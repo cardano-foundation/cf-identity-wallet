@@ -58,10 +58,11 @@ class ConnectionService extends AgentService {
     // This will take our first KERI identifier and get the server to resolve it, so that the connection is resolved from both sides and we can issue to this wallet using its API.
     if (url.includes("dev.keria.cf-keripy.metadata.dev.cf-deployments.org")) {
       // This is inefficient but it will change going forward.
-      const aid = (await Agent.agent.identifiers.getIdentifiers())[0];
-      if (aid && aid.signifyName) {
-        // signifyName should always be set
-        const oobi = await Agent.agent.connections.getKeriOobi(aid.signifyName);
+      const aids = await Agent.agent.identifiers.getIdentifiers();
+      if (aids.length > 0) {
+        const oobi = await Agent.agent.connections.getKeriOobi(
+          aids[0].signifyName
+        );
         await (
           await fetch(
             "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/resolveOobi",

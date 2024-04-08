@@ -8,6 +8,7 @@ const filteredIdentifierFix: IdentifierShortDetails[] = [
     colors: ["#47E0FF", "#00C6EF"],
     theme: 0,
     isPending: false,
+    signifyName: "Test",
   },
   {
     id: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inx",
@@ -16,6 +17,7 @@ const filteredIdentifierFix: IdentifierShortDetails[] = [
     colors: ["#47E0FF", "#00C6EF"],
     theme: 1,
     isPending: false,
+    signifyName: "Test",
   },
   {
     id: "ECHG-cxboMQ78Hwlm2-w6OS3iU275bAKkqC1LjwICPyi",
@@ -24,6 +26,7 @@ const filteredIdentifierFix: IdentifierShortDetails[] = [
     colors: ["#000000", "#000000"],
     theme: 4,
     isPending: true,
+    signifyName: "Test",
   },
 ];
 

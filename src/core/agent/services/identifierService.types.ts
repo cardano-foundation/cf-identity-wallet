@@ -4,7 +4,7 @@ interface IdentifierShortDetails {
   id: string;
   displayName: string;
   createdAtUTC: string;
-  signifyName?: string;
+  signifyName: string;
   colors: [string, string];
   theme: number;
   isPending: boolean;
@@ -30,8 +30,14 @@ interface MultiSigIcpRequestDetails {
   threshold: number;
 }
 
+interface CreateIdentifierResult {
+  identifier: string;
+  signifyName: string;
+}
+
 export type {
   IdentifierShortDetails,
   IdentifierDetails,
   MultiSigIcpRequestDetails,
+  CreateIdentifierResult,
 };

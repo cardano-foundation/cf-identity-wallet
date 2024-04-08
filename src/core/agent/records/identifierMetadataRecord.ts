@@ -4,7 +4,7 @@ interface IdentifierMetadataRecordProps {
   id: string;
   displayName: string;
   colors: [string, string];
-  signifyName?: string;
+  signifyName: string;
   createdAt?: Date;
   isArchived?: boolean;
   isDeleted?: boolean;
@@ -24,7 +24,7 @@ class IdentifierMetadataRecord
   isDeleted?: boolean;
   isPending?: boolean;
   signifyOpName?: string | undefined;
-  signifyName?: string | undefined;
+  signifyName!: string;
   theme!: number;
   multisigManageAid?: string | undefined;
 

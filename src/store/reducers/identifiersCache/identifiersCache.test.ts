@@ -32,6 +32,7 @@ describe("identifiersCacheSlice", () => {
         colors: ["#92FFC0", "#47FF94"],
         theme: 0,
         isPending: false,
+        signifyName: "Test",
       },
     ];
     const newState = identifiersCacheSlice.reducer(

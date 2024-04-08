@@ -48,17 +48,18 @@ const IdentifierStage3 = ({
       );
       return;
     } else {
-      const identifier = await Agent.agent.identifiers.createMultisig(
-        ourIdentifier,
-        otherIdentifierContacts,
-        {
-          theme: state.selectedTheme,
-          // @TODO - sdisalvo: Colors will need to be removed
-          colors: ["#000000", "#000000"],
-          displayName: state.displayNameValue,
-        },
-        state.threshold
-      );
+      const { identifier, signifyName } =
+        await Agent.agent.identifiers.createMultisig(
+          ourIdentifier,
+          otherIdentifierContacts,
+          {
+            theme: state.selectedTheme,
+            // @TODO - sdisalvo: Colors will need to be removed
+            colors: ["#000000", "#000000"],
+            displayName: state.displayNameValue,
+          },
+          state.threshold
+        );
       if (identifier) {
         const newIdentifier: IdentifierShortDetails = {
           id: identifier,
@@ -68,6 +69,7 @@ const IdentifierStage3 = ({
           colors: ["#000000", "#000000"],
           theme: state.selectedTheme,
           isPending: state.threshold >= 2,
+          signifyName,
         };
         dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
         dispatch(

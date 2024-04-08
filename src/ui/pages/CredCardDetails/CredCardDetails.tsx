@@ -63,8 +63,6 @@ const CredCardDetails = () => {
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<ACDCDetails>();
-  const [connectionDetails, setConnectionDetails] =
-    useState<ConnectionDetails>();
 
   const [navAnimation, setNavAnimation] = useState(false);
   const isArchived =

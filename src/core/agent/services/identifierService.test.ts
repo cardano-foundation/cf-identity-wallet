@@ -159,7 +159,6 @@ describe("Identifier service of agent", () => {
       await identifierService.getIdentifier(keriMetadataRecord.id)
     ).toStrictEqual({
       id: keriMetadataRecord.id,
-      // @TODO - foconnor: Redundant info.
       displayName: keriMetadataRecordProps.displayName,
       createdAtUTC: nowISO,
       colors,
@@ -185,7 +184,10 @@ describe("Identifier service of agent", () => {
         colors,
         theme: 0,
       })
-    ).toBe(aid);
+    ).toEqual({
+      identifier: aid,
+      signifyName: expect.any(String),
+    });
     expect(signifyApi.createIdentifier).toBeCalled();
     expect(basicStorage.save).toBeCalledTimes(1);
   });
@@ -367,7 +369,10 @@ describe("Identifier service of agent", () => {
         metadata as IdentifierMetadataRecordProps,
         otherIdentifiers.length + 1
       )
-    ).toBe(multisigIdentifier);
+    ).toEqual({
+      identifier: multisigIdentifier,
+      signifyName: expect.any(String),
+    });
     expect(basicStorage.save).toBeCalledWith(
       expect.objectContaining({ id: multisigIdentifier })
     );
@@ -384,7 +389,11 @@ describe("Identifier service of agent", () => {
         metadata as IdentifierMetadataRecordProps,
         1
       )
-    ).toBe(`${multisigIdentifier}1`);
+    ).toEqual({
+      identifier: `${multisigIdentifier}1`,
+      signifyName: expect.any(String),
+    });
+
     expect(basicStorage.save).toBeCalledWith(
       expect.objectContaining({
         id: `${multisigIdentifier}1`,
@@ -403,7 +412,11 @@ describe("Identifier service of agent", () => {
         metadata as IdentifierMetadataRecordProps,
         2
       )
-    ).toBe(`${multisigIdentifier}2`);
+    ).toEqual({
+      identifier: `${multisigIdentifier}2`,
+      signifyName: expect.any(String),
+    });
+
     expect(basicStorage.save).toBeCalledWith(
       expect.objectContaining({
         id: `${multisigIdentifier}2`,
@@ -472,7 +485,10 @@ describe("Identifier service of agent", () => {
         otherIdentifiers.length + 1,
         delegatorContact
       )
-    ).toBe(multisigIdentifier);
+    ).toEqual({
+      identifier: multisigIdentifier,
+      signifyName: expect.any(String),
+    });
 
     expect(signifyApi.createMultisig).toBeCalledWith(
       {
@@ -539,7 +555,10 @@ describe("Identifier service of agent", () => {
           displayName: "Multisig",
         }
       )
-    ).toBe(multisigIdentifier);
+    ).toEqual({
+      identifier: multisigIdentifier,
+      signifyName: expect.any(String),
+    });
   });
 
   test("cannot join multisig by notification if exn messages are missing", async () => {
@@ -633,24 +652,6 @@ describe("Identifier service of agent", () => {
     );
   });
 
-  test("should call signify.checkDelegationSuccess with missing signify name and throw error", async () => {
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-
-      colors: ["#e0f5bc", "#ccef8f"],
-      isPending: true,
-      signifyOpName: "op123",
-      signifyName: "",
-      theme: 4,
-    } as IdentifierMetadataRecord;
-
-    expect(
-      identifierService.checkDelegationSuccess(metadata)
-    ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-    expect(signifyApi.delegationApproved).toBeCalledTimes(0);
-  });
-
   test("should call signify.rotateIdentifier with correct params", async () => {
     const metadata = {
       id: "123456",
@@ -667,23 +668,6 @@ describe("Identifier service of agent", () => {
       metadata.signifyName
     );
     expect(signifyApi.delegationApproved).toBeCalledTimes(0);
-  });
-
-  test("should call signify.rotateIdentifier with missing signify name and throw error", async () => {
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-
-      colors: ["#e0f5bc", "#ccef8f"],
-      isPending: true,
-      signifyOpName: "op123",
-      signifyName: "",
-      theme: 4,
-    } as IdentifierMetadataRecord;
-
-    expect(identifierService.rotateIdentifier(metadata)).rejects.toThrowError(
-      IdentifierService.AID_MISSING_SIGNIFY_NAME
-    );
   });
 
   test("should can rorate multisig with KERI multisig do not have manageAid and throw error", async () => {
@@ -943,52 +927,6 @@ describe("Identifier service of agent", () => {
     ).rejects.toThrowError(IdentifierService.AID_IS_NOT_MULTI_SIG);
   });
 
-  test("should can join the multisig rotation with AID is DID and throw error", async () => {
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-
-      colors: ["#e0f5bc", "#ccef8f"],
-      isPending: true,
-      signifyOpName: "op123",
-      signifyName: "",
-      theme: 4,
-      multisigManageAid: "123",
-    } as IdentifierMetadataRecord;
-    identifierService.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(metadata);
-    basicStorage.findById = jest.fn().mockResolvedValue({
-      content: {
-        d: "d",
-      },
-    });
-    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
-      {
-        exn: {
-          a: {
-            name: "signifyName",
-            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
-          },
-        },
-      },
-    ]);
-
-    signifyApi.getIdentifierById = jest.fn().mockResolvedValue([
-      {
-        name: "multisig",
-        prefix: "prefix",
-      },
-    ]);
-    expect(
-      identifierService.joinMultisigRotation({
-        id: "id",
-        createdAt: new Date(),
-        a: { d: "d" },
-      })
-    ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-  });
-
   test("should can join the multisig rotation", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
     const metadata = {
@@ -1086,41 +1024,6 @@ describe("Identifier service of agent", () => {
         }
       )
     ).rejects.toThrowError(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
-  });
-
-  test("cannot join multisig if the identifier does not have signifyName", async () => {
-    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
-      {
-        exn: {
-          a: {
-            name: "signifyName",
-            smids: ["id"],
-            rmids: ["id"],
-          },
-        },
-      },
-    ]);
-
-    identifierService.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
-      {
-        displayName: "displayName",
-        id: "id",
-        signifyName: undefined,
-        createdAt: new Date(),
-        colors: ["#000000", "#000000"],
-        theme: 4,
-      },
-    ]);
-    await expect(
-      identifierService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 4,
-          colors: ["#000000", "#000000"],
-          displayName: "Multisig",
-        }
-      )
-    ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
   });
 
   test("Can get multisig icp details of 2 persons multi-sig", async () => {

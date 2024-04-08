@@ -61,6 +61,7 @@ describe("Identifiers Tab", () => {
         colors: ["#000000", "#000000"],
         theme: 4,
         isPending: true,
+        signifyName: "Test",
       },
     ];
     const handleClick = jest.fn();

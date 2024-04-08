@@ -69,12 +69,13 @@ const IdentifierStage0 = ({
     // @TODO - sdisalvo: Colors will need to be removed
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
-    const identifier = await Agent.agent.identifiers.createIdentifier({
-      displayName: state.displayNameValue,
-      // @TODO - sdisalvo: Colors will need to be removed
-      colors: [newColor[1], newColor[0]],
-      theme: state.selectedTheme,
-    });
+    const { identifier, signifyName } =
+      await Agent.agent.identifiers.createIdentifier({
+        displayName: state.displayNameValue,
+        // @TODO - sdisalvo: Colors will need to be removed
+        colors: [newColor[1], newColor[0]],
+        theme: state.selectedTheme,
+      });
     if (identifier) {
       const newIdentifier: IdentifierShortDetails = {
         id: identifier,
@@ -84,6 +85,7 @@ const IdentifierStage0 = ({
         colors: [newColor[1], newColor[0]],
         theme: state.selectedTheme,
         isPending: false,
+        signifyName,
       };
       dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));

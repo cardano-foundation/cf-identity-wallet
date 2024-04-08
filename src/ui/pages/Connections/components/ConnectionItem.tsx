@@ -17,8 +17,6 @@ const ConnectionItem = ({
   item,
   handleShowConnectionDetails,
 }: ConnectionItemProps) => {
-  const fallbackLogo = KeriLogo;
-
   return (
     <IonItem onClick={() => handleShowConnectionDetails(item)}>
       <IonGrid>
@@ -28,7 +26,7 @@ const ConnectionItem = ({
             className="connection-logo"
           >
             <img
-              src={item?.logo || fallbackLogo}
+              src={item?.logo || KeriLogo}
               alt="connection-logo"
             />
           </IonCol>

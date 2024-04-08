@@ -174,8 +174,6 @@ const ConnectionDetails = () => {
     },
   ];
 
-  const fallbackLogo = KeriLogo;
-
   if (loading.details || loading.history) {
     return (
       <div
@@ -208,7 +206,7 @@ const ConnectionDetails = () => {
       >
         <div className="connection-details-content">
           <ConnectionDetailsHeader
-            logo={connectionDetails?.logo || fallbackLogo}
+            logo={connectionDetails?.logo || KeriLogo}
             label={connectionDetails?.label}
             date={connectionDetails?.connectionDate}
           />
@@ -283,7 +281,7 @@ const ConnectionDetails = () => {
                 <div className="connection-details-history-event">
                   <div className="connection-details-logo">
                     <img
-                      src={connectionDetails?.logo || fallbackLogo}
+                      src={connectionDetails?.logo || KeriLogo}
                       alt="connection-logo"
                     />
                   </div>

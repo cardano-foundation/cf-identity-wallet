@@ -9,6 +9,7 @@ const mockData: IdentifierMetadataRecordProps = {
   colors: ["#000000", "#FFFFFF"],
   isArchived: true,
   theme: 0,
+  signifyName: "Test",
 };
 
 describe("Identifier Record", () => {
@@ -38,6 +39,7 @@ describe("Identifier Record", () => {
       colors: mockData.colors,
       isArchived: mockData.isArchived,
       theme: 0,
+      signifyName: "Test",
     });
     expect(settingsRecord.createdAt.getTime()).toBeGreaterThan(
       createdAt.getTime()
@@ -52,6 +54,7 @@ describe("Identifier Record", () => {
       colors: mockData.colors,
       createdAt: createdAt,
       theme: 0,
+      signifyName: "Test",
     });
     expect(settingsRecord.isArchived).toBe(false);
   });

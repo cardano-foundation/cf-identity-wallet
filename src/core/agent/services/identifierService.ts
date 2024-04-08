@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { plainToInstance } from "class-transformer";
 import {
+  CreateIdentifierResult,
   IdentifierDetails,
   IdentifierShortDetails,
   MultiSigIcpRequestDetails,
@@ -45,8 +46,6 @@ class IdentifierService extends AgentService {
   static readonly ONLY_ALLOW_KERI_CONTACTS =
     "Can only create multi-sig using KERI contacts with specified OOBI URLs";
 
-  static readonly AID_MISSING_SIGNIFY_NAME =
-    "Metadata record for KERI AID is missing the Signify name";
   static readonly MULTI_SIG_NOT_FOUND =
     "There's no multi sig identifier for the given SAID";
   static readonly AID_IS_NOT_MULTI_SIG =
@@ -123,9 +122,9 @@ class IdentifierService extends AgentService {
   async createIdentifier(
     metadata: Omit<
       IdentifierMetadataRecordProps,
-      "id" | "createdAt" | "isArchived"
+      "id" | "createdAt" | "isArchived" | "signifyName"
     >
-  ): Promise<string | undefined> {
+  ): Promise<CreateIdentifierResult> {
     const { signifyName, identifier } =
       await this.signifyApi.createIdentifier();
     await this.createIdentifierMetadataRecord({
@@ -133,7 +132,7 @@ class IdentifierService extends AgentService {
       ...metadata,
       signifyName: signifyName,
     });
-    return identifier;
+    return { identifier, signifyName };
   }
 
   async archiveIdentifier(identifier: string): Promise<void> {
@@ -238,11 +237,11 @@ class IdentifierService extends AgentService {
     >,
     threshold: number,
     delegateContact?: ConnectionShortDetails
-  ): Promise<string | undefined> {
+  ): Promise<CreateIdentifierResult> {
     const ourMetadata = await this.getIdentifierMetadata(ourIdentifier);
     this.validIdentifierMetadata(ourMetadata);
     const ourAid = (await this.signifyApi.getIdentifierByName(
-      ourMetadata.signifyName as string
+      ourMetadata.signifyName
     )) as Aid;
     const otherAids = await Promise.all(
       otherIdentifierContacts.map(async (contact) => {
@@ -282,7 +281,7 @@ class IdentifierService extends AgentService {
       isPending,
       multisigManageAid: ourIdentifier,
     });
-    return multisigId;
+    return { identifier: multisigId, signifyName };
   }
 
   async rotateMultisig(ourIdentifier: string): Promise<string> {
@@ -295,9 +294,6 @@ class IdentifierService extends AgentService {
       metadata.multisigManageAid
     );
 
-    if (!metadata.signifyName || !identifierManageAid.signifyName) {
-      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-    }
     const multiSig = await this.signifyApi.getIdentifierByName(
       metadata.signifyName
     );
@@ -358,10 +354,6 @@ class IdentifierService extends AgentService {
     const identifierManageAid = await this.getIdentifierMetadata(
       multiSig.multisigManageAid
     );
-
-    if (!multiSig.signifyName || !identifierManageAid.signifyName) {
-      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-    }
 
     const aid = await this.signifyApi.getIdentifierByName(
       identifierManageAid.signifyName
@@ -464,7 +456,7 @@ class IdentifierService extends AgentService {
       IdentifierMetadataRecordProps,
       "displayName" | "colors" | "theme"
     >
-  ): Promise<string | undefined> {
+  ): Promise<CreateIdentifierResult | undefined> {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const msgSaid = notification.a.d as string;
     const hasJoined = await this.hasJoinedMultisig(msgSaid);
@@ -489,10 +481,6 @@ class IdentifierService extends AgentService {
       throw new Error(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
     }
 
-    if (!identifier.signifyName) {
-      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-    }
-
     const aid = await this.signifyApi.getIdentifierByName(
       identifier?.signifyName
     );
@@ -510,7 +498,7 @@ class IdentifierService extends AgentService {
       isPending: res.op.done ? false : true, //this will be updated once the operation is done
       multisigManageAid: identifier.id,
     });
-    return multisigId;
+    return { identifier: multisigId, signifyName };
   }
 
   async markMultisigCompleteIfReady(metadata: IdentifierMetadataRecord) {
@@ -559,7 +547,7 @@ class IdentifierService extends AgentService {
   async createDelegatedIdentifier(
     metadata: Omit<
       IdentifierMetadataRecordProps,
-      "id" | "createdAt" | "isArchived"
+      "id" | "createdAt" | "isArchived" | "signifyName"
     >,
     delegatorPrefix: string
   ): Promise<string | undefined> {
@@ -584,9 +572,6 @@ class IdentifierService extends AgentService {
   async checkDelegationSuccess(
     metadata: IdentifierMetadataRecord
   ): Promise<boolean> {
-    if (!metadata.signifyName) {
-      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-    }
     if (!metadata.isPending) {
       return true;
     }
@@ -600,9 +585,6 @@ class IdentifierService extends AgentService {
   }
 
   async rotateIdentifier(metadata: IdentifierMetadataRecord) {
-    if (!metadata.signifyName) {
-      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-    }
     await this.signifyApi.rotateIdentifier(metadata.signifyName);
   }
 

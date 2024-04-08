@@ -16,6 +16,15 @@ const props: ShareIdentifierProps = {
   setIsOpen,
   signifyName: identifierFix[0].signifyName,
 };
+jest.mock("../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      connections: {
+        getKeriOobi: jest.fn(),
+      },
+    },
+  },
+}));
 describe("Share Indentifier (OOBI)", () => {
   test("Show toast when copy identifier", async () => {
     const mockStore = configureStore();
