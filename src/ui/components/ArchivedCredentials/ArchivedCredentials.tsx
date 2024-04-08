@@ -42,7 +42,6 @@ import {
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
-import Minicred from "../../assets/images/minicred.jpg";
 import { CredentialItem } from "./CredentialItem";
 
 const ArchivedCredentialsContainer = forwardRef<
