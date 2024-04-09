@@ -3,8 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import { MultiSigRoute } from "./signifyApi.types";
 import { SignifyApi } from "./signifyApi";
 import { ConfigurationService } from "../../../configuration";
-import { AriesAgent } from "../../agent";
-import { IdentifierType } from "../../services/identifierService.types";
 
 const firstAid = "aid1";
 const secondAid = "aid2";
