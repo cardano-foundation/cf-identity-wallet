@@ -48,6 +48,7 @@ describe("State Cache", () => {
   test("should set the authentication cache", () => {
     const authentication: AuthenticationCacheProps = {
       loggedIn: false,
+      userName: "",
       time: 0,
       passcodeIsSet: false,
       seedPhraseIsSet: false,
@@ -81,7 +82,7 @@ describe("State Cache", () => {
   test("should set queue connection credential request", () => {
     const connectionCredentialRequestProps: IncomingRequestProps = {
       id: "123",
-      type: IncomingRequestType.CONNECTION_INCOMING,
+      type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
     };
     const action = setQueueIncomingRequest(connectionCredentialRequestProps);
     const nextState = stateCacheSlice.reducer(initialState, action);
@@ -97,17 +98,17 @@ describe("State Cache", () => {
     initialStateMock.queueIncomingRequest.queues = [
       {
         id: "123",
-        type: IncomingRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
       },
     ];
     const batchIncomingRequestProps: IncomingRequestProps[] = [
       {
         id: "456",
-        type: IncomingRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
       },
       {
         id: "789",
-        type: IncomingRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
       },
     ];
     const action = enqueueIncomingRequest(batchIncomingRequestProps);
@@ -125,11 +126,11 @@ describe("State Cache", () => {
     initialStateMock.queueIncomingRequest.queues = [
       {
         id: "123",
-        type: IncomingRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
       },
       {
         id: "456",
-        type: IncomingRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
       },
     ];
     const action = dequeueCredentialRequest();
@@ -149,7 +150,7 @@ describe("State Cache", () => {
     const nextState1 = stateCacheSlice.reducer(initialState, action1);
     const connectionCredentialRequestProps: IncomingRequestProps = {
       id: "123",
-      type: IncomingRequestType.CONNECTION_INCOMING,
+      type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
     };
     const action2 = setQueueIncomingRequest(connectionCredentialRequestProps);
     const nextState2 = stateCacheSlice.reducer(nextState1, action2);
@@ -166,11 +167,11 @@ describe("State Cache", () => {
     initialStateMock.queueIncomingRequest.queues = [
       {
         id: "123",
-        type: IncomingRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
       },
       {
         id: "",
-        type: IncomingRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
       },
     ];
     const action = dequeueCredentialRequest();

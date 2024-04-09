@@ -3,6 +3,7 @@ import {
   IonButton,
   IonIcon,
   IonSpinner,
+  useIonRouter,
   useIonViewWillEnter,
 } from "@ionic/react";
 import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
@@ -27,7 +28,7 @@ import { CredsOptions } from "../../components/CredsOptions";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import {
   addFavouritesCredsCache,
   getCredsCache,
@@ -39,22 +40,19 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { CredCardTemplate } from "../../components/CredCardTemplate";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { ConnectionDetails } from "../Connections/Connections.types";
-import {
-  ACDCDetails,
-  W3CCredentialDetails,
-} from "../../../core/agent/services/credentialService.types";
-import "../../components/CardDetailsElements/CardDetails.scss";
+import { ACDCDetails } from "../../../core/agent/services/credentialService.types";
+import "../../components/CardDetails/CardDetails.scss";
 import "./CredCardDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
-import { ConnectionType } from "../../../core/agent/agent.types";
-import { CredContentW3c } from "./components/CredContentW3c";
 import { CredContentAcdc } from "./components/CredContentAcdc";
+import { combineClassNames } from "../../utils/style";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
 
 const CredCardDetails = () => {
   const pageId = "credential-card-details";
+  const ionRouter = useIonRouter();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
@@ -67,13 +65,10 @@ const CredCardDetails = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState<
-    W3CCredentialDetails | ACDCDetails
-  >();
-  const [connectionDetails, setConnectionDetails] =
-    useState<ConnectionDetails>();
+  const [cardData, setCardData] = useState<ACDCDetails>();
 
   const [navAnimation, setNavAnimation] = useState(false);
+
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === params.id);
@@ -87,20 +82,10 @@ const CredCardDetails = () => {
   });
 
   const getCredDetails = async () => {
-    const cardDetails =
-      await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
+    const cardDetails = await Agent.agent.credentials.getCredentialDetailsById(
+      params.id
+    );
     setCardData(cardDetails);
-
-    if (cardDetails.connectionType === ConnectionType.DIDCOMM) {
-      const connectionDetails =
-        cardDetails.connectionId &&
-        (await AriesAgent.agent.connections?.getConnectionById(
-          cardDetails.connectionId
-        ));
-      if (connectionDetails) {
-        setConnectionDetails(connectionDetails);
-      }
-    }
   };
 
   const handleDone = () => {
@@ -118,7 +103,7 @@ const CredCardDetails = () => {
     );
 
     setTimeout(() => {
-      history.push(nextPath.pathname);
+      ionRouter.push(nextPath.pathname, "root");
     }, NAVIGATION_DELAY);
 
     setTimeout(() => {
@@ -127,7 +112,7 @@ const CredCardDetails = () => {
   };
 
   const handleArchiveCredential = async () => {
-    await AriesAgent.agent.credentials.archiveCredential(params.id);
+    await Agent.agent.credentials.archiveCredential(params.id);
     const creds = credsCache.filter((item) => item.id !== params.id);
     if (isFavourite) {
       handleSetFavourite(params.id);
@@ -138,17 +123,16 @@ const CredCardDetails = () => {
 
   const handleDeleteCredential = async () => {
     // @TODO - sdisalvo: handle error
-    await AriesAgent.agent.credentials.deleteCredential(params.id);
+    await Agent.agent.credentials.deleteCredential(params.id);
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
   };
 
   const handleRestoreCredential = async () => {
-    await AriesAgent.agent.credentials.restoreCredential(params.id);
+    await Agent.agent.credentials.restoreCredential(params.id);
     // @TODO - sdisalvo: handle error
-    const creds =
-      await AriesAgent.agent.credentials.getCredentialShortDetailsById(
-        params.id
-      );
+    const creds = await Agent.agent.credentials.getCredentialShortDetailsById(
+      params.id
+    );
     dispatch(setCredsCache([...credsCache, creds]));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
     handleDone();
@@ -236,164 +220,134 @@ const CredCardDetails = () => {
     );
   };
 
-  if (!cardData) {
-    return (
-      <div
-        className="cred-detail-spinner-container"
-        data-testid="cred-detail-spinner-container"
-      >
-        <IonSpinner name="circular" />
-      </div>
-    );
-  } else {
-    if (
-      cardData.connectionType === ConnectionType.DIDCOMM &&
-      Array.isArray(cardData.credentialSubject)
-    ) {
-      // @TODO - sdisalvo: Prevent app crashing when credentialSubject is an array
-      // Keeping this as a safety net as we may want to show a message in the future.
-      return null;
+  const pageClasses = combineClassNames(
+    "cred-card-detail card-details cred-open-animation",
+    {
+      "archived-credential": isArchived,
+      "cred-back-animation": navAnimation,
+      "cred-open-animation": !navAnimation,
     }
+  );
 
-    const pageClasses = `cred-card-detail card-details${
-      isArchived ? " archived-credential" : ""
-    } ${navAnimation ? "cred-back-animation" : "cred-open-animation"}`;
-
-    return (
-      <TabLayout
-        pageId={pageId}
-        customClass={pageClasses}
-        header={true}
-        doneLabel={`${i18n.t("creds.card.details.done")}`}
-        doneAction={handleDone}
-        additionalButtons={!isArchived && <AdditionalButtons />}
-        actionButton={isArchived}
-        actionButtonAction={() => setAlertRestoreIsOpen(true)}
-        actionButtonLabel={`${i18n.t("creds.card.details.restore")}`}
-      >
-        {!cardData ? (
-          <div
-            className="spinner-container"
-            data-testid="spinner-container"
-          >
-            <IonSpinner name="circular" />
-          </div>
-        ) : (
-          <>
-            <CredCardTemplate
-              shortData={cardData}
-              isActive={false}
-            />
-            <div className="card-details-content">
-              {cardData.connectionType === ConnectionType.DIDCOMM ? (
-                <CredContentW3c
-                  cardData={cardData}
-                  connectionDetails={connectionDetails}
-                />
-              ) : (
-                <CredContentAcdc cardData={cardData} />
-              )}
-              <PageFooter
-                pageId={pageId}
-                archiveButtonText={
-                  !isArchived
-                    ? `${i18n.t("creds.card.details.button.archive")}`
-                    : ""
-                }
-                archiveButtonAction={() => {
-                  setAlertDeleteArchiveIsOpen(true);
-                  dispatch(
-                    setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL)
-                  );
-                }}
-                deleteButtonText={
-                  isArchived
-                    ? `${i18n.t("creds.card.details.button.delete")}`
-                    : ""
-                }
-                deleteButtonAction={() => {
-                  setAlertDeleteArchiveIsOpen(true);
-                  dispatch(
-                    setCurrentOperation(OperationType.DELETE_CREDENTIAL)
-                  );
-                }}
-              />
-            </div>
-            <CredsOptions
-              optionsIsOpen={optionsIsOpen}
-              setOptionsIsOpen={setOptionsIsOpen}
-              cardData={cardData}
-              credsOptionAction={
-                isArchived ? handleDeleteCredential : handleArchiveCredential
+  return (
+    <TabLayout
+      pageId={pageId}
+      customClass={pageClasses}
+      header={true}
+      doneLabel={`${i18n.t("creds.card.details.done")}`}
+      doneAction={handleDone}
+      additionalButtons={!isArchived && <AdditionalButtons />}
+      actionButton={isArchived}
+      actionButtonAction={() => setAlertRestoreIsOpen(true)}
+      actionButtonLabel={`${i18n.t("creds.card.details.restore")}`}
+    >
+      {!cardData ? (
+        <div
+          className="cred-detail-spinner-container"
+          data-testid="cred-detail-spinner-container"
+        >
+          <IonSpinner name="circular" />
+        </div>
+      ) : (
+        <>
+          <CredCardTemplate
+            cardData={cardData}
+            isActive={false}
+          />
+          <div className="card-details-content">
+            <CredContentAcdc cardData={cardData} />
+            <PageFooter
+              pageId={pageId}
+              archiveButtonText={
+                !isArchived
+                  ? `${i18n.t("creds.card.details.button.archive")}`
+                  : ""
               }
+              archiveButtonAction={() => {
+                setAlertDeleteArchiveIsOpen(true);
+                dispatch(setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL));
+              }}
+              deleteButtonText={
+                isArchived
+                  ? `${i18n.t("creds.card.details.button.delete")}`
+                  : ""
+              }
+              deleteButtonAction={() => {
+                setAlertDeleteArchiveIsOpen(true);
+                dispatch(setCurrentOperation(OperationType.DELETE_CREDENTIAL));
+              }}
             />
-          </>
-        )}
-
-        <AlertDeleteArchive
-          isOpen={alertDeleteArchiveIsOpen}
-          setIsOpen={setAlertDeleteArchiveIsOpen}
-          dataTestId="alert-delete-archive"
-          headerText={i18n.t(
-            isArchived
-              ? "creds.card.details.alert.delete.title"
-              : "creds.card.details.alert.archive.title"
-          )}
-          confirmButtonText={`${i18n.t(
-            isArchived
-              ? "creds.card.details.alert.delete.confirm"
-              : "creds.card.details.alert.archive.confirm"
-          )}`}
-          cancelButtonText={`${i18n.t(
-            isArchived
-              ? "creds.card.details.alert.delete.cancel"
-              : "creds.card.details.alert.archive.cancel"
-          )}`}
-          actionConfirm={() => {
-            if (
-              !stateCache?.authentication.passwordIsSkipped &&
-              stateCache?.authentication.passwordIsSet
-            ) {
-              setVerifyPasswordIsOpen(true);
-            } else {
-              setVerifyPasscodeIsOpen(true);
+          </div>
+          <CredsOptions
+            optionsIsOpen={optionsIsOpen}
+            setOptionsIsOpen={setOptionsIsOpen}
+            cardData={cardData}
+            credsOptionAction={
+              isArchived ? handleDeleteCredential : handleArchiveCredential
             }
-          }}
-          actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-          actionDismiss={() =>
-            dispatch(setCurrentOperation(OperationType.IDLE))
+          />
+        </>
+      )}
+
+      <AlertDeleteArchive
+        isOpen={alertDeleteArchiveIsOpen}
+        setIsOpen={setAlertDeleteArchiveIsOpen}
+        dataTestId="alert-delete-archive"
+        headerText={i18n.t(
+          isArchived
+            ? "creds.card.details.alert.delete.title"
+            : "creds.card.details.alert.archive.title"
+        )}
+        confirmButtonText={`${i18n.t(
+          isArchived
+            ? "creds.card.details.alert.delete.confirm"
+            : "creds.card.details.alert.archive.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          isArchived
+            ? "creds.card.details.alert.delete.cancel"
+            : "creds.card.details.alert.archive.cancel"
+        )}`}
+        actionConfirm={() => {
+          if (
+            !stateCache?.authentication.passwordIsSkipped &&
+            stateCache?.authentication.passwordIsSet
+          ) {
+            setVerifyPasswordIsOpen(true);
+          } else {
+            setVerifyPasscodeIsOpen(true);
           }
-        />
-        <AlertRestore
-          isOpen={alertRestoreIsOpen}
-          setIsOpen={setAlertRestoreIsOpen}
-          dataTestId="alert-restore"
-          headerText={i18n.t("creds.card.details.alert.restore.title")}
-          confirmButtonText={`${i18n.t(
-            "creds.card.details.alert.restore.confirm"
-          )}`}
-          cancelButtonText={`${i18n.t(
-            "creds.card.details.alert.restore.cancel"
-          )}`}
-          actionConfirm={() => handleRestoreCredential()}
-          actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-          actionDismiss={() =>
-            dispatch(setCurrentOperation(OperationType.IDLE))
-          }
-        />
-        <VerifyPassword
-          isOpen={verifyPasswordIsOpen}
-          setIsOpen={setVerifyPasswordIsOpen}
-          onVerify={onVerify}
-        />
-        <VerifyPasscode
-          isOpen={verifyPasscodeIsOpen}
-          setIsOpen={setVerifyPasscodeIsOpen}
-          onVerify={onVerify}
-        />
-      </TabLayout>
-    );
-  }
+        }}
+        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+      />
+      <AlertRestore
+        isOpen={alertRestoreIsOpen}
+        setIsOpen={setAlertRestoreIsOpen}
+        dataTestId="alert-restore"
+        headerText={i18n.t("creds.card.details.alert.restore.title")}
+        confirmButtonText={`${i18n.t(
+          "creds.card.details.alert.restore.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "creds.card.details.alert.restore.cancel"
+        )}`}
+        actionConfirm={() => handleRestoreCredential()}
+        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+      />
+      <VerifyPassword
+        isOpen={verifyPasswordIsOpen}
+        setIsOpen={setVerifyPasswordIsOpen}
+        onVerify={onVerify}
+      />
+      <VerifyPasscode
+        isOpen={verifyPasscodeIsOpen}
+        setIsOpen={setVerifyPasscodeIsOpen}
+        onVerify={onVerify}
+      />
+    </TabLayout>
+  );
 };
 
 export { CredCardDetails };

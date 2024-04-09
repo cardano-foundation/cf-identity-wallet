@@ -3,12 +3,6 @@ export enum CreatePassword {
   Title = "Create your Password",
 }
 
-export enum GenerateSeedPhrase {
-  DescriptionBottom = "This phrase is essentially a representation of your Identity Wallet profile private key. This means that anyone with access to it can control your identity. We strongly recommend not using screenshots or storing this phrase without encryption.",
-  DescriptionTop = "It is critical that you securely store this secret recovery phrase, also referred to as a mnemonic, seed, or backup phrase. You will require this phrase in the event that you change mobile devices or need to regain access to your identity wallet profile.",
-  Title = "Generate your Seed Phrase",
-}
-
 export enum Passcode {
   Description = "Create a passcode to secure access to your wallet and to continue the onboarding process",
   Title = "Create your Passcode",
@@ -83,6 +77,17 @@ export enum PrivacyPolicy {
   Section11Content1 = "For further inquiries or requests in relation to Our handling of your Personal Data or this Privacy Policy please contact Us at gdpr@cardanofoundation.org",
 }
 
+export enum SeedPhraseGenerate {
+  DescriptionBottom = "This phrase is essentially a representation of your Identity Wallet profile private key. This means that anyone with access to it can control your identity. We strongly recommend not using screenshots or storing this phrase without encryption.",
+  DescriptionTop = "It is critical that you securely store this secret recovery phrase, also referred to as a mnemonic, seed, or backup phrase. You will require this phrase in the event that you change mobile devices or need to regain access to your identity wallet profile.",
+  Title = "Generate your Seed Phrase",
+}
+
+export enum SeedPhraseVerify {
+  Description = "Please select every word from your seed phrase in the correct order. If you select a word in the wrong order, select it again to move it back down to the list of available words.",
+  Title = "Verify your Seed Phrase",
+}
+
 export enum TermsOfUse {
   Title = "Terms of Use",
   Intro = "Please read these terms of use (\"Terms of Use\" or \"Terms\") carefully before using the services offered by Cardano Foundation (together with our subsidiaries and affiliates, referred to as \"Foundation,\" \"We,\" \"Us\" or \"Our\" in these Terms of Use). These Terms of Use set forth the legally binding terms and conditions for your use of this website and all of the related websites, mobile apps, products and services offered by the Foundation and its affiliated entities including our APK's, API's, plug-ins and browser extensions (collectively, the \"Products\"). By using the Products in any manner, you agree to be bound by these Terms of Use.",
@@ -137,9 +142,4 @@ export enum TermsOfUse {
   Section6Content2 = "These Terms of Use are between you and the Foundation only, and not with an application service or application platform provider (such as Apple, Inc., or Google Inc.), which may provide you the application subject to its own terms of use.",
   Section6Subtitle1 = "a. Amendment:",
   Section6Subtitle2 = "b. Application Provider Terms:",
-}
-
-export enum VerifySeedPhrase {
-  Description = "Please select every word from your seed phrase in the correct order. If you select a word in the wrong order, select it again to move it back down to the list of available words.",
-  Title = "Verify your Seed Phrase",
 }

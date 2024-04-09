@@ -19,7 +19,7 @@ import {
   apps,
   appsOutline,
 } from "ionicons/icons";
-import React from "react";
+import { ComponentType } from "react";
 import { useLocation } from "react-router-dom";
 import { i18n } from "../../../../i18n";
 import "./TabsMenu.scss";
@@ -29,6 +29,8 @@ import { Creds } from "../../../pages/Creds";
 import { Scan } from "../../../pages/Scan";
 import { Chat } from "../../../pages/Chat";
 import { Menu } from "../../../pages/Menu";
+import { useAppDispatch } from "../../../../store/hooks";
+import { setCurrentRoute } from "../../../../store/reducers/stateCache";
 
 const tabsRoutes = [
   {
@@ -62,14 +64,14 @@ const tabsRoutes = [
     icon: [apps, appsOutline],
   },
 ];
-const TabsMenu = ({
-  tab,
-  path,
-}: {
-  tab: React.ComponentType;
-  path: string;
-}) => {
+const TabsMenu = ({ tab, path }: { tab: ComponentType; path: string }) => {
   const location = useLocation();
+  const dispatch = useAppDispatch();
+
+  const handleTabClick = (tabPath: string) => {
+    dispatch(setCurrentRoute({ path: tabPath }));
+  };
+
   return (
     <IonTabs>
       <IonRouterOutlet animated={false}>
@@ -98,6 +100,9 @@ const TabsMenu = ({
               data-testid={
                 "tab-button-" + tab.label.toLowerCase().replace(/\s/g, "-")
               }
+              onClick={() => {
+                handleTabClick(tab.path);
+              }}
             >
               <div className="border-top" />
               <IonIcon

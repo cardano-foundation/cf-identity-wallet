@@ -8,11 +8,8 @@ import { PageHeader } from "../../../components/PageHeader";
 import { IdentifierThemeSelector } from "../../../components/CreateIdentifier/components/IdentifierThemeSelector";
 import { CustomInput } from "../../../components/CustomInput";
 import { ErrorMessage } from "../../../components/ErrorMessage";
-import { AriesAgent } from "../../../../core/agent/agent";
-import {
-  IdentifierShortDetails,
-  IdentifierType,
-} from "../../../../core/agent/services/identifierService.types";
+import { Agent } from "../../../../core/agent/agent";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
   getIdentifiersCache,
@@ -42,7 +39,7 @@ const MultiSigRequestStageTwo = ({
     if (!(requestData.event && requestData.multisigIcpDetails)) {
       // Do some error thing here... maybe it's just a TODO
     } else {
-      const multisigId = await AriesAgent.agent.identifiers.joinMultisig(
+      const joinMultisigResult = await Agent.agent.identifiers.joinMultisig(
         requestData.event.id,
         requestData.event.a.d as string,
         {
@@ -53,16 +50,16 @@ const MultiSigRequestStageTwo = ({
         }
       );
 
-      if (multisigId) {
+      if (joinMultisigResult) {
         const newIdentifier: IdentifierShortDetails = {
-          id: multisigId,
-          method: IdentifierType.KERI,
+          id: joinMultisigResult.identifier,
           displayName: displayNameValue,
           createdAtUTC: `${requestData.event?.createdAt}`,
           // @TODO - sdisalvo: Colors will need to be removed
           colors: ["#000000", "#000000"],
           theme: selectedTheme,
           isPending: requestData.multisigIcpDetails.threshold >= 2,
+          signifyName: joinMultisigResult.signifyName,
         };
         dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
         dispatch(
@@ -134,7 +131,6 @@ const MultiSigRequestStageTwo = ({
         <div className="multisig-request-section">
           <h4>{i18n.t("createidentifier.theme.title")}</h4>
           <IdentifierThemeSelector
-            identifierType={1}
             selectedTheme={selectedTheme}
             setSelectedTheme={setSelectedTheme}
           />

@@ -1,0 +1,26 @@
+.connection-details-notes {
+  .card-details-info-block-inner {
+    padding: 1.25rem;
+  }
+
+  .connection-details-note-text {
+    font-weight: 400;
+    margin-top: 0.625rem;
+    display: block;
+  }
+
+  .connection-details-note-title {
+    font-weight: 500;
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .card-details-info-block-inner {
+      padding: 1rem;
+    }
+
+    .connection-details-note-text {
+      font-size: 0.8rem;
+      margin-top: 0.2rem;
+    }
+  }
+}

@@ -49,8 +49,7 @@ import { VerifyPasscode } from "../VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../layout/PageLayout";
 import { writeToClipboard } from "../../utils/clipboard";
-import { AriesAgent } from "../../../core/agent/agent";
-import { IdentifierType } from "../../../core/agent/services/identifierService.types";
+import { Agent } from "../../../core/agent/agent";
 import { IdentifierThemeSelector } from "../CreateIdentifier/components/IdentifierThemeSelector";
 
 const IdentifierOptions = ({
@@ -122,7 +121,7 @@ const IdentifierOptions = ({
       displayName: newDisplayName,
       theme: newSelectedTheme,
     };
-    await AriesAgent.agent.identifiers.updateIdentifier(cardData.id, {
+    await Agent.agent.identifiers.updateIdentifier(cardData.id, {
       displayName: newDisplayName,
       theme: newSelectedTheme,
     });
@@ -142,6 +141,7 @@ const IdentifierOptions = ({
       (item) => item.id !== cardData.id
     );
     dispatch(setIdentifiersCache(updatedIdentifiers));
+    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
     handleDone();
   };
 
@@ -195,7 +195,7 @@ const IdentifierOptions = ({
                 <IonCol size="12">
                   <span
                     className="identifier-options-option"
-                    data-testid="identifier-options-view-button"
+                    data-testid="view-json-identifier-options"
                     onClick={() => {
                       setOptionsIsOpen(false);
                       setViewIsOpen(true);
@@ -215,7 +215,7 @@ const IdentifierOptions = ({
                   </span>
                   <span
                     className="identifier-options-option"
-                    data-testid="identifier-options-identifier-options-button"
+                    data-testid="edit-identifier-options"
                     onClick={() => {
                       dispatch(
                         setCurrentOperation(OperationType.UPDATE_IDENTIFIER)
@@ -239,7 +239,7 @@ const IdentifierOptions = ({
                   </span>
                   <span
                     className="identifier-options-option"
-                    data-testid="identifier-options-share-button"
+                    data-testid="share-identifier-options"
                     onClick={async () => {
                       await Share.share({
                         text: cardData.displayName + " " + cardData.id,
@@ -260,7 +260,7 @@ const IdentifierOptions = ({
                   </span>
                   <span
                     className="identifier-options-option"
-                    data-testid="delete-button-identifier-options"
+                    data-testid="delete-identifier-options"
                     onClick={() => {
                       setOptionsIsOpen(false);
                       handleDelete();
@@ -317,7 +317,7 @@ const IdentifierOptions = ({
                   {i18n.t("identifiers.card.details.options.cancel")}
                 </IonButton>
               </IonButtons>
-              <IonTitle data-testid="identifier-options-title">
+              <IonTitle data-testid="edit-identifier-title">
                 <h2>{i18n.t("identifiers.card.details.options.edit")}</h2>
               </IonTitle>
             </IonToolbar>
@@ -330,7 +330,7 @@ const IdentifierOptions = ({
               <IonRow>
                 <IonCol size="12">
                   <CustomInput
-                    dataTestId="edit-display-name"
+                    dataTestId="edit-name-input"
                     title={`${i18n.t(
                       "identifiers.card.details.options.inner.label"
                     )}`}
@@ -357,7 +357,6 @@ const IdentifierOptions = ({
                 )}`}</span>
               </IonRow>
               <IdentifierThemeSelector
-                identifierType={cardData.method === IdentifierType.KEY ? 0 : 1}
                 selectedTheme={newSelectedTheme}
                 setSelectedTheme={setNewSelectedTheme}
               />
@@ -401,6 +400,7 @@ const IdentifierOptions = ({
                 <IonRow>
                   <IonCol className="footer-col">
                     <IonButton
+                      data-testid="copy-json-button"
                       shape="round"
                       expand="block"
                       fill="outline"
@@ -418,6 +418,7 @@ const IdentifierOptions = ({
                       {i18n.t("identifiers.card.details.view.copy")}
                     </IonButton>
                     <IonButton
+                      data-testid="save-to-device-button"
                       shape="round"
                       expand="block"
                       className="primary-button"
@@ -443,7 +444,7 @@ const IdentifierOptions = ({
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
-        dataTestId="alert-confirm"
+        dataTestId="alert-confirm-identifier-delete-options"
         headerText={i18n.t("identifiers.card.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
           "identifiers.card.details.delete.alert.confirm"

@@ -203,7 +203,7 @@ const GenerateSeedPhrase = () => {
       <AlertConfirm
         isOpen={alertConfirmIsOpen}
         setIsOpen={setAlertConfirmIsOpen}
-        dataTestId="alert-confirm"
+        dataTestId="seed-phrase-generate-alert-continue"
         headerText={i18n.t("generateseedphrase.alert.confirm.text")}
         confirmButtonText={`${i18n.t(
           "generateseedphrase.alert.confirm.button.confirm"

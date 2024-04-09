@@ -7,22 +7,23 @@ import { AnyAction, Store } from "@reduxjs/toolkit";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
-import { credsFixW3c } from "../../__fixtures__/credsFix";
+import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
+import { VerifyPasscode } from "./VerifyPasscode";
 
-const path = TabsRoutePath.CREDS + "/" + credsFixW3c[0].id;
+const path = TabsRoutePath.CREDS + "/" + credsFixAcdc[0].id;
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: credsFixW3c[0].id,
+    id: credsFixAcdc[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
 }));
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       credentials: {
         getCredentialDetailsById: jest.fn(),
@@ -51,7 +52,7 @@ const initialStateNoPassword = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  credsCache: { creds: credsFixW3c },
+  credsCache: { creds: credsFixAcdc },
 };
 
 describe("Verify Passcode on Cards Details page", () => {
@@ -67,8 +68,8 @@ describe("Verify Passcode on Cards Details page", () => {
 
   test("It renders verify passcode when clicking on the big button", async () => {
     jest
-      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
-      .mockResolvedValue(credsFixW3c[0]);
+      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFixAcdc[0]);
     const { findByTestId, getAllByText, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
@@ -159,6 +160,30 @@ describe("Verify Passcode on Cards Details page", () => {
         "is-open",
         "true"
       );
+    });
+  });
+  test("Render passcode", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    storeMocked = {
+      ...mockStore(initialStateNoPassword),
+      dispatch: dispatchMock,
+    };
+
+    const closeFn = jest.fn();
+
+    const { getByTestId, getAllByTestId } = render(
+      <Provider store={storeMocked}>
+        <VerifyPasscode
+          isOpen={true}
+          setIsOpen={closeFn}
+          onVerify={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("close-button-label")).toBeInTheDocument();
     });
   });
 });

@@ -124,6 +124,32 @@ describe("SetPasscode Page", () => {
     expect(errorMessage).toBeInTheDocument();
   });
 
+  test("Back to enter passcode screen from re-enter passcode screen", () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={store}>
+        <SetPasscode />
+      </Provider>
+    );
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/2/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/3/));
+    fireEvent.click(getByText(/4/));
+    fireEvent.click(getByText(/5/));
+
+    const reEnterPasscodeLabel = getByText(
+      EN_TRANSLATIONS.setpasscode.reenterpasscode.title
+    );
+    expect(reEnterPasscodeLabel).toBeInTheDocument();
+
+    fireEvent.click(getByTestId("back-button"));
+
+    const enterPasscodeLabel = getByText(
+      EN_TRANSLATIONS.setpasscode.enterpasscode.title
+    );
+    expect(enterPasscodeLabel).toBeInTheDocument();
+  });
+
   test("Redirects to next page when passcode is entered correctly", async () => {
     const { getByText, queryByText } = render(
       <MemoryRouter initialEntries={[RoutePath.SET_PASSCODE]}>

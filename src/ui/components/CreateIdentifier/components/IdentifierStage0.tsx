@@ -13,11 +13,10 @@ import { TypeItem } from "./TypeItem";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { ColorGenerator } from "../../../utils/colorGenerator";
 import {
+  CreateIdentifierInputs,
   IdentifierShortDetails,
-  IdentifierType,
-  createIdentifierInputs,
 } from "../../../../core/agent/services/identifierService.types";
-import { AriesAgent } from "../../../../core/agent/agent";
+import { Agent } from "../../../../core/agent/agent";
 import {
   getIdentifiersCache,
   setIdentifiersCache,
@@ -44,7 +43,6 @@ const IdentifierStage0 = ({
   const [selectedTheme, setSelectedTheme] = useState(state.selectedTheme);
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
-  const typeIsSelectedIsValid = state.selectedIdentifierType !== undefined;
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -56,16 +54,6 @@ const IdentifierStage0 = ({
       });
     }
   }, []);
-
-  const identifierTypeSelector = (index: number) => {
-    if (state.selectedIdentifierType !== index) {
-      setSelectedTheme(index === 0 ? 0 : 4);
-    }
-    setState((prevState: IdentifierStageProps) => ({
-      ...prevState,
-      selectedIdentifierType: index,
-    }));
-  };
 
   useEffect(() => {
     setState((prevState: IdentifierStageProps) => ({
@@ -85,19 +73,14 @@ const IdentifierStage0 = ({
     // @TODO - sdisalvo: Colors will need to be removed
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
-    const type =
-      state.selectedIdentifierType === 0
-        ? IdentifierType.KEY
-        : IdentifierType.KERI;
-    const metadata: createIdentifierInputs = {
+    const metadata: CreateIdentifierInputs = {
       displayName: state.displayNameValue,
-      method: type,
       // @TODO - sdisalvo: Colors will need to be removed
       colors: [newColor[1], newColor[0]],
       theme: state.selectedTheme,
     };
     let groupMetadata;
-    if (type === IdentifierType.KERI && state.selectedAidType == 1) {
+    if (state.selectedAidType == 1) {
       groupMetadata = {
         groupId: utils.uuid(),
         groupInitiator: true,
@@ -105,19 +88,18 @@ const IdentifierStage0 = ({
       };
       metadata.groupMetadata = groupMetadata;
     }
-    const identifier = await AriesAgent.agent.identifiers.createIdentifier(
-      metadata
-    );
+    const { identifier, signifyName } =
+      await Agent.agent.identifiers.createIdentifier(metadata);
     if (identifier) {
       const newIdentifier: IdentifierShortDetails = {
         id: identifier,
-        method: type,
         displayName: state.displayNameValue,
         createdAtUTC: new Date().toISOString(),
         // @TODO - sdisalvo: Colors will need to be removed
         colors: [newColor[1], newColor[0]],
         theme: state.selectedTheme,
         isPending: false,
+        signifyName,
       };
       if (groupMetadata) {
         newIdentifier.groupMetadata = groupMetadata;
@@ -129,7 +111,7 @@ const IdentifierStage0 = ({
   };
 
   const handleContinue = async () => {
-    if (state.selectedIdentifierType === 1 && state.selectedAidType !== 0) {
+    if (state.selectedAidType !== 0) {
       setState((prevState: IdentifierStageProps) => ({
         ...prevState,
         identifierCreationStage: 1,
@@ -182,93 +164,65 @@ const IdentifierStage0 = ({
             )}
           </div>
         </div>
-        <div className="identifier-type">
+        <div className="aid-type">
           <div className="type-input-title">{`${i18n.t(
-            "createidentifier.identifiertype.title"
+            "createidentifier.aidtype.title"
           )}`}</div>
           <IonGrid
-            className="identifier-type-selector"
-            data-testid="identifier-type-selector"
+            className="aid-type-selector"
+            data-testid="aid-type-selector"
           >
             <IonRow>
               <IonCol>
                 <TypeItem
+                  dataTestId="identifier-aidtype-default"
                   index={0}
-                  text={i18n.t("createidentifier.identifiertype.didkey")}
-                  clickEvent={() => identifierTypeSelector(0)}
-                  selectedType={state.selectedIdentifierType}
+                  text={i18n.t("createidentifier.aidtype.default.label")}
+                  clickEvent={() =>
+                    setState((prevState: IdentifierStageProps) => ({
+                      ...prevState,
+                      selectedAidType: 0,
+                    }))
+                  }
+                  selectedType={state.selectedAidType}
                 />
               </IonCol>
               <IonCol>
                 <TypeItem
+                  dataTestId="identifier-aidtype-multisig"
                   index={1}
-                  text={i18n.t("createidentifier.identifiertype.keri")}
-                  clickEvent={() => identifierTypeSelector(1)}
-                  selectedType={state.selectedIdentifierType}
+                  text={i18n.t("createidentifier.aidtype.multisig.label")}
+                  clickEvent={() =>
+                    setState((prevState: IdentifierStageProps) => ({
+                      ...prevState,
+                      selectedAidType: 1,
+                    }))
+                  }
+                  selectedType={state.selectedAidType}
+                />
+              </IonCol>
+              <IonCol>
+                <TypeItem
+                  dataTestId="identifier-aidtype-delegated"
+                  index={2}
+                  text={i18n.t("createidentifier.aidtype.delegated.label")}
+                  clickEvent={() =>
+                    setState((prevState: IdentifierStageProps) => ({
+                      ...prevState,
+                      selectedAidType: 2,
+                    }))
+                  }
+                  selectedType={state.selectedAidType}
                 />
               </IonCol>
             </IonRow>
           </IonGrid>
         </div>
-        {state.selectedIdentifierType === 1 && (
-          <div className="aid-type">
-            <div className="type-input-title">{`${i18n.t(
-              "createidentifier.aidtype.title"
-            )}`}</div>
-            <IonGrid
-              className="aid-type-selector"
-              data-testid="aid-type-selector"
-            >
-              <IonRow>
-                <IonCol>
-                  <TypeItem
-                    index={0}
-                    text={i18n.t("createidentifier.aidtype.default.label")}
-                    clickEvent={() =>
-                      setState((prevState: IdentifierStageProps) => ({
-                        ...prevState,
-                        selectedAidType: 0,
-                      }))
-                    }
-                    selectedType={state.selectedAidType}
-                  />
-                </IonCol>
-                <IonCol>
-                  <TypeItem
-                    index={1}
-                    text={i18n.t("createidentifier.aidtype.multisig.label")}
-                    clickEvent={() =>
-                      setState((prevState: IdentifierStageProps) => ({
-                        ...prevState,
-                        selectedAidType: 1,
-                      }))
-                    }
-                    selectedType={state.selectedAidType}
-                  />
-                </IonCol>
-                <IonCol>
-                  <TypeItem
-                    index={2}
-                    text={i18n.t("createidentifier.aidtype.delegated.label")}
-                    clickEvent={() =>
-                      setState((prevState: IdentifierStageProps) => ({
-                        ...prevState,
-                        selectedAidType: 2,
-                      }))
-                    }
-                    selectedType={state.selectedAidType}
-                  />
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </div>
-        )}
         <div className="identifier-theme">
           <div className="theme-input-title">{`${i18n.t(
             "createidentifier.theme.title"
           )}`}</div>
           <IdentifierThemeSelector
-            identifierType={state.selectedIdentifierType}
             selectedTheme={selectedTheme}
             setSelectedTheme={setSelectedTheme}
           />
@@ -279,9 +233,7 @@ const IdentifierStage0 = ({
         customClass={keyboardIsOpen ? "ion-hide" : ""}
         primaryButtonText={`${i18n.t("createidentifier.confirmbutton")}`}
         primaryButtonAction={async () => handleContinue()}
-        primaryButtonDisabled={
-          !(displayNameValueIsValid && typeIsSelectedIsValid)
-        }
+        primaryButtonDisabled={!displayNameValueIsValid}
       />
     </>
   );

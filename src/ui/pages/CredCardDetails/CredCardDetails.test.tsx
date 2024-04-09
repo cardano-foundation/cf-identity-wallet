@@ -10,15 +10,15 @@ import { CredCardDetails } from "./CredCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
-import { credsFixW3c } from "../../__fixtures__/credsFix";
-import { AriesAgent } from "../../../core/agent/agent";
+import { credsFixAcdc } from "../../__fixtures__/credsFix";
+import { Agent } from "../../../core/agent/agent";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { IdentifierCardDetails } from "../IdentifierCardDetails";
 
-const path = TabsRoutePath.CREDS + "/" + credsFixW3c[0].id;
+const path = TabsRoutePath.CREDS + "/" + credsFixAcdc[0].id;
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       credentials: {
         getCredentialDetailsById: jest.fn(),
@@ -33,7 +33,7 @@ jest.mock("../../../core/agent/agent", () => ({
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: credsFixW3c[0].id,
+    id: credsFixAcdc[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
 }));
@@ -54,7 +54,7 @@ const initialStateCreds = {
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
   identifiersCache: {
-    identifiers: credsFixW3c,
+    identifiers: credsFixAcdc,
     favourites: [],
   },
 };
@@ -82,7 +82,7 @@ const initialStateNoPasswordCurrent = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  credsCache: { creds: credsFixW3c },
+  credsCache: { creds: credsFixAcdc },
 };
 
 const initialStateNoPasswordArchived = {
@@ -109,8 +109,8 @@ describe("Cards Details page - current not archived credential", () => {
   let storeMocked: Store<unknown, AnyAction>;
   beforeAll(() => {
     jest
-      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
-      .mockResolvedValue(credsFixW3c[0]);
+      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFixAcdc[0]);
   });
   beforeEach(() => {
     const mockStore = configureStore();
@@ -142,31 +142,6 @@ describe("Cards Details page - current not archived credential", () => {
       expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
         "false"
       );
-    });
-  });
-
-  test("It copies id to clipboard", async () => {
-    Clipboard.write = jest
-      .fn()
-      .mockImplementation(async (text: string): Promise<void> => {
-        return;
-      });
-    const { findByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-    const copyButton = await findByTestId("card-details-proof-value");
-    fireEvent.click(copyButton);
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: credsFixW3c[0].proofValue,
-      });
     });
   });
 
@@ -224,12 +199,12 @@ describe("Cards Details page - current not archived credential", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(credsFixW3c[0].id)).toBeVisible();
+      expect(getByText(credsFixAcdc[0].id)).toBeVisible();
     });
   });
 
   test("It shows the warning when I click on the big archive button", async () => {
-    const { findByTestId, getAllByText, queryByTestId } = render(
+    const { findByTestId, getAllByText, queryAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -247,7 +222,7 @@ describe("Cards Details page - current not archived credential", () => {
     });
 
     await waitFor(() => {
-      expect(queryByTestId("alert-delete-archive")).toBeInTheDocument();
+      expect(queryAllByTestId("alert-delete-archive")[0]).toBeInTheDocument();
     });
 
     await waitFor(() => {
@@ -262,7 +237,7 @@ describe("Cards Details page - current not archived credential", () => {
       .fn()
       .mockImplementation(async (data: SetOptions): Promise<void> => {
         expect(data.key).toBe(PreferencesKeys.APP_CREDS_FAVOURITES);
-        expect(data.value).toBe(credsFixW3c[0]);
+        expect(data.value).toBe(credsFixAcdc[0]);
       });
 
     const { getByTestId } = render(
@@ -292,8 +267,8 @@ describe("Cards Details page - archived credential", () => {
   let storeMocked: Store<unknown, AnyAction>;
   beforeAll(() => {
     jest
-      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
-      .mockResolvedValue(credsFixW3c[0]);
+      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFixAcdc[0]);
   });
   beforeEach(() => {
     const mockStore = configureStore();
@@ -305,7 +280,7 @@ describe("Cards Details page - archived credential", () => {
   });
 
   test("It shows the restore alert", async () => {
-    const { queryByTestId, queryByText, getByText } = render(
+    const { queryByText, getByText, queryAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -329,95 +304,13 @@ describe("Cards Details page - archived credential", () => {
     });
 
     await waitFor(() => {
-      expect(queryByTestId("alert-restore")).toBeInTheDocument();
+      expect(queryAllByTestId("alert-restore")[0]).toBeInTheDocument();
     });
 
     await waitFor(() => {
       expect(
         queryByText(EN_TRANSLATIONS.creds.card.details.alert.restore.title)
       ).toBeVisible();
-    });
-  });
-});
-
-describe("Cards Details loading", () => {
-  let storeMocked: Store<unknown, AnyAction>;
-  beforeAll(() => {
-    jest
-      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
-      .mockResolvedValue(credsFixW3c[0]);
-  });
-  beforeEach(() => {
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
-    storeMocked = {
-      ...mockStore(initialStateNoPasswordArchived),
-      dispatch: dispatchMock,
-    };
-  });
-
-  test("Show loading when card data is empty", async () => {
-    const initialStateCreds = {
-      stateCache: {
-        routes: [TabsRoutePath.CREDS],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-          passwordIsSet: true,
-        },
-      },
-      seedPhraseCache: {
-        seedPhrase160:
-          "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
-      },
-      identifiersCache: {
-        identifiers: [],
-        favourites: [],
-      },
-      credsCache: {
-        creds: [],
-      },
-    };
-    const innerMockStore = configureStore();
-
-    const storeMockedCreds = {
-      ...innerMockStore(initialStateCreds),
-      dispatch: dispatchMock,
-    };
-
-    const { queryByTestId } = render(
-      <Provider store={storeMockedCreds}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId("cred-detail-spinner-container")).toBeVisible();
-    });
-  });
-
-  test("Hidden loading when card data has value", async () => {
-    const { queryByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId("cred-detail-spinner-container")).toBe(null);
     });
   });
 });

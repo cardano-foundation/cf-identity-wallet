@@ -3,6 +3,7 @@ import {
   IonButton,
   IonIcon,
   IonSpinner,
+  useIonRouter,
   useIonViewWillEnter,
 } from "@ionic/react";
 import {
@@ -33,14 +34,9 @@ import {
   removeFavouriteIdentifierCache,
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
-import { AriesAgent } from "../../../core/agent/agent";
-import {
-  DIDDetails,
-  IdentifierType,
-  KERIDetails,
-} from "../../../core/agent/services/identifierService.types";
+import { Agent } from "../../../core/agent/agent";
+import { IdentifierDetails } from "../../../core/agent/services/identifierService.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
-import { IdentifierCardInfoDid } from "../../components/IdentifierCardInfoKey";
 import { IdentifierCardInfoKeri } from "../../components/IdentifierCardInfoKeri";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
@@ -48,16 +44,18 @@ import { IdentifierOptions } from "../../components/IdentifierOptions";
 import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { PageFooter } from "../../components/PageFooter";
-import "../../components/CardDetailsElements/CardDetails.scss";
+import "../../components/CardDetails/CardDetails.scss";
 import "./IdentifierCardDetails.scss";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../components/PageHeader";
+import { combineClassNames } from "../../utils/style";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
 
 const IdentifierCardDetails = () => {
   const pageId = "identifier-card-details";
+  const ionRouter = useIonRouter();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -70,10 +68,9 @@ const IdentifierCardDetails = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState<
-    DIDDetails | KERIDetails | undefined
-  >();
+  const [cardData, setCardData] = useState<IdentifierDetails | undefined>();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+
   const [navAnimation, setNavAnimation] = useState(false);
 
   const isFavourite = favouritesIdentifiersData?.some(
@@ -82,10 +79,11 @@ const IdentifierCardDetails = () => {
 
   useEffect(() => {
     const fetchDetails = async () => {
-      const cardDetailsResult =
-        await AriesAgent.agent.identifiers.getIdentifier(params.id);
+      const cardDetailsResult = await Agent.agent.identifiers.getIdentifier(
+        params.id
+      );
       if (cardDetailsResult) {
-        setCardData(cardDetailsResult.result);
+        setCardData(cardDetailsResult);
       } else {
         // @TODO - Error handling.
       }
@@ -114,7 +112,7 @@ const IdentifierCardDetails = () => {
     );
 
     setTimeout(() => {
-      history.push(backPath.pathname);
+      ionRouter.push(backPath.pathname, "root");
     }, NAVIGATION_DELAY);
 
     setTimeout(() => {
@@ -131,6 +129,7 @@ const IdentifierCardDetails = () => {
         (item) => item.id !== cardData.id
       );
       await deleteIdentifier();
+      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
       dispatch(setIdentifiersCache(updatedIdentifiers));
     }
     handleDone();
@@ -139,8 +138,8 @@ const IdentifierCardDetails = () => {
   const deleteIdentifier = async () => {
     if (cardData) {
       // For now there is no archiving in the UI so does both.
-      await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
-      await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
+      await Agent.agent.identifiers.archiveIdentifier(cardData.id);
+      await Agent.agent.identifiers.deleteIdentifier(cardData.id);
       if (isFavourite) {
         handleSetFavourite(cardData.id);
       }
@@ -232,9 +231,10 @@ const IdentifierCardDetails = () => {
     );
   };
 
-  const pageClasses = `card-details ${
-    navAnimation ? "back-animation" : "open-animation"
-  }`;
+  const pageClasses = combineClassNames("card-details", {
+    "back-animation": navAnimation,
+    "open-animation": !navAnimation,
+  });
 
   return (
     <ScrollablePageLayout
@@ -263,11 +263,7 @@ const IdentifierCardDetails = () => {
             isActive={false}
           />
           <div className="card-details-content">
-            {cardData.method === IdentifierType.KEY ? (
-              <IdentifierCardInfoDid cardData={cardData as DIDDetails} />
-            ) : (
-              <IdentifierCardInfoKeri cardData={cardData as KERIDetails} />
-            )}
+            <IdentifierCardInfoKeri cardData={cardData as IdentifierDetails} />
             <PageFooter
               pageId={pageId}
               deleteButtonText={`${i18n.t(
@@ -282,8 +278,7 @@ const IdentifierCardDetails = () => {
           <ShareIdentifier
             isOpen={shareIsOpen}
             setIsOpen={setShareIsOpen}
-            id={cardData.id}
-            name={cardData.displayName}
+            signifyName={cardData.signifyName}
           />
           <IdentifierOptions
             optionsIsOpen={identifierOptionsIsOpen}
@@ -297,7 +292,7 @@ const IdentifierCardDetails = () => {
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
-        dataTestId="alert-confirm"
+        dataTestId="alert-confirm-identifier-delete-details"
         headerText={i18n.t("identifiers.card.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
           "identifiers.card.details.delete.alert.confirm"

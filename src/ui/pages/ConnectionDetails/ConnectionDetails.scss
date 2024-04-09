@@ -76,6 +76,13 @@
     }
   }
 
+  .connection-details-card {
+    ion-text {
+      padding: 0.8125rem 0;
+      display: block;
+    }
+  }
+
   .page-footer ion-icon {
     margin-right: 0.5rem;
   }
@@ -85,6 +92,13 @@
     .connection-details-tab > *,
     .connection-notes-tab > * {
       margin-bottom: 1.2rem;
+    }
+
+    .connection-details-card {
+      ion-text {
+        padding: 0.44rem 0;
+        font-size: 0.8rem;
+      }
     }
 
     .connection-details-history-event {
@@ -112,4 +126,42 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.connection-details-history {
+  .card-details-info-block-inner {
+    padding: 1.25rem;
+
+    display: flex;
+    flex-direction: column;
+
+    > * {
+      display: flex;
+
+      &:not(.connection-details-history-event) {
+        margin: 0;
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    > p {
+      margin-left: 0.8rem;
+    }
+
+    &:not(:last-child) {
+      margin-bottom: 0.8rem;
+    }
+
+    .card-details-info-block-inner {
+      padding: 1rem;
+      border-radius: 0.75rem;
+
+      &:not(:last-child) {
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
 }

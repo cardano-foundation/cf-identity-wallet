@@ -21,7 +21,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { Connections } from "../Connections";
 import { CardType, OperationType, ToastMsgType } from "../../globals/types";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import {
   getCredsCache,
   getFavouritesCredsCache,
@@ -89,7 +89,7 @@ const Creds = () => {
 
   const fetchArchivedCreds = async () => {
     // @TODO - sdisalvo: handle error
-    const creds = await AriesAgent.agent.credentials.getCredentials(true);
+    const creds = await Agent.agent.credentials.getCredentials(true);
     setArchivedCreds(creds);
   };
 
@@ -168,6 +168,12 @@ const Creds = () => {
         : ""
   }`;
 
+  const handleArchivedCredentialsDisplayChange = (value: boolean) => {
+    if (value === archivedCredentialsIsOpen) return;
+    setArchivedCredentialsIsOpen(value);
+    fetchArchivedCreds();
+  };
+
   const ArchivedCredentialsButton = () => {
     return (
       <div className="archived-credentials-button-container">
@@ -208,7 +214,7 @@ const Creds = () => {
               buttonAction={handleCreateCred}
               testId={pageId}
             >
-              {archivedCreds.length > 0 && <ArchivedCredentialsButton />}
+              {!!archivedCreds.length && <ArchivedCredentialsButton />}
             </CardsPlaceholder>
           )
         }
@@ -218,11 +224,9 @@ const Creds = () => {
             {favCreds.length > 0 && (
               <div
                 ref={favouriteContainerElement}
-                className="credential-favourite-cards"
+                className="credentials-tab-content-block credential-favourite-cards"
               >
-                <div className="cards-title">
-                  {i18n.t("creds.tab.favourites")}
-                </div>
+                {!!allCreds.length && <h3>{i18n.t("creds.tab.favourites")}</h3>}
                 <CardsStack
                   name="favs"
                   cardsType={CardType.CREDS}
@@ -231,13 +235,9 @@ const Creds = () => {
                 />
               </div>
             )}
-            {allCreds.length > 0 && (
-              <div className="credential-cards">
-                {favCreds.length > 0 && (
-                  <div className="cards-title cards-title-all">
-                    {i18n.t("creds.tab.allcreds")}
-                  </div>
-                )}
+            {!!allCreds.length && (
+              <div className="credentials-tab-content-block credential-cards">
+                {!!favCreds.length && <h3>{i18n.t("creds.tab.allcreds")}</h3>}
                 <CardsStack
                   name="allcreds"
                   cardsType={CardType.CREDS}
@@ -246,14 +246,14 @@ const Creds = () => {
                 />
               </div>
             )}
-            {archivedCreds.length > 0 && <ArchivedCredentialsButton />}
+            {!!archivedCreds.length && <ArchivedCredentialsButton />}
           </>
         )}
       </TabLayout>
       <ArchivedCredentials
         archivedCreds={archivedCreds}
         archivedCredentialsIsOpen={archivedCredentialsIsOpen}
-        setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
+        setArchivedCredentialsIsOpen={handleArchivedCredentialsDisplayChange}
       />
     </>
   );

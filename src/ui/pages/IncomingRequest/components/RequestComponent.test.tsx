@@ -8,8 +8,7 @@ import { Provider } from "react-redux";
 import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
-import { ConnectionType } from "../../../../core/agent/agent.types";
-import { filteredKeriFix } from "../../../__fixtures__/filteredIdentifierFix";
+import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
 import { RequestComponent } from "./RequestComponent";
 import { store } from "../../../../store";
 
@@ -33,9 +32,8 @@ describe("Multi-Sig request", () => {
   const requestData = {
     id: "abc123456",
     type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-    source: ConnectionType.KERI,
     multisigIcpDetails: {
-      ourIdentifier: filteredKeriFix[0],
+      ourIdentifier: filteredIdentifierFix[0],
       sender: connectionsFix[3],
       otherConnections: [connectionsFix[4], connectionsFix[5]],
       threshold: 1,
@@ -45,29 +43,6 @@ describe("Multi-Sig request", () => {
   const handleAccept = jest.fn();
   const handleCancel = jest.fn();
   const handleIgnore = jest.fn();
-
-  test("It renders content for CONNECTION_INCOMING ", async () => {
-    const { getAllByText } = render(
-      <Provider store={storeMocked}>
-        <RequestComponent
-          pageId={pageId}
-          activeStatus={activeStatus}
-          blur={blur}
-          setBlur={setBlur}
-          requestData={requestData}
-          initiateAnimation={initiateAnimation}
-          handleAccept={handleAccept}
-          handleCancel={handleCancel}
-          handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.CONNECTION_INCOMING}
-        />
-      </Provider>
-    );
-
-    expect(
-      getAllByText(EN_TRANSLATIONS.request.connection.title)[0]
-    ).toBeInTheDocument();
-  });
 
   test("It renders content for CREDENTIAL_OFFER_RECEIVED ", async () => {
     const { getByText } = render(
@@ -92,6 +67,36 @@ describe("Multi-Sig request", () => {
     ).toBeInTheDocument();
   });
 
+  test("Display fallback image when provider logo is empty: CREDENTIAL_OFFER_RECEIVED", async () => {
+    const testData = {
+      ...requestData,
+      logo: "",
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <RequestComponent
+          pageId={pageId}
+          activeStatus={activeStatus}
+          blur={blur}
+          setBlur={setBlur}
+          requestData={testData}
+          initiateAnimation={initiateAnimation}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          handleIgnore={handleIgnore}
+          incomingRequestType={IncomingRequestType.CREDENTIAL_OFFER_RECEIVED}
+        />
+      </Provider>
+    );
+
+    expect(getByTestId("credential-request-provider-logo")).toBeInTheDocument();
+
+    expect(
+      getByTestId("credential-request-provider-logo").getAttribute("src")
+    ).not.toBe(undefined);
+  });
+
   test("It renders content for MULTI_SIG_REQUEST_INCOMING - stage 0", async () => {
     const { getByText } = render(
       <Provider store={storeMocked}>
@@ -113,5 +118,59 @@ describe("Multi-Sig request", () => {
     expect(
       getByText(EN_TRANSLATIONS.request.multisig.stageone.title)
     ).toBeInTheDocument();
+  });
+
+  test("Display fallback image when provider logo is empty: CREDENTIAL_OFFER_RECEIVED MULTI_SIG_REQUEST_INCOMING - stage 0", async () => {
+    const data = {
+      id: "abc123456",
+      type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
+      multisigIcpDetails: {
+        ourIdentifier: filteredIdentifierFix[0],
+        sender: {
+          ...connectionsFix[3],
+          logo: "",
+        },
+        otherConnections: [
+          {
+            ...connectionsFix[4],
+            logo: "",
+          },
+          {
+            ...connectionsFix[5],
+            logo: "",
+          },
+        ],
+        threshold: 1,
+      },
+    };
+
+    const { getByText, queryByTestId, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <RequestComponent
+          pageId={pageId}
+          activeStatus={activeStatus}
+          blur={blur}
+          setBlur={setBlur}
+          requestData={requestData}
+          initiateAnimation={initiateAnimation}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          handleIgnore={handleIgnore}
+          incomingRequestType={IncomingRequestType.MULTI_SIG_REQUEST_INCOMING}
+        />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.request.multisig.stageone.title)
+    ).toBeInTheDocument();
+
+    expect(queryByTestId("multisig-connection-fallback-logo")).toBeVisible();
+    expect(
+      getByTestId("other-multisig-connection-logo-0").getAttribute("src")
+    ).not.toBe(undefined);
+    expect(
+      getByTestId("other-multisig-connection-logo-1").getAttribute("src")
+    ).not.toBe(undefined);
   });
 });

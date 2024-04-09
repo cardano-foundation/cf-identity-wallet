@@ -1,6 +1,4 @@
-import { JsonCredential } from "@aries-framework/core";
-import { ConnectionType } from "../agent.types";
-import { CredentialMetadataRecordProps } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 
 enum CredentialStatus {
   CONFIRMED = "confirmed",
@@ -12,18 +10,18 @@ type CredentialShortDetails = Omit<
   "credentialRecordId" | "connectionId" | "createdAt" | "issuerLogo"
 >;
 
-interface W3CCredentialDetails extends CredentialShortDetails {
-  connectionType: ConnectionType.DIDCOMM;
-  type: string[];
-  connectionId?: string;
-  expirationDate?: string;
-  credentialSubject: JsonCredential["credentialSubject"];
-  proofType: string;
-  proofValue?: string;
+type JSONValue =
+  | string
+  | number
+  | boolean
+  | { [x: string]: JSONValue }
+  | Array<JSONValue>;
+
+interface JSONObject {
+  [x: string]: JSONValue;
 }
 
 interface ACDCDetails extends CredentialShortDetails {
-  connectionType: ConnectionType.KERI;
   i: string;
   a: {
     i: string;
@@ -55,7 +53,8 @@ interface Notification {
 export { CredentialStatus };
 export type {
   CredentialShortDetails,
-  W3CCredentialDetails,
   ACDCDetails,
   Notification,
+  JSONObject,
+  JSONValue,
 };
