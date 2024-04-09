@@ -117,7 +117,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const [initialised, setInitialised] = useState(false);
-  const [agentInitErr, setAgentInitErr] = useState(false);
   const [isOffline, setIsOffline] = useState(true);
 
   useEffect(() => {
@@ -155,11 +154,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
           await keriNotificationsChangeHandler(message, dispatch);
         });
         // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-        await Promise.all([
-          AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
-          AriesAgent.agent.connections.syncKeriaContacts(),
-          AriesAgent.agent.credentials.syncACDCs(),
-        ]);
+        //TODO: uncomment these lines when we finish the KERIA refactoring
+        // await Promise.all([
+        //   AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
+        //   AriesAgent.agent.connections.syncKeriaContacts(),
+        //   AriesAgent.agent.credentials.syncACDCs(),
+        // ]);
       };
       handleMessages();
     }
@@ -196,11 +196,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await AriesAgent.agent.start();
       setIsOffline(false);
     } catch (e) {
-      // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
-      // eslint-disable-next-line no-console
-      AriesAgent.agent.bootAndConnect().then(() => {
-        setIsOffline(!AriesAgent.agent.isAgentReady());
-      });
+      // If the error is failed to fetch with signify, we retry until the connection is secured
+      if (/failed to fetch/gi.test((e as Error).message)) {
+        AriesAgent.agent.bootAndConnect().then(() => {
+          setIsOffline(!AriesAgent.agent.isAgentReady());
+        });
+      } else {
+        throw e;
+      }
     }
 
     dispatch(setPauseQueueIncomingRequest(true));
@@ -291,48 +294,26 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setConnectionsCache(connectionsDetails));
 
     setInitialised(true);
-
-    const oldMessages = (
-      await Promise.all([
-        AriesAgent.agent.credentials.getKeriCredentialNotifications(),
-        AriesAgent.agent.identifiers.getUnhandledMultisigIdentifiers({
-          isDismissed: false,
-        }),
-      ])
-    )
-      .flat()
-      .sort(function (messageA, messageB) {
-        return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
-      });
-    oldMessages.forEach(async (message) => {
-      await keriNotificationsChangeHandler(message, dispatch);
-    });
-    // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-    // await Promise.all([
-    //   AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
-    //   AriesAgent.agent.connections.syncKeriaContacts(),
-    //   AriesAgent.agent.credentials.syncACDCs(),
-    // ]);
   };
 
   // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.
   // Hence this isn't in i18n.
-  if (agentInitErr) {
-    return (
-      <div className="agent-init-error-msg">
-        <p>
-          There’s an issue connecting to the cloud services we depend on right
-          now (DIDComm mediator, KERIA) - please check your internet connection,
-          or if this problem persists, let us know on Discord!
-        </p>
-        <p>
-          We’re working on an offline mode, as well as improving the deployment
-          setup for this pre-production release. Thank you for your
-          understanding!
-        </p>
-      </div>
-    );
-  }
+  // if (isOffline) {
+  //   return (
+  //     <div className="agent-init-error-msg">
+  //       <p>
+  //         There’s an issue connecting to the cloud services we depend on right
+  //         now (DIDComm mediator, KERIA) - please check your internet connection,
+  //         or if this problem persists, let us know on Discord!
+  //       </p>
+  //       <p>
+  //         We’re working on an offline mode, as well as improving the deployment
+  //         setup for this pre-production release. Thank you for your
+  //         understanding!
+  //       </p>
+  //     </div>
+  //   );
+  // }
 
   return initialised ? <>{props.children}</> : <></>;
 };

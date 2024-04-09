@@ -17,6 +17,7 @@ import { IdentifierType } from "./identifierService.types";
 import { KeriContact } from "../modules/signify/signifyApi.types";
 import { BasicRecord } from "../records";
 import { RecordType } from "../../storage/storage.types";
+import { onlineOnly } from "../modules/signify/signifyApi";
 
 class ConnectionService extends AgentService {
   // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
@@ -29,7 +30,7 @@ class ConnectionService extends AgentService {
     "Connection note record not found";
   static readonly CONNECTION_KERI_METADATA_RECORD_NOT_FOUND =
     "Connection keri metadata record not found";
-  static readonly KERIA_IS_DOWN = "The KERIA is down at the moment";
+
   onConnectionKeriStateChanged(
     callback: (event: ConnectionKeriStateChangedEvent) => void
   ) {
@@ -41,6 +42,7 @@ class ConnectionService extends AgentService {
     );
   }
 
+  @onlineOnly
   async receiveInvitationFromUrl(url: string): Promise<void> {
     if (url.includes("/oobi")) {
       this.eventService.emit<ConnectionKeriStateChangedEvent>({
@@ -121,14 +123,11 @@ class ConnectionService extends AgentService {
     };
   }
 
+  @onlineOnly
   async getConnectionById(
     id: string,
     type?: ConnectionType
   ): Promise<ConnectionDetails> {
-    const isKeriOnline = this.signifyApi.getKeriaOnlineStatus();
-    if (!isKeriOnline) {
-      throw new Error(ConnectionService.KERIA_IS_DOWN);
-    }
     const connection = await this.signifyApi.getContactById(id);
     return {
       label: connection?.alias,
@@ -249,11 +248,8 @@ class ConnectionService extends AgentService {
     return histories;
   }
 
+  @onlineOnly
   async syncKeriaContacts() {
-    const isKeriOnline = this.signifyApi.getKeriaOnlineStatus();
-    if (!isKeriOnline) {
-      throw new Error(ConnectionService.KERIA_IS_DOWN);
-    }
     const signifyContacts = await this.signifyApi.getContacts();
     const storageContacts = await this.getAllConnectionKeriMetadata();
     const unSyncedData = signifyContacts.filter(

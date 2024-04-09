@@ -149,6 +149,7 @@ describe("Connection service of agent", () => {
   });
 
   test("can receive keri oobi", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     signifyApi.resolveOobi.mockImplementation((url) => {
       return { name: url, response: { i: "id" } };
     });
@@ -227,17 +228,16 @@ describe("Connection service of agent", () => {
     expect(basicStorage.save).toBeCalledTimes(2);
   });
 
-  test("getConnectionById should throw error when KERIA is offline", async () => {
+  test("Should throw error when KERIA is offline", async () => {
     signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
-    await expect(
-      connectionService.getConnectionById("id")
-    ).rejects.toThrowError(ConnectionService.KERIA_IS_DOWN);
-  });
-
-  test("syncKeriaContacts should throw error when KERIA is offline", async () => {
-    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
-    await expect(connectionService.syncKeriaContacts()).rejects.toThrowError(
-      ConnectionService.KERIA_IS_DOWN
+    expect(() => connectionService.getConnectionById("id")).toThrowError(
+      SignifyApi.KERIA_CONNECTION_BROKEN
     );
+    expect(() => connectionService.syncKeriaContacts()).toThrowError(
+      SignifyApi.KERIA_CONNECTION_BROKEN
+    );
+    expect(() =>
+      connectionService.receiveInvitationFromUrl("url/oobi")
+    ).toThrowError(SignifyApi.KERIA_CONNECTION_BROKEN);
   });
 });

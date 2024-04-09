@@ -534,27 +534,17 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
 
   test("getCredentialDetailsById should throw an error when KERIA is offline ", async () => {
     signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
-    const id = "not-found-id";
-    await expect(
-      credentialService.getCredentialDetailsById(id)
-    ).rejects.toThrowError(CredentialService.KERIA_IS_DOWN);
-  });
-  test("getKeriCredentialNotifications should throw an error when KERIA is offline ", async () => {
-    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
-    await expect(
+    expect(() =>
+      credentialService.getCredentialDetailsById("not-found-id")
+    ).toThrowError(SignifyApi.KERIA_CONNECTION_BROKEN);
+    expect(() =>
       credentialService.getKeriCredentialNotifications()
-    ).rejects.toThrowError(CredentialService.KERIA_IS_DOWN);
-  });
-  test("acceptKeriAcdc should throw an error when KERIA is offline ", async () => {
-    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
-    await expect(credentialService.acceptKeriAcdc("id")).rejects.toThrowError(
-      CredentialService.KERIA_IS_DOWN
+    ).toThrowError(SignifyApi.KERIA_CONNECTION_BROKEN);
+    expect(() => credentialService.acceptKeriAcdc("id")).toThrowError(
+      SignifyApi.KERIA_CONNECTION_BROKEN
     );
-  });
-  test("syncACDCs should throw an error when KERIA is offline ", async () => {
-    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
-    await expect(credentialService.syncACDCs()).rejects.toThrowError(
-      CredentialService.KERIA_IS_DOWN
+    expect(() => credentialService.syncACDCs()).toThrowError(
+      SignifyApi.KERIA_CONNECTION_BROKEN
     );
   });
 });

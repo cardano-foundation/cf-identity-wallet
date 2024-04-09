@@ -27,6 +27,21 @@ import {
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
 import { WitnessMode } from "../../../configuration/configurationService.types";
 
+export const onlineOnly = (
+  target: any,
+  propertyKey: string,
+  descriptor: PropertyDescriptor
+) => {
+  const originalMethod = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    const isKeriOnline = (this as any).signifyApi.getKeriaOnlineStatus();
+    if (!isKeriOnline) {
+      throw new Error(SignifyApi.KERIA_CONNECTION_BROKEN);
+    }
+    // Call the original method
+    return originalMethod.apply(this, args);
+  };
+};
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
     "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
@@ -41,7 +56,8 @@ export class SignifyApi {
   static readonly INVALID_THRESHOLD = "Invalid threshold";
   static readonly CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER =
     "Unable to retrieve key states for given multi-sig member";
-  static readonly KERIA_IS_DOWN = "The KERIA is down at the moment";
+  static readonly KERIA_CONNECTION_BROKEN =
+    "The app is not connected to KERIA at the moment";
 
   static readonly CREDENTIAL_SERVER =
     "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
@@ -92,13 +108,14 @@ export class SignifyApi {
     } catch (err) {
       await this.signifyClient.boot();
       await this.signifyClient.connect();
+      this.isOnline = true;
     }
   }
 
   async createIdentifier(): Promise<CreateIdentifierResult> {
     const isKeriOnline = this.getKeriaOnlineStatus();
     if (!isKeriOnline) {
-      throw new Error(SignifyApi.KERIA_IS_DOWN);
+      throw new Error(SignifyApi.KERIA_CONNECTION_BROKEN);
     }
     const signifyName = uuidv4();
     const operation = await this.signifyClient
@@ -123,7 +140,7 @@ export class SignifyApi {
   ): Promise<CreateIdentifierResult> {
     const isKeriOnline = this.getKeriaOnlineStatus();
     if (!isKeriOnline) {
-      throw new Error(SignifyApi.KERIA_IS_DOWN);
+      throw new Error(SignifyApi.KERIA_CONNECTION_BROKEN);
     }
     const signifyName = uuidv4();
     const operation = await this.signifyClient
@@ -199,7 +216,7 @@ export class SignifyApi {
   async resolveOobi(url: string): Promise<any> {
     const isKeriOnline = this.getKeriaOnlineStatus();
     if (!isKeriOnline) {
-      throw new Error(SignifyApi.KERIA_IS_DOWN);
+      throw new Error(SignifyApi.KERIA_CONNECTION_BROKEN);
     }
     if (SignifyApi.resolvedOobi[url]) {
       return SignifyApi.resolvedOobi[url];
@@ -221,7 +238,7 @@ export class SignifyApi {
   async getNotifications(start = 0, end = 24) {
     const isKeriOnline = this.getKeriaOnlineStatus();
     if (!isKeriOnline) {
-      throw new Error(SignifyApi.KERIA_IS_DOWN);
+      throw new Error(SignifyApi.KERIA_CONNECTION_BROKEN);
     }
     return this.signifyClient.notifications().list(start, end);
   }

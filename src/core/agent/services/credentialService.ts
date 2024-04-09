@@ -21,6 +21,7 @@ import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { RecordType } from "../../storage/storage.types";
 import { AriesAgent } from "../agent";
 import { BasicRecord } from "../records";
+import { onlineOnly } from "../modules/signify/signifyApi";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -36,7 +37,6 @@ class CredentialService extends AgentService {
     "Cannot accept incoming ACDC, issuee AID not controlled by us";
   static readonly CREDENTIAL_NOT_FOUND =
     "Credential with given SAID not found on KERIA";
-  static readonly KERIA_IS_DOWN = "The KERIA is down at the moment";
 
   onAcdcKeriStateChanged(callback: (event: AcdcKeriStateChangedEvent) => void) {
     this.eventService.on(
@@ -79,11 +79,8 @@ class CredentialService extends AgentService {
     return this.getCredentialShortDetails(await this.getMetadataById(id));
   }
 
+  @onlineOnly
   async getCredentialDetailsById(id: string): Promise<ACDCDetails> {
-    const isKeriOnline = this.signifyApi.getKeriaOnlineStatus();
-    if (!isKeriOnline) {
-      throw new Error(CredentialService.KERIA_IS_DOWN);
-    }
     const metadata = await this.getMetadataById(id);
     const { acdc, error } = await this.signifyApi.getCredentialBySaid(
       metadata.credentialRecordId
@@ -162,15 +159,12 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
+  @onlineOnly
   async getKeriCredentialNotifications(
     filters: {
       isDismissed?: boolean;
     } = {}
   ): Promise<KeriNotification[]> {
-    const isKeriOnline = this.signifyApi.getKeriaOnlineStatus();
-    if (!isKeriOnline) {
-      throw new Error(CredentialService.KERIA_IS_DOWN);
-    }
     const results = await this.basicStorage.findAllByQuery(
       RecordType.NOTIFICATION_KERI,
       {
@@ -243,11 +237,8 @@ class CredentialService extends AgentService {
     await this.basicStorage.deleteById(id);
   }
 
+  @onlineOnly
   async acceptKeriAcdc(id: string): Promise<void> {
-    const isKeriOnline = this.signifyApi.getKeriaOnlineStatus();
-    if (!isKeriOnline) {
-      throw new Error(CredentialService.KERIA_IS_DOWN);
-    }
     const keriNoti = await this.getKeriNotificationRecordById(id);
     const keriExchange = await this.signifyApi.getKeriExchange(
       keriNoti.a.d as string
@@ -314,11 +305,8 @@ class CredentialService extends AgentService {
     return acdc;
   }
 
+  @onlineOnly
   async syncACDCs() {
-    const isKeriOnline = this.signifyApi.getKeriaOnlineStatus();
-    if (!isKeriOnline) {
-      throw new Error(CredentialService.KERIA_IS_DOWN);
-    }
     const signifyCredentials = await this.signifyApi.getCredentials();
     const storedCredentials = await this.getAllCredentialMetadata();
     const unSyncedData = signifyCredentials.filter(

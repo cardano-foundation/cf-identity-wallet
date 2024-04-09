@@ -91,13 +91,8 @@ class AriesAgent {
   async start(): Promise<void> {
     if (!AriesAgent.ready) {
       await this.basicRecordStorage.open(config.walletConfig?.id || "idw");
-      try {
-        await this.signifyApi.start();
-        AriesAgent.ready = true;
-      } catch (error) {
-        AriesAgent.ready = false;
-        throw error;
-      }
+      await this.signifyApi.start();
+      AriesAgent.ready = true;
     }
   }
 

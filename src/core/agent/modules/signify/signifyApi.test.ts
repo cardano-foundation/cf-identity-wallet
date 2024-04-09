@@ -948,25 +948,25 @@ describe("Offline Signify API", () => {
 
   test("createIdentifier should throw error when KERIA is offline", async () => {
     await expect(api.createIdentifier()).rejects.toThrowError(
-      SignifyApi.KERIA_IS_DOWN
+      SignifyApi.KERIA_CONNECTION_BROKEN
     );
   });
 
   test("createDelegationIdentifier should throw error when KERIA is offline", async () => {
     await expect(api.createDelegationIdentifier("prefix")).rejects.toThrowError(
-      SignifyApi.KERIA_IS_DOWN
+      SignifyApi.KERIA_CONNECTION_BROKEN
     );
   });
 
   test("resolveOobi should throw error when KERIA is offline", async () => {
     await expect(api.resolveOobi("url")).rejects.toThrowError(
-      SignifyApi.KERIA_IS_DOWN
+      SignifyApi.KERIA_CONNECTION_BROKEN
     );
   });
 
   test("getNotifications should throw error when KERIA is offline", async () => {
     await expect(api.getNotifications()).rejects.toThrowError(
-      SignifyApi.KERIA_IS_DOWN
+      SignifyApi.KERIA_CONNECTION_BROKEN
     );
   });
 });
