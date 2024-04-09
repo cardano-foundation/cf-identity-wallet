@@ -47,7 +47,6 @@ const IdentifierCardTemplate = ({
               src={KERILogo}
               alt="card-logo"
             />
-            {""}
           </span>
           <span data-testid={`card-display-name-${index}`}>
             {cardData.displayName}
