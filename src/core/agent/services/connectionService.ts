@@ -15,6 +15,7 @@ import { Agent } from "../agent";
 import { KeriContact } from "../modules/signify/signifyApi.types";
 import { BasicRecord } from "../records";
 import { RecordType } from "../../storage/storage.types";
+import { PreferencesKeys, PreferencesStorage } from "../../storage";
 
 class ConnectionService extends AgentService {
   // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
@@ -60,8 +61,24 @@ class ConnectionService extends AgentService {
       // This is inefficient but it will change going forward.
       const aids = await Agent.agent.identifiers.getIdentifiers();
       if (aids.length > 0) {
+        let userName;
+        try {
+          userName = (
+            await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME)
+          ).userName as string;
+        } catch (error) {
+          if (
+            (error as Error).message !==
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
+          ) {
+            throw error;
+          }
+        }
+
+        // signifyName should always be set
         const oobi = await Agent.agent.connections.getKeriOobi(
-          aids[0].signifyName
+          aids[0].signifyName,
+          userName
         );
         await (
           await fetch(
