@@ -17,11 +17,6 @@ enum ConnectionHistoryType {
   CREDENTIAL_ACCEPTED,
 }
 
-enum ConnectionType {
-  DIDCOMM,
-  KERI,
-}
-
 interface ConnectionHistoryItem {
   type: ConnectionHistoryType;
   credentialType?: string;
@@ -46,7 +41,6 @@ interface ConnectionShortDetails {
   connectionDate: string;
   logo?: string;
   status: ConnectionStatus;
-  type?: ConnectionType;
   oobi?: string;
 }
 
@@ -64,12 +58,6 @@ interface ConnectionDetails extends ConnectionShortDetails {
   requestAttachments?: string[];
   serviceEndpoints?: string[];
   notes?: ConnectionNoteDetails[];
-}
-
-enum CredentialType {
-  UNIVERSITY_DEGREE_CREDENTIAL = "UniversityDegreeCredential",
-  ACCESS_PASS_CREDENTIAL = "AccessPassCredential",
-  PERMANENT_RESIDENT_CARD = "PermanentResidentCard",
 }
 
 enum ConnectionKeriEventTypes {
@@ -120,8 +108,6 @@ export {
   ConnectionStatus,
   ConnectionHistoryType,
   MiscRecordId,
-  ConnectionType,
-  CredentialType,
   ConnectionKeriEventTypes,
   AcdcKeriEventTypes,
 };

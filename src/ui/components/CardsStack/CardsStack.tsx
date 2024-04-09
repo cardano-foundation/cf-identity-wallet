@@ -2,14 +2,17 @@ import { useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./CardsStack.scss";
 import {
-  DIDDetails,
+  IdentifierDetails,
   IdentifierShortDetails,
 } from "../../../core/agent/services/identifierService.types";
 import { CardType } from "../../globals/types";
 
 import { IdentifierCardTemplate } from "../IdentifierCardTemplate";
 import { CredCardTemplate } from "../CredCardTemplate";
-import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import {
+  CredentialShortDetails,
+  JSONObject,
+} from "../../../core/agent/services/credentialService.types";
 import { CardsStackProps } from "./CardsStack.types";
 
 const NAVIGATION_DELAY = 250;
@@ -65,7 +68,7 @@ const CardsStack = ({
     let pathname = "";
 
     if (cardsType === CardType.IDENTIFIERS) {
-      const data = cardsData[index] as DIDDetails;
+      const data = cardsData[index] as IdentifierDetails;
       pathname = `/tabs/identifiers/${data.id}`;
     } else {
       const data = cardsData[index] as CredentialShortDetails;

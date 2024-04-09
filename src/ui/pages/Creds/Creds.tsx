@@ -21,7 +21,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { Connections } from "../Connections";
 import { CardType, OperationType, ToastMsgType } from "../../globals/types";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import {
   getCredsCache,
   getFavouritesCredsCache,
@@ -89,7 +89,7 @@ const Creds = () => {
 
   const fetchArchivedCreds = async () => {
     // @TODO - sdisalvo: handle error
-    const creds = await AriesAgent.agent.credentials.getCredentials(true);
+    const creds = await Agent.agent.credentials.getCredentials(true);
     setArchivedCreds(creds);
   };
 

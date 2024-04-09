@@ -2,9 +2,7 @@ import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../utils/formatters";
 import { IDENTIFIER_BG_MAPPING } from "../../globals/types";
 import { IdentifierCardTemplateProps } from "./IdentifierCardTemplate.types";
-import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
 import KERILogo from "../../../ui/assets/images/keri-aid.svg";
-import { IdentifierType } from "../../../core/agent/services/identifierService.types";
 import "./IdentifierCardTemplate.scss";
 
 const IdentifierCardTemplate = ({
@@ -46,10 +44,9 @@ const IdentifierCardTemplate = ({
             data-testid={`card-key-${index}`}
           >
             <img
-              src={cardData.method === IdentifierType.KEY ? W3CLogo : KERILogo}
+              src={KERILogo}
               alt="card-logo"
             />
-            {cardData.method === IdentifierType.KEY ? "did:key" : ""}
           </span>
           <span data-testid={`card-display-name-${index}`}>
             {cardData.displayName}
@@ -72,9 +69,7 @@ const IdentifierCardTemplate = ({
           </span>
           <span className="card-footer-column">
             <span className="card-footer-column-info">
-              {cardData.method === IdentifierType.KEY
-                ? cardData.id.substring(8, 13) + "..." + cardData.id.slice(-5)
-                : cardData.id.substring(0, 5) + "..." + cardData.id.slice(-5)}
+              {cardData.id.substring(0, 5) + "..." + cardData.id.slice(-5)}
             </span>
           </span>
         </div>

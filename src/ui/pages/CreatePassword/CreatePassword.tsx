@@ -5,7 +5,7 @@ import "./CreatePassword.scss";
 import { CustomInput } from "../../components/CustomInput";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { RoutePath } from "../../../routes";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -65,7 +65,7 @@ const CreatePassword = () => {
         createPasswordValue
       );
       if (hintValue) {
-        await AriesAgent.agent.basicStorages.save({
+        await Agent.agent.basicStorages.save({
           id: MiscRecordId.OP_PASS_HINT,
           content: { value: hintValue },
           type: RecordType.OP_PASS_HINT,

@@ -1,4 +1,4 @@
-import { ConnectionType, ConnectionStatus } from "../agent.types";
+import { ConnectionStatus } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { SignifyApi } from "../modules/signify/signifyApi";
 import { RecordType } from "../../storage/storage.types";
@@ -61,7 +61,6 @@ describe("Connection service of agent", () => {
         id: keriContacts[0].id,
         label: keriContacts[0].alias,
         status: ConnectionStatus.CONFIRMED,
-        type: ConnectionType.KERI,
         connectionDate: expect.any(String),
       },
     ]);
@@ -124,10 +123,7 @@ describe("Connection service of agent", () => {
     signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     basicStorage.findAllByQuery = jest.fn().mockReturnValue([]);
     const connectionId = "connectionId";
-    await connectionService.deleteConnectionById(
-      connectionId,
-      ConnectionType.KERI
-    );
+    await connectionService.deleteConnectionById(connectionId);
     expect(basicStorage.deleteById).toBeCalledWith(connectionId);
     // expect(signifyApi.deleteContactById).toBeCalledWith(connectionId); // TODO: must open when Keria runs well
   });
@@ -143,10 +139,7 @@ describe("Connection service of agent", () => {
       },
     ]);
     const connectionId = "connectionId";
-    await connectionService.deleteConnectionById(
-      connectionId,
-      ConnectionType.KERI
-    );
+    await connectionService.deleteConnectionById(connectionId);
     expect(basicStorage.deleteById).toBeCalledTimes(2);
   });
 
@@ -179,7 +172,6 @@ describe("Connection service of agent", () => {
       connectionDate: nowISO,
       label: "keri",
       status: ConnectionStatus.CONFIRMED,
-      type: ConnectionType.KERI,
     });
     expect(basicStorage.findById).toBeCalledWith(keriContacts[0].id);
   });

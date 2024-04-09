@@ -29,7 +29,7 @@ import {
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import {
   ArchivedCredentialsContainerRef,
   ArchivedCredentialsProps,
@@ -102,7 +102,7 @@ const ArchivedCredentialsContainer = forwardRef<
     setVerifyPasscodeIsOpen(false);
     // @TODO - sdisalvo: handle error
     await Promise.all(
-      ids.map((id) => AriesAgent.agent.credentials.deleteCredential(id))
+      ids.map((id) => Agent.agent.credentials.deleteCredential(id))
     );
   };
 
@@ -114,9 +114,7 @@ const ArchivedCredentialsContainer = forwardRef<
 
     try {
       const restoreRes = await Promise.allSettled(
-        selectedIds.map((id) =>
-          AriesAgent.agent.credentials.restoreCredential(id)
-        )
+        selectedIds.map((id) => Agent.agent.credentials.restoreCredential(id))
       );
 
       const restoreSuccessCrendentials: CredentialShortDetails[] = [];
@@ -256,7 +254,10 @@ const ArchivedCredentialsContainer = forwardRef<
                   {i18n.t("creds.archived.delete")}
                 </IonButton>
               </IonButtons>
-              <div className="selected-amount-credentials-label">
+              <div
+                data-testid="selected-amount-credentials"
+                className="selected-amount-credentials-label"
+              >
                 {selectedCredentials.length === 1
                   ? i18n.t("creds.archived.oneselected")
                   : i18next.t("creds.archived.manyselected", {

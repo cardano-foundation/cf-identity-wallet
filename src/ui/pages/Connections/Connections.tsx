@@ -24,7 +24,7 @@ import {
 import "./Connections.scss";
 import { ConnectModal } from "../../components/ConnectModal";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { DIDCommRequestType } from "../../globals/types";
+import { RequestType } from "../../globals/types";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -33,7 +33,7 @@ import { updateReduxState } from "../../../store/utils";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 import { ShareQR } from "../../components/ShareQR/ShareQR";
 import { MoreOptions } from "../../components/ShareQR/MoreOptions";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { AlphabeticList } from "./components/AlphabeticList";
 import { AlphabetSelector } from "./components/AlphabetSelector";
 
@@ -60,11 +60,7 @@ const Connections = ({
   }, [connectionsCache]);
 
   async function handleProvideQr() {
-    // const invitation =
-    //   await AriesAgent.agent.connections.createMediatorInvitation();
-    // const shortUrl = await AriesAgent.agent.connections.getShortenUrl(
-    //   invitation.invitationUrl
-    // );
+    // TODO: bao-sotatek: define how to provide the QR
     // setInvitationLink(shortUrl);
     setConnectModalIsOpen(false);
   }
@@ -182,7 +178,7 @@ const Connections = ({
         </>
       )}
       <ConnectModal
-        type={DIDCommRequestType.CONNECTION}
+        type={RequestType.CONNECTION}
         connectModalIsOpen={connectModalIsOpen}
         setConnectModalIsOpen={setConnectModalIsOpen}
         handleProvideQr={handleProvideQr}

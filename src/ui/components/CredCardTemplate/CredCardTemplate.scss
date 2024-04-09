@@ -37,7 +37,7 @@
     }
   }
 
-  &.card-body-w3c-generic > img {
+  &.card-body-generic > img {
     position: absolute;
     top: -5%;
     left: -8%;
@@ -46,10 +46,10 @@
     opacity: 0.04;
   }
 
-  &.card-body-w3c-generic,
+  &.card-body-generic,
   &.card-body-acdc {
     position: relative;
-    background: var(--ion-color-gradient-w3c-card);
+    background: var(--ion-color-gradient-card);
     text-shadow: 0px 2px 4px rgba(12, 64, 90, 0.5);
 
     .cred-card-template-inner {
@@ -355,7 +355,7 @@
       margin-top: -8.8rem;
     }
 
-    &.card-body-w3c-generic {
+    &.card-body-generic {
       .cred-card-template-inner {
         .card-footer {
           .card-footer-column {

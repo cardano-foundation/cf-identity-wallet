@@ -22,7 +22,6 @@ const CreateIdentifier = ({
   const initialState = {
     identifierCreationStage: 0,
     displayNameValue: "",
-    selectedIdentifierType: 0,
     selectedAidType: 0,
     selectedTheme: 0,
     threshold: 1,

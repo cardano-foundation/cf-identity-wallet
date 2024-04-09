@@ -7,12 +7,10 @@ import {
 import i18next from "i18next";
 import { i18n } from "../../../../i18n";
 import KeriLogo from "../../../../ui/assets/images/KeriGeneric.jpg";
-import DidComLogo from "../../../../ui/assets/images/didCommGeneric.jpg";
-import { DIDCommRequestType } from "../../../globals/types";
 import { PageFooter } from "../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
 import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageLayout";
-import { ConnectionType } from "../../../../core/agent/agent.types";
+import { RequestType } from "../../../globals/types";
 
 const CredentialRequest = ({
   pageId,
@@ -22,8 +20,7 @@ const CredentialRequest = ({
   handleAccept,
   handleCancel,
 }: RequestProps) => {
-  const fallbackLogo =
-    requestData.source === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
+  const fallbackLogo = KeriLogo;
 
   return (
     <ResponsivePageLayout
@@ -63,7 +60,7 @@ const CredentialRequest = ({
         <div className="request-info-row">
           <IonCol size="12">
             <span>
-              {DIDCommRequestType.CREDENTIAL +
+              {RequestType.CREDENTIAL +
                 i18n.t("request.credential.offercredential")}
             </span>
             <strong>{requestData?.label}</strong>
@@ -73,7 +70,7 @@ const CredentialRequest = ({
           <IonCol size="12">
             <strong>
               {i18next.t("request.pending", {
-                action: DIDCommRequestType.CREDENTIAL,
+                action: RequestType.CREDENTIAL,
               })}
             </strong>
           </IonCol>

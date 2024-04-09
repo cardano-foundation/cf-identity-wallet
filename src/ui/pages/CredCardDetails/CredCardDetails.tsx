@@ -28,7 +28,7 @@ import { CredsOptions } from "../../components/CredsOptions";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import {
   addFavouritesCredsCache,
   getCredsCache,
@@ -40,15 +40,10 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { CredCardTemplate } from "../../components/CredCardTemplate";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { ConnectionDetails } from "../Connections/Connections.types";
-import {
-  ACDCDetails,
-  W3CCredentialDetails,
-} from "../../../core/agent/services/credentialService.types";
+import { ACDCDetails } from "../../../core/agent/services/credentialService.types";
 import "../../components/CardDetails/CardDetails.scss";
 import "./CredCardDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
-import { ConnectionType } from "../../../core/agent/agent.types";
-import { CredContentW3c } from "./components/CredContentW3c";
 import { CredContentAcdc } from "./components/CredContentAcdc";
 import { combineClassNames } from "../../utils/style";
 
@@ -70,11 +65,7 @@ const CredCardDetails = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState<
-    W3CCredentialDetails | ACDCDetails
-  >();
-  const [connectionDetails, setConnectionDetails] =
-    useState<ConnectionDetails>();
+  const [cardData, setCardData] = useState<ACDCDetails>();
 
   const [navAnimation, setNavAnimation] = useState(false);
 
@@ -91,20 +82,10 @@ const CredCardDetails = () => {
   });
 
   const getCredDetails = async () => {
-    const cardDetails =
-      await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
+    const cardDetails = await Agent.agent.credentials.getCredentialDetailsById(
+      params.id
+    );
     setCardData(cardDetails);
-
-    // if (cardDetails.connectionType === ConnectionType.DIDCOMM) {
-    //   const connectionDetails =
-    //     cardDetails.connectionId &&
-    //     (await AriesAgent.agent.connections?.getConnectionById(
-    //       cardDetails.connectionId
-    //     ));
-    //   if (connectionDetails) {
-    //     setConnectionDetails(connectionDetails);
-    //   }
-    // }
   };
 
   const handleDone = () => {
@@ -131,7 +112,7 @@ const CredCardDetails = () => {
   };
 
   const handleArchiveCredential = async () => {
-    await AriesAgent.agent.credentials.archiveCredential(params.id);
+    await Agent.agent.credentials.archiveCredential(params.id);
     const creds = credsCache.filter((item) => item.id !== params.id);
     if (isFavourite) {
       handleSetFavourite(params.id);
@@ -142,17 +123,16 @@ const CredCardDetails = () => {
 
   const handleDeleteCredential = async () => {
     // @TODO - sdisalvo: handle error
-    await AriesAgent.agent.credentials.deleteCredential(params.id);
+    await Agent.agent.credentials.deleteCredential(params.id);
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
   };
 
   const handleRestoreCredential = async () => {
-    await AriesAgent.agent.credentials.restoreCredential(params.id);
+    await Agent.agent.credentials.restoreCredential(params.id);
     // @TODO - sdisalvo: handle error
-    const creds =
-      await AriesAgent.agent.credentials.getCredentialShortDetailsById(
-        params.id
-      );
+    const creds = await Agent.agent.credentials.getCredentialShortDetailsById(
+      params.id
+    );
     dispatch(setCredsCache([...credsCache, creds]));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
     handleDone();
@@ -240,16 +220,6 @@ const CredCardDetails = () => {
     );
   };
 
-  if (
-    cardData &&
-    cardData.connectionType === ConnectionType.DIDCOMM &&
-    Array.isArray(cardData.credentialSubject)
-  ) {
-    // @TODO - sdisalvo: Prevent app crashing when credentialSubject is an array
-    // Keeping this as a safety net as we may want to show a message in the future.
-    return null;
-  }
-
   const pageClasses = combineClassNames(
     "cred-card-detail card-details cred-open-animation",
     {
@@ -285,14 +255,7 @@ const CredCardDetails = () => {
             isActive={false}
           />
           <div className="card-details-content">
-            {cardData.connectionType === ConnectionType.DIDCOMM ? (
-              <CredContentW3c
-                cardData={cardData}
-                connectionDetails={connectionDetails}
-              />
-            ) : (
-              <CredContentAcdc cardData={cardData} />
-            )}
+            <CredContentAcdc cardData={cardData} />
             <PageFooter
               pageId={pageId}
               archiveButtonText={

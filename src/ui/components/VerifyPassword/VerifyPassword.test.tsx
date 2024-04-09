@@ -7,22 +7,22 @@ import { AnyAction, Store } from "@reduxjs/toolkit";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
-import { credsFixW3c } from "../../__fixtures__/credsFix";
+import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 
-const path = TabsRoutePath.CREDS + "/" + credsFixW3c[0].id;
+const path = TabsRoutePath.CREDS + "/" + credsFixAcdc[0].id;
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: credsFixW3c[0].id,
+    id: credsFixAcdc[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
 }));
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       credentials: {
         getCredentialDetailsById: jest.fn(),
@@ -48,7 +48,7 @@ const initialStateNoPassword = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  credsCache: { creds: credsFixW3c },
+  credsCache: { creds: credsFixAcdc },
 };
 
 const initialStateWithPassword = {
@@ -68,7 +68,7 @@ const initialStateWithPassword = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  credsCache: { creds: credsFixW3c },
+  credsCache: { creds: credsFixAcdc },
 };
 
 describe("Verify Password on Cards Details page", () => {
@@ -82,65 +82,65 @@ describe("Verify Password on Cards Details page", () => {
     };
   });
 
-  // test.skip("It renders verify password when clicking on the big archive button", async () => {
-  //   jest
-  //     .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
-  //     .mockResolvedValue(credsFixW3c[0]);
-  //   const mockStore = configureStore();
-  //   const dispatchMock = jest.fn();
-  //   storeMocked = {
-  //     ...mockStore(initialStateWithPassword),
-  //     dispatch: dispatchMock,
-  //   };
-  //   const { findByTestId, getAllByText, getAllByTestId } = render(
-  //     <Provider store={storeMocked}>
-  //       <MemoryRouter initialEntries={[path]}>
-  //         <Route
-  //           path={path}
-  //           component={CredCardDetails}
-  //         />
-  //       </MemoryRouter>
-  //     </Provider>
-  //   );
+  test.skip("It renders verify password when clicking on the big archive button", async () => {
+    jest
+      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFixAcdc[0]);
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    storeMocked = {
+      ...mockStore(initialStateWithPassword),
+      dispatch: dispatchMock,
+    };
+    const { findByTestId, getAllByText, getAllByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
 
-  //   const archiveButton = await findByTestId(
-  //     "archive-button-credential-card-details"
-  //   );
+    const archiveButton = await findByTestId(
+      "archive-button-credential-card-details"
+    );
 
-  //   act(() => {
-  //     fireEvent.click(archiveButton);
-  //   });
+    act(() => {
+      fireEvent.click(archiveButton);
+    });
 
-  //   await waitFor(() => {
-  //     expect(
-  //       getAllByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)[1]
-  //     ).toBeVisible();
-  //   });
+    await waitFor(() => {
+      expect(
+        getAllByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)[1]
+      ).toBeVisible();
+    });
 
-  //   await waitFor(() => {
-  //     expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
-  //       "is-open",
-  //       "false"
-  //     );
-  //   });
+    await waitFor(() => {
+      expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
+        "is-open",
+        "false"
+      );
+    });
 
-  //   act(() => {
-  //     fireEvent.click(
-  //       getAllByText(
-  //         EN_TRANSLATIONS.creds.card.details.alert.archive.confirm
-  //       )[0]
-  //     );
-  //   });
+    act(() => {
+      fireEvent.click(
+        getAllByText(
+          EN_TRANSLATIONS.creds.card.details.alert.archive.confirm
+        )[0]
+      );
+    });
 
-  //   await waitForIonicReact();
+    await waitForIonicReact();
 
-  //   await waitFor(() => {
-  //     expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
-  //       "is-open",
-  //       "true"
-  //     );
-  //   });
-  // });
+    await waitFor(() => {
+      expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
+        "is-open",
+        "true"
+      );
+    });
+  });
 
   test.skip("It asks to verify the password when users try to archive the cred using the button in the modal", async () => {
     const mockStore = configureStore();

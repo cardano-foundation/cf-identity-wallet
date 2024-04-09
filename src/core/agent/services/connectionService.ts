@@ -8,12 +8,10 @@ import {
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
-  ConnectionType,
   ConnectionStatus,
 } from "../agent.types";
 import { AgentService } from "./agentService";
-import { AriesAgent } from "../agent";
-import { IdentifierType } from "./identifierService.types";
+import { Agent } from "../agent";
 import { KeriContact } from "../modules/signify/signifyApi.types";
 import { BasicRecord } from "../records";
 import { RecordType } from "../../storage/storage.types";
@@ -45,76 +43,72 @@ class ConnectionService extends AgentService {
 
   @OnlineOnly
   async receiveInvitationFromUrl(url: string): Promise<void> {
-    if (url.includes("/oobi")) {
-      this.eventService.emit<ConnectionKeriStateChangedEvent>({
-        type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
-        payload: {
-          connectionId: undefined,
-          status: ConnectionStatus.PENDING,
-        },
-      });
-      const operation = await this.signifyApi.resolveOobi(url);
-      const connectionId = operation.response.i;
-      await this.createConnectionKeriMetadata(connectionId, {
-        alias: operation.alias,
-        oobi: url,
-      });
+    this.eventService.emit<ConnectionKeriStateChangedEvent>({
+      type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+      payload: {
+        connectionId: undefined,
+        status: ConnectionStatus.PENDING,
+      },
+    });
+    const operation = await this.signifyApi.resolveOobi(url);
+    const connectionId = operation.response.i;
+    await this.createConnectionKeriMetadata(connectionId, {
+      alias: operation.alias,
+      oobi: url,
+    });
 
-      // @TODO - foconnor: This is temporary for ease of development, will be removed soon.
-      // This will take our first KERI identifier and get the server to resolve it, so that the connection is resolved from both sides and we can issue to this wallet using its API.
-      if (url.includes("dev.keria.cf-keripy.metadata.dev.cf-deployments.org")) {
-        // This is inefficient but it will change going forward.
-        const aid = (await AriesAgent.agent.identifiers.getIdentifiers()).find(
-          (identifier) => identifier.method === IdentifierType.KERI
-        );
-        if (aid && aid.signifyName) {
-          let userName;
-          try {
-            userName = (
-              await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME)
-            ).userName as string;
-          } catch (error) {
-            if (
-              (error as Error).message !==
-              `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
-            ) {
-              throw error;
-            }
+    // @TODO - foconnor: This is temporary for ease of development, will be removed soon.
+    // This will take our first KERI identifier and get the server to resolve it, so that the connection is resolved from both sides and we can issue to this wallet using its API.
+    if (url.includes("dev.keria.cf-keripy.metadata.dev.cf-deployments.org")) {
+      // This is inefficient but it will change going forward.
+      const aids = await Agent.agent.identifiers.getIdentifiers();
+      if (aids.length > 0) {
+        let userName;
+        try {
+          userName = (
+            await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME)
+          ).userName as string;
+        } catch (error) {
+          if (
+            (error as Error).message !==
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
+          ) {
+            throw error;
           }
-
-          // signifyName should always be set
-          const oobi = await AriesAgent.agent.connections.getKeriOobi(
-            aid.signifyName,
-            userName
-          );
-          await (
-            await fetch(
-              "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/resolveOobi",
-              {
-                method: "POST",
-                body: JSON.stringify({ oobi }),
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
-            )
-          ).json();
-        } else {
-          // eslint-disable-next-line no-console
-          console.warn(
-            "Please create a KERI AID first before scanning an OOBI of the deployed server, if you wish to be issued an ACDC automatically."
-          );
         }
-      }
 
-      return this.eventService.emit<ConnectionKeriStateChangedEvent>({
-        type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
-        payload: {
-          connectionId: operation.response.i,
-          status: ConnectionStatus.CONFIRMED,
-        },
-      });
+        // signifyName should always be set
+        const oobi = await Agent.agent.connections.getKeriOobi(
+          aids[0].signifyName,
+          userName
+        );
+        await (
+          await fetch(
+            "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/resolveOobi",
+            {
+              method: "POST",
+              body: JSON.stringify({ oobi }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+        ).json();
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(
+          "Please create a KERI AID first before scanning an OOBI of the deployed server, if you wish to be issued an ACDC automatically."
+        );
+      }
     }
+
+    return this.eventService.emit<ConnectionKeriStateChangedEvent>({
+      type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+      payload: {
+        connectionId: operation.response.i,
+        status: ConnectionStatus.CONFIRMED,
+      },
+    });
   }
 
   async getConnections(): Promise<ConnectionShortDetails[]> {
@@ -134,16 +128,12 @@ class ConnectionService extends AgentService {
       label: record.content?.alias as string,
       connectionDate: record.createdAt.toISOString(),
       status: ConnectionStatus.CONFIRMED,
-      type: ConnectionType.KERI,
       oobi: record.content?.oobi as string,
     };
   }
 
   @OnlineOnly
-  async getConnectionById(
-    id: string,
-    type?: ConnectionType
-  ): Promise<ConnectionDetails> {
+  async getConnectionById(id: string): Promise<ConnectionDetails> {
     const connection = await this.signifyApi.getContactById(id);
     return {
       label: connection?.alias,
@@ -158,10 +148,7 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async deleteConnectionById(
-    id: string,
-    connectionType?: ConnectionType
-  ): Promise<void> {
+  async deleteConnectionById(id: string): Promise<void> {
     await this.basicStorage.deleteById(id);
     // await this.signifyApi.deleteContactById(id); TODO: must open when Keria runs well
     const notes = await this.getConnectNotesByConnectionId(id);
@@ -250,7 +237,7 @@ class ConnectionService extends AgentService {
   ): Promise<ConnectionHistoryItem[]> {
     let histories: ConnectionHistoryItem[] = [];
     const credentialRecords =
-      await AriesAgent.agent.credentials.getCredentialMetadataByConnectionId(
+      await Agent.agent.credentials.getCredentialMetadataByConnectionId(
         connectionId
       );
     histories = histories.concat(

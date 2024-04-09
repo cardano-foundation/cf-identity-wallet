@@ -16,7 +16,7 @@ import {
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { OperationType, ToastMsgType } from "../../globals/types";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { ScannerProps } from "./Scanner.types";
 
 const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
@@ -76,7 +76,7 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
           dispatch(setCurrentOperation(OperationType.IDLE));
           // @TODO - foconnor: when above loading screen in place, handle invalid QR code
           // @TODO - sdisalvo: receiveInvitationFromUrl should be awaited once we have error handling
-          AriesAgent.agent.connections.receiveInvitationFromUrl(result.content);
+          Agent.agent.connections.receiveInvitationFromUrl(result.content);
           setIsValueCaptured && setIsValueCaptured(true);
         }
       }

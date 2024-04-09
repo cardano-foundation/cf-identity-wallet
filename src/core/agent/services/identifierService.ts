@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from "uuid";
 import { plainToInstance } from "class-transformer";
 import {
-  GetIdentifierResult,
+  CreateIdentifierResult,
+  IdentifierDetails,
   IdentifierShortDetails,
-  IdentifierType,
   MultiSigIcpRequestDetails,
 } from "./identifierService.types";
 import {
@@ -17,20 +17,13 @@ import {
   MultiSigExnMessage,
   NotificationRoute,
 } from "../modules/signify/signifyApi.types";
-import {
-  ConnectionShortDetails,
-  ConnectionType,
-  KeriNotification,
-} from "../agent.types";
-import { AriesAgent } from "../agent";
+import { ConnectionShortDetails, KeriNotification } from "../agent.types";
+import { Agent } from "../agent";
 import { RecordType } from "../../storage/storage.types";
 import { BasicRecord } from "../records";
 import { OnlineOnly } from "../modules/signify/signifyApi";
 
-const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
-  [IdentifierType.KEY]: [0, 1, 2, 3],
-  [IdentifierType.KERI]: [4, 5],
-};
+const identifierTypeThemes = [0, 1];
 
 class IdentifierService extends AgentService {
   static readonly DID_MISSING_INCORRECT =
@@ -53,12 +46,7 @@ class IdentifierService extends AgentService {
     "There's no exchange message for the given SAID";
   static readonly ONLY_ALLOW_KERI_CONTACTS =
     "Can only create multi-sig using KERI contacts with specified OOBI URLs";
-  static readonly ONLY_CREATE_DELAGATION_WITH_AID =
-    "Can only create delegation using KERI AID";
-  static readonly AID_MISSING_SIGNIFY_NAME =
-    "Metadata record for KERI AID is missing the Signify name";
-  static readonly ONLY_CREATE_ROTATION_WITH_AID =
-    "Can only create rotation using KERI AID";
+
   static readonly MULTI_SIG_NOT_FOUND =
     "There's no multi sig identifier for the given SAID";
   static readonly AID_IS_NOT_MULTI_SIG =
@@ -78,7 +66,6 @@ class IdentifierService extends AgentService {
     for (let i = 0; i < listMetadata.length; i++) {
       const metadata = listMetadata[i];
       identifiers.push({
-        method: metadata.method,
         displayName: metadata.displayName,
         id: metadata.id,
         signifyName: metadata.signifyName,
@@ -94,7 +81,7 @@ class IdentifierService extends AgentService {
   @OnlineOnly
   async getIdentifier(
     identifier: string
-  ): Promise<GetIdentifierResult | undefined> {
+  ): Promise<IdentifierDetails | undefined> {
     const metadata = await this.getIdentifierMetadata(identifier);
     const aid = await this.signifyApi.getIdentifierByName(
       metadata.signifyName as string
@@ -107,27 +94,23 @@ class IdentifierService extends AgentService {
     }
 
     return {
-      type: IdentifierType.KERI,
-      result: {
-        id: aid.prefix,
-        method: IdentifierType.KERI,
-        displayName: metadata.displayName,
-        createdAtUTC: metadata.createdAt.toISOString(),
-        signifyName: metadata.signifyName,
-        colors: metadata.colors,
-        theme: metadata.theme,
-        signifyOpName: metadata.signifyOpName,
-        isPending: metadata.isPending ?? false,
-        s: aid.state.s,
-        dt: aid.state.dt,
-        kt: aid.state.kt,
-        k: aid.state.k,
-        nt: aid.state.nt,
-        n: aid.state.n,
-        bt: aid.state.bt,
-        b: aid.state.b,
-        di: aid.state.di,
-      },
+      id: aid.prefix,
+      displayName: metadata.displayName,
+      createdAtUTC: metadata.createdAt.toISOString(),
+      signifyName: metadata.signifyName,
+      colors: metadata.colors,
+      theme: metadata.theme,
+      signifyOpName: metadata.signifyOpName,
+      isPending: metadata.isPending ?? false,
+      s: aid.state.s,
+      dt: aid.state.dt,
+      kt: aid.state.kt,
+      k: aid.state.k,
+      nt: aid.state.nt,
+      n: aid.state.n,
+      bt: aid.state.bt,
+      b: aid.state.b,
+      di: aid.state.di,
     };
   }
 
@@ -141,9 +124,9 @@ class IdentifierService extends AgentService {
   async createIdentifier(
     metadata: Omit<
       IdentifierMetadataRecordProps,
-      "id" | "createdAt" | "isArchived"
+      "id" | "createdAt" | "isArchived" | "signifyName"
     >
-  ): Promise<string | undefined> {
+  ): Promise<CreateIdentifierResult> {
     const { signifyName, identifier } =
       await this.signifyApi.createIdentifier();
     await this.createIdentifierMetadataRecord({
@@ -151,7 +134,7 @@ class IdentifierService extends AgentService {
       ...metadata,
       signifyName: signifyName,
     });
-    return identifier;
+    return { identifier, signifyName };
   }
 
   async archiveIdentifier(identifier: string): Promise<void> {
@@ -199,9 +182,8 @@ class IdentifierService extends AgentService {
         await this.createIdentifierMetadataRecord({
           id: identifier.prefix,
           displayName: identifier.prefix, //same as the id at the moment
-          method: IdentifierType.KERI,
           colors: ["#e0f5bc", "#ccef8f"],
-          theme: 4,
+          theme: 0,
           signifyName: identifier.name,
         });
       }
@@ -242,10 +224,7 @@ class IdentifierService extends AgentService {
   private validIdentifierMetadata(
     metadata: IdentifierMetadataRecordProps
   ): void {
-    if (
-      metadata.theme &&
-      !identifierTypeMappingTheme[metadata.method].includes(metadata.theme)
-    ) {
+    if (metadata.theme && !identifierTypeThemes.includes(metadata.theme)) {
       throw new Error(
         `${IdentifierService.THEME_WAS_NOT_VALID} ${metadata.id}`
       );
@@ -261,19 +240,12 @@ class IdentifierService extends AgentService {
     >,
     threshold: number,
     delegateContact?: ConnectionShortDetails
-  ): Promise<string | undefined> {
+  ): Promise<CreateIdentifierResult> {
     const ourMetadata = await this.getIdentifierMetadata(ourIdentifier);
     this.validIdentifierMetadata(ourMetadata);
     const ourAid = (await this.signifyApi.getIdentifierByName(
-      ourMetadata.signifyName as string
+      ourMetadata.signifyName
     )) as Aid;
-    //Make sure no non-Keri contacts get passed into this function
-    const nonKeriContact = otherIdentifierContacts.find(
-      (contact) => !contact.oobi || contact.type !== ConnectionType.KERI
-    );
-    if (nonKeriContact) {
-      throw new Error(IdentifierService.ONLY_ALLOW_KERI_CONTACTS);
-    }
     const otherAids = await Promise.all(
       otherIdentifierContacts.map(async (contact) => {
         const aid = await this.signifyApi.resolveOobi(contact.oobi as string);
@@ -305,7 +277,6 @@ class IdentifierService extends AgentService {
     await this.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
-      method: IdentifierType.KERI,
       colors: meta.colors,
       theme: meta.theme,
       signifyName,
@@ -313,14 +284,11 @@ class IdentifierService extends AgentService {
       isPending,
       multisigManageAid: ourIdentifier,
     });
-    return multisigId;
+    return { identifier: multisigId, signifyName };
   }
 
   async rotateMultisig(ourIdentifier: string): Promise<string> {
     const metadata = await this.getIdentifierMetadata(ourIdentifier);
-    if (metadata.method !== IdentifierType.KERI) {
-      throw new Error(IdentifierService.ONLY_CREATE_ROTATION_WITH_AID);
-    }
 
     if (!metadata.multisigManageAid) {
       throw new Error(IdentifierService.AID_IS_NOT_MULTI_SIG);
@@ -329,9 +297,6 @@ class IdentifierService extends AgentService {
       metadata.multisigManageAid
     );
 
-    if (!metadata.signifyName || !identifierManageAid.signifyName) {
-      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-    }
     const multiSig = await this.signifyApi.getIdentifierByName(
       metadata.signifyName
     );
@@ -393,10 +358,6 @@ class IdentifierService extends AgentService {
       multiSig.multisigManageAid
     );
 
-    if (!multiSig.signifyName || !identifierManageAid.signifyName) {
-      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-    }
-
     const aid = await this.signifyApi.getIdentifierByName(
       identifierManageAid.signifyName
     );
@@ -442,14 +403,14 @@ class IdentifierService extends AgentService {
     const senderAid = icpMsg[0].exn.i;
     // @TODO - foconnor: This cross service call should be handled better.
     const senderContact =
-      await AriesAgent.agent.connections.getConnectionKeriShortDetailById(
+      await Agent.agent.connections.getConnectionKeriShortDetailById(
         icpMsg[0].exn.i
       );
 
     const smids = icpMsg[0].exn.a.smids;
     // @TODO - foconnor: These searches should be optimised, revisit.
     const ourIdentifiers = await this.getIdentifiers();
-    const ourConnections = await AriesAgent.agent.connections.getConnections();
+    const ourConnections = await Agent.agent.connections.getConnections();
 
     let ourIdentifier;
     const otherConnections = [];
@@ -498,7 +459,7 @@ class IdentifierService extends AgentService {
       IdentifierMetadataRecordProps,
       "displayName" | "colors" | "theme"
     >
-  ): Promise<string | undefined> {
+  ): Promise<CreateIdentifierResult | undefined> {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const msgSaid = notification.a.d as string;
     const hasJoined = await this.hasJoinedMultisig(msgSaid);
@@ -523,10 +484,6 @@ class IdentifierService extends AgentService {
       throw new Error(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
     }
 
-    if (!identifier.signifyName) {
-      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-    }
-
     const aid = await this.signifyApi.getIdentifierByName(
       identifier?.signifyName
     );
@@ -537,7 +494,6 @@ class IdentifierService extends AgentService {
     await this.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
-      method: IdentifierType.KERI,
       colors: meta.colors,
       theme: meta.theme,
       signifyName,
@@ -545,7 +501,7 @@ class IdentifierService extends AgentService {
       isPending: res.op.done ? false : true, //this will be updated once the operation is done
       multisigManageAid: identifier.id,
     });
-    return multisigId;
+    return { identifier: multisigId, signifyName };
   }
 
   async markMultisigCompleteIfReady(metadata: IdentifierMetadataRecord) {
@@ -595,20 +551,16 @@ class IdentifierService extends AgentService {
   async createDelegatedIdentifier(
     metadata: Omit<
       IdentifierMetadataRecordProps,
-      "id" | "createdAt" | "isArchived"
+      "id" | "createdAt" | "isArchived" | "signifyName"
     >,
     delegatorPrefix: string
   ): Promise<string | undefined> {
-    if (metadata.method !== IdentifierType.KERI) {
-      throw new Error(IdentifierService.ONLY_CREATE_DELAGATION_WITH_AID);
-    }
     const { signifyName, identifier } =
       await this.signifyApi.createDelegationIdentifier(delegatorPrefix);
     await this.createIdentifierMetadataRecord({
       id: identifier,
       ...metadata,
       signifyName: signifyName,
-      method: IdentifierType.KERI,
       isPending: true,
     });
     return identifier;
@@ -624,9 +576,6 @@ class IdentifierService extends AgentService {
   async checkDelegationSuccess(
     metadata: IdentifierMetadataRecord
   ): Promise<boolean> {
-    if (!metadata.signifyName) {
-      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-    }
     if (!metadata.isPending) {
       return true;
     }
@@ -640,12 +589,6 @@ class IdentifierService extends AgentService {
   }
 
   async rotateIdentifier(metadata: IdentifierMetadataRecord) {
-    if (metadata.method !== IdentifierType.KERI) {
-      throw new Error(IdentifierService.ONLY_CREATE_ROTATION_WITH_AID);
-    }
-    if (!metadata.signifyName) {
-      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-    }
     await this.signifyApi.rotateIdentifier(metadata.signifyName);
   }
 
@@ -666,11 +609,8 @@ class IdentifierService extends AgentService {
   // TODO @bao-sotatek: must write the unit test for aid storage in recontructing agent services
 
   async getKeriIdentifiersMetadata(): Promise<IdentifierMetadataRecord[]> {
-    const basicRecords = await this.basicStorage.findAllByQuery(
-      RecordType.IDENTIFIER_METADATA_RECORD,
-      {
-        method: IdentifierType.KERI,
-      }
+    const basicRecords = await this.basicStorage.getAll(
+      RecordType.IDENTIFIER_METADATA_RECORD
     );
     return basicRecords.map((bc) => {
       return this.parseIdentifierMetadataRecord(bc);

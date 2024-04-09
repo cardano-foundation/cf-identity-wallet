@@ -4,11 +4,7 @@ import {
   CredentialMetadataRecordStatus,
 } from "../records/credentialMetadataRecord.types";
 import { CredentialStatus } from "./credentialService.types";
-import {
-  AcdcKeriEventTypes,
-  AcdcKeriStateChangedEvent,
-  ConnectionType,
-} from "../agent.types";
+import { AcdcKeriEventTypes, AcdcKeriStateChangedEvent } from "../agent.types";
 import { SignifyApi } from "../modules/signify/signifyApi";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { RecordType } from "../../storage/storage.types";
@@ -56,7 +52,6 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   credentialType: "credType",
   status: CredentialMetadataRecordStatus.CONFIRMED,
   credentialRecordId: credentialRecordId1,
-  connectionType: ConnectionType.KERI,
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(
@@ -126,7 +121,7 @@ const keriNotifications = genericRecords.map((result) => {
 //         issuanceDate: nowISO,
 //         status: CredentialMetadataRecordStatus.CONFIRMED,
 //         cachedDetails: undefined,
-//         connectionType: ConnectionType.DIDCOMM,
+//         connectionType: ConnectionType.KERI,
 //       },
 //       {
 //         id: id2,
@@ -135,7 +130,7 @@ const keriNotifications = genericRecords.map((result) => {
 //         issuanceDate: nowISO,
 //         status: CredentialMetadataRecordStatus.CONFIRMED,
 //         cachedDetails: undefined,
-//         connectionType: ConnectionType.DIDCOMM,
+//         connectionType: ConnectionType.KERI,
 //       },
 //     ]);
 //   });
@@ -489,9 +484,7 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       status: CredentialMetadataRecordStatus.CONFIRMED,
       colors,
       credentialType,
-      connectionType: ConnectionType.KERI,
       issuanceDate: nowISO,
-      cachedDetails: undefined,
       isDeleted: false,
       connectionId: undefined,
     });
@@ -502,9 +495,7 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       colors,
       status: CredentialMetadataRecordStatus.CONFIRMED,
       credentialType,
-      connectionType: ConnectionType.KERI,
       issuanceDate: nowISO,
-      cachedDetails: undefined,
     });
   });
 
