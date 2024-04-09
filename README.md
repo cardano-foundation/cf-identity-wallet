@@ -28,7 +28,7 @@
 # Overview
 
 <div align="justify"> 
-<b> The Identity Wallet is an open source application developed by the Cardano Foundation.  This project is the result of ongoing research and development pertaining to the principles of Self-Sovereign Identity (SSI), Decentralized Identifiers (DIDs), Self-Certifying Identifiers (SCIs), Verifiable Credentials, Verifiable Data Registries (VDRs) and the standards, frameworks and implementations available within the Cardano ecosystem and externally.  The first release of Identity Wallet provides an open source reference implementation demonstrating W3C Decentralized Identifiers, Verifiable Credentials, and Key Event Receipt Infrastructure (KERI) on Cardano. </b>
+<b> The Identity Wallet is an open source application developed by the Cardano Foundation. This project is the result of ongoing research and development pertaining to the principles of Self-Sovereign Identity (SSI), Self-Certifying Identifiers (SCIs), Verifiable Data Registries (VDRs), and the standards, frameworks, and implementations available within the Cardano ecosystem and externally. The first release of Identity Wallet provides an open source reference implementation demonstrating the Key Event Receipt Infrastructure (KERI) on Cardano. </b>
 </div>
 
 <br>
@@ -48,18 +48,18 @@
 
 | **User Interface**    |  **Secure Storage**  |**Interoperability**   |  **Standards & Protocols** | **Connections & Credential Issuance**  |     **SSI Agents**   |           
 |----------------|---------------|---------------|----------------|---------------|----------------|
-|  Intuitive User Experience |  Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material |  [Aries RFCs](https://github.com/hyperledger/aries-rfcs) |  [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) |  Holder-to-Holder |  [Open Wallet Foundation](https://github.com/openwallet-foundation/agent-framework-javascript)| 
-|  Android and iOS support |  Hierarchical Deterministic (HD) Identity Wallet | [W3C](https://www.w3.org/) | [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID)  |  Issuer-to-Holder |  [KERIA](https://github.com/cardano-foundation/keria) | 
-|  | | [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) |  [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) |  [Credential Issuance Testing Tool](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  |  [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
-|  | | [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | |  | |
+|  Intuitive User Experience |  Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material | [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID) |  Holder-to-Holder | [KERIA](https://github.com/cardano-foundation/keria) | 
+|  Android and iOS support |  Hierarchical Deterministic (HD) Identity Wallet | [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) |  |  Issuer-to-Holder | [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
+|  | |  |  |  [Credential Issuance Testing Tool](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  |   | 
+|  | |  | |  | |
 
 # Potential Future Developments
 
-|**App Features**            |  **Identity Recovery**               |     **Identifiers**           |     **Verifiable Credentials**  |    **Communications** |   **Peer-to-Peer (P2P)** |  
-|----------------|---------------|---------------|----------------|----------------|----------------|
-| Bluetooth |  [Shamir Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing)|  [did:webs](https://labs.hyperledger.org/labs/didwebs.html#:~:text=did%3Awebs%20extends%20the%20web,%2C%20X509%2C%20and%20certificate%20authorities.) |  [OID4vc](https://openid.net/sg/openid4vc/specifications/)| Messaging | [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) Support  | 
-| Biometrics | On-chain Recovery | [did:keri](https://identity.foundation/keri/did_methods/)  | On-Chain Schemas | Social Recovery |  App Integration |
-| NFC|  Local Encrypted|  | [AnonCreds](https://www.hyperledger.org/projects/anoncreds) | [DIDComm v2](https://identity.foundation/didcomm-messaging/spec/) | | 
+|**App Features**            |  **Identity Recovery**               |     **Verifiable Credentials**  |    **Communications** |   **Peer-to-Peer (P2P)** |  
+|----------------|---------------|----------------|----------------|----------------|
+| Bluetooth |  [Shamir Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing)|  [OID4vc](https://openid.net/sg/openid4vc/specifications/)| Messaging | [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) Support  | 
+| Biometrics | On-chain Recovery | On-Chain Schemas | Social Recovery |  App Integration |
+| NFC|  Local Encrypted|  | [AnonCreds](https://www.hyperledger.org/projects/anoncreds) |  | | 
 |Aries Askar | Cloud-based |  | [Cheqd](https://cheqd.io/) | |  |
 
 
@@ -177,17 +177,11 @@ Please be aware that from time-to-time the hosted pre-production KERI services r
 <br>
 
 <div align="center"> 
-      <a href="https://discord.gg/Wh25yBqwpz">👨‍💻 Join our Discord! 👩‍💻
+      <a href="https://discord.gg/Wh25yBqwpz">👨‍💻 Join our Discord! 👩‍💻<a>
 </div>
 
 
 # Resources
-
-## W3C
-- [DID Core Specification](https://www.w3.org/TR/did-core/)
-- [DID Methods Registry](https://www.w3.org/TR/did-spec-registries/)
-- [Verifiable Credentials Data Model](https://www.w3.org/TR/vc-data-model/)
-- [Verifiable Credential V2](https://www.w3.org/TR/vc-data-model-2.0/)
 
 ## KERI
 - [Key Event Receipt Infrastructure](https://keri.one/)
@@ -198,7 +192,6 @@ Please be aware that from time-to-time the hosted pre-production KERI services r
 
 ## Standards, Frameworks and Governance
 - [Aries Framework JavaScript](https://github.com/openwallet-foundation/agent-framework-javascript)
-- [Veramo](https://veramo.io/)
 - [SSI Frameworks Overview](https://europeanblockchainassociation.org/ssi-frameworks-sdks-overview/)
 - [Global Legal Entity Identifier Foundation (GLIEF)](https://www.gleif.org/en)
 - [Decentralized Identity Foundation](https://identity.foundation/)
