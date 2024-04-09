@@ -1,10 +1,7 @@
 import { Operation, Serder, SignifyClient } from "signify-ts";
 import { CredentialMetadataRecord } from "../records";
 import { CredentialShortDetails } from "./credentialService.types";
-import {
-  Aid,
-  CreateMultisigExnPayload,
-} from "../agent.types";
+import { Aid, CreateMultisigExnPayload } from "../agent.types";
 import { MultiSigRoute } from "../agent.types";
 
 async function waitAndGetDoneOp(
@@ -47,7 +44,6 @@ function getCredentialShortDetails(
     issuanceDate: metadata.issuanceDate,
     credentialType: metadata.credentialType,
     status: metadata.status,
-    connectionType: metadata.connectionType,
   };
 }
 

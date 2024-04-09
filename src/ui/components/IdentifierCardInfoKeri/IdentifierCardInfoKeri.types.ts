@@ -1,4 +1,4 @@
-import { IdentifierDetails } from "../../../core/agent/services/identifierService.types";
+import { IdentifierDetails } from "../../../core/agent/services/identifier.types";
 
 interface IdentifierCardInfoKeriProps {
   cardData: IdentifierDetails;

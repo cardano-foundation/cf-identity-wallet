@@ -1,7 +1,10 @@
 import { AgentService } from "./agentService";
-import { KeriNotification, KeriaNotificationMarker } from "../agent.types";
+import {
+  KeriNotification,
+  KeriaNotificationMarker,
+  NotificationRoute,
+} from "../agent.types";
 import { Notification } from "./credentialService.types";
-import { NotificationRoute } from "../modules/signify/signifyApi.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { RecordType } from "../../storage/storage.types";
 class SignifyNotificationService extends AgentService {
@@ -40,10 +43,9 @@ class SignifyNotificationService extends AgentService {
       const startFetchingIndex =
         notificationQuery.nextIndex > 0 ? notificationQuery.nextIndex - 1 : 0;
 
-      const notifications = await this.signifyApi.getNotifications(
-        startFetchingIndex,
-        startFetchingIndex + 24
-      );
+      const notifications = await this.signifyClient
+        .notifications()
+        .list(startFetchingIndex, startFetchingIndex + 24);
       if (
         notificationQuery.nextIndex > 0 &&
         (notifications.notes.length == 0 ||
@@ -102,9 +104,9 @@ class SignifyNotificationService extends AgentService {
     ) {
       const keriNoti = await this.createKeriNotificationRecord(notif);
       callback(keriNoti);
-      await this.signifyApi.markNotification(notif.i);
+      await this.markNotification(notif.i);
     } else if (!notif.r) {
-      this.signifyApi.markNotification(notif.i);
+      this.markNotification(notif.i);
     }
   }
 
@@ -146,6 +148,10 @@ class SignifyNotificationService extends AgentService {
       }
     );
     return notifications;
+  }
+
+  private markNotification(notiSaid: string) {
+    return this.signifyClient.notifications().mark(notiSaid);
   }
 }
 

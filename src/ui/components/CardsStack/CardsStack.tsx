@@ -4,7 +4,7 @@ import "./CardsStack.scss";
 import {
   IdentifierDetails,
   IdentifierShortDetails,
-} from "../../../core/agent/services/identifierService.types";
+} from "../../../core/agent/services/identifier.types";
 import { CardType } from "../../globals/types";
 
 import { IdentifierCardTemplate } from "../IdentifierCardTemplate";

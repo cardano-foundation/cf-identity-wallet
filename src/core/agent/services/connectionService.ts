@@ -9,13 +9,14 @@ import {
   ConnectionNoteProps,
   ConnectionShortDetails,
   ConnectionStatus,
+  KeriContact,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { Agent } from "../agent";
-import { KeriContact } from "../modules/signify/signifyApi.types";
 import { BasicRecord } from "../records";
 import { RecordType } from "../../storage/storage.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
+import { waitAndGetDoneOp } from "./utils";
 
 class ConnectionService extends AgentService {
   // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
@@ -28,6 +29,10 @@ class ConnectionService extends AgentService {
     "Connection note record not found";
   static readonly CONNECTION_KERI_METADATA_RECORD_NOT_FOUND =
     "Connection keri metadata record not found";
+
+  static readonly FAILED_TO_RESOLVE_OOBI =
+    "Failed to resolve OOBI, operation not completing...";
+  static resolvedOobi: { [key: string]: any } = {};
 
   onConnectionKeriStateChanged(
     callback: (event: ConnectionKeriStateChangedEvent) => void
@@ -48,7 +53,7 @@ class ConnectionService extends AgentService {
         status: ConnectionStatus.PENDING,
       },
     });
-    const operation = await this.signifyApi.resolveOobi(url);
+    const operation = await this.resolveOobi(url);
     const connectionId = operation.response.i;
     await this.createConnectionKeriMetadata(connectionId, {
       alias: operation.alias,
@@ -131,17 +136,7 @@ class ConnectionService extends AgentService {
   }
 
   async getConnectionById(id: string): Promise<ConnectionDetails> {
-    const connection = await this.signifyApi.getContactById(id);
-    return {
-      label: connection?.alias,
-      id: connection.id,
-      status: ConnectionStatus.CONFIRMED,
-      connectionDate: (
-        await this.getConnectionKeriMetadataById(connection.id)
-      ).createdAt.toISOString(),
-      serviceEndpoints: [connection.oobi],
-      notes: await this.getConnectNotesByConnectionId(connection.id),
-    };
+    return this.getKeriConnectionDetails(id);
   }
 
   async deleteConnectionById(id: string): Promise<void> {
@@ -191,7 +186,8 @@ class ConnectionService extends AgentService {
   }
 
   async getKeriOobi(signifyName: string, alias?: string): Promise<string> {
-    const oobi = await this.signifyApi.getOobi(signifyName);
+    const result = await this.signifyClient.oobis().get(signifyName);
+    const oobi = result.oobis[0];
     return alias ? `${oobi}?name=${encodeURIComponent(alias)}` : oobi;
   }
 
@@ -233,7 +229,7 @@ class ConnectionService extends AgentService {
   ): Promise<ConnectionHistoryItem[]> {
     let histories: ConnectionHistoryItem[] = [];
     const credentialRecords =
-      await Agent.agent.credentials.getCredentialMetadataByConnectionId(
+      await this.credentialStorage.getCredentialMetadataByConnectionId(
         connectionId
       );
     histories = histories.concat(
@@ -249,7 +245,7 @@ class ConnectionService extends AgentService {
   }
 
   async syncKeriaContacts() {
-    const signifyContacts = await this.signifyApi.getContacts();
+    const signifyContacts = await this.signifyClient.contacts().list();
     const storageContacts = await this.getAllConnectionKeriMetadata();
     const unSyncedData = signifyContacts.filter(
       (contact: KeriContact) =>
@@ -264,6 +260,21 @@ class ConnectionService extends AgentService {
         });
       }
     }
+  }
+
+  async resolveOobi(url: string): Promise<any> {
+    if (ConnectionService.resolvedOobi[url]) {
+      return ConnectionService.resolvedOobi[url];
+    }
+    const alias = uuidv4();
+    let operation = await this.signifyClient.oobis().resolve(url, alias);
+    operation = await waitAndGetDoneOp(this.signifyClient, operation);
+    if (!operation.done) {
+      throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
+    }
+    const Oobi = { ...operation, alias };
+    ConnectionService.resolvedOobi[url] = Oobi;
+    return Oobi;
   }
 
   private async getConnectNotesByConnectionId(
@@ -282,6 +293,22 @@ class ConnectionService extends AgentService {
         message: note.content.message as string,
       };
     });
+  }
+
+  private async getKeriConnectionDetails(
+    id: string
+  ): Promise<ConnectionDetails> {
+    const connection = await this.signifyClient.contacts().get(id);
+    return {
+      label: connection?.alias,
+      id: connection.id,
+      status: ConnectionStatus.CONFIRMED,
+      connectionDate: (
+        await this.getConnectionKeriMetadataById(connection.id)
+      ).createdAt.toISOString(),
+      serviceEndpoints: [connection.oobi],
+      notes: await this.getConnectNotesByConnectionId(connection.id),
+    };
   }
 }
 

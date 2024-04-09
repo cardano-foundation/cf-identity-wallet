@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { IdentifiersList } from "./IdentifiersList";
-import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../globals/constants";

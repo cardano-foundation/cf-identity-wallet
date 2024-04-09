@@ -1,6 +1,5 @@
 import { plainToInstance } from "class-transformer";
 import { RecordType, StorageApi } from "../../storage/storage.types";
-import { IdentifierType } from "../services/identifier.types";
 import { BasicRecord } from "./basicRecord";
 import {
   IdentifierMetadataRecord,
@@ -38,11 +37,8 @@ class IdentifierStorage {
   }
 
   async getKeriIdentifiersMetadata(): Promise<IdentifierMetadataRecord[]> {
-    const basicRecords = await this.basicStorage.findAllByQuery(
-      RecordType.IDENTIFIER_METADATA_RECORD,
-      {
-        method: IdentifierType.KERI,
-      }
+    const basicRecords = await this.basicStorage.getAll(
+      RecordType.IDENTIFIER_METADATA_RECORD
     );
     return basicRecords.map((bc) => {
       return this.parseIdentifierMetadataRecord(bc);

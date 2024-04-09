@@ -15,7 +15,7 @@ import {
   IdentifierMetadataRecordProps,
 } from "../records";
 import { AgentService } from "./agentService";
-import { IdentifierType, MultiSigIcpRequestDetails } from "./identifier.types";
+import { MultiSigIcpRequestDetails } from "./identifier.types";
 import { sendMultisigExn, waitAndGetDoneOp } from "./utils";
 import { RecordType } from "../../storage/storage.types";
 
@@ -31,12 +31,6 @@ class MultiSigService extends AgentService {
     "There's no exchange message for the given SAID";
   static readonly ONLY_ALLOW_KERI_CONTACTS =
     "Can only create multi-sig using KERI contacts with specified OOBI URLs";
-  static readonly ONLY_CREATE_DELAGATION_WITH_AID =
-    "Can only create delegation using KERI AID";
-  static readonly AID_MISSING_SIGNIFY_NAME =
-    "Metadata record for KERI AID is missing the Signify name";
-  static readonly ONLY_CREATE_ROTATION_WITH_AID =
-    "Can only create rotation using KERI AID";
   static readonly MULTI_SIG_NOT_FOUND =
     "There's no multi sig identifier for the given SAID";
   static readonly AID_IS_NOT_MULTI_SIG =
@@ -68,6 +62,10 @@ class MultiSigService extends AgentService {
         const aid = await Agent.agent.connections.resolveOobi(
           contact.oobi as string
         );
+        console.log(
+          "🚀 ~ MultiSigService ~ otherIdentifierContacts.map ~ aid:",
+          aid
+        );
         return { state: aid.response };
       })
     );
@@ -96,7 +94,6 @@ class MultiSigService extends AgentService {
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
-      method: IdentifierType.KERI,
       colors: meta.colors,
       theme: meta.theme,
       signifyName,
@@ -175,10 +172,6 @@ class MultiSigService extends AgentService {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       ourIdentifier
     );
-    if (metadata.method !== IdentifierType.KERI) {
-      throw new Error(MultiSigService.ONLY_CREATE_ROTATION_WITH_AID);
-    }
-
     if (!metadata.multisigManageAid) {
       throw new Error(MultiSigService.AID_IS_NOT_MULTI_SIG);
     }
@@ -187,9 +180,6 @@ class MultiSigService extends AgentService {
         metadata.multisigManageAid
       );
 
-    if (!metadata.signifyName || !identifierManageAid.signifyName) {
-      throw new Error(MultiSigService.AID_MISSING_SIGNIFY_NAME);
-    }
     const multiSig = await this.signifyClient
       .identifiers()
       .get(metadata.signifyName);
@@ -253,10 +243,6 @@ class MultiSigService extends AgentService {
       await this.identifierStorage.getIdentifierMetadata(
         multiSig.multisigManageAid
       );
-
-    if (!multiSig.signifyName || !identifierManageAid.signifyName) {
-      throw new Error(MultiSigService.AID_MISSING_SIGNIFY_NAME);
-    }
 
     const aid = await this.signifyClient
       .identifiers()
@@ -387,10 +373,6 @@ class MultiSigService extends AgentService {
       throw new Error(MultiSigService.CANNOT_JOIN_MULTISIG_ICP);
     }
 
-    if (!identifier.signifyName) {
-      throw new Error(MultiSigService.AID_MISSING_SIGNIFY_NAME);
-    }
-
     const aid = await this.signifyClient
       .identifiers()
       .get(identifier?.signifyName);
@@ -401,7 +383,6 @@ class MultiSigService extends AgentService {
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
-      method: IdentifierType.KERI,
       colors: meta.colors,
       theme: meta.theme,
       signifyName,
@@ -455,13 +436,10 @@ class MultiSigService extends AgentService {
   async createDelegatedIdentifier(
     metadata: Omit<
       IdentifierMetadataRecordProps,
-      "id" | "createdAt" | "isArchived"
+      "id" | "createdAt" | "isArchived" | "signifyName"
     >,
     delegatorPrefix: string
   ): Promise<string | undefined> {
-    if (metadata.method !== IdentifierType.KERI) {
-      throw new Error(MultiSigService.ONLY_CREATE_DELAGATION_WITH_AID);
-    }
     const signifyName = uuidv4();
     const operation = await this.signifyClient
       .identifiers()
@@ -471,7 +449,6 @@ class MultiSigService extends AgentService {
       id: identifier,
       ...metadata,
       signifyName: signifyName,
-      method: IdentifierType.KERI,
       isPending: true,
     });
     return identifier;
@@ -497,9 +474,6 @@ class MultiSigService extends AgentService {
   async checkDelegationSuccess(
     metadata: IdentifierMetadataRecord
   ): Promise<boolean> {
-    if (!metadata.signifyName) {
-      throw new Error(MultiSigService.AID_MISSING_SIGNIFY_NAME);
-    }
     if (!metadata.isPending) {
       return true;
     }
@@ -520,12 +494,6 @@ class MultiSigService extends AgentService {
   }
 
   async rotateIdentifier(metadata: IdentifierMetadataRecord) {
-    if (metadata.method !== IdentifierType.KERI) {
-      throw new Error(MultiSigService.ONLY_CREATE_ROTATION_WITH_AID);
-    }
-    if (!metadata.signifyName) {
-      throw new Error(MultiSigService.AID_MISSING_SIGNIFY_NAME);
-    }
     const rotateResult = await this.signifyClient
       .identifiers()
       .rotate(metadata.signifyName);

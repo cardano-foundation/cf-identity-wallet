@@ -17,7 +17,7 @@ import {
   getIdentifiersCache,
   setIdentifiersCache,
 } from "../../../../store/reducers/identifiersCache";
-import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 
 const IdentifierStage3 = ({

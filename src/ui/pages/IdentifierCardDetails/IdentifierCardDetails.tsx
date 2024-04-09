@@ -35,7 +35,7 @@ import {
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import { Agent } from "../../../core/agent/agent";
-import { IdentifierDetails } from "../../../core/agent/services/identifierService.types";
+import { IdentifierDetails } from "../../../core/agent/services/identifier.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { IdentifierCardInfoKeri } from "../../components/IdentifierCardInfoKeri";
 import { MAX_FAVOURITES } from "../../globals/constants";

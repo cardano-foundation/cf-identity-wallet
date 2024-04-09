@@ -9,7 +9,7 @@ import { IdentifierThemeSelector } from "../../../components/CreateIdentifier/co
 import { CustomInput } from "../../../components/CustomInput";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { Agent } from "../../../../core/agent/agent";
-import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
   getIdentifiersCache,

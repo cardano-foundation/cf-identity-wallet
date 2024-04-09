@@ -4,12 +4,11 @@ import { Agent } from "../agent";
 import {
   AcdcKeriEventTypes,
   AcdcKeriStateChangedEvent,
-  ConnectionType,
   KeriNotification,
-
   IdentifierResult,
   IdentifiersListResult,
-  NotificationRoute} from "../agent.types";
+  NotificationRoute,
+} from "../agent.types";
 import { CredentialMetadataRecord, IdentifierMetadataRecord } from "../records";
 import {
   CredentialMetadataRecordProps,
@@ -116,27 +115,6 @@ class IpexCommunicationService extends AgentService {
     return acdc;
   }
 
-  async syncACDCs() {
-    const signifyCredentials = await this.signifyClient.credentials().list();
-    const storedCredentials =
-      await this.credentialStorage.getAllCredentialMetadata();
-    const unSyncedData = signifyCredentials.filter(
-      (credential: any) =>
-        !storedCredentials.find(
-          (item) => credential.sad.d === item.credentialRecordId
-        )
-    );
-    if (unSyncedData.length) {
-      //sync the storage with the signify data
-      for (const credential of unSyncedData) {
-        await this.saveAcdcMetadataRecord(
-          credential.sad.d,
-          credential.sad.a.dt
-        );
-      }
-    }
-  }
-
   private async getKeriNotificationRecordById(
     id: string
   ): Promise<KeriNotification> {
@@ -195,7 +173,6 @@ class IpexCommunicationService extends AgentService {
       credentialType: "",
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
-      connectionType: ConnectionType.KERI,
     };
     await this.createMetadata({
       ...credentialDetails,

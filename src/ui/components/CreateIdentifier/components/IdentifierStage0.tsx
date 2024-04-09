@@ -11,7 +11,7 @@ import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
 import { TypeItem } from "./TypeItem";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { ColorGenerator } from "../../../utils/colorGenerator";
-import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
 import { Agent } from "../../../../core/agent/agent";
 import {
   getIdentifiersCache,
