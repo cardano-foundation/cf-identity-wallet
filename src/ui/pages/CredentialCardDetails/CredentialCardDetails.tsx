@@ -24,7 +24,7 @@ import {
   Alert as AlertDeleteArchive,
   Alert as AlertRestore,
 } from "../../components/Alert";
-import { CredsOptions } from "../../components/CredsOptions";
+import { CredentialOptions } from "../../components/CredentialOptions";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
@@ -37,20 +37,19 @@ import {
   setCredsCache,
 } from "../../../store/reducers/credsCache";
 import { getNextRoute } from "../../../routes/nextRoute";
-import { CredCardTemplate } from "../../components/CredCardTemplate";
+import { CredentialCardTemplate } from "../../components/CredentialCardTemplate";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
-import { ConnectionDetails } from "../Connections/Connections.types";
 import { ACDCDetails } from "../../../core/agent/services/credentialService.types";
 import "../../components/CardDetails/CardDetails.scss";
-import "./CredCardDetails.scss";
+import "./CredentialCardDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
-import { CredContentAcdc } from "./components/CredContentAcdc";
+import { CredContentAcdc } from "./components/CredentialContentAcdc";
 import { combineClassNames } from "../../utils/style";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
 
-const CredCardDetails = () => {
+const CredentialCardDetails = () => {
   const pageId = "credential-card-details";
   const ionRouter = useIonRouter();
   const history = useHistory();
@@ -250,7 +249,7 @@ const CredCardDetails = () => {
         </div>
       ) : (
         <>
-          <CredCardTemplate
+          <CredentialCardTemplate
             cardData={cardData}
             isActive={false}
           />
@@ -278,7 +277,7 @@ const CredCardDetails = () => {
               }}
             />
           </div>
-          <CredsOptions
+          <CredentialOptions
             optionsIsOpen={optionsIsOpen}
             setOptionsIsOpen={setOptionsIsOpen}
             cardData={cardData}
@@ -350,4 +349,4 @@ const CredCardDetails = () => {
   );
 };
 
-export { CredCardDetails };
+export { CredentialCardDetails };

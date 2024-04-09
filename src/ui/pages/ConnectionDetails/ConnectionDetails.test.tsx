@@ -11,7 +11,7 @@ import { RoutePath } from "../../../routes";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { Creds } from "../Creds";
+import { Creds } from "../Credentials";
 import { ConnectionDetails } from "./ConnectionDetails";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { Agent } from "../../../core/agent/agent";

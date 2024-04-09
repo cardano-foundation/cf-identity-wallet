@@ -1,6 +1,6 @@
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
-interface CredCardTemplateProps {
+interface CredentialCardTemplateProps {
   name?: string;
   cardData: CredentialShortDetails;
   isActive: boolean;
@@ -9,4 +9,4 @@ interface CredCardTemplateProps {
   pickedCard?: boolean;
 }
 
-export type { CredCardTemplateProps };
+export type { CredentialCardTemplateProps };

@@ -130,7 +130,7 @@ describe("Cards Stack Component", () => {
   //         />
   //         <Route
   //           path={TabsRoutePath.CRED_DETAILS}
-  //           component={CredCardDetails}
+  //           component={CredentialCardDetails}
   //         />
   //       </Provider>
   //     </MemoryRouter>

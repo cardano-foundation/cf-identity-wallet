@@ -26,7 +26,7 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
       </CardDetailsBlock>
       <CardDetailsBlock
         className="cred-content-acdc-card"
-        title={i18n.t("creds.card.details.description.label")}
+        title={i18n.t("creds.card.details.description")}
       >
         {cardData.s.description}
       </CardDetailsBlock>

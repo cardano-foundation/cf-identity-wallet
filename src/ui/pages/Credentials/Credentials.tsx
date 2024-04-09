@@ -8,7 +8,7 @@ import { peopleOutline, addOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
-import "./Creds.scss";
+import "./Credentials.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";

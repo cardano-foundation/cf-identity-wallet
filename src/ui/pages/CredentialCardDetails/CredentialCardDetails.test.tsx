@@ -6,7 +6,7 @@ import { Clipboard } from "@capacitor/clipboard";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { SetOptions } from "@capacitor/preferences";
 import { waitForIonicReact } from "@ionic/react-test-utils";
-import { CredCardDetails } from "./CredCardDetails";
+import { CredentialCardDetails } from "./CredentialCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
@@ -127,7 +127,7 @@ describe("Cards Details page - current not archived credential", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={CredCardDetails}
+            component={CredentialCardDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -151,7 +151,7 @@ describe("Cards Details page - current not archived credential", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={CredCardDetails}
+            component={CredentialCardDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -174,7 +174,7 @@ describe("Cards Details page - current not archived credential", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={CredCardDetails}
+            component={CredentialCardDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -209,7 +209,7 @@ describe("Cards Details page - current not archived credential", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={CredCardDetails}
+            component={CredentialCardDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -285,7 +285,7 @@ describe("Cards Details page - archived credential", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={CredCardDetails}
+            component={CredentialCardDetails}
           />
         </MemoryRouter>
       </Provider>

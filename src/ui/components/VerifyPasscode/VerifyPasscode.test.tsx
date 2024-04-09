@@ -8,7 +8,7 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
-import { CredCardDetails } from "../../pages/CredCardDetails";
+import { CredentialCardDetails } from "../../pages/CredentialCardDetails";
 import { Agent } from "../../../core/agent/agent";
 import { VerifyPasscode } from "./VerifyPasscode";
 
@@ -75,7 +75,7 @@ describe("Verify Passcode on Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={CredCardDetails}
+            component={CredentialCardDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -131,7 +131,7 @@ describe("Verify Passcode on Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={CredCardDetails}
+            component={CredentialCardDetails}
           />
         </MemoryRouter>
       </Provider>

@@ -19,8 +19,8 @@ import {
   downloadOutline,
 } from "ionicons/icons";
 import { i18n } from "../../../i18n";
-import { CredsOptionsProps } from "./CredsOptions.types";
-import "./CredsOptions.scss";
+import { CredentialOptionsProps } from "./CredentialOptions.types";
+import "./CredentialOptions.scss";
 import { VerifyPassword } from "../VerifyPassword";
 import { Alert } from "../Alert";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -37,12 +37,12 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../layout/PageLayout";
 import { writeToClipboard } from "../../utils/clipboard";
 
-const CredsOptions = ({
+const CredentialOptions = ({
   cardData,
   optionsIsOpen,
   setOptionsIsOpen,
   credsOptionAction,
-}: CredsOptionsProps) => {
+}: CredentialOptionsProps) => {
   const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
   const [viewIsOpen, setViewIsOpen] = useState(false);
@@ -261,4 +261,4 @@ const CredsOptions = ({
   );
 };
 
-export { CredsOptions };
+export { CredentialOptions };

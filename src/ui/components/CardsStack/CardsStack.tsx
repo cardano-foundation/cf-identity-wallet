@@ -8,7 +8,7 @@ import {
 import { CardType } from "../../globals/types";
 
 import { IdentifierCardTemplate } from "../IdentifierCardTemplate";
-import { CredCardTemplate } from "../CredCardTemplate";
+import { CredentialCardTemplate } from "../CredentialCardTemplate";
 import {
   CredentialShortDetails,
   JSONObject,
@@ -47,7 +47,7 @@ const CardsStack = ({
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
           />
         ) : (
-          <CredCardTemplate
+          <CredentialCardTemplate
             name={name}
             key={index}
             index={index}

@@ -19,7 +19,7 @@ import { getNextRoute } from "./nextRoute";
 import { TabsMenu, tabsRoutes } from "../ui/components/navigation/TabsMenu";
 import { RoutePath } from "./paths";
 import { IdentifierCardDetails } from "../ui/pages/IdentifierCardDetails";
-import { CredCardDetails } from "../ui/pages/CredCardDetails";
+import { CredentialCardDetails } from "../ui/pages/CredentialCardDetails";
 import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
 import { AuthenticatedRouteProps } from "./routes.types";
 
@@ -136,7 +136,7 @@ const Routes = () => {
         />
         <AuthenticatedRoute
           path="/tabs/creds/:id"
-          component={CredCardDetails}
+          component={CredentialCardDetails}
           exact
           nextPathname={nextPath.pathname}
         />

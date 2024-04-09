@@ -742,23 +742,14 @@
     },
     "card": {
       "layout": {
-        "type": "Type",
-        "validity": "Valid from - to",
-        "issued": "Issued",
-        "name": "Name",
-        "countryofbirth": "Country of birth",
-        "expirationdate": "Expiration date",
-        "category": "Category",
-        "residentsince": "Resident since"
+        "issued": "Issued"
       },
       "details": {
         "done": "Done",
         "restore": "Restore",
         "type": "Type",
         "title": "Title",
-        "description": {
-          "label": "Description"
-        },
+        "description": "Description",
         "attributes": {
           "label": "Attributes",
           "issuee": "Issuee",
@@ -773,11 +764,6 @@
           "revoked": "Revoked",
           "timestamp": "Timestamp"
         },
-        "connection": "Connection",
-        "issuancedate": "Issuance Date",
-        "expirationdate": "Expiration date",
-        "prooftypes": "Proof Types",
-        "notavailable": "N/A",
         "options": {
           "title": "Credential options",
           "view": "View JSON",

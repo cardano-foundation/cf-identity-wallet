@@ -1,15 +1,15 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { store } from "../../../store";
-import { CredCardTemplate } from "./CredCardTemplate";
+import { CredentialCardTemplate } from "./CredentialCardTemplate";
 import { shortCredsFix } from "../../__fixtures__/shortCredsFix";
 
-describe("CredCardTemplate", () => {
+describe("CredentialCardTemplate", () => {
   it("renders ACDC card", async () => {
     const handleShowCardDetails = jest.fn();
     const { getByText, getByTestId, getByAltText } = render(
       <Provider store={store}>
-        <CredCardTemplate
+        <CredentialCardTemplate
           name="name"
           index={0}
           cardData={shortCredsFix[3]}
@@ -33,7 +33,7 @@ describe("CredCardTemplate", () => {
     const handleShowCardDetails = jest.fn();
     const { getByTestId } = render(
       <Provider store={store}>
-        <CredCardTemplate
+        <CredentialCardTemplate
           name="name"
           index={0}
           cardData={shortCredsFix[4]}
@@ -59,7 +59,7 @@ describe("CredCardTemplate", () => {
     const handleShowCardDetails = jest.fn();
     const { getByTestId } = render(
       <Provider store={store}>
-        <CredCardTemplate
+        <CredentialCardTemplate
           name="name"
           index={0}
           cardData={shortCredsFix[4]}
