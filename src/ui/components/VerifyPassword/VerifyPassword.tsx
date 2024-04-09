@@ -8,7 +8,7 @@ import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
 import "./VerifyPassword.scss";
 import { Alert } from "../Alert";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 
 const VerifyPassword = ({
@@ -66,7 +66,7 @@ const VerifyPassword = ({
     let hint;
     try {
       hint = (
-        await AriesAgent.agent.basicStorages.findById(MiscRecordId.OP_PASS_HINT)
+        await Agent.agent.basicStorages.findById(MiscRecordId.OP_PASS_HINT)
       )?.content?.value;
     } catch (error) {
       // TODO: @bao-sotatek handle error for this

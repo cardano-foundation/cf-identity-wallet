@@ -7,30 +7,24 @@ import { identifierFix } from "../../__fixtures__/identifierFix";
 import { store } from "../../../store";
 import { IdentifierCardDetails } from "../../pages/IdentifierCardDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { credsFixW3c } from "../../__fixtures__/credsFix";
-import { CredCardDetails } from "../../pages/CredCardDetails";
+import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
-import { AriesAgent } from "../../../core/agent/agent";
 import { CardType } from "../../globals/types";
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       identifiers: {
         getIdentifier: jest.fn().mockResolvedValue({
-          type: "key",
-          result: {
-            id: "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
-            method: "key",
-            displayName: "Anonymous ID",
-            createdAtUTC: "2023-01-01T19:23:24Z",
-            colors: ["#92FFC0", "#47FF94"],
-            theme: 0,
-            keyType: "Ed25519",
-            controller:
-              "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
-            publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
-          },
+          id: "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
+          displayName: "Anonymous ID",
+          createdAtUTC: "2023-01-01T19:23:24Z",
+          colors: ["#92FFC0", "#47FF94"],
+          theme: 0,
+          keyType: "Ed25519",
+          controller:
+            "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
+          publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
         }),
         checkMultisigComplete: jest.fn().mockResolvedValue(true),
       },
@@ -56,7 +50,7 @@ describe("Cards Stack Component", () => {
       </Provider>
     );
     const firstCardId = getByText(
-      identifierFix[0].id.substring(8, 13) +
+      identifierFix[0].id.substring(0, 5) +
         "..." +
         identifierFix[0].id.slice(-5)
     );
@@ -71,7 +65,7 @@ describe("Cards Stack Component", () => {
           cardsType={CardType.CREDS}
           cardsData={[
             {
-              ...credsFixW3c[0],
+              ...credsFixAcdc[0],
               status: CredentialMetadataRecordStatus.PENDING,
             },
           ]}
@@ -124,7 +118,7 @@ describe("Cards Stack Component", () => {
   // test("It navigates to Cred Card Details and back", async () => {
   //   jest.useFakeTimers();
   //   jest
-  //     .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+  //     .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
   //     .mockResolvedValue(credsFixW3c[0]);
   //   const { findByTestId } = render(
   //     <MemoryRouter>

@@ -7,7 +7,7 @@ import {
 import i18next from "i18next";
 import { i18n } from "../../../../i18n";
 import CardanoLogo from "../../../../ui/assets/images/CardanoLogo.jpg";
-import { DIDCommRequestType } from "../../../globals/types";
+import { RequestType } from "../../../globals/types";
 import { PageFooter } from "../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
 import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageLayout";
@@ -58,7 +58,7 @@ const ConnectionRequest = ({
         <div className="request-info-row">
           <IonCol size="12">
             <span>
-              {DIDCommRequestType.CONNECTION +
+              {RequestType.CONNECTION +
                 i18n.t("request.connection.requestconnection")}
             </span>
             <strong>{requestData?.label}</strong>
@@ -68,7 +68,7 @@ const ConnectionRequest = ({
           <IonCol size="12">
             <strong>
               {i18next.t("request.pending", {
-                action: DIDCommRequestType.CONNECTION,
+                action: RequestType.CONNECTION,
               })}
             </strong>
           </IonCol>

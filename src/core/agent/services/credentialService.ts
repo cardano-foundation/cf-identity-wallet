@@ -3,7 +3,6 @@ import {
   KeriNotification,
   AcdcKeriStateChangedEvent,
   AcdcKeriEventTypes,
-  ConnectionType,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import {
@@ -19,7 +18,7 @@ import {
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { RecordType } from "../../storage/storage.types";
-import { AriesAgent } from "../agent";
+import { Agent } from "../agent";
 import { BasicRecord } from "../records";
 
 class CredentialService extends AgentService {
@@ -67,8 +66,6 @@ class CredentialService extends AgentService {
       issuanceDate: metadata.issuanceDate,
       credentialType: metadata.credentialType,
       status: metadata.status,
-      cachedDetails: metadata.cachedDetails,
-      connectionType: metadata.connectionType,
     };
   }
 
@@ -102,7 +99,6 @@ class CredentialService extends AgentService {
         s: acdc.status.s,
         dt: new Date(acdc.status.dt).toISOString(),
       },
-      connectionType: ConnectionType.KERI,
     };
   }
 
@@ -124,13 +120,9 @@ class CredentialService extends AgentService {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
     //With KERI, we only soft delete because we need to sync with KERIA. This will prevent re-sync deleted records.
-    if (metadata.connectionType === ConnectionType.KERI) {
-      await this.updateCredentialMetadata(id, {
-        isDeleted: true,
-      });
-    } else {
-      await this.deleteCredentialMetadata(id);
-    }
+    await this.updateCredentialMetadata(id, {
+      isDeleted: true,
+    });
   }
 
   async restoreCredential(id: string): Promise<void> {
@@ -193,7 +185,6 @@ class CredentialService extends AgentService {
       credentialType: "",
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
-      connectionType: ConnectionType.KERI,
     };
     await this.createMetadata({
       ...credentialDetails,
@@ -250,7 +241,7 @@ class CredentialService extends AgentService {
       },
     });
     let holderSignifyName;
-    const holder = await AriesAgent.agent.identifiers.getIdentifierMetadata(
+    const holder = await Agent.agent.identifiers.getIdentifierMetadata(
       keriExchange.exn.a.i
     );
     if (holder && holder.signifyName) {
@@ -394,12 +385,7 @@ class CredentialService extends AgentService {
     data: Partial<
       Pick<
         CredentialMetadataRecord,
-        | "isArchived"
-        | "colors"
-        | "status"
-        | "credentialType"
-        | "isDeleted"
-        | "cachedDetails"
+        "isArchived" | "colors" | "status" | "credentialType" | "isDeleted"
       >
     >
   ) {
@@ -410,7 +396,6 @@ class CredentialService extends AgentService {
       if (data.credentialType) record.credentialType = data.credentialType;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
       if (data.isDeleted !== undefined) record.isDeleted = data.isDeleted;
-      if (data.cachedDetails) record.cachedDetails = data.cachedDetails;
       const basicRecord = new BasicRecord({
         id: record.id,
         content: record.toJSON(),

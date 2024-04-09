@@ -3,9 +3,8 @@ import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
-import { IdentifierType } from "./identifierService.types";
-import { ConnectionStatus, ConnectionType } from "../agent.types";
-import { AriesAgent } from "../agent";
+import { ConnectionStatus } from "../agent.types";
+import { Agent } from "../agent";
 import { SignifyApi } from "../modules/signify/signifyApi";
 import { RecordType } from "../../storage/storage.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
@@ -46,7 +45,7 @@ const identifierService = new IdentifierService(
 );
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       connections: {
         getConnectionKeriShortDetailById: jest.fn(),
@@ -64,7 +63,7 @@ const keriMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
   colors,
-  method: IdentifierType.KERI,
+
   signifyName: "uuid-here",
   createdAt: now,
   theme: 0,
@@ -109,7 +108,7 @@ describe("Identifier service of agent", () => {
         displayName: "Identifier 2",
         signifyName: "uuid-here",
         colors,
-        method: IdentifierType.KERI,
+
         createdAtUTC: nowISO,
         theme: 0,
         isPending: false,
@@ -159,19 +158,15 @@ describe("Identifier service of agent", () => {
     expect(
       await identifierService.getIdentifier(keriMetadataRecord.id)
     ).toStrictEqual({
-      type: IdentifierType.KERI,
-      result: {
-        id: keriMetadataRecord.id,
-        method: IdentifierType.KERI, // @TODO - foconnor: Redundant info.
-        displayName: keriMetadataRecordProps.displayName,
-        createdAtUTC: nowISO,
-        colors,
-        theme: 0,
-        ...aidReturnedBySignify.state,
-        signifyOpName: undefined,
-        signifyName: "uuid-here",
-        isPending: false,
-      },
+      id: keriMetadataRecord.id,
+      displayName: keriMetadataRecordProps.displayName,
+      createdAtUTC: nowISO,
+      colors,
+      theme: 0,
+      ...aidReturnedBySignify.state,
+      signifyOpName: undefined,
+      signifyName: "uuid-here",
+      isPending: false,
     });
   });
 
@@ -185,12 +180,14 @@ describe("Identifier service of agent", () => {
     });
     expect(
       await identifierService.createIdentifier({
-        method: IdentifierType.KERI,
         displayName,
         colors,
         theme: 0,
       })
-    ).toBe(aid);
+    ).toEqual({
+      identifier: aid,
+      signifyName: expect.any(String),
+    });
     expect(signifyApi.createIdentifier).toBeCalled();
     expect(basicStorage.save).toBeCalledTimes(1);
   });
@@ -206,7 +203,6 @@ describe("Identifier service of agent", () => {
 
     await expect(
       identifierService.createIdentifier({
-        method: IdentifierType.KERI,
         displayName,
         colors,
         theme: 3,
@@ -224,7 +220,6 @@ describe("Identifier service of agent", () => {
     });
     await expect(
       identifierService.createIdentifier({
-        method: IdentifierType.KERI,
         displayName,
         colors,
         theme: 8,
@@ -358,12 +353,12 @@ describe("Identifier service of agent", () => {
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
         status: ConnectionStatus.CONFIRMED,
-        type: ConnectionType.KERI,
+
         connectionDate: new Date().toISOString(),
       },
     ];
     const metadata = {
-      theme: 4,
+      theme: 0,
       colors: ["#000000", "#000000"],
       displayName: "Multisig",
     };
@@ -374,7 +369,10 @@ describe("Identifier service of agent", () => {
         metadata as IdentifierMetadataRecordProps,
         otherIdentifiers.length + 1
       )
-    ).toBe(multisigIdentifier);
+    ).toEqual({
+      identifier: multisigIdentifier,
+      signifyName: expect.any(String),
+    });
     expect(basicStorage.save).toBeCalledWith(
       expect.objectContaining({ id: multisigIdentifier })
     );
@@ -391,7 +389,11 @@ describe("Identifier service of agent", () => {
         metadata as IdentifierMetadataRecordProps,
         1
       )
-    ).toBe(`${multisigIdentifier}1`);
+    ).toEqual({
+      identifier: `${multisigIdentifier}1`,
+      signifyName: expect.any(String),
+    });
+
     expect(basicStorage.save).toBeCalledWith(
       expect.objectContaining({
         id: `${multisigIdentifier}1`,
@@ -410,30 +412,16 @@ describe("Identifier service of agent", () => {
         metadata as IdentifierMetadataRecordProps,
         2
       )
-    ).toBe(`${multisigIdentifier}2`);
+    ).toEqual({
+      identifier: `${multisigIdentifier}2`,
+      signifyName: expect.any(String),
+    });
+
     expect(basicStorage.save).toBeCalledWith(
       expect.objectContaining({
         id: `${multisigIdentifier}2`,
       })
     );
-
-    const invalidOtherIdentifiers = [
-      {
-        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
-        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
-        status: ConnectionStatus.CONFIRMED,
-        type: ConnectionType.DIDCOMM,
-        connectionDate: new Date().toISOString(),
-      },
-    ];
-    await expect(
-      identifierService.createMultisig(
-        creatorIdentifier,
-        invalidOtherIdentifiers,
-        metadata as IdentifierMetadataRecordProps,
-        invalidOtherIdentifiers.length + 1
-      )
-    ).rejects.toThrowError();
   });
 
   test("Can create a keri delegated multisig with KERI contacts", async () => {
@@ -471,7 +459,7 @@ describe("Identifier service of agent", () => {
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
         status: ConnectionStatus.CONFIRMED,
-        type: ConnectionType.KERI,
+
         connectionDate: new Date().toISOString(),
       },
     ];
@@ -481,11 +469,11 @@ describe("Identifier service of agent", () => {
       label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
       oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
       status: ConnectionStatus.CONFIRMED,
-      type: ConnectionType.KERI,
+
       connectionDate: new Date().toISOString(),
     };
     const metadata = {
-      theme: 4,
+      theme: 0,
       colors: ["#000000", "#000000"],
       displayName: "Multisig",
     };
@@ -497,7 +485,10 @@ describe("Identifier service of agent", () => {
         otherIdentifiers.length + 1,
         delegatorContact
       )
-    ).toBe(multisigIdentifier);
+    ).toEqual({
+      identifier: multisigIdentifier,
+      signifyName: expect.any(String),
+    });
 
     expect(signifyApi.createMultisig).toBeCalledWith(
       {
@@ -547,25 +538,27 @@ describe("Identifier service of agent", () => {
     });
     identifierService.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
       {
-        method: IdentifierType.KERI,
         displayName: "displayName",
         id: "id",
         signifyName: "signifyName",
         createdAt: new Date(),
         colors: ["#000000", "#000000"],
-        theme: 4,
+        theme: 0,
       },
     ]);
     expect(
       await identifierService.joinMultisig(
         { id: "id", createdAt: new Date(), a: { d: "d" } },
         {
-          theme: 4,
+          theme: 0,
           colors: ["#000000", "#000000"],
           displayName: "Multisig",
         }
       )
-    ).toBe(multisigIdentifier);
+    ).toEqual({
+      identifier: multisigIdentifier,
+      signifyName: expect.any(String),
+    });
   });
 
   test("cannot join multisig by notification if exn messages are missing", async () => {
@@ -574,7 +567,7 @@ describe("Identifier service of agent", () => {
       identifierService.joinMultisig(
         { id: "id", createdAt: new Date(), a: { d: "d" } },
         {
-          theme: 4,
+          theme: 0,
           colors: ["#000000", "#000000"],
           displayName: "Multisig",
         }
@@ -593,7 +586,6 @@ describe("Identifier service of agent", () => {
     expect(
       await identifierService.createDelegatedIdentifier(
         {
-          method: IdentifierType.KERI,
           displayName,
           colors,
           theme: 0,
@@ -603,21 +595,6 @@ describe("Identifier service of agent", () => {
     ).toBe(aid);
     expect(signifyApi.createDelegationIdentifier).toBeCalled();
     expect(basicStorage.save).toBeCalledTimes(1);
-  });
-
-  test("should call signify.createDelegationIdentifier with the DID and throw an error", async () => {
-    const displayName = "newDisplayName";
-    expect(
-      identifierService.createDelegatedIdentifier(
-        {
-          method: IdentifierType.KEY,
-          displayName,
-          colors,
-          theme: 0,
-        },
-        "delegationPrefix"
-      )
-    ).rejects.toThrowError(IdentifierService.ONLY_CREATE_DELAGATION_WITH_AID);
   });
 
   test("should call the interactDelegation method of the signify module with the given arguments", async () => {
@@ -635,7 +612,7 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-      method: IdentifierType.KERI,
+
       colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
@@ -662,7 +639,7 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-      method: IdentifierType.KERI,
+
       colors: ["#e0f5bc", "#ccef8f"],
       isPending: false,
       signifyOpName: "op123",
@@ -675,29 +652,11 @@ describe("Identifier service of agent", () => {
     );
   });
 
-  test("should call signify.checkDelegationSuccess with missing signify name and throw error", async () => {
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-      method: IdentifierType.KERI,
-      colors: ["#e0f5bc", "#ccef8f"],
-      isPending: true,
-      signifyOpName: "op123",
-      signifyName: "",
-      theme: 4,
-    } as IdentifierMetadataRecord;
-
-    expect(
-      identifierService.checkDelegationSuccess(metadata)
-    ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-    expect(signifyApi.delegationApproved).toBeCalledTimes(0);
-  });
-
   test("should call signify.rotateIdentifier with correct params", async () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-      method: IdentifierType.KERI,
+
       colors: ["#e0f5bc", "#ccef8f"],
       isPending: false,
       signifyOpName: "op123",
@@ -711,64 +670,11 @@ describe("Identifier service of agent", () => {
     expect(signifyApi.delegationApproved).toBeCalledTimes(0);
   });
 
-  test("should call signify.rotateIdentifier with missing signify name and throw error", async () => {
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-      method: IdentifierType.KERI,
-      colors: ["#e0f5bc", "#ccef8f"],
-      isPending: true,
-      signifyOpName: "op123",
-      signifyName: "",
-      theme: 4,
-    } as IdentifierMetadataRecord;
-
-    expect(identifierService.rotateIdentifier(metadata)).rejects.toThrowError(
-      IdentifierService.AID_MISSING_SIGNIFY_NAME
-    );
-  });
-
-  test("should call signify.rotateIdentifier with DID and throw error", async () => {
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-      method: IdentifierType.KEY,
-      colors: ["#e0f5bc", "#ccef8f"],
-      isPending: true,
-      signifyOpName: "op123",
-      signifyName: "",
-      theme: 4,
-    } as IdentifierMetadataRecord;
-
-    expect(identifierService.rotateIdentifier(metadata)).rejects.toThrowError(
-      IdentifierService.ONLY_CREATE_ROTATION_WITH_AID
-    );
-  });
-
-  test("should can rorate multisig with DID and throw error", async () => {
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-      method: IdentifierType.KEY,
-      colors: ["#e0f5bc", "#ccef8f"],
-      isPending: true,
-      signifyOpName: "op123",
-      signifyName: "",
-      theme: 4,
-    } as IdentifierMetadataRecord;
-    identifierService.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(metadata);
-    expect(identifierService.rotateMultisig(metadata.id)).rejects.toThrowError(
-      IdentifierService.ONLY_CREATE_ROTATION_WITH_AID
-    );
-  });
-
   test("should can rorate multisig with KERI multisig do not have manageAid and throw error", async () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-      method: IdentifierType.KERI,
+
       colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
@@ -780,26 +686,6 @@ describe("Identifier service of agent", () => {
       .mockResolvedValue(metadata);
     expect(identifierService.rotateMultisig(metadata.id)).rejects.toThrowError(
       IdentifierService.AID_IS_NOT_MULTI_SIG
-    );
-  });
-
-  test("should can rorate multisig with KERI multisig do not have signifyName and throw error", async () => {
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-      method: IdentifierType.KERI,
-      colors: ["#e0f5bc", "#ccef8f"],
-      isPending: true,
-      signifyOpName: "op123",
-      signifyName: "",
-      theme: 4,
-      multisigManageAid: "123",
-    } as IdentifierMetadataRecord;
-    identifierService.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(metadata);
-    expect(identifierService.rotateMultisig(metadata.id)).rejects.toThrowError(
-      IdentifierService.AID_MISSING_SIGNIFY_NAME
     );
   });
 
@@ -834,7 +720,6 @@ describe("Identifier service of agent", () => {
     });
     identifierService.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
       {
-        method: IdentifierType.KERI,
         displayName: "displayName",
         id: "id",
         signifyName: "signifyName",
@@ -846,7 +731,7 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-      method: IdentifierType.KERI,
+
       colors: ["#e0f5bc", "#ccef8f"],
       isPending: false,
       signifyOpName: "op123",
@@ -920,7 +805,6 @@ describe("Identifier service of agent", () => {
     });
     identifierService.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
       {
-        method: IdentifierType.KERI,
         displayName: "displayName",
         id: "id",
         signifyName: "signifyName",
@@ -937,7 +821,7 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-      method: IdentifierType.KERI,
+
       colors: ["#e0f5bc", "#ccef8f"],
       isPending: false,
       signifyOpName: "op123",
@@ -1002,7 +886,7 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-      method: IdentifierType.KERI,
+
       colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
@@ -1043,58 +927,12 @@ describe("Identifier service of agent", () => {
     ).rejects.toThrowError(IdentifierService.AID_IS_NOT_MULTI_SIG);
   });
 
-  test("should can join the multisig rotation with AID is DID and throw error", async () => {
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-      method: IdentifierType.KEY,
-      colors: ["#e0f5bc", "#ccef8f"],
-      isPending: true,
-      signifyOpName: "op123",
-      signifyName: "",
-      theme: 4,
-      multisigManageAid: "123",
-    } as IdentifierMetadataRecord;
-    identifierService.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(metadata);
-    basicStorage.findById = jest.fn().mockResolvedValue({
-      content: {
-        d: "d",
-      },
-    });
-    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
-      {
-        exn: {
-          a: {
-            name: "signifyName",
-            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
-          },
-        },
-      },
-    ]);
-
-    signifyApi.getIdentifierById = jest.fn().mockResolvedValue([
-      {
-        name: "multisig",
-        prefix: "prefix",
-      },
-    ]);
-    expect(
-      identifierService.joinMultisigRotation({
-        id: "id",
-        createdAt: new Date(),
-        a: { d: "d" },
-      })
-    ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-  });
-
   test("should can join the multisig rotation", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-      method: IdentifierType.KERI,
+
       colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
@@ -1135,7 +973,6 @@ describe("Identifier service of agent", () => {
     });
     identifierService.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
       {
-        method: IdentifierType.KERI,
         displayName: "displayName",
         id: "id",
         signifyName: "signifyName",
@@ -1169,7 +1006,6 @@ describe("Identifier service of agent", () => {
 
     identifierService.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
       {
-        method: IdentifierType.KERI,
         displayName: "displayName",
         id: "id1",
         signifyName: "signifyName",
@@ -1190,45 +1026,8 @@ describe("Identifier service of agent", () => {
     ).rejects.toThrowError(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
   });
 
-  test("cannot join multisig if the identifier does not have signifyName", async () => {
-    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
-      {
-        exn: {
-          a: {
-            name: "signifyName",
-            smids: ["id"],
-            rmids: ["id"],
-          },
-        },
-      },
-    ]);
-
-    identifierService.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
-      {
-        method: IdentifierType.KERI,
-        displayName: "displayName",
-        id: "id",
-        signifyName: undefined,
-        createdAt: new Date(),
-        colors: ["#000000", "#000000"],
-        theme: 4,
-      },
-    ]);
-    await expect(
-      identifierService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 4,
-          colors: ["#000000", "#000000"],
-          displayName: "Multisig",
-        }
-      )
-    ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-  });
-
   test("Can get multisig icp details of 2 persons multi-sig", async () => {
     const identifierMetadata = {
-      method: IdentifierType.KERI,
       displayName: "displayName",
       id: "id",
       signifyName: undefined,
@@ -1242,7 +1041,6 @@ describe("Identifier service of agent", () => {
       connectionDate: nowISO,
       label: "keri",
       status: ConnectionStatus.CONFIRMED,
-      type: ConnectionType.KERI,
     };
     signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
       {
@@ -1264,12 +1062,10 @@ describe("Identifier service of agent", () => {
       .fn()
       .mockResolvedValue([identifierMetadata]);
 
-    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+    Agent.agent.connections.getConnectionKeriShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
-    AriesAgent.agent.connections.getConnections = jest
-      .fn()
-      .mockResolvedValue([]);
+    Agent.agent.connections.getConnections = jest.fn().mockResolvedValue([]);
 
     const result = await identifierService.getMultisigIcpDetails({
       id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
@@ -1287,7 +1083,6 @@ describe("Identifier service of agent", () => {
 
   test("Throw error if the Multi-sig join request contains unknown AIDs", async () => {
     const identifierMetadata = {
-      method: IdentifierType.KERI,
       displayName: "displayName",
       id: "id",
       signifyName: undefined,
@@ -1301,7 +1096,6 @@ describe("Identifier service of agent", () => {
       connectionDate: nowISO,
       label: "keri",
       status: ConnectionStatus.CONFIRMED,
-      type: ConnectionType.KERI,
     };
     signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
       {
@@ -1322,17 +1116,16 @@ describe("Identifier service of agent", () => {
       .fn()
       .mockResolvedValue([identifierMetadata]);
 
-    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+    Agent.agent.connections.getConnectionKeriShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
-    AriesAgent.agent.connections.getConnections = jest.fn().mockResolvedValue([
+    Agent.agent.connections.getConnections = jest.fn().mockResolvedValue([
       {
         id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
         connectionDate: nowISO,
         label: "",
         logo: "logoUrl",
         status: ConnectionStatus.PENDING,
-        type: ConnectionType.DIDCOMM,
       },
       {
         id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
@@ -1340,7 +1133,6 @@ describe("Identifier service of agent", () => {
         label: "",
         logo: "logoUrl",
         status: ConnectionStatus.CONFIRMED,
-        type: ConnectionType.DIDCOMM,
       },
     ]);
 
@@ -1358,7 +1150,6 @@ describe("Identifier service of agent", () => {
 
   test("Can get multisig icp details of 3 persons multi-sig", async () => {
     const identifierMetadata = {
-      method: IdentifierType.KERI,
       displayName: "displayName",
       id: "id",
       signifyName: undefined,
@@ -1372,7 +1163,6 @@ describe("Identifier service of agent", () => {
       connectionDate: nowISO,
       label: "keri",
       status: ConnectionStatus.CONFIRMED,
-      type: ConnectionType.KERI,
     };
     signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
       {
@@ -1398,17 +1188,16 @@ describe("Identifier service of agent", () => {
       .fn()
       .mockResolvedValue([identifierMetadata]);
 
-    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+    Agent.agent.connections.getConnectionKeriShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
-    AriesAgent.agent.connections.getConnections = jest.fn().mockResolvedValue([
+    Agent.agent.connections.getConnections = jest.fn().mockResolvedValue([
       {
         id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
         connectionDate: nowISO,
         label: "",
         logo: "logoUrl",
         status: ConnectionStatus.PENDING,
-        type: ConnectionType.DIDCOMM,
       },
     ]);
     const result = await identifierService.getMultisigIcpDetails({
@@ -1430,7 +1219,6 @@ describe("Identifier service of agent", () => {
 
   test("Throw error if we do not control any member AID of the multi-sig", async () => {
     const identifierMetadata = {
-      method: IdentifierType.KERI,
       displayName: "displayName",
       id: "id",
       signifyName: undefined,
@@ -1444,7 +1232,6 @@ describe("Identifier service of agent", () => {
       connectionDate: nowISO,
       label: "keri",
       status: ConnectionStatus.CONFIRMED,
-      type: ConnectionType.KERI,
     };
     signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
       {
@@ -1466,28 +1253,24 @@ describe("Identifier service of agent", () => {
       .mockResolvedValue([identifierMetadata]);
 
     jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionKeriShortDetailById")
+      .spyOn(Agent.agent.connections, "getConnectionKeriShortDetailById")
       .mockResolvedValue(senderData);
-    jest
-      .spyOn(AriesAgent.agent.connections, "getConnections")
-      .mockResolvedValue([
-        {
-          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-          connectionDate: nowISO,
-          label: "",
-          logo: "logoUrl",
-          status: ConnectionStatus.PENDING,
-          type: ConnectionType.DIDCOMM,
-        },
-        {
-          id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
-          connectionDate: nowISO,
-          label: "",
-          logo: "logoUrl",
-          status: ConnectionStatus.CONFIRMED,
-          type: ConnectionType.DIDCOMM,
-        },
-      ]);
+    jest.spyOn(Agent.agent.connections, "getConnections").mockResolvedValue([
+      {
+        id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.PENDING,
+      },
+      {
+        id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.CONFIRMED,
+      },
+    ]);
 
     await expect(
       identifierService.getMultisigIcpDetails({
@@ -1518,7 +1301,7 @@ describe("Identifier service of agent", () => {
     ]);
     // @TODO - foconnor: This is not ideal as our identifier service is getting tightly coupled with the connection service.
     // Re-work this later.
-    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+    Agent.agent.connections.getConnectionKeriShortDetailById = jest
       .fn()
       .mockImplementation(() => {
         throw new Error("Some error from connection service");

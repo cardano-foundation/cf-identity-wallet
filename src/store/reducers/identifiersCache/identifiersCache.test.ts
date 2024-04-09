@@ -9,10 +9,7 @@ import {
   getFavouritesIdentifiersCache,
 } from "./identifiersCache";
 import { RootState } from "../../index";
-import {
-  IdentifierShortDetails,
-  IdentifierType,
-} from "../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
 import { FavouriteIdentifier } from "./identifiersCache.types";
 
 describe("identifiersCacheSlice", () => {
@@ -30,12 +27,12 @@ describe("identifiersCacheSlice", () => {
     const identifiers: IdentifierShortDetails[] = [
       {
         id: "id-1",
-        method: IdentifierType.KEY,
         displayName: "example-name",
         createdAtUTC: "example-date",
         colors: ["#92FFC0", "#47FF94"],
         theme: 0,
         isPending: false,
+        signifyName: "Test",
       },
     ];
     const newState = identifiersCacheSlice.reducer(
@@ -93,14 +90,12 @@ describe("get identifier Cache", () => {
         identifiers: [
           {
             id: "id-1",
-            method: IdentifierType.KEY,
             displayName: "example-name-1",
             createdAtUTC: "example-date",
             colors: ["#92FFC0", "#47FF94"],
           },
           {
             id: "id-2",
-            method: IdentifierType.KEY,
             displayName: "example-name-2",
             createdAtUTC: "example-date",
             colors: ["#FFBC60", "#FFA21F"],

@@ -10,7 +10,7 @@ import "./ShareIdentifier.scss";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache, setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { PageHeader } from "../PageHeader";
 import { ResponsiveModal } from "../layout/ResponsiveModal";
 
@@ -28,7 +28,7 @@ const ShareIdentifier = ({
   useEffect(() => {
     if (signifyName) {
       const fetchOobi = async () => {
-        const oobiValue = await AriesAgent.agent.connections.getKeriOobi(
+        const oobiValue = await Agent.agent.connections.getKeriOobi(
           `${signifyName}`,
           userName
         );

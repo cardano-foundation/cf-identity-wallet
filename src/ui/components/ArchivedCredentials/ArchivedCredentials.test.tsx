@@ -1,4 +1,10 @@
-import { fireEvent, render, waitFor, act } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  waitFor,
+  act,
+  queryByText,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
@@ -7,7 +13,7 @@ import {
   ArchivedCredentials,
   ArchivedCredentialsContainer,
 } from "./ArchivedCredentials";
-import { credsFixW3c } from "../../__fixtures__/credsFix";
+import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 
@@ -64,11 +70,11 @@ describe("Creds Tab", () => {
   });
 
   test("Render archived credentials", async () => {
-    const { getByText, getByTestId } = render(
+    const { getByTestId } = render(
       <Provider store={mockedStore}>
-        <ArchivedCredentials
+        <ArchivedCredentialsContainer
           archivedCredentialsIsOpen={true}
-          archivedCreds={credsFixW3c}
+          archivedCreds={credsFixAcdc}
           setArchivedCredentialsIsOpen={jest.fn()}
         />
       </Provider>
@@ -78,15 +84,12 @@ describe("Creds Tab", () => {
       expect(getByTestId("action-button")).toBeVisible();
     });
 
-    credsFixW3c.forEach((cred) => {
-      expect(
-        getByText(
-          cred.credentialType
-            .replace(/([A-Z][a-z])/g, " $1")
-            .replace(/(\d)/g, " $1")
-            .trim()
-        )
-      ).toBeVisible();
+    credsFixAcdc.forEach((cred) => {
+      expect(getByTestId(`credential-name-${cred.id}`).innerHTML).toBe(
+        cred.credentialType
+          .replace(/([A-Z][a-z])/g, " $1")
+          .replace(/(\d)/g, " $1")
+      );
     });
 
     expect(getByTestId("action-button").children.item(0)?.innerHTML).toBe(
@@ -99,7 +102,7 @@ describe("Creds Tab", () => {
       <Provider store={mockedStore}>
         <ArchivedCredentialsContainer
           archivedCredentialsIsOpen={true}
-          archivedCreds={credsFixW3c}
+          archivedCreds={credsFixAcdc}
           setArchivedCredentialsIsOpen={jest.fn()}
         />
       </Provider>
@@ -123,19 +126,13 @@ describe("Creds Tab", () => {
       expect(getByText("0 Credentials Selected")).toBeVisible();
     });
 
-    const cardItem = getByTestId(`crendential-card-item-${credsFixW3c[0].id}`);
+    const cardItem = getByTestId(`crendential-card-item-${credsFixAcdc[0].id}`);
     fireEvent.click(cardItem);
 
-    const cardItem1 = getByTestId(`crendential-card-item-${credsFixW3c[1].id}`);
-    fireEvent.click(cardItem1);
-
-    const cardItem2 = getByTestId(`crendential-card-item-${credsFixW3c[2].id}`);
-    fireEvent.click(cardItem2);
-
     await waitFor(() => {
-      expect(
-        getByText(`${credsFixW3c.length} Credentials Selected`)
-      ).toBeVisible();
+      expect(getByTestId("selected-amount-credentials").innerHTML).toBe(
+        `${credsFixAcdc.length} Credential Selected`
+      );
     });
 
     fireEvent.click(getByTestId("restore-credentials"));
@@ -151,7 +148,7 @@ describe("Creds Tab", () => {
     );
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(setCredsCache([...credsFixW3c]));
+      expect(dispatchMock).toBeCalledTimes(1);
     });
   });
 
@@ -160,7 +157,7 @@ describe("Creds Tab", () => {
       <Provider store={mockedStore}>
         <ArchivedCredentialsContainer
           archivedCredentialsIsOpen={true}
-          archivedCreds={credsFixW3c}
+          archivedCreds={credsFixAcdc}
           setArchivedCredentialsIsOpen={jest.fn()}
         />
       </Provider>
@@ -186,7 +183,7 @@ describe("Creds Tab", () => {
       expect(getByText("0 Credentials Selected")).toBeVisible();
     });
 
-    const cardItem = getByTestId(`crendential-card-item-${credsFixW3c[0].id}`);
+    const cardItem = getByTestId(`crendential-card-item-${credsFixAcdc[0].id}`);
 
     fireEvent.click(cardItem);
 

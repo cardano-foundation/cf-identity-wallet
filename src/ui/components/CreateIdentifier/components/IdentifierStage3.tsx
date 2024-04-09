@@ -11,19 +11,14 @@ import { Alert } from "../../Alert";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../globals/types";
-import { AriesAgent } from "../../../../core/agent/agent";
+import { Agent } from "../../../../core/agent/agent";
 import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
 import {
   getIdentifiersCache,
   setIdentifiersCache,
 } from "../../../../store/reducers/identifiersCache";
-import {
-  IdentifierShortDetails,
-  IdentifierType,
-} from "../../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
-import DidComLogo from "../../../assets/images/didCommGeneric.jpg";
-import { ConnectionType } from "../../../../core/agent/agent.types";
 
 const IdentifierStage3 = ({
   state,
@@ -38,9 +33,7 @@ const IdentifierStage3 = ({
   // We'll need to work out a proper way to get 'ourIdentifier'.
   const identifiersData = useAppSelector(getIdentifiersCache);
   const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
-  const ourIdentifier = identifiersData.find(
-    (identifier) => identifier.method === IdentifierType.KERI
-  )?.id;
+  const ourIdentifier = identifiersData[0]?.id;
   const [otherIdentifierContacts, setOtherIdentifierContacts] = useState<
     ConnectionShortDetails[]
   >([]);
@@ -55,27 +48,28 @@ const IdentifierStage3 = ({
       );
       return;
     } else {
-      const identifier = await AriesAgent.agent.identifiers.createMultisig(
-        ourIdentifier,
-        otherIdentifierContacts,
-        {
-          theme: state.selectedTheme,
-          // @TODO - sdisalvo: Colors will need to be removed
-          colors: ["#000000", "#000000"],
-          displayName: state.displayNameValue,
-        },
-        state.threshold
-      );
+      const { identifier, signifyName } =
+        await Agent.agent.identifiers.createMultisig(
+          ourIdentifier,
+          otherIdentifierContacts,
+          {
+            theme: state.selectedTheme,
+            // @TODO - sdisalvo: Colors will need to be removed
+            colors: ["#000000", "#000000"],
+            displayName: state.displayNameValue,
+          },
+          state.threshold
+        );
       if (identifier) {
         const newIdentifier: IdentifierShortDetails = {
           id: identifier,
-          method: IdentifierType.KERI,
           displayName: state.displayNameValue,
           createdAtUTC: new Date().toISOString(),
           // @TODO - sdisalvo: Colors will need to be removed
           colors: ["#000000", "#000000"],
           theme: state.selectedTheme,
           isPending: state.threshold >= 2,
+          signifyName,
         };
         dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
         dispatch(
@@ -106,9 +100,6 @@ const IdentifierStage3 = ({
       await createMultisigIdentifier();
     }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
   };
-
-  const getFallbackLogo = (type?: ConnectionType) =>
-    type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
 
   return (
     <>
@@ -165,7 +156,7 @@ const IdentifierStage3 = ({
                 >
                   <IonLabel>
                     <img
-                      src={connection?.logo || getFallbackLogo(connection.type)}
+                      src={connection?.logo || KeriLogo}
                       className="connection-logo"
                       alt="connection-logo"
                       data-testid={`identifier-stage-3-connection-logo-${index}`}

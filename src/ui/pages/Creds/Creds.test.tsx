@@ -10,7 +10,7 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { formatShortDate } from "../../utils/formatters";
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       credentials: {
         getCredentialDetailsById: jest.fn(),

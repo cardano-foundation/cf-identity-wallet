@@ -1,4 +1,4 @@
-import { ellipsisVertical, addOutline } from "ionicons/icons";
+import { ellipsisVertical } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
@@ -38,28 +38,19 @@ import {
 } from "../../../store/reducers/connectionsCache";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionHistoryItem,
   ConnectionNoteDetails,
-  ConnectionType,
-  CredentialType,
 } from "../../../core/agent/agent.types";
 import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
 import { EditConnectionsModal } from "./components/EditConnectionsModal";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import Minicred1 from "../../assets/images/minicred1.jpg";
-import Minicred2 from "../../assets/images/minicred2.jpg";
-import Minicred3 from "../../assets/images/minicred3.jpg";
-import Minicred4 from "../../assets/images/minicred4.jpg";
+import Minicred from "../../assets/images/minicred.jpg";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
-import DidComLogo from "../../assets/images/didCommGeneric.jpg";
-import {
-  CardDetailsBlock,
-  CardDetailsItem,
-} from "../../components/CardDetails";
+import { CardDetailsBlock } from "../../components/CardDetails";
 import { ConnectionNotes } from "./components/ConnectionNotes";
 
 const ConnectionDetails = () => {
@@ -94,9 +85,8 @@ const ConnectionDetails = () => {
     async function getDetails() {
       try {
         const connectionDetails =
-          await AriesAgent.agent.connections.getConnectionById(
-            connectionShortDetails.id,
-            connectionShortDetails.type
+          await Agent.agent.connections.getConnectionById(
+            connectionShortDetails.id
           );
         setConnectionDetails(connectionDetails);
         if (connectionDetails.notes) {
@@ -113,7 +103,7 @@ const ConnectionDetails = () => {
     async function getHistory() {
       try {
         const connectionHistory =
-          await AriesAgent.agent.connections.getConnectionHistoryById(
+          await Agent.agent.connections.getConnectionHistoryById(
             connectionShortDetails.id
           );
         setConnectionHistory(connectionHistory);
@@ -153,9 +143,8 @@ const ConnectionDetails = () => {
 
   const verifyAction = () => {
     async function deleteConnection() {
-      await AriesAgent.agent.connections.deleteConnectionById(
-        connectionShortDetails.id,
-        connectionShortDetails.type
+      await Agent.agent.connections.deleteConnectionById(
+        connectionShortDetails.id
       );
       const updatedConnections = connectionsData.filter(
         (item) => item.id !== connectionDetails?.id
@@ -185,24 +174,6 @@ const ConnectionDetails = () => {
         i18n.t("connections.details.notavailable"),
     },
   ];
-
-  const credentialBackground = () => {
-    if (connectionShortDetails?.type === ConnectionType.KERI) {
-      return Minicred4;
-    } else if (connectionShortDetails?.type === ConnectionType.DIDCOMM) {
-      switch (connectionHistory[0]?.credentialType) {
-      case CredentialType.PERMANENT_RESIDENT_CARD:
-        return Minicred3;
-      case CredentialType.ACCESS_PASS_CREDENTIAL:
-        return Minicred2;
-      default:
-        return Minicred1;
-      }
-    }
-  };
-
-  const fallbackLogo =
-    connectionDetails?.type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
 
   if (loading.details || loading.history) {
     return (
@@ -236,7 +207,7 @@ const ConnectionDetails = () => {
       >
         <div className="connection-details-content">
           <ConnectionDetailsHeader
-            logo={connectionDetails?.logo || fallbackLogo}
+            logo={connectionDetails?.logo || KeriLogo}
             label={connectionDetails?.label}
             date={connectionDetails?.connectionDate}
           />
@@ -286,7 +257,7 @@ const ConnectionDetails = () => {
                   <div className="connection-details-history-event">
                     <div className="connection-details-logo">
                       <img
-                        src={credentialBackground()}
+                        src={Minicred}
                         alt="credential-miniature"
                         className="credential-miniature"
                       />
@@ -311,7 +282,7 @@ const ConnectionDetails = () => {
                 <div className="connection-details-history-event">
                   <div className="connection-details-logo">
                     <img
-                      src={connectionDetails?.logo || fallbackLogo}
+                      src={connectionDetails?.logo || KeriLogo}
                       alt="connection-logo"
                     />
                   </div>

@@ -9,10 +9,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     isArchived: false,
     issuanceDate: "2024-01-24T16:20:26.497Z",
     status: CredentialMetadataRecordStatus.CONFIRMED,
-    connectionType: 0,
-    cachedDetails: {
-      degreeType: "BachelorDegree",
-    },
   },
   {
     colors: ["#ef8f99", "#f5bcc2"],
@@ -21,13 +17,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     isArchived: false,
     issuanceDate: "2024-01-24T16:19:33.281Z",
     status: CredentialMetadataRecordStatus.CONFIRMED,
-    connectionType: 0,
-    cachedDetails: {
-      summitType: "AccessPass",
-      startDate: "November 2, 2023",
-      endDate: "November 2, 2023",
-      passId: "4c44c251-eaa3-4c77-be07-d378b7b98497",
-    },
   },
   {
     colors: ["#af8fef", "#cfbcf5"],
@@ -36,17 +25,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     isArchived: false,
     issuanceDate: "2024-01-24T16:21:09.451Z",
     status: CredentialMetadataRecordStatus.CONFIRMED,
-    connectionType: 0,
-    cachedDetails: {
-      expirationDate: "2025-12-12T12:12:12Z",
-      image:
-        "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/static/ResIdImg.jpg",
-      givenName: "John",
-      familyName: "Smith",
-      birthCountry: "The Bahamas",
-      lprCategory: "C09",
-      residentSince: "2022-10-10T10:12:12Z",
-    },
   },
   {
     id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
@@ -54,7 +32,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     issuanceDate: "2024-01-22T16:03:44.643Z",
     credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialMetadataRecordStatus.CONFIRMED,
-    connectionType: 1,
   },
   {
     id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
@@ -62,7 +39,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     issuanceDate: "2024-01-22T16:03:44.643Z",
     credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialMetadataRecordStatus.PENDING,
-    connectionType: 1,
   },
 ];
 

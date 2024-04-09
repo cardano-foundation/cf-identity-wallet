@@ -34,14 +34,9 @@ import {
   removeFavouriteIdentifierCache,
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
-import { AriesAgent } from "../../../core/agent/agent";
-import {
-  DIDDetails,
-  IdentifierType,
-  KERIDetails,
-} from "../../../core/agent/services/identifierService.types";
+import { Agent } from "../../../core/agent/agent";
+import { IdentifierDetails } from "../../../core/agent/services/identifierService.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
-import { IdentifierCardInfoDid } from "../../components/IdentifierCardInfoKey";
 import { IdentifierCardInfoKeri } from "../../components/IdentifierCardInfoKeri";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
@@ -73,9 +68,7 @@ const IdentifierCardDetails = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState<
-    DIDDetails | KERIDetails | undefined
-  >();
+  const [cardData, setCardData] = useState<IdentifierDetails | undefined>();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
   const [navAnimation, setNavAnimation] = useState(false);
@@ -86,10 +79,11 @@ const IdentifierCardDetails = () => {
 
   useEffect(() => {
     const fetchDetails = async () => {
-      const cardDetailsResult =
-        await AriesAgent.agent.identifiers.getIdentifier(params.id);
+      const cardDetailsResult = await Agent.agent.identifiers.getIdentifier(
+        params.id
+      );
       if (cardDetailsResult) {
-        setCardData(cardDetailsResult.result);
+        setCardData(cardDetailsResult);
       } else {
         // @TODO - Error handling.
       }
@@ -144,8 +138,8 @@ const IdentifierCardDetails = () => {
   const deleteIdentifier = async () => {
     if (cardData) {
       // For now there is no archiving in the UI so does both.
-      await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
-      await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
+      await Agent.agent.identifiers.archiveIdentifier(cardData.id);
+      await Agent.agent.identifiers.deleteIdentifier(cardData.id);
       if (isFavourite) {
         handleSetFavourite(cardData.id);
       }
@@ -269,11 +263,7 @@ const IdentifierCardDetails = () => {
             isActive={false}
           />
           <div className="card-details-content">
-            {cardData.method === IdentifierType.KEY ? (
-              <IdentifierCardInfoDid cardData={cardData as DIDDetails} />
-            ) : (
-              <IdentifierCardInfoKeri cardData={cardData as KERIDetails} />
-            )}
+            <IdentifierCardInfoKeri cardData={cardData as IdentifierDetails} />
             <PageFooter
               pageId={pageId}
               deleteButtonText={`${i18n.t(

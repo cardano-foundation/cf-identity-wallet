@@ -10,14 +10,7 @@ import { i18n } from "../../../i18n";
 import "./ArchivedCredentials.scss";
 import { formatShortDate } from "../../utils/formatters";
 import { CredentialItemProps } from "./ArchivedCredentials.types";
-import {
-  ConnectionType,
-  CredentialType,
-} from "../../../core/agent/agent.types";
-import Minicred1 from "../../assets/images/minicred1.jpg";
-import Minicred2 from "../../assets/images/minicred2.jpg";
-import Minicred3 from "../../assets/images/minicred3.jpg";
-import Minicred4 from "../../assets/images/minicred4.jpg";
+import Minicred from "../../assets/images/minicred.jpg";
 
 const CredentialItem = ({
   credential,
@@ -28,21 +21,6 @@ const CredentialItem = ({
   onDelete,
   onRestore,
 }: CredentialItemProps) => {
-  const credentialBackground = () => {
-    if (credential.connectionType === ConnectionType.KERI) {
-      return Minicred4;
-    } else if (credential.connectionType === ConnectionType.DIDCOMM) {
-      switch (credential.credentialType) {
-      case CredentialType.PERMANENT_RESIDENT_CARD:
-        return Minicred3;
-      case CredentialType.ACCESS_PASS_CREDENTIAL:
-        return Minicred2;
-      default:
-        return Minicred1;
-      }
-    }
-  };
-
   return (
     <IonItemSliding>
       <IonItem
@@ -61,12 +39,15 @@ const CredentialItem = ({
             />
           )}
           <img
-            src={credentialBackground()}
+            src={Minicred}
             alt="credential-miniature"
             className="credential-miniature"
           />
           <div className="credential-info">
-            <div className="credential-name">
+            <div
+              data-testid={`credential-name-${credential.id}`}
+              className="credential-name"
+            >
               {credential.credentialType
                 .replace(/([A-Z][a-z])/g, " $1")
                 .replace(/(\d)/g, " $1")}

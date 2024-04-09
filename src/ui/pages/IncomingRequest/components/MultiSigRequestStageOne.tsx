@@ -20,8 +20,6 @@ import { PageFooter } from "../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
 import { PageHeader } from "../../../components/PageHeader";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
-import DidComLogo from "../../../assets/images/didCommGeneric.jpg";
-import { ConnectionType } from "../../../../core/agent/agent.types";
 import "./MultiSigRequestStageOne.scss";
 
 const MultiSigRequestStageOne = ({
@@ -48,9 +46,6 @@ const MultiSigRequestStageOne = ({
   const actionIgnore = () => {
     handleIgnore && handleIgnore();
   };
-
-  const getFallbackLogo = (type?: ConnectionType) =>
-    type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
 
   return (
     <>
@@ -133,10 +128,7 @@ const MultiSigRequestStageOne = ({
                           >
                             <img
                               data-testid={`other-multisig-connection-logo-${index}`}
-                              src={
-                                connection.logo ||
-                                getFallbackLogo(connection.type)
-                              }
+                              src={connection.logo || KeriLogo}
                               alt="multisig-connection-logo"
                             />
                           </IonCol>
