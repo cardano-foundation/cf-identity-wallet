@@ -154,9 +154,9 @@ const ArchivedCredentialsContainer = forwardRef<
   const closeButtonLabel = `${
     activeList
       ? selectedCredentials.length > 0
-        ? i18n.t("creds.archived.deselectall")
-        : i18n.t("creds.archived.selectall")
-      : i18n.t("creds.archived.done")
+        ? i18n.t("credentials.archived.deselectall")
+        : i18n.t("credentials.archived.selectall")
+      : i18n.t("credentials.archived.done")
   }`;
 
   const handleActionButtonClick = () => {
@@ -166,8 +166,8 @@ const ArchivedCredentialsContainer = forwardRef<
 
   const actionButtonLabel = `${
     activeList
-      ? i18n.t("creds.archived.cancel")
-      : i18n.t("creds.archived.select")
+      ? i18n.t("credentials.archived.cancel")
+      : i18n.t("credentials.archived.select")
   }`;
 
   const handleClickCard = (id: string) => {
@@ -213,7 +213,7 @@ const ArchivedCredentialsContainer = forwardRef<
             actionButton={true}
             actionButtonAction={handleActionButtonClick}
             actionButtonLabel={actionButtonLabel}
-            title={`${i18n.t("creds.archived.title")}`}
+            title={`${i18n.t("credentials.archived.title")}`}
           />
         }
       >
@@ -251,7 +251,7 @@ const ArchivedCredentialsContainer = forwardRef<
                   onClick={() => setAlertDeleteIsOpen(true)}
                   data-testid="delete-credentials"
                 >
-                  {i18n.t("creds.archived.delete")}
+                  {i18n.t("credentials.archived.delete")}
                 </IonButton>
               </IonButtons>
               <div
@@ -259,8 +259,8 @@ const ArchivedCredentialsContainer = forwardRef<
                 className="selected-amount-credentials-label"
               >
                 {selectedCredentials.length === 1
-                  ? i18n.t("creds.archived.oneselected")
-                  : i18next.t("creds.archived.manyselected", {
+                  ? i18n.t("credentials.archived.oneselected")
+                  : i18next.t("credentials.archived.manyselected", {
                     amount: selectedCredentials.length,
                   })}
               </div>
@@ -270,7 +270,7 @@ const ArchivedCredentialsContainer = forwardRef<
                   onClick={() => setAlertRestoreIsOpen(true)}
                   data-testid="restore-credentials"
                 >
-                  {i18n.t("creds.archived.restore")}
+                  {i18n.t("credentials.archived.restore")}
                 </IonButton>
               </IonButtons>
             </IonToolbar>

@@ -87,8 +87,8 @@ const CredentialCardTemplate = ({
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
           dataTestId="alert-confirm"
-          headerText={i18n.t("creds.create.alert.title")}
-          confirmButtonText={`${i18n.t("creds.create.alert.confirm")}`}
+          headerText={i18n.t("credentials.create.alert.title")}
+          confirmButtonText={`${i18n.t("credentials.create.alert.confirm")}`}
           actionConfirm={() => setAlertIsOpen(false)}
           backdropDismiss={false}
         />
