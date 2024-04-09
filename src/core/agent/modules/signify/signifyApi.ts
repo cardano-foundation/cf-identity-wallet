@@ -70,6 +70,7 @@ export class SignifyApi {
     "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu";
   static resolvedOobi: { [key: string]: any } = {};
 
+  //TODO: Change this to private later
   static isOnline = false;
 
   private signifyClient!: SignifyClient;
