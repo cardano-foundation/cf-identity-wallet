@@ -226,7 +226,7 @@ describe("Cards Details page - current not archived credential", () => {
 
     await waitFor(() => {
       expect(
-        getAllByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)[1]
+        getAllByText(EN_TRANSLATIONS.credentials.details.alert.archive.title)[1]
       ).toBeVisible();
     });
   });
@@ -292,11 +292,13 @@ describe("Cards Details page - archived credential", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS.creds.card.details.restore)
+        queryByText(EN_TRANSLATIONS.credentials.details.restore)
       ).toBeVisible();
     });
 
-    const restoreButton = getByText(EN_TRANSLATIONS.creds.card.details.restore);
+    const restoreButton = getByText(
+      EN_TRANSLATIONS.credentials.details.restore
+    );
 
     act(() => {
       fireEvent.click(restoreButton);
@@ -308,7 +310,7 @@ describe("Cards Details page - archived credential", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS.creds.card.details.alert.restore.title)
+        queryByText(EN_TRANSLATIONS.credentials.details.alert.restore.title)
       ).toBeVisible();
     });
   });

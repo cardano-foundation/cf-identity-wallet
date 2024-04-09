@@ -79,7 +79,9 @@ describe("Identifiers Tab", () => {
       </Provider>
     );
 
-    expect(getByText(EN_TRANSLATIONS.creds.tab.favourites)).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.identifiers.tab.favourites)
+    ).toBeInTheDocument();
   });
 
   test("Renders Identifiers Tab and all elements in it", () => {
@@ -156,9 +158,7 @@ describe("Identifiers Tab", () => {
       jest.advanceTimersByTime(NAVIGATION_DELAY);
     });
 
-    expect(
-      getByText(EN_TRANSLATIONS.identifiers.card.details.done)
-    ).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.identifiers.details.done)).toBeVisible();
 
     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
 

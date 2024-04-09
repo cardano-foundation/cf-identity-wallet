@@ -98,7 +98,7 @@ const CredentialOptions = ({
           >
             <IonToolbar color="light">
               <IonTitle data-testid="creds-options-title">
-                <h2>{i18n.t("creds.card.details.options.title")}</h2>
+                <h2>{i18n.t("credentials.details.options.title")}</h2>
               </IonTitle>
             </IonToolbar>
           </IonHeader>
@@ -127,7 +127,7 @@ const CredentialOptions = ({
                       </IonButton>
                     </span>
                     <span className="creds-options-label">
-                      {i18n.t("creds.card.details.options.view")}
+                      {i18n.t("credentials.details.options.view")}
                     </span>
                   </span>
                   <span
@@ -149,7 +149,7 @@ const CredentialOptions = ({
                       </IonButton>
                     </span>
                     <span className="creds-options-label">
-                      {i18n.t("creds.card.details.options.archive")}
+                      {i18n.t("credentials.details.options.archive")}
                     </span>
                   </span>
                 </IonCol>
@@ -171,9 +171,9 @@ const CredentialOptions = ({
             <PageLayout
               header={true}
               closeButton={true}
-              closeButtonLabel={`${i18n.t("creds.card.details.view.cancel")}`}
+              closeButtonLabel={`${i18n.t("credentials.details.view.cancel")}`}
               closeButtonAction={handleCloseView}
-              title={`${i18n.t("creds.card.details.view.title")}`}
+              title={`${i18n.t("credentials.details.view.title")}`}
             >
               <IonGrid className="creds-options-inner">
                 <pre>{JSON.stringify(cardData, null, 2)}</pre>
@@ -197,7 +197,7 @@ const CredentialOptions = ({
                         icon={copyOutline}
                         color="primary"
                       />
-                      {i18n.t("creds.card.details.view.copy")}
+                      {i18n.t("credentials.details.view.copy")}
                     </IonButton>
                     <IonButton
                       shape="round"
@@ -214,7 +214,7 @@ const CredentialOptions = ({
                         icon={downloadOutline}
                         color="primary"
                       />
-                      {i18n.t("creds.card.details.view.save")}
+                      {i18n.t("credentials.details.view.save")}
                     </IonButton>
                   </IonCol>
                 </IonRow>
@@ -227,12 +227,12 @@ const CredentialOptions = ({
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
         dataTestId="alert-confirm"
-        headerText={i18n.t("creds.card.details.alert.archive.title")}
+        headerText={i18n.t("credentials.details.alert.archive.title")}
         confirmButtonText={`${i18n.t(
-          "creds.card.details.alert.archive.confirm"
+          "credentials.details.alert.archive.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "creds.card.details.alert.archive.cancel"
+          "credentials.details.alert.archive.cancel"
         )}`}
         actionConfirm={() => {
           if (

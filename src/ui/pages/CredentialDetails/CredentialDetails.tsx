@@ -233,12 +233,12 @@ const CredentialDetails = () => {
       pageId={pageId}
       customClass={pageClasses}
       header={true}
-      doneLabel={`${i18n.t("creds.card.details.done")}`}
+      doneLabel={`${i18n.t("credentials.details.done")}`}
       doneAction={handleDone}
       additionalButtons={!isArchived && <AdditionalButtons />}
       actionButton={isArchived}
       actionButtonAction={() => setAlertRestoreIsOpen(true)}
-      actionButtonLabel={`${i18n.t("creds.card.details.restore")}`}
+      actionButtonLabel={`${i18n.t("credentials.details.restore")}`}
     >
       {!cardData ? (
         <div
@@ -259,7 +259,7 @@ const CredentialDetails = () => {
               pageId={pageId}
               archiveButtonText={
                 !isArchived
-                  ? `${i18n.t("creds.card.details.button.archive")}`
+                  ? `${i18n.t("credentials.details.button.archive")}`
                   : ""
               }
               archiveButtonAction={() => {
@@ -268,7 +268,7 @@ const CredentialDetails = () => {
               }}
               deleteButtonText={
                 isArchived
-                  ? `${i18n.t("creds.card.details.button.delete")}`
+                  ? `${i18n.t("credentials.details.button.delete")}`
                   : ""
               }
               deleteButtonAction={() => {
@@ -294,18 +294,18 @@ const CredentialDetails = () => {
         dataTestId="alert-delete-archive"
         headerText={i18n.t(
           isArchived
-            ? "creds.card.details.alert.delete.title"
-            : "creds.card.details.alert.archive.title"
+            ? "credentials.details.alert.delete.title"
+            : "credentials.details.alert.archive.title"
         )}
         confirmButtonText={`${i18n.t(
           isArchived
-            ? "creds.card.details.alert.delete.confirm"
-            : "creds.card.details.alert.archive.confirm"
+            ? "credentials.details.alert.delete.confirm"
+            : "credentials.details.alert.archive.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
           isArchived
-            ? "creds.card.details.alert.delete.cancel"
-            : "creds.card.details.alert.archive.cancel"
+            ? "credentials.details.alert.delete.cancel"
+            : "credentials.details.alert.archive.cancel"
         )}`}
         actionConfirm={() => {
           if (
@@ -324,12 +324,12 @@ const CredentialDetails = () => {
         isOpen={alertRestoreIsOpen}
         setIsOpen={setAlertRestoreIsOpen}
         dataTestId="alert-restore"
-        headerText={i18n.t("creds.card.details.alert.restore.title")}
+        headerText={i18n.t("credentials.details.alert.restore.title")}
         confirmButtonText={`${i18n.t(
-          "creds.card.details.alert.restore.confirm"
+          "credentials.details.alert.restore.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "creds.card.details.alert.restore.cancel"
+          "credentials.details.alert.restore.cancel"
         )}`}
         actionConfirm={() => handleRestoreCredential()}
         actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}

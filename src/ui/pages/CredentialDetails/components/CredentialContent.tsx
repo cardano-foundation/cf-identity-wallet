@@ -11,7 +11,7 @@ import { CredentialContentProps } from "./CredentialContent.types";
 const CredentialContent = ({ cardData }: CredentialContentProps) => {
   return (
     <>
-      <CardDetailsBlock title={i18n.t("creds.card.details.title")}>
+      <CardDetailsBlock title={i18n.t("credentials.details.title")}>
         <CardDetailsItem
           info={cardData.credentialType}
           icon={informationCircleOutline}
@@ -20,26 +20,26 @@ const CredentialContent = ({ cardData }: CredentialContentProps) => {
       </CardDetailsBlock>
       <CardDetailsBlock
         className="cred-content-acdc-card"
-        title={i18n.t("creds.card.details.description")}
+        title={i18n.t("credentials.details.description")}
       >
         {cardData.s.description}
       </CardDetailsBlock>
       {cardData.a && (
         <CardDetailsBlock
           className="card-attribute-block"
-          title={i18n.t("creds.card.details.attributes.label")}
+          title={i18n.t("credentials.details.attributes.label")}
         >
           <CardDetailsAttributes data={cardData.a as JSONObject} />
         </CardDetailsBlock>
       )}
-      <CardDetailsBlock title={i18n.t("creds.card.details.schemaversion")}>
+      <CardDetailsBlock title={i18n.t("credentials.details.schemaversion")}>
         <CardDetailsItem
           info={cardData.s.version}
           icon={informationCircleOutline}
           testId="card-details-schema-version"
         />
       </CardDetailsBlock>
-      <CardDetailsBlock title={i18n.t("creds.card.details.issuer")}>
+      <CardDetailsBlock title={i18n.t("credentials.details.issuer")}>
         <CardDetailsItem
           info={cardData.i}
           copyButton={true}
@@ -49,7 +49,7 @@ const CredentialContent = ({ cardData }: CredentialContentProps) => {
       </CardDetailsBlock>
       <CardDetailsBlock
         className="card-attribute-block"
-        title={i18n.t("creds.card.details.status.label")}
+        title={i18n.t("credentials.details.status.label")}
       >
         <CardDetailsAttributes
           data={cardData.lastStatus as JSONObject}

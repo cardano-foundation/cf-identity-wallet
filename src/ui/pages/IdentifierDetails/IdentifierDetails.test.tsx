@@ -193,7 +193,7 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.identifiers.card.details.options.inner.label)
+        getByText(EN_TRANSLATIONS.identifiers.details.options.inner.label)
       ).toBeVisible();
     });
   });
@@ -229,22 +229,20 @@ describe("Cards Details page", () => {
 
     act(() => {
       fireEvent.click(
-        getAllByText(EN_TRANSLATIONS.identifiers.card.details.options.delete)[0]
+        getAllByText(EN_TRANSLATIONS.identifiers.details.options.delete)[0]
       );
     });
 
     await waitFor(() => {
       expect(
-        getAllByText(
-          EN_TRANSLATIONS.identifiers.card.details.delete.alert.title
-        )[1]
+        getAllByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)[1]
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
         getAllByText(
-          EN_TRANSLATIONS.identifiers.card.details.delete.alert.confirm
+          EN_TRANSLATIONS.identifiers.details.delete.alert.confirm
         )[0]
       );
     });
@@ -281,7 +279,7 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.identifiers.card.details.delete.alert.title)
+        getByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)
       ).toBeVisible();
     });
   });
@@ -343,13 +341,13 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.identifiers.card.details.delete.alert.title)
+        getByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.identifiers.card.details.delete.alert.confirm)
+        getByText(EN_TRANSLATIONS.identifiers.details.delete.alert.confirm)
       );
     });
     await waitForIonicReact();

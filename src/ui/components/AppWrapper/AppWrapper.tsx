@@ -43,7 +43,6 @@ import { NotificationRoute } from "../../../core/agent/modules/signify/signifyAp
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
-import { shortCredsFix } from "../../__fixtures__/shortCredsFix";
 
 const connectionKeriStateChangedHandler = async (
   event: ConnectionKeriStateChangedEvent,
@@ -235,7 +234,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
 
     dispatch(setIdentifiersCache(storedIdentifiers));
-    dispatch(setCredsCache(shortCredsFix));
+    dispatch(setCredsCache(credentials));
     dispatch(setConnectionsCache(connectionsDetails));
 
     Agent.agent.connections.onConnectionKeriStateChanged((event) => {

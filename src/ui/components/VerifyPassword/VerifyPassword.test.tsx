@@ -113,7 +113,7 @@ describe("Verify Password on Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getAllByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)[1]
+        getAllByText(EN_TRANSLATIONS.credentials.details.alert.archive.title)[1]
       ).toBeVisible();
     });
 
@@ -127,7 +127,7 @@ describe("Verify Password on Cards Details page", () => {
     act(() => {
       fireEvent.click(
         getAllByText(
-          EN_TRANSLATIONS.creds.card.details.alert.archive.confirm
+          EN_TRANSLATIONS.credentials.details.alert.archive.confirm
         )[0]
       );
     });

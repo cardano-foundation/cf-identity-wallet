@@ -13,10 +13,10 @@ describe("Creds content", () => {
       </Provider>
     );
     expect(getByTestId("card-details-credential-type")).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.creds.card.details.title)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.credentials.details.title)).toBeVisible();
     expect(getByText("Qualified vLEI Issuer Credential")).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.creds.card.details.description)
+      getByText(EN_TRANSLATIONS.credentials.details.description)
     ).toBeVisible();
     expect(
       getByText(
@@ -24,7 +24,7 @@ describe("Creds content", () => {
       )
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.creds.card.details.attributes.label)
+      getByText(EN_TRANSLATIONS.credentials.details.attributes.label)
     ).toBeVisible();
     expect(
       getByText("EJWgO4hwKxNMxu2aUpmGFMozKt9Eq2Jz8n-xXR7CYtY_")
@@ -36,16 +36,16 @@ describe("Creds content", () => {
       getByText("EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5")
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.creds.card.details.status.label)
+      getByText(EN_TRANSLATIONS.credentials.details.status.label)
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.creds.card.details.status.label + ":")
+      getByText(EN_TRANSLATIONS.credentials.details.status.label + ":")
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.creds.card.details.status.timestamp + ":")
+      getByText(EN_TRANSLATIONS.credentials.details.status.timestamp + ":")
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.creds.card.details.status.issued)
+      getByText(EN_TRANSLATIONS.credentials.details.status.issued)
     ).toBeVisible();
     // expect(getByText("22/01/2024 - 16:05:44")).toBeVisible();
   });

@@ -123,7 +123,7 @@ const IdentifierDetails = () => {
   const handleDelete = async () => {
     setVerifyPasswordIsOpen(false);
     // @TODO - sdisalvo: Update Database.
-    // Remember to update identifiers.card.details.options file too.
+    // Remember to update identifiers.details.options file too.
     if (cardData) {
       const updatedIdentifiers = identifierData.filter(
         (item) => item.id !== cardData.id
@@ -243,7 +243,7 @@ const IdentifierDetails = () => {
       header={
         <PageHeader
           closeButton={true}
-          closeButtonLabel={`${i18n.t("identifiers.card.details.done")}`}
+          closeButtonLabel={`${i18n.t("identifiers.details.done")}`}
           closeButtonAction={() => handleDone()}
           additionalButtons={<AdditionalButtons />}
         />
@@ -267,7 +267,7 @@ const IdentifierDetails = () => {
             <PageFooter
               pageId={pageId}
               deleteButtonText={`${i18n.t(
-                "identifiers.card.details.delete.button"
+                "identifiers.details.delete.button"
               )}`}
               deleteButtonAction={() => {
                 setAlertIsOpen(true);
@@ -293,12 +293,12 @@ const IdentifierDetails = () => {
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
         dataTestId="alert-confirm-identifier-delete-details"
-        headerText={i18n.t("identifiers.card.details.delete.alert.title")}
+        headerText={i18n.t("identifiers.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
-          "identifiers.card.details.delete.alert.confirm"
+          "identifiers.details.delete.alert.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "identifiers.card.details.delete.alert.cancel"
+          "identifiers.details.delete.alert.cancel"
         )}`}
         actionConfirm={() => {
           if (

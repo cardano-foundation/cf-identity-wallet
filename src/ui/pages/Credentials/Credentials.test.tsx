@@ -83,7 +83,9 @@ describe("Creds Tab", () => {
       </Provider>
     );
 
-    expect(getByText(EN_TRANSLATIONS.creds.tab.favourites)).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.credentials.tab.favourites)
+    ).toBeInTheDocument();
   });
 
   test("Renders Creds Tab", () => {

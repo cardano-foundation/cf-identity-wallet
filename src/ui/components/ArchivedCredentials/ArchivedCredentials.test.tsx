@@ -139,12 +139,12 @@ describe("Creds Tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.creds.card.details.alert.restore.confirm)
+        getByText(EN_TRANSLATIONS.credentials.details.alert.restore.confirm)
       ).toBeVisible();
     });
 
     fireEvent.click(
-      getByText(EN_TRANSLATIONS.creds.card.details.alert.restore.confirm)
+      getByText(EN_TRANSLATIONS.credentials.details.alert.restore.confirm)
     );
 
     await waitFor(() => {
@@ -191,7 +191,7 @@ describe("Creds Tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.creds.card.details.alert.delete.confirm)
+        getByText(EN_TRANSLATIONS.credentials.details.alert.delete.confirm)
       ).toBeVisible();
     });
   });

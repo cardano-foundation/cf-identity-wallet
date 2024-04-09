@@ -69,7 +69,7 @@ const CredentialCardTemplate = ({
         <div className="card-footer">
           <div className="card-footer-column">
             <span className="card-footer-column-label">
-              {i18n.t("creds.card.layout.issued")}
+              {i18n.t("credentials.layout.issued")}
             </span>
             <span className="card-footer-column-value">
               {cardData.status === CredentialMetadataRecordStatus.CONFIRMED ? (

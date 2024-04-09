@@ -183,7 +183,7 @@ const Creds = () => {
           onClick={() => setArchivedCredentialsIsOpen(true)}
         >
           <IonLabel color="secondary">
-            {i18n.t("creds.tab.viewarchived")}
+            {i18n.t("credentials.tab.viewarchived")}
           </IonLabel>
         </IonButton>
       </div>
@@ -200,7 +200,7 @@ const Creds = () => {
         pageId={pageId}
         header={true}
         customClass={tabClasses}
-        title={`${i18n.t("creds.tab.title")}`}
+        title={`${i18n.t("credentials.tab.title")}`}
         additionalButtons={
           <AdditionalButtons
             handleConnections={() => setShowConnections(true)}
@@ -210,7 +210,7 @@ const Creds = () => {
         placeholder={
           showPlaceholder && (
             <CardsPlaceholder
-              buttonLabel={i18n.t("creds.tab.create")}
+              buttonLabel={i18n.t("credentials.tab.create")}
               buttonAction={handleCreateCred}
               testId={pageId}
             >
@@ -226,7 +226,9 @@ const Creds = () => {
                 ref={favouriteContainerElement}
                 className="credentials-tab-content-block credential-favourite-cards"
               >
-                {!!allCreds.length && <h3>{i18n.t("creds.tab.favourites")}</h3>}
+                {!!allCreds.length && (
+                  <h3>{i18n.t("credentials.tab.favourites")}</h3>
+                )}
                 <CardsStack
                   name="favs"
                   cardsType={CardType.CREDS}
@@ -237,7 +239,9 @@ const Creds = () => {
             )}
             {!!allCreds.length && (
               <div className="credentials-tab-content-block credential-cards">
-                {!!favCreds.length && <h3>{i18n.t("creds.tab.allcreds")}</h3>}
+                {!!favCreds.length && (
+                  <h3>{i18n.t("credentials.tab.allcreds")}</h3>
+                )}
                 <CardsStack
                   name="allcreds"
                   cardsType={CardType.CREDS}

@@ -261,8 +261,8 @@ const ArchivedCredentialsContainer = forwardRef<
                 {selectedCredentials.length === 1
                   ? i18n.t("creds.archived.oneselected")
                   : i18next.t("creds.archived.manyselected", {
-                      amount: selectedCredentials.length,
-                    })}
+                    amount: selectedCredentials.length,
+                  })}
               </div>
               <IonButtons slot="end">
                 <IonButton
@@ -281,11 +281,13 @@ const ArchivedCredentialsContainer = forwardRef<
         isOpen={alertDeleteIsOpen}
         setIsOpen={setAlertDeleteIsOpen}
         dataTestId="alert-delete"
-        headerText={i18n.t("creds.card.details.alert.delete.title")}
+        headerText={i18n.t("credentials.details.alert.delete.title")}
         confirmButtonText={`${i18n.t(
-          "creds.card.details.alert.delete.confirm"
+          "credentials.details.alert.delete.confirm"
         )}`}
-        cancelButtonText={`${i18n.t("creds.card.details.alert.delete.cancel")}`}
+        cancelButtonText={`${i18n.t(
+          "credentials.details.alert.delete.cancel"
+        )}`}
         actionConfirm={() => {
           if (
             !stateCache?.authentication.passwordIsSkipped &&
@@ -303,12 +305,12 @@ const ArchivedCredentialsContainer = forwardRef<
         isOpen={alertRestoreIsOpen}
         setIsOpen={setAlertRestoreIsOpen}
         dataTestId="alert-restore"
-        headerText={i18n.t("creds.card.details.alert.restore.title")}
+        headerText={i18n.t("credentials.details.alert.restore.title")}
         confirmButtonText={`${i18n.t(
-          "creds.card.details.alert.restore.confirm"
+          "credentials.details.alert.restore.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "creds.card.details.alert.restore.cancel"
+          "credentials.details.alert.restore.cancel"
         )}`}
         actionConfirm={async () => {
           await handleRestoreCredentials(selectedCredentials);

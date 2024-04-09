@@ -11,20 +11,18 @@ const IdentifierContent = ({ cardData }: IdentifierContentProps) => {
   return (
     <>
       {cardData.di !== "" && (
-        <CardDetailsBlock
-          title={i18n.t("identifiers.card.details.delegator.title")}
-        >
+        <CardDetailsBlock title={i18n.t("identifiers.details.delegator.title")}>
           <CardDetailsItem
             info={cardData.di}
             copyButton={true}
-            textIcon="identifiers.card.details.delegator.icon"
+            textIcon="identifiers.details.delegator.icon"
             testId="delegator"
           />
         </CardDetailsBlock>
       )}
       {cardData.k.length && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.card.details.signingkeyslist.title")}
+          title={i18n.t("identifiers.details.signingkeyslist.title")}
         >
           {cardData.k.map((item, index) => {
             return (
@@ -32,7 +30,7 @@ const IdentifierContent = ({ cardData }: IdentifierContentProps) => {
                 key={index}
                 info={item}
                 copyButton={true}
-                textIcon="identifiers.card.details.signingkeyslist.icon"
+                textIcon="identifiers.details.signingkeyslist.icon"
                 testId={`signing-key-${index}`}
               />
             );
@@ -41,19 +39,19 @@ const IdentifierContent = ({ cardData }: IdentifierContentProps) => {
       )}
       {cardData.kt > 1 && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.card.details.signingkeysthreshold.title")}
+          title={i18n.t("identifiers.details.signingkeysthreshold.title")}
         >
           <CardDetailsItem
             info={`${cardData.kt}`}
             copyButton={false}
-            textIcon="identifiers.card.details.signingkeysthreshold.icon"
+            textIcon="identifiers.details.signingkeysthreshold.icon"
             testId="signing-keys-threshold"
           />
         </CardDetailsBlock>
       )}
       {cardData.n.length && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.card.details.nextkeyslist.title")}
+          title={i18n.t("identifiers.details.nextkeyslist.title")}
         >
           {cardData.n.map((item, index) => {
             return (
@@ -61,7 +59,7 @@ const IdentifierContent = ({ cardData }: IdentifierContentProps) => {
                 key={index}
                 info={item}
                 copyButton={true}
-                textIcon="identifiers.card.details.nextkeyslist.icon"
+                textIcon="identifiers.details.nextkeyslist.icon"
                 testId={`next-key-${index}`}
               />
             );
@@ -70,18 +68,18 @@ const IdentifierContent = ({ cardData }: IdentifierContentProps) => {
       )}
       {cardData.nt > 1 && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.card.details.nextkeysthreshold.title")}
+          title={i18n.t("identifiers.details.nextkeysthreshold.title")}
         >
           <CardDetailsItem
             info={`${cardData.nt}`}
             copyButton={false}
-            textIcon="identifiers.card.details.nextkeysthreshold.icon"
+            textIcon="identifiers.details.nextkeysthreshold.icon"
             testId="next-keys-threshold"
           />
         </CardDetailsBlock>
       )}
       <CardDetailsBlock
-        title={i18n.t("identifiers.card.details.creationtimestamp.title")}
+        title={i18n.t("identifiers.details.creationtimestamp.title")}
       >
         <CardDetailsItem
           info={
@@ -96,7 +94,7 @@ const IdentifierContent = ({ cardData }: IdentifierContentProps) => {
       </CardDetailsBlock>
       {cardData.s > 0 && cardData.dt && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.card.details.rotationtimestamp.title")}
+          title={i18n.t("identifiers.details.rotationtimestamp.title")}
         >
           <CardDetailsItem
             info={
@@ -105,26 +103,26 @@ const IdentifierContent = ({ cardData }: IdentifierContentProps) => {
               formatTimeToSec(cardData.dt)
             }
             copyButton={false}
-            textIcon="identifiers.card.details.rotationtimestamp.icon"
+            textIcon="identifiers.details.rotationtimestamp.icon"
             testId="rotation-timestamp"
           />
         </CardDetailsBlock>
       )}
       {cardData.s > 0 && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.card.details.sequencenumber.title")}
+          title={i18n.t("identifiers.details.sequencenumber.title")}
         >
           <CardDetailsItem
             info={`${cardData.s}`}
             copyButton={true}
-            textIcon="identifiers.card.details.sequencenumber.icon"
+            textIcon="identifiers.details.sequencenumber.icon"
             testId="sequence-number"
           />
         </CardDetailsBlock>
       )}
       {cardData.b.length > 0 && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.card.details.backerslist.title")}
+          title={i18n.t("identifiers.details.backerslist.title")}
         >
           {cardData.b.map((item, index) => {
             return (
@@ -132,7 +130,7 @@ const IdentifierContent = ({ cardData }: IdentifierContentProps) => {
                 key={index}
                 info={item}
                 copyButton={true}
-                textIcon="identifiers.card.details.backerslist.icon"
+                textIcon="identifiers.details.backerslist.icon"
                 testId={`backer-${index}`}
               />
             );
@@ -142,7 +140,7 @@ const IdentifierContent = ({ cardData }: IdentifierContentProps) => {
 
       {ConfigurationService.env.keri.backerType === WitnessMode.LEDGER && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.card.details.backeraddress.title")}
+          title={i18n.t("identifiers.details.backeraddress.title")}
         >
           <CardDetailsItem
             info={ConfigurationService.env.keri.ledger.address}
