@@ -198,10 +198,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     } catch (e) {
       const errorStack = (e as Error).stack as string;
       // If the error is failed to fetch with signify, we retry until the connection is secured
-      if (
-        /failed to fetch/gi.test(errorStack) &&
-        /at SignifyClient.boot/gi.test(errorStack)
-      ) {
+      if (/SignifyClient/gi.test(errorStack)) {
         AriesAgent.agent.bootAndConnect().then(() => {
           setIsOffline(!AriesAgent.agent.isAgentReady());
         });
