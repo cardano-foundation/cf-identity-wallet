@@ -74,11 +74,10 @@ export class SignifyApi {
   }
 
   async resolveOobi(url: string): Promise<any> {
-    const alias = uuidv4();
-    let operation = await this.signifyClient.oobis().resolve(url, alias);
-    operation = await waitAndGetDoneOp(
+    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
+    const operation = await waitAndGetDoneOp(
       this.signifyClient,
-      operation,
+      await this.signifyClient.oobis().resolve(url, alias),
       this.opTimeout,
       this.opRetryInterval
     );

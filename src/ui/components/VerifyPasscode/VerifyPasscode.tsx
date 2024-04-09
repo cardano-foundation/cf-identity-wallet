@@ -17,6 +17,7 @@ import { VerifyPasscodeProps } from "./VerifyPasscode.types";
 import "./VerifyPasscode.scss";
 import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
 import { PageFooter } from "../PageFooter";
+import { PageHeader } from "../PageHeader";
 
 const VerifyPasscode = ({
   isOpen,
@@ -109,7 +110,16 @@ const VerifyPasscode = ({
       data-testid={componentId}
       onDidDismiss={() => handleClearState()}
     >
-      <ResponsivePageLayout pageId={`${componentId}-content`}>
+      <ResponsivePageLayout
+        header={
+          <PageHeader
+            closeButton={true}
+            closeButtonLabel={`${i18n.t("verifypasscode.cancel")}`}
+            closeButtonAction={handleClearState}
+          />
+        }
+        pageId={`${componentId}-content`}
+      >
         <h2
           className="verify-passcode-title"
           data-testid="verify-passcode-title"
