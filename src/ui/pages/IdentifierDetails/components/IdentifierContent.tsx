@@ -1,13 +1,13 @@
 import { calendarNumberOutline, personCircleOutline } from "ionicons/icons";
-import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
-import { IdentifierCardInfoKeriProps } from "./IdentifierCardInfoKeri.types";
-import { i18n } from "../../../i18n";
-import { ConfigurationService } from "../../../core/configuration";
-import { WitnessMode } from "../../../core/configuration/configurationService.types";
-import { CardDetailsBlock } from "../CardDetails/CardDetailsBlock";
-import { CardDetailsItem } from "../CardDetails/CardDetailsItem";
+import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import { IdentifierContentProps } from "./IdentifierContent.types";
+import { i18n } from "../../../../i18n";
+import { ConfigurationService } from "../../../../core/configuration";
+import { WitnessMode } from "../../../../core/configuration/configurationService.types";
+import { CardDetailsBlock } from "../../../components/CardDetails/CardDetailsBlock";
+import { CardDetailsItem } from "../../../components/CardDetails/CardDetailsItem";
 
-const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
+const IdentifierContent = ({ cardData }: IdentifierContentProps) => {
   return (
     <>
       {cardData.di !== "" && (
@@ -157,4 +157,4 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
   );
 };
 
-export { IdentifierCardInfoKeri };
+export { IdentifierContent };

@@ -97,7 +97,7 @@ describe("Creds Tab", () => {
       </Provider>
     );
 
-    expect(getByTestId("creds-tab")).toBeInTheDocument();
+    expect(getByTestId("credentials-tab")).toBeInTheDocument();
     expect(getByText("Credentials")).toBeInTheDocument();
   });
 
@@ -112,7 +112,9 @@ describe("Creds Tab", () => {
       </Provider>
     );
 
-    expect(getByTestId("creds-tab-cards-placeholder")).toBeInTheDocument();
+    expect(
+      getByTestId("credentials-tab-cards-placeholder")
+    ).toBeInTheDocument();
   });
 
   test("Renders Creds Card", () => {

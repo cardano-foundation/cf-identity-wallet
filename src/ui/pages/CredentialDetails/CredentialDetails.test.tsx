@@ -2,18 +2,17 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
-import { Clipboard } from "@capacitor/clipboard";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { SetOptions } from "@capacitor/preferences";
 import { waitForIonicReact } from "@ionic/react-test-utils";
-import { CredentialCardDetails } from "./CredentialCardDetails";
+import { CredentialDetails } from "./CredentialDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { Agent } from "../../../core/agent/agent";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
-import { IdentifierCardDetails } from "../IdentifierCardDetails";
+import { IdentifierDetails } from "../IdentifierDetails";
 
 const path = TabsRoutePath.CREDS + "/" + credsFixAcdc[0].id;
 
@@ -127,7 +126,7 @@ describe("Cards Details page - current not archived credential", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={CredentialCardDetails}
+            component={CredentialDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -151,7 +150,7 @@ describe("Cards Details page - current not archived credential", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={CredentialCardDetails}
+            component={CredentialDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -174,7 +173,7 @@ describe("Cards Details page - current not archived credential", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={CredentialCardDetails}
+            component={CredentialDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -209,7 +208,7 @@ describe("Cards Details page - current not archived credential", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={CredentialCardDetails}
+            component={CredentialDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -245,7 +244,7 @@ describe("Cards Details page - current not archived credential", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -285,7 +284,7 @@ describe("Cards Details page - archived credential", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={CredentialCardDetails}
+            component={CredentialDetails}
           />
         </MemoryRouter>
       </Provider>

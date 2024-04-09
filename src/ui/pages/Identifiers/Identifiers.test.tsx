@@ -5,7 +5,7 @@ import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { Identifiers } from "./Identifiers";
 import { TabsRoutePath } from "../../../routes/paths";
-import { IdentifierCardDetails } from "../IdentifierCardDetails";
+import { IdentifierDetails } from "../IdentifierDetails";
 import {
   CLEAR_STATE_DELAY,
   NAVIGATION_DELAY,
@@ -135,7 +135,7 @@ describe("Identifiers Tab", () => {
           />
           <Route
             path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </Provider>
       </MemoryRouter>

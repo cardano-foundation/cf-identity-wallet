@@ -41,15 +41,15 @@ import { CredentialCardTemplate } from "../../components/CredentialCardTemplate"
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { ACDCDetails } from "../../../core/agent/services/credentialService.types";
 import "../../components/CardDetails/CardDetails.scss";
-import "./CredentialCardDetails.scss";
+import "./CredentialDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
-import { CredContentAcdc } from "./components/CredentialContentAcdc";
+import { CredentialContent } from "./components/CredentialContent";
 import { combineClassNames } from "../../utils/style";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
 
-const CredentialCardDetails = () => {
+const CredentialDetails = () => {
   const pageId = "credential-card-details";
   const ionRouter = useIonRouter();
   const history = useHistory();
@@ -254,7 +254,7 @@ const CredentialCardDetails = () => {
             isActive={false}
           />
           <div className="card-details-content">
-            <CredContentAcdc cardData={cardData} />
+            <CredentialContent cardData={cardData} />
             <PageFooter
               pageId={pageId}
               archiveButtonText={
@@ -349,4 +349,4 @@ const CredentialCardDetails = () => {
   );
 };
 
-export { CredentialCardDetails };
+export { CredentialDetails };

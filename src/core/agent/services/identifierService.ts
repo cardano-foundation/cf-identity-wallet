@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { plainToInstance } from "class-transformer";
 import {
   CreateIdentifierResult,
-  IdentifierDetails,
+  IdentifierFullDetails,
   IdentifierShortDetails,
   MultiSigIcpRequestDetails,
 } from "./identifierService.types";
@@ -79,7 +79,7 @@ class IdentifierService extends AgentService {
 
   async getIdentifier(
     identifier: string
-  ): Promise<IdentifierDetails | undefined> {
+  ): Promise<IdentifierFullDetails | undefined> {
     const metadata = await this.getIdentifierMetadata(identifier);
     const aid = await this.signifyApi.getIdentifierByName(
       metadata.signifyName as string

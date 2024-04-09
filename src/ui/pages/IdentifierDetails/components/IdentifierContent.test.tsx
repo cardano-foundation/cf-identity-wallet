@@ -3,14 +3,14 @@ import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
-import { identifierFix } from "../../__fixtures__/identifierFix";
-import { TabsRoutePath } from "../navigation/TabsMenu";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
-import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { IdentifierCardDetails } from "../../pages/IdentifierCardDetails";
-import { Agent } from "../../../core/agent/agent";
-import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
-import { ConfigurationService } from "../../../core/configuration";
+import { identifierFix } from "../../../__fixtures__/identifierFix";
+import { TabsRoutePath } from "../../../components/navigation/TabsMenu";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../globals/constants";
+import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
+import { IdentifierDetails } from "..";
+import { Agent } from "../../../../core/agent/agent";
+import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import { ConfigurationService } from "../../../../core/configuration";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
 
@@ -22,7 +22,7 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-jest.mock("../../../core/agent/agent", () => ({
+jest.mock("../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       identifiers: {
@@ -76,13 +76,13 @@ describe("Cards Details page", () => {
     await new ConfigurationService().start();
   });
 
-  test("It renders Keri Card Details", async () => {
+  test("It renders Identifier Details", async () => {
     const { getByText, getByTestId, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -119,7 +119,7 @@ describe("Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -156,7 +156,7 @@ describe("Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </MemoryRouter>
       </Provider>

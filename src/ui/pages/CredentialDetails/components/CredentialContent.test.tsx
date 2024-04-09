@@ -2,14 +2,14 @@ import { render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 import { credsFixAcdc } from "../../../__fixtures__/credsFix";
-import { CredContentAcdc } from "./CredentialContentAcdc";
+import { CredentialContent } from "./CredentialContent";
 import { store } from "../../../../store";
 
 describe("Creds content", () => {
   test("Render ACDC cedential content", () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
-        <CredContentAcdc cardData={credsFixAcdc[0]} />
+        <CredentialContent cardData={credsFixAcdc[0]} />
       </Provider>
     );
     expect(getByTestId("card-details-credential-type")).toBeVisible();

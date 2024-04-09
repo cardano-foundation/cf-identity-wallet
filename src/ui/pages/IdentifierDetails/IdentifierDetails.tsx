@@ -35,9 +35,9 @@ import {
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import { Agent } from "../../../core/agent/agent";
-import { IdentifierDetails } from "../../../core/agent/services/identifierService.types";
+import { IdentifierFullDetails } from "../../../core/agent/services/identifierService.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
-import { IdentifierCardInfoKeri } from "../../components/IdentifierCardInfoKeri";
+import { IdentifierContent } from "./components/IdentifierContent";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { IdentifierOptions } from "../../components/IdentifierOptions";
@@ -45,7 +45,7 @@ import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate"
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { PageFooter } from "../../components/PageFooter";
 import "../../components/CardDetails/CardDetails.scss";
-import "./IdentifierCardDetails.scss";
+import "./IdentifierDetails.scss";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../components/PageHeader";
 import { combineClassNames } from "../../utils/style";
@@ -53,7 +53,7 @@ import { combineClassNames } from "../../utils/style";
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
 
-const IdentifierCardDetails = () => {
+const IdentifierDetails = () => {
   const pageId = "identifier-card-details";
   const ionRouter = useIonRouter();
   const history = useHistory();
@@ -68,7 +68,7 @@ const IdentifierCardDetails = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState<IdentifierDetails | undefined>();
+  const [cardData, setCardData] = useState<IdentifierFullDetails | undefined>();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
   const [navAnimation, setNavAnimation] = useState(false);
@@ -263,7 +263,7 @@ const IdentifierCardDetails = () => {
             isActive={false}
           />
           <div className="card-details-content">
-            <IdentifierCardInfoKeri cardData={cardData as IdentifierDetails} />
+            <IdentifierContent cardData={cardData as IdentifierFullDetails} />
             <PageFooter
               pageId={pageId}
               deleteButtonText={`${i18n.t(
@@ -327,4 +327,4 @@ const IdentifierCardDetails = () => {
   );
 };
 
-export { IdentifierCardDetails };
+export { IdentifierDetails };

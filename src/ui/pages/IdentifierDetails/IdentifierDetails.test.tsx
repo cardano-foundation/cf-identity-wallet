@@ -5,7 +5,7 @@ import { MemoryRouter, Route } from "react-router-dom";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import { SetOptions } from "@capacitor/preferences";
 import { identifierFix } from "../../__fixtures__/identifierFix";
-import { IdentifierCardDetails } from "./IdentifierCardDetails";
+import { IdentifierDetails } from "./IdentifierDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
@@ -80,7 +80,7 @@ describe("Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -104,7 +104,7 @@ describe("Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -134,7 +134,7 @@ describe("Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -164,7 +164,7 @@ describe("Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -204,7 +204,7 @@ describe("Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -260,7 +260,7 @@ describe("Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -299,7 +299,7 @@ describe("Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -322,7 +322,7 @@ describe("Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -367,7 +367,7 @@ describe("Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -386,7 +386,7 @@ describe("Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </MemoryRouter>
       </Provider>

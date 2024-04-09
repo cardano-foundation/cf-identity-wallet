@@ -71,7 +71,7 @@ const AdditionalButtons = ({
 };
 
 const Creds = () => {
-  const pageId = "creds-tab";
+  const pageId = "credentials-tab";
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const favCredsCache = useAppSelector(getFavouritesCredsCache);

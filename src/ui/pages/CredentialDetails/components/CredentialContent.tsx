@@ -1,20 +1,14 @@
 import { keyOutline, informationCircleOutline } from "ionicons/icons";
 import { i18n } from "../../../../i18n";
-import {
-  ACDCDetails,
-  JSONObject,
-} from "../../../../core/agent/services/credentialService.types";
+import { JSONObject } from "../../../../core/agent/services/credentialService.types";
 import {
   CardDetailsAttributes,
   CardDetailsBlock,
   CardDetailsItem,
 } from "../../../components/CardDetails";
+import { CredentialContentProps } from "./CredentialContent.types";
 
-interface ACDCContentProps {
-  cardData: ACDCDetails;
-}
-
-const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
+const CredentialContent = ({ cardData }: CredentialContentProps) => {
   return (
     <>
       <CardDetailsBlock title={i18n.t("creds.card.details.title")}>
@@ -66,4 +60,4 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
   );
 };
 
-export { CredContentAcdc };
+export { CredentialContent };

@@ -5,7 +5,7 @@ import { IonReactRouter } from "@ionic/react-router";
 import { CLEAR_STATE_DELAY, CardsStack, NAVIGATION_DELAY } from "./CardsStack";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { store } from "../../../store";
-import { IdentifierCardDetails } from "../../pages/IdentifierCardDetails";
+import { IdentifierDetails } from "../../pages/IdentifierDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
@@ -88,7 +88,7 @@ describe("Cards Stack Component", () => {
           />
           <Route
             path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </Provider>
       </IonReactRouter>

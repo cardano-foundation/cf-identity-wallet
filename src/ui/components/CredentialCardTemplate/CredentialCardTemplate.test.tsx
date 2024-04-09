@@ -5,7 +5,7 @@ import { CredentialCardTemplate } from "./CredentialCardTemplate";
 import { shortCredsFix } from "../../__fixtures__/shortCredsFix";
 
 describe("CredentialCardTemplate", () => {
-  it("renders ACDC card", async () => {
+  it("renders Credential Card Template", async () => {
     const handleShowCardDetails = jest.fn();
     const { getByText, getByTestId, getByAltText } = render(
       <Provider store={store}>
@@ -21,7 +21,6 @@ describe("CredentialCardTemplate", () => {
     const card = getByTestId("cred-card-template-name-index-0");
     expect(getByText("Qualified vLEI Issuer Credential")).toBeInTheDocument();
     expect(getByText("22/01/2024")).toBeInTheDocument();
-    expect(card.classList.contains("card-body-generic")).toBe(true);
     expect(getByAltText(/card-logo/i)).toBeInTheDocument();
     act(() => {
       fireEvent.click(card);

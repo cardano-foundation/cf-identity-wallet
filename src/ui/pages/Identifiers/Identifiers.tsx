@@ -160,7 +160,7 @@ const Identifiers = () => {
     }, CLEAR_STATE_DELAY);
   };
 
-  const tabClasses = `identifier-tab ${
+  const tabClasses = `${
     navAnimation === "cards"
       ? "cards-identifier-nav"
       : navAnimation === "favourite"

@@ -648,11 +648,7 @@
       "create": "Add an identifier",
       "favourites": "Favourites",
       "allidentifiers": "All identifiers",
-      "pendingidentifiers": "Pending identifiers",
-      "type": {
-        "didkey": "W3C did:key",
-        "keri": "KERI AID"
-      }
+      "pendingidentifiers": "Pending identifiers"
     },
     "card": {
       "layout": {
