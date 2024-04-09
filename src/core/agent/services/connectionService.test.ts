@@ -121,6 +121,7 @@ describe("Connection service of agent", () => {
   });
 
   test("can delete conenction by id", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     basicStorage.findAllByQuery = jest.fn().mockReturnValue([]);
     const connectionId = "connectionId";
     await connectionService.deleteConnectionById(
@@ -132,6 +133,7 @@ describe("Connection service of agent", () => {
   });
 
   test("Should delete connection's notes when deleting that connection", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     basicStorage.findAllByQuery = jest.fn().mockReturnValue([
       {
         id: "uuid",
@@ -239,5 +241,8 @@ describe("Connection service of agent", () => {
     expect(() =>
       connectionService.receiveInvitationFromUrl("url/oobi")
     ).toThrowError(SignifyApi.KERIA_CONNECTION_BROKEN);
+    expect(() => connectionService.deleteConnectionById("id")).toThrowError(
+      SignifyApi.KERIA_CONNECTION_BROKEN
+    );
   });
 });

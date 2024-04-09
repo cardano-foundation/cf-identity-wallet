@@ -196,8 +196,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await AriesAgent.agent.start();
       setIsOffline(false);
     } catch (e) {
+      const errorStack = (e as Error).stack as string;
       // If the error is failed to fetch with signify, we retry until the connection is secured
-      if (/failed to fetch/gi.test((e as Error).message)) {
+      if (
+        /failed to fetch/gi.test(errorStack) &&
+        /at SignifyClient.boot/gi.test(errorStack)
+      ) {
         AriesAgent.agent.bootAndConnect().then(() => {
           setIsOffline(!AriesAgent.agent.isAgentReady());
         });
@@ -295,25 +299,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     setInitialised(true);
   };
-
-  // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.
-  // Hence this isn't in i18n.
-  // if (isOffline) {
-  //   return (
-  //     <div className="agent-init-error-msg">
-  //       <p>
-  //         There’s an issue connecting to the cloud services we depend on right
-  //         now (DIDComm mediator, KERIA) - please check your internet connection,
-  //         or if this problem persists, let us know on Discord!
-  //       </p>
-  //       <p>
-  //         We’re working on an offline mode, as well as improving the deployment
-  //         setup for this pre-production release. Thank you for your
-  //         understanding!
-  //       </p>
-  //     </div>
-  //   );
-  // }
 
   return initialised ? <>{props.children}</> : <></>;
 };

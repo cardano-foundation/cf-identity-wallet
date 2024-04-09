@@ -933,6 +933,7 @@ describe("Signify API", () => {
 
 describe("Offline Signify API", () => {
   beforeEach(async () => {
+    jest.resetAllMocks();
     connectMock = jest.fn().mockImplementationOnce(() => {
       throw new Error("Connect error");
     });
@@ -946,26 +947,17 @@ describe("Offline Signify API", () => {
     expect(api.getKeriaOnlineStatus()).toEqual(false);
   });
 
-  test("createIdentifier should throw error when KERIA is offline", async () => {
-    await expect(api.createIdentifier()).rejects.toThrowError(
+  test("Should throw an error when KERIA is offline", async () => {
+    expect(() => api.createIdentifier()).toThrowError(
       SignifyApi.KERIA_CONNECTION_BROKEN
     );
-  });
-
-  test("createDelegationIdentifier should throw error when KERIA is offline", async () => {
-    await expect(api.createDelegationIdentifier("prefix")).rejects.toThrowError(
+    expect(() => api.createDelegationIdentifier("prefix")).toThrowError(
       SignifyApi.KERIA_CONNECTION_BROKEN
     );
-  });
-
-  test("resolveOobi should throw error when KERIA is offline", async () => {
-    await expect(api.resolveOobi("url")).rejects.toThrowError(
+    expect(() => api.resolveOobi("url")).toThrowError(
       SignifyApi.KERIA_CONNECTION_BROKEN
     );
-  });
-
-  test("getNotifications should throw error when KERIA is offline", async () => {
-    await expect(api.getNotifications()).rejects.toThrowError(
+    expect(() => api.getNotifications()).toThrowError(
       SignifyApi.KERIA_CONNECTION_BROKEN
     );
   });

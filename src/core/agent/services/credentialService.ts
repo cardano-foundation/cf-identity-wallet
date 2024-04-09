@@ -21,7 +21,7 @@ import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { RecordType } from "../../storage/storage.types";
 import { AriesAgent } from "../agent";
 import { BasicRecord } from "../records";
-import { onlineOnly } from "../modules/signify/signifyApi";
+import { OnlineOnly } from "../modules/signify/signifyApi";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -79,7 +79,7 @@ class CredentialService extends AgentService {
     return this.getCredentialShortDetails(await this.getMetadataById(id));
   }
 
-  @onlineOnly
+  @OnlineOnly
   async getCredentialDetailsById(id: string): Promise<ACDCDetails> {
     const metadata = await this.getMetadataById(id);
     const { acdc, error } = await this.signifyApi.getCredentialBySaid(
@@ -159,7 +159,7 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  @onlineOnly
+  @OnlineOnly
   async getKeriCredentialNotifications(
     filters: {
       isDismissed?: boolean;
@@ -237,7 +237,7 @@ class CredentialService extends AgentService {
     await this.basicStorage.deleteById(id);
   }
 
-  @onlineOnly
+  @OnlineOnly
   async acceptKeriAcdc(id: string): Promise<void> {
     const keriNoti = await this.getKeriNotificationRecordById(id);
     const keriExchange = await this.signifyApi.getKeriExchange(
@@ -305,7 +305,7 @@ class CredentialService extends AgentService {
     return acdc;
   }
 
-  @onlineOnly
+  @OnlineOnly
   async syncACDCs() {
     const signifyCredentials = await this.signifyApi.getCredentials();
     const storedCredentials = await this.getAllCredentialMetadata();

@@ -17,7 +17,7 @@ import { IdentifierType } from "./identifierService.types";
 import { KeriContact } from "../modules/signify/signifyApi.types";
 import { BasicRecord } from "../records";
 import { RecordType } from "../../storage/storage.types";
-import { onlineOnly } from "../modules/signify/signifyApi";
+import { OnlineOnly } from "../modules/signify/signifyApi";
 
 class ConnectionService extends AgentService {
   // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
@@ -42,7 +42,7 @@ class ConnectionService extends AgentService {
     );
   }
 
-  @onlineOnly
+  @OnlineOnly
   async receiveInvitationFromUrl(url: string): Promise<void> {
     if (url.includes("/oobi")) {
       this.eventService.emit<ConnectionKeriStateChangedEvent>({
@@ -123,7 +123,7 @@ class ConnectionService extends AgentService {
     };
   }
 
-  @onlineOnly
+  @OnlineOnly
   async getConnectionById(
     id: string,
     type?: ConnectionType
@@ -141,6 +141,7 @@ class ConnectionService extends AgentService {
     };
   }
 
+  @OnlineOnly
   async deleteConnectionById(
     id: string,
     connectionType?: ConnectionType
@@ -248,7 +249,7 @@ class ConnectionService extends AgentService {
     return histories;
   }
 
-  @onlineOnly
+  @OnlineOnly
   async syncKeriaContacts() {
     const signifyContacts = await this.signifyApi.getContacts();
     const storageContacts = await this.getAllConnectionKeriMetadata();

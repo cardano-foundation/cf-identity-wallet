@@ -25,7 +25,7 @@ import {
 import { AriesAgent } from "../agent";
 import { RecordType } from "../../storage/storage.types";
 import { BasicRecord } from "../records";
-import { onlineOnly } from "../modules/signify/signifyApi";
+import { OnlineOnly } from "../modules/signify/signifyApi";
 
 const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
   [IdentifierType.KEY]: [0, 1, 2, 3],
@@ -91,7 +91,7 @@ class IdentifierService extends AgentService {
     return identifiers;
   }
 
-  @onlineOnly
+  @OnlineOnly
   async getIdentifier(
     identifier: string
   ): Promise<GetIdentifierResult | undefined> {
@@ -184,7 +184,7 @@ class IdentifierService extends AgentService {
     });
   }
 
-  @onlineOnly
+  @OnlineOnly
   async syncKeriaIdentifiers() {
     const { aids: signifyIdentifiers } =
       await this.signifyApi.getAllIdentifiers();
@@ -564,7 +564,7 @@ class IdentifierService extends AgentService {
     return { done: false };
   }
 
-  @onlineOnly
+  @OnlineOnly
   async getUnhandledMultisigIdentifiers(
     filters: {
       isDismissed?: boolean;
