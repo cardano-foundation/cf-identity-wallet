@@ -1,9 +1,12 @@
 import { AgentService } from "./agentService";
-import { KeriNotification, KeriaNotificationMarker, NotificationRoute } from "../agent.types";
+import { KeriNotification, KeriaNotificationMarker } from "../agent.types";
 import { Notification } from "./credentialService.types";
+import { NotificationRoute } from "../modules/signify/signifyApi.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { RecordType } from "../../storage/storage.types";
 class SignifyNotificationService extends AgentService {
+  static readonly KERI_NOTIFICATION_NOT_FOUND =
+    "Keri notification record not found";
   async onNotificationKeriStateChanged(
     callback: (event: KeriNotification) => void
   ) {
@@ -37,9 +40,10 @@ class SignifyNotificationService extends AgentService {
       const startFetchingIndex =
         notificationQuery.nextIndex > 0 ? notificationQuery.nextIndex - 1 : 0;
 
-      const notifications = await this.signifyClient
-        .notifications()
-        .list(startFetchingIndex, startFetchingIndex + 24);
+      const notifications = await this.signifyApi.getNotifications(
+        startFetchingIndex,
+        startFetchingIndex + 24
+      );
       if (
         notificationQuery.nextIndex > 0 &&
         (notifications.notes.length == 0 ||
@@ -98,9 +102,9 @@ class SignifyNotificationService extends AgentService {
     ) {
       const keriNoti = await this.createKeriNotificationRecord(notif);
       callback(keriNoti);
-      await this.markNotification(notif.i);
+      await this.signifyApi.markNotification(notif.i);
     } else if (!notif.r) {
-      await this.markNotification(notif.i);
+      this.signifyApi.markNotification(notif.i);
     }
   }
 
@@ -112,6 +116,7 @@ class SignifyNotificationService extends AgentService {
       content: event.a,
       type: RecordType.NOTIFICATION_KERI,
       tags: {
+        isDismissed: false,
         type: RecordType.NOTIFICATION_KERI,
         route: event.a.r,
       },
@@ -123,8 +128,24 @@ class SignifyNotificationService extends AgentService {
     };
   }
 
-  private markNotification(notiSaid: string) {
-    return this.signifyClient.notifications().mark(notiSaid);
+  async dismissNotification(notificationId: string) {
+    const notificationRecord = await this.basicStorage.findById(notificationId);
+    if (!notificationRecord) {
+      throw new Error(SignifyNotificationService.KERI_NOTIFICATION_NOT_FOUND);
+    }
+    notificationRecord.setTag("isDismissed", true);
+    await this.basicStorage.update(notificationRecord);
+  }
+
+  /**This allow us to get all dismissed notifications */
+  async getDismissedNotifications() {
+    const notifications = await this.basicStorage.findAllByQuery(
+      RecordType.NOTIFICATION_KERI,
+      {
+        isDismissed: true,
+      }
+    );
+    return notifications;
   }
 }
 

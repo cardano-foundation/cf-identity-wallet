@@ -1,4 +1,4 @@
-import { ellipsisVertical, addOutline } from "ionicons/icons";
+import { ellipsisVertical } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
@@ -6,6 +6,7 @@ import {
   IonSegment,
   IonSegmentButton,
   IonSpinner,
+  IonText,
 } from "@ionic/react";
 import i18next from "i18next";
 import { i18n } from "../../../i18n";
@@ -41,19 +42,16 @@ import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionHistoryItem,
   ConnectionNoteDetails,
-  ConnectionType,
 } from "../../../core/agent/agent.types";
 import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
 import { EditConnectionsModal } from "./components/EditConnectionsModal";
-import { ConnectionDetailsInfoBlock } from "./components/ConnectionDetailsInfoBlock";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
-import CardanoLogo from "../../assets/images/CardanoLogo.jpg";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import Minicred1 from "../../assets/images/minicred1.jpg";
-import Minicred2 from "../../assets/images/minicred2.jpg";
-import Minicred3 from "../../assets/images/minicred3.jpg";
-import Minicred4 from "../../assets/images/minicred4.jpg";
+import Minicred from "../../assets/images/minicred.jpg";
+import KeriLogo from "../../assets/images/KeriGeneric.jpg";
+import { CardDetailsBlock } from "../../components/CardDetails";
+import { ConnectionNotes } from "./components/ConnectionNotes";
 
 const ConnectionDetails = () => {
   const pageId = "connection-details";
@@ -88,8 +86,7 @@ const ConnectionDetails = () => {
       try {
         const connectionDetails =
           await Agent.agent.connections.getConnectionById(
-            connectionShortDetails.id,
-            connectionShortDetails.type
+            connectionShortDetails.id
           );
         setConnectionDetails(connectionDetails);
         if (connectionDetails.notes) {
@@ -147,11 +144,12 @@ const ConnectionDetails = () => {
   const verifyAction = () => {
     async function deleteConnection() {
       await Agent.agent.connections.deleteConnectionById(
-        connectionShortDetails.id,
+        connectionShortDetails.id
       );
       const updatedConnections = connectionsData.filter(
         (item) => item.id !== connectionDetails?.id
       );
+      dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
       dispatch(setConnectionsCache(updatedConnections));
       handleDone();
       setVerifyPasswordIsOpen(false);
@@ -176,10 +174,6 @@ const ConnectionDetails = () => {
         i18n.t("connections.details.notavailable"),
     },
   ];
-
-  const credentialBackground = () => {
-    return Minicred4;
-  };
 
   if (loading.details || loading.history) {
     return (
@@ -213,7 +207,7 @@ const ConnectionDetails = () => {
       >
         <div className="connection-details-content">
           <ConnectionDetailsHeader
-            logo={connectionDetails?.logo}
+            logo={connectionDetails?.logo || KeriLogo}
             label={connectionDetails?.label}
             date={connectionDetails?.connectionDate}
           />
@@ -243,21 +237,27 @@ const ConnectionDetails = () => {
               data-testid="connection-details-tab"
             >
               {connectionDetailsData.map((infoBlock, index) => (
-                <ConnectionDetailsInfoBlock
+                <CardDetailsBlock
+                  className="connection-details-card"
                   key={index}
                   title={infoBlock.title}
                 >
-                  {infoBlock.value}
-                </ConnectionDetailsInfoBlock>
+                  {typeof infoBlock.value === "string" ? (
+                    <IonText>{infoBlock.value}</IonText>
+                  ) : (
+                    infoBlock.value
+                  )}
+                </CardDetailsBlock>
               ))}
-              <ConnectionDetailsInfoBlock
+              <CardDetailsBlock
+                className="connection-details-history"
                 title={i18n.t("connections.details.history")}
               >
                 {connectionHistory?.length > 0 && (
                   <div className="connection-details-history-event">
                     <div className="connection-details-logo">
                       <img
-                        src={credentialBackground()}
+                        src={Minicred}
                         alt="credential-miniature"
                         className="credential-miniature"
                       />
@@ -282,7 +282,7 @@ const ConnectionDetails = () => {
                 <div className="connection-details-history-event">
                   <div className="connection-details-logo">
                     <img
-                      src={connectionDetails?.logo ?? CardanoLogo}
+                      src={connectionDetails?.logo || KeriLogo}
                       alt="connection-logo"
                     />
                   </div>
@@ -299,7 +299,7 @@ const ConnectionDetails = () => {
                     </span>
                   </p>
                 </div>
-              </ConnectionDetailsInfoBlock>
+              </CardDetailsBlock>
               <PageFooter
                 pageId={pageId}
                 deleteButtonText={`${i18n.t("connections.details.delete")}`}
@@ -316,41 +316,10 @@ const ConnectionDetails = () => {
               className="connection-notes-tab"
               data-testid="connection-notes-tab"
             >
-              {notes.length > 0 ? (
-                <div className="connection-details-info-block">
-                  <p>{i18n.t("connections.details.notes")}</p>
-                  {notes.map((note, index) => (
-                    <div
-                      className="connection-details-info-block-inner"
-                      key={index}
-                    >
-                      <div className="connection-details-info-block-line">
-                        <p className="connection-details-info-block-note-title">
-                          {note.title}
-                        </p>
-                        <p className="connection-details-info-block-note-message">
-                          {note.message}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="connection-notes-empty">
-                  {i18n.t("connections.details.nocurrentnotesext")}
-                </p>
-              )}
-              <PageFooter
+              <ConnectionNotes
+                notes={notes}
                 pageId={pageId}
-                primaryButtonIcon={notes.length > 0 ? "" : addOutline}
-                primaryButtonText={`${
-                  notes.length > 0
-                    ? i18n.t("connections.details.options.labels.manage")
-                    : i18n.t("connections.details.options.labels.add")
-                }`}
-                primaryButtonAction={() => {
-                  setOptionsIsOpen(true);
-                }}
+                onOptionButtonClick={() => setOptionsIsOpen(true)}
               />
             </div>
           )}

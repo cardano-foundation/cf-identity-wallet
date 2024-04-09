@@ -8,15 +8,24 @@ import { ShareIdentifierProps } from "./ShareIdentifier.types";
 import { ShareIdentifier } from "./ShareIdentifier";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
+import { identifierFix } from "../../__fixtures__/identifierFix";
 
 const setIsOpen = jest.fn();
 const props: ShareIdentifierProps = {
   isOpen: true,
   setIsOpen,
-  id: "test-id",
-  name: "share-test-name",
+  signifyName: identifierFix[0].signifyName,
 };
-describe("Share Indentifier", () => {
+jest.mock("../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      connections: {
+        getKeriOobi: jest.fn(),
+      },
+    },
+  },
+}));
+describe("Share Indentifier (OOBI)", () => {
   test("Show toast when copy identifier", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
@@ -30,8 +39,7 @@ describe("Share Indentifier", () => {
         <ShareIdentifier
           isOpen={props.isOpen}
           setIsOpen={props.setIsOpen}
-          id={props.id}
-          name={props.name}
+          signifyName={props.signifyName}
         />
       </Provider>
     );

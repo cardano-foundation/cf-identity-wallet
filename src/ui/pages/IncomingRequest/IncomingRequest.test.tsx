@@ -1,6 +1,6 @@
 import { mockIonicReact } from "@ionic/react-test-utils";
 mockIonicReact();
-import { act, fireEvent, render } from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { EventEmitter } from "events";
 import { Provider } from "react-redux";
 import { store } from "../../../store";
@@ -8,19 +8,12 @@ import { IncomingRequest } from "./IncomingRequest";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import {
-  setQueueIncomingRequest,
-  dequeueCredentialRequest,
-} from "../../../store/reducers/stateCache";
-import { ConnectionType } from "../../../core/agent/agent.types";
-import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
+import { setQueueIncomingRequest } from "../../../store/reducers/stateCache";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { CredentialService } from "../../../core/agent/services";
-import {
-  CredentialStorage,
-  IdentifierStorage,
-} from "../../../core/agent/records";
-import { EventService } from "../../../core/agent/services/eventService";
-import { IpexCommunicationService } from "../../../core/agent/services/ipexCommunicationService";
+import { SignifyApi } from "../../../core/agent/modules/signify/signifyApi";
+import { Agent } from "../../../core/agent/agent";
+import { i18n } from "../../../i18n";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -76,9 +69,6 @@ const agent = jest.mocked({
       getIdentifierMetadata: jest.fn(),
     },
   },
-  w3cCredentials: {
-    getCredentialRecordById: jest.fn(),
-  },
   dids: {
     getCreatedDids: jest.fn(),
   },
@@ -109,177 +99,19 @@ const signifyApi = jest.mocked({
   getCredentialBySaid: jest.fn(),
 });
 
-const agentServicesProps = {
-  basicStorage: basicStorage,
-  signifyClient: {} as unknown as any,
-  eventService: new EventService(),
-  identifierStorage: new IdentifierStorage(basicStorage),
-  credentialStorage: new CredentialStorage(basicStorage),
-};
-
-const credentialService = new CredentialService(agentServicesProps);
-
-const ipexCommunicationService = new IpexCommunicationService(
-  agentServicesProps
+const credentialService = new CredentialService(
+  basicStorage,
+  signifyApi as any as SignifyApi
 );
 
 const connectionMock = connectionsFix[0];
-
-describe("Connection request", () => {
-  // afterEach(() => {
-  //   store.dispatch(dequeueCredentialRequest());
-  // });
-  //   test("It renders connection request incoming", async () => {
-  //     store.dispatch(
-  //       setQueueIncomingRequest({
-  //         id: "123",
-  //         type: IncomingRequestType.CONNECTION_INCOMING,
-  //         logo: connectionMock.logo,
-  //         label: connectionMock.label,
-  //       })
-  //     );
-  //     const { container, getByText } = render(
-  //       <Provider store={store}>
-  //         <IncomingRequest />
-  //       </Provider>
-  //     );
-  //     await waitFor(
-  //       () => {
-  //         const title = container.querySelector("h2");
-  //         const label = getByText(connectionMock.label);
-  //         expect(title).toHaveTextContent(
-  //           i18n.t("request.connection.title").toString()
-  //         );
-  //         expect(label).toBeInTheDocument();
-  //       },
-  //       { container: container }
-  //     );
-  //   });
-  //   test("It renders connection request incoming and confirm request", async () => {
-  //     const id = "123";
-  //     store.dispatch(
-  //       setQueueIncomingRequest({
-  //         id: id,
-  //         type: IncomingRequestType.CONNECTION_INCOMING,
-  //         logo: connectionMock.logo,
-  //         label: connectionMock.label,
-  //       })
-  //     );
-  //     const acceptRequestConnectionSpy = jest.spyOn(
-  //       Agent.agent.connections,
-  //       "acceptRequestConnection"
-  //     );
-  //     const { findByTestId } = render(
-  //       <Provider store={store}>
-  //         <IncomingRequest />
-  //       </Provider>
-  //     );
-  //     const continueButton = await findByTestId(
-  //       "primary-button-incoming-request"
-  //     );
-  //     expect(continueButton).toBeInTheDocument();
-  //     act(() => {
-  //       continueButton.click();
-  //     });
-  //     await waitFor(() => {
-  //       expect(acceptRequestConnectionSpy).toBeCalledWith(id);
-  //     });
-  //   });
-  //   test("It renders connection response and confirm request", async () => {
-  //     const id = "123";
-  //     store.dispatch(
-  //       setQueueIncomingRequest({
-  //         id: id,
-  //         type: IncomingRequestType.CONNECTION_RESPONSE,
-  //         logo: connectionMock.logo,
-  //         label: connectionMock.label,
-  //       })
-  //     );
-  //     const acceptResponseConnectionSpy = jest.spyOn(
-  //       Agent.agent.connections,
-  //       "acceptResponseConnection"
-  //     );
-  //     const { findByTestId } = render(
-  //       <Provider store={store}>
-  //         <IncomingRequest />
-  //       </Provider>
-  //     );
-  //     const continueButton = await findByTestId(
-  //       "primary-button-incoming-request"
-  //     );
-  //     act(() => {
-  //       fireEvent.click(continueButton);
-  //     });
-  //     expect(acceptResponseConnectionSpy).toBeCalledWith(id);
-  //   });
-  // });
-  // describe("Credential request", () => {
-  //   afterEach(() => {
-  //     store.dispatch(dequeueCredentialCredentialRequest());
-  //   });
-  //   test("It renders credential request and accept credential", async () => {
-  //     const id = "456";
-  //     store.dispatch(
-  //       setQueueIncomingRequest({
-  //         id: id,
-  //         type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
-  //         logo: connectionMock.logo,
-  //         label: connectionMock.label,
-  //       })
-  //     );
-  //     const acceptCredentialOfferSpy = jest.spyOn(
-  //       Agent.agent.credentials,
-  //       "acceptCredentialOffer"
-  //     );
-  //     const { findByTestId } = render(
-  //       <Provider store={store}>
-  //         <IncomingRequest />
-  //       </Provider>
-  //     );
-  //     const continueButton = await findByTestId(
-  //       "primary-button-incoming-request"
-  //     );
-  //     act(() => {
-  //       fireEvent.click(continueButton);
-  //     });
-  //     expect(acceptCredentialOfferSpy).toBeCalledWith(id);
-  //   });
-  //   test("It renders credential request and decline credential", async () => {
-  //     const id = "68";
-  //     store.dispatch(
-  //       setQueueIncomingRequest({
-  //         id: id,
-  //         type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
-  //       })
-  //     );
-  //     const declineCredentialOfferSpy = jest.spyOn(
-  //       Agent.agent.credentials,
-  //       "declineCredentialOffer"
-  //     );
-  //     const { findByText } = render(
-  //       <Provider store={store}>
-  //         <IncomingRequest />
-  //       </Provider>
-  //     );
-  //     const btnCancel = await findByText(
-  //       i18n.t("request.alert.cancel").toString()
-  //     );
-  //     act(() => {
-  //       btnCancel.click();
-  //     });
-  //     await waitFor(() => {
-  //       expect(declineCredentialOfferSpy).toBeCalledWith(id);
-  //     });
-  //   });
-});
 
 describe("Multi-Sig request", () => {
   const requestDetails = {
     id: "abc123456",
     type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-    source: ConnectionType.KERI,
     multisigIcpDetails: {
-      ourIdentifier: filteredKeriFix[0],
+      ourIdentifier: filteredIdentifierFix[0],
       sender: connectionsFix[3],
       otherConnections: [connectionsFix[4], connectionsFix[5]],
       threshold: 1,
@@ -287,9 +119,7 @@ describe("Multi-Sig request", () => {
   };
 
   afterEach(async () => {
-    await ipexCommunicationService.deleteKeriNotificationRecordById(
-      requestDetails.id
-    );
+    await credentialService.deleteKeriNotificationRecordById(requestDetails.id);
   });
 
   test("It receives incoming Multi-Sig request and render content in MultiSigRequestStageOne", async () => {

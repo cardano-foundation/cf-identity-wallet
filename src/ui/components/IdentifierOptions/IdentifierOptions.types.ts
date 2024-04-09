@@ -1,10 +1,10 @@
-import { KERIDetails } from "../../../core/agent/services/identifier.types";
+import { IdentifierDetails } from "../../../core/agent/services/identifierService.types";
 
 interface IdentifierOptionsProps {
   optionsIsOpen: boolean;
   setOptionsIsOpen: (value: boolean) => void;
-  cardData: KERIDetails;
-  setCardData: (value: KERIDetails) => void;
+  cardData: IdentifierDetails;
+  setCardData: (value: IdentifierDetails) => void;
   handleDeleteIdentifier: () => Promise<void>;
 }
 

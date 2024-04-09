@@ -1,5 +1,4 @@
-import { CSSProperties } from "react";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
 
 interface IdentifierCardTemplateProps {
   name?: string;
@@ -7,7 +6,7 @@ interface IdentifierCardTemplateProps {
   isActive: boolean;
   index?: number;
   onHandleShowCardDetails?: (index: number | undefined) => void;
-  styles?: CSSProperties;
+  pickedCard?: boolean;
 }
 
 export type { IdentifierCardTemplateProps };

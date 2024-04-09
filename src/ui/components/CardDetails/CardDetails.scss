@@ -1,0 +1,144 @@
+.card-details {
+  background: var(--ion-color-light-grey);
+
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(var(--scale-h) * 100);
+  }
+
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Safari, Chrome and Opera > 12.1 */
+  @-webkit-keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .page-header,
+  .card-details-content {
+    -webkit-animation: fadein 0.7s; /* Safari, Chrome and Opera > 12.1 */
+    animation: fadein 0.7s;
+  }
+
+  ion-header ion-toolbar {
+    --background: var(--ion-color-light-grey);
+
+    ion-button:not(.close-button-label),
+    ion-button.md:not(.close-button-label) {
+      width: 2.8125rem;
+      height: 2.8125rem;
+      border-radius: 1.5rem;
+      background: var(--ion-color-light);
+
+      &:not(:first-child) {
+        margin-left: 0.5rem;
+      }
+
+      &::part(native) {
+        padding: 0.5rem;
+      }
+
+      &.heart-button-favourite {
+        background: rgba(var(--ion-color-danger-rgb), 0.15) !important;
+
+        .heart-icon-favourite {
+          color: var(--ion-color-danger);
+        }
+      }
+    }
+  }
+
+  &.archived-credential {
+    .action-button-label,
+    .action-button-label.md {
+      background: none;
+    }
+  }
+
+  ion-content.tab-content,
+  ion-content.scrollable-page-content,
+  ion-content.scrollable-page-content.md {
+    > *:first-child {
+      margin-top: 1.5rem;
+    }
+  }
+
+  .card-details-content {
+    color: var(--ion-color-secondary);
+    margin-top: 1.5625rem;
+
+    .cred-content-acdc-card {
+      .card-details-info-block-inner {
+        padding: 1.25rem;
+      }
+    }
+
+    > *:not(:first-child) {
+      margin: 1.56rem 0 1rem;
+    }
+
+    .card-attribute-block {
+      .card-details-info-block-inner {
+        padding: 1.25rem;
+      }
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .cred-content-acdc-card {
+      .card-details-info-block-inner {
+        font-size: 0.8rem;
+      }
+    }
+
+    &.archived-credential {
+      .action-button-label,
+      .action-button-label.md {
+        font-size: 0.8rem;
+      }
+    }
+
+    ion-header ion-toolbar {
+      ion-button:not(.close-button-label),
+      ion-button.md:not(.close-button-label) {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 1.275rem;
+      }
+    }
+
+    ion-content.scrollable-page-content,
+    ion-content.scrollable-page-content.md {
+      > *:first-child {
+        margin-top: 1.275rem;
+      }
+    }
+
+    .card-details-content {
+      margin-top: 1.2625rem;
+
+      > *:not(:first-child) {
+        margin: 1rem 0 0.85rem;
+      }
+
+      .card-attribute-block {
+        .card-details-info-block-inner {
+          padding: 1rem 1.25rem;
+        }
+      }
+    }
+  }
+}

@@ -36,13 +36,13 @@ import {
   ConnectionKeriStateChangedEvent,
   ConnectionStatus,
   AcdcKeriStateChangedEvent,
-  ConnectionType,
-  NotificationRoute,
 } from "../../../core/agent/agent.types";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
+import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
+import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 
 const connectionKeriStateChangedHandler = async (
   event: ConnectionKeriStateChangedEvent,
@@ -73,18 +73,16 @@ const keriNotificationsChangeHandler = async (
         type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
         logo: "", // TODO: must define Keri logo
         label: "Credential Issuance Server", // TODO: must define it
-        source: ConnectionType.KERI,
       })
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
     const multisigIcpDetails =
-      await Agent.agent.multiSigs.getMultisigIcpDetails(event);
+      await Agent.agent.identifiers.getMultisigIcpDetails(event);
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
         event: event,
         type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-        source: ConnectionType.KERI,
         multisigIcpDetails: multisigIcpDetails,
       })
     );
@@ -156,6 +154,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     dispatch(setPauseQueueIncomingRequest(true));
     const connectionsDetails = await Agent.agent.connections.getConnections();
+    let userName: PreferencesStorageItem = { userName: "" };
     const credentials = await Agent.agent.credentials.getCredentials();
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
@@ -209,9 +208,25 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     }
 
+    try {
+      userName = await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME);
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
+        )
+      ) {
+        throw e;
+      }
+    }
+
     dispatch(
       setAuthentication({
         ...authentication,
+        userName: userName.userName as string,
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
@@ -228,7 +243,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.signifyNotifications.onNotificationKeriStateChanged((event) => {
       return keriNotificationsChangeHandler(event, dispatch);
     });
-    Agent.agent.ipexCommunications.onAcdcKeriStateChanged((event) => {
+    Agent.agent.credentials.onAcdcKeriStateChanged((event) => {
       return keriAcdcChangeHandler(event, dispatch);
     });
 
@@ -236,7 +251,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     const oldMessages = (
       await Promise.all([
-        Agent.agent.ipexCommunications.getUnhandledCredentials(),
+        Agent.agent.credentials.getKeriCredentialNotifications(),
+        Agent.agent.identifiers.getUnhandledMultisigIdentifiers({
+          isDismissed: false,
+        }),
       ])
     )
       .flat()
@@ -247,11 +265,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await keriNotificationsChangeHandler(message, dispatch);
     });
     // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-    await Promise.all([
-      Agent.agent.identifiers.syncKeriaIdentifiers(),
-      Agent.agent.connections.syncKeriaContacts(),
-      Agent.agent.ipexCommunications.syncACDCs(),
-    ]);
+    // await Promise.all([
+    //   AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
+    //   AriesAgent.agent.connections.syncKeriaContacts(),
+    //   AriesAgent.agent.credentials.syncACDCs(),
+    // ]);
   };
 
   // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.

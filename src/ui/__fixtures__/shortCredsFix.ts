@@ -1,6 +1,5 @@
 import { CredentialShortDetails } from "../../core/agent/services/credentialService.types";
 import { CredentialMetadataRecordStatus } from "../../core/agent/records/credentialMetadataRecord.types";
-import { ConnectionType } from "../../core/agent/agent.types";
 
 const shortCredsFix: CredentialShortDetails[] = [
   {
@@ -10,7 +9,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     isArchived: false,
     issuanceDate: "2024-01-24T16:20:26.497Z",
     status: CredentialMetadataRecordStatus.CONFIRMED,
-    connectionType: ConnectionType.KERI,
   },
   {
     colors: ["#ef8f99", "#f5bcc2"],
@@ -19,7 +17,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     isArchived: false,
     issuanceDate: "2024-01-24T16:19:33.281Z",
     status: CredentialMetadataRecordStatus.CONFIRMED,
-    connectionType: ConnectionType.KERI,
   },
   {
     colors: ["#af8fef", "#cfbcf5"],
@@ -28,7 +25,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     isArchived: false,
     issuanceDate: "2024-01-24T16:21:09.451Z",
     status: CredentialMetadataRecordStatus.CONFIRMED,
-    connectionType: ConnectionType.KERI,
   },
   {
     id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
@@ -36,7 +32,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     issuanceDate: "2024-01-22T16:03:44.643Z",
     credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialMetadataRecordStatus.CONFIRMED,
-    connectionType: ConnectionType.KERI,
   },
   {
     id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
@@ -44,7 +39,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     issuanceDate: "2024-01-22T16:03:44.643Z",
     credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialMetadataRecordStatus.PENDING,
-    connectionType: ConnectionType.KERI,
   },
 ];
 

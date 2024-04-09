@@ -1,23 +1,16 @@
 import { ConnectionShortDetails } from "../agent.types";
 
-enum IdentifierType {
-  KERI = "keri",
-}
-
 interface IdentifierShortDetails {
   id: string;
-  method: IdentifierType;
   displayName: string;
   createdAtUTC: string;
-  signifyName?: string;
+  signifyName: string;
   colors: [string, string];
   theme: number;
   isPending: boolean;
 }
 
-type GetIdentifierResult = { type: IdentifierType.KERI; result: KERIDetails };
-
-interface KERIDetails extends IdentifierShortDetails {
+interface IdentifierDetails extends IdentifierShortDetails {
   signifyOpName?: string;
   s: number;
   dt: string;
@@ -37,11 +30,14 @@ interface MultiSigIcpRequestDetails {
   threshold: number;
 }
 
-export { IdentifierType };
+interface CreateIdentifierResult {
+  identifier: string;
+  signifyName: string;
+}
 
 export type {
   IdentifierShortDetails,
-  KERIDetails,
-  GetIdentifierResult,
+  IdentifierDetails,
   MultiSigIcpRequestDetails,
+  CreateIdentifierResult,
 };

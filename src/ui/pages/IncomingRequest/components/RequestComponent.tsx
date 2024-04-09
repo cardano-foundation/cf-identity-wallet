@@ -20,19 +20,6 @@ const RequestComponent = ({
 }: RequestProps) => {
   const [requestStage, setRequestStage] = useState(0);
   switch (incomingRequestType) {
-  case IncomingRequestType.CONNECTION_INCOMING:
-  case IncomingRequestType.CONNECTION_RESPONSE:
-    return (
-      <ConnectionRequest
-        pageId={pageId}
-        activeStatus={activeStatus}
-        requestData={requestData}
-        initiateAnimation={initiateAnimation}
-        handleAccept={handleAccept}
-        handleCancel={handleCancel}
-        incomingRequestType={incomingRequestType}
-      />
-    );
   case IncomingRequestType.CREDENTIAL_OFFER_RECEIVED:
     return (
       <CredentialRequest

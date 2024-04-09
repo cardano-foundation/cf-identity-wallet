@@ -6,11 +6,11 @@ import {
 } from "ionicons/icons";
 import i18next from "i18next";
 import { i18n } from "../../../../i18n";
-import CardanoLogo from "../../../../ui/assets/images/CardanoLogo.jpg";
-import { RequestType } from "../../../globals/types";
+import KeriLogo from "../../../../ui/assets/images/KeriGeneric.jpg";
 import { PageFooter } from "../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
 import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageLayout";
+import { RequestType } from "../../../globals/types";
 
 const CredentialRequest = ({
   pageId,
@@ -20,6 +20,8 @@ const CredentialRequest = ({
   handleAccept,
   handleCancel,
 }: RequestProps) => {
+  const fallbackLogo = KeriLogo;
+
   return (
     <ResponsivePageLayout
       pageId={pageId}
@@ -49,7 +51,8 @@ const CredentialRequest = ({
           </div>
           <div className="request-provider-logo">
             <img
-              src={requestData?.logo ?? CardanoLogo}
+              data-testid="credential-request-provider-logo"
+              src={requestData?.logo || fallbackLogo}
               alt="request-provider-logo"
             />
           </div>

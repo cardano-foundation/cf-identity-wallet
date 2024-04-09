@@ -9,10 +9,7 @@ import { IdentifierThemeSelector } from "../../../components/CreateIdentifier/co
 import { CustomInput } from "../../../components/CustomInput";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { Agent } from "../../../../core/agent/agent";
-import {
-  IdentifierShortDetails,
-  IdentifierType,
-} from "../../../../core/agent/services/identifier.types";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
   getIdentifiersCache,
@@ -42,7 +39,7 @@ const MultiSigRequestStageTwo = ({
     if (!(requestData.event && requestData.multisigIcpDetails)) {
       // Do some error thing here... maybe it's just a TODO
     } else {
-      const multisigId = await Agent.agent.multiSigs.joinMultisig(
+      const joinMultisigResult = await Agent.agent.identifiers.joinMultisig(
         requestData.event,
         {
           theme: selectedTheme,
@@ -52,16 +49,16 @@ const MultiSigRequestStageTwo = ({
         }
       );
 
-      if (multisigId) {
+      if (joinMultisigResult) {
         const newIdentifier: IdentifierShortDetails = {
-          id: multisigId,
-          method: IdentifierType.KERI,
+          id: joinMultisigResult.identifier,
           displayName: displayNameValue,
           createdAtUTC: `${requestData.event?.createdAt}`,
           // @TODO - sdisalvo: Colors will need to be removed
           colors: ["#000000", "#000000"],
           theme: selectedTheme,
           isPending: requestData.multisigIcpDetails.threshold >= 2,
+          signifyName: joinMultisigResult.signifyName,
         };
         dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
         dispatch(

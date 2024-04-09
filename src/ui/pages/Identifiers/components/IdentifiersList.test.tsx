@@ -3,10 +3,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { IdentifiersList } from "./IdentifiersList";
-import {
-  IdentifierShortDetails,
-  IdentifierType,
-} from "../../../../core/agent/services/identifier.types";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../globals/constants";
@@ -59,12 +56,12 @@ describe("Identifiers Tab", () => {
     const pendingIdentifiers: IdentifierShortDetails[] = [
       {
         id: "ECHG-cxboMQ78Hwlm2-w6OS3iU275bAKkqC1LjwICPyi",
-        method: IdentifierType.KERI,
         displayName: "Test MS",
         createdAtUTC: "2024-03-07T11:54:56.886Z",
         colors: ["#000000", "#000000"],
         theme: 4,
         isPending: true,
+        signifyName: "Test",
       },
     ];
     const handleClick = jest.fn();

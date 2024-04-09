@@ -1,8 +1,7 @@
-import { ConnectionType, ConnectionStatus } from "../agent.types";
+import { ConnectionStatus } from "../agent.types";
 import { ConnectionService } from "./connectionService";
+import { SignifyApi } from "../modules/signify/signifyApi";
 import { RecordType } from "../../storage/storage.types";
-import { EventService } from "./eventService";
-import { CredentialStorage, IdentifierStorage } from "../records";
 
 const basicStorage = jest.mocked({
   open: jest.fn(),
@@ -15,90 +14,17 @@ const basicStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
-const contactListMock = jest.fn();
-
-const signifyClient = jest.mocked({
-  connect: jest.fn(),
-  boot: jest.fn(),
-  identifiers: () => ({
-    list: jest.fn(),
-    get: jest.fn(),
-    create: jest.fn(),
-    addEndRole: jest.fn(),
-    interact: jest.fn(),
-    rotate: jest.fn(),
-    members: jest.fn(),
-  }),
-  operations: () => ({
-    get: jest.fn().mockImplementation((id: string) => {
-      return {
-        done: true,
-        response: {
-          i: id,
-        },
-      };
-    }),
-  }),
-  oobis: () => ({
-    get: jest.fn().mockImplementation((name: string) => {
-      return {
-        oobis: [`${oobiPrefix}${name}`],
-        done: true,
-      };
-    }),
-    resolve: jest.fn().mockImplementation((name: string) => {
-      return {
-        done: true,
-        response: {
-          i: name,
-        },
-      };
-    }),
-  }),
-  contacts: () => ({
-    list: contactListMock,
-    get: jest.fn().mockImplementation((id: string) => {
-      return {
-        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
-        oobi: "oobi",
-        id,
-      };
-    }),
-    delete: jest.fn(),
-  }),
-  notifications: () => ({
-    list: jest.fn(),
-    mark: jest.fn(),
-  }),
-  ipex: () => ({
-    admit: jest.fn(),
-    submitAdmit: jest.fn(),
-  }),
-  credentials: () => ({
-    list: jest.fn(),
-  }),
-  exchanges: () => ({
-    get: jest.fn(),
-    send: jest.fn(),
-  }),
-  agent: {
-    pre: "pre",
-  },
-  keyStates: () => ({
-    query: jest.fn(),
-    get: jest.fn(),
-  }),
+const signifyApi = jest.mocked({
+  resolveOobi: jest.fn(),
+  getContacts: jest.fn(),
+  getOobi: jest.fn(),
+  deleteContactById: jest.fn(),
 });
 
-const agentServicesProps = {
-  basicStorage: basicStorage,
-  signifyClient: signifyClient as any,
-  eventService: new EventService(),
-  identifierStorage: new IdentifierStorage(basicStorage),
-  credentialStorage: new CredentialStorage(basicStorage),
-};
-
-const connectionService = new ConnectionService(agentServicesProps);
+const connectionService = new ConnectionService(
+  basicStorage,
+  signifyApi as any as SignifyApi
+);
 
 const now = new Date();
 const nowISO = now.toISOString();
@@ -128,12 +54,12 @@ describe("Connection service of agent", () => {
         },
       },
     ]);
+    signifyApi.getContacts = jest.fn().mockResolvedValue(keriContacts);
     expect(await connectionService.getConnections()).toEqual([
       {
         id: keriContacts[0].id,
         label: keriContacts[0].alias,
         status: ConnectionStatus.CONFIRMED,
-        type: ConnectionType.KERI,
         connectionDate: expect.any(String),
       },
     ]);
@@ -197,6 +123,7 @@ describe("Connection service of agent", () => {
     const connectionId = "connectionId";
     await connectionService.deleteConnectionById(connectionId);
     expect(basicStorage.deleteById).toBeCalledWith(connectionId);
+    // expect(signifyApi.deleteContactById).toBeCalledWith(connectionId); // TODO: must open when Keria runs well
   });
 
   test("Should delete connection's notes when deleting that connection", async () => {
@@ -214,12 +141,14 @@ describe("Connection service of agent", () => {
   });
 
   test("can receive keri oobi", async () => {
-    signifyClient.oobis().resolve.mockResolvedValue({
-      done: true,
+    signifyApi.resolveOobi.mockImplementation((url) => {
+      return { name: url, response: { i: "id" } };
     });
     const oobi =
       "http://127.0.0.1:3902/oobi/EBRcDDwjOfqZwC1w2XFcE1mKQUb1LekNNidkZ8mrIEaw/agent/EEXekkGu9IAzav6pZVJhkLnjtjM5v3AcyA-pdKUcaGei";
     await connectionService.receiveInvitationFromUrl(oobi);
+    // We aren't too concerned with testing the config passed
+    expect(signifyApi.resolveOobi).toBeCalledWith(oobi);
   });
 
   test("can get connection keri (short detail view) by id", async () => {
@@ -239,13 +168,12 @@ describe("Connection service of agent", () => {
       connectionDate: nowISO,
       label: "keri",
       status: ConnectionStatus.CONFIRMED,
-      type: ConnectionType.KERI,
     });
     expect(basicStorage.findById).toBeCalledWith(keriContacts[0].id);
   });
 
   test("can get KERI OOBI", async () => {
-    signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
+    signifyApi.getOobi = jest.fn().mockImplementation((name: string) => {
       return `${oobiPrefix}${name}`;
     });
     const signifyName = "keriuuid";
@@ -253,8 +181,22 @@ describe("Connection service of agent", () => {
     expect(KeriOobi).toEqual(oobiPrefix + signifyName);
   });
 
+  test("can get a KERI OOBI with an alias (URL encoded)", async () => {
+    signifyApi.getOobi = jest.fn().mockImplementation((name: string) => {
+      return `${oobiPrefix}${name}`;
+    });
+    const signifyName = "keriuuid";
+    const KeriOobi = await connectionService.getKeriOobi(
+      signifyName,
+      "alias with spaces"
+    );
+    expect(KeriOobi).toEqual(
+      `${oobiPrefix}${signifyName}?name=alias%20with%20spaces`
+    );
+  });
+
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
-    contactListMock.mockReturnValue([
+    signifyApi.getContacts = jest.fn().mockReturnValue([
       {
         id: "EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR",
         alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",

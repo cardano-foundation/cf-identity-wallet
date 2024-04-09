@@ -60,11 +60,7 @@ const Connections = ({
   }, [connectionsCache]);
 
   async function handleProvideQr() {
-    // const invitation =
-    //   await Agent.agent.connections.createMediatorInvitation();
-    // const shortUrl = await Agent.agent.connections.getShortenUrl(
-    //   invitation.invitationUrl
-    // );
+    // TODO: bao-sotatek: define how to provide the QR
     // setInvitationLink(shortUrl);
     setConnectModalIsOpen(false);
   }

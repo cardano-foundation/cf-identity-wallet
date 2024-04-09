@@ -1,12 +1,10 @@
 import { BaseRecord } from "../../storage/storage.types";
-import { IdentifierType } from "../services/identifier.types";
 
 interface IdentifierMetadataRecordProps {
   id: string;
   displayName: string;
   colors: [string, string];
-  method: IdentifierType;
-  signifyName?: string;
+  signifyName: string;
   createdAt?: Date;
   isArchived?: boolean;
   isDeleted?: boolean;
@@ -21,13 +19,12 @@ class IdentifierMetadataRecord
   implements IdentifierMetadataRecordProps
 {
   displayName!: string;
-  method!: IdentifierType;
   colors!: [string, string];
   isArchived?: boolean;
   isDeleted?: boolean;
   isPending?: boolean;
   signifyOpName?: string | undefined;
-  signifyName?: string | undefined;
+  signifyName!: string;
   theme!: number;
   multisigManageAid?: string | undefined;
 
@@ -40,7 +37,6 @@ class IdentifierMetadataRecord
     if (props) {
       this.id = props.id;
       this.displayName = props.displayName;
-      this.method = props.method;
       this.colors = props.colors;
       this.signifyName = props.signifyName;
       this.isArchived = props.isArchived ?? false;
@@ -59,7 +55,6 @@ class IdentifierMetadataRecord
       isArchived: this.isArchived,
       isDeleted: this.isDeleted,
       isPending: this.isPending,
-      method: this.method,
     };
   }
 }

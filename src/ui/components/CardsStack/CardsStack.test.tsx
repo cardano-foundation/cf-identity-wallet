@@ -1,6 +1,7 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
+import { IonReactRouter } from "@ionic/react-router";
 import { CLEAR_STATE_DELAY, CardsStack, NAVIGATION_DELAY } from "./CardsStack";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { store } from "../../../store";
@@ -15,19 +16,15 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       identifiers: {
         getIdentifier: jest.fn().mockResolvedValue({
-          type: "key",
-          result: {
-            id: "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
-            method: "key",
-            displayName: "Anonymous ID",
-            createdAtUTC: "2023-01-01T19:23:24Z",
-            colors: ["#92FFC0", "#47FF94"],
-            theme: 0,
-            keyType: "Ed25519",
-            controller:
-              "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
-            publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
-          },
+          id: "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
+          displayName: "Anonymous ID",
+          createdAtUTC: "2023-01-01T19:23:24Z",
+          colors: ["#92FFC0", "#47FF94"],
+          theme: 0,
+          keyType: "Ed25519",
+          controller:
+            "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
+          publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
         }),
         checkMultisigComplete: jest.fn().mockResolvedValue(true),
       },
@@ -82,7 +79,7 @@ describe("Cards Stack Component", () => {
   test("It navigates to Identifier Card Details and back", async () => {
     jest.useFakeTimers();
     const { findByTestId } = render(
-      <MemoryRouter>
+      <IonReactRouter>
         <Provider store={store}>
           <CardsStack
             name="example"
@@ -94,7 +91,7 @@ describe("Cards Stack Component", () => {
             component={IdentifierCardDetails}
           />
         </Provider>
-      </MemoryRouter>
+      </IonReactRouter>
     );
 
     const firstCard = await findByTestId(

@@ -1,4 +1,3 @@
-import { IdentifierType } from "../services/identifier.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -8,9 +7,9 @@ const mockData: IdentifierMetadataRecordProps = {
   id: "z6Mkpph7qyemfmHt5cSEXXbhm1VbSZT789X8Ep4eA7ndGxGh",
   displayName: "New AID",
   colors: ["#000000", "#FFFFFF"],
-  method: IdentifierType.KERI,
   isArchived: true,
   theme: 0,
+  signifyName: "Test",
 };
 
 describe("Identifier Record", () => {
@@ -38,9 +37,9 @@ describe("Identifier Record", () => {
       id: mockData.id,
       displayName: mockData.displayName,
       colors: mockData.colors,
-      method: mockData.method,
       isArchived: mockData.isArchived,
       theme: 0,
+      signifyName: "Test",
     });
     expect(settingsRecord.createdAt.getTime()).toBeGreaterThan(
       createdAt.getTime()
@@ -53,9 +52,9 @@ describe("Identifier Record", () => {
       id: mockData.id,
       displayName: mockData.displayName,
       colors: mockData.colors,
-      method: mockData.method,
       createdAt: createdAt,
       theme: 0,
+      signifyName: "Test",
     });
     expect(settingsRecord.isArchived).toBe(false);
   });

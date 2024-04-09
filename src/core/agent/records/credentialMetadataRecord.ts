@@ -3,7 +3,6 @@ import {
   CredentialMetadataRecordStatus,
 } from "./credentialMetadataRecord.types";
 import { BaseRecord } from "../../storage/storage.types";
-import { ConnectionType } from "../agent.types";
 
 class CredentialMetadataRecord
   extends BaseRecord
@@ -18,7 +17,6 @@ class CredentialMetadataRecord
   status!: CredentialMetadataRecordStatus;
   credentialRecordId!: string;
   connectionId?: string;
-  connectionType!: ConnectionType;
 
   static readonly type = "CredentialMetadataRecord";
   readonly type = CredentialMetadataRecord.type;
@@ -38,7 +36,6 @@ class CredentialMetadataRecord
       this.credentialType = props.credentialType;
       this.status = props.status;
       this.connectionId = props.connectionId;
-      this.connectionType = props.connectionType;
     }
   }
 

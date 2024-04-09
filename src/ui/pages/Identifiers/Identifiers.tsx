@@ -16,7 +16,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
 import { CardType } from "../../globals/types";
 import { Connections } from "../Connections";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
 import "./Identifiers.scss";
 import { IdentifiersList } from "./components/IdentifiersList";
 import { Agent } from "../../../core/agent/agent";
@@ -129,7 +129,7 @@ const Identifiers = () => {
     // and I moved it here since PendingIdentifiers are never going to show up in the stack.
     /**The below code only return false if the identifier is a multisig and it is not ready */
     const checkMultisigComplete =
-      await Agent.agent.multiSigs.checkMultisigComplete(identifier.id);
+      await Agent.agent.identifiers.checkMultisigComplete(identifier.id);
     if (!checkMultisigComplete) {
       return;
     } else {
@@ -202,9 +202,9 @@ const Identifiers = () => {
                 ref={favouriteContainerElement}
                 className="identifiers-tab-content-block identifier-favourite-cards"
               >
-                {allIdentifiers.length ? (
-                  <h3>{i18n.t("creds.tab.favourites")}</h3>
-                ) : null}
+                {!!allIdentifiers.length && (
+                  <h3>{i18n.t("identifiers.tab.favourites")}</h3>
+                )}
                 <CardsStack
                   name="favs"
                   cardsType={CardType.IDENTIFIERS}

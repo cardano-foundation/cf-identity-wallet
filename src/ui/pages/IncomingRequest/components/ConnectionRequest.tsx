@@ -49,7 +49,8 @@ const ConnectionRequest = ({
           </div>
           <div className="request-provider-logo">
             <img
-              src={requestData?.logo ?? CardanoLogo}
+              data-testid="request-provider-logo"
+              src={requestData?.logo || CardanoLogo}
               alt="request-provider-logo"
             />
           </div>

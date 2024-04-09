@@ -3,10 +3,10 @@ import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
-import { keriFix, identifierFix } from "../../__fixtures__/identifierFix";
+import { identifierFix } from "../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
-import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { IdentifierCardDetails } from "../../pages/IdentifierCardDetails";
 import { Agent } from "../../../core/agent/agent";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
@@ -26,12 +26,13 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       identifiers: {
-        getIdentifier: jest
-          .fn()
-          .mockResolvedValue({ type: "keri", result: identifierFix[0] }),
+        getIdentifier: jest.fn().mockResolvedValue(identifierFix[0]),
       },
       genericRecords: {
         findById: jest.fn(),
+      },
+      connections: {
+        getKeriOobi: jest.fn(),
       },
     },
   },
@@ -56,7 +57,7 @@ const initialState = {
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
   identifiersCache: {
-    identifiers: filteredKeriFix,
+    identifiers: filteredIdentifierFix,
   },
 };
 
@@ -90,13 +91,13 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(
         getByText(
-          filteredKeriFix[0].id.substring(0, 5) +
+          filteredIdentifierFix[0].id.substring(0, 5) +
             "..." +
-            filteredKeriFix[0].id.slice(-5)
+            filteredIdentifierFix[0].id.slice(-5)
         )
       ).toBeInTheDocument()
     );
-    expect(getByText(filteredKeriFix[0].displayName)).toBeInTheDocument();
+    expect(getByText(filteredIdentifierFix[0].displayName)).toBeInTheDocument();
     expect(getByTestId("share-identifier-modal").getAttribute("is-open")).toBe(
       "false"
     );
@@ -107,7 +108,7 @@ describe("Cards Details page", () => {
       "false"
     );
     expect(Agent.agent.identifiers.getIdentifier).toBeCalledWith(
-      filteredKeriFix[0].id
+      filteredIdentifierFix[0].id
     );
   });
 
@@ -124,29 +125,27 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() =>
-      expect(getByTestId("delegator-copy-button")).toBeInTheDocument()
-    );
+    await waitFor(() => expect(getByTestId("delegator")).toBeInTheDocument());
 
-    fireEvent.click(getByTestId("delegator-copy-button"));
+    fireEvent.click(getByTestId("delegator"));
 
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
-        string: keriFix[0].di,
+        string: identifierFix[0].di,
       });
     });
 
-    fireEvent.click(getByTestId("signing-keys-list-copy-button-0"));
+    fireEvent.click(getByTestId("signing-key-0"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
-        string: keriFix[0].k[0],
+        string: identifierFix[0].k[0],
       });
     });
 
-    fireEvent.click(getByTestId("next-keys-list-copy-button-0"));
+    fireEvent.click(getByTestId("next-key-0"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
-        string: keriFix[0].n[0],
+        string: identifierFix[0].n[0],
       });
     });
   });
@@ -166,30 +165,38 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(
         getByText(
-          keriFix[0].id.substring(0, 5) + "..." + keriFix[0].id.slice(-5)
-        )
-      ).toBeInTheDocument()
-    );
-    await waitFor(() => expect(getByText(keriFix[0].kt)).toBeInTheDocument());
-    await waitFor(() => expect(getByText(keriFix[0].nt)).toBeInTheDocument());
-    await waitFor(() =>
-      expect(
-        getByText(
-          formatShortDate(keriFix[0].createdAtUTC) +
-            " - " +
-            formatTimeToSec(keriFix[0].createdAtUTC)
+          identifierFix[0].id.substring(0, 5) +
+            "..." +
+            identifierFix[0].id.slice(-5)
         )
       ).toBeInTheDocument()
     );
     await waitFor(() =>
+      expect(getByText(identifierFix[0].kt)).toBeInTheDocument()
+    );
+    await waitFor(() =>
+      expect(getByText(identifierFix[0].nt)).toBeInTheDocument()
+    );
+    await waitFor(() =>
       expect(
         getByText(
-          formatShortDate(keriFix[0].dt) +
+          formatShortDate(identifierFix[0].createdAtUTC) +
             " - " +
-            formatTimeToSec(keriFix[0].dt)
+            formatTimeToSec(identifierFix[0].createdAtUTC)
         )
       ).toBeInTheDocument()
     );
-    await waitFor(() => expect(getByText(keriFix[0].s)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(
+        getByText(
+          formatShortDate(identifierFix[0].dt) +
+            " - " +
+            formatTimeToSec(identifierFix[0].dt)
+        )
+      ).toBeInTheDocument()
+    );
+    await waitFor(() =>
+      expect(getByText(identifierFix[0].s)).toBeInTheDocument()
+    );
   });
 });

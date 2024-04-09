@@ -6,6 +6,7 @@ interface CreateIdentifierProps {
 }
 
 interface TypeItemProps {
+  dataTestId: string;
   index: number;
   text: string;
   clickEvent: () => void;
@@ -25,7 +26,6 @@ interface IdentifierStageProps {
   state: {
     identifierCreationStage: number;
     displayNameValue: string;
-    selectedIdentifierType: number;
     selectedAidType: number;
     selectedTheme: number;
     threshold: number;

@@ -1,7 +1,6 @@
 import {
   ConnectionDetails,
   ConnectionStatus,
-  ConnectionType,
 } from "../../core/agent/agent.types";
 import { CredentialMetadataRecordStatus } from "../../core/agent/records/credentialMetadataRecord.types";
 import { ACDCDetails } from "../../core/agent/services/credentialService.types";
@@ -20,7 +19,6 @@ const credsFixAcdc: ACDCDetails[] = [
     issuanceDate: "2024-01-22T16:03:44.643Z",
     credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialMetadataRecordStatus.CONFIRMED,
-    connectionType: ConnectionType.KERI,
     i: "EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5",
     a: {
       d: "EJ3HSnEqtSm3WiucWkeBbKspmEAIjf2N6wr5EKOcQ9Vl",

@@ -10,7 +10,6 @@ import {
   IncomingRequestProps,
   IncomingRequestType,
 } from "../../../store/reducers/stateCache/stateCache.types";
-import { ConnectionType } from "../../../core/agent/agent.types";
 import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
 import { RequestComponent } from "./components/RequestComponent";
 
@@ -56,27 +55,13 @@ const IncomingRequest = () => {
     if (
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
-      if (incomingRequest.source === ConnectionType.KERI) {
-        await Agent.agent.ipexCommunications.deleteKeriNotificationRecordById(
-          incomingRequest.id
-        );
-      }
-    } else if (
-      incomingRequest.type === IncomingRequestType.CONNECTION_INCOMING ||
-      incomingRequest.type === IncomingRequestType.CONNECTION_RESPONSE
-    ) {
-      // TODO: will handle with KERI connection if it is supported
-      // await Agent.agent.connections.deleteConnectionById(
-      //   incomingRequest.id,
-      //   ConnectionType.DIDCOMM
-      // );
-      // const updatedConnections =
-      //   await Agent.agent.connections.getConnections();
-      // dispatch(setConnectionsCache([...updatedConnections]));
+      await Agent.agent.credentials.deleteKeriNotificationRecordById(
+        incomingRequest.id
+      );
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      await Agent.agent.ipexCommunications.deleteKeriNotificationRecordById(
+      await Agent.agent.credentials.deleteKeriNotificationRecordById(
         incomingRequest.id
       );
     }
@@ -85,24 +70,14 @@ const IncomingRequest = () => {
 
   const handleAccept = async () => {
     setInitiateAnimation(true);
-    if (incomingRequest.type === IncomingRequestType.CONNECTION_INCOMING) {
-      // Agent.agent.connections.acceptRequestConnection(incomingRequest.id);
-    } else if (
-      incomingRequest.type === IncomingRequestType.CONNECTION_RESPONSE
-    ) {
-      // Agent.agent.connections.acceptResponseConnection(incomingRequest.id);
-    } else if (
+    if (
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
-      if (incomingRequest.source === ConnectionType.KERI) {
-        Agent.agent.ipexCommunications.acceptKeriAcdc(incomingRequest.id);
-      } else {
-        // Agent.agent.credentials.acceptCredentialOffer(incomingRequest.id);
-      }
+      Agent.agent.credentials.acceptKeriAcdc(incomingRequest.id);
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      Agent.agent.ipexCommunications.deleteKeriNotificationRecordById(
+      Agent.agent.credentials.deleteKeriNotificationRecordById(
         incomingRequest.id
       );
     }
@@ -116,6 +91,9 @@ const IncomingRequest = () => {
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
       // @TODO - sdisalvo: placeholder for ignoring the request
+      await Agent.agent.signifyNotifications.dismissNotification(
+        incomingRequest.id
+      );
     }
     handleReset();
   };

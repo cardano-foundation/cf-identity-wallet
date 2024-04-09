@@ -5,7 +5,7 @@ import configureStore from "redux-mock-store";
 import { CreateIdentifier } from "./CreateIdentifier";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -20,6 +20,7 @@ describe("CreateIdentifier modal", () => {
       routes: ["/"],
       authentication: {
         loggedIn: true,
+        userName: "Test",
         time: Date.now(),
         passcodeIsSet: true,
       },
@@ -28,7 +29,7 @@ describe("CreateIdentifier modal", () => {
       connections: connectionsFix,
     },
     identifiersCache: {
-      identifiers: filteredKeriFix,
+      identifiers: filteredIdentifierFix,
       favourites: [],
     },
   };

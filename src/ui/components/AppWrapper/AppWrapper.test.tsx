@@ -9,10 +9,7 @@ import {
   setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
-import {
-  ConnectionShortDetails,
-  ConnectionType,
-} from "../../../core/agent/agent.types";
+import { ConnectionShortDetails } from "../../../core/agent/agent.types";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
@@ -25,6 +22,7 @@ jest.mock("../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
+        getUnhandledMultisigIdentifiers: jest.fn(),
       },
       connections: {
         getConnections: jest.fn().mockResolvedValue([]),
@@ -48,7 +46,8 @@ jest.mock("../../../core/agent/agent", () => ({
         createMetadata: jest.fn(),
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
-        getUnhandledCredentials: jest.fn(),
+        getKeriCredentialNotifications: jest.fn(),
+        onAcdcKeriStateChanged: jest.fn(),
         syncACDCs: jest.fn(),
       },
       messages: {
@@ -57,11 +56,6 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       signifyNotifications: {
         onNotificationKeriStateChanged: jest.fn(),
-      },
-      ipexCommunications: {
-        onAcdcKeriStateChanged: jest.fn(),
-        getUnhandledCredentials: jest.fn(),
-        syncACDCs: jest.fn(),
       },
     },
   },

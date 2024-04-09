@@ -4,10 +4,11 @@ import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 import { credsFixAcdc } from "../../../__fixtures__/credsFix";
 import { CredContentAcdc } from "./CredContentAcdc";
 import { store } from "../../../../store";
+import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 
 describe("Creds content", () => {
   test("Render ACDC cedential content", () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, queryAllByTestId } = render(
       <Provider store={store}>
         <CredContentAcdc cardData={credsFixAcdc[0]} />
       </Provider>

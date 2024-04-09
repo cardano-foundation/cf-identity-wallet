@@ -11,10 +11,7 @@ import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
 import { TypeItem } from "./TypeItem";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { ColorGenerator } from "../../../utils/colorGenerator";
-import {
-  IdentifierShortDetails,
-  IdentifierType,
-} from "../../../../core/agent/services/identifier.types";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
 import { Agent } from "../../../../core/agent/agent";
 import {
   getIdentifiersCache,
@@ -42,7 +39,6 @@ const IdentifierStage0 = ({
   const [selectedTheme, setSelectedTheme] = useState(state.selectedTheme);
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
-  const typeIsSelectedIsValid = state.selectedIdentifierType !== undefined;
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -73,24 +69,23 @@ const IdentifierStage0 = ({
     // @TODO - sdisalvo: Colors will need to be removed
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
-    const type = IdentifierType.KERI; //
-    const identifier = await Agent.agent.identifiers.createIdentifier({
-      displayName: state.displayNameValue,
-      method: type,
-      // @TODO - sdisalvo: Colors will need to be removed
-      colors: [newColor[1], newColor[0]],
-      theme: state.selectedTheme,
-    });
+    const { identifier, signifyName } =
+      await Agent.agent.identifiers.createIdentifier({
+        displayName: state.displayNameValue,
+        // @TODO - sdisalvo: Colors will need to be removed
+        colors: [newColor[1], newColor[0]],
+        theme: state.selectedTheme,
+      });
     if (identifier) {
       const newIdentifier: IdentifierShortDetails = {
         id: identifier,
-        method: type,
         displayName: state.displayNameValue,
         createdAtUTC: new Date().toISOString(),
         // @TODO - sdisalvo: Colors will need to be removed
         colors: [newColor[1], newColor[0]],
         theme: state.selectedTheme,
         isPending: false,
+        signifyName,
       };
       dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
@@ -99,7 +94,7 @@ const IdentifierStage0 = ({
   };
 
   const handleContinue = async () => {
-    if (state.selectedIdentifierType === 1 && state.selectedAidType !== 0) {
+    if (state.selectedAidType !== 0) {
       setState((prevState: IdentifierStageProps) => ({
         ...prevState,
         identifierCreationStage: 1,
@@ -163,6 +158,7 @@ const IdentifierStage0 = ({
             <IonRow>
               <IonCol>
                 <TypeItem
+                  dataTestId="identifier-aidtype-default"
                   index={0}
                   text={i18n.t("createidentifier.aidtype.default.label")}
                   clickEvent={() =>
@@ -176,6 +172,7 @@ const IdentifierStage0 = ({
               </IonCol>
               <IonCol>
                 <TypeItem
+                  dataTestId="identifier-aidtype-multisig"
                   index={1}
                   text={i18n.t("createidentifier.aidtype.multisig.label")}
                   clickEvent={() =>
@@ -189,6 +186,7 @@ const IdentifierStage0 = ({
               </IonCol>
               <IonCol>
                 <TypeItem
+                  dataTestId="identifier-aidtype-delegated"
                   index={2}
                   text={i18n.t("createidentifier.aidtype.delegated.label")}
                   clickEvent={() =>
@@ -203,7 +201,6 @@ const IdentifierStage0 = ({
             </IonRow>
           </IonGrid>
         </div>
-
         <div className="identifier-theme">
           <div className="theme-input-title">{`${i18n.t(
             "createidentifier.theme.title"
@@ -219,9 +216,7 @@ const IdentifierStage0 = ({
         customClass={keyboardIsOpen ? "ion-hide" : ""}
         primaryButtonText={`${i18n.t("createidentifier.confirmbutton")}`}
         primaryButtonAction={async () => handleContinue()}
-        primaryButtonDisabled={
-          !(displayNameValueIsValid && typeIsSelectedIsValid)
-        }
+        primaryButtonDisabled={!displayNameValueIsValid}
       />
     </>
   );

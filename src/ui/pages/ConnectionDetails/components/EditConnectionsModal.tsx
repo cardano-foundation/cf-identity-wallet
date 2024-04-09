@@ -10,6 +10,7 @@ import { ToastMsgType } from "../../../globals/types";
 import { ConnectionNoteProps } from "./ConnectionNote.types";
 import { useAppDispatch } from "../../../../store/hooks";
 import { EditConnectionsModalProps } from "./EditConnectionsModal.types";
+import KeriLogo from "../../../../ui/assets/images/KeriGeneric.jpg";
 import "./EditConnectionsModal.scss";
 
 const EditConnectionsModal = ({
@@ -70,9 +71,7 @@ const EditConnectionsModal = ({
                   (noteFilter) => noteCore.id === noteFilter.id
                 );
                 if (!noteFind) {
-                  Agent.agent.connections.deleteConnectionNoteById(
-                    noteCore.id
-                  );
+                  Agent.agent.connections.deleteConnectionNoteById(noteCore.id);
                   update = true;
                 } else if (
                   noteCore.title !== noteFind.title ||
@@ -96,7 +95,7 @@ const EditConnectionsModal = ({
         >
           <div className="connection-details-content">
             <ConnectionDetailsHeader
-              logo={connectionDetails?.logo}
+              logo={connectionDetails?.logo || KeriLogo}
               label={connectionDetails?.label}
               date={connectionDetails?.connectionDate}
             />

@@ -4,48 +4,12 @@ import { log } from "../helpers/logger.js";
 import { Passcode } from "../constants/text.constants.js";
 
 export class PasscodeScreen {
-  get digit0Button() {
-    return $("[data-testid=\"passcode-button-0\"]");
-  }
-
-  get digit1Button() {
-    return $("[data-testid=\"passcode-button-1\"]");
-  }
-
-  get digit2Button() {
-    return $("[data-testid=\"passcode-button-2\"]");
-  }
-
-  get digit3Button() {
-    return $("[data-testid=\"passcode-button-3\"]");
-  }
-
-  get digit4Button() {
-    return $("[data-testid=\"passcode-button-4\"]");
-  }
-
-  get digit5Button() {
-    return $("[data-testid=\"passcode-button-5\"]");
-  }
-
-  get digit6Button() {
-    return $("[data-testid=\"passcode-button-6\"]");
-  }
-
-  get digit7Button() {
-    return $("[data-testid=\"passcode-button-7\"]");
-  }
-
-  get digit8Button() {
-    return $("[data-testid=\"passcode-button-8\"]");
-  }
-
-  get digit9Button() {
-    return $("[data-testid=\"passcode-button-9\"]");
-  }
-
   get forgotYourPasscodeButton() {
     return $("[data-testid=\"secondary-button-set-passcode\"]");
+  }
+
+  get id() {
+    return "[data-testid=\"set-passcode-page\"]";
   }
 
   get screenTitle() {
@@ -56,21 +20,20 @@ export class PasscodeScreen {
     return $("[data-testid=\"set-passcode-description\"]");
   }
 
+  async digitButton(digit: number, parentElement = "") {
+    return $(
+      `${parentElement} [data-testid="passcode-button-${digit}"]`.trimStart()
+    );
+  }
+
   async loads() {
     await expect(this.screenTitle).toBeDisplayed();
     await expect(this.screenTitle).toHaveText(Passcode.Title);
     await expect(this.screenDescriptionText).toBeDisplayed();
     await expect(this.screenDescriptionText).toHaveText(Passcode.Description);
-    await expect(this.digit1Button).toBeDisplayed();
-    await expect(this.digit2Button).toBeDisplayed();
-    await expect(this.digit3Button).toBeDisplayed();
-    await expect(this.digit4Button).toBeDisplayed();
-    await expect(this.digit5Button).toBeDisplayed();
-    await expect(this.digit6Button).toBeDisplayed();
-    await expect(this.digit7Button).toBeDisplayed();
-    await expect(this.digit8Button).toBeDisplayed();
-    await expect(this.digit9Button).toBeDisplayed();
-    await expect(this.digit0Button).toBeDisplayed();
+    for (let i = 0; i < 10; i++) {
+      await expect(this.digitButton(i)).toBeDisplayed();
+    }
   }
 
   async loadsReEnterScreen() {
@@ -78,26 +41,18 @@ export class PasscodeScreen {
     await expect(this.screenTitle).toHaveText(Passcode.TitleReEnter);
   }
 
-  async enterPasscode(passcode: number[]) {
-    interface DigitButtonMap {
+  async enterPasscode(passcode: number[], parentElement = "") {
+    const digitButtonMap: {
       [key: number]: () => Promise<void>;
+    } = {};
+    for (let i = 0; i < 10; i++) {
+      digitButtonMap[i] = async () => {
+        await (await this.digitButton(i, parentElement)).click();
+      };
     }
-
-    const digitButtonMap: DigitButtonMap = {
-      0: this.digit0Button.click,
-      1: this.digit1Button.click,
-      2: this.digit2Button.click,
-      3: this.digit3Button.click,
-      4: this.digit4Button.click,
-      5: this.digit5Button.click,
-      6: this.digit6Button.click,
-      7: this.digit7Button.click,
-      8: this.digit8Button.click,
-      9: this.digit9Button.click,
-    };
-
+    //clicking digits on the screen
     for (const digit of passcode) {
-      await digitButtonMap[digit].call(this);
+      await digitButtonMap[digit]();
     }
   }
 
