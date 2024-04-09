@@ -10,6 +10,7 @@ import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
 import { Agent } from "../../../core/agent/agent";
+import { VerifyPasscode } from "./VerifyPasscode";
 
 const path = TabsRoutePath.CREDS + "/" + credsFixAcdc[0].id;
 
@@ -159,6 +160,30 @@ describe("Verify Passcode on Cards Details page", () => {
         "is-open",
         "true"
       );
+    });
+  });
+  test("Render passcode", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    storeMocked = {
+      ...mockStore(initialStateNoPassword),
+      dispatch: dispatchMock,
+    };
+
+    const closeFn = jest.fn();
+
+    const { getByTestId, getAllByTestId } = render(
+      <Provider store={storeMocked}>
+        <VerifyPasscode
+          isOpen={true}
+          setIsOpen={closeFn}
+          onVerify={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("close-button-label")).toBeInTheDocument();
     });
   });
 });
