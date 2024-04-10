@@ -228,6 +228,27 @@ const CredentialDetails = () => {
     }
   );
 
+  const handleArchive = () => {
+    setAlertDeleteArchiveIsOpen(true);
+    dispatch(setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL));
+  };
+
+  const handleDelete = () => {
+    setAlertDeleteArchiveIsOpen(true);
+    dispatch(setCurrentOperation(OperationType.DELETE_CREDENTIAL));
+  };
+
+  const handleAuthentication = () => {
+    if (
+      !stateCache?.authentication.passwordIsSkipped &&
+      stateCache?.authentication.passwordIsSet
+    ) {
+      setVerifyPasswordIsOpen(true);
+    } else {
+      setVerifyPasscodeIsOpen(true);
+    }
+  };
+
   return (
     <TabLayout
       pageId={pageId}
@@ -262,19 +283,13 @@ const CredentialDetails = () => {
                   ? `${i18n.t("credentials.details.button.archive")}`
                   : ""
               }
-              archiveButtonAction={() => {
-                setAlertDeleteArchiveIsOpen(true);
-                dispatch(setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL));
-              }}
+              archiveButtonAction={() => handleArchive()}
               deleteButtonText={
                 isArchived
                   ? `${i18n.t("credentials.details.button.delete")}`
                   : ""
               }
-              deleteButtonAction={() => {
-                setAlertDeleteArchiveIsOpen(true);
-                dispatch(setCurrentOperation(OperationType.DELETE_CREDENTIAL));
-              }}
+              deleteButtonAction={() => handleDelete()}
             />
           </div>
           <CredentialOptions
@@ -307,16 +322,7 @@ const CredentialDetails = () => {
             ? "credentials.details.alert.delete.cancel"
             : "credentials.details.alert.archive.cancel"
         )}`}
-        actionConfirm={() => {
-          if (
-            !stateCache?.authentication.passwordIsSkipped &&
-            stateCache?.authentication.passwordIsSet
-          ) {
-            setVerifyPasswordIsOpen(true);
-          } else {
-            setVerifyPasscodeIsOpen(true);
-          }
-        }}
+        actionConfirm={() => handleAuthentication()}
         actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
         actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
       />

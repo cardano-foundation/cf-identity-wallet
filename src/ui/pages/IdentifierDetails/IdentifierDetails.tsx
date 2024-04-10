@@ -175,6 +175,22 @@ const IdentifierDetails = () => {
     }
   };
 
+  const deleteButtonAction = () => {
+    setAlertIsOpen(true);
+    dispatch(setCurrentOperation(OperationType.DELETE_IDENTIFIER));
+  };
+
+  const handleAuthentication = () => {
+    if (
+      !stateCache?.authentication.passwordIsSkipped &&
+      stateCache?.authentication.passwordIsSet
+    ) {
+      setVerifyPasswordIsOpen(true);
+    } else {
+      setVerifyPasscodeIsOpen(true);
+    }
+  };
+
   const AdditionalButtons = () => {
     return (
       <>
@@ -203,9 +219,7 @@ const IdentifierDetails = () => {
           shape="round"
           className="share-button"
           data-testid="share-button"
-          onClick={() => {
-            setShareIsOpen(true);
-          }}
+          onClick={() => setShareIsOpen(true)}
         >
           <IonIcon
             slot="icon-only"
@@ -217,9 +231,7 @@ const IdentifierDetails = () => {
           shape="round"
           className="identifier-options-button"
           data-testid="identifier-options-button"
-          onClick={() => {
-            setIdentifierOptionsIsOpen(true);
-          }}
+          onClick={() => setIdentifierOptionsIsOpen(true)}
         >
           <IonIcon
             slot="icon-only"
@@ -269,10 +281,7 @@ const IdentifierDetails = () => {
               deleteButtonText={`${i18n.t(
                 "identifiers.details.delete.button"
               )}`}
-              deleteButtonAction={() => {
-                setAlertIsOpen(true);
-                dispatch(setCurrentOperation(OperationType.DELETE_IDENTIFIER));
-              }}
+              deleteButtonAction={() => deleteButtonAction()}
             />
           </div>
           <ShareIdentifier
@@ -300,16 +309,7 @@ const IdentifierDetails = () => {
         cancelButtonText={`${i18n.t(
           "identifiers.details.delete.alert.cancel"
         )}`}
-        actionConfirm={() => {
-          if (
-            !stateCache?.authentication.passwordIsSkipped &&
-            stateCache?.authentication.passwordIsSet
-          ) {
-            setVerifyPasswordIsOpen(true);
-          } else {
-            setVerifyPasscodeIsOpen(true);
-          }
-        }}
+        actionConfirm={() => handleAuthentication()}
         actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
         actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
       />
