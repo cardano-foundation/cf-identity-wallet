@@ -46,11 +46,11 @@
 
 # Features
 
-| **User Interface**    |  **Secure Storage**  |  **Standards & Protocols** |  **SSI Services**   |           
+| **User Interface**    |  **Private Key Storage**  |  **Standards & Protocols** |  **SSI Services**   |           
 |----------------|---------------|---------------|----------------|
 |  Intuitive User Experience |  Hardware Security Module (HSM)   | [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | [KERIA](https://github.com/cardano-foundation/keria) | 
 |  Android  |  Secure Enclave (SE) | [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) |  [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
-| iOS | Private Key Storage | [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) |  [Credential Issuance Modules](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  |   | 
+| iOS |  | [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) |  [Credential Issuance Modules](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  |   | 
 
 
 # Potential Future Developments
