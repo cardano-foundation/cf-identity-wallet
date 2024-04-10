@@ -226,7 +226,7 @@ describe("Cards Details page - current not archived credential", () => {
 
     await waitFor(() => {
       expect(
-        getAllByText(EN_TRANSLATIONS.credentials.details.alert.archive.title)[1]
+        getAllByText(EN_TRANSLATIONS.credentials.details.alert.archive.title)[0]
       ).toBeVisible();
     });
   });

@@ -20,12 +20,7 @@ import {
 import { i18n } from "../../../i18n";
 import { CredentialOptionsProps } from "./CredentialOptions.types";
 import "./CredentialOptions.scss";
-import { VerifyPassword } from "../VerifyPassword";
-import { Alert } from "../Alert";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getBackRoute } from "../../../routes/backRoute";
-import { TabsRoutePath } from "../../../routes/paths";
-import "./CredsOptions.scss";
+import { useAppDispatch } from "../../../store/hooks";
 import {
   setCurrentOperation,
   setToastMsg,
