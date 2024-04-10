@@ -1,7 +1,8 @@
 import { fireEvent, render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { MemoryRouter } from "react-router-dom";
+import { createMemoryHistory } from "history";
+import { IonReactMemoryRouter } from "@ionic/react-router";
 import { PageLayout } from "./PageLayout";
 import { store } from "../../../../store";
 import { RoutePath } from "../../../../routes";
@@ -57,8 +58,14 @@ describe("Page Layout", () => {
     };
     const mockCloseButton = jest.fn();
 
+    const history = createMemoryHistory();
+    history.push(RoutePath.VERIFY_SEED_PHRASE);
+
     const { getByTestId } = render(
-      <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
+      <IonReactMemoryRouter
+        history={history}
+        initialEntries={[RoutePath.ONBOARDING]}
+      >
         <Provider store={storeMocked}>
           <PageLayout
             header={true}
@@ -74,7 +81,7 @@ describe("Page Layout", () => {
             <p>Content</p>
           </PageLayout>
         </Provider>
-      </MemoryRouter>
+      </IonReactMemoryRouter>
     );
     expect(getByTestId("back-button")).toBeInTheDocument();
     expect(mockCloseButton).not.toHaveBeenCalled();

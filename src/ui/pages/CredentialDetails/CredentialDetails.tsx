@@ -299,9 +299,7 @@ const CredentialDetails = () => {
             optionsIsOpen={optionsIsOpen}
             setOptionsIsOpen={setOptionsIsOpen}
             cardData={cardData}
-            credsOptionAction={
-              isArchived ? handleDeleteCredential : handleArchiveCredential
-            }
+            credsOptionAction={() => setAlertDeleteArchiveIsOpen(true)}
           />
         </>
       )}
