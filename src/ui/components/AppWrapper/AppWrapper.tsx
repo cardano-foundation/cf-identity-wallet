@@ -115,7 +115,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const [agentInitErr, setAgentInitErr] = useState(false);
 
   useEffect(() => {
-    let timer: string | number | NodeJS.Timeout | undefined;
+    let timer: NodeJS.Timeout;
     const handleActivity = () => {
       clearTimeout(timer);
       timer = setTimeout(() => {
