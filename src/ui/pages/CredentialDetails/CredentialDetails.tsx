@@ -3,7 +3,6 @@ import {
   IonButton,
   IonIcon,
   IonSpinner,
-  useIonRouter,
   useIonViewWillEnter,
 } from "@ionic/react";
 import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
@@ -45,13 +44,14 @@ import "./CredentialDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
 import { CredentialContent } from "./components/CredentialContent";
 import { combineClassNames } from "../../utils/style";
+import { useAppIonRouter } from "../../hooks";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
 
 const CredentialDetails = () => {
   const pageId = "credential-card-details";
-  const ionRouter = useIonRouter();
+  const ionRouter = useAppIonRouter();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
@@ -105,7 +105,7 @@ const CredentialDetails = () => {
     );
 
     setTimeout(() => {
-      ionRouter.push(nextPath.pathname, "root");
+      ionRouter.push(nextPath.pathname, "back", "pop");
     }, NAVIGATION_DELAY);
 
     setTimeout(() => {

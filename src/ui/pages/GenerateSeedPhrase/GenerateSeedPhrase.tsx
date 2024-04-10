@@ -24,9 +24,11 @@ import { PageFooter } from "../../components/PageFooter";
 import { MnemonicLengthSegment } from "../../components/MnemonicLengthSegment";
 import { SeedPhraseModule } from "../../components/SeedPhraseModule";
 import { TermsModal } from "../../components/TermsModal";
+import { useAppIonRouter } from "../../hooks";
 
 const GenerateSeedPhrase = () => {
   const pageId = "generate-seed-phrase";
+  const ionRouter = useAppIonRouter();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -128,9 +130,7 @@ const GenerateSeedPhrase = () => {
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     handleClearState();
-    history.push({
-      pathname: nextPath.pathname,
-    });
+    ionRouter.push(nextPath.pathname, "forward", "push");
   };
 
   return (
