@@ -2,7 +2,7 @@ import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
 import { IonGrid, IonRow, IonCol } from "@ionic/react";
 import { useEffect, useState } from "react";
-import { utils } from "@aries-framework/core";
+import { v4 as uuidv4 } from "uuid";
 import { i18n } from "../../../../i18n";
 import { CustomInput } from "../../CustomInput";
 import { ErrorMessage } from "../../ErrorMessage";
@@ -82,7 +82,7 @@ const IdentifierStage0 = ({
     let groupMetadata;
     if (state.selectedAidType == 1) {
       groupMetadata = {
-        groupId: utils.uuid(),
+        groupId: uuidv4(),
         groupInitiator: true,
         groupCreated: false,
       };
