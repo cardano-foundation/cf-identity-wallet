@@ -52,9 +52,11 @@ import Minicred from "../../assets/images/minicred.jpg";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { CardDetailsBlock } from "../../components/CardDetails";
 import { ConnectionNotes } from "./components/ConnectionNotes";
+import { useAppIonRouter } from "../../hooks";
 
 const ConnectionDetails = () => {
   const pageId = "connection-details";
+  const ionicRouter = useAppIonRouter();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -133,7 +135,7 @@ const ConnectionDetails = () => {
       data
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    history.push(nextPath.pathname);
+    ionicRouter.push(nextPath.pathname, "back", "pop");
   };
 
   const handleDelete = () => {

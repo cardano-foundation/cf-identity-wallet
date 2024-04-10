@@ -1,4 +1,5 @@
 import { act, render, waitFor } from "@testing-library/react";
+import { createMemoryHistory } from "history";
 import {
   ionFireEvent as fireEvent,
   waitForIonicReact,
@@ -6,6 +7,7 @@ import {
 import { MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { IonReactMemoryRouter } from "@ionic/react-router";
 import { ConnectionStatus } from "../../../core/agent/agent.types";
 import { RoutePath } from "../../../routes";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -86,8 +88,13 @@ describe("ConnectionDetails Page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.CREDENTIALS);
     const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+      <IonReactMemoryRouter
+        history={history}
+        initialEntries={[TabsRoutePath.CREDENTIALS]}
+      >
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
@@ -99,7 +106,7 @@ describe("ConnectionDetails Page", () => {
             component={ConnectionDetails}
           />
         </Provider>
-      </MemoryRouter>
+      </IonReactMemoryRouter>
     );
 
     act(() => {
