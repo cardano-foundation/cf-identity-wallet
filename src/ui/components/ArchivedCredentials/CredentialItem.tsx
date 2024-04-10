@@ -66,7 +66,7 @@ const CredentialItem = ({
             onRestore(credential.id);
           }}
         >
-          {i18n.t("creds.archived.restore")}
+          {i18n.t("credentials.archived.restore")}
         </IonItemOption>
         <IonItemOption
           color="danger"
@@ -74,7 +74,7 @@ const CredentialItem = ({
             onDelete(credential.id);
           }}
         >
-          {i18n.t("creds.archived.delete")}
+          {i18n.t("credentials.archived.delete")}
         </IonItemOption>
       </IonItemOptions>
     </IonItemSliding>

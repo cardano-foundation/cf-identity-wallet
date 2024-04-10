@@ -49,9 +49,7 @@ const IdentifiersList = ({
                   className="identifier-info-bottom-line"
                   data-testid={`identifier-info-${index}`}
                 >
-                  {i18n.t("identifiers.tab.type.keri")}
-                  {showDate &&
-                    "  •  " + formatShortDate(identifier.createdAtUTC)}
+                  {showDate && formatShortDate(identifier.createdAtUTC)}
                 </div>
               </div>
             </IonLabel>

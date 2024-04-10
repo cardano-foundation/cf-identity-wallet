@@ -11,7 +11,7 @@ import { RoutePath } from "../../../routes";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { Creds } from "../Creds";
+import { Creds } from "../Credentials";
 import { ConnectionDetails } from "./ConnectionDetails";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { Agent } from "../../../core/agent/agent";
@@ -44,7 +44,7 @@ const mockStore = configureStore();
 const dispatchMock = jest.fn();
 const initialStateFull = {
   stateCache: {
-    routes: [TabsRoutePath.CREDS],
+    routes: [TabsRoutePath.CREDENTIALS],
     authentication: {
       loggedIn: true,
       time: Date.now(),
@@ -87,10 +87,10 @@ describe("ConnectionDetails Page", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
-            path={TabsRoutePath.CREDS}
+            path={TabsRoutePath.CREDENTIALS}
             component={Creds}
           />
 
@@ -135,10 +135,10 @@ describe("ConnectionDetails Page", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
-            path={TabsRoutePath.CREDS}
+            path={TabsRoutePath.CREDENTIALS}
             component={Creds}
           />
 
@@ -179,10 +179,10 @@ describe("ConnectionDetails Page", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId, getByText, findByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
-            path={TabsRoutePath.CREDS}
+            path={TabsRoutePath.CREDENTIALS}
             component={Creds}
           />
 
@@ -223,10 +223,10 @@ describe("ConnectionDetails Page", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
-            path={TabsRoutePath.CREDS}
+            path={TabsRoutePath.CREDENTIALS}
             component={Creds}
           />
 
@@ -255,10 +255,10 @@ describe("ConnectionDetails Page", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId, getByText, queryByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
-            path={TabsRoutePath.CREDS}
+            path={TabsRoutePath.CREDENTIALS}
             component={Creds}
           />
 
@@ -291,10 +291,10 @@ describe("ConnectionDetails Page", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId, getByText, findByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
-            path={TabsRoutePath.CREDS}
+            path={TabsRoutePath.CREDENTIALS}
             component={Creds}
           />
 
@@ -337,10 +337,10 @@ describe("ConnectionDetails Page", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
-            path={TabsRoutePath.CREDS}
+            path={TabsRoutePath.CREDENTIALS}
             component={Creds}
           />
 
@@ -388,10 +388,10 @@ describe("ConnectionDetails Page", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
-            path={TabsRoutePath.CREDS}
+            path={TabsRoutePath.CREDENTIALS}
             component={Creds}
           />
 
@@ -482,10 +482,10 @@ describe("Checking the Connection Details Page when no notes are available", () 
       dispatch: dispatchMock,
     };
     const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
-            path={TabsRoutePath.CREDS}
+            path={TabsRoutePath.CREDENTIALS}
             component={Creds}
           />
 
@@ -559,10 +559,10 @@ describe("Checking the Connection Details Page when notes are available", () => 
       dispatch: dispatchMock,
     };
     const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
-            path={TabsRoutePath.CREDS}
+            path={TabsRoutePath.CREDENTIALS}
             component={Creds}
           />
 
@@ -628,10 +628,10 @@ describe("Checking the Connection Details Page when different Credentials are is
     };
 
     const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
-            path={TabsRoutePath.CREDS}
+            path={TabsRoutePath.CREDENTIALS}
             component={Creds}
           />
 
@@ -703,10 +703,10 @@ describe("Checking the Connection Details Page when different Credentials are is
       dispatch: dispatchMock,
     };
     const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
-            path={TabsRoutePath.CREDS}
+            path={TabsRoutePath.CREDENTIALS}
             component={Creds}
           />
 
@@ -778,10 +778,10 @@ describe("Checking the Connection Details Page when different Credentials are is
       dispatch: dispatchMock,
     };
     const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
-            path={TabsRoutePath.CREDS}
+            path={TabsRoutePath.CREDENTIALS}
             component={Creds}
           />
 
@@ -853,10 +853,10 @@ describe("Checking the Connection Details Page when different Credentials are is
       dispatch: dispatchMock,
     };
     const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
-            path={TabsRoutePath.CREDS}
+            path={TabsRoutePath.CREDENTIALS}
             component={Creds}
           />
 

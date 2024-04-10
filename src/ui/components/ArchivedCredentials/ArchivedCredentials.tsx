@@ -154,9 +154,9 @@ const ArchivedCredentialsContainer = forwardRef<
   const closeButtonLabel = `${
     activeList
       ? selectedCredentials.length > 0
-        ? i18n.t("creds.archived.deselectall")
-        : i18n.t("creds.archived.selectall")
-      : i18n.t("creds.archived.done")
+        ? i18n.t("credentials.archived.deselectall")
+        : i18n.t("credentials.archived.selectall")
+      : i18n.t("credentials.archived.done")
   }`;
 
   const handleActionButtonClick = () => {
@@ -166,8 +166,8 @@ const ArchivedCredentialsContainer = forwardRef<
 
   const actionButtonLabel = `${
     activeList
-      ? i18n.t("creds.archived.cancel")
-      : i18n.t("creds.archived.select")
+      ? i18n.t("credentials.archived.cancel")
+      : i18n.t("credentials.archived.select")
   }`;
 
   const handleClickCard = (id: string) => {
@@ -213,7 +213,7 @@ const ArchivedCredentialsContainer = forwardRef<
             actionButton={true}
             actionButtonAction={handleActionButtonClick}
             actionButtonLabel={actionButtonLabel}
-            title={`${i18n.t("creds.archived.title")}`}
+            title={`${i18n.t("credentials.archived.title")}`}
           />
         }
       >
@@ -251,7 +251,7 @@ const ArchivedCredentialsContainer = forwardRef<
                   onClick={() => setAlertDeleteIsOpen(true)}
                   data-testid="delete-credentials"
                 >
-                  {i18n.t("creds.archived.delete")}
+                  {i18n.t("credentials.archived.delete")}
                 </IonButton>
               </IonButtons>
               <div
@@ -259,10 +259,10 @@ const ArchivedCredentialsContainer = forwardRef<
                 className="selected-amount-credentials-label"
               >
                 {selectedCredentials.length === 1
-                  ? i18n.t("creds.archived.oneselected")
-                  : i18next.t("creds.archived.manyselected", {
-                      amount: selectedCredentials.length,
-                    })}
+                  ? i18n.t("credentials.archived.oneselected")
+                  : i18next.t("credentials.archived.manyselected", {
+                    amount: selectedCredentials.length,
+                  })}
               </div>
               <IonButtons slot="end">
                 <IonButton
@@ -270,7 +270,7 @@ const ArchivedCredentialsContainer = forwardRef<
                   onClick={() => setAlertRestoreIsOpen(true)}
                   data-testid="restore-credentials"
                 >
-                  {i18n.t("creds.archived.restore")}
+                  {i18n.t("credentials.archived.restore")}
                 </IonButton>
               </IonButtons>
             </IonToolbar>
@@ -281,11 +281,13 @@ const ArchivedCredentialsContainer = forwardRef<
         isOpen={alertDeleteIsOpen}
         setIsOpen={setAlertDeleteIsOpen}
         dataTestId="alert-delete"
-        headerText={i18n.t("creds.card.details.alert.delete.title")}
+        headerText={i18n.t("credentials.details.alert.delete.title")}
         confirmButtonText={`${i18n.t(
-          "creds.card.details.alert.delete.confirm"
+          "credentials.details.alert.delete.confirm"
         )}`}
-        cancelButtonText={`${i18n.t("creds.card.details.alert.delete.cancel")}`}
+        cancelButtonText={`${i18n.t(
+          "credentials.details.alert.delete.cancel"
+        )}`}
         actionConfirm={() => {
           if (
             !stateCache?.authentication.passwordIsSkipped &&
@@ -303,12 +305,12 @@ const ArchivedCredentialsContainer = forwardRef<
         isOpen={alertRestoreIsOpen}
         setIsOpen={setAlertRestoreIsOpen}
         dataTestId="alert-restore"
-        headerText={i18n.t("creds.card.details.alert.restore.title")}
+        headerText={i18n.t("credentials.details.alert.restore.title")}
         confirmButtonText={`${i18n.t(
-          "creds.card.details.alert.restore.confirm"
+          "credentials.details.alert.restore.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "creds.card.details.alert.restore.cancel"
+          "credentials.details.alert.restore.cancel"
         )}`}
         actionConfirm={async () => {
           await handleRestoreCredentials(selectedCredentials);

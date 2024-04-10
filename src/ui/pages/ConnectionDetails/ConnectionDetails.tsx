@@ -186,6 +186,32 @@ const ConnectionDetails = () => {
     );
   }
 
+  const deleteButtonAction = () => {
+    setAlertDeleteConnectionIsOpen(true);
+    dispatch(setCurrentOperation(OperationType.DELETE_CONNECTION));
+  };
+
+  const handleAuthentication = () => {
+    if (
+      !stateCache?.authentication.passwordIsSkipped &&
+      stateCache?.authentication.passwordIsSet
+    ) {
+      setVerifyPasswordIsOpen(true);
+    } else {
+      setVerifyPasscodeIsOpen(true);
+    }
+  };
+
+  const handleDeleteNote = () => {
+    const newNotes = [...notes];
+    const noteIndex = newNotes
+      .map((el) => el.id)
+      .indexOf(currentNoteId.current);
+    newNotes.splice(noteIndex, 1);
+    setNotes(newNotes);
+    dispatch(setToastMsg(ToastMsgType.NOTE_REMOVED));
+  };
+
   return (
     <>
       <ScrollablePageLayout
@@ -198,9 +224,7 @@ const ConnectionDetails = () => {
             closeButtonLabel={`${i18n.t("connections.details.done")}`}
             currentPath={RoutePath.CONNECTION_DETAILS}
             actionButton={true}
-            actionButtonAction={() => {
-              setOptionsIsOpen(true);
-            }}
+            actionButtonAction={() => setOptionsIsOpen(true)}
             actionButtonIcon={ellipsisVertical}
           />
         }
@@ -214,9 +238,7 @@ const ConnectionDetails = () => {
           <IonSegment
             data-testid="connection-details-segment"
             value={segmentValue}
-            onIonChange={(event) => {
-              setSegmentValue(`${event.detail.value}`);
-            }}
+            onIonChange={(event) => setSegmentValue(`${event.detail.value}`)}
           >
             <IonSegmentButton
               value="details"
@@ -303,12 +325,7 @@ const ConnectionDetails = () => {
               <PageFooter
                 pageId={pageId}
                 deleteButtonText={`${i18n.t("connections.details.delete")}`}
-                deleteButtonAction={() => {
-                  setAlertDeleteConnectionIsOpen(true);
-                  dispatch(
-                    setCurrentOperation(OperationType.DELETE_CONNECTION)
-                  );
-                }}
+                deleteButtonAction={() => deleteButtonAction()}
               />
             </div>
           ) : (
@@ -366,16 +383,7 @@ const ConnectionDetails = () => {
         cancelButtonText={`${i18n.t(
           "connections.details.options.alert.deleteconnection.cancel"
         )}`}
-        actionConfirm={() => {
-          if (
-            !stateCache?.authentication.passwordIsSkipped &&
-            stateCache?.authentication.passwordIsSet
-          ) {
-            setVerifyPasswordIsOpen(true);
-          } else {
-            setVerifyPasscodeIsOpen(true);
-          }
-        }}
+        actionConfirm={() => handleAuthentication()}
         actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
         actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
       />
@@ -392,21 +400,9 @@ const ConnectionDetails = () => {
         cancelButtonText={`${i18n.t(
           "connections.details.options.alert.deletenote.cancel"
         )}`}
-        actionConfirm={() => {
-          const newNotes = [...notes];
-          const noteIndex = newNotes
-            .map((el) => el.id)
-            .indexOf(currentNoteId.current);
-          newNotes.splice(noteIndex, 1);
-          setNotes(newNotes);
-          dispatch(setToastMsg(ToastMsgType.NOTE_REMOVED));
-        }}
-        actionCancel={() => {
-          setAlertDeleteNoteIsOpen(false);
-        }}
-        actionDismiss={() => {
-          setAlertDeleteNoteIsOpen(false);
-        }}
+        actionConfirm={() => handleDeleteNote()}
+        actionCancel={() => setAlertDeleteNoteIsOpen(false)}
+        actionDismiss={() => setAlertDeleteNoteIsOpen(false)}
       />
     </>
   );
