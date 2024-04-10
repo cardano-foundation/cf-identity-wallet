@@ -46,7 +46,6 @@ import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 import { RoutePath } from "../../../routes";
-import { NodeJS } from "timers";
 
 const connectionKeriStateChangedHandler = async (
   event: ConnectionKeriStateChangedEvent,
