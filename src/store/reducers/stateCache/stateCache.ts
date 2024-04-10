@@ -55,6 +55,13 @@ const stateCacheSlice = createSlice({
         (route) => route.path !== RoutePath.SET_PASSCODE
       );
     },
+    logout: (state) => {
+      state.routes = [{ path: RoutePath.PASSCODE_LOGIN }, ...state.routes];
+      state.authentication = {
+        ...state.authentication,
+        loggedIn: false,
+      };
+    },
     setAuthentication: (
       state,
       action: PayloadAction<AuthenticationCacheProps>
@@ -118,6 +125,7 @@ const {
   removeSetPasscodeRoute,
   removeRoute,
   setAuthentication,
+  logout,
   setCurrentOperation,
   setToastMsg,
   dequeueCredentialRequest,
@@ -157,6 +165,7 @@ export {
   removeCurrentRoute,
   removeSetPasscodeRoute,
   getAuthentication,
+  logout,
   setAuthentication,
   getCurrentOperation,
   setCurrentOperation,

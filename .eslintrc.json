@@ -5,7 +5,8 @@
         "jest": true
     },
     "globals": {
-        "__dirname": true
+        "__dirname": true,
+        "NodeJS": true
     },
     "extends": [
         "eslint:recommended",

@@ -2,8 +2,10 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  logout,
   setAuthentication,
   setCurrentOperation,
+  setCurrentRoute,
   setInitialized,
   setPauseQueueIncomingRequest,
   setQueueIncomingRequest,
@@ -43,6 +45,8 @@ import { NotificationRoute } from "../../../core/agent/modules/signify/signifyAp
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
+import { RoutePath } from "../../../routes";
+import { NodeJS } from "timers";
 
 const connectionKeriStateChangedHandler = async (
   event: ConnectionKeriStateChangedEvent,
@@ -104,12 +108,46 @@ const keriAcdcChangeHandler = async (
     dispatch(setCurrentOperation(OperationType.IDLE));
   }
 };
-
+const ACTIVTY_TIMEOUT = 14000;
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const [initialised, setInitialised] = useState(false);
   const [agentInitErr, setAgentInitErr] = useState(false);
+
+  useEffect(() => {
+    let timer: string | number | NodeJS.Timeout | undefined;
+    const handleActivity = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        dispatch(logout());
+        dispatch(setCurrentRoute({ path: RoutePath.PASSCODE_LOGIN }));
+      }, ACTIVTY_TIMEOUT);
+    };
+
+    window.addEventListener("load", handleActivity);
+    document.addEventListener("mousemove", handleActivity);
+    document.addEventListener("touchstart", handleActivity);
+    document.addEventListener("touchmove", handleActivity);
+    document.addEventListener("click", handleActivity);
+    document.addEventListener("focus", handleActivity);
+    document.addEventListener("keydown", handleActivity);
+    document.addEventListener("scroll", handleActivity);
+
+    handleActivity();
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("load", handleActivity);
+      document.removeEventListener("mousemove", handleActivity);
+      document.removeEventListener("touchstart", handleActivity);
+      document.removeEventListener("touchmove", handleActivity);
+      document.removeEventListener("click", handleActivity);
+      document.removeEventListener("focus", handleActivity);
+      document.removeEventListener("keydown", handleActivity);
+      document.removeEventListener("scroll", handleActivity);
+    };
+  }, []);
 
   useEffect(() => {
     initApp();
