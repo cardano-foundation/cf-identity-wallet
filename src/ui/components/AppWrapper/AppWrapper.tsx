@@ -120,7 +120,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
       clearTimeout(timer);
       timer = setTimeout(() => {
         dispatch(logout());
-        dispatch(setCurrentRoute({ path: RoutePath.PASSCODE_LOGIN }));
       }, ACTIVTY_TIMEOUT);
     };
 
