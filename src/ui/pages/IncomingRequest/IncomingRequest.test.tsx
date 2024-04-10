@@ -11,9 +11,7 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { setQueueIncomingRequest } from "../../../store/reducers/stateCache";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { CredentialService } from "../../../core/agent/services";
-import { SignifyApi } from "../../../core/agent/modules/signify/signifyApi";
-import { Agent } from "../../../core/agent/agent";
-import { i18n } from "../../../i18n";
+import { EventService } from "../../../core/agent/services/eventService";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -90,19 +88,107 @@ const basicStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
-const signifyApi = jest.mocked({
-  admitIpex: jest.fn(),
-  getNotifications: jest.fn(),
-  markNotification: jest.fn(),
-  getKeriExchange: jest.fn(),
-  getCredentials: jest.fn(),
-  getCredentialBySaid: jest.fn(),
+const identifiersListMock = jest.fn();
+const identifiersGetMock = jest.fn();
+const identifiersCreateMock = jest.fn();
+const identifiersMemberMock = jest.fn();
+const identifiersInteractMock = jest.fn();
+const identifiersRotateMock = jest.fn();
+
+const oobiResolveMock = jest.fn();
+const groupGetRequestMock = jest.fn();
+const queryKeyStateMock = jest.fn();
+const credentialListMock = jest.fn();
+
+const signifyClient = jest.mocked({
+  connect: jest.fn(),
+  boot: jest.fn(),
+  identifiers: () => ({
+    list: identifiersListMock,
+    get: identifiersGetMock,
+    create: identifiersCreateMock,
+    addEndRole: jest.fn(),
+    interact: identifiersInteractMock,
+    rotate: identifiersRotateMock,
+    members: identifiersMemberMock,
+  }),
+  operations: () => ({
+    get: jest.fn().mockImplementation((id: string) => {
+      return {
+        done: true,
+        response: {
+          i: id,
+        },
+      };
+    }),
+  }),
+  oobis: () => ({
+    get: jest.fn(),
+    resolve: oobiResolveMock,
+  }),
+  contacts: () => ({
+    list: jest.fn(),
+    get: jest.fn().mockImplementation((id: string) => {
+      return {
+        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
+        oobi: "oobi",
+        id,
+      };
+    }),
+    delete: jest.fn(),
+  }),
+  notifications: () => ({
+    list: jest.fn(),
+    mark: jest.fn(),
+  }),
+  ipex: () => ({
+    admit: jest.fn(),
+    submitAdmit: jest.fn(),
+  }),
+  credentials: () => ({
+    list: credentialListMock,
+  }),
+  exchanges: () => ({
+    get: jest.fn(),
+    send: jest.fn(),
+  }),
+  agent: {
+    pre: "pre",
+  },
+  keyStates: () => ({
+    query: queryKeyStateMock,
+    get: jest.fn(),
+  }),
+
+  groups: () => ({ getRequest: groupGetRequestMock }),
+});
+const identifierStorage = jest.mocked({
+  getIdentifierMetadata: jest.fn(),
+  getAllIdentifierMetadata: jest.fn(),
+  getKeriIdentifiersMetadata: jest.fn(),
+  updateIdentifierMetadata: jest.fn(),
+  createIdentifierMetadataRecord: jest.fn(),
 });
 
-const credentialService = new CredentialService(
-  basicStorage,
-  signifyApi as any as SignifyApi
-);
+const credentialStorage = jest.mocked({
+  getAllCredentialMetadata: jest.fn(),
+  deleteCredentialMetadata: jest.fn(),
+  getCredentialMetadata: jest.fn(),
+  getCredentialMetadataByCredentialRecordId: jest.fn(),
+  getCredentialMetadataByConnectionId: jest.fn(),
+  saveCredentialMetadataRecord: jest.fn(),
+  updateCredentialMetadata: jest.fn(),
+});
+
+const agentServicesProps = {
+  basicStorage: basicStorage,
+  signifyClient: signifyClient as any,
+  eventService: new EventService(),
+  identifierStorage: identifierStorage as any,
+  credentialStorage: credentialStorage as any,
+};
+
+const credentialService = new CredentialService(agentServicesProps);
 
 const connectionMock = connectionsFix[0];
 

@@ -129,7 +129,7 @@ const Identifiers = () => {
     // and I moved it here since PendingIdentifiers are never going to show up in the stack.
     /**The below code only return false if the identifier is a multisig and it is not ready */
     const checkMultisigComplete =
-      await Agent.agent.identifiers.checkMultisigComplete(identifier.id);
+      await Agent.agent.multiSigs.checkMultisigComplete(identifier.id);
     if (!checkMultisigComplete) {
       return;
     } else {

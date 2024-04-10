@@ -49,7 +49,7 @@ const IdentifierStage3 = ({
       return;
     } else {
       const { identifier, signifyName } =
-        await Agent.agent.identifiers.createMultisig(
+        await Agent.agent.multiSigs.createMultisig(
           ourIdentifier,
           otherIdentifierContacts,
           {

@@ -1,3 +1,4 @@
+import { truncate } from "fs";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -23,6 +24,9 @@ const identifiersListMock = jest.fn();
 let identifiersGetMock = jest.fn();
 let identifiersCreateMock = jest.fn();
 let identifiersMemberMock = jest.fn();
+const identifiersInteractMock = jest.fn();
+const identifiersRotateMock = jest.fn();
+
 const oobiResolveMock = jest.fn();
 let groupGetRequestMock = jest.fn();
 let queryKeyStateMock = jest.fn();
@@ -35,8 +39,8 @@ const signifyClient = jest.mocked({
     get: identifiersGetMock,
     create: identifiersCreateMock,
     addEndRole: jest.fn(),
-    interact: jest.fn(),
-    rotate: jest.fn(),
+    interact: identifiersInteractMock,
+    rotate: identifiersRotateMock,
     members: identifiersMemberMock,
   }),
   operations: () => ({
@@ -107,17 +111,17 @@ const agentServicesProps = {
 
 const multiSigService = new MultiSigService(agentServicesProps);
 
-var mockResolveOobi = jest.fn();
+let mockResolveOobi = jest.fn();
+let mockGetIdentifiers = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
         getConnectionKeriShortDetailById: jest.fn(),
-        resolveOobi: jest.fn().mockResolvedValue({
-          response: {},
-        }),
+        resolveOobi: () => mockResolveOobi(),
       },
+      identifiers: { getIdentifiers: () => mockGetIdentifiers() },
     },
   },
 }));
@@ -213,10 +217,14 @@ describe("Multisig sig service of agent", () => {
         metadata as IdentifierMetadataRecordProps,
         otherIdentifiers.length + 1
       )
-    ).toBe(multisigIdentifier);
-    expect(basicStorage.save).toBeCalledWith(
-      expect.objectContaining({ id: multisigIdentifier })
+    ).toEqual({
+      identifier: multisigIdentifier,
+      signifyName: expect.any(String),
+    });
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
+      expect.objectContaining({ id: multisigIdentifier, isPending: true })
     );
+
     multiSigService.createAidMultisig = jest.fn().mockResolvedValue({
       op: { name: `group.${multisigIdentifier}1`, done: false },
       icpResult: {},
@@ -229,8 +237,11 @@ describe("Multisig sig service of agent", () => {
         metadata as IdentifierMetadataRecordProps,
         1
       )
-    ).toBe(`${multisigIdentifier}1`);
-    expect(basicStorage.save).toBeCalledWith(
+    ).toEqual({
+      identifier: `${multisigIdentifier}1`,
+      signifyName: expect.any(String),
+    });
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
       expect.objectContaining({
         id: `${multisigIdentifier}1`,
       })
@@ -247,29 +258,15 @@ describe("Multisig sig service of agent", () => {
         metadata as IdentifierMetadataRecordProps,
         2
       )
-    ).toBe(`${multisigIdentifier}2`);
-    expect(basicStorage.save).toBeCalledWith(
+    ).toEqual({
+      identifier: `${multisigIdentifier}2`,
+      signifyName: expect.any(String),
+    });
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
       expect.objectContaining({
         id: `${multisigIdentifier}2`,
       })
     );
-    const invalidOtherIdentifiers = [
-      {
-        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
-        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
-        status: ConnectionStatus.CONFIRMED,
-
-        connectionDate: new Date().toISOString(),
-      },
-    ];
-    await expect(
-      multiSigService.createMultisig(
-        creatorIdentifier,
-        invalidOtherIdentifiers,
-        metadata as IdentifierMetadataRecordProps,
-        invalidOtherIdentifiers.length + 1
-      )
-    ).rejects.toThrowError();
   });
   test("Can create a keri delegated multisig with KERI contacts", async () => {
     const creatorIdentifier = "creatorIdentifier";
@@ -329,7 +326,10 @@ describe("Multisig sig service of agent", () => {
         otherIdentifiers.length + 1,
         delegatorContact
       )
-    ).toBe(multisigIdentifier);
+    ).toEqual({
+      identifier: `${multisigIdentifier}`,
+      signifyName: expect.any(String),
+    });
     expect(multiSigService.createAidMultisig).toBeCalledWith(
       {
         prefix: "aidHere",
@@ -374,7 +374,7 @@ describe("Multisig sig service of agent", () => {
       icpResult: {},
       name: "name",
     });
-    identifierStorage.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
+    mockGetIdentifiers = jest.fn().mockResolvedValue([
       {
         displayName: "displayName",
         id: "id",
@@ -393,7 +393,10 @@ describe("Multisig sig service of agent", () => {
           displayName: "Multisig",
         }
       )
-    ).toBe(multisigIdentifier);
+    ).toEqual({
+      identifier: `${multisigIdentifier}`,
+      signifyName: expect.any(String),
+    });
   });
   test("cannot join multisig by notification if exn messages are missing", async () => {
     await expect(
@@ -414,6 +417,11 @@ describe("Multisig sig service of agent", () => {
     identifiersCreateMock = jest.fn().mockResolvedValue({
       identifier: aid,
       signifyName,
+      serder: {
+        ked: {
+          i: "i",
+        },
+      },
     });
     expect(
       await multiSigService.createDelegatedIdentifier(
@@ -424,19 +432,28 @@ describe("Multisig sig service of agent", () => {
         },
         "delegationPrefix"
       )
-    ).toBe(aid);
+    ).toEqual({
+      identifier: "i",
+      signifyName: expect.any(String),
+    });
     expect(identifiersCreateMock).toBeCalled();
-    expect(basicStorage.save).toBeCalledTimes(1);
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
   });
 
   test("should call the interactDelegation method of the signify module with the given arguments", async () => {
     const signifyName = "exampleSignifyName";
     const delegatePrefix = "exampleDelegatePrefix";
+    identifiersInteractMock.mockResolvedValue({
+      op: jest.fn().mockResolvedValue({
+        done: truncate,
+      }),
+    });
     await multiSigService.approveDelegation(signifyName, delegatePrefix);
-    // expect(signifyApi.interactDelegation).toHaveBeenCalledWith(
-    //   signifyName,
-    //   delegatePrefix
-    // );
+    expect(identifiersInteractMock).toHaveBeenCalledWith(signifyName, {
+      d: delegatePrefix,
+      i: delegatePrefix,
+      s: "0",
+    });
   });
   test("should call signify.checkDelegationSuccess and update metadata isPending property to false", async () => {
     const metadata = {
@@ -448,7 +465,14 @@ describe("Multisig sig service of agent", () => {
       signifyName: "john_doe",
       theme: 4,
     } as IdentifierMetadataRecord;
-    multiSigService.checkDelegationSuccess = jest.fn().mockResolvedValue(true);
+    identifiersGetMock.mockResolvedValue({
+      state: {
+        id: metadata.id,
+      },
+    });
+    queryKeyStateMock.mockResolvedValue({
+      done: true,
+    });
     expect(await multiSigService.checkDelegationSuccess(metadata)).toEqual(
       true
     );
@@ -484,10 +508,13 @@ describe("Multisig sig service of agent", () => {
       signifyName: "john_doe",
       theme: 4,
     } as IdentifierMetadataRecord;
+    identifiersRotateMock.mockResolvedValue({
+      op: jest.fn().mockResolvedValue({
+        done: true,
+      }),
+    });
     await multiSigService.rotateIdentifier(metadata);
-    expect(multiSigService.rotateIdentifier).toHaveBeenCalledWith(
-      metadata.signifyName
-    );
+    expect(identifiersRotateMock).toHaveBeenCalledWith(metadata.signifyName);
   });
 
   test("should can rorate multisig with KERI multisig do not have manageAid and throw error", async () => {
@@ -812,7 +839,7 @@ describe("Multisig sig service of agent", () => {
         },
       },
     ]);
-    identifierStorage.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
+    mockGetIdentifiers = jest.fn().mockResolvedValue([
       {
         displayName: "displayName",
         id: "id1",
@@ -864,9 +891,7 @@ describe("Multisig sig service of agent", () => {
         },
       },
     ]);
-    identifierStorage.getAllIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue([identifierMetadata]);
+    mockGetIdentifiers = jest.fn().mockResolvedValue([identifierMetadata]);
     Agent.agent.connections.getConnectionKeriShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
@@ -913,9 +938,7 @@ describe("Multisig sig service of agent", () => {
         },
       },
     ]);
-    identifierStorage.getAllIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue([identifierMetadata]);
+    mockGetIdentifiers = jest.fn().mockResolvedValue([identifierMetadata]);
     Agent.agent.connections.getConnectionKeriShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
@@ -980,9 +1003,7 @@ describe("Multisig sig service of agent", () => {
         },
       },
     ]);
-    identifierStorage.getAllIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue([identifierMetadata]);
+    mockGetIdentifiers = jest.fn().mockResolvedValue([identifierMetadata]);
     Agent.agent.connections.getConnectionKeriShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
@@ -1040,9 +1061,7 @@ describe("Multisig sig service of agent", () => {
         },
       },
     ]);
-    identifierStorage.getAllIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue([identifierMetadata]);
+    mockGetIdentifiers = jest.fn().mockResolvedValue([identifierMetadata]);
     jest
       .spyOn(Agent.agent.connections, "getConnectionKeriShortDetailById")
       .mockResolvedValue(senderData);

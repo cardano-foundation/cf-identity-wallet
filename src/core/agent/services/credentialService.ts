@@ -80,15 +80,13 @@ class CredentialService extends AgentService {
     const metadata = await this.getMetadataById(id);
     let acdc;
 
-    try {
-      const results = await this.signifyClient.credentials().list({
-        filter: {
-          "-d": { $eq: metadata.credentialRecordId },
-        },
-      });
+    const results = await this.signifyClient.credentials().list({
+      filter: {
+        "-d": { $eq: metadata.credentialRecordId },
+      },
+    });
+    if (results.length > 0) {
       acdc = results[0];
-    } catch (error) {
-      throw error;
     }
     if (!acdc) {
       throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
@@ -177,10 +175,6 @@ class CredentialService extends AgentService {
     });
   }
 
-  private async createAcdcMetadataRecord(event: any): Promise<void> {
-    await this.saveAcdcMetadataRecord(event.e.acdc.d, event.e.acdc.a.dt);
-  }
-
   private async saveAcdcMetadataRecord(
     credentialId: string,
     dateTime: string
@@ -197,41 +191,6 @@ class CredentialService extends AgentService {
       ...credentialDetails,
       credentialRecordId: credentialId,
     });
-  }
-
-  private async updateAcdcMetadataRecordCompleted(
-    id: string,
-    cred: any
-  ): Promise<CredentialShortDetails> {
-    const metadata =
-      await this.credentialStorage.getCredentialMetadataByCredentialRecordId(
-        id
-      );
-    if (!metadata) {
-      throw new Error(CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG);
-    }
-
-    metadata.status = CredentialMetadataRecordStatus.CONFIRMED;
-    metadata.credentialType = cred.schema?.title;
-    await this.credentialStorage.updateCredentialMetadata(
-      metadata.id,
-      metadata
-    );
-    return this.getCredentialShortDetails(metadata);
-  }
-
-  private async getKeriNotificationRecordById(
-    id: string
-  ): Promise<KeriNotification> {
-    const result = await this.basicStorage.findById(id);
-    if (!result) {
-      throw new Error(`${CredentialService.KERI_NOTIFICATION_NOT_FOUND} ${id}`);
-    }
-    return {
-      id: result.id,
-      createdAt: result.createdAt,
-      a: result.content,
-    };
   }
 
   async deleteKeriNotificationRecordById(id: string): Promise<void> {

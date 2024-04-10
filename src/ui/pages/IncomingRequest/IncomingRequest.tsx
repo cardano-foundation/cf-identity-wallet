@@ -73,7 +73,7 @@ const IncomingRequest = () => {
     if (
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
-      Agent.agent.credentials.acceptKeriAcdc(incomingRequest.id);
+      Agent.agent.ipexCommunications.acceptKeriAcdc(incomingRequest.id);
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {

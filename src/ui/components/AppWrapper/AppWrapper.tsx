@@ -36,10 +36,10 @@ import {
   ConnectionKeriStateChangedEvent,
   ConnectionStatus,
   AcdcKeriStateChangedEvent,
+  NotificationRoute,
 } from "../../../core/agent/agent.types";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
-import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
@@ -77,7 +77,7 @@ const keriNotificationsChangeHandler = async (
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
     const multisigIcpDetails =
-      await Agent.agent.identifiers.getMultisigIcpDetails(event);
+      await Agent.agent.multiSigs.getMultisigIcpDetails(event);
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
@@ -252,7 +252,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const oldMessages = (
       await Promise.all([
         Agent.agent.credentials.getKeriCredentialNotifications(),
-        Agent.agent.identifiers.getUnhandledMultisigIdentifiers({
+        Agent.agent.multiSigs.getUnhandledMultisigIdentifiers({
           isDismissed: false,
         }),
       ])

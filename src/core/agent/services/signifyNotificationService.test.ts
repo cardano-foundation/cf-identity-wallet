@@ -1,5 +1,6 @@
+import { CredentialStorage } from "../records";
+import { EventService } from "./eventService";
 import { SignifyNotificationService } from "./signifyNotificationService";
-import { SignifyApi } from "../modules/signify/signifyApi";
 
 const basicStorage = jest.mocked({
   open: jest.fn(),
@@ -12,13 +13,97 @@ const basicStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
-const signifyApi = jest.mocked({
-  markNotification: jest.fn(),
+const identifiersListMock = jest.fn();
+const identifiersGetMock = jest.fn();
+const identifiersCreateMock = jest.fn();
+const identifiersMemberMock = jest.fn();
+const identifiersInteractMock = jest.fn();
+const identifiersRotateMock = jest.fn();
+
+const oobiResolveMock = jest.fn();
+const groupGetRequestMock = jest.fn();
+const queryKeyStateMock = jest.fn();
+
+const signifyClient = jest.mocked({
+  connect: jest.fn(),
+  boot: jest.fn(),
+  identifiers: () => ({
+    list: identifiersListMock,
+    get: identifiersGetMock,
+    create: identifiersCreateMock,
+    addEndRole: jest.fn(),
+    interact: identifiersInteractMock,
+    rotate: identifiersRotateMock,
+    members: identifiersMemberMock,
+  }),
+  operations: () => ({
+    get: jest.fn().mockImplementation((id: string) => {
+      return {
+        done: true,
+        response: {
+          i: id,
+        },
+      };
+    }),
+  }),
+  oobis: () => ({
+    get: jest.fn(),
+    resolve: oobiResolveMock,
+  }),
+  contacts: () => ({
+    list: jest.fn(),
+    get: jest.fn().mockImplementation((id: string) => {
+      return {
+        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
+        oobi: "oobi",
+        id,
+      };
+    }),
+    delete: jest.fn(),
+  }),
+  notifications: () => ({
+    list: jest.fn(),
+    mark: jest.fn(),
+  }),
+  ipex: () => ({
+    admit: jest.fn(),
+    submitAdmit: jest.fn(),
+  }),
+  credentials: () => ({
+    list: jest.fn(),
+  }),
+  exchanges: () => ({
+    get: jest.fn(),
+    send: jest.fn(),
+  }),
+  agent: {
+    pre: "pre",
+  },
+  keyStates: () => ({
+    query: queryKeyStateMock,
+    get: jest.fn(),
+  }),
+
+  groups: () => ({ getRequest: groupGetRequestMock }),
+});
+const identifierStorage = jest.mocked({
+  getIdentifierMetadata: jest.fn(),
+  getAllIdentifierMetadata: jest.fn(),
+  getKeriIdentifiersMetadata: jest.fn(),
+  updateIdentifierMetadata: jest.fn(),
+  createIdentifierMetadataRecord: jest.fn(),
 });
 
+const agentServicesProps = {
+  basicStorage: basicStorage,
+  signifyClient: signifyClient as any,
+  eventService: new EventService(),
+  identifierStorage: identifierStorage as any,
+  credentialStorage: new CredentialStorage(basicStorage),
+};
+
 const signifyNotificationService = new SignifyNotificationService(
-  basicStorage,
-  signifyApi as any as SignifyApi
+  agentServicesProps
 );
 
 describe("Signify notification service of agent", () => {

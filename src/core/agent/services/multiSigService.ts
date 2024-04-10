@@ -9,6 +9,7 @@ import {
   MultiSigExnMessage,
   MultiSigRoute,
   NotificationRoute,
+  CreateIdentifierResult,
 } from "../agent.types";
 import {
   IdentifierMetadataRecord,
@@ -41,6 +42,7 @@ class MultiSigService extends AgentService {
     "Cannot join multi-sig inception as we do not control any member AID of the multi-sig";
   static readonly UNKNOWN_AIDS_IN_MULTISIG_ICP =
     "Multi-sig join request contains unknown AIDs (not connected)";
+
   async createMultisig(
     ourIdentifier: string,
     otherIdentifierContacts: ConnectionShortDetails[],
@@ -50,7 +52,7 @@ class MultiSigService extends AgentService {
     >,
     threshold: number,
     delegateContact?: ConnectionShortDetails
-  ): Promise<string | undefined> {
+  ): Promise<CreateIdentifierResult> {
     const ourMetadata = await this.identifierStorage.getIdentifierMetadata(
       ourIdentifier
     );
@@ -61,10 +63,6 @@ class MultiSigService extends AgentService {
       otherIdentifierContacts.map(async (contact) => {
         const aid = await Agent.agent.connections.resolveOobi(
           contact.oobi as string
-        );
-        console.log(
-          "🚀 ~ MultiSigService ~ otherIdentifierContacts.map ~ aid:",
-          aid
         );
         return { state: aid.response };
       })
@@ -101,7 +99,7 @@ class MultiSigService extends AgentService {
       isPending,
       multisigManageAid: ourIdentifier,
     });
-    return multisigId;
+    return { identifier: multisigId, signifyName };
   }
 
   async createAidMultisig(
@@ -347,7 +345,7 @@ class MultiSigService extends AgentService {
       IdentifierMetadataRecordProps,
       "displayName" | "colors" | "theme"
     >
-  ): Promise<string | undefined> {
+  ): Promise<CreateIdentifierResult | undefined> {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const msgSaid = notification.a.d as string;
     const hasJoined = await this.hasJoinedMultisig(msgSaid);
@@ -390,7 +388,7 @@ class MultiSigService extends AgentService {
       isPending: res.op.done ? false : true, //this will be updated once the operation is done
       multisigManageAid: identifier.id,
     });
-    return multisigId;
+    return { identifier: multisigId, signifyName };
   }
 
   async markMultisigCompleteIfReady(metadata: IdentifierMetadataRecord) {
@@ -411,11 +409,16 @@ class MultiSigService extends AgentService {
     return { done: false };
   }
 
-  async getUnhandledMultisigIdentifiers(): Promise<KeriNotification[]> {
+  async getUnhandledMultisigIdentifiers(
+    filters: {
+      isDismissed?: boolean;
+    } = {}
+  ): Promise<KeriNotification[]> {
     const results = await this.basicStorage.findAllByQuery(
       RecordType.NOTIFICATION_KERI,
       {
         route: NotificationRoute.MultiSigIcp,
+        ...filters,
         $or: [
           { route: NotificationRoute.MultiSigIcp },
           {
@@ -439,7 +442,7 @@ class MultiSigService extends AgentService {
       "id" | "createdAt" | "isArchived" | "signifyName"
     >,
     delegatorPrefix: string
-  ): Promise<string | undefined> {
+  ): Promise<CreateIdentifierResult> {
     const signifyName = uuidv4();
     const operation = await this.signifyClient
       .identifiers()
@@ -451,7 +454,7 @@ class MultiSigService extends AgentService {
       signifyName: signifyName,
       isPending: true,
     });
-    return identifier;
+    return { identifier, signifyName };
   }
 
   async approveDelegation(
