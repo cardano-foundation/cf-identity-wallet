@@ -294,7 +294,7 @@ const IdentifierDetails = () => {
             setOptionsIsOpen={setIdentifierOptionsIsOpen}
             cardData={cardData}
             setCardData={setCardData}
-            handleDeleteIdentifier={deleteIdentifier}
+            handleDeleteIdentifier={() => setAlertIsOpen(true)}
           />
         </>
       )}

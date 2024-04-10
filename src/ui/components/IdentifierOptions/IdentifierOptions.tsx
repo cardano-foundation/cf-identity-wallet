@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import {
   IonButton,
   IonButtons,
@@ -29,23 +28,16 @@ import { IdentifierOptionsProps } from "./IdentifierOptions.types";
 import "./IdentifierOptions.scss";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
-import { VerifyPassword } from "../VerifyPassword";
-import { Alert } from "../Alert";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getIdentifiersCache,
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
-import { getBackRoute } from "../../../routes/backRoute";
-import { TabsRoutePath } from "../../../routes/paths";
 import {
-  getStateCache,
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { updateReduxState } from "../../../store/utils";
 import { DISPLAY_NAME_LENGTH } from "../../globals/constants";
-import { VerifyPasscode } from "../VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../layout/PageLayout";
 import { writeToClipboard } from "../../utils/clipboard";
@@ -61,16 +53,10 @@ const IdentifierOptions = ({
 }: IdentifierOptionsProps) => {
   const dispatch = useAppDispatch();
   const identifierData = useAppSelector(getIdentifiersCache);
-  const stateCache = useAppSelector(getStateCache);
-  const history = useHistory();
   const [editorOptionsIsOpen, setEditorIsOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
   const [newSelectedTheme, setNewSelectedTheme] = useState(cardData.theme);
-  const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [viewIsOpen, setViewIsOpen] = useState(false);
-  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
-  const [actionType, setActionType] = useState("");
   const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
   const verifyDisplayName =
     newDisplayName.length > 0 &&
@@ -103,13 +89,11 @@ const IdentifierOptions = ({
   };
 
   const handleDelete = () => {
-    setActionType("delete");
+    handleDeleteIdentifier();
     setOptionsIsOpen(false);
-    setAlertIsOpen(true);
   };
 
   const handleSubmit = async () => {
-    setActionType("edit");
     setEditorIsOpen(false);
     setOptionsIsOpen(false);
     const updatedIdentifiers = [...identifierData];
@@ -132,37 +116,6 @@ const IdentifierOptions = ({
     });
     dispatch(setIdentifiersCache(updatedIdentifiers));
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
-    handleDone();
-  };
-
-  const verifyAction = () => {
-    handleClose();
-    const updatedIdentifiers = identifierData.filter(
-      (item) => item.id !== cardData.id
-    );
-    dispatch(setIdentifiersCache(updatedIdentifiers));
-    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
-    handleDone();
-  };
-
-  const handleDone = async () => {
-    const { backPath, updateRedux } = getBackRoute(
-      TabsRoutePath.IDENTIFIER_DETAILS,
-      {
-        store: { stateCache },
-      }
-    );
-
-    updateReduxState(
-      backPath.pathname,
-      { store: { stateCache } },
-      dispatch,
-      updateRedux
-    );
-    if (actionType === "delete") {
-      await handleDeleteIdentifier();
-      history.push(TabsRoutePath.IDENTIFIERS);
-    }
   };
 
   return (
@@ -439,40 +392,6 @@ const IdentifierOptions = ({
           )}
         </div>
       </IonModal>
-      <Alert
-        isOpen={alertIsOpen}
-        setIsOpen={setAlertIsOpen}
-        dataTestId="alert-confirm-identifier-delete-options"
-        headerText={i18n.t("identifiers.details.delete.alert.title")}
-        confirmButtonText={`${i18n.t(
-          "identifiers.details.delete.alert.confirm"
-        )}`}
-        cancelButtonText={`${i18n.t(
-          "identifiers.details.delete.alert.cancel"
-        )}`}
-        actionConfirm={() => {
-          if (
-            !stateCache?.authentication.passwordIsSkipped &&
-            stateCache?.authentication.passwordIsSet
-          ) {
-            setVerifyPasswordIsOpen(true);
-          } else {
-            setVerifyPasscodeIsOpen(true);
-          }
-        }}
-        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-      />
-      <VerifyPassword
-        isOpen={verifyPasswordIsOpen}
-        setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={verifyAction}
-      />
-      <VerifyPasscode
-        isOpen={verifyPasscodeIsOpen}
-        setIsOpen={setVerifyPasscodeIsOpen}
-        onVerify={verifyAction}
-      />
     </>
   );
 };

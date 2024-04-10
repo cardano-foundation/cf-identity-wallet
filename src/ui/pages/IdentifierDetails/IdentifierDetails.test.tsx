@@ -235,7 +235,7 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getAllByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)[1]
+        getAllByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)[0]
       ).toBeVisible();
     });
 
