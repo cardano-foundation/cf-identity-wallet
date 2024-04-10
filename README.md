@@ -12,7 +12,7 @@
 # Disclaimer
 
 <div align="justify"> 
-<b> Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development and security audits have yet to be conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions. Furthermore, any seed phrase generated during the onboarding process is currently not being utilised. We are in the process of reviewing the ideal key management and social recovery methodologies for development in 2024. </b>
+<b> Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development with security audits and threat modelling still pending. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions. Furthermore, any seed phrase generated during the onboarding process is currently not being utilised. We are in the process of reviewing the ideal key management and social recovery methodologies for development in 2024. </b>
 </div>
 <br>
 <div align="center">   
@@ -46,21 +46,21 @@
 
 # Features
 
-| **User Interface**    |  **Secure Storage**  |**Interoperability**   |  **Standards & Protocols** | **Connections & Credential Issuance**  |     **SSI Agents**   |           
-|----------------|---------------|---------------|----------------|---------------|----------------|
-|  Intuitive User Experience |  Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material | [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID) |  Holder-to-Holder | [KERIA](https://github.com/cardano-foundation/keria) | 
-|  Android and iOS support |  Hierarchical Deterministic (HD) Identity Wallet | [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) |  |  Issuer-to-Holder | [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
-|  | |  |  |  [Credential Issuance Testing Tool](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  |   | 
-|  | |  | |  | |
+| **User Interface**    |  **Secure Storage**  |  **Standards & Protocols** |  **SSI Services**   |           
+|----------------|---------------|---------------|----------------|
+|  Intuitive User Experience |  Hardware Security Module (HSM)   | [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | [KERIA](https://github.com/cardano-foundation/keria) | 
+|  Android  |  Secure Enclave (SE) | [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) |  [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
+| iOS | Private Key Storage | [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) |  [Credential Issuance Modules](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  |   | 
+
 
 # Potential Future Developments
 
-|**App Features**            |  **Identity Recovery**               |     **Verifiable Credentials**  |    **Communications** |   **Peer-to-Peer (P2P)** |  
-|----------------|---------------|----------------|----------------|----------------|
-| Bluetooth |  [Shamir Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing)|  [OID4vc](https://openid.net/sg/openid4vc/specifications/)| Messaging | [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) Support  | 
-| Biometrics | On-chain Recovery | On-Chain Schemas | Social Recovery |  App Integration |
-| NFC|  Local Encrypted|  | [AnonCreds](https://www.hyperledger.org/projects/anoncreds) |  | | 
-|Aries Askar | Cloud-based |  | [Cheqd](https://cheqd.io/) | |  |
+|**Mobile Application Features**        |  **Decentralized Identifier Recovery**               |     **Standards & Protocols**  |  **Peer-to-Peer (P2P)** |  
+|----------------|---------------|----------------|----------------|
+| Bluetooth |  [Shamir Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing)| Ledger-based Schemas  | Private Messaging | 
+| Biometrics | On-chain Recovery | Direct Mode (Offline) | Social Recovery |  App Integration |
+| NFC|  Local Encrypted|  eIDAS 2.0  | [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) Support | 
+|Aries Askar | Cloud-based | [OID4vc](https://openid.net/sg/openid4vc/specifications/)  | App Integration | 
 
 
 # Preview in your Browser
