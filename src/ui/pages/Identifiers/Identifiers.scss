@@ -58,41 +58,6 @@
     }
   }
 
-  @media screen and (min-width: 250px) and (max-width: 370px) {
-    .identifiers-tab-content-block {
-      margin-bottom: 1.6rem;
-
-      h3 {
-        margin-bottom: 0.7rem;
-      }
-
-      ion-list {
-        ion-item.identifier-item ion-label {
-          .identifier-miniature {
-            height: 2.2rem;
-            width: 3.85rem;
-            border-radius: 0.2rem;
-          }
-
-          .identifier-info {
-            margin-left: 0.752rem;
-
-            .identifier-info-top-line {
-              font-size: 0.8rem;
-              margin-bottom: 0.31rem;
-            }
-
-            .identifier-info-bottom-line {
-              font-size: 0.7rem;
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-.identifier-tab {
   &.cards-identifier-nav {
     .identifier-favourite-cards {
       animation: indentifierFavouriteCardResize 0.25s ease;
@@ -140,6 +105,39 @@
             opacity: 0;
             height: 0;
             overflow: hidden;
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .identifiers-tab-content-block {
+      margin-bottom: 1.6rem;
+
+      h3 {
+        margin-bottom: 0.7rem;
+      }
+
+      ion-list {
+        ion-item.identifier-item ion-label {
+          .identifier-miniature {
+            height: 2.2rem;
+            width: 3.85rem;
+            border-radius: 0.2rem;
+          }
+
+          .identifier-info {
+            margin-left: 0.752rem;
+
+            .identifier-info-top-line {
+              font-size: 0.8rem;
+              margin-bottom: 0.31rem;
+            }
+
+            .identifier-info-bottom-line {
+              font-size: 0.7rem;
+            }
           }
         }
       }

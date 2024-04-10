@@ -182,7 +182,7 @@ const IdentifierOptions = ({
           >
             <IonToolbar color="light">
               <IonTitle data-testid="identifier-options-title">
-                <h2>{i18n.t("identifiers.card.details.options.title")}</h2>
+                <h2>{i18n.t("identifiers.details.options.title")}</h2>
               </IonTitle>
             </IonToolbar>
           </IonHeader>
@@ -210,7 +210,7 @@ const IdentifierOptions = ({
                       </IonButton>
                     </span>
                     <span className="identifier-options-label">
-                      {i18n.t("identifiers.card.details.options.view")}
+                      {i18n.t("identifiers.details.options.view")}
                     </span>
                   </span>
                   <span
@@ -234,7 +234,7 @@ const IdentifierOptions = ({
                       </IonButton>
                     </span>
                     <span className="identifier-options-label">
-                      {i18n.t("identifiers.card.details.options.edit")}
+                      {i18n.t("identifiers.details.options.edit")}
                     </span>
                   </span>
                   <span
@@ -255,7 +255,7 @@ const IdentifierOptions = ({
                       </IonButton>
                     </span>
                     <span className="identifier-options-info-block-data">
-                      {i18n.t("identifiers.card.details.options.share")}
+                      {i18n.t("identifiers.details.options.share")}
                     </span>
                   </span>
                   <span
@@ -278,7 +278,7 @@ const IdentifierOptions = ({
                       </IonButton>
                     </span>
                     <span className="identifier-options-label">
-                      {i18n.t("identifiers.card.details.options.delete")}
+                      {i18n.t("identifiers.details.options.delete")}
                     </span>
                   </span>
                 </IonCol>
@@ -314,11 +314,11 @@ const IdentifierOptions = ({
                   }}
                   data-testid="close-button"
                 >
-                  {i18n.t("identifiers.card.details.options.cancel")}
+                  {i18n.t("identifiers.details.options.cancel")}
                 </IonButton>
               </IonButtons>
               <IonTitle data-testid="edit-identifier-title">
-                <h2>{i18n.t("identifiers.card.details.options.edit")}</h2>
+                <h2>{i18n.t("identifiers.details.options.edit")}</h2>
               </IonTitle>
             </IonToolbar>
           </IonHeader>
@@ -332,7 +332,7 @@ const IdentifierOptions = ({
                   <CustomInput
                     dataTestId="edit-name-input"
                     title={`${i18n.t(
-                      "identifiers.card.details.options.inner.label"
+                      "identifiers.details.options.inner.label"
                     )}`}
                     hiddenInput={false}
                     autofocus={true}
@@ -345,7 +345,7 @@ const IdentifierOptions = ({
                 {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
                   <ErrorMessage
                     message={`${i18n.t(
-                      "identifiers.card.details.options.inner.error"
+                      "identifiers.details.options.inner.error"
                     )}`}
                     timeout={false}
                   />
@@ -353,7 +353,7 @@ const IdentifierOptions = ({
               </IonRow>
               <IonRow>
                 <span className="theme-input-title">{`${i18n.t(
-                  "identifiers.card.details.options.inner.theme"
+                  "identifiers.details.options.inner.theme"
                 )}`}</span>
               </IonRow>
               <IdentifierThemeSelector
@@ -368,7 +368,7 @@ const IdentifierOptions = ({
                 onClick={handleSubmit}
                 disabled={!verifyDisplayName}
               >
-                {i18n.t("identifiers.card.details.options.inner.confirm")}
+                {i18n.t("identifiers.details.options.inner.confirm")}
               </IonButton>
             </IonGrid>
           </IonContent>
@@ -387,11 +387,9 @@ const IdentifierOptions = ({
             <PageLayout
               header={true}
               closeButton={true}
-              closeButtonLabel={`${i18n.t(
-                "identifiers.card.details.view.cancel"
-              )}`}
+              closeButtonLabel={`${i18n.t("identifiers.details.view.cancel")}`}
               closeButtonAction={() => setViewIsOpen(false)}
-              title={`${i18n.t("identifiers.card.details.view.title")}`}
+              title={`${i18n.t("identifiers.details.view.title")}`}
             >
               <IonGrid className="identifier-options-inner">
                 <pre>{JSON.stringify(cardData, null, 2)}</pre>
@@ -415,7 +413,7 @@ const IdentifierOptions = ({
                         size="small"
                         icon={copyOutline}
                       />
-                      {i18n.t("identifiers.card.details.view.copy")}
+                      {i18n.t("identifiers.details.view.copy")}
                     </IonButton>
                     <IonButton
                       data-testid="save-to-device-button"
@@ -432,7 +430,7 @@ const IdentifierOptions = ({
                         size="small"
                         icon={downloadOutline}
                       />
-                      {i18n.t("identifiers.card.details.view.save")}
+                      {i18n.t("identifiers.details.view.save")}
                     </IonButton>
                   </IonCol>
                 </IonRow>
@@ -445,12 +443,12 @@ const IdentifierOptions = ({
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
         dataTestId="alert-confirm-identifier-delete-options"
-        headerText={i18n.t("identifiers.card.details.delete.alert.title")}
+        headerText={i18n.t("identifiers.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
-          "identifiers.card.details.delete.alert.confirm"
+          "identifiers.details.delete.alert.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "identifiers.card.details.delete.alert.cancel"
+          "identifiers.details.delete.alert.cancel"
         )}`}
         actionConfirm={() => {
           if (

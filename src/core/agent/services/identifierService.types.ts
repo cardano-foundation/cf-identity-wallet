@@ -24,7 +24,7 @@ interface IdentifierShortDetails {
   groupMetadata?: GroupMetadata;
 }
 
-interface IdentifierDetails extends IdentifierShortDetails {
+interface IdentifierFullDetails extends IdentifierShortDetails {
   signifyOpName?: string;
   s: number;
   dt: string;
@@ -51,7 +51,7 @@ interface CreateIdentifierResult {
 
 export type {
   IdentifierShortDetails,
-  IdentifierDetails,
+  IdentifierFullDetails,
   MultiSigIcpRequestDetails,
   CreateIdentifierInputs,
   CreateIdentifierResult,
