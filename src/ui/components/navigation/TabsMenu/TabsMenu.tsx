@@ -41,7 +41,7 @@ const tabsRoutes = [
   },
   {
     label: i18n.t("tabsmenu.label.creds"),
-    path: TabsRoutePath.CREDS,
+    path: TabsRoutePath.CREDENTIALS,
     component: Creds,
     icon: [idCard, idCardOutline],
   },

@@ -61,9 +61,12 @@ const CredentialOptions = ({
   };
 
   const handleDone = () => {
-    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
-      store: { stateCache },
-    });
+    const { backPath, updateRedux } = getBackRoute(
+      TabsRoutePath.CREDENTIAL_DETAILS,
+      {
+        store: { stateCache },
+      }
+    );
 
     updateReduxState(
       backPath.pathname,
@@ -71,7 +74,7 @@ const CredentialOptions = ({
       dispatch,
       updateRedux
     );
-    history.push(TabsRoutePath.CREDS);
+    history.push(TabsRoutePath.CREDENTIALS);
   };
 
   const verifyAction = () => {

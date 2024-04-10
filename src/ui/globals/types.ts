@@ -2,7 +2,7 @@ import BackgroundKERI0 from "../assets/images/keri-0.png";
 import BackgroundKERI1 from "../assets/images/keri-1.png";
 
 enum CardType {
-  CREDS = "creds",
+  CREDENTIALS = "credentials",
   IDENTIFIERS = "identifiers",
 }
 

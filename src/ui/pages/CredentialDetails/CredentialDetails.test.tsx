@@ -14,7 +14,7 @@ import { Agent } from "../../../core/agent/agent";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { IdentifierDetails } from "../IdentifierDetails";
 
-const path = TabsRoutePath.CREDS + "/" + credsFixAcdc[0].id;
+const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -38,7 +38,7 @@ jest.mock("react-router-dom", () => ({
 }));
 const initialStateCreds = {
   stateCache: {
-    routes: [TabsRoutePath.CREDS],
+    routes: [TabsRoutePath.CREDENTIALS],
     authentication: {
       loggedIn: true,
       time: Date.now(),
@@ -66,7 +66,7 @@ const storeMockedCreds = {
 };
 const initialStateNoPasswordCurrent = {
   stateCache: {
-    routes: [TabsRoutePath.CREDS],
+    routes: [TabsRoutePath.CREDENTIALS],
     authentication: {
       loggedIn: true,
       time: Date.now(),
@@ -86,7 +86,7 @@ const initialStateNoPasswordCurrent = {
 
 const initialStateNoPasswordArchived = {
   stateCache: {
-    routes: [TabsRoutePath.CREDS],
+    routes: [TabsRoutePath.CREDENTIALS],
     authentication: {
       loggedIn: true,
       time: Date.now(),

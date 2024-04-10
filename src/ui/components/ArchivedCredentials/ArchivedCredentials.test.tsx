@@ -42,7 +42,7 @@ jest.mock("../../../core/storage", () => ({
 
 const initialStateEmpty = {
   stateCache: {
-    routes: [TabsRoutePath.CREDS],
+    routes: [TabsRoutePath.CREDENTIALS],
     authentication: {
       loggedIn: true,
       time: Date.now(),

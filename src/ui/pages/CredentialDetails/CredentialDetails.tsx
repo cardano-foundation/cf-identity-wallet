@@ -90,9 +90,12 @@ const CredentialDetails = () => {
   const handleDone = () => {
     setNavAnimation(true);
 
-    const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.CRED_DETAILS, {
-      store: { stateCache },
-    });
+    const { nextPath, updateRedux } = getNextRoute(
+      TabsRoutePath.CREDENTIAL_DETAILS,
+      {
+        store: { stateCache },
+      }
+    );
 
     updateReduxState(
       nextPath.pathname,

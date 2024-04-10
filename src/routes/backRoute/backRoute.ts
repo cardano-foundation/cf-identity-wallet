@@ -125,7 +125,7 @@ const backRoute: Record<string, any> = {
   [TabsRoutePath.IDENTIFIER_DETAILS]: {
     updateRedux: [removeCurrentRoute],
   },
-  [TabsRoutePath.CRED_DETAILS]: {
+  [TabsRoutePath.CREDENTIAL_DETAILS]: {
     updateRedux: [removeCurrentRoute],
   },
 };

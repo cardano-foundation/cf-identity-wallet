@@ -116,7 +116,7 @@ const Creds = () => {
   };
 
   useIonViewWillEnter(() => {
-    dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }));
+    dispatch(setCurrentRoute({ path: TabsRoutePath.CREDENTIALS }));
     fetchArchivedCreds();
   });
 
@@ -231,7 +231,7 @@ const Creds = () => {
                 )}
                 <CardsStack
                   name="favs"
-                  cardsType={CardType.CREDS}
+                  cardsType={CardType.CREDENTIALS}
                   cardsData={sortedFavCreds}
                   onShowCardDetails={() => handleShowNavAnimation("favourite")}
                 />
@@ -244,7 +244,7 @@ const Creds = () => {
                 )}
                 <CardsStack
                   name="allcreds"
-                  cardsType={CardType.CREDS}
+                  cardsType={CardType.CREDENTIALS}
                   cardsData={allCreds}
                   onShowCardDetails={() => handleShowNavAnimation("cards")}
                 />

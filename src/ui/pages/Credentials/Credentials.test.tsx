@@ -20,7 +20,7 @@ jest.mock("../../../core/agent/agent", () => ({
 }));
 const initialStateEmpty = {
   stateCache: {
-    routes: [TabsRoutePath.CREDS],
+    routes: [TabsRoutePath.CREDENTIALS],
     authentication: {
       loggedIn: true,
       time: Date.now(),
@@ -38,7 +38,7 @@ const initialStateEmpty = {
 
 const initialStateFull = {
   stateCache: {
-    routes: [TabsRoutePath.CREDS],
+    routes: [TabsRoutePath.CREDENTIALS],
     authentication: {
       loggedIn: true,
       time: Date.now(),

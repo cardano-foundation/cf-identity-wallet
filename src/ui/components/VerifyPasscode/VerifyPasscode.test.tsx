@@ -12,7 +12,7 @@ import { CredentialDetails } from "../../pages/CredentialDetails";
 import { Agent } from "../../../core/agent/agent";
 import { VerifyPasscode } from "./VerifyPasscode";
 
-const path = TabsRoutePath.CREDS + "/" + credsFixAcdc[0].id;
+const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -37,7 +37,7 @@ jest.mock("../../../core/agent/agent", () => ({
 
 const initialStateNoPassword = {
   stateCache: {
-    routes: [TabsRoutePath.CREDS],
+    routes: [TabsRoutePath.CREDENTIALS],
     authentication: {
       loggedIn: true,
       time: Date.now(),
