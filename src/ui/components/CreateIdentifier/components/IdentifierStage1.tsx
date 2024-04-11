@@ -105,9 +105,7 @@ const IdentifierStage1 = ({
                   <IonCheckbox
                     checked={selectedConnections.includes(connection)}
                     data-testid={`connection-checkbox-${index}`}
-                    onIonChange={() => {
-                      handleSelectConnection(connection);
-                    }}
+                    onIonChange={() => handleSelectConnection(connection)}
                     aria-label=""
                   />
                 </IonLabel>

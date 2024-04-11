@@ -25,7 +25,7 @@ import { i18n } from "../../../../i18n";
 import "./TabsMenu.scss";
 import { TabsRoutePath } from "../../../../routes/paths";
 import { Identifiers } from "../../../pages/Identifiers";
-import { Creds } from "../../../pages/Creds";
+import { Creds } from "../../../pages/Credentials";
 import { Scan } from "../../../pages/Scan";
 import { Chat } from "../../../pages/Chat";
 import { Menu } from "../../../pages/Menu";
@@ -41,7 +41,7 @@ const tabsRoutes = [
   },
   {
     label: i18n.t("tabsmenu.label.creds"),
-    path: TabsRoutePath.CREDS,
+    path: TabsRoutePath.CREDENTIALS,
     component: Creds,
     icon: [idCard, idCardOutline],
   },
