@@ -1,4 +1,4 @@
-import { IdentifierFullDetails } from "../../../../core/agent/services/identifierService.types";
+import { IdentifierFullDetails } from "../../../../core/agent/services/identifier.types";
 
 interface IdentifierContentProps {
   cardData: IdentifierFullDetails;

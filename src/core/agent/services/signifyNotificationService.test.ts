@@ -179,4 +179,10 @@ describe("Signify notification service of agent", () => {
       SignifyNotificationService.KERI_NOTIFICATION_NOT_FOUND
     );
   });
+
+  test("can delete keri notification by ID", async () => {
+    const id = "uuid";
+    await signifyNotificationService.deleteKeriNotificationRecordById(id);
+    expect(basicStorage.deleteById).toBeCalled();
+  });
 });

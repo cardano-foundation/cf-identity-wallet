@@ -10,8 +10,8 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { setQueueIncomingRequest } from "../../../store/reducers/stateCache";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { CredentialService } from "../../../core/agent/services";
 import { EventService } from "../../../core/agent/services/eventService";
+import { SignifyNotificationService } from "../../../core/agent/services/signifyNotificationService";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -188,9 +188,9 @@ const agentServicesProps = {
   credentialStorage: credentialStorage as any,
 };
 
-const credentialService = new CredentialService(agentServicesProps);
-
-const connectionMock = connectionsFix[0];
+const signifyNotificationService = new SignifyNotificationService(
+  agentServicesProps
+);
 
 describe("Multi-Sig request", () => {
   const requestDetails = {
@@ -205,7 +205,9 @@ describe("Multi-Sig request", () => {
   };
 
   afterEach(async () => {
-    await credentialService.deleteKeriNotificationRecordById(requestDetails.id);
+    await signifyNotificationService.deleteKeriNotificationRecordById(
+      requestDetails.id
+    );
   });
 
   test("It receives incoming Multi-Sig request and render content in MultiSigRequestStageOne", async () => {

@@ -497,26 +497,6 @@ describe("Multisig sig service of agent", () => {
     );
   });
 
-  test("should call signify.rotateIdentifier with correct params", async () => {
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-
-      colors: ["#e0f5bc", "#ccef8f"],
-      isPending: false,
-      signifyOpName: "op123",
-      signifyName: "john_doe",
-      theme: 4,
-    } as IdentifierMetadataRecord;
-    identifiersRotateMock.mockResolvedValue({
-      op: jest.fn().mockResolvedValue({
-        done: true,
-      }),
-    });
-    await multiSigService.rotateIdentifier(metadata);
-    expect(identifiersRotateMock).toHaveBeenCalledWith(metadata.signifyName);
-  });
-
   test("should can rorate multisig with KERI multisig do not have manageAid and throw error", async () => {
     const metadata = {
       id: "123456",

@@ -1,24 +1,16 @@
 import { v4 as uuidv4 } from "uuid";
-import { plainToInstance } from "class-transformer";
 import {
   CreateIdentifierResult,
   IdentifierFullDetails,
   IdentifierShortDetails,
-  MultiSigIcpRequestDetails,
 } from "./identifier.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
-import {
-  ConnectionShortDetails,
-  IdentifierResult,
-  KeriNotification,
-} from "../agent.types";
-import { Agent } from "../agent";
-import { RecordType } from "../../storage/storage.types";
-import { BasicRecord } from "../records";
+import { IdentifierResult } from "../agent.types";
+import { waitAndGetDoneOp } from "./utils";
 
 const identifierTypeThemes = [0, 1];
 
@@ -43,17 +35,8 @@ class IdentifierService extends AgentService {
     "There's no exchange message for the given SAID";
   static readonly ONLY_ALLOW_KERI_CONTACTS =
     "Can only create multi-sig using KERI contacts with specified OOBI URLs";
-
-  static readonly MULTI_SIG_NOT_FOUND =
-    "There's no multi sig identifier for the given SAID";
-  static readonly AID_IS_NOT_MULTI_SIG =
-    "This AID is not a multi sig identifier";
-  static readonly NOT_FOUND_ALL_MEMBER_OF_MULTISIG =
-    "Cannot find all members of multisig or one of the members does not rotate its AID";
-  static readonly CANNOT_JOIN_MULTISIG_ICP =
-    "Cannot join multi-sig inception as we do not control any member AID of the multi-sig";
-  static readonly UNKNOWN_AIDS_IN_MULTISIG_ICP =
-    "Multi-sig join request contains unknown AIDs (not connected)";
+  static readonly FAILED_TO_ROTATE_AID =
+    "Failed to rotate AID, operation not completing...";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -81,12 +64,13 @@ class IdentifierService extends AgentService {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
     );
-    const aid = await this.signifyClient
-      .identifiers()
-      .get(metadata.signifyName);
     if (metadata.isPending && metadata.signifyOpName) {
       return undefined;
     }
+    const aid = await this.signifyClient
+      .identifiers()
+      .get(metadata.signifyName);
+
     if (!aid) {
       return undefined;
     }
@@ -213,6 +197,17 @@ class IdentifierService extends AgentService {
   ): void {
     if (metadata.theme && !identifierTypeThemes.includes(metadata.theme)) {
       throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
+    }
+  }
+
+  async rotateIdentifier(metadata: IdentifierMetadataRecord) {
+    const rotateResult = await this.signifyClient
+      .identifiers()
+      .rotate(metadata.signifyName);
+    let operation = await rotateResult.op();
+    operation = await waitAndGetDoneOp(this.signifyClient, operation);
+    if (!operation.done) {
+      throw new Error(IdentifierService.FAILED_TO_ROTATE_AID);
     }
   }
 }

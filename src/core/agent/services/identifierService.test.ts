@@ -18,6 +18,7 @@ const basicStorage = jest.mocked({
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
 const identifiersCreateMock = jest.fn();
+const identifiersRotateMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -28,7 +29,7 @@ const signifyClient = jest.mocked({
     create: identifiersCreateMock,
     addEndRole: jest.fn(),
     interact: jest.fn(),
-    rotate: jest.fn(),
+    rotate: identifiersRotateMock,
     members: jest.fn(),
   }),
   operations: () => ({
@@ -337,5 +338,25 @@ describe("Single sig service of agent", () => {
       .mockReturnValue([]);
     await identifierService.syncKeriaIdentifiers();
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
+  });
+
+  test("should call signify.rotateIdentifier with correct params", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: false,
+      signifyOpName: "op123",
+      signifyName: "john_doe",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+    identifiersRotateMock.mockResolvedValue({
+      op: jest.fn().mockResolvedValue({
+        done: true,
+      }),
+    });
+    await identifierService.rotateIdentifier(metadata);
+    expect(identifiersRotateMock).toHaveBeenCalledWith(metadata.signifyName);
   });
 });
