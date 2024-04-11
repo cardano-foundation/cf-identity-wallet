@@ -21,14 +21,7 @@ import { KeyStoreKeys, SecureStorage } from "../storage";
 import { MultiSigService } from "./services/multiSigService";
 import { IpexCommunicationService } from "./services/ipexCommunicationService";
 
-const config = {
-  label: "idw-agent",
-  walletConfig: {
-    id: "idw",
-    key: "idw", // Right now, this key isn't used as we don't have encryption.
-  },
-  autoUpdateStorageOnStartup: true,
-};
+const walletId = "idw";
 class Agent {
   static readonly LOCAL_KERIA_ENDPOINT =
     "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
@@ -116,7 +109,7 @@ class Agent {
 
   async start(): Promise<void> {
     if (!Agent.ready) {
-      await this.basicRecordStorage.open(config.walletConfig?.id || "idw");
+      await this.basicRecordStorage.open(walletId);
       await signifyReady();
       const bran = await this.getBran();
       // @TODO - foconnor: Review of Tier level.

@@ -1,4 +1,4 @@
-import { Algos, d, EventResult, messagize, Siger } from "signify-ts";
+import { Algos, d, EventResult, messagize, Serder, Siger } from "signify-ts";
 import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../agent";
 import {
@@ -10,6 +10,7 @@ import {
   MultiSigRoute,
   NotificationRoute,
   CreateIdentifierResult,
+  CreateMultisigExnPayload,
 } from "../agent.types";
 import {
   IdentifierMetadataRecord,
@@ -17,7 +18,7 @@ import {
 } from "../records";
 import { AgentService } from "./agentService";
 import { MultiSigIcpRequestDetails } from "./identifier.types";
-import { sendMultisigExn, waitAndGetDoneOp } from "./utils";
+import { waitAndGetDoneOp } from "./utils";
 import { RecordType } from "../../storage/storage.types";
 
 class MultiSigService extends AgentService {
@@ -142,8 +143,7 @@ class MultiSigService extends AgentService {
     const recp = otherAids
       .map((aid) => aid["state"])
       .map((state) => state["i"]);
-    await sendMultisigExn(
-      this.signifyClient,
+    await this.sendMultisigExn(
       aid["name"],
       aid,
       MultiSigRoute.ICP,
@@ -523,8 +523,7 @@ class MultiSigService extends AgentService {
       .map((aid) => aid["state"])
       .map((state) => state["i"]);
 
-    await sendMultisigExn(
-      this.signifyClient,
+    await this.sendMultisigExn(
       aid["name"],
       aid,
       MultiSigRoute.ROT,
@@ -572,8 +571,7 @@ class MultiSigService extends AgentService {
     const recp = rstates
       .filter((r) => r.i !== aid.state.i)
       .map((state) => state["i"]);
-    await sendMultisigExn(
-      this.signifyClient,
+    await this.sendMultisigExn(
       aid["name"],
       aid,
       MultiSigRoute.IXN,
@@ -663,8 +661,7 @@ class MultiSigService extends AgentService {
     const recp = states
       .filter((r) => r.i !== aid.state.i)
       .map((state) => state["i"]);
-    await sendMultisigExn(
-      this.signifyClient,
+    await this.sendMultisigExn(
       aid["name"],
       aid,
       MultiSigRoute.ICP,
@@ -691,6 +688,22 @@ class MultiSigService extends AgentService {
     );
     const markMultisigResult = await this.markMultisigCompleteIfReady(metadata);
     return markMultisigResult.done;
+  }
+
+  private async sendMultisigExn(
+    name: string,
+    aid: Aid,
+    route: MultiSigRoute,
+    embeds: {
+      icp?: (string | Serder)[];
+      rot?: (string | Serder)[];
+    },
+    recp: any,
+    payload: CreateMultisigExnPayload
+  ): Promise<any> {
+    return this.signifyClient
+      .exchanges()
+      .send(name, "multisig", aid, route, payload, embeds, recp);
   }
 }
 
