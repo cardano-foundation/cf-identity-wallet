@@ -150,7 +150,7 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   credentialRecordId: credentialRecordId1,
 };
 
-describe("Credential service of agent - CredentialExchangeRecord helpers", () => {
+describe("Ipex communication service of agent", () => {
   test("callback will run when have a event listener of ACDC KERI state changed", async () => {
     const callback = jest.fn();
     ipexCommunicationService.onAcdcKeriStateChanged(callback);
@@ -169,12 +169,6 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
     };
     eventService.emit(event);
     expect(callback).toBeCalledWith(event);
-  });
-
-  test("can delete keri notification by ID", async () => {
-    const id = "uuid";
-    await ipexCommunicationService.deleteKeriNotificationRecordById(id);
-    expect(basicStorage.deleteById).toBeCalled();
   });
 
   test("accept KERI ACDC", async () => {

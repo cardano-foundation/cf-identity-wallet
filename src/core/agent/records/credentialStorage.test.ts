@@ -124,7 +124,7 @@ describe("Connection service of agent", () => {
 
   test("Should save credential metadata record", async () => {
     await credentialStorage.saveCredentialMetadataRecord(
-      credentialMetadataRecordA
+      credentialMetadataProps
     );
     expect(basicStorage.save).toBeCalledWith({
       id: credentialMetadataRecordA.id,

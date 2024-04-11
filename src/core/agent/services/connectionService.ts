@@ -136,7 +136,17 @@ class ConnectionService extends AgentService {
   }
 
   async getConnectionById(id: string): Promise<ConnectionDetails> {
-    return this.getKeriConnectionDetails(id);
+    const connection = await this.signifyClient.contacts().get(id);
+    return {
+      label: connection?.alias,
+      id: connection.id,
+      status: ConnectionStatus.CONFIRMED,
+      connectionDate: (
+        await this.getConnectionKeriMetadataById(connection.id)
+      ).createdAt.toISOString(),
+      serviceEndpoints: [connection.oobi],
+      notes: await this.getConnectNotesByConnectionId(connection.id),
+    };
   }
 
   async deleteConnectionById(id: string): Promise<void> {
@@ -266,7 +276,7 @@ class ConnectionService extends AgentService {
     if (ConnectionService.resolvedOobi[url]) {
       return ConnectionService.resolvedOobi[url];
     }
-    const alias = uuidv4();
+    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
     let operation = await this.signifyClient.oobis().resolve(url, alias);
     operation = await waitAndGetDoneOp(this.signifyClient, operation);
     if (!operation.done) {
@@ -293,22 +303,6 @@ class ConnectionService extends AgentService {
         message: note.content.message as string,
       };
     });
-  }
-
-  private async getKeriConnectionDetails(
-    id: string
-  ): Promise<ConnectionDetails> {
-    const connection = await this.signifyClient.contacts().get(id);
-    return {
-      label: connection?.alias,
-      id: connection.id,
-      status: ConnectionStatus.CONFIRMED,
-      connectionDate: (
-        await this.getConnectionKeriMetadataById(connection.id)
-      ).createdAt.toISOString(),
-      serviceEndpoints: [connection.oobi],
-      notes: await this.getConnectNotesByConnectionId(connection.id),
-    };
   }
 }
 

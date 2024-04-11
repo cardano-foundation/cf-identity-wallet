@@ -91,6 +91,10 @@ class SignifyNotificationService extends AgentService {
     }
   }
 
+  async deleteKeriNotificationRecordById(id: string): Promise<void> {
+    await this.basicStorage.deleteById(id);
+  }
+
   async processNotification(
     notif: Notification,
     callback: (event: KeriNotification) => void

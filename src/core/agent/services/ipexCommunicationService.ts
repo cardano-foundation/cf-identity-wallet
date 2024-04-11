@@ -91,7 +91,7 @@ class IpexCommunicationService extends AgentService {
       credentialId,
       cred
     );
-    await this.deleteKeriNotificationRecordById(id);
+    await this.basicStorage.deleteById(id);
     this.eventService.emit<AcdcKeriStateChangedEvent>({
       type: AcdcKeriEventTypes.AcdcKeriStateChanged,
       payload: {
@@ -129,10 +129,6 @@ class IpexCommunicationService extends AgentService {
       createdAt: result.createdAt,
       a: result.content,
     };
-  }
-
-  async deleteKeriNotificationRecordById(id: string): Promise<void> {
-    await this.basicStorage.deleteById(id);
   }
 
   private async updateAcdcMetadataRecordCompleted(
@@ -174,7 +170,7 @@ class IpexCommunicationService extends AgentService {
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
     };
-    await this.createMetadata({
+    await this.credentialStorage.saveCredentialMetadataRecord({
       ...credentialDetails,
       credentialRecordId: credentialId,
     });
@@ -200,16 +196,14 @@ class IpexCommunicationService extends AgentService {
     });
   }
 
-  async getIdentifierById(id: string): Promise<IdentifierResult | undefined> {
-    const allIdentifiers = await this.getAllIdentifiers();
+  private async getIdentifierById(
+    id: string
+  ): Promise<IdentifierResult | undefined> {
+    const allIdentifiers = await this.signifyClient.identifiers().list();
     const identifier = allIdentifiers.aids.find(
       (identifier: IdentifierResult) => identifier.prefix === id
     );
     return identifier;
-  }
-
-  async getAllIdentifiers(): Promise<IdentifiersListResult> {
-    return this.signifyClient.identifiers().list();
   }
 
   private async admitIpex(
@@ -252,14 +246,6 @@ class IpexCommunicationService extends AgentService {
         error,
       };
     }
-  }
-
-  async createMetadata(data: CredentialMetadataRecordProps) {
-    const metadataRecord = new CredentialMetadataRecord({
-      ...data,
-    });
-
-    await this.credentialStorage.saveCredentialMetadataRecord(metadataRecord);
   }
 }
 

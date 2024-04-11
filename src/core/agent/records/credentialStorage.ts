@@ -1,7 +1,8 @@
+import { plainToInstance } from "class-transformer";
 import { RecordType, StorageApi } from "../../storage/storage.types";
 import { BasicRecord } from "./basicRecord";
 import { CredentialMetadataRecord } from "./credentialMetadataRecord";
-import { plainToInstance } from "class-transformer";
+import { CredentialMetadataRecordProps } from "./credentialMetadataRecord.types";
 
 class CredentialStorage {
   protected readonly basicStorage: StorageApi;
@@ -35,7 +36,9 @@ class CredentialStorage {
     return this.parseCredentialMetadataRecord(basicRecord);
   }
 
-  async getCredentialMetadataByCredentialRecordId(credentialRecordId: string) : Promise<CredentialMetadataRecord | null> {
+  async getCredentialMetadataByCredentialRecordId(
+    credentialRecordId: string
+  ): Promise<CredentialMetadataRecord | null> {
     const basicRecords = await this.basicStorage.findAllByQuery(
       RecordType.CREDENTIAL_METADATA_RECORD,
       {
@@ -61,7 +64,7 @@ class CredentialStorage {
     });
   }
 
-  async saveCredentialMetadataRecord(data: CredentialMetadataRecord) {
+  async saveCredentialMetadataRecord(data: CredentialMetadataRecordProps) {
     const record = new CredentialMetadataRecord({
       ...data,
     });
@@ -80,11 +83,7 @@ class CredentialStorage {
     data: Partial<
       Pick<
         CredentialMetadataRecord,
-        | "isArchived"
-        | "colors"
-        | "status"
-        | "credentialType"
-        | "isDeleted"
+        "isArchived" | "colors" | "status" | "credentialType" | "isDeleted"
       >
     >
   ) {

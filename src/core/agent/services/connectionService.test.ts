@@ -16,6 +16,7 @@ const basicStorage = jest.mocked({
 });
 
 const contactListMock = jest.fn();
+const deleteContactMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -64,7 +65,7 @@ const signifyClient = jest.mocked({
         id,
       };
     }),
-    delete: jest.fn(),
+    delete: deleteContactMock,
   }),
   notifications: () => ({
     list: jest.fn(),
@@ -196,6 +197,7 @@ describe("Connection service of agent", () => {
     const connectionId = "connectionId";
     await connectionService.deleteConnectionById(connectionId);
     expect(basicStorage.deleteById).toBeCalledWith(connectionId);
+    // expect(deleteContactMock).toBeCalledWith(connectionId); // it should be uncommented later when deleting on KERIA is re-enabled
   });
 
   test("Should delete connection's notes when deleting that connection", async () => {
@@ -219,6 +221,20 @@ describe("Connection service of agent", () => {
     const oobi =
       "http://127.0.0.1:3902/oobi/EBRcDDwjOfqZwC1w2XFcE1mKQUb1LekNNidkZ8mrIEaw/agent/EEXekkGu9IAzav6pZVJhkLnjtjM5v3AcyA-pdKUcaGei";
     await connectionService.receiveInvitationFromUrl(oobi);
+  });
+
+  test("can get a KERI OOBI with an alias (URL encoded)", async () => {
+    signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
+      return `${oobiPrefix}${name}`;
+    });
+    const signifyName = "keriuuid";
+    const KeriOobi = await connectionService.getKeriOobi(
+      signifyName,
+      "alias with spaces"
+    );
+    expect(KeriOobi).toEqual(
+      `${oobiPrefix}${signifyName}?name=alias%20with%20spaces`
+    );
   });
 
   test("can get connection keri (short detail view) by id", async () => {

@@ -82,6 +82,15 @@ describe("Connection service of agent", () => {
     });
   });
 
+  test("Should get credential metadata and throw error if null", async () => {
+    basicStorage.findById.mockResolvedValue(null);
+    await expect(
+      identifierStorage.getIdentifierMetadata(identifierMetadataRecord.id)
+    ).rejects.toThrowError(
+      IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+    );
+  });
+
   test("Should get keri identifiers metadata", async () => {
     basicStorage.getAll.mockResolvedValue([basicRecordA]);
     expect(await identifierStorage.getKeriIdentifiersMetadata()).toEqual([

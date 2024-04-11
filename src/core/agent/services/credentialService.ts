@@ -193,10 +193,6 @@ class CredentialService extends AgentService {
     });
   }
 
-  async deleteKeriNotificationRecordById(id: string): Promise<void> {
-    await this.basicStorage.deleteById(id);
-  }
-
   async syncACDCs() {
     const signifyCredentials = await this.signifyClient.credentials().list();
     const storedCredentials =

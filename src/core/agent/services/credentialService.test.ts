@@ -334,14 +334,6 @@ describe("Credential service of agent", () => {
       },
     });
   });
-});
-
-describe("Credential service of agent - CredentialExchangeRecord helpers", () => {
-  test("can delete keri notification by ID", async () => {
-    const id = "uuid";
-    await credentialService.deleteKeriNotificationRecordById(id);
-    expect(basicStorage.deleteById).toBeCalled();
-  });
 
   test("can get credential short details by ID", async () => {
     const id = "testid";
@@ -411,5 +403,16 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
     credentialStorage.getAllCredentialMetadata = jest.fn().mockReturnValue([]);
     await credentialService.syncACDCs();
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(2);
+  });
+
+  test("Must throw 'Credential with given SAID not found on KERIA' when there's no KERI credential", async () => {
+    const id = "not-found-id";
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(credentialMetadataRecordA);
+    credentialListMock = jest.fn().mockResolvedValue([]);
+    await expect(
+      credentialService.getCredentialDetailsById(id)
+    ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_FOUND);
   });
 });

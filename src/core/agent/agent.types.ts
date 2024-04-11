@@ -131,8 +131,8 @@ interface KeriContact {
   alias: string;
   id: string;
   oobi: string;
-  challenges: Array<string>;
-  wellKnowns: Array<string>;
+  challenges: string[];
+  wellKnowns: string[];
 }
 
 interface IdentifierResult {
