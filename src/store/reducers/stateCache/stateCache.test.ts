@@ -16,6 +16,7 @@ import {
   dequeueCredentialRequest,
   StateCacheProps,
   stateCacheSlice,
+  logout,
 } from "./stateCache";
 import { RootState } from "../../index";
 import { RoutePath } from "../../../routes";
@@ -77,6 +78,14 @@ describe("State Cache", () => {
     const rootState = { stateCache: nextState } as RootState;
     expect(getCurrentOperation(rootState)).toEqual(nextState.currentOperation);
     expect(getStateCache(rootState)).toEqual(nextState);
+  });
+
+  test("should logout", () => {
+    const action = logout();
+    const nextState = stateCacheSlice.reducer(initialState, action);
+    expect(nextState.authentication.loggedIn).toEqual(false);
+    expect(nextState.routes[0]).toEqual({ path: RoutePath.PASSCODE_LOGIN });
+    expect(nextState).not.toBe(initialState);
   });
 
   test("should set queue connection credential request", () => {
