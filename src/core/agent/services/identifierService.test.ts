@@ -57,13 +57,10 @@ jest.mock("../../../core/agent/agent", () => ({
 
 const now = new Date();
 const nowISO = now.toISOString();
-const colors: [string, string] = ["#fff", "#fff"];
 
 const keriMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
-  colors,
-
   signifyName: "uuid-here",
   createdAt: now,
   theme: 0,
@@ -107,8 +104,6 @@ describe("Identifier service of agent", () => {
         id: keriMetadataRecord.id,
         displayName: "Identifier 2",
         signifyName: "uuid-here",
-        colors,
-
         createdAtUTC: nowISO,
         theme: 0,
         isPending: false,
@@ -161,7 +156,6 @@ describe("Identifier service of agent", () => {
       id: keriMetadataRecord.id,
       displayName: keriMetadataRecordProps.displayName,
       createdAtUTC: nowISO,
-      colors,
       theme: 0,
       ...aidReturnedBySignify.state,
       signifyOpName: undefined,
@@ -181,7 +175,6 @@ describe("Identifier service of agent", () => {
     expect(
       await identifierService.createIdentifier({
         displayName,
-        colors,
         theme: 0,
       })
     ).toEqual({
@@ -204,7 +197,6 @@ describe("Identifier service of agent", () => {
     await expect(
       identifierService.createIdentifier({
         displayName,
-        colors,
         theme: 3,
       })
     ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
@@ -221,7 +213,6 @@ describe("Identifier service of agent", () => {
     await expect(
       identifierService.createIdentifier({
         displayName,
-        colors,
         theme: 8,
       })
     ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
@@ -359,7 +350,6 @@ describe("Identifier service of agent", () => {
     ];
     const metadata = {
       theme: 0,
-      colors: ["#000000", "#000000"],
       displayName: "Multisig",
     };
     expect(
@@ -474,7 +464,6 @@ describe("Identifier service of agent", () => {
     };
     const metadata = {
       theme: 0,
-      colors: ["#000000", "#000000"],
       displayName: "Multisig",
     };
     expect(
@@ -542,7 +531,6 @@ describe("Identifier service of agent", () => {
         id: "id",
         signifyName: "signifyName",
         createdAt: new Date(),
-        colors: ["#000000", "#000000"],
         theme: 0,
       },
     ]);
@@ -551,7 +539,6 @@ describe("Identifier service of agent", () => {
         { id: "id", createdAt: new Date(), a: { d: "d" } },
         {
           theme: 0,
-          colors: ["#000000", "#000000"],
           displayName: "Multisig",
         }
       )
@@ -568,7 +555,6 @@ describe("Identifier service of agent", () => {
         { id: "id", createdAt: new Date(), a: { d: "d" } },
         {
           theme: 0,
-          colors: ["#000000", "#000000"],
           displayName: "Multisig",
         }
       )
@@ -587,7 +573,6 @@ describe("Identifier service of agent", () => {
       await identifierService.createDelegatedIdentifier(
         {
           displayName,
-          colors,
           theme: 0,
         },
         "delegationPrefix"
@@ -612,8 +597,6 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
       signifyName: "john_doe",
@@ -639,8 +622,6 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: false,
       signifyOpName: "op123",
       signifyName: "john_doe",
@@ -656,8 +637,6 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: false,
       signifyOpName: "op123",
       signifyName: "john_doe",
@@ -674,8 +653,6 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
       signifyName: "",
@@ -724,15 +701,12 @@ describe("Identifier service of agent", () => {
         id: "id",
         signifyName: "signifyName",
         createdAt: new Date(),
-        colors: ["#000000", "#000000"],
         theme: 4,
       },
     ]);
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: false,
       signifyOpName: "op123",
       signifyName: "john_doe",
@@ -809,7 +783,6 @@ describe("Identifier service of agent", () => {
         id: "id",
         signifyName: "signifyName",
         createdAt: new Date(),
-        colors: ["#000000", "#000000"],
         theme: 4,
       },
     ]);
@@ -821,8 +794,6 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: false,
       signifyOpName: "op123",
       signifyName: "john_doe",
@@ -886,8 +857,6 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
       signifyName: "name",
@@ -932,8 +901,6 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
       signifyName: "name",
@@ -977,7 +944,6 @@ describe("Identifier service of agent", () => {
         id: "id",
         signifyName: "signifyName",
         createdAt: new Date(),
-        colors: ["#000000", "#000000"],
         theme: 4,
         multisigManageAid: "123",
       },
@@ -1010,7 +976,6 @@ describe("Identifier service of agent", () => {
         id: "id1",
         signifyName: "signifyName",
         createdAt: new Date(),
-        colors: ["#000000", "#000000"],
         theme: 4,
       },
     ]);
@@ -1019,7 +984,6 @@ describe("Identifier service of agent", () => {
         { id: "id", createdAt: new Date(), a: { d: "d" } },
         {
           theme: 4,
-          colors: ["#000000", "#000000"],
           displayName: "Multisig",
         }
       )
@@ -1032,7 +996,6 @@ describe("Identifier service of agent", () => {
       id: "id",
       signifyName: undefined,
       createdAt: new Date(),
-      colors: ["#000000", "#000000"],
       theme: 4,
     };
 
@@ -1087,7 +1050,6 @@ describe("Identifier service of agent", () => {
       id: "id",
       signifyName: undefined,
       createdAt: new Date(),
-      colors: ["#000000", "#000000"],
       theme: 4,
     };
 
@@ -1154,7 +1116,6 @@ describe("Identifier service of agent", () => {
       id: "id",
       signifyName: undefined,
       createdAt: new Date(),
-      colors: ["#000000", "#000000"],
       theme: 4,
     };
 
@@ -1223,7 +1184,6 @@ describe("Identifier service of agent", () => {
       id: "id",
       signifyName: undefined,
       createdAt: new Date(),
-      colors: ["#000000", "#000000"],
       theme: 4,
     };
 

@@ -15,7 +15,6 @@ const connectionDetailsFix: ConnectionDetails = {
 const credsFixAcdc: ACDCDetails[] = [
   {
     id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
-    colors: ["#8fefba", "#bcf5d6"],
     issuanceDate: "2024-01-22T16:03:44.643Z",
     credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialMetadataRecordStatus.CONFIRMED,

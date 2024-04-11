@@ -69,7 +69,6 @@ class IdentifierService extends AgentService {
         id: metadata.id,
         signifyName: metadata.signifyName,
         createdAtUTC: metadata.createdAt.toISOString(),
-        colors: metadata.colors,
         theme: metadata.theme,
         isPending: metadata.isPending ?? false,
       });
@@ -96,7 +95,6 @@ class IdentifierService extends AgentService {
       displayName: metadata.displayName,
       createdAtUTC: metadata.createdAt.toISOString(),
       signifyName: metadata.signifyName,
-      colors: metadata.colors,
       theme: metadata.theme,
       signifyOpName: metadata.signifyOpName,
       isPending: metadata.isPending ?? false,
@@ -179,7 +177,6 @@ class IdentifierService extends AgentService {
         await this.createIdentifierMetadataRecord({
           id: identifier.prefix,
           displayName: identifier.prefix, //same as the id at the moment
-          colors: ["#e0f5bc", "#ccef8f"],
           theme: 0,
           signifyName: identifier.name,
         });
@@ -231,10 +228,7 @@ class IdentifierService extends AgentService {
   async createMultisig(
     ourIdentifier: string,
     otherIdentifierContacts: ConnectionShortDetails[],
-    meta: Pick<
-      IdentifierMetadataRecordProps,
-      "displayName" | "colors" | "theme"
-    >,
+    meta: Pick<IdentifierMetadataRecordProps, "displayName" | "theme">,
     threshold: number,
     delegateContact?: ConnectionShortDetails
   ): Promise<CreateIdentifierResult> {
@@ -274,7 +268,6 @@ class IdentifierService extends AgentService {
     await this.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
-      colors: meta.colors,
       theme: meta.theme,
       signifyName,
       signifyOpName: result.op.name, //we save the signifyOpName here to sync the multisig's status later
@@ -452,10 +445,7 @@ class IdentifierService extends AgentService {
 
   async joinMultisig(
     notification: KeriNotification,
-    meta: Pick<
-      IdentifierMetadataRecordProps,
-      "displayName" | "colors" | "theme"
-    >
+    meta: Pick<IdentifierMetadataRecordProps, "displayName" | "theme">
   ): Promise<CreateIdentifierResult | undefined> {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const msgSaid = notification.a.d as string;
@@ -491,7 +481,6 @@ class IdentifierService extends AgentService {
     await this.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
-      colors: meta.colors,
       theme: meta.theme,
       signifyName,
       signifyOpName: res.op.name, //we save the signifyOpName here to sync the multisig's status later

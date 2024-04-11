@@ -5,7 +5,6 @@ interface IdentifierShortDetails {
   displayName: string;
   createdAtUTC: string;
   signifyName: string;
-  colors: [string, string];
   theme: number;
   isPending: boolean;
 }

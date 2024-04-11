@@ -43,8 +43,6 @@ const MultiSigRequestStageTwo = ({
         requestData.event,
         {
           theme: selectedTheme,
-          // @TODO - sdisalvo: Colors will need to be removed
-          colors: ["#000000", "#000000"],
           displayName: displayNameValue,
         }
       );
@@ -54,8 +52,6 @@ const MultiSigRequestStageTwo = ({
           id: joinMultisigResult.identifier,
           displayName: displayNameValue,
           createdAtUTC: `${requestData.event?.createdAt}`,
-          // @TODO - sdisalvo: Colors will need to be removed
-          colors: ["#000000", "#000000"],
           theme: selectedTheme,
           isPending: requestData.multisigIcpDetails.threshold >= 2,
           signifyName: joinMultisigResult.signifyName,

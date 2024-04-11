@@ -20,7 +20,6 @@ jest.mock("../../../core/agent/agent", () => ({
           id: "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
           displayName: "Anonymous ID",
           createdAtUTC: "2023-01-01T19:23:24Z",
-          colors: ["#92FFC0", "#47FF94"],
           theme: 0,
           keyType: "Ed25519",
           controller:
@@ -32,7 +31,6 @@ jest.mock("../../../core/agent/agent", () => ({
       credentials: {
         getCredentialDetailsById: jest.fn().mockResolvedValue({
           id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
-          colors: ["#8fefba", "#bcf5d6"],
           issuanceDate: "2024-01-22T16:03:44.643Z",
           credentialType: "Qualified vLEI Issuer Credential",
           status: "confirmed",
