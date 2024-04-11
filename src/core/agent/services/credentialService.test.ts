@@ -37,14 +37,12 @@ const credentialService = new CredentialService(
 
 const now = new Date();
 const nowISO = now.toISOString();
-const colors: [string, string] = ["#fff", "#fff"];
 
 const id1 = "id1";
 const id2 = "id2";
 const credentialRecordId1 = "cId1";
 const credentialMetadataProps: CredentialMetadataRecordProps = {
   id: id1,
-  colors,
   createdAt: now,
   issuanceDate: nowISO,
   issuerLogo: "issuerLogoHere",
@@ -115,7 +113,6 @@ const keriNotifications = genericRecords.map((result) => {
 //     expect(await credentialService.getCredentials()).toStrictEqual([
 //       {
 //         id: id1,
-//         colors,
 //         credentialType: credentialMetadataRecordA.credentialType,
 //         issuanceDate: nowISO,
 //         status: CredentialMetadataRecordStatus.CONFIRMED,
@@ -124,7 +121,6 @@ const keriNotifications = genericRecords.map((result) => {
 //       },
 //       {
 //         id: id2,
-//         colors,
 //         credentialType: credentialMetadataRecordB.credentialType,
 //         issuanceDate: nowISO,
 //         status: CredentialMetadataRecordStatus.CONFIRMED,
@@ -298,7 +294,6 @@ const keriNotifications = genericRecords.map((result) => {
 //       credentialService.getCredentialDetailsById(acdcMetadataRecord.id)
 //     ).resolves.toStrictEqual({
 //       id: credentialMetadataRecordA.id,
-//       colors: credentialMetadataRecordA.colors,
 //       credentialType: acdcMetadataRecord.credentialType,
 //       issuanceDate: nowISO,
 //       cachedDetails: undefined,
@@ -328,7 +323,6 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
   //     payload: {
   //       credential: {
   //         id: "acdc",
-  //         colors: ["#fff", "#fff"],
   //         issuanceDate: "dt",
   //         credentialType: "type",
   //         status: CredentialMetadataRecordStatus.CONFIRMED,
@@ -476,7 +470,6 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
     credentialService.getCredentialMetadata = jest.fn().mockReturnValue({
       id,
       status: CredentialMetadataRecordStatus.CONFIRMED,
-      colors,
       credentialType,
       issuanceDate: nowISO,
       isDeleted: false,
@@ -486,7 +479,6 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       await credentialService.getCredentialShortDetailsById(id)
     ).toStrictEqual({
       id,
-      colors,
       status: CredentialMetadataRecordStatus.CONFIRMED,
       credentialType,
       issuanceDate: nowISO,

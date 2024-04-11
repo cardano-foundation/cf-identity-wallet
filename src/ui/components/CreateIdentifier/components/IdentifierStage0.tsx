@@ -11,7 +11,6 @@ import { PageHeader } from "../../PageHeader";
 import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
 import { TypeItem } from "./TypeItem";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
-import { ColorGenerator } from "../../../utils/colorGenerator";
 import {
   CreateIdentifierInputs,
   IdentifierShortDetails,
@@ -70,13 +69,8 @@ const IdentifierStage0 = ({
   }, [selectedTheme, setState]);
 
   const handleCreateIdentifier = async () => {
-    // @TODO - sdisalvo: Colors will need to be removed
-    const colorGenerator = new ColorGenerator();
-    const newColor = colorGenerator.generateNextColor();
     const metadata: CreateIdentifierInputs = {
       displayName: state.displayNameValue,
-      // @TODO - sdisalvo: Colors will need to be removed
-      colors: [newColor[1], newColor[0]],
       theme: state.selectedTheme,
     };
     let groupMetadata;
@@ -95,8 +89,6 @@ const IdentifierStage0 = ({
         id: identifier,
         displayName: state.displayNameValue,
         createdAtUTC: new Date().toISOString(),
-        // @TODO - sdisalvo: Colors will need to be removed
-        colors: [newColor[1], newColor[0]],
         theme: state.selectedTheme,
         isPending: false,
         signifyName,

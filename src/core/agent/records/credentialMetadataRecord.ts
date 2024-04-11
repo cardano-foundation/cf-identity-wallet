@@ -8,7 +8,6 @@ class CredentialMetadataRecord
   extends BaseRecord
   implements CredentialMetadataRecordProps
 {
-  colors!: [string, string];
   isArchived?: boolean;
   isDeleted?: boolean;
   issuanceDate!: string;
@@ -27,7 +26,6 @@ class CredentialMetadataRecord
     if (props) {
       this.id = props.id;
       this.credentialRecordId = props.credentialRecordId;
-      this.colors = props.colors;
       this.isArchived = props.isArchived ?? false;
       this.isDeleted = props.isDeleted ?? false;
       this.createdAt = props.createdAt ?? new Date();

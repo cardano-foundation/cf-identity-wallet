@@ -6,7 +6,6 @@ import {
 const mockData: IdentifierMetadataRecordProps = {
   id: "z6Mkpph7qyemfmHt5cSEXXbhm1VbSZT789X8Ep4eA7ndGxGh",
   displayName: "New AID",
-  colors: ["#000000", "#FFFFFF"],
   isArchived: true,
   theme: 0,
   signifyName: "Test",
@@ -36,7 +35,6 @@ describe("Identifier Record", () => {
     const settingsRecord = new IdentifierMetadataRecord({
       id: mockData.id,
       displayName: mockData.displayName,
-      colors: mockData.colors,
       isArchived: mockData.isArchived,
       theme: 0,
       signifyName: "Test",
@@ -51,7 +49,6 @@ describe("Identifier Record", () => {
     const settingsRecord = new IdentifierMetadataRecord({
       id: mockData.id,
       displayName: mockData.displayName,
-      colors: mockData.colors,
       createdAt: createdAt,
       theme: 0,
       signifyName: "Test",

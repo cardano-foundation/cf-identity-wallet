@@ -203,11 +203,6 @@ describe("Connection state changed handler", () => {
   //   });
   // });
 
-  jest.mock("../../utils/colorGenerator", () => ({
-    ColorGenerator: jest.fn(() => ({
-      generateNextColor: jest.fn().mockReturnValue(["#000000", "#000000"]),
-    })),
-  }));
   const now = new Date();
   // const credentialStateChangedEventMock = {
   //   payload: {
@@ -256,7 +251,6 @@ describe("Connection state changed handler", () => {
   //       updateOrAddCredsCache({
   //         id: `metadata:${credentialStateChangedEventMock.payload.credentialRecord.id}`,
   //         isArchived: false,
-  //         colors: ["#000000", "#000000"],
   //         credentialType: "",
   //         issuanceDate:
   //           credentialStateChangedEventMock.payload.credentialRecord.createdAt.toISOString(),
@@ -270,7 +264,6 @@ describe("Connection state changed handler", () => {
   //   const credentialShortDetail = {
   //     id: `metadata:${credentialStateChangedEventMock.payload.credentialRecord.id}`,
   //     isArchived: false,
-  //     colors: ["#000000", "#000000"],
   //     credentialType: "",
   //     issuanceDate:
   //       credentialStateChangedEventMock.payload.credentialRecord.createdAt.toISOString(),
