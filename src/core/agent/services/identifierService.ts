@@ -195,13 +195,15 @@ class IdentifierService extends AgentService {
 
   async updateIdentifier(
     identifier: string,
-    data: Pick<IdentifierMetadataRecordProps, "theme" | "displayName">
+    data: Pick<
+      IdentifierMetadataRecordProps,
+      "theme" | "displayName" | "groupMetadata"
+    >
   ): Promise<void> {
     const metadata = await this.getIdentifierMetadata(identifier);
     this.validIdentifierMetadata(metadata);
     return this.updateIdentifierMetadata(identifier, {
-      theme: data.theme,
-      displayName: data.displayName,
+      ...data,
     });
   }
 
@@ -673,7 +675,12 @@ class IdentifierService extends AgentService {
     metadata: Partial<
       Pick<
         IdentifierMetadataRecord,
-        "displayName" | "theme" | "isArchived" | "isPending" | "isDeleted"
+        | "displayName"
+        | "theme"
+        | "isArchived"
+        | "isPending"
+        | "isDeleted"
+        | "groupMetadata"
       >
     >
   ) {
@@ -689,6 +696,8 @@ class IdentifierService extends AgentService {
         metadata.isPending || identifierMetadataRecord.isPending;
       identifierMetadataRecord.isDeleted =
         metadata.isDeleted || identifierMetadataRecord.isDeleted;
+      identifierMetadataRecord.groupMetadata =
+        metadata.groupMetadata || identifierMetadataRecord.groupMetadata;
       const basicRecord = new BasicRecord({
         id: identifierMetadataRecord.id,
         content: identifierMetadataRecord.toJSON(),

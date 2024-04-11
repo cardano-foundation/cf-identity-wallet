@@ -233,7 +233,12 @@ class ConnectionService extends AgentService {
     groupId?: string
   ): Promise<string> {
     const oobi = await this.signifyApi.getOobi(signifyName, groupId);
-    return alias ? `${oobi}?name=${encodeURIComponent(alias)}` : oobi;
+    if (alias) {
+      const url = new URL(oobi);
+      url.searchParams.set("name", encodeURIComponent(alias));
+      return url.toString();
+    }
+    return oobi;
   }
 
   private async createConnectionKeriMetadata(
@@ -245,6 +250,7 @@ class ConnectionService extends AgentService {
       content: metadata || {},
       type: RecordType.CONNECTION_KERI_METADATA,
       tags: {
+        groupId: metadata?.groupId,
         type: RecordType.CONNECTION_KERI_METADATA,
       },
     });
