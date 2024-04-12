@@ -112,8 +112,8 @@ const keriAcdcChangeHandler = async (
   }
 };
 
-const ACTIVITY_TIMEOUT = 4000; // 60 secs
-const ACTIVITY_BACKGROUND_TIMEOUT = 4000; // 30 secs
+const ACTIVITY_TIMEOUT = 3000; // 60 secs
+const ACTIVITY_BACKGROUND_TIMEOUT = 3000; // 30 secs
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -289,9 +289,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     }
 
-    handleInitialRoute(isInitialized?.initialized as boolean);
-
     await loadPreferences();
+    handleInitialRoute(isInitialized?.initialized as boolean);
 
     await new ConfigurationService().start();
     try {

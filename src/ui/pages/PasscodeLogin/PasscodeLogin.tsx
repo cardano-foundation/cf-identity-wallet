@@ -23,6 +23,7 @@ import { RoutePath } from "../../../routes";
 import { PageFooter } from "../../components/PageFooter";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { PageHeader } from "../../components/PageHeader";
+import { TabsRoutePath } from "../../../routes/paths";
 
 const PasscodeLogin = () => {
   const pageId = "passcode-login";

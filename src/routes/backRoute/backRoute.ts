@@ -66,6 +66,8 @@ const getPasscodeLoginBackRoute = (data: DataProps) => {
   if (prevRoute.pathname === RoutePath.ROOT) {
     if (!data.store.stateCache.authentication.seedPhraseIsSet) {
       prevRoute = { pathname: RoutePath.ONBOARDING };
+    } else if (!data.store.stateCache.routes.length) {
+      prevRoute = { pathname: TabsRoutePath.IDENTIFIERS };
     }
   }
 
