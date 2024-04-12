@@ -73,7 +73,10 @@ const Connections = ({
     const data: DataProps = {
       store: { stateCache },
     };
-    const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.CREDS, data);
+    const { nextPath, updateRedux } = getNextRoute(
+      TabsRoutePath.CREDENTIALS,
+      data
+    );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     history.push({
       pathname: nextPath.pathname,

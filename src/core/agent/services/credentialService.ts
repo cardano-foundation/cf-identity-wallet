@@ -9,7 +9,6 @@ import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../records/credentialMetadataRecord.types";
-import { ColorGenerator } from "../../../ui/utils/colorGenerator";
 import {
   CredentialShortDetails,
   CredentialStatus,
@@ -63,7 +62,6 @@ class CredentialService extends AgentService {
   ): CredentialShortDetails {
     return {
       id: metadata.id,
-      colors: metadata.colors,
       issuanceDate: metadata.issuanceDate,
       credentialType: metadata.credentialType,
       status: metadata.status,
@@ -184,7 +182,6 @@ class CredentialService extends AgentService {
     const credentialDetails: CredentialShortDetails = {
       id: `metadata:${credentialId}`,
       isArchived: false,
-      colors: new ColorGenerator().generateNextColor() as [string, string],
       credentialType: "",
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
@@ -390,13 +387,12 @@ class CredentialService extends AgentService {
     data: Partial<
       Pick<
         CredentialMetadataRecord,
-        "isArchived" | "colors" | "status" | "credentialType" | "isDeleted"
+        "isArchived" | "status" | "credentialType" | "isDeleted"
       >
     >
   ) {
     const record = await this.getMetadataById(id);
     if (record) {
-      if (data.colors) record.colors = data.colors;
       if (data.status) record.status = data.status;
       if (data.credentialType) record.credentialType = data.credentialType;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;

@@ -8,11 +8,11 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
-import { CredCardDetails } from "../../pages/CredCardDetails";
+import { CredentialDetails } from "../../pages/CredentialDetails";
 import { Agent } from "../../../core/agent/agent";
 import { VerifyPasscode } from "./VerifyPasscode";
 
-const path = TabsRoutePath.CREDS + "/" + credsFixAcdc[0].id;
+const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -37,7 +37,7 @@ jest.mock("../../../core/agent/agent", () => ({
 
 const initialStateNoPassword = {
   stateCache: {
-    routes: [TabsRoutePath.CREDS],
+    routes: [TabsRoutePath.CREDENTIALS],
     authentication: {
       loggedIn: true,
       time: Date.now(),
@@ -75,7 +75,7 @@ describe("Verify Passcode on Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={CredCardDetails}
+            component={CredentialDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -90,7 +90,7 @@ describe("Verify Passcode on Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getAllByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)[1]
+        getAllByText(EN_TRANSLATIONS.credentials.details.alert.archive.title)[1]
       ).toBeVisible();
     });
 
@@ -104,7 +104,7 @@ describe("Verify Passcode on Cards Details page", () => {
     act(() => {
       fireEvent.click(
         getAllByText(
-          EN_TRANSLATIONS.creds.card.details.alert.archive.confirm
+          EN_TRANSLATIONS.credentials.details.alert.archive.confirm
         )[0]
       );
     });
@@ -131,7 +131,7 @@ describe("Verify Passcode on Cards Details page", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={CredCardDetails}
+            component={CredentialDetails}
           />
         </MemoryRouter>
       </Provider>

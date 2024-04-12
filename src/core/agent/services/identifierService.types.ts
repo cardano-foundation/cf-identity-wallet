@@ -5,12 +5,11 @@ interface IdentifierShortDetails {
   displayName: string;
   createdAtUTC: string;
   signifyName: string;
-  colors: [string, string];
   theme: number;
   isPending: boolean;
 }
 
-interface IdentifierDetails extends IdentifierShortDetails {
+interface IdentifierFullDetails extends IdentifierShortDetails {
   signifyOpName?: string;
   s: number;
   dt: string;
@@ -37,7 +36,7 @@ interface CreateIdentifierResult {
 
 export type {
   IdentifierShortDetails,
-  IdentifierDetails,
+  IdentifierFullDetails,
   MultiSigIcpRequestDetails,
   CreateIdentifierResult,
 };

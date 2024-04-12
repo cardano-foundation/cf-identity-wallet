@@ -6,7 +6,6 @@ import { PageFooter } from "../../PageFooter";
 import { PageHeader } from "../../PageHeader";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
-import CardanoLogo from "../../../assets/images/CardanoLogo.jpg";
 import { Alert } from "../../Alert";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
@@ -54,8 +53,6 @@ const IdentifierStage3 = ({
           otherIdentifierContacts,
           {
             theme: state.selectedTheme,
-            // @TODO - sdisalvo: Colors will need to be removed
-            colors: ["#000000", "#000000"],
             displayName: state.displayNameValue,
           },
           state.threshold
@@ -65,8 +62,6 @@ const IdentifierStage3 = ({
           id: identifier,
           displayName: state.displayNameValue,
           createdAtUTC: new Date().toISOString(),
-          // @TODO - sdisalvo: Colors will need to be removed
-          colors: ["#000000", "#000000"],
           theme: state.selectedTheme,
           isPending: state.threshold >= 2,
           signifyName,

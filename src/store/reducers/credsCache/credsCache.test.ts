@@ -31,7 +31,6 @@ describe("credsCacheSlice", () => {
         id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
         issuanceDate: "2010-01-01T19:23:24Z",
         credentialType: "University Credential",
-        colors: ["#FFBC60", "#FFA21F"],
         status: CredentialMetadataRecordStatus.CONFIRMED,
       },
     ];
@@ -47,7 +46,6 @@ describe("credsCacheSlice", () => {
       id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "University Credential",
-      colors: ["#FFBC60", "#FFA21F"],
       status: CredentialMetadataRecordStatus.CONFIRMED,
     };
     const newState = credsCacheSlice.reducer(
@@ -64,14 +62,12 @@ describe("credsCacheSlice", () => {
       id: credId1,
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "University Credential",
-      colors: ["#FFBC60", "#FFA21F"],
       status: CredentialMetadataRecordStatus.PENDING,
     };
     const cred2: CredentialShortDetails = {
       id: credId2,
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "University Credential",
-      colors: ["#FFBC60", "#FFA21F"],
       status: CredentialMetadataRecordStatus.PENDING,
     };
     const updateCred: CredentialShortDetails = {
@@ -139,14 +135,12 @@ describe("get methods for CredsCache", () => {
             issuanceDate: "2010-01-01T19:23:24Z",
             credentialType: "University Credential",
             nameOnCredential: "Thomas A. Mayfield",
-            colors: ["#FFBC60", "#FFA21F"],
             status: "confirmed",
           },
           {
             id: "did:example:ebfeb1f712ebc6f1c276e12ec22",
             issuanceDate: "2010-01-01T19:23:24Z",
             credentialType: "University Credential",
-            colors: ["#FFBC60", "#FFA21F"],
             status: "confirmed",
           },
         ],
