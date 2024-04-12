@@ -6,6 +6,12 @@
   .modal {
     border-radius: 0;
 
+    .page-header {
+      ion-toolbar {
+        --background: transparent;
+      }
+    }
+
     .close-button-label,
     .action-button-label {
       margin: 0;
