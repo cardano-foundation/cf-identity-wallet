@@ -8,8 +8,12 @@ import { SetPasscode } from "../ui/pages/SetPasscode";
 import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
 import { VerifySeedPhrase } from "../ui/pages/VerifySeedPhrase";
 import { CreatePassword } from "../ui/pages/CreatePassword";
-import { useAppSelector } from "../store/hooks";
-import { getAuthentication } from "../store/reducers/stateCache";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import {
+  getAuthentication,
+  getRoutes,
+  getStateCache,
+} from "../store/reducers/stateCache";
 import {
   TabsMenu,
   TabsRoutePath,

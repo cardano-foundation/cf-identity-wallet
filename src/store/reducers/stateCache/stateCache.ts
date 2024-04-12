@@ -61,6 +61,23 @@ const stateCacheSlice = createSlice({
         ...state.authentication,
         loggedIn: false,
       };
+      state.queueIncomingRequest = {
+        ...state.queueIncomingRequest,
+        isPaused: true,
+        isProcessing: false,
+      };
+    },
+    login: (state) => {
+      state.authentication = {
+        ...state.authentication,
+        loggedIn: true,
+        time: Date.now(),
+      };
+      state.queueIncomingRequest = {
+        ...state.queueIncomingRequest,
+        isPaused: false,
+        isProcessing: true,
+      };
     },
     setAuthentication: (
       state,
@@ -126,6 +143,7 @@ const {
   removeRoute,
   setAuthentication,
   logout,
+  login,
   setCurrentOperation,
   setToastMsg,
   dequeueCredentialRequest,
@@ -166,6 +184,7 @@ export {
   removeSetPasscodeRoute,
   getAuthentication,
   logout,
+  login,
   setAuthentication,
   getCurrentOperation,
   setCurrentOperation,

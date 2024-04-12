@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  getRoutes,
   logout,
   setAuthentication,
   setCurrentOperation,
@@ -45,7 +46,10 @@ import { NotificationRoute } from "../../../core/agent/modules/signify/signifyAp
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
+import { App } from "@capacitor/app";
+import { IonSpinner } from "@ionic/react";
 import { RoutePath } from "../../../routes";
+import { useHistory } from "react-router-dom";
 
 const connectionKeriStateChangedHandler = async (
   event: ConnectionKeriStateChangedEvent,
@@ -107,20 +111,28 @@ const keriAcdcChangeHandler = async (
     dispatch(setCurrentOperation(OperationType.IDLE));
   }
 };
-const ACTIVTY_TIMEOUT = 14000;
+
+const ACTIVITY_TIMEOUT = 4000; // 60 secs
+const ACTIVITY_BACKGROUND_TIMEOUT = 4000; // 30 secs
+
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
+  const history = useHistory();
   const authentication = useAppSelector(getAuthentication);
+  const routes = useAppSelector(getRoutes);
   const [initialised, setInitialised] = useState(false);
   const [agentInitErr, setAgentInitErr] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    const handleActivity = () => {
+    const handleActivity = async () => {
       clearTimeout(timer);
-      timer = setTimeout(() => {
-        dispatch(logout());
-      }, ACTIVTY_TIMEOUT);
+      timer = setTimeout(
+        () => {
+          dispatch(logout());
+        },
+        (await App.getState()) ? ACTIVITY_TIMEOUT : ACTIVITY_BACKGROUND_TIMEOUT
+      );
     };
 
     window.addEventListener("load", handleActivity);
@@ -160,44 +172,50 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
   };
 
-  const initApp = async () => {
-    // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
-    // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
-    try {
-      const isInitialized = await PreferencesStorage.get(
-        PreferencesKeys.APP_ALREADY_INIT
-      );
-      dispatch(setInitialized(isInitialized?.initialized as boolean));
-    } catch (e) {
-      await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
-      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
-      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY);
-      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
-      await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
-    }
-
-    await new ConfigurationService().start();
-
-    try {
-      await Agent.agent.start();
-    } catch (e) {
-      // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
-      setAgentInitErr(true);
-      // eslint-disable-next-line no-console
-      console.error(e);
-      return;
-    }
-
-    dispatch(setPauseQueueIncomingRequest(true));
+  const loadDatabase = async () => {
     const connectionsDetails = await Agent.agent.connections.getConnections();
-    let userName: PreferencesStorageItem = { userName: "" };
+
     const credentials = await Agent.agent.credentials.getCredentials();
+    const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
+
+    dispatch(setIdentifiersCache(storedIdentifiers));
+    dispatch(setCredsCache(credentials));
+    dispatch(setConnectionsCache(connectionsDetails));
+  };
+
+  const loadPreferences = async () => {
+    let userName: PreferencesStorageItem = { userName: "" };
+
+    try {
+      userName = await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME);
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
+        )
+      ) {
+        throw e;
+      }
+    }
+
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
-    const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
+
+    const updatedAuthentication = {
+      ...authentication,
+      userName: userName.userName as string,
+      passcodeIsSet,
+      seedPhraseIsSet,
+      passwordIsSet,
+    };
+
+    dispatch(setAuthentication(updatedAuthentication));
 
     // @TODO - handle error
     try {
@@ -243,35 +261,51 @@ const AppWrapper = (props: { children: ReactNode }) => {
         throw e;
       }
     }
+  };
 
+  const handleInitialRoute = (initialized: boolean) => {
+    const noRoutes = !routes.length;
+    if (noRoutes && !initialized) {
+      history.push({
+        pathname: RoutePath.ONBOARDING,
+      });
+    }
+  };
+
+  const initApp = async () => {
+    // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
+    // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
+    let isInitialized;
     try {
-      userName = await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME);
+      isInitialized = await PreferencesStorage.get(
+        PreferencesKeys.APP_ALREADY_INIT
+      );
+      dispatch(setInitialized(isInitialized?.initialized as boolean));
     } catch (e) {
-      if (
-        !(e instanceof Error) ||
-        !(
-          e instanceof Error &&
-          e.message ===
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
-        )
-      ) {
-        throw e;
-      }
+      await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
+      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
+      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY);
+      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
+      await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     }
 
-    dispatch(
-      setAuthentication({
-        ...authentication,
-        userName: userName.userName as string,
-        passcodeIsSet,
-        seedPhraseIsSet,
-        passwordIsSet,
-      })
-    );
+    handleInitialRoute(isInitialized?.initialized as boolean);
 
-    dispatch(setIdentifiersCache(storedIdentifiers));
-    dispatch(setCredsCache(credentials));
-    dispatch(setConnectionsCache(connectionsDetails));
+    await loadPreferences();
+
+    await new ConfigurationService().start();
+    try {
+      await Agent.agent.start();
+    } catch (e) {
+      // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
+      setAgentInitErr(true);
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return;
+    }
+    dispatch(setPauseQueueIncomingRequest(true));
+
+    await loadDatabase();
 
     Agent.agent.connections.onConnectionKeriStateChanged((event) => {
       return connectionKeriStateChangedHandler(event, dispatch);
@@ -311,6 +345,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.
   // Hence this isn't in i18n.
   if (agentInitErr) {
+    //if (false) {
     return (
       <div className="agent-init-error-msg">
         <p>
@@ -327,7 +362,16 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
   }
 
-  return initialised ? <>{props.children}</> : <></>;
+  if (!initialised) {
+    //if (false) {
+    return (
+      <div className="loading-page">
+        <IonSpinner name="crescent" />
+      </div>
+    );
+  }
+
+  return <>{props.children}</>;
 };
 
 export { AppWrapper };

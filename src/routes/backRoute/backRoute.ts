@@ -1,6 +1,7 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
 import {
+  login,
   removeCurrentRoute,
   setAuthentication,
   setCurrentRoute,
@@ -8,6 +9,7 @@ import {
 import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 import { DataProps, PayloadProps } from "../nextRoute/nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
+import { getNextOnboardingRoute } from "../nextRoute";
 
 const getBackRoute = (
   currentPath: string,
@@ -16,10 +18,10 @@ const getBackRoute = (
   backPath: { pathname: string };
   updateRedux: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
-  const { updateRedux } = backRoute[currentPath];
+  const { backPath, updateRedux } = backRoute[currentPath];
 
   return {
-    backPath: backPath(data),
+    backPath: backPath ? backPath(data) : getBackPath(data),
     updateRedux,
   };
 };
@@ -58,29 +60,19 @@ const getPreviousRoute = (data: DataProps): { pathname: string } => {
 
   return { pathname: path };
 };
+const getPasscodeLoginBackRoute = (data: DataProps) => {
+  let prevRoute = getPreviousRoute(data);
 
-const updateStoreAfterPasscodeLoginRoute = (data: DataProps) => {
-  const seedPhraseISet = data.store.stateCache.authentication.seedPhraseIsSet;
-
-  if (data.state?.resetPasscode && seedPhraseISet) {
-    return setAuthentication({
-      ...data.store.stateCache.authentication,
-      loggedIn: false,
-      time: 0,
-    });
-  } else if (data.state?.resetPasscode) {
-    return setAuthentication({
-      ...data.store.stateCache.authentication,
-      loggedIn: false,
-      time: 0,
-    });
-  } else {
-    return setAuthentication({
-      ...data.store.stateCache.authentication,
-      loggedIn: true,
-      time: Date.now(),
-    });
+  if (prevRoute.pathname === RoutePath.ROOT) {
+    if (!data.store.stateCache.authentication.seedPhraseIsSet) {
+      prevRoute = { pathname: RoutePath.ONBOARDING };
+    }
   }
+
+  return prevRoute;
+};
+const updateStoreAfterPasscodeLoginRoute = (data: DataProps) => {
+  return login();
 };
 
 const calcPreviousRoute = (
@@ -91,7 +83,7 @@ const calcPreviousRoute = (
     .find((element) => element.path !== RoutePath.PASSCODE_LOGIN);
 };
 
-const backPath = (data: DataProps) => getPreviousRoute(data);
+const getBackPath = (data: DataProps) => getPreviousRoute(data);
 
 const backRoute: Record<string, any> = {
   [RoutePath.ROOT]: {
@@ -114,6 +106,7 @@ const backRoute: Record<string, any> = {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
   [RoutePath.PASSCODE_LOGIN]: {
+    backPath: (data: DataProps) => getPasscodeLoginBackRoute(data),
     updateRedux: [removeCurrentRoute, updateStoreAfterPasscodeLoginRoute],
   },
   [RoutePath.CREATE_PASSWORD]: {
@@ -136,5 +129,5 @@ export {
   getPreviousRoute,
   updateStoreAfterPasscodeLoginRoute,
   updateStoreSetCurrentRoute,
-  backPath,
+  getBackPath,
 };
