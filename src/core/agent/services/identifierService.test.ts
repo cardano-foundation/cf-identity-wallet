@@ -1350,14 +1350,14 @@ describe("Identifier service of agent", () => {
 
   test("getIdentifier should throw an error when KERIA is offline ", async () => {
     signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
-    expect(() => identifierService.getIdentifier("id")).toThrowError(
+    await expect(identifierService.getIdentifier("id")).rejects.toThrowError(
       SignifyApi.KERIA_CONNECTION_BROKEN
     );
-    expect(() => identifierService.syncKeriaIdentifiers()).toThrowError(
+    await expect(identifierService.syncKeriaIdentifiers()).rejects.toThrowError(
       SignifyApi.KERIA_CONNECTION_BROKEN
     );
-    expect(() =>
+    await expect(() =>
       identifierService.getUnhandledMultisigIdentifiers()
-    ).toThrowError(SignifyApi.KERIA_CONNECTION_BROKEN);
+    ).rejects.toThrowError(SignifyApi.KERIA_CONNECTION_BROKEN);
   });
 });

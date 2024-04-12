@@ -22,7 +22,6 @@ class Agent {
   private static instance: Agent;
   private basicRecordStorage!: StorageApi;
   private signifyApi!: SignifyApi;
-  static ready = false;
 
   // @TODO - foconnor: Registering these should be more generic, but OK for now
   private identifierService!: IdentifierService;
@@ -89,20 +88,18 @@ class Agent {
   }
 
   async start(): Promise<void> {
-    if (!Agent.ready) {
+    if (!this.isAgentReady()) {
       await this.basicRecordStorage.open(config.walletConfig?.id || "idw");
       await this.signifyApi.start();
-      Agent.ready = true;
     }
   }
 
   async bootAndConnect(): Promise<void> {
     await this.signifyApi.bootAndConnect();
-    Agent.ready = true;
   }
 
   isAgentReady(): boolean {
-    return Agent.ready;
+    return Agent.agent.signifyApi.getKeriaOnlineStatus();
   }
 }
 

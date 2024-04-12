@@ -517,16 +517,16 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
 
   test("getCredentialDetailsById should throw an error when KERIA is offline ", async () => {
     signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
-    expect(() =>
+    await expect(
       credentialService.getCredentialDetailsById("not-found-id")
-    ).toThrowError(SignifyApi.KERIA_CONNECTION_BROKEN);
-    expect(() =>
+    ).rejects.toThrowError(SignifyApi.KERIA_CONNECTION_BROKEN);
+    await expect(
       credentialService.getKeriCredentialNotifications()
-    ).toThrowError(SignifyApi.KERIA_CONNECTION_BROKEN);
-    expect(() => credentialService.acceptKeriAcdc("id")).toThrowError(
+    ).rejects.toThrowError(SignifyApi.KERIA_CONNECTION_BROKEN);
+    await expect(credentialService.acceptKeriAcdc("id")).rejects.toThrowError(
       SignifyApi.KERIA_CONNECTION_BROKEN
     );
-    expect(() => credentialService.syncACDCs()).toThrowError(
+    await expect(credentialService.syncACDCs()).rejects.toThrowError(
       SignifyApi.KERIA_CONNECTION_BROKEN
     );
   });

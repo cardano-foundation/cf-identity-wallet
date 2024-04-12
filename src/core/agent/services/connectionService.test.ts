@@ -224,17 +224,17 @@ describe("Connection service of agent", () => {
 
   test("Should throw error when KERIA is offline", async () => {
     signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
-    expect(() => connectionService.getConnectionById("id")).toThrowError(
+    await expect(
+      connectionService.getConnectionById("id")
+    ).rejects.toThrowError(SignifyApi.KERIA_CONNECTION_BROKEN);
+    await expect(connectionService.syncKeriaContacts()).rejects.toThrowError(
       SignifyApi.KERIA_CONNECTION_BROKEN
     );
-    expect(() => connectionService.syncKeriaContacts()).toThrowError(
-      SignifyApi.KERIA_CONNECTION_BROKEN
-    );
-    expect(() =>
+    await expect(
       connectionService.receiveInvitationFromUrl("url/oobi")
-    ).toThrowError(SignifyApi.KERIA_CONNECTION_BROKEN);
-    expect(() => connectionService.deleteConnectionById("id")).toThrowError(
-      SignifyApi.KERIA_CONNECTION_BROKEN
-    );
+    ).rejects.toThrowError(SignifyApi.KERIA_CONNECTION_BROKEN);
+    await expect(
+      connectionService.deleteConnectionById("id")
+    ).rejects.toThrowError(SignifyApi.KERIA_CONNECTION_BROKEN);
   });
 });

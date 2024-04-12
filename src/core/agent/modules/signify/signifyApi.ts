@@ -33,16 +33,32 @@ export const OnlineOnly = (
   descriptor: PropertyDescriptor
 ) => {
   const originalMethod = descriptor.value;
-  descriptor.value = function (...args: any[]) {
-    const isKeriOnline =
+  descriptor.value = async function (...args: any[]) {
+    const signifyApi =
       typeof target.getKeriaOnlineStatus == "function"
-        ? target.getKeriaOnlineStatus()
-        : (this as any).signifyApi.getKeriaOnlineStatus();
+        ? target
+        : (this as any).signifyApi;
+    const isKeriOnline = signifyApi.getKeriaOnlineStatus();
     if (!isKeriOnline) {
       throw new Error(SignifyApi.KERIA_CONNECTION_BROKEN);
     }
     // Call the original method
-    return originalMethod.apply(this, args);
+    try {
+      const executeResult = await originalMethod.apply(this, args);
+      return executeResult;
+    } catch (error) {
+      const errorStack = (error as Error).stack;
+      /** If the error is failed to fetch with signify,
+       * we retry until the connection is secured,
+       * we can limit the number of retries if we want*/
+      if (errorStack && /SignifyClient/gi.test(errorStack)) {
+        await signifyApi.bootAndConnect(1000);
+        const executeResult = await originalMethod.apply(this, args);
+        return executeResult;
+      } else {
+        throw error;
+      }
+    }
   };
 };
 export class SignifyApi {
@@ -61,6 +77,8 @@ export class SignifyApi {
     "Unable to retrieve key states for given multi-sig member";
   static readonly KERIA_CONNECTION_BROKEN =
     "The app is not connected to KERIA at the moment";
+  static readonly FAILED_TO_ESTABLISH_KERIA_CONNECTION =
+    "Failed to establish connection with KERIA after multiple retries";
 
   static readonly CREDENTIAL_SERVER =
     "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
@@ -82,14 +100,26 @@ export class SignifyApi {
     this.opRetryInterval = opRetryInterval;
   }
 
-  async bootAndConnect(retryInterval = 1000) {
+  async bootAndConnect(
+    retryInterval = 1000,
+    maximumNumberOfRetries?: number,
+    numberOfRetries = 0
+  ) {
     try {
+      SignifyApi.isOnline = false;
       await this.signifyClient.boot();
       await this.signifyClient.connect();
       SignifyApi.isOnline = true;
     } catch (error) {
+      if (maximumNumberOfRetries && numberOfRetries >= maximumNumberOfRetries) {
+        throw new Error(SignifyApi.FAILED_TO_ESTABLISH_KERIA_CONNECTION);
+      }
       await new Promise((resolve) => setTimeout(resolve, retryInterval));
-      await this.bootAndConnect();
+      await this.bootAndConnect(
+        retryInterval,
+        maximumNumberOfRetries,
+        numberOfRetries + 1
+      );
     }
   }
   /**

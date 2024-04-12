@@ -948,16 +948,16 @@ describe("Offline Signify API", () => {
   });
 
   test("Should throw an error when KERIA is offline", async () => {
-    expect(() => api.createIdentifier()).toThrowError(
+    await expect(api.createIdentifier()).rejects.toThrowError(
       SignifyApi.KERIA_CONNECTION_BROKEN
     );
-    expect(() => api.createDelegationIdentifier("prefix")).toThrowError(
+    await expect(api.createDelegationIdentifier("prefix")).rejects.toThrowError(
       SignifyApi.KERIA_CONNECTION_BROKEN
     );
-    expect(() => api.resolveOobi("url")).toThrowError(
+    await expect(api.resolveOobi("url")).rejects.toThrowError(
       SignifyApi.KERIA_CONNECTION_BROKEN
     );
-    expect(() => api.getNotifications()).toThrowError(
+    await expect(api.getNotifications()).rejects.toThrowError(
       SignifyApi.KERIA_CONNECTION_BROKEN
     );
   });
