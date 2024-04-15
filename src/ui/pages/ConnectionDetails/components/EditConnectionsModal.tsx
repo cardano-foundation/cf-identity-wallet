@@ -155,7 +155,9 @@ export const EditConnectionsContainer = ({
             <div className="connection-details-info-block">
               {updatedNotes.length ? (
                 <>
-                  <h3>{i18n.t("connections.details.notes")}</h3>
+                  <h3 className="note-title">
+                    {i18n.t("connections.details.notes")}
+                  </h3>
                   {updatedNotes.map((note) => (
                     <ConnectionNote
                       data={note}
