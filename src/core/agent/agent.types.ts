@@ -1,5 +1,4 @@
 import { SignifyClient } from "signify-ts";
-import { StorageApi } from "../storage/storage.types";
 import {
   CredentialShortDetails,
   CredentialStatus,
@@ -7,6 +6,7 @@ import {
 import { EventService } from "./services/eventService";
 import { IdentifierStorage } from "./records/identifierStorage";
 import { CredentialStorage } from "./records/credentialStorage";
+import { BasicStorage } from "./records/basicStorage";
 
 enum Blockchain {
   CARDANO = "Cardano",
@@ -109,13 +109,12 @@ interface KeriaNotificationMarker {
 }
 
 interface AgentServicesProps {
-  basicStorage: StorageApi;
+  basicStorage: BasicStorage;
   signifyClient: SignifyClient;
   eventService: EventService;
   identifierStorage: IdentifierStorage;
   credentialStorage: CredentialStorage;
 }
-
 enum MultiSigRoute {
   ROT = "/multisig/rot",
   ICP = "/multisig/icp",

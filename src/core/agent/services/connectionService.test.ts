@@ -91,12 +91,14 @@ const signifyClient = jest.mocked({
   }),
 });
 
+const session = {};
+
 const agentServicesProps = {
-  basicStorage: basicStorage,
+  basicStorage: basicStorage as any,
   signifyClient: signifyClient as any,
   eventService: new EventService(),
-  identifierStorage: new IdentifierStorage(basicStorage),
-  credentialStorage: new CredentialStorage(basicStorage),
+  identifierStorage: new IdentifierStorage(session as any),
+  credentialStorage: new CredentialStorage(session as any),
 };
 
 const connectionService = new ConnectionService(agentServicesProps);
@@ -119,11 +121,10 @@ describe("Connection service of agent", () => {
     jest.resetAllMocks();
   });
   test("can get all connections", async () => {
-    basicStorage.getAll = jest.fn().mockResolvedValue([
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {
         id: keriContacts[0].id,
         createdAt: now,
-        type: RecordType.CONNECTION_KERI_METADATA,
         content: {
           alias: "keri",
         },
@@ -149,8 +150,8 @@ describe("Connection service of agent", () => {
     expect(basicStorage.save).toBeCalledWith({
       id: expect.any(String),
       content: note,
-      type: RecordType.CONNECTION_NOTE,
-      tags: { connectionId },
+
+      tags: { connectionId, type: RecordType.CONNECTION_NOTE },
     });
   });
 
@@ -284,7 +285,7 @@ describe("Connection service of agent", () => {
         wellKnowns: [],
       },
     ]);
-    basicStorage.getAll = jest.fn().mockReturnValue([]);
+    basicStorage.findAllByQuery = jest.fn().mockReturnValue([]);
     await connectionService.syncKeriaContacts();
     expect(basicStorage.save).toBeCalledTimes(2);
   });

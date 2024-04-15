@@ -5,21 +5,31 @@ import {
   ready as signifyReady,
   Tier,
 } from "signify-ts";
+import { Storage } from "@ionic/storage";
 import {
   ConnectionService,
   CredentialService,
   IdentifierService,
 } from "./services";
 import { SignifyNotificationService } from "./services/signifyNotificationService";
-import { StorageApi } from "../storage/storage.types";
-import { SqliteStorage } from "../storage/sqliteStorage";
-import { IonicStorage } from "../storage/ionicStorage";
 import { AgentServicesProps } from "./agent.types";
 import { EventService } from "./services/eventService";
-import { CredentialStorage, IdentifierStorage } from "./records";
+import {
+  BasicRecord,
+  BasicStorage,
+  CredentialMetadataRecord,
+  CredentialStorage,
+  IdentifierMetadataRecord,
+  IdentifierStorage,
+} from "./records";
 import { KeyStoreKeys, SecureStorage } from "../storage";
 import { MultiSigService } from "./services/multiSigService";
 import { IpexCommunicationService } from "./services/ipexCommunicationService";
+import { SqliteSession } from "../storage/sqliteStorage/sqliteSession";
+import { IonicSession } from "../storage/ionicStorage/ionicSession";
+import { IonicStorage } from "../storage/ionicStorage";
+import { SqliteStorage } from "../storage/sqliteStorage";
+import { BaseRecord } from "../storage/storage.types";
 
 const walletId = "idw";
 class Agent {
@@ -31,7 +41,9 @@ class Agent {
   private static instance: Agent;
   private agentServicesProps!: AgentServicesProps;
 
-  private basicRecordStorage!: StorageApi;
+  private storageSession!: SqliteSession | IonicSession;
+
+  private basicStorage!: BasicStorage;
   private signifyClient!: SignifyClient;
   static ready = false;
 
@@ -82,7 +94,7 @@ class Agent {
   }
 
   get basicStorages() {
-    return this.basicRecordStorage;
+    return this.basicStorage;
   }
 
   get signifyNotifications() {
@@ -95,9 +107,9 @@ class Agent {
   }
 
   private constructor() {
-    this.basicRecordStorage = Capacitor.isNativePlatform()
-      ? new SqliteStorage()
-      : new IonicStorage();
+    this.storageSession = Capacitor.isNativePlatform()
+      ? new SqliteSession()
+      : new IonicSession();
   }
 
   static get agent() {
@@ -109,7 +121,7 @@ class Agent {
 
   async start(): Promise<void> {
     if (!Agent.ready) {
-      await this.basicRecordStorage.open(walletId);
+      await this.storageSession.open(walletId);
       await signifyReady();
       const bran = await this.getBran();
       // @TODO - foconnor: Review of Tier level.
@@ -125,12 +137,19 @@ class Agent {
         await this.signifyClient.boot();
         await this.signifyClient.connect();
       }
+      this.basicStorage = new BasicStorage(
+        this.getStorageService<BasicRecord>(this.storageSession)
+      );
       this.agentServicesProps = {
-        basicStorage: this.basicRecordStorage,
+        basicStorage: this.basicStorage,
         signifyClient: this.signifyClient,
         eventService: new EventService(),
-        identifierStorage: new IdentifierStorage(this.basicRecordStorage),
-        credentialStorage: new CredentialStorage(this.basicRecordStorage),
+        identifierStorage: new IdentifierStorage(
+          this.getStorageService<IdentifierMetadataRecord>(this.storageSession)
+        ),
+        credentialStorage: new CredentialStorage(
+          this.getStorageService<CredentialMetadataRecord>(this.storageSession)
+        ),
       };
       Agent.ready = true;
     }
@@ -145,6 +164,15 @@ class Agent {
       await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
     }
     return bran as string;
+  }
+
+  private getStorageService<T extends BaseRecord>(
+    instance: IonicSession | SqliteSession
+  ) {
+    if (instance instanceof IonicSession) {
+      return new IonicStorage<T>(instance.session!);
+    }
+    return new SqliteStorage<T>(instance.session!);
   }
 }
 

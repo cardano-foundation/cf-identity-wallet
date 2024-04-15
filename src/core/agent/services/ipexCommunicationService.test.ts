@@ -111,7 +111,7 @@ const signifyClient = jest.mocked({
 const eventService = new EventService();
 
 const agentServicesProps = {
-  basicStorage: basicStorage,
+  basicStorage: basicStorage as any,
   signifyClient: signifyClient as any,
   eventService,
   identifierStorage: identifierStorage as any,

@@ -159,13 +159,11 @@ class CredentialService extends AgentService {
       isDismissed?: boolean;
     } = {}
   ): Promise<KeriNotification[]> {
-    const results = await this.basicStorage.findAllByQuery(
-      RecordType.NOTIFICATION_KERI,
-      {
-        route: NotificationRoute.Credential,
-        ...filters,
-      }
-    );
+    const results = await this.basicStorage.findAllByQuery({
+      route: NotificationRoute.Credential,
+      ...filters,
+      type: RecordType.NOTIFICATION_KERI,
+    });
     return results.map((result) => {
       return {
         id: result.id,

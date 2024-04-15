@@ -1,6 +1,4 @@
-import { plainToInstance } from "class-transformer";
-import { RecordType, StorageApi } from "../../storage/storage.types";
-import { BasicRecord } from "./basicRecord";
+import { StorageService } from "../../storage/storage.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -9,40 +7,38 @@ import {
 class IdentifierStorage {
   static readonly IDENTIFIER_METADATA_RECORD_MISSING =
     "Identifier metadata record does not exist";
-  protected readonly basicStorage: StorageApi;
-  constructor(basicStorage: StorageApi) {
-    this.basicStorage = basicStorage;
+  private storageService: StorageService<IdentifierMetadataRecord>;
+
+  constructor(storageService: StorageService<IdentifierMetadataRecord>) {
+    this.storageService = storageService;
   }
 
   async getIdentifierMetadata(id: string): Promise<IdentifierMetadataRecord> {
-    const metadata = await this.basicStorage.findById(id);
+    const metadata = await this.storageService.findById(
+      id,
+      IdentifierMetadataRecord
+    );
     if (!metadata) {
       throw new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING);
     }
-    return this.parseIdentifierMetadataRecord(metadata);
+    return metadata;
   }
 
   async getAllIdentifierMetadata(
     isArchived: boolean
   ): Promise<IdentifierMetadataRecord[]> {
-    const basicRecords = await this.basicStorage.findAllByQuery(
-      RecordType.IDENTIFIER_METADATA_RECORD,
+    const records = await this.storageService.findAllByQuery(
       {
         isArchived,
-      }
+      },
+      IdentifierMetadataRecord
     );
-    return basicRecords.map((bc) => {
-      return this.parseIdentifierMetadataRecord(bc);
-    });
+    return records;
   }
 
   async getKeriIdentifiersMetadata(): Promise<IdentifierMetadataRecord[]> {
-    const basicRecords = await this.basicStorage.getAll(
-      RecordType.IDENTIFIER_METADATA_RECORD
-    );
-    return basicRecords.map((bc) => {
-      return this.parseIdentifierMetadataRecord(bc);
-    });
+    const records = await this.storageService.getAll(IdentifierMetadataRecord);
+    return records;
   }
 
   async updateIdentifierMetadata(
@@ -66,13 +62,7 @@ class IdentifierStorage {
         metadata.isPending || identifierMetadataRecord.isPending;
       identifierMetadataRecord.isDeleted =
         metadata.isDeleted || identifierMetadataRecord.isDeleted;
-      const basicRecord = new BasicRecord({
-        id: identifierMetadataRecord.id,
-        content: identifierMetadataRecord.toJSON(),
-        tags: identifierMetadataRecord.getTags(),
-        type: RecordType.IDENTIFIER_METADATA_RECORD,
-      });
-      await this.basicStorage.update(basicRecord);
+      await this.storageService.update(identifierMetadataRecord);
     }
   }
 
@@ -82,30 +72,7 @@ class IdentifierStorage {
     const record = new IdentifierMetadataRecord({
       ...data,
     });
-    await this.basicStorage.save({
-      id: record.id,
-      content: record.toJSON(),
-      tags: { ...record.getTags() },
-      type: RecordType.IDENTIFIER_METADATA_RECORD,
-    });
-  }
-
-  private parseIdentifierMetadataRecord(
-    basicRecord: BasicRecord
-  ): IdentifierMetadataRecord {
-    const instance = plainToInstance(
-      IdentifierMetadataRecord,
-      basicRecord.content,
-      {
-        exposeDefaultValues: true,
-      }
-    );
-    instance.createdAt = new Date(instance.createdAt);
-    instance.updatedAt = instance.updatedAt
-      ? new Date(instance.createdAt)
-      : undefined;
-    instance.replaceTags(basicRecord.getTags());
-    return instance;
+    await this.storageService.save(record);
   }
 }
 

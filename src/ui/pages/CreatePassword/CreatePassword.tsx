@@ -68,7 +68,9 @@ const CreatePassword = () => {
         await Agent.agent.basicStorages.save({
           id: MiscRecordId.OP_PASS_HINT,
           content: { value: hintValue },
-          type: RecordType.OP_PASS_HINT,
+          tags: {
+            type: RecordType.OP_PASS_HINT,
+          },
         });
       }
     }

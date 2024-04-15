@@ -1,81 +1,73 @@
-import { plainToInstance } from "class-transformer";
-import { RecordType, StorageApi } from "../../storage/storage.types";
-import { BasicRecord } from "./basicRecord";
+import { StorageService } from "../../storage/storage.types";
 import { CredentialMetadataRecord } from "./credentialMetadataRecord";
 import { CredentialMetadataRecordProps } from "./credentialMetadataRecord.types";
 
 class CredentialStorage {
-  protected readonly basicStorage: StorageApi;
-  constructor(basicStorage: StorageApi) {
-    this.basicStorage = basicStorage;
-  }
+  private storageService: StorageService<CredentialMetadataRecord>;
 
-  async getAllCredentialMetadata(isArchived?: boolean) {
-    const basicRecords = await this.basicStorage.findAllByQuery(
-      RecordType.CREDENTIAL_METADATA_RECORD,
+  constructor(storageService: StorageService<CredentialMetadataRecord>) {
+    this.storageService = storageService;
+  }
+  async getAllCredentialMetadata(
+    isArchived?: boolean
+  ): Promise<CredentialMetadataRecord[]> {
+    const records = await this.storageService.findAllByQuery(
       {
         ...(isArchived !== undefined ? { isArchived } : {}),
-      }
+      },
+      CredentialMetadataRecord
     );
-    return basicRecords.map((bc) => {
-      return this.parseCredentialMetadataRecord(bc);
-    });
+    return records;
   }
 
   async deleteCredentialMetadata(id: string) {
-    return this.basicStorage.deleteById(id);
+    return this.storageService.deleteById(id);
   }
 
   async getCredentialMetadata(
     id: string
   ): Promise<CredentialMetadataRecord | null> {
-    const basicRecord = await this.basicStorage.findById(id);
-    if (!basicRecord) {
+    const record = await this.storageService.findById(
+      id,
+      CredentialMetadataRecord
+    );
+    if (!record) {
       return null;
     }
-    return this.parseCredentialMetadataRecord(basicRecord);
+    return record;
   }
 
   async getCredentialMetadataByCredentialRecordId(
     credentialRecordId: string
   ): Promise<CredentialMetadataRecord | null> {
-    const basicRecords = await this.basicStorage.findAllByQuery(
-      RecordType.CREDENTIAL_METADATA_RECORD,
+    const records = await this.storageService.findAllByQuery(
       {
         credentialRecordId,
-      }
+      },
+      CredentialMetadataRecord
     );
-    const basicRecord = basicRecords[0];
-    if (!basicRecord) {
+    const record = records[0];
+    if (!record) {
       return null;
     }
-    return this.parseCredentialMetadataRecord(basicRecord);
+    return record;
   }
 
   async getCredentialMetadataByConnectionId(connectionId: string) {
-    const basicRecords = await this.basicStorage.findAllByQuery(
-      RecordType.CREDENTIAL_METADATA_RECORD,
+    const record = await this.storageService.findAllByQuery(
       {
         connectionId,
-      }
+      },
+      CredentialMetadataRecord
     );
-    return basicRecords.map((bc) => {
-      return this.parseCredentialMetadataRecord(bc);
-    });
+    return record;
   }
 
   async saveCredentialMetadataRecord(data: CredentialMetadataRecordProps) {
     const record = new CredentialMetadataRecord({
       ...data,
     });
-    return this.basicStorage.save({
-      id: record.id,
-      content: record.toJSON(),
-      tags: {
-        ...record.getTags(),
-      },
-      type: RecordType.CREDENTIAL_METADATA_RECORD,
-    });
+    return this.storageService.save(record);
   }
 
   async updateCredentialMetadata(
@@ -94,32 +86,8 @@ class CredentialStorage {
       if (data.credentialType) record.credentialType = data.credentialType;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
       if (data.isDeleted !== undefined) record.isDeleted = data.isDeleted;
-      const basicRecord = new BasicRecord({
-        id: record.id,
-        content: record.toJSON(),
-        tags: record.getTags(),
-        type: RecordType.CREDENTIAL_METADATA_RECORD,
-      });
-      await this.basicStorage.update(basicRecord);
+      await this.storageService.update(record);
     }
-  }
-
-  private parseCredentialMetadataRecord(
-    basicRecord: BasicRecord
-  ): CredentialMetadataRecord {
-    const instance = plainToInstance(
-      CredentialMetadataRecord,
-      basicRecord.content,
-      {
-        exposeDefaultValues: true,
-      }
-    );
-    instance.createdAt = new Date(instance.createdAt);
-    instance.updatedAt = instance.updatedAt
-      ? new Date(instance.createdAt)
-      : undefined;
-    instance.replaceTags(basicRecord.getTags());
-    return instance;
   }
 }
 

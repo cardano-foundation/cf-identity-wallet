@@ -7,6 +7,8 @@ abstract class BaseRecord {
 
   id!: string;
 
+  type!: string;
+
   createdAt!: Date;
 
   updatedAt?: Date;
@@ -43,7 +45,6 @@ interface SaveBasicRecordOption {
   content: Record<string, unknown>;
   id?: string;
   tags?: Tags;
-  type: RecordType;
 }
 
 enum RecordType {
@@ -65,17 +66,29 @@ interface AdvancedQuery<T extends BaseRecord> {
 type Query<T extends BaseRecord> = AdvancedQuery<T> | SimpleQuery<T>;
 
 interface StorageApi {
-  open(storageName: string): Promise<void>;
   save({ content, tags, id }: SaveBasicRecordOption): Promise<BasicRecord>;
   delete(record: BasicRecord): Promise<void>;
   deleteById(id: string): Promise<void>;
   update(record: BasicRecord): Promise<void>;
   findById(id: string): Promise<BasicRecord | null>;
+  findAllByQuery(query: Query<BasicRecord>): Promise<BasicRecord[]>;
+  getAll(): Promise<BasicRecord[]>;
+}
+
+interface StorageService<T extends BaseRecord> {
+  save(record: T): Promise<T>;
+  delete(record: T): Promise<void>;
+  deleteById(id: string): Promise<void>;
+  update(record: T): Promise<void>;
+  findById(
+    id: string,
+    recordClass: BaseRecordConstructor<T>
+  ): Promise<T | null>;
   findAllByQuery(
-    type: RecordType,
-    query: Query<BasicRecord>
-  ): Promise<BasicRecord[]>;
-  getAll(type: RecordType): Promise<BasicRecord[]>;
+    query: Query<T>,
+    recordClass: BaseRecordConstructor<T>
+  ): Promise<T[]>;
+  getAll(recordClass: BaseRecordConstructor<T>): Promise<T[]>;
 }
 interface StorageRecord {
   name: string;
@@ -84,5 +97,19 @@ interface StorageRecord {
   category: string;
 }
 
+type Constructor<T = BaseRecord> = new (...args: any[]) => T;
+
+interface BaseRecordConstructor<T> extends Constructor<T> {
+  type: string;
+}
+
 export { BaseRecord, RecordType };
-export type { StorageApi, Query, SaveBasicRecordOption, StorageRecord, Tags };
+export type {
+  StorageApi,
+  Query,
+  SaveBasicRecordOption,
+  StorageRecord,
+  Tags,
+  StorageService,
+  BaseRecordConstructor,
+};

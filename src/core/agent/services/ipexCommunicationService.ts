@@ -181,12 +181,10 @@ class IpexCommunicationService extends AgentService {
   }
 
   private async getKeriCredentialNotifications(): Promise<KeriNotification[]> {
-    const results = await this.basicStorage.findAllByQuery(
-      RecordType.NOTIFICATION_KERI,
-      {
-        route: NotificationRoute.Credential,
-      }
-    );
+    const results = await this.basicStorage.findAllByQuery({
+      route: NotificationRoute.Credential,
+      type: RecordType.NOTIFICATION_KERI,
+    });
     return results.map((result) => {
       return {
         id: result.id,

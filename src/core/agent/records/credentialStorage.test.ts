@@ -1,5 +1,4 @@
 import { RecordType } from "../../storage/storage.types";
-import { BasicRecord } from "./basicRecord";
 import { CredentialMetadataRecord } from "./credentialMetadataRecord";
 import {
   CredentialMetadataRecordProps,
@@ -7,8 +6,7 @@ import {
 } from "./credentialMetadataRecord.types";
 import { CredentialStorage } from "./credentialStorage";
 
-const basicStorage = jest.mocked({
-  open: jest.fn(),
+const storageService = jest.mocked({
   save: jest.fn(),
   delete: jest.fn(),
   deleteById: jest.fn(),
@@ -18,7 +16,7 @@ const basicStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
-const credentialStorage = new CredentialStorage(basicStorage);
+const credentialStorage = new CredentialStorage(storageService as any);
 
 const id1 = "id1";
 const id2 = "id2";
@@ -48,102 +46,68 @@ const credentialMetadataRecordB = new CredentialMetadataRecord({
   id: id2,
 });
 
-const basicRecordA = new BasicRecord({
-  id: credentialMetadataRecordA.id,
-  content: credentialMetadataRecordA.toJSON(),
-  tags: credentialMetadataRecordA.getTags(),
-  type: RecordType.CREDENTIAL_METADATA_RECORD,
-});
-
-const basicRecordB = new BasicRecord({
-  id: credentialMetadataRecordB.id,
-  content: credentialMetadataRecordB.toJSON(),
-  tags: credentialMetadataRecordB.getTags(),
-  type: RecordType.CREDENTIAL_METADATA_RECORD,
-});
-
 describe("Connection service of agent", () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   test("Should get all credentials", async () => {
-    basicStorage.findAllByQuery.mockResolvedValue([basicRecordA, basicRecordB]);
+    storageService.findAllByQuery.mockResolvedValue([
+      credentialMetadataRecordA,
+      credentialMetadataRecordB,
+    ]);
     expect(await credentialStorage.getAllCredentialMetadata()).toEqual([
-      {
-        ...credentialMetadataRecordA,
-        _tags: credentialMetadataRecordA.getTags(),
-        updatedAt: undefined,
-      },
-      {
-        ...credentialMetadataRecordB,
-        _tags: credentialMetadataRecordB.getTags(),
-        updatedAt: undefined,
-      },
+      credentialMetadataRecordA,
+      credentialMetadataRecordB,
     ]);
   });
 
   test("Should get credential metadata", async () => {
-    basicStorage.findById.mockResolvedValue(basicRecordA);
+    storageService.findById.mockResolvedValue(credentialMetadataRecordA);
     expect(
       await credentialStorage.getCredentialMetadata(
         credentialMetadataRecordA.id
       )
-    ).toEqual({
-      ...credentialMetadataRecordA,
-      _tags: credentialMetadataRecordA.getTags(),
-      updatedAt: undefined,
-    });
+    ).toEqual(credentialMetadataRecordA);
   });
 
   test("Should get credential metadata by credential record id", async () => {
-    basicStorage.findAllByQuery.mockResolvedValue([basicRecordA]);
+    storageService.findAllByQuery.mockResolvedValue([
+      credentialMetadataRecordA,
+    ]);
     expect(
       await credentialStorage.getCredentialMetadataByCredentialRecordId(
         credentialMetadataRecordA.id
       )
-    ).toEqual({
-      ...credentialMetadataRecordA,
-      _tags: credentialMetadataRecordA.getTags(),
-      updatedAt: undefined,
-    });
+    ).toEqual(credentialMetadataRecordA);
   });
 
   test("Should get credential metadata by connection record id", async () => {
-    basicStorage.findAllByQuery.mockResolvedValue([basicRecordB]);
+    storageService.findAllByQuery.mockResolvedValue([
+      credentialMetadataRecordB,
+    ]);
     expect(
       await credentialStorage.getCredentialMetadataByCredentialRecordId(
         credentialMetadataRecordB.id
       )
-    ).toEqual({
-      ...credentialMetadataRecordB,
-      _tags: credentialMetadataRecordB.getTags(),
-      updatedAt: undefined,
-    });
+    ).toEqual(credentialMetadataRecordB);
   });
 
   test("Should save credential metadata record", async () => {
     await credentialStorage.saveCredentialMetadataRecord(
       credentialMetadataProps
     );
-    expect(basicStorage.save).toBeCalledWith({
-      id: credentialMetadataRecordA.id,
-      content: credentialMetadataRecordA.toJSON(),
-      tags: {
-        ...credentialMetadataRecordA.getTags(),
-      },
-      type: RecordType.CREDENTIAL_METADATA_RECORD,
-    });
+    expect(storageService.save).toBeCalledWith(credentialMetadataRecordA);
   });
 
   test("Should update credential metadata record", async () => {
-    basicStorage.findById.mockResolvedValue(basicRecordA);
+    storageService.findById.mockResolvedValue(credentialMetadataRecordA);
     await credentialStorage.updateCredentialMetadata(
       credentialMetadataRecordA.id,
       {
         credentialType: "credentialType",
       }
     );
-    expect(basicStorage.update).toBeCalled();
+    expect(storageService.update).toBeCalled();
   });
 });

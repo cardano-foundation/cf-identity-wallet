@@ -172,9 +172,9 @@ class ConnectionService extends AgentService {
     await this.basicStorage.save({
       id: uuidv4(),
       content: note,
-      type: RecordType.CONNECTION_NOTE,
       tags: {
         connectionId,
+        type: RecordType.CONNECTION_NOTE,
       },
     });
   }
@@ -208,7 +208,6 @@ class ConnectionService extends AgentService {
     await this.basicStorage.save({
       id: connectionId,
       content: metadata || {},
-      type: RecordType.CONNECTION_KERI_METADATA,
       tags: {
         type: RecordType.CONNECTION_KERI_METADATA,
       },
@@ -228,9 +227,9 @@ class ConnectionService extends AgentService {
   }
 
   async getAllConnectionKeriMetadata(): Promise<BasicRecord[]> {
-    const connectionKeris = await this.basicStorage.getAll(
-      RecordType.CONNECTION_KERI_METADATA
-    );
+    const connectionKeris = await this.basicStorage.findAllByQuery({
+      type: RecordType.CONNECTION_KERI_METADATA,
+    });
     return connectionKeris;
   }
 
@@ -290,12 +289,10 @@ class ConnectionService extends AgentService {
   private async getConnectNotesByConnectionId(
     connectionId: string
   ): Promise<ConnectionNoteDetails[]> {
-    const notes = await this.basicStorage.findAllByQuery(
-      RecordType.CONNECTION_NOTE,
-      {
-        connectionId,
-      }
-    );
+    const notes = await this.basicStorage.findAllByQuery({
+      connectionId,
+      type: RecordType.CONNECTION_NOTE,
+    });
     return notes.map((note) => {
       return {
         id: note.id,

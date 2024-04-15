@@ -120,7 +120,6 @@ class SignifyNotificationService extends AgentService {
     const result = await this.basicStorage.save({
       id: event.i,
       content: event.a,
-      type: RecordType.NOTIFICATION_KERI,
       tags: {
         isDismissed: false,
         type: RecordType.NOTIFICATION_KERI,
@@ -145,12 +144,10 @@ class SignifyNotificationService extends AgentService {
 
   /**This allow us to get all dismissed notifications */
   async getDismissedNotifications() {
-    const notifications = await this.basicStorage.findAllByQuery(
-      RecordType.NOTIFICATION_KERI,
-      {
-        isDismissed: true,
-      }
-    );
+    const notifications = await this.basicStorage.findAllByQuery({
+      isDismissed: true,
+      type: RecordType.NOTIFICATION_KERI,
+    });
     return notifications;
   }
 

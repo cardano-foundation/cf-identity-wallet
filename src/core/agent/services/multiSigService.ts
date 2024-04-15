@@ -412,19 +412,17 @@ class MultiSigService extends AgentService {
       isDismissed?: boolean;
     } = {}
   ): Promise<KeriNotification[]> {
-    const results = await this.basicStorage.findAllByQuery(
-      RecordType.NOTIFICATION_KERI,
-      {
-        route: NotificationRoute.MultiSigIcp,
-        ...filters,
-        $or: [
-          { route: NotificationRoute.MultiSigIcp },
-          {
-            route: NotificationRoute.MultiSigRot,
-          },
-        ],
-      }
-    );
+    const results = await this.basicStorage.findAllByQuery({
+      type: RecordType.NOTIFICATION_KERI,
+      route: NotificationRoute.MultiSigIcp,
+      ...filters,
+      $or: [
+        { route: NotificationRoute.MultiSigIcp },
+        {
+          route: NotificationRoute.MultiSigRot,
+        },
+      ],
+    });
     return results.map((result) => {
       return {
         id: result.id,

@@ -95,11 +95,11 @@ const identifierStorage = jest.mocked({
 });
 
 const agentServicesProps = {
-  basicStorage: basicStorage,
+  basicStorage: basicStorage as any,
   signifyClient: signifyClient as any,
   eventService: new EventService(),
   identifierStorage: identifierStorage as any,
-  credentialStorage: new CredentialStorage(basicStorage),
+  credentialStorage: {} as any,
 };
 
 const signifyNotificationService = new SignifyNotificationService(

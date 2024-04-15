@@ -95,12 +95,22 @@ const identifierStorage = jest.mocked({
   createIdentifierMetadataRecord: jest.fn(),
 });
 
+const credentialStorage = jest.mocked({
+  getAllCredentialMetadata: jest.fn(),
+  deleteCredentialMetadata: jest.fn(),
+  getCredentialMetadata: jest.fn(),
+  getCredentialMetadataByCredentialRecordId: jest.fn(),
+  getCredentialMetadataByConnectionId: jest.fn(),
+  saveCredentialMetadataRecord: jest.fn(),
+  updateCredentialMetadata: jest.fn(),
+});
+
 const agentServicesProps = {
-  basicStorage: basicStorage,
+  basicStorage: basicStorage as any,
   signifyClient: signifyClient as any,
   eventService: new EventService(),
   identifierStorage: identifierStorage as any,
-  credentialStorage: new CredentialStorage(basicStorage),
+  credentialStorage: credentialStorage as any,
 };
 
 const identifierService = new IdentifierService(agentServicesProps);
