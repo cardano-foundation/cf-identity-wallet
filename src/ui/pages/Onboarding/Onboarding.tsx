@@ -28,8 +28,8 @@ const Onboarding = () => {
   const [hiddenPage, setHiddenPage] = useState(false);
 
   useEffect(() => {
-    setHiddenPage(history.location.pathname !== RoutePath.ONBOARDING);
-  }, [hiddenPage, history.location.pathname]);
+    setHiddenPage(history?.location?.pathname !== RoutePath.ONBOARDING);
+  }, [hiddenPage, history?.location?.pathname]);
 
   const items: SlideItem[] = [
     {
