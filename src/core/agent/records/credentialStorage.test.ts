@@ -24,11 +24,9 @@ const credentialRecordId1 = "cId1";
 
 const now = new Date();
 const nowISO = now.toISOString();
-const colors: [string, string] = ["#fff", "#fff"];
 
 const credentialMetadataProps: CredentialMetadataRecordProps = {
   id: id1,
-  colors,
   createdAt: now,
   issuanceDate: nowISO,
   issuerLogo: "issuerLogoHere",

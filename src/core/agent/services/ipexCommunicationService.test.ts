@@ -141,7 +141,6 @@ const id2 = "id2";
 const credentialRecordId1 = "cId1";
 const credentialMetadataProps: CredentialMetadataRecordProps = {
   id: id1,
-  colors,
   createdAt: now,
   issuanceDate: nowISO,
   issuerLogo: "issuerLogoHere",
@@ -159,7 +158,6 @@ describe("Ipex communication service of agent", () => {
       payload: {
         credential: {
           id: "acdc",
-          colors: ["#fff", "#fff"],
           issuanceDate: "dt",
           credentialType: "type",
           status: CredentialMetadataRecordStatus.CONFIRMED,

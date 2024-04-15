@@ -128,13 +128,10 @@ jest.mock("../../../core/agent/agent", () => ({
 
 const now = new Date();
 const nowISO = now.toISOString();
-const colors: [string, string] = ["#fff", "#fff"];
 
 const keriMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
-  colors,
-
   signifyName: "uuid-here",
   createdAt: now,
   theme: 0,
@@ -207,7 +204,6 @@ describe("Multisig sig service of agent", () => {
     ];
     const metadata = {
       theme: 0,
-      colors: ["#000000", "#000000"],
       displayName: "Multisig",
     };
     expect(
@@ -315,7 +311,6 @@ describe("Multisig sig service of agent", () => {
     };
     const metadata = {
       theme: 0,
-      colors: ["#000000", "#000000"],
       displayName: "Multisig",
     };
     expect(
@@ -380,7 +375,6 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         signifyName: "signifyName",
         createdAt: new Date(),
-        colors: ["#000000", "#000000"],
         theme: 0,
       },
     ]);
@@ -389,7 +383,6 @@ describe("Multisig sig service of agent", () => {
         { id: "id", createdAt: new Date(), a: { d: "d" } },
         {
           theme: 0,
-          colors: ["#000000", "#000000"],
           displayName: "Multisig",
         }
       )
@@ -404,7 +397,6 @@ describe("Multisig sig service of agent", () => {
         { id: "id", createdAt: new Date(), a: { d: "d" } },
         {
           theme: 0,
-          colors: ["#000000", "#000000"],
           displayName: "Multisig",
         }
       )
@@ -427,7 +419,6 @@ describe("Multisig sig service of agent", () => {
       await multiSigService.createDelegatedIdentifier(
         {
           displayName,
-          colors,
           theme: 0,
         },
         "delegationPrefix"
@@ -459,7 +450,6 @@ describe("Multisig sig service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
       signifyName: "john_doe",
@@ -486,7 +476,6 @@ describe("Multisig sig service of agent", () => {
       id: "123456",
       displayName: "John Doe",
 
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: false,
       signifyOpName: "op123",
       signifyName: "john_doe",
@@ -502,7 +491,6 @@ describe("Multisig sig service of agent", () => {
       id: "123456",
       displayName: "John Doe",
 
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
       signifyName: "",
@@ -549,7 +537,6 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         signifyName: "signifyName",
         createdAt: new Date(),
-        colors: ["#000000", "#000000"],
         theme: 4,
       },
     ]);
@@ -557,7 +544,6 @@ describe("Multisig sig service of agent", () => {
       id: "123456",
       displayName: "John Doe",
 
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: false,
       signifyOpName: "op123",
       signifyName: "john_doe",
@@ -631,7 +617,6 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         signifyName: "signifyName",
         createdAt: new Date(),
-        colors: ["#000000", "#000000"],
         theme: 4,
       },
     ]);
@@ -644,7 +629,6 @@ describe("Multisig sig service of agent", () => {
       id: "123456",
       displayName: "John Doe",
 
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: false,
       signifyOpName: "op123",
       signifyName: "john_doe",
@@ -707,7 +691,6 @@ describe("Multisig sig service of agent", () => {
       id: "123456",
       displayName: "John Doe",
 
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
       signifyName: "name",
@@ -751,8 +734,6 @@ describe("Multisig sig service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
       signifyName: "name",
@@ -794,7 +775,6 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         signifyName: "signifyName",
         createdAt: new Date(),
-        colors: ["#000000", "#000000"],
         theme: 4,
         multisigManageAid: "123",
       },
@@ -825,7 +805,6 @@ describe("Multisig sig service of agent", () => {
         id: "id1",
         signifyName: "signifyName",
         createdAt: new Date(),
-        colors: ["#000000", "#000000"],
         theme: 4,
       },
     ]);
@@ -834,7 +813,6 @@ describe("Multisig sig service of agent", () => {
         { id: "id", createdAt: new Date(), a: { d: "d" } },
         {
           theme: 4,
-          colors: ["#000000", "#000000"],
           displayName: "Multisig",
         }
       )
@@ -847,7 +825,6 @@ describe("Multisig sig service of agent", () => {
       id: "id",
       signifyName: undefined,
       createdAt: new Date(),
-      colors: ["#000000", "#000000"],
       theme: 4,
     };
     const senderData = {
@@ -895,7 +872,6 @@ describe("Multisig sig service of agent", () => {
       id: "id",
       signifyName: undefined,
       createdAt: new Date(),
-      colors: ["#000000", "#000000"],
       theme: 4,
     };
     const senderData = {
@@ -955,7 +931,6 @@ describe("Multisig sig service of agent", () => {
       id: "id",
       signifyName: undefined,
       createdAt: new Date(),
-      colors: ["#000000", "#000000"],
       theme: 4,
     };
     const senderData = {
@@ -1018,7 +993,6 @@ describe("Multisig sig service of agent", () => {
       id: "id",
       signifyName: undefined,
       createdAt: new Date(),
-      colors: ["#000000", "#000000"],
       theme: 4,
     };
     const senderData = {

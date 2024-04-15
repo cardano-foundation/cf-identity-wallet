@@ -3,11 +3,7 @@ import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../records/credentialMetadataRecord.types";
-import { CredentialStatus } from "./credentialService.types";
-import { AcdcKeriEventTypes, AcdcKeriStateChangedEvent } from "../agent.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
-import { RecordType } from "../../storage/storage.types";
-import { BasicRecord } from "../records";
 import { EventService } from "./eventService";
 
 const basicStorage = jest.mocked({
@@ -125,14 +121,12 @@ const credentialService = new CredentialService(agentServicesProps);
 
 const now = new Date();
 const nowISO = now.toISOString();
-const colors: [string, string] = ["#fff", "#fff"];
 
 const id1 = "id1";
 const id2 = "id2";
 const credentialRecordId1 = "cId1";
 const credentialMetadataProps: CredentialMetadataRecordProps = {
   id: id1,
-  colors,
   createdAt: now,
   issuanceDate: nowISO,
   issuerLogo: "issuerLogoHere",
@@ -178,14 +172,12 @@ describe("Credential service of agent", () => {
     expect(await credentialService.getCredentials()).toStrictEqual([
       {
         id: id1,
-        colors,
         credentialType: credentialMetadataRecordA.credentialType,
         issuanceDate: nowISO,
         status: CredentialMetadataRecordStatus.CONFIRMED,
       },
       {
         id: id2,
-        colors,
         credentialType: credentialMetadataRecordB.credentialType,
         issuanceDate: nowISO,
         status: CredentialMetadataRecordStatus.CONFIRMED,
@@ -317,7 +309,6 @@ describe("Credential service of agent", () => {
       credentialService.getCredentialDetailsById(credentialMetadataRecordA.id)
     ).resolves.toStrictEqual({
       id: credentialMetadataRecordA.id,
-      colors: credentialMetadataRecordA.colors,
       credentialType: credentialMetadataRecordA.credentialType,
       issuanceDate: nowISO,
       status: CredentialMetadataRecordStatus.CONFIRMED,
@@ -341,7 +332,6 @@ describe("Credential service of agent", () => {
     credentialStorage.getCredentialMetadata = jest.fn().mockReturnValue({
       id,
       status: CredentialMetadataRecordStatus.CONFIRMED,
-      colors,
       credentialType,
       issuanceDate: nowISO,
       isDeleted: false,
@@ -351,7 +341,6 @@ describe("Credential service of agent", () => {
       await credentialService.getCredentialShortDetailsById(id)
     ).toStrictEqual({
       id,
-      colors,
       status: CredentialMetadataRecordStatus.CONFIRMED,
       credentialType,
       issuanceDate: nowISO,

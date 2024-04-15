@@ -10,7 +10,6 @@ import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../records/credentialMetadataRecord.types";
-import { ColorGenerator } from "../../../ui/utils/colorGenerator";
 import {
   CredentialShortDetails,
   CredentialStatus,
@@ -63,7 +62,6 @@ class CredentialService extends AgentService {
   ): CredentialShortDetails {
     return {
       id: metadata.id,
-      colors: metadata.colors,
       issuanceDate: metadata.issuanceDate,
       credentialType: metadata.credentialType,
       status: metadata.status,
@@ -180,7 +178,6 @@ class CredentialService extends AgentService {
     const credentialDetails: CredentialShortDetails = {
       id: `metadata:${credentialId}`,
       isArchived: false,
-      colors: new ColorGenerator().generateNextColor() as [string, string],
       credentialType: "",
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,

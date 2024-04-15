@@ -1,4 +1,3 @@
-import { ColorGenerator } from "../../../ui/utils/colorGenerator";
 import { RecordType } from "../../storage/storage.types";
 import { Agent } from "../agent";
 import {
@@ -6,14 +5,9 @@ import {
   AcdcKeriStateChangedEvent,
   KeriNotification,
   IdentifierResult,
-  IdentifiersListResult,
   NotificationRoute,
 } from "../agent.types";
-import { CredentialMetadataRecord, IdentifierMetadataRecord } from "../records";
-import {
-  CredentialMetadataRecordProps,
-  CredentialMetadataRecordStatus,
-} from "../records/credentialMetadataRecord.types";
+import { CredentialMetadataRecordStatus } from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
 import {
   CredentialShortDetails,
@@ -165,7 +159,6 @@ class IpexCommunicationService extends AgentService {
     const credentialDetails: CredentialShortDetails = {
       id: `metadata:${credentialId}`,
       isArchived: false,
-      colors: new ColorGenerator().generateNextColor() as [string, string],
       credentialType: "",
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,

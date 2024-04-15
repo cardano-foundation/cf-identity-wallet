@@ -6,7 +6,6 @@ const identifierFix: IdentifierFullDetails[] = [
     id: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
     displayName: "Professional ID",
     createdAtUTC: "2023-01-01T19:23:24Z",
-    colors: ["#47E0FF", "#00C6EF"],
     isPending: false,
     theme: 0,
     s: 4, // Sequence number, only show if s > 0

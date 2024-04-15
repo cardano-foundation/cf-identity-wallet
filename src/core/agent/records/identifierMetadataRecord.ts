@@ -3,7 +3,6 @@ import { BaseRecord } from "../../storage/storage.types";
 interface IdentifierMetadataRecordProps {
   id: string;
   displayName: string;
-  colors: [string, string];
   signifyName: string;
   createdAt?: Date;
   isArchived?: boolean;
@@ -19,7 +18,6 @@ class IdentifierMetadataRecord
   implements IdentifierMetadataRecordProps
 {
   displayName!: string;
-  colors!: [string, string];
   isArchived?: boolean;
   isDeleted?: boolean;
   isPending?: boolean;
@@ -37,7 +35,6 @@ class IdentifierMetadataRecord
     if (props) {
       this.id = props.id;
       this.displayName = props.displayName;
-      this.colors = props.colors;
       this.signifyName = props.signifyName;
       this.isArchived = props.isArchived ?? false;
       this.isDeleted = props.isDeleted ?? false;

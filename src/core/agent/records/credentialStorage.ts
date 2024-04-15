@@ -75,13 +75,12 @@ class CredentialStorage {
     data: Partial<
       Pick<
         CredentialMetadataRecord,
-        "isArchived" | "colors" | "status" | "credentialType" | "isDeleted"
+        "isArchived" | "status" | "credentialType" | "isDeleted"
       >
     >
   ) {
     const record = await this.getCredentialMetadata(id);
     if (record) {
-      if (data.colors) record.colors = data.colors;
       if (data.status) record.status = data.status;
       if (data.credentialType) record.credentialType = data.credentialType;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;

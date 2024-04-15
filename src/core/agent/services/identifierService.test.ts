@@ -128,12 +128,10 @@ jest.mock("../../../core/agent/agent", () => ({
 
 const now = new Date();
 const nowISO = now.toISOString();
-const colors: [string, string] = ["#fff", "#fff"];
 
 const keriMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
-  colors,
   signifyName: "uuid-here",
   createdAt: now,
   theme: 0,
@@ -176,7 +174,6 @@ describe("Single sig service of agent", () => {
         id: keriMetadataRecord.id,
         displayName: "Identifier 2",
         signifyName: "uuid-here",
-        colors,
         createdAtUTC: nowISO,
         theme: 0,
         isPending: false,
@@ -212,7 +209,6 @@ describe("Single sig service of agent", () => {
       id: keriMetadataRecord.id,
       displayName: keriMetadataRecordProps.displayName,
       createdAtUTC: nowISO,
-      colors,
       theme: 0,
       ...aidReturnedBySignify.state,
       signifyOpName: undefined,
@@ -234,7 +230,6 @@ describe("Single sig service of agent", () => {
     expect(
       await identifierService.createIdentifier({
         displayName,
-        colors,
         theme: 0,
       })
     ).toEqual({ identifier: aid, signifyName: expect.any(String) });
@@ -254,7 +249,6 @@ describe("Single sig service of agent", () => {
     await expect(
       identifierService.createIdentifier({
         displayName,
-        colors,
         theme: 3,
       })
     ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
@@ -354,8 +348,6 @@ describe("Single sig service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-
-      colors: ["#e0f5bc", "#ccef8f"],
       isPending: false,
       signifyOpName: "op123",
       signifyName: "john_doe",

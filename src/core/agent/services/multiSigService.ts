@@ -45,10 +45,7 @@ class MultiSigService extends AgentService {
   async createMultisig(
     ourIdentifier: string,
     otherIdentifierContacts: ConnectionShortDetails[],
-    meta: Pick<
-      IdentifierMetadataRecordProps,
-      "displayName" | "colors" | "theme"
-    >,
+    meta: Pick<IdentifierMetadataRecordProps, "displayName" | "theme">,
     threshold: number,
     delegateContact?: ConnectionShortDetails
   ): Promise<CreateIdentifierResult> {
@@ -91,7 +88,6 @@ class MultiSigService extends AgentService {
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
-      colors: meta.colors,
       theme: meta.theme,
       signifyName,
       signifyOpName: result.op.name, //we save the signifyOpName here to sync the multisig's status later
@@ -339,10 +335,7 @@ class MultiSigService extends AgentService {
 
   async joinMultisig(
     notification: KeriNotification,
-    meta: Pick<
-      IdentifierMetadataRecordProps,
-      "displayName" | "colors" | "theme"
-    >
+    meta: Pick<IdentifierMetadataRecordProps, "displayName" | "theme">
   ): Promise<CreateIdentifierResult | undefined> {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const msgSaid = notification.a.d as string;
@@ -379,7 +372,6 @@ class MultiSigService extends AgentService {
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
-      colors: meta.colors,
       theme: meta.theme,
       signifyName,
       signifyOpName: res.op.name, //we save the signifyOpName here to sync the multisig's status later
