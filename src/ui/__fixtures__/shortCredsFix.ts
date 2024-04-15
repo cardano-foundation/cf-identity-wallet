@@ -3,7 +3,6 @@ import { CredentialMetadataRecordStatus } from "../../core/agent/records/credent
 
 const shortCredsFix: CredentialShortDetails[] = [
   {
-    colors: ["#ef8fb9", "#f5bcd5"],
     credentialType: "UniversityDegreeCredential",
     id: "metadata:61397f5b-a048-42ad-b165-84d49f574d4c",
     isArchived: false,
@@ -11,7 +10,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     status: CredentialMetadataRecordStatus.CONFIRMED,
   },
   {
-    colors: ["#ef8f99", "#f5bcc2"],
     credentialType: "AccessPassCredential",
     id: "metadata:491bb132-91e7-4ce7-8e8e-52444e2ffb2b",
     isArchived: false,
@@ -19,7 +17,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     status: CredentialMetadataRecordStatus.CONFIRMED,
   },
   {
-    colors: ["#af8fef", "#cfbcf5"],
     credentialType: "PermanentResidentCard",
     id: "metadata:d0ea1b6b-bc49-4350-a0ee-46a0cdb87be1",
     isArchived: false,
@@ -28,14 +25,12 @@ const shortCredsFix: CredentialShortDetails[] = [
   },
   {
     id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
-    colors: ["#8fefba", "#bcf5d6"],
     issuanceDate: "2024-01-22T16:03:44.643Z",
     credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialMetadataRecordStatus.CONFIRMED,
   },
   {
     id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
-    colors: ["#8fefba", "#bcf5d6"],
     issuanceDate: "2024-01-22T16:03:44.643Z",
     credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialMetadataRecordStatus.PENDING,

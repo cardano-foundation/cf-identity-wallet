@@ -6,7 +6,6 @@ import {
 
 const mockData: CredentialMetadataRecordProps = {
   id: "credential:z6Mkpph7qyemfmHt5cSEXXbhm1VbSZT789X8Ep4eA7ndGxGh",
-  colors: ["#000000", "#FFFFFF"],
   isArchived: true,
   issuanceDate: "2010-01-01T19:23:24Z",
   issuerLogo: "https://placehold.co/120x22",
@@ -38,7 +37,6 @@ describe("Credential metadata record", () => {
     await new Promise((resolve) => setTimeout(resolve, 10));
     const settingsRecord = new CredentialMetadataRecord({
       id: mockData.id,
-      colors: mockData.colors,
       isArchived: mockData.isArchived,
       issuanceDate: "2010-01-01T19:23:24Z",
       issuerLogo: "https://placehold.co/120x22",
@@ -55,7 +53,6 @@ describe("Credential metadata record", () => {
     const createdAt = new Date();
     const settingsRecord = new CredentialMetadataRecord({
       id: mockData.id,
-      colors: mockData.colors,
       createdAt: createdAt,
       issuanceDate: "2010-01-01T19:23:24Z",
       issuerLogo: "https://placehold.co/120x22",

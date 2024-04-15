@@ -8,7 +8,6 @@ interface GroupMetadata {
 
 interface CreateIdentifierInputs {
   displayName: string;
-  colors: [string, string];
   theme: number;
   groupMetadata?: GroupMetadata;
 }
@@ -18,7 +17,6 @@ interface IdentifierShortDetails {
   displayName: string;
   createdAtUTC: string;
   signifyName: string;
-  colors: [string, string];
   theme: number;
   isPending: boolean;
   groupMetadata?: GroupMetadata;

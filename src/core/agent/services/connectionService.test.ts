@@ -74,7 +74,6 @@ describe("Connection service of agent", () => {
         id: "id",
         signifyName: "uuid",
         createdAtUTC: new Date().toISOString(),
-        colors: ["#ffff", "#ffff"],
         theme: 0,
         isPending: false,
         groupMetadata: {

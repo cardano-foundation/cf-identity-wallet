@@ -3,7 +3,6 @@ export interface DidKeyJson {
   method: string;
   displayName: string;
   createdAtUTC: string;
-  colors: string[];
   theme: number;
   controller: string;
   keyType: string;
@@ -17,7 +16,6 @@ export interface KeriJson {
   displayName: string;
   createdAtUTC: string;
   signifyName: string;
-  colors: string[];
   theme: number;
   isPending: boolean;
   s: string;

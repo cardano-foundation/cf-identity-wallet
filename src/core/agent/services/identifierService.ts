@@ -76,7 +76,6 @@ class IdentifierService extends AgentService {
         id: metadata.id,
         signifyName: metadata.signifyName,
         createdAtUTC: metadata.createdAt.toISOString(),
-        colors: metadata.colors,
         theme: metadata.theme,
         isPending: metadata.isPending ?? false,
         groupMetadata: metadata.groupMetadata,
@@ -104,7 +103,6 @@ class IdentifierService extends AgentService {
       displayName: metadata.displayName,
       createdAtUTC: metadata.createdAt.toISOString(),
       signifyName: metadata.signifyName,
-      colors: metadata.colors,
       theme: metadata.theme,
       signifyOpName: metadata.signifyOpName,
       isPending: metadata.isPending ?? false,
@@ -132,7 +130,6 @@ class IdentifierService extends AgentService {
       id: metadata.id,
       signifyName: metadata.signifyName,
       createdAtUTC: metadata.createdAt.toISOString(),
-      colors: metadata.colors,
       theme: metadata.theme,
       isPending: metadata.isPending ?? false,
     };
@@ -150,7 +147,6 @@ class IdentifierService extends AgentService {
       id: metadata.id,
       signifyName: metadata.signifyName,
       createdAtUTC: metadata.createdAt.toISOString(),
-      colors: metadata.colors,
       theme: metadata.theme,
       isPending: metadata.isPending ?? false,
     };
@@ -199,13 +195,15 @@ class IdentifierService extends AgentService {
 
   async updateIdentifier(
     identifier: string,
-    data: Pick<IdentifierMetadataRecordProps, "theme" | "displayName">
+    data: Pick<
+      IdentifierMetadataRecordProps,
+      "theme" | "displayName" | "groupMetadata"
+    >
   ): Promise<void> {
     const metadata = await this.getIdentifierMetadata(identifier);
     this.validIdentifierMetadata(metadata);
     return this.updateIdentifierMetadata(identifier, {
-      theme: data.theme,
-      displayName: data.displayName,
+      ...data,
     });
   }
 
@@ -223,7 +221,6 @@ class IdentifierService extends AgentService {
         await this.createIdentifierMetadataRecord({
           id: identifier.prefix,
           displayName: identifier.prefix, //same as the id at the moment
-          colors: ["#e0f5bc", "#ccef8f"],
           theme: 0,
           signifyName: identifier.name,
         });
@@ -329,7 +326,6 @@ class IdentifierService extends AgentService {
     await this.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: ourMetadata.displayName,
-      colors: ourMetadata.colors,
       theme: ourMetadata.theme,
       signifyName,
       signifyOpName: result.op.name, //we save the signifyOpName here to sync the multisig's status later
@@ -510,10 +506,7 @@ class IdentifierService extends AgentService {
   async joinMultisig(
     notificationId: string,
     notificationSaid: string,
-    meta: Pick<
-      IdentifierMetadataRecordProps,
-      "displayName" | "colors" | "theme"
-    >
+    meta: Pick<IdentifierMetadataRecordProps, "displayName" | "theme">
   ): Promise<CreateIdentifierResult | undefined> {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
@@ -554,7 +547,6 @@ class IdentifierService extends AgentService {
     await this.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
-      colors: meta.colors,
       theme: meta.theme,
       signifyName,
       signifyOpName: res.op.name, //we save the signifyOpName here to sync the multisig's status later
@@ -683,7 +675,12 @@ class IdentifierService extends AgentService {
     metadata: Partial<
       Pick<
         IdentifierMetadataRecord,
-        "displayName" | "theme" | "isArchived" | "isPending" | "isDeleted"
+        | "displayName"
+        | "theme"
+        | "isArchived"
+        | "isPending"
+        | "isDeleted"
+        | "groupMetadata"
       >
     >
   ) {
@@ -699,6 +696,8 @@ class IdentifierService extends AgentService {
         metadata.isPending || identifierMetadataRecord.isPending;
       identifierMetadataRecord.isDeleted =
         metadata.isDeleted || identifierMetadataRecord.isDeleted;
+      identifierMetadataRecord.groupMetadata =
+        metadata.groupMetadata || identifierMetadataRecord.groupMetadata;
       const basicRecord = new BasicRecord({
         id: identifierMetadataRecord.id,
         content: identifierMetadataRecord.toJSON(),
