@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
 import {
   IonButton,
   IonCol,
@@ -21,18 +20,11 @@ import {
 import { i18n } from "../../../i18n";
 import { CredentialOptionsProps } from "./CredentialOptions.types";
 import "./CredentialOptions.scss";
-import { VerifyPassword } from "../VerifyPassword";
-import { Alert } from "../Alert";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getBackRoute } from "../../../routes/backRoute";
-import { TabsRoutePath } from "../../../routes/paths";
+import { useAppDispatch } from "../../../store/hooks";
 import {
-  getStateCache,
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { updateReduxState } from "../../../store/utils";
-import { VerifyPasscode } from "../VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../layout/PageLayout";
 import { writeToClipboard } from "../../utils/clipboard";
@@ -43,45 +35,15 @@ const CredentialOptions = ({
   setOptionsIsOpen,
   credsOptionAction,
 }: CredentialOptionsProps) => {
-  const stateCache = useAppSelector(getStateCache);
-  const history = useHistory();
   const [viewIsOpen, setViewIsOpen] = useState(false);
-  const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const dispatch = useAppDispatch();
 
   const handleCloseOptions = () => setOptionsIsOpen(false);
   const handleCloseView = () => setViewIsOpen(false);
-  const handleOpenAlert = () => setAlertIsOpen(true);
   const handleDelete = () => {
     handleCloseView();
     handleCloseOptions();
-    handleOpenAlert();
-  };
-
-  const handleDone = () => {
-    const { backPath, updateRedux } = getBackRoute(
-      TabsRoutePath.CREDENTIAL_DETAILS,
-      {
-        store: { stateCache },
-      }
-    );
-
-    updateReduxState(
-      backPath.pathname,
-      { store: { stateCache } },
-      dispatch,
-      updateRedux
-    );
-    history.push(TabsRoutePath.CREDENTIALS);
-  };
-
-  const verifyAction = () => {
-    handleCloseView();
-    handleCloseOptions();
     credsOptionAction();
-    handleDone();
   };
 
   return (
@@ -226,40 +188,6 @@ const CredentialOptions = ({
           )}
         </div>
       </IonModal>
-      <Alert
-        isOpen={alertIsOpen}
-        setIsOpen={setAlertIsOpen}
-        dataTestId="alert-confirm"
-        headerText={i18n.t("credentials.details.alert.archive.title")}
-        confirmButtonText={`${i18n.t(
-          "credentials.details.alert.archive.confirm"
-        )}`}
-        cancelButtonText={`${i18n.t(
-          "credentials.details.alert.archive.cancel"
-        )}`}
-        actionConfirm={() => {
-          if (
-            !stateCache?.authentication.passwordIsSkipped &&
-            stateCache?.authentication.passwordIsSet
-          ) {
-            setVerifyPasswordIsOpen(true);
-          } else {
-            setVerifyPasscodeIsOpen(true);
-          }
-        }}
-        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-      />
-      <VerifyPassword
-        isOpen={verifyPasswordIsOpen}
-        setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={verifyAction}
-      />
-      <VerifyPasscode
-        isOpen={verifyPasscodeIsOpen}
-        setIsOpen={setVerifyPasscodeIsOpen}
-        onVerify={verifyAction}
-      />
     </>
   );
 };

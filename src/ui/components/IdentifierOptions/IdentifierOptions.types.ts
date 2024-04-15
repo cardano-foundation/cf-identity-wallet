@@ -5,7 +5,7 @@ interface IdentifierOptionsProps {
   setOptionsIsOpen: (value: boolean) => void;
   cardData: IdentifierFullDetails;
   setCardData: (value: IdentifierFullDetails) => void;
-  handleDeleteIdentifier: () => Promise<void>;
+  handleDeleteIdentifier: () => void;
 }
 
 export type { IdentifierOptionsProps };
