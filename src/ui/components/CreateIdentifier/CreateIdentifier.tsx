@@ -6,12 +6,14 @@ import { IdentifierStage0 } from "./components/IdentifierStage0";
 import { IdentifierStage1 } from "./components/IdentifierStage1";
 import { IdentifierStage2 } from "./components/IdentifierStage2";
 import { IdentifierStage3 } from "./components/IdentifierStage3";
+import { IdentifierStage4 } from "./components/IdentifierStage4";
 
 const stages = [
   IdentifierStage0,
   IdentifierStage1,
   IdentifierStage2,
   IdentifierStage3,
+  IdentifierStage4,
 ];
 
 const CreateIdentifier = ({
@@ -26,6 +28,7 @@ const CreateIdentifier = ({
     selectedTheme: 0,
     threshold: 1,
     selectedConnections: [],
+    initialised: false,
   };
   const [state, setState] = useState(initialState);
   const [blur, setBlur] = useState(false);

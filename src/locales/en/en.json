@@ -987,6 +987,12 @@
     "title": "Add an identifier",
     "cancel": "Cancel",
     "back": "Back",
+    "done": "Done",
+    "share": {
+      "title": "Share identifier",
+      "subtitle": "Before proceeding, please make sure that everyone you want to include as a signer scans this QR code.",
+      "footnote": "After everyone has scanned your QR code, please be sure to scan everyone else's QR code as well."
+    },
     "connections": {
       "title": "Connections",
       "subtitle": "Select the connections you want to sign this identifier with",

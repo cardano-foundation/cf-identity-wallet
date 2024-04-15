@@ -19,7 +19,7 @@ import {
 import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 
-const IdentifierStage4 = ({
+const IdentifierStage3 = ({
   state,
   setState,
   componentId,
@@ -58,8 +58,6 @@ const IdentifierStage4 = ({
           id: identifier,
           displayName: state.displayNameValue,
           createdAtUTC: new Date().toISOString(),
-          // @TODO - sdisalvo: Colors will need to be removed
-          colors: ["#000000", "#000000"],
           theme: state.selectedTheme,
           isPending: state.threshold >= 2,
           signifyName,
@@ -129,7 +127,7 @@ const IdentifierStage4 = ({
                 onClick={() =>
                   setState((prevState: IdentifierStageProps) => ({
                     ...prevState,
-                    identifierCreationStage: 0,
+                    identifierCreationStage: 1,
                   }))
                 }
               />
@@ -220,4 +218,4 @@ const IdentifierStage4 = ({
   );
 };
 
-export { IdentifierStage4 };
+export { IdentifierStage3 };

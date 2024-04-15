@@ -1,36 +1,60 @@
-import { IonButton, IonIcon } from "@ionic/react";
-import { addOutline, removeOutline } from "ionicons/icons";
+import {
+  IonSearchbar,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonCheckbox,
+} from "@ionic/react";
+import { useEffect, useState } from "react";
 import { i18n } from "../../../../i18n";
 import { PageFooter } from "../../PageFooter";
 import { PageHeader } from "../../PageHeader";
-import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
+import { IdentifierStageProps } from "../CreateIdentifier.types";
+import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
+import { useAppSelector } from "../../../../store/hooks";
+import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
+import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 
 const IdentifierStage2 = ({
   state,
   setState,
   componentId,
 }: IdentifierStageProps) => {
-  const updateThreshold = (amount: number) => {
-    const newThreshold = state.threshold + amount;
+  const connectionsCache = useAppSelector(getConnectionsCache);
+  const [selectedConnections, setSelectedConnections] = useState<
+    ConnectionShortDetails[]
+  >(state.selectedConnections);
+  const [sortedConnections, setSortedConnections] = useState<
+    ConnectionShortDetails[]
+  >([]);
 
-    if (
-      newThreshold < 1 ||
-      newThreshold > state.selectedConnections.length + 1
-    ) {
-      return;
+  useEffect(() => {
+    if (connectionsCache.length) {
+      const sortedConnections = [...connectionsCache].sort(function (a, b) {
+        const textA = a.label.toUpperCase();
+        const textB = b.label.toUpperCase();
+        return textA < textB ? -1 : textA > textB ? 1 : 0;
+      });
+      setSortedConnections(sortedConnections);
     }
+  }, [connectionsCache, setState]);
 
-    setState((prevState: IdentifierStageProps) => ({
-      ...prevState,
-      threshold: newThreshold,
-    }));
+  const handleSelectConnection = (connection: ConnectionShortDetails) => {
+    let data = selectedConnections;
+    if (data.find((item) => item === connection)) {
+      data = data.filter((item) => item !== connection);
+    } else {
+      data = [...selectedConnections, connection];
+    }
+    setSelectedConnections(data);
   };
 
   const handleContinue = () => {
     setState((prevState: IdentifierStageProps) => ({
       ...prevState,
       identifierCreationStage: 3,
+      selectedConnections: selectedConnections,
     }));
   };
 
@@ -41,60 +65,60 @@ const IdentifierStage2 = ({
         header={
           <PageHeader
             closeButton={true}
-            closeButtonLabel={`${i18n.t("createidentifier.back")}`}
             closeButtonAction={() => {
               setState((prevState: IdentifierStageProps) => ({
                 ...prevState,
-                threshold: 1,
                 identifierCreationStage: 1,
+                selectedConnections: [],
               }));
             }}
-            title={`${i18n.t("createidentifier.threshold.title")}`}
+            closeButtonLabel={`${i18n.t("createidentifier.back")}`}
+            title={`${i18n.t("createidentifier.connections.title")}`}
           />
         }
       >
         <p className="multisig-subtitle">
-          {i18n.t("createidentifier.threshold.subtitle")}
+          {i18n.t("createidentifier.connections.subtitle")}
         </p>
-        <div className="identifier-threshold">
-          <div className="identifier-threshold-title">
-            {i18n.t("createidentifier.threshold.label")}
-          </div>
-          <div className="identifier-threshold-items">
-            <div className="identifier-threshold-amount">{state.threshold}</div>
-            <div className="identifier-threshold-controls">
-              <IonButton
-                shape="round"
-                className="decrease-threshold-button"
-                data-testid="decrease-threshold-button"
-                onClick={() => updateThreshold(-1)}
+        <IonSearchbar
+          placeholder={`${i18n.t("createidentifier.connections.search")}`}
+        />
+        <IonList>
+          {sortedConnections.map((connection, index) => {
+            return (
+              <IonItem
+                key={index}
+                onClick={() => handleSelectConnection(connection)}
+                className={`${
+                  selectedConnections.includes(connection) &&
+                  "selected-connection"
+                }`}
               >
-                <IonIcon
-                  slot="icon-only"
-                  icon={removeOutline}
-                  color="primary"
-                />
-              </IonButton>
-              <IonButton
-                shape="round"
-                className="increase-threshold-button"
-                data-testid="increase-threshold-button"
-                onClick={() => updateThreshold(1)}
-              >
-                <IonIcon
-                  slot="icon-only"
-                  icon={addOutline}
-                  color="primary"
-                />
-              </IonButton>
-            </div>
-          </div>
-        </div>
+                <IonLabel className="connection-item">
+                  <img
+                    src={connection?.logo || KeriLogo}
+                    className="connection-logo"
+                    data-testid="identifier-stage-1-logo"
+                    alt="connection-logo"
+                  />
+                  <span className="connection-name">{connection.label}</span>
+                  <IonCheckbox
+                    checked={selectedConnections.includes(connection)}
+                    data-testid={`connection-checkbox-${index}`}
+                    onIonChange={() => handleSelectConnection(connection)}
+                    aria-label=""
+                  />
+                </IonLabel>
+              </IonItem>
+            );
+          })}
+        </IonList>
       </ScrollablePageLayout>
       <PageFooter
         pageId={componentId}
-        primaryButtonText={`${i18n.t("createidentifier.threshold.continue")}`}
+        primaryButtonText={`${i18n.t("createidentifier.connections.continue")}`}
         primaryButtonAction={() => handleContinue()}
+        primaryButtonDisabled={!selectedConnections.length}
       />
     </>
   );

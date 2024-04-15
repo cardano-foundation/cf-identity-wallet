@@ -1,125 +1,85 @@
-import {
-  IonSearchbar,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonCheckbox,
-} from "@ionic/react";
 import { useEffect, useState } from "react";
+import { QRCode } from "react-qrcode-logo";
 import { i18n } from "../../../../i18n";
-import { PageFooter } from "../../PageFooter";
 import { PageHeader } from "../../PageHeader";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
 import { useAppSelector } from "../../../../store/hooks";
 import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
-import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
+import { ResponsivePageLayout } from "../../layout/ResponsivePageLayout";
+import { getStateCache } from "../../../../store/reducers/stateCache";
+import { Agent } from "../../../../core/agent/agent";
 
 const IdentifierStage1 = ({
   state,
   setState,
   componentId,
+  resetModal,
 }: IdentifierStageProps) => {
-  const connectionsCache = useAppSelector(getConnectionsCache);
-  const [selectedConnections, setSelectedConnections] = useState<
-    ConnectionShortDetails[]
-  >(state.selectedConnections);
-  const [sortedConnections, setSortedConnections] = useState<
-    ConnectionShortDetails[]
-  >([]);
+  const stateCache = useAppSelector(getStateCache);
+  const userName = stateCache.authentication.userName;
+  const [oobi, setOobi] = useState("");
+  const identifierId = "";
+  const nameFromPreferences = "";
+  const groupIdFromIdentifier = "";
 
   useEffect(() => {
-    if (connectionsCache.length) {
-      const sortedConnections = [...connectionsCache].sort(function (a, b) {
-        const textA = a.label.toUpperCase();
-        const textB = b.label.toUpperCase();
-        return textA < textB ? -1 : textA > textB ? 1 : 0;
-      });
-      setSortedConnections(sortedConnections);
-    }
-  }, [connectionsCache, setState]);
+    const fetchOobi = async () => {
+      const oobiValue = await Agent.agent.connections.getKeriOobi(
+        identifierId,
+        nameFromPreferences,
+        groupIdFromIdentifier
+      );
+      if (oobiValue) {
+        setOobi(oobiValue);
+      }
+    };
+    fetchOobi();
+  }, [signifyName, userName]);
 
-  const handleSelectConnection = (connection: ConnectionShortDetails) => {
-    let data = selectedConnections;
-    if (data.find((item) => item === connection)) {
-      data = data.filter((item) => item !== connection);
-    } else {
-      data = [...selectedConnections, connection];
-    }
-    setSelectedConnections(data);
-  };
-
-  const handleContinue = () => {
-    setState((prevState: IdentifierStageProps) => ({
-      ...prevState,
-      identifierCreationStage: 2,
-      selectedConnections: selectedConnections,
-    }));
+  const handleDone = () => {
+    // setState((prevState: IdentifierStageProps) => ({
+    //   ...prevState,
+    //   identifierCreationStage: 2,
+    //   selectedConnections: selectedConnections,
+    // }));
+    // TODO: Save the identifier to the state cache and reset the modal
+    resetModal && resetModal();
   };
 
   return (
     <>
-      <ScrollablePageLayout
+      <ResponsivePageLayout
         pageId={componentId + "-content"}
         header={
           <PageHeader
             closeButton={true}
-            closeButtonAction={() => {
-              setState((prevState: IdentifierStageProps) => ({
-                ...prevState,
-                identifierCreationStage: 0,
-                selectedConnections: [],
-              }));
-            }}
-            closeButtonLabel={`${i18n.t("createidentifier.back")}`}
-            title={`${i18n.t("createidentifier.connections.title")}`}
+            closeButtonAction={handleDone}
+            closeButtonLabel={`${i18n.t("createidentifier.done")}`}
+            title={`${i18n.t("createidentifier.share.title")}`}
           />
         }
       >
         <p className="multisig-subtitle">
-          {i18n.t("createidentifier.connections.subtitle")}
+          {i18n.t("createidentifier.share.subtitle")}
         </p>
-        <IonSearchbar
-          placeholder={`${i18n.t("createidentifier.connections.search")}`}
+        <QRCode
+          value={oobi}
+          size={250}
+          fgColor={"black"}
+          bgColor={"white"}
+          qrStyle={"squares"}
+          logoImage={""} // Optional - leaving as a reminder for possible future customisation
+          logoWidth={60}
+          logoHeight={60}
+          logoOpacity={1}
+          quietZone={10}
         />
-        <IonList>
-          {sortedConnections.map((connection, index) => {
-            return (
-              <IonItem
-                key={index}
-                onClick={() => handleSelectConnection(connection)}
-                className={`${
-                  selectedConnections.includes(connection) &&
-                  "selected-connection"
-                }`}
-              >
-                <IonLabel className="connection-item">
-                  <img
-                    src={connection?.logo || KeriLogo}
-                    className="connection-logo"
-                    data-testid="identifier-stage-1-logo"
-                    alt="connection-logo"
-                  />
-                  <span className="connection-name">{connection.label}</span>
-                  <IonCheckbox
-                    checked={selectedConnections.includes(connection)}
-                    data-testid={`connection-checkbox-${index}`}
-                    onIonChange={() => handleSelectConnection(connection)}
-                    aria-label=""
-                  />
-                </IonLabel>
-              </IonItem>
-            );
-          })}
-        </IonList>
-      </ScrollablePageLayout>
-      <PageFooter
-        pageId={componentId}
-        primaryButtonText={`${i18n.t("createidentifier.connections.continue")}`}
-        primaryButtonAction={() => handleContinue()}
-        primaryButtonDisabled={!selectedConnections.length}
-      />
+        <p className="multisig-subtitle">
+          {i18n.t("createidentifier.share.footnote")}
+        </p>
+      </ResponsivePageLayout>
     </>
   );
 };
