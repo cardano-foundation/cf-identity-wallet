@@ -19,7 +19,7 @@ import {
 import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 
-const IdentifierStage3 = ({
+const IdentifierStage4 = ({
   state,
   setState,
   componentId,
@@ -218,4 +218,4 @@ const IdentifierStage3 = ({
   );
 };
 
-export { IdentifierStage3 };
+export { IdentifierStage4 };

@@ -19,6 +19,8 @@ const stages = [
 const CreateIdentifier = ({
   modalIsOpen,
   setModalIsOpen,
+  resumeMultiSig,
+  setResumeMultiSig,
 }: CreateIdentifierProps) => {
   const componentId = "create-identifier-modal";
   const initialState = {
@@ -29,6 +31,14 @@ const CreateIdentifier = ({
     threshold: 1,
     selectedConnections: [],
     initialised: false,
+    newIdentifier: {
+      id: "",
+      displayName: "",
+      createdAtUTC: "",
+      theme: 0,
+      isPending: false,
+      signifyName: "",
+    },
   };
   const [state, setState] = useState(initialState);
   const [blur, setBlur] = useState(false);
@@ -45,9 +55,12 @@ const CreateIdentifier = ({
     setBlur(false);
     setModalIsOpen(false);
     setState(initialState);
+    setResumeMultiSig && setResumeMultiSig(null);
   };
 
-  const CurrentStage = stages[state.identifierCreationStage];
+  const CurrentStage = resumeMultiSig
+    ? IdentifierStage1
+    : stages[state.identifierCreationStage];
 
   return (
     <IonModal
@@ -69,6 +82,7 @@ const CreateIdentifier = ({
         componentId={componentId}
         resetModal={resetModal}
         setBlur={setBlur}
+        resumeMultiSig={resumeMultiSig}
       />
     </IonModal>
   );

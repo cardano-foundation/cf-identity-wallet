@@ -1,8 +1,11 @@
+import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
 import { ConnectionShortDetails } from "../../pages/Connections/Connections.types";
 
 interface CreateIdentifierProps {
   modalIsOpen: boolean;
   setModalIsOpen: (value: boolean) => void;
+  resumeMultiSig?: IdentifierShortDetails | null;
+  setResumeMultiSig?: (value: IdentifierShortDetails | null) => void;
 }
 
 interface TypeItemProps {
@@ -30,11 +33,13 @@ interface IdentifierStageProps {
     selectedTheme: number;
     threshold: number;
     selectedConnections: ConnectionShortDetails[];
+    newIdentifier: IdentifierShortDetails;
   };
   setState: (value: any) => void;
   componentId: string;
   setBlur?: (value: boolean) => void;
   resetModal: () => void;
+  resumeMultiSig?: IdentifierShortDetails | null;
 }
 
 export type {

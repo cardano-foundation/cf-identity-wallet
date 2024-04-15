@@ -6,7 +6,7 @@ import { PageHeader } from "../../PageHeader";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 
-const IdentifierStage2 = ({
+const IdentifierStage3 = ({
   state,
   setState,
   componentId,
@@ -100,4 +100,4 @@ const IdentifierStage2 = ({
   );
 };
 
-export { IdentifierStage2 };
+export { IdentifierStage3 };

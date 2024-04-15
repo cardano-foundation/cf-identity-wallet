@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
+import { IonButton, IonIcon } from "@ionic/react";
+import { scanOutline } from "ionicons/icons";
 import { i18n } from "../../../../i18n";
 import { PageHeader } from "../../PageHeader";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
@@ -16,19 +18,21 @@ const IdentifierStage1 = ({
   setState,
   componentId,
   resetModal,
+  resumeMultiSig,
 }: IdentifierStageProps) => {
   const stateCache = useAppSelector(getStateCache);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
-  const identifierId = "";
-  const nameFromPreferences = "";
-  const groupIdFromIdentifier = "";
+  const identifierId = resumeMultiSig?.id || state.newIdentifier.id;
+  const groupIdFromIdentifier =
+    resumeMultiSig?.groupMetadata?.groupId ||
+    state.newIdentifier.groupMetadata?.groupId;
 
   useEffect(() => {
     const fetchOobi = async () => {
       const oobiValue = await Agent.agent.connections.getKeriOobi(
         identifierId,
-        nameFromPreferences,
+        userName,
         groupIdFromIdentifier
       );
       if (oobiValue) {
@@ -36,7 +40,7 @@ const IdentifierStage1 = ({
       }
     };
     fetchOobi();
-  }, [signifyName, userName]);
+  }, [userName]);
 
   const handleDone = () => {
     // setState((prevState: IdentifierStageProps) => ({
@@ -79,6 +83,18 @@ const IdentifierStage1 = ({
         <p className="multisig-subtitle">
           {i18n.t("createidentifier.share.footnote")}
         </p>
+        <div className="share-identifier-scan-button">
+          <IonButton
+            shape="round"
+            color={"primary-gradient"}
+            onClick={() => console.log("Scan button clicked")}
+          >
+            <IonIcon
+              slot="icon-only"
+              icon={scanOutline}
+            />
+          </IonButton>
+        </div>
       </ResponsivePageLayout>
     </>
   );

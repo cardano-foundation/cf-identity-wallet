@@ -71,6 +71,14 @@ describe("Render Identifier Stage", () => {
             selectedTheme: 1,
             threshold: 1,
             selectedConnections: [],
+            newIdentifier: {
+              id: "",
+              displayName: "",
+              createdAtUTC: "",
+              theme: 0,
+              isPending: false,
+              signifyName: "",
+            },
           }}
           resetModal={jest.fn()}
           setState={jest.fn()}
@@ -100,6 +108,14 @@ describe("Render Identifier Stage", () => {
                 logo: "",
               },
             ],
+            newIdentifier: {
+              id: "",
+              displayName: "",
+              createdAtUTC: "",
+              theme: 0,
+              isPending: false,
+              signifyName: "",
+            },
           }}
           resetModal={jest.fn()}
           setState={jest.fn()}

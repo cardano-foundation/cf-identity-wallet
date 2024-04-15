@@ -648,7 +648,8 @@
       "create": "Add an identifier",
       "favourites": "Favourites",
       "allidentifiers": "All identifiers",
-      "pendingidentifiers": "Pending identifiers"
+      "pendingidentifiers": "Pending identifiers",
+      "multisigidentifiers": "For multiple signers"
     },
     "layout": {
       "created": "CREATED"
