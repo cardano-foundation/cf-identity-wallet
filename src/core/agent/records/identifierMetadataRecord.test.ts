@@ -9,6 +9,9 @@ const mockData: IdentifierMetadataRecordProps = {
   isArchived: true,
   theme: 0,
   signifyName: "Test",
+  delegated: {
+    delegatePrefix: "delegatePrefix",
+  },
 };
 
 describe("Identifier Record", () => {
@@ -26,6 +29,9 @@ describe("Identifier Record", () => {
     expect(settingsRecord.isArchived).toBe(mockData.isArchived);
     expect(settingsRecord.getTags()).toMatchObject({
       isArchived: mockData.isArchived,
+    });
+    expect(settingsRecord.delegated).toEqual({
+      delegatePrefix: "delegatePrefix",
     });
   });
 

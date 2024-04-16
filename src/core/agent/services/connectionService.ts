@@ -10,6 +10,8 @@ import {
   ConnectionShortDetails,
   ConnectionStatus,
   KeriContact,
+  OOBIScan,
+  ScanOOBIRes,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { Agent } from "../agent";
@@ -45,7 +47,7 @@ class ConnectionService extends AgentService {
     );
   }
 
-  async receiveInvitationFromUrl(url: string): Promise<void> {
+  async receiveInvitationFromUrl(url: string): Promise<ScanOOBIRes> {
     this.eventService.emit<ConnectionKeriStateChangedEvent>({
       type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
       payload: {
@@ -105,13 +107,19 @@ class ConnectionService extends AgentService {
       }
     }
 
-    return this.eventService.emit<ConnectionKeriStateChangedEvent>({
+    await this.eventService.emit<ConnectionKeriStateChangedEvent>({
       type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
       payload: {
         connectionId: operation.response.i,
         status: ConnectionStatus.CONFIRMED,
       },
     });
+    return new URL(url).searchParams.get("delegated")
+      ? {
+        oobiType: OOBIScan.Delegated,
+        delegatePrefix: "TODO", // TODO: must recheck when confirmed with Fergal
+      }
+      : { oobiType: OOBIScan.Aid };
   }
 
   async getConnections(): Promise<ConnectionShortDetails[]> {
@@ -195,10 +203,30 @@ class ConnectionService extends AgentService {
     return this.basicStorage.deleteById(connectionNoteId);
   }
 
-  async getKeriOobi(signifyName: string, alias?: string): Promise<string> {
-    const result = await this.signifyClient.oobis().get(signifyName);
+  async getKeriOobi(identifier: string, alias?: string): Promise<string> {
+    const metadata = await this.identifierStorage.getIdentifierMetadata(
+      identifier
+    );
+    const result = await this.signifyClient.oobis().get(metadata.signifyName);
     const oobi = result.oobis[0];
-    return alias ? `${oobi}?name=${encodeURIComponent(alias)}` : oobi;
+    const encodedParams: Record<string, string> = {};
+    if (alias) {
+      encodedParams["name"] = alias;
+    }
+    if (metadata.delegated) {
+      encodedParams["delegated"] = "true";
+    }
+    return Object.keys(encodedParams).length > 0
+      ? `${oobi}?${Object.keys(encodedParams)
+        .map(function (key) {
+          return (
+            encodeURIComponent(key) +
+              "=" +
+              encodeURIComponent(encodedParams[key])
+          );
+        })
+        .join("&")}`
+      : oobi;
   }
 
   private async createConnectionKeriMetadata(
