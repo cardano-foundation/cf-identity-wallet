@@ -24,6 +24,7 @@ import {
   ConnectionType,
   ConnectionStatus,
   GenericRecordType,
+  IpexMessageDetails,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { KeriContact } from "../modules/signify/signifyApi.types";
@@ -484,6 +485,20 @@ class ConnectionService extends AgentService {
     });
   }
 
+  private async getLinkedIPEXMessageByConnectionId(
+    connectionId: string
+  ): Promise<IpexMessageDetails[]> {
+    const messages = await this.agent.genericRecords.findAllByQuery({
+      connectionId,
+      type: GenericRecordType.IPEX_MESSAGE,
+    });
+    return messages.map((message: any) => {
+      return {
+        id: message.id,
+        content: message.content,
+      };
+    });
+  }
   private async getConnectionDetails(
     connection: ConnectionRecord,
     outOfBandRecord?: OutOfBandRecord
@@ -527,6 +542,9 @@ class ConnectionService extends AgentService {
       ).createdAt.toISOString(),
       serviceEndpoints: [connection.oobi],
       notes: await this.getConnectNotesByConnectionId(connection.id),
+      linkedIpexMessages: await this.getLinkedIPEXMessageByConnectionId(
+        connection.id
+      ),
     };
   }
 

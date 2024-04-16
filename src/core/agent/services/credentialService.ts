@@ -11,6 +11,7 @@ import {
   JsonLdCredentialDetailFormat,
   W3cJsonLdVerifiableCredential,
   JsonObject,
+  utils,
 } from "@aries-framework/core";
 import {
   KeriNotification,
@@ -19,6 +20,7 @@ import {
   AcdcKeriEventTypes,
   ConnectionType,
   CredentialType,
+  IpexMessages,
 } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
 import { AgentService } from "./agentService";
@@ -440,7 +442,22 @@ class CredentialService extends AgentService {
       msg.exn.i,
       pickedCred
     );
+    await this.createLinkedIpexMessageRecord(msg.exn.i, msg);
     await this.deleteKeriNotificationRecordById(id);
+  }
+
+  private async createLinkedIpexMessageRecord(
+    connectionId: string,
+    message: IpexMessages
+  ): Promise<void> {
+    await this.agent.genericRecords.save({
+      id: utils.uuid(),
+      content: message,
+      tags: {
+        connectionId,
+        type: GenericRecordType.IPEX_MESSAGE,
+      },
+    });
   }
 
   async grantApplyAcdc(id: string) {
@@ -469,12 +486,14 @@ class CredentialService extends AgentService {
     if (!holderSignifyName) {
       throw new Error(CredentialService.AID_NOT_FOUND);
     }
-
     await this.agent.modules.signify.grantAcdc(
       holderSignifyName,
       msg.exn.i,
       pickedCred.acdc
     );
+    // Save the IPEX message that is linked to the sender connection
+    await this.createLinkedIpexMessageRecord(msg.exn.i, msg);
+
     await this.deleteKeriNotificationRecordById(id);
   }
 
@@ -630,6 +649,9 @@ class CredentialService extends AgentService {
       credentialId,
       cred
     );
+    // Save the IPEX message that is linked to the sender connection
+    await this.createLinkedIpexMessageRecord(keriExchange.exn.i, keriExchange);
+
     await this.deleteKeriNotificationRecordById(id);
     this.agent.events.emit<AcdcKeriStateChangedEvent>(this.agent.context, {
       type: AcdcKeriEventTypes.AcdcKeriStateChanged,

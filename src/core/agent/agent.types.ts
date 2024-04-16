@@ -18,6 +18,7 @@ enum GenericRecordType {
   CONNECTION_NOTE = "connection-note",
   CONNECTION_KERI_METADATA = "connection-keri-metadata",
   NOTIFICATION_KERI = "notification-keri",
+  IPEX_MESSAGE = "ipex-message",
 }
 
 enum ConnectionHistoryType {
@@ -63,6 +64,31 @@ type ConnectionNoteDetails = {
   message: string;
 };
 
+type IpexMessages = {
+  exn: {
+    v: string;
+    t: string;
+    d: string;
+    i: string;
+    p: string;
+    dt: string;
+    r: string;
+    q: any;
+    a: any;
+    e: any;
+  };
+  pathed: {
+    acdc: string;
+    iss: string;
+    anc: string;
+  };
+};
+
+type IpexMessageDetails = {
+  id: string;
+  content: IpexMessages;
+};
+
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 
 interface ConnectionDetails extends ConnectionShortDetails {
@@ -71,6 +97,7 @@ interface ConnectionDetails extends ConnectionShortDetails {
   requestAttachments?: string[];
   serviceEndpoints?: string[];
   notes?: ConnectionNoteDetails[];
+  linkedIpexMessages?: IpexMessageDetails[];
 }
 
 enum CredentialType {
@@ -133,4 +160,6 @@ export type {
   ConnectionKeriStateChangedEvent,
   KeriNotification,
   AcdcKeriStateChangedEvent,
+  IpexMessages,
+  IpexMessageDetails,
 };

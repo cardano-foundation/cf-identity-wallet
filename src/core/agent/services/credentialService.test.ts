@@ -933,6 +933,7 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
         id: "id",
       });
     await credentialService.acceptKeriAcdc(id);
+    expect(agent.genericRecords.save).toBeCalled();
     expect(agent.events.emit).toBeCalled();
     expect(agent.genericRecords.deleteById).toBeCalled();
   });
@@ -1080,6 +1081,7 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       });
     await credentialService.offerAcdc(id);
     expect(agent.modules.signify.offerAcdc).toBeCalledWith("abc123", "i", {});
+    expect(agent.genericRecords.save).toBeCalled();
   });
 
   test("can not offer Keri Acdc if the acdc is not existed", async () => {
@@ -1185,6 +1187,7 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       });
     await credentialService.grantApplyAcdc(id);
     expect(agent.modules.signify.grantAcdc).toBeCalledWith("abc123", "i", {});
+    expect(agent.genericRecords.save).toBeCalled();
   });
 
   test("can not grant Keri Acdc if aid is not existed", async () => {
