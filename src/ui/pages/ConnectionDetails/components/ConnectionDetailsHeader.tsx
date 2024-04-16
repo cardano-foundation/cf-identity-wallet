@@ -15,8 +15,8 @@ const ConnectionDetailsHeader = ({
           alt="connection-logo"
         />
       </div>
-      <h2>{label}</h2>
-      <p>{formatShortDate(`${date}`)}</p>
+      <h2 data-testid="connection-name">{label}</h2>
+      <p data-testid="data-connection-time">{formatShortDate(`${date}`)}</p>
     </div>
   );
 };
