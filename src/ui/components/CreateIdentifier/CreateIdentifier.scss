@@ -58,13 +58,13 @@ ion-modal.create-identifier-modal {
       overflow: hidden;
     }
 
-    ion-title.md {
-      margin-left: -3rem;
-    }
-
     ion-content.scrollable-page-content > *:first-child {
       padding-top: 1rem;
     }
+  }
+
+  ion-title.md {
+    margin-left: -3rem;
   }
 
   .multisig-share-qr-code {

@@ -26,16 +26,21 @@ const IdentifierStage1 = ({
     state.newIdentifier.groupMetadata?.groupId;
 
   useEffect(() => {
-    const fetchOobi = async () => {
-      const oobiValue = await Agent.agent.connections.getKeriOobi(
-        signifyName,
-        userName,
-        groupId
-      );
-      if (oobiValue) {
-        setOobi(oobiValue);
+    async function fetchOobi() {
+      try {
+        const oobiValue = await Agent.agent.connections.getKeriOobi(
+          signifyName,
+          userName,
+          groupId
+        );
+        if (oobiValue) {
+          setOobi(oobiValue);
+        }
+      } catch (e) {
+        // @TODO - Error handling.
       }
-    };
+    }
+
     fetchOobi();
   }, [groupId, signifyName, userName]);
 
