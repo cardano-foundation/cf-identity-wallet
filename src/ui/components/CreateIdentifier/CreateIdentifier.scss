@@ -28,16 +28,6 @@ ion-modal.create-identifier-modal {
   .responsive-page-content {
     justify-content: space-evenly;
 
-    #react-qrcode-logo {
-      width: 70vw !important;
-      height: 70vw !important;
-      padding: 1.5rem;
-      margin: 1rem auto;
-      background-color: white;
-      box-shadow: 0px 2px 4px rgba(54, 60, 74, 0.2);
-      border-radius: 16px;
-    }
-
     .share-identifier-scan-button {
       text-align: center;
 
@@ -74,6 +64,57 @@ ion-modal.create-identifier-modal {
 
     ion-content.scrollable-page-content > *:first-child {
       padding-top: 1rem;
+    }
+  }
+
+  .multisig-share-qr-code {
+    text-align: center;
+
+    #react-qrcode-logo {
+      background-color: white;
+      box-shadow: 0px 2px 4px rgba(54, 60, 74, 0.2);
+    }
+
+    .multisig-share-qr-code-blur-overlay-container {
+      position: absolute;
+      left: calc(50% - 35vw);
+      box-shadow: 0px 2px 4px rgba(54, 60, 74, 0.2);
+
+      .multisig-share-qr-code-blur-overlay-inner {
+        display: none;
+      }
+    }
+
+    #react-qrcode-logo,
+    .multisig-share-qr-code-blur-overlay-container {
+      width: 70vw !important;
+      height: 70vw !important;
+      padding: 1.5rem;
+      margin: 1rem auto;
+      border-radius: 1rem;
+    }
+
+    &.blur {
+      #react-qrcode-logo {
+        filter: blur(0.5rem);
+        opacity: 0.3;
+      }
+
+      .multisig-share-qr-code-blur-overlay-inner {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+
+        ion-icon {
+          width: 5rem;
+          height: 5rem;
+          opacity: 1;
+          text-align: center;
+          margin: 0 auto;
+        }
+      }
     }
   }
 

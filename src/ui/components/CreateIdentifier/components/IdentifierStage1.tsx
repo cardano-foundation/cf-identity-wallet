@@ -1,21 +1,17 @@
 import { useEffect, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
 import { IonButton, IonIcon } from "@ionic/react";
-import { scanOutline } from "ionicons/icons";
+import { scanOutline, qrCodeOutline } from "ionicons/icons";
 import { i18n } from "../../../../i18n";
 import { PageHeader } from "../../PageHeader";
-import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
-import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
 import { useAppSelector } from "../../../../store/hooks";
-import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
 import { ResponsivePageLayout } from "../../layout/ResponsivePageLayout";
 import { getStateCache } from "../../../../store/reducers/stateCache";
 import { Agent } from "../../../../core/agent/agent";
 
 const IdentifierStage1 = ({
   state,
-  setState,
   componentId,
   resetModal,
   resumeMultiSig,
@@ -23,33 +19,32 @@ const IdentifierStage1 = ({
   const stateCache = useAppSelector(getStateCache);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
-  const identifierId = resumeMultiSig?.id || state.newIdentifier.id;
-  const groupIdFromIdentifier =
+  const signifyName =
+    resumeMultiSig?.signifyName || state.newIdentifier.signifyName;
+  const groupId =
     resumeMultiSig?.groupMetadata?.groupId ||
     state.newIdentifier.groupMetadata?.groupId;
 
   useEffect(() => {
     const fetchOobi = async () => {
       const oobiValue = await Agent.agent.connections.getKeriOobi(
-        identifierId,
+        signifyName,
         userName,
-        groupIdFromIdentifier
+        groupId
       );
       if (oobiValue) {
         setOobi(oobiValue);
       }
     };
     fetchOobi();
-  }, [userName]);
+  }, [groupId, signifyName, userName]);
 
   const handleDone = () => {
-    // setState((prevState: IdentifierStageProps) => ({
-    //   ...prevState,
-    //   identifierCreationStage: 2,
-    //   selectedConnections: selectedConnections,
-    // }));
-    // TODO: Save the identifier to the state cache and reset the modal
     resetModal && resetModal();
+  };
+
+  const handleScanButton = () => {
+    // TODO: scan button functionality
   };
 
   return (
@@ -68,18 +63,33 @@ const IdentifierStage1 = ({
         <p className="multisig-subtitle">
           {i18n.t("createidentifier.share.subtitle")}
         </p>
-        <QRCode
-          value={oobi}
-          size={250}
-          fgColor={"black"}
-          bgColor={"white"}
-          qrStyle={"squares"}
-          logoImage={""} // Optional - leaving as a reminder for possible future customisation
-          logoWidth={60}
-          logoHeight={60}
-          logoOpacity={1}
-          quietZone={10}
-        />
+        <div
+          className={`multisig-share-qr-code${
+            oobi.length ? " reveal" : " blur"
+          }`}
+          data-testid="multisig-share-qr-code"
+        >
+          <QRCode
+            value={oobi}
+            size={250}
+            fgColor={"black"}
+            bgColor={"white"}
+            qrStyle={"squares"}
+            logoImage={""}
+            logoWidth={60}
+            logoHeight={60}
+            logoOpacity={1}
+            quietZone={10}
+          />
+          <span className="multisig-share-qr-code-blur-overlay-container">
+            <span className="multisig-share-qr-code-blur-overlay-inner">
+              <IonIcon
+                slot="icon-only"
+                icon={qrCodeOutline}
+              />
+            </span>
+          </span>
+        </div>
         <p className="multisig-subtitle">
           {i18n.t("createidentifier.share.footnote")}
         </p>
@@ -87,7 +97,7 @@ const IdentifierStage1 = ({
           <IonButton
             shape="round"
             color={"primary-gradient"}
-            onClick={() => console.log("Scan button clicked")}
+            onClick={handleScanButton}
           >
             <IonIcon
               slot="icon-only"

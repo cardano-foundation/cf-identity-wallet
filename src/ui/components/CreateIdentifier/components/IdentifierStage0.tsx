@@ -97,6 +97,13 @@ const IdentifierStage0 = ({
         newIdentifier.groupMetadata = groupMetadata;
       }
       dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
+      if (state.selectedAidType !== 0) {
+        setState((prevState: IdentifierStageProps) => ({
+          ...prevState,
+          identifierCreationStage: 1,
+          newIdentifier,
+        }));
+      }
     }
   };
 
@@ -105,10 +112,6 @@ const IdentifierStage0 = ({
     setTimeout(async () => {
       await handleCreateIdentifier();
       if (state.selectedAidType !== 0) {
-        setState((prevState: IdentifierStageProps) => ({
-          ...prevState,
-          identifierCreationStage: 1,
-        }));
         setBlur && setBlur(false);
       } else {
         dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
