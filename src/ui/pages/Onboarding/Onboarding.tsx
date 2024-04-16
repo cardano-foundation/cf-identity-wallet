@@ -5,7 +5,10 @@ import { Slides } from "../../components/Slides";
 import { SlideItem } from "../../components/Slides/Slides.types";
 import { RoutePath } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
@@ -16,6 +19,8 @@ import introImg3 from "../../assets/images/intro-3.png";
 import introImg4 from "../../assets/images/intro-4.png";
 import { PageFooter } from "../../components/PageFooter";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { useIonViewWillEnter } from "@ionic/react";
+import { TabsRoutePath } from "../../../routes/paths";
 
 export type IntroImg0Type = typeof introImg0;
 
@@ -52,6 +57,10 @@ const Onboarding = () => {
       image: introImg4,
     },
   ];
+
+  useIonViewWillEnter(() => {
+    dispatch(setCurrentRoute({ path: RoutePath.ONBOARDING }));
+  });
 
   // @TODO - foconnor: This should be op: OperationType when available (non optional)
   const handleNavigation = (op?: string) => {

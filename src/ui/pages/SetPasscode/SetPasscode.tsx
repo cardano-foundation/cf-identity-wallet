@@ -44,6 +44,7 @@ const SetPasscode = () => {
                 RoutePath.SET_PASSCODE,
                 data
               );
+
               updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
               history.push(nextPath.pathname);
               handleClearState();

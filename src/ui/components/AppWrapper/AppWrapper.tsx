@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
+  AuthenticationCacheProps,
   getAuthentication,
   getRoutes,
   logout,
@@ -50,6 +51,7 @@ import { App } from "@capacitor/app";
 import { IonSpinner } from "@ionic/react";
 import { RoutePath } from "../../../routes";
 import { useHistory } from "react-router-dom";
+import { TabsRoutePath } from "../../../routes/paths";
 
 const connectionKeriStateChangedHandler = async (
   event: ConnectionKeriStateChangedEvent,
@@ -119,7 +121,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const history = useHistory();
   const authentication = useAppSelector(getAuthentication);
-  const routes = useAppSelector(getRoutes);
   const [initialised, setInitialised] = useState(false);
   const [agentInitErr, setAgentInitErr] = useState(false);
 
@@ -263,15 +264,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
   };
 
-  const handleInitialRoute = (initialized: boolean) => {
-    const noRoutes = !routes.length;
-    if (noRoutes && !initialized) {
-      history.push({
-        pathname: RoutePath.ONBOARDING,
-      });
-    }
-  };
-
   const initApp = async () => {
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
@@ -290,7 +282,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
 
     await loadPreferences();
-    handleInitialRoute(isInitialized?.initialized as boolean);
+    // handleInitialRoute(updatedAuthentication);
+
+    setInitialised(true);
 
     await new ConfigurationService().start();
     try {
@@ -315,8 +309,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.credentials.onAcdcKeriStateChanged((event) => {
       return keriAcdcChangeHandler(event, dispatch);
     });
-
-    setInitialised(true);
 
     const oldMessages = (
       await Promise.all([
@@ -362,7 +354,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }
 
   if (!initialised) {
-    //if (false) {
+    // if (false) {
     return (
       <div className="loading-page">
         <IonSpinner name="crescent" />

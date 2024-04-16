@@ -23,6 +23,7 @@ import { RoutePath } from "./paths";
 import { IdentifierDetails } from "../ui/pages/IdentifierDetails";
 import { CredentialDetails } from "../ui/pages/CredentialDetails";
 import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
+import { getNextRoute } from "./nextRoute";
 
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
@@ -44,6 +45,12 @@ const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
 };
 
 const Routes = () => {
+  const stateCache = useAppSelector(getStateCache);
+
+  const { nextPath } = getNextRoute(RoutePath.ROOT, {
+    store: { stateCache },
+  });
+
   return (
     <IonReactRouter>
       <IonRouterOutlet animated={false}>
@@ -117,8 +124,8 @@ const Routes = () => {
         />
         <Redirect
           exact
-          from="/"
-          to={TabsRoutePath.IDENTIFIERS}
+          from={RoutePath.ROOT}
+          to={nextPath}
         />
       </IonRouterOutlet>
     </IonReactRouter>
