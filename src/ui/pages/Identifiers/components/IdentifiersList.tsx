@@ -1,8 +1,5 @@
 import { IonItem, IonLabel, IonList } from "@ionic/react";
-import {
-  IdentifierShortDetails,
-  IdentifierType,
-} from "../../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
 import { IDENTIFIER_BG_MAPPING } from "../../../globals/types";
 import { i18n } from "../../../../i18n";
 import { formatShortDate } from "../../../utils/formatters";
@@ -52,11 +49,7 @@ const IdentifiersList = ({
                   className="identifier-info-bottom-line"
                   data-testid={`identifier-info-${index}`}
                 >
-                  {identifier.method === IdentifierType.KERI
-                    ? i18n.t("identifiers.tab.type.keri")
-                    : i18n.t("identifiers.tab.type.didkey")}
-                  {showDate &&
-                    "  •  " + formatShortDate(identifier.createdAtUTC)}
+                  {showDate && formatShortDate(identifier.createdAtUTC)}
                 </div>
               </div>
             </IonLabel>

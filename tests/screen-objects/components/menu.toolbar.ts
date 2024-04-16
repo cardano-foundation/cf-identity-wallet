@@ -1,7 +1,12 @@
 import { expect } from "expect-webdriverio";
-import { findAndClickElement } from "../base.screen.js";
+import {
+  findAndClickLocator,
+  findFilterAndClickElement,
+} from "../base.screen.js";
 
 export class MenuToolbar {
+  backArrowButtonLocator = "[data-testid=\"back-button\"]";
+
   get addButton() {
     return $("[data-testid=\"add-button\"]");
   }
@@ -14,14 +19,17 @@ export class MenuToolbar {
     return $(`[data-testid="menu-button-${screenLocator}"]`);
   }
 
-  async clickBackArrowIcon() {
-    await findAndClickElement("[data-testid=\"back-button\"]");
+  async clickBackArrowButtonOf(parent: string) {
+    await findAndClickLocator(`${parent} ${this.backArrowButtonLocator}`);
   }
 
-  async loads(screenLocator: string) {
+  async clickBackArrowIcon() {
+    await findFilterAndClickElement(this.backArrowButtonLocator);
+  }
+
+  async loads() {
     await expect(this.addButton).toBeDisplayed();
     await expect(this.connectionsButton).toBeDisplayed();
-    await expect(this.menusButton(screenLocator)).toBeDisplayed();
   }
 }
 

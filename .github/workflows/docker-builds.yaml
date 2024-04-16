@@ -1,0 +1,76 @@
+name: Build and publish docker artifacts
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    types: [ opened, synchronize ]
+  workflow_dispatch:
+
+env:
+  PRIVATE_DOCKER_REGISTRY_URL: ${{ secrets.GITLAB_DOCKER_REGISTRY_URL }}
+  PRIVATE_DOCKER_REGISTRY_USER: Deploy-Token
+  PRIVATE_DOCKER_REGISTRY_PASS: ${{ secrets.GITLAB_PKG_REGISTRY_TOKEN }}
+
+jobs:
+  publish:
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set extra environment and metadata
+        id: metadata
+        run: |
+          GIT_SHORT_COMMIT=$(git rev-parse --short "$GITHUB_SHA")
+          CURRENT_VERSION=$(jq -r .version package.json)
+
+          if [ ${{github.event_name}} == "pull_request" ]
+          then
+            PR_NUMBER=$(echo $GITHUB_REF | awk -F/ '{ print $3 }')
+            ARTIFACT_VERSION="${CURRENT_VERSION}-PR${PR_NUMBER}"
+            echo "ARTIFACT_VERSION=${ARTIFACT_VERSION}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+          else
+            BRANCH=${GITHUB_REF##*/}
+            echo "BRANCH=${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
+
+            ARTIFACT_VERSION=${CURRENT_VERSION}-${BRANCH}
+            echo "ARTIFACT_VERSION=${ARTIFACT_VERSION}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+          fi
+
+          echo "DOCKER_COMMIT_TAG=${ARTIFACT_VERSION}-${GIT_SHORT_COMMIT}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+          echo "DOCKER_COMMIT_GHRUNID_TAG=${ARTIFACT_VERSION}-${GIT_SHORT_COMMIT}-${GITHUB_RUN_ID}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+          
+          echo "EARTHLY_BUILD_ARGS=DOCKER_IMAGES_EXTRA_TAGS=${ARTIFACT_VERSION}-${GIT_SHORT_COMMIT} ${ARTIFACT_VERSION}-${GIT_SHORT_COMMIT}-${GITHUB_RUN_ID}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Docker Login (private registry)
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
+          username: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
+          password: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
+
+      - name: Docker Login (hub.docker.com)
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.HUB_DOCKER_COM_USER }}
+          password: ${{ secrets.HUB_DOCKER_COM_PASS }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - uses: earthly/actions-setup@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: "0.8.6"
+
+      - name: 🌍 earthly (docker build and push)
+        env:
+          EARTHLY_BUILD_ARGS: ${{ steps.metadata.outputs.EARTHLY_BUILD_ARGS }},DOCKER_REGISTRIES=${{ secrets.DOCKER_REGISTRIES }}
+        run: |
+          earthly +docker-publish

@@ -34,29 +34,24 @@ const PageLayout = ({
   return (
     <>
       {header && (
-        <IonHeader
-          translucent={true}
-          className="ion-no-border page-header"
-        >
-          <PageHeader
-            backButton={backButton}
-            beforeBack={beforeBack}
-            onBack={onBack}
-            currentPath={currentPath}
-            closeButton={closeButton}
-            closeButtonAction={closeButtonAction}
-            closeButtonLabel={closeButtonLabel}
-            actionButton={actionButton}
-            actionButtonDisabled={actionButtonDisabled}
-            actionButtonAction={actionButtonAction}
-            actionButtonLabel={actionButtonLabel}
-            actionButtonIcon={actionButtonIcon}
-            progressBar={progressBar}
-            progressBarValue={progressBarValue}
-            progressBarBuffer={progressBarBuffer}
-            title={title}
-          />
-        </IonHeader>
+        <PageHeader
+          backButton={backButton}
+          beforeBack={beforeBack}
+          onBack={onBack}
+          currentPath={currentPath}
+          closeButton={closeButton}
+          closeButtonAction={closeButtonAction}
+          closeButtonLabel={closeButtonLabel}
+          actionButton={actionButton}
+          actionButtonDisabled={actionButtonDisabled}
+          actionButtonAction={actionButtonAction}
+          actionButtonLabel={actionButtonLabel}
+          actionButtonIcon={actionButtonIcon}
+          progressBar={progressBar}
+          progressBarValue={progressBarValue}
+          progressBarBuffer={progressBarBuffer}
+          title={title}
+        />
       )}
 
       <IonContent>{children}</IonContent>

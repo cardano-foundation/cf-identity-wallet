@@ -14,8 +14,7 @@ import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
 import { useAppSelector } from "../../../../store/hooks";
 import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
-import CardanoLogo from "../../../assets/images/CardanoLogo.jpg";
-import { ConnectionType } from "../../../../core/agent/agent.types";
+import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 
 const IdentifierStage1 = ({
   state,
@@ -32,10 +31,7 @@ const IdentifierStage1 = ({
 
   useEffect(() => {
     if (connectionsCache.length) {
-      const keriConnections = connectionsCache.filter(
-        (connection) => connection.type === ConnectionType.KERI
-      );
-      const sortedConnections = [...keriConnections].sort(function (a, b) {
+      const sortedConnections = [...connectionsCache].sort(function (a, b) {
         const textA = a.label.toUpperCase();
         const textB = b.label.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;
@@ -100,17 +96,16 @@ const IdentifierStage1 = ({
               >
                 <IonLabel className="connection-item">
                   <img
-                    src={connection?.logo ?? CardanoLogo}
+                    src={connection?.logo || KeriLogo}
                     className="connection-logo"
+                    data-testid="identifier-stage-1-logo"
                     alt="connection-logo"
                   />
                   <span className="connection-name">{connection.label}</span>
                   <IonCheckbox
                     checked={selectedConnections.includes(connection)}
                     data-testid={`connection-checkbox-${index}`}
-                    onIonChange={() => {
-                      handleSelectConnection(connection);
-                    }}
+                    onIonChange={() => handleSelectConnection(connection)}
                     aria-label=""
                   />
                 </IonLabel>

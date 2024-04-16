@@ -1,5 +1,5 @@
 import { CredentialFilter, ready } from "signify-ts";
-import { utils } from "@aries-framework/core";
+import { v4 as uuidv4 } from "uuid";
 import { MultiSigRoute } from "./signifyApi.types";
 import { SignifyApi } from "./signifyApi";
 import { ConfigurationService } from "../../../configuration";
@@ -9,7 +9,7 @@ const secondAid = "aid2";
 const aidPrefix = "keri-";
 const witnessPrefix = "witness.";
 const uuidToThrow = "throwMe";
-const oobiPrefix = "oobi.";
+const oobiPrefix = "http://server.com/oobi/";
 
 let connectMock = jest.fn();
 const bootMock = jest.fn();
@@ -361,11 +361,10 @@ describe("Signify API", () => {
   });
 
   test("can create an identifier", async () => {
-    const mockName = "keriuuid";
-    jest.spyOn(utils, "uuid").mockReturnValue(mockName);
     const { signifyName, identifier } = await api.createIdentifier();
-    expect(signifyName).toBe(mockName);
-    expect(identifier).toBe(mockName);
+    // For now, we are using uuidv4 for signifyName
+    expect(signifyName).toEqual(expect.any(String));
+    expect(identifier).toEqual(expect.any(String));
   });
 
   test("can get identifier by name", async () => {
@@ -384,9 +383,8 @@ describe("Signify API", () => {
     expect(await api.getOobi(mockName)).toEqual(oobiPrefix + mockName);
   });
 
-  test("can resolve oobi", async () => {
-    const aid = "keriuuid";
-    const url = oobiPrefix + aid;
+  test("can resolve oobi with no name parameter", async () => {
+    const url = `${oobiPrefix}keriuuid`;
     const op = await api.resolveOobi(url);
     expect(op).toEqual({
       name: url,
@@ -395,11 +393,20 @@ describe("Signify API", () => {
     });
   });
 
+  test("can resolve oobi with a name parameter (URL decoded)", async () => {
+    const url = `${oobiPrefix}keriuuid?name=alias%20with%20spaces`;
+    const op = await api.resolveOobi(url);
+    expect(op).toEqual({
+      name: url,
+      alias: "alias with spaces",
+      done: true,
+    });
+  });
+
   test("should timeout if oobi resolving is not completing", async () => {
-    const url = oobiPrefix + uuidToThrow;
-    await expect(api.resolveOobi(url)).rejects.toThrowError(
-      SignifyApi.FAILED_TO_RESOLVE_OOBI
-    );
+    await expect(
+      api.resolveOobi(`${oobiPrefix}${uuidToThrow}`)
+    ).rejects.toThrowError(SignifyApi.FAILED_TO_RESOLVE_OOBI);
   });
 
   test("should get contacts successfully", async () => {
@@ -524,7 +531,7 @@ describe("Signify API", () => {
     const result = await api.createMultisig(
       aid,
       otherAids,
-      utils.uuid(),
+      uuidv4(),
       otherAids.length + 1
     );
     expect(result).toHaveProperty("op");
@@ -627,7 +634,7 @@ describe("Signify API", () => {
     const result = await api.createMultisig(
       aid,
       otherAids,
-      utils.uuid(),
+      uuidv4(),
       otherAids.length + 1,
       delegateAid
     );
@@ -640,7 +647,7 @@ describe("Signify API", () => {
     const result = await api.joinMultisig(
       multisigIcpExn,
       multisigMember,
-      utils.uuid()
+      uuidv4()
     );
     expect(result).toHaveProperty("op");
     expect(result).toHaveProperty("icpResult");
@@ -651,7 +658,7 @@ describe("Signify API", () => {
   test("should throw if we cannot retrieve smid states joining multisig", async () => {
     getKeyStateMock = jest.fn().mockResolvedValueOnce([]);
     await expect(
-      api.joinMultisig(multisigIcpExn, multisigMember, utils.uuid())
+      api.joinMultisig(multisigIcpExn, multisigMember, uuidv4())
     ).rejects.toThrowError(SignifyApi.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER);
   });
 
@@ -668,7 +675,7 @@ describe("Signify API", () => {
       .mockResolvedValueOnce(getKeyStateRet)
       .mockResolvedValue([]);
     await expect(
-      api.joinMultisig(multisigIcpExn, multisigMember, utils.uuid())
+      api.joinMultisig(multisigIcpExn, multisigMember, uuidv4())
     ).rejects.toThrowError(SignifyApi.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER);
   });
 
@@ -740,7 +747,7 @@ describe("Signify API", () => {
     const result = await api.rotateMultisigAid(
       multisigMember,
       otherAids,
-      utils.uuid()
+      uuidv4()
     );
     expect(result).toHaveProperty("op");
     expect(result).toHaveProperty("icpResult");
@@ -857,7 +864,7 @@ describe("Signify API", () => {
     const result = await api.joinMultisigRotation(
       exn,
       multisigMember,
-      utils.uuid()
+      uuidv4()
     );
     expect(result).toHaveProperty("op");
     expect(result).toHaveProperty("icpResult");
@@ -911,10 +918,10 @@ describe("Signify API", () => {
       },
     ];
     await expect(
-      api.createMultisig(multisigMember, otherAids, utils.uuid(), 5)
+      api.createMultisig(multisigMember, otherAids, uuidv4(), 5)
     ).rejects.toThrowError(SignifyApi.INVALID_THRESHOLD);
     await expect(
-      api.createMultisig(multisigMember, otherAids, utils.uuid(), 0)
+      api.createMultisig(multisigMember, otherAids, uuidv4(), 0)
     ).rejects.toThrowError(SignifyApi.INVALID_THRESHOLD);
   });
 });

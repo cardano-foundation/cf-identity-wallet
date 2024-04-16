@@ -10,8 +10,7 @@ import {
   updateOrAddCredsCache,
 } from "./credsCache";
 import { RootState } from "../../index";
-import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { ConnectionType } from "../../../core/agent/agent.types";
+import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../identifiersCache/identifiersCache.types";
 
@@ -32,9 +31,7 @@ describe("credsCacheSlice", () => {
         id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
         issuanceDate: "2010-01-01T19:23:24Z",
         credentialType: "University Credential",
-        colors: ["#FFBC60", "#FFA21F"],
         status: CredentialMetadataRecordStatus.CONFIRMED,
-        connectionType: ConnectionType.DIDCOMM,
       },
     ];
     const newState = credsCacheSlice.reducer(
@@ -49,9 +46,7 @@ describe("credsCacheSlice", () => {
       id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "University Credential",
-      colors: ["#FFBC60", "#FFA21F"],
       status: CredentialMetadataRecordStatus.CONFIRMED,
-      connectionType: ConnectionType.DIDCOMM,
     };
     const newState = credsCacheSlice.reducer(
       initialState,
@@ -67,17 +62,13 @@ describe("credsCacheSlice", () => {
       id: credId1,
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "University Credential",
-      colors: ["#FFBC60", "#FFA21F"],
       status: CredentialMetadataRecordStatus.PENDING,
-      connectionType: ConnectionType.DIDCOMM,
     };
     const cred2: CredentialShortDetails = {
       id: credId2,
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "University Credential",
-      colors: ["#FFBC60", "#FFA21F"],
       status: CredentialMetadataRecordStatus.PENDING,
-      connectionType: ConnectionType.DIDCOMM,
     };
     const updateCred: CredentialShortDetails = {
       ...cred1,
@@ -144,14 +135,12 @@ describe("get methods for CredsCache", () => {
             issuanceDate: "2010-01-01T19:23:24Z",
             credentialType: "University Credential",
             nameOnCredential: "Thomas A. Mayfield",
-            colors: ["#FFBC60", "#FFA21F"],
             status: "confirmed",
           },
           {
             id: "did:example:ebfeb1f712ebc6f1c276e12ec22",
             issuanceDate: "2010-01-01T19:23:24Z",
             credentialType: "University Credential",
-            colors: ["#FFBC60", "#FFA21F"],
             status: "confirmed",
           },
         ],

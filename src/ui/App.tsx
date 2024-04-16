@@ -1,5 +1,6 @@
-import { StrictMode, useEffect, useState } from "react";
-import { setupIonicReact, IonApp, IonToast } from "@ionic/react";
+import { StrictMode, useEffect, useMemo, useState } from "react";
+import { setupIonicReact, IonApp, getPlatforms } from "@ionic/react";
+import { StatusBar, Style } from "@capacitor/status-bar";
 import { Routes } from "../routes";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
@@ -7,28 +8,39 @@ import "./App.scss";
 import "./styles/smartphoneLayout.scss";
 import { AppWrapper } from "./components/AppWrapper";
 import {
+  getAuthentication,
   getCurrentOperation,
+  getCurrentRoute,
   getToastMsg,
-  setToastMsg,
 } from "../store/reducers/stateCache";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { useAppSelector } from "../store/hooks";
 import { FullPageScanner } from "./pages/FullPageScanner";
 import { OperationType } from "./globals/types";
-import { i18n } from "../i18n";
 import { IncomingRequest } from "./pages/IncomingRequest";
 import { Settings } from "./pages/Settings";
+import { SetUserName } from "./components/SetUserName";
+import { TabsRoutePath } from "../routes/paths";
+import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
+import { CustomToast } from "./components/CustomToast/CustomToast";
 
 setupIonicReact();
 
 const App = () => {
-  const dispatch = useAppDispatch();
+  const authentication = useAppSelector(getAuthentication);
+  const currentRoute = useAppSelector(getCurrentRoute);
+  const [showSetUserName, setShowSetUserName] = useState(false);
   const currentOperation = useAppSelector(getCurrentOperation);
   const toastMsg = useAppSelector(getToastMsg);
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
+  const isPreviewMode = useMemo(
+    () => new URLSearchParams(window.location.search).has("browserPreview"),
+    []
+  );
+
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).has("browserPreview")) {
+    if (isPreviewMode) {
       setupIonicReact({
         rippleEffect: false,
         mode: "ios",
@@ -39,12 +51,33 @@ const App = () => {
       sidePanel.classList.add("side-panel");
       document?.querySelector("body")?.appendChild(sidePanel);
     }
-  }, []);
+  }, [isPreviewMode]);
 
   useEffect(() => {
     setShowScan(currentOperation === OperationType.SCAN_CONNECTION);
     setShowToast(toastMsg !== undefined);
   }, [currentOperation, toastMsg]);
+
+  useEffect(() => {
+    if (
+      authentication.userName?.length === 0 &&
+      currentRoute?.path?.includes(TabsRoutePath.ROOT)
+    ) {
+      setShowSetUserName(true);
+    }
+  }, [authentication, currentRoute]);
+
+  useEffect(() => {
+    const platforms = getPlatforms();
+    const isIosAppPlatform =
+      platforms.includes("ios") && !platforms.includes("mobileweb");
+
+    if (isIosAppPlatform) {
+      StatusBar.setStyle({
+        style: Style.Light,
+      });
+    }
+  }, []);
 
   return (
     <IonApp>
@@ -53,24 +86,21 @@ const App = () => {
           {showScan ? (
             <FullPageScanner setShowScan={setShowScan} />
           ) : (
-            <Routes />
+            <>
+              {isPreviewMode && <MobileHeaderPreview />}
+              <Routes />
+            </>
           )}
-
+          <SetUserName
+            isOpen={showSetUserName}
+            setIsOpen={setShowSetUserName}
+          />
           <IncomingRequest />
           <Settings />
-          <IonToast
-            isOpen={showToast}
-            onDidDismiss={() => {
-              setShowToast(false);
-              dispatch(setToastMsg());
-            }}
-            message={
-              toastMsg ? `${i18n.t("toast." + toastMsg.toLowerCase())}` : ""
-            }
-            color="secondary"
-            position="top"
-            cssClass="confirmation-toast"
-            duration={1500}
+          <CustomToast
+            toastMsg={toastMsg}
+            showToast={showToast}
+            setShowToast={setShowToast}
           />
         </StrictMode>
       </AppWrapper>

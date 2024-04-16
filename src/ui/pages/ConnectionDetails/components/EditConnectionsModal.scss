@@ -6,6 +6,12 @@
   .modal {
     border-radius: 0;
 
+    .page-header {
+      ion-toolbar {
+        --background: transparent;
+      }
+    }
+
     .close-button-label,
     .action-button-label {
       margin: 0;
@@ -23,21 +29,30 @@
     }
 
     .action-button-label {
-      color: var(--ion-color-action-blue) !important;
+      & > p {
+        color: var(--ion-color-action-blue) !important;
+      }
     }
 
     .connection-details-info-block {
       margin-top: 1.5rem;
       padding-bottom: 10rem;
+      color: var(--ion-color-secondary);
 
       h3 {
         margin-bottom: 2.94rem;
+        margin-left: 1.25rem;
+        font-weight: 500;
+        color: var(--ion-color-secondary);
       }
     }
 
     .connection-details-info-block-inner {
       position: relative;
       margin-bottom: 2.94rem;
+      padding: 1.25rem;
+      border-radius: 1rem;
+      background-color: white;
 
       .connection-details-delete-note {
         position: absolute;
@@ -94,7 +109,7 @@
       }
 
       ion-input {
-        margin-bottom: 1.56rem;
+        margin-bottom: 1.5rem;
       }
     }
 
@@ -136,6 +151,31 @@
     .close-button-label,
     .close-button-label.md {
       font-size: 1rem;
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .modal {
+      .connection-details-info-block {
+        h3 {
+          font-size: 0.8rem;
+          margin-bottom: 1.75rem;
+        }
+      }
+
+      .connection-details-info-block-title {
+        font-size: 0.8rem;
+
+        span:last-child {
+          font-size: 0.775rem;
+          font-weight: 400;
+        }
+      }
+
+      ion-input,
+      ion-textarea {
+        font-size: 0.8rem;
+      }
     }
   }
 }

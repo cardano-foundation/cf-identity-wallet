@@ -5,7 +5,7 @@ import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { Identifiers } from "./Identifiers";
 import { TabsRoutePath } from "../../../routes/paths";
-import { IdentifierCardDetails } from "../IdentifierCardDetails";
+import { IdentifierDetails } from "../IdentifierDetails";
 import {
   CLEAR_STATE_DELAY,
   NAVIGATION_DELAY,
@@ -16,7 +16,7 @@ import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       identifiers: {
         getIdentifier: jest.fn().mockResolvedValue({}),
@@ -79,7 +79,9 @@ describe("Identifiers Tab", () => {
       </Provider>
     );
 
-    expect(getByText(EN_TRANSLATIONS.creds.tab.favourites)).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.identifiers.tab.favourites)
+    ).toBeInTheDocument();
   });
 
   test("Renders Identifiers Tab and all elements in it", () => {
@@ -135,7 +137,7 @@ describe("Identifiers Tab", () => {
           />
           <Route
             path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </Provider>
       </MemoryRouter>
@@ -143,7 +145,7 @@ describe("Identifiers Tab", () => {
 
     expect(
       getByText(
-        filteredIdentifierFix[0].id.substring(8, 13) +
+        filteredIdentifierFix[0].id.substring(0, 5) +
           "..." +
           filteredIdentifierFix[0].id.slice(-5)
       )
@@ -156,9 +158,7 @@ describe("Identifiers Tab", () => {
       jest.advanceTimersByTime(NAVIGATION_DELAY);
     });
 
-    expect(
-      getByText(EN_TRANSLATIONS.identifiers.card.details.done)
-    ).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.identifiers.details.done)).toBeVisible();
 
     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
 

@@ -58,6 +58,59 @@
     }
   }
 
+  &.cards-identifier-nav {
+    .identifier-favourite-cards {
+      animation: indentifierFavouriteCardResize 0.25s ease;
+      animation-fill-mode: forwards;
+
+      @keyframes indentifierFavouriteCardResize {
+        from {
+          opacity: 0;
+          overflow: hidden;
+          margin-top: 0;
+        }
+        to {
+          opacity: 0;
+          height: 0;
+          overflow: hidden;
+          margin: 0;
+        }
+      }
+    }
+
+    .identifier-cards {
+      h3 {
+        display: none;
+      }
+    }
+  }
+
+  &.favorite-identifier-nav {
+    .identifier-cards {
+      display: none;
+    }
+
+    .identifier-favourite-cards {
+      h3 {
+        animation: indentifierFavouriteCardHeaderResize 0.25s ease;
+        animation-fill-mode: forwards;
+
+        @keyframes indentifierFavouriteCardHeaderResize {
+          from {
+            opacity: 0;
+            overflow: hidden;
+            height: 1.25rem;
+          }
+          to {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+          }
+        }
+      }
+    }
+  }
+
   @media screen and (min-width: 250px) and (max-width: 370px) {
     .identifiers-tab-content-block {
       margin-bottom: 1.6rem;
@@ -85,61 +138,6 @@
             .identifier-info-bottom-line {
               font-size: 0.7rem;
             }
-          }
-        }
-      }
-    }
-  }
-}
-
-.identifier-tab {
-  &.cards-identifier-nav {
-    .identifier-favourite-cards {
-      animation: indentifierFavouriteCardResize 0.25s ease;
-      animation-fill-mode: forwards;
-
-      @keyframes indentifierFavouriteCardResize {
-        from {
-          opacity: 0;
-          overflow: hidden;
-          margin-top: 0;
-        }
-        to {
-          opacity: 0;
-          height: 0;
-          overflow: hidden;
-        }
-      }
-    }
-
-    .identifier-cards {
-      h3 {
-        display: none;
-      }
-    }
-  }
-
-  &.favorite-identifier-nav {
-    .identifier-cards {
-      display: none;
-    }
-
-    .identifier-favourite-cards {
-      h3 {
-        animation: indentifierFavouriteCardHeaderResize 0.25s ease;
-        animation-fill-mode: forwards;
-
-        @keyframes indentifierFavouriteCardHeaderResize {
-          from {
-            opacity: 0;
-            overflow: hidden;
-            margin-top: 0;
-            height: 1.25rem;
-          }
-          to {
-            opacity: 0;
-            height: 0;
-            overflow: hidden;
           }
         }
       }

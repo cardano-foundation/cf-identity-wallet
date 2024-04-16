@@ -1,12 +1,12 @@
-import { findAndClickElement } from "../base.screen.js";
+import { findAndClickLocator } from "../base.screen.js";
 
 export class AlertModal {
-  async clickCancelButton() {
-    await findAndClickElement("#cancel-alert-button");
+  async clickCancelButtonOf(parent: string) {
+    await findAndClickLocator(`${parent} #cancel-alert-button`);
   }
 
-  async clickConfirmButton() {
-    await findAndClickElement("#confirm-alert-button");
+  async clickConfirmButtonOf(parent: string) {
+    await findAndClickLocator(`${parent} #confirm-alert-button`);
   }
 }
 

@@ -11,7 +11,7 @@ import { hourglassOutline } from "ionicons/icons";
 import { ConnectionStatus } from "../../../../core/agent/agent.types";
 import { formatShortDate } from "../../../utils/formatters";
 import { ConnectionItemProps } from "../Connections.types";
-import CardanoLogo from "../../../../ui/assets/images/CardanoLogo.jpg";
+import KeriLogo from "../../../../ui/assets/images/KeriGeneric.jpg";
 
 const ConnectionItem = ({
   item,
@@ -26,7 +26,7 @@ const ConnectionItem = ({
             className="connection-logo"
           >
             <img
-              src={item?.logo ?? CardanoLogo}
+              src={item?.logo || KeriLogo}
               alt="connection-logo"
             />
           </IonCol>

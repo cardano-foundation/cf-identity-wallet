@@ -5,6 +5,8 @@ import { NotificationRoute } from "../modules/signify/signifyApi.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { RecordType } from "../../storage/storage.types";
 class SignifyNotificationService extends AgentService {
+  static readonly KERI_NOTIFICATION_NOT_FOUND =
+    "Keri notification record not found";
   async onNotificationKeriStateChanged(
     callback: (event: KeriNotification) => void
   ) {
@@ -36,9 +38,7 @@ class SignifyNotificationService extends AgentService {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const startFetchingIndex =
-        notificationQuery.nextIndex > 0
-          ? notificationQuery.nextIndex - 1
-          : notificationQuery.nextIndex;
+        notificationQuery.nextIndex > 0 ? notificationQuery.nextIndex - 1 : 0;
 
       const notifications = await this.signifyApi.getNotifications(
         startFetchingIndex,
@@ -46,7 +46,8 @@ class SignifyNotificationService extends AgentService {
       );
       if (
         notificationQuery.nextIndex > 0 &&
-        notifications.notes[0].i !== notificationQuery.lastNotificationId
+        (notifications.notes.length == 0 ||
+          notifications.notes[0].i !== notificationQuery.lastNotificationId)
       ) {
         /**This is to verify no notifications were deleted for some reason (which affects the batch range) */
         notificationQuery = {
@@ -68,10 +69,11 @@ class SignifyNotificationService extends AgentService {
       }
       if (notifications.notes.length) {
         const nextNotificationIndex =
-          startFetchingIndex + notifications.notes.length;
+          notificationQuery.nextIndex + notifications.notes.length;
         notificationQuery = {
           nextIndex: nextNotificationIndex,
-          lastNotificationId: notifications.notes[nextNotificationIndex - 1].i,
+          lastNotificationId:
+            notifications.notes[notifications.notes.length - 1].i,
         };
         await PreferencesStorage.set(
           PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER,
@@ -114,6 +116,7 @@ class SignifyNotificationService extends AgentService {
       content: event.a,
       type: RecordType.NOTIFICATION_KERI,
       tags: {
+        isDismissed: false,
         type: RecordType.NOTIFICATION_KERI,
         route: event.a.r,
       },
@@ -123,6 +126,26 @@ class SignifyNotificationService extends AgentService {
       createdAt: result.createdAt,
       a: result.content,
     };
+  }
+
+  async dismissNotification(notificationId: string) {
+    const notificationRecord = await this.basicStorage.findById(notificationId);
+    if (!notificationRecord) {
+      throw new Error(SignifyNotificationService.KERI_NOTIFICATION_NOT_FOUND);
+    }
+    notificationRecord.setTag("isDismissed", true);
+    await this.basicStorage.update(notificationRecord);
+  }
+
+  /**This allow us to get all dismissed notifications */
+  async getDismissedNotifications() {
+    const notifications = await this.basicStorage.findAllByQuery(
+      RecordType.NOTIFICATION_KERI,
+      {
+        isDismissed: true,
+      }
+    );
+    return notifications;
   }
 }
 

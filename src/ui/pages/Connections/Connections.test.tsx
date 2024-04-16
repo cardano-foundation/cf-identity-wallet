@@ -2,17 +2,16 @@ import { mockIonicReact } from "@ionic/react-test-utils";
 mockIonicReact();
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { OutOfBandInvitation, OutOfBandRecord } from "@aries-framework/core";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { Connections } from "./Connections";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { formatShortDate } from "../../utils/formatters";
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       connections: {
         createMediatorInvitation: jest.fn(),
@@ -26,7 +25,7 @@ const mockSetShowConnections = jest.fn();
 
 const initialStateFull = {
   stateCache: {
-    routes: [TabsRoutePath.CREDS],
+    routes: [TabsRoutePath.CREDENTIALS],
     authentication: {
       loggedIn: true,
       time: Date.now(),
@@ -101,16 +100,16 @@ describe("Connections page", () => {
   });
 
   test.skip("It renders QR code successfully", async () => {
-    jest
-      .spyOn(AriesAgent.agent.connections, "createMediatorInvitation")
-      .mockResolvedValue({
-        invitationUrl: "http://example.com?oob=abc123",
-        record: {} as OutOfBandRecord,
-        invitation: {} as OutOfBandInvitation,
-      });
-    jest
-      .spyOn(AriesAgent.agent.connections, "getShortenUrl")
-      .mockResolvedValue("http://example.com/shorten/123");
+    // jest
+    //   .spyOn(Agent.agent.connections, "createMediatorInvitation")
+    //   .mockResolvedValue({
+    //     invitationUrl: "http://example.com?oob=abc123",
+    //     record: {} as OutOfBandRecord,
+    //     invitation: {} as OutOfBandInvitation,
+    //   });
+    // jest
+    //   .spyOn(Agent.agent.connections, "getShortenUrl")
+    //   .mockResolvedValue("http://example.com/shorten/123");
     const { getByText, getByTestId } = render(
       <Provider store={mockedStore}>
         <Connections

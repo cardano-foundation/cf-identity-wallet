@@ -6,7 +6,7 @@
   font-size: 0.875rem;
   line-height: 1.375rem;
 
-  &.active:not(:first-child):hover {
+  &.active:not(:first-child).picked-card {
     // @TODO - foconnor: We should avoid this - animating with top.
     position: absolute;
     top: 0rem !important;
@@ -15,7 +15,7 @@
     box-shadow: none;
   }
 
-  &.active:not(:hover) {
+  &.active.not-picked {
     transform: translate3d(0, 100vh, 0);
     transition: 0.5s ease-out;
   }
@@ -127,10 +127,6 @@
     font-size: 0.75rem;
     line-height: 1.169rem;
 
-    &.active:not(:first-child):hover {
-      top: 0rem !important;
-    }
-
     &:not(:first-child) {
       margin-top: -8.8rem;
     }
@@ -193,6 +189,14 @@
           font-size: 0.744rem;
         }
       }
+    }
+  }
+
+  @media screen and (min-width: 480px) {
+    height: 15.375rem;
+
+    &:not(:first-child) {
+      margin-top: -12rem;
     }
   }
 }
