@@ -48,10 +48,10 @@
 
 | **User Interface**    |  **Private Key Storage**  |  **Standards & Protocols** |  **SSI Services**   |           
 |----------------|---------------|---------------|----------------|
-|  Intuitive User Experience |  Hardware Security Module (HSM)   | [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) | [KERIA](https://github.com/cardano-foundation/keria) | 
-|  Android  |  Secure Enclave (SE) | [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) |  [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
-| iOS |  | [KERI](https://keri.one/) |  [Credential Issuance Modules](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  |   | 
-|  |  | [CESR](https://weboftrust.github.io/ietf-cesr/draft-ssmith-cesr.html) | [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) |
+|  Intuitive User Experience |  Hardware Security Module (HSM)   | [KERI](https://keri.one/) | [KERIA](https://github.com/cardano-foundation/keria) | 
+|  Android  |  Secure Enclave (SE) | [ACDC](https://trustoverip.github.io/tswg-acdc-specification/) |  [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
+| iOS |  | [CESR](https://weboftrust.github.io/ietf-cesr/draft-ssmith-cesr.html) |  [Credential Issuance Modules](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  |   | 
+|  |  | | [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) |
 
 
 # Potential Future Developments
