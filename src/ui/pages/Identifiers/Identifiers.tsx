@@ -77,11 +77,16 @@ const Identifiers = () => {
   const [pendingIdentifiers, setPendingIdentifiers] = useState<
     IdentifierShortDetails[]
   >([]);
+  const [multiSigIdentifiers, setMultiSigIdentifiers] = useState<
+    IdentifierShortDetails[]
+  >([]);
   const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [showConnections, setShowConnections] = useState(false);
   const [toggleClick, setToggleClick] = useState(false);
+  const [resumeMultiSig, setResumeMultiSig] =
+    useState<IdentifierShortDetails | null>(null);
   const [navAnimation, setNavAnimation] =
     useState<StartAnimationSource>("none");
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
@@ -100,6 +105,7 @@ const Identifiers = () => {
     setAllIdentifiers(
       identifiersData
         .filter((identifier) => !identifier.isPending)
+        .filter((identifier) => !identifier.groupMetadata?.groupId)
         .filter(
           (identifier) =>
             !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
@@ -107,6 +113,9 @@ const Identifiers = () => {
     );
     setPendingIdentifiers(
       identifiersData.filter((identifier) => identifier.isPending)
+    );
+    setMultiSigIdentifiers(
+      identifiersData.filter((identifier) => identifier.groupMetadata?.groupId)
     );
   }, [favouritesIdentifiers, identifiersData, toggleClick]);
 
@@ -144,6 +153,11 @@ const Identifiers = () => {
     }
   };
 
+  const handleMultiSigClick = async (identifier: IdentifierShortDetails) => {
+    setResumeMultiSig(identifier);
+    setCreateIdentifierModalIsOpen(true);
+  };
+
   const handleShowNavAnimation = (source: StartAnimationSource) => {
     if (favouriteContainerElement.current && source !== "favourite") {
       favouriteContainerElement.current.style.height =
@@ -164,8 +178,8 @@ const Identifiers = () => {
     navAnimation === "cards"
       ? "cards-identifier-nav"
       : navAnimation === "favourite"
-        ? "favorite-identifier-nav"
-        : ""
+      ? "favorite-identifier-nav"
+      : ""
   }`;
 
   return (
@@ -226,6 +240,18 @@ const Identifiers = () => {
                 />
               </div>
             )}
+            {!!multiSigIdentifiers.length && (
+              <div className="identifiers-tab-content-block">
+                <h3>{i18n.t("identifiers.tab.multisigidentifiers")}</h3>
+                <IdentifiersList
+                  identifiers={multiSigIdentifiers}
+                  showDate={true}
+                  handleClick={async (identifier) =>
+                    handleMultiSigClick(identifier)
+                  }
+                />
+              </div>
+            )}
             {!!pendingIdentifiers.length && (
               <div className="identifiers-tab-content-block">
                 <h3>{i18n.t("identifiers.tab.pendingidentifiers")}</h3>
@@ -246,6 +272,8 @@ const Identifiers = () => {
         setModalIsOpen={(isOpen: boolean) =>
           setCreateIdentifierModalIsOpen(isOpen)
         }
+        resumeMultiSig={resumeMultiSig}
+        setResumeMultiSig={setResumeMultiSig}
       />
     </>
   );

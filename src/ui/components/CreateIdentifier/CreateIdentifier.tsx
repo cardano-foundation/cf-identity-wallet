@@ -6,17 +6,21 @@ import { IdentifierStage0 } from "./components/IdentifierStage0";
 import { IdentifierStage1 } from "./components/IdentifierStage1";
 import { IdentifierStage2 } from "./components/IdentifierStage2";
 import { IdentifierStage3 } from "./components/IdentifierStage3";
+import { IdentifierStage4 } from "./components/IdentifierStage4";
 
 const stages = [
   IdentifierStage0,
   IdentifierStage1,
   IdentifierStage2,
   IdentifierStage3,
+  IdentifierStage4,
 ];
 
 const CreateIdentifier = ({
   modalIsOpen,
   setModalIsOpen,
+  resumeMultiSig,
+  setResumeMultiSig,
 }: CreateIdentifierProps) => {
   const componentId = "create-identifier-modal";
   const initialState = {
@@ -26,6 +30,15 @@ const CreateIdentifier = ({
     selectedTheme: 0,
     threshold: 1,
     selectedConnections: [],
+    initialised: false,
+    newIdentifier: {
+      id: "",
+      displayName: "",
+      createdAtUTC: "",
+      theme: 0,
+      isPending: false,
+      signifyName: "",
+    },
   };
   const [state, setState] = useState(initialState);
   const [blur, setBlur] = useState(false);
@@ -42,9 +55,12 @@ const CreateIdentifier = ({
     setBlur(false);
     setModalIsOpen(false);
     setState(initialState);
+    setResumeMultiSig && setResumeMultiSig(null);
   };
 
-  const CurrentStage = stages[state.identifierCreationStage];
+  const CurrentStage = resumeMultiSig
+    ? IdentifierStage1
+    : stages[state.identifierCreationStage];
 
   return (
     <IonModal
@@ -60,13 +76,16 @@ const CreateIdentifier = ({
           <IonSpinner name="circular" />
         </div>
       )}
-      <CurrentStage
-        state={state}
-        setState={setState}
-        componentId={componentId}
-        resetModal={resetModal}
-        setBlur={setBlur}
-      />
+      {modalIsOpen && (
+        <CurrentStage
+          state={state}
+          setState={setState}
+          componentId={componentId}
+          resetModal={resetModal}
+          setBlur={setBlur}
+          resumeMultiSig={resumeMultiSig}
+        />
+      )}
     </IonModal>
   );
 };

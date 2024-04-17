@@ -25,6 +25,30 @@ ion-modal.create-identifier-modal {
     background: rgba(3, 3, 33, 0.2);
   }
 
+  .responsive-page-content {
+    justify-content: space-evenly;
+
+    .share-identifier-scan-button {
+      text-align: center;
+
+      ion-button {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 1.875rem;
+
+        &::part(native) {
+          padding: 0;
+        }
+
+        ion-icon {
+          width: 1.5rem;
+          height: 1.5rem;
+          color: var(--ion-color-secondary);
+        }
+      }
+    }
+  }
+
   .scrollable-page-layout {
     &:not(.keyboard-is-open) {
       padding-bottom: 4rem;
@@ -34,12 +58,63 @@ ion-modal.create-identifier-modal {
       overflow: hidden;
     }
 
-    ion-title.md {
-      margin-left: -3rem;
-    }
-
     ion-content.scrollable-page-content > *:first-child {
       padding-top: 1rem;
+    }
+  }
+
+  ion-title.md {
+    margin-left: -3rem;
+  }
+
+  .multisig-share-qr-code {
+    text-align: center;
+
+    #react-qrcode-logo {
+      background-color: white;
+      box-shadow: 0px 2px 4px rgba(54, 60, 74, 0.2);
+    }
+
+    .multisig-share-qr-code-blur-overlay-container {
+      position: absolute;
+      left: calc(50% - 35vw);
+      box-shadow: 0px 2px 4px rgba(54, 60, 74, 0.2);
+
+      .multisig-share-qr-code-blur-overlay-inner {
+        display: none;
+      }
+    }
+
+    #react-qrcode-logo,
+    .multisig-share-qr-code-blur-overlay-container {
+      width: 70vw !important;
+      height: 70vw !important;
+      padding: 1.5rem;
+      margin: 0.8rem auto;
+      border-radius: 1rem;
+    }
+
+    &.blur {
+      #react-qrcode-logo {
+        filter: blur(0.5rem);
+        opacity: 0.3;
+      }
+
+      .multisig-share-qr-code-blur-overlay-inner {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+
+        ion-icon {
+          width: 5rem;
+          height: 5rem;
+          opacity: 1;
+          text-align: center;
+          margin: 0 auto;
+        }
+      }
     }
   }
 
@@ -156,6 +231,7 @@ ion-modal.create-identifier-modal {
 
     .multisig-subtitle {
       text-align: center;
+      padding: 0 2.5rem;
     }
 
     ion-searchbar {
@@ -433,6 +509,25 @@ ion-modal.create-identifier-modal {
     .scrollable-page-layout {
       &:not(.keyboard-is-open) {
         padding-bottom: 3rem;
+      }
+    }
+
+    .responsive-page-content,
+    .scrollable-page-content {
+      p.multisig-subtitle {
+        padding: 0 2rem;
+      }
+
+      #react-qrcode-logo,
+      .multisig-share-qr-code-blur-overlay-container {
+        width: 68vw !important;
+        height: 68vw !important;
+        padding: 1.2rem;
+        margin: 0.5rem auto;
+      }
+
+      .multisig-share-qr-code-blur-overlay-container {
+        left: calc(50% - 34vw);
       }
     }
 

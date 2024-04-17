@@ -97,23 +97,27 @@ const IdentifierStage0 = ({
         newIdentifier.groupMetadata = groupMetadata;
       }
       dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
-      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
-      resetModal && resetModal();
+      if (state.selectedAidType !== 0) {
+        setState((prevState: IdentifierStageProps) => ({
+          ...prevState,
+          identifierCreationStage: 1,
+          newIdentifier,
+        }));
+      }
     }
   };
 
   const handleContinue = async () => {
-    if (state.selectedAidType !== 0) {
-      setState((prevState: IdentifierStageProps) => ({
-        ...prevState,
-        identifierCreationStage: 1,
-      }));
-    } else {
-      setBlur && setBlur(true);
-      setTimeout(async () => {
-        await handleCreateIdentifier();
-      }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
-    }
+    setBlur && setBlur(true);
+    setTimeout(async () => {
+      await handleCreateIdentifier();
+      if (state.selectedAidType !== 0) {
+        setBlur && setBlur(false);
+      } else {
+        dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
+        resetModal && resetModal();
+      }
+    }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
   };
 
   return (

@@ -1,125 +1,116 @@
-import {
-  IonSearchbar,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonCheckbox,
-} from "@ionic/react";
 import { useEffect, useState } from "react";
+import { QRCode } from "react-qrcode-logo";
+import { IonButton, IonIcon } from "@ionic/react";
+import { scanOutline, qrCodeOutline } from "ionicons/icons";
 import { i18n } from "../../../../i18n";
-import { PageFooter } from "../../PageFooter";
 import { PageHeader } from "../../PageHeader";
-import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
-import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
 import { useAppSelector } from "../../../../store/hooks";
-import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
-import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
+import { ResponsivePageLayout } from "../../layout/ResponsivePageLayout";
+import { getStateCache } from "../../../../store/reducers/stateCache";
+import { Agent } from "../../../../core/agent/agent";
 
 const IdentifierStage1 = ({
   state,
-  setState,
   componentId,
+  resetModal,
+  resumeMultiSig,
 }: IdentifierStageProps) => {
-  const connectionsCache = useAppSelector(getConnectionsCache);
-  const [selectedConnections, setSelectedConnections] = useState<
-    ConnectionShortDetails[]
-  >(state.selectedConnections);
-  const [sortedConnections, setSortedConnections] = useState<
-    ConnectionShortDetails[]
-  >([]);
+  const stateCache = useAppSelector(getStateCache);
+  const userName = stateCache.authentication.userName;
+  const [oobi, setOobi] = useState("");
+  const signifyName =
+    resumeMultiSig?.signifyName || state.newIdentifier.signifyName;
+  const groupId =
+    resumeMultiSig?.groupMetadata?.groupId ||
+    state.newIdentifier.groupMetadata?.groupId;
 
   useEffect(() => {
-    if (connectionsCache.length) {
-      const sortedConnections = [...connectionsCache].sort(function (a, b) {
-        const textA = a.label.toUpperCase();
-        const textB = b.label.toUpperCase();
-        return textA < textB ? -1 : textA > textB ? 1 : 0;
-      });
-      setSortedConnections(sortedConnections);
+    async function fetchOobi() {
+      try {
+        const oobiValue = await Agent.agent.connections.getKeriOobi(
+          signifyName,
+          userName,
+          groupId
+        );
+        if (oobiValue) {
+          setOobi(oobiValue);
+        }
+      } catch (e) {
+        // @TODO - Error handling.
+      }
     }
-  }, [connectionsCache, setState]);
 
-  const handleSelectConnection = (connection: ConnectionShortDetails) => {
-    let data = selectedConnections;
-    if (data.find((item) => item === connection)) {
-      data = data.filter((item) => item !== connection);
-    } else {
-      data = [...selectedConnections, connection];
-    }
-    setSelectedConnections(data);
+    fetchOobi();
+  }, [groupId, signifyName, userName]);
+
+  const handleDone = () => {
+    resetModal && resetModal();
   };
 
-  const handleContinue = () => {
-    setState((prevState: IdentifierStageProps) => ({
-      ...prevState,
-      identifierCreationStage: 2,
-      selectedConnections: selectedConnections,
-    }));
+  const handleScanButton = () => {
+    // TODO: scan button functionality
   };
 
   return (
     <>
-      <ScrollablePageLayout
+      <ResponsivePageLayout
         pageId={componentId + "-content"}
         header={
           <PageHeader
             closeButton={true}
-            closeButtonAction={() => {
-              setState((prevState: IdentifierStageProps) => ({
-                ...prevState,
-                identifierCreationStage: 0,
-                selectedConnections: [],
-              }));
-            }}
-            closeButtonLabel={`${i18n.t("createidentifier.back")}`}
-            title={`${i18n.t("createidentifier.connections.title")}`}
+            closeButtonAction={handleDone}
+            closeButtonLabel={`${i18n.t("createidentifier.done")}`}
+            title={`${i18n.t("createidentifier.share.title")}`}
           />
         }
       >
         <p className="multisig-subtitle">
-          {i18n.t("createidentifier.connections.subtitle")}
+          {i18n.t("createidentifier.share.subtitle")}
         </p>
-        <IonSearchbar
-          placeholder={`${i18n.t("createidentifier.connections.search")}`}
-        />
-        <IonList>
-          {sortedConnections.map((connection, index) => {
-            return (
-              <IonItem
-                key={index}
-                onClick={() => handleSelectConnection(connection)}
-                className={`${
-                  selectedConnections.includes(connection) &&
-                  "selected-connection"
-                }`}
-              >
-                <IonLabel className="connection-item">
-                  <img
-                    src={connection?.logo || KeriLogo}
-                    className="connection-logo"
-                    data-testid="identifier-stage-1-logo"
-                    alt="connection-logo"
-                  />
-                  <span className="connection-name">{connection.label}</span>
-                  <IonCheckbox
-                    checked={selectedConnections.includes(connection)}
-                    data-testid={`connection-checkbox-${index}`}
-                    onIonChange={() => handleSelectConnection(connection)}
-                    aria-label=""
-                  />
-                </IonLabel>
-              </IonItem>
-            );
-          })}
-        </IonList>
-      </ScrollablePageLayout>
-      <PageFooter
-        pageId={componentId}
-        primaryButtonText={`${i18n.t("createidentifier.connections.continue")}`}
-        primaryButtonAction={() => handleContinue()}
-        primaryButtonDisabled={!selectedConnections.length}
-      />
+        <div
+          className={`multisig-share-qr-code${
+            oobi.length ? " reveal" : " blur"
+          }`}
+          data-testid="multisig-share-qr-code"
+        >
+          <QRCode
+            value={oobi}
+            size={250}
+            fgColor={"black"}
+            bgColor={"white"}
+            qrStyle={"squares"}
+            logoImage={""}
+            logoWidth={60}
+            logoHeight={60}
+            logoOpacity={1}
+            quietZone={10}
+          />
+          <span className="multisig-share-qr-code-blur-overlay-container">
+            <span className="multisig-share-qr-code-blur-overlay-inner">
+              <IonIcon
+                slot="icon-only"
+                icon={qrCodeOutline}
+              />
+            </span>
+          </span>
+        </div>
+        <p className="multisig-subtitle">
+          {i18n.t("createidentifier.share.footnote")}
+        </p>
+        <div className="share-identifier-scan-button">
+          <IonButton
+            shape="round"
+            color={"primary-gradient"}
+            onClick={handleScanButton}
+          >
+            <IonIcon
+              slot="icon-only"
+              icon={scanOutline}
+            />
+          </IonButton>
+        </div>
+      </ResponsivePageLayout>
     </>
   );
 };

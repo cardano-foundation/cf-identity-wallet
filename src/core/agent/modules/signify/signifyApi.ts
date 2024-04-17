@@ -86,13 +86,14 @@ export class SignifyApi {
       .identifiers()
       .create(signifyName); //, this.getCreateAidOptions());
     await operation.op();
-    await this.signifyClient
+    const addRoleOperation = await this.signifyClient
       .identifiers()
       .addEndRole(
         signifyName,
         SignifyApi.DEFAULT_ROLE,
         this.signifyClient.agent!.pre
       );
+    await addRoleOperation.op();
     return {
       signifyName,
       identifier: operation.serder.ked.i,
