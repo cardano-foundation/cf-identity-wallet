@@ -28,16 +28,16 @@ When(/^tap Done button on Card Details screen$/, async function () {
 });
 
 When(
-  /^user can see Card Details screen for (DIDKEY|KERI)$/,
-  async function (identifierType: string) {
-    await IdentityCardDetailsScreen.loads(identifierType);
+  /^user can see Card Details screen for KERI$/,
+  async function () {
+    await IdentityCardDetailsScreen.loads();
   }
 );
 
 Then(
-  /^user copy and verify details for (DIDKEY|KERI)$/,
-  async function (identifierType: string) {
-    await cardDetails().choseIdentityDetailsToVerify(identifierType);
+  /^user copy and verify details for KERI$/,
+  async function () {
+    await cardDetails().choseIdentityDetailsToVerify();
   }
 );
 

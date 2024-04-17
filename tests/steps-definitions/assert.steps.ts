@@ -16,7 +16,7 @@ Then(
 );
 
 Then(
-  /^the JSON schema is correct for (DidKeyJson|KeriJson)$/,
+  /^the JSON schema is correct for (KeriJson)$/,
   async function (identifierType: string) {
     await Assert.responseJsonSchema(
       atob(await driver.getClipboard()),
