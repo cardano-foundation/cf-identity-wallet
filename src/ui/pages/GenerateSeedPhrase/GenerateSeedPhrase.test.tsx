@@ -215,7 +215,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     );
   });
 
-  test.skip("User is prompted to save the seed phrase", async () => {
+  test("User is prompted to save the seed phrase", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
         <Router history={history}>
@@ -256,7 +256,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     await waitFor(() => expect(alertTitle).toBeVisible());
   });
 
-  test.skip("Clicking on second alert button will dismiss it", async () => {
+  test("Clicking on second alert button will dismiss it", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
         <Router history={history}>
@@ -288,7 +288,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     await waitFor(() => expect(alertWrapper).toHaveClass("alert-invisible"));
   });
 
-  test.skip("Clicking on alert backdrop will dismiss it", async () => {
+  test("Clicking on alert backdrop will dismiss it", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={store}>
         <Router history={history}>

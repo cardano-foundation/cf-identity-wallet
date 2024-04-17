@@ -11,8 +11,8 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { Agent } from "../../../core/agent/agent";
-import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
-import { IdentifierDetails } from "../IdentifierDetails";
+import { PreferencesStorage } from "../../../core/storage";
+import { addFavouritesCredsCache } from "../../../store/reducers/credsCache";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -60,10 +60,6 @@ const initialStateCreds = {
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
 
-const storeMockedCreds = {
-  ...mockStore(initialStateCreds),
-  dispatch: dispatchMock,
-};
 const initialStateNoPasswordCurrent = {
   stateCache: {
     routes: [TabsRoutePath.CREDENTIALS],
@@ -81,7 +77,7 @@ const initialStateNoPasswordCurrent = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  credsCache: { creds: credsFixAcdc },
+  credsCache: { creds: credsFixAcdc, favourites: [] },
 };
 
 const initialStateNoPasswordArchived = {
@@ -231,20 +227,27 @@ describe("Cards Details page - current not archived credential", () => {
     });
   });
 
-  test.skip("It changes to favourite icon on click disabled favourite button", async () => {
+  test("It changes to favourite icon on click disabled favourite button", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateNoPasswordCurrent),
+      dispatch: dispatchMock,
+    };
+
     PreferencesStorage.set = jest
       .fn()
-      .mockImplementation(async (data: SetOptions): Promise<void> => {
-        expect(data.key).toBe(PreferencesKeys.APP_CREDS_FAVOURITES);
-        expect(data.value).toBe(credsFixAcdc[0]);
+      .mockImplementation(async (data: SetOptions): Promise<boolean> => {
+        return Promise.resolve(true);
       });
 
+    const mockNow = 1466424490000;
+    const dateSpy = jest.spyOn(Date, "now").mockReturnValue(mockNow);
+
     const { getByTestId } = render(
-      <Provider store={storeMockedCreds}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierDetails}
+            component={CredentialDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -257,8 +260,15 @@ describe("Cards Details page - current not archived credential", () => {
     await waitForIonicReact();
 
     await waitFor(() => {
-      expect(getByTestId("heart-icon-favourite")).toBeVisible();
+      expect(dispatchMock).toBeCalledWith(
+        addFavouritesCredsCache({
+          id: credsFixAcdc[0].id,
+          time: mockNow,
+        })
+      );
     });
+
+    dateSpy.mockRestore();
   });
 });
 

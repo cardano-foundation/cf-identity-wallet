@@ -56,7 +56,6 @@ const Alert = ({
       }`}
     >
       <IonAlert
-        data-testid={dataTestId}
         isOpen={isOpen}
         backdropDismiss={backdropDismiss}
         cssClass="custom-alert"
