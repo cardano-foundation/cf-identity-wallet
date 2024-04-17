@@ -58,9 +58,10 @@ const CreateIdentifier = ({
     setResumeMultiSig && setResumeMultiSig(null);
   };
 
-  const CurrentStage = resumeMultiSig
-    ? IdentifierStage1
-    : stages[state.identifierCreationStage];
+  const CurrentStage =
+    resumeMultiSig && state.identifierCreationStage === 0
+      ? IdentifierStage1
+      : stages[state.identifierCreationStage];
 
   return (
     <IonModal

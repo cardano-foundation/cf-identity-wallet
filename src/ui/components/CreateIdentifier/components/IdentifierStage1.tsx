@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
-import { QRCode } from "react-qrcode-logo";
-import { IonButton, IonIcon } from "@ionic/react";
-import { scanOutline, qrCodeOutline } from "ionicons/icons";
-import { i18n } from "../../../../i18n";
-import { PageHeader } from "../../PageHeader";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { useAppSelector } from "../../../../store/hooks";
-import { ResponsivePageLayout } from "../../layout/ResponsivePageLayout";
 import { getStateCache } from "../../../../store/reducers/stateCache";
 import { Agent } from "../../../../core/agent/agent";
+import { IdentifierStage1BodyInit } from "./IdentifierStage1BodyInit";
+import { IdentifierStage1BodyResume } from "./IdentifierStage1BodyResume";
 
 const IdentifierStage1 = ({
   state,
+  setState,
   componentId,
   resetModal,
   resumeMultiSig,
@@ -54,63 +51,21 @@ const IdentifierStage1 = ({
 
   return (
     <>
-      <ResponsivePageLayout
-        pageId={componentId + "-content"}
-        header={
-          <PageHeader
-            closeButton={true}
-            closeButtonAction={handleDone}
-            closeButtonLabel={`${i18n.t("createidentifier.done")}`}
-            title={`${i18n.t("createidentifier.share.title")}`}
-          />
-        }
-      >
-        <p className="multisig-subtitle">
-          {i18n.t("createidentifier.share.subtitle")}
-        </p>
-        <div
-          className={`multisig-share-qr-code${
-            oobi.length ? " reveal" : " blur"
-          }`}
-          data-testid="multisig-share-qr-code"
-        >
-          <QRCode
-            value={oobi}
-            size={250}
-            fgColor={"black"}
-            bgColor={"white"}
-            qrStyle={"squares"}
-            logoImage={""}
-            logoWidth={60}
-            logoHeight={60}
-            logoOpacity={1}
-            quietZone={10}
-          />
-          <span className="multisig-share-qr-code-blur-overlay-container">
-            <span className="multisig-share-qr-code-blur-overlay-inner">
-              <IonIcon
-                slot="icon-only"
-                icon={qrCodeOutline}
-              />
-            </span>
-          </span>
-        </div>
-        <p className="multisig-subtitle">
-          {i18n.t("createidentifier.share.footnote")}
-        </p>
-        <div className="share-identifier-scan-button">
-          <IonButton
-            shape="round"
-            color={"primary-gradient"}
-            onClick={handleScanButton}
-          >
-            <IonIcon
-              slot="icon-only"
-              icon={scanOutline}
-            />
-          </IonButton>
-        </div>
-      </ResponsivePageLayout>
+      {!resumeMultiSig?.signifyName.length ? (
+        <IdentifierStage1BodyInit
+          componentId={componentId}
+          handleDone={handleDone}
+          oobi={oobi}
+          handleScanButton={handleScanButton}
+        />
+      ) : (
+        <IdentifierStage1BodyResume
+          componentId={componentId}
+          handleDone={handleDone}
+          oobi={oobi}
+          handleScanButton={handleScanButton}
+        />
+      )}
     </>
   );
 };
