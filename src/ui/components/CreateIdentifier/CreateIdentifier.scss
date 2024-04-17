@@ -90,7 +90,7 @@ ion-modal.create-identifier-modal {
       width: 70vw !important;
       height: 70vw !important;
       padding: 1.5rem;
-      margin: 1rem auto;
+      margin: 0.8rem auto;
       border-radius: 1rem;
     }
 
@@ -516,6 +516,18 @@ ion-modal.create-identifier-modal {
     .scrollable-page-content {
       p.multisig-subtitle {
         padding: 0 2rem;
+      }
+
+      #react-qrcode-logo,
+      .multisig-share-qr-code-blur-overlay-container {
+        width: 68vw !important;
+        height: 68vw !important;
+        padding: 1.2rem;
+        margin: 0.5rem auto;
+      }
+
+      .multisig-share-qr-code-blur-overlay-container {
+        left: calc(50% - 34vw);
       }
     }
 

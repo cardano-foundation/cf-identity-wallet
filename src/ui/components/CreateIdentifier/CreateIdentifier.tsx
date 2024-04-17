@@ -76,14 +76,16 @@ const CreateIdentifier = ({
           <IonSpinner name="circular" />
         </div>
       )}
-      <CurrentStage
-        state={state}
-        setState={setState}
-        componentId={componentId}
-        resetModal={resetModal}
-        setBlur={setBlur}
-        resumeMultiSig={resumeMultiSig}
-      />
+      {modalIsOpen && (
+        <CurrentStage
+          state={state}
+          setState={setState}
+          componentId={componentId}
+          resetModal={resetModal}
+          setBlur={setBlur}
+          resumeMultiSig={resumeMultiSig}
+        />
+      )}
     </IonModal>
   );
 };
