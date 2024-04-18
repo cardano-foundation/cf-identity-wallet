@@ -61,6 +61,12 @@ ion-modal.create-identifier-modal {
     ion-content.scrollable-page-content > *:first-child {
       padding-top: 1rem;
     }
+
+    p.multisig-share-note.multisig-share-note-footer {
+      font-style: italic;
+      font-weight: 500;
+      padding: 0;
+    }
   }
 
   ion-title.md {
@@ -229,7 +235,7 @@ ion-modal.create-identifier-modal {
       }
     }
 
-    .multisig-subtitle {
+    .multisig-share-note {
       text-align: center;
       padding: 0 2.5rem;
     }
@@ -514,7 +520,7 @@ ion-modal.create-identifier-modal {
 
     .responsive-page-content,
     .scrollable-page-content {
-      p.multisig-subtitle {
+      p.multisig-share-note {
         padding: 0 2rem;
       }
 

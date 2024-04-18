@@ -42,10 +42,18 @@ interface IdentifierStageProps {
   resumeMultiSig?: IdentifierShortDetails | null;
 }
 
+interface IdentifierStage1BodyProps {
+  componentId: string;
+  handleDone: () => void;
+  oobi: string;
+  handleScanButton: () => void;
+}
+
 export type {
   CreateIdentifierProps,
   TypeItemProps,
   IdentifierThemeSelectorProps,
   ThemeItemProps,
   IdentifierStageProps,
+  IdentifierStage1BodyProps,
 };
