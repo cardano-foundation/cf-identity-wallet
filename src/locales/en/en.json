@@ -998,7 +998,7 @@
         "bottom": "To continue with the initiation of the mult-sig you must have scanned at least one other QR code."
       },
       "scanbutton": "Scan QR codes",
-      "initiatebutton": "Initiate mult-sig"
+      "initiatebutton": "Initiate multi-sig"
     },
     "connections": {
       "title": "Connections",
