@@ -210,7 +210,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     const alertDeleteConnection = await findByTestId(
-      "alert-confirm-delete-connection"
+      "alert-confirm-delete-connection-container"
     );
     expect(alertDeleteConnection).toHaveClass("alert-invisible");
     const deleteButton = await findByTestId("delete-button-connection-details");
@@ -224,6 +224,19 @@ describe("ConnectionDetails Page", () => {
     await waitFor(() =>
       expect(alertDeleteConnection).toHaveClass("alert-visible")
     );
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("alert-confirm-delete-connection-confirm-button")
+      );
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(getByTestId("verify-passcode")).toBeVisible();
+      expect(getByTestId("verify-passcode")).toHaveAttribute("is-open", "true");
+    });
   });
 
   test("Show loading spin when load data", async () => {
@@ -354,7 +367,7 @@ describe("ConnectionDetails Page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, queryByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
@@ -376,6 +389,10 @@ describe("ConnectionDetails Page", () => {
 
     act(() => {
       fireEvent.click(getByText(connectionsFix[0].label));
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("connection-detail-spinner-container")).toBe(null);
     });
 
     act(() => {

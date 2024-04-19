@@ -228,7 +228,9 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     const continueButton = getByText(
       EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
-    const alertWrapper = getByTestId("seed-phrase-generate-alert-continue");
+    const alertWrapper = getByTestId(
+      "seed-phrase-generate-alert-continue-container"
+    );
     const termsCheckbox = getByTestId("terms-and-conditions-checkbox");
 
     expect(alertWrapper).toHaveClass("alert-invisible");
@@ -269,7 +271,9 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     const continueButton = getByText(
       EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
-    const alertWrapper = getByTestId("seed-phrase-generate-alert-continue");
+    const alertWrapper = getByTestId(
+      "seed-phrase-generate-alert-continue-container"
+    );
 
     act(() => {
       fireEvent.click(revealSeedPhraseButton);

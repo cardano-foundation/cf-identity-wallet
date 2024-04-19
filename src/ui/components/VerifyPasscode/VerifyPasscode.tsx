@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IonModal, useIonRouter } from "@ionic/react";
+import { IonModal } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { ErrorMessage } from "../ErrorMessage";
