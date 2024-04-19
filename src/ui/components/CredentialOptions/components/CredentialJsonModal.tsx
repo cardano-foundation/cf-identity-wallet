@@ -34,7 +34,9 @@ const CredentialJsonModal = ({
       {cardData && (
         <>
           <div className="creds-options-inner">
-            <pre>{JSON.stringify(cardData, null, 2)}</pre>
+            <pre data-testid="cred-content">
+              {JSON.stringify(cardData, null, 2)}
+            </pre>
           </div>
           <div className="footer-col">
             <IonButton
@@ -42,6 +44,7 @@ const CredentialJsonModal = ({
               expand="block"
               fill="outline"
               className="secondary-button"
+              data-testid="cred-copy-json"
               onClick={() => {
                 writeToClipboard(JSON.stringify(cardData, null, 2));
                 dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
