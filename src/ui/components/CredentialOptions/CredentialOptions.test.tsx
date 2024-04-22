@@ -57,7 +57,6 @@ describe("Identifier Options modal", () => {
 
     await waitForIonicReact();
 
-    // expect(getByTestId("creds-options-modal")).toBeVisible();
     expect(getByTestId("creds-options-view-button")).toBeVisible();
     expect(getByTestId("creds-options-archive-button")).toBeVisible();
   });
