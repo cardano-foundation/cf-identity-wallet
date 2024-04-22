@@ -1,4 +1,4 @@
-import { ConnectionStatus } from "../agent.types";
+import { ConnectionStatus, OOBIScan } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { RecordType } from "../../storage/storage.types";
 import { EventService } from "./eventService";
@@ -230,6 +230,19 @@ describe("Connection service of agent", () => {
     const oobi =
       "http://127.0.0.1:3902/oobi/EBRcDDwjOfqZwC1w2XFcE1mKQUb1LekNNidkZ8mrIEaw/agent/EEXekkGu9IAzav6pZVJhkLnjtjM5v3AcyA-pdKUcaGei";
     await connectionService.receiveInvitationFromUrl(oobi);
+  });
+
+  test("can receive keri oobi with delegated", async () => {
+    signifyClient.oobis().resolve.mockResolvedValue({
+      done: true,
+    });
+    const delegatePrefix = "EBRcDDwjOfqZwC1w2XFcE1mKQUb1LekNNidkZ8mrIEaw";
+    const oobi = `http://127.0.0.1:3902/oobi/${delegatePrefix}/agent/EEXekkGu9IAzav6pZVJhkLnjtjM5v3AcyA-pdKUcaGei?delegated=true`;
+    const res = await connectionService.receiveInvitationFromUrl(oobi);
+    expect(res).toEqual({
+      delegatePrefix,
+      oobiType: OOBIScan.Delegated,
+    });
   });
 
   test("can get a KERI OOBI with an alias (URL encoded)", async () => {

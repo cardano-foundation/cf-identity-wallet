@@ -117,7 +117,10 @@ class ConnectionService extends AgentService {
     return new URL(url).searchParams.get("delegated")
       ? {
         oobiType: OOBIScan.Delegated,
-        delegatePrefix: "TODO", // TODO: must recheck when confirmed with Fergal
+        delegatePrefix: url.slice(
+          url.indexOf("/oobi/") + 6,
+          url.indexOf("/agent/")
+        ),
       }
       : { oobiType: OOBIScan.Aid };
   }
