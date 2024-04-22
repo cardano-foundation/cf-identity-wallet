@@ -7,6 +7,7 @@ import { IdentifierStage1 } from "./components/IdentifierStage1";
 import { IdentifierStage2 } from "./components/IdentifierStage2";
 import { IdentifierStage3 } from "./components/IdentifierStage3";
 import { IdentifierStage4 } from "./components/IdentifierStage4";
+import { IdentifierInvitationReceived } from "./components/IdentifierInvitationReceived";
 
 const stages = [
   IdentifierStage0,
@@ -21,6 +22,7 @@ const CreateIdentifier = ({
   setModalIsOpen,
   resumeMultiSig,
   setResumeMultiSig,
+  invitationReceived,
 }: CreateIdentifierProps) => {
   const componentId = "create-identifier-modal";
   const initialState = {
@@ -77,16 +79,25 @@ const CreateIdentifier = ({
           <IonSpinner name="circular" />
         </div>
       )}
-      {modalIsOpen && (
-        <CurrentStage
-          state={state}
-          setState={setState}
-          componentId={componentId}
-          resetModal={resetModal}
-          setBlur={setBlur}
-          resumeMultiSig={resumeMultiSig}
-        />
-      )}
+      {modalIsOpen &&
+        (invitationReceived ? (
+          <IdentifierInvitationReceived
+            state={state}
+            setState={setState}
+            componentId={componentId}
+            resetModal={resetModal}
+            setBlur={setBlur}
+          />
+        ) : (
+          <CurrentStage
+            state={state}
+            setState={setState}
+            componentId={componentId}
+            resetModal={resetModal}
+            setBlur={setBlur}
+            resumeMultiSig={resumeMultiSig}
+          />
+        ))}
     </IonModal>
   );
 };

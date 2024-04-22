@@ -6,6 +6,7 @@ interface CreateIdentifierProps {
   setModalIsOpen: (value: boolean) => void;
   resumeMultiSig?: IdentifierShortDetails | null;
   setResumeMultiSig?: (value: IdentifierShortDetails | null) => void;
+  invitationReceived?: boolean;
 }
 
 interface TypeItemProps {
