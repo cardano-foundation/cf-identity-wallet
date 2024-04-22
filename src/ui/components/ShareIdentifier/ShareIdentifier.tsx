@@ -17,7 +17,7 @@ import { ResponsiveModal } from "../layout/ResponsiveModal";
 const ShareIdentifier = ({
   isOpen,
   setIsOpen,
-  signifyName,
+  identifier,
 }: ShareIdentifierProps) => {
   const componentId = "share-identifier-modal";
   const dispatch = useAppDispatch();
@@ -26,10 +26,10 @@ const ShareIdentifier = ({
   const [oobi, setOobi] = useState("");
 
   useEffect(() => {
-    if (signifyName) {
+    if (identifier) {
       const fetchOobi = async () => {
         const oobiValue = await Agent.agent.connections.getKeriOobi(
-          `${signifyName}`,
+          `${identifier}`,
           userName
         );
         if (oobiValue) {
@@ -38,7 +38,7 @@ const ShareIdentifier = ({
       };
       fetchOobi();
     }
-  }, [signifyName, userName]);
+  }, [identifier, userName]);
 
   return (
     <ResponsiveModal

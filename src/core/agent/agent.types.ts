@@ -231,6 +231,20 @@ enum NotificationRoute {
   MultiSigRot = "/multisig/rot",
 }
 
+enum OOBIScan {
+  Delegated,
+  Aid,
+}
+
+type ScanOOBIRes =
+  | {
+      oobiType: OOBIScan.Aid;
+    }
+  | {
+      oobiType: OOBIScan.Delegated;
+      delegatePrefix: string;
+    };
+
 export {
   Blockchain,
   ConnectionStatus,
@@ -240,6 +254,7 @@ export {
   AcdcKeriEventTypes,
   NotificationRoute,
   MultiSigRoute,
+  OOBIScan,
 };
 
 export type {
@@ -262,4 +277,5 @@ export type {
   MultiSigExnMessage,
   Aid,
   IdentifierResult,
+  ScanOOBIRes,
 };

@@ -287,7 +287,7 @@ const IdentifierDetails = () => {
           <ShareIdentifier
             isOpen={shareIsOpen}
             setIsOpen={setShareIsOpen}
-            signifyName={cardData.signifyName}
+            identifier={cardData.id}
           />
           <IdentifierOptions
             optionsIsOpen={identifierOptionsIsOpen}

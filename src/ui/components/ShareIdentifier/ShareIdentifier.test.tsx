@@ -14,7 +14,7 @@ const setIsOpen = jest.fn();
 const props: ShareIdentifierProps = {
   isOpen: true,
   setIsOpen,
-  signifyName: identifierFix[0].signifyName,
+  identifier: identifierFix[0].id,
 };
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -39,7 +39,7 @@ describe("Share Indentifier (OOBI)", () => {
         <ShareIdentifier
           isOpen={props.isOpen}
           setIsOpen={props.setIsOpen}
-          signifyName={props.signifyName}
+          identifier={props.identifier}
         />
       </Provider>
     );

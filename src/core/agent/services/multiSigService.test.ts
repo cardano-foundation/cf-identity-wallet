@@ -428,7 +428,16 @@ describe("Multisig sig service of agent", () => {
       signifyName: expect.any(String),
     });
     expect(identifiersCreateMock).toBeCalled();
-    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith({
+      delegated: {
+        delegatePrefix: "delegationPrefix",
+      },
+      displayName: "newDisplayName",
+      id: "i",
+      isPending: true,
+      signifyName: expect.any(String),
+      theme: 0,
+    });
   });
 
   test("should call the interactDelegation method of the signify module with the given arguments", async () => {

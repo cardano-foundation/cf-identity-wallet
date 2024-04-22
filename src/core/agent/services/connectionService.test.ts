@@ -1,4 +1,4 @@
-import { ConnectionStatus } from "../agent.types";
+import { ConnectionStatus, OOBIScan } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { RecordType } from "../../storage/storage.types";
 import { EventService } from "./eventService";
@@ -93,11 +93,19 @@ const signifyClient = jest.mocked({
 
 const session = {};
 
+const identifierStorage = jest.mocked({
+  getIdentifierMetadata: jest.fn(),
+  getAllIdentifierMetadata: jest.fn(),
+  getKeriIdentifiersMetadata: jest.fn(),
+  updateIdentifierMetadata: jest.fn(),
+  createIdentifierMetadataRecord: jest.fn(),
+});
+
 const agentServicesProps = {
   basicStorage: basicStorage as any,
   signifyClient: signifyClient as any,
   eventService: new EventService(),
-  identifierStorage: new IdentifierStorage(session as any),
+  identifierStorage: identifierStorage as any,
   credentialStorage: new CredentialStorage(session as any),
 };
 
@@ -224,17 +232,69 @@ describe("Connection service of agent", () => {
     await connectionService.receiveInvitationFromUrl(oobi);
   });
 
+  test("can receive keri oobi with delegated", async () => {
+    signifyClient.oobis().resolve.mockResolvedValue({
+      done: true,
+    });
+    const delegatePrefix = "EBRcDDwjOfqZwC1w2XFcE1mKQUb1LekNNidkZ8mrIEaw";
+    const oobi = `http://127.0.0.1:3902/oobi/${delegatePrefix}/agent/EEXekkGu9IAzav6pZVJhkLnjtjM5v3AcyA-pdKUcaGei?delegated=true`;
+    const res = await connectionService.receiveInvitationFromUrl(oobi);
+    expect(res).toEqual({
+      delegatePrefix,
+      oobiType: OOBIScan.Delegated,
+    });
+  });
+
   test("can get a KERI OOBI with an alias (URL encoded)", async () => {
+    const signifyName = "signifyName";
+    identifierStorage.getIdentifierMetadata.mockResolvedValue({
+      signifyName,
+    });
     signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
       return `${oobiPrefix}${name}`;
     });
-    const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getKeriOobi(
+    const keriOobi = await connectionService.getKeriOobi(
       signifyName,
       "alias with spaces"
     );
-    expect(KeriOobi).toEqual(
+    expect(keriOobi).toEqual(
       `${oobiPrefix}${signifyName}?name=alias%20with%20spaces`
+    );
+  });
+
+  test("can get KERI OOBI with delegated identifier", async () => {
+    const identifier = "keriuuid";
+    const signifyName = "signifyName";
+    identifierStorage.getIdentifierMetadata.mockResolvedValue({
+      signifyName,
+      delegated: {
+        delegateePrefix: "uuid",
+      },
+    });
+    signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
+      return `${oobiPrefix}${name}`;
+    });
+    const KeriOobi = await connectionService.getKeriOobi(identifier);
+    expect(KeriOobi).toEqual(oobiPrefix + signifyName + "?delegated=true");
+  });
+
+  test("can get a KERI OOBI with an alias and delegated (URL encoded)", async () => {
+    const signifyName = "signifyName";
+    identifierStorage.getIdentifierMetadata.mockResolvedValue({
+      signifyName,
+      delegated: {
+        delegateePrefix: "uuid",
+      },
+    });
+    signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
+      return `${oobiPrefix}${name}`;
+    });
+    const keriOobi = await connectionService.getKeriOobi(
+      signifyName,
+      "alias with spaces"
+    );
+    expect(keriOobi).toEqual(
+      `${oobiPrefix}${signifyName}?name=alias%20with%20spaces&delegated=true`
     );
   });
 
@@ -257,15 +317,6 @@ describe("Connection service of agent", () => {
       status: ConnectionStatus.CONFIRMED,
     });
     expect(basicStorage.findById).toBeCalledWith(keriContacts[0].id);
-  });
-
-  test("can get KERI OOBI", async () => {
-    signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
-      return `${oobiPrefix}${name}`;
-    });
-    const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getKeriOobi(signifyName);
-    expect(KeriOobi).toEqual(oobiPrefix + signifyName);
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {

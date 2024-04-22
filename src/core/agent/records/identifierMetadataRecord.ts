@@ -11,6 +11,7 @@ interface IdentifierMetadataRecordProps {
   theme: number;
   signifyOpName?: string;
   multisigManageAid?: string;
+  delegated?: Record<string, unknown>;
 }
 
 class IdentifierMetadataRecord
@@ -22,6 +23,7 @@ class IdentifierMetadataRecord
   isDeleted?: boolean;
   isPending?: boolean;
   signifyOpName?: string | undefined;
+  delegated?: Record<string, unknown>;
   signifyName!: string;
   theme!: number;
   multisigManageAid?: string | undefined;
@@ -43,6 +45,7 @@ class IdentifierMetadataRecord
       this.multisigManageAid = props.multisigManageAid;
       this.createdAt = props.createdAt ?? new Date();
       this.theme = props.theme;
+      this.delegated = props.delegated;
     }
   }
 

@@ -7,6 +7,7 @@ interface IdentifierShortDetails {
   signifyName: string;
   theme: number;
   isPending: boolean;
+  delegated?: Record<string, unknown>;
 }
 
 interface IdentifierFullDetails extends IdentifierShortDetails {
