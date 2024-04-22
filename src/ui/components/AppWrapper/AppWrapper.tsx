@@ -76,6 +76,18 @@ const keriNotificationsChangeHandler = async (
       })
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
+    retryHandleMultisigEvent(event, dispatch);
+  } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
+    //TODO: Use dispatch here, handle logic for the multisig rotation notification
+  }
+};
+
+const retryHandleMultisigEvent = async (
+  event: KeriNotification,
+  dispatch: ReturnType<typeof useAppDispatch>,
+  retryInterval = 3000
+) => {
+  try {
     const multisigIcpDetails =
       await Agent.agent.identifiers.getMultisigIcpDetails(event);
     dispatch(
@@ -86,8 +98,9 @@ const keriNotificationsChangeHandler = async (
         multisigIcpDetails: multisigIcpDetails,
       })
     );
-  } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
-    //TODO: Use dispatch here, handle logic for the multisig rotation notification
+  } catch (error) {
+    await new Promise((resolve) => setTimeout(resolve, retryInterval));
+    await retryHandleMultisigEvent(event, dispatch, retryInterval);
   }
 };
 
