@@ -1,14 +1,13 @@
 import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
 import { IonGrid, IonRow, IonCol } from "@ionic/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { i18n } from "../../../../i18n";
 import { CustomInput } from "../../CustomInput";
 import { ErrorMessage } from "../../ErrorMessage";
 import { PageFooter } from "../../PageFooter";
 import { PageHeader } from "../../PageHeader";
-import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
 import { TypeItem } from "./TypeItem";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
@@ -20,10 +19,15 @@ import {
   getIdentifiersCache,
   setIdentifiersCache,
 } from "../../../../store/reducers/identifiersCache";
-import { setToastMsg } from "../../../../store/reducers/stateCache";
+import {
+  getQueueIncomingRequest,
+  setCurrentOperation,
+  setToastMsg,
+} from "../../../../store/reducers/stateCache";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
-import { ToastMsgType } from "../../../globals/types";
+import { OperationType, ToastMsgType } from "../../../globals/types";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
+import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
 
 const IdentifierStage0 = ({
   state,
@@ -31,6 +35,7 @@ const IdentifierStage0 = ({
   componentId,
   setBlur,
   resetModal,
+  invitationReceived,
 }: IdentifierStageProps) => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
@@ -42,6 +47,14 @@ const IdentifierStage0 = ({
   const [selectedTheme, setSelectedTheme] = useState(state.selectedTheme);
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
+  const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
+  const incomingRequest = useMemo(() => {
+    return !queueIncomingRequest.isProcessing
+      ? { id: "" }
+      : queueIncomingRequest.queues.length > 0
+        ? queueIncomingRequest.queues[0]
+        : { id: "" };
+  }, [queueIncomingRequest]);
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -74,7 +87,13 @@ const IdentifierStage0 = ({
       theme: state.selectedTheme,
     };
     let groupMetadata;
-    if (state.selectedAidType == 1) {
+    if (invitationReceived) {
+      groupMetadata = {
+        groupId: incomingRequest.id,
+        groupInitiator: false,
+        groupCreated: false,
+      };
+    } else if (state.selectedAidType == 1) {
       groupMetadata = {
         groupId: uuidv4(),
         groupInitiator: true,
@@ -97,12 +116,13 @@ const IdentifierStage0 = ({
         newIdentifier.groupMetadata = groupMetadata;
       }
       dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
-      if (state.selectedAidType !== 0) {
+      if (state.selectedAidType !== 0 || invitationReceived) {
         setState((prevState: IdentifierStageProps) => ({
           ...prevState,
           identifierCreationStage: 1,
           newIdentifier,
         }));
+        invitationReceived && dispatch(setCurrentOperation(OperationType.IDLE));
       }
     }
   };
@@ -111,13 +131,22 @@ const IdentifierStage0 = ({
     setBlur && setBlur(true);
     setTimeout(async () => {
       await handleCreateIdentifier();
-      if (state.selectedAidType !== 0) {
+      if (state.selectedAidType !== 0 || invitationReceived) {
         setBlur && setBlur(false);
       } else {
         dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
         resetModal && resetModal();
       }
     }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
+  };
+
+  const handleCancel = async () => {
+    // @TODO - sdisalvo: Placeholder for deleting the notification record
+    // await Agent.agent.credentials.deleteKeriNotificationRecordById(
+    //   incomingRequest.id
+    // );
+    invitationReceived && dispatch(setCurrentOperation(OperationType.IDLE));
+    resetModal && resetModal();
   };
 
   return (
@@ -128,9 +157,17 @@ const IdentifierStage0 = ({
         header={
           <PageHeader
             closeButton={true}
-            closeButtonAction={() => resetModal && resetModal()}
-            closeButtonLabel={`${i18n.t("createidentifier.cancel")}`}
-            title={`${i18n.t("createidentifier.add.title")}`}
+            closeButtonAction={() => handleCancel()}
+            closeButtonLabel={`${i18n.t(
+              invitationReceived
+                ? "createidentifier.back"
+                : "createidentifier.cancel"
+            )}`}
+            title={`${i18n.t(
+              invitationReceived
+                ? "createidentifier.receive.title"
+                : "createidentifier.add.title"
+            )}`}
           />
         }
       >
@@ -160,60 +197,62 @@ const IdentifierStage0 = ({
             )}
           </div>
         </div>
-        <div className="aid-type">
-          <div className="type-input-title">{`${i18n.t(
-            "createidentifier.aidtype.title"
-          )}`}</div>
-          <IonGrid
-            className="aid-type-selector"
-            data-testid="aid-type-selector"
-          >
-            <IonRow>
-              <IonCol>
-                <TypeItem
-                  dataTestId="identifier-aidtype-default"
-                  index={0}
-                  text={i18n.t("createidentifier.aidtype.default.label")}
-                  clickEvent={() =>
-                    setState((prevState: IdentifierStageProps) => ({
-                      ...prevState,
-                      selectedAidType: 0,
-                    }))
-                  }
-                  selectedType={state.selectedAidType}
-                />
-              </IonCol>
-              <IonCol>
-                <TypeItem
-                  dataTestId="identifier-aidtype-multisig"
-                  index={1}
-                  text={i18n.t("createidentifier.aidtype.multisig.label")}
-                  clickEvent={() =>
-                    setState((prevState: IdentifierStageProps) => ({
-                      ...prevState,
-                      selectedAidType: 1,
-                    }))
-                  }
-                  selectedType={state.selectedAidType}
-                />
-              </IonCol>
-              <IonCol>
-                <TypeItem
-                  dataTestId="identifier-aidtype-delegated"
-                  index={2}
-                  text={i18n.t("createidentifier.aidtype.delegated.label")}
-                  clickEvent={() =>
-                    setState((prevState: IdentifierStageProps) => ({
-                      ...prevState,
-                      selectedAidType: 2,
-                    }))
-                  }
-                  selectedType={state.selectedAidType}
-                />
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        </div>
+        {!invitationReceived && (
+          <div className="aid-type">
+            <div className="type-input-title">{`${i18n.t(
+              "createidentifier.aidtype.title"
+            )}`}</div>
+            <IonGrid
+              className="aid-type-selector"
+              data-testid="aid-type-selector"
+            >
+              <IonRow>
+                <IonCol>
+                  <TypeItem
+                    dataTestId="identifier-aidtype-default"
+                    index={0}
+                    text={i18n.t("createidentifier.aidtype.default.label")}
+                    clickEvent={() =>
+                      setState((prevState: IdentifierStageProps) => ({
+                        ...prevState,
+                        selectedAidType: 0,
+                      }))
+                    }
+                    selectedType={state.selectedAidType}
+                  />
+                </IonCol>
+                <IonCol>
+                  <TypeItem
+                    dataTestId="identifier-aidtype-multisig"
+                    index={1}
+                    text={i18n.t("createidentifier.aidtype.multisig.label")}
+                    clickEvent={() =>
+                      setState((prevState: IdentifierStageProps) => ({
+                        ...prevState,
+                        selectedAidType: 1,
+                      }))
+                    }
+                    selectedType={state.selectedAidType}
+                  />
+                </IonCol>
+                <IonCol>
+                  <TypeItem
+                    dataTestId="identifier-aidtype-delegated"
+                    index={2}
+                    text={i18n.t("createidentifier.aidtype.delegated.label")}
+                    clickEvent={() =>
+                      setState((prevState: IdentifierStageProps) => ({
+                        ...prevState,
+                        selectedAidType: 2,
+                      }))
+                    }
+                    selectedType={state.selectedAidType}
+                  />
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+          </div>
+        )}
         <div className="identifier-theme">
           <div className="theme-input-title">{`${i18n.t(
             "createidentifier.theme.title"
@@ -227,7 +266,11 @@ const IdentifierStage0 = ({
       <PageFooter
         pageId={componentId}
         customClass={keyboardIsOpen ? "ion-hide" : ""}
-        primaryButtonText={`${i18n.t("createidentifier.add.confirmbutton")}`}
+        primaryButtonText={`${i18n.t(
+          invitationReceived
+            ? "createidentifier.receive.confirmbutton"
+            : "createidentifier.add.confirmbutton"
+        )}`}
         primaryButtonAction={async () => handleContinue()}
         primaryButtonDisabled={!displayNameValueIsValid}
       />

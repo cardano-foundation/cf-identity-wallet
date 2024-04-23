@@ -42,12 +42,14 @@ interface IdentifierStageProps {
   setBlur?: (value: boolean) => void;
   resetModal: () => void;
   resumeMultiSig?: IdentifierShortDetails | null;
+  invitationReceived?: boolean;
 }
 
 interface IdentifierStage1BodyProps {
   componentId: string;
   handleDone: () => void;
   oobi: string;
+  groupInitiator?: boolean | undefined;
   handleScanButton: () => void;
 }
 

@@ -1,7 +1,6 @@
 import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
-import { t } from "i18next";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";

@@ -14,6 +14,7 @@ const IdentifierStage1BodyResume = ({
   componentId,
   handleDone,
   oobi,
+  groupInitiator,
   handleScanButton,
 }: IdentifierStage1BodyProps) => {
   const [scannedConections, setScannedConnections] = useState<
@@ -106,12 +107,16 @@ const IdentifierStage1BodyResume = ({
           </IonList>
         )}
       </ScrollablePageLayout>
-      <PageFooter
-        pageId={componentId}
-        primaryButtonText={`${i18n.t("createidentifier.share.initiatebutton")}`}
-        primaryButtonAction={handleInitiateMultiSig}
-        primaryButtonDisabled={!scannedConections.length}
-      />
+      {groupInitiator && (
+        <PageFooter
+          pageId={componentId}
+          primaryButtonText={`${i18n.t(
+            "createidentifier.share.initiatebutton"
+          )}`}
+          primaryButtonAction={handleInitiateMultiSig}
+          primaryButtonDisabled={!scannedConections.length}
+        />
+      )}
     </>
   );
 };
