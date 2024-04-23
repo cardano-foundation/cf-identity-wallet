@@ -7,6 +7,7 @@ import {
 import { Notification } from "./credentialService.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { RecordType } from "../../storage/storage.types";
+import { IdentifierShortDetails } from "./identifier.types";
 class SignifyNotificationService extends AgentService {
   static readonly KERI_NOTIFICATION_NOT_FOUND =
     "Keri notification record not found";
@@ -88,6 +89,52 @@ class SignifyNotificationService extends AgentService {
           }, 2000);
         });
       }
+    }
+  }
+
+  async onSignifyOperationStateChanged(
+    callback: (identifierShortDetails: IdentifierShortDetails) => void
+  ) {
+    const condition = true;
+    while (condition) {
+      const pendingIdentifiers =
+        await this.identifierStorage.getAllPendingIdentifierMetadata();
+      if (pendingIdentifiers.length > 0) {
+        const promises = await Promise.allSettled(
+          pendingIdentifiers.map((aid) => {
+            return this.signifyClient.operations().get(aid.signifyOpName!);
+          })
+        );
+        for (const pm of promises) {
+          if (pm.status === "fulfilled") {
+            const operation = pm.value;
+            if (operation.done) {
+              const aid = pendingIdentifiers.find(
+                (aid) => aid.signifyOpName === operation.name
+              )!;
+              await this.identifierStorage.updateIdentifierMetadata(aid.id, {
+                isPending: false,
+              });
+              callback({
+                displayName: aid.displayName,
+                id: aid.id,
+                signifyName: aid.signifyName,
+                createdAtUTC: aid.createdAt.toISOString(),
+                theme: aid.theme,
+                isPending: false,
+                delegated: aid.delegated,
+              });
+            }
+          } else {
+            //TODO: must handle case get operation failed
+          }
+        }
+      }
+      await new Promise((rs) => {
+        setTimeout(() => {
+          rs(true);
+        }, 2000);
+      });
     }
   }
 

@@ -435,12 +435,14 @@ class MultiSigService extends AgentService {
     const operation = await this.signifyClient
       .identifiers()
       .create(signifyName, { delpre: delegatorPrefix });
+    const op = await operation.op();
     const identifier = operation.serder.ked.i;
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: identifier,
       ...metadata,
       signifyName: signifyName,
       isPending: true,
+      signifyOpName: op.name,
       delegated: { delegatePrefix: delegatorPrefix },
     });
     return { identifier, signifyName };

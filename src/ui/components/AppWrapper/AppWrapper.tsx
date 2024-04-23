@@ -18,6 +18,7 @@ import {
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
+  updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   setCredsCache,
@@ -43,6 +44,8 @@ import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/id
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
+import { IdentifierMetadataRecord } from "../../../core/agent/records";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 
 const connectionKeriStateChangedHandler = async (
   event: ConnectionKeriStateChangedEvent,
@@ -103,6 +106,15 @@ const keriAcdcChangeHandler = async (
     dispatch(setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED));
     dispatch(setCurrentOperation(OperationType.IDLE));
   }
+};
+
+const signifyOperationStateChangeHandler = async (
+  aid: IdentifierShortDetails,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  dispatch(updateOrAddIdentifiersCache(aid));
+  dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
+  dispatch(setCurrentOperation(OperationType.IDLE));
 };
 
 const AppWrapper = (props: { children: ReactNode }) => {
@@ -245,6 +257,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
     });
     Agent.agent.credentials.onAcdcKeriStateChanged((event) => {
       return keriAcdcChangeHandler(event, dispatch);
+    });
+
+    Agent.agent.signifyNotifications.onSignifyOperationStateChanged((event) => {
+      return signifyOperationStateChangeHandler(event, dispatch);
     });
 
     setInitialised(true);

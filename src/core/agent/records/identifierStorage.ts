@@ -36,6 +36,16 @@ class IdentifierStorage {
     return records;
   }
 
+  async getAllPendingIdentifierMetadata(): Promise<IdentifierMetadataRecord[]> {
+    const records = await this.storageService.findAllByQuery(
+      {
+        isPending: true,
+      },
+      IdentifierMetadataRecord
+    );
+    return records;
+  }
+
   async getKeriIdentifiersMetadata(): Promise<IdentifierMetadataRecord[]> {
     const records = await this.storageService.getAll(IdentifierMetadataRecord);
     return records;

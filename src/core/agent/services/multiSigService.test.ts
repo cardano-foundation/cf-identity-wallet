@@ -414,6 +414,9 @@ describe("Multisig sig service of agent", () => {
           i: "i",
         },
       },
+      op: () => {
+        return { name: "opName" };
+      },
     });
     expect(
       await multiSigService.createDelegatedIdentifier(
@@ -437,6 +440,7 @@ describe("Multisig sig service of agent", () => {
       isPending: true,
       signifyName: expect.any(String),
       theme: 0,
+      signifyOpName: "opName",
     });
   });
 

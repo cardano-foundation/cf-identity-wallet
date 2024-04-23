@@ -20,6 +20,15 @@ const identifiersCacheSlice = createSlice({
     ) => {
       state.identifiers = action.payload;
     },
+    updateOrAddIdentifiersCache: (
+      state,
+      action: PayloadAction<IdentifierShortDetails>
+    ) => {
+      const identifiers = state.identifiers.filter(
+        (aid) => aid.id !== action.payload.id
+      );
+      state.identifiers = [...identifiers, action.payload];
+    },
     setFavouritesIdentifiersCache: (
       state,
       action: PayloadAction<FavouriteIdentifier[]>
@@ -48,6 +57,7 @@ export const {
   setFavouritesIdentifiersCache,
   addFavouriteIdentifierCache,
   removeFavouriteIdentifierCache,
+  updateOrAddIdentifiersCache,
 } = identifiersCacheSlice.actions;
 
 const getIdentifiersCache = (state: RootState) =>
