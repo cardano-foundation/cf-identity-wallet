@@ -7,6 +7,7 @@ interface CreateIdentifierProps {
   resumeMultiSig?: IdentifierShortDetails | null;
   setResumeMultiSig?: (value: IdentifierShortDetails | null) => void;
   invitationReceived?: boolean;
+  setInvitationReceived?: (value: boolean) => void;
 }
 
 interface TypeItemProps {

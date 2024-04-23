@@ -130,7 +130,7 @@ const IdentifierStage0 = ({
             closeButton={true}
             closeButtonAction={() => resetModal && resetModal()}
             closeButtonLabel={`${i18n.t("createidentifier.cancel")}`}
-            title={`${i18n.t("createidentifier.title")}`}
+            title={`${i18n.t("createidentifier.add.title")}`}
           />
         }
       >
@@ -227,7 +227,7 @@ const IdentifierStage0 = ({
       <PageFooter
         pageId={componentId}
         customClass={keyboardIsOpen ? "ion-hide" : ""}
-        primaryButtonText={`${i18n.t("createidentifier.confirmbutton")}`}
+        primaryButtonText={`${i18n.t("createidentifier.add.confirmbutton")}`}
         primaryButtonAction={async () => handleContinue()}
         primaryButtonDisabled={!displayNameValueIsValid}
       />

@@ -7,7 +7,7 @@ import { IdentifierStage1 } from "./components/IdentifierStage1";
 import { IdentifierStage2 } from "./components/IdentifierStage2";
 import { IdentifierStage3 } from "./components/IdentifierStage3";
 import { IdentifierStage4 } from "./components/IdentifierStage4";
-import { IdentifierInvitationReceived } from "./components/IdentifierInvitationReceived";
+import { IdentifierReceiveInvitation } from "./components/IdentifierReceiveInvitation";
 
 const stages = [
   IdentifierStage0,
@@ -23,6 +23,7 @@ const CreateIdentifier = ({
   resumeMultiSig,
   setResumeMultiSig,
   invitationReceived,
+  setInvitationReceived,
 }: CreateIdentifierProps) => {
   const componentId = "create-identifier-modal";
   const initialState = {
@@ -60,6 +61,11 @@ const CreateIdentifier = ({
     setResumeMultiSig && setResumeMultiSig(null);
   };
 
+  const handleResetInvitationReceived = () => {
+    resetModal();
+    setInvitationReceived && setInvitationReceived(false);
+  };
+
   const CurrentStage =
     resumeMultiSig && state.identifierCreationStage === 0
       ? IdentifierStage1
@@ -81,11 +87,11 @@ const CreateIdentifier = ({
       )}
       {modalIsOpen &&
         (invitationReceived ? (
-          <IdentifierInvitationReceived
+          <IdentifierReceiveInvitation
             state={state}
             setState={setState}
             componentId={componentId}
-            resetModal={resetModal}
+            resetModal={() => handleResetInvitationReceived()}
             setBlur={setBlur}
           />
         ) : (

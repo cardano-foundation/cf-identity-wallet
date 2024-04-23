@@ -22,7 +22,7 @@ interface AuthenticationCacheProps {
 enum IncomingRequestType {
   CREDENTIAL_OFFER_RECEIVED = "credential-offer-received",
   MULTI_SIG_REQUEST_INCOMING = "multi-sig-request-incoming",
-  MULTI_SIG_INVITATION_RECEIVED = "multi-sig-invitation-received",
+  MULTI_SIG_RECEIVE_INVITATION = "multi-sig-receive-invitation",
 }
 
 interface IncomingRequestProps {

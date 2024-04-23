@@ -985,10 +985,13 @@
     "more": "More share options"
   },
   "createidentifier": {
-    "title": "Add an identifier",
     "cancel": "Cancel",
     "back": "Back",
     "done": "Done",
+    "add": {
+      "title": "Add an identifier",
+      "confirmbutton": "Create identifier"
+    },
     "share": {
       "title": "Share identifier",
       "subtitle": "You've scanned",
@@ -1004,6 +1007,10 @@
         "confirm": "Confirm and scan",
         "cancel": "Cancel"
       }
+    },
+    "receive": {
+      "title": "Setup identifier",
+      "confirmbutton": "Add identifier"
     },
     "connections": {
       "title": "Connections",
@@ -1058,7 +1065,6 @@
     "theme": {
       "title": "Choose a theme"
     },
-    "confirmbutton": "Create identifier",
     "error": {
       "maxlength": "Must be less than 32 characters long"
     }

@@ -91,8 +91,11 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
             dispatch(
               setQueueIncomingRequest({
                 id: invitation.groupId,
-                type: IncomingRequestType.MULTI_SIG_INVITATION_RECEIVED,
+                type: IncomingRequestType.MULTI_SIG_RECEIVE_INVITATION,
               })
+            );
+            dispatch(
+              setCurrentOperation(OperationType.RECEIVE_MULTI_SIG_INVITATION)
             );
             history.push({
               pathname: TabsRoutePath.IDENTIFIERS,

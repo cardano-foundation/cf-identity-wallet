@@ -55,9 +55,19 @@ const IncomingRequest = () => {
   };
 
   const handleCancel = async () => {
-    await Agent.agent.credentials.deleteKeriNotificationRecordById(
-      incomingRequest.id
-    );
+    if (
+      incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
+    ) {
+      await Agent.agent.credentials.deleteKeriNotificationRecordById(
+        incomingRequest.id
+      );
+    } else if (
+      incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
+    ) {
+      await Agent.agent.credentials.deleteKeriNotificationRecordById(
+        incomingRequest.id
+      );
+    }
     handleReset();
   };
 

@@ -1,7 +1,6 @@
 import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
-import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { useEffect, useMemo, useState } from "react";
 import { i18n } from "../../../../i18n";
 import { CustomInput } from "../../CustomInput";
 import { ErrorMessage } from "../../ErrorMessage";
@@ -17,13 +16,17 @@ import {
   getIdentifiersCache,
   setIdentifiersCache,
 } from "../../../../store/reducers/identifiersCache";
-import { setToastMsg } from "../../../../store/reducers/stateCache";
+import {
+  getQueueIncomingRequest,
+  setCurrentOperation,
+  setToastMsg,
+} from "../../../../store/reducers/stateCache";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
-import { ToastMsgType } from "../../../globals/types";
+import { OperationType, ToastMsgType } from "../../../globals/types";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
 
-const IdentifierInvitationReceived = ({
+const IdentifierReceiveInvitation = ({
   state,
   setState,
   componentId,
@@ -40,6 +43,14 @@ const IdentifierInvitationReceived = ({
   const [selectedTheme, setSelectedTheme] = useState(state.selectedTheme);
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
+  const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
+  const incomingRequest = useMemo(() => {
+    return !queueIncomingRequest.isProcessing
+      ? { id: "" }
+      : queueIncomingRequest.queues.length > 0
+        ? queueIncomingRequest.queues[0]
+        : { id: "" };
+  }, [queueIncomingRequest]);
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -72,7 +83,7 @@ const IdentifierInvitationReceived = ({
       theme: state.selectedTheme,
     };
     const groupMetadata = {
-      groupId: uuidv4(),
+      groupId: incomingRequest.id,
       groupInitiator: false,
       groupCreated: false,
     };
@@ -93,13 +104,26 @@ const IdentifierInvitationReceived = ({
     }
   };
 
+  const handleReset = async () => {
+    dispatch(setCurrentOperation(OperationType.IDLE));
+    resetModal && resetModal();
+  };
+
   const handleContinue = async () => {
     setBlur && setBlur(true);
     setTimeout(async () => {
       await handleCreateIdentifier();
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
-      resetModal && resetModal();
+      handleReset();
     }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
+  };
+
+  const handleCancel = async () => {
+    // @TODO - sdisalvo: Placeholder for deleting the notification record
+    // await Agent.agent.credentials.deleteKeriNotificationRecordById(
+    //   incomingRequest.id
+    // );
+    handleReset();
   };
 
   return (
@@ -111,9 +135,9 @@ const IdentifierInvitationReceived = ({
         header={
           <PageHeader
             closeButton={true}
-            closeButtonAction={() => resetModal && resetModal()}
-            closeButtonLabel={`${i18n.t("createidentifier.cancel")}`}
-            title={`${i18n.t("createidentifier.title")}`}
+            closeButtonAction={() => handleCancel()}
+            closeButtonLabel={`${i18n.t("createidentifier.back")}`}
+            title={`${i18n.t("createidentifier.receive.title")}`}
           />
         }
       >
@@ -156,7 +180,9 @@ const IdentifierInvitationReceived = ({
       <PageFooter
         pageId={componentId}
         customClass={keyboardIsOpen ? "ion-hide" : ""}
-        primaryButtonText={`${i18n.t("createidentifier.confirmbutton")}`}
+        primaryButtonText={`${i18n.t(
+          "createidentifier.receive.confirmbutton"
+        )}`}
         primaryButtonAction={async () => handleContinue()}
         primaryButtonDisabled={!displayNameValueIsValid}
       />
@@ -164,4 +190,4 @@ const IdentifierInvitationReceived = ({
   );
 };
 
-export { IdentifierInvitationReceived };
+export { IdentifierReceiveInvitation };

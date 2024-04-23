@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
 import { RequestProps } from "../IncomingRequest.types";
 import { CredentialRequest } from "./CredentialRequest";
 import { MultiSigRequestStageOne } from "./MultiSigRequestStageOne";
 import { MultiSigRequestStageTwo } from "./MultiSigRequestStageTwo";
-import { CreateIdentifier } from "../../../components/CreateIdentifier";
 
 const RequestComponent = ({
   pageId,
@@ -19,17 +18,6 @@ const RequestComponent = ({
   incomingRequestType,
 }: RequestProps) => {
   const [requestStage, setRequestStage] = useState(0);
-  const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
-    useState(false);
-
-  useEffect(() => {
-    if (
-      incomingRequestType === IncomingRequestType.MULTI_SIG_INVITATION_RECEIVED
-    ) {
-      setCreateIdentifierModalIsOpen(true);
-    }
-  }, [incomingRequestType]);
-
   switch (incomingRequestType) {
   case IncomingRequestType.CREDENTIAL_OFFER_RECEIVED:
     return (
@@ -66,14 +54,6 @@ const RequestComponent = ({
         handleAccept={handleAccept}
         handleCancel={handleCancel}
         setRequestStage={setRequestStage}
-      />
-    );
-  case IncomingRequestType.MULTI_SIG_INVITATION_RECEIVED:
-    return (
-      <CreateIdentifier
-        modalIsOpen={createIdentifierModalIsOpen}
-        setModalIsOpen={setCreateIdentifierModalIsOpen}
-        invitationReceived={true}
       />
     );
   default:
