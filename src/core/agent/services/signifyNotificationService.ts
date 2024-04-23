@@ -95,8 +95,8 @@ class SignifyNotificationService extends AgentService {
   async onSignifyOperationStateChanged(
     callback: (identifierShortDetails: IdentifierShortDetails) => void
   ) {
-    const condition = true;
-    while (condition) {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
       const pendingIdentifiers =
         await this.identifierStorage.getAllPendingIdentifierMetadata();
       if (pendingIdentifiers.length > 0) {
