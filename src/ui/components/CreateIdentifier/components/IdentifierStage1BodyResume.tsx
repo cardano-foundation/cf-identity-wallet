@@ -26,16 +26,17 @@ const IdentifierStage1BodyResume = ({
 
   useEffect(() => {
     if (connectionsCache.length) {
-      const sortedConnections = [...connectionsCache].sort(function (a, b) {
+      const filteredConnections = connectionsCache.filter(
+        (connection) => connection.groupId === groupMetadata?.groupId
+      );
+
+      const sortedConnections = filteredConnections.sort(function (a, b) {
         const textA = a.label.toUpperCase();
         const textB = b.label.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;
       });
 
-      const filteredConnections = sortedConnections.filter(
-        (connection) => connection.groupId === groupMetadata?.groupId
-      );
-      setScannedConnections(filteredConnections);
+      setScannedConnections(sortedConnections);
     }
   }, [connectionsCache]);
 
