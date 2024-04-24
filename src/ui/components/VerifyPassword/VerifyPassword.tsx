@@ -1,7 +1,6 @@
-import { IonButton, IonCol, IonGrid, IonModal, IonRow } from "@ionic/react";
+import { IonButton } from "@ionic/react";
 import { useEffect, useMemo, useState } from "react";
 import { i18n } from "../../../i18n";
-import { PageLayout } from "../layout/PageLayout";
 import { VerifyPasswordProps } from "./VerifyPassword.types";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
@@ -165,6 +164,7 @@ const VerifyPassword = ({
               fill="outline"
               className="secondary-button"
               onClick={() => setAlertChoiceIsOpen(true)}
+              data-testid="forgot-hint-btn"
             >
               {i18n.t("verifypassword.button.forgot")}
             </IonButton>
