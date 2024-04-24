@@ -1,7 +1,7 @@
 import { IonIcon, IonButton, IonItem, IonLabel, IonList } from "@ionic/react";
 import { qrCodeOutline } from "ionicons/icons";
 import { QRCode } from "react-qrcode-logo";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { i18n } from "../../../../i18n";
 import { PageHeader } from "../../PageHeader";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
@@ -9,6 +9,8 @@ import { IdentifierStage1BodyProps } from "../CreateIdentifier.types";
 import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { PageFooter } from "../../PageFooter";
+import { useAppSelector } from "../../../../store/hooks";
+import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
 
 const IdentifierStage1BodyResume = ({
   componentId,
@@ -17,9 +19,25 @@ const IdentifierStage1BodyResume = ({
   groupMetadata,
   handleScanButton,
 }: IdentifierStage1BodyProps) => {
+  const connectionsCache = useAppSelector(getConnectionsCache);
   const [scannedConections, setScannedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
+
+  useEffect(() => {
+    if (connectionsCache.length) {
+      const sortedConnections = [...connectionsCache].sort(function (a, b) {
+        const textA = a.label.toUpperCase();
+        const textB = b.label.toUpperCase();
+        return textA < textB ? -1 : textA > textB ? 1 : 0;
+      });
+
+      const filteredConnections = sortedConnections.filter(
+        (connection) => connection.groupId === groupMetadata?.groupId
+      );
+      setScannedConnections(filteredConnections);
+    }
+  }, [connectionsCache]);
 
   const handleInitiateMultiSig = () => {
     // TODO: handle initiate Multi Sig

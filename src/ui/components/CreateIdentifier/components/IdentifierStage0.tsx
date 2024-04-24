@@ -99,8 +99,8 @@ const IdentifierStage0 = ({
         groupInitiator: true,
         groupCreated: false,
       };
-      metadata.groupMetadata = groupMetadata;
     }
+    metadata.groupMetadata = groupMetadata;
     const { identifier, signifyName } =
       await Agent.agent.identifiers.createIdentifier(metadata);
     if (identifier) {
@@ -134,9 +134,9 @@ const IdentifierStage0 = ({
       if (state.selectedAidType !== 0 || invitationReceived) {
         setBlur && setBlur(false);
       } else {
-        dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
         resetModal && resetModal();
       }
+      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
     }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
   };
 
