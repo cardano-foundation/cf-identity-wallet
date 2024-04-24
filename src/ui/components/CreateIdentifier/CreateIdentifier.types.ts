@@ -49,7 +49,11 @@ interface IdentifierStage1BodyProps {
   componentId: string;
   handleDone: () => void;
   oobi: string;
-  groupInitiator?: boolean | undefined;
+  groupMetadata?: {
+    groupId: string;
+    groupInitiator: boolean;
+    groupCreated: boolean;
+  };
   handleScanButton: () => void;
 }
 

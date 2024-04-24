@@ -14,7 +14,7 @@ const IdentifierStage1BodyResume = ({
   componentId,
   handleDone,
   oobi,
-  groupInitiator,
+  groupMetadata,
   handleScanButton,
 }: IdentifierStage1BodyProps) => {
   const [scannedConections, setScannedConnections] = useState<
@@ -39,7 +39,11 @@ const IdentifierStage1BodyResume = ({
         }
       >
         <p className="multisig-share-note">
-          {i18n.t("createidentifier.share.notes.top")}
+          {i18n.t(
+            groupMetadata?.groupInitiator
+              ? "createidentifier.share.notes.top"
+              : "createidentifier.receive.notes.top"
+          )}
         </p>
         <div
           className={`multisig-share-qr-code${
@@ -69,7 +73,11 @@ const IdentifierStage1BodyResume = ({
           </span>
         </div>
         <p className="multisig-share-note">
-          {i18n.t("createidentifier.share.notes.middle")}
+          {i18n.t(
+            groupMetadata?.groupInitiator
+              ? "createidentifier.share.notes.middle"
+              : "createidentifier.receive.notes.middle"
+          )}
         </p>
         <div className="share-identifier-scan-button">
           <IonButton
@@ -107,7 +115,7 @@ const IdentifierStage1BodyResume = ({
           </IonList>
         )}
       </ScrollablePageLayout>
-      {groupInitiator && (
+      {groupMetadata?.groupInitiator && (
         <PageFooter
           pageId={componentId}
           primaryButtonText={`${i18n.t(

@@ -11,6 +11,7 @@ const IdentifierStage1BodyInit = ({
   handleDone,
   oobi,
   handleScanButton,
+  groupMetadata,
 }: IdentifierStage1BodyProps) => {
   return (
     <ResponsivePageLayout

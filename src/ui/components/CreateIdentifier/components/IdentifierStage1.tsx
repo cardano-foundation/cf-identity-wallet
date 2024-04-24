@@ -23,9 +23,8 @@ const IdentifierStage1 = ({
   const groupId =
     resumeMultiSig?.groupMetadata?.groupId ||
     state.newIdentifier.groupMetadata?.groupId;
-  const groupInitiator =
-    resumeMultiSig?.groupMetadata?.groupInitiator ||
-    state.newIdentifier.groupMetadata?.groupInitiator;
+  const groupMetadata =
+    resumeMultiSig?.groupMetadata || state.newIdentifier.groupMetadata;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
 
   useEffect(() => {
@@ -69,7 +68,7 @@ const IdentifierStage1 = ({
           componentId={componentId}
           handleDone={handleDone}
           oobi={oobi}
-          groupInitiator={groupInitiator}
+          groupMetadata={groupMetadata}
           handleScanButton={() => setAlertIsOpen(true)}
         />
       )}
