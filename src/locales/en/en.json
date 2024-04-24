@@ -929,7 +929,8 @@
     "title": "Add a ",
     "scan": "Scan QR Code",
     "connect": "Scan to connect",
-    "provide": "Provide QR Code"
+    "provide": "Provide QR Code",
+    "close": "Done"
   },
   "verifypassword": {
     "title": "Enter password",
