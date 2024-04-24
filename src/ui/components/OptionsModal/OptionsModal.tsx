@@ -22,7 +22,7 @@ const OptionModal = ({
       {...props}
     >
       <PageHeader {...header} />
-      {items.length > 0 && (
+      {items && items.length > 0 && (
         <IonList
           className="option-list"
           lines="none"

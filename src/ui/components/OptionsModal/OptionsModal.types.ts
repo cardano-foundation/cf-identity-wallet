@@ -1,4 +1,4 @@
-import { MouseEventHandler, ReactNode } from "react";
+import { ReactNode } from "react";
 import { PageHeaderProps } from "../PageHeader/PageHeader.types";
 import { ResponsiveModalProps } from "../layout/ResponsiveModal/ResponsiveModal.types";
 
@@ -12,6 +12,6 @@ export interface OptionItem {
 
 export interface OptionModalProps extends ResponsiveModalProps {
   header: PageHeaderProps;
-  items: OptionItem[];
+  items?: OptionItem[];
   children?: ReactNode;
 }
