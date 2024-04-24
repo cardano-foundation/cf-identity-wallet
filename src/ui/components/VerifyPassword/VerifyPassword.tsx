@@ -1,5 +1,5 @@
 import { IonButton, IonCol, IonGrid, IonModal, IonRow } from "@ionic/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { VerifyPasswordProps } from "./VerifyPassword.types";
@@ -10,6 +10,7 @@ import { Alert } from "../Alert";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
+import { OptionModal } from "../OptionsModal";
 
 const VerifyPassword = ({
   isOpen,
@@ -116,111 +117,101 @@ const VerifyPassword = ({
     // @TODO - sdisalvo: navigate the user to the Reset Operations Password Screen
   };
 
+  const headerOptions = useMemo(
+    () => ({
+      closeButton: true,
+      closeButtonLabel: `${i18n.t("verifypassword.cancel")}`,
+      closeButtonAction: () => setIsOpen(false),
+      title: `${i18n.t("verifypassword.title")}`,
+      actionButton: true,
+      actionButtonDisabled: !verifyPasswordValue.length,
+      actionButtonAction: () => setAttempts(attempts - 1),
+      actionButtonLabel: `${i18n.t("verifypassword.confirm")}`,
+    }),
+    [verifyPasswordValue.length]
+  );
+
   return (
-    <IonModal
-      isOpen={isOpen}
-      initialBreakpoint={0.35}
-      breakpoints={[0, 0.35]}
-      animated={false}
-      className="page-layout extended-modal"
-      data-testid="verify-password"
-      onDidDismiss={() => resetModal()}
-    >
-      <div className="verify-password modal">
-        <PageLayout
-          header={true}
-          closeButton={true}
-          closeButtonLabel={`${i18n.t("verifypassword.cancel")}`}
-          closeButtonAction={() => setIsOpen(false)}
-          actionButton={true}
-          actionButtonDisabled={!verifyPasswordValue.length}
-          actionButtonAction={() => setAttempts(attempts - 1)}
-          actionButtonLabel={`${i18n.t("verifypassword.confirm")}`}
-          title={`${i18n.t("verifypassword.title")}`}
-        >
-          <IonGrid>
-            <IonRow>
-              <IonCol size="12">
-                <CustomInput
-                  dataTestId="verify-password-value"
-                  hiddenInput={true}
-                  autofocus={true}
-                  onChangeInput={setVerifyPasswordValue}
-                  value={verifyPasswordValue}
-                />
-              </IonCol>
-            </IonRow>
-            {showError ? (
-              <ErrorMessage
-                message={errorMessages.hasNoMatch}
-                timeout={true}
-              />
-            ) : (
-              <div className="error-placeholder" />
-            )}
-          </IonGrid>
-          <IonGrid>
-            <IonRow>
-              <IonCol className="continue-col">
-                {storedHint ? (
-                  <IonButton
-                    shape="round"
-                    expand="block"
-                    fill="outline"
-                    className="secondary-button"
-                    onClick={() => setAlertChoiceIsOpen(true)}
-                  >
-                    {i18n.t("verifypassword.button.forgot")}
-                  </IonButton>
-                ) : (
-                  <IonButton
-                    shape="round"
-                    expand="block"
-                    fill="outline"
-                    className="secondary-button"
-                    onClick={handleReset}
-                  >
-                    {i18n.t("verifypassword.alert.button.resetmypassword")}
-                  </IonButton>
-                )}
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-          <Alert
-            isOpen={alertChoiceIsOpen}
-            setIsOpen={setAlertChoiceIsOpen}
-            dataTestId="alert-choice"
-            headerText={i18n.t("verifypassword.alert.choice.title")}
-            confirmButtonText={`${i18n.t(
-              "verifypassword.alert.button.seepasswordhint"
-            )}`}
-            cancelButtonText={`${i18n.t(
-              "verifypassword.alert.button.resetmypassword"
-            )}`}
-            actionConfirm={() => {
-              setAlertChoiceIsOpen(false);
-              setAlertHintIsOpen(true);
-            }}
-            actionDismiss={handleReset}
+    <>
+      <OptionModal
+        modalIsOpen={isOpen}
+        componentId="verify-password"
+        customClasses="verify-password-modal"
+        onDismiss={() => resetModal()}
+        header={headerOptions}
+      >
+        <div className="password-input-container">
+          <CustomInput
+            dataTestId="verify-password-value"
+            hiddenInput={true}
+            autofocus={true}
+            onChangeInput={setVerifyPasswordValue}
+            value={verifyPasswordValue}
           />
-          <Alert
-            isOpen={alertHintIsOpen}
-            setIsOpen={setAlertHintIsOpen}
-            dataTestId="alert-tryagain"
-            headerText={i18n.t("verifypassword.alert.hint.title")}
-            subheaderText={storedHint}
-            confirmButtonText={`${i18n.t(
-              "verifypassword.alert.button.tryagain"
-            )}`}
-            cancelButtonText={`${i18n.t(
-              "verifypassword.alert.button.resetmypassword"
-            )}`}
-            actionConfirm={() => setAlertHintIsOpen(false)}
-            actionDismiss={handleReset}
-          />
-        </PageLayout>
-      </div>
-    </IonModal>
+          {showError ? (
+            <ErrorMessage
+              message={errorMessages.hasNoMatch}
+              timeout={true}
+            />
+          ) : (
+            <div className="error-placeholder" />
+          )}
+        </div>
+        <div className="forgot-actions">
+          {storedHint ? (
+            <IonButton
+              shape="round"
+              expand="block"
+              fill="outline"
+              className="secondary-button"
+              onClick={() => setAlertChoiceIsOpen(true)}
+            >
+              {i18n.t("verifypassword.button.forgot")}
+            </IonButton>
+          ) : (
+            <IonButton
+              shape="round"
+              expand="block"
+              fill="outline"
+              className="secondary-button"
+              onClick={handleReset}
+            >
+              {i18n.t("verifypassword.alert.button.resetmypassword")}
+            </IonButton>
+          )}
+        </div>
+      </OptionModal>
+      <Alert
+        isOpen={alertChoiceIsOpen}
+        setIsOpen={setAlertChoiceIsOpen}
+        dataTestId="alert-choice"
+        headerText={i18n.t("verifypassword.alert.choice.title")}
+        confirmButtonText={`${i18n.t(
+          "verifypassword.alert.button.seepasswordhint"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "verifypassword.alert.button.resetmypassword"
+        )}`}
+        actionConfirm={() => {
+          setAlertChoiceIsOpen(false);
+          setAlertHintIsOpen(true);
+        }}
+        actionDismiss={handleReset}
+      />
+      <Alert
+        isOpen={alertHintIsOpen}
+        setIsOpen={setAlertHintIsOpen}
+        dataTestId="alert-tryagain"
+        headerText={i18n.t("verifypassword.alert.hint.title")}
+        subheaderText={storedHint}
+        confirmButtonText={`${i18n.t("verifypassword.alert.button.tryagain")}`}
+        cancelButtonText={`${i18n.t(
+          "verifypassword.alert.button.resetmypassword"
+        )}`}
+        actionConfirm={() => setAlertHintIsOpen(false)}
+        actionDismiss={handleReset}
+      />
+    </>
   );
 };
 
