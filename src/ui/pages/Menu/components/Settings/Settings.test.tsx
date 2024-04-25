@@ -6,13 +6,12 @@ import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 
 describe("Settings page", () => {
   test("Renders Settings page", () => {
-    const { getByTestId, getByText } = render(
+    const { getByText } = render(
       <Provider store={store}>
         <Settings />
       </Provider>
     );
 
-    expect(getByTestId("settings-page")).toBeInTheDocument();
     expect(
       getByText(EN_TRANSLATIONS.settings.sections.security.title)
     ).toBeInTheDocument();

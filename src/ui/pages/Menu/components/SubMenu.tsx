@@ -28,7 +28,10 @@ const SubMenu = ({
       }
       customClass={`${showSubMenu ? "show" : "hide"}`}
     >
-      <div className={`${title?.toLowerCase().replace(" ", "-")}-content`}>
+      <div
+        className={`${title?.toLowerCase().replace(" ", "-")}-content`}
+        data-testid={`${title?.toLowerCase().replace(" ", "-")}-content`}
+      >
         {children}
       </div>
     </ScrollablePageLayout>
