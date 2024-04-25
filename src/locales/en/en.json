@@ -1010,7 +1010,11 @@
     },
     "receive": {
       "title": "Setup identifier",
-      "confirmbutton": "Add identifier"
+      "confirmbutton": "Add identifier",
+      "notes": {
+        "top": "Before proceeding, please make sure everyone included as a member scans this QR code.",
+        "middle": "Remember to scan everyone else’s QR code too!"
+      }
     },
     "connections": {
       "title": "Connections",

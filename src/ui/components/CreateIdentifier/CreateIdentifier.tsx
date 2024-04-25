@@ -59,6 +59,7 @@ const CreateIdentifier = ({
     setModalIsOpen(false);
     setState(initialState);
     setResumeMultiSig && setResumeMultiSig(null);
+    setInvitationReceived && setInvitationReceived(false);
   };
 
   const handleResetInvitationReceived = () => {
@@ -85,25 +86,17 @@ const CreateIdentifier = ({
           <IonSpinner name="circular" />
         </div>
       )}
-      {modalIsOpen &&
-        (invitationReceived ? (
-          <IdentifierReceiveInvitation
-            state={state}
-            setState={setState}
-            componentId={componentId}
-            resetModal={() => handleResetInvitationReceived()}
-            setBlur={setBlur}
-          />
-        ) : (
-          <CurrentStage
-            state={state}
-            setState={setState}
-            componentId={componentId}
-            resetModal={resetModal}
-            setBlur={setBlur}
-            resumeMultiSig={resumeMultiSig}
-          />
-        ))}
+      {modalIsOpen && (
+        <CurrentStage
+          state={state}
+          setState={setState}
+          componentId={componentId}
+          resetModal={resetModal}
+          setBlur={setBlur}
+          resumeMultiSig={resumeMultiSig}
+          invitationReceived={invitationReceived}
+        />
+      )}
     </IonModal>
   );
 };

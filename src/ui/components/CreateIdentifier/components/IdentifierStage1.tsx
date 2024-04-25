@@ -10,7 +10,6 @@ import { i18n } from "../../../../i18n";
 
 const IdentifierStage1 = ({
   state,
-  setState,
   componentId,
   resetModal,
   resumeMultiSig,
@@ -23,6 +22,8 @@ const IdentifierStage1 = ({
   const groupId =
     resumeMultiSig?.groupMetadata?.groupId ||
     state.newIdentifier.groupMetadata?.groupId;
+  const groupMetadata =
+    resumeMultiSig?.groupMetadata || state.newIdentifier.groupMetadata;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
 
   useEffect(() => {
@@ -59,6 +60,7 @@ const IdentifierStage1 = ({
           componentId={componentId}
           handleDone={handleDone}
           oobi={oobi}
+          groupMetadata={groupMetadata}
           handleScanButton={() => setAlertIsOpen(true)}
         />
       ) : (
@@ -66,6 +68,7 @@ const IdentifierStage1 = ({
           componentId={componentId}
           handleDone={handleDone}
           oobi={oobi}
+          groupMetadata={groupMetadata}
           handleScanButton={() => setAlertIsOpen(true)}
         />
       )}

@@ -1,7 +1,7 @@
 import { IonIcon, IonButton, IonItem, IonLabel, IonList } from "@ionic/react";
 import { qrCodeOutline } from "ionicons/icons";
 import { QRCode } from "react-qrcode-logo";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { i18n } from "../../../../i18n";
 import { PageHeader } from "../../PageHeader";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
@@ -9,16 +9,36 @@ import { IdentifierStage1BodyProps } from "../CreateIdentifier.types";
 import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { PageFooter } from "../../PageFooter";
+import { useAppSelector } from "../../../../store/hooks";
+import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
 
 const IdentifierStage1BodyResume = ({
   componentId,
   handleDone,
   oobi,
+  groupMetadata,
   handleScanButton,
 }: IdentifierStage1BodyProps) => {
+  const connectionsCache = useAppSelector(getConnectionsCache);
   const [scannedConections, setScannedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
+
+  useEffect(() => {
+    if (connectionsCache.length) {
+      const filteredConnections = connectionsCache.filter(
+        (connection) => connection.groupId === groupMetadata?.groupId
+      );
+
+      const sortedConnections = filteredConnections.sort(function (a, b) {
+        const textA = a.label.toUpperCase();
+        const textB = b.label.toUpperCase();
+        return textA < textB ? -1 : textA > textB ? 1 : 0;
+      });
+
+      setScannedConnections(sortedConnections);
+    }
+  }, [connectionsCache]);
 
   const handleInitiateMultiSig = () => {
     // TODO: handle initiate Multi Sig
@@ -38,7 +58,11 @@ const IdentifierStage1BodyResume = ({
         }
       >
         <p className="multisig-share-note">
-          {i18n.t("createidentifier.share.notes.top")}
+          {i18n.t(
+            groupMetadata?.groupInitiator
+              ? "createidentifier.share.notes.top"
+              : "createidentifier.receive.notes.top"
+          )}
         </p>
         <div
           className={`multisig-share-qr-code${
@@ -68,7 +92,11 @@ const IdentifierStage1BodyResume = ({
           </span>
         </div>
         <p className="multisig-share-note">
-          {i18n.t("createidentifier.share.notes.middle")}
+          {i18n.t(
+            groupMetadata?.groupInitiator
+              ? "createidentifier.share.notes.middle"
+              : "createidentifier.receive.notes.middle"
+          )}
         </p>
         <div className="share-identifier-scan-button">
           <IonButton
@@ -106,12 +134,16 @@ const IdentifierStage1BodyResume = ({
           </IonList>
         )}
       </ScrollablePageLayout>
-      <PageFooter
-        pageId={componentId}
-        primaryButtonText={`${i18n.t("createidentifier.share.initiatebutton")}`}
-        primaryButtonAction={handleInitiateMultiSig}
-        primaryButtonDisabled={!scannedConections.length}
-      />
+      {groupMetadata?.groupInitiator && (
+        <PageFooter
+          pageId={componentId}
+          primaryButtonText={`${i18n.t(
+            "createidentifier.share.initiatebutton"
+          )}`}
+          primaryButtonAction={handleInitiateMultiSig}
+          primaryButtonDisabled={!scannedConections.length}
+        />
+      )}
     </>
   );
 };

@@ -11,6 +11,7 @@ const IdentifierStage1BodyInit = ({
   handleDone,
   oobi,
   handleScanButton,
+  groupMetadata,
 }: IdentifierStage1BodyProps) => {
   return (
     <ResponsivePageLayout
@@ -25,7 +26,11 @@ const IdentifierStage1BodyInit = ({
       }
     >
       <p className="multisig-share-note">
-        {i18n.t("createidentifier.share.notes.top")}
+        {i18n.t(
+          groupMetadata?.groupInitiator
+            ? "createidentifier.share.notes.top"
+            : "createidentifier.receive.notes.top"
+        )}
       </p>
       <div
         className={`multisig-share-qr-code${oobi.length ? " reveal" : " blur"}`}
@@ -53,7 +58,11 @@ const IdentifierStage1BodyInit = ({
         </span>
       </div>
       <p className="multisig-share-note">
-        {i18n.t("createidentifier.share.notes.middle")}
+        {i18n.t(
+          groupMetadata?.groupInitiator
+            ? "createidentifier.share.notes.middle"
+            : "createidentifier.receive.notes.middle"
+        )}
       </p>
       <div className="share-identifier-scan-button">
         <IonButton
