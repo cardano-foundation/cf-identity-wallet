@@ -197,6 +197,10 @@ const ConnectionDetails = () => {
     }
   };
 
+  const handleOpenNoteManageModal = () => {
+    setModalIsOpen(true);
+  };
+
   return (
     <>
       <ScrollablePageLayout
@@ -321,7 +325,7 @@ const ConnectionDetails = () => {
               <ConnectionNotes
                 notes={notes}
                 pageId={pageId}
-                onOptionButtonClick={() => setOptionsIsOpen(true)}
+                onOptionButtonClick={handleOpenNoteManageModal}
               />
             </div>
           )}
