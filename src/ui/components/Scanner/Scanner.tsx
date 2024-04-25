@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { IonCol, IonGrid, IonIcon, IonRow, isPlatform } from "@ionic/react";
 import {
   BarcodeScanner,
@@ -6,6 +6,7 @@ import {
 } from "@capacitor-community/barcode-scanner";
 import { scanOutline } from "ionicons/icons";
 import "./Scanner.scss";
+import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -13,14 +14,18 @@ import {
   getCurrentRoute,
   getToastMsg,
   setCurrentOperation,
+  setQueueIncomingRequest,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { Agent } from "../../../core/agent/agent";
 import { ScannerProps } from "./Scanner.types";
+import { KeriConnectionType } from "../../../core/agent/agent.types";
+import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 
 const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
   const dispatch = useAppDispatch();
+  const history = useHistory();
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentToastMsg = useAppSelector(getToastMsg);
   const currentRoute = useAppSelector(getCurrentRoute);
@@ -76,8 +81,26 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
           dispatch(setCurrentOperation(OperationType.IDLE));
           // @TODO - foconnor: when above loading screen in place, handle invalid QR code
           // @TODO - sdisalvo: receiveInvitationFromUrl should be awaited once we have error handling
-          Agent.agent.connections.receiveInvitationFromUrl(result.content);
-          setIsValueCaptured && setIsValueCaptured(true);
+          const invitation =
+            await Agent.agent.connections.receiveInvitationFromUrl(
+              result.content
+            );
+          if (invitation.type === KeriConnectionType.NORMAL) {
+            setIsValueCaptured && setIsValueCaptured(true);
+          } else if (invitation.type === KeriConnectionType.MULTI_SIG) {
+            dispatch(
+              setQueueIncomingRequest({
+                id: invitation.groupId,
+                type: IncomingRequestType.MULTI_SIG_RECEIVE_INVITATION,
+              })
+            );
+            dispatch(
+              setCurrentOperation(OperationType.RECEIVE_MULTI_SIG_INVITATION)
+            );
+            history.push({
+              pathname: TabsRoutePath.IDENTIFIERS,
+            });
+          }
         }
       }
     }

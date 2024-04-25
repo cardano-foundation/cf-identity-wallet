@@ -6,6 +6,8 @@ interface CreateIdentifierProps {
   setModalIsOpen: (value: boolean) => void;
   resumeMultiSig?: IdentifierShortDetails | null;
   setResumeMultiSig?: (value: IdentifierShortDetails | null) => void;
+  invitationReceived?: boolean;
+  setInvitationReceived?: (value: boolean) => void;
 }
 
 interface TypeItemProps {
@@ -40,12 +42,18 @@ interface IdentifierStageProps {
   setBlur?: (value: boolean) => void;
   resetModal: () => void;
   resumeMultiSig?: IdentifierShortDetails | null;
+  invitationReceived?: boolean;
 }
 
 interface IdentifierStage1BodyProps {
   componentId: string;
   handleDone: () => void;
   oobi: string;
+  groupMetadata?: {
+    groupId: string;
+    groupInitiator: boolean;
+    groupCreated: boolean;
+  };
   handleScanButton: () => void;
 }
 

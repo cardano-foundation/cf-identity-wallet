@@ -33,7 +33,6 @@ import { updateReduxState } from "../../../store/utils";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 import { ShareQR } from "../../components/ShareQR/ShareQR";
 import { MoreOptions } from "../../components/ShareQR/MoreOptions";
-import { Agent } from "../../../core/agent/agent";
 import { AlphabeticList } from "./components/AlphabeticList";
 import { AlphabetSelector } from "./components/AlphabetSelector";
 

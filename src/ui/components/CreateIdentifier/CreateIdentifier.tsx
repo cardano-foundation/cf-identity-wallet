@@ -21,6 +21,8 @@ const CreateIdentifier = ({
   setModalIsOpen,
   resumeMultiSig,
   setResumeMultiSig,
+  invitationReceived,
+  setInvitationReceived,
 }: CreateIdentifierProps) => {
   const componentId = "create-identifier-modal";
   const initialState = {
@@ -56,6 +58,7 @@ const CreateIdentifier = ({
     setModalIsOpen(false);
     setState(initialState);
     setResumeMultiSig && setResumeMultiSig(null);
+    setInvitationReceived && setInvitationReceived(false);
   };
 
   const CurrentStage =
@@ -85,6 +88,7 @@ const CreateIdentifier = ({
           resetModal={resetModal}
           setBlur={setBlur}
           resumeMultiSig={resumeMultiSig}
+          invitationReceived={invitationReceived}
         />
       )}
     </IonModal>

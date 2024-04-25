@@ -985,10 +985,13 @@
     "more": "More share options"
   },
   "createidentifier": {
-    "title": "Add an identifier",
     "cancel": "Cancel",
     "back": "Back",
     "done": "Done",
+    "add": {
+      "title": "Add an identifier",
+      "confirmbutton": "Create identifier"
+    },
     "share": {
       "title": "Share identifier",
       "subtitle": "You've scanned",
@@ -998,7 +1001,20 @@
         "bottom": "To continue with the initiation of the mult-sig you must have scanned at least one other QR code."
       },
       "scanbutton": "Scan QR codes",
-      "initiatebutton": "Initiate multi-sig"
+      "initiatebutton": "Initiate multi-sig",
+      "scanalert": {
+        "text": "Have all the individuals you want to include as members scanned your QR code?",
+        "confirm": "Confirm and scan",
+        "cancel": "Cancel"
+      }
+    },
+    "receive": {
+      "title": "Setup identifier",
+      "confirmbutton": "Add identifier",
+      "notes": {
+        "top": "Before proceeding, please make sure everyone included as a member scans this QR code.",
+        "middle": "Remember to scan everyone else’s QR code too!"
+      }
     },
     "connections": {
       "title": "Connections",
@@ -1053,7 +1069,6 @@
     "theme": {
       "title": "Choose a theme"
     },
-    "confirmbutton": "Create identifier",
     "error": {
       "maxlength": "Must be less than 32 characters long"
     }

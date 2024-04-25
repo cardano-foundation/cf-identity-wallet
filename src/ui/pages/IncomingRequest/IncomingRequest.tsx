@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import "./IncomingRequest.scss";
 import {
   getQueueIncomingRequest,
@@ -10,16 +10,19 @@ import {
   IncomingRequestProps,
   IncomingRequestType,
 } from "../../../store/reducers/stateCache/stateCache.types";
-import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
 import { RequestComponent } from "./components/RequestComponent";
 
 const IncomingRequest = () => {
   const pageId = "incoming-request";
   const dispatch = useAppDispatch();
   const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
-  const incomingRequest = !queueIncomingRequest.isProcessing
-    ? { id: "" }
-    : queueIncomingRequest.queues[0] ?? { id: "" };
+  const incomingRequest = useMemo(() => {
+    return !queueIncomingRequest.isProcessing
+      ? { id: "" }
+      : queueIncomingRequest.queues.length > 0
+        ? queueIncomingRequest.queues[0]
+        : { id: "" };
+  }, [queueIncomingRequest]);
   const [showRequest, setShowRequest] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [requestData, setRequestData] = useState<IncomingRequestProps>();

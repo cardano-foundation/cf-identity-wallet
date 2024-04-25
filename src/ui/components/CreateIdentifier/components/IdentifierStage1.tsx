@@ -5,10 +5,11 @@ import { getStateCache } from "../../../../store/reducers/stateCache";
 import { Agent } from "../../../../core/agent/agent";
 import { IdentifierStage1BodyInit } from "./IdentifierStage1BodyInit";
 import { IdentifierStage1BodyResume } from "./IdentifierStage1BodyResume";
+import { Alert } from "../../Alert";
+import { i18n } from "../../../../i18n";
 
 const IdentifierStage1 = ({
   state,
-  setState,
   componentId,
   resetModal,
   resumeMultiSig,
@@ -21,6 +22,9 @@ const IdentifierStage1 = ({
   const groupId =
     resumeMultiSig?.groupMetadata?.groupId ||
     state.newIdentifier.groupMetadata?.groupId;
+  const groupMetadata =
+    resumeMultiSig?.groupMetadata || state.newIdentifier.groupMetadata;
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
 
   useEffect(() => {
     async function fetchOobi() {
@@ -45,7 +49,7 @@ const IdentifierStage1 = ({
     resetModal && resetModal();
   };
 
-  const handleScanButton = () => {
+  const handleInitiateScan = () => {
     // TODO: scan button functionality
   };
 
@@ -56,16 +60,33 @@ const IdentifierStage1 = ({
           componentId={componentId}
           handleDone={handleDone}
           oobi={oobi}
-          handleScanButton={handleScanButton}
+          groupMetadata={groupMetadata}
+          handleScanButton={() => setAlertIsOpen(true)}
         />
       ) : (
         <IdentifierStage1BodyResume
           componentId={componentId}
           handleDone={handleDone}
           oobi={oobi}
-          handleScanButton={handleScanButton}
+          groupMetadata={groupMetadata}
+          handleScanButton={() => setAlertIsOpen(true)}
         />
       )}
+      <Alert
+        isOpen={alertIsOpen}
+        setIsOpen={setAlertIsOpen}
+        dataTestId="multisig-share-scan-alert"
+        headerText={i18n.t("createidentifier.share.scanalert.text")}
+        confirmButtonText={`${i18n.t(
+          "createidentifier.share.scanalert.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "createidentifier.share.scanalert.cancel"
+        )}`}
+        actionConfirm={handleInitiateScan}
+        actionCancel={() => setAlertIsOpen(false)}
+        actionDismiss={() => setAlertIsOpen(false)}
+      />
     </>
   );
 };

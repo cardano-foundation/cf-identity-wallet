@@ -50,7 +50,7 @@ describe("CreateIdentifier modal", () => {
       </Provider>
     );
     expect(
-      getByText(EN_TRANSLATIONS.createidentifier.title)
+      getByText(EN_TRANSLATIONS.createidentifier.add.title)
     ).toBeInTheDocument();
     fireEvent.click(getByTestId("close-button"));
     expect(getByTestId("create-identifier-modal-content-page")).toHaveClass(

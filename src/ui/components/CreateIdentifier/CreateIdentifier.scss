@@ -139,6 +139,12 @@ ion-modal.create-identifier-modal {
   }
 
   .create-identifier-modal-content {
+    padding-top: 0;
+
+    .page-header {
+      margin-top: 0.625rem;
+    }
+
     ion-grid {
       padding: 0 0.063rem;
     }
