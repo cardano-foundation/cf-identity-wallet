@@ -10,6 +10,11 @@ export interface OptionItem {
   testId?: string;
 }
 
+export interface OptionListProps {
+  data: OptionItem[];
+  className?: string;
+}
+
 export interface OptionModalProps extends ResponsiveModalProps {
   header: PageHeaderProps;
   items?: OptionItem[];
