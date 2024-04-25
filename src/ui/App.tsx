@@ -17,7 +17,6 @@ import { useAppSelector } from "../store/hooks";
 import { FullPageScanner } from "./pages/FullPageScanner";
 import { OperationType } from "./globals/types";
 import { IncomingRequest } from "./pages/IncomingRequest";
-import { Settings } from "./pages/Settings";
 import { SetUserName } from "./components/SetUserName";
 import { TabsRoutePath } from "../routes/paths";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
@@ -96,7 +95,6 @@ const App = () => {
             setIsOpen={setShowSetUserName}
           />
           <IncomingRequest />
-          <Settings />
           <CustomToast
             toastMsg={toastMsg}
             showToast={showToast}

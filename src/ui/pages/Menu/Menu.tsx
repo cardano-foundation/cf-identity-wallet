@@ -17,24 +17,32 @@ import {
   fingerPrintOutline,
   idCardOutline,
 } from "ionicons/icons";
+import { useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch } from "../../../store/hooks";
-import {
-  setCurrentOperation,
-  setCurrentRoute,
-} from "../../../store/reducers/stateCache";
+import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import "./Menu.scss";
 import { i18n } from "../../../i18n";
-import { OperationType } from "../../globals/types";
+import { Settings } from "./components/Settings";
+import { SubMenu } from "./components/SubMenu";
 
 const Menu = () => {
   const pageId = "menu-tab";
   const dispatch = useAppDispatch();
+  const [showSubMenu, setShowSubMenu] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(0);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
   });
+
+  const showSelectedOption = (index: number) => {
+    {
+      setShowSubMenu(true);
+      setSelectedOption(index);
+    }
+  };
 
   const AdditionalButtons = () => {
     return (
@@ -42,9 +50,7 @@ const Menu = () => {
         shape="round"
         className="settings-button"
         data-testid="settings-button"
-        onClick={() => {
-          dispatch(setCurrentOperation(OperationType.SHOW_SETTINGS));
-        }}
+        onClick={() => showSelectedOption(0)}
       >
         <IonIcon
           slot="icon-only"
@@ -53,10 +59,6 @@ const Menu = () => {
         />
       </IonButton>
     );
-  };
-
-  const handleItemSelection = (index: number) => {
-    // @TODO - sdisalvo: add some logic for selection
   };
 
   const MenuItem = ({
@@ -71,7 +73,7 @@ const Menu = () => {
     return (
       <IonCol>
         <IonCard
-          onClick={() => handleItemSelection(index)}
+          onClick={() => showSelectedOption(index)}
           data-testid={`menu-input-item-${index}`}
           className="menu-input"
         >
@@ -85,52 +87,66 @@ const Menu = () => {
     );
   };
 
+  const SubMenuChildren = [Settings];
+  const subMenuTitle = ["settings.sections.header"];
+  const subMenuAdditionalButtons = [<></>];
+
   return (
-    <TabLayout
-      pageId={pageId}
-      header={true}
-      title={`${i18n.t("menu.tab.header")}`}
-      additionalButtons={<AdditionalButtons />}
-    >
-      <IonGrid>
-        <IonRow className="menu-input-row">
-          <MenuItem
-            index={0}
-            icon={personCircleOutline}
-            label={`${i18n.t("menu.tab.items.profile")}`}
-          />
-          <MenuItem
-            index={1}
-            icon={walletOutline}
-            label={`${i18n.t("menu.tab.items.crypto")}`}
-          />
-        </IonRow>
-        <IonRow className="menu-input-row">
-          <MenuItem
-            index={2}
-            icon={peopleOutline}
-            label={`${i18n.t("menu.tab.items.connections")}`}
-          />
-          <MenuItem
-            index={3}
-            icon={chatbubbleOutline}
-            label={`${i18n.t("menu.tab.items.p2p")}`}
-          />
-        </IonRow>
-        <IonRow className="menu-input-row">
-          <MenuItem
-            index={4}
-            icon={fingerPrintOutline}
-            label={`${i18n.t("menu.tab.items.identity")}`}
-          />
-          <MenuItem
-            index={5}
-            icon={idCardOutline}
-            label={`${i18n.t("menu.tab.items.credentials")}`}
-          />
-        </IonRow>
-      </IonGrid>
-    </TabLayout>
+    <>
+      <TabLayout
+        pageId={pageId}
+        header={true}
+        title={`${i18n.t("menu.tab.header")}`}
+        additionalButtons={<AdditionalButtons />}
+      >
+        <IonGrid>
+          <IonRow className="menu-input-row">
+            <MenuItem
+              index={1}
+              icon={personCircleOutline}
+              label={`${i18n.t("menu.tab.items.profile")}`}
+            />
+            <MenuItem
+              index={2}
+              icon={walletOutline}
+              label={`${i18n.t("menu.tab.items.crypto")}`}
+            />
+          </IonRow>
+          <IonRow className="menu-input-row">
+            <MenuItem
+              index={3}
+              icon={peopleOutline}
+              label={`${i18n.t("menu.tab.items.connections")}`}
+            />
+            <MenuItem
+              index={4}
+              icon={chatbubbleOutline}
+              label={`${i18n.t("menu.tab.items.p2p")}`}
+            />
+          </IonRow>
+          <IonRow className="menu-input-row">
+            <MenuItem
+              index={5}
+              icon={fingerPrintOutline}
+              label={`${i18n.t("menu.tab.items.identity")}`}
+            />
+            <MenuItem
+              index={6}
+              icon={idCardOutline}
+              label={`${i18n.t("menu.tab.items.credentials")}`}
+            />
+          </IonRow>
+        </IonGrid>
+      </TabLayout>
+      <SubMenu
+        showSubMenu={showSubMenu}
+        setShowSubMenu={setShowSubMenu}
+        title={`${i18n.t(subMenuTitle[selectedOption])}`}
+        additionalButtons={subMenuAdditionalButtons[selectedOption]}
+      >
+        {SubMenuChildren[selectedOption] && SubMenuChildren[selectedOption]()}
+      </SubMenu>
+    </>
   );
 };
 
