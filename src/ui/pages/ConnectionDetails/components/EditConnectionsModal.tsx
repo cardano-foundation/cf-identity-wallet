@@ -1,5 +1,5 @@
 import { IonButton, IonIcon, IonModal } from "@ionic/react";
-import { createOutline } from "ionicons/icons";
+import { createOutline, addOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { i18n } from "../../../../i18n";
 import { ConnectionNote } from "./ConnectionNote";
@@ -15,6 +15,7 @@ import { ConnectionNoteDetails } from "../../../../core/agent/agent.types";
 import { Alert } from "../../../components/Alert";
 import { PageHeader } from "../../../components/PageHeader";
 import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
+import { PageFooter } from "../../../components/PageFooter";
 
 export const EditConnectionsContainer = ({
   notes,
@@ -171,9 +172,19 @@ export const EditConnectionsContainer = ({
                 ))}
               </>
             ) : (
-              <i className="connection-details-info-block-nonotes">
-                {i18n.t("connections.details.nocurrentnotes")}
-              </i>
+              <>
+                <p className="connection-details-info-block-nonotes">
+                  {i18n.t("connections.details.nocurrentnotesext")}
+                </p>
+                <PageFooter
+                  pageId="edit-connections-modal"
+                  primaryButtonIcon={addOutline}
+                  primaryButtonText={`${i18n.t(
+                    "connections.details.options.labels.add"
+                  )}`}
+                  primaryButtonAction={handleAddNewNote}
+                />
+              </>
             )}
           </div>
           <div className="connection-details-add-note">
