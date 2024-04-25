@@ -230,7 +230,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
-        passwordIsSkipped: !passcodeIsSet,
+        passwordIsSkipped: !passwordIsSet,
       })
     );
 

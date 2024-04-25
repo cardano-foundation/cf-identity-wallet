@@ -59,7 +59,7 @@ describe("Share QR component", () => {
         />
       </Provider>
     );
-    const refreshBtn = getByTestId("refresh-button");
+    const refreshBtn = getByTestId("action-button");
     act(() => {
       refreshBtn.click();
     });
