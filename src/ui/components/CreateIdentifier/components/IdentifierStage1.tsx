@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { useAppSelector } from "../../../../store/hooks";
 import { getStateCache } from "../../../../store/reducers/stateCache";
@@ -7,13 +8,16 @@ import { IdentifierStage1BodyInit } from "./IdentifierStage1BodyInit";
 import { IdentifierStage1BodyResume } from "./IdentifierStage1BodyResume";
 import { Alert } from "../../Alert";
 import { i18n } from "../../../../i18n";
+import { TabsRoutePath } from "../../navigation/TabsMenu";
 
 const IdentifierStage1 = ({
   state,
   componentId,
   resetModal,
   resumeMultiSig,
+  groupId: groupIdProp,
 }: IdentifierStageProps) => {
+  const history = useHistory();
   const stateCache = useAppSelector(getStateCache);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
@@ -47,6 +51,11 @@ const IdentifierStage1 = ({
 
   const handleDone = () => {
     resetModal && resetModal();
+    if (groupIdProp) {
+      history.push({
+        pathname: TabsRoutePath.IDENTIFIERS,
+      });
+    }
   };
 
   const handleInitiateScan = () => {

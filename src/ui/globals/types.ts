@@ -22,7 +22,6 @@ enum OperationType {
   SCAN_CONNECTION = "scanConnection",
   ADD_CREDENTIAL = "addCredential",
   RECEIVE_CONNECTION = "receiveConnection",
-  RECEIVE_MULTI_SIG_INVITATION = "receiveMultiSigInvitation",
   SHOW_SETTINGS = "showSettings",
 }
 
