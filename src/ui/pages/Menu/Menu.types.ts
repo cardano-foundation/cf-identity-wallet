@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { ReactElement, ReactNode } from "react";
 
 interface SubMenuData {
-  Component: () => ReactNode;
+  Component: () => ReactElement;
   title: string;
   additionalButtons: ReactNode;
 }
