@@ -26,7 +26,7 @@ import "./Menu.scss";
 import { i18n } from "../../../i18n";
 import { Settings } from "./components/Settings";
 import { SubMenu } from "./components/SubMenu";
-import { SubMenuKey } from "./Menu.types";
+import { MenuItemProps, SubMenuKey } from "./Menu.types";
 
 const submenuMap = new Map([
   [
@@ -39,11 +39,31 @@ const submenuMap = new Map([
   ],
 ]);
 
+const MenuItem = ({ key, icon, label, onClick }: MenuItemProps) => {
+  return (
+    <IonCol>
+      <IonCard
+        onClick={() => onClick(key)}
+        data-testid={`menu-input-item-${key}`}
+        className="menu-input"
+      >
+        <IonIcon
+          icon={icon}
+          color="primary"
+        />
+        <IonLabel>{label}</IonLabel>
+      </IonCard>
+    </IonCol>
+  );
+};
+
 const Menu = () => {
   const pageId = "menu-tab";
   const dispatch = useAppDispatch();
   const [showSubMenu, setShowSubMenu] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(0);
+  const [selectedOption, setSelectedOption] = useState<
+    SubMenuKey | undefined
+  >();
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
@@ -73,33 +93,14 @@ const Menu = () => {
     );
   };
 
-  const MenuItem = ({
-    index,
-    icon,
-    label,
-  }: {
-    index: number;
-    icon: string;
-    label: string;
-  }) => {
-    return (
-      <IonCol>
-        <IonCard
-          onClick={() => showSelectedOption(index)}
-          data-testid={`menu-input-item-${index}`}
-          className="menu-input"
-        >
-          <IonIcon
-            icon={icon}
-            color="primary"
-          />
-          <IonLabel>{label}</IonLabel>
-        </IonCard>
-      </IonCol>
-    );
+  const handleCloseSubMenu = () => {
+    setShowSubMenu(false);
+    setSelectedOption(undefined);
   };
 
   const selectSubmenu = useMemo(() => {
+    if (!selectedOption) return;
+
     return submenuMap.get(selectedOption);
   }, [selectedOption]);
 
@@ -114,38 +115,44 @@ const Menu = () => {
         <IonGrid>
           <IonRow className="menu-input-row">
             <MenuItem
-              index={SubMenuKey.Profile}
+              key={SubMenuKey.Profile}
               icon={personCircleOutline}
               label={`${i18n.t("menu.tab.items.profile")}`}
+              onClick={setSelectedOption}
             />
             <MenuItem
-              index={SubMenuKey.Crypto}
+              key={SubMenuKey.Crypto}
               icon={walletOutline}
               label={`${i18n.t("menu.tab.items.crypto")}`}
+              onClick={setSelectedOption}
             />
           </IonRow>
           <IonRow className="menu-input-row">
             <MenuItem
-              index={SubMenuKey.Connections}
+              key={SubMenuKey.Connections}
               icon={peopleOutline}
               label={`${i18n.t("menu.tab.items.connections")}`}
+              onClick={setSelectedOption}
             />
             <MenuItem
-              index={SubMenuKey.P2P}
+              key={SubMenuKey.P2P}
               icon={chatbubbleOutline}
               label={`${i18n.t("menu.tab.items.p2p")}`}
+              onClick={setSelectedOption}
             />
           </IonRow>
           <IonRow className="menu-input-row">
             <MenuItem
-              index={SubMenuKey.Identifier}
+              key={SubMenuKey.Identifier}
               icon={fingerPrintOutline}
               label={`${i18n.t("menu.tab.items.identity")}`}
+              onClick={setSelectedOption}
             />
             <MenuItem
-              index={SubMenuKey.Credential}
+              key={SubMenuKey.Credential}
               icon={idCardOutline}
               label={`${i18n.t("menu.tab.items.credentials")}`}
+              onClick={setSelectedOption}
             />
           </IonRow>
         </IonGrid>
@@ -153,7 +160,7 @@ const Menu = () => {
       {selectSubmenu && (
         <SubMenu
           showSubMenu={showSubMenu}
-          setShowSubMenu={setShowSubMenu}
+          setShowSubMenu={handleCloseSubMenu}
           title={`${i18n.t(selectSubmenu.title)}`}
           additionalButtons={selectSubmenu.addtionalButtons}
         >

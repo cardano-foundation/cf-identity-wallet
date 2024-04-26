@@ -8,6 +8,13 @@ interface SubMenuProps {
   children: ReactNode;
 }
 
+interface MenuItemProps {
+  key: SubMenuKey;
+  icon: string;
+  label: string;
+  onClick: (key: SubMenuKey) => void;
+}
+
 export enum SubMenuKey {
   Settings,
   Profile,
@@ -18,4 +25,4 @@ export enum SubMenuKey {
   Credential,
 }
 
-export type { SubMenuProps };
+export type { SubMenuProps, MenuItemProps };
