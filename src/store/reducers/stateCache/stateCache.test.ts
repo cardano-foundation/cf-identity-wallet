@@ -7,6 +7,7 @@ import {
   getCurrentRoute,
   getStateCache,
   initialState,
+  logout,
   setAuthentication,
   enqueueIncomingRequest,
   setCurrentOperation,
@@ -64,6 +65,16 @@ describe("State Cache", () => {
     const rootState = { stateCache: nextState } as RootState;
     expect(getAuthentication(rootState)).toEqual(nextState.authentication);
     expect(getStateCache(rootState)).toEqual(nextState);
+  });
+
+  test("should logout", () => {
+    const action = logout();
+    const nextState = stateCacheSlice.reducer(initialState, action);
+    expect(nextState.authentication.loggedIn).toEqual(false);
+    expect(nextState.queueIncomingRequest.isPaused).toEqual(true);
+    expect(nextState.queueIncomingRequest.isProcessing).toEqual(false);
+    expect(nextState.routes[0]).toEqual({ path: RoutePath.PASSCODE_LOGIN });
+    expect(nextState).not.toBe(initialState);
   });
 
   test("should set the currentOperation cache", () => {

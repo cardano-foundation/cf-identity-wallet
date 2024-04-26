@@ -108,8 +108,8 @@ const keriAcdcChangeHandler = async (
   }
 };
 
-const ACTIVITY_TIMEOUT = 10000; // 60 secs
-const ACTIVITY_BACKGROUND_TIMEOUT = ACTIVITY_TIMEOUT / 2;
+const ACTIVITY_TIMEOUT = 60000; // 60 secs
+const ACTIVITY_BACKGROUND_TIMEOUT = 3000;
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -117,16 +117,20 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const [initialised, setInitialised] = useState(false);
   const [agentInitErr, setAgentInitErr] = useState(false);
 
+  let timer: NodeJS.Timeout;
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    const handleActivity = async () => {
+    const handleActivity = () => {
       clearTimeout(timer);
-      timer = setTimeout(
-        () => {
-          dispatch(logout());
-        },
-        (await App.getState()) ? ACTIVITY_TIMEOUT : ACTIVITY_BACKGROUND_TIMEOUT
-      );
+      timer = setTimeout(() => {
+        dispatch(logout());
+      }, ACTIVITY_TIMEOUT);
+    };
+
+    const startBackgroundTimer = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        dispatch(logout());
+      }, ACTIVITY_BACKGROUND_TIMEOUT);
     };
 
     window.addEventListener("load", handleActivity);
@@ -138,10 +142,22 @@ const AppWrapper = (props: { children: ReactNode }) => {
     document.addEventListener("keydown", handleActivity);
     document.addEventListener("scroll", handleActivity);
 
-    handleActivity();
+    App.addListener("appStateChange", (state) => {
+      if (!state.isActive) {
+        startBackgroundTimer();
+      } else {
+        handleActivity();
+      }
+    });
+
+    App.addListener("pause", () => {
+      startBackgroundTimer();
+    });
+    App.addListener("resume", () => {
+      handleActivity();
+    });
 
     return () => {
-      clearTimeout(timer);
       window.removeEventListener("load", handleActivity);
       document.removeEventListener("mousemove", handleActivity);
       document.removeEventListener("touchstart", handleActivity);
@@ -149,7 +165,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       document.removeEventListener("click", handleActivity);
       document.removeEventListener("focus", handleActivity);
       document.removeEventListener("keydown", handleActivity);
-      document.removeEventListener("scroll", handleActivity);
+      clearTimeout(timer);
     };
   }, []);
 
