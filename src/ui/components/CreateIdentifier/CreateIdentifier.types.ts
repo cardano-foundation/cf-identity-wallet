@@ -6,8 +6,8 @@ interface CreateIdentifierProps {
   setModalIsOpen: (value: boolean) => void;
   resumeMultiSig?: IdentifierShortDetails | null;
   setResumeMultiSig?: (value: IdentifierShortDetails | null) => void;
-  invitationReceived?: boolean;
-  setInvitationReceived?: (value: boolean) => void;
+  groupId?: string;
+  setGroupId?: (value: string) => void;
 }
 
 interface TypeItemProps {
@@ -42,7 +42,8 @@ interface IdentifierStageProps {
   setBlur?: (value: boolean) => void;
   resetModal: () => void;
   resumeMultiSig?: IdentifierShortDetails | null;
-  invitationReceived?: boolean;
+  groupId?: string;
+  setGroupId?: (value: string) => void;
 }
 
 interface IdentifierStage1BodyProps {
