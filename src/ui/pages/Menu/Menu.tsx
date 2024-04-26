@@ -45,12 +45,12 @@ const submenuMap = new Map<SubMenuKey, SubMenuData>([
   ],
 ]);
 
-const MenuItem = ({ key, icon, label, onClick }: MenuItemProps) => {
+const MenuItem = ({ itemKey, icon, label, onClick }: MenuItemProps) => {
   return (
     <IonCol>
       <IonCard
-        onClick={() => onClick(key)}
-        data-testid={`menu-input-item-${key}`}
+        onClick={() => onClick(itemKey)}
+        data-testid={`menu-input-item-${itemKey}`}
         className="menu-input"
       >
         <IonIcon
@@ -123,13 +123,13 @@ const Menu = () => {
         <IonGrid>
           <IonRow className="menu-input-row">
             <MenuItem
-              key={SubMenuKey.Profile}
+              itemKey={SubMenuKey.Profile}
               icon={personCircleOutline}
               label={`${i18n.t("menu.tab.items.profile")}`}
               onClick={setSelectedOption}
             />
             <MenuItem
-              key={SubMenuKey.Crypto}
+              itemKey={SubMenuKey.Crypto}
               icon={walletOutline}
               label={`${i18n.t("menu.tab.items.crypto")}`}
               onClick={setSelectedOption}
@@ -137,13 +137,13 @@ const Menu = () => {
           </IonRow>
           <IonRow className="menu-input-row">
             <MenuItem
-              key={SubMenuKey.Connections}
+              itemKey={SubMenuKey.Connections}
               icon={peopleOutline}
               label={`${i18n.t("menu.tab.items.connections")}`}
               onClick={setSelectedOption}
             />
             <MenuItem
-              key={SubMenuKey.P2P}
+              itemKey={SubMenuKey.P2P}
               icon={chatbubbleOutline}
               label={`${i18n.t("menu.tab.items.p2p")}`}
               onClick={setSelectedOption}
@@ -151,13 +151,13 @@ const Menu = () => {
           </IonRow>
           <IonRow className="menu-input-row">
             <MenuItem
-              key={SubMenuKey.Identifier}
+              itemKey={SubMenuKey.Identifier}
               icon={fingerPrintOutline}
               label={`${i18n.t("menu.tab.items.identity")}`}
               onClick={setSelectedOption}
             />
             <MenuItem
-              key={SubMenuKey.Credential}
+              itemKey={SubMenuKey.Credential}
               icon={idCardOutline}
               label={`${i18n.t("menu.tab.items.credentials")}`}
               onClick={setSelectedOption}

@@ -15,7 +15,7 @@ interface SubMenuProps {
 }
 
 interface MenuItemProps {
-  key: SubMenuKey;
+  itemKey: SubMenuKey;
   icon: string;
   label: string;
   onClick: (key: SubMenuKey) => void;
