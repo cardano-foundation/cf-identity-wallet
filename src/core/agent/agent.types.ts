@@ -96,12 +96,12 @@ interface KeriNotification {
 
 enum KeriConnectionType {
   NORMAL = "NORMAL",
-  MULTI_SIG = "MULTI_SIG",
+  MULTI_SIG_INITIATOR = "MULTI_SIG_INITIATOR",
 }
 
 type OobiScan =
   | { type: KeriConnectionType.NORMAL }
-  | { type: KeriConnectionType.MULTI_SIG; groupId: string };
+  | { type: KeriConnectionType.MULTI_SIG_INITIATOR; groupId: string };
 
 interface BaseEventEmitter {
   type: string;
