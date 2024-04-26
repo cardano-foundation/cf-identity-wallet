@@ -17,7 +17,7 @@ import {
   fingerPrintOutline,
   idCardOutline,
 } from "ionicons/icons";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
@@ -26,6 +26,18 @@ import "./Menu.scss";
 import { i18n } from "../../../i18n";
 import { Settings } from "./components/Settings";
 import { SubMenu } from "./components/SubMenu";
+import { SubMenuKey } from "./Menu.types";
+
+const submenuMap = new Map([
+  [
+    SubMenuKey.Settings,
+    {
+      Component: Settings,
+      title: "settings.sections.header",
+      addtionalButtons: <></>,
+    },
+  ],
+]);
 
 const Menu = () => {
   const pageId = "menu-tab";
@@ -50,7 +62,7 @@ const Menu = () => {
         shape="round"
         className="settings-button"
         data-testid="settings-button"
-        onClick={() => showSelectedOption(0)}
+        onClick={() => showSelectedOption(SubMenuKey.Settings)}
       >
         <IonIcon
           slot="icon-only"
@@ -87,9 +99,9 @@ const Menu = () => {
     );
   };
 
-  const SubMenuChildren = [Settings];
-  const subMenuTitle = ["settings.sections.header"];
-  const subMenuAdditionalButtons = [<></>];
+  const selectSubmenu = useMemo(() => {
+    return submenuMap.get(selectedOption);
+  }, [selectedOption]);
 
   return (
     <>
@@ -102,50 +114,52 @@ const Menu = () => {
         <IonGrid>
           <IonRow className="menu-input-row">
             <MenuItem
-              index={1}
+              index={SubMenuKey.Profile}
               icon={personCircleOutline}
               label={`${i18n.t("menu.tab.items.profile")}`}
             />
             <MenuItem
-              index={2}
+              index={SubMenuKey.Cryto}
               icon={walletOutline}
               label={`${i18n.t("menu.tab.items.crypto")}`}
             />
           </IonRow>
           <IonRow className="menu-input-row">
             <MenuItem
-              index={3}
+              index={SubMenuKey.Connections}
               icon={peopleOutline}
               label={`${i18n.t("menu.tab.items.connections")}`}
             />
             <MenuItem
-              index={4}
+              index={SubMenuKey.P2P}
               icon={chatbubbleOutline}
               label={`${i18n.t("menu.tab.items.p2p")}`}
             />
           </IonRow>
           <IonRow className="menu-input-row">
             <MenuItem
-              index={5}
+              index={SubMenuKey.Identifier}
               icon={fingerPrintOutline}
               label={`${i18n.t("menu.tab.items.identity")}`}
             />
             <MenuItem
-              index={6}
+              index={SubMenuKey.Credential}
               icon={idCardOutline}
               label={`${i18n.t("menu.tab.items.credentials")}`}
             />
           </IonRow>
         </IonGrid>
       </TabLayout>
-      <SubMenu
-        showSubMenu={showSubMenu}
-        setShowSubMenu={setShowSubMenu}
-        title={`${i18n.t(subMenuTitle[selectedOption])}`}
-        additionalButtons={subMenuAdditionalButtons[selectedOption]}
-      >
-        {SubMenuChildren[selectedOption] && SubMenuChildren[selectedOption]()}
-      </SubMenu>
+      {selectSubmenu && (
+        <SubMenu
+          showSubMenu={showSubMenu}
+          setShowSubMenu={setShowSubMenu}
+          title={`${i18n.t(selectSubmenu.title)}`}
+          additionalButtons={selectSubmenu.addtionalButtons}
+        >
+          <selectSubmenu.Component />
+        </SubMenu>
+      )}
     </>
   );
 };

@@ -8,4 +8,14 @@ interface SubMenuProps {
   children: ReactNode;
 }
 
+export enum SubMenuKey {
+  Settings,
+  Profile,
+  Cryto,
+  Connections,
+  P2P,
+  Identifier,
+  Credential,
+}
+
 export type { SubMenuProps };
