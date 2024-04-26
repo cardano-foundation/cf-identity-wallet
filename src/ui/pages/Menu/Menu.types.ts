@@ -11,7 +11,7 @@ interface SubMenuProps {
 export enum SubMenuKey {
   Settings,
   Profile,
-  Cryto,
+  Crypto,
   Connections,
   P2P,
   Identifier,

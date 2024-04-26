@@ -119,7 +119,7 @@ const Menu = () => {
               label={`${i18n.t("menu.tab.items.profile")}`}
             />
             <MenuItem
-              index={SubMenuKey.Cryto}
+              index={SubMenuKey.Crypto}
               icon={walletOutline}
               label={`${i18n.t("menu.tab.items.crypto")}`}
             />
