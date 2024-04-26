@@ -1,6 +1,7 @@
 import { StrictMode, useEffect, useMemo, useState } from "react";
 import { setupIonicReact, IonApp, getPlatforms } from "@ionic/react";
 import { StatusBar, Style } from "@capacitor/status-bar";
+import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { Routes } from "../routes";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
@@ -68,6 +69,8 @@ const App = () => {
   }, [authentication, currentRoute]);
 
   useEffect(() => {
+    ScreenOrientation.lock({ orientation: "portrait" });
+
     const platforms = getPlatforms();
     const isIosAppPlatform =
       platforms.includes("ios") && !platforms.includes("mobileweb");
@@ -77,6 +80,10 @@ const App = () => {
         style: Style.Light,
       });
     }
+
+    return () => {
+      ScreenOrientation.unlock();
+    };
   }, []);
 
   return (
