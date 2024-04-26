@@ -26,15 +26,21 @@ import "./Menu.scss";
 import { i18n } from "../../../i18n";
 import { Settings } from "./components/Settings";
 import { SubMenu } from "./components/SubMenu";
-import { MenuItemProps, SubMenuKey } from "./Menu.types";
+import { MenuItemProps, SubMenuData, SubMenuKey } from "./Menu.types";
 
-const submenuMap = new Map([
+const emptySubMenu = {
+  Component: () => <></>,
+  title: "",
+  additionalButtons: <></>,
+};
+
+const submenuMap = new Map<SubMenuKey, SubMenuData>([
   [
     SubMenuKey.Settings,
     {
       Component: Settings,
       title: "settings.sections.header",
-      addtionalButtons: <></>,
+      additionalButtons: <></>,
     },
   ],
 ]);
@@ -69,11 +75,11 @@ const Menu = () => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
   });
 
-  const showSelectedOption = (index: number) => {
-    {
-      setShowSubMenu(true);
-      setSelectedOption(index);
-    }
+  const showSelectedOption = (key: SubMenuKey) => {
+    if (!submenuMap.has(key)) return;
+
+    setShowSubMenu(true);
+    setSelectedOption(key);
   };
 
   const AdditionalButtons = () => {
@@ -95,13 +101,15 @@ const Menu = () => {
 
   const handleCloseSubMenu = () => {
     setShowSubMenu(false);
-    setSelectedOption(undefined);
   };
 
   const selectSubmenu = useMemo(() => {
-    if (!selectedOption) return;
+    if (selectedOption === undefined) return emptySubMenu;
 
-    return submenuMap.get(selectedOption);
+    const selectedSubmenu = submenuMap.get(selectedOption);
+    if (!selectedSubmenu) return emptySubMenu;
+
+    return selectedSubmenu;
   }, [selectedOption]);
 
   return (
@@ -157,16 +165,14 @@ const Menu = () => {
           </IonRow>
         </IonGrid>
       </TabLayout>
-      {selectSubmenu && (
-        <SubMenu
-          showSubMenu={showSubMenu}
-          setShowSubMenu={handleCloseSubMenu}
-          title={`${i18n.t(selectSubmenu.title)}`}
-          additionalButtons={selectSubmenu.addtionalButtons}
-        >
-          <selectSubmenu.Component />
-        </SubMenu>
-      )}
+      <SubMenu
+        showSubMenu={showSubMenu}
+        setShowSubMenu={handleCloseSubMenu}
+        title={`${i18n.t(selectSubmenu.title)}`}
+        additionalButtons={selectSubmenu.additionalButtons}
+      >
+        <selectSubmenu.Component />
+      </SubMenu>
     </>
   );
 };

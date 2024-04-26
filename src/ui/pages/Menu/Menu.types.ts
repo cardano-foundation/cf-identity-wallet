@@ -1,5 +1,11 @@
 import { ReactNode } from "react";
 
+interface SubMenuData {
+  Component: () => ReactNode;
+  title: string;
+  additionalButtons: ReactNode;
+}
+
 interface SubMenuProps {
   showSubMenu: boolean;
   setShowSubMenu: (value: boolean) => void;
@@ -25,4 +31,4 @@ export enum SubMenuKey {
   Credential,
 }
 
-export type { SubMenuProps, MenuItemProps };
+export type { SubMenuProps, MenuItemProps, SubMenuData };
