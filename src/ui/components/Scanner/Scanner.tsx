@@ -86,7 +86,9 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
             );
           if (invitation.type === KeriConnectionType.NORMAL) {
             setIsValueCaptured && setIsValueCaptured(true);
-          } else if (invitation.type === KeriConnectionType.MULTI_SIG) {
+          } else if (
+            invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR
+          ) {
             setGroupId(invitation.groupId);
             setCreateIdentifierModalIsOpen(true);
           }

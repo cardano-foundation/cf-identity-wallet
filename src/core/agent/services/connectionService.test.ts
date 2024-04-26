@@ -38,7 +38,7 @@ const keriContacts = [
     wellKnowns: [],
   },
 ];
-const oobiPrefix = "oobi.";
+const oobiPrefix = "http://oobi.com/";
 
 describe("Connection service of agent", () => {
   beforeEach(() => {
@@ -56,12 +56,24 @@ describe("Connection service of agent", () => {
       .mockResolvedValue(null);
     const result = await connectionService.receiveInvitationFromUrl(oobi);
     expect(result).toStrictEqual({
-      type: KeriConnectionType.MULTI_SIG,
+      type: KeriConnectionType.MULTI_SIG_INITIATOR,
       groupId,
+    });
+    expect(basicStorage.save).toBeCalledWith({
+      id: "id",
+      content: {
+        oobi,
+        groupId,
+      },
+      type: RecordType.CONNECTION_KERI_METADATA,
+      tags: {
+        type: RecordType.CONNECTION_KERI_METADATA,
+        groupId,
+      },
     });
   });
 
-  test("Can receive OOBIs with groupId", async () => {
+  test("Can create groupId connections for existing pending multi-sigs", async () => {
     const groupId = "123";
     const oobi = `http://localhost/oobi=3423?groupId=${groupId}`;
     signifyApi.resolveOobi = jest.fn().mockImplementation((url) => {
@@ -93,6 +105,7 @@ describe("Connection service of agent", () => {
       type: RecordType.CONNECTION_KERI_METADATA,
       tags: {
         type: RecordType.CONNECTION_KERI_METADATA,
+        groupId,
       },
     });
   });
@@ -246,6 +259,21 @@ describe("Connection service of agent", () => {
     );
     expect(KeriOobi).toEqual(
       `${oobiPrefix}${signifyName}?name=alias%20with%20spaces`
+    );
+  });
+
+  test("can get KERI OOBI with alias and groupId", async () => {
+    signifyApi.getOobi = jest.fn().mockImplementation((name: string) => {
+      return `${oobiPrefix}${name}?groupId=123`;
+    });
+    const signifyName = "keriuuid";
+    const KeriOobi = await connectionService.getKeriOobi(
+      signifyName,
+      "alias",
+      "123"
+    );
+    expect(KeriOobi).toEqual(
+      `${oobiPrefix}${signifyName}?groupId=123&name=alias`
     );
   });
 
