@@ -14,6 +14,7 @@ import { Agent } from "../../../../core/agent/agent";
 const IdentifierStage1BodyResume = ({
   componentId,
   handleDone,
+  handleInitiateMultiSig,
   oobi,
   groupMetadata,
   handleScanButton,
@@ -42,10 +43,6 @@ const IdentifierStage1BodyResume = ({
       updateConnections();
     }
   }, [groupMetadata]);
-
-  const handleInitiateMultiSig = () => {
-    // TODO: handle initiate Multi Sig
-  };
 
   return (
     <>
