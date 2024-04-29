@@ -11,6 +11,7 @@ import { useAppIonRouter } from "../../hooks";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  login,
   setAuthentication,
   setCurrentRoute,
   setPauseQueueIncomingRequest,
@@ -58,13 +59,7 @@ const LockModal = () => {
     if (updatedPasscode.length === 6) {
       verifyPasscode(updatedPasscode).then((verified) => {
         if (verified) {
-          dispatch(
-            setAuthentication({
-              ...authentication,
-              loggedIn: true,
-              time: Date.now(),
-            })
-          );
+          dispatch(login());
           handleClearState();
           setTimeout(() => {
             dispatch(setPauseQueueIncomingRequest(false));
