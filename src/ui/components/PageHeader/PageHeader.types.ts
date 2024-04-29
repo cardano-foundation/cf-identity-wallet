@@ -19,6 +19,7 @@ interface PageHeaderProps {
   progressBarValue?: number;
   progressBarBuffer?: number;
   title?: string;
+  additionalButtons?: ReactNode;
 }
 
 export type { PageHeaderProps };

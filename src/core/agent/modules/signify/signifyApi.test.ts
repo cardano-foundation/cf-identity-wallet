@@ -1,14 +1,15 @@
 import { CredentialFilter, ready } from "signify-ts";
-import { utils } from "@aries-framework/core";
+import { v4 as uuidv4 } from "uuid";
 import { MultiSigRoute } from "./signifyApi.types";
 import { SignifyApi } from "./signifyApi";
+import { ConfigurationService } from "../../../configuration";
 
 const firstAid = "aid1";
 const secondAid = "aid2";
 const aidPrefix = "keri-";
 const witnessPrefix = "witness.";
 const uuidToThrow = "throwMe";
-const oobiPrefix = "oobi.";
+const oobiPrefix = "http://server.com/oobi/";
 
 let connectMock = jest.fn();
 const bootMock = jest.fn();
@@ -20,7 +21,22 @@ const admitMock = jest
     }
   );
 const submitAdmitMock = jest.fn();
-const interactMock = jest.fn();
+const interactMock = jest.fn().mockImplementation((name, _config) => {
+  return {
+    done: false,
+    name: `${witnessPrefix}${name}`,
+    op: jest.fn().mockResolvedValue({
+      done: true,
+      name: "oobi.test",
+    }),
+    serder: {
+      ked: { i: name },
+    },
+    sigs: [
+      "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+    ],
+  };
+});
 const rotateMock = jest.fn().mockImplementation((name, _config) => {
   return {
     done: false,
@@ -40,6 +56,12 @@ const membersMock = jest.fn();
 
 const exchangeSendMock = jest.fn();
 
+let getKeyStateMock = jest.fn().mockReturnValue([
+  {
+    i: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
+  },
+]);
+
 const contacts = [
   {
     id: "id",
@@ -56,7 +78,7 @@ jest.mock("signify-ts", () => ({
     return {
       connect: connectMock,
       boot: bootMock,
-      identifiers: jest.fn().mockReturnValue({
+      identifiers: () => ({
         list: jest.fn().mockResolvedValue({
           aids: [
             { name: firstAid, prefix: "1" },
@@ -92,7 +114,7 @@ jest.mock("signify-ts", () => ({
         rotate: rotateMock,
         members: membersMock,
       }),
-      operations: jest.fn().mockReturnValue({
+      operations: () => ({
         get: jest.fn().mockImplementation((name: string) => {
           if (
             name === `${witnessPrefix}${uuidToThrow}` ||
@@ -103,7 +125,7 @@ jest.mock("signify-ts", () => ({
           return { done: true, name };
         }),
       }),
-      oobis: jest.fn().mockReturnValue({
+      oobis: () => ({
         get: jest.fn().mockImplementation((name: string) => {
           return {
             oobis: [`${oobiPrefix}${name}`],
@@ -113,7 +135,7 @@ jest.mock("signify-ts", () => ({
           return { done: false, name, response: {} };
         }),
       }),
-      contacts: jest.fn().mockReturnValue({
+      contacts: () => ({
         list: jest
           .fn()
           .mockImplementation(
@@ -133,7 +155,7 @@ jest.mock("signify-ts", () => ({
           };
         }),
       }),
-      notifications: jest.fn().mockReturnValue({
+      notifications: () => ({
         list: jest.fn().mockImplementation((start?: number, end?: number) => {
           return notifications;
         }),
@@ -141,16 +163,16 @@ jest.mock("signify-ts", () => ({
           return "marked";
         }),
       }),
-      ipex: jest.fn().mockReturnValue({
+      ipex: () => ({
         admit: admitMock,
         submitAdmit: submitAdmitMock,
       }),
-      credentials: jest.fn().mockReturnValue({
+      credentials: () => ({
         list: jest.fn().mockImplementation((kargs?: CredentialFilter) => {
           return credentials;
         }),
       }),
-      exchanges: jest.fn().mockReturnValue({
+      exchanges: () => ({
         get: jest.fn().mockImplementation((name: string, said: string) => {
           return exchange;
         }),
@@ -159,11 +181,12 @@ jest.mock("signify-ts", () => ({
       agent: {
         pre: "pre",
       },
-      keyStates: jest.fn().mockReturnValue({
+      keyStates: () => ({
         query: jest.fn().mockReturnValue({
           name: "operation",
           done: true,
         }),
+        get: getKeyStateMock,
       }),
     };
   }),
@@ -179,12 +202,152 @@ jest.mock("signify-ts", () => ({
   messagize: jest.fn(),
 }));
 
+const multisigIcpExn = {
+  v: "KERI10JSON0007bf_",
+  t: "exn",
+  d: "EPwR9xi7f8yMFYb31uRiPjwSWgzD40jLCUosxJe2k1aM",
+  i: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
+  p: "",
+  dt: "2023-12-25T07:57:40.307000+00:00",
+  r: "/multisig/icp",
+  q: {},
+  a: {
+    gid: "ENWBYC6g1-e3SyAB6PnjYwKMpQNw-jUwO_I9VUvYzM8_",
+    smids: [
+      "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
+      "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+    ],
+    rmids: [
+      "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
+      "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+    ],
+    rstates: [
+      {
+        vn: [1, 0],
+        i: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
+        s: "0",
+        p: "",
+        d: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
+        f: "0",
+        dt: "2023-12-25T07:37:32.006185+00:00",
+        et: "icp",
+        kt: "1",
+        k: ["DOBaDQOTbreUoqMzCzX0f2ywCB2Qbv17qeHMlm85QjZZ"],
+        nt: "1",
+        n: ["EJqXepNeybydv7fb0FdRsDhWxia6i_bDCv1LyucSegMj"],
+        bt: "1",
+        b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
+        c: [],
+        ee: {
+          s: "0",
+          d: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
+          br: [],
+          ba: [],
+        },
+        di: "",
+      },
+      {
+        vn: [1, 0],
+        i: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+        s: "0",
+        p: "",
+        d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+        f: "0",
+        dt: "2023-12-25T07:42:44.975239+00:00",
+        et: "icp",
+        kt: "1",
+        k: ["DIDpyM3TPrV5-ZwpiFDU9HtI9-zXpHtOGLNzfUrzLOs5"],
+        nt: "1",
+        n: ["EMnyXeI28CtemqNmxget-4Xn1DrKehDect1qHwfREo1u"],
+        bt: "1",
+        b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
+        c: [],
+        ee: {
+          s: "0",
+          d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+          br: [],
+          ba: [],
+        },
+        di: "",
+      },
+    ],
+    name: "6eaf3e83-eb11-4146-bfb3-17e67c38199a",
+  },
+  e: {
+    icp: {
+      v: "KERI10JSON0001b7_",
+      t: "icp",
+      d: "ENWBYC6g1-e3SyAB6PnjYwKMpQNw-jUwO_I9VUvYzM8_",
+      i: "ENWBYC6g1-e3SyAB6PnjYwKMpQNw-jUwO_I9VUvYzM8_",
+      s: "0",
+      kt: "2",
+      k: [
+        "DOBaDQOTbreUoqMzCzX0f2ywCB2Qbv17qeHMlm85QjZZ",
+        "DIDpyM3TPrV5-ZwpiFDU9HtI9-zXpHtOGLNzfUrzLOs5",
+      ],
+      nt: "2",
+      n: [
+        "EJqXepNeybydv7fb0FdRsDhWxia6i_bDCv1LyucSegMj",
+        "EMnyXeI28CtemqNmxget-4Xn1DrKehDect1qHwfREo1u",
+      ],
+      bt: "1",
+      b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
+      c: [],
+      a: [],
+    },
+    d: "EGG3Bma__y5CHGYDlGWKCcJNoO826bIXgrGwJBhz9OyV",
+  },
+};
+
+const multisigMember = {
+  name: "4130a76b-21d9-4a21-bdd4-40219b157be5",
+  prefix: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+  salty: {
+    sxlt: "1AAHhHKLzBwuO8s6Ntzb0OJ3vd8apYe5SsqAvaA_k3ac-Qu9Om-HHJCUac5Wh0EIuhySrrHYoiJV9KdJrEJiRjLULVdS0UR7T4cv",
+    pidx: 0,
+    kidx: 0,
+    stem: "signify:aid",
+    tier: "low",
+    dcode: "E",
+    icodes: ["A"],
+    ncodes: ["A"],
+    transferable: true,
+  },
+  transferable: true,
+  state: {
+    vn: [1, 0],
+    i: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+    s: "0",
+    p: "",
+    d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+    f: "0",
+    dt: "2023-12-25T07:36:32.350862+00:00",
+    et: "icp",
+    kt: "1",
+    k: ["DIDpyM3TPrV5-ZwpiFDU9HtI9-zXpHtOGLNzfUrzLOs5"],
+    nt: "1",
+    n: ["EMnyXeI28CtemqNmxget-4Xn1DrKehDect1qHwfREo1u"],
+    bt: "1",
+    b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
+    c: [],
+    ee: {
+      s: "0",
+      d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+      br: [],
+      ba: [],
+    },
+    di: "",
+  },
+  windexes: [0],
+};
+
 // Set low timeout - fake timers would be better but having issues advancing timer at exact right time
 const api = new SignifyApi(5, 1);
 
 describe("Signify API", () => {
   beforeAll(async () => {
     await api.start();
+    await new ConfigurationService().start();
   });
 
   test("should call boot if connect fails", async () => {
@@ -198,11 +361,10 @@ describe("Signify API", () => {
   });
 
   test("can create an identifier", async () => {
-    const mockName = "keriuuid";
-    jest.spyOn(utils, "uuid").mockReturnValue(mockName);
     const { signifyName, identifier } = await api.createIdentifier();
-    expect(signifyName).toBe(mockName);
-    expect(identifier).toBe(mockName);
+    // For now, we are using uuidv4 for signifyName
+    expect(signifyName).toEqual(expect.any(String));
+    expect(identifier).toEqual(expect.any(String));
   });
 
   test("can get identifier by name", async () => {
@@ -221,9 +383,8 @@ describe("Signify API", () => {
     expect(await api.getOobi(mockName)).toEqual(oobiPrefix + mockName);
   });
 
-  test("can resolve oobi", async () => {
-    const aid = "keriuuid";
-    const url = oobiPrefix + aid;
+  test("can resolve oobi with no name parameter", async () => {
+    const url = `${oobiPrefix}keriuuid`;
     const op = await api.resolveOobi(url);
     expect(op).toEqual({
       name: url,
@@ -232,11 +393,20 @@ describe("Signify API", () => {
     });
   });
 
+  test("can resolve oobi with a name parameter (URL decoded)", async () => {
+    const url = `${oobiPrefix}keriuuid?name=alias%20with%20spaces`;
+    const op = await api.resolveOobi(url);
+    expect(op).toEqual({
+      name: url,
+      alias: "alias with spaces",
+      done: true,
+    });
+  });
+
   test("should timeout if oobi resolving is not completing", async () => {
-    const url = oobiPrefix + uuidToThrow;
-    await expect(api.resolveOobi(url)).rejects.toThrowError(
-      SignifyApi.FAILED_TO_RESOLVE_OOBI
-    );
+    await expect(
+      api.resolveOobi(`${oobiPrefix}${uuidToThrow}`)
+    ).rejects.toThrowError(SignifyApi.FAILED_TO_RESOLVE_OOBI);
   });
 
   test("should get contacts successfully", async () => {
@@ -358,204 +528,18 @@ describe("Signify API", () => {
         },
       },
     ];
-    const result = await api.createMultisig(aid, otherAids, utils.uuid());
+    const result = await api.createMultisig(
+      aid,
+      otherAids,
+      uuidv4(),
+      otherAids.length + 1
+    );
     expect(result).toHaveProperty("op");
     expect(result).toHaveProperty("icpResult");
     expect(result).toHaveProperty("name");
   });
 
-  test("Should able to join multisig", async () => {
-    const exn = {
-      v: "KERI10JSON0007bf_",
-      t: "exn",
-      d: "EPwR9xi7f8yMFYb31uRiPjwSWgzD40jLCUosxJe2k1aM",
-      i: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
-      p: "",
-      dt: "2023-12-25T07:57:40.307000+00:00",
-      r: "/multisig/icp",
-      q: {},
-      a: {
-        gid: "ENWBYC6g1-e3SyAB6PnjYwKMpQNw-jUwO_I9VUvYzM8_",
-        smids: [
-          "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
-          "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
-        ],
-        rmids: [
-          "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
-          "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
-        ],
-        rstates: [
-          {
-            vn: [1, 0],
-            i: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
-            s: "0",
-            p: "",
-            d: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
-            f: "0",
-            dt: "2023-12-25T07:37:32.006185+00:00",
-            et: "icp",
-            kt: "1",
-            k: ["DOBaDQOTbreUoqMzCzX0f2ywCB2Qbv17qeHMlm85QjZZ"],
-            nt: "1",
-            n: ["EJqXepNeybydv7fb0FdRsDhWxia6i_bDCv1LyucSegMj"],
-            bt: "1",
-            b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
-            c: [],
-            ee: {
-              s: "0",
-              d: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
-              br: [],
-              ba: [],
-            },
-            di: "",
-          },
-          {
-            vn: [1, 0],
-            i: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
-            s: "0",
-            p: "",
-            d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
-            f: "0",
-            dt: "2023-12-25T07:42:44.975239+00:00",
-            et: "icp",
-            kt: "1",
-            k: ["DIDpyM3TPrV5-ZwpiFDU9HtI9-zXpHtOGLNzfUrzLOs5"],
-            nt: "1",
-            n: ["EMnyXeI28CtemqNmxget-4Xn1DrKehDect1qHwfREo1u"],
-            bt: "1",
-            b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
-            c: [],
-            ee: {
-              s: "0",
-              d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
-              br: [],
-              ba: [],
-            },
-            di: "",
-          },
-        ],
-        name: "6eaf3e83-eb11-4146-bfb3-17e67c38199a",
-      },
-      e: {
-        icp: {
-          v: "KERI10JSON0001b7_",
-          t: "icp",
-          d: "ENWBYC6g1-e3SyAB6PnjYwKMpQNw-jUwO_I9VUvYzM8_",
-          i: "ENWBYC6g1-e3SyAB6PnjYwKMpQNw-jUwO_I9VUvYzM8_",
-          s: "0",
-          kt: "2",
-          k: [
-            "DOBaDQOTbreUoqMzCzX0f2ywCB2Qbv17qeHMlm85QjZZ",
-            "DIDpyM3TPrV5-ZwpiFDU9HtI9-zXpHtOGLNzfUrzLOs5",
-          ],
-          nt: "2",
-          n: [
-            "EJqXepNeybydv7fb0FdRsDhWxia6i_bDCv1LyucSegMj",
-            "EMnyXeI28CtemqNmxget-4Xn1DrKehDect1qHwfREo1u",
-          ],
-          bt: "1",
-          b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
-          c: [],
-          a: [],
-        },
-        d: "EGG3Bma__y5CHGYDlGWKCcJNoO826bIXgrGwJBhz9OyV",
-      },
-    };
-    const aid = {
-      name: "4130a76b-21d9-4a21-bdd4-40219b157be5",
-      prefix: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
-      salty: {
-        sxlt: "1AAHhHKLzBwuO8s6Ntzb0OJ3vd8apYe5SsqAvaA_k3ac-Qu9Om-HHJCUac5Wh0EIuhySrrHYoiJV9KdJrEJiRjLULVdS0UR7T4cv",
-        pidx: 0,
-        kidx: 0,
-        stem: "signify:aid",
-        tier: "low",
-        dcode: "E",
-        icodes: ["A"],
-        ncodes: ["A"],
-        transferable: true,
-      },
-      transferable: true,
-      state: {
-        vn: [1, 0],
-        i: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
-        s: "0",
-        p: "",
-        d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
-        f: "0",
-        dt: "2023-12-25T07:36:32.350862+00:00",
-        et: "icp",
-        kt: "1",
-        k: ["DIDpyM3TPrV5-ZwpiFDU9HtI9-zXpHtOGLNzfUrzLOs5"],
-        nt: "1",
-        n: ["EMnyXeI28CtemqNmxget-4Xn1DrKehDect1qHwfREo1u"],
-        bt: "1",
-        b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
-        c: [],
-        ee: {
-          s: "0",
-          d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
-          br: [],
-          ba: [],
-        },
-        di: "",
-      },
-      windexes: [0],
-    };
-    const result = await api.joinMultisig(exn, aid, utils.uuid());
-    expect(result).toHaveProperty("op");
-    expect(result).toHaveProperty("icpResult");
-    expect(result).toHaveProperty("name");
-  });
-
-  test("should create a new delegation identifier with a random UUID as the name", async () => {
-    const delegatorPrefix = "ABC123";
-    const result = await api.createDelegationIdentifier(delegatorPrefix);
-    expect(result).toEqual({
-      signifyName: expect.any(String),
-      identifier: expect.any(String),
-    });
-  });
-
-  test("should wait for the key state query operation to complete", async () => {
-    const signifyName = "exampleSignifyName";
-    const result = await api.delegationApproved(signifyName);
-    expect(result).toEqual(true);
-  });
-
-  test("should call signifyClient.identifiers().interact with the correct parameters", async () => {
-    const signifyName = "exampleSignifyName";
-    const delegatePrefix = "exampleDelegatePrefix";
-
-    await api.interactDelegation(signifyName, delegatePrefix);
-
-    expect(interactMock).toHaveBeenCalledWith(signifyName, {
-      i: delegatePrefix,
-      s: "0",
-      d: delegatePrefix,
-    });
-  });
-
-  test("should call signifyClient.identifiers().interact with the correct parameters", async () => {
-    const signifyName = "exampleSignifyName";
-    const delegatePrefix = "exampleDelegatePrefix";
-
-    await api.interactDelegation(signifyName, delegatePrefix);
-
-    expect(interactMock).toHaveBeenCalledWith(signifyName, {
-      i: delegatePrefix,
-      s: "0",
-      d: delegatePrefix,
-    });
-  });
-
-  test("should call signifyClient.identifiers().rotate with the correct parameters", async () => {
-    const signifyName = "exampleSignifyName";
-    await api.rotateIdentifier(signifyName);
-    expect(rotateMock).toHaveBeenCalledWith(signifyName);
-  });
-
-  test("can create Keri multisig rotation", async () => {
+  test("can create Keri delegatation multisig", async () => {
     const aid = {
       name: "0d5d804a-eb44-42e9-a67a-7e24ab4b7e42",
       prefix: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
@@ -615,7 +599,156 @@ describe("Signify API", () => {
         },
       },
     ];
-    const result = await api.rotateMultisigAid(aid, otherAids, utils.uuid());
+
+    const delegateAid = {
+      name: "0d5d804a-eb44-42e9-a67a-7e24ab4b7e42",
+      prefix: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_2",
+      salty: {},
+      transferable: true,
+      state: {
+        vn: [1, 0],
+        i: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_2",
+        s: "0",
+        p: "",
+        d: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_2",
+        f: "0",
+        dt: "2023-12-25T07:37:32.006185+00:00",
+        et: "icp",
+        kt: "1",
+        k: ["DOBaDQOTbreUoqMzCzX0f2ywCB2Qbv17qeHMlm85QjZZ"],
+        nt: "1",
+        n: ["EJqXepNeybydv7fb0FdRsDhWxia6i_bDCv1LyucSegMj"],
+        bt: "1",
+        b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
+        c: [],
+        ee: {
+          s: "0",
+          d: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_2",
+          br: [],
+          ba: [],
+        },
+        di: "",
+      },
+      windexes: [0],
+    };
+    const result = await api.createMultisig(
+      aid,
+      otherAids,
+      uuidv4(),
+      otherAids.length + 1,
+      delegateAid
+    );
+    expect(result).toHaveProperty("op");
+    expect(result).toHaveProperty("icpResult");
+    expect(result).toHaveProperty("name");
+  });
+
+  test("Should able to join multisig", async () => {
+    const result = await api.joinMultisig(
+      multisigIcpExn,
+      multisigMember,
+      uuidv4()
+    );
+    expect(result).toHaveProperty("op");
+    expect(result).toHaveProperty("icpResult");
+    expect(result).toHaveProperty("name");
+    expect(getKeyStateMock).toBeCalledTimes(4);
+  });
+
+  test("should throw if we cannot retrieve smid states joining multisig", async () => {
+    getKeyStateMock = jest.fn().mockResolvedValueOnce([]);
+    await expect(
+      api.joinMultisig(multisigIcpExn, multisigMember, uuidv4())
+    ).rejects.toThrowError(SignifyApi.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER);
+  });
+
+  test("should throw if we cannot retrieve rmid states joining multisig", async () => {
+    const getKeyStateRet = [
+      {
+        i: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
+      },
+    ];
+    // 2 in multi-sig, so 2 for smids and then fail on rmids
+    getKeyStateMock = jest
+      .fn()
+      .mockResolvedValueOnce(getKeyStateRet)
+      .mockResolvedValueOnce(getKeyStateRet)
+      .mockResolvedValue([]);
+    await expect(
+      api.joinMultisig(multisigIcpExn, multisigMember, uuidv4())
+    ).rejects.toThrowError(SignifyApi.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER);
+  });
+
+  test("should create a new delegation identifier with a random UUID as the name", async () => {
+    const delegatorPrefix = "ABC123";
+    const result = await api.createDelegationIdentifier(delegatorPrefix);
+    expect(result).toEqual({
+      signifyName: expect.any(String),
+      identifier: expect.any(String),
+    });
+  });
+
+  test("should wait for the key state query operation to complete", async () => {
+    const signifyName = "exampleSignifyName";
+    const result = await api.delegationApproved(signifyName);
+    expect(result).toEqual(true);
+  });
+
+  test("should call signifyClient.identifiers().interact with the correct parameters", async () => {
+    const signifyName = "exampleSignifyName";
+    const delegatePrefix = "exampleDelegatePrefix";
+
+    const result = await api.interactDelegation(signifyName, delegatePrefix);
+
+    expect(result).toEqual(true);
+
+    expect(interactMock).toHaveBeenCalledWith(signifyName, {
+      i: delegatePrefix,
+      s: "0",
+      d: delegatePrefix,
+    });
+  });
+
+  test("should call signifyClient.identifiers().rotate with the correct parameters", async () => {
+    const signifyName = "exampleSignifyName";
+    await api.rotateIdentifier(signifyName);
+    expect(rotateMock).toHaveBeenCalledWith(signifyName);
+  });
+
+  test("can create Keri multisig rotation", async () => {
+    const otherAids = [
+      {
+        state: {
+          vn: [1, 0],
+          i: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+          s: "0",
+          p: "",
+          d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+          f: "0",
+          dt: "2023-12-25T07:42:44.975239+00:00",
+          et: "icp",
+          kt: "1",
+          k: ["DIDpyM3TPrV5-ZwpiFDU9HtI9-zXpHtOGLNzfUrzLOs5"],
+          nt: "1",
+          n: ["EMnyXeI28CtemqNmxget-4Xn1DrKehDect1qHwfREo1u"],
+          bt: "1",
+          b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
+          c: [],
+          ee: {
+            s: "0",
+            d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+            br: [],
+            ba: [],
+          },
+          di: "",
+        },
+      },
+    ];
+    const result = await api.rotateMultisigAid(
+      multisigMember,
+      otherAids,
+      uuidv4()
+    );
     expect(result).toHaveProperty("op");
     expect(result).toHaveProperty("icpResult");
     expect(exchangeSendMock).toBeCalledWith(
@@ -630,6 +763,7 @@ describe("Signify API", () => {
       ["EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb"]
     );
   });
+
   test("can join Keri multisig rotation", async () => {
     const exn = {
       v: "KERI10JSON0007bf_",
@@ -727,48 +861,11 @@ describe("Signify API", () => {
         d: "EGG3Bma__y5CHGYDlGWKCcJNoO826bIXgrGwJBhz9OyV",
       },
     };
-    const aid = {
-      name: "4130a76b-21d9-4a21-bdd4-40219b157be5",
-      prefix: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
-      salty: {
-        sxlt: "1AAHhHKLzBwuO8s6Ntzb0OJ3vd8apYe5SsqAvaA_k3ac-Qu9Om-HHJCUac5Wh0EIuhySrrHYoiJV9KdJrEJiRjLULVdS0UR7T4cv",
-        pidx: 0,
-        kidx: 0,
-        stem: "signify:aid",
-        tier: "low",
-        dcode: "E",
-        icodes: ["A"],
-        ncodes: ["A"],
-        transferable: true,
-      },
-      transferable: true,
-      state: {
-        vn: [1, 0],
-        i: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
-        s: "0",
-        p: "",
-        d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
-        f: "0",
-        dt: "2023-12-25T07:36:32.350862+00:00",
-        et: "icp",
-        kt: "1",
-        k: ["DIDpyM3TPrV5-ZwpiFDU9HtI9-zXpHtOGLNzfUrzLOs5"],
-        nt: "1",
-        n: ["EMnyXeI28CtemqNmxget-4Xn1DrKehDect1qHwfREo1u"],
-        bt: "1",
-        b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
-        c: [],
-        ee: {
-          s: "0",
-          d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
-          br: [],
-          ba: [],
-        },
-        di: "",
-      },
-      windexes: [0],
-    };
-    const result = await api.joinMultisigRotation(exn, aid, utils.uuid());
+    const result = await api.joinMultisigRotation(
+      exn,
+      multisigMember,
+      uuidv4()
+    );
     expect(result).toHaveProperty("op");
     expect(result).toHaveProperty("icpResult");
     expect(result).toHaveProperty("name");
@@ -789,5 +886,42 @@ describe("Signify API", () => {
     const signifyName = "exampleSignifyName";
     await api.getMultisigMembers(signifyName);
     expect(membersMock).toHaveBeenCalledWith(signifyName);
+  });
+
+  test("should throw error if the threshold is invalid", async () => {
+    const otherAids = [
+      {
+        state: {
+          vn: [1, 0],
+          i: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+          s: "0",
+          p: "",
+          d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+          f: "0",
+          dt: "2023-12-25T07:42:44.975239+00:00",
+          et: "icp",
+          kt: "1",
+          k: ["DIDpyM3TPrV5-ZwpiFDU9HtI9-zXpHtOGLNzfUrzLOs5"],
+          nt: "1",
+          n: ["EMnyXeI28CtemqNmxget-4Xn1DrKehDect1qHwfREo1u"],
+          bt: "1",
+          b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
+          c: [],
+          ee: {
+            s: "0",
+            d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+            br: [],
+            ba: [],
+          },
+          di: "",
+        },
+      },
+    ];
+    await expect(
+      api.createMultisig(multisigMember, otherAids, uuidv4(), 5)
+    ).rejects.toThrowError(SignifyApi.INVALID_THRESHOLD);
+    await expect(
+      api.createMultisig(multisigMember, otherAids, uuidv4(), 0)
+    ).rejects.toThrowError(SignifyApi.INVALID_THRESHOLD);
   });
 });

@@ -1,5 +1,3 @@
-import { BaseEvent } from "@aries-framework/core";
-import { IdentifierMetadataRecordProps } from "./modules";
 import {
   CredentialShortDetails,
   CredentialStatus,
@@ -12,21 +10,11 @@ enum Blockchain {
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
-}
-
-enum GenericRecordType {
-  CONNECTION_NOTE = "connection-note",
-  CONNECTION_KERI_METADATA = "connection-keri-metadata",
-  NOTIFICATION_KERI = "notification-keri",
+  ACCEPTED = "accepted",
 }
 
 enum ConnectionHistoryType {
   CREDENTIAL_ACCEPTED,
-}
-
-enum ConnectionType {
-  DIDCOMM,
-  KERI,
 }
 
 interface ConnectionHistoryItem {
@@ -53,7 +41,6 @@ interface ConnectionShortDetails {
   connectionDate: string;
   logo?: string;
   status: ConnectionStatus;
-  type?: ConnectionType;
   oobi?: string;
 }
 
@@ -73,19 +60,13 @@ interface ConnectionDetails extends ConnectionShortDetails {
   notes?: ConnectionNoteDetails[];
 }
 
-enum CredentialType {
-  UNIVERSITY_DEGREE_CREDENTIAL = "UniversityDegreeCredential",
-  ACCESS_PASS_CREDENTIAL = "AccessPassCredential",
-  PERMANENT_RESIDENT_CARD = "PermanentResidentCard",
-}
-
 enum ConnectionKeriEventTypes {
   ConnectionKeriStateChanged = "ConnectionKeriStateChanged",
 }
 enum AcdcKeriEventTypes {
   AcdcKeriStateChanged = "AcdcKeriStateChanged",
 }
-interface ConnectionKeriStateChangedEvent extends BaseEvent {
+interface ConnectionKeriStateChangedEvent extends BaseEventEmitter {
   type: typeof ConnectionKeriEventTypes.ConnectionKeriStateChanged;
   payload: {
     connectionId?: string;
@@ -93,7 +74,7 @@ interface ConnectionKeriStateChangedEvent extends BaseEvent {
   };
 }
 
-interface AcdcKeriStateChangedEvent extends BaseEvent {
+interface AcdcKeriStateChangedEvent extends BaseEventEmitter {
   type: typeof AcdcKeriEventTypes.AcdcKeriStateChanged;
   payload:
     | {
@@ -112,17 +93,25 @@ interface KeriNotification {
   a: Record<string, unknown>;
 }
 
+interface BaseEventEmitter {
+  type: string;
+  payload: Record<string, unknown>;
+}
+
+interface KeriaNotificationMarker {
+  nextIndex: number;
+  lastNotificationId: string;
+}
+
 export {
   Blockchain,
   ConnectionStatus,
-  GenericRecordType,
   ConnectionHistoryType,
   MiscRecordId,
-  ConnectionType,
-  CredentialType,
   ConnectionKeriEventTypes,
   AcdcKeriEventTypes,
 };
+
 export type {
   CryptoAccountRecordShortDetails,
   ConnectionShortDetails,
@@ -133,4 +122,6 @@ export type {
   ConnectionKeriStateChangedEvent,
   KeriNotification,
   AcdcKeriStateChangedEvent,
+  BaseEventEmitter,
+  KeriaNotificationMarker,
 };

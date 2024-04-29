@@ -228,7 +228,9 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     const continueButton = getByText(
       EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
-    const alertWrapper = getByTestId("alert-confirm");
+    const alertWrapper = getByTestId(
+      "seed-phrase-generate-alert-continue-container"
+    );
     const termsCheckbox = getByTestId("terms-and-conditions-checkbox");
 
     expect(alertWrapper).toHaveClass("alert-invisible");
@@ -269,7 +271,9 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     const continueButton = getByText(
       EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
-    const alertWrapper = getByTestId("alert-confirm");
+    const alertWrapper = getByTestId(
+      "seed-phrase-generate-alert-continue-container"
+    );
 
     act(() => {
       fireEvent.click(revealSeedPhraseButton);
@@ -308,7 +312,9 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("alert-confirm")).toBeInTheDocument();
+      expect(
+        getByTestId("seed-phrase-generate-alert-continue")
+      ).toBeInTheDocument();
     });
 
     const backdrop = document.querySelector("ion-backdrop");
@@ -336,5 +342,42 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     expect(termsCheckbox.hasAttribute("[checked=\"true\""));
     fireEvent.ionChange(termsCheckbox, "[checked=\"false\"");
     expect(termsCheckbox.hasAttribute("[checked=\"false\""));
+  });
+  test("Display seed number on seed phrase segment", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [RoutePath.GENERATE_SEED_PHRASE],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+        currentOperation: OperationType.IDLE,
+      },
+      seedPhraseCache: {
+        seedPhrase160: "",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
+      },
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked(initialState)}>
+        <Router history={history}>
+          <GenerateSeedPhrase />
+        </Router>
+      </Provider>
+    );
+
+    const seedPhraseContainer = getByTestId("seed-phrase-container");
+
+    expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS);
+
+    await waitFor(() => {
+      const seedNumberElements = seedPhraseContainer.querySelectorAll(
+        "span[data-testid*=\"word-index-number\"]"
+      );
+      expect(seedNumberElements.length).toBe(MNEMONIC_FIFTEEN_WORDS);
+    });
   });
 });

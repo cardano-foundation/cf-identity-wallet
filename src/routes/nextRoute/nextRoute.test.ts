@@ -26,6 +26,7 @@ describe("NextRoute", () => {
         routes: [],
         authentication: {
           loggedIn: false,
+          userName: "",
           time: 0,
           passcodeIsSet: false,
           seedPhraseIsSet: false,
@@ -127,6 +128,7 @@ describe("getNextRoute", () => {
       routes: [],
       authentication: {
         loggedIn: false,
+        userName: "",
         time: 0,
         passcodeIsSet: true,
         seedPhraseIsSet: false,

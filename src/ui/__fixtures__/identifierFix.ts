@@ -1,30 +1,12 @@
-import {
-  DIDDetails,
-  IdentifierType,
-  KERIDetails,
-} from "../../core/agent/services/identifierService.types";
+import { IdentifierFullDetails } from "../../core/agent/services/identifierService.types";
 
-const didFix: DIDDetails[] = [
+const identifierFix: IdentifierFullDetails[] = [
   {
-    id: "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
-    method: IdentifierType.KEY,
-    displayName: "Anonymous ID",
-    createdAtUTC: "2023-01-01T19:23:24Z",
-    colors: ["#92FFC0", "#47FF94"],
-    theme: 0,
-    keyType: "Ed25519",
-    controller: "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
-    publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
-  },
-];
-
-const keriFix: KERIDetails[] = [
-  {
+    signifyName: "Test",
     id: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
-    method: IdentifierType.KERI,
     displayName: "Professional ID",
     createdAtUTC: "2023-01-01T19:23:24Z",
-    colors: ["#47E0FF", "#00C6EF"],
+    isPending: false,
     theme: 0,
     s: 4, // Sequence number, only show if s > 0
     dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
@@ -44,6 +26,4 @@ const keriFix: KERIDetails[] = [
   },
 ];
 
-const identifierFix = [...didFix, ...keriFix];
-
-export { didFix, keriFix, identifierFix };
+export { identifierFix };

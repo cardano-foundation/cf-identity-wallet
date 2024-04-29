@@ -18,8 +18,8 @@ import {
 import { getNextRoute } from "./nextRoute";
 import { TabsMenu, tabsRoutes } from "../ui/components/navigation/TabsMenu";
 import { RoutePath } from "./paths";
-import { IdentifierCardDetails } from "../ui/pages/IdentifierCardDetails";
-import { CredCardDetails } from "../ui/pages/CredCardDetails";
+import { IdentifierDetails } from "../ui/pages/IdentifierDetails";
+import { CredentialDetails } from "../ui/pages/CredentialDetails";
 import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
 import { AuthenticatedRouteProps } from "./routes.types";
 
@@ -130,13 +130,13 @@ const Routes = () => {
         })}
         <AuthenticatedRoute
           path="/tabs/identifiers/:id"
-          component={IdentifierCardDetails}
+          component={IdentifierDetails}
           exact
           nextPathname={nextPath.pathname}
         />
         <AuthenticatedRoute
           path="/tabs/creds/:id"
-          component={CredCardDetails}
+          component={CredentialDetails}
           exact
           nextPathname={nextPath.pathname}
         />

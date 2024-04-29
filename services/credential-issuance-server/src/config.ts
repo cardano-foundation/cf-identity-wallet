@@ -8,20 +8,14 @@ const config = {
   port,
   path: {
     ping: "/ping",
-    getConnectionByDid: "/getConnectionByDid",
-    invitation: "/invitation",
-    credential: "/credential",
-    invitationWithCredential: "/offerCredentialWithConnection",
-    invitationWithCredentialConnectionless:
-      "/offerCredentialWithConnectionLess",
     shorten: "/shorten/:id",
     createShorten: "/shorten",
-    credentials: {
-      summit: "/credentials/schemas/summit/v1",
-    },
     keriOobi: "/keriOobi",
-    issueAcdcCredentialWithOobi : "/issueAcdcCredentialWithOobi",
+    issueAcdcCredential : "/issueAcdcCredential",
     schemaOobi: "/oobi/:id",
+    contacts: "/contacts",
+    resolveOobi: "/resolveOobi",
+    requestDisclosure: "/requestDisclosure",
   },
 };
 

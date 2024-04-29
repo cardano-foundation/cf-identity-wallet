@@ -1,7 +1,10 @@
-import { MemoryRouter, Route } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
+import { createMemoryHistory } from "history";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
+import { IonRouterOutlet } from "@ionic/react";
 import { SetPasscode } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
@@ -124,21 +127,54 @@ describe("SetPasscode Page", () => {
     expect(errorMessage).toBeInTheDocument();
   });
 
+  test("Back to enter passcode screen from re-enter passcode screen", () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={store}>
+        <SetPasscode />
+      </Provider>
+    );
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/2/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/3/));
+    fireEvent.click(getByText(/4/));
+    fireEvent.click(getByText(/5/));
+
+    const reEnterPasscodeLabel = getByText(
+      EN_TRANSLATIONS.setpasscode.reenterpasscode.title
+    );
+    expect(reEnterPasscodeLabel).toBeInTheDocument();
+
+    fireEvent.click(getByTestId("back-button"));
+
+    const enterPasscodeLabel = getByText(
+      EN_TRANSLATIONS.setpasscode.enterpasscode.title
+    );
+    expect(enterPasscodeLabel).toBeInTheDocument();
+  });
+
   test("Redirects to next page when passcode is entered correctly", async () => {
     const { getByText, queryByText } = render(
-      <MemoryRouter initialEntries={[RoutePath.SET_PASSCODE]}>
-        <Provider store={store}>
+      <IonReactRouter>
+        <IonRouterOutlet animated={false}>
+          <Provider store={store}>
+            <Route
+              exact
+              path={RoutePath.SET_PASSCODE}
+              component={SetPasscode}
+            />
+          </Provider>
           <Route
-            exact
-            path={RoutePath.SET_PASSCODE}
-            component={SetPasscode}
+            path={RoutePath.GENERATE_SEED_PHRASE}
+            component={GenerateSeedPhrase}
           />
-        </Provider>
-        <Route
-          path={RoutePath.GENERATE_SEED_PHRASE}
-          component={GenerateSeedPhrase}
-        />
-      </MemoryRouter>
+          <Redirect
+            exact
+            from="/"
+            to={RoutePath.SET_PASSCODE}
+          />
+        </IonRouterOutlet>
+      </IonReactRouter>
     );
 
     fireEvent.click(getByText(/1/));
@@ -192,12 +228,18 @@ describe("SetPasscode Page", () => {
       dispatch: dispatchMock,
     };
 
+    const history = createMemoryHistory();
+    history.push(RoutePath.VERIFY_SEED_PHRASE);
+
     const { queryByText, getByTestId } = render(
-      <MemoryRouter initialEntries={[RoutePath.SET_PASSCODE]}>
+      <IonReactMemoryRouter
+        history={history}
+        initialEntries={[RoutePath.SET_PASSCODE]}
+      >
         <Provider store={storeMocked}>
           <SetPasscode />
         </Provider>
-      </MemoryRouter>
+      </IonReactMemoryRouter>
     );
     const backButton = getByTestId("back-button");
     fireEvent.click(backButton);

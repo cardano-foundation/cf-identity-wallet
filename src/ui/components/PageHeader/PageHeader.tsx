@@ -7,7 +7,6 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import { useHistory } from "react-router-dom";
 import { arrowBackOutline, closeOutline } from "ionicons/icons";
 import { PageHeaderProps } from "./PageHeader.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -15,6 +14,7 @@ import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { getBackRoute } from "../../../routes/backRoute";
 import "./PageHeader.scss";
+import { useAppIonRouter } from "../../hooks";
 
 const PageHeader = ({
   backButton,
@@ -34,8 +34,9 @@ const PageHeader = ({
   progressBarValue,
   progressBarBuffer,
   title,
+  additionalButtons,
 }: PageHeaderProps) => {
-  const history = useHistory();
+  const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const hasContent =
@@ -59,7 +60,7 @@ const PageHeader = ({
           dispatch,
           updateRedux
         );
-        history.push(backPath.pathname);
+        ionRouter.push(backPath.pathname, "back", "pop");
       }
     }
   };
@@ -71,7 +72,7 @@ const PageHeader = ({
         hasContent ? "show-header" : "hide-header"
       }`}
     >
-      <IonToolbar color="light">
+      <IonToolbar>
         <IonButtons slot="start">
           {backButton && (
             <IonButton
@@ -80,6 +81,7 @@ const PageHeader = ({
               onClick={handleOnBack}
               className="back-button"
               data-testid="back-button"
+              shape="round"
             >
               <IonIcon
                 icon={arrowBackOutline}
@@ -109,7 +111,7 @@ const PageHeader = ({
               onClick={closeButtonAction}
               data-testid="close-button"
             >
-              <p>{closeButtonLabel}</p>
+              <h4 data-testid="close-button-label">{closeButtonLabel}</h4>
             </IonButton>
           )}
         </IonButtons>
@@ -167,6 +169,8 @@ const PageHeader = ({
                 <p>{actionButtonLabel}</p>
               </IonButton>
             )}
+
+            {additionalButtons && additionalButtons}
           </IonButtons>
         )}
       </IonToolbar>

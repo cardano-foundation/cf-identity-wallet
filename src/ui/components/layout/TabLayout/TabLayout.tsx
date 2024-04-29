@@ -74,7 +74,7 @@ const TabLayout = ({
                 onClick={doneAction}
                 data-testid="tab-done-button"
               >
-                <h3>{doneLabel}</h3>
+                <h4 data-testid="tab-done-label">{doneLabel}</h4>
               </IonTitle>
             )}
 

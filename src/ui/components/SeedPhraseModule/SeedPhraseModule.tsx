@@ -12,6 +12,7 @@ const SeedPhraseModule = ({
   addSeedPhraseSelected,
   removeSeedPhraseSelected,
   emptyWord,
+  hideSeedNumber,
 }: SeedPhraseModuleProps) => {
   return (
     <div
@@ -53,13 +54,23 @@ const SeedPhraseModule = ({
                 }
               }}
             >
-              <span className="index">{index + 1}.</span>
+              {!hideSeedNumber && (
+                <span
+                  data-testid={`word-index-number-${index}`}
+                  className="index"
+                >
+                  {index + 1}.
+                </span>
+              )}
               <span data-testid={`word-index-${index + 1}`}>{word}</span>
             </IonChip>
           );
         })}
         {emptyWord && (
-          <IonChip className="empty-word">
+          <IonChip
+            className="empty-word"
+            data-testid={`empty-word-${seedPhrase.length + 1}`}
+          >
             <span className="index">{seedPhrase.length + 1}.</span>
           </IonChip>
         )}

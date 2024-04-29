@@ -15,18 +15,22 @@ import { CreatePassword } from "../CreatePassword";
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
     const { getByText } = render(
-      <Provider store={store}>
-        <Onboarding />
-      </Provider>
+      <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
+        <Provider store={store}>
+          <Onboarding />
+        </Provider>
+      </MemoryRouter>
     );
     const slide1 = getByText(EN_TRANSLATIONS.onboarding.slides[0].title);
     expect(slide1).toBeInTheDocument();
   });
   test("Render 'Get Started' button", () => {
     const { getByText } = render(
-      <Provider store={store}>
-        <Onboarding />
-      </Provider>
+      <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
+        <Provider store={store}>
+          <Onboarding />
+        </Provider>
+      </MemoryRouter>
     );
     const button = getByText(
       EN_TRANSLATIONS.onboarding.getstarted.button.label
@@ -35,9 +39,11 @@ describe("Onboarding Page", () => {
   });
   test("Render 'I already have a wallet' option", () => {
     const { getByText } = render(
-      <Provider store={store}>
-        <Onboarding />
-      </Provider>
+      <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
+        <Provider store={store}>
+          <Onboarding />
+        </Provider>
+      </MemoryRouter>
     );
     const alreadyWallet = getByText(
       EN_TRANSLATIONS.onboarding.alreadywallet.button.label

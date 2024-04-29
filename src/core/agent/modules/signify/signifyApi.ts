@@ -1,4 +1,3 @@
-import { utils } from "@aries-framework/core";
 import {
   SignifyClient,
   ready as signifyReady,
@@ -12,7 +11,10 @@ import {
   EventResult,
   Signer,
   Operation,
+  CreateIdentiferArgs,
 } from "signify-ts";
+import { v4 as uuidv4 } from "uuid";
+import { ConfigurationService } from "../../../configuration/configurationService";
 import {
   KeriContact,
   CreateIdentifierResult,
@@ -20,31 +22,17 @@ import {
   IdentifiersListResult,
   CreateMultisigExnPayload,
   Aid,
-  MultiSigIcpNotification,
+  MultiSigExnMessage,
   MultiSigRoute,
 } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
+import { WitnessMode } from "../../../configuration/configurationService.types";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
     "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
     "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
-  static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
-
-  // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
-  static readonly BACKER_ADDRESS =
-    "addr_test1vq0w66kmwwgkedxpcysfmy6z3lqxnyj7t4zzt5df3xv3qcs6cmmqm";
-
-  static readonly BACKER_CONFIG = {
-    toad: 1,
-    wits: [SignifyApi.BACKER_AID],
-    count: 1,
-    ncount: 1,
-    isith: "1",
-    nsith: "1",
-    data: [{ ca: SignifyApi.BACKER_ADDRESS }],
-  };
 
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
@@ -53,10 +41,16 @@ export class SignifyApi {
     "Failed to rotate AID, operation not completing...";
   static readonly FAILED_TO_OBTAIN_KEY_MANAGER =
     "Failed to obtain key manager for given AID";
+  static readonly INVALID_THRESHOLD = "Invalid threshold";
+  static readonly CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER =
+    "Unable to retrieve key states for given multi-sig member";
 
-  static readonly VLEI_HOST =
-    "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
-  static readonly SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
+  static readonly CREDENTIAL_SERVER =
+    "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
+  static readonly SCHEMA_SAID_VLEI =
+    "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
+  static readonly SCHEMA_SAID_IIW_DEMO =
+    "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu";
   static resolvedOobi: { [key: string]: any } = {};
 
   private signifyClient!: SignifyClient;
@@ -74,6 +68,7 @@ export class SignifyApi {
   async start(): Promise<void> {
     await signifyReady();
     const bran = await this.getBran();
+    // @TODO - foconnor: Review of Tier level.
     this.signifyClient = new SignifyClient(
       SignifyApi.LOCAL_KERIA_ENDPOINT,
       bran,
@@ -89,10 +84,10 @@ export class SignifyApi {
   }
 
   async createIdentifier(): Promise<CreateIdentifierResult> {
-    const signifyName = utils.uuid();
+    const signifyName = uuidv4();
     const operation = await this.signifyClient
       .identifiers()
-      .create(signifyName, SignifyApi.BACKER_CONFIG);
+      .create(signifyName); //, this.getCreateAidOptions());
     await operation.op();
     await this.signifyClient
       .identifiers()
@@ -110,20 +105,32 @@ export class SignifyApi {
   async createDelegationIdentifier(
     delegatorPrefix: string
   ): Promise<CreateIdentifierResult> {
-    const signifyName = utils.uuid();
+    const signifyName = uuidv4();
     const operation = await this.signifyClient
       .identifiers()
       .create(signifyName, { delpre: delegatorPrefix });
     return { signifyName, identifier: operation.serder.ked.i };
   }
 
-  async interactDelegation(signifyName: string, delegatePrefix: string) {
+  async interactDelegation(
+    signifyName: string,
+    delegatePrefix: string
+  ): Promise<boolean> {
     const anchor = {
       i: delegatePrefix,
       s: "0",
       d: delegatePrefix,
     };
-    return this.signifyClient.identifiers().interact(signifyName, anchor);
+    const ixnResult = await this.signifyClient
+      .identifiers()
+      .interact(signifyName, anchor);
+    const operation = await ixnResult.op();
+    await this.waitAndGetDoneOp(
+      operation,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+    return operation.done;
   }
 
   async delegationApproved(signifyName: string): Promise<boolean> {
@@ -173,10 +180,9 @@ export class SignifyApi {
     if (SignifyApi.resolvedOobi[url]) {
       return SignifyApi.resolvedOobi[url];
     }
-    const alias = utils.uuid();
-    let operation = await this.signifyClient.oobis().resolve(url, alias);
-    operation = await this.waitAndGetDoneOp(
-      operation,
+    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
+    const operation = await this.waitAndGetDoneOp(
+      await this.signifyClient.oobis().resolve(url, alias),
       this.opTimeout,
       this.opRetryInterval
     );
@@ -188,8 +194,8 @@ export class SignifyApi {
     return Oobi;
   }
 
-  async getNotifications() {
-    return this.signifyClient.notifications().list();
+  async getNotifications(start = 0, end = 24) {
+    return this.signifyClient.notifications().list(start, end);
   }
 
   async markNotification(id: string) {
@@ -201,7 +207,13 @@ export class SignifyApi {
     holderAidName: string,
     issuerAid: string
   ): Promise<void> {
-    await this.resolveOobi(SignifyApi.VLEI_HOST + SignifyApi.SCHEMA_SAID);
+    // @TODO - foconnor: For now this will only work with our test server, we need to find a better way to handle this in production.
+    await this.resolveOobi(
+      SignifyApi.CREDENTIAL_SERVER + SignifyApi.SCHEMA_SAID_VLEI
+    );
+    await this.resolveOobi(
+      SignifyApi.CREDENTIAL_SERVER + SignifyApi.SCHEMA_SAID_IIW_DEMO
+    );
     const dt = new Date().toISOString().replace("Z", "000+00:00");
     const [admit, sigs, aend] = await this.signifyClient
       .ipex()
@@ -285,22 +297,28 @@ export class SignifyApi {
   async createMultisig(
     aid: Aid,
     otherAids: Pick<Aid, "state">[],
-    name: string
+    name: string,
+    threshold: number,
+    delegate?: Aid
   ): Promise<{
     op: any;
     icpResult: EventResult;
     name: string;
   }> {
+    if (threshold < 1 || threshold > otherAids.length + 1) {
+      throw new Error(SignifyApi.INVALID_THRESHOLD);
+    }
     const states = [aid["state"], ...otherAids.map((aid) => aid["state"])];
     const icp = await this.signifyClient.identifiers().create(name, {
       algo: Algos.group,
       mhab: aid,
-      isith: otherAids.length + 1,
-      nsith: otherAids.length + 1,
+      isith: threshold,
+      nsith: threshold,
       toad: aid.state.b.length,
       wits: aid.state.b,
       states: states,
       rstates: states,
+      delpre: delegate?.prefix,
     });
     const op = await icp.op();
     const serder = icp.serder;
@@ -389,7 +407,7 @@ export class SignifyApi {
   }
 
   async joinMultisigRotation(
-    exn: MultiSigIcpNotification["exn"],
+    exn: MultiSigExnMessage["exn"],
     aid: Aid,
     name: string
   ): Promise<{
@@ -453,14 +471,12 @@ export class SignifyApi {
       .send(name, "multisig", aid, route, payload, embeds, recp);
   }
 
-  async getNotificationsBySaid(
-    said: string
-  ): Promise<MultiSigIcpNotification[]> {
+  async getMultisigMessageBySaid(said: string): Promise<MultiSigExnMessage[]> {
     return this.signifyClient.groups().getRequest(said);
   }
 
   async joinMultisig(
-    exn: MultiSigIcpNotification["exn"],
+    exn: MultiSigExnMessage["exn"],
     aid: Aid,
     name: string
   ): Promise<{
@@ -469,7 +485,28 @@ export class SignifyApi {
     name: string;
   }> {
     const icp = exn.e.icp;
-    const rstates = exn.a.rstates;
+
+    // @TODO - foconnor: We can skip our member and get state from aid param.
+    const states = await Promise.all(
+      exn.a.smids.map(async (member) => {
+        const result = await this.signifyClient.keyStates().get(member);
+        if (result.length === 0) {
+          throw new Error(SignifyApi.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER);
+        }
+        return result[0];
+      })
+    );
+
+    // @TODO - foconnor: Check if smids === rmids, and if so, skip this.
+    const rstates = await Promise.all(
+      exn.a.rmids.map(async (member) => {
+        const result = await this.signifyClient.keyStates().get(member);
+        if (result.length === 0) {
+          throw new Error(SignifyApi.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER);
+        }
+        return result[0];
+      })
+    );
     const icpResult = await this.signifyClient.identifiers().create(name, {
       algo: Algos.group,
       mhab: aid,
@@ -477,7 +514,7 @@ export class SignifyApi {
       nsith: icp.nt,
       toad: parseInt(icp.bt),
       wits: icp.b,
-      states: rstates,
+      states,
       rstates,
     });
     const op = await icpResult.op();
@@ -492,7 +529,7 @@ export class SignifyApi {
     };
 
     const smids = exn.a.smids;
-    const recp = rstates
+    const recp = states
       .filter((r) => r.i !== aid.state.i)
       .map((state) => state["i"]);
     await this.sendMultisigExn(
@@ -542,5 +579,22 @@ export class SignifyApi {
 
   async getMultisigMembers(name: string): Promise<any> {
     return this.signifyClient.identifiers().members(name);
+  }
+  private getCreateAidOptions(): CreateIdentiferArgs {
+    if (ConfigurationService.env.keri.backerType === WitnessMode.LEDGER) {
+      return {
+        toad: 1,
+        wits: [ConfigurationService.env.keri.ledger.aid],
+        count: 1,
+        ncount: 1,
+        isith: "1",
+        nsith: "1",
+        data: [{ ca: ConfigurationService.env.keri.ledger.address }],
+      };
+    }
+    return {
+      toad: ConfigurationService.env.keri.pools.length,
+      wits: ConfigurationService.env.keri.pools,
+    };
   }
 }

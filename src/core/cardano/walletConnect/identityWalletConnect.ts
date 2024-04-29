@@ -6,9 +6,7 @@ import {
 } from "@fabianbormann/cardano-peer-connect/dist/src/types";
 import { CardanoPeerConnect } from "@fabianbormann/cardano-peer-connect";
 import { Signer } from "signify-ts";
-import { AriesAgent } from "../../agent/agent";
-import { IdentifierType } from "../../agent/services/identifierService.types";
-import { PreferencesStorage } from "../../storage";
+import { Agent } from "../../agent/agent";
 
 class IdentityWalletConnect extends CardanoPeerConnect {
   static readonly IDENTIFIER_ID_NOT_LOCATED =
@@ -43,15 +41,13 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     this.signerCache = new Map();
 
     this.getIdentifierId = async (): Promise<string> => {
-      const identifiers = await AriesAgent.agent.identifiers.getIdentifiers();
+      const identifiers = await Agent.agent.identifiers.getIdentifiers();
       if (!(identifiers && identifiers.length > 0)) {
         throw new Error(IdentityWalletConnect.NO_IDENTIFIERS_STORED);
       }
 
       for (const identifier of identifiers) {
-        if (identifier.method === IdentifierType.KERI) {
-          return identifier.id;
-        }
+        return identifier.id;
       }
       throw new Error(IdentityWalletConnect.NO_KERI_IDENTIFIERS_STORED);
     };
@@ -63,7 +59,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       if (this.signerCache.get(identifierId) === undefined) {
         this.signerCache.set(
           identifierId,
-          await AriesAgent.agent.identifiers.getSigner(identifierId)
+          await Agent.agent.identifiers.getSigner(identifierId)
         );
       }
       return this.signerCache.get(identifierId)!.sign(Buffer.from(payload))
@@ -71,7 +67,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     };
 
     this.generateOobi = async (identifierId: string): Promise<string> => {
-      const identifier = await AriesAgent.agent.identifiers.getIdentifier(
+      const identifier = await Agent.agent.identifiers.getIdentifier(
         identifierId
       );
 
@@ -81,13 +77,11 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         );
       }
 
-      if (!identifier.result.signifyName) {
+      if (!identifier.signifyName) {
         throw new Error(`${IdentityWalletConnect.AID_MISSING_SIGNIFY_NAME}`);
       }
 
-      return await AriesAgent.agent.connections.getKeriOobi(
-        identifier.result.signifyName
-      );
+      return await Agent.agent.connections.getKeriOobi(identifier.signifyName);
     };
   }
 

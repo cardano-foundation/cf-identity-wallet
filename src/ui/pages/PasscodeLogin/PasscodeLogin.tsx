@@ -23,10 +23,11 @@ import { RoutePath } from "../../../routes";
 import { PageFooter } from "../../components/PageFooter";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { PageHeader } from "../../components/PageHeader";
+import { useAppIonRouter } from "../../hooks";
 
 const PasscodeLogin = () => {
   const pageId = "passcode-login";
-  const history = useHistory();
+  const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const authentication = useAppSelector(getAuthentication);
@@ -77,7 +78,7 @@ const PasscodeLogin = () => {
             updateRedux
           );
 
-          history.push(backPath.pathname);
+          ionRouter.push(backPath.pathname, "back", "pop");
           handleClearState();
 
           setTimeout(() => {
@@ -121,7 +122,7 @@ const PasscodeLogin = () => {
           path: RoutePath.SET_PASSCODE,
         })
       );
-      history.push(RoutePath.SET_PASSCODE);
+      ionRouter.push(RoutePath.SET_PASSCODE, "back", "pop");
       handleClearState();
     });
   };

@@ -5,6 +5,7 @@ import "./PageFooter.scss";
 
 const PageFooter = ({
   pageId,
+  customClass,
   primaryButtonIcon,
   primaryButtonText,
   primaryButtonAction,
@@ -25,7 +26,9 @@ const PageFooter = ({
   deleteButtonDisabled,
 }: PageFooterProps) => {
   return (
-    <IonToolbar className="page-footer">
+    <IonToolbar
+      className={`page-footer${customClass ? " " + customClass : ""}`}
+    >
       {primaryButtonText && primaryButtonAction && (
         <IonButton
           shape="round"
