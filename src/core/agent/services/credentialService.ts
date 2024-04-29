@@ -1,4 +1,3 @@
-import { plainToInstance } from "class-transformer";
 import {
   KeriNotification,
   AcdcKeriStateChangedEvent,
@@ -10,14 +9,9 @@ import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../records/credentialMetadataRecord.types";
-import {
-  CredentialShortDetails,
-  CredentialStatus,
-  ACDCDetails,
-} from "./credentialService.types";
+import { CredentialShortDetails, ACDCDetails } from "./credentialService.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { RecordType } from "../../storage/storage.types";
-import { Agent } from "../agent";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =

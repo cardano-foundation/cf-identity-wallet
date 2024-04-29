@@ -43,7 +43,7 @@ class Agent {
 
   private storageSession!: SqliteSession | IonicSession;
 
-  private basicStorage!: BasicStorage;
+  private basicStorageService!: BasicStorage;
   private signifyClient!: SignifyClient;
   static ready = false;
 
@@ -93,8 +93,8 @@ class Agent {
     return this.credentialService;
   }
 
-  get basicStorages() {
-    return this.basicStorage;
+  get basicStorage() {
+    return this.basicStorageService;
   }
 
   get signifyNotifications() {
@@ -137,11 +137,11 @@ class Agent {
         await this.signifyClient.boot();
         await this.signifyClient.connect();
       }
-      this.basicStorage = new BasicStorage(
+      this.basicStorageService = new BasicStorage(
         this.getStorageService<BasicRecord>(this.storageSession)
       );
       this.agentServicesProps = {
-        basicStorage: this.basicStorage,
+        basicStorage: this.basicStorageService,
         signifyClient: this.signifyClient,
         eventService: new EventService(),
         identifierStorage: new IdentifierStorage(

@@ -8,7 +8,7 @@ interface BasicRecordStorageProps {
   content: Record<string, unknown>;
 }
 
-class BasicRecord extends BaseRecord implements BasicRecordStorageProps {
+class BasicRecord extends BaseRecord {
   content!: Record<string, unknown>;
   static readonly type = "BasicRecord";
   readonly type = BasicRecord.type;

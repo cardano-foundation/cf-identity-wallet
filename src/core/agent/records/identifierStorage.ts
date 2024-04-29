@@ -37,8 +37,7 @@ class IdentifierStorage {
   }
 
   async getKeriIdentifiersMetadata(): Promise<IdentifierMetadataRecord[]> {
-    const records = await this.storageService.getAll(IdentifierMetadataRecord);
-    return records;
+    return this.storageService.getAll(IdentifierMetadataRecord);
   }
 
   async updateIdentifierMetadata(

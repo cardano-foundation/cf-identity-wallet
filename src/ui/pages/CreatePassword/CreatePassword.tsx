@@ -65,7 +65,7 @@ const CreatePassword = () => {
         createPasswordValue
       );
       if (hintValue) {
-        await Agent.agent.basicStorages.save({
+        await Agent.agent.basicStorage.save({
           id: MiscRecordId.OP_PASS_HINT,
           content: { value: hintValue },
           tags: {

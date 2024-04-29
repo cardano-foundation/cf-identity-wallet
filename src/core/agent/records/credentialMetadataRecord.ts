@@ -4,10 +4,7 @@ import {
 } from "./credentialMetadataRecord.types";
 import { BaseRecord } from "../../storage/storage.types";
 
-class CredentialMetadataRecord
-  extends BaseRecord
-  implements CredentialMetadataRecordProps
-{
+class CredentialMetadataRecord extends BaseRecord {
   isArchived?: boolean;
   isDeleted?: boolean;
   issuanceDate!: string;

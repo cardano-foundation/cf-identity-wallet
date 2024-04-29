@@ -8,6 +8,7 @@ class CredentialStorage {
   constructor(storageService: StorageService<CredentialMetadataRecord>) {
     this.storageService = storageService;
   }
+
   async getAllCredentialMetadata(
     isArchived?: boolean
   ): Promise<CredentialMetadataRecord[]> {
