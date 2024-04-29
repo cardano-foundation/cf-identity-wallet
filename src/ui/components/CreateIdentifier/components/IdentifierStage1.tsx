@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
-import { useAppSelector } from "../../../../store/hooks";
-import { getStateCache } from "../../../../store/reducers/stateCache";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import {
+  getStateCache,
+  setCurrentOperation,
+} from "../../../../store/reducers/stateCache";
 import { Agent } from "../../../../core/agent/agent";
 import { IdentifierStage1BodyInit } from "./IdentifierStage1BodyInit";
 import { IdentifierStage1BodyResume } from "./IdentifierStage1BodyResume";
 import { Alert } from "../../Alert";
 import { i18n } from "../../../../i18n";
 import { TabsRoutePath } from "../../navigation/TabsMenu";
+import { OperationType } from "../../../globals/types";
 
 const IdentifierStage1 = ({
   state,
@@ -18,6 +22,7 @@ const IdentifierStage1 = ({
   groupId: groupIdProp,
 }: IdentifierStageProps) => {
   const history = useHistory();
+  const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
@@ -29,6 +34,7 @@ const IdentifierStage1 = ({
   const groupMetadata =
     resumeMultiSig?.groupMetadata || state.newIdentifier.groupMetadata;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [initiated, setInitiated] = useState(false);
 
   useEffect(() => {
     async function fetchOobi() {
@@ -59,13 +65,14 @@ const IdentifierStage1 = ({
   };
 
   const handleInitiateScan = () => {
-    // TODO: scan button functionality
+    dispatch(setCurrentOperation(OperationType.SCAN_CONNECTION));
+    setInitiated(true);
   };
 
   return (
     <>
-      {!resumeMultiSig?.signifyName.length ? (
-        <IdentifierStage1BodyInit
+      {resumeMultiSig?.signifyName.length || initiated ? (
+        <IdentifierStage1BodyResume
           componentId={componentId}
           handleDone={handleDone}
           oobi={oobi}
@@ -73,7 +80,7 @@ const IdentifierStage1 = ({
           handleScanButton={() => setAlertIsOpen(true)}
         />
       ) : (
-        <IdentifierStage1BodyResume
+        <IdentifierStage1BodyInit
           componentId={componentId}
           handleDone={handleDone}
           oobi={oobi}

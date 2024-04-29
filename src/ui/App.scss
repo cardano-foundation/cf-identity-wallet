@@ -20,6 +20,12 @@ body {
     text-transform: none;
   }
 
+  &.full-page-scanner {
+    #root ion-app > *:not(.qr-code-scanner-full-page) {
+      display: none;
+    }
+  }
+
   &.scanner-active {
     background-color: transparent;
 

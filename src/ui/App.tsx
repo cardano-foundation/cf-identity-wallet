@@ -83,14 +83,9 @@ const App = () => {
     <IonApp>
       <AppWrapper>
         <StrictMode>
-          {showScan ? (
-            <FullPageScanner setShowScan={setShowScan} />
-          ) : (
-            <>
-              {isPreviewMode && <MobileHeaderPreview />}
-              <Routes />
-            </>
-          )}
+          {isPreviewMode && <MobileHeaderPreview />}
+          {showScan && <FullPageScanner setShowScan={setShowScan} />}
+          <Routes />
           <SetUserName
             isOpen={showSetUserName}
             setIsOpen={setShowSetUserName}

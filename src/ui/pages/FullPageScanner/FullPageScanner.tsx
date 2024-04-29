@@ -7,7 +7,7 @@ import {
   IonIcon,
   IonHeader,
 } from "@ionic/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Scanner } from "../../components/Scanner";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { useAppDispatch } from "../../../store/hooks";
@@ -22,10 +22,15 @@ const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
   const dispatch = useAppDispatch();
   const scannerRef = useRef<ScannerRefComponent>(null);
 
+  useEffect(() => {
+    document?.querySelector("body")?.classList.add("full-page-scanner");
+  }, []);
+
   const handleBackButton = () => {
     setShowScan(false);
     dispatch(setCurrentOperation(OperationType.IDLE));
     scannerRef.current?.stopScan();
+    document?.querySelector("body")?.classList.remove("full-page-scanner");
     document
       ?.querySelector("body.scanner-active > div:last-child")
       ?.classList.add("hide");
