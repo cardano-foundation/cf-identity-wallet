@@ -19,18 +19,14 @@ import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { waitAndGetDoneOp } from "./utils";
 
 class ConnectionService extends AgentService {
-  static readonly COULD_NOT_CREATE_OOB_VIA_MEDIATOR =
-    "Could not create new mediator oob invitation";
-  static readonly INVALID_CONNECTIONLESS_MSG =
-    "Invalid connectionless OOBI - does not contain d_m parameter";
   static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
     "Connection note record not found";
   static readonly CONNECTION_METADATA_RECORD_NOT_FOUND =
     "Connection metadata record not found";
   static readonly DEFAULT_ROLE = "agent";
-
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
+
   static resolvedOobi: { [key: string]: any } = {};
 
   onConnectionStateChanged(

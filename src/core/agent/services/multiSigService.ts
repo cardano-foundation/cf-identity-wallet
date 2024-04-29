@@ -18,19 +18,14 @@ import {
 } from "../records";
 import { AgentService } from "./agentService";
 import { MultiSigIcpRequestDetails } from "./identifier.types";
-import { waitAndGetDoneOp } from "./utils";
 import { RecordType } from "../../storage/storage.types";
 
 class MultiSigService extends AgentService {
-  static readonly FAILED_TO_RESOLVE_OOBI =
-    "Failed to resolve OOBI, operation not completing...";
   static readonly INVALID_THRESHOLD = "Invalid threshold";
   static readonly CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER =
     "Unable to retrieve key states for given multi-sig member";
   static readonly EXN_MESSAGE_NOT_FOUND =
     "There's no exchange message for the given SAID";
-  static readonly ONLY_ALLOW_KERI_CONTACTS =
-    "Can only create multi-sig using KERI contacts with specified OOBI URLs";
   static readonly MULTI_SIG_NOT_FOUND =
     "There's no multi sig identifier for the given SAID";
   static readonly AID_IS_NOT_MULTI_SIG =
