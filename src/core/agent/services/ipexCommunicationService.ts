@@ -1,8 +1,8 @@
 import { Agent } from "../agent";
 import {
-  AcdcKeriEventTypes,
-  AcdcKeriStateChangedEvent,
-  KeriNotification,
+  AcdcEventTypes,
+  AcdcStateChangedEvent,
+  KeriaNotification,
 } from "../agent.types";
 import { CredentialMetadataRecordStatus } from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
@@ -27,16 +27,7 @@ class IpexCommunicationService extends AgentService {
   static readonly SCHEMA_SAID_IIW_DEMO =
     "EKYv475K1k6uMt9IJw99NM8iLQuQf1bKfSHqA1XIKoQy";
 
-  onAcdcKeriStateChanged(callback: (event: AcdcKeriStateChangedEvent) => void) {
-    this.eventService.on(
-      AcdcKeriEventTypes.AcdcKeriStateChanged,
-      async (event: AcdcKeriStateChangedEvent) => {
-        callback(event);
-      }
-    );
-  }
-
-  async acceptKeriAcdc(
+  async acceptAcdc(
     id: string,
     waitForAcdcConfig = { maxAttempts: 120, interval: 500 }
   ): Promise<void> {
@@ -47,8 +38,8 @@ class IpexCommunicationService extends AgentService {
     const credentialId = exn.exn.e.acdc.d;
     await this.saveAcdcMetadataRecord(exn.exn.e.acdc.d, exn.exn.e.acdc.a.dt);
 
-    this.eventService.emit<AcdcKeriStateChangedEvent>({
-      type: AcdcKeriEventTypes.AcdcKeriStateChanged,
+    this.eventService.emit<AcdcStateChangedEvent>({
+      type: AcdcEventTypes.AcdcStateChanged,
       payload: {
         credentialId,
         status: CredentialStatus.PENDING,
@@ -78,8 +69,8 @@ class IpexCommunicationService extends AgentService {
       cred
     );
     await this.basicStorage.deleteById(id);
-    this.eventService.emit<AcdcKeriStateChangedEvent>({
-      type: AcdcKeriEventTypes.AcdcKeriStateChanged,
+    this.eventService.emit<AcdcStateChangedEvent>({
+      type: AcdcEventTypes.AcdcStateChanged,
       payload: {
         status: CredentialStatus.CONFIRMED,
         credential: credentialShortDetails,
@@ -108,7 +99,7 @@ class IpexCommunicationService extends AgentService {
 
   private async getNotificationRecordById(
     id: string
-  ): Promise<KeriNotification> {
+  ): Promise<KeriaNotification> {
     const result = await this.basicStorage.findById(id);
     if (!result) {
       throw new Error(

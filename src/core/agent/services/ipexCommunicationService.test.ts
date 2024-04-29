@@ -1,5 +1,3 @@
-import { CredentialMetadataRecordStatus } from "../records/credentialMetadataRecord.types";
-import { AcdcKeriEventTypes, AcdcKeriStateChangedEvent } from "../agent.types";
 import { EventService } from "./eventService";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import { CredentialStatus } from "./credentialService.types";
@@ -158,25 +156,6 @@ const ipexCommunicationService = new IpexCommunicationService(
 );
 
 describe("Ipex communication service of agent", () => {
-  test("callback will run when have a event listener of ACDC state changed", async () => {
-    const callback = jest.fn();
-    ipexCommunicationService.onAcdcKeriStateChanged(callback);
-    const event: AcdcKeriStateChangedEvent = {
-      type: AcdcKeriEventTypes.AcdcKeriStateChanged,
-      payload: {
-        credential: {
-          id: "acdc",
-          issuanceDate: "dt",
-          credentialType: "type",
-          status: CredentialMetadataRecordStatus.CONFIRMED,
-        },
-        status: CredentialStatus.CONFIRMED,
-      },
-    };
-    eventService.emit(event);
-    expect(callback).toBeCalledWith(event);
-  });
-
   test("can accept ACDC", async () => {
     const id = "uuid";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
@@ -194,7 +173,7 @@ describe("Ipex communication service of agent", () => {
       .mockResolvedValue({
         id: "id",
       });
-    await ipexCommunicationService.acceptKeriAcdc(id);
+    await ipexCommunicationService.acceptAcdc(id);
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalled();
     expect(credentialStorage.updateCredentialMetadata).toBeCalledWith("id", {
       id: "id",
@@ -205,9 +184,7 @@ describe("Ipex communication service of agent", () => {
 
   test("cannot accept ACDC if the notification is missing in the DB", async () => {
     const id = "not-found-id";
-    await expect(
-      ipexCommunicationService.acceptKeriAcdc(id)
-    ).rejects.toThrowError(
+    await expect(ipexCommunicationService.acceptAcdc(id)).rejects.toThrowError(
       `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
     );
   });
@@ -226,9 +203,9 @@ describe("Ipex communication service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(undefined);
-    await expect(
-      ipexCommunicationService.acceptKeriAcdc(id)
-    ).rejects.toThrowError(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+    await expect(ipexCommunicationService.acceptAcdc(id)).rejects.toThrowError(
+      IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY
+    );
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalled();
     expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
     expect(basicStorage.deleteById).not.toBeCalled();
@@ -245,7 +222,7 @@ describe("Ipex communication service of agent", () => {
     });
     // Could use fake timers instead.
     await expect(
-      ipexCommunicationService.acceptKeriAcdc(id, {
+      ipexCommunicationService.acceptAcdc(id, {
         maxAttempts: 2,
         interval: 10,
       })
@@ -267,9 +244,7 @@ describe("Ipex communication service of agent", () => {
     credentialStorage.getCredentialMetadataByCredentialRecordId = jest
       .fn()
       .mockResolvedValue(null);
-    await expect(
-      ipexCommunicationService.acceptKeriAcdc(id)
-    ).rejects.toThrowError(
+    await expect(ipexCommunicationService.acceptAcdc(id)).rejects.toThrowError(
       IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
     );
     expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();

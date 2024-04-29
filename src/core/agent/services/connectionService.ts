@@ -3,13 +3,13 @@ import {
   ConnectionDetails,
   ConnectionHistoryItem,
   ConnectionHistoryType,
-  ConnectionKeriEventTypes,
-  ConnectionKeriStateChangedEvent,
+  ConnectionEventTypes,
+  ConnectionStateChangedEvent,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
   ConnectionStatus,
-  KeriContact,
+  KeriaContact,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { Agent } from "../agent";
@@ -33,20 +33,20 @@ class ConnectionService extends AgentService {
     "Failed to resolve OOBI, operation not completing...";
   static resolvedOobi: { [key: string]: any } = {};
 
-  onConnectionKeriStateChanged(
-    callback: (event: ConnectionKeriStateChangedEvent) => void
+  onConnectionStateChanged(
+    callback: (event: ConnectionStateChangedEvent) => void
   ) {
     this.eventService.on(
-      ConnectionKeriEventTypes.ConnectionKeriStateChanged,
-      async (event: ConnectionKeriStateChangedEvent) => {
+      ConnectionEventTypes.ConnectionStateChanged,
+      async (event: ConnectionStateChangedEvent) => {
         callback(event);
       }
     );
   }
 
   async receiveInvitationFromUrl(url: string): Promise<void> {
-    this.eventService.emit<ConnectionKeriStateChangedEvent>({
-      type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+    this.eventService.emit<ConnectionStateChangedEvent>({
+      type: ConnectionEventTypes.ConnectionStateChanged,
       payload: {
         connectionId: undefined,
         status: ConnectionStatus.PENDING,
@@ -104,8 +104,8 @@ class ConnectionService extends AgentService {
       }
     }
 
-    return this.eventService.emit<ConnectionKeriStateChangedEvent>({
-      type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+    return this.eventService.emit<ConnectionStateChangedEvent>({
+      type: ConnectionEventTypes.ConnectionStateChanged,
       payload: {
         connectionId: operation.response.i,
         status: ConnectionStatus.CONFIRMED,
@@ -210,7 +210,7 @@ class ConnectionService extends AgentService {
       id: connectionId,
       content: metadata || {},
       tags: {
-        type: RecordType.CONNECTION_KERI_METADATA,
+        type: RecordType.KERIA_CONNECTION_METADATA,
       },
     });
   }
@@ -229,7 +229,7 @@ class ConnectionService extends AgentService {
 
   async getAllConnectionKeriMetadata(): Promise<BasicRecord[]> {
     const connectionKeris = await this.basicStorage.findAllByQuery({
-      type: RecordType.CONNECTION_KERI_METADATA,
+      type: RecordType.KERIA_CONNECTION_METADATA,
     });
     return connectionKeris;
   }
@@ -258,7 +258,7 @@ class ConnectionService extends AgentService {
     const signifyContacts = await this.signifyClient.contacts().list();
     const storageContacts = await this.getAllConnectionKeriMetadata();
     const unSyncedData = signifyContacts.filter(
-      (contact: KeriContact) =>
+      (contact: KeriaContact) =>
         !storageContacts.find((item: BasicRecord) => contact.id == item.id)
     );
     if (unSyncedData.length) {

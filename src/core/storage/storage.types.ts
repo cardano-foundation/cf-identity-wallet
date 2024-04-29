@@ -49,8 +49,8 @@ interface SaveBasicRecordOption {
 
 enum RecordType {
   CONNECTION_NOTE = "ConnectionNote",
-  CONNECTION_KERI_METADATA = "ConnectionKeriMetadata",
-  NOTIFICATION_KERI = "NotificationKeri",
+  KERIA_CONNECTION_METADATA = "KeriaConnectionMetadata",
+  KERIA_NOTIFICATION = "KeriaNotification",
   CREDENTIAL_METADATA_RECORD = "CredentialMetadataRecord",
   IDENTIFIER_METADATA_RECORD = "IdentifierMetadataRecord",
   OP_PASS_HINT = "OpPassHint",

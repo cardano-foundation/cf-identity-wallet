@@ -32,10 +32,10 @@ import {
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import {
-  KeriNotification,
-  ConnectionKeriStateChangedEvent,
+  KeriaNotification,
+  ConnectionStateChangedEvent,
   ConnectionStatus,
-  AcdcKeriStateChangedEvent,
+  AcdcStateChangedEvent,
   NotificationRoute,
 } from "../../../core/agent/agent.types";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
@@ -44,8 +44,8 @@ import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 
-const connectionKeriStateChangedHandler = async (
-  event: ConnectionKeriStateChangedEvent,
+const connectionStateChangedHandler = async (
+  event: ConnectionStateChangedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === ConnectionStatus.PENDING) {
@@ -62,8 +62,8 @@ const connectionKeriStateChangedHandler = async (
   }
 };
 
-const keriNotificationsChangeHandler = async (
-  event: KeriNotification,
+const keriaNotificationsChangeHandler = async (
+  event: KeriaNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event?.a?.r === NotificationRoute.Credential) {
@@ -91,8 +91,8 @@ const keriNotificationsChangeHandler = async (
   }
 };
 
-const keriAcdcChangeHandler = async (
-  event: AcdcKeriStateChangedEvent,
+const acdcChangeHandler = async (
+  event: AcdcStateChangedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === CredentialStatus.PENDING) {
@@ -238,14 +238,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setCredsCache(credentials));
     dispatch(setConnectionsCache(connectionsDetails));
 
-    Agent.agent.connections.onConnectionKeriStateChanged((event) => {
-      return connectionKeriStateChangedHandler(event, dispatch);
+    Agent.agent.connections.onConnectionStateChanged((event) => {
+      return connectionStateChangedHandler(event, dispatch);
     });
-    Agent.agent.signifyNotifications.onNotificationKeriStateChanged((event) => {
-      return keriNotificationsChangeHandler(event, dispatch);
+    Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
+      return keriaNotificationsChangeHandler(event, dispatch);
     });
-    Agent.agent.credentials.onAcdcKeriStateChanged((event) => {
-      return keriAcdcChangeHandler(event, dispatch);
+    Agent.agent.credentials.onAcdcStateChanged((event) => {
+      return acdcChangeHandler(event, dispatch);
     });
 
     setInitialised(true);
@@ -263,7 +263,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
       });
     oldMessages.forEach(async (message) => {
-      await keriNotificationsChangeHandler(message, dispatch);
+      await keriaNotificationsChangeHandler(message, dispatch);
     });
     // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
     // await Promise.all([

@@ -30,7 +30,6 @@ jest.mock("../core/agent/agent", () => ({
         isConnectionConnected: jest.fn(),
         getConnectionShortDetailById: jest.fn(),
         getUnhandledConnections: jest.fn(),
-        onConnectionKeriStateChanged: jest.fn(),
         syncKeriaContacts: jest.fn(),
       },
       credentials: {
@@ -42,7 +41,7 @@ jest.mock("../core/agent/agent", () => ({
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
         getKeriCredentialNotifications: jest.fn(),
-        onAcdcKeriStateChanged: jest.fn(),
+        onAcdcStateChanged: jest.fn(),
         syncACDCs: jest.fn(),
       },
       messages: {
@@ -50,7 +49,7 @@ jest.mock("../core/agent/agent", () => ({
         pickupMessagesFromMediator: jest.fn(),
       },
       signifyNotifications: {
-        onNotificationKeriStateChanged: jest.fn(),
+        onNotificationStateChanged: jest.fn(),
       },
     },
   },

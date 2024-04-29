@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../agent";
 import {
   ConnectionShortDetails,
-  KeriNotification,
+  KeriaNotification,
   Aid,
   IdentifierResult,
   MultiSigExnMessage,
@@ -212,7 +212,7 @@ class MultiSigService extends AgentService {
     return multisigId;
   }
 
-  async joinMultisigRotation(notification: KeriNotification): Promise<string> {
+  async joinMultisigRotation(notification: KeriaNotification): Promise<string> {
     const msgSaid = notification.a.d as string;
     const notifications: MultiSigExnMessage[] = await this.signifyClient
       .groups()
@@ -269,7 +269,7 @@ class MultiSigService extends AgentService {
   }
 
   async getMultisigIcpDetails(
-    notification: KeriNotification
+    notification: KeriaNotification
   ): Promise<MultiSigIcpRequestDetails> {
     const msgSaid = notification.a.d as string;
     const icpMsg: MultiSigExnMessage[] = await this.signifyClient
@@ -334,7 +334,7 @@ class MultiSigService extends AgentService {
   }
 
   async joinMultisig(
-    notification: KeriNotification,
+    notification: KeriaNotification,
     meta: Pick<IdentifierMetadataRecordProps, "displayName" | "theme">
   ): Promise<CreateIdentifierResult | undefined> {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
@@ -403,9 +403,9 @@ class MultiSigService extends AgentService {
     filters: {
       isDismissed?: boolean;
     } = {}
-  ): Promise<KeriNotification[]> {
+  ): Promise<KeriaNotification[]> {
     const results = await this.basicStorage.findAllByQuery({
-      type: RecordType.NOTIFICATION_KERI,
+      type: RecordType.KERIA_NOTIFICATION,
       route: NotificationRoute.MultiSigIcp,
       ...filters,
       $or: [

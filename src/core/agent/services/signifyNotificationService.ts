@@ -1,6 +1,6 @@
 import { AgentService } from "./agentService";
 import {
-  KeriNotification,
+  KeriaNotification,
   KeriaNotificationMarker,
   NotificationRoute,
 } from "../agent.types";
@@ -11,8 +11,8 @@ import { RecordType } from "../../storage/storage.types";
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
 
-  async onNotificationKeriStateChanged(
-    callback: (event: KeriNotification) => void
+  async onNotificationStateChanged(
+    callback: (event: KeriaNotification) => void
   ) {
     let notificationQuery = {
       nextIndex: 0,
@@ -98,7 +98,7 @@ class SignifyNotificationService extends AgentService {
 
   async processNotification(
     notif: Notification,
-    callback: (event: KeriNotification) => void
+    callback: (event: KeriaNotification) => void
   ) {
     // We only process with the credential and the multisig at the moment
     if (
@@ -107,23 +107,23 @@ class SignifyNotificationService extends AgentService {
       ) &&
       !notif.r
     ) {
-      const keriNoti = await this.createKeriNotificationRecord(notif);
-      callback(keriNoti);
+      const keriaNotif = await this.createNotificationRecord(notif);
+      callback(keriaNotif);
       await this.markNotification(notif.i);
     } else if (!notif.r) {
       this.markNotification(notif.i);
     }
   }
 
-  private async createKeriNotificationRecord(
+  private async createNotificationRecord(
     event: Notification
-  ): Promise<KeriNotification> {
+  ): Promise<KeriaNotification> {
     const result = await this.basicStorage.save({
       id: event.i,
       content: event.a,
       tags: {
         isDismissed: false,
-        type: RecordType.NOTIFICATION_KERI,
+        type: RecordType.KERIA_NOTIFICATION,
         route: event.a.r,
       },
     });
@@ -147,7 +147,7 @@ class SignifyNotificationService extends AgentService {
   async getDismissedNotifications() {
     const notifications = await this.basicStorage.findAllByQuery({
       isDismissed: true,
-      type: RecordType.NOTIFICATION_KERI,
+      type: RecordType.KERIA_NOTIFICATION,
     });
     return notifications;
   }

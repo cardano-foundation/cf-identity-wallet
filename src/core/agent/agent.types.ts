@@ -65,22 +65,24 @@ interface ConnectionDetails extends ConnectionShortDetails {
   notes?: ConnectionNoteDetails[];
 }
 
-enum ConnectionKeriEventTypes {
-  ConnectionKeriStateChanged = "ConnectionKeriStateChanged",
+enum ConnectionEventTypes {
+  ConnectionStateChanged = "ConnectionStateChanged",
 }
-enum AcdcKeriEventTypes {
-  AcdcKeriStateChanged = "AcdcKeriStateChanged",
+
+enum AcdcEventTypes {
+  AcdcStateChanged = "AcdcStateChanged",
 }
-interface ConnectionKeriStateChangedEvent extends BaseEventEmitter {
-  type: typeof ConnectionKeriEventTypes.ConnectionKeriStateChanged;
+
+interface ConnectionStateChangedEvent extends BaseEventEmitter {
+  type: typeof ConnectionEventTypes.ConnectionStateChanged;
   payload: {
     connectionId?: string;
     status: ConnectionStatus;
   };
 }
 
-interface AcdcKeriStateChangedEvent extends BaseEventEmitter {
-  type: typeof AcdcKeriEventTypes.AcdcKeriStateChanged;
+interface AcdcStateChangedEvent extends BaseEventEmitter {
+  type: typeof AcdcEventTypes.AcdcStateChanged;
   payload:
     | {
         status: CredentialStatus.PENDING;
@@ -92,7 +94,7 @@ interface AcdcKeriStateChangedEvent extends BaseEventEmitter {
       };
 }
 
-interface KeriNotification {
+interface KeriaNotification {
   id: string;
   createdAt: Date;
   a: Record<string, unknown>;
@@ -115,6 +117,7 @@ interface AgentServicesProps {
   identifierStorage: IdentifierStorage;
   credentialStorage: CredentialStorage;
 }
+
 enum MultiSigRoute {
   ROT = "/multisig/rot",
   ICP = "/multisig/icp",
@@ -126,7 +129,7 @@ interface CreateIdentifierResult {
   identifier: string;
 }
 
-interface KeriContact {
+interface KeriaContact {
   alias: string;
   id: string;
   oobi: string;
@@ -236,8 +239,8 @@ export {
   ConnectionStatus,
   ConnectionHistoryType,
   MiscRecordId,
-  ConnectionKeriEventTypes,
-  AcdcKeriEventTypes,
+  ConnectionEventTypes,
+  AcdcEventTypes,
   NotificationRoute,
   MultiSigRoute,
 };
@@ -249,14 +252,14 @@ export type {
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionHistoryItem,
-  ConnectionKeriStateChangedEvent,
-  KeriNotification,
-  AcdcKeriStateChangedEvent,
+  ConnectionStateChangedEvent,
+  KeriaNotification,
+  AcdcStateChangedEvent,
   BaseEventEmitter,
   KeriaNotificationMarker,
   AgentServicesProps,
   CreateIdentifierResult,
-  KeriContact,
+  KeriaContact,
   IdentifiersListResult,
   CreateMultisigExnPayload,
   MultiSigExnMessage,

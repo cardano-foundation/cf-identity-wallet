@@ -1,7 +1,7 @@
 import {
-  KeriNotification,
-  AcdcKeriStateChangedEvent,
-  AcdcKeriEventTypes,
+  KeriaNotification,
+  AcdcStateChangedEvent,
+  AcdcEventTypes,
   NotificationRoute,
 } from "../agent.types";
 import { AgentService } from "./agentService";
@@ -20,10 +20,10 @@ class CredentialService extends AgentService {
   static readonly CREDENTIAL_NOT_FOUND =
     "Credential with given SAID not found on KERIA";
 
-  onAcdcKeriStateChanged(callback: (event: AcdcKeriStateChangedEvent) => void) {
+  onAcdcStateChanged(callback: (event: AcdcStateChangedEvent) => void) {
     this.eventService.on(
-      AcdcKeriEventTypes.AcdcKeriStateChanged,
-      async (event: AcdcKeriStateChangedEvent) => {
+      AcdcEventTypes.AcdcStateChanged,
+      async (event: AcdcStateChangedEvent) => {
         callback(event);
       }
     );
@@ -142,11 +142,11 @@ class CredentialService extends AgentService {
     filters: {
       isDismissed?: boolean;
     } = {}
-  ): Promise<KeriNotification[]> {
+  ): Promise<KeriaNotification[]> {
     const results = await this.basicStorage.findAllByQuery({
       route: NotificationRoute.Credential,
       ...filters,
-      type: RecordType.NOTIFICATION_KERI,
+      type: RecordType.KERIA_NOTIFICATION,
     });
     return results.map((result) => {
       return {
