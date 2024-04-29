@@ -114,7 +114,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const [initialised, setInitialised] = useState(false);
   const [agentInitErr, setAgentInitErr] = useState(false);
 
-  const ACTIVITY_TIMEOUT = 30000;
+  const ACTIVITY_TIMEOUT = 60000;
   let timer: NodeJS.Timeout;
   let timeoutDuration = ACTIVITY_TIMEOUT;
 
