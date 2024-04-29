@@ -122,6 +122,7 @@ const LockModal = () => {
       isOpen={lockApp}
       className="lock-modal"
       data-testid={componentId}
+      animated={false}
     >
       <ResponsivePageLayout
         pageId={componentId}

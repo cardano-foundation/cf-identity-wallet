@@ -856,7 +856,8 @@
         "connections": "Connections",
         "p2p": "P2P",
         "identity": "Identity",
-        "credentials": "Credentials"
+        "credentials": "Credentials",
+        "lock": "Lock"
       }
     }
   },
