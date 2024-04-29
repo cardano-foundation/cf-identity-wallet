@@ -24,8 +24,6 @@ const PublicRoutes = [
   RoutePath.ROOT,
   RoutePath.ONBOARDING,
   RoutePath.SET_PASSCODE,
-  RoutePath.GENERATE_SEED_PHRASE,
-  RoutePath.VERIFY_SEED_PHRASE,
 ];
 
 export { RoutePath, TabsRoutePath, PublicRoutes };
