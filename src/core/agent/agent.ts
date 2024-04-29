@@ -5,7 +5,6 @@ import {
   ready as signifyReady,
   Tier,
 } from "signify-ts";
-import { Storage } from "@ionic/storage";
 import { DataType } from "@aparajita/capacitor-secure-storage";
 import {
   ConnectionService,

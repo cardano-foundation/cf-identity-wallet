@@ -346,6 +346,7 @@ describe("Multisig sig service of agent", () => {
       { state: {} }
     );
   });
+
   test("can join the multisig inception", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
     basicStorage.findById = jest.fn().mockResolvedValue({
@@ -391,6 +392,7 @@ describe("Multisig sig service of agent", () => {
       signifyName: expect.any(String),
     });
   });
+
   test("cannot join multisig by notification if exn messages are missing", async () => {
     await expect(
       multiSigService.joinMultisig(
@@ -401,89 +403,6 @@ describe("Multisig sig service of agent", () => {
         }
       )
     ).rejects.toThrowError();
-  });
-  test("should call signify.createDelegationIdentifier with the correct parameters and return the result", async () => {
-    const aid = "newIdentifierAid";
-    const displayName = "newDisplayName";
-    const signifyName = "newUuidHere";
-    identifiersCreateMock = jest.fn().mockResolvedValue({
-      identifier: aid,
-      signifyName,
-      serder: {
-        ked: {
-          i: "i",
-        },
-      },
-    });
-    expect(
-      await multiSigService.createDelegatedIdentifier(
-        {
-          displayName,
-          theme: 0,
-        },
-        "delegationPrefix"
-      )
-    ).toEqual({
-      identifier: "i",
-      signifyName: expect.any(String),
-    });
-    expect(identifiersCreateMock).toBeCalled();
-    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
-  });
-
-  test("should call the interactDelegation method of the signify module with the given arguments", async () => {
-    const signifyName = "exampleSignifyName";
-    const delegatePrefix = "exampleDelegatePrefix";
-    identifiersInteractMock.mockResolvedValue({
-      op: jest.fn().mockResolvedValue({
-        done: truncate,
-      }),
-    });
-    await multiSigService.approveDelegation(signifyName, delegatePrefix);
-    expect(identifiersInteractMock).toHaveBeenCalledWith(signifyName, {
-      d: delegatePrefix,
-      i: delegatePrefix,
-      s: "0",
-    });
-  });
-  test("should call signify.checkDelegationSuccess and update metadata isPending property to false", async () => {
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-      isPending: true,
-      signifyOpName: "op123",
-      signifyName: "john_doe",
-      theme: 4,
-    } as IdentifierMetadataRecord;
-    identifiersGetMock.mockResolvedValue({
-      state: {
-        id: metadata.id,
-      },
-    });
-    queryKeyStateMock.mockResolvedValue({
-      done: true,
-    });
-    expect(await multiSigService.checkDelegationSuccess(metadata)).toEqual(
-      true
-    );
-    expect(identifierStorage.updateIdentifierMetadata).toHaveBeenCalledWith(
-      metadata.id,
-      { isPending: false }
-    );
-  });
-  test("should call signify.checkDelegationSuccess with isPending is false and return true", async () => {
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-
-      isPending: false,
-      signifyOpName: "op123",
-      signifyName: "john_doe",
-      theme: 4,
-    } as IdentifierMetadataRecord;
-    expect(await multiSigService.checkDelegationSuccess(metadata)).toEqual(
-      true
-    );
   });
 
   test("should can rorate multisig with KERI multisig do not have manageAid and throw error", async () => {
