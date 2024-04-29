@@ -6,6 +6,7 @@ import {
   Tier,
 } from "signify-ts";
 import { Storage } from "@ionic/storage";
+import { DataType } from "@aparajita/capacitor-secure-storage";
 import {
   ConnectionService,
   CredentialService,
@@ -156,12 +157,20 @@ class Agent {
   }
 
   private async getBran(): Promise<string> {
-    let bran;
+    let bran: DataType | null;
     try {
       bran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
     } catch (error) {
-      bran = randomPasscode();
-      await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
+      if (
+        error instanceof Error &&
+        error.message ===
+          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
+      ) {
+        bran = randomPasscode();
+        await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
+      } else {
+        throw error;
+      }
     }
     return bran as string;
   }
