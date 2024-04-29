@@ -55,13 +55,13 @@ const IncomingRequest = () => {
     if (
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
-      await Agent.agent.signifyNotifications.deleteKeriNotificationRecordById(
+      await Agent.agent.signifyNotifications.deleteNotificationRecordById(
         incomingRequest.id
       );
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      await Agent.agent.signifyNotifications.deleteKeriNotificationRecordById(
+      await Agent.agent.signifyNotifications.deleteNotificationRecordById(
         incomingRequest.id
       );
     }
@@ -77,7 +77,7 @@ const IncomingRequest = () => {
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      Agent.agent.signifyNotifications.deleteKeriNotificationRecordById(
+      Agent.agent.signifyNotifications.deleteNotificationRecordById(
         incomingRequest.id
       );
     }

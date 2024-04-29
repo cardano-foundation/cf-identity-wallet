@@ -20,7 +20,7 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
-        getKeriOobi: jest.fn(),
+        getOobi: jest.fn(),
       },
     },
   },

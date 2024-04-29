@@ -108,4 +108,10 @@ describe("Connection service of agent", () => {
     );
     expect(storageService.update).toBeCalled();
   });
+
+  test("Missing credential record should return null", async () => {
+    storageService.findById.mockResolvedValue(null);
+    const record = await credentialStorage.getCredentialMetadata("id");
+    expect(record).toBe(null);
+  });
 });

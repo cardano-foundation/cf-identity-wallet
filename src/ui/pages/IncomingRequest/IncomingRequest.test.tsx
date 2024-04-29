@@ -205,7 +205,7 @@ describe("Multi-Sig request", () => {
   };
 
   afterEach(async () => {
-    await signifyNotificationService.deleteKeriNotificationRecordById(
+    await signifyNotificationService.deleteNotificationRecordById(
       requestDetails.id
     );
   });

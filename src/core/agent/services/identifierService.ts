@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import {
   CreateIdentifierResult,
-  IdentifierFullDetails,
+  IdentifierDetails,
   IdentifierShortDetails,
 } from "./identifier.types";
 import {
@@ -23,8 +23,6 @@ class IdentifierService extends AgentService {
     "DID document missing or unresolvable for stored DID";
   static readonly UNEXPECTED_DID_DOC_FORMAT =
     "DID document format is missing expected values for stored DID";
-  static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
-    "No domain found in config";
   static readonly IDENTIFIER_METADATA_RECORD_MISSING =
     "Identifier metadata record does not exist";
   static readonly UNEXPECTED_MISSING_DID_RESULT_ON_CREATE =
@@ -59,7 +57,7 @@ class IdentifierService extends AgentService {
 
   async getIdentifier(
     identifier: string
-  ): Promise<IdentifierFullDetails | undefined> {
+  ): Promise<IdentifierDetails | undefined> {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
     );

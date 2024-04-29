@@ -57,7 +57,7 @@ describe("Connection service of agent", () => {
     ).toEqual(identifierMetadataRecord);
   });
 
-  test("Should get credential metadata and throw error if null", async () => {
+  test("Should throw if identifier metadata record is missing", async () => {
     storageService.findById.mockResolvedValue(null);
     await expect(
       identifierStorage.getIdentifierMetadata(identifierMetadataRecord.id)

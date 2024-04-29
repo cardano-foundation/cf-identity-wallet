@@ -1,7 +1,7 @@
-import { IdentifierFullDetails } from "../../../../core/agent/services/identifier.types";
+import { IdentifierDetails } from "../../../../core/agent/services/identifier.types";
 
 interface IdentifierContentProps {
-  cardData: IdentifierFullDetails;
+  cardData: IdentifierDetails;
 }
 
 export type { IdentifierContentProps };

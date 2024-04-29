@@ -1,7 +1,6 @@
-import { Operation, Serder, SignifyClient } from "signify-ts";
+import { Operation, SignifyClient } from "signify-ts";
 import { CredentialMetadataRecord } from "../records";
 import { CredentialShortDetails } from "./credentialService.types";
-import { Aid, CreateMultisigExnPayload, MultiSigRoute } from "../agent.types";
 
 async function waitAndGetDoneOp(
   client: SignifyClient,

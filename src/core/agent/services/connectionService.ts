@@ -19,8 +19,6 @@ import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { waitAndGetDoneOp } from "./utils";
 
 class ConnectionService extends AgentService {
-  // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
-  //   "No domain found in config";
   static readonly COULD_NOT_CREATE_OOB_VIA_MEDIATOR =
     "Could not create new mediator oob invitation";
   static readonly INVALID_CONNECTIONLESS_MSG =
@@ -29,6 +27,7 @@ class ConnectionService extends AgentService {
     "Connection note record not found";
   static readonly CONNECTION_KERI_METADATA_RECORD_NOT_FOUND =
     "Connection keri metadata record not found";
+  static readonly DEFAULT_ROLE = "agent";
 
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
@@ -81,7 +80,7 @@ class ConnectionService extends AgentService {
         }
 
         // signifyName should always be set
-        const oobi = await Agent.agent.connections.getKeriOobi(
+        const oobi = await Agent.agent.connections.getOobi(
           aids[0].signifyName,
           userName
         );
@@ -195,8 +194,10 @@ class ConnectionService extends AgentService {
     return this.basicStorage.deleteById(connectionNoteId);
   }
 
-  async getKeriOobi(signifyName: string, alias?: string): Promise<string> {
-    const result = await this.signifyClient.oobis().get(signifyName);
+  async getOobi(signifyName: string, alias?: string): Promise<string> {
+    const result = await this.signifyClient
+      .oobis()
+      .get(signifyName, ConnectionService.DEFAULT_ROLE);
     const oobi = result.oobis[0];
     return alias ? `${oobi}?name=${encodeURIComponent(alias)}` : oobi;
   }
@@ -276,8 +277,10 @@ class ConnectionService extends AgentService {
       return ConnectionService.resolvedOobi[url];
     }
     const alias = new URL(url).searchParams.get("name") ?? uuidv4();
-    let operation = await this.signifyClient.oobis().resolve(url, alias);
-    operation = await waitAndGetDoneOp(this.signifyClient, operation);
+    const operation = await waitAndGetDoneOp(
+      this.signifyClient,
+      await this.signifyClient.oobis().resolve(url, alias)
+    );
     if (!operation.done) {
       throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
     }

@@ -182,7 +182,7 @@ describe("Signify notification service of agent", () => {
 
   test("can delete keri notification by ID", async () => {
     const id = "uuid";
-    await signifyNotificationService.deleteKeriNotificationRecordById(id);
+    await signifyNotificationService.deleteNotificationRecordById(id);
     expect(basicStorage.deleteById).toBeCalled();
   });
 });

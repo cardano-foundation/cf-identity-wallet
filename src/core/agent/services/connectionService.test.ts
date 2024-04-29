@@ -229,7 +229,7 @@ describe("Connection service of agent", () => {
       return `${oobiPrefix}${name}`;
     });
     const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getKeriOobi(
+    const KeriOobi = await connectionService.getOobi(
       signifyName,
       "alias with spaces"
     );
@@ -264,7 +264,7 @@ describe("Connection service of agent", () => {
       return `${oobiPrefix}${name}`;
     });
     const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getKeriOobi(signifyName);
+    const KeriOobi = await connectionService.getOobi(signifyName);
     expect(KeriOobi).toEqual(oobiPrefix + signifyName);
   });
 

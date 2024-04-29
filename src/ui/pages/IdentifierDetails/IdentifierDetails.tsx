@@ -48,7 +48,7 @@ import "./IdentifierDetails.scss";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../components/PageHeader";
 import { combineClassNames } from "../../utils/style";
-import { IdentifierFullDetails } from "../../../core/agent/services/identifier.types";
+import { IdentifierDetails as IdentifierDetailsCore } from "../../../core/agent/services/identifier.types";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -68,7 +68,7 @@ const IdentifierDetails = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState<IdentifierFullDetails | undefined>();
+  const [cardData, setCardData] = useState<IdentifierDetailsCore | undefined>();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
   const [navAnimation, setNavAnimation] = useState(false);
@@ -275,7 +275,7 @@ const IdentifierDetails = () => {
             isActive={false}
           />
           <div className="card-details-content">
-            <IdentifierContent cardData={cardData as IdentifierFullDetails} />
+            <IdentifierContent cardData={cardData as IdentifierDetailsCore} />
             <PageFooter
               pageId={pageId}
               deleteButtonText={`${i18n.t(

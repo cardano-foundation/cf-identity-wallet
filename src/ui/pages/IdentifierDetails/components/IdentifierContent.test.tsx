@@ -32,7 +32,7 @@ jest.mock("../../../../core/agent/agent", () => ({
         findById: jest.fn(),
       },
       connections: {
-        getKeriOobi: jest.fn(),
+        getOobi: jest.fn(),
       },
     },
   },
