@@ -13,70 +13,12 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { EventService } from "../../../core/agent/services/eventService";
 import { SignifyNotificationService } from "../../../core/agent/services/signifyNotificationService";
 
-jest.mock("../../../core/agent/agent", () => ({
-  Agent: {
-    agent: {
-      connections: {
-        acceptRequestConnection: jest.fn(),
-        acceptResponseConnection: jest.fn(),
-      },
-      credentials: {
-        acceptCredentialOffer: jest.fn(),
-        declineCredentialOffer: jest.fn(),
-      },
-    },
-  },
-}));
-
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
     get: jest.fn(),
   },
 }));
 
-const eventEmitter = new EventEmitter();
-
-const agent = jest.mocked({
-  credentials: {
-    acceptOffer: jest.fn(),
-    proposeCredential: jest.fn(),
-    deleteById: jest.fn(),
-    getById: jest.fn(),
-    findOfferMessage: jest.fn(),
-    negotiateOffer: jest.fn(),
-    findAllByQuery: jest.fn(),
-  },
-  connections: {
-    findById: jest.fn(),
-  },
-  events: {
-    on: eventEmitter.on.bind(eventEmitter),
-    emit: jest.fn(),
-  },
-  eventEmitter: {
-    emit: eventEmitter.emit.bind(eventEmitter),
-  },
-  modules: {
-    generalStorage: {
-      getAllCredentialMetadata: jest.fn(),
-      updateCredentialMetadata: jest.fn(),
-      deleteCredentialMetadata: jest.fn(),
-      getCredentialMetadata: jest.fn(),
-      saveCredentialMetadataRecord: jest.fn(),
-      getCredentialMetadataByCredentialRecordId: jest.fn(),
-      getIdentifierMetadata: jest.fn(),
-    },
-  },
-  dids: {
-    getCreatedDids: jest.fn(),
-  },
-  genericRecords: {
-    save: jest.fn(),
-    findAllByQuery: jest.fn(),
-    findById: jest.fn(),
-    deleteById: jest.fn(),
-  },
-});
 const basicStorage = jest.mocked({
   open: jest.fn(),
   save: jest.fn(),

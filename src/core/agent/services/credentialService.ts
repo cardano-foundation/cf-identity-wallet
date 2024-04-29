@@ -35,7 +35,8 @@ class CredentialService extends AgentService {
     const listMetadatas = await this.credentialStorage.getAllCredentialMetadata(
       isGetArchive
     );
-    //only get credentials that are not deleted
+    // Only get credentials that are not deleted
+    // @TODO - foconnor: Should be filtering via SQL for the deleted ones.
     return listMetadatas
       .filter((item) => !item.isDeleted)
       .map((element: CredentialMetadataRecord) =>
@@ -108,7 +109,7 @@ class CredentialService extends AgentService {
   async deleteCredential(id: string): Promise<void> {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
-    //With KERI, we only soft delete because we need to sync with KERIA. This will prevent re-sync deleted records.
+    // We only soft delete because we need to sync with KERIA. This will prevent re-sync deleted records.
     await this.credentialStorage.updateCredentialMetadata(id, {
       isDeleted: true,
     });
@@ -138,7 +139,7 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  async getKeriCredentialNotifications(
+  async getUnreadIpexGrantNotifications(
     filters: {
       isDismissed?: boolean;
     } = {}

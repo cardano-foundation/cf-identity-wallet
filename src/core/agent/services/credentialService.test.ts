@@ -148,14 +148,6 @@ const archivedMetadataRecord = new CredentialMetadataRecord({
   isArchived: true,
 });
 
-const genericRecords = [
-  {
-    id: "uuid",
-    content: "mockContent",
-    createdAt: new Date(),
-  },
-];
-
 // Callbacks need to be tested at an integration/e2e test level
 describe("Credential service of agent", () => {
   beforeEach(() => {

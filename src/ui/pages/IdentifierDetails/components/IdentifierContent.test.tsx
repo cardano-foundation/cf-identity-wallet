@@ -28,9 +28,6 @@ jest.mock("../../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifier: jest.fn().mockResolvedValue(identifierFix[0]),
       },
-      genericRecords: {
-        findById: jest.fn(),
-      },
       connections: {
         getOobi: jest.fn(),
       },

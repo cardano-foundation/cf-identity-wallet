@@ -173,14 +173,14 @@ describe("Connection service of agent", () => {
   });
 
   test("can update connection note by id", async () => {
-    const mockGenericRecords = {
+    const connectionToUpdate = {
       id: "id",
       content: {
         title: "title",
         message: "message",
       },
     };
-    basicStorage.findById = jest.fn().mockResolvedValue(mockGenericRecords);
+    basicStorage.findById = jest.fn().mockResolvedValue(connectionToUpdate);
     const connectionId = "connectionId";
     const note = {
       title: "title",
@@ -188,7 +188,7 @@ describe("Connection service of agent", () => {
     };
     await connectionService.updateConnectionNoteById(connectionId, note);
     expect(basicStorage.update).toBeCalledWith({
-      ...mockGenericRecords,
+      ...connectionToUpdate,
       content: note,
     });
   });
@@ -221,7 +221,7 @@ describe("Connection service of agent", () => {
     });
     const oobi =
       "http://127.0.0.1:3902/oobi/EBRcDDwjOfqZwC1w2XFcE1mKQUb1LekNNidkZ8mrIEaw/agent/EEXekkGu9IAzav6pZVJhkLnjtjM5v3AcyA-pdKUcaGei";
-    await connectionService.receiveInvitationFromUrl(oobi);
+    await connectionService.connectByOobiUrl(oobi);
   });
 
   test("can get a KERI OOBI with an alias (URL encoded)", async () => {

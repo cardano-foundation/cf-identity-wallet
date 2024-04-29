@@ -40,7 +40,7 @@ class ConnectionService extends AgentService {
     );
   }
 
-  async receiveInvitationFromUrl(url: string): Promise<void> {
+  async connectByOobiUrl(url: string): Promise<void> {
     this.eventService.emit<ConnectionStateChangedEvent>({
       type: ConnectionEventTypes.ConnectionStateChanged,
       payload: {
@@ -146,7 +146,7 @@ class ConnectionService extends AgentService {
 
   async deleteConnectionById(id: string): Promise<void> {
     await this.basicStorage.deleteById(id);
-    // await this.signifyApi.deleteContactById(id); TODO: must open when Keria runs well
+    // await this.signifyApi.deleteContactById(id); @TODO - foconnor: Uncomment when KERIA endpoint fixed
     const notes = await this.getConnectNotesByConnectionId(id);
     for (const note of notes) {
       this.basicStorage.deleteById(note.id);
@@ -277,9 +277,9 @@ class ConnectionService extends AgentService {
     if (!operation.done) {
       throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
     }
-    const Oobi = { ...operation, alias };
-    ConnectionService.resolvedOobi[url] = Oobi;
-    return Oobi;
+    const oobi = { ...operation, alias };
+    ConnectionService.resolvedOobi[url] = oobi;
+    return oobi;
   }
 
   private async getConnectNotesByConnectionId(

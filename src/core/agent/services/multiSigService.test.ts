@@ -1,4 +1,3 @@
-import { truncate } from "fs";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -6,7 +5,6 @@ import {
 import { ConnectionStatus } from "../agent.types";
 import { Agent } from "../agent";
 import { EventService } from "./eventService";
-import { CredentialStorage } from "../records";
 import { MultiSigService } from "./multiSigService";
 
 const basicStorage = jest.mocked({
@@ -136,11 +134,6 @@ const keriMetadataRecordProps = {
   createdAt: now,
   theme: 0,
 };
-const archivedMetadataRecord = new IdentifierMetadataRecord({
-  ...keriMetadataRecordProps,
-  isArchived: true,
-  theme: 0,
-});
 
 const keriMetadataRecord = new IdentifierMetadataRecord(
   keriMetadataRecordProps
@@ -188,6 +181,8 @@ describe("Multisig sig service of agent", () => {
       response: {},
       alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
     });
+
+    // @TODO - foconnor: We shouldn't be mocking internal functions in the service - handle in next PR.
     multiSigService.createAidMultisig = jest.fn().mockResolvedValue({
       op: { name: `group.${multisigIdentifier}`, done: false },
       icpResult: {},

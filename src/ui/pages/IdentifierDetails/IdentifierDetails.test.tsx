@@ -33,9 +33,6 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         getOobi: jest.fn(),
       },
-      genericRecords: {
-        findById: jest.fn(),
-      },
     },
   },
 }));

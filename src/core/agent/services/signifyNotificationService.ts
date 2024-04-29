@@ -27,7 +27,7 @@ class SignifyNotificationService extends AgentService {
         (error as Error).message ==
         `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER}`
       ) {
-        /**Set the preference key */
+        // Set the preference key
         await PreferencesStorage.set(
           PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER,
           {
@@ -52,7 +52,7 @@ class SignifyNotificationService extends AgentService {
         (notifications.notes.length == 0 ||
           notifications.notes[0].i !== notificationQuery.lastNotificationId)
       ) {
-        /**This is to verify no notifications were deleted for some reason (which affects the batch range) */
+        // This is to verify no notifications were deleted for some reason (which affects the batch range)
         notificationQuery = {
           nextIndex: 0,
           lastNotificationId: "",
@@ -64,7 +64,7 @@ class SignifyNotificationService extends AgentService {
         continue;
       }
       if (notificationQuery.nextIndex > 0) {
-        /**Since the first item is the (next index - 1), we can ignore it */
+        // Since the first item is the (next index - 1), we can ignore it
         notifications.notes.shift();
       }
       for (const notif of notifications.notes) {

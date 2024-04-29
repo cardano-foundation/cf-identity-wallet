@@ -17,9 +17,6 @@ const updateMock = jest.fn();
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
-      genericRecords: {
-        findById: jest.fn(),
-      },
       identifiers: {
         updateIdentifier: () => updateMock(() => Promise.resolve(true)),
       },

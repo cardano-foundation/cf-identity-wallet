@@ -178,6 +178,7 @@ describe("Single sig service of agent", () => {
       },
     ]);
   });
+
   test("can get all identifiers without error if there are none", async () => {
     identifierStorage.getAllIdentifierMetadata = jest
       .fn()
@@ -196,6 +197,7 @@ describe("Single sig service of agent", () => {
       keriMetadataRecord.id
     );
   });
+
   test("can get a keri identifier in detailed view", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -214,6 +216,7 @@ describe("Single sig service of agent", () => {
       isPending: false,
     });
   });
+
   test("can create a keri identifier", async () => {
     const aid = "newIdentifierAid";
     const displayName = "newDisplayName";
