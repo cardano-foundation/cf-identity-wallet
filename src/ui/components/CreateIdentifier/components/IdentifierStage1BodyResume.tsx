@@ -9,8 +9,7 @@ import { IdentifierStage1BodyProps } from "../CreateIdentifier.types";
 import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { PageFooter } from "../../PageFooter";
-import { useAppSelector } from "../../../../store/hooks";
-import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
+import { Agent } from "../../../../core/agent/agent";
 
 const IdentifierStage1BodyResume = ({
   componentId,
@@ -19,26 +18,30 @@ const IdentifierStage1BodyResume = ({
   groupMetadata,
   handleScanButton,
 }: IdentifierStage1BodyProps) => {
-  const connectionsCache = useAppSelector(getConnectionsCache);
   const [scannedConections, setScannedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
 
   useEffect(() => {
-    if (connectionsCache.length) {
-      const filteredConnections = connectionsCache.filter(
-        (connection) => connection.groupId === groupMetadata?.groupId
-      );
+    if (groupMetadata?.groupId) {
+      const updateConnections = async () => {
+        const connections =
+          await Agent.agent.connections.getMultisigLinkedContacts(
+            groupMetadata?.groupId
+          );
 
-      const sortedConnections = filteredConnections.sort(function (a, b) {
-        const textA = a.label.toUpperCase();
-        const textB = b.label.toUpperCase();
-        return textA < textB ? -1 : textA > textB ? 1 : 0;
-      });
+        const sortedConnections = connections.sort(function (a, b) {
+          const textA = a.label.toUpperCase();
+          const textB = b.label.toUpperCase();
+          return textA < textB ? -1 : textA > textB ? 1 : 0;
+        });
 
-      setScannedConnections(sortedConnections);
+        setScannedConnections(sortedConnections);
+      };
+
+      updateConnections();
     }
-  }, [connectionsCache]);
+  }, [groupMetadata]);
 
   const handleInitiateMultiSig = () => {
     // TODO: handle initiate Multi Sig
