@@ -8,10 +8,6 @@ import { IdentifierStorage } from "./records/identifierStorage";
 import { CredentialStorage } from "./records/credentialStorage";
 import { BasicStorage } from "./records/basicStorage";
 
-enum Blockchain {
-  CARDANO = "Cardano",
-}
-
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
@@ -30,14 +26,6 @@ interface ConnectionHistoryItem {
 
 enum MiscRecordId {
   OP_PASS_HINT = "app-op-password-hint",
-}
-
-interface CryptoAccountRecordShortDetails {
-  id: string;
-  displayName: string;
-  blockchain: Blockchain;
-  totalADAinUSD: number;
-  usesIdentitySeedPhrase: boolean;
 }
 
 interface ConnectionShortDetails {
@@ -235,7 +223,6 @@ enum NotificationRoute {
 }
 
 export {
-  Blockchain,
   ConnectionStatus,
   ConnectionHistoryType,
   MiscRecordId,
@@ -246,7 +233,6 @@ export {
 };
 
 export type {
-  CryptoAccountRecordShortDetails,
   ConnectionShortDetails,
   ConnectionDetails,
   ConnectionNoteDetails,

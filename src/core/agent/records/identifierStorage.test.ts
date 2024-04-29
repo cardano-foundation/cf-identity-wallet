@@ -1,5 +1,3 @@
-import { RecordType } from "../../storage/storage.types";
-import { BasicRecord } from "./basicRecord";
 import { IdentifierMetadataRecord } from "./identifierMetadataRecord";
 import { IdentifierStorage } from "./identifierStorage";
 
@@ -15,15 +13,14 @@ const storageService = jest.mocked({
 
 const identifierStorage = new IdentifierStorage(storageService as any);
 
-const now = new Date();
-
 const identifierMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
   signifyName: "uuid-here",
-  createdAt: now,
+  createdAt: new Date(),
   theme: 0,
 };
+
 const identifierMetadataRecord = new IdentifierMetadataRecord({
   ...identifierMetadataRecordProps,
 });
@@ -32,6 +29,7 @@ const identifierMetadataRecord2 = new IdentifierMetadataRecord({
   ...identifierMetadataRecordProps,
   id: "id2",
 });
+
 describe("Connection service of agent", () => {
   beforeEach(() => {
     jest.resetAllMocks();

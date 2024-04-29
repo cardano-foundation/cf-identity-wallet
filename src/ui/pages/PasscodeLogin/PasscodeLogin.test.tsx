@@ -29,9 +29,6 @@ interface StoreMocked {
     seedPhrase256: string;
     selected: number;
   };
-  cryptoAccountsCache: {
-    cryptoAccounts: never[];
-  };
 }
 
 const mockStore = configureStore();
@@ -66,9 +63,6 @@ describe("Passcode Login Page", () => {
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
-    cryptoAccountsCache: {
-      cryptoAccounts: [],
-    },
   };
 
   const initialStateWithoutSeedPhrase = {
@@ -86,9 +80,6 @@ describe("Passcode Login Page", () => {
       seedPhrase160: "",
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
-    },
-    cryptoAccountsCache: {
-      cryptoAccounts: [],
     },
   };
 

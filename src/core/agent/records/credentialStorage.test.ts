@@ -1,4 +1,3 @@
-import { RecordType } from "../../storage/storage.types";
 import { CredentialMetadataRecord } from "./credentialMetadataRecord";
 import {
   CredentialMetadataRecordProps,
