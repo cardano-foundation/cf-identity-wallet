@@ -100,7 +100,7 @@ const App = () => {
           />
           <IncomingRequest />
           <Settings />
-          <LockModal isOpen={authentication.loggedIn} />
+          <LockModal />
           <CustomToast
             toastMsg={toastMsg}
             showToast={showToast}

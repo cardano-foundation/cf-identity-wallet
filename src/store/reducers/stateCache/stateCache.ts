@@ -56,7 +56,6 @@ const stateCacheSlice = createSlice({
       );
     },
     logout: (state) => {
-      state.routes = [{ path: RoutePath.PASSCODE_LOGIN }, ...state.routes];
       state.authentication = {
         ...state.authentication,
         loggedIn: false,

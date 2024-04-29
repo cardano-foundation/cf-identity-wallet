@@ -114,25 +114,19 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const [initialised, setInitialised] = useState(false);
   const [agentInitErr, setAgentInitErr] = useState(false);
 
-  const ACTIVITY_TIMEOUT = 15000;
-  //let timer: NodeJS.Timeout;
-  const timeoutDuration = ACTIVITY_TIMEOUT;
-  /*
-  useEffect(() => {
+  const ACTIVITY_TIMEOUT = 30000;
+  let timer: NodeJS.Timeout;
+  let timeoutDuration = ACTIVITY_TIMEOUT;
 
+  useEffect(() => {
     const handleActivity = () => {
       clearTimeout(timer);
       timer = setTimeout(() => {
-        console.log("lets lock");
-        console.log("timeoutDuration");
-        console.log(timeoutDuration);
         dispatch(logout());
       }, timeoutDuration);
     };
 
-    const handleAppStateChange = ({ isActive }: {isActive:boolean}) => {
-      console.log("handleAppStateChange");
-      console.log(isActive);
+    const handleAppStateChange = ({ isActive }: { isActive: boolean }) => {
       if (isActive) {
         timeoutDuration = ACTIVITY_TIMEOUT;
       } else {
@@ -141,8 +135,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       handleActivity();
     };
 
-    App.addListener('appStateChange', handleAppStateChange);
-
+    App.addListener("appStateChange", handleAppStateChange);
     window.addEventListener("load", handleActivity);
     document.addEventListener("mousemove", handleActivity);
     document.addEventListener("touchstart", handleActivity);
@@ -164,8 +157,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       clearTimeout(timer);
     };
   }, []);
-  */
 
+  /*
   let timer: NodeJS.Timeout;
   useEffect(() => {
     const handleActivity = () => {
@@ -194,7 +187,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       document.removeEventListener("keydown", handleActivity);
       clearTimeout(timer);
     };
-  }, []);
+  }, []);*/
 
   useEffect(() => {
     initApp();

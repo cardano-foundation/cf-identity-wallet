@@ -73,7 +73,6 @@ describe("State Cache", () => {
     expect(nextState.authentication.loggedIn).toEqual(false);
     expect(nextState.queueIncomingRequest.isPaused).toEqual(true);
     expect(nextState.queueIncomingRequest.isProcessing).toEqual(false);
-    expect(nextState.routes[0]).toEqual({ path: RoutePath.PASSCODE_LOGIN });
     expect(nextState).not.toBe(initialState);
   });
 

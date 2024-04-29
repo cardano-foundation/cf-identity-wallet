@@ -1,6 +1,5 @@
 import { IonModal } from "@ionic/react";
 import { i18n } from "../../../i18n";
-import { LockModalProps } from "./LockModal.types";
 import "./LockModal.scss";
 import { RoutePath } from "../../../routes";
 import { PasscodeModule } from "../PasscodeModule";
@@ -9,26 +8,21 @@ import { PageFooter } from "../PageFooter";
 import { Alert } from "../Alert";
 import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
 import { useAppIonRouter } from "../../hooks";
-import { useHistory } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
-  getStateCache,
   setAuthentication,
   setCurrentRoute,
   setPauseQueueIncomingRequest,
 } from "../../../store/reducers/stateCache";
 import { useEffect, useState } from "react";
-import { getBackRoute } from "../../../routes/backRoute";
-import { updateReduxState } from "../../../store/utils";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { PublicRoutes } from "../../../routes/paths";
 
-const LockModal = ({ isOpen }: LockModalProps) => {
+const LockModal = () => {
   const componentId = "lock-modal";
   const ionRouter = useAppIonRouter();
-  const history = useHistory();
   const dispatch = useAppDispatch();
-  const stateCache = useAppSelector(getStateCache);
   const authentication = useAppSelector(getAuthentication);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = authentication.seedPhraseIsSet;
@@ -118,9 +112,14 @@ const LockModal = ({ isOpen }: LockModalProps) => {
     });
   };
 
+  const isPublicPage = PublicRoutes.includes(
+    window.location.pathname as RoutePath
+  );
+  const lockApp = !isPublicPage && !authentication.loggedIn;
+
   return (
     <IonModal
-      isOpen={isOpen}
+      isOpen={lockApp}
       className="lock-modal"
       data-testid={componentId}
     >
