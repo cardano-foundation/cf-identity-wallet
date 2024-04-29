@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./CardsStack.scss";
 import {
-  IdentifierFullDetails,
+  IdentifierDetails,
   IdentifierShortDetails,
 } from "../../../core/agent/services/identifier.types";
 import { CardType } from "../../globals/types";
@@ -64,7 +64,7 @@ const CardsStack = ({
     let pathname = "";
 
     if (cardsType === CardType.IDENTIFIERS) {
-      const data = cardsData[index] as IdentifierFullDetails;
+      const data = cardsData[index] as IdentifierDetails;
       pathname = `/tabs/identifiers/${data.id}`;
     } else {
       const data = cardsData[index] as CredentialShortDetails;

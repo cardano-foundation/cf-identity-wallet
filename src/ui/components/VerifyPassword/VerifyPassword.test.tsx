@@ -31,7 +31,7 @@ jest.mock("../../../core/agent/agent", () => ({
       credentials: {
         getCredentialDetailsById: jest.fn(),
       },
-      basicStorages: {
+      basicStorage: {
         findById: jest.fn(),
       },
     },
@@ -321,7 +321,7 @@ describe("Verify Password", () => {
   });
 
   test("Render hint button success", async () => {
-    jest.spyOn(Agent.agent.basicStorages, "findById").mockResolvedValue(
+    jest.spyOn(Agent.agent.basicStorage, "findById").mockResolvedValue(
       Promise.resolve({
         content: {
           value: "1111",
