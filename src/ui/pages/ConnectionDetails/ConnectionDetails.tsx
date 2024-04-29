@@ -1,5 +1,5 @@
 import { ellipsisVertical } from "ionicons/icons";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
   IonLabel,
@@ -24,14 +24,10 @@ import {
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { ConnectionOptions } from "../../components/ConnectionOptions";
 import { VerifyPassword } from "../../components/VerifyPassword";
-import {
-  Alert as AlertDeleteConnection,
-  Alert as AlertDeleteNote,
-} from "../../components/Alert";
+import { Alert as AlertDeleteConnection } from "../../components/Alert";
 import {
   getConnectionsCache,
   setConnectionsCache,
@@ -52,9 +48,12 @@ import Minicred from "../../assets/images/minicred.jpg";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { CardDetailsBlock } from "../../components/CardDetails";
 import { ConnectionNotes } from "./components/ConnectionNotes";
+import { useAppIonRouter } from "../../hooks";
+import { getBackRoute } from "../../../routes/backRoute";
 
 const ConnectionDetails = () => {
   const pageId = "connection-details";
+  const ionicRouter = useAppIonRouter();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -68,52 +67,47 @@ const ConnectionDetails = () => {
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertDeleteConnectionIsOpen, setAlertDeleteConnectionIsOpen] =
     useState(false);
-  const [alertDeleteNoteIsOpen, setAlertDeleteNoteIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [coreNotes, setCoreNotes] = useState<ConnectionNoteDetails[]>([]);
   const [notes, setNotes] = useState<ConnectionNoteDetails[]>([]);
-  const currentNoteId = useRef("");
   const [segmentValue, setSegmentValue] = useState("details");
   const [loading, setLoading] = useState({
     details: false,
     history: false,
   });
 
+  const getDetails = async () => {
+    try {
+      const connectionDetails = await Agent.agent.connections.getConnectionById(
+        connectionShortDetails.id
+      );
+      setConnectionDetails(connectionDetails);
+      if (connectionDetails.notes) {
+        setNotes(connectionDetails.notes);
+      }
+    } catch (e) {
+      // @TODO - Error handling.
+    } finally {
+      setLoading((value) => ({ ...value, details: false }));
+    }
+  };
+
+  const getHistory = async () => {
+    try {
+      const connectionHistory =
+        await Agent.agent.connections.getConnectionHistoryById(
+          connectionShortDetails.id
+        );
+      setConnectionHistory(connectionHistory);
+    } catch (e) {
+      // @TODO - Error handling.
+    } finally {
+      setLoading((value) => ({ ...value, history: false }));
+    }
+  };
+
   useEffect(() => {
-    async function getDetails() {
-      try {
-        const connectionDetails =
-          await Agent.agent.connections.getConnectionById(
-            connectionShortDetails.id
-          );
-        setConnectionDetails(connectionDetails);
-        if (connectionDetails.notes) {
-          setCoreNotes(connectionDetails.notes);
-          setNotes(connectionDetails.notes);
-        }
-      } catch (e) {
-        // @TODO - Error handling.
-      } finally {
-        setLoading((value) => ({ ...value, details: false }));
-      }
-    }
-
-    async function getHistory() {
-      try {
-        const connectionHistory =
-          await Agent.agent.connections.getConnectionHistoryById(
-            connectionShortDetails.id
-          );
-        setConnectionHistory(connectionHistory);
-      } catch (e) {
-        // @TODO - Error handling.
-      } finally {
-        setLoading((value) => ({ ...value, history: false }));
-      }
-    }
-
     if (connectionShortDetails?.id) {
       setLoading({
         history: true,
@@ -122,18 +116,19 @@ const ConnectionDetails = () => {
       getDetails();
       getHistory();
     }
-  }, [connectionShortDetails?.id, modalIsOpen]);
+  }, [connectionShortDetails?.id]);
 
   const handleDone = () => {
     const data: DataProps = {
       store: { stateCache },
     };
-    const { nextPath, updateRedux } = getNextRoute(
+    const { backPath, updateRedux } = getBackRoute(
       RoutePath.CONNECTION_DETAILS,
       data
     );
-    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    history.push(nextPath.pathname);
+
+    updateReduxState(backPath.pathname, data, dispatch, updateRedux);
+    ionicRouter.goBack();
   };
 
   const handleDelete = () => {
@@ -202,14 +197,8 @@ const ConnectionDetails = () => {
     }
   };
 
-  const handleDeleteNote = () => {
-    const newNotes = [...notes];
-    const noteIndex = newNotes
-      .map((el) => el.id)
-      .indexOf(currentNoteId.current);
-    newNotes.splice(noteIndex, 1);
-    setNotes(newNotes);
-    dispatch(setToastMsg(ToastMsgType.NOTE_REMOVED));
+  const handleOpenNoteManageModal = () => {
+    setModalIsOpen(true);
   };
 
   return (
@@ -336,7 +325,7 @@ const ConnectionDetails = () => {
               <ConnectionNotes
                 notes={notes}
                 pageId={pageId}
-                onOptionButtonClick={() => setOptionsIsOpen(true)}
+                onOptionButtonClick={handleOpenNoteManageModal}
               />
             </div>
           )}
@@ -362,12 +351,10 @@ const ConnectionDetails = () => {
         <EditConnectionsModal
           notes={notes}
           setNotes={setNotes}
-          coreNotes={coreNotes}
           modalIsOpen={modalIsOpen}
           setModalIsOpen={setModalIsOpen}
-          currentNoteId={currentNoteId.current}
           connectionDetails={connectionDetails}
-          setAlertDeleteNoteIsOpen={setAlertDeleteNoteIsOpen}
+          onConfirm={getDetails}
         />
       )}
       <AlertDeleteConnection
@@ -386,23 +373,6 @@ const ConnectionDetails = () => {
         actionConfirm={() => handleAuthentication()}
         actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
         actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-      />
-      <AlertDeleteNote
-        isOpen={alertDeleteNoteIsOpen}
-        setIsOpen={setAlertDeleteNoteIsOpen}
-        dataTestId="alert-confirm-delete-note"
-        headerText={i18n.t(
-          "connections.details.options.alert.deletenote.title"
-        )}
-        confirmButtonText={`${i18n.t(
-          "connections.details.options.alert.deletenote.confirm"
-        )}`}
-        cancelButtonText={`${i18n.t(
-          "connections.details.options.alert.deletenote.cancel"
-        )}`}
-        actionConfirm={() => handleDeleteNote()}
-        actionCancel={() => setAlertDeleteNoteIsOpen(false)}
-        actionDismiss={() => setAlertDeleteNoteIsOpen(false)}
       />
     </>
   );

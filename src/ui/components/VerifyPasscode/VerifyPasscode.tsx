@@ -18,6 +18,7 @@ import "./VerifyPasscode.scss";
 import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
 import { PageFooter } from "../PageFooter";
 import { PageHeader } from "../PageHeader";
+import { useAppIonRouter } from "../../hooks";
 
 const VerifyPasscode = ({
   isOpen,
@@ -25,6 +26,7 @@ const VerifyPasscode = ({
   onVerify,
 }: VerifyPasscodeProps) => {
   const componentId = "verify-passcode";
+  const ionRouter = useAppIonRouter();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -98,7 +100,7 @@ const VerifyPasscode = ({
           path: RoutePath.SET_PASSCODE,
         })
       );
-      history.push(RoutePath.SET_PASSCODE);
+      ionRouter.push(RoutePath.SET_PASSCODE);
       handleClearState();
     });
   };

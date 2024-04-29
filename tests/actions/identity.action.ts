@@ -22,43 +22,40 @@ export async function inputAndReturnIdentifierName() {
   return identityName;
 }
 
-async function addChosenIdentityType(identifierType: string) {
+async function addChosenIdentityType() {
   const identityName = inputAndReturnIdentifierName();
-  if (identifierType === "KERI") {
-    await AddAnIdentifierModal.clickChosenIdentifierType(identifierType);
-  }
   await AddAnIdentifierModal.createIdentifierButton.waitForClickable();
   await AddAnIdentifierModal.createIdentifierButton.click();
   return identityName;
 }
 
-async function addChosenIdentityTypeByPlusIcon(identifierType: string) {
+async function addChosenIdentityTypeByPlusIcon() {
   await MenuToolbar.addButton.click();
-  return await addChosenIdentityType(identifierType);
+  return await addChosenIdentityType();
 }
 
 Given(
-  /^identifier is created and user can see Card Details screen for (DIDKEY|KERI)$/,
+  /^identifier is created and user can see Card Details screen for (KERI)$/,
   async function (identifierType: string) {
     this.identifierType = identifierType;
-    this.identityName = await addChosenIdentityTypeByPlusIcon(identifierType);
+    this.identityName = await addChosenIdentityTypeByPlusIcon();
     await (await IdentityScreen.identityAllCard(0)).click();
-    await IdentityCardDetailsScreen.loads(identifierType);
+    await IdentityCardDetailsScreen.loads();
   }
 );
 
 Given(
-  /^user add (DIDKEY|KERI) identity through plus icon$/,
+  /^user add (KERI) identity through plus icon$/,
   async function (identifierType: string) {
     this.identifierType = identifierType;
-    this.identityName = await addChosenIdentityTypeByPlusIcon(identifierType);
+    this.identityName = await addChosenIdentityTypeByPlusIcon();
   }
 );
 
 When(
-  /^user add (DIDKEY|KERI) identity$/,
+  /^user add (KERI) identity$/,
   async function (identifierType: string) {
     this.identifierType = identifierType;
-    this.identityName = await addChosenIdentityType(identifierType);
+    this.identityName = await addChosenIdentityType();
   }
 );

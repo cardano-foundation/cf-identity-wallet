@@ -3,7 +3,6 @@ import {
   IonButton,
   IonIcon,
   IonSpinner,
-  useIonRouter,
   useIonViewWillEnter,
 } from "@ionic/react";
 import {
@@ -49,13 +48,14 @@ import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayo
 import { PageHeader } from "../../components/PageHeader";
 import { combineClassNames } from "../../utils/style";
 import { IdentifierDetails as IdentifierDetailsCore } from "../../../core/agent/services/identifier.types";
+import { useAppIonRouter } from "../../hooks";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
 
 const IdentifierDetails = () => {
   const pageId = "identifier-card-details";
-  const ionRouter = useIonRouter();
+  const ionRouter = useAppIonRouter();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -112,7 +112,7 @@ const IdentifierDetails = () => {
     );
 
     setTimeout(() => {
-      ionRouter.push(backPath.pathname, "root");
+      ionRouter.push(backPath.pathname, "back", "pop");
     }, NAVIGATION_DELAY);
 
     setTimeout(() => {
@@ -294,7 +294,7 @@ const IdentifierDetails = () => {
             setOptionsIsOpen={setIdentifierOptionsIsOpen}
             cardData={cardData}
             setCardData={setCardData}
-            handleDeleteIdentifier={deleteIdentifier}
+            handleDeleteIdentifier={() => setAlertIsOpen(true)}
           />
         </>
       )}

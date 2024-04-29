@@ -72,6 +72,15 @@ jest.mock("@capacitor/status-bar", () => ({
   },
 }));
 
+const lockScreenOrientationMock = jest.fn();
+jest.mock("@capacitor/screen-orientation", () => ({
+  ...jest.requireActual("@capacitor/status-bar"),
+  ScreenOrientation: {
+    lock: (params: StyleOptions) => lockScreenOrientationMock(params),
+    unlock: () => jest.fn(),
+  },
+}));
+
 const getPlatformsMock = jest.fn(() => ["android"]);
 
 jest.mock("@ionic/react", () => ({
@@ -145,6 +154,23 @@ describe("App", () => {
 
     await waitFor(() => {
       expect(setStyleMock).toBeCalledTimes(0);
+    });
+  });
+
+  test("Should lock screen orientation to portrait mode", async () => {
+    getPlatformsMock.mockImplementationOnce(() => ["android", "mobileweb"]);
+
+    render(
+      <Provider store={store}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(lockScreenOrientationMock).toBeCalledTimes(1);
+      expect(lockScreenOrientationMock).toBeCalledWith({
+        orientation: "portrait",
+      });
     });
   });
 

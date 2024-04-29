@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import {
@@ -22,10 +21,11 @@ import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayo
 import { PageHeader } from "../../components/PageHeader";
 import "./SetPasscode.scss";
 import { PageFooter } from "../../components/PageFooter";
+import { useAppIonRouter } from "../../hooks";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
-  const history = useHistory();
+  const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const [passcode, setPasscode] = useState("");
@@ -45,7 +45,7 @@ const SetPasscode = () => {
                 data
               );
               updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-              history.push(nextPath.pathname);
+              ionRouter.push(nextPath.pathname, "forward", "push");
               handleClearState();
 
               PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {

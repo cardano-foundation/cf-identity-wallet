@@ -11,28 +11,28 @@ const ConnectionNotes = ({
   onOptionButtonClick,
   pageId,
 }: ConnectionNotesProps) => {
-  if (notes.length === 0) {
-    return (
-      <p className="connection-notes-empty">
-        {i18n.t("connections.details.nocurrentnotesext")}
-      </p>
-    );
-  }
-
   return (
     <>
-      {notes.map((note, index) => (
-        <CardDetailsBlock
-          key={index}
-          className="connection-details-notes"
-          title={index === 0 ? i18n.t("connections.details.notes") : undefined}
-        >
-          <h4 className="connection-details-note-title">{note.title}</h4>
-          <IonText className="connection-details-note-text">
-            {note.message}
-          </IonText>
-        </CardDetailsBlock>
-      ))}
+      {notes.length > 0 ? (
+        notes.map((note, index) => (
+          <CardDetailsBlock
+            key={index}
+            className="connection-details-notes"
+            title={
+              index === 0 ? i18n.t("connections.details.notes") : undefined
+            }
+          >
+            <h4 className="connection-details-note-title">{note.title}</h4>
+            <IonText className="connection-details-note-text">
+              {note.message}
+            </IonText>
+          </CardDetailsBlock>
+        ))
+      ) : (
+        <p className="connection-notes-empty">
+          {i18n.t("connections.details.nocurrentnotesext")}
+        </p>
+      )}
       <PageFooter
         pageId={pageId}
         primaryButtonIcon={notes.length > 0 ? "" : addOutline}

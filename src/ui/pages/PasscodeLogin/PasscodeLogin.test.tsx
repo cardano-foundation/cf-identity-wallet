@@ -3,6 +3,7 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { createMemoryHistory } from "history";
+import { IonReactMemoryRouter } from "@ionic/react-router";
 import { PasscodeLogin } from "./PasscodeLogin";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { SetPasscode } from "../SetPasscode";
@@ -120,9 +121,15 @@ describe("Passcode Login Page", () => {
   });
 
   test("If no seed phrase was stored and I click on I forgot my passcode, I can start over", async () => {
+    const history = createMemoryHistory();
+    history.push(RoutePath.PASSCODE_LOGIN);
+
     const { getByText, findByText } = render(
       <Provider store={storeMocked(initialStateWithoutSeedPhrase)}>
-        <MemoryRouter initialEntries={[RoutePath.PASSCODE_LOGIN]}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[RoutePath.PASSCODE_LOGIN]}
+        >
           <Route
             path={RoutePath.PASSCODE_LOGIN}
             component={PasscodeLogin}
@@ -131,7 +138,7 @@ describe("Passcode Login Page", () => {
             path={RoutePath.SET_PASSCODE}
             component={SetPasscode}
           />
-        </MemoryRouter>
+        </IonReactMemoryRouter>
       </Provider>
     );
     fireEvent.click(getByText(/1/));
@@ -154,9 +161,15 @@ describe("Passcode Login Page", () => {
   });
 
   test("If a seed phrase was stored and I click on I forgot my passcode, I can start over", async () => {
+    const history = createMemoryHistory();
+    history.push(RoutePath.PASSCODE_LOGIN);
+
     const { getByText, findByText } = render(
       <Provider store={storeMocked(initialStateWithSeedPhrase)}>
-        <MemoryRouter initialEntries={[RoutePath.PASSCODE_LOGIN]}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[RoutePath.PASSCODE_LOGIN]}
+        >
           <Route
             path={RoutePath.PASSCODE_LOGIN}
             component={PasscodeLogin}
@@ -165,7 +178,7 @@ describe("Passcode Login Page", () => {
             path={RoutePath.SET_PASSCODE}
             component={SetPasscode}
           />
-        </MemoryRouter>
+        </IonReactMemoryRouter>
       </Provider>
     );
     fireEvent.click(getByText(/1/));
