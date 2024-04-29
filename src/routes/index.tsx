@@ -26,15 +26,8 @@ import { AuthenticatedRouteProps } from "./routes.types";
 const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    authentication.loggedIn
-  );
 
-  useEffect(() => {
-    setIsAuthenticated(authentication.loggedIn);
-  }, [authentication.loggedIn]);
-
-  return isAuthenticated ? (
+  return authentication.loggedIn ? (
     <Route
       {...props}
       component={props.component}

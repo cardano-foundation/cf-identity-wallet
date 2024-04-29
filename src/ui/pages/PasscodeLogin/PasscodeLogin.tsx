@@ -28,6 +28,7 @@ import { useAppIonRouter } from "../../hooks";
 const PasscodeLogin = () => {
   const pageId = "passcode-login";
   const ionRouter = useAppIonRouter();
+  const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const authentication = useAppSelector(getAuthentication);
@@ -71,6 +72,7 @@ const PasscodeLogin = () => {
               store: { stateCache },
             }
           );
+
           updateReduxState(
             backPath.pathname,
             { store: { stateCache } },
@@ -78,7 +80,9 @@ const PasscodeLogin = () => {
             updateRedux
           );
 
-          ionRouter.push(backPath.pathname, "back", "pop");
+          history.push(backPath.pathname);
+          // ionRouter.push(backPath.pathname, "back", "pop");
+
           handleClearState();
 
           setTimeout(() => {

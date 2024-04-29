@@ -535,7 +535,7 @@
       }
     ]
   },
-  "passcodelogin": {
+  "lockmodal": {
     "title": "Welcome back",
     "description": "Please enter your passcode to login",
     "error": "Incorrect passcode",

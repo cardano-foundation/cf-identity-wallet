@@ -98,9 +98,9 @@ describe("Passcode Login Page", () => {
         <PasscodeLogin />
       </Provider>
     );
-    expect(getByText(EN_TRANSLATIONS.passcodelogin.title)).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.lockmodal.title)).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.passcodelogin.description)
+      getByText(EN_TRANSLATIONS.lockmodal.description)
     ).toBeInTheDocument();
   });
 
@@ -147,14 +147,12 @@ describe("Passcode Login Page", () => {
     fireEvent.click(getByText(/4/));
     fireEvent.click(getByText(/5/));
     fireEvent.click(getByText(/6/));
-    expect(await findByText(EN_TRANSLATIONS.passcodelogin.error)).toBeVisible();
-    fireEvent.click(getByText(EN_TRANSLATIONS.passcodelogin.forgotten.button));
+    expect(await findByText(EN_TRANSLATIONS.lockmodal.error)).toBeVisible();
+    fireEvent.click(getByText(EN_TRANSLATIONS.lockmodal.forgotten.button));
     expect(
-      await findByText(EN_TRANSLATIONS.passcodelogin.alert.text.restart)
+      await findByText(EN_TRANSLATIONS.lockmodal.alert.text.restart)
     ).toBeVisible();
-    fireEvent.click(
-      getByText(EN_TRANSLATIONS.passcodelogin.alert.button.restart)
-    );
+    fireEvent.click(getByText(EN_TRANSLATIONS.lockmodal.alert.button.restart));
     expect(
       await findByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
     ).toBeVisible();
@@ -187,14 +185,12 @@ describe("Passcode Login Page", () => {
     fireEvent.click(getByText(/4/));
     fireEvent.click(getByText(/5/));
     fireEvent.click(getByText(/6/));
-    expect(await findByText(EN_TRANSLATIONS.passcodelogin.error)).toBeVisible();
-    fireEvent.click(getByText(EN_TRANSLATIONS.passcodelogin.forgotten.button));
+    expect(await findByText(EN_TRANSLATIONS.lockmodal.error)).toBeVisible();
+    fireEvent.click(getByText(EN_TRANSLATIONS.lockmodal.forgotten.button));
     expect(
-      await findByText(EN_TRANSLATIONS.passcodelogin.alert.text.verify)
+      await findByText(EN_TRANSLATIONS.lockmodal.alert.text.verify)
     ).toBeVisible();
-    fireEvent.click(
-      getByText(EN_TRANSLATIONS.passcodelogin.alert.button.verify)
-    );
+    fireEvent.click(getByText(EN_TRANSLATIONS.lockmodal.alert.button.verify));
     expect(
       await findByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
     ).toBeVisible();

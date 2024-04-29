@@ -22,6 +22,7 @@ import { SetUserName } from "./components/SetUserName";
 import { TabsRoutePath } from "../routes/paths";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
+import { LockModal } from "./components/LockModal/LockModal";
 
 setupIonicReact();
 
@@ -33,6 +34,8 @@ const App = () => {
   const toastMsg = useAppSelector(getToastMsg);
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
+
+  const [lockModalIsOpen, setLockModalIsOpen] = useState(true);
 
   const isPreviewMode = useMemo(
     () => new URLSearchParams(window.location.search).has("browserPreview"),
@@ -97,6 +100,7 @@ const App = () => {
           />
           <IncomingRequest />
           <Settings />
+          <LockModal isOpen={authentication.loggedIn} />
           <CustomToast
             toastMsg={toastMsg}
             showToast={showToast}

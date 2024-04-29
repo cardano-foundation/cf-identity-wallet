@@ -108,30 +108,40 @@ const keriAcdcChangeHandler = async (
   }
 };
 
-const ACTIVITY_TIMEOUT = 60000; // 60 secs
-const ACTIVITY_BACKGROUND_TIMEOUT = 3000;
-
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const [initialised, setInitialised] = useState(false);
   const [agentInitErr, setAgentInitErr] = useState(false);
 
-  let timer: NodeJS.Timeout;
+  const ACTIVITY_TIMEOUT = 15000;
+  //let timer: NodeJS.Timeout;
+  const timeoutDuration = ACTIVITY_TIMEOUT;
+  /*
   useEffect(() => {
+
     const handleActivity = () => {
       clearTimeout(timer);
       timer = setTimeout(() => {
+        console.log("lets lock");
+        console.log("timeoutDuration");
+        console.log(timeoutDuration);
         dispatch(logout());
-      }, ACTIVITY_TIMEOUT);
+      }, timeoutDuration);
     };
 
-    const startBackgroundTimer = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        dispatch(logout());
-      }, ACTIVITY_BACKGROUND_TIMEOUT);
+    const handleAppStateChange = ({ isActive }: {isActive:boolean}) => {
+      console.log("handleAppStateChange");
+      console.log(isActive);
+      if (isActive) {
+        timeoutDuration = ACTIVITY_TIMEOUT;
+      } else {
+        timeoutDuration = ACTIVITY_TIMEOUT / 2;
+      }
+      handleActivity();
     };
+
+    App.addListener('appStateChange', handleAppStateChange);
 
     window.addEventListener("load", handleActivity);
     document.addEventListener("mousemove", handleActivity);
@@ -142,20 +152,37 @@ const AppWrapper = (props: { children: ReactNode }) => {
     document.addEventListener("keydown", handleActivity);
     document.addEventListener("scroll", handleActivity);
 
-    App.addListener("appStateChange", (state) => {
-      if (!state.isActive) {
-        startBackgroundTimer();
-      } else {
-        handleActivity();
-      }
-    });
+    return () => {
+      App.removeAllListeners();
+      window.removeEventListener("load", handleActivity);
+      document.removeEventListener("mousemove", handleActivity);
+      document.removeEventListener("touchstart", handleActivity);
+      document.removeEventListener("touchmove", handleActivity);
+      document.removeEventListener("click", handleActivity);
+      document.removeEventListener("focus", handleActivity);
+      document.removeEventListener("keydown", handleActivity);
+      clearTimeout(timer);
+    };
+  }, []);
+  */
 
-    App.addListener("pause", () => {
-      startBackgroundTimer();
-    });
-    App.addListener("resume", () => {
-      handleActivity();
-    });
+  let timer: NodeJS.Timeout;
+  useEffect(() => {
+    const handleActivity = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        dispatch(logout());
+      }, ACTIVITY_TIMEOUT);
+    };
+
+    window.addEventListener("load", handleActivity);
+    document.addEventListener("mousemove", handleActivity);
+    document.addEventListener("touchstart", handleActivity);
+    document.addEventListener("touchmove", handleActivity);
+    document.addEventListener("click", handleActivity);
+    document.addEventListener("focus", handleActivity);
+    document.addEventListener("keydown", handleActivity);
+    document.addEventListener("scroll", handleActivity);
 
     return () => {
       window.removeEventListener("load", handleActivity);
