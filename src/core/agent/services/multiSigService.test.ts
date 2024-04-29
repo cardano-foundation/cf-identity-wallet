@@ -118,7 +118,7 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
-        getConnectionKeriShortDetailById: jest.fn(),
+        getConnectionShortDetailById: jest.fn(),
         resolveOobi: () => mockResolveOobi(),
       },
       identifiers: { getIdentifiers: () => mockGetIdentifiers() },
@@ -768,7 +768,7 @@ describe("Multisig sig service of agent", () => {
       },
     ]);
     mockGetIdentifiers = jest.fn().mockResolvedValue([identifierMetadata]);
-    Agent.agent.connections.getConnectionKeriShortDetailById = jest
+    Agent.agent.connections.getConnectionShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
     Agent.agent.connections.getConnections = jest.fn().mockResolvedValue([]);
@@ -814,7 +814,7 @@ describe("Multisig sig service of agent", () => {
       },
     ]);
     mockGetIdentifiers = jest.fn().mockResolvedValue([identifierMetadata]);
-    Agent.agent.connections.getConnectionKeriShortDetailById = jest
+    Agent.agent.connections.getConnectionShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
     Agent.agent.connections.getConnections = jest.fn().mockResolvedValue([
@@ -878,7 +878,7 @@ describe("Multisig sig service of agent", () => {
       },
     ]);
     mockGetIdentifiers = jest.fn().mockResolvedValue([identifierMetadata]);
-    Agent.agent.connections.getConnectionKeriShortDetailById = jest
+    Agent.agent.connections.getConnectionShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
     Agent.agent.connections.getConnections = jest.fn().mockResolvedValue([
@@ -936,7 +936,7 @@ describe("Multisig sig service of agent", () => {
     ]);
     mockGetIdentifiers = jest.fn().mockResolvedValue([identifierMetadata]);
     jest
-      .spyOn(Agent.agent.connections, "getConnectionKeriShortDetailById")
+      .spyOn(Agent.agent.connections, "getConnectionShortDetailById")
       .mockResolvedValue(senderData);
     jest.spyOn(Agent.agent.connections, "getConnections").mockResolvedValue([
       {
@@ -982,7 +982,7 @@ describe("Multisig sig service of agent", () => {
     ]);
     // @TODO - foconnor: This is not ideal as our identifier service is getting tightly coupled with the connection service.
     // Re-work this later.
-    Agent.agent.connections.getConnectionKeriShortDetailById = jest
+    Agent.agent.connections.getConnectionShortDetailById = jest
       .fn()
       .mockImplementation(() => {
         throw new Error("Some error from connection service");

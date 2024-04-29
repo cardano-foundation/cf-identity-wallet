@@ -25,8 +25,8 @@ class ConnectionService extends AgentService {
     "Invalid connectionless OOBI - does not contain d_m parameter";
   static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
     "Connection note record not found";
-  static readonly CONNECTION_KERI_METADATA_RECORD_NOT_FOUND =
-    "Connection keri metadata record not found";
+  static readonly CONNECTION_METADATA_RECORD_NOT_FOUND =
+    "Connection metadata record not found";
   static readonly DEFAULT_ROLE = "agent";
 
   static readonly FAILED_TO_RESOLVE_OOBI =
@@ -54,7 +54,7 @@ class ConnectionService extends AgentService {
     });
     const operation = await this.resolveOobi(url);
     const connectionId = operation.response.i;
-    await this.createConnectionKeriMetadata(connectionId, {
+    await this.createConnectionMetadata(connectionId, {
       alias: operation.alias,
       oobi: url,
     });
@@ -115,14 +115,14 @@ class ConnectionService extends AgentService {
 
   async getConnections(): Promise<ConnectionShortDetails[]> {
     const connectionsDetails: ConnectionShortDetails[] = [];
-    const connectionKeriMetadatas = await this.getAllConnectionKeriMetadata();
-    connectionKeriMetadatas.forEach(async (connection) => {
-      connectionsDetails.push(this.getConnectionKeriShortDetails(connection));
+    const metadatas = await this.getAllConnectionMetadata();
+    metadatas.forEach(async (connection) => {
+      connectionsDetails.push(this.getConnectionShortDetails(connection));
     });
     return connectionsDetails;
   }
 
-  private getConnectionKeriShortDetails(
+  private getConnectionShortDetails(
     record: BasicRecord
   ): ConnectionShortDetails {
     return {
@@ -141,7 +141,7 @@ class ConnectionService extends AgentService {
       id: connection.id,
       status: ConnectionStatus.CONFIRMED,
       connectionDate: (
-        await this.getConnectionKeriMetadataById(connection.id)
+        await this.getConnectionMetadataById(connection.id)
       ).createdAt.toISOString(),
       serviceEndpoints: [connection.oobi],
       notes: await this.getConnectNotesByConnectionId(connection.id),
@@ -157,11 +157,11 @@ class ConnectionService extends AgentService {
     }
   }
 
-  async getConnectionKeriShortDetailById(
+  async getConnectionShortDetailById(
     id: string
   ): Promise<ConnectionShortDetails> {
-    const metadata = await this.getConnectionKeriMetadataById(id);
-    return this.getConnectionKeriShortDetails(metadata);
+    const metadata = await this.getConnectionMetadataById(id);
+    return this.getConnectionShortDetails(metadata);
   }
 
   async createConnectionNote(
@@ -202,7 +202,7 @@ class ConnectionService extends AgentService {
     return alias ? `${oobi}?name=${encodeURIComponent(alias)}` : oobi;
   }
 
-  private async createConnectionKeriMetadata(
+  private async createConnectionMetadata(
     connectionId: string,
     metadata?: Record<string, unknown>
   ): Promise<void> {
@@ -215,23 +215,20 @@ class ConnectionService extends AgentService {
     });
   }
 
-  private async getConnectionKeriMetadataById(
+  private async getConnectionMetadataById(
     connectionId: string
   ): Promise<BasicRecord> {
-    const connectionKeri = await this.basicStorage.findById(connectionId);
-    if (!connectionKeri) {
-      throw new Error(
-        ConnectionService.CONNECTION_KERI_METADATA_RECORD_NOT_FOUND
-      );
+    const connection = await this.basicStorage.findById(connectionId);
+    if (!connection) {
+      throw new Error(ConnectionService.CONNECTION_METADATA_RECORD_NOT_FOUND);
     }
-    return connectionKeri;
+    return connection;
   }
 
-  async getAllConnectionKeriMetadata(): Promise<BasicRecord[]> {
-    const connectionKeris = await this.basicStorage.findAllByQuery({
+  async getAllConnectionMetadata(): Promise<BasicRecord[]> {
+    return this.basicStorage.findAllByQuery({
       type: RecordType.KERIA_CONNECTION_METADATA,
     });
-    return connectionKeris;
   }
 
   async getConnectionHistoryById(
@@ -256,7 +253,7 @@ class ConnectionService extends AgentService {
 
   async syncKeriaContacts() {
     const signifyContacts = await this.signifyClient.contacts().list();
-    const storageContacts = await this.getAllConnectionKeriMetadata();
+    const storageContacts = await this.getAllConnectionMetadata();
     const unSyncedData = signifyContacts.filter(
       (contact: KeriaContact) =>
         !storageContacts.find((item: BasicRecord) => contact.id == item.id)
@@ -264,7 +261,7 @@ class ConnectionService extends AgentService {
     if (unSyncedData.length) {
       //sync the storage with the signify data
       for (const contact of unSyncedData) {
-        await this.createConnectionKeriMetadata(contact.id, {
+        await this.createConnectionMetadata(contact.id, {
           alias: contact.alias,
           oobi: contact.oobi,
         });

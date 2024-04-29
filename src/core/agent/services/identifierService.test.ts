@@ -117,7 +117,7 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
-        getConnectionKeriShortDetailById: jest.fn(),
+        getConnectionShortDetailById: jest.fn(),
         getConnections: jest.fn(),
       },
     },

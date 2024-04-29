@@ -283,7 +283,7 @@ class MultiSigService extends AgentService {
     const senderAid = icpMsg[0].exn.i;
     // @TODO - foconnor: This cross service call should be handled better.
     const senderContact =
-      await Agent.agent.connections.getConnectionKeriShortDetailById(
+      await Agent.agent.connections.getConnectionShortDetailById(
         icpMsg[0].exn.i
       );
 

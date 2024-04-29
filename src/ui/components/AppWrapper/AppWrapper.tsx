@@ -54,7 +54,7 @@ const connectionStateChangedHandler = async (
   } else {
     const connectionRecordId = event.payload.connectionId!;
     const connectionDetails =
-      await Agent.agent.connections.getConnectionKeriShortDetailById(
+      await Agent.agent.connections.getConnectionShortDetailById(
         connectionRecordId
       );
     dispatch(updateOrAddConnectionCache(connectionDetails));

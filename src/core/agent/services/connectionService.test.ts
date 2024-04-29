@@ -247,9 +247,7 @@ describe("Connection service of agent", () => {
       },
     });
     expect(
-      await connectionService.getConnectionKeriShortDetailById(
-        keriContacts[0].id
-      )
+      await connectionService.getConnectionShortDetailById(keriContacts[0].id)
     ).toMatchObject({
       id: keriContacts[0].id,
       connectionDate: nowISO,
