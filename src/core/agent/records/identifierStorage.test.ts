@@ -16,12 +16,10 @@ const storageService = jest.mocked({
 const identifierStorage = new IdentifierStorage(storageService as any);
 
 const now = new Date();
-const colors: [string, string] = ["#fff", "#fff"];
 
 const identifierMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
-  colors,
   signifyName: "uuid-here",
   createdAt: now,
   theme: 0,

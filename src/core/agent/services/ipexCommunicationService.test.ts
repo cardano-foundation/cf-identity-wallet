@@ -1,8 +1,4 @@
-import { CredentialService } from "./credentialService";
-import {
-  CredentialMetadataRecordProps,
-  CredentialMetadataRecordStatus,
-} from "../records/credentialMetadataRecord.types";
+import { CredentialMetadataRecordStatus } from "../records/credentialMetadataRecord.types";
 import { AcdcKeriEventTypes, AcdcKeriStateChangedEvent } from "../agent.types";
 import { EventService } from "./eventService";
 import { IpexCommunicationService } from "./ipexCommunicationService";
@@ -14,7 +10,18 @@ const basicStorage = jest.mocked({
   delete: jest.fn(),
   deleteById: jest.fn(),
   update: jest.fn(),
-  findById: jest.fn(),
+  findById: jest.fn().mockImplementation((id: string) => {
+    if (id === "uuid") {
+      return {
+        id,
+        createdAt: "2024-04-29T11:01:04.903Z",
+        content: {
+          d: "saidForUuid",
+        },
+      };
+    }
+    return null;
+  }),
   findAllByQuery: jest.fn(),
   getAll: jest.fn(),
 });
@@ -38,8 +45,6 @@ const credentialStorage = jest.mocked({
 });
 
 const credentialListMock = jest.fn();
-const exchangeGetMock = jest.fn();
-
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -96,7 +101,27 @@ const signifyClient = jest.mocked({
     list: credentialListMock,
   }),
   exchanges: () => ({
-    get: exchangeGetMock,
+    get: jest.fn().mockImplementation((id: string) => {
+      if (id == "saidForUuid") {
+        return {
+          exn: {
+            a: {
+              i: "uuid",
+            },
+            i: "i",
+            e: {
+              acdc: {
+                d: "id",
+                a: {
+                  dt: new Date().toISOString(),
+                },
+              },
+            },
+          },
+        };
+      }
+      return;
+    }),
     send: jest.fn(),
   }),
   agent: {
@@ -132,25 +157,8 @@ const ipexCommunicationService = new IpexCommunicationService(
   agentServicesProps
 );
 
-const now = new Date();
-const nowISO = now.toISOString();
-const colors: [string, string] = ["#fff", "#fff"];
-
-const id1 = "id1";
-const id2 = "id2";
-const credentialRecordId1 = "cId1";
-const credentialMetadataProps: CredentialMetadataRecordProps = {
-  id: id1,
-  createdAt: now,
-  issuanceDate: nowISO,
-  issuerLogo: "issuerLogoHere",
-  credentialType: "credType",
-  status: CredentialMetadataRecordStatus.CONFIRMED,
-  credentialRecordId: credentialRecordId1,
-};
-
 describe("Ipex communication service of agent", () => {
-  test("callback will run when have a event listener of ACDC KERI state changed", async () => {
+  test("callback will run when have a event listener of ACDC state changed", async () => {
     const callback = jest.fn();
     ipexCommunicationService.onAcdcKeriStateChanged(callback);
     const event: AcdcKeriStateChangedEvent = {
@@ -169,37 +177,8 @@ describe("Ipex communication service of agent", () => {
     expect(callback).toBeCalledWith(event);
   });
 
-  test("accept KERI ACDC", async () => {
+  test("can accept ACDC", async () => {
     const id = "uuid";
-    const date = new Date();
-    basicStorage.findById = jest.fn().mockImplementation((id) => {
-      if (id == "uuid") {
-        return {
-          id,
-          createdAt: date,
-          content: {
-            d: "keri",
-          },
-        };
-      }
-      return;
-    });
-    exchangeGetMock.mockResolvedValue({
-      exn: {
-        a: {
-          i: "uuid",
-        },
-        i: "i",
-        e: {
-          acdc: {
-            d: "id",
-            a: {
-              dt: nowISO,
-            },
-          },
-        },
-      },
-    });
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "holder",
     });
@@ -216,16 +195,83 @@ describe("Ipex communication service of agent", () => {
         id: "id",
       });
     await ipexCommunicationService.acceptKeriAcdc(id);
-    expect(basicStorage.deleteById).toBeCalled();
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalled();
+    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith("id", {
+      id: "id",
+      status: CredentialStatus.CONFIRMED,
+    });
+    expect(basicStorage.deleteById).toBeCalledWith(id);
   });
 
-  test("Must throw an error when there's no KERI notification", async () => {
+  test("cannot accept ACDC if the notification is missing in the DB", async () => {
     const id = "not-found-id";
-    basicStorage.findById = jest.fn();
     await expect(
       ipexCommunicationService.acceptKeriAcdc(id)
     ).rejects.toThrowError(
-      `${CredentialService.KERI_NOTIFICATION_NOT_FOUND} ${id}`
+      `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
     );
+  });
+
+  // This logic must change if we are accepting presentations later.
+  test("cannot accept ACDC if identifier is not locally stored", async () => {
+    // @TODO - foconnor: Ensure syncing process resovles this edge case of identifier in cloud but not local prior to release.
+    const id = "uuid";
+    basicStorage.findById = jest.fn().mockResolvedValue({
+      id,
+      createdAt: "2024-04-29T11:01:04.903Z",
+      content: {
+        d: "saidForUuid",
+      },
+    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(undefined);
+    await expect(
+      ipexCommunicationService.acceptKeriAcdc(id)
+    ).rejects.toThrowError(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalled();
+    expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
+    expect(basicStorage.deleteById).not.toBeCalled();
+  });
+
+  // This test should go when this has been made event driven.
+  test("throws if a credential does not appear in KERIA after admitting", async () => {
+    const id = "uuid";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockImplementation(() => {
+      throw new Error("404 on KERIA");
+    });
+    // Could use fake timers instead.
+    await expect(
+      ipexCommunicationService.acceptKeriAcdc(id, {
+        maxAttempts: 2,
+        interval: 10,
+      })
+    ).rejects.toThrowError(IpexCommunicationService.ACDC_NOT_APPEARING);
+  });
+
+  test("cannot mark credential as confirmed if metadata is missing", async () => {
+    const id = "uuid";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    credentialStorage.getCredentialMetadataByCredentialRecordId = jest
+      .fn()
+      .mockResolvedValue(null);
+    await expect(
+      ipexCommunicationService.acceptKeriAcdc(id)
+    ).rejects.toThrowError(
+      IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+    );
+    expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
   });
 });

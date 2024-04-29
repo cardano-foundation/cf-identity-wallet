@@ -1,4 +1,3 @@
-import { CredentialStorage } from "../records";
 import { EventService } from "./eventService";
 import { SignifyNotificationService } from "./signifyNotificationService";
 
@@ -175,9 +174,7 @@ describe("Signify notification service of agent", () => {
     basicStorage.findById = jest.fn().mockResolvedValue(null);
     await expect(
       signifyNotificationService.dismissNotification("not-exist-noti-id")
-    ).rejects.toThrowError(
-      SignifyNotificationService.KERI_NOTIFICATION_NOT_FOUND
-    );
+    ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
   });
 
   test("can delete keri notification by ID", async () => {

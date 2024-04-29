@@ -7,9 +7,10 @@ import {
 import { Notification } from "./credentialService.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { RecordType } from "../../storage/storage.types";
+
 class SignifyNotificationService extends AgentService {
-  static readonly KERI_NOTIFICATION_NOT_FOUND =
-    "Keri notification record not found";
+  static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
+
   async onNotificationKeriStateChanged(
     callback: (event: KeriNotification) => void
   ) {
@@ -136,13 +137,13 @@ class SignifyNotificationService extends AgentService {
   async dismissNotification(notificationId: string) {
     const notificationRecord = await this.basicStorage.findById(notificationId);
     if (!notificationRecord) {
-      throw new Error(SignifyNotificationService.KERI_NOTIFICATION_NOT_FOUND);
+      throw new Error(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
     }
     notificationRecord.setTag("isDismissed", true);
     await this.basicStorage.update(notificationRecord);
   }
 
-  /**This allow us to get all dismissed notifications */
+  // This allow us to get all dismissed notifications
   async getDismissedNotifications() {
     const notifications = await this.basicStorage.findAllByQuery({
       isDismissed: true,

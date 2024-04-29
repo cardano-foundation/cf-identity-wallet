@@ -1,11 +1,8 @@
-import { RecordType } from "../../storage/storage.types";
 import { Agent } from "../agent";
 import {
   AcdcKeriEventTypes,
   AcdcKeriStateChangedEvent,
   KeriNotification,
-  IdentifierResult,
-  NotificationRoute,
 } from "../agent.types";
 import { CredentialMetadataRecordStatus } from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
@@ -16,13 +13,10 @@ import {
 import { getCredentialShortDetails } from "./utils";
 
 class IpexCommunicationService extends AgentService {
-  static readonly ISSUEE_NOT_FOUND =
-    "Cannot accept incoming ACDC, issuee AID not controlled by us";
+  static readonly ISSUEE_NOT_FOUND_LOCALLY =
+    "Cannot accept incoming ACDC, issuee AID not found in local wallet DB";
   static readonly ACDC_NOT_APPEARING = "ACDC is not appearing..."; // @TODO - foconnor: This is async we should wait for a notification
-
-  static readonly KERI_NOTIFICATION_NOT_FOUND =
-    "Keri notification record not found";
-
+  static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
     "Credential metadata missing for stored credential";
 
@@ -42,13 +36,16 @@ class IpexCommunicationService extends AgentService {
     );
   }
 
-  async acceptKeriAcdc(id: string): Promise<void> {
-    const keriNoti = await this.getKeriNotificationRecordById(id);
-    const keriExchange = await this.signifyClient
+  async acceptKeriAcdc(
+    id: string,
+    waitForAcdcConfig = { maxAttempts: 120, interval: 500 }
+  ): Promise<void> {
+    const notifRecord = await this.getNotificationRecordById(id);
+    const exn = await this.signifyClient
       .exchanges()
-      .get(keriNoti.a.d as string);
-    const credentialId = keriExchange.exn.e.acdc.d;
-    await this.createAcdcMetadataRecord(keriExchange.exn);
+      .get(notifRecord.a.d as string);
+    const credentialId = exn.exn.e.acdc.d;
+    await this.saveAcdcMetadataRecord(exn.exn.e.acdc.d, exn.exn.e.acdc.a.dt);
 
     this.eventService.emit<AcdcKeriStateChangedEvent>({
       type: AcdcKeriEventTypes.AcdcKeriStateChanged,
@@ -57,30 +54,25 @@ class IpexCommunicationService extends AgentService {
         status: CredentialStatus.PENDING,
       },
     });
-    let holderSignifyName;
+
     const holder = await this.identifierStorage.getIdentifierMetadata(
-      keriExchange.exn.a.i
+      exn.exn.a.i
     );
-    if (holder && holder.signifyName) {
-      holderSignifyName = holder.signifyName;
-    } else {
-      const identifierHolder = await this.getIdentifierById(
-        keriExchange.exn.a.i
-      );
-      holderSignifyName = identifierHolder?.name;
-    }
-    if (!holderSignifyName) {
-      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND);
+    if (!holder) {
+      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     }
 
     await this.admitIpex(
-      keriNoti.a.d as string,
-      holderSignifyName,
-      keriExchange.exn.i
+      notifRecord.a.d as string,
+      holder.signifyName,
+      exn.exn.i
     );
 
     // @TODO - foconnor: This should be event driven, need to fix the notification in KERIA/Signify.
-    const cred = await this.waitForAcdcToAppear(credentialId);
+    const cred = await this.waitForAcdcToAppear(
+      credentialId,
+      waitForAcdcConfig
+    );
     const credentialShortDetails = await this.updateAcdcMetadataRecordCompleted(
       credentialId,
       cred
@@ -95,27 +87,32 @@ class IpexCommunicationService extends AgentService {
     });
   }
 
-  private async waitForAcdcToAppear(credentialId: string): Promise<any> {
-    let acdc = await this.getCredentialBySaid(credentialId);
+  private async waitForAcdcToAppear(
+    credentialId: string,
+    waitForAcdcConfig: { maxAttempts: number; interval: number }
+  ): Promise<any> {
+    let acdc;
     let retryTimes = 0;
     while (!acdc) {
-      if (retryTimes > 120) {
+      if (retryTimes >= waitForAcdcConfig.maxAttempts) {
         throw new Error(IpexCommunicationService.ACDC_NOT_APPEARING);
       }
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) =>
+        setTimeout(resolve, waitForAcdcConfig.interval)
+      );
       acdc = (await this.getCredentialBySaid(credentialId)).acdc;
       retryTimes++;
     }
     return acdc;
   }
 
-  private async getKeriNotificationRecordById(
+  private async getNotificationRecordById(
     id: string
   ): Promise<KeriNotification> {
     const result = await this.basicStorage.findById(id);
     if (!result) {
       throw new Error(
-        `${IpexCommunicationService.KERI_NOTIFICATION_NOT_FOUND} ${id}`
+        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
       );
     }
     return {
@@ -148,10 +145,6 @@ class IpexCommunicationService extends AgentService {
     return getCredentialShortDetails(metadata);
   }
 
-  private async createAcdcMetadataRecord(event: any): Promise<void> {
-    await this.saveAcdcMetadataRecord(event.e.acdc.d, event.e.acdc.a.dt);
-  }
-
   private async saveAcdcMetadataRecord(
     credentialId: string,
     dateTime: string
@@ -167,34 +160,6 @@ class IpexCommunicationService extends AgentService {
       ...credentialDetails,
       credentialRecordId: credentialId,
     });
-  }
-
-  async getUnhandledCredentials(): Promise<KeriNotification[]> {
-    return this.getKeriCredentialNotifications();
-  }
-
-  private async getKeriCredentialNotifications(): Promise<KeriNotification[]> {
-    const results = await this.basicStorage.findAllByQuery({
-      route: NotificationRoute.Credential,
-      type: RecordType.NOTIFICATION_KERI,
-    });
-    return results.map((result) => {
-      return {
-        id: result.id,
-        createdAt: result.createdAt,
-        a: result.content,
-      };
-    });
-  }
-
-  private async getIdentifierById(
-    id: string
-  ): Promise<IdentifierResult | undefined> {
-    const allIdentifiers = await this.signifyClient.identifiers().list();
-    const identifier = allIdentifiers.aids.find(
-      (identifier: IdentifierResult) => identifier.prefix === id
-    );
-    return identifier;
   }
 
   private async admitIpex(
@@ -220,7 +185,7 @@ class IpexCommunicationService extends AgentService {
       .submitAdmit(holderAidName, admit, sigs, aend, [issuerAid]);
   }
 
-  async getCredentialBySaid(
+  private async getCredentialBySaid(
     sad: string
   ): Promise<{ acdc?: any; error?: unknown }> {
     try {

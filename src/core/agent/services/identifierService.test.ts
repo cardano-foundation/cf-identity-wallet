@@ -1,8 +1,6 @@
 import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
-import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { IdentifierService } from "./identifierService";
-import { CredentialStorage } from "../records/credentialStorage";
 
 const basicStorage = jest.mocked({
   open: jest.fn(),

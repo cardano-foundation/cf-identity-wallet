@@ -17,14 +17,6 @@ class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
     "Credential metadata missing for stored credential";
   static readonly CREDENTIAL_NOT_ARCHIVED = "Credential was not archived";
-  static readonly ACDC_NOT_APPEARING = "ACDC is not appearing..."; // @TODO - foconnor: This is async we should wait for a notification
-  static readonly CREDENTIAL_MISSING_FOR_NEGOTIATE =
-    "Credential missing for negotiation";
-  static readonly CREATED_DID_NOT_FOUND = "Referenced public did not found";
-  static readonly KERI_NOTIFICATION_NOT_FOUND =
-    "Keri notification record not found";
-  static readonly ISSUEE_NOT_FOUND =
-    "Cannot accept incoming ACDC, issuee AID not controlled by us";
   static readonly CREDENTIAL_NOT_FOUND =
     "Credential with given SAID not found on KERIA";
 
