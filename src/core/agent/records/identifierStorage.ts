@@ -50,19 +50,17 @@ class IdentifierStorage {
     >
   ): Promise<void> {
     const identifierMetadataRecord = await this.getIdentifierMetadata(id);
-    if (identifierMetadataRecord) {
-      identifierMetadataRecord.displayName =
-        metadata.displayName || identifierMetadataRecord.displayName;
-      identifierMetadataRecord.theme =
-        metadata.theme || identifierMetadataRecord.theme;
-      identifierMetadataRecord.isArchived =
-        metadata.isArchived || identifierMetadataRecord.isArchived;
-      identifierMetadataRecord.isPending =
-        metadata.isPending || identifierMetadataRecord.isPending;
-      identifierMetadataRecord.isDeleted =
-        metadata.isDeleted || identifierMetadataRecord.isDeleted;
-      await this.storageService.update(identifierMetadataRecord);
-    }
+    if (metadata.displayName !== undefined)
+      identifierMetadataRecord.displayName = metadata.displayName;
+    if (metadata.theme !== undefined)
+      identifierMetadataRecord.theme = metadata.theme;
+    if (metadata.isArchived !== undefined)
+      identifierMetadataRecord.isArchived = metadata.isArchived;
+    if (metadata.isPending !== undefined)
+      identifierMetadataRecord.isPending = metadata.isPending;
+    if (metadata.isDeleted !== undefined)
+      identifierMetadataRecord.isDeleted = metadata.isDeleted;
+    await this.storageService.update(identifierMetadataRecord);
   }
 
   async createIdentifierMetadataRecord(

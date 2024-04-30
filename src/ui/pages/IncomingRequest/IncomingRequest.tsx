@@ -74,12 +74,6 @@ const IncomingRequest = () => {
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
       Agent.agent.ipexCommunications.acceptAcdc(incomingRequest.id);
-    } else if (
-      incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
-    ) {
-      Agent.agent.signifyNotifications.deleteNotificationRecordById(
-        incomingRequest.id
-      );
     }
     setTimeout(() => {
       handleReset();

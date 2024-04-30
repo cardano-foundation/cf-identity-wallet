@@ -1,7 +1,6 @@
 import { IonItem, IonLabel, IonList } from "@ionic/react";
 import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
 import { IDENTIFIER_BG_MAPPING } from "../../../globals/types";
-import { i18n } from "../../../../i18n";
 import { formatShortDate } from "../../../utils/formatters";
 
 const IdentifiersList = ({

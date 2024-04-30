@@ -82,8 +82,9 @@ class CredentialStorage {
   ) {
     const record = await this.getCredentialMetadata(id);
     if (record) {
-      if (data.status) record.status = data.status;
-      if (data.credentialType) record.credentialType = data.credentialType;
+      if (data.status !== undefined) record.status = data.status;
+      if (data.credentialType !== undefined)
+        record.credentialType = data.credentialType;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
       if (data.isDeleted !== undefined) record.isDeleted = data.isDeleted;
       await this.storageService.update(record);
