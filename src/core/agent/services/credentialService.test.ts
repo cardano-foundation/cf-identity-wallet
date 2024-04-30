@@ -5,6 +5,8 @@ import {
 } from "../records/credentialMetadataRecord.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { EventService } from "./eventService";
+import { RecordType } from "../../storage/storage.types";
+import { NotificationRoute } from "../agent.types";
 
 const basicStorage = jest.mocked({
   open: jest.fn(),
@@ -395,5 +397,43 @@ describe("Credential service of agent", () => {
     await expect(
       credentialService.getCredentialDetailsById(id)
     ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_FOUND);
+  });
+
+  test("Should be able to getUnreadIpexGrantNotifications", async () => {
+    const basicRecord = {
+      _tags: {
+        isDismiss: true,
+        type: RecordType.KERIA_NOTIFICATION,
+        route: NotificationRoute.Credential,
+      },
+      id: "AIeGgKkS23FDK4mxpfodpbWhTydFz2tdM64DER6EdgG-",
+      createdAt: new Date(),
+      content: {
+        r: NotificationRoute.Credential,
+        d: "EF6Nmxz8hs0oVc4loyh2J5Sq9H3Z7apQVqjO6e4chtsp",
+      },
+    };
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([basicRecord]);
+    expect(
+      await credentialService.getUnreadIpexGrantNotifications()
+    ).toStrictEqual([
+      {
+        id: basicRecord.id,
+        createdAt: basicRecord.createdAt,
+        a: basicRecord.content,
+      },
+    ]);
+  });
+
+  test("Should pass the filter throught findAllByQuery when call getUnreadIpexGrantNotifications", async () => {
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    await credentialService.getUnreadIpexGrantNotifications({
+      isDismissed: false,
+    });
+    expect(basicStorage.findAllByQuery).toBeCalledWith({
+      type: RecordType.KERIA_NOTIFICATION,
+      route: NotificationRoute.Credential,
+      isDismissed: false,
+    });
   });
 });
