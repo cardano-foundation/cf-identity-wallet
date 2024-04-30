@@ -33,21 +33,21 @@ import {
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import {
-  KeriNotification,
-  ConnectionKeriStateChangedEvent,
+  KeriaNotification,
+  ConnectionStateChangedEvent,
   ConnectionStatus,
-  AcdcKeriStateChangedEvent,
+  AcdcStateChangedEvent,
+  NotificationRoute,
 } from "../../../core/agent/agent.types";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
-import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 import { App } from "@capacitor/app";
 import { IonSpinner } from "@ionic/react";
 
-const connectionKeriStateChangedHandler = async (
-  event: ConnectionKeriStateChangedEvent,
+const connectionStateChangedHandler = async (
+  event: ConnectionStateChangedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === ConnectionStatus.PENDING) {
@@ -56,7 +56,7 @@ const connectionKeriStateChangedHandler = async (
   } else {
     const connectionRecordId = event.payload.connectionId!;
     const connectionDetails =
-      await Agent.agent.connections.getConnectionKeriShortDetailById(
+      await Agent.agent.connections.getConnectionShortDetailById(
         connectionRecordId
       );
     dispatch(updateOrAddConnectionCache(connectionDetails));
@@ -64,8 +64,8 @@ const connectionKeriStateChangedHandler = async (
   }
 };
 
-const keriNotificationsChangeHandler = async (
-  event: KeriNotification,
+const keriaNotificationsChangeHandler = async (
+  event: KeriaNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event?.a?.r === NotificationRoute.Credential) {
@@ -79,7 +79,7 @@ const keriNotificationsChangeHandler = async (
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
     const multisigIcpDetails =
-      await Agent.agent.identifiers.getMultisigIcpDetails(event);
+      await Agent.agent.multiSigs.getMultisigIcpDetails(event);
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
@@ -93,8 +93,8 @@ const keriNotificationsChangeHandler = async (
   }
 };
 
-const keriAcdcChangeHandler = async (
-  event: AcdcKeriStateChangedEvent,
+const acdcChangeHandler = async (
+  event: AcdcStateChangedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === CredentialStatus.PENDING) {
@@ -252,20 +252,22 @@ const AppWrapper = (props: { children: ReactNode }) => {
       /* TODO: handle error */
     });
 
-    Agent.agent.connections.onConnectionKeriStateChanged((event) => {
-      return connectionKeriStateChangedHandler(event, dispatch);
+    Agent.agent.connections.onConnectionStateChanged((event) => {
+      return connectionStateChangedHandler(event, dispatch);
     });
-    Agent.agent.signifyNotifications.onNotificationKeriStateChanged((event) => {
-      return keriNotificationsChangeHandler(event, dispatch);
+    Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
+      return keriaNotificationsChangeHandler(event, dispatch);
     });
-    Agent.agent.credentials.onAcdcKeriStateChanged((event) => {
-      return keriAcdcChangeHandler(event, dispatch);
+    Agent.agent.credentials.onAcdcStateChanged((event) => {
+      return acdcChangeHandler(event, dispatch);
     });
 
     const oldMessages = (
       await Promise.all([
-        Agent.agent.credentials.getKeriCredentialNotifications(),
-        Agent.agent.identifiers.getUnhandledMultisigIdentifiers({
+        Agent.agent.credentials.getUnhandledIpexGrantNotifications({
+          isDismissed: false,
+        }),
+        Agent.agent.multiSigs.getUnhandledMultisigIdentifiers({
           isDismissed: false,
         }),
       ])
@@ -275,7 +277,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
       });
     oldMessages.forEach(async (message) => {
-      await keriNotificationsChangeHandler(message, dispatch);
+      await keriaNotificationsChangeHandler(message, dispatch);
     });
     // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
     // await Promise.all([
