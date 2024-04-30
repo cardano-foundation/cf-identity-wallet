@@ -30,7 +30,7 @@ const MultiSigRequestStageTwo = ({
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const [displayNameValue, setDisplayNameValue] = useState("");
-  const [selectedTheme, setSelectedTheme] = useState(4);
+  const [selectedTheme, setSelectedTheme] = useState(0);
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
 

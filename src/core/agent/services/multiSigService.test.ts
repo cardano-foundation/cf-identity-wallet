@@ -410,7 +410,7 @@ describe("Multisig sig service of agent", () => {
       isPending: true,
       signifyOpName: "op123",
       signifyName: "",
-      theme: 4,
+      theme: 0,
     } as IdentifierMetadataRecord;
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -453,7 +453,7 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         signifyName: "signifyName",
         createdAt: new Date(),
-        theme: 4,
+        theme: 0,
       },
     ]);
     const metadata = {
@@ -463,7 +463,7 @@ describe("Multisig sig service of agent", () => {
       isPending: false,
       signifyOpName: "op123",
       signifyName: "john_doe",
-      theme: 4,
+      theme: 0,
       multisigManageAid: "123",
     } as IdentifierMetadataRecord;
     identifiersMemberMock = jest.fn().mockResolvedValue({
@@ -534,7 +534,7 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         signifyName: "signifyName",
         createdAt: new Date(),
-        theme: 4,
+        theme: 0,
       },
     ]);
     multiSigService.rotateMultisigAid = jest.fn().mockResolvedValue({
@@ -549,7 +549,7 @@ describe("Multisig sig service of agent", () => {
       isPending: false,
       signifyOpName: "op123",
       signifyName: "john_doe",
-      theme: 4,
+      theme: 0,
       multisigManageAid: "123",
     } as IdentifierMetadataRecord;
     identifierStorage.getIdentifierMetadata = jest
@@ -613,7 +613,7 @@ describe("Multisig sig service of agent", () => {
       isPending: true,
       signifyOpName: "op123",
       signifyName: "name",
-      theme: 4,
+      theme: 0,
     } as IdentifierMetadataRecord;
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -656,7 +656,7 @@ describe("Multisig sig service of agent", () => {
       isPending: true,
       signifyOpName: "op123",
       signifyName: "name",
-      theme: 4,
+      theme: 0,
       multisigManageAid: "123",
     } as IdentifierMetadataRecord;
     identifierStorage.getIdentifierMetadata = jest
@@ -694,7 +694,7 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         signifyName: "signifyName",
         createdAt: new Date(),
-        theme: 4,
+        theme: 0,
         multisigManageAid: "123",
       },
     ]);
@@ -725,14 +725,14 @@ describe("Multisig sig service of agent", () => {
         id: "id1",
         signifyName: "signifyName",
         createdAt: new Date(),
-        theme: 4,
+        theme: 0,
       },
     ]);
     await expect(
       multiSigService.joinMultisig(
         { id: "id", createdAt: new Date(), a: { d: "d" } },
         {
-          theme: 4,
+          theme: 0,
           displayName: "Multisig",
         }
       )
@@ -745,7 +745,7 @@ describe("Multisig sig service of agent", () => {
       id: "id",
       signifyName: undefined,
       createdAt: new Date(),
-      theme: 4,
+      theme: 0,
     };
     const senderData = {
       id: "senderId",
@@ -793,7 +793,7 @@ describe("Multisig sig service of agent", () => {
       id: "id",
       signifyName: undefined,
       createdAt: new Date(),
-      theme: 4,
+      theme: 0,
     };
     const senderData = {
       id: "senderId",
@@ -853,7 +853,7 @@ describe("Multisig sig service of agent", () => {
       id: "id",
       signifyName: undefined,
       createdAt: new Date(),
-      theme: 4,
+      theme: 0,
     };
     const senderData = {
       id: "senderId",
@@ -916,7 +916,7 @@ describe("Multisig sig service of agent", () => {
       id: "id",
       signifyName: undefined,
       createdAt: new Date(),
-      theme: 4,
+      theme: 0,
     };
     const senderData = {
       id: "senderId",

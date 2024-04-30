@@ -21,7 +21,7 @@ const filteredIdentifierFix: IdentifierShortDetails[] = [
     id: "ECHG-cxboMQ78Hwlm2-w6OS3iU275bAKkqC1LjwICPyi",
     displayName: "Test MS",
     createdAtUTC: "2024-03-07T11:54:56.886Z",
-    theme: 4,
+    theme: 0,
     isPending: true,
     signifyName: "Test",
   },

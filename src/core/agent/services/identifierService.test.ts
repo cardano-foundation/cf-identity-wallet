@@ -352,7 +352,7 @@ describe("Single sig service of agent", () => {
       isPending: false,
       signifyOpName: "op123",
       signifyName: "john_doe",
-      theme: 4,
+      theme: 0,
     } as IdentifierMetadataRecord;
     identifiersRotateMock.mockResolvedValue({
       op: jest.fn().mockResolvedValue({

@@ -94,7 +94,7 @@ describe("Delegation sig service of agent", () => {
       isPending: true,
       signifyOpName: "op123",
       signifyName: "john_doe",
-      theme: 4,
+      theme: 0,
     } as IdentifierMetadataRecord;
     identifiersGetMock.mockResolvedValue({
       state: {
@@ -120,7 +120,7 @@ describe("Delegation sig service of agent", () => {
       isPending: false,
       signifyOpName: "op123",
       signifyName: "john_doe",
-      theme: 4,
+      theme: 0,
     } as IdentifierMetadataRecord;
     expect(await delegationService.checkDelegationSuccess(metadata)).toEqual(
       true
