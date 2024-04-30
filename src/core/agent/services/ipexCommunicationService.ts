@@ -25,7 +25,7 @@ class IpexCommunicationService extends AgentService {
   static readonly SCHEMA_SAID_VLEI =
     "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
   static readonly SCHEMA_SAID_IIW_DEMO =
-    "EKYv475K1k6uMt9IJw99NM8iLQuQf1bKfSHqA1XIKoQy";
+    "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu";
 
   async acceptAcdc(
     id: string,
