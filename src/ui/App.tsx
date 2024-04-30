@@ -7,7 +7,7 @@ import {
 } from "@ionic/react";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
-import { RoutePath, Routes } from "../routes";
+import { Routes } from "../routes";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";
@@ -25,10 +25,10 @@ import { OperationType } from "./globals/types";
 import { IncomingRequest } from "./pages/IncomingRequest";
 import { Settings } from "./pages/Settings";
 import { SetUserName } from "./components/SetUserName";
-import { PublicRoutes, TabsRoutePath } from "../routes/paths";
+import { TabsRoutePath } from "../routes/paths";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
-import { LockModal } from "./components/LockModal/LockModal";
+import { LockModal } from "./components/LockModal";
 
 setupIonicReact();
 

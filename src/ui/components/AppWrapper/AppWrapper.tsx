@@ -112,9 +112,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const authentication = useAppSelector(getAuthentication);
   const [agentInitErr, setAgentInitErr] = useState(false);
 
-  const ACTIVITY_TIMEOUT = 5000;
+  const ACTIVITY_TIMEOUT = 60000;
   let timer: NodeJS.Timeout;
-  let timeoutDuration = ACTIVITY_TIMEOUT;
+  const timeoutDuration = ACTIVITY_TIMEOUT;
 
   useEffect(() => {
     const handleActivity = () => {
@@ -124,16 +124,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }, timeoutDuration);
     };
 
-    const handleAppStateChange = ({ isActive }: { isActive: boolean }) => {
-      if (isActive) {
-        timeoutDuration = ACTIVITY_TIMEOUT;
-      } else {
-        timeoutDuration = ACTIVITY_TIMEOUT / 2;
-      }
-      handleActivity();
-    };
-
-    App.addListener("appStateChange", handleAppStateChange);
+    // TODO: detect appStateChange in android and ios to reduce the ACTIVITY_TIMEOUT
+    // App.addListener("appStateChange", handleAppStateChange);
     window.addEventListener("load", handleActivity);
     document.addEventListener("mousemove", handleActivity);
     document.addEventListener("touchstart", handleActivity);
@@ -144,7 +136,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     document.addEventListener("scroll", handleActivity);
 
     return () => {
-      App.removeAllListeners();
       window.removeEventListener("load", handleActivity);
       document.removeEventListener("mousemove", handleActivity);
       document.removeEventListener("touchstart", handleActivity);
