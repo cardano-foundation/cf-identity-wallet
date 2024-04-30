@@ -17,6 +17,7 @@ import {
   dequeueCredentialRequest,
   StateCacheProps,
   stateCacheSlice,
+  login,
 } from "./stateCache";
 import { RootState } from "../../index";
 import { RoutePath } from "../../../routes";
@@ -73,6 +74,15 @@ describe("State Cache", () => {
     expect(nextState.authentication.loggedIn).toEqual(false);
     expect(nextState.queueIncomingRequest.isPaused).toEqual(true);
     expect(nextState.queueIncomingRequest.isProcessing).toEqual(false);
+    expect(nextState).not.toBe(initialState);
+  });
+
+  test("should login", () => {
+    const action = login();
+    const nextState = stateCacheSlice.reducer(initialState, action);
+    expect(nextState.authentication.loggedIn).toEqual(true);
+    expect(nextState.queueIncomingRequest.isPaused).toEqual(false);
+    expect(nextState.queueIncomingRequest.isProcessing).toEqual(true);
     expect(nextState).not.toBe(initialState);
   });
 
