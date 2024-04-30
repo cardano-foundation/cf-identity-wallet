@@ -10,6 +10,8 @@ import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { PageFooter } from "../../PageFooter";
 import { Agent } from "../../../../core/agent/agent";
+import { useAppSelector } from "../../../../store/hooks";
+import { getCurrentOperation } from "../../../../store/reducers/stateCache";
 
 const IdentifierStage1BodyResume = ({
   componentId,
@@ -19,6 +21,7 @@ const IdentifierStage1BodyResume = ({
   groupMetadata,
   handleScanButton,
 }: IdentifierStage1BodyProps) => {
+  const currentOperation = useAppSelector(getCurrentOperation);
   const [scannedConections, setScannedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
@@ -42,7 +45,7 @@ const IdentifierStage1BodyResume = ({
 
       updateConnections();
     }
-  }, [groupMetadata]);
+  }, [groupMetadata, currentOperation]);
 
   return (
     <>
@@ -104,7 +107,7 @@ const IdentifierStage1BodyResume = ({
             expand="block"
             fill="outline"
             className="secondary-button"
-            onClick={handleScanButton}
+            onClick={() => handleScanButton(scannedConections.length)}
           >
             {i18n.t("createidentifier.share.scanbutton")}
           </IonButton>

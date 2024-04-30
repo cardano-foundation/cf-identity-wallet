@@ -56,7 +56,7 @@ interface IdentifierStage1BodyProps {
     groupInitiator: boolean;
     groupCreated: boolean;
   };
-  handleScanButton: () => void;
+  handleScanButton: (value: number) => void;
 }
 
 export type {

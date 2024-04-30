@@ -65,8 +65,18 @@ const IdentifierStage1 = ({
     }
   };
 
+  const handleScanButton = (scannedConections: number) => {
+    scannedConections >= 1 ? handleInitiateScan() : setAlertIsOpen(true);
+  };
+
   const handleInitiateScan = () => {
-    dispatch(setCurrentOperation(OperationType.SCAN_CONNECTION));
+    dispatch(
+      setCurrentOperation(
+        groupMetadata?.groupInitiator
+          ? OperationType.MULTI_SIG_INITIATOR_SCAN
+          : OperationType.MULTI_SIG_RECEIVER_SCAN
+      )
+    );
     setInitiated(true);
   };
 
@@ -86,7 +96,7 @@ const IdentifierStage1 = ({
           handleInitiateMultiSig={handleInitiateMultiSig}
           oobi={oobi}
           groupMetadata={groupMetadata}
-          handleScanButton={() => setAlertIsOpen(true)}
+          handleScanButton={handleScanButton}
         />
       ) : (
         <IdentifierStage1BodyInit
@@ -94,7 +104,7 @@ const IdentifierStage1 = ({
           handleDone={handleDone}
           oobi={oobi}
           groupMetadata={groupMetadata}
-          handleScanButton={() => setAlertIsOpen(true)}
+          handleScanButton={handleScanButton}
         />
       )}
       <Alert

@@ -26,7 +26,7 @@ const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
     document?.querySelector("body")?.classList.add("full-page-scanner");
   }, []);
 
-  const handleBackButton = () => {
+  const handleReset = () => {
     setShowScan(false);
     dispatch(setCurrentOperation(OperationType.IDLE));
     scannerRef.current?.stopScan();
@@ -46,7 +46,7 @@ const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
             <IonButton
               slot="icon-only"
               fill="clear"
-              onClick={() => handleBackButton()}
+              onClick={() => handleReset()}
               className="back-button"
               data-testid="back-button"
             >
@@ -58,7 +58,10 @@ const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
           </IonButtons>
         </IonToolbar>
       </IonHeader>
-      <Scanner ref={scannerRef} />
+      <Scanner
+        ref={scannerRef}
+        handleReset={handleReset}
+      />
     </IonPage>
   );
 };
