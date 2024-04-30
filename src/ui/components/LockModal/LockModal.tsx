@@ -126,6 +126,9 @@ const LockModal = ({ didEnter }: LockModalTypes) => {
       className="lock-modal"
       data-testid={componentId}
       animated={false}
+      draggable={false}
+      backdropDismiss={false}
+      showBackdrop={true}
     >
       <ResponsivePageLayout
         pageId={componentId}
