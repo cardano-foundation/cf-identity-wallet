@@ -114,14 +114,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   const ACTIVITY_TIMEOUT = 60000;
   let timer: NodeJS.Timeout;
-  const timeoutDuration = ACTIVITY_TIMEOUT;
 
   useEffect(() => {
     const handleActivity = () => {
       clearTimeout(timer);
       timer = setTimeout(() => {
         dispatch(logout());
-      }, timeoutDuration);
+      }, ACTIVITY_TIMEOUT);
     };
 
     // TODO: detect appStateChange in android and ios to reduce the ACTIVITY_TIMEOUT
