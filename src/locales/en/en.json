@@ -535,7 +535,7 @@
       }
     ]
   },
-  "passcodelogin": {
+  "lockmodal": {
     "title": "Welcome back",
     "description": "Please enter your passcode to login",
     "error": "Incorrect passcode",
@@ -856,7 +856,8 @@
         "connections": "Connections",
         "p2p": "P2P",
         "identity": "Identity",
-        "credentials": "Credentials"
+        "credentials": "Credentials",
+        "lock": "Lock"
       }
     }
   },
