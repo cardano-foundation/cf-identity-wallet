@@ -49,9 +49,7 @@ class CredentialStorage {
   }
 
   async saveCredentialMetadataRecord(data: CredentialMetadataRecordProps) {
-    const record = new CredentialMetadataRecord({
-      ...data,
-    });
+    const record = new CredentialMetadataRecord(data);
     return this.storageService.save(record);
   }
 

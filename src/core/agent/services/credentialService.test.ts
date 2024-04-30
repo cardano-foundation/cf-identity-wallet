@@ -395,7 +395,7 @@ describe("Credential service of agent", () => {
     ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_FOUND);
   });
 
-  test("Should be able to getUnreadIpexGrantNotifications", async () => {
+  test("Should be able to getUnhandledIpexGrantNotifications", async () => {
     const basicRecord = {
       _tags: {
         isDismiss: true,
@@ -411,7 +411,7 @@ describe("Credential service of agent", () => {
     };
     basicStorage.findAllByQuery = jest.fn().mockResolvedValue([basicRecord]);
     expect(
-      await credentialService.getUnreadIpexGrantNotifications()
+      await credentialService.getUnhandledIpexGrantNotifications()
     ).toStrictEqual([
       {
         id: basicRecord.id,
@@ -421,9 +421,9 @@ describe("Credential service of agent", () => {
     ]);
   });
 
-  test("Should pass the filter throught findAllByQuery when call getUnreadIpexGrantNotifications", async () => {
+  test("Should pass the filter throught findAllByQuery when call getUnhandledIpexGrantNotifications", async () => {
     basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
-    await credentialService.getUnreadIpexGrantNotifications({
+    await credentialService.getUnhandledIpexGrantNotifications({
       isDismissed: false,
     });
     expect(basicStorage.findAllByQuery).toBeCalledWith({

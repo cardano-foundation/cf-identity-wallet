@@ -139,7 +139,7 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  async getUnreadIpexGrantNotifications(
+  async getUnhandledIpexGrantNotifications(
     filters: {
       isDismissed?: boolean;
     } = {}

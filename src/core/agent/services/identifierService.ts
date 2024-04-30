@@ -86,6 +86,7 @@ class IdentifierService extends AgentService {
       "id" | "createdAt" | "isArchived" | "signifyName"
     >
   ): Promise<CreateIdentifierResult> {
+    this.validIdentifierMetadata(metadata);
     const signifyName = uuidv4();
     const operation = await this.signifyClient
       .identifiers()
@@ -95,7 +96,6 @@ class IdentifierService extends AgentService {
       .identifiers()
       .addEndRole(signifyName, "agent", this.signifyClient.agent!.pre);
     const identifier = operation.serder.ked.i;
-    this.validIdentifierMetadata(metadata);
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: identifier,
       ...metadata,
@@ -187,8 +187,10 @@ class IdentifierService extends AgentService {
     const rotateResult = await this.signifyClient
       .identifiers()
       .rotate(metadata.signifyName);
-    let operation = await rotateResult.op();
-    operation = await waitAndGetDoneOp(this.signifyClient, operation);
+    const operation = await waitAndGetDoneOp(
+      this.signifyClient,
+      await rotateResult.op()
+    );
     if (!operation.done) {
       throw new Error(IdentifierService.FAILED_TO_ROTATE_AID);
     }

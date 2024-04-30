@@ -66,9 +66,7 @@ class IdentifierStorage {
   async createIdentifierMetadataRecord(
     data: IdentifierMetadataRecordProps
   ): Promise<void> {
-    const record = new IdentifierMetadataRecord({
-      ...data,
-    });
+    const record = new IdentifierMetadataRecord(data);
     await this.storageService.save(record);
   }
 }

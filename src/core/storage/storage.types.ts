@@ -1,7 +1,9 @@
 import { instanceToPlain } from "class-transformer";
 import { BasicRecord } from "../agent/records";
 
+// Intented for interop with Askar.
 type Tags = Record<string | number, unknown>;
+
 abstract class BaseRecord {
   protected _tags: Tags = {} as Tags;
 
@@ -58,11 +60,13 @@ enum RecordType {
 
 type SimpleQuery<T extends BaseRecord> = Partial<ReturnType<T["getTags"]>> &
   Tags;
+
 interface AdvancedQuery<T extends BaseRecord> {
   $and?: Query<T>[];
   $or?: Query<T>[];
   $not?: Query<T>;
 }
+
 type Query<T extends BaseRecord> = AdvancedQuery<T> | SimpleQuery<T>;
 
 interface StorageApi {
@@ -90,6 +94,7 @@ interface StorageService<T extends BaseRecord> {
   ): Promise<T[]>;
   getAll(recordClass: BaseRecordConstructor<T>): Promise<T[]>;
 }
+
 interface StorageRecord {
   name: string;
   value: string;
