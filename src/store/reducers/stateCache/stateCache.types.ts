@@ -11,7 +11,7 @@ interface CurrentRouteCacheProps {
 }
 
 interface AuthenticationCacheProps {
-  loggedIn: boolean | undefined;
+  loggedIn: boolean;
   userName: string;
   time: number;
   passcodeIsSet: boolean;
