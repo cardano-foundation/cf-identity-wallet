@@ -146,37 +146,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     };
   }, []);
 
-  /*
-  let timer: NodeJS.Timeout;
-  useEffect(() => {
-    const handleActivity = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        dispatch(logout());
-      }, ACTIVITY_TIMEOUT);
-    };
-
-    window.addEventListener("load", handleActivity);
-    document.addEventListener("mousemove", handleActivity);
-    document.addEventListener("touchstart", handleActivity);
-    document.addEventListener("touchmove", handleActivity);
-    document.addEventListener("click", handleActivity);
-    document.addEventListener("focus", handleActivity);
-    document.addEventListener("keydown", handleActivity);
-    document.addEventListener("scroll", handleActivity);
-
-    return () => {
-      window.removeEventListener("load", handleActivity);
-      document.removeEventListener("mousemove", handleActivity);
-      document.removeEventListener("touchstart", handleActivity);
-      document.removeEventListener("touchmove", handleActivity);
-      document.removeEventListener("click", handleActivity);
-      document.removeEventListener("focus", handleActivity);
-      document.removeEventListener("keydown", handleActivity);
-      clearTimeout(timer);
-    };
-  }, []);*/
-
   useEffect(() => {
     initApp();
   }, []);
