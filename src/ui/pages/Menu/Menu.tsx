@@ -58,13 +58,7 @@ const Menu = () => {
   };
 
   const handleItemSelection = (option: string) => {
-    switch (option) {
-    case i18n.t("menu.tab.items.lock"):
-      dispatch(logout());
-      return;
-    default:
-      return;
-    }
+    // TODO: handle menu options
   };
 
   const MenuItem = ({
@@ -135,18 +129,6 @@ const Menu = () => {
             index={5}
             icon={idCardOutline}
             label={`${i18n.t("menu.tab.items.credentials")}`}
-          />
-        </IonRow>
-        <IonRow className="menu-input-row">
-          <MenuItem
-            index={4}
-            icon={lockClosedOutline}
-            label={`${i18n.t("menu.tab.items.lock")}`}
-          />
-          <MenuItem
-            index={5}
-            icon=""
-            label=""
           />
         </IonRow>
       </IonGrid>
