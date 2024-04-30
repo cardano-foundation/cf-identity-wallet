@@ -1,7 +1,12 @@
 import { StrictMode, useEffect, useMemo, useState } from "react";
-import { setupIonicReact, IonApp, getPlatforms } from "@ionic/react";
+import {
+  setupIonicReact,
+  IonApp,
+  getPlatforms,
+  IonSpinner,
+} from "@ionic/react";
 import { StatusBar, Style } from "@capacitor/status-bar";
-import { Routes } from "../routes";
+import { RoutePath, Routes } from "../routes";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";
@@ -19,7 +24,7 @@ import { OperationType } from "./globals/types";
 import { IncomingRequest } from "./pages/IncomingRequest";
 import { Settings } from "./pages/Settings";
 import { SetUserName } from "./components/SetUserName";
-import { TabsRoutePath } from "../routes/paths";
+import { PublicRoutes, TabsRoutePath } from "../routes/paths";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
 import { LockModal } from "./components/LockModal/LockModal";
@@ -34,8 +39,7 @@ const App = () => {
   const toastMsg = useAppSelector(getToastMsg);
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
-
-  const [lockModalIsOpen, setLockModalIsOpen] = useState(true);
+  const [lockIsRendered, setLockIsRendered] = useState(false);
 
   const isPreviewMode = useMemo(
     () => new URLSearchParams(window.location.search).has("browserPreview"),
@@ -63,12 +67,14 @@ const App = () => {
 
   useEffect(() => {
     if (
-      authentication.userName?.length === 0 &&
+      authentication.loggedIn &&
+      (authentication.userName === undefined ||
+        authentication.userName?.length === 0) &&
       currentRoute?.path?.includes(TabsRoutePath.ROOT)
     ) {
       setShowSetUserName(true);
     }
-  }, [authentication, currentRoute]);
+  }, [authentication.loggedIn, currentRoute]);
 
   useEffect(() => {
     const platforms = getPlatforms();
@@ -82,25 +88,41 @@ const App = () => {
     }
   }, []);
 
+  const renderApp = () => {
+    if (!lockIsRendered) {
+      // We need to include the LockModal in the loading page to track when is rendered
+      return (
+        <>
+          <LockModal didEnter={() => setLockIsRendered(true)} />
+          <div className="loading-page">
+            <IonSpinner name="crescent" />
+          </div>
+        </>
+      );
+    } else if (showScan) {
+      return <FullPageScanner setShowScan={setShowScan} />;
+    } else {
+      return (
+        <>
+          {isPreviewMode ? <MobileHeaderPreview /> : null}
+          <Routes />
+        </>
+      );
+    }
+  };
+
   return (
     <IonApp>
       <AppWrapper>
         <StrictMode>
-          {showScan ? (
-            <FullPageScanner setShowScan={setShowScan} />
-          ) : (
-            <>
-              {isPreviewMode && <MobileHeaderPreview />}
-              <Routes />
-            </>
-          )}
+          {lockIsRendered && !authentication.loggedIn ? <LockModal /> : null}
+          {renderApp()}
           <SetUserName
             isOpen={showSetUserName}
             setIsOpen={setShowSetUserName}
           />
           <IncomingRequest />
           <Settings />
-          <LockModal />
           <CustomToast
             toastMsg={toastMsg}
             showToast={showToast}

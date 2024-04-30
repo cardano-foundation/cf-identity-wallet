@@ -1,4 +1,8 @@
-import { IonModal } from "@ionic/react";
+import {
+  IonModal,
+  useIonViewDidEnter,
+  useIonViewWillEnter,
+} from "@ionic/react";
 import { i18n } from "../../../i18n";
 import "./LockModal.scss";
 import { RoutePath } from "../../../routes";
@@ -18,9 +22,10 @@ import {
 } from "../../../store/reducers/stateCache";
 import { useEffect, useState } from "react";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { PublicRoutes } from "../../../routes/paths";
+import { PublicRoutes, TabsRoutePath } from "../../../routes/paths";
+import { LockModalTypes } from "./LockModal.types";
 
-const LockModal = () => {
+const LockModal = ({ didEnter }: LockModalTypes) => {
   const componentId = "lock-modal";
   const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
@@ -28,6 +33,7 @@ const LockModal = () => {
   const [passcode, setPasscode] = useState("");
   const seedPhrase = authentication.seedPhraseIsSet;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [showModalAfterRender, setShowModalAfterRender] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
   const headerText = seedPhrase
     ? i18n.t("lockmodal.alert.text.verify")
@@ -36,6 +42,11 @@ const LockModal = () => {
     ? i18n.t("lockmodal.alert.button.verify")
     : i18n.t("lockmodal.alert.button.restart");
   const cancelButtonText = i18n.t("lockmodal.alert.button.cancel");
+
+  useEffect(() => {
+    didEnter && didEnter();
+    setShowModalAfterRender(true);
+  }, []);
 
   const handleClearState = () => {
     setAlertIsOpen(false);
@@ -114,7 +125,7 @@ const LockModal = () => {
 
   return (
     <IonModal
-      isOpen={lockApp}
+      isOpen={lockApp && showModalAfterRender}
       className="lock-modal"
       data-testid={componentId}
       animated={false}

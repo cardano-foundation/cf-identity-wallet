@@ -43,7 +43,6 @@ import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/id
 import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
-import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 import { App } from "@capacitor/app";
 import { IonSpinner } from "@ionic/react";
 
@@ -111,10 +110,9 @@ const keriAcdcChangeHandler = async (
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
-  const [initialised, setInitialised] = useState(false);
   const [agentInitErr, setAgentInitErr] = useState(false);
 
-  const ACTIVITY_TIMEOUT = 60000;
+  const ACTIVITY_TIMEOUT = 5000;
   let timer: NodeJS.Timeout;
   let timeoutDuration = ACTIVITY_TIMEOUT;
 
@@ -214,22 +212,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
 
   const loadPreferences = async () => {
-    let userName: PreferencesStorageItem = { userName: "" };
-
-    try {
-      userName = await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME);
-    } catch (e) {
-      if (
-        !(e instanceof Error) ||
-        !(
-          e instanceof Error &&
-          e.message ===
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
-        )
-      ) {
-        throw e;
+    const getPreferenceSafe = async (key: string) => {
+      try {
+        return await PreferencesStorage.get(key);
+      } catch (e) {
+        // TODO: handle error
       }
-    }
+    };
+    const userName = await getPreferenceSafe(PreferencesKeys.APP_USER_NAME);
 
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
@@ -239,7 +229,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     const updatedAuthentication = {
       ...authentication,
-      userName: userName.userName as string,
+      loggedIn: false,
+      userName: userName?.userName as string,
       passcodeIsSet,
       seedPhraseIsSet,
       passwordIsSet,
@@ -247,50 +238,23 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     dispatch(setAuthentication(updatedAuthentication));
 
-    // @TODO - handle error
-    try {
-      const identifiersFavourites = await PreferencesStorage.get(
-        PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
-      );
-      dispatch(
-        setFavouritesIdentifiersCache(
-          identifiersFavourites.favourites as FavouriteIdentifier[]
-        )
-      );
-    } catch (e) {
-      if (
-        !(e instanceof Error) ||
-        !(
-          e instanceof Error &&
-          e.message ===
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_IDENTIFIERS_FAVOURITES}`
-        )
-      ) {
-        throw e;
-      }
-    }
+    const identifiersFavourites = await getPreferenceSafe(
+      PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
+    );
+    dispatch(
+      setFavouritesIdentifiersCache(
+        identifiersFavourites?.favourites as FavouriteIdentifier[]
+      )
+    );
 
-    try {
-      const credsFavourites = await PreferencesStorage.get(
-        PreferencesKeys.APP_CREDS_FAVOURITES
-      );
-      dispatch(
-        setFavouritesCredsCache(
-          credsFavourites.favourites as FavouriteIdentifier[]
-        )
-      );
-    } catch (e) {
-      if (
-        !(e instanceof Error) ||
-        !(
-          e instanceof Error &&
-          e.message ===
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_CREDS_FAVOURITES}`
-        )
-      ) {
-        throw e;
-      }
-    }
+    const credsFavourites = await getPreferenceSafe(
+      PreferencesKeys.APP_CREDS_FAVOURITES
+    );
+    dispatch(
+      setFavouritesCredsCache(
+        credsFavourites?.favourites as FavouriteIdentifier[]
+      )
+    );
   };
 
   const initApp = async () => {
@@ -311,11 +275,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
 
     await loadPreferences();
-    // handleInitialRoute(updatedAuthentication);
-
-    setInitialised(true);
 
     await new ConfigurationService().start();
+
     try {
       await Agent.agent.start();
     } catch (e) {
@@ -327,7 +289,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
     dispatch(setPauseQueueIncomingRequest(true));
 
-    await loadDatabase();
+    await loadDatabase().catch((e) => {
+      /* TODO: handle error */
+    });
 
     Agent.agent.connections.onConnectionKeriStateChanged((event) => {
       return connectionKeriStateChangedHandler(event, dispatch);
@@ -378,15 +342,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
           setup for this pre-production release. Thank you for your
           understanding!
         </p>
-      </div>
-    );
-  }
-
-  if (!initialised) {
-    // if (false) {
-    return (
-      <div className="loading-page">
-        <IonSpinner name="crescent" />
       </div>
     );
   }

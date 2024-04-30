@@ -13,7 +13,7 @@ const initialState: StateCacheProps = {
   initialized: false,
   routes: [],
   authentication: {
-    loggedIn: false,
+    loggedIn: undefined,
     userName: "",
     time: 0,
     passcodeIsSet: false,
