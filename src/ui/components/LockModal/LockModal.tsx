@@ -72,9 +72,6 @@ const LockModal = ({ didEnter }: LockModalTypes) => {
         if (verified) {
           dispatch(login());
           handleClearState();
-          setTimeout(() => {
-            dispatch(setPauseQueueIncomingRequest(false));
-          }, 500);
         } else {
           setPasscodeIncorrect(true);
         }
