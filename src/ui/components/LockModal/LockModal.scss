@@ -1,0 +1,55 @@
+ion-modal.lock-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  --height: auto;
+
+  .responsive-page-content {
+    justify-content: space-evenly;
+
+    .lock-modal-title,
+    .lock-modal-description {
+      text-align: center;
+    }
+
+    .lock-modal-title {
+      margin-top: 4rem;
+
+      @media screen and (min-height: 300px) and (max-height: 550px) {
+        margin-top: 2rem;
+      }
+    }
+  }
+
+  .page-header {
+    ion-toolbar {
+      --background: transparent;
+    }
+  }
+
+  &::part(content) {
+    height: 100%;
+  }
+
+  p *:nth-child(2) {
+    margin-left: 0.5rem;
+  }
+
+  ion-toolbar {
+    --min-height: 4rem;
+
+    h2 {
+      margin: 0 auto;
+    }
+
+    &.md {
+      ion-buttons {
+        min-width: calc(var(--scale-w) * 14);
+      }
+
+      ion-title {
+        width: auto;
+      }
+    }
+  }
+}
