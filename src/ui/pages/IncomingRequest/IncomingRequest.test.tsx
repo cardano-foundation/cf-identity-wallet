@@ -116,7 +116,6 @@ const credentialStorage = jest.mocked({
   getAllCredentialMetadata: jest.fn(),
   deleteCredentialMetadata: jest.fn(),
   getCredentialMetadata: jest.fn(),
-  getCredentialMetadataByCredentialRecordId: jest.fn(),
   getCredentialMetadataByConnectionId: jest.fn(),
   saveCredentialMetadataRecord: jest.fn(),
   updateCredentialMetadata: jest.fn(),

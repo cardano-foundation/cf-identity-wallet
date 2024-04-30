@@ -9,9 +9,7 @@ interface CredentialMetadataRecordProps {
   isArchived?: boolean;
   isDeleted?: boolean;
   issuanceDate: string;
-  issuerLogo?: string;
   credentialType: string;
-  credentialRecordId: string;
   status: CredentialMetadataRecordStatus;
   connectionId?: string;
 }

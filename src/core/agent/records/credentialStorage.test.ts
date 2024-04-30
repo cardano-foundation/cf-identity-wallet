@@ -19,7 +19,6 @@ const credentialStorage = new CredentialStorage(storageService as any);
 
 const id1 = "id1";
 const id2 = "id2";
-const credentialRecordId1 = "cId1";
 
 const now = new Date();
 const nowISO = now.toISOString();
@@ -28,10 +27,8 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   id: id1,
   createdAt: now,
   issuanceDate: nowISO,
-  issuerLogo: "issuerLogoHere",
   credentialType: "credType",
   status: CredentialMetadataRecordStatus.CONFIRMED,
-  credentialRecordId: credentialRecordId1,
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(
@@ -66,28 +63,6 @@ describe("Connection service of agent", () => {
         credentialMetadataRecordA.id
       )
     ).toEqual(credentialMetadataRecordA);
-  });
-
-  test("Should get credential metadata by credential record id", async () => {
-    storageService.findAllByQuery.mockResolvedValue([
-      credentialMetadataRecordA,
-    ]);
-    expect(
-      await credentialStorage.getCredentialMetadataByCredentialRecordId(
-        credentialMetadataRecordA.id
-      )
-    ).toEqual(credentialMetadataRecordA);
-  });
-
-  test("Should get credential metadata by connection record id", async () => {
-    storageService.findAllByQuery.mockResolvedValue([
-      credentialMetadataRecordB,
-    ]);
-    expect(
-      await credentialStorage.getCredentialMetadataByCredentialRecordId(
-        credentialMetadataRecordB.id
-      )
-    ).toEqual(credentialMetadataRecordB);
   });
 
   test("Should save credential metadata record", async () => {

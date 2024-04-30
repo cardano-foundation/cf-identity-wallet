@@ -67,7 +67,7 @@ class CredentialService extends AgentService {
 
     const results = await this.signifyClient.credentials().list({
       filter: {
-        "-d": { $eq: metadata.credentialRecordId },
+        "-d": { $eq: metadata.id.replace("metadata:", "") },
       },
     });
     if (results.length > 0) {
@@ -162,17 +162,14 @@ class CredentialService extends AgentService {
     credentialId: string,
     dateTime: string
   ): Promise<void> {
-    const credentialDetails: CredentialShortDetails = {
+    const credentialDetails: CredentialMetadataRecordProps = {
       id: `metadata:${credentialId}`,
       isArchived: false,
       credentialType: "",
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
     };
-    await this.createMetadata({
-      ...credentialDetails,
-      credentialRecordId: credentialId,
-    });
+    await this.createMetadata(credentialDetails);
   }
 
   async syncACDCs() {
@@ -182,7 +179,7 @@ class CredentialService extends AgentService {
     const unSyncedData = signifyCredentials.filter(
       (credential: any) =>
         !storedCredentials.find(
-          (item) => credential.sad.d === item.credentialRecordId
+          (item) => credential.sad.d === item.id.replace("metadata:", "")
         )
     );
     if (unSyncedData.length) {

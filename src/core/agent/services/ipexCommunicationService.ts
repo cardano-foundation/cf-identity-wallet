@@ -4,7 +4,10 @@ import {
   AcdcStateChangedEvent,
   KeriaNotification,
 } from "../agent.types";
-import { CredentialMetadataRecordStatus } from "../records/credentialMetadataRecord.types";
+import {
+  CredentialMetadataRecordProps,
+  CredentialMetadataRecordStatus,
+} from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
 import {
   CredentialShortDetails,
@@ -117,10 +120,9 @@ class IpexCommunicationService extends AgentService {
     id: string,
     cred: any
   ): Promise<CredentialShortDetails> {
-    const metadata =
-      await this.credentialStorage.getCredentialMetadataByCredentialRecordId(
-        id
-      );
+    const metadata = await this.credentialStorage.getCredentialMetadata(
+      `metadata:${id}`
+    );
     if (!metadata) {
       throw new Error(
         IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
@@ -140,17 +142,16 @@ class IpexCommunicationService extends AgentService {
     credentialId: string,
     dateTime: string
   ): Promise<void> {
-    const credentialDetails: CredentialShortDetails = {
+    const credentialDetails: CredentialMetadataRecordProps = {
       id: `metadata:${credentialId}`,
       isArchived: false,
       credentialType: "",
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
     };
-    await this.credentialStorage.saveCredentialMetadataRecord({
-      ...credentialDetails,
-      credentialRecordId: credentialId,
-    });
+    await this.credentialStorage.saveCredentialMetadataRecord(
+      credentialDetails
+    );
   }
 
   private async admitIpex(

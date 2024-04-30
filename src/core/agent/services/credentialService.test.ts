@@ -105,7 +105,6 @@ const credentialStorage = jest.mocked({
   getAllCredentialMetadata: jest.fn(),
   deleteCredentialMetadata: jest.fn(),
   getCredentialMetadata: jest.fn(),
-  getCredentialMetadataByCredentialRecordId: jest.fn(),
   getCredentialMetadataByConnectionId: jest.fn(),
   saveCredentialMetadataRecord: jest.fn(),
   updateCredentialMetadata: jest.fn(),
@@ -126,15 +125,12 @@ const nowISO = now.toISOString();
 
 const id1 = "id1";
 const id2 = "id2";
-const credentialRecordId1 = "cId1";
 const credentialMetadataProps: CredentialMetadataRecordProps = {
   id: id1,
   createdAt: now,
   issuanceDate: nowISO,
-  issuerLogo: "issuerLogoHere",
   credentialType: "credType",
   status: CredentialMetadataRecordStatus.CONFIRMED,
-  credentialRecordId: credentialRecordId1,
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(

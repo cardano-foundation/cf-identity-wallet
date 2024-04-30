@@ -38,22 +38,6 @@ class CredentialStorage {
     return record;
   }
 
-  async getCredentialMetadataByCredentialRecordId(
-    credentialRecordId: string
-  ): Promise<CredentialMetadataRecord | null> {
-    const records = await this.storageService.findAllByQuery(
-      {
-        credentialRecordId,
-      },
-      CredentialMetadataRecord
-    );
-    const record = records[0];
-    if (!record) {
-      return null;
-    }
-    return record;
-  }
-
   async getCredentialMetadataByConnectionId(connectionId: string) {
     const record = await this.storageService.findAllByQuery(
       {

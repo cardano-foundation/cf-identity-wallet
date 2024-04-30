@@ -36,7 +36,6 @@ const credentialStorage = jest.mocked({
   getAllCredentialMetadata: jest.fn(),
   deleteCredentialMetadata: jest.fn(),
   getCredentialMetadata: jest.fn(),
-  getCredentialMetadataByCredentialRecordId: jest.fn(),
   getCredentialMetadataByConnectionId: jest.fn(),
   saveCredentialMetadataRecord: jest.fn(),
   updateCredentialMetadata: jest.fn(),
@@ -168,11 +167,9 @@ describe("Ipex communication service of agent", () => {
         },
       },
     ]);
-    credentialStorage.getCredentialMetadataByCredentialRecordId = jest
-      .fn()
-      .mockResolvedValue({
-        id: "id",
-      });
+    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
+      id: "id",
+    });
     await ipexCommunicationService.acceptAcdc(id);
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalled();
     expect(credentialStorage.updateCredentialMetadata).toBeCalledWith("id", {
@@ -241,9 +238,7 @@ describe("Ipex communication service of agent", () => {
         },
       },
     ]);
-    credentialStorage.getCredentialMetadataByCredentialRecordId = jest
-      .fn()
-      .mockResolvedValue(null);
+    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
     await expect(ipexCommunicationService.acceptAcdc(id)).rejects.toThrowError(
       IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
     );
