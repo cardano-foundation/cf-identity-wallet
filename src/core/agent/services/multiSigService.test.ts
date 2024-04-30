@@ -2,10 +2,11 @@ import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
-import { ConnectionStatus } from "../agent.types";
+import { ConnectionStatus, NotificationRoute } from "../agent.types";
 import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { MultiSigService } from "./multiSigService";
+import { RecordType } from "../../storage/storage.types";
 
 const basicStorage = jest.mocked({
   open: jest.fn(),
@@ -259,6 +260,7 @@ describe("Multisig sig service of agent", () => {
       })
     );
   });
+
   test("Can create a keri delegated multisig with KERI contacts", async () => {
     const creatorIdentifier = "creatorIdentifier";
     const multisigIdentifier = "newMultisigIdentifierAid";
@@ -502,6 +504,7 @@ describe("Multisig sig service of agent", () => {
       MultiSigService.NOT_FOUND_ALL_MEMBER_OF_MULTISIG
     );
   });
+
   test("should can rotate a keri multisig with KERI contacts", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
     const signifyName = "newUuidHere";
@@ -590,6 +593,7 @@ describe("Multisig sig service of agent", () => {
       multisigIdentifier
     );
   });
+
   test("should can join the multisig rotation with no notification and throw error", async () => {
     groupGetRequestMock = jest.fn().mockResolvedValue([]);
     expect(
@@ -600,6 +604,7 @@ describe("Multisig sig service of agent", () => {
       })
     ).rejects.toThrowError(MultiSigService.EXN_MESSAGE_NOT_FOUND);
   });
+
   test("should can join the multisig rotation with AID is not multisig and throw error", async () => {
     const metadata = {
       id: "123456",
@@ -701,6 +706,7 @@ describe("Multisig sig service of agent", () => {
       })
     ).toBe(multisigIdentifier);
   });
+
   test("cannot join multisig if there's no identifier matched", async () => {
     groupGetRequestMock = jest.fn().mockResolvedValue([
       {
@@ -780,6 +786,7 @@ describe("Multisig sig service of agent", () => {
     expect(result.otherConnections.length).toBe(0);
     expect(result.threshold).toBe(2);
   });
+
   test("Throw error if the Multi-sig join request contains unknown AIDs", async () => {
     const identifierMetadata = {
       displayName: "displayName",
@@ -839,6 +846,7 @@ describe("Multisig sig service of agent", () => {
       })
     ).rejects.toThrowError(MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP);
   });
+
   test("Can get multisig icp details of 3 persons multi-sig", async () => {
     const identifierMetadata = {
       displayName: "displayName",
@@ -901,6 +909,7 @@ describe("Multisig sig service of agent", () => {
     );
     expect(result.threshold).toBe(3);
   });
+
   test("Throw error if we do not control any member AID of the multi-sig", async () => {
     const identifierMetadata = {
       displayName: "displayName",
@@ -960,6 +969,7 @@ describe("Multisig sig service of agent", () => {
       })
     ).rejects.toThrowError(MultiSigService.CANNOT_JOIN_MULTISIG_ICP);
   });
+
   test("cannot get multi-sig details from an unknown sender (missing metadata)", async () => {
     groupGetRequestMock = jest.fn().mockResolvedValue([
       {
@@ -993,6 +1003,7 @@ describe("Multisig sig service of agent", () => {
       })
     ).rejects.toThrowError("Some error from connection service");
   });
+
   test("cannot get multi-sig details from a notification with no matching exn message", async () => {
     groupGetRequestMock = jest.fn().mockResolvedValue([]);
     await expect(
@@ -1007,5 +1018,49 @@ describe("Multisig sig service of agent", () => {
     ).rejects.toThrowError(
       `${MultiSigService.EXN_MESSAGE_NOT_FOUND} EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW`
     );
+  });
+
+  test("Can get unhandled Multisig Identifier notifications", async () => {
+    const basicRecord = {
+      _tags: {
+        isDismiss: true,
+        type: RecordType.KERIA_NOTIFICATION,
+        route: NotificationRoute.MultiSigIcp,
+      },
+      id: "AIeGgKkS23FDK4mxpfodpbWhTydFz2tdM64DER6EdgG-",
+      createdAt: new Date(),
+      content: {
+        r: NotificationRoute.MultiSigIcp,
+        d: "EF6Nmxz8hs0oVc4loyh2J5Sq9H3Z7apQVqjO6e4chtsp",
+      },
+    };
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([basicRecord]);
+    expect(
+      await multiSigService.getUnhandledMultisigIdentifiers()
+    ).toStrictEqual([
+      {
+        id: basicRecord.id,
+        createdAt: basicRecord.createdAt,
+        a: basicRecord.content,
+      },
+    ]);
+  });
+
+  test("Should pass the filter throught findAllByQuery when call getUnhandledMultisigIdentifiers", async () => {
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    await multiSigService.getUnhandledMultisigIdentifiers({
+      isDismissed: false,
+    });
+    expect(basicStorage.findAllByQuery).toBeCalledWith({
+      type: RecordType.KERIA_NOTIFICATION,
+      route: NotificationRoute.MultiSigIcp,
+      isDismissed: false,
+      $or: [
+        { route: NotificationRoute.MultiSigIcp },
+        {
+          route: NotificationRoute.MultiSigRot,
+        },
+      ],
+    });
   });
 });
