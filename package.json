@@ -15,6 +15,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@aparajita/capacitor-biometric-auth": "^8.0.0",
     "@aparajita/capacitor-secure-storage": "^5.0.0",
     "@capacitor-community/barcode-scanner": "^4.0.1",
     "@capacitor-community/sqlite": "^5.5.0",

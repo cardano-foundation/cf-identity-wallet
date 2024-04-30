@@ -1,8 +1,13 @@
+import { IonModal } from "@ionic/react";
 import {
-  IonModal,
-  useIonViewDidEnter,
-  useIonViewWillEnter,
-} from "@ionic/react";
+  BiometryErrorType,
+  BiometryError,
+  AndroidBiometryStrength,
+  BiometricAuth,
+  CheckBiometryResult,
+} from "@aparajita/capacitor-biometric-auth";
+import { useEffect, useState } from "react";
+import { PluginListenerHandle } from "@capacitor/core";
 import { i18n } from "../../../i18n";
 import "./LockModal.scss";
 import { RoutePath } from "../../../routes";
@@ -16,13 +21,13 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
   login,
+  logout,
   setAuthentication,
   setCurrentRoute,
   setPauseQueueIncomingRequest,
 } from "../../../store/reducers/stateCache";
-import { useEffect, useState } from "react";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { PublicRoutes, TabsRoutePath } from "../../../routes/paths";
+import { PublicRoutes } from "../../../routes/paths";
 import { LockModalTypes } from "./LockModal.types";
 
 const LockModal = ({ didEnter }: LockModalTypes) => {
@@ -116,6 +121,59 @@ const LockModal = ({ didEnter }: LockModalTypes) => {
       ionRouter.push(RoutePath.SET_PASSCODE, "back", "pop");
       handleClearState();
     });
+  };
+
+  let appListener: PluginListenerHandle;
+  useEffect(() => {
+    const checkBiometry = async () => {
+      updateBiometryInfo(await BiometricAuth.checkBiometry());
+      try {
+        appListener = await BiometricAuth.addResumeListener(updateBiometryInfo);
+      } catch (error) {
+        if (error instanceof Error) {
+          // TODO
+        }
+      }
+    };
+
+    checkBiometry();
+    return () => {
+      appListener?.remove();
+    };
+  }, []);
+
+  const updateBiometryInfo = (info: CheckBiometryResult): void => {
+    if (info.isAvailable) {
+      handleBiometricAuth();
+    } else {
+      // Biometry is not available, info.reason and info.code will tell you why.
+    }
+  };
+
+  const handleBiometricAuth = async () => {
+    try {
+      await BiometricAuth.authenticate({
+        reason: "Please authenticate",
+        cancelTitle: "Cancel",
+        allowDeviceCredential: true,
+        iosFallbackTitle: "Use passcode",
+        androidTitle: "Biometric login",
+        androidSubtitle: "Log in using biometric authentication",
+        androidConfirmationRequired: false,
+        androidBiometryStrength: AndroidBiometryStrength.weak,
+      });
+
+      dispatch(login());
+      handleClearState();
+    } catch (error) {
+      // error is always an instance of BiometryError.
+      if (error instanceof BiometryError) {
+        if (error.code !== BiometryErrorType.userCancel) {
+          // Display the error.
+          //await showAlert(error.message)
+        }
+      }
+    }
   };
 
   const isPublicPage = PublicRoutes.includes(
