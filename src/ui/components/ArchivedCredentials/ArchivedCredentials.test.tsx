@@ -1,30 +1,17 @@
-import {
-  fireEvent,
-  render,
-  waitFor,
-  act,
-  queryByText,
-} from "@testing-library/react";
+import { fireEvent, render, waitFor, act } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { TabsRoutePath } from "../../../routes/paths";
-import {
-  ArchivedCredentials,
-  ArchivedCredentialsContainer,
-} from "./ArchivedCredentials";
+import { ArchivedCredentialsContainer } from "./ArchivedCredentials";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { setCredsCache } from "../../../store/reducers/credsCache";
 
 const deleteCredentailsMock = jest.fn((id: string) => Promise.resolve(true));
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
-      genericRecords: {
-        findById: jest.fn(),
-      },
       credentials: {
         restoreCredential: jest.fn((id: string) => Promise.resolve(id)),
         deleteCredential: (id: string) => deleteCredentailsMock(id),

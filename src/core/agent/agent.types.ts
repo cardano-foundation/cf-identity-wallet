@@ -1,11 +1,12 @@
+import { SignifyClient } from "signify-ts";
 import {
   CredentialShortDetails,
   CredentialStatus,
 } from "./services/credentialService.types";
-
-enum Blockchain {
-  CARDANO = "Cardano",
-}
+import { EventService } from "./services/eventService";
+import { IdentifierStorage } from "./records/identifierStorage";
+import { CredentialStorage } from "./records/credentialStorage";
+import { BasicStorage } from "./records/basicStorage";
 
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
@@ -25,14 +26,6 @@ interface ConnectionHistoryItem {
 
 enum MiscRecordId {
   OP_PASS_HINT = "app-op-password-hint",
-}
-
-interface CryptoAccountRecordShortDetails {
-  id: string;
-  displayName: string;
-  blockchain: Blockchain;
-  totalADAinUSD: number;
-  usesIdentitySeedPhrase: boolean;
 }
 
 interface ConnectionShortDetails {
@@ -60,22 +53,24 @@ interface ConnectionDetails extends ConnectionShortDetails {
   notes?: ConnectionNoteDetails[];
 }
 
-enum ConnectionKeriEventTypes {
-  ConnectionKeriStateChanged = "ConnectionKeriStateChanged",
+enum ConnectionEventTypes {
+  ConnectionStateChanged = "ConnectionStateChanged",
 }
-enum AcdcKeriEventTypes {
-  AcdcKeriStateChanged = "AcdcKeriStateChanged",
+
+enum AcdcEventTypes {
+  AcdcStateChanged = "AcdcStateChanged",
 }
-interface ConnectionKeriStateChangedEvent extends BaseEventEmitter {
-  type: typeof ConnectionKeriEventTypes.ConnectionKeriStateChanged;
+
+interface ConnectionStateChangedEvent extends BaseEventEmitter {
+  type: typeof ConnectionEventTypes.ConnectionStateChanged;
   payload: {
     connectionId?: string;
     status: ConnectionStatus;
   };
 }
 
-interface AcdcKeriStateChangedEvent extends BaseEventEmitter {
-  type: typeof AcdcKeriEventTypes.AcdcKeriStateChanged;
+interface AcdcStateChangedEvent extends BaseEventEmitter {
+  type: typeof AcdcEventTypes.AcdcStateChanged;
   payload:
     | {
         status: CredentialStatus.PENDING;
@@ -87,7 +82,7 @@ interface AcdcKeriStateChangedEvent extends BaseEventEmitter {
       };
 }
 
-interface KeriNotification {
+interface KeriaNotification {
   id: string;
   createdAt: Date;
   a: Record<string, unknown>;
@@ -103,25 +98,157 @@ interface KeriaNotificationMarker {
   lastNotificationId: string;
 }
 
+interface AgentServicesProps {
+  basicStorage: BasicStorage;
+  signifyClient: SignifyClient;
+  eventService: EventService;
+  identifierStorage: IdentifierStorage;
+  credentialStorage: CredentialStorage;
+}
+
+enum MultiSigRoute {
+  ROT = "/multisig/rot",
+  ICP = "/multisig/icp",
+  IXN = "/multisig/ixn",
+}
+
+interface CreateIdentifierResult {
+  signifyName: string;
+  identifier: string;
+}
+
+interface KeriaContact {
+  alias: string;
+  id: string;
+  oobi: string;
+  challenges: string[];
+  wellKnowns: string[];
+}
+
+interface IdentifierResult {
+  name: string;
+  prefix: string;
+  salty: any;
+}
+
+interface IdentifiersListResult {
+  aids: IdentifierResult[];
+  start: 0;
+  end: 0;
+  total: 0;
+}
+
+interface CreateMultisigExnPayload {
+  gid: string;
+  smids: any[];
+  rmids: any;
+  rstates: any;
+  name: string;
+}
+
+interface Aid {
+  name: string;
+  prefix: string;
+  salty: any;
+  transferable: boolean;
+  state: {
+    vn: number[];
+    i: string;
+    s: string;
+    p: string;
+    d: string;
+    f: string;
+    dt: string;
+    et: string;
+    kt: string;
+    k: string[];
+    nt: string;
+    n: string[];
+    bt: string;
+    b: string[];
+    c: string[];
+    ee: {
+      s: string;
+      d: string;
+      br: any[];
+      ba: any[];
+    };
+    di: string;
+  };
+  windexes: number[];
+}
+
+interface MultiSigExnMessage {
+  exn: {
+    v: string;
+    t: string;
+    d: string;
+    i: string;
+    p: string;
+    dt: string;
+    r: string;
+    q: any;
+    a: {
+      gid: string;
+      smids: string[];
+      rmids: string[];
+      rstates: Aid["state"][];
+      name: string;
+    };
+    e: {
+      icp: {
+        v: string;
+        t: string;
+        d: string;
+        i: string;
+        s: string;
+        kt: string;
+        k: string[];
+        nt: string;
+        n: string[];
+        bt: string;
+        b: string[];
+        c: any[];
+        a: any[];
+      };
+      d: string;
+    };
+  };
+}
+
+enum NotificationRoute {
+  Credential = "/exn/ipex/grant",
+  MultiSigIcp = "/multisig/icp",
+  MultiSigRot = "/multisig/rot",
+}
+
 export {
-  Blockchain,
   ConnectionStatus,
   ConnectionHistoryType,
   MiscRecordId,
-  ConnectionKeriEventTypes,
-  AcdcKeriEventTypes,
+  ConnectionEventTypes,
+  AcdcEventTypes,
+  NotificationRoute,
+  MultiSigRoute,
 };
 
 export type {
-  CryptoAccountRecordShortDetails,
   ConnectionShortDetails,
   ConnectionDetails,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionHistoryItem,
-  ConnectionKeriStateChangedEvent,
-  KeriNotification,
-  AcdcKeriStateChangedEvent,
+  ConnectionStateChangedEvent,
+  KeriaNotification,
+  AcdcStateChangedEvent,
   BaseEventEmitter,
   KeriaNotificationMarker,
+  AgentServicesProps,
+  CreateIdentifierResult,
+  KeriaContact,
+  IdentifiersListResult,
+  CreateMultisigExnPayload,
+  MultiSigExnMessage,
+  Aid,
+  IdentifierResult,
 };

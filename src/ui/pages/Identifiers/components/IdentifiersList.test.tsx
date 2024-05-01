@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { IdentifiersList } from "./IdentifiersList";
-import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../globals/constants";
@@ -58,7 +58,7 @@ describe("Identifiers Tab", () => {
         id: "ECHG-cxboMQ78Hwlm2-w6OS3iU275bAKkqC1LjwICPyi",
         displayName: "Test MS",
         createdAtUTC: "2024-03-07T11:54:56.886Z",
-        theme: 4,
+        theme: 0,
         isPending: true,
         signifyName: "Test",
       },

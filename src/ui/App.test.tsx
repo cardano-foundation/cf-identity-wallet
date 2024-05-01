@@ -15,6 +15,8 @@ jest.mock("../core/agent/agent", () => ({
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
+      },
+      multiSigs: {
         getUnhandledMultisigIdentifiers: jest.fn(),
       },
       connections: {
@@ -28,7 +30,6 @@ jest.mock("../core/agent/agent", () => ({
         isConnectionConnected: jest.fn(),
         getConnectionShortDetailById: jest.fn(),
         getUnhandledConnections: jest.fn(),
-        onConnectionKeriStateChanged: jest.fn(),
         syncKeriaContacts: jest.fn(),
       },
       credentials: {
@@ -39,8 +40,8 @@ jest.mock("../core/agent/agent", () => ({
         createMetadata: jest.fn(),
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
-        getKeriCredentialNotifications: jest.fn(),
-        onAcdcKeriStateChanged: jest.fn(),
+        getUnhandledIpexGrantNotifications: jest.fn(),
+        onAcdcStateChanged: jest.fn(),
         syncACDCs: jest.fn(),
       },
       messages: {
@@ -48,7 +49,7 @@ jest.mock("../core/agent/agent", () => ({
         pickupMessagesFromMediator: jest.fn(),
       },
       signifyNotifications: {
-        onNotificationKeriStateChanged: jest.fn(),
+        onNotificationStateChanged: jest.fn(),
       },
     },
   },
@@ -67,6 +68,15 @@ jest.mock("@capacitor/status-bar", () => ({
   ...jest.requireActual("@capacitor/status-bar"),
   StatusBar: {
     setStyle: (params: StyleOptions) => setStyleMock(params),
+  },
+}));
+
+const lockScreenOrientationMock = jest.fn();
+jest.mock("@capacitor/screen-orientation", () => ({
+  ...jest.requireActual("@capacitor/status-bar"),
+  ScreenOrientation: {
+    lock: (params: StyleOptions) => lockScreenOrientationMock(params),
+    unlock: () => jest.fn(),
   },
 }));
 
@@ -143,6 +153,23 @@ describe("App", () => {
 
     await waitFor(() => {
       expect(setStyleMock).toBeCalledTimes(0);
+    });
+  });
+
+  test("Should lock screen orientation to portrait mode", async () => {
+    getPlatformsMock.mockImplementationOnce(() => ["android", "mobileweb"]);
+
+    render(
+      <Provider store={store}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(lockScreenOrientationMock).toBeCalledTimes(1);
+      expect(lockScreenOrientationMock).toBeCalledWith({
+        orientation: "portrait",
+      });
     });
   });
 

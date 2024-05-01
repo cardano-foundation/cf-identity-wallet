@@ -4,12 +4,12 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { Agent } from "../../../core/agent/agent";
 import { Connections } from "./Connections";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { formatShortDate } from "../../utils/formatters";
+
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {

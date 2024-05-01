@@ -16,6 +16,7 @@ import {
   chatbubbleOutline,
   fingerPrintOutline,
   idCardOutline,
+  lockClosedOutline,
 } from "ionicons/icons";
 import { useMemo, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";

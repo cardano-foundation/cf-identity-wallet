@@ -66,7 +66,7 @@ const VerifyPassword = ({
     let hint;
     try {
       hint = (
-        await Agent.agent.basicStorages.findById(MiscRecordId.OP_PASS_HINT)
+        await Agent.agent.basicStorage.findById(MiscRecordId.OP_PASS_HINT)
       )?.content?.value;
     } catch (error) {
       // TODO: @bao-sotatek handle error for this

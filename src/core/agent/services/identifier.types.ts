@@ -9,7 +9,7 @@ interface IdentifierShortDetails {
   isPending: boolean;
 }
 
-interface IdentifierFullDetails extends IdentifierShortDetails {
+interface IdentifierDetails extends IdentifierShortDetails {
   signifyOpName?: string;
   s: number;
   dt: string;
@@ -36,7 +36,7 @@ interface CreateIdentifierResult {
 
 export type {
   IdentifierShortDetails,
-  IdentifierFullDetails,
+  IdentifierDetails,
   MultiSigIcpRequestDetails,
   CreateIdentifierResult,
 };
