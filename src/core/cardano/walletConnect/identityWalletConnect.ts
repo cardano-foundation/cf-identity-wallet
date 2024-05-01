@@ -12,15 +12,11 @@ class IdentityWalletConnect extends CardanoPeerConnect {
   static readonly IDENTIFIER_ID_NOT_LOCATED =
     "The id doesn't correspond with any stored identifier";
   static readonly NO_IDENTIFIERS_STORED = "No stored identifiers";
-  static readonly NO_KERI_IDENTIFIERS_STORED = "No KERI identifiers stored";
   static readonly AID_MISSING_SIGNIFY_NAME =
     "Metadata record for KERI AID is missing the Signify name";
 
-  getIdentifierId: () => Promise<string>;
-  signDataWithIdentifier: (
-    identifierId: string,
-    payload: string
-  ) => Promise<string>;
+  getIdentifierOobi: () => Promise<string>;
+  sign: (oobi: string, payload: string) => Promise<string>;
   generateOobi: (identifierId: string) => Promise<string>;
 
   signerCache: Map<string, Signer>;
@@ -40,30 +36,23 @@ class IdentityWalletConnect extends CardanoPeerConnect {
 
     this.signerCache = new Map();
 
-    this.getIdentifierId = async (): Promise<string> => {
+    this.getIdentifierOobi = async (): Promise<string> => {
       const identifiers = await Agent.agent.identifiers.getIdentifiers();
       if (!(identifiers && identifiers.length > 0)) {
         throw new Error(IdentityWalletConnect.NO_IDENTIFIERS_STORED);
       }
 
-      for (const identifier of identifiers) {
-        return identifier.id;
-      }
-      throw new Error(IdentityWalletConnect.NO_KERI_IDENTIFIERS_STORED);
+      return identifiers[0].id;
     };
 
-    this.signDataWithIdentifier = async (
-      identifierId: string,
-      payload: string
-    ): Promise<string> => {
-      if (this.signerCache.get(identifierId) === undefined) {
+    this.sign = async (oobi: string, payload: string): Promise<string> => {
+      if (this.signerCache.get(oobi) === undefined) {
         this.signerCache.set(
-          identifierId,
-          await Agent.agent.identifiers.getSigner(identifierId)
+          oobi,
+          await Agent.agent.identifiers.getSigner(oobi)
         );
       }
-      return this.signerCache.get(identifierId)!.sign(Buffer.from(payload))
-        .qb64;
+      return this.signerCache.get(oobi)!.sign(Buffer.from(payload)).qb64;
     };
 
     this.generateOobi = async (identifierId: string): Promise<string> => {

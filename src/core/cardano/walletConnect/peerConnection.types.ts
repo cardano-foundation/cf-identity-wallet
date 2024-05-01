@@ -1,6 +1,6 @@
 interface ExperimentalAPIFunctions {
-  getIdentifierId: () => Promise<string>;
-  signData: (identifierId: string, payload: string) => Promise<string>;
+  getIdentifierOobi: () => Promise<string>;
+  sign: (oobi: string, payload: string) => Promise<string>;
   getOobi: (identifierId: string) => Promise<string>;
 }
 

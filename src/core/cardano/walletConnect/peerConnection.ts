@@ -59,8 +59,8 @@ class PeerConnection {
 
     this.identityWalletConnect.setEnableExperimentalApi(
       new ExperimentalContainer<ExperimentalAPIFunctions>({
-        getIdentifierId: this.identityWalletConnect.getIdentifierId,
-        signData: this.identityWalletConnect.signDataWithIdentifier,
+        getIdentifierOobi: this.identityWalletConnect.getIdentifierOobi,
+        sign: this.identityWalletConnect.sign,
         getOobi: this.identityWalletConnect.generateOobi,
       })
     );
