@@ -79,12 +79,6 @@ const Scanner = forwardRef(
             // @TODO - foconnor: instead of setting the optype to idle we should
             // have a loading screen with "waiting for server..." etc,
             // and it can update to an error if the QR is invalid with a re-scan btn
-            if (
-              currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
-              currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
-            ) {
-              //
-            }
             dispatch(setCurrentOperation(OperationType.IDLE));
             // @TODO - foconnor: when above loading screen in place, handle invalid QR code
             const invitation =
