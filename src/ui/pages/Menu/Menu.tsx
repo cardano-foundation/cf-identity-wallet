@@ -100,14 +100,9 @@ const Menu = () => {
   };
 
   const selectSubmenu = useMemo(() => {
-    // NOTE: I return empty submenu to make sure SubMenu component always render on DOM and keep animation when we open or close it
-    // Please refactor if you find out pretty solution.
-    if (selectedOption === undefined) return emptySubMenu;
-
-    const selectedSubmenu = submenuMap.get(selectedOption);
-    if (!selectedSubmenu) return emptySubMenu;
-
-    return selectedSubmenu;
+    return selectedOption !== undefined
+      ? submenuMap.get(selectedOption) || emptySubMenu
+      : emptySubMenu;
   }, [selectedOption]);
 
   return (
