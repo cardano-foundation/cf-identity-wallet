@@ -77,21 +77,19 @@ const App = () => {
   }, [authentication.loggedIn, currentRoute]);
 
   useEffect(() => {
-    ScreenOrientation.lock({ orientation: "portrait" });
-
     const platforms = getPlatforms();
-    const isIosAppPlatform =
-      platforms.includes("ios") && !platforms.includes("mobileweb");
+    if (!platforms.includes("mobileweb")) {
+      ScreenOrientation.lock({ orientation: "portrait" });
+      if (platforms.includes("ios")) {
+        StatusBar.setStyle({
+          style: Style.Light,
+        });
+      }
 
-    if (isIosAppPlatform) {
-      StatusBar.setStyle({
-        style: Style.Light,
-      });
+      return () => {
+        ScreenOrientation.unlock();
+      };
     }
-
-    return () => {
-      ScreenOrientation.unlock();
-    };
   }, []);
 
   const renderApp = () => {
