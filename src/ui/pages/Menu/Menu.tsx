@@ -16,7 +16,6 @@ import {
   chatbubbleOutline,
   fingerPrintOutline,
   idCardOutline,
-  lockClosedOutline,
 } from "ionicons/icons";
 import { useMemo, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -48,7 +47,7 @@ const submenuMap = new Map<SubMenuKey, SubMenuData>([
 
 const MenuItem = ({ itemKey, icon, label, onClick }: MenuItemProps) => {
   return (
-    <IonCol>
+    <IonCol size="6">
       <IonCard
         onClick={() => onClick(itemKey)}
         data-testid={`menu-input-item-${itemKey}`}
@@ -148,15 +147,17 @@ const Menu = () => {
         additionalButtons={<AdditionalButtons />}
       >
         <IonGrid>
-          {menuItems.map((menuItem) => (
-            <MenuItem
-              key={menuItem.itemKey}
-              itemKey={menuItem.itemKey}
-              icon={menuItem.icon}
-              label={`${i18n.t(menuItem.label)}`}
-              onClick={() => showSelectedOption(menuItem.itemKey)}
-            />
-          ))}
+          <IonRow>
+            {menuItems.map((menuItem) => (
+              <MenuItem
+                key={menuItem.itemKey}
+                itemKey={menuItem.itemKey}
+                icon={menuItem.icon}
+                label={`${i18n.t(menuItem.label)}`}
+                onClick={() => showSelectedOption(menuItem.itemKey)}
+              />
+            ))}
+          </IonRow>
         </IonGrid>
       </TabLayout>
       <SubMenu
