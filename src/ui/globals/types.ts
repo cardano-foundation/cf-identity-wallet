@@ -22,8 +22,9 @@ enum OperationType {
   SCAN_CONNECTION = "scanConnection",
   ADD_CREDENTIAL = "addCredential",
   RECEIVE_CONNECTION = "receiveConnection",
-  RECEIVE_MULTI_SIG_INVITATION = "receiveMultiSigInvitation",
   SHOW_SETTINGS = "showSettings",
+  MULTI_SIG_INITIATOR_SCAN = "multiSigInitiatorScan",
+  MULTI_SIG_RECEIVER_SCAN = "multiSigReceiverScan",
 }
 
 enum ToastMsgType {

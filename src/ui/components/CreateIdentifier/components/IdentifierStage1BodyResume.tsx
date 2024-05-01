@@ -9,40 +9,43 @@ import { IdentifierStage1BodyProps } from "../CreateIdentifier.types";
 import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { PageFooter } from "../../PageFooter";
+import { Agent } from "../../../../core/agent/agent";
 import { useAppSelector } from "../../../../store/hooks";
-import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
+import { getCurrentOperation } from "../../../../store/reducers/stateCache";
 
 const IdentifierStage1BodyResume = ({
   componentId,
   handleDone,
+  handleInitiateMultiSig,
   oobi,
   groupMetadata,
   handleScanButton,
 }: IdentifierStage1BodyProps) => {
-  const connectionsCache = useAppSelector(getConnectionsCache);
+  const currentOperation = useAppSelector(getCurrentOperation);
   const [scannedConections, setScannedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
 
   useEffect(() => {
-    if (connectionsCache.length) {
-      const filteredConnections = connectionsCache.filter(
-        (connection) => connection.groupId === groupMetadata?.groupId
-      );
+    if (groupMetadata?.groupId) {
+      const updateConnections = async () => {
+        const connections =
+          await Agent.agent.connections.getMultisigLinkedContacts(
+            groupMetadata?.groupId
+          );
 
-      const sortedConnections = filteredConnections.sort(function (a, b) {
-        const textA = a.label.toUpperCase();
-        const textB = b.label.toUpperCase();
-        return textA < textB ? -1 : textA > textB ? 1 : 0;
-      });
+        const sortedConnections = connections.sort(function (a, b) {
+          const textA = a.label.toUpperCase();
+          const textB = b.label.toUpperCase();
+          return textA < textB ? -1 : textA > textB ? 1 : 0;
+        });
 
-      setScannedConnections(sortedConnections);
+        setScannedConnections(sortedConnections);
+      };
+
+      updateConnections();
     }
-  }, [connectionsCache]);
-
-  const handleInitiateMultiSig = () => {
-    // TODO: handle initiate Multi Sig
-  };
+  }, [groupMetadata, currentOperation]);
 
   return (
     <>
@@ -104,7 +107,7 @@ const IdentifierStage1BodyResume = ({
             expand="block"
             fill="outline"
             className="secondary-button"
-            onClick={handleScanButton}
+            onClick={() => handleScanButton(scannedConections.length)}
           >
             {i18n.t("createidentifier.share.scanbutton")}
           </IonButton>

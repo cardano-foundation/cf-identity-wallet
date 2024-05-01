@@ -263,6 +263,10 @@ ion-modal.create-identifier-modal {
           background: var(--ion-color-light);
         }
 
+        &:last-of-type {
+          --border-color: transparent;
+        }
+
         ion-label {
           img {
             width: 2.75rem;

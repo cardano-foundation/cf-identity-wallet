@@ -11,13 +11,10 @@ import {
   getIdentifiersCache,
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
-import {
-  getCurrentOperation,
-  setCurrentRoute,
-} from "../../../store/reducers/stateCache";
+import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
-import { CardType, OperationType } from "../../globals/types";
+import { CardType } from "../../globals/types";
 import { Connections } from "../Connections";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
 import "./Identifiers.scss";
@@ -69,7 +66,6 @@ const AdditionalButtons = ({
 const Identifiers = () => {
   const pageId = "identifiers-tab";
   const dispatch = useAppDispatch();
-  const currentOperation = useAppSelector(getCurrentOperation);
   const identifiersData = useAppSelector(getIdentifiersCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const [favIdentifiers, setFavIdentifiers] = useState<
@@ -94,18 +90,10 @@ const Identifiers = () => {
   const [navAnimation, setNavAnimation] =
     useState<StartAnimationSource>("none");
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
-  const [invitationReceived, setInvitationReceived] = useState(false);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
   });
-
-  useEffect(() => {
-    if (currentOperation === OperationType.RECEIVE_MULTI_SIG_INVITATION) {
-      setInvitationReceived(true);
-      setCreateIdentifierModalIsOpen(true);
-    }
-  }, [currentOperation]);
 
   useEffect(() => {
     setShowPlaceholder(identifiersData.length === 0);
@@ -286,8 +274,6 @@ const Identifiers = () => {
         }
         resumeMultiSig={resumeMultiSig}
         setResumeMultiSig={setResumeMultiSig}
-        invitationReceived={invitationReceived}
-        setInvitationReceived={setInvitationReceived}
       />
     </>
   );

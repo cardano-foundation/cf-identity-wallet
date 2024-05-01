@@ -1,19 +1,29 @@
 import { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
-import { useAppSelector } from "../../../../store/hooks";
-import { getStateCache } from "../../../../store/reducers/stateCache";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import {
+  getStateCache,
+  setCurrentOperation,
+} from "../../../../store/reducers/stateCache";
 import { Agent } from "../../../../core/agent/agent";
 import { IdentifierStage1BodyInit } from "./IdentifierStage1BodyInit";
 import { IdentifierStage1BodyResume } from "./IdentifierStage1BodyResume";
 import { Alert } from "../../Alert";
 import { i18n } from "../../../../i18n";
+import { TabsRoutePath } from "../../navigation/TabsMenu";
+import { OperationType } from "../../../globals/types";
 
 const IdentifierStage1 = ({
   state,
+  setState,
   componentId,
   resetModal,
   resumeMultiSig,
+  groupId: groupIdProp,
 }: IdentifierStageProps) => {
+  const history = useHistory();
+  const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
@@ -25,6 +35,7 @@ const IdentifierStage1 = ({
   const groupMetadata =
     resumeMultiSig?.groupMetadata || state.newIdentifier.groupMetadata;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [initiated, setInitiated] = useState(false);
 
   useEffect(() => {
     async function fetchOobi() {
@@ -47,29 +58,53 @@ const IdentifierStage1 = ({
 
   const handleDone = () => {
     resetModal && resetModal();
+    if (groupIdProp) {
+      history.push({
+        pathname: TabsRoutePath.IDENTIFIERS,
+      });
+    }
+  };
+
+  const handleScanButton = (scannedConections: number) => {
+    scannedConections >= 1 ? handleInitiateScan() : setAlertIsOpen(true);
   };
 
   const handleInitiateScan = () => {
-    // TODO: scan button functionality
+    dispatch(
+      setCurrentOperation(
+        groupMetadata?.groupInitiator
+          ? OperationType.MULTI_SIG_INITIATOR_SCAN
+          : OperationType.MULTI_SIG_RECEIVER_SCAN
+      )
+    );
+    setInitiated(true);
+  };
+
+  const handleInitiateMultiSig = () => {
+    setState((prevState: IdentifierStageProps) => ({
+      ...prevState,
+      identifierCreationStage: 2,
+    }));
   };
 
   return (
     <>
-      {!resumeMultiSig?.signifyName.length ? (
+      {resumeMultiSig?.signifyName.length || initiated ? (
+        <IdentifierStage1BodyResume
+          componentId={componentId}
+          handleDone={handleDone}
+          handleInitiateMultiSig={handleInitiateMultiSig}
+          oobi={oobi}
+          groupMetadata={groupMetadata}
+          handleScanButton={handleScanButton}
+        />
+      ) : (
         <IdentifierStage1BodyInit
           componentId={componentId}
           handleDone={handleDone}
           oobi={oobi}
           groupMetadata={groupMetadata}
-          handleScanButton={() => setAlertIsOpen(true)}
-        />
-      ) : (
-        <IdentifierStage1BodyResume
-          componentId={componentId}
-          handleDone={handleDone}
-          oobi={oobi}
-          groupMetadata={groupMetadata}
-          handleScanButton={() => setAlertIsOpen(true)}
+          handleScanButton={handleScanButton}
         />
       )}
       <Alert

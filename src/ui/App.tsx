@@ -54,7 +54,11 @@ const App = () => {
   }, [isPreviewMode]);
 
   useEffect(() => {
-    setShowScan(currentOperation === OperationType.SCAN_CONNECTION);
+    setShowScan(
+      currentOperation === OperationType.SCAN_CONNECTION ||
+        currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
+        currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
+    );
     setShowToast(toastMsg !== undefined);
   }, [currentOperation, toastMsg]);
 
@@ -83,14 +87,9 @@ const App = () => {
     <IonApp>
       <AppWrapper>
         <StrictMode>
-          {showScan ? (
-            <FullPageScanner setShowScan={setShowScan} />
-          ) : (
-            <>
-              {isPreviewMode && <MobileHeaderPreview />}
-              <Routes />
-            </>
-          )}
+          {isPreviewMode && <MobileHeaderPreview />}
+          {showScan && <FullPageScanner setShowScan={setShowScan} />}
+          <Routes />
           <SetUserName
             isOpen={showSetUserName}
             setIsOpen={setShowSetUserName}
