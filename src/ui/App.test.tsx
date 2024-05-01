@@ -157,7 +157,7 @@ describe("App", () => {
   });
 
   test("Should lock screen orientation to portrait mode", async () => {
-    getPlatformsMock.mockImplementationOnce(() => ["android", "mobileweb"]);
+    getPlatformsMock.mockImplementationOnce(() => ["android"]);
 
     render(
       <Provider store={store}>
