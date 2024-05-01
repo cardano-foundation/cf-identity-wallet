@@ -23,7 +23,6 @@ import { useAppSelector } from "../store/hooks";
 import { FullPageScanner } from "./pages/FullPageScanner";
 import { OperationType } from "./globals/types";
 import { IncomingRequest } from "./pages/IncomingRequest";
-import { Settings } from "./pages/Settings";
 import { SetUserName } from "./components/SetUserName";
 import { TabsRoutePath } from "../routes/paths";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
@@ -78,21 +77,19 @@ const App = () => {
   }, [authentication.loggedIn, currentRoute]);
 
   useEffect(() => {
-    ScreenOrientation.lock({ orientation: "portrait" });
-
     const platforms = getPlatforms();
-    const isIosAppPlatform =
-      platforms.includes("ios") && !platforms.includes("mobileweb");
+    if (!platforms.includes("mobileweb")) {
+      ScreenOrientation.lock({ orientation: "portrait" });
+      if (platforms.includes("ios")) {
+        StatusBar.setStyle({
+          style: Style.Light,
+        });
+      }
 
-    if (isIosAppPlatform) {
-      StatusBar.setStyle({
-        style: Style.Light,
-      });
+      return () => {
+        ScreenOrientation.unlock();
+      };
     }
-
-    return () => {
-      ScreenOrientation.unlock();
-    };
   }, []);
 
   const renderApp = () => {
@@ -129,7 +126,6 @@ const App = () => {
             setIsOpen={setShowSetUserName}
           />
           <IncomingRequest />
-          <Settings />
           <CustomToast
             toastMsg={toastMsg}
             showToast={showToast}
