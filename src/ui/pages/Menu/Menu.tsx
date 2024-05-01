@@ -99,6 +99,39 @@ const Menu = () => {
     );
   };
 
+  const menuItems = [
+    {
+      itemKey: SubMenuKey.Profile,
+      icon: personCircleOutline,
+      label: `${i18n.t("menu.tab.items.profile")}`,
+    },
+    {
+      itemKey: SubMenuKey.Crypto,
+      icon: walletOutline,
+      label: `${i18n.t("menu.tab.items.crypto")}`,
+    },
+    {
+      itemKey: SubMenuKey.Connections,
+      icon: peopleOutline,
+      label: `${i18n.t("menu.tab.items.connections")}`,
+    },
+    {
+      itemKey: SubMenuKey.P2P,
+      icon: chatbubbleOutline,
+      label: `${i18n.t("menu.tab.items.p2p")}`,
+    },
+    {
+      itemKey: SubMenuKey.Identifier,
+      icon: fingerPrintOutline,
+      label: `${i18n.t("menu.tab.items.identity")}`,
+    },
+    {
+      itemKey: SubMenuKey.Credential,
+      icon: idCardOutline,
+      label: `${i18n.t("menu.tab.items.credentials")}`,
+    },
+  ];
+
   const selectSubmenu = useMemo(() => {
     return selectedOption !== undefined
       ? submenuMap.get(selectedOption) || emptySubMenu
@@ -114,48 +147,15 @@ const Menu = () => {
         additionalButtons={<AdditionalButtons />}
       >
         <IonGrid>
-          <IonRow className="menu-input-row">
+          {menuItems.map((menuItem) => (
             <MenuItem
-              itemKey={SubMenuKey.Profile}
-              icon={personCircleOutline}
-              label={`${i18n.t("menu.tab.items.profile")}`}
-              onClick={showSelectedOption}
+              key={menuItem.itemKey}
+              itemKey={menuItem.itemKey}
+              icon={menuItem.icon}
+              label={`${i18n.t(menuItem.label)}`}
+              onClick={() => showSelectedOption(menuItem.itemKey)}
             />
-            <MenuItem
-              itemKey={SubMenuKey.Crypto}
-              icon={walletOutline}
-              label={`${i18n.t("menu.tab.items.crypto")}`}
-              onClick={showSelectedOption}
-            />
-          </IonRow>
-          <IonRow className="menu-input-row">
-            <MenuItem
-              itemKey={SubMenuKey.Connections}
-              icon={peopleOutline}
-              label={`${i18n.t("menu.tab.items.connections")}`}
-              onClick={showSelectedOption}
-            />
-            <MenuItem
-              itemKey={SubMenuKey.P2P}
-              icon={chatbubbleOutline}
-              label={`${i18n.t("menu.tab.items.p2p")}`}
-              onClick={showSelectedOption}
-            />
-          </IonRow>
-          <IonRow className="menu-input-row">
-            <MenuItem
-              itemKey={SubMenuKey.Identifier}
-              icon={fingerPrintOutline}
-              label={`${i18n.t("menu.tab.items.identity")}`}
-              onClick={showSelectedOption}
-            />
-            <MenuItem
-              itemKey={SubMenuKey.Credential}
-              icon={idCardOutline}
-              label={`${i18n.t("menu.tab.items.credentials")}`}
-              onClick={showSelectedOption}
-            />
-          </IonRow>
+          ))}
         </IonGrid>
       </TabLayout>
       <SubMenu
