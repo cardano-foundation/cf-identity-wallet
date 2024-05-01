@@ -133,6 +133,8 @@ const Menu = () => {
   ];
 
   const selectSubmenu = useMemo(() => {
+    // NOTE: emptySubMenu is returned for unavailable selected options to not break the animation
+    // by keeping the SubMenu component in the DOM
     return selectedOption !== undefined
       ? submenuMap.get(selectedOption) || emptySubMenu
       : emptySubMenu;
