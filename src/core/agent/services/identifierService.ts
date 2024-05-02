@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { Signer } from "signify-ts";
 import {
   CreateIdentifierResult,
   IdentifierDetails,
@@ -23,6 +24,8 @@ class IdentifierService extends AgentService {
     "There's no exchange message for the given SAID";
   static readonly FAILED_TO_ROTATE_AID =
     "Failed to rotate AID, operation not completing...";
+  static readonly FAILED_TO_OBTAIN_KEY_MANAGER =
+    "Failed to obtain key manager for given AID";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -142,6 +145,24 @@ class IdentifierService extends AgentService {
       theme: data.theme,
       displayName: data.displayName,
     });
+  }
+
+  async getSigner(identifier: string): Promise<Signer> {
+    const metadata = await this.identifierStorage.getIdentifierMetadata(
+      identifier
+    );
+    this.validIdentifierMetadata(metadata);
+
+    const aid = await this.signifyClient
+      .identifiers()
+      .get(metadata.signifyName);
+
+    const manager = this.signifyClient.manager;
+    if (manager) {
+      return (await manager.get(aid)).signers[0];
+    } else {
+      throw new Error(IdentifierService.FAILED_TO_OBTAIN_KEY_MANAGER);
+    }
   }
 
   async syncKeriaIdentifiers() {
