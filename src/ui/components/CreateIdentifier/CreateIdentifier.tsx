@@ -7,6 +7,10 @@ import { IdentifierStage1 } from "./components/IdentifierStage1";
 import { IdentifierStage2 } from "./components/IdentifierStage2";
 import { IdentifierStage3 } from "./components/IdentifierStage3";
 import { IdentifierStage4 } from "./components/IdentifierStage4";
+import { Agent } from "../../../core/agent/agent";
+import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
+import { useAppDispatch } from "../../../store/hooks";
+import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
 
 const stages = [
   IdentifierStage0,
@@ -21,10 +25,10 @@ const CreateIdentifier = ({
   setModalIsOpen,
   resumeMultiSig,
   setResumeMultiSig,
-  groupId,
-  setGroupId,
+  groupId: groupIdProp,
 }: CreateIdentifierProps) => {
   const componentId = "create-identifier-modal";
+  const dispatch = useAppDispatch();
   const initialState = {
     identifierCreationStage: 0,
     displayNameValue: "",
@@ -34,6 +38,7 @@ const CreateIdentifier = ({
     scannedConections: [],
     selectedConnections: [],
     initialised: false,
+    ourIdentifier: "",
     newIdentifier: {
       id: "",
       displayName: "",
@@ -45,6 +50,10 @@ const CreateIdentifier = ({
   };
   const [state, setState] = useState(initialState);
   const [blur, setBlur] = useState(false);
+  const groupId = groupIdProp || resumeMultiSig?.groupMetadata?.groupId;
+  const [multiSigGroup, setMultiSigGroup] = useState<
+    MultiSigGroup | undefined
+  >();
 
   useEffect(() => {
     if (blur) {
@@ -54,12 +63,28 @@ const CreateIdentifier = ({
     }
   }, [blur]);
 
+  useEffect(() => {
+    if (groupId) {
+      const updateMultiSigGroup = async (groupId: string) => {
+        const connections =
+          await Agent.agent.connections.getMultisigLinkedContacts(groupId);
+        const multiSigGroup: MultiSigGroup = {
+          groupId,
+          connections,
+        };
+        setMultiSigGroup(multiSigGroup);
+        dispatch(setMultiSigGroupCache(multiSigGroup));
+      };
+
+      updateMultiSigGroup(groupId);
+    }
+  }, [groupId]);
+
   const resetModal = () => {
     setBlur(false);
     setModalIsOpen(false);
     setState(initialState);
     setResumeMultiSig && setResumeMultiSig(null);
-    setGroupId && setGroupId("");
   };
 
   const CurrentStage =
@@ -89,8 +114,8 @@ const CreateIdentifier = ({
           resetModal={resetModal}
           setBlur={setBlur}
           resumeMultiSig={resumeMultiSig}
-          groupId={groupId}
-          setGroupId={setGroupId}
+          multiSigGroup={multiSigGroup}
+          setMultiSigGroup={setMultiSigGroup}
         />
       )}
     </IonModal>

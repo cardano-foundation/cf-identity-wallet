@@ -14,7 +14,7 @@ import { Alert } from "../../Alert";
 import { i18n } from "../../../../i18n";
 import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { OperationType } from "../../../globals/types";
-import { getMultiSigGroupsCache } from "../../../../store/reducers/identifiersCache";
+import { getMultiSigGroupCache } from "../../../../store/reducers/identifiersCache";
 import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
 
 const IdentifierStage1 = ({
@@ -23,13 +23,13 @@ const IdentifierStage1 = ({
   componentId,
   resetModal,
   resumeMultiSig,
-  groupId: groupIdProp,
+  multiSigGroup,
 }: IdentifierStageProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const currentOperation = useAppSelector(getCurrentOperation);
-  const multiSigGroupCache = useAppSelector(getMultiSigGroupsCache);
+  const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
   const signifyName =
@@ -67,9 +67,7 @@ const IdentifierStage1 = ({
   useEffect(() => {
     if (groupId) {
       const updateConnections = async () => {
-        const connections =
-          multiSigGroupCache.find((group) => group.groupId === groupId)
-            ?.connections || [];
+        const connections = multiSigGroupCache.connections;
         setScannedConnections(connections);
       };
       updateConnections();
@@ -78,7 +76,7 @@ const IdentifierStage1 = ({
 
   const handleDone = () => {
     resetModal && resetModal();
-    if (groupIdProp) {
+    if (multiSigGroup?.groupId) {
       history.push({
         pathname: TabsRoutePath.IDENTIFIERS,
       });

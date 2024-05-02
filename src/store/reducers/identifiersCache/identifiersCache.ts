@@ -6,11 +6,14 @@ import { FavouriteIdentifier, MultiSigGroup } from "./identifiersCache.types";
 const initialState: {
   identifiers: IdentifierShortDetails[];
   favourites: FavouriteIdentifier[];
-  multiSigGroups: MultiSigGroup[];
+  multiSigGroup: MultiSigGroup;
 } = {
   identifiers: [],
   favourites: [],
-  multiSigGroups: [],
+  multiSigGroup: {
+    groupId: "",
+    connections: [],
+  },
 };
 const identifiersCacheSlice = createSlice({
   name: "identifiersCache",
@@ -40,8 +43,8 @@ const identifiersCacheSlice = createSlice({
         (fav) => fav.id !== action.payload
       );
     },
-    setMultiSigGroupsCache: (state, action: PayloadAction<MultiSigGroup[]>) => {
-      state.multiSigGroups = action.payload;
+    setMultiSigGroupCache: (state, action: PayloadAction<MultiSigGroup>) => {
+      state.multiSigGroup = action.payload;
     },
   },
 });
@@ -53,7 +56,7 @@ export const {
   setFavouritesIdentifiersCache,
   addFavouriteIdentifierCache,
   removeFavouriteIdentifierCache,
-  setMultiSigGroupsCache,
+  setMultiSigGroupCache,
 } = identifiersCacheSlice.actions;
 
 const getIdentifiersCache = (state: RootState) =>
@@ -62,11 +65,11 @@ const getIdentifiersCache = (state: RootState) =>
 const getFavouritesIdentifiersCache = (state: RootState) =>
   state.identifiersCache.favourites;
 
-const getMultiSigGroupsCache = (state: RootState) =>
-  state.identifiersCache.multiSigGroups;
+const getMultiSigGroupCache = (state: RootState) =>
+  state.identifiersCache.multiSigGroup;
 
 export {
   getIdentifiersCache,
   getFavouritesIdentifiersCache,
-  getMultiSigGroupsCache,
+  getMultiSigGroupCache,
 };

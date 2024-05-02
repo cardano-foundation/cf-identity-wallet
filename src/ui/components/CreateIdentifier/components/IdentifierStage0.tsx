@@ -17,9 +17,8 @@ import {
 import { Agent } from "../../../../core/agent/agent";
 import {
   getIdentifiersCache,
-  getMultiSigGroupsCache,
   setIdentifiersCache,
-  setMultiSigGroupsCache,
+  setMultiSigGroupCache,
 } from "../../../../store/reducers/identifiersCache";
 import {
   setCurrentOperation,
@@ -37,11 +36,10 @@ const IdentifierStage0 = ({
   componentId,
   setBlur,
   resetModal,
-  groupId,
+  multiSigGroup,
 }: IdentifierStageProps) => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
-  const multiSigGroupCache = useAppSelector(getMultiSigGroupsCache);
   const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const [displayNameValue, setDisplayNameValue] = useState(
@@ -82,9 +80,9 @@ const IdentifierStage0 = ({
       theme: state.selectedTheme,
     };
     let groupMetadata;
-    if (groupId) {
+    if (multiSigGroup) {
       groupMetadata = {
-        groupId,
+        groupId: multiSigGroup.groupId,
         groupInitiator: false,
         groupCreated: false,
       };
@@ -111,24 +109,25 @@ const IdentifierStage0 = ({
         newIdentifier.groupMetadata = groupMetadata;
       }
       dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
-      if (groupId) {
+      if (multiSigGroup) {
         const connections =
-          await Agent.agent.connections.getMultisigLinkedContacts(groupId);
+          await Agent.agent.connections.getMultisigLinkedContacts(
+            multiSigGroup.groupId
+          );
         const newMultiSigGroup: MultiSigGroup = {
-          groupId,
+          groupId: multiSigGroup.groupId,
           connections,
         };
-        dispatch(
-          setMultiSigGroupsCache([...multiSigGroupCache, newMultiSigGroup])
-        );
+        dispatch(setMultiSigGroupCache(newMultiSigGroup));
       }
-      if (state.selectedAidType !== 0 || groupId) {
+      if (state.selectedAidType !== 0 || multiSigGroup) {
         setState((prevState: IdentifierStageProps) => ({
           ...prevState,
+          ourIdentifier: identifier,
           identifierCreationStage: 1,
           newIdentifier,
         }));
-        groupId && dispatch(setCurrentOperation(OperationType.IDLE));
+        multiSigGroup && dispatch(setCurrentOperation(OperationType.IDLE));
       }
     }
   };
@@ -137,7 +136,7 @@ const IdentifierStage0 = ({
     setBlur && setBlur(true);
     setTimeout(async () => {
       await handleCreateIdentifier();
-      if (state.selectedAidType !== 0 || groupId) {
+      if (state.selectedAidType !== 0 || multiSigGroup) {
         setBlur && setBlur(false);
       } else {
         resetModal && resetModal();
@@ -147,7 +146,7 @@ const IdentifierStage0 = ({
   };
 
   const handleCancel = async () => {
-    groupId && dispatch(setCurrentOperation(OperationType.IDLE));
+    multiSigGroup && dispatch(setCurrentOperation(OperationType.IDLE));
     resetModal && resetModal();
   };
 
@@ -161,10 +160,12 @@ const IdentifierStage0 = ({
             closeButton={true}
             closeButtonAction={() => handleCancel()}
             closeButtonLabel={`${i18n.t(
-              groupId ? "createidentifier.back" : "createidentifier.cancel"
+              multiSigGroup
+                ? "createidentifier.back"
+                : "createidentifier.cancel"
             )}`}
             title={`${i18n.t(
-              groupId
+              multiSigGroup
                 ? "createidentifier.receive.title"
                 : "createidentifier.add.title"
             )}`}
@@ -197,7 +198,7 @@ const IdentifierStage0 = ({
             )}
           </div>
         </div>
-        {!groupId && (
+        {!multiSigGroup && (
           <div className="aid-type">
             <div className="type-input-title">{`${i18n.t(
               "createidentifier.aidtype.title"
@@ -267,7 +268,7 @@ const IdentifierStage0 = ({
         pageId={componentId}
         customClass={keyboardIsOpen ? "ion-hide" : ""}
         primaryButtonText={`${i18n.t(
-          groupId
+          multiSigGroup
             ? "createidentifier.receive.confirmbutton"
             : "createidentifier.add.confirmbutton"
         )}`}

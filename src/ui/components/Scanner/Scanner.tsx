@@ -20,16 +20,12 @@ import { Agent } from "../../../core/agent/agent";
 import { ScannerProps } from "./Scanner.types";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { CreateIdentifier } from "../CreateIdentifier";
-import {
-  getMultiSigGroupsCache,
-  setMultiSigGroupsCache,
-} from "../../../store/reducers/identifiersCache";
+import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 
 const Scanner = forwardRef(
   ({ setIsValueCaptured, handleReset }: ScannerProps, ref) => {
     const dispatch = useAppDispatch();
-    const multiSigGroupCache = useAppSelector(getMultiSigGroupsCache);
     const currentOperation = useAppSelector(getCurrentOperation);
     const currentToastMsg = useAppSelector(getToastMsg);
     const currentRoute = useAppSelector(getCurrentRoute);
@@ -74,34 +70,14 @@ const Scanner = forwardRef(
     }));
 
     const updateConnections = async (groupId: string) => {
-      const existingGroupIndex = multiSigGroupCache.findIndex(
-        (group) => group.groupId === groupId
-      );
+      const connections =
+        await Agent.agent.connections.getMultisigLinkedContacts(groupId);
+      const newMultiSigGroup: MultiSigGroup = {
+        groupId,
+        connections,
+      };
 
-      if (existingGroupIndex !== -1) {
-        const updatedConnections =
-          await Agent.agent.connections.getMultisigLinkedContacts(groupId);
-        const updatedGroup = {
-          ...multiSigGroupCache[existingGroupIndex],
-          connections: updatedConnections,
-        };
-
-        const updatedCache = [...multiSigGroupCache];
-        updatedCache[existingGroupIndex] = updatedGroup;
-
-        dispatch(setMultiSigGroupsCache(updatedCache));
-      } else {
-        const connections =
-          await Agent.agent.connections.getMultisigLinkedContacts(groupId);
-        const newMultiSigGroup: MultiSigGroup = {
-          groupId,
-          connections,
-        };
-
-        dispatch(
-          setMultiSigGroupsCache([...multiSigGroupCache, newMultiSigGroup])
-        );
-      }
+      dispatch(setMultiSigGroupCache(newMultiSigGroup));
     };
 
     const initScan = async () => {
@@ -185,7 +161,6 @@ const Scanner = forwardRef(
           modalIsOpen={createIdentifierModalIsOpen}
           setModalIsOpen={setCreateIdentifierModalIsOpen}
           groupId={groupId}
-          setGroupId={setGroupId}
         />
       </>
     );

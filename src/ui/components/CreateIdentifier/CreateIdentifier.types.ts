@@ -1,4 +1,5 @@
 import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
+import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { ConnectionShortDetails } from "../../pages/Connections/Connections.types";
 
 interface CreateIdentifierProps {
@@ -7,7 +8,6 @@ interface CreateIdentifierProps {
   resumeMultiSig?: IdentifierShortDetails | null;
   setResumeMultiSig?: (value: IdentifierShortDetails | null) => void;
   groupId?: string;
-  setGroupId?: (value: string) => void;
 }
 
 interface TypeItemProps {
@@ -43,8 +43,8 @@ interface IdentifierStageProps {
   setBlur?: (value: boolean) => void;
   resetModal: () => void;
   resumeMultiSig?: IdentifierShortDetails | null;
-  groupId?: string;
-  setGroupId?: (value: string) => void;
+  multiSigGroup?: MultiSigGroup;
+  setMultiSigGroup?: (value: MultiSigGroup) => void;
 }
 
 interface IdentifierStage1BodyProps {
