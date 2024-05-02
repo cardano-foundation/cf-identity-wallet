@@ -20,10 +20,16 @@ import { Agent } from "../../../core/agent/agent";
 import { ScannerProps } from "./Scanner.types";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { CreateIdentifier } from "../CreateIdentifier";
+import {
+  getMultiSigGroupsCache,
+  setMultiSigGroupsCache,
+} from "../../../store/reducers/identifiersCache";
+import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 
 const Scanner = forwardRef(
   ({ setIsValueCaptured, handleReset }: ScannerProps, ref) => {
     const dispatch = useAppDispatch();
+    const multiSigGroupCache = useAppSelector(getMultiSigGroupsCache);
     const currentOperation = useAppSelector(getCurrentOperation);
     const currentToastMsg = useAppSelector(getToastMsg);
     const currentRoute = useAppSelector(getCurrentRoute);
@@ -67,6 +73,37 @@ const Scanner = forwardRef(
       stopScan,
     }));
 
+    const updateConnections = async (groupId: string) => {
+      const existingGroupIndex = multiSigGroupCache.findIndex(
+        (group) => group.groupId === groupId
+      );
+
+      if (existingGroupIndex !== -1) {
+        const updatedConnections =
+          await Agent.agent.connections.getMultisigLinkedContacts(groupId);
+        const updatedGroup = {
+          ...multiSigGroupCache[existingGroupIndex],
+          connections: updatedConnections,
+        };
+
+        const updatedCache = [...multiSigGroupCache];
+        updatedCache[existingGroupIndex] = updatedGroup;
+
+        dispatch(setMultiSigGroupsCache(updatedCache));
+      } else {
+        const connections =
+          await Agent.agent.connections.getMultisigLinkedContacts(groupId);
+        const newMultiSigGroup: MultiSigGroup = {
+          groupId,
+          connections,
+        };
+
+        dispatch(
+          setMultiSigGroupsCache([...multiSigGroupCache, newMultiSigGroup])
+        );
+      }
+    };
+
     const initScan = async () => {
       if (isPlatform("ios") || isPlatform("android")) {
         const allowed = await checkPermission();
@@ -88,6 +125,15 @@ const Scanner = forwardRef(
             if (invitation.type === KeriConnectionType.NORMAL) {
               handleReset && handleReset();
               setIsValueCaptured && setIsValueCaptured(true);
+              if (
+                currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
+                currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
+              ) {
+                const groupId = new URL(result.content).searchParams.get(
+                  "groupId"
+                );
+                groupId && updateConnections(groupId);
+              }
             } else if (
               invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR
             ) {

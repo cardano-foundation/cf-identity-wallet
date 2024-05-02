@@ -31,6 +31,7 @@ const CreateIdentifier = ({
     selectedAidType: 0,
     selectedTheme: 0,
     threshold: 1,
+    scannedConections: [],
     selectedConnections: [],
     initialised: false,
     newIdentifier: {

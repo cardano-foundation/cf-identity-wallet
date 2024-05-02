@@ -1,17 +1,12 @@
 import { IonIcon, IonButton, IonItem, IonLabel, IonList } from "@ionic/react";
 import { qrCodeOutline } from "ionicons/icons";
 import { QRCode } from "react-qrcode-logo";
-import { useEffect, useState } from "react";
 import { i18n } from "../../../../i18n";
 import { PageHeader } from "../../PageHeader";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierStage1BodyProps } from "../CreateIdentifier.types";
-import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { PageFooter } from "../../PageFooter";
-import { Agent } from "../../../../core/agent/agent";
-import { useAppSelector } from "../../../../store/hooks";
-import { getCurrentOperation } from "../../../../store/reducers/stateCache";
 
 const IdentifierStage1BodyResume = ({
   componentId,
@@ -20,37 +15,15 @@ const IdentifierStage1BodyResume = ({
   oobi,
   groupMetadata,
   handleScanButton,
+  scannedConections,
 }: IdentifierStage1BodyProps) => {
-  const currentOperation = useAppSelector(getCurrentOperation);
-  const [scannedConections, setScannedConnections] = useState<
-    ConnectionShortDetails[]
-  >([]);
-
-  useEffect(() => {
-    if (groupMetadata?.groupId) {
-      const updateConnections = async () => {
-        const connections =
-          await Agent.agent.connections.getMultisigLinkedContacts(
-            groupMetadata?.groupId
-          );
-
-        const sortedConnections = connections.sort(function (a, b) {
-          const textA = a.label.toUpperCase();
-          const textB = b.label.toUpperCase();
-          return textA < textB ? -1 : textA > textB ? 1 : 0;
-        });
-
-        setScannedConnections(sortedConnections);
-      };
-
-      updateConnections();
-    }
-  }, [groupMetadata, currentOperation]);
-
   return (
     <>
       <ScrollablePageLayout
         pageId={componentId + "-content"}
+        customClass={`${
+          groupMetadata?.groupInitiator ? "initiator-view" : "receiver-view"
+        }`}
         header={
           <PageHeader
             closeButton={true}
@@ -107,13 +80,13 @@ const IdentifierStage1BodyResume = ({
             expand="block"
             fill="outline"
             className="secondary-button"
-            onClick={() => handleScanButton(scannedConections.length)}
+            onClick={handleScanButton}
           >
             {i18n.t("createidentifier.share.scanbutton")}
           </IonButton>
         </div>
         <h3>{i18n.t("createidentifier.share.subtitle")}</h3>
-        {!scannedConections.length ? (
+        {!scannedConections?.length ? (
           <p className="multisig-share-note multisig-share-note-footer">
             {i18n.t("createidentifier.share.notes.bottom")}
           </p>
@@ -144,7 +117,7 @@ const IdentifierStage1BodyResume = ({
             "createidentifier.share.initiatebutton"
           )}`}
           primaryButtonAction={handleInitiateMultiSig}
-          primaryButtonDisabled={!scannedConections.length}
+          primaryButtonDisabled={!scannedConections?.length}
         />
       )}
     </>

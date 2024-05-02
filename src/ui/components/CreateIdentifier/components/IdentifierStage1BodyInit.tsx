@@ -68,7 +68,7 @@ const IdentifierStage1BodyInit = ({
         <IonButton
           shape="round"
           color={"primary-gradient"}
-          onClick={() => handleScanButton(0)}
+          onClick={handleScanButton}
         >
           <IonIcon
             slot="icon-only"

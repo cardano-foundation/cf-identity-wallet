@@ -16,6 +16,7 @@ describe("identifiersCacheSlice", () => {
   const initialState = {
     identifiers: [],
     favourites: [],
+    multiSigGroups: [],
   };
   it("should return the initial state", () => {
     expect(
@@ -73,6 +74,7 @@ describe("identifiersCacheSlice", () => {
           time: 1,
         },
       ],
+      multiSigGroups: [],
     };
     const newState = identifiersCacheSlice.reducer(
       initialState,

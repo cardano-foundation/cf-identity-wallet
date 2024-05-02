@@ -5,15 +5,13 @@ import {
   IonLabel,
   IonCheckbox,
 } from "@ionic/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { i18n } from "../../../../i18n";
 import { PageFooter } from "../../PageFooter";
 import { PageHeader } from "../../PageHeader";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
-import { useAppSelector } from "../../../../store/hooks";
-import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 
 const IdentifierStage2 = ({
@@ -21,24 +19,9 @@ const IdentifierStage2 = ({
   setState,
   componentId,
 }: IdentifierStageProps) => {
-  const connectionsCache = useAppSelector(getConnectionsCache);
   const [selectedConnections, setSelectedConnections] = useState<
     ConnectionShortDetails[]
-  >(state.selectedConnections);
-  const [sortedConnections, setSortedConnections] = useState<
-    ConnectionShortDetails[]
   >([]);
-
-  useEffect(() => {
-    if (connectionsCache.length) {
-      const sortedConnections = [...connectionsCache].sort(function (a, b) {
-        const textA = a.label.toUpperCase();
-        const textB = b.label.toUpperCase();
-        return textA < textB ? -1 : textA > textB ? 1 : 0;
-      });
-      setSortedConnections(sortedConnections);
-    }
-  }, [connectionsCache, setState]);
 
   const handleSelectConnection = (connection: ConnectionShortDetails) => {
     let data = selectedConnections;
@@ -84,7 +67,7 @@ const IdentifierStage2 = ({
           placeholder={`${i18n.t("createidentifier.connections.search")}`}
         />
         <IonList>
-          {sortedConnections.map((connection, index) => {
+          {state.scannedConections.map((connection, index) => {
             return (
               <IonItem
                 key={index}

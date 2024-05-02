@@ -17,7 +17,9 @@ import {
 import { Agent } from "../../../../core/agent/agent";
 import {
   getIdentifiersCache,
+  getMultiSigGroupsCache,
   setIdentifiersCache,
+  setMultiSigGroupsCache,
 } from "../../../../store/reducers/identifiersCache";
 import {
   setCurrentOperation,
@@ -27,6 +29,7 @@ import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { OperationType, ToastMsgType } from "../../../globals/types";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
+import { MultiSigGroup } from "../../../../store/reducers/identifiersCache/identifiersCache.types";
 
 const IdentifierStage0 = ({
   state,
@@ -38,6 +41,7 @@ const IdentifierStage0 = ({
 }: IdentifierStageProps) => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
+  const multiSigGroupCache = useAppSelector(getMultiSigGroupsCache);
   const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const [displayNameValue, setDisplayNameValue] = useState(
@@ -80,7 +84,7 @@ const IdentifierStage0 = ({
     let groupMetadata;
     if (groupId) {
       groupMetadata = {
-        groupId: groupId,
+        groupId,
         groupInitiator: false,
         groupCreated: false,
       };
@@ -107,6 +111,17 @@ const IdentifierStage0 = ({
         newIdentifier.groupMetadata = groupMetadata;
       }
       dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
+      if (groupId) {
+        const connections =
+          await Agent.agent.connections.getMultisigLinkedContacts(groupId);
+        const newMultiSigGroup: MultiSigGroup = {
+          groupId,
+          connections,
+        };
+        dispatch(
+          setMultiSigGroupsCache([...multiSigGroupCache, newMultiSigGroup])
+        );
+      }
       if (state.selectedAidType !== 0 || groupId) {
         setState((prevState: IdentifierStageProps) => ({
           ...prevState,

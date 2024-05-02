@@ -70,6 +70,7 @@ describe("Render Identifier Stage", () => {
             selectedAidType: 1,
             selectedTheme: 1,
             threshold: 1,
+            scannedConections: [],
             selectedConnections: [],
             newIdentifier: {
               id: "",
@@ -102,6 +103,7 @@ describe("Render Identifier Stage", () => {
             selectedAidType: 1,
             selectedTheme: 1,
             threshold: 1,
+            scannedConections: [],
             selectedConnections: [
               {
                 ...connectionsFix[5],

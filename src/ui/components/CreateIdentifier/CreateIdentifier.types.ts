@@ -34,6 +34,7 @@ interface IdentifierStageProps {
     selectedAidType: number;
     selectedTheme: number;
     threshold: number;
+    scannedConections: ConnectionShortDetails[];
     selectedConnections: ConnectionShortDetails[];
     newIdentifier: IdentifierShortDetails;
   };
@@ -56,7 +57,8 @@ interface IdentifierStage1BodyProps {
     groupInitiator: boolean;
     groupCreated: boolean;
   };
-  handleScanButton: (value: number) => void;
+  scannedConections?: ConnectionShortDetails[];
+  handleScanButton: () => void;
 }
 
 export type {

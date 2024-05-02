@@ -1,14 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
 import { RootState } from "../../index";
-import { FavouriteIdentifier } from "./identifiersCache.types";
+import { FavouriteIdentifier, MultiSigGroup } from "./identifiersCache.types";
 
 const initialState: {
   identifiers: IdentifierShortDetails[];
   favourites: FavouriteIdentifier[];
+  multiSigGroups: MultiSigGroup[];
 } = {
   identifiers: [],
   favourites: [],
+  multiSigGroups: [],
 };
 const identifiersCacheSlice = createSlice({
   name: "identifiersCache",
@@ -38,6 +40,9 @@ const identifiersCacheSlice = createSlice({
         (fav) => fav.id !== action.payload
       );
     },
+    setMultiSigGroupsCache: (state, action: PayloadAction<MultiSigGroup[]>) => {
+      state.multiSigGroups = action.payload;
+    },
   },
 });
 
@@ -48,6 +53,7 @@ export const {
   setFavouritesIdentifiersCache,
   addFavouriteIdentifierCache,
   removeFavouriteIdentifierCache,
+  setMultiSigGroupsCache,
 } = identifiersCacheSlice.actions;
 
 const getIdentifiersCache = (state: RootState) =>
@@ -56,4 +62,11 @@ const getIdentifiersCache = (state: RootState) =>
 const getFavouritesIdentifiersCache = (state: RootState) =>
   state.identifiersCache.favourites;
 
-export { getIdentifiersCache, getFavouritesIdentifiersCache };
+const getMultiSigGroupsCache = (state: RootState) =>
+  state.identifiersCache.multiSigGroups;
+
+export {
+  getIdentifiersCache,
+  getFavouritesIdentifiersCache,
+  getMultiSigGroupsCache,
+};

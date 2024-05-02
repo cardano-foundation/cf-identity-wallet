@@ -18,6 +18,7 @@ import {
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
+  setMultiSigGroupsCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   setCredsCache,
@@ -38,7 +39,10 @@ import {
   AcdcKeriStateChangedEvent,
 } from "../../../core/agent/agent.types";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
-import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
+import {
+  FavouriteIdentifier,
+  MultiSigGroup,
+} from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
@@ -223,6 +227,23 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     }
 
+    const multiSigGroups: MultiSigGroup[] = (
+      await Promise.all(
+        storedIdentifiers.map(async (identifier) => {
+          if (identifier.groupMetadata) {
+            const groupId = identifier.groupMetadata.groupId;
+            const connections =
+              await Agent.agent.connections.getMultisigLinkedContacts(groupId);
+            return {
+              groupId,
+              connections,
+            };
+          }
+          return null;
+        })
+      )
+    ).filter((group): group is MultiSigGroup => group !== null);
+
     dispatch(
       setAuthentication({
         ...authentication,
@@ -236,6 +257,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setIdentifiersCache(storedIdentifiers));
     dispatch(setCredsCache(credentials));
     dispatch(setConnectionsCache(connectionsDetails));
+    dispatch(setMultiSigGroupsCache(multiSigGroups));
 
     Agent.agent.connections.onConnectionKeriStateChanged((event) => {
       return connectionKeriStateChangedHandler(event, dispatch);
