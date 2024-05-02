@@ -151,11 +151,10 @@ describe("Lock Modal", () => {
     );
 
     fireEvent.click(
-      await findByText(EN_TRANSLATIONS.lockmodal.forgotten.button)
+      await getByText(EN_TRANSLATIONS.lockmodal.forgotten.button)
     );
-    fireEvent.click(
-      await getByText(EN_TRANSLATIONS.lockmodal.alert.button.verify)
-    );
+    //fireEvent.click(getByText(EN_TRANSLATIONS.lockmodal.alert.button.restart));
+    fireEvent.click(getByText(EN_TRANSLATIONS.lockmodal.alert.button.verify));
 
     await waitFor(() => {
       expect(

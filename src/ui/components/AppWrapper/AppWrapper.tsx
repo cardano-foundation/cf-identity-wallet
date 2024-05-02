@@ -119,7 +119,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const handleActivity = () => {
       clearTimeout(timer);
       timer = setTimeout(() => {
-        dispatch(logout());
+        if (authentication.passcodeIsSet) {
+          dispatch(logout());
+        }
       }, ACTIVITY_TIMEOUT);
     };
 
