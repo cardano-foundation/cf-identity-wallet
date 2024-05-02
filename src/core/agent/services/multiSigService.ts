@@ -92,7 +92,7 @@ class MultiSigService extends AgentService {
     return { identifier: multisigId, signifyName };
   }
 
-  async createAidMultisig(
+  private async createAidMultisig(
     aid: Aid,
     otherAids: Pick<Aid, "state">[],
     name: string,
@@ -419,7 +419,7 @@ class MultiSigService extends AgentService {
     });
   }
 
-  async rotateMultisigAid(
+  private async rotateMultisigAid(
     aid: Aid,
     multisigAidMembers: Pick<Aid, "state">[],
     name: string
@@ -468,7 +468,7 @@ class MultiSigService extends AgentService {
     };
   }
 
-  async joinMultisigRotationKeri(
+  private async joinMultisigRotationKeri(
     exn: MultiSigExnMessage["exn"],
     aid: Aid,
     name: string
@@ -517,7 +517,9 @@ class MultiSigService extends AgentService {
     };
   }
 
-  async getIdentifierById(id: string): Promise<IdentifierResult | undefined> {
+  private async getIdentifierById(
+    id: string
+  ): Promise<IdentifierResult | undefined> {
     const allIdentifiers = await this.signifyClient.identifiers().list();
     const identifier = allIdentifiers.aids.find(
       (identifier: IdentifierResult) => identifier.prefix === id
@@ -525,7 +527,7 @@ class MultiSigService extends AgentService {
     return identifier;
   }
 
-  async joinMultisigKeri(
+  private async joinMultisigKeri(
     exn: MultiSigExnMessage["exn"],
     aid: Aid,
     name: string
