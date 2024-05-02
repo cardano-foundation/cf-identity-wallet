@@ -37,6 +37,7 @@ const stateCacheSlice = createSlice({
       state.initialized = action.payload;
     },
     setCurrentRoute: (state, action: PayloadAction<CurrentRouteCacheProps>) => {
+      if (!action.payload.path) return;
       const filteredRoutes = state.routes.filter(
         (route) => action.payload.path !== route.path
       );

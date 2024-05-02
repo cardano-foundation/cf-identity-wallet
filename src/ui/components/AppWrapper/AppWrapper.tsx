@@ -130,6 +130,17 @@ const AppWrapper = (props: { children: ReactNode }) => {
     };
 
     // TODO: detect appStateChange in android and ios to reduce the ACTIVITY_TIMEOUT
+    const handleAppStateChange = (state: { isActive: boolean }) => {
+      if (!state.isActive) {
+        //console.info('App has gone to the background!');
+      } else {
+        //console.info('App has come to the foreground!');
+      }
+    };
+
+    // Registrar el listener
+    App.addListener("appStateChange", handleAppStateChange);
+
     // App.addListener("appStateChange", handleAppStateChange);
     window.addEventListener("load", handleActivity);
     document.addEventListener("mousemove", handleActivity);
