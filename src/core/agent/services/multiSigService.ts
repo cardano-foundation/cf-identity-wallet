@@ -4,13 +4,9 @@ import { Agent } from "../agent";
 import {
   ConnectionShortDetails,
   KeriaNotification,
-  Aid,
   IdentifierResult,
-  MultiSigExnMessage,
-  MultiSigRoute,
   NotificationRoute,
   CreateIdentifierResult,
-  CreateMultisigExnPayload,
 } from "../agent.types";
 import {
   IdentifierMetadataRecord,
@@ -19,6 +15,12 @@ import {
 import { AgentService } from "./agentService";
 import { MultiSigIcpRequestDetails } from "./identifier.types";
 import { RecordType } from "../../storage/storage.types";
+import {
+  Aid,
+  MultiSigRoute,
+  MultiSigExnMessage,
+  CreateMultisigExnPayload,
+} from "./multiSig.types";
 
 class MultiSigService extends AgentService {
   static readonly INVALID_THRESHOLD = "Invalid threshold";

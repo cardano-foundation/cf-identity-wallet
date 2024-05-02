@@ -43,8 +43,6 @@ import { CredentialStatus } from "../../../core/agent/services/credentialService
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
-import { App } from "@capacitor/app";
-import { IonSpinner } from "@ionic/react";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -302,4 +300,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
   return initialised ? <>{props.children}</> : <></>;
 };
 
-export { AppWrapper };
+export {
+  AppWrapper,
+  connectionStateChangedHandler,
+  acdcChangeHandler,
+  keriaNotificationsChangeHandler,
+};
