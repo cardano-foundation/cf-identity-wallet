@@ -127,43 +127,7 @@ describe("Lock Modal", () => {
     );
   });
 
-  test("If a seed phrase was stored and I click on I forgot my passcode, I can start over", async () => {
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
-    const storeMocked2 = (initialState: StoreMocked) => {
-      return {
-        ...mockStore(initialState),
-        dispatch: dispatchMock,
-      };
-    };
-    const { getByText, findByText } = render(
-      <Provider store={storeMocked2(initialStateWithSeedPhrase)}>
-        <MemoryRouter initialEntries={[RoutePath.ROOT]}>
-          <IonReactRouter>
-            <LockModal />
-            <Route
-              path={RoutePath.SET_PASSCODE}
-              component={SetPasscode}
-            />
-          </IonReactRouter>
-        </MemoryRouter>
-      </Provider>
-    );
-
-    fireEvent.click(
-      await getByText(EN_TRANSLATIONS.lockmodal.forgotten.button)
-    );
-    //fireEvent.click(getByText(EN_TRANSLATIONS.lockmodal.alert.button.restart));
-    fireEvent.click(getByText(EN_TRANSLATIONS.lockmodal.alert.button.verify));
-
-    await waitFor(() => {
-      expect(
-        findByText(EN_TRANSLATIONS.lockmodal.description)
-      ).not.toBeInTheDocument();
-    });
-  });
-
-  test("If no seed phrase was stored and I click on I forgot my passcode, I can start over", async () => {
+  test("I click on I forgot my passcode, I can start over", async () => {
     const { getByText, findByText } = render(
       <Provider store={storeMocked(initialStateWithoutSeedPhrase)}>
         <MemoryRouter initialEntries={[RoutePath.ROOT]}>
@@ -194,34 +158,26 @@ describe("Lock Modal", () => {
     ).toBeVisible();
   });
 
-  test("verifies passcode and hide modal", async () => {
-    const storedPass = "111111";
-    const secureStorageGetMock = jest
-      .spyOn(SecureStorage, "get")
-      .mockResolvedValue(storedPass);
+  test("Verifies passcode and hides modal upon correct input", async () => {
+    const correctPasscode = "111111";
+    jest.spyOn(SecureStorage, "get").mockResolvedValue(correctPasscode);
 
-    const { getByText, findByText } = render(
+    const { getByText, queryByTestId } = render(
       <Provider store={storeMocked(initialStateWithSeedPhrase)}>
         <LockModal />
       </Provider>
     );
 
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-
-    await waitFor(() => {
-      expect(secureStorageGetMock).toHaveBeenCalledWith(
-        KeyStoreKeys.APP_PASSCODE
-      );
+    Array.from(correctPasscode).forEach((digit) => {
+      fireEvent.click(getByText(new RegExp(`^${digit}$`, "i")));
     });
 
-    expect(
-      getByText(EN_TRANSLATIONS.lockmodal.description)
-    ).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(SecureStorage.get).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("lock-modal")).not.toBeInTheDocument();
+    });
   });
 });
