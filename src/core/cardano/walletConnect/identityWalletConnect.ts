@@ -70,7 +70,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         throw new Error(`${IdentityWalletConnect.AID_MISSING_SIGNIFY_NAME}`);
       }
 
-      return await Agent.agent.connections.getKeriOobi(identifier.signifyName);
+      return await Agent.agent.connections.getOobi(identifier.signifyName);
     };
   }
 

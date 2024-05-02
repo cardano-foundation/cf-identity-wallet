@@ -38,9 +38,6 @@ jest.mock("../../../core/agent/agent", () => ({
         restoreCredential: jest.fn(() => Promise.resolve(true)),
         getCredentialShortDetailsById: jest.fn(() => Promise.resolve([])),
       },
-      genericRecords: {
-        findById: jest.fn(),
-      },
     },
   },
 }));

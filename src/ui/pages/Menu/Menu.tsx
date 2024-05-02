@@ -16,10 +16,12 @@ import {
   chatbubbleOutline,
   fingerPrintOutline,
   idCardOutline,
+  lockClosedOutline,
 } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch } from "../../../store/hooks";
 import {
+  logout,
   setCurrentOperation,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
@@ -55,8 +57,14 @@ const Menu = () => {
     );
   };
 
-  const handleItemSelection = (index: number) => {
-    // @TODO - sdisalvo: add some logic for selection
+  const handleItemSelection = (option: string) => {
+    switch (option) {
+    case i18n.t("menu.tab.items.lock"):
+      dispatch(logout());
+      return;
+    default:
+      return;
+    }
   };
 
   const MenuItem = ({
@@ -71,7 +79,7 @@ const Menu = () => {
     return (
       <IonCol>
         <IonCard
-          onClick={() => handleItemSelection(index)}
+          onClick={() => handleItemSelection(label)}
           data-testid={`menu-input-item-${index}`}
           className="menu-input"
         >
@@ -127,6 +135,18 @@ const Menu = () => {
             index={5}
             icon={idCardOutline}
             label={`${i18n.t("menu.tab.items.credentials")}`}
+          />
+        </IonRow>
+        <IonRow className="menu-input-row">
+          <MenuItem
+            index={4}
+            icon={lockClosedOutline}
+            label={`${i18n.t("menu.tab.items.lock")}`}
+          />
+          <MenuItem
+            index={5}
+            icon=""
+            label=""
           />
         </IonRow>
       </IonGrid>

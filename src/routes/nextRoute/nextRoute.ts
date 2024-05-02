@@ -21,9 +21,7 @@ const getNextRootRoute = (store: StoreState) => {
     routes.some((route) => route.path === "/") || routes.length === 0;
 
   let path;
-  if (authentication.passcodeIsSet && !authentication.loggedIn) {
-    path = RoutePath.PASSCODE_LOGIN;
-  } else if (routes.length === 1 && !isInitialized) {
+  if (routes.length === 1 && !isInitialized) {
     path = RoutePath.ONBOARDING;
   } else if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
     path = RoutePath.TABS_MENU;

@@ -1,10 +1,11 @@
 import { IConnectMessage } from "@fabianbormann/cardano-peer-connect/dist/src/types";
 import { ExperimentalContainer } from "@fabianbormann/cardano-peer-connect";
+import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { IdentityWalletConnect } from "./identityWalletConnect";
 import { ExperimentalAPIFunctions } from "./peerConnection.types";
 import packageInfo from "../../../../package.json";
 import ICON_BASE64 from "../../../assets/icon-only";
-import { PreferencesStorage, PreferencesKeys } from "../../storage";
+import { KeyStoreKeys } from "../../storage";
 
 class PeerConnection {
   static readonly PEER_CONNECTION_START_PENDING =
@@ -33,9 +34,9 @@ class PeerConnection {
     let meerkatSeed = null;
 
     try {
-      meerkatSeed = (
-        await PreferencesStorage.get(PreferencesKeys.APP_MEERKAT_SEED)
-      )?.seed as string;
+      meerkatSeed = (await SecureStorage.get(
+        KeyStoreKeys.APP_MEERKAT_SEED
+      )) as string;
     } catch {
       meerkatSeed = null;
     }
@@ -72,9 +73,7 @@ class PeerConnection {
     }
 
     const seed = this.identityWalletConnect.connect(dAppIdentifier);
-    PreferencesStorage.set(PreferencesKeys.APP_MEERKAT_SEED, {
-      meerkatSeed: seed,
-    });
+    SecureStorage.set(KeyStoreKeys.APP_MEERKAT_SEED, seed);
     this.connected = true;
   }
 

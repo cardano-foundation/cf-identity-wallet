@@ -1,6 +1,6 @@
-import { IdentifierFullDetails } from "../../core/agent/services/identifierService.types";
+import { IdentifierDetails } from "../../core/agent/services/identifier.types";
 
-const identifierFix: IdentifierFullDetails[] = [
+const identifierFix: IdentifierDetails[] = [
   {
     signifyName: "Test",
     id: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",

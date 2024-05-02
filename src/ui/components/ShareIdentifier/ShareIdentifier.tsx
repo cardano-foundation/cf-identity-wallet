@@ -28,7 +28,7 @@ const ShareIdentifier = ({
   useEffect(() => {
     if (signifyName) {
       const fetchOobi = async () => {
-        const oobiValue = await Agent.agent.connections.getKeriOobi(
+        const oobiValue = await Agent.agent.connections.getOobi(
           `${signifyName}`,
           userName
         );

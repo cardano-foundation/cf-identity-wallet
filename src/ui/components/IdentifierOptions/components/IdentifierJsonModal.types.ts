@@ -1,7 +1,7 @@
-import { IdentifierFullDetails } from "../../../../core/agent/services/identifierService.types";
+import { IdentifierDetails } from "../../../../core/agent/services/identifier.types";
 
 export interface IdentifierJsonModalProps {
-  cardData: IdentifierFullDetails;
+  cardData: IdentifierDetails;
   isOpen: boolean;
   onDissmiss: () => void;
 }
