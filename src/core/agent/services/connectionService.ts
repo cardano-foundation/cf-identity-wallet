@@ -2,14 +2,12 @@ import { v4 as uuidv4 } from "uuid";
 import {
   ConnectionDetails,
   ConnectionHistoryItem,
-  ConnectionHistoryType,
   ConnectionEventTypes,
   ConnectionStateChangedEvent,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
   ConnectionStatus,
-  KeriaContact,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { Agent } from "../agent";
@@ -17,6 +15,7 @@ import { BasicRecord } from "../records";
 import { RecordType } from "../../storage/storage.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { waitAndGetDoneOp } from "./utils";
+import { ConnectionHistoryType, KeriaContact } from "./connection.types";
 
 class ConnectionService extends AgentService {
   static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
