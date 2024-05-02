@@ -72,6 +72,7 @@ describe("Render Identifier Stage", () => {
             threshold: 1,
             scannedConections: [],
             selectedConnections: [],
+            ourIdentifier: "",
             newIdentifier: {
               id: "",
               displayName: "",
@@ -110,6 +111,7 @@ describe("Render Identifier Stage", () => {
                 logo: "",
               },
             ],
+            ourIdentifier: "",
             newIdentifier: {
               id: "",
               displayName: "",

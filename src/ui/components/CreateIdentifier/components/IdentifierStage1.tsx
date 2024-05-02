@@ -102,6 +102,8 @@ const IdentifierStage1 = ({
     setState((prevState: IdentifierStageProps) => ({
       ...prevState,
       scannedConections,
+      displayNameValue: state.displayNameValue || resumeMultiSig?.displayName,
+      ourIdentifier: state.ourIdentifier || resumeMultiSig?.id,
       identifierCreationStage: 2,
     }));
   };

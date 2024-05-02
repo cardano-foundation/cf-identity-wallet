@@ -120,17 +120,6 @@ const IdentifierStage4 = ({
           <IonCard>
             <IonItem className="identifier-list-item">
               <IonLabel>{state.displayNameValue}</IonLabel>
-              <IonIcon
-                aria-hidden="true"
-                icon={pencilOutline}
-                slot="end"
-                onClick={() =>
-                  setState((prevState: IdentifierStageProps) => ({
-                    ...prevState,
-                    identifierCreationStage: 1,
-                  }))
-                }
-              />
             </IonItem>
           </IonCard>
         </div>

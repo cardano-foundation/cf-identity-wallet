@@ -63,9 +63,6 @@ const IdentifierStage2 = ({
         <p className="multisig-subtitle">
           {i18n.t("createidentifier.connections.subtitle")}
         </p>
-        <IonSearchbar
-          placeholder={`${i18n.t("createidentifier.connections.search")}`}
-        />
         <IonList>
           {state.scannedConections.map((connection, index) => {
             return (

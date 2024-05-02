@@ -37,6 +37,7 @@ interface IdentifierStageProps {
     scannedConections: ConnectionShortDetails[];
     selectedConnections: ConnectionShortDetails[];
     newIdentifier: IdentifierShortDetails;
+    ourIdentifier: string;
   };
   setState: (value: any) => void;
   componentId: string;
