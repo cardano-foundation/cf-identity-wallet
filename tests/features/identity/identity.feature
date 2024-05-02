@@ -17,22 +17,14 @@ Feature: Identity
     Then user can see Identity screen
     And user can not to see Add An Identifier modal
 
-  Scenario Outline: Identity - Create <key_name> identifier from Add an identified button
+  Scenario: Identity - Create KERI default identifier from Add an identified button
     Given user tap Add an identified button on the Identity screen
-    When user add <key_name> identity
+    When user add KERI identity
     Then user can see toast message about created identity on Identity screen
     And user can see identity card details
-    Examples:
-      | key_name |
-      | DIDKEY   |
-      | KERI     |
 
-  Scenario Outline: Identity - Create <key_name> identifier from plus icon
+  Scenario: Identity - Create KERI default identifier from plus icon
     Given user tap Plus button on the screen
-    When user add <key_name> identity
+    When user add KERI identity
     Then user can see toast message about created identity on Identity screen
     And user can see identity card details
-    Examples:
-      | key_name |
-      | DIDKEY   |
-      | KERI     |

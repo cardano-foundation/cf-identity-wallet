@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import "./CreatePassword.scss";
 import { CustomInput } from "../../components/CustomInput";
@@ -23,11 +22,12 @@ import { PageFooter } from "../../components/PageFooter";
 import { passwordStrengthChecker } from "../../utils/passwordStrengthChecker";
 import { PasswordValidation } from "../../components/PasswordValidation";
 import { RecordType } from "../../../core/storage/storage.types";
+import { useAppIonRouter } from "../../hooks";
 
 const CreatePassword = () => {
   const pageId = "create-password";
   const stateCache = useAppSelector(getStateCache);
-  const history = useHistory();
+  const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
   const [createPasswordValue, setCreatePasswordValue] = useState("");
   const [confirmPasswordValue, setConfirmPasswordValue] = useState("");
@@ -65,10 +65,12 @@ const CreatePassword = () => {
         createPasswordValue
       );
       if (hintValue) {
-        await Agent.agent.basicStorages.save({
+        await Agent.agent.basicStorage.save({
           id: MiscRecordId.OP_PASS_HINT,
           content: { value: hintValue },
-          type: RecordType.OP_PASS_HINT,
+          tags: {
+            type: RecordType.OP_PASS_HINT,
+          },
         });
       }
     }
@@ -88,7 +90,7 @@ const CreatePassword = () => {
       updateRedux
     );
     dispatch(setCurrentOperation(OperationType.IDLE));
-    history.push(nextPath.pathname);
+    ionRouter.push(nextPath.pathname, "forward", "push");
     handleClearState();
   };
 

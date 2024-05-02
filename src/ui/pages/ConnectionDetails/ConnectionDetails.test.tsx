@@ -1,4 +1,5 @@
 import { act, render, waitFor } from "@testing-library/react";
+import { createMemoryHistory } from "history";
 import {
   ionFireEvent as fireEvent,
   waitForIonicReact,
@@ -6,6 +7,7 @@ import {
 import { MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { IonReactMemoryRouter } from "@ionic/react-router";
 import { ConnectionStatus } from "../../../core/agent/agent.types";
 import { RoutePath } from "../../../routes";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -26,9 +28,6 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       credentials: {
         getCredentialDetailsById: jest.fn(),
-      },
-      genericRecords: {
-        findById: jest.fn(),
       },
     },
   },
@@ -86,8 +85,13 @@ describe("ConnectionDetails Page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.CREDENTIALS);
     const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+      <IonReactMemoryRouter
+        history={history}
+        initialEntries={[TabsRoutePath.CREDENTIALS]}
+      >
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
@@ -99,7 +103,7 @@ describe("ConnectionDetails Page", () => {
             component={ConnectionDetails}
           />
         </Provider>
-      </MemoryRouter>
+      </IonReactMemoryRouter>
     );
 
     act(() => {
@@ -173,7 +177,7 @@ describe("ConnectionDetails Page", () => {
     );
   });
 
-  test.skip("Delete button in the footer triggers a confirmation alert", async () => {
+  test("Delete button in the footer triggers a confirmation alert", async () => {
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
@@ -203,18 +207,33 @@ describe("ConnectionDetails Page", () => {
     });
 
     const alertDeleteConnection = await findByTestId(
-      "alert-confirm-delete-connection"
+      "alert-confirm-delete-connection-container"
     );
     expect(alertDeleteConnection).toHaveClass("alert-invisible");
-    const deleteButton = await findByTestId(
-      "delete-button-identifier-card-details"
-    );
+    const deleteButton = await findByTestId("delete-button-connection-details");
+
+    await waitForIonicReact();
+
     act(() => {
       fireEvent.click(deleteButton);
     });
+
     await waitFor(() =>
       expect(alertDeleteConnection).toHaveClass("alert-visible")
     );
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("alert-confirm-delete-connection-confirm-button")
+      );
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(getByTestId("verify-passcode")).toBeVisible();
+      expect(getByTestId("verify-passcode")).toHaveAttribute("is-open", "true");
+    });
   });
 
   test("Show loading spin when load data", async () => {
@@ -290,7 +309,7 @@ describe("ConnectionDetails Page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, getByText, findByTestId } = render(
+    const { getByTestId, getByText, getAllByTestId, queryByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
@@ -314,21 +333,30 @@ describe("ConnectionDetails Page", () => {
       fireEvent.click(getByText(connectionsFix[0].label));
     });
 
+    await waitFor(() => {
+      expect(queryByTestId("connection-detail-spinner-container")).toBe(null);
+    });
+
     act(() => {
       fireEvent.click(getByTestId("action-button"));
     });
 
-    const alertDeleteConnection = await findByTestId(
-      "alert-confirm-delete-connection"
-    );
-    expect(alertDeleteConnection).toHaveClass("alert-invisible");
-    const deleteButton = await findByTestId("delete-button-connection-options");
-    act(() => {
-      fireEvent.click(deleteButton);
+    await waitFor(() => {
+      expect(getAllByTestId("connection-options-modal")[0]).toBeVisible();
+      expect(getByTestId("delete-button-connection-options")).toBeVisible();
     });
-    await waitFor(() =>
-      expect(alertDeleteConnection).toHaveClass("alert-visible")
-    );
+
+    const button = getByTestId("delete-button-connection-options");
+
+    act(() => {
+      fireEvent.click(button);
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("alert-confirm-delete-connection")).toHaveClass(
+        "alert-visible"
+      );
+    });
   });
 
   test.skip("Open Manage Connection notes modal", async () => {
@@ -336,7 +364,7 @@ describe("ConnectionDetails Page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, queryByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
@@ -358,6 +386,10 @@ describe("ConnectionDetails Page", () => {
 
     act(() => {
       fireEvent.click(getByText(connectionsFix[0].label));
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("connection-detail-spinner-container")).toBe(null);
     });
 
     act(() => {

@@ -1,6 +1,5 @@
 import { expect } from "expect-webdriverio";
 import { cardDetails } from "../../helpers/card-details.js";
-import { KeyIdentifierType } from "../../constants/keyIdentifier.types.js";
 
 export class IdentityCardDetailsScreen {
   identifierParentLocator =
@@ -56,7 +55,7 @@ export class IdentityCardDetailsScreen {
     ).toHaveText(editedIdentityName);
   }
 
-  async loads(identifierType: string) {
+  async loads() {
     await expect(await this.favouriteButton).toBeDisplayed();
     await expect(await this.shareButton).toBeDisplayed();
     await expect(await this.optionsButton).toBeDisplayed();
@@ -67,14 +66,7 @@ export class IdentityCardDetailsScreen {
       await this.cardDisplayNameText(0, this.identifierParentLocator)
     ).toBeDisplayed();
     await expect(await this.deleteIdentifierButton).toBeExisting();
-    switch (identifierType) {
-    case KeyIdentifierType.DIDKEY:
-      await cardDetails().cardBlocksForDidKey();
-      return;
-    case KeyIdentifierType.KERI:
-      await cardDetails().cardBlocksForKeri();
-      return;
-    }
+    await cardDetails().cardBlocksForKeri();
   }
 }
 

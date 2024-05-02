@@ -5,38 +5,42 @@ import { i18n } from "../../../../i18n";
 import { ConnectionNoteProps } from "./ConnectionNote.types";
 
 const ConnectionNote = ({
-  title,
-  message,
-  id,
-  notes,
-  currentNoteId,
-  setAlertDeleteNoteIsOpen,
-  setNotes,
+  data,
+  onNoteDataChange,
+  onDeleteNote,
 }: ConnectionNoteProps) => {
+  const { title, message, id } = data;
   const [newTitle, setNewTitle] = useState(title);
   const [newMessage, setNewMessage] = useState(message);
   const TITLE_MAX_LENGTH = 64;
   const MESSAGE_MAX_LENGTH = 576;
 
+  const submitNoteChange = () => {
+    onNoteDataChange({
+      id: id,
+      title: newTitle,
+      message: newMessage,
+    });
+  };
+
   return (
-    <div className="connection-details-info-block-inner">
+    <div
+      data-testid="connection-note"
+      className="connection-details-info-block-inner"
+    >
       <div className="connection-details-info-block-line">
         <div className="connection-details-info-block-data">
           <div className="connection-details-info-block-title">
             <span>{i18n.t("connections.details.title")}</span>
-            <span>
+            <span data-testid="title-length">
               {newTitle.length}/{TITLE_MAX_LENGTH}
             </span>
           </div>
           <IonInput
+            aria-label={`${i18n.t("connections.details.title")}`}
             data-testid={`edit-connections-modal-note-title-${id}`}
-            onIonChange={(e) => setNewTitle(`${e.target.value ?? ""}`)}
-            onIonBlur={(e) => {
-              const newNotes = [...notes];
-              const noteIndex = newNotes.map((el) => el.id).indexOf(id);
-              newNotes[noteIndex].title = e.target.value?.toString() ?? "";
-              setNotes(newNotes);
-            }}
+            onIonInput={(e) => setNewTitle(`${e.target.value ?? ""}`)}
+            onIonBlur={submitNoteChange}
             value={newTitle}
           />
         </div>
@@ -50,13 +54,8 @@ const ConnectionNote = ({
           <IonTextarea
             autoGrow={true}
             data-testid={`edit-connections-modal-note-message-${id}`}
-            onIonChange={(e) => setNewMessage(`${e.target.value ?? ""}`)}
-            onIonBlur={(e) => {
-              const newNotes = [...notes];
-              const noteIndex = newNotes.map((el) => el.id).indexOf(id);
-              newNotes[noteIndex].message = e.target.value?.toString() ?? "";
-              setNotes(newNotes);
-            }}
+            onIonInput={(e) => setNewMessage(`${e.target.value ?? ""}`)}
+            onIonBlur={submitNoteChange}
             value={newMessage}
           />
         </div>
@@ -65,9 +64,9 @@ const ConnectionNote = ({
         <IonButton
           shape="round"
           color={"danger"}
+          data-testid={`note-delete-button-${id}`}
           onClick={() => {
-            currentNoteId = id;
-            setAlertDeleteNoteIsOpen(true);
+            onDeleteNote(id);
           }}
         >
           <IonIcon

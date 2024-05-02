@@ -1,26 +1,21 @@
+import { SQLiteDBConnection } from "@capacitor-community/sqlite";
 import {
-  CapacitorSQLite,
-  SQLiteConnection,
-  SQLiteDBConnection,
-} from "@capacitor-community/sqlite";
-import {
-  StorageApi,
   Query,
-  SaveBasicRecordOption,
   StorageRecord,
-  RecordType,
+  BaseRecord,
+  StorageService,
+  BaseRecordConstructor,
 } from "../storage.types";
 import {
   TagDataType,
   convertDbQuery,
-  getUnMigrationSqls,
   isNilOrEmptyString,
   resolveTagsFromDb,
 } from "./utils";
 import { deserializeRecord } from "../utils";
 import { BasicRecord } from "../../agent/records";
 
-class SqliteStorage implements StorageApi {
+class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
   private static readonly SESION_IS_NOT_INITIALIZED =
     "Session is not initialized";
   static readonly RECORD_ALREADY_EXISTS_ERROR_MSG =
@@ -47,26 +42,15 @@ class SqliteStorage implements StorageApi {
   static readonly SCAN_TAGS_SQL_IN =
     "EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value IN ";
 
-  static readonly VERSION_DATABASE_KEY = "VERSION_DATABASE_KEY";
-
-  static readonly GET_KV_SQL = "SELECT * FROM kv where key = ?";
-  static readonly INSERT_KV_SQL =
-    "INSERT OR REPLACE INTO kv (key,value) VALUES (?,?)";
-
   private session?: SQLiteDBConnection;
 
-  async save({
-    type,
-    content,
-    tags,
-    id,
-  }: SaveBasicRecordOption): Promise<BasicRecord> {
+  constructor(session?: SQLiteDBConnection) {
+    this.session = session;
+  }
+
+  async save(record: T): Promise<T> {
     this.checkSession(this.session);
-    const record = new BasicRecord({
-      id,
-      content,
-      type,
-    });
+    record.updatedAt = new Date();
 
     if (await this.getItem(record.id)) {
       throw new Error(
@@ -78,12 +62,12 @@ class SqliteStorage implements StorageApi {
       category: record.type,
       name: record.id,
       value: JSON.stringify(record),
-      tags: tags || {},
+      tags: record.getTags(),
     });
     return record;
   }
 
-  async update(record: BasicRecord): Promise<void> {
+  async update(record: T): Promise<void> {
     this.checkSession(this.session);
 
     if (!(await this.getItem(record.id))) {
@@ -104,7 +88,7 @@ class SqliteStorage implements StorageApi {
     });
   }
 
-  async delete(record: BasicRecord): Promise<void> {
+  async delete(record: T): Promise<void> {
     this.checkSession(this.session);
 
     if (!(await this.getItem(record.id))) {
@@ -126,7 +110,10 @@ class SqliteStorage implements StorageApi {
     await this.deleteItem(id);
   }
 
-  async findById(id: string): Promise<BasicRecord | null> {
+  async findById(
+    id: string,
+    recordClass: BaseRecordConstructor<T>
+  ): Promise<T | null> {
     this.checkSession(this.session);
 
     const record = await this.getItem(id);
@@ -134,33 +121,33 @@ class SqliteStorage implements StorageApi {
     if (!record) {
       return null;
     }
-    return deserializeRecord(record);
+    return deserializeRecord(record, recordClass);
   }
 
-  async getAll(type: RecordType): Promise<BasicRecord[]> {
+  async getAll(recordClass: BaseRecordConstructor<T>): Promise<T[]> {
     this.checkSession(this.session);
-    const instances: BasicRecord[] = [];
+    const instances: T[] = [];
 
-    const records = await this.scanItems(type);
+    const records = await this.scanItems(recordClass.type);
 
     records.forEach((value) => {
-      instances.push(deserializeRecord(value));
+      instances.push(deserializeRecord(value, recordClass));
     });
 
     return instances;
   }
 
   async findAllByQuery(
-    type: RecordType,
-    query: Query<BasicRecord>
-  ): Promise<BasicRecord[]> {
+    query: Query<BasicRecord>,
+    recordClass: BaseRecordConstructor<T>
+  ): Promise<T[]> {
     this.checkSession(this.session);
 
-    const instances: BasicRecord[] = [];
+    const instances: T[] = [];
 
-    const records = await this.scanItems(type, query);
+    const records = await this.scanItems(recordClass.type, query);
     records.forEach((value) => {
-      instances.push(deserializeRecord(value));
+      instances.push(deserializeRecord(value, recordClass));
     });
     return instances;
   }
@@ -176,10 +163,7 @@ class SqliteStorage implements StorageApi {
     return undefined;
   }
 
-  async scanItems(
-    type: RecordType,
-    query?: Query<BasicRecord>
-  ): Promise<StorageRecord[]> {
+  async scanItems(type: string, query?: Query<T>): Promise<StorageRecord[]> {
     let scanValues = [type as string];
     let scanQuery = SqliteStorage.SCAN_QUERY_SQL;
     if (query && Object.keys(query).length > 0) {
@@ -311,67 +295,9 @@ class SqliteStorage implements StorageApi {
     return { condition: conditions.join(" AND "), values };
   }
 
-  async open(storageName: string): Promise<void> {
-    const connection = new SQLiteConnection(CapacitorSQLite);
-    const ret = await connection.checkConnectionsConsistency();
-    const isConn = (await connection.isConnection(storageName, false)).result;
-    if (ret.result && isConn) {
-      this.session = await connection.retrieveConnection(storageName, false);
-    } else {
-      this.session = await connection.createConnection(
-        storageName,
-        false,
-        "no-encryption",
-        1,
-        false
-      );
-    }
-    await this.session.open();
-    await this.initDB();
-  }
-
-  private async initDB(): Promise<void> {
-    const unMigrationSqls = getUnMigrationSqls(
-      await this.getCurrentVersionDatabase()
-    );
-    if (unMigrationSqls) {
-      const migrationStatements: { statement: string; values?: string[] }[] =
-        unMigrationSqls.sqls.map((sql) => {
-          return { statement: sql };
-        });
-      migrationStatements.push({
-        statement: SqliteStorage.INSERT_KV_SQL,
-        values: [
-          SqliteStorage.VERSION_DATABASE_KEY,
-          JSON.stringify(unMigrationSqls.latestVersion),
-        ],
-      });
-      await this.session?.executeTransaction(migrationStatements);
-    }
-  }
-
   private checkSession(session?: SQLiteDBConnection) {
     if (!session) {
       throw new Error(SqliteStorage.SESION_IS_NOT_INITIALIZED);
-    }
-  }
-
-  async getKv(key: string): Promise<any> {
-    const qValues = await this.session?.query(SqliteStorage.GET_KV_SQL, [key]);
-    if (qValues && qValues.values && qValues.values.length === 1) {
-      return JSON.parse(qValues.values[0]?.value);
-    }
-    return undefined;
-  }
-
-  private async getCurrentVersionDatabase(): Promise<string> {
-    try {
-      const currentVersionDatabase = await this.getKv(
-        SqliteStorage.VERSION_DATABASE_KEY
-      );
-      return currentVersionDatabase;
-    } catch (error) {
-      return "0.0.0";
     }
   }
 }

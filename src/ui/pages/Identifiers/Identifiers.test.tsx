@@ -22,9 +22,6 @@ jest.mock("../../../core/agent/agent", () => ({
         getIdentifier: jest.fn().mockResolvedValue({}),
         checkMultisigComplete: jest.fn().mockResolvedValue(true),
       },
-      genericRecords: {
-        findById: jest.fn(),
-      },
     },
   },
 }));

@@ -28,9 +28,6 @@ jest.mock("../../../core/agent/agent", () => ({
       credentials: {
         getCredentialDetailsById: jest.fn(),
       },
-      genericRecords: {
-        findById: jest.fn(),
-      },
     },
   },
 }));
@@ -90,12 +87,12 @@ describe("Verify Passcode on Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getAllByText(EN_TRANSLATIONS.credentials.details.alert.archive.title)[1]
+        getAllByText(EN_TRANSLATIONS.credentials.details.alert.archive.title)[0]
       ).toBeVisible();
     });
 
     await waitFor(() => {
-      expect(getAllByTestId("verify-passcode")[1]).toHaveAttribute(
+      expect(getAllByTestId("verify-passcode")[0]).toHaveAttribute(
         "is-open",
         "false"
       );
@@ -112,7 +109,7 @@ describe("Verify Passcode on Cards Details page", () => {
     await waitForIonicReact();
 
     await waitFor(() => {
-      expect(getAllByTestId("verify-passcode")[1]).toHaveAttribute(
+      expect(getAllByTestId("verify-passcode")[0]).toHaveAttribute(
         "is-open",
         "true"
       );

@@ -10,7 +10,6 @@ import { PageHeader } from "../../PageHeader";
 import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
 import { TypeItem } from "./TypeItem";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
-import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
 import { Agent } from "../../../../core/agent/agent";
 import {
   getIdentifiersCache,
@@ -20,6 +19,7 @@ import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { ToastMsgType } from "../../../globals/types";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
 
 const IdentifierStage0 = ({
   state,
