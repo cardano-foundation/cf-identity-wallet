@@ -17,6 +17,7 @@ import {
   getAuthentication,
   getCurrentOperation,
   getCurrentRoute,
+  getStateCache,
   getToastMsg,
 } from "../store/reducers/stateCache";
 import { useAppSelector } from "../store/hooks";
@@ -33,6 +34,7 @@ import { LockModal } from "./components/LockModal";
 setupIonicReact();
 
 const App = () => {
+  const stateCache = useAppSelector(getStateCache);
   const authentication = useAppSelector(getAuthentication);
   const currentRoute = useAppSelector(getCurrentRoute);
   const [showSetUserName, setShowSetUserName] = useState(false);
@@ -96,7 +98,7 @@ const App = () => {
   }, []);
 
   const renderApp = () => {
-    if (!lockIsRendered) {
+    if (!lockIsRendered && !stateCache.initialized) {
       // We need to include the LockModal in the loading page to track when is rendered
       return (
         <>

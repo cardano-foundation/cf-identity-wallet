@@ -261,7 +261,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
       isInitialized = await PreferencesStorage.get(
         PreferencesKeys.APP_ALREADY_INIT
       );
-      dispatch(setInitialized(isInitialized?.initialized as boolean));
     } catch (e) {
       await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
       await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
@@ -286,6 +285,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setPauseQueueIncomingRequest(true));
 
     await loadDatabase();
+
+    dispatch(setInitialized(isInitialized?.initialized as boolean));
 
     Agent.agent.connections.onConnectionKeriStateChanged((event) => {
       return connectionKeriStateChangedHandler(event, dispatch);
