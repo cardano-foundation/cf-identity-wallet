@@ -9,7 +9,7 @@ enum KeyStoreKeys {
   IDENTITY_ROOT_XPRV_KEY = "identity-root-xprv-key",
   APP_OP_PASSWORD = "app-operations-password",
   SIGNIFY_BRAN = "signify-bran",
-  APP_MEERKAT_SEED = "app-meerkat-seed",
+  MEERKAT_SEED = "app-meerkat-seed",
 }
 
 class SecureStorage {

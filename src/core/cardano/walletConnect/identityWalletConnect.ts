@@ -12,12 +12,9 @@ class IdentityWalletConnect extends CardanoPeerConnect {
   static readonly IDENTIFIER_ID_NOT_LOCATED =
     "The id doesn't correspond with any stored identifier";
   static readonly NO_IDENTIFIERS_STORED = "No stored identifiers";
-  static readonly AID_MISSING_SIGNIFY_NAME =
-    "Metadata record for KERI AID is missing the Signify name";
 
   getIdentifierOobi: () => Promise<string>;
-  sign: (oobi: string, payload: string) => Promise<string>;
-  generateOobi: (identifierId: string) => Promise<string>;
+  sign: (identifier: string, payload: string) => Promise<string>;
 
   signerCache: Map<string, Signer>;
 
@@ -42,35 +39,20 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         throw new Error(IdentityWalletConnect.NO_IDENTIFIERS_STORED);
       }
 
-      return identifiers[0].id;
+      return Agent.agent.connections.getOobi(identifiers[0].signifyName);
     };
 
-    this.sign = async (oobi: string, payload: string): Promise<string> => {
-      if (this.signerCache.get(oobi) === undefined) {
+    this.sign = async (
+      identifier: string,
+      payload: string
+    ): Promise<string> => {
+      if (this.signerCache.get(identifier) === undefined) {
         this.signerCache.set(
-          oobi,
-          await Agent.agent.identifiers.getSigner(oobi)
+          identifier,
+          await Agent.agent.identifiers.getSigner(identifier)
         );
       }
-      return this.signerCache.get(oobi)!.sign(Buffer.from(payload)).qb64;
-    };
-
-    this.generateOobi = async (identifierId: string): Promise<string> => {
-      const identifier = await Agent.agent.identifiers.getIdentifier(
-        identifierId
-      );
-
-      if (!identifier) {
-        throw new Error(
-          `${IdentityWalletConnect.IDENTIFIER_ID_NOT_LOCATED} ${identifierId}`
-        );
-      }
-
-      if (!identifier.signifyName) {
-        throw new Error(`${IdentityWalletConnect.AID_MISSING_SIGNIFY_NAME}`);
-      }
-
-      return await Agent.agent.connections.getOobi(identifier.signifyName);
+      return this.signerCache.get(identifier)!.sign(Buffer.from(payload)).qb64;
     };
   }
 

@@ -35,7 +35,7 @@ class PeerConnection {
 
     try {
       meerkatSeed = (await SecureStorage.get(
-        KeyStoreKeys.APP_MEERKAT_SEED
+        KeyStoreKeys.MEERKAT_SEED
       )) as string;
     } catch {
       meerkatSeed = null;
@@ -62,7 +62,6 @@ class PeerConnection {
       new ExperimentalContainer<ExperimentalAPIFunctions>({
         getIdentifierOobi: this.identityWalletConnect.getIdentifierOobi,
         sign: this.identityWalletConnect.sign,
-        getOobi: this.identityWalletConnect.generateOobi,
       })
     );
   }
@@ -73,7 +72,7 @@ class PeerConnection {
     }
 
     const seed = this.identityWalletConnect.connect(dAppIdentifier);
-    SecureStorage.set(KeyStoreKeys.APP_MEERKAT_SEED, seed);
+    SecureStorage.set(KeyStoreKeys.MEERKAT_SEED, seed);
     this.connected = true;
   }
 

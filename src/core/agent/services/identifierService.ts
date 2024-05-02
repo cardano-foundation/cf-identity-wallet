@@ -10,9 +10,8 @@ import {
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
-import { Aid, IdentifierResult } from "../agent.types";
+import { IdentifierResult } from "../agent.types";
 import { waitAndGetDoneOp } from "./utils";
-import { IdentityWalletConnect } from "../../cardano/walletConnect/identityWalletConnect";
 
 const identifierTypeThemes = [0, 1];
 
@@ -153,12 +152,6 @@ class IdentifierService extends AgentService {
       identifier
     );
     this.validIdentifierMetadata(metadata);
-
-    if (!metadata.signifyName) {
-      throw new Error(
-        `${IdentityWalletConnect.AID_MISSING_SIGNIFY_NAME} ${metadata.id}`
-      );
-    }
 
     const aid = await this.signifyClient
       .identifiers()
