@@ -114,7 +114,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const authentication = useAppSelector(getAuthentication);
   const [agentInitErr, setAgentInitErr] = useState(false);
 
-  const ACTIVITY_TIMEOUT = 3000;
+  const ACTIVITY_TIMEOUT = 60000;
   let timer: NodeJS.Timeout;
 
   useEffect(() => {
