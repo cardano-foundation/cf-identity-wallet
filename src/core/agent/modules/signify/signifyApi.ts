@@ -77,8 +77,6 @@ export class SignifyApi {
     "Unable to retrieve key states for given multi-sig member";
   static readonly KERIA_CONNECTION_BROKEN =
     "The app is not connected to KERIA at the moment";
-  static readonly FAILED_TO_ESTABLISH_KERIA_CONNECTION =
-    "Failed to establish connection with KERIA after multiple retries";
 
   static readonly CREDENTIAL_SERVER =
     "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
@@ -100,26 +98,15 @@ export class SignifyApi {
     this.opRetryInterval = opRetryInterval;
   }
 
-  async bootAndConnect(
-    retryInterval = 1000,
-    maximumNumberOfRetries?: number,
-    numberOfRetries = 0
-  ) {
+  async bootAndConnect(retryInterval = 1000) {
     try {
       SignifyApi.isOnline = false;
       await this.signifyClient.boot();
       await this.signifyClient.connect();
       SignifyApi.isOnline = true;
     } catch (error) {
-      if (maximumNumberOfRetries && numberOfRetries >= maximumNumberOfRetries) {
-        throw new Error(SignifyApi.FAILED_TO_ESTABLISH_KERIA_CONNECTION);
-      }
       await new Promise((resolve) => setTimeout(resolve, retryInterval));
-      await this.bootAndConnect(
-        retryInterval,
-        maximumNumberOfRetries,
-        numberOfRetries + 1
-      );
+      await this.bootAndConnect(retryInterval);
     }
   }
   /**
