@@ -1,8 +1,4 @@
-import {
-  IonModal,
-  useIonViewDidEnter,
-  useIonViewWillEnter,
-} from "@ionic/react";
+import { IonModal } from "@ionic/react";
 import { i18n } from "../../../i18n";
 import "./LockModal.scss";
 import { RoutePath } from "../../../routes";
@@ -18,11 +14,10 @@ import {
   login,
   setAuthentication,
   setCurrentRoute,
-  setPauseQueueIncomingRequest,
 } from "../../../store/reducers/stateCache";
 import { useEffect, useState } from "react";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { PublicRoutes, TabsRoutePath } from "../../../routes/paths";
+import { PublicRoutes } from "../../../routes/paths";
 import { LockModalTypes } from "./LockModal.types";
 
 const LockModal = ({ didEnter }: LockModalTypes) => {
@@ -72,9 +67,6 @@ const LockModal = ({ didEnter }: LockModalTypes) => {
         if (verified) {
           dispatch(login());
           handleClearState();
-          setTimeout(() => {
-            dispatch(setPauseQueueIncomingRequest(false));
-          }, 500);
         } else {
           setPasscodeIncorrect(true);
         }
@@ -129,6 +121,9 @@ const LockModal = ({ didEnter }: LockModalTypes) => {
       className="lock-modal"
       data-testid={componentId}
       animated={false}
+      draggable={false}
+      backdropDismiss={false}
+      showBackdrop={true}
     >
       <ResponsivePageLayout
         pageId={componentId}

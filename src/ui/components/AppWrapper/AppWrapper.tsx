@@ -43,6 +43,7 @@ import { CredentialStatus } from "../../../core/agent/services/credentialService
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
+import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -169,48 +170,80 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
 
   const loadPreferences = async () => {
-    const getPreferenceSafe = async (key: string) => {
-      try {
-        return await PreferencesStorage.get(key);
-      } catch (e) {
-        // TODO: handle error
-      }
-    };
-    const userName = await getPreferenceSafe(PreferencesKeys.APP_USER_NAME);
-
+    let userName: PreferencesStorageItem = { userName: "" };
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
 
-    const updatedAuthentication = {
-      ...authentication,
-      loggedIn: false,
-      userName: userName?.userName as string,
-      passcodeIsSet,
-      seedPhraseIsSet,
-      passwordIsSet,
-    };
+    try {
+      const identifiersFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
+      );
+      dispatch(
+        setFavouritesIdentifiersCache(
+          identifiersFavourites.favourites as FavouriteIdentifier[]
+        )
+      );
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_IDENTIFIERS_FAVOURITES}`
+        )
+      ) {
+        throw e;
+      }
+    }
 
-    dispatch(setAuthentication(updatedAuthentication));
+    try {
+      const credsFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_CREDS_FAVOURITES
+      );
+      dispatch(
+        setFavouritesCredsCache(
+          credsFavourites.favourites as FavouriteIdentifier[]
+        )
+      );
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_CREDS_FAVOURITES}`
+        )
+      ) {
+        throw e;
+      }
+    }
 
-    const identifiersFavourites = await getPreferenceSafe(
-      PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
-    );
+    try {
+      userName = await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME);
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
+        )
+      ) {
+        throw e;
+      }
+    }
+
     dispatch(
-      setFavouritesIdentifiersCache(
-        identifiersFavourites?.favourites as FavouriteIdentifier[]
-      )
-    );
-
-    const credsFavourites = await getPreferenceSafe(
-      PreferencesKeys.APP_CREDS_FAVOURITES
-    );
-    dispatch(
-      setFavouritesCredsCache(
-        credsFavourites?.favourites as FavouriteIdentifier[]
-      )
+      setAuthentication({
+        ...authentication,
+        userName: userName.userName as string,
+        passcodeIsSet,
+        seedPhraseIsSet,
+        passwordIsSet,
+      })
     );
   };
 
@@ -222,7 +255,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
       isInitialized = await PreferencesStorage.get(
         PreferencesKeys.APP_ALREADY_INIT
       );
-      dispatch(setInitialized(isInitialized?.initialized as boolean));
     } catch (e) {
       await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
       await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
@@ -246,9 +278,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
     dispatch(setPauseQueueIncomingRequest(true));
 
-    await loadDatabase().catch((e) => {
-      /* TODO: handle error */
-    });
+    await loadDatabase();
+    dispatch(setInitialized(isInitialized?.initialized as boolean));
 
     Agent.agent.connections.onConnectionStateChanged((event) => {
       return connectionStateChangedHandler(event, dispatch);

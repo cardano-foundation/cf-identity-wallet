@@ -17,6 +17,7 @@ import {
   getAuthentication,
   getCurrentOperation,
   getCurrentRoute,
+  getStateCache,
   getToastMsg,
 } from "../store/reducers/stateCache";
 import { useAppSelector } from "../store/hooks";
@@ -32,6 +33,7 @@ import { LockModal } from "./components/LockModal";
 setupIonicReact();
 
 const App = () => {
+  const stateCache = useAppSelector(getStateCache);
   const authentication = useAppSelector(getAuthentication);
   const currentRoute = useAppSelector(getCurrentRoute);
   const [showSetUserName, setShowSetUserName] = useState(false);
@@ -77,23 +79,25 @@ const App = () => {
   }, [authentication.loggedIn, currentRoute]);
 
   useEffect(() => {
-    const platforms = getPlatforms();
-    if (!platforms.includes("mobileweb")) {
-      ScreenOrientation.lock({ orientation: "portrait" });
-      if (platforms.includes("ios")) {
-        StatusBar.setStyle({
-          style: Style.Light,
-        });
-      }
+    ScreenOrientation.lock({ orientation: "portrait" });
 
-      return () => {
-        ScreenOrientation.unlock();
-      };
+    const platforms = getPlatforms();
+    const isIosAppPlatform =
+      platforms.includes("ios") && !platforms.includes("mobileweb");
+
+    if (isIosAppPlatform) {
+      StatusBar.setStyle({
+        style: Style.Light,
+      });
     }
+
+    return () => {
+      ScreenOrientation.unlock();
+    };
   }, []);
 
   const renderApp = () => {
-    if (!lockIsRendered) {
+    if (!lockIsRendered && !stateCache.initialized) {
       // We need to include the LockModal in the loading page to track when is rendered
       return (
         <>

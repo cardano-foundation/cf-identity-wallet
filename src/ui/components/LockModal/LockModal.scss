@@ -3,6 +3,7 @@ ion-modal.lock-modal {
   flex-direction: column;
   justify-content: end;
   --height: auto;
+  --width: 100%;
 
   .responsive-page-content {
     justify-content: space-evenly;
