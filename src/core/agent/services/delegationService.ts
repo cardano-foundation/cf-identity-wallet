@@ -1,13 +1,23 @@
 import { v4 as uuidv4 } from "uuid";
-import { CreateIdentifierResult } from "../agent.types";
+import { AgentServicesProps, CreateIdentifierResult } from "../agent.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
+  IdentifierStorage,
 } from "../records";
 import { AgentService } from "./agentService";
 import { waitAndGetDoneOp } from "./utils";
 
 class DelegationService extends AgentService {
+  protected readonly identifierStorage: IdentifierStorage;
+
+  constructor(
+    agentServiceProps: AgentServicesProps,
+    identifierStorage: IdentifierStorage
+  ) {
+    super(agentServiceProps);
+    this.identifierStorage = identifierStorage;
+  }
   async createDelegatedIdentifier(
     metadata: Omit<
       IdentifierMetadataRecordProps,

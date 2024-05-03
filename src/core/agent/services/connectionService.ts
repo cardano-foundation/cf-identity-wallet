@@ -8,16 +8,36 @@ import {
   ConnectionNoteProps,
   ConnectionShortDetails,
   ConnectionStatus,
+  AgentServicesProps,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { Agent } from "../agent";
-import { BasicRecord } from "../records";
-import { RecordType } from "../../storage/storage.types";
+import {
+  ConnectionNoteStorage,
+  ConnectionRecord,
+  CredentialStorage,
+  ConnectionStorage } from "../records";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
 
 class ConnectionService extends AgentService {
+  protected readonly connectionStorage!: ConnectionStorage;
+  protected readonly connectionNoteStorage!: ConnectionNoteStorage;
+  protected readonly credentialStorage: CredentialStorage;
+
+  constructor(
+    agentServiceProps: AgentServicesProps,
+    connectionStorage: ConnectionStorage,
+    connectionNoteStorage: ConnectionNoteStorage,
+    credentialStorage: CredentialStorage
+  ) {
+    super(agentServiceProps);
+    this.connectionStorage = connectionStorage;
+    this.connectionNoteStorage = connectionNoteStorage;
+    this.credentialStorage = credentialStorage;
+  }
+
   static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
     "Connection note record not found";
   static readonly CONNECTION_METADATA_RECORD_NOT_FOUND =
@@ -118,14 +138,14 @@ class ConnectionService extends AgentService {
   }
 
   private getConnectionShortDetails(
-    record: BasicRecord
+    record: ConnectionRecord
   ): ConnectionShortDetails {
     return {
       id: record.id,
-      label: record.content?.alias as string,
+      label: record.alias,
       connectionDate: record.createdAt.toISOString(),
       status: ConnectionStatus.CONFIRMED,
-      oobi: record.content?.oobi as string,
+      oobi: record.oobi,
     };
   }
 
@@ -144,11 +164,11 @@ class ConnectionService extends AgentService {
   }
 
   async deleteConnectionById(id: string): Promise<void> {
-    await this.basicStorage.deleteById(id);
+    await this.connectionStorage.deleteById(id);
     // await this.signifyApi.deleteContactById(id); @TODO - foconnor: Uncomment when KERIA endpoint fixed
     const notes = await this.getConnectNotesByConnectionId(id);
     for (const note of notes) {
-      this.basicStorage.deleteById(note.id);
+      this.connectionNoteStorage.deleteById(note.id);
     }
   }
 
@@ -163,13 +183,11 @@ class ConnectionService extends AgentService {
     connectionId: string,
     note: ConnectionNoteProps
   ): Promise<void> {
-    await this.basicStorage.save({
+    await this.connectionNoteStorage.save({
       id: uuidv4(),
-      content: note,
-      tags: {
-        connectionId,
-        type: RecordType.CONNECTION_NOTE,
-      },
+      title: note.title,
+      message: note.message,
+      connectionId,
     });
   }
 
@@ -177,16 +195,19 @@ class ConnectionService extends AgentService {
     connectionNoteId: string,
     note: ConnectionNoteProps
   ) {
-    const noteRecord = await this.basicStorage.findById(connectionNoteId);
+    const noteRecord = await this.connectionNoteStorage.findById(
+      connectionNoteId
+    );
     if (!noteRecord) {
       throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
     }
-    noteRecord.content = note;
-    await this.basicStorage.update(noteRecord);
+    noteRecord.title = note.title;
+    noteRecord.message = note.message;
+    await this.connectionNoteStorage.update(noteRecord);
   }
 
   async deleteConnectionNoteById(connectionNoteId: string) {
-    return this.basicStorage.deleteById(connectionNoteId);
+    return this.connectionNoteStorage.deleteById(connectionNoteId);
   }
 
   async getOobi(signifyName: string, alias?: string): Promise<string> {
@@ -199,31 +220,27 @@ class ConnectionService extends AgentService {
 
   private async createConnectionMetadata(
     connectionId: string,
-    metadata?: Record<string, unknown>
+    metadata: Record<string, unknown>
   ): Promise<void> {
-    await this.basicStorage.save({
+    await this.connectionStorage.save({
       id: connectionId,
-      content: metadata || {},
-      tags: {
-        type: RecordType.KERIA_CONNECTION_METADATA,
-      },
+      alias: metadata.alias as string,
+      oobi: metadata.oobi as string,
     });
   }
 
   private async getConnectionMetadataById(
     connectionId: string
-  ): Promise<BasicRecord> {
-    const connection = await this.basicStorage.findById(connectionId);
+  ): Promise<ConnectionRecord> {
+    const connection = await this.connectionStorage.findById(connectionId);
     if (!connection) {
       throw new Error(ConnectionService.CONNECTION_METADATA_RECORD_NOT_FOUND);
     }
     return connection;
   }
 
-  async getAllConnectionMetadata(): Promise<BasicRecord[]> {
-    return this.basicStorage.findAllByQuery({
-      type: RecordType.KERIA_CONNECTION_METADATA,
-    });
+  async getAllConnectionMetadata(): Promise<ConnectionRecord[]> {
+    return this.connectionStorage.getAll();
   }
 
   async getConnectionHistoryById(
@@ -251,7 +268,7 @@ class ConnectionService extends AgentService {
     const storageContacts = await this.getAllConnectionMetadata();
     const unSyncedData = signifyContacts.filter(
       (contact: KeriaContact) =>
-        !storageContacts.find((item: BasicRecord) => contact.id == item.id)
+        !storageContacts.find((item: ConnectionRecord) => contact.id == item.id)
     );
     if (unSyncedData.length) {
       //sync the storage with the signify data
@@ -284,15 +301,14 @@ class ConnectionService extends AgentService {
   private async getConnectNotesByConnectionId(
     connectionId: string
   ): Promise<ConnectionNoteDetails[]> {
-    const notes = await this.basicStorage.findAllByQuery({
+    const notes = await this.connectionNoteStorage.findAllByQuery({
       connectionId,
-      type: RecordType.CONNECTION_NOTE,
     });
     return notes.map((note) => {
       return {
         id: note.id,
-        title: note.content.title as string,
-        message: note.content.message as string,
+        title: note.title,
+        message: note.message,
       };
     });
   }

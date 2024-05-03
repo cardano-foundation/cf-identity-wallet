@@ -1,15 +1,26 @@
 import { AgentService } from "./agentService";
 import {
+  AgentServicesProps,
   KeriaNotification,
   KeriaNotificationMarker,
   NotificationRoute,
 } from "../agent.types";
 import { Notification } from "./credentialService.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
-import { RecordType } from "../../storage/storage.types";
+import { NotificationStorage } from "../records";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
+
+  protected readonly notificationStorage!: NotificationStorage;
+
+  constructor(
+    agentServiceProps: AgentServicesProps,
+    notificationStorage: NotificationStorage
+  ) {
+    super(agentServiceProps);
+    this.notificationStorage = notificationStorage;
+  }
 
   async onNotificationStateChanged(
     callback: (event: KeriaNotification) => void
@@ -93,7 +104,7 @@ class SignifyNotificationService extends AgentService {
   }
 
   async deleteNotificationRecordById(id: string): Promise<void> {
-    await this.basicStorage.deleteById(id);
+    await this.notificationStorage.deleteById(id);
   }
 
   async processNotification(
@@ -118,36 +129,34 @@ class SignifyNotificationService extends AgentService {
   private async createNotificationRecord(
     event: Notification
   ): Promise<KeriaNotification> {
-    const result = await this.basicStorage.save({
+    const result = await this.notificationStorage.save({
       id: event.i,
-      content: event.a,
-      tags: {
-        isDismissed: false,
-        type: RecordType.KERIA_NOTIFICATION,
-        route: event.a.r,
-      },
+      a: event.a,
+      isDismissed: false,
+      route: event.a.r,
     });
     return {
       id: result.id,
       createdAt: result.createdAt,
-      a: result.content,
+      a: result.a,
     };
   }
 
   async dismissNotification(notificationId: string) {
-    const notificationRecord = await this.basicStorage.findById(notificationId);
+    const notificationRecord = await this.notificationStorage.findById(
+      notificationId
+    );
     if (!notificationRecord) {
       throw new Error(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
     }
     notificationRecord.setTag("isDismissed", true);
-    await this.basicStorage.update(notificationRecord);
+    await this.notificationStorage.update(notificationRecord);
   }
 
   // This allow us to get all dismissed notifications
   async getDismissedNotifications() {
-    const notifications = await this.basicStorage.findAllByQuery({
+    const notifications = await this.notificationStorage.findAllByQuery({
       isDismissed: true,
-      type: RecordType.KERIA_NOTIFICATION,
     });
     return notifications;
   }

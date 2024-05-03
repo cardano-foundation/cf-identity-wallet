@@ -10,8 +10,9 @@ import {
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
-import { IdentifierResult } from "../agent.types";
+import { AgentServicesProps, IdentifierResult } from "../agent.types";
 import { waitAndGetDoneOp } from "./utils";
+import { IdentifierStorage } from "../records";
 
 const identifierTypeThemes = [0, 1];
 
@@ -26,6 +27,16 @@ class IdentifierService extends AgentService {
     "Failed to rotate AID, operation not completing...";
   static readonly FAILED_TO_OBTAIN_KEY_MANAGER =
     "Failed to obtain key manager for given AID";
+
+  protected readonly identifierStorage: IdentifierStorage;
+
+  constructor(
+    agentServiceProps: AgentServicesProps,
+    identifierStorage: IdentifierStorage
+  ) {
+    super(agentServiceProps);
+    this.identifierStorage = identifierStorage;
+  }
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
