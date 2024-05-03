@@ -25,9 +25,15 @@ import "./Menu.scss";
 import { i18n } from "../../../i18n";
 import { SubMenu } from "./components/SubMenu";
 import { MenuItemProps, SubMenuData, SubMenuKey } from "./Menu.types";
-import { emptySubMenu } from "./Menu.const";
 import { Settings } from "./components/Settings";
 import { ConnectWallet } from "./components/ConnectWallet";
+
+const emptySubMenu = {
+  Component: () => <></>,
+  title: "",
+  additionalButtons: <></>,
+  pageId: "empty",
+};
 
 const MenuItem = ({
   itemKey,
