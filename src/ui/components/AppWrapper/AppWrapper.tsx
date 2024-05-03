@@ -319,7 +319,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.
   // Hence this isn't in i18n.
   if (agentInitErr) {
-    //if (false) {
     return (
       <div className="agent-init-error-msg">
         <p>
