@@ -221,6 +221,7 @@ describe("Single sig service of agent", () => {
   });
 
   test("can create a keri identifier", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const aid = "newIdentifierAid";
     const displayName = "newDisplayName";
     identifiersCreateMock.mockResolvedValue({
@@ -241,6 +242,7 @@ describe("Single sig service of agent", () => {
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
   });
   test("cannot create a keri identifier if theme is not valid", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const displayName = "newDisplayName";
     identifiersCreateMock.mockResolvedValue({
       serder: {

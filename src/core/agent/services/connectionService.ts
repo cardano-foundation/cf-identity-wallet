@@ -268,6 +268,7 @@ class ConnectionService extends AgentService {
     }
   }
 
+  @OnlineOnly
   async resolveOobi(url: string): Promise<any> {
     if (ConnectionService.resolvedOobi[url]) {
       return ConnectionService.resolvedOobi[url];

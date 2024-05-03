@@ -81,6 +81,7 @@ class IdentifierService extends AgentService {
     };
   }
 
+  @OnlineOnly
   async createIdentifier(
     metadata: Omit<
       IdentifierMetadataRecordProps,

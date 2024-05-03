@@ -121,6 +121,7 @@ jest.mock("../../../core/agent/agent", () => ({
         resolveOobi: () => mockResolveOobi(),
       },
       identifiers: { getIdentifiers: () => mockGetIdentifiers() },
+      getKeriaOnlineStatus: jest.fn(),
     },
   },
 }));
@@ -1021,6 +1022,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Can get unhandled Multisig Identifier notifications", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const basicRecord = {
       _tags: {
         isDismiss: true,
@@ -1047,6 +1049,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Should pass the filter throught findAllByQuery when call getUnhandledMultisigIdentifiers", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     await multiSigService.getUnhandledMultisigIdentifiers({
       isDismissed: false,

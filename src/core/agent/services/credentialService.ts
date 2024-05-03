@@ -142,24 +142,6 @@ class CredentialService extends AgentService {
   }
 
   @OnlineOnly
-  async getKeriCredentialNotifications(
-    filters: {
-      isDismissed?: boolean;
-    } = {}
-  ): Promise<KeriaNotification[]> {
-    const results = await this.basicStorage.findAllByQuery({
-      route: NotificationRoute.Credential,
-      ...filters,
-      type: RecordType.KERIA_NOTIFICATION,
-    });
-    return results.map((result) => {
-      return {
-        id: result.id,
-        createdAt: result.createdAt,
-        a: result.content,
-      };
-    });
-  }
   async getUnhandledIpexGrantNotifications(
     filters: {
       isDismissed?: boolean;

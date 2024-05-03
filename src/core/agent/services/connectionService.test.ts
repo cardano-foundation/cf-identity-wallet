@@ -227,7 +227,7 @@ describe("Connection service of agent", () => {
   });
 
   test("can receive keri oobi", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     signifyClient.oobis().resolve.mockResolvedValue({
       done: true,
     });

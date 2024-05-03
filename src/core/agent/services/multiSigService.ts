@@ -21,6 +21,7 @@ import {
   MultiSigExnMessage,
   CreateMultisigExnPayload,
 } from "./multiSig.types";
+import { OnlineOnly } from "./utils";
 
 class MultiSigService extends AgentService {
   static readonly INVALID_THRESHOLD = "Invalid threshold";
@@ -396,6 +397,7 @@ class MultiSigService extends AgentService {
     return { done: false };
   }
 
+  @OnlineOnly
   async getUnhandledMultisigIdentifiers(
     filters: {
       isDismissed?: boolean;

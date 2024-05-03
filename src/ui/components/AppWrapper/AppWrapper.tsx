@@ -108,8 +108,7 @@ const acdcChangeHandler = async (
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
-  const [initialised, setInitialised] = useState(false);
-  const [isOffline, setIsOffline] = useState(true);
+  const [isOnline, setIsOnline] = useState(false);
 
   const ACTIVITY_TIMEOUT = 60000;
   let timer: NodeJS.Timeout;
@@ -150,7 +149,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (!isOffline && initialised) {
+    if (isOnline) {
+      dispatch(setPauseQueueIncomingRequest(true));
       const handleMessages = async () => {
         Agent.agent.connections.onConnectionStateChanged((event) => {
           return connectionStateChangedHandler(event, dispatch);
@@ -164,7 +164,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
         const oldMessages = (
           await Promise.all([
-            Agent.agent.credentials.getUnhandledIpexGrantNotifications(),
+            Agent.agent.credentials.getUnhandledIpexGrantNotifications({
+              isDismissed: false,
+            }),
             Agent.agent.multiSigs.getUnhandledMultisigIdentifiers({
               isDismissed: false,
             }),
@@ -178,15 +180,20 @@ const AppWrapper = (props: { children: ReactNode }) => {
           await keriaNotificationsChangeHandler(message, dispatch);
         });
         // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-        await Promise.all([
-          Agent.agent.identifiers.syncKeriaIdentifiers(),
-          Agent.agent.connections.syncKeriaContacts(),
-          Agent.agent.credentials.syncACDCs(),
-        ]);
+        // await Promise.all([
+        //   Agent.agent.identifiers.syncKeriaIdentifiers(),
+        //   Agent.agent.connections.syncKeriaContacts(),
+        //   Agent.agent.credentials.syncACDCs(),
+        // ]);
       };
-      handleMessages();
+      (async () => {
+        await loadDatabase().catch((e) => {
+          /* TODO: handle error */
+        });
+        await handleMessages();
+      })();
     }
-  }, [isOffline, initialised]);
+  }, [isOnline]);
 
   const checkKeyStore = async (key: string) => {
     try {
@@ -277,27 +284,21 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     try {
       await Agent.agent.start();
-      setIsOffline(false);
+      setIsOnline(true);
     } catch (e) {
       const errorStack = (e as Error).stack as string;
       // If the error is failed to fetch with signify, we retry until the connection is secured
       if (/SignifyClient/gi.test(errorStack)) {
         Agent.agent.bootAndConnect().then(() => {
-          setIsOffline(!Agent.agent.isAgentReady());
+          setIsOnline(Agent.agent.getKeriaOnlineStatus());
         });
       } else {
         throw e;
       }
     }
-    dispatch(setPauseQueueIncomingRequest(true));
-    await loadDatabase().catch((e) => {
-      /* TODO: handle error */
-    });
-
-    setInitialised(true);
   };
 
-  return initialised ? <>{props.children}</> : <></>;
+  return <>{props.children}</>;
 };
 
 export {

@@ -356,13 +356,13 @@ describe("Credential service of agent", () => {
     );
   });
 
-  test("getCredentialDetailsById should throw an error when KERIA is offline ", async () => {
+  test("Should throw an error when KERIA is offline ", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
     await expect(
       credentialService.getCredentialDetailsById("not-found-id")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     await expect(
-      credentialService.getKeriCredentialNotifications()
+      credentialService.getUnhandledIpexGrantNotifications()
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     await expect(credentialService.syncACDCs()).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
@@ -420,6 +420,7 @@ describe("Credential service of agent", () => {
   });
 
   test("Should be able to getUnhandledIpexGrantNotifications", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const basicRecord = {
       _tags: {
         isDismiss: true,
@@ -446,6 +447,7 @@ describe("Credential service of agent", () => {
   });
 
   test("Should pass the filter throught findAllByQuery when call getUnhandledIpexGrantNotifications", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     await credentialService.getUnhandledIpexGrantNotifications({
       isDismissed: false,
