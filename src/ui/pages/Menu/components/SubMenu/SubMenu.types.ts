@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-export interface SubMenuProps {
+interface SubMenuProps {
   showSubMenu: boolean;
   setShowSubMenu: (value: boolean) => void;
   title: string;
@@ -8,3 +8,5 @@ export interface SubMenuProps {
   children: ReactNode;
   pageId: string;
 }
+
+export type { SubMenuProps };

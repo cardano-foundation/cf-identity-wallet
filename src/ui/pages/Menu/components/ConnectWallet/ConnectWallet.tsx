@@ -3,7 +3,7 @@ import { i18n } from "../../../../../i18n";
 import { CardsPlaceholder } from "../../../../components/CardsPlaceholder";
 import "./ConnectWallet.scss";
 
-export const ConnectWallet = () => {
+const ConnectWallet = () => {
   const pageId = "connect-wallet-placeholder";
   const [openConnectWallet, setOpenConnectWallet] = useState(false);
   const handleAddConnect = () => {
@@ -24,3 +24,5 @@ export const ConnectWallet = () => {
     </>
   );
 };
+
+export { ConnectWallet };

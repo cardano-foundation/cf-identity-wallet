@@ -23,7 +23,7 @@ interface MenuItemProps {
   onClick: (key: SubMenuKey) => void;
 }
 
-export enum SubMenuKey {
+enum SubMenuKey {
   Settings,
   Profile,
   Crypto,
@@ -32,3 +32,4 @@ export enum SubMenuKey {
 }
 
 export type { SubMenuProps, MenuItemProps, SubMenuData };
+export { SubMenuKey };
