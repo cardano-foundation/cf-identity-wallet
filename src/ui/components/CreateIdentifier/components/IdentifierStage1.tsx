@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
+  getCurrentOperation,
   getStateCache,
   setCurrentOperation,
 } from "../../../../store/reducers/stateCache";
@@ -13,6 +14,8 @@ import { Alert } from "../../Alert";
 import { i18n } from "../../../../i18n";
 import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { OperationType } from "../../../globals/types";
+import { getMultiSigGroupCache } from "../../../../store/reducers/identifiersCache";
+import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
 
 const IdentifierStage1 = ({
   state,
@@ -20,11 +23,13 @@ const IdentifierStage1 = ({
   componentId,
   resetModal,
   resumeMultiSig,
-  groupId: groupIdProp,
+  multiSigGroup,
 }: IdentifierStageProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+  const currentOperation = useAppSelector(getCurrentOperation);
+  const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
   const signifyName =
@@ -36,6 +41,9 @@ const IdentifierStage1 = ({
     resumeMultiSig?.groupMetadata || state.newIdentifier.groupMetadata;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [initiated, setInitiated] = useState(false);
+  const [scannedConections, setScannedConnections] = useState<
+    ConnectionShortDetails[]
+  >([]);
 
   useEffect(() => {
     async function fetchOobi() {
@@ -56,17 +64,27 @@ const IdentifierStage1 = ({
     fetchOobi();
   }, [groupId, signifyName, userName]);
 
+  useEffect(() => {
+    if (groupId) {
+      const updateConnections = async () => {
+        const connections = multiSigGroupCache?.connections;
+        connections && setScannedConnections(connections);
+      };
+      updateConnections();
+    }
+  }, [groupMetadata, currentOperation, groupId, multiSigGroupCache]);
+
   const handleDone = () => {
     resetModal && resetModal();
-    if (groupIdProp) {
+    if (multiSigGroup?.groupId) {
       history.push({
         pathname: TabsRoutePath.IDENTIFIERS,
       });
     }
   };
 
-  const handleScanButton = (scannedConections: number) => {
-    scannedConections >= 1 ? handleInitiateScan() : setAlertIsOpen(true);
+  const handleScanButton = () => {
+    scannedConections.length >= 1 ? handleInitiateScan() : setAlertIsOpen(true);
   };
 
   const handleInitiateScan = () => {
@@ -83,6 +101,9 @@ const IdentifierStage1 = ({
   const handleInitiateMultiSig = () => {
     setState((prevState: IdentifierStageProps) => ({
       ...prevState,
+      scannedConections,
+      displayNameValue: state.displayNameValue || resumeMultiSig?.displayName,
+      ourIdentifier: state.ourIdentifier || resumeMultiSig?.id,
       identifierCreationStage: 2,
     }));
   };
@@ -97,6 +118,7 @@ const IdentifierStage1 = ({
           oobi={oobi}
           groupMetadata={groupMetadata}
           handleScanButton={handleScanButton}
+          scannedConections={scannedConections}
         />
       ) : (
         <IdentifierStage1BodyInit
@@ -105,6 +127,7 @@ const IdentifierStage1 = ({
           oobi={oobi}
           groupMetadata={groupMetadata}
           handleScanButton={handleScanButton}
+          scannedConections={scannedConections}
         />
       )}
       <Alert

@@ -1018,26 +1018,25 @@
     },
     "connections": {
       "title": "Connections",
-      "subtitle": "Select the connections you want to sign this identifier with",
-      "search": "Search connections",
-      "continue": "Choose connections"
+      "subtitle": "These are the members you scanned. Please review before proceeding.",
+      "continue": "Confirm connections"
     },
     "threshold": {
       "title": "Set a Threshold",
       "subtitle": "Set the threshold to determine the level of consensus required",
       "label": "Threshold",
-      "continue": "Review identifier"
+      "continue": "Confirm threshold"
     },
     "confirm": {
       "title": "Confirm",
-      "subtitle": "Double-check all the details for your Keri AID identifier are accurate",
+      "subtitle": "Confirm all details for your Keri AID multi-sig identifier are accurate",
       "displayname": "Display Name",
       "selectedmembers": "Selected Members",
       "treshold": "Threshold",
       "continue": "Confirm identifier",
       "cancel": "Cancel",
       "alert": {
-        "text": "Cancelling now means you'll need to restart the identifier adding process. Are you sure you want to cancel?",
+        "text": "Cancelling now means you'll need to restart the multi-sig initiation process.",
         "cancel": "Yes, cancel",
         "back": "Back"
       }

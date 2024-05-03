@@ -20,6 +20,8 @@ import { Agent } from "../../../core/agent/agent";
 import { ScannerProps } from "./Scanner.types";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { CreateIdentifier } from "../CreateIdentifier";
+import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
+import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 
 const Scanner = forwardRef(
   ({ setIsValueCaptured, handleReset }: ScannerProps, ref) => {
@@ -67,6 +69,20 @@ const Scanner = forwardRef(
       stopScan,
     }));
 
+    const updateConnections = async (groupId: string) => {
+      // TODO: We should avoid calling getMultisigLinkedContacts every time we scan a QR code,
+      // ideally once the OOBI is resolved we can insert the connection details into Redux -
+      // should change when we do scanner error handling
+      const connections =
+        await Agent.agent.connections.getMultisigLinkedContacts(groupId);
+      const newMultiSigGroup: MultiSigGroup = {
+        groupId,
+        connections,
+      };
+
+      dispatch(setMultiSigGroupCache(newMultiSigGroup));
+    };
+
     const initScan = async () => {
       if (isPlatform("ios") || isPlatform("android")) {
         const allowed = await checkPermission();
@@ -88,6 +104,15 @@ const Scanner = forwardRef(
             if (invitation.type === KeriConnectionType.NORMAL) {
               handleReset && handleReset();
               setIsValueCaptured && setIsValueCaptured(true);
+              if (
+                currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
+                currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
+              ) {
+                const groupId = new URL(result.content).searchParams.get(
+                  "groupId"
+                );
+                groupId && updateConnections(groupId);
+              }
             } else if (
               invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR
             ) {
@@ -139,7 +164,6 @@ const Scanner = forwardRef(
           modalIsOpen={createIdentifierModalIsOpen}
           setModalIsOpen={setCreateIdentifierModalIsOpen}
           groupId={groupId}
-          setGroupId={setGroupId}
         />
       </>
     );

@@ -51,7 +51,9 @@ ion-modal.create-identifier-modal {
 
   .scrollable-page-layout {
     &:not(.keyboard-is-open) {
-      padding-bottom: 4rem;
+      &.initiator-view {
+        padding-bottom: 4rem;
+      }
     }
 
     &.keyboard-is-open ion-content.scrollable-page-content {
@@ -143,6 +145,10 @@ ion-modal.create-identifier-modal {
 
     .page-header {
       margin-top: 0.625rem;
+    }
+
+    .multisig-subtitle {
+      text-align: center;
     }
 
     ion-grid {
