@@ -70,6 +70,9 @@ const Scanner = forwardRef(
     }));
 
     const updateConnections = async (groupId: string) => {
+      // TODO: We should avoid calling getMultisigLinkedContacts every time we scan a QR code,
+      // ideally once the OOBI is resolved we can insert the connection details into Redux -
+      // should change when we do scanner error handling
       const connections =
         await Agent.agent.connections.getMultisigLinkedContacts(groupId);
       const newMultiSigGroup: MultiSigGroup = {
