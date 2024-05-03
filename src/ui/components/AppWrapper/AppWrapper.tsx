@@ -188,7 +188,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
 
   const loadPreferences = async () => {
-    dispatch(setPauseQueueIncomingRequest(true));
     let userName: PreferencesStorageItem = { userName: "" };
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
