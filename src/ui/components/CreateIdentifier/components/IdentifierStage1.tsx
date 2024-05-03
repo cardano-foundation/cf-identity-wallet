@@ -67,8 +67,8 @@ const IdentifierStage1 = ({
   useEffect(() => {
     if (groupId) {
       const updateConnections = async () => {
-        const connections = multiSigGroupCache.connections;
-        setScannedConnections(connections);
+        const connections = multiSigGroupCache?.connections;
+        connections && setScannedConnections(connections);
       };
       updateConnections();
     }

@@ -85,6 +85,7 @@ const CreateIdentifier = ({
     setModalIsOpen(false);
     setState(initialState);
     setResumeMultiSig && setResumeMultiSig(null);
+    dispatch(setMultiSigGroupCache(undefined));
   };
 
   const CurrentStage =

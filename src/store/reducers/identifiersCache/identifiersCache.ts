@@ -6,14 +6,11 @@ import { FavouriteIdentifier, MultiSigGroup } from "./identifiersCache.types";
 const initialState: {
   identifiers: IdentifierShortDetails[];
   favourites: FavouriteIdentifier[];
-  multiSigGroup: MultiSigGroup;
+  multiSigGroup: MultiSigGroup | undefined;
 } = {
   identifiers: [],
   favourites: [],
-  multiSigGroup: {
-    groupId: "",
-    connections: [],
-  },
+  multiSigGroup: undefined,
 };
 const identifiersCacheSlice = createSlice({
   name: "identifiersCache",
@@ -43,7 +40,10 @@ const identifiersCacheSlice = createSlice({
         (fav) => fav.id !== action.payload
       );
     },
-    setMultiSigGroupCache: (state, action: PayloadAction<MultiSigGroup>) => {
+    setMultiSigGroupCache: (
+      state,
+      action: PayloadAction<MultiSigGroup | undefined>
+    ) => {
       state.multiSigGroup = action.payload;
     },
   },
