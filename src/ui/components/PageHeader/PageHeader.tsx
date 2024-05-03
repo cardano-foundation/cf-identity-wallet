@@ -17,6 +17,7 @@ import { getBackRoute } from "../../../routes/backRoute";
 import "./PageHeader.scss";
 
 const PageHeader = ({
+  translucent,
   backButton,
   beforeBack,
   onBack,
@@ -67,7 +68,6 @@ const PageHeader = ({
 
   return (
     <IonHeader
-      translucent={true}
       className={`ion-no-border page-header ${
         hasContent ? "show-header" : "hide-header"
       }`}

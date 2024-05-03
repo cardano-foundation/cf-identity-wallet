@@ -27,7 +27,7 @@ body {
   }
 
   &.scanner-active {
-    background-color: transparent;
+    background-color: var(--ion-color-secondary);
 
     > div:last-child {
       display: block;

@@ -9,17 +9,26 @@ import {
 } from "@ionic/react";
 import { useEffect, useRef } from "react";
 import { Scanner } from "../../components/Scanner";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { useAppDispatch } from "../../../store/hooks";
+import {
+  getCurrentOperation,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   FullPageScannerProps,
   ScannerRefComponent,
 } from "./FullPageScanner.types";
 import { OperationType } from "../../globals/types";
 import "./FullPageScanner.scss";
+import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { PageHeader } from "../../components/PageHeader";
+import { PageFooter } from "../../components/PageFooter";
+import { i18n } from "../../../i18n";
 
-const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
+const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
+  const pageId = "qr-code-scanner-full-page";
   const dispatch = useAppDispatch();
+  const currentOperation = useAppSelector(getCurrentOperation);
   const scannerRef = useRef<ScannerRefComponent>(null);
 
   useEffect(() => {
@@ -35,34 +44,50 @@ const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
       ?.querySelector("body.scanner-active > div:last-child")
       ?.classList.add("hide");
   };
+
+  const handlePrimaryButtonAction = () => {
+    //
+  };
+
+  const handleSecondaryButtonAction = () => {
+    //
+  };
+
   return (
-    <IonPage
-      className="qr-code-scanner-full-page"
-      data-testid="qr-code-scanner-full-page"
+    <ResponsivePageLayout
+      pageId={pageId}
+      activeStatus={showScan}
+      header={
+        <PageHeader
+          closeButton={true}
+          closeButtonAction={handleReset}
+          closeButtonIcon={arrowBackOutline}
+        />
+      }
     >
-      <IonHeader className="ion-no-border page-header">
-        <IonToolbar color="transparent">
-          <IonButtons slot="start">
-            <IonButton
-              slot="icon-only"
-              fill="clear"
-              onClick={() => handleReset()}
-              className="back-button"
-              data-testid="back-button"
-            >
-              <IonIcon
-                icon={arrowBackOutline}
-                color="primary"
-              />
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
       <Scanner
         ref={scannerRef}
         handleReset={handleReset}
       />
-    </IonPage>
+      {currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN && (
+        <PageFooter
+          pageId={pageId}
+          primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
+          primaryButtonAction={() => handlePrimaryButtonAction()}
+          secondaryButtonText={`${i18n.t("createidentifier.scan.pasteoobi")}`}
+          secondaryButtonAction={() => handleSecondaryButtonAction()}
+        />
+      )}
+      {currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN && (
+        <PageFooter
+          pageId={pageId}
+          secondaryButtonText={`${i18n.t(
+            "createidentifier.scan.pastecontents"
+          )}`}
+          secondaryButtonAction={() => handleSecondaryButtonAction()}
+        />
+      )}
+    </ResponsivePageLayout>
   );
 };
 

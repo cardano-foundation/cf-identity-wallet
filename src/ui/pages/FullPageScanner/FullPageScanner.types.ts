@@ -1,4 +1,5 @@
 interface FullPageScannerProps {
+  showScan: boolean;
   setShowScan: (value: boolean) => void;
 }
 

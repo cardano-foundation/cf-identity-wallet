@@ -88,7 +88,12 @@ const App = () => {
       <AppWrapper>
         <StrictMode>
           {isPreviewMode && <MobileHeaderPreview />}
-          {showScan && <FullPageScanner setShowScan={setShowScan} />}
+          {showScan && (
+            <FullPageScanner
+              showScan={showScan}
+              setShowScan={setShowScan}
+            />
+          )}
           <Routes />
           <SetUserName
             isOpen={showSetUserName}

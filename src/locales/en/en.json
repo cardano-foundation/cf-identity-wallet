@@ -1016,6 +1016,13 @@
         "middle": "Remember to scan everyone else’s QR code too!"
       }
     },
+    "scan": {
+      "confirm": "Confirm",
+      "pasteoobi": "Paste OOBI",
+      "initiate": "Initiate multi-sig",
+      "scanqrcode": "Scan QR code",
+      "pastecontents": "Paste contents"
+    },
     "connections": {
       "title": "Connections",
       "subtitle": "These are the members you scanned. Please review before proceeding.",

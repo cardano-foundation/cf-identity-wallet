@@ -63,6 +63,7 @@ const Scanner = forwardRef(
       await BarcodeScanner.stopScan();
       await BarcodeScanner.showBackground();
       document?.querySelector("body")?.classList.remove("scanner-active");
+      setGroupId("");
     };
 
     useImperativeHandle(ref, () => ({

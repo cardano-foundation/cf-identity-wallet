@@ -1,12 +1,38 @@
 .qr-code-scanner-full-page {
-  .page-header {
-    position: absolute;
-    top: 0;
-    left: 0;
+  &.responsive-page-layout {
+    background: transparent;
+
+    ion-toolbar {
+      margin-top: 0;
+      --background: transparent;
+    }
   }
 
-  .qr-code-scanner-icon {
-    padding-bottom: 4rem;
-    margin: 0;
+  .responsive-page-content {
+    justify-content: flex-end;
+
+    .qr-code-scanner {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .qr-code-scanner-icon {
+      padding-bottom: 4rem;
+      margin: 0;
+    }
+
+    ion-toolbar.page-footer {
+      display: flex !important;
+      flex-direction: column-reverse !important;
+
+      .primary-button {
+        order: 2;
+      }
+
+      .secondary-button {
+        order: 2;
+      }
+    }
   }
 }
