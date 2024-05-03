@@ -1066,4 +1066,11 @@ describe("Multisig sig service of agent", () => {
       ],
     });
   });
+
+  test("Should throw an error when KERIA is offline ", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    await expect(
+      multiSigService.getUnhandledMultisigIdentifiers()
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+  });
 });

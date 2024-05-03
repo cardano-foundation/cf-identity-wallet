@@ -149,6 +149,7 @@ class IdentifierService extends AgentService {
     });
   }
 
+  @OnlineOnly
   async getSigner(identifier: string): Promise<Signer> {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier

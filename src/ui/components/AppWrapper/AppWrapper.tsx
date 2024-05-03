@@ -150,7 +150,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     if (isOnline) {
-      dispatch(setPauseQueueIncomingRequest(true));
       const handleMessages = async () => {
         Agent.agent.connections.onConnectionStateChanged((event) => {
           return connectionStateChangedHandler(event, dispatch);
@@ -186,12 +185,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         //   Agent.agent.credentials.syncACDCs(),
         // ]);
       };
-      (async () => {
-        await loadDatabase().catch((e) => {
-          /* TODO: handle error */
-        });
-        await handleMessages();
-      })();
+      handleMessages();
     }
   }, [isOnline]);
 
@@ -296,6 +290,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
         throw e;
       }
     }
+    dispatch(setPauseQueueIncomingRequest(true));
+    await loadDatabase().catch((e) => {
+      /* TODO: handle error */
+    });
   };
 
   return <>{props.children}</>;

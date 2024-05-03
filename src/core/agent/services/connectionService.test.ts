@@ -19,6 +19,7 @@ const basicStorage = jest.mocked({
 const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();
 
+const uuidToThrow = "throwMe";
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -33,11 +34,18 @@ const signifyClient = jest.mocked({
   }),
   operations: () => ({
     get: jest.fn().mockImplementation((id: string) => {
+      if (id === `${oobiPrefix}${uuidToThrow}`) {
+        return {
+          done: false,
+          name: id,
+        };
+      }
       return {
         done: true,
         response: {
           i: id,
         },
+        name: id,
       };
     }),
   }),
@@ -49,11 +57,18 @@ const signifyClient = jest.mocked({
       };
     }),
     resolve: jest.fn().mockImplementation((name: string) => {
+      if (name === `${oobiPrefix}${uuidToThrow}`) {
+        return {
+          done: false,
+          name,
+        };
+      }
       return {
         done: true,
         response: {
           i: name,
         },
+        name,
       };
     }),
   }),
@@ -123,7 +138,7 @@ const keriContacts = [
     wellKnowns: [],
   },
 ];
-const oobiPrefix = "oobi.";
+const oobiPrefix = "http://localhost:3902/oobi.";
 
 describe("Connection service of agent", () => {
   beforeEach(() => {
@@ -301,6 +316,40 @@ describe("Connection service of agent", () => {
     expect(basicStorage.save).toBeCalledTimes(2);
   });
 
+  test("can resolve oobi with no name parameter", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const url = `${oobiPrefix}keriuuid`;
+    const op = await connectionService.resolveOobi(url);
+    expect(op).toEqual({
+      response: { i: url },
+      name: url,
+      alias: expect.any(String),
+      done: true,
+    });
+  });
+
+  test("can resolve oobi with a name parameter (URL decoded)", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const url = `${oobiPrefix}keriuuid?name=alias%20with%20spaces`;
+    const op = await connectionService.resolveOobi(url);
+    expect(op).toEqual({
+      response: { i: url },
+      name: url,
+      alias: "alias with spaces",
+      done: true,
+    });
+  });
+
+  test("should timeout if oobi resolving is not completing", async () => {
+    signifyClient.operations().get = jest
+      .fn()
+      .mockResolvedValue({ done: false });
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    await expect(
+      connectionService.resolveOobi(`${oobiPrefix}${uuidToThrow}`)
+    ).rejects.toThrowError(ConnectionService.FAILED_TO_RESOLVE_OOBI);
+  }, 15251);
+
   test("Should throw error when KERIA is offline", async () => {
     await expect(
       connectionService.getConnectionById("id")
@@ -310,6 +359,9 @@ describe("Connection service of agent", () => {
     );
     await expect(
       connectionService.deleteConnectionById("id")
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      connectionService.resolveOobi("oobi-url")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 });

@@ -377,5 +377,14 @@ describe("Single sig service of agent", () => {
     await expect(identifierService.syncKeriaIdentifiers()).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
     );
+    await expect(
+      identifierService.getSigner("identifier")
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      identifierService.createIdentifier({
+        displayName: "name",
+        theme: 0,
+      })
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 });
