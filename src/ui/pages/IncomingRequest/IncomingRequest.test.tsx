@@ -127,6 +127,7 @@ const agentServicesProps = {
   eventService: new EventService(),
   identifierStorage: identifierStorage as any,
   credentialStorage: credentialStorage as any,
+  peerConnectionStorage: {} as any,
 };
 
 const signifyNotificationService = new SignifyNotificationService(

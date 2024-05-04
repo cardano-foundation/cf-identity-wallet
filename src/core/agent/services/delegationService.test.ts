@@ -34,6 +34,7 @@ const agentServicesProps = {
   eventService: new EventService(),
   identifierStorage: identifierStorage as any,
   credentialStorage: {} as any,
+  peerConnectionStorage: {} as any,
 };
 
 const delegationService = new DelegationService(agentServicesProps);

@@ -8,6 +8,7 @@ import { IdentifierStorage } from "./records/identifierStorage";
 import { CredentialStorage } from "./records/credentialStorage";
 import { BasicStorage } from "./records/basicStorage";
 import { ConnectionHistoryType } from "./services/connection.types";
+import { PeerConnectionStorage } from "./records";
 
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
@@ -101,6 +102,7 @@ interface AgentServicesProps {
   eventService: EventService;
   identifierStorage: IdentifierStorage;
   credentialStorage: CredentialStorage;
+  peerConnectionStorage: PeerConnectionStorage;
 }
 
 interface CreateIdentifierResult {

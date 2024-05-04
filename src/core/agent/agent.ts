@@ -10,6 +10,7 @@ import {
   ConnectionService,
   CredentialService,
   IdentifierService,
+  PeerConnectionService,
 } from "./services";
 import { SignifyNotificationService } from "./services/signifyNotificationService";
 import { AgentServicesProps } from "./agent.types";
@@ -21,6 +22,8 @@ import {
   CredentialStorage,
   IdentifierMetadataRecord,
   IdentifierStorage,
+  PeerConnectionMetadataRecord,
+  PeerConnectionStorage,
 } from "./records";
 import { KeyStoreKeys, SecureStorage } from "../storage";
 import { MultiSigService } from "./services/multiSigService";
@@ -54,6 +57,7 @@ class Agent {
 
   private connectionService!: ConnectionService;
   private credentialService!: CredentialService;
+  private peerConnectionService!: PeerConnectionService;
   private signifyNotificationService!: SignifyNotificationService;
 
   get identifiers() {
@@ -91,6 +95,15 @@ class Agent {
       this.credentialService = new CredentialService(this.agentServicesProps);
     }
     return this.credentialService;
+  }
+
+  get peerConnections() {
+    if (!this.peerConnectionService) {
+      this.peerConnectionService = new PeerConnectionService(
+        this.agentServicesProps
+      );
+    }
+    return this.peerConnectionService;
   }
 
   get basicStorage() {
@@ -149,6 +162,11 @@ class Agent {
         ),
         credentialStorage: new CredentialStorage(
           this.getStorageService<CredentialMetadataRecord>(this.storageSession)
+        ),
+        peerConnectionStorage: new PeerConnectionStorage(
+          this.getStorageService<PeerConnectionMetadataRecord>(
+            this.storageSession
+          )
         ),
       };
       Agent.ready = true;

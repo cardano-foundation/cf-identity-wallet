@@ -4,6 +4,7 @@ import { EventService } from "./eventService";
 import { IdentifierStorage } from "../records/identifierStorage";
 import { CredentialStorage } from "../records/credentialStorage";
 import { AgentServicesProps } from "../agent.types";
+import { PeerConnectionStorage } from "../records";
 
 abstract class AgentService {
   protected readonly basicStorage: StorageApi;
@@ -11,6 +12,7 @@ abstract class AgentService {
   protected readonly eventService: EventService;
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;
+  protected readonly peerConnectionStorage: PeerConnectionStorage;
 
   constructor(agentServicesProps: AgentServicesProps) {
     this.basicStorage = agentServicesProps.basicStorage;
@@ -18,6 +20,7 @@ abstract class AgentService {
     this.eventService = agentServicesProps.eventService;
     this.identifierStorage = agentServicesProps.identifierStorage;
     this.credentialStorage = agentServicesProps.credentialStorage;
+    this.peerConnectionStorage = agentServicesProps.peerConnectionStorage;
   }
 }
 

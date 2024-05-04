@@ -138,6 +138,7 @@ const agentServicesProps = {
   eventService,
   identifierStorage: identifierStorage as any,
   credentialStorage: credentialStorage as any,
+  peerConnectionStorage: {} as any,
 };
 
 jest.mock("../../../core/agent/agent", () => ({

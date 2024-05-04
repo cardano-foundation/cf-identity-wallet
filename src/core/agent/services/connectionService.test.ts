@@ -99,6 +99,7 @@ const agentServicesProps = {
   eventService: new EventService(),
   identifierStorage: new IdentifierStorage(session as any),
   credentialStorage: new CredentialStorage(session as any),
+  peerConnectionStorage: {} as any,
 };
 
 const connectionService = new ConnectionService(agentServicesProps);
