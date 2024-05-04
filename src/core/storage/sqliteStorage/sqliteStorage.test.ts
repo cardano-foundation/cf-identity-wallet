@@ -1,8 +1,7 @@
 import { SqliteStorage } from "./sqliteStorage";
 import { convertDbQuery } from "./utils";
-import { RecordType, StorageRecord } from "../storage.types";
+import { StorageRecord } from "../storage.types";
 import { BasicRecord } from "../../agent/records";
-import { SqliteSession } from "./sqliteSession";
 
 const startTime = new Date();
 

@@ -50,7 +50,6 @@ class Agent {
   private storageSession!: SqliteSession | IonicSession;
 
   private basicStorageService!: BasicStorage;
-
   private identifierStorage!: IdentifierStorage;
   private credentialStorage!: CredentialStorage;
   private connectionStorage!: ConnectionStorage;

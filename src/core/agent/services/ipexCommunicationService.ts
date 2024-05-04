@@ -38,7 +38,7 @@ class IpexCommunicationService extends AgentService {
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;
-  protected readonly notificationStorage!: NotificationStorage;
+  protected readonly notificationStorage: NotificationStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
