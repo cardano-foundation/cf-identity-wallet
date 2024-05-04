@@ -149,6 +149,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
+    if (authentication.loggedIn) {
+      dispatch(setPauseQueueIncomingRequest(!isOnline));
+    } else {
+      dispatch(setPauseQueueIncomingRequest(true));
+    }
     if (isOnline) {
       const handleMessages = async () => {
         Agent.agent.connections.onConnectionStateChanged((event) => {
@@ -187,7 +192,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       };
       handleMessages();
     }
-  }, [isOnline]);
+  }, [isOnline, authentication, dispatch]);
 
   const checkKeyStore = async (key: string) => {
     try {
@@ -279,10 +284,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
     try {
       await Agent.agent.start();
       setIsOnline(true);
+      await loadDatabase();
     } catch (e) {
       const errorStack = (e as Error).stack as string;
       // If the error is failed to fetch with signify, we retry until the connection is secured
       if (/SignifyClient/gi.test(errorStack)) {
+        await loadDatabase();
         Agent.agent.bootAndConnect().then(() => {
           setIsOnline(Agent.agent.getKeriaOnlineStatus());
         });
@@ -290,10 +297,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
         throw e;
       }
     }
-    dispatch(setPauseQueueIncomingRequest(true));
-    await loadDatabase().catch((e) => {
-      /* TODO: handle error */
-    });
   };
 
   return <>{props.children}</>;
