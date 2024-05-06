@@ -25,7 +25,7 @@ const walletConnectionsFix: ConnectionData[] = [
   {
     id: 4,
     name: "Wallet name #4",
-    owner: "",
+    owner: "Yume",
     url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
   },
 ];

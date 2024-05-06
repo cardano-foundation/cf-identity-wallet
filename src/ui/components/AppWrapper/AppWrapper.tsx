@@ -43,6 +43,8 @@ import { CredentialStatus } from "../../../core/agent/services/credentialService
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
+import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
+import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -166,6 +168,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setIdentifiersCache(storedIdentifiers));
     dispatch(setCredsCache(credentials));
     dispatch(setConnectionsCache(connectionsDetails));
+    // TODO: Need update after core function completed.
+    dispatch(setWalletConnectionsCache(walletConnectionsFix));
   };
 
   const loadPreferences = async () => {

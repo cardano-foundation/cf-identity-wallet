@@ -50,6 +50,10 @@ describe("NextRoute", () => {
       connectionsCache: {
         connections: [],
       },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: null,
+      },
     };
     data = {
       store: storeMock,
@@ -151,6 +155,10 @@ describe("getNextRoute", () => {
     credsCache: { creds: [], favourites: [] },
     connectionsCache: {
       connections: [],
+    },
+    walletConnectionsCache: {
+      walletConnections: [],
+      connectedWallet: null,
     },
   };
   const state = {};
