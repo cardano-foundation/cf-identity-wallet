@@ -8,15 +8,10 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { RoutePath } from "../../../routes";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { OperationType } from "../../globals/types";
-import { LockModal } from "./LockModal";
-import { SetPasscode } from "../../pages/SetPasscode";
+import { SetPasscode } from "../SetPasscode";
+import { LockPage } from "./LockPage";
 
-jest.mock("@ionic/react", () => ({
-  ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children }: { children: any }) => children,
-}));
-
-interface StoreMocked {
+interface StoreMockedProps {
   stateCache: {
     routes: RoutePath[];
     authentication: {
@@ -39,36 +34,14 @@ interface StoreMocked {
 
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
-const storeMocked = (initialState: StoreMocked) => {
+const storeMocked = (initialState: StoreMockedProps) => {
   return {
     ...mockStore(initialState),
     dispatch: dispatchMock,
   };
 };
 
-const initialStateWithSeedPhrase = {
-  stateCache: {
-    routes: [RoutePath.GENERATE_SEED_PHRASE],
-    authentication: {
-      loggedIn: false,
-      time: Date.now(),
-      passcodeIsSet: true,
-      seedPhraseIsSet: true,
-    },
-    currentOperation: OperationType.IDLE,
-  },
-  seedPhraseCache: {
-    seedPhrase160:
-      "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-    seedPhrase256: "",
-    selected: FIFTEEN_WORDS_BIT_LENGTH,
-  },
-  cryptoAccountsCache: {
-    cryptoAccounts: [],
-  },
-};
-
-const initialStateWithoutSeedPhrase = {
+const initialState = {
   stateCache: {
     routes: [RoutePath.GENERATE_SEED_PHRASE],
     authentication: {
@@ -89,18 +62,15 @@ const initialStateWithoutSeedPhrase = {
   },
 };
 
-describe("Lock Modal", () => {
+describe("Lock Page", () => {
   beforeEach(() => {
-    jest.resetAllMocks();
-  });
-  afterEach(() => {
     jest.resetAllMocks();
   });
 
   test("Renders Lock modal with title and description", () => {
     const { getByText } = render(
-      <Provider store={storeMocked(initialStateWithoutSeedPhrase)}>
-        <LockModal />
+      <Provider store={storeMocked(initialState)}>
+        <LockPage />
       </Provider>
     );
     expect(getByText(EN_TRANSLATIONS.lockmodal.title)).toBeInTheDocument();
@@ -111,8 +81,8 @@ describe("Lock Modal", () => {
 
   test("The user can add and remove digits from the passcode", () => {
     const { getByText, getByTestId } = render(
-      <Provider store={storeMocked(initialStateWithoutSeedPhrase)}>
-        <LockModal />
+      <Provider store={storeMocked(initialState)}>
+        <LockPage />
       </Provider>
     );
     fireEvent.click(getByText(/1/));
@@ -127,10 +97,10 @@ describe("Lock Modal", () => {
 
   test("I click on I forgot my passcode, I can start over", async () => {
     const { getByText, findByText } = render(
-      <Provider store={storeMocked(initialStateWithoutSeedPhrase)}>
+      <Provider store={storeMocked(initialState)}>
         <MemoryRouter initialEntries={[RoutePath.ROOT]}>
           <IonReactRouter>
-            <LockModal />
+            <LockPage />
             <Route
               path={RoutePath.SET_PASSCODE}
               component={SetPasscode}
@@ -156,13 +126,13 @@ describe("Lock Modal", () => {
     ).toBeVisible();
   });
 
-  test("Verifies passcode and hides modal upon correct input", async () => {
+  test("Verifies passcode and hides page upon correct input", async () => {
     const correctPasscode = "111111";
     jest.spyOn(SecureStorage, "get").mockResolvedValue(correctPasscode);
 
     const { getByText, queryByTestId } = render(
-      <Provider store={storeMocked(initialStateWithSeedPhrase)}>
-        <LockModal />
+      <Provider store={storeMocked(initialState)}>
+        <LockPage />
       </Provider>
     );
 
@@ -175,7 +145,7 @@ describe("Lock Modal", () => {
     });
 
     await waitFor(() => {
-      expect(queryByTestId("lock-modal")).not.toBeInTheDocument();
+      expect(queryByTestId("lock-page")).not.toBeInTheDocument();
     });
   });
 });
