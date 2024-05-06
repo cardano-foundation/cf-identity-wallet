@@ -282,6 +282,40 @@ describe("Multisig sig service of agent", () => {
     );
   });
 
+  test("Cannot create a keri multisig if the threshold is invalid", async () => {
+    const creatorIdentifier = "creatorIdentifier";
+    const otherIdentifiers = [
+      {
+        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+        oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+        status: ConnectionStatus.CONFIRMED,
+        connectionDate: new Date().toISOString(),
+      },
+    ];
+    const metadata = {
+      theme: 0,
+      displayName: "Multisig",
+    };
+
+    await expect(
+      multiSigService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        metadata as IdentifierMetadataRecordProps,
+        0
+      )
+    ).rejects.toThrowError(MultiSigService.INVALID_THRESHOLD);
+    await expect(
+      multiSigService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        metadata as IdentifierMetadataRecordProps,
+        otherIdentifiers.length + 2
+      )
+    ).rejects.toThrowError(MultiSigService.INVALID_THRESHOLD);
+  });
+
   test("Can create a keri delegated multisig with KERI contacts", async () => {
     const creatorIdentifier = "creatorIdentifier";
     const multisigIdentifier = "newMultisigIdentifierAid";
@@ -449,6 +483,115 @@ describe("Multisig sig service of agent", () => {
         }
       )
     ).rejects.toThrowError();
+  });
+
+  test("cannot join the multisig if cannot get key states for multisig member", async () => {
+    const multisigIdentifier = "newMultisigIdentifierAid";
+    basicStorage.findById = jest.fn().mockResolvedValue({
+      content: {
+        d: "d",
+      },
+    });
+    groupGetRequestMock = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            smids: ["smidId"],
+            rmids: ["rmidId"],
+          },
+          e: {
+            icp: "icp",
+          },
+        },
+      },
+    ]);
+    identifiersRotateMock.mockImplementation((name, _config) => {
+      return {
+        op: () => {
+          return { name: `group.${multisigIdentifier}`, done: false };
+        },
+        serder: {
+          ked: { i: name },
+        },
+        sigs: [
+          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+        ],
+      };
+    });
+    identifiersGetMock = jest.fn().mockResolvedValue(aidReturnedBySignify);
+
+    mockGetIdentifiers = jest.fn().mockResolvedValue([
+      {
+        displayName: "displayName",
+        id: "smidId",
+        signifyName: "signifyName",
+        createdAt: new Date(),
+        theme: 0,
+      },
+    ]);
+    identifiersCreateMock.mockImplementation((name, _config) => {
+      return {
+        op: () => {
+          return { name: `group.${multisigIdentifier}`, done: false };
+        },
+        serder: {
+          ked: { i: name },
+        },
+        sigs: [
+          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+        ],
+      };
+    });
+
+    // Cannot get key states both smid and rmid
+    queryKeyStateGetMock = jest.fn().mockResolvedValue([]);
+    await expect(
+      multiSigService.joinMultisig(
+        { id: "id", createdAt: new Date(), a: { d: "d" } },
+        {
+          theme: 0,
+          displayName: "Multisig",
+        }
+      )
+    ).rejects.toThrowError(
+      MultiSigService.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER
+    );
+
+    // Can get keystate smid but cannot get key states both rmid
+    queryKeyStateGetMock = jest.fn().mockImplementation((id: string) => {
+      if (id === "smidId") {
+        return [
+          {
+            name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+            metadata: {
+              oobi: "testOobi",
+            },
+            done: true,
+            error: null,
+            response: {
+              i: "smidId",
+            },
+            alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+          },
+        ];
+      }
+      return [];
+    });
+
+    // Cannot get key states both smid and rmid
+    queryKeyStateGetMock = jest.fn().mockResolvedValue([]);
+    await expect(
+      multiSigService.joinMultisig(
+        { id: "id", createdAt: new Date(), a: { d: "d" } },
+        {
+          theme: 0,
+          displayName: "Multisig",
+        }
+      )
+    ).rejects.toThrowError(
+      MultiSigService.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER
+    );
   });
 
   test("should can rorate multisig with KERI multisig do not have manageAid and throw error", async () => {

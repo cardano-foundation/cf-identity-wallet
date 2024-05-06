@@ -44,6 +44,9 @@ class MultiSigService extends AgentService {
     threshold: number,
     delegateContact?: ConnectionShortDetails
   ): Promise<CreateIdentifierResult> {
+    if (threshold < 1 || threshold > otherIdentifierContacts.length + 1) {
+      throw new Error(MultiSigService.INVALID_THRESHOLD);
+    }
     const ourMetadata = await this.identifierStorage.getIdentifierMetadata(
       ourIdentifier
     );
@@ -103,9 +106,6 @@ class MultiSigService extends AgentService {
     icpResult: EventResult;
     name: string;
   }> {
-    if (threshold < 1 || threshold > otherAids.length + 1) {
-      throw new Error(MultiSigService.INVALID_THRESHOLD);
-    }
     const states = [aid["state"], ...otherAids.map((aid) => aid["state"])];
     const icp = await this.signifyClient.identifiers().create(name, {
       algo: Algos.group,
