@@ -30,19 +30,17 @@ const LockPage = ({ didEnter }: LockPageProps) => {
   const [passcode, setPasscode] = useState("");
   const seedPhrase = authentication.seedPhraseIsSet;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const [showModalAfterRender, setShowModalAfterRender] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
   const headerText = seedPhrase
-    ? i18n.t("lockmodal.alert.text.verify")
-    : i18n.t("lockmodal.alert.text.restart");
+    ? i18n.t("lockpage.alert.text.verify")
+    : i18n.t("lockpage.alert.text.restart");
   const confirmButtonText = seedPhrase
-    ? i18n.t("lockmodal.alert.button.verify")
-    : i18n.t("lockmodal.alert.button.restart");
-  const cancelButtonText = i18n.t("lockmodal.alert.button.cancel");
+    ? i18n.t("lockpage.alert.button.verify")
+    : i18n.t("lockpage.alert.button.restart");
+  const cancelButtonText = i18n.t("lockpage.alert.button.cancel");
 
   useEffect(() => {
     didEnter && didEnter();
-    setShowModalAfterRender(true);
   }, []);
 
   const handleClearState = () => {
@@ -127,20 +125,20 @@ const LockPage = ({ didEnter }: LockPageProps) => {
         className={`${pageId}-title`}
         data-testid={`${pageId}-title`}
       >
-        {i18n.t("lockmodal.title")}
+        {i18n.t("lockpage.title")}
       </h2>
       <p
         className={`${pageId}-description small-hide`}
         data-testid={`${pageId}-description`}
       >
-        {i18n.t("lockmodal.description")}
+        {i18n.t("lockpage.description")}
       </p>
       <PasscodeModule
         error={
           <ErrorMessage
             message={
               passcode.length === 6 && passcodeIncorrect
-                ? `${i18n.t("lockmodal.error")}`
+                ? `${i18n.t("lockpage.error")}`
                 : undefined
             }
             timeout={true}
@@ -152,7 +150,7 @@ const LockPage = ({ didEnter }: LockPageProps) => {
       />
       <PageFooter
         pageId={pageId}
-        secondaryButtonText={`${i18n.t("lockmodal.forgotten.button")}`}
+        secondaryButtonText={`${i18n.t("lockpage.forgotten.button")}`}
         secondaryButtonAction={() => setAlertIsOpen(true)}
       />
       <Alert

@@ -73,10 +73,8 @@ describe("Lock Page", () => {
         <LockPage />
       </Provider>
     );
-    expect(getByText(EN_TRANSLATIONS.lockmodal.title)).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.lockmodal.description)
-    ).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.lockpage.title)).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.lockpage.description)).toBeInTheDocument();
   });
 
   test("The user can add and remove digits from the passcode", () => {
@@ -115,12 +113,12 @@ describe("Lock Page", () => {
     fireEvent.click(getByText(/4/));
     fireEvent.click(getByText(/5/));
     fireEvent.click(getByText(/6/));
-    expect(await findByText(EN_TRANSLATIONS.lockmodal.error)).toBeVisible();
-    fireEvent.click(getByText(EN_TRANSLATIONS.lockmodal.forgotten.button));
+    expect(await findByText(EN_TRANSLATIONS.lockpage.error)).toBeVisible();
+    fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.forgotten.button));
     expect(
-      await findByText(EN_TRANSLATIONS.lockmodal.alert.text.restart)
+      await findByText(EN_TRANSLATIONS.lockpage.alert.text.restart)
     ).toBeVisible();
-    fireEvent.click(getByText(EN_TRANSLATIONS.lockmodal.alert.button.restart));
+    fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.alert.button.restart));
     expect(
       await findByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
     ).toBeVisible();

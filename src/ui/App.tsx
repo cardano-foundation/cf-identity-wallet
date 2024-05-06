@@ -28,7 +28,6 @@ import { SetUserName } from "./components/SetUserName";
 import { TabsRoutePath } from "../routes/paths";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
-import { LockModal } from "./components/LockModal";
 import { LockPage } from "./pages/LockPage/LockPage";
 
 setupIonicReact();

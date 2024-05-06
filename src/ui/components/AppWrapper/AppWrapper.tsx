@@ -106,14 +106,17 @@ const acdcChangeHandler = async (
   }
 };
 
+let ACTIVITY_TIMEOUT = 60000; // 1min
+if (process.env.NODE_ENV === "development") {
+  ACTIVITY_TIMEOUT = 3600000; // 1h
+}
+
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const [agentInitErr, setAgentInitErr] = useState(false);
 
-  const ACTIVITY_TIMEOUT = 60000;
   let timer: NodeJS.Timeout;
-
   useEffect(() => {
     const handleActivity = () => {
       clearTimeout(timer);
