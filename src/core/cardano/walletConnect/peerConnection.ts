@@ -30,7 +30,7 @@ class PeerConnection {
   private identityWalletConnect: IdentityWalletConnect | undefined;
   private connected = false;
 
-  async start() {
+  async start(selectedAid: string) {
     let meerkatSeed = null;
 
     try {
@@ -44,7 +44,8 @@ class PeerConnection {
     this.identityWalletConnect = new IdentityWalletConnect(
       this.walletInfo,
       meerkatSeed,
-      this.announce
+      this.announce,
+      selectedAid
     );
     this.identityWalletConnect.setOnConnect(
       (connectMessage: IConnectMessage) => {
@@ -73,7 +74,6 @@ class PeerConnection {
 
     const seed = this.identityWalletConnect.connect(dAppIdentifier);
     SecureStorage.set(KeyStoreKeys.MEERKAT_SEED, seed);
-    this.connected = true;
   }
 
   disconnectDApp(dAppIdentifier: string) {
