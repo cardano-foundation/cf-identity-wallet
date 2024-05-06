@@ -16,7 +16,7 @@ import {
   linkOutline,
   addOutline,
 } from "ionicons/icons";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
@@ -26,7 +26,10 @@ import { i18n } from "../../../i18n";
 import { SubMenu } from "./components/SubMenu";
 import { MenuItemProps, SubMenuData, SubMenuKey } from "./Menu.types";
 import { Settings } from "./components/Settings";
-import { ConnectWallet } from "./components/ConnectWallet";
+import {
+  ConnectWallet,
+  ConnectWalletOptionRef,
+} from "./components/ConnectWallet";
 
 const emptySubMenu = {
   Component: () => <></>,
@@ -74,6 +77,8 @@ const Menu = () => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
   });
 
+  const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
+
   const submenuMap = useMemo(
     () =>
       new Map<SubMenuKey, SubMenuData>([
@@ -89,7 +94,7 @@ const Menu = () => {
         [
           SubMenuKey.ConnectWallet,
           {
-            Component: ConnectWallet,
+            Component: () => <ConnectWallet ref={connectWalletRef} />,
             title: "connectwallet.sections.header",
             pageId: "connect-wallet",
             additionalButtons: (
@@ -97,6 +102,7 @@ const Menu = () => {
                 shape="round"
                 className="connect-wallet-button"
                 data-testid="menu-add-connection-button"
+                onClick={() => connectWalletRef.current?.openConnectWallet()}
               >
                 <IonIcon
                   slot="icon-only"
