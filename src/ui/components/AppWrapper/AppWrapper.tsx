@@ -88,6 +88,10 @@ const keriaNotificationsChangeHandler = async (
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
     //TODO: Use dispatch here, handle logic for the multisig rotation notification
+  } else if (event?.a?.r === NotificationRoute.ExnIpexApply) {
+    //TODO: Use dispatch here, handle logic for the exchange apply message
+  } else if (event?.a?.r === NotificationRoute.ExnIpexAgree) {
+    //TODO: Use dispatch here, handle logic for the exchange apply agree
   }
 };
 

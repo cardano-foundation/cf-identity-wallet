@@ -18,7 +18,7 @@ export class SignifyApi {
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
-  static readonly UNKNOW_SCHEMA_ID = "Unknow Schema ID: "
+  static readonly UNKNOW_SCHEMA_ID = "Unknow Schema ID: ";
   private signifyClient!: SignifyClient;
   private opTimeout: number;
   private opRetryInterval: number;
@@ -104,8 +104,8 @@ export class SignifyApi {
     name?: string
   ) {
     await this.resolveOobi(`${config.endpoint}/oobi/${schemaId}`);
-    
-    let vcdata = {}
+
+    let vcdata = {};
     if (schemaId === "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu") {
       vcdata = {
         attendeeName: name,
@@ -117,12 +117,17 @@ export class SignifyApi {
     } else {
       throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);
     }
-    
+
     const result = await this.signifyClient
       .credentials()
       .issue({ issuerName, registryId, schemaId, recipient, data: vcdata });
-    await waitAndGetDoneOp(this.signifyClient, result.op, this.opTimeout, this.opRetryInterval);
-    
+    await waitAndGetDoneOp(
+      this.signifyClient,
+      result.op,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+
     const datetime = new Date().toISOString().replace("Z", "000+00:00");
     const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
       senderName: issuerName,
@@ -137,19 +142,55 @@ export class SignifyApi {
       .submitGrant(issuerName, grant, gsigs, gend, [recipient]);
   }
 
-  async requestDisclosure(senderName: string, schemaSaid: string, recipient: string) {
-    /*const [apply, sigs] = await this.signifyClient.ipex().apply({
+  async requestDisclosure(
+    senderName: string,
+    schemaSaid: string,
+    recipient: string
+  ) {
+    const [apply, sigs] = await this.signifyClient.ipex().apply({
       senderName,
       recipient,
       schema: schemaSaid,
     });
     await this.signifyClient
       .ipex()
-      .submitApply(senderName, apply, sigs, [recipient]);*/
+      .submitApply(senderName, apply, sigs, [recipient]);
   }
 
   async contacts(): Promise<any> {
     return this.signifyClient.contacts().list();
+  }
+
+  async agreeOffer(
+    senderName: string,
+    offerSaid: string,
+    recipient: string,
+    acdc: Object
+  ) {
+    const [apply, sigs] = await this.signifyClient.ipex().agree({
+      senderName,
+      recipient,
+      offer: offerSaid,
+      message: JSON.stringify({
+        i: recipient,
+        acdc,
+      }),
+    });
+    await this.signifyClient
+      .ipex()
+      .submitAgree(senderName, apply, sigs, [recipient]);
+  }
+
+  async getNotifications() {
+    return this.signifyClient.notifications().list();
+  }
+
+  async deleteNotification(said: string) {
+    return this.signifyClient.notifications().delete(said);
+  }
+
+  async getExchangeMsg(said: string) {
+    return this.signifyClient.exchanges().get(said);
   }
 
   /**

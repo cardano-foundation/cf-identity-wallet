@@ -1,8 +1,10 @@
+import { Serder } from "signify-ts";
 import { Agent } from "../agent";
 import {
   AcdcEventTypes,
   AcdcStateChangedEvent,
   AgentServicesProps,
+  IdentifierResult,
   KeriaNotification,
 } from "../agent.types";
 import {
@@ -28,6 +30,11 @@ class IpexCommunicationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
     "Credential metadata missing for stored credential";
+  static readonly CREDENTIAL_NOT_FOUND_WITH_SCHEMA =
+    "Credential not found with this schema";
+
+  static readonly AID_NOT_FOUND = "Aid not found";
+  static readonly CREDENTIAL_NOT_FOUND = "Credential not found";
 
   static readonly CREDENTIAL_SERVER =
     "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
@@ -101,6 +108,91 @@ class IpexCommunicationService extends AgentService {
         credential: credentialShortDetails,
       },
     });
+  }
+
+  async offerAcdc(notificationId: string) {
+    const keriNoti = await this.getNotificationRecordById(notificationId);
+    const msgSaid = keriNoti.a.d as string;
+    const msg = await this.signifyClient.exchanges().get(msgSaid);
+    const schemaSaid = msg.exn.a.s;
+    const creds = await this.signifyClient.credentials().list({
+      filter: {
+        "-s": { $eq: schemaSaid },
+      },
+    });
+    if (!creds || creds.length === 0) {
+      throw new Error(
+        IpexCommunicationService.CREDENTIAL_NOT_FOUND_WITH_SCHEMA
+      );
+    }
+    const pickedCred = creds[0];
+    let holderSignifyName;
+    const holder = await this.identifierStorage.getIdentifierMetadata(
+      msg.exn.a.i
+    );
+    if (holder && holder.signifyName) {
+      holderSignifyName = holder.signifyName;
+    } else {
+      const identifierHolder = await this.getIdentifierById(msg.exn.a.i);
+      holderSignifyName = identifierHolder?.name;
+    }
+    if (!holderSignifyName) {
+      throw new Error(IpexCommunicationService.AID_NOT_FOUND);
+    }
+
+    const [offer, sigs, gend] = await this.signifyClient.ipex().offer({
+      senderName: holderSignifyName,
+      recipient: msg.exn.i,
+      acdc: new Serder(pickedCred),
+    });
+    await this.signifyClient
+      .ipex()
+      .submitOffer(holderSignifyName, offer, sigs, gend, [msg.exn.i]);
+    await this.notificationStorage.deleteById(notificationId);
+  }
+
+  async grantApplyAcdc(notificationId: string) {
+    const keriNoti = await this.getNotificationRecordById(notificationId);
+    const msgSaid = keriNoti.a.d as string;
+    const msg = await this.signifyClient.exchanges().get(msgSaid);
+    const exnMessage = JSON.parse(msg.exn.a.m);
+    const creds = await this.signifyClient.credentials().list({
+      filter: {
+        "-d": { $eq: exnMessage.acdc.d },
+      },
+    });
+    if (!creds || creds.length === 0) {
+      throw new Error(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
+    }
+    const pickedCred = creds[0];
+    let holderSignifyName;
+    const holder = await this.identifierStorage.getIdentifierMetadata(
+      exnMessage.i
+    );
+    if (holder && holder.signifyName) {
+      holderSignifyName = holder.signifyName;
+    } else {
+      const identifierHolder = await this.getIdentifierById(msg.exn.a.i);
+      holderSignifyName = identifierHolder?.name;
+    }
+    if (!holderSignifyName) {
+      throw new Error(IpexCommunicationService.AID_NOT_FOUND);
+    }
+
+    const [offer, sigs, gend] = await this.signifyClient.ipex().grant({
+      senderName: holderSignifyName,
+      recipient: msg.exn.i,
+      acdc: new Serder(pickedCred.sad),
+      anc: new Serder(pickedCred.anc),
+      iss: new Serder(pickedCred.iss),
+      acdcAttachment: pickedCred.atc,
+      ancAttachment: pickedCred.ancatc,
+      issAttachment: pickedCred.issAtc,
+    });
+    await this.signifyClient
+      .ipex()
+      .submitGrant(holderSignifyName, offer, sigs, gend, [msg.exn.i]);
+    await this.notificationStorage.deleteById(notificationId);
   }
 
   private async waitForAcdcToAppear(
@@ -216,6 +308,16 @@ class IpexCommunicationService extends AgentService {
         error,
       };
     }
+  }
+
+  private async getIdentifierById(
+    id: string
+  ): Promise<IdentifierResult | undefined> {
+    const allIdentifiers = await this.signifyClient.identifiers().list();
+    const identifier = allIdentifiers.aids.find(
+      (identifier: IdentifierResult) => identifier.prefix === id
+    );
+    return identifier;
   }
 }
 
