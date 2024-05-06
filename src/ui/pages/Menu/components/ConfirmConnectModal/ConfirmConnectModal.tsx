@@ -9,6 +9,7 @@ import { writeToClipboard } from "../../../../utils/clipboard";
 import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../../globals/types";
 import { useAppDispatch } from "../../../../../store/hooks";
+import { combineClassNames } from "../../../../utils/style";
 
 const ConfirmConnectModal = ({
   openModal,
@@ -59,6 +60,11 @@ const ConfirmConnectModal = ({
     closeModal();
   };
 
+  const confirmClass = combineClassNames("confirm-connect-submit", {
+    "primary-button": isConnectModal,
+    "secondary-button": !isConnectModal,
+  });
+
   return (
     <OptionModal
       modalIsOpen={openModal}
@@ -92,7 +98,7 @@ const ConfirmConnectModal = ({
         <IonIcon icon={copyOutline} />
       </div>
       <IonButton
-        className="confirm-connect-submit primary-button"
+        className={confirmClass}
         data-testid="confirm-connect-btn"
         onClick={confirm}
       >
