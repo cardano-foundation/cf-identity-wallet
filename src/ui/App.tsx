@@ -29,6 +29,7 @@ import { TabsRoutePath } from "../routes/paths";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
 import { LockModal } from "./components/LockModal";
+import { LockPage } from "./pages/LockPage/LockPage";
 
 setupIonicReact();
 
@@ -101,7 +102,7 @@ const App = () => {
       // We need to include the LockModal in the loading page to track when is rendered
       return (
         <>
-          <LockModal didEnter={() => setLockIsRendered(true)} />
+          <LockPage didEnter={() => setLockIsRendered(true)} />
           <div className="loading-page">
             <IonSpinner name="crescent" />
           </div>
@@ -123,7 +124,7 @@ const App = () => {
     <IonApp>
       <AppWrapper>
         <StrictMode>
-          {lockIsRendered && !authentication.loggedIn ? <LockModal /> : null}
+          {lockIsRendered && !authentication.loggedIn ? <LockPage /> : null}
           {renderApp()}
           <SetUserName
             isOpen={showSetUserName}
