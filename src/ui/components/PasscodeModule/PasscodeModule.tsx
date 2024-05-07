@@ -1,5 +1,5 @@
 import { IonButton, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
-import { backspaceSharp } from "ionicons/icons";
+import { backspaceSharp, fingerPrintSharp } from "ionicons/icons";
 import { PasscodeModuleProps } from "./PasscodeModule.types";
 import "./PasscodeModule.scss";
 import { PASSCODE_MAPPING } from "../../globals/types";
@@ -9,6 +9,7 @@ const PasscodeModule = ({
   passcode,
   handlePinChange,
   handleRemove,
+  handleBiometricButtonClick,
 }: PasscodeModuleProps) => {
   const numbers = PASSCODE_MAPPING.numbers;
   const labels = PASSCODE_MAPPING.labels;
@@ -46,7 +47,25 @@ const PasscodeModule = ({
                 className={`passcode-module-numbers-row ${rowIndex}`}
                 key={rowIndex}
               >
-                {rowIndex === rows.length - 1 && <IonCol />}
+                {rowIndex === rows.length - 1 && (
+                  <IonCol>
+                    <IonButton
+                      data-testid={"passcode-button-#"}
+                      className="passcode-module-number-button"
+                      onClick={() =>
+                        handleBiometricButtonClick &&
+                        handleBiometricButtonClick()
+                      }
+                    >
+                      <IonIcon
+                        slot="icon-only"
+                        className="passcode-module-fingerprint-icon"
+                        icon={fingerPrintSharp}
+                      />
+                    </IonButton>
+                  </IonCol>
+                )}
+
                 {row.map((number, colIndex) => (
                   <IonCol key={colIndex}>
                     <IonButton
