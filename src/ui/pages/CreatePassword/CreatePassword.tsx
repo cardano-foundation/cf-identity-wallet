@@ -21,7 +21,6 @@ import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayo
 import { PageFooter } from "../../components/PageFooter";
 import { passwordStrengthChecker } from "../../utils/passwordStrengthChecker";
 import { PasswordValidation } from "../../components/PasswordValidation";
-import { RecordType } from "../../../core/storage/storage.types";
 import { useAppIonRouter } from "../../hooks";
 
 const CreatePassword = () => {
@@ -68,9 +67,6 @@ const CreatePassword = () => {
         await Agent.agent.basicStorage.save({
           id: MiscRecordId.OP_PASS_HINT,
           content: { value: hintValue },
-          tags: {
-            type: RecordType.OP_PASS_HINT,
-          },
         });
       }
     }

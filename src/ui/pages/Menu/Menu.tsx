@@ -13,39 +13,38 @@ import {
   personCircleOutline,
   walletOutline,
   peopleOutline,
-  chatbubbleOutline,
-  fingerPrintOutline,
-  idCardOutline,
+  linkOutline,
+  addOutline,
 } from "ionicons/icons";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import "./Menu.scss";
 import { i18n } from "../../../i18n";
-import { Settings } from "./components/Settings";
 import { SubMenu } from "./components/SubMenu";
 import { MenuItemProps, SubMenuData, SubMenuKey } from "./Menu.types";
+import { Settings } from "./components/Settings";
+import {
+  ConnectWallet,
+  ConnectWalletOptionRef,
+} from "./components/ConnectWallet";
 
 const emptySubMenu = {
   Component: () => <></>,
   title: "",
   additionalButtons: <></>,
+  pageId: "empty",
 };
 
-const submenuMap = new Map<SubMenuKey, SubMenuData>([
-  [
-    SubMenuKey.Settings,
-    {
-      Component: Settings,
-      title: "settings.sections.header",
-      additionalButtons: <></>,
-    },
-  ],
-]);
-
-const MenuItem = ({ itemKey, icon, label, onClick }: MenuItemProps) => {
+const MenuItem = ({
+  itemKey,
+  icon,
+  label,
+  onClick,
+  subLabel,
+}: MenuItemProps) => {
   return (
     <IonCol size="6">
       <IonCard
@@ -53,10 +52,13 @@ const MenuItem = ({ itemKey, icon, label, onClick }: MenuItemProps) => {
         data-testid={`menu-input-item-${itemKey}`}
         className="menu-input"
       >
-        <IonIcon
-          icon={icon}
-          color="primary"
-        />
+        <div className="menu-item-icon">
+          <IonIcon
+            icon={icon}
+            color="primary"
+          />
+          {subLabel && <span className="sub-label">{subLabel}</span>}
+        </div>
         <IonLabel>{label}</IonLabel>
       </IonCard>
     </IonCol>
@@ -74,6 +76,46 @@ const Menu = () => {
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
   });
+
+  const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
+
+  const submenuMap = useMemo(
+    () =>
+      new Map<SubMenuKey, SubMenuData>([
+        [
+          SubMenuKey.Settings,
+          {
+            Component: Settings,
+            title: "settings.sections.header",
+            additionalButtons: <></>,
+            pageId: "menu-setting",
+          },
+        ],
+        [
+          SubMenuKey.ConnectWallet,
+          {
+            Component: () => <ConnectWallet ref={connectWalletRef} />,
+            title: "connectwallet.sections.header",
+            pageId: "connect-wallet",
+            additionalButtons: (
+              <IonButton
+                shape="round"
+                className="connect-wallet-button"
+                data-testid="menu-add-connection-button"
+                onClick={() => connectWalletRef.current?.openConnectWallet()}
+              >
+                <IonIcon
+                  slot="icon-only"
+                  icon={addOutline}
+                  color="primary"
+                />
+              </IonButton>
+            ),
+          },
+        ],
+      ]),
+    []
+  );
 
   const showSelectedOption = (key: SubMenuKey) => {
     if (!submenuMap.has(key)) return;
@@ -99,7 +141,7 @@ const Menu = () => {
     );
   };
 
-  const menuItems = [
+  const menuItems: Omit<MenuItemProps, "onClick">[] = [
     {
       itemKey: SubMenuKey.Profile,
       icon: personCircleOutline,
@@ -116,19 +158,10 @@ const Menu = () => {
       label: `${i18n.t("menu.tab.items.connections")}`,
     },
     {
-      itemKey: SubMenuKey.P2P,
-      icon: chatbubbleOutline,
-      label: `${i18n.t("menu.tab.items.p2p")}`,
-    },
-    {
-      itemKey: SubMenuKey.Identifier,
-      icon: fingerPrintOutline,
-      label: `${i18n.t("menu.tab.items.identity")}`,
-    },
-    {
-      itemKey: SubMenuKey.Credential,
-      icon: idCardOutline,
-      label: `${i18n.t("menu.tab.items.credentials")}`,
+      itemKey: SubMenuKey.ConnectWallet,
+      icon: linkOutline,
+      label: `${i18n.t("menu.tab.items.connectwallet")}`,
+      subLabel: `${i18n.t("menu.tab.items.cip")}`,
     },
   ];
 
@@ -156,6 +189,7 @@ const Menu = () => {
                 itemKey={menuItem.itemKey}
                 icon={menuItem.icon}
                 label={`${i18n.t(menuItem.label)}`}
+                subLabel={menuItem.subLabel}
                 onClick={() => showSelectedOption(menuItem.itemKey)}
               />
             ))}
@@ -167,6 +201,7 @@ const Menu = () => {
         setShowSubMenu={setShowSubMenu}
         title={`${i18n.t(selectSubmenu.title)}`}
         additionalButtons={selectSubmenu.additionalButtons}
+        pageId={selectSubmenu.pageId}
       >
         <selectSubmenu.Component />
       </SubMenu>

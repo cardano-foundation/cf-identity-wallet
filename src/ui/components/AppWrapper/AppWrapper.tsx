@@ -44,6 +44,8 @@ import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 import { useActivityTimer } from "./hooks/useActivityTimer";
+import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
+import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -134,6 +136,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setIdentifiersCache(storedIdentifiers));
     dispatch(setCredsCache(credentials));
     dispatch(setConnectionsCache(connectionsDetails));
+    // TODO: Need update after core function completed.
+    dispatch(setWalletConnectionsCache(walletConnectionsFix));
   };
 
   const loadPreferences = async () => {

@@ -1,8 +1,9 @@
 import { arrowBackOutline } from "ionicons/icons";
-import { PageHeader } from "../../../components/PageHeader";
-import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
 import "./SubMenu.scss";
-import { SubMenuProps } from "../../Menu/Menu.types";
+import { SubMenuProps } from "./SubMenu.types";
+import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
+import { PageHeader } from "../../../../components/PageHeader";
+import { combineClassNames } from "../../../../utils/style";
 
 const SubMenu = ({
   showSubMenu,
@@ -10,8 +11,13 @@ const SubMenu = ({
   title,
   additionalButtons,
   children,
+  pageId: customPageId,
 }: SubMenuProps) => {
-  const pageId = "sub-menu";
+  const pageId = `sub-menu ${customPageId}`;
+  const classes = combineClassNames({
+    show: showSubMenu,
+    hide: !showSubMenu,
+  });
 
   return (
     <ScrollablePageLayout
@@ -26,7 +32,7 @@ const SubMenu = ({
           additionalButtons={additionalButtons}
         />
       }
-      customClass={`${showSubMenu ? "show" : "hide"}`}
+      customClass={classes}
     >
       <div
         className={`${title?.toLowerCase().replace(" ", "-")}-content`}

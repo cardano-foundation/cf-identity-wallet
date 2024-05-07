@@ -4,6 +4,7 @@ interface SubMenuData {
   Component: () => ReactElement;
   title: string;
   additionalButtons: ReactNode;
+  pageId: string;
 }
 
 interface SubMenuProps {
@@ -18,17 +19,17 @@ interface MenuItemProps {
   itemKey: SubMenuKey;
   icon: string;
   label: string;
+  subLabel?: string;
   onClick: (key: SubMenuKey) => void;
 }
 
-export enum SubMenuKey {
+enum SubMenuKey {
   Settings,
   Profile,
   Crypto,
   Connections,
-  P2P,
-  Identifier,
-  Credential,
+  ConnectWallet,
 }
 
 export type { SubMenuProps, MenuItemProps, SubMenuData };
+export { SubMenuKey };

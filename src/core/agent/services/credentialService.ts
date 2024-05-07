@@ -3,6 +3,7 @@ import {
   AcdcStateChangedEvent,
   AcdcEventTypes,
   NotificationRoute,
+  AgentServicesProps,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import {
@@ -11,7 +12,7 @@ import {
 } from "../records/credentialMetadataRecord.types";
 import { CredentialShortDetails, ACDCDetails } from "./credentialService.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
-import { RecordType } from "../../storage/storage.types";
+import { CredentialStorage, NotificationStorage } from "../records";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -19,6 +20,19 @@ class CredentialService extends AgentService {
   static readonly CREDENTIAL_NOT_ARCHIVED = "Credential was not archived";
   static readonly CREDENTIAL_NOT_FOUND =
     "Credential with given SAID not found on KERIA";
+
+  protected readonly credentialStorage: CredentialStorage;
+  protected readonly notificationStorage!: NotificationStorage;
+
+  constructor(
+    agentServiceProps: AgentServicesProps,
+    credentialStorage: CredentialStorage,
+    notificationStorage: NotificationStorage
+  ) {
+    super(agentServiceProps);
+    this.credentialStorage = credentialStorage;
+    this.notificationStorage = notificationStorage;
+  }
 
   onAcdcStateChanged(callback: (event: AcdcStateChangedEvent) => void) {
     this.eventService.on(
@@ -144,16 +158,15 @@ class CredentialService extends AgentService {
       isDismissed?: boolean;
     } = {}
   ): Promise<KeriaNotification[]> {
-    const results = await this.basicStorage.findAllByQuery({
+    const results = await this.notificationStorage.findAllByQuery({
       route: NotificationRoute.Credential,
       ...filters,
-      type: RecordType.KERIA_NOTIFICATION,
     });
     return results.map((result) => {
       return {
         id: result.id,
         createdAt: result.createdAt,
-        a: result.content,
+        a: result.a,
       };
     });
   }
