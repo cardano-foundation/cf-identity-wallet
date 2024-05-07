@@ -854,11 +854,22 @@
         "profile": "Profile",
         "crypto": "Crypto",
         "connections": "Connections",
-        "p2p": "P2P",
-        "identity": "Identity",
-        "credentials": "Credentials",
-        "lock": "Lock"
+        "connectwallet": "Connect Wallet",
+        "lock": "Lock",
+        "cip": "CIP-45"
       }
+    }
+  },
+  "connectwallet": {
+    "sections": {
+      "header": "Cardano Connect",
+      "connectbtn": "Connect with Cardano"
+    },
+    "connectwalletmodal": {
+      "header": "New connection",
+      "cancel": "Cancel",
+      "scanqr": "Scan QR code",
+      "pastePID": "Paste Peer ID"
     }
   },
   "settings": {

@@ -61,6 +61,9 @@ class MultiSigService extends AgentService {
     threshold: number,
     delegateContact?: ConnectionShortDetails
   ): Promise<CreateIdentifierResult> {
+    if (threshold < 1 || threshold > otherIdentifierContacts.length + 1) {
+      throw new Error(MultiSigService.INVALID_THRESHOLD);
+    }
     const ourMetadata = await this.identifierStorage.getIdentifierMetadata(
       ourIdentifier
     );
@@ -109,7 +112,7 @@ class MultiSigService extends AgentService {
     return { identifier: multisigId, signifyName };
   }
 
-  async createAidMultisig(
+  private async createAidMultisig(
     aid: Aid,
     otherAids: Pick<Aid, "state">[],
     name: string,
@@ -120,9 +123,6 @@ class MultiSigService extends AgentService {
     icpResult: EventResult;
     name: string;
   }> {
-    if (threshold < 1 || threshold > otherAids.length + 1) {
-      throw new Error(MultiSigService.INVALID_THRESHOLD);
-    }
     const states = [aid["state"], ...otherAids.map((aid) => aid["state"])];
     const icp = await this.signifyClient.identifiers().create(name, {
       algo: Algos.group,
@@ -435,7 +435,7 @@ class MultiSigService extends AgentService {
     });
   }
 
-  async rotateMultisigAid(
+  private async rotateMultisigAid(
     aid: Aid,
     multisigAidMembers: Pick<Aid, "state">[],
     name: string
@@ -484,7 +484,7 @@ class MultiSigService extends AgentService {
     };
   }
 
-  async joinMultisigRotationKeri(
+  private async joinMultisigRotationKeri(
     exn: MultiSigExnMessage["exn"],
     aid: Aid,
     name: string
@@ -533,7 +533,9 @@ class MultiSigService extends AgentService {
     };
   }
 
-  async getIdentifierById(id: string): Promise<IdentifierResult | undefined> {
+  private async getIdentifierById(
+    id: string
+  ): Promise<IdentifierResult | undefined> {
     const allIdentifiers = await this.signifyClient.identifiers().list();
     const identifier = allIdentifiers.aids.find(
       (identifier: IdentifierResult) => identifier.prefix === id
@@ -541,7 +543,7 @@ class MultiSigService extends AgentService {
     return identifier;
   }
 
-  async joinMultisigKeri(
+  private async joinMultisigKeri(
     exn: MultiSigExnMessage["exn"],
     aid: Aid,
     name: string
