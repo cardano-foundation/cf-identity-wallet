@@ -1,5 +1,13 @@
 import i18n from "i18next";
+import {
+  BiometryErrorType,
+  BiometryError,
+  AndroidBiometryStrength,
+  BiometricAuth,
+  CheckBiometryResult,
+} from "@aparajita/capacitor-biometric-auth";
 import { useEffect, useState } from "react";
+import { PluginListenerHandle } from "@capacitor/core";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useAppIonRouter } from "../../hooks";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -20,6 +28,7 @@ import { PasscodeModule } from "../../components/PasscodeModule";
 import { PageFooter } from "../../components/PageFooter";
 import { Alert } from "../../components/Alert";
 import "./LockPage.scss";
+import { BiometryInfo } from "./LockPage.types";
 
 const LockPage = () => {
   const pageId = "lock-page";
@@ -30,6 +39,9 @@ const LockPage = () => {
   const seedPhrase = authentication.seedPhraseIsSet;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
+  const [biometricInfo, setBiometricInfo] = useState<BiometryInfo | undefined>(
+    undefined
+  );
   const headerText = seedPhrase
     ? i18n.t("lockpage.alert.text.verify")
     : i18n.t("lockpage.alert.text.restart");
@@ -37,6 +49,60 @@ const LockPage = () => {
     ? i18n.t("lockpage.alert.button.verify")
     : i18n.t("lockpage.alert.button.restart");
   const cancelButtonText = i18n.t("lockpage.alert.button.cancel");
+
+  let appListener: PluginListenerHandle;
+  useEffect(() => {
+    const checkBiometry = async () => {
+      updateBiometryInfo(await BiometricAuth.checkBiometry());
+      try {
+        appListener = await BiometricAuth.addResumeListener(updateBiometryInfo);
+      } catch (error) {
+        if (error instanceof Error) {
+          // TODO
+        }
+      }
+    };
+
+    checkBiometry();
+    return () => {
+      appListener?.remove();
+    };
+  }, []);
+
+  const updateBiometryInfo = (info: CheckBiometryResult): void => {
+    setBiometricInfo(info);
+    if (info.isAvailable) {
+      handleBiometricAuth();
+    } else {
+      // Biometry is not available, info.reason and info.code will tell you why.
+    }
+  };
+
+  const handleBiometricAuth = async () => {
+    try {
+      await BiometricAuth.authenticate({
+        reason: "Please authenticate",
+        cancelTitle: "Cancel",
+        allowDeviceCredential: true,
+        iosFallbackTitle: "Use passcode",
+        androidTitle: "Biometric login",
+        androidSubtitle: "Log in using biometric authentication",
+        androidConfirmationRequired: false,
+        androidBiometryStrength: AndroidBiometryStrength.weak,
+      });
+
+      dispatch(login());
+      handleClearState();
+    } catch (error) {
+      // error is always an instance of BiometryError.
+      if (error instanceof BiometryError) {
+        if (error.code !== BiometryErrorType.userCancel) {
+          // Display the error.
+          //await showAlert(error.message)
+        }
+      }
+    }
+  };
 
   const handleClearState = () => {
     setAlertIsOpen(false);
