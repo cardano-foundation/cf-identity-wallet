@@ -1,5 +1,12 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { IonCol, IonGrid, IonIcon, IonRow, isPlatform } from "@ionic/react";
+import {
+  IonCol,
+  IonGrid,
+  IonIcon,
+  IonRow,
+  IonSpinner,
+  isPlatform,
+} from "@ionic/react";
 import {
   BarcodeScanner,
   SupportedFormat,
@@ -39,6 +46,7 @@ const Scanner = forwardRef(
     const [pasteModalIsOpen, setPasteModalIsOpen] = useState(false);
     const [groupId, setGroupId] = useState("");
     const [pastedValue, setPastedValue] = useState("");
+    const [scanning, setScanning] = useState(false);
 
     const checkPermission = async () => {
       const status = await BarcodeScanner.checkPermission({ force: true });
@@ -55,6 +63,7 @@ const Scanner = forwardRef(
     };
 
     const startScan = async () => {
+      setScanning(true);
       await BarcodeScanner.hideBackground();
       document?.querySelector("body")?.classList.add("scanner-active");
       document
@@ -67,6 +76,7 @@ const Scanner = forwardRef(
     };
 
     const stopScan = async () => {
+      setScanning(false);
       await BarcodeScanner.stopScan();
       await BarcodeScanner.showBackground();
       document?.querySelector("body")?.classList.remove("scanner-active");
@@ -200,21 +210,32 @@ const Scanner = forwardRef(
           className="qr-code-scanner"
           data-testid="qr-code-scanner"
         >
-          <IonRow>
-            <IonCol size="12">
-              <span className="qr-code-scanner-text">
-                {i18n.t("scan.tab.title")}
-              </span>
-            </IonCol>
-          </IonRow>
-          <IonRow>
-            <IonIcon
-              icon={scanOutline}
-              color="light"
-              className="qr-code-scanner-icon"
-            />
-          </IonRow>
-          <RenderPageFooter />
+          {scanning ? (
+            <>
+              <IonRow>
+                <IonCol size="12">
+                  <span className="qr-code-scanner-text">
+                    {i18n.t("scan.tab.title")}
+                  </span>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonIcon
+                  icon={scanOutline}
+                  color="light"
+                  className="qr-code-scanner-icon"
+                />
+              </IonRow>
+              <RenderPageFooter />
+            </>
+          ) : (
+            <div
+              className="scanner-spinner-container"
+              data-testid="scanner-spinner-container"
+            >
+              <IonSpinner name="circular" />
+            </div>
+          )}
         </IonGrid>
         <CreateIdentifier
           modalIsOpen={createIdentifierModalIsOpen}

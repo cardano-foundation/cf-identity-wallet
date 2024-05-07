@@ -27,6 +27,19 @@ ion-grid.qr-code-scanner {
     }
   }
 
+  .scanner-spinner-container {
+    z-index: 1000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    background: rgba(3, 3, 33, 0.2);
+  }
+
   .page-footer .secondary-button {
     opacity: 0.5;
     backdrop-filter: blur(0.33rem);
