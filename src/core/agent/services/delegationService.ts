@@ -35,6 +35,7 @@ class DelegationService extends AgentService {
       ...metadata,
       signifyName: signifyName,
       isPending: true,
+      delegated: { delegatePrefix: delegatorPrefix },
     });
     return { identifier, signifyName };
   }

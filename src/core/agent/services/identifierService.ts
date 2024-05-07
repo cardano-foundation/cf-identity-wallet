@@ -52,6 +52,7 @@ class IdentifierService extends AgentService {
         createdAtUTC: metadata.createdAt.toISOString(),
         theme: metadata.theme,
         isPending: metadata.isPending ?? false,
+        delegated: metadata.delegated,
       });
     }
     return identifiers;
@@ -82,6 +83,7 @@ class IdentifierService extends AgentService {
       theme: metadata.theme,
       signifyOpName: metadata.signifyOpName,
       isPending: metadata.isPending ?? false,
+      delegated: metadata.delegated,
       s: aid.state.s,
       dt: aid.state.dt,
       kt: aid.state.kt,

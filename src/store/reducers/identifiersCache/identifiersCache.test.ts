@@ -7,6 +7,7 @@ import {
   addFavouriteIdentifierCache,
   removeFavouriteIdentifierCache,
   getFavouritesIdentifiersCache,
+  updateOrAddIdentifiersCache,
 } from "./identifiersCache";
 import { RootState } from "../../index";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
@@ -39,6 +40,36 @@ describe("identifiersCacheSlice", () => {
       setIdentifiersCache(identifiers)
     );
     expect(newState.identifiers).toEqual(identifiers);
+  });
+
+  it("should handle updateOrAddIdentifiersCache", () => {
+    const identifiers: IdentifierShortDetails[] = [
+      {
+        id: "id-1",
+        displayName: "example-name",
+        createdAtUTC: "example-date",
+        theme: 0,
+        isPending: false,
+        signifyName: "Test",
+      },
+    ];
+    const currentState = identifiersCacheSlice.reducer(
+      initialState,
+      setIdentifiersCache(identifiers)
+    );
+    const identifier: IdentifierShortDetails = {
+      id: "id-2",
+      displayName: "example-name",
+      createdAtUTC: "example-date",
+      theme: 0,
+      isPending: false,
+      signifyName: "Test",
+    };
+    const newState = identifiersCacheSlice.reducer(
+      currentState,
+      updateOrAddIdentifiersCache(identifier)
+    );
+    expect(newState.identifiers).toEqual([...identifiers, identifier]);
   });
   it("should handle setFavouritesIdentifiersCache", () => {
     const favourites: FavouriteIdentifier[] = [
