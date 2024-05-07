@@ -29,16 +29,10 @@ import { TabsRoutePath } from "../routes/paths";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
 import { LockPage } from "./pages/LockPage/LockPage";
+import { LoadingPage } from "./pages/LoadingPage/LoadingPage";
 
 setupIonicReact();
 
-const LoadingPage = () => {
-  return (
-    <div className="loading-page">
-      <IonSpinner name="crescent" />
-    </div>
-  );
-};
 const App = () => {
   const stateCache = useAppSelector(getStateCache);
   const authentication = useAppSelector(getAuthentication);
@@ -123,7 +117,7 @@ const App = () => {
               {!authentication.loggedIn ? <LockPage /> : null}
             </>
           ) : (
-            LoadingPage()
+            <LoadingPage />
           )}
           <SetUserName
             isOpen={showSetUserName}

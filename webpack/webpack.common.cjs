@@ -82,7 +82,6 @@ const config = {
     }),
     new webpack.DefinePlugin({
       VERSION: JSON.stringify(require("../package.json").version),
-      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
       "process.env": JSON.stringify(process.env)
     }),
     new webpack.ProvidePlugin({
