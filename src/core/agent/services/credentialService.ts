@@ -159,7 +159,7 @@ class CredentialService extends AgentService {
     } = {}
   ): Promise<KeriaNotification[]> {
     const results = await this.notificationStorage.findAllByQuery({
-      route: NotificationRoute.Credential,
+      route: NotificationRoute.ExnIpexGrant,
       ...filters,
     });
     return results.map((result) => {

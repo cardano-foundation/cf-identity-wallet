@@ -205,7 +205,7 @@ describe("AppWrapper handler", () => {
       const keriNoti = {
         id: "id",
         a: {
-          r: NotificationRoute.Credential,
+          r: NotificationRoute.ExnIpexGrant,
         },
         createdAt: new Date(),
       } as KeriaNotification;

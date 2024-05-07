@@ -112,7 +112,7 @@ interface IdentifierResult {
 }
 
 enum NotificationRoute {
-  Credential = "/exn/ipex/grant",
+  ExnIpexGrant = "/exn/ipex/grant",
   MultiSigIcp = "/multisig/icp",
   MultiSigRot = "/multisig/rot",
   ExnIpexApply = "/exn/ipex/apply",

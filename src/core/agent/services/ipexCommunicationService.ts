@@ -127,11 +127,11 @@ class IpexCommunicationService extends AgentService {
     }
     const pickedCred = creds[0];
     let holderSignifyName;
-    const holder = await this.identifierStorage.getIdentifierMetadata(
-      msg.exn.a.i
-    );
-    if (holder && holder.signifyName) {
-      holderSignifyName = holder.signifyName;
+    const signifyName = (
+      await this.identifierStorage.getIdentifierMetadata(msg.exn.a.i)
+    ).signifyName;
+    if (signifyName) {
+      holderSignifyName = signifyName;
     } else {
       const identifierHolder = await this.getIdentifierById(msg.exn.a.i);
       holderSignifyName = identifierHolder?.name;
@@ -166,11 +166,11 @@ class IpexCommunicationService extends AgentService {
     }
     const pickedCred = creds[0];
     let holderSignifyName;
-    const holder = await this.identifierStorage.getIdentifierMetadata(
-      exnMessage.i
-    );
-    if (holder && holder.signifyName) {
-      holderSignifyName = holder.signifyName;
+    const signifyName = (
+      await this.identifierStorage.getIdentifierMetadata(msg.exn.a.i)
+    ).signifyName;
+    if (signifyName) {
+      holderSignifyName = signifyName;
     } else {
       const identifierHolder = await this.getIdentifierById(msg.exn.a.i);
       holderSignifyName = identifierHolder?.name;

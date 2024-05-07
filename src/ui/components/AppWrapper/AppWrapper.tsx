@@ -66,7 +66,7 @@ const keriaNotificationsChangeHandler = async (
   event: KeriaNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  if (event?.a?.r === NotificationRoute.Credential) {
+  if (event?.a?.r === NotificationRoute.ExnIpexGrant) {
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
