@@ -7,11 +7,13 @@ interface ConnectionRecordStorageProps {
   tags?: Tags;
   alias: string;
   oobi: string;
+  groupId?: string;
 }
 
 class ConnectionRecord extends BaseRecord {
   alias!: string;
   oobi!: string;
+  groupId?: string;
   static readonly type = "ConnectionRecord";
   readonly type = ConnectionRecord.type;
 
@@ -22,6 +24,7 @@ class ConnectionRecord extends BaseRecord {
       this.createdAt = props.createdAt ?? new Date();
       this.alias = props.alias;
       this.oobi = props.oobi;
+      this.groupId = props.groupId;
       this._tags = props.tags ?? {};
     }
   }
@@ -29,6 +32,7 @@ class ConnectionRecord extends BaseRecord {
   getTags() {
     return {
       ...this._tags,
+      groupId: this.groupId,
     };
   }
 }

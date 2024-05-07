@@ -69,6 +69,21 @@ class IdentifierStorage {
     const record = new IdentifierMetadataRecord(data);
     await this.storageService.save(record);
   }
+
+  async getIdentifierMetadataByGroupId(
+    groupId: string
+  ): Promise<IdentifierMetadataRecord | null> {
+    const records = await this.storageService.findAllByQuery(
+      {
+        groupId,
+      },
+      IdentifierMetadataRecord
+    );
+    if (records.length > 0) {
+      return records[0];
+    }
+    return null;
+  }
 }
 
 export { IdentifierStorage };

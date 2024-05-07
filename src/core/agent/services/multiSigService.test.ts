@@ -121,7 +121,10 @@ jest.mock("../../../core/agent/agent", () => ({
         getConnectionShortDetailById: jest.fn(),
         resolveOobi: () => mockResolveOobi(),
       },
-      identifiers: { getIdentifiers: () => mockGetIdentifiers() },
+      identifiers: {
+        getIdentifiers: () => mockGetIdentifiers(),
+        updateIdentifier: jest.fn(),
+      },
     },
   },
 }));
@@ -129,12 +132,17 @@ jest.mock("../../../core/agent/agent", () => ({
 const now = new Date();
 const nowISO = now.toISOString();
 
-const keriMetadataRecordProps = {
+const keriMetadataRecordProps: IdentifierMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
   signifyName: "uuid-here",
   createdAt: now,
   theme: 0,
+  groupMetadata: {
+    groupId: "group-id",
+    groupInitiator: true,
+    groupCreated: false,
+  },
 };
 
 const keriMetadataRecord = new IdentifierMetadataRecord(
@@ -199,17 +207,13 @@ describe("Multisig sig service of agent", () => {
         oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
         status: ConnectionStatus.CONFIRMED,
         connectionDate: new Date().toISOString(),
+        groupId: "group-id",
       },
     ];
-    const metadata = {
-      theme: 0,
-      displayName: "Multisig",
-    };
     expect(
       await multiSigService.createMultisig(
         creatorIdentifier,
         otherIdentifiers,
-        metadata as IdentifierMetadataRecordProps,
         otherIdentifiers.length + 1
       )
     ).toEqual({
@@ -220,6 +224,7 @@ describe("Multisig sig service of agent", () => {
       expect.objectContaining({ id: multisigIdentifier, isPending: true })
     );
 
+    (keriMetadataRecord.groupMetadata as any).groupCreated = false;
     identifiersCreateMock.mockImplementation((name, _config) => {
       return {
         op: () => {
@@ -233,12 +238,10 @@ describe("Multisig sig service of agent", () => {
         ],
       };
     });
-    1;
     expect(
       await multiSigService.createMultisig(
         creatorIdentifier,
         otherIdentifiers,
-        metadata as IdentifierMetadataRecordProps,
         1
       )
     ).toEqual({
@@ -250,6 +253,8 @@ describe("Multisig sig service of agent", () => {
         id: `${multisigIdentifier}1`,
       })
     );
+
+    (keriMetadataRecord.groupMetadata as any).groupCreated = false;
     identifiersCreateMock.mockImplementation((name, _config) => {
       return {
         op: () => {
@@ -268,7 +273,6 @@ describe("Multisig sig service of agent", () => {
       await multiSigService.createMultisig(
         creatorIdentifier,
         otherIdentifiers,
-        metadata as IdentifierMetadataRecordProps,
         2
       )
     ).toEqual({
@@ -280,6 +284,23 @@ describe("Multisig sig service of agent", () => {
         id: `${multisigIdentifier}2`,
       })
     );
+
+    (keriMetadataRecord.groupMetadata as any).groupCreated = false;
+    const invalidOtherIdentifiers = [
+      {
+        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+        status: ConnectionStatus.CONFIRMED,
+        connectionDate: new Date().toISOString(),
+      },
+    ];
+    await expect(
+      multiSigService.createMultisig(
+        creatorIdentifier,
+        invalidOtherIdentifiers,
+        invalidOtherIdentifiers.length + 1
+      )
+    ).rejects.toThrowError();
   });
 
   test("Cannot create a keri multisig if the threshold is invalid", async () => {
@@ -293,24 +314,13 @@ describe("Multisig sig service of agent", () => {
         connectionDate: new Date().toISOString(),
       },
     ];
-    const metadata = {
-      theme: 0,
-      displayName: "Multisig",
-    };
-
     await expect(
-      multiSigService.createMultisig(
-        creatorIdentifier,
-        otherIdentifiers,
-        metadata as IdentifierMetadataRecordProps,
-        0
-      )
+      multiSigService.createMultisig(creatorIdentifier, otherIdentifiers, 0)
     ).rejects.toThrowError(MultiSigService.INVALID_THRESHOLD);
     await expect(
       multiSigService.createMultisig(
         creatorIdentifier,
         otherIdentifiers,
-        metadata as IdentifierMetadataRecordProps,
         otherIdentifiers.length + 2
       )
     ).rejects.toThrowError(MultiSigService.INVALID_THRESHOLD);
@@ -357,8 +367,8 @@ describe("Multisig sig service of agent", () => {
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
         status: ConnectionStatus.CONFIRMED,
-
         connectionDate: new Date().toISOString(),
+        groupId: "group-id",
       },
     ];
     const delegatorContact = {
@@ -366,23 +376,17 @@ describe("Multisig sig service of agent", () => {
       label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
       oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
       status: ConnectionStatus.CONFIRMED,
-
       connectionDate: new Date().toISOString(),
-    };
-    const metadata = {
-      theme: 0,
-      displayName: "Multisig",
     };
     expect(
       await multiSigService.createMultisig(
         creatorIdentifier,
         otherIdentifiers,
-        metadata as IdentifierMetadataRecordProps,
         otherIdentifiers.length + 1,
         delegatorContact
       )
     ).toEqual({
-      identifier: `${multisigIdentifier}`,
+      identifier: multisigIdentifier,
       signifyName: expect.any(String),
     });
   });
@@ -430,6 +434,11 @@ describe("Multisig sig service of agent", () => {
         signifyName: "signifyName",
         createdAt: new Date(),
         theme: 0,
+        groupMetadata: {
+          groupId: "group-id",
+          groupInitiator: false,
+          groupCreated: false,
+        },
       },
     ]);
     queryKeyStateGetMock = jest.fn().mockResolvedValue([
@@ -460,29 +469,24 @@ describe("Multisig sig service of agent", () => {
       };
     });
     expect(
-      await multiSigService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 0,
-          displayName: "Multisig",
-        }
-      )
+      await multiSigService.joinMultisig("id", "d", {
+        theme: 0,
+        displayName: "Multisig",
+      })
     ).toEqual({
-      identifier: `${multisigIdentifier}`,
+      identifier: multisigIdentifier,
       signifyName: expect.any(String),
     });
   });
 
   test("cannot join multisig by notification if exn messages are missing", async () => {
+    groupGetRequestMock = jest.fn().mockResolvedValue([]);
     await expect(
-      multiSigService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 0,
-          displayName: "Multisig",
-        }
-      )
-    ).rejects.toThrowError();
+      multiSigService.joinMultisig("id", "d", {
+        theme: 0,
+        displayName: "Multisig",
+      })
+    ).rejects.toThrowError(`${MultiSigService.EXN_MESSAGE_NOT_FOUND} d`);
   });
 
   test("cannot join the multisig if cannot get key states for multisig member", async () => {
@@ -523,6 +527,11 @@ describe("Multisig sig service of agent", () => {
         signifyName: "signifyName",
         createdAt: new Date(),
         theme: 0,
+        groupMetadata: {
+          groupId: "group-id",
+          groupCreated: false,
+          groupInitiator: false,
+        },
       },
     ]);
     identifiersCreateMock.mockImplementation((name, _config) => {
@@ -542,13 +551,10 @@ describe("Multisig sig service of agent", () => {
     // Cannot get key states both smid and rmid
     queryKeyStateGetMock = jest.fn().mockResolvedValue([]);
     await expect(
-      multiSigService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 0,
-          displayName: "Multisig",
-        }
-      )
+      multiSigService.joinMultisig("id", "d", {
+        theme: 0,
+        displayName: "Multisig",
+      })
     ).rejects.toThrowError(
       MultiSigService.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER
     );
@@ -577,13 +583,10 @@ describe("Multisig sig service of agent", () => {
     // Cannot get key states both smid and rmid
     queryKeyStateGetMock = jest.fn().mockResolvedValue([]);
     await expect(
-      multiSigService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 0,
-          displayName: "Multisig",
-        }
-      )
+      multiSigService.joinMultisig("id", "d", {
+        theme: 0,
+        displayName: "Multisig",
+      })
     ).rejects.toThrowError(
       MultiSigService.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER
     );
@@ -593,7 +596,6 @@ describe("Multisig sig service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-
       isPending: true,
       signifyOpName: "op123",
       signifyName: "",
@@ -646,7 +648,6 @@ describe("Multisig sig service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-
       isPending: false,
       signifyOpName: "op123",
       signifyName: "john_doe",
@@ -740,7 +741,6 @@ describe("Multisig sig service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-
       isPending: false,
       signifyOpName: "op123",
       signifyName: "john_doe",
@@ -804,7 +804,6 @@ describe("Multisig sig service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-
       isPending: true,
       signifyOpName: "op123",
       signifyName: "name",
@@ -937,13 +936,10 @@ describe("Multisig sig service of agent", () => {
       },
     ]);
     await expect(
-      multiSigService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 0,
-          displayName: "Multisig",
-        }
-      )
+      multiSigService.joinMultisig("id", "d", {
+        theme: 0,
+        displayName: "Multisig",
+      })
     ).rejects.toThrowError(MultiSigService.CANNOT_JOIN_MULTISIG_ICP);
   });
 
@@ -1270,5 +1266,116 @@ describe("Multisig sig service of agent", () => {
         },
       ],
     });
+  });
+
+  test("Should throw errors when create KERI multisigs with invalid identifier", async () => {
+    const creatorIdentifier = "creatorIdentifier";
+    const identifierMetaData = {
+      id: "creatorIdentifier",
+      displayName: "Identifier 2",
+      signifyName: "uuid-here",
+      createdAt: now,
+      theme: 0,
+    };
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue(
+      new IdentifierMetadataRecord({
+        ...identifierMetaData,
+        groupMetadata: undefined,
+      })
+    );
+    const otherIdentifiers = [
+      {
+        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+        oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+        status: ConnectionStatus.CONFIRMED,
+        connectionDate: new Date().toISOString(),
+        groupId: "group-id",
+      },
+    ];
+    // Identifier doesn't have groupMetadata
+    await expect(
+      multiSigService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        otherIdentifiers.length + 1
+      )
+    ).rejects.toThrowError(MultiSigService.MISSING_GROUP_METADATA);
+
+    // Identifier's group is already created
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue(
+      new IdentifierMetadataRecord({
+        ...identifierMetaData,
+        groupMetadata: {
+          groupId: "123",
+          groupCreated: true,
+          groupInitiator: true,
+        },
+      })
+    );
+    await expect(
+      multiSigService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        otherIdentifiers.length + 1
+      )
+    ).rejects.toThrowError(MultiSigService.GROUP_ALREADY_EXISTs);
+
+    // Identifier's not groupInitiator
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue(
+      new IdentifierMetadataRecord({
+        ...identifierMetaData,
+        groupMetadata: {
+          groupId: "123",
+          groupCreated: false,
+          groupInitiator: false,
+        },
+      })
+    );
+    await expect(
+      multiSigService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        otherIdentifiers.length + 1
+      )
+    ).rejects.toThrowError(MultiSigService.ONLY_ALLOW_GROUP_INITIATOR);
+  });
+
+  test.only("Should throw errors when create KERI multisigs with invalid contacts", async () => {
+    const creatorIdentifier = "creatorIdentifier";
+    const identifierMetaData = {
+      id: "creatorIdentifier",
+      displayName: "Identifier 2",
+      signifyName: "uuid-here",
+      createdAt: now,
+      theme: 0,
+    };
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue(
+      new IdentifierMetadataRecord({
+        ...identifierMetaData,
+        groupMetadata: {
+          groupCreated: false,
+          groupInitiator: true,
+          groupId: "not-group-id",
+        },
+      })
+    );
+    const otherIdentifiers = [
+      {
+        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+        oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+        status: ConnectionStatus.CONFIRMED,
+        connectionDate: new Date().toISOString(),
+        groupId: "group-id",
+      },
+    ];
+    await expect(
+      multiSigService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        otherIdentifiers.length + 1
+      )
+    ).rejects.toThrowError(MultiSigService.ONLY_ALLOW_LINKED_CONTACTS);
   });
 });

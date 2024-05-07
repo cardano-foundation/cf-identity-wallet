@@ -158,7 +158,6 @@ class ConnectionService extends AgentService {
     const connectionsDetails: ConnectionShortDetails[] = [];
     const metadatas = await this.getAllConnectionMetadata();
     metadatas.forEach(async (connection) => {
-      connectionsDetails.push(this.getConnectionShortDetails(connection));
       // @TODO - foconnor: This filter should be via the SQL, may cause a regression so this is a temp solution.
       if (connection.getTag("groupId") === undefined) {
         connectionsDetails.push(this.getConnectionShortDetails(connection));
