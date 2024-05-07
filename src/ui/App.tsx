@@ -48,7 +48,6 @@ const App = () => {
   const toastMsg = useAppSelector(getToastMsg);
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [lockIsRendered, setLockIsRendered] = useState(false);
 
   const isPreviewMode = useMemo(
     () => new URLSearchParams(window.location.search).has("browserPreview"),
@@ -102,15 +101,7 @@ const App = () => {
   }, []);
 
   const renderApp = () => {
-    if (!lockIsRendered) {
-      // We need to include the LockModal in the loading page to track when is rendered
-      return (
-        <>
-          <LockPage didEnter={() => setLockIsRendered(true)} />
-          {LoadingPage()}
-        </>
-      );
-    } else if (showScan) {
+    if (showScan) {
       return <FullPageScanner setShowScan={setShowScan} />;
     } else {
       return (
@@ -126,8 +117,14 @@ const App = () => {
     <IonApp>
       <AppWrapper>
         <StrictMode>
-          {lockIsRendered && !authentication.loggedIn ? <LockPage /> : null}
-          {stateCache.initialized ? renderApp() : LoadingPage()}
+          {stateCache.initialized ? (
+            <>
+              {renderApp()}
+              {!authentication.loggedIn ? <LockPage /> : null}
+            </>
+          ) : (
+            LoadingPage()
+          )}
           <SetUserName
             isOpen={showSetUserName}
             setIsOpen={setShowSetUserName}

@@ -16,13 +16,12 @@ import {
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { RoutePath } from "../../../routes";
 import { PublicRoutes } from "../../../routes/paths";
-import { LockPageProps } from "./LockPage.types";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import { PageFooter } from "../../components/PageFooter";
 import { Alert } from "../../components/Alert";
 import "./LockPage.scss";
 
-const LockPage = ({ didEnter }: LockPageProps) => {
+const LockPage = () => {
   const pageId = "lock-page";
   const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
@@ -38,10 +37,6 @@ const LockPage = ({ didEnter }: LockPageProps) => {
     ? i18n.t("lockpage.alert.button.verify")
     : i18n.t("lockpage.alert.button.restart");
   const cancelButtonText = i18n.t("lockpage.alert.button.cancel");
-
-  useEffect(() => {
-    didEnter && didEnter();
-  }, []);
 
   const handleClearState = () => {
     setAlertIsOpen(false);
