@@ -174,6 +174,7 @@ describe("Single sig service of agent", () => {
         createdAtUTC: nowISO,
         theme: 0,
         isPending: false,
+        delegated: undefined,
       },
     ]);
   });
@@ -213,6 +214,7 @@ describe("Single sig service of agent", () => {
       signifyOpName: undefined,
       signifyName: "uuid-here",
       isPending: false,
+      delegated: undefined,
     });
   });
 

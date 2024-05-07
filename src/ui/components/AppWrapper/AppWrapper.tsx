@@ -19,6 +19,7 @@ import {
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
+  updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   setCredsCache,
@@ -43,6 +44,7 @@ import { CredentialStatus } from "../../../core/agent/services/credentialService
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -103,6 +105,15 @@ const acdcChangeHandler = async (
     dispatch(setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED));
     dispatch(setCurrentOperation(OperationType.IDLE));
   }
+};
+
+const signifyOperationStateChangeHandler = async (
+  aid: IdentifierShortDetails,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  dispatch(updateOrAddIdentifiersCache(aid));
+  dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
+  dispatch(setCurrentOperation(OperationType.IDLE));
 };
 
 const AppWrapper = (props: { children: ReactNode }) => {
@@ -260,6 +271,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
       return acdcChangeHandler(event, dispatch);
     });
 
+    Agent.agent.signifyNotifications.onSignifyOperationStateChanged((event) => {
+      return signifyOperationStateChangeHandler(event, dispatch);
+    });
+
     const oldMessages = (
       await Promise.all([
         Agent.agent.credentials.getUnhandledIpexGrantNotifications({
@@ -313,4 +328,5 @@ export {
   connectionStateChangedHandler,
   acdcChangeHandler,
   keriaNotificationsChangeHandler,
+  signifyOperationStateChangeHandler,
 };

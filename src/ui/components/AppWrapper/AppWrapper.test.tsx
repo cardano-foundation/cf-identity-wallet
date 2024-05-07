@@ -5,6 +5,7 @@ import {
   acdcChangeHandler,
   connectionStateChangedHandler,
   keriaNotificationsChangeHandler,
+  signifyOperationStateChangeHandler,
 } from "./AppWrapper";
 import { store } from "../../../store";
 import { Agent } from "../../../core/agent/agent";
@@ -31,6 +32,8 @@ import {
   CredentialShortDetails,
   CredentialStatus,
 } from "../../../core/agent/services/credentialService.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { updateOrAddIdentifiersCache } from "../../../store/reducers/identifiersCache";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -236,6 +239,26 @@ describe("AppWrapper handler", () => {
           type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
           multisigIcpDetails: {} as any,
         })
+      );
+    });
+  });
+
+  describe("Signify operation state changed handler", () => {
+    test("handles operation updated", async () => {
+      const aid = {
+        id: "id",
+        displayName: "string",
+        createdAtUTC: "string",
+        signifyName: "string",
+        theme: 0,
+        isPending: false,
+        delegated: {},
+      } as IdentifierShortDetails;
+      await signifyOperationStateChangeHandler(aid, dispatch);
+      expect(dispatch).toBeCalledWith(updateOrAddIdentifiersCache(aid));
+      expect(dispatch).toBeCalledWith(setCurrentOperation(OperationType.IDLE));
+      expect(dispatch).toBeCalledWith(
+        setToastMsg(ToastMsgType.IDENTIFIER_UPDATED)
       );
     });
   });

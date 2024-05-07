@@ -11,6 +11,7 @@ interface IdentifierMetadataRecordProps {
   theme: number;
   signifyOpName?: string;
   multisigManageAid?: string;
+  delegated?: Record<string, unknown>;
 }
 
 class IdentifierMetadataRecord extends BaseRecord {
@@ -22,6 +23,7 @@ class IdentifierMetadataRecord extends BaseRecord {
   signifyName!: string;
   theme!: number;
   multisigManageAid?: string | undefined;
+  delegated?: Record<string, unknown>;
 
   static readonly type = "IdentifierMetadataRecord";
   readonly type = IdentifierMetadataRecord.type;
@@ -40,6 +42,7 @@ class IdentifierMetadataRecord extends BaseRecord {
       this.multisigManageAid = props.multisigManageAid;
       this.createdAt = props.createdAt ?? new Date();
       this.theme = props.theme;
+      this.delegated = props.delegated;
     }
   }
 
