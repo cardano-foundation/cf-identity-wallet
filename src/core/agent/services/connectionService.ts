@@ -16,7 +16,8 @@ import {
   ConnectionNoteStorage,
   ConnectionRecord,
   CredentialStorage,
-  ConnectionStorage } from "../records";
+  ConnectionStorage,
+} from "../records";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
