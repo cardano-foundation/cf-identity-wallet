@@ -45,6 +45,8 @@ class Agent {
     "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
 
   private static instance: Agent;
+  private agentServicesProps!: AgentServicesProps;
+
   private storageSession!: SqliteSession | IonicSession;
 
   private basicStorageService!: BasicStorage;
@@ -65,11 +67,6 @@ class Agent {
   private connectionService!: ConnectionService;
   private credentialService!: CredentialService;
   private signifyNotificationService!: SignifyNotificationService;
-
-  private agentServicesProps: AgentServicesProps = {
-    signifyClient: this.signifyClient,
-    eventService: new EventService(),
-  };
 
   get identifiers() {
     if (!this.identifierService) {
@@ -157,21 +154,6 @@ class Agent {
   async start(): Promise<void> {
     if (!Agent.ready) {
       await this.storageSession.open(walletId);
-      await signifyReady();
-      const bran = await this.getBran();
-      // @TODO - foconnor: Review of Tier level.
-      this.signifyClient = new SignifyClient(
-        Agent.LOCAL_KERIA_ENDPOINT,
-        bran,
-        Tier.low,
-        Agent.LOCAL_KERIA_BOOT_ENDPOINT
-      );
-      try {
-        await this.signifyClient.connect();
-      } catch (err) {
-        await this.signifyClient.boot();
-        await this.signifyClient.connect();
-      }
       this.basicStorageService = new BasicStorage(
         this.getStorageService<BasicRecord>(this.storageSession)
       );
@@ -190,6 +172,28 @@ class Agent {
       this.notificationStorage = new NotificationStorage(
         this.getStorageService<NotificationRecord>(this.storageSession)
       );
+
+      await signifyReady();
+      const bran = await this.getBran();
+      // @TODO - foconnor: Review of Tier level.
+      this.signifyClient = new SignifyClient(
+        Agent.LOCAL_KERIA_ENDPOINT,
+        bran,
+        Tier.low,
+        Agent.LOCAL_KERIA_BOOT_ENDPOINT
+      );
+      try {
+        await this.signifyClient.connect();
+      } catch (err) {
+        await this.signifyClient.boot();
+        await this.signifyClient.connect();
+      }
+
+      this.agentServicesProps = {
+        signifyClient: this.signifyClient,
+        eventService: new EventService(),
+      };
+
       Agent.ready = true;
     }
   }
