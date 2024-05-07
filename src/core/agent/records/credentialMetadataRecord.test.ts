@@ -8,10 +8,8 @@ const mockData: CredentialMetadataRecordProps = {
   id: "credential:z6Mkpph7qyemfmHt5cSEXXbhm1VbSZT789X8Ep4eA7ndGxGh",
   isArchived: true,
   issuanceDate: "2010-01-01T19:23:24Z",
-  issuerLogo: "https://placehold.co/120x22",
   credentialType: "test",
   status: CredentialMetadataRecordStatus.CONFIRMED,
-  credentialRecordId: "1",
 };
 
 describe("Credential metadata record", () => {
@@ -26,7 +24,6 @@ describe("Credential metadata record", () => {
     expect(settingsRecord.createdAt).toBe(createdAt);
     expect(settingsRecord.isArchived).toBe(mockData.isArchived);
     expect(settingsRecord.issuanceDate).toBe(mockData.issuanceDate);
-    expect(settingsRecord.issuerLogo).toBe(mockData.issuerLogo);
     expect(settingsRecord.getTags()).toMatchObject({
       isArchived: mockData.isArchived,
     });
@@ -39,10 +36,8 @@ describe("Credential metadata record", () => {
       id: mockData.id,
       isArchived: mockData.isArchived,
       issuanceDate: "2010-01-01T19:23:24Z",
-      issuerLogo: "https://placehold.co/120x22",
       credentialType: "test",
       status: CredentialMetadataRecordStatus.CONFIRMED,
-      credentialRecordId: "1",
     });
     expect(settingsRecord.createdAt.getTime()).toBeGreaterThan(
       createdAt.getTime()
@@ -55,10 +50,8 @@ describe("Credential metadata record", () => {
       id: mockData.id,
       createdAt: createdAt,
       issuanceDate: "2010-01-01T19:23:24Z",
-      issuerLogo: "https://placehold.co/120x22",
       credentialType: "test",
       status: CredentialMetadataRecordStatus.CONFIRMED,
-      credentialRecordId: "1",
     });
     expect(settingsRecord.isArchived).toBe(false);
   });

@@ -7,7 +7,6 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import { useHistory } from "react-router-dom";
 import { arrowBackOutline, closeOutline } from "ionicons/icons";
 import { PageHeaderProps } from "./PageHeader.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -15,6 +14,7 @@ import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { getBackRoute } from "../../../routes/backRoute";
 import "./PageHeader.scss";
+import { useAppIonRouter } from "../../hooks";
 
 const PageHeader = ({
   backButton,
@@ -36,7 +36,7 @@ const PageHeader = ({
   title,
   additionalButtons,
 }: PageHeaderProps) => {
-  const history = useHistory();
+  const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const hasContent =
@@ -60,7 +60,7 @@ const PageHeader = ({
           dispatch,
           updateRedux
         );
-        history.push(backPath.pathname);
+        ionRouter.push(backPath.pathname, "back", "pop");
       }
     }
   };

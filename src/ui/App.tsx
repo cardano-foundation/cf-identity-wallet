@@ -1,6 +1,12 @@
 import { StrictMode, useEffect, useMemo, useState } from "react";
-import { setupIonicReact, IonApp, getPlatforms } from "@ionic/react";
+import {
+  setupIonicReact,
+  IonApp,
+  getPlatforms,
+  IonSpinner,
+} from "@ionic/react";
 import { StatusBar, Style } from "@capacitor/status-bar";
+import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { Routes } from "../routes";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
@@ -17,11 +23,11 @@ import { useAppSelector } from "../store/hooks";
 import { FullPageScanner } from "./pages/FullPageScanner";
 import { OperationType } from "./globals/types";
 import { IncomingRequest } from "./pages/IncomingRequest";
-import { Settings } from "./pages/Settings";
 import { SetUserName } from "./components/SetUserName";
 import { TabsRoutePath } from "../routes/paths";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
+import { LockModal } from "./components/LockModal";
 
 setupIonicReact();
 
@@ -33,6 +39,7 @@ const App = () => {
   const toastMsg = useAppSelector(getToastMsg);
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [lockIsRendered, setLockIsRendered] = useState(false);
 
   const isPreviewMode = useMemo(
     () => new URLSearchParams(window.location.search).has("browserPreview"),
@@ -64,38 +71,64 @@ const App = () => {
 
   useEffect(() => {
     if (
-      authentication.userName?.length === 0 &&
+      authentication.loggedIn &&
+      (authentication.userName === undefined ||
+        authentication.userName?.length === 0) &&
       currentRoute?.path?.includes(TabsRoutePath.ROOT)
     ) {
       setShowSetUserName(true);
     }
-  }, [authentication, currentRoute]);
+  }, [authentication.loggedIn, currentRoute]);
 
   useEffect(() => {
     const platforms = getPlatforms();
-    const isIosAppPlatform =
-      platforms.includes("ios") && !platforms.includes("mobileweb");
+    if (!platforms.includes("mobileweb")) {
+      ScreenOrientation.lock({ orientation: "portrait" });
+      if (platforms.includes("ios")) {
+        StatusBar.setStyle({
+          style: Style.Light,
+        });
+      }
 
-    if (isIosAppPlatform) {
-      StatusBar.setStyle({
-        style: Style.Light,
-      });
+      return () => {
+        ScreenOrientation.unlock();
+      };
     }
   }, []);
+
+  const renderApp = () => {
+    if (!lockIsRendered) {
+      // We need to include the LockModal in the loading page to track when is rendered
+      return (
+        <>
+          <LockModal didEnter={() => setLockIsRendered(true)} />
+          <div className="loading-page">
+            <IonSpinner name="crescent" />
+          </div>
+        </>
+      );
+    } else {
+      return (
+        <>
+          {isPreviewMode ? <MobileHeaderPreview /> : null}
+          {showScan && <FullPageScanner setShowScan={setShowScan} />}
+          <Routes />
+        </>
+      );
+    }
+  };
 
   return (
     <IonApp>
       <AppWrapper>
         <StrictMode>
-          {isPreviewMode && <MobileHeaderPreview />}
-          {showScan && <FullPageScanner setShowScan={setShowScan} />}
-          <Routes />
+          {lockIsRendered && !authentication.loggedIn ? <LockModal /> : null}
+          {renderApp()}
           <SetUserName
             isOpen={showSetUserName}
             setIsOpen={setShowSetUserName}
           />
           <IncomingRequest />
-          <Settings />
           <CustomToast
             toastMsg={toastMsg}
             showToast={showToast}

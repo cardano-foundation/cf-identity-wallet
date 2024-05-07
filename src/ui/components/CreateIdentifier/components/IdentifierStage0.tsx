@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
   CreateIdentifierInputs,
   IdentifierShortDetails,
-} from "../../../../core/agent/services/identifierService.types";
+} from "../../../../core/agent/services/identifier.types";
 import { Agent } from "../../../../core/agent/agent";
 import {
   getIdentifiersCache,

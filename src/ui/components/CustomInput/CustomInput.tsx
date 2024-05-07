@@ -42,6 +42,7 @@ const CustomInput = ({
           id={dataTestId}
           data-testid={dataTestId}
           label={title}
+          aria-label={`input-${title}`}
           labelPlacement="stacked"
           type={hidden ? "password" : "text"}
           autofocus={autofocus}

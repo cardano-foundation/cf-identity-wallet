@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  logout,
   setAuthentication,
   setCurrentOperation,
   setInitialized,
@@ -32,21 +33,22 @@ import {
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import {
-  KeriNotification,
-  ConnectionKeriStateChangedEvent,
+  KeriaNotification,
+  ConnectionStateChangedEvent,
   ConnectionStatus,
-  AcdcKeriStateChangedEvent,
+  AcdcStateChangedEvent,
+  NotificationRoute,
 } from "../../../core/agent/agent.types";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
-import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
-import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 import { IdentifierService } from "../../../core/agent/services";
+import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
+import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 
-const connectionKeriStateChangedHandler = async (
-  event: ConnectionKeriStateChangedEvent,
+const connectionStateChangedHandler = async (
+  event: ConnectionStateChangedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === ConnectionStatus.PENDING) {
@@ -55,7 +57,7 @@ const connectionKeriStateChangedHandler = async (
   } else {
     const connectionRecordId = event.payload.connectionId!;
     const connectionDetails =
-      await Agent.agent.connections.getConnectionKeriShortDetailById(
+      await Agent.agent.connections.getConnectionShortDetailById(
         connectionRecordId
       );
     dispatch(updateOrAddConnectionCache(connectionDetails));
@@ -63,8 +65,8 @@ const connectionKeriStateChangedHandler = async (
   }
 };
 
-const keriNotificationsChangeHandler = async (
-  event: KeriNotification,
+const keriaNotificationsChangeHandler = async (
+  event: KeriaNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event?.a?.r === NotificationRoute.Credential) {
@@ -84,13 +86,13 @@ const keriNotificationsChangeHandler = async (
 };
 
 const processMultiSigIcpNotification = async (
-  event: KeriNotification,
+  event: KeriaNotification,
   dispatch: ReturnType<typeof useAppDispatch>,
   retryInterval = 3000
 ) => {
   try {
     const multisigIcpDetails =
-      await Agent.agent.identifiers.getMultisigIcpDetails(event);
+      await Agent.agent.multiSigs.getMultisigIcpDetails(event);
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
@@ -111,8 +113,8 @@ const processMultiSigIcpNotification = async (
   }
 };
 
-const keriAcdcChangeHandler = async (
-  event: AcdcKeriStateChangedEvent,
+const acdcChangeHandler = async (
+  event: AcdcStateChangedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === CredentialStatus.PENDING) {
@@ -128,8 +130,41 @@ const keriAcdcChangeHandler = async (
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
-  const [initialised, setInitialised] = useState(false);
   const [agentInitErr, setAgentInitErr] = useState(false);
+
+  const ACTIVITY_TIMEOUT = 60000;
+  let timer: NodeJS.Timeout;
+
+  useEffect(() => {
+    const handleActivity = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        dispatch(logout());
+      }, ACTIVITY_TIMEOUT);
+    };
+
+    // TODO: detect appStateChange in android and ios to reduce the ACTIVITY_TIMEOUT
+    // App.addListener("appStateChange", handleAppStateChange);
+    window.addEventListener("load", handleActivity);
+    document.addEventListener("mousemove", handleActivity);
+    document.addEventListener("touchstart", handleActivity);
+    document.addEventListener("touchmove", handleActivity);
+    document.addEventListener("click", handleActivity);
+    document.addEventListener("focus", handleActivity);
+    document.addEventListener("keydown", handleActivity);
+    document.addEventListener("scroll", handleActivity);
+
+    return () => {
+      window.removeEventListener("load", handleActivity);
+      document.removeEventListener("mousemove", handleActivity);
+      document.removeEventListener("touchstart", handleActivity);
+      document.removeEventListener("touchmove", handleActivity);
+      document.removeEventListener("click", handleActivity);
+      document.removeEventListener("focus", handleActivity);
+      document.removeEventListener("keydown", handleActivity);
+      clearTimeout(timer);
+    };
+  }, []);
 
   useEffect(() => {
     initApp();
@@ -144,11 +179,71 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
   };
 
+  const loadDatabase = async () => {
+    const connectionsDetails = await Agent.agent.connections.getConnections();
+
+    const credentials = await Agent.agent.credentials.getCredentials();
+    const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
+
+    dispatch(setIdentifiersCache(storedIdentifiers));
+    dispatch(setCredsCache(credentials));
+    dispatch(setConnectionsCache(connectionsDetails));
+    // TODO: Need update after core function completed.
+    dispatch(setWalletConnectionsCache(walletConnectionsFix));
+  };
+
+  const loadPreferences = async () => {
+    const getPreferenceSafe = async (key: string) => {
+      try {
+        return await PreferencesStorage.get(key);
+      } catch (e) {
+        // TODO: handle error
+      }
+    };
+    const userName = await getPreferenceSafe(PreferencesKeys.APP_USER_NAME);
+
+    const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
+    const seedPhraseIsSet = await checkKeyStore(
+      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
+    );
+    const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
+
+    const updatedAuthentication = {
+      ...authentication,
+      loggedIn: false,
+      userName: userName?.userName as string,
+      passcodeIsSet,
+      seedPhraseIsSet,
+      passwordIsSet,
+    };
+
+    dispatch(setAuthentication(updatedAuthentication));
+
+    const identifiersFavourites = await getPreferenceSafe(
+      PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
+    );
+    dispatch(
+      setFavouritesIdentifiersCache(
+        identifiersFavourites?.favourites as FavouriteIdentifier[]
+      )
+    );
+
+    const credsFavourites = await getPreferenceSafe(
+      PreferencesKeys.APP_CREDS_FAVOURITES
+    );
+    dispatch(
+      setFavouritesCredsCache(
+        credsFavourites?.favourites as FavouriteIdentifier[]
+      )
+    );
+  };
+
   const initApp = async () => {
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
+    let isInitialized;
     try {
-      const isInitialized = await PreferencesStorage.get(
+      isInitialized = await PreferencesStorage.get(
         PreferencesKeys.APP_ALREADY_INIT
       );
       dispatch(setInitialized(isInitialized?.initialized as boolean));
@@ -159,6 +254,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     }
+
+    await loadPreferences();
 
     await new ConfigurationService().start();
 
@@ -171,108 +268,28 @@ const AppWrapper = (props: { children: ReactNode }) => {
       console.error(e);
       return;
     }
-
     dispatch(setPauseQueueIncomingRequest(true));
-    const connectionsDetails = await Agent.agent.connections.getConnections();
-    let userName: PreferencesStorageItem = { userName: "" };
-    const credentials = await Agent.agent.credentials.getCredentials();
-    const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
-    const seedPhraseIsSet = await checkKeyStore(
-      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
-    );
-    const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
-    const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
 
-    // @TODO - handle error
-    try {
-      const identifiersFavourites = await PreferencesStorage.get(
-        PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
-      );
-      dispatch(
-        setFavouritesIdentifiersCache(
-          identifiersFavourites.favourites as FavouriteIdentifier[]
-        )
-      );
-    } catch (e) {
-      if (
-        !(e instanceof Error) ||
-        !(
-          e instanceof Error &&
-          e.message ===
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_IDENTIFIERS_FAVOURITES}`
-        )
-      ) {
-        throw e;
-      }
-    }
-
-    try {
-      const credsFavourites = await PreferencesStorage.get(
-        PreferencesKeys.APP_CREDS_FAVOURITES
-      );
-      dispatch(
-        setFavouritesCredsCache(
-          credsFavourites.favourites as FavouriteIdentifier[]
-        )
-      );
-    } catch (e) {
-      if (
-        !(e instanceof Error) ||
-        !(
-          e instanceof Error &&
-          e.message ===
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_CREDS_FAVOURITES}`
-        )
-      ) {
-        throw e;
-      }
-    }
-
-    try {
-      userName = await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME);
-    } catch (e) {
-      if (
-        !(e instanceof Error) ||
-        !(
-          e instanceof Error &&
-          e.message ===
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
-        )
-      ) {
-        throw e;
-      }
-    }
-
-    dispatch(
-      setAuthentication({
-        ...authentication,
-        userName: userName.userName as string,
-        passcodeIsSet,
-        seedPhraseIsSet,
-        passwordIsSet,
-      })
-    );
-
-    dispatch(setIdentifiersCache(storedIdentifiers));
-    dispatch(setCredsCache(credentials));
-    dispatch(setConnectionsCache(connectionsDetails));
-
-    Agent.agent.connections.onConnectionKeriStateChanged((event) => {
-      return connectionKeriStateChangedHandler(event, dispatch);
-    });
-    Agent.agent.signifyNotifications.onNotificationKeriStateChanged((event) => {
-      return keriNotificationsChangeHandler(event, dispatch);
-    });
-    Agent.agent.credentials.onAcdcKeriStateChanged((event) => {
-      return keriAcdcChangeHandler(event, dispatch);
+    await loadDatabase().catch((e) => {
+      /* TODO: handle error */
     });
 
-    setInitialised(true);
+    Agent.agent.connections.onConnectionStateChanged((event) => {
+      return connectionStateChangedHandler(event, dispatch);
+    });
+    Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
+      return keriaNotificationsChangeHandler(event, dispatch);
+    });
+    Agent.agent.credentials.onAcdcStateChanged((event) => {
+      return acdcChangeHandler(event, dispatch);
+    });
 
     const oldMessages = (
       await Promise.all([
-        Agent.agent.credentials.getKeriCredentialNotifications(),
-        Agent.agent.identifiers.getUnhandledMultisigIdentifiers({
+        Agent.agent.credentials.getUnhandledIpexGrantNotifications({
+          isDismissed: false,
+        }),
+        Agent.agent.multiSigs.getUnhandledMultisigIdentifiers({
           isDismissed: false,
         }),
       ])
@@ -282,7 +299,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
       });
     oldMessages.forEach(async (message) => {
-      await keriNotificationsChangeHandler(message, dispatch);
+      await keriaNotificationsChangeHandler(message, dispatch);
     });
     // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
     // await Promise.all([
@@ -295,6 +312,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.
   // Hence this isn't in i18n.
   if (agentInitErr) {
+    //if (false) {
     return (
       <div className="agent-init-error-msg">
         <p>
@@ -311,7 +329,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
   }
 
-  return initialised ? <>{props.children}</> : <></>;
+  return <>{props.children}</>;
 };
 
-export { AppWrapper };
+export {
+  AppWrapper,
+  connectionStateChangedHandler,
+  acdcChangeHandler,
+  keriaNotificationsChangeHandler,
+};

@@ -20,10 +20,7 @@ interface IdentifierMetadataRecordProps {
   groupMetadata?: groupMetadata;
 }
 
-class IdentifierMetadataRecord
-  extends BaseRecord
-  implements IdentifierMetadataRecordProps
-{
+class IdentifierMetadataRecord extends BaseRecord {
   displayName!: string;
   isArchived?: boolean;
   isDeleted?: boolean;

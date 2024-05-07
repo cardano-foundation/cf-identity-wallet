@@ -9,7 +9,7 @@ import {
   getFavouritesIdentifiersCache,
 } from "./identifiersCache";
 import { RootState } from "../../index";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { FavouriteIdentifier } from "./identifiersCache.types";
 
 describe("identifiersCacheSlice", () => {

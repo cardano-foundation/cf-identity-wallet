@@ -28,7 +28,7 @@ export class CommonIdentityModal {
   }
 
   async identifierTypeItem(name: string) {
-    return $(`[data-testid="identifier-type-${name.toLowerCase()}"]`);
+    return $(`[data-testid="identifier-aidtype-${name.toLowerCase()}"]`);
   }
 
   async modalTitleElement(elementName: string) {
