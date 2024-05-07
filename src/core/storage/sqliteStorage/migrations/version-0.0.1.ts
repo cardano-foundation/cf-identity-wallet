@@ -12,7 +12,7 @@ const DATA_V001 = {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             item_id TEXT NOT NULL,
             name TEXT NOT NULL,
-            value TEXT NOT NULL,
+            value TEXT,
             type TEXT NOT NULL,
             FOREIGN KEY (item_id) REFERENCES items (id)
                 ON DELETE CASCADE ON UPDATE CASCADE

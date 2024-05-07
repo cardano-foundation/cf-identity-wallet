@@ -39,6 +39,8 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
     FROM items i WHERE category = ?`;
   static readonly SCAN_TAGS_SQL_EQ =
     "EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?)";
+  static readonly SCAN_TAGS_SQL_IS_NULL =
+    "EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value is NULL)";
   static readonly SCAN_TAGS_SQL_IN =
     "EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value IN ";
 
@@ -223,7 +225,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
     await this.session!.executeSet(transactionStatements);
   }
 
-  private getTagsInsertSql(itemId: string, tags: Record<string, unknown>) {
+  getTagsInsertSql(itemId: string, tags: Record<string, unknown>) {
     const statements = [];
     for (const key in tags) {
       if (isNilOrEmptyString(tags[key])) continue;
@@ -288,8 +290,13 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
         );
         values.push(queryKey, ...queryVal);
       } else {
-        conditions.push(SqliteStorage.SCAN_TAGS_SQL_EQ);
-        values.push(queryKey, queryVal as string);
+        if (queryVal === null) {
+          conditions.push(SqliteStorage.SCAN_TAGS_SQL_IS_NULL);
+          values.push(queryKey);
+        } else {
+          conditions.push(SqliteStorage.SCAN_TAGS_SQL_EQ);
+          values.push(queryKey, queryVal as string);
+        }
       }
     }
     return { condition: conditions.join(" AND "), values };
