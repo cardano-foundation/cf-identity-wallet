@@ -22,9 +22,11 @@ import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { CreateIdentifier } from "../CreateIdentifier";
 import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
+import { PageFooter } from "../PageFooter";
 
 const Scanner = forwardRef(
   ({ setIsValueCaptured, handleReset }: ScannerProps, ref) => {
+    const componentId = "scanner";
     const dispatch = useAppDispatch();
     const currentOperation = useAppSelector(getCurrentOperation);
     const currentToastMsg = useAppSelector(getToastMsg);
@@ -140,6 +142,55 @@ const Scanner = forwardRef(
       }
     }, [currentOperation, currentRoute]);
 
+    const handlePrimaryButtonAction = () => {
+      // TODO: Add content to initiate Multi Sig
+      console.log("click primary");
+    };
+
+    const handleSecondaryButtonAction = () => {
+      // TODO: Add content to open modal to paste OOBI / other content
+      console.log("click secondary");
+    };
+
+    const RenderPageFooter = () => {
+      switch (currentOperation) {
+        case OperationType.IDLE:
+          return (
+            <PageFooter
+              pageId={componentId}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pastecontents"
+              )}`}
+              secondaryButtonAction={handleSecondaryButtonAction}
+            />
+          );
+        case OperationType.MULTI_SIG_INITIATOR_SCAN:
+          return (
+            <PageFooter
+              pageId={componentId}
+              primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
+              primaryButtonAction={handlePrimaryButtonAction}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pasteoobi"
+              )}`}
+              secondaryButtonAction={handleSecondaryButtonAction}
+            />
+          );
+        case OperationType.MULTI_SIG_RECEIVER_SCAN:
+          return (
+            <PageFooter
+              pageId={componentId}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pasteoobi"
+              )}`}
+              secondaryButtonAction={handleSecondaryButtonAction}
+            />
+          );
+        default:
+          return null;
+      }
+    };
+
     return (
       <>
         <IonGrid
@@ -160,6 +211,7 @@ const Scanner = forwardRef(
               className="qr-code-scanner-icon"
             />
           </IonRow>
+          <RenderPageFooter />
         </IonGrid>
         <CreateIdentifier
           modalIsOpen={createIdentifierModalIsOpen}
