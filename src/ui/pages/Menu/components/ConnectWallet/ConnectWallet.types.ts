@@ -5,8 +5,17 @@ interface ConnectWalletOptionRef {
 }
 
 type ActionInfo = {
-  type: "add" | "delete" | "connect" | "none";
+  type: ActionType;
   data?: ConnectionData;
 };
+
+enum ActionType {
+  Add = "add",
+  Delete = "delete",
+  Connect = "connect",
+  None = "none",
+}
+
+export { ActionType };
 
 export type { ConnectWalletOptionRef, ActionInfo };

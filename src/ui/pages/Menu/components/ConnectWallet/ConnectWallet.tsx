@@ -9,7 +9,11 @@ import { i18n } from "../../../../../i18n";
 import { CardsPlaceholder } from "../../../../components/CardsPlaceholder";
 import "./ConnectWallet.scss";
 import { ConnectWalletActions } from "../ConnectWalletActions";
-import { ActionInfo, ConnectWalletOptionRef } from "./ConnectWallet.types";
+import {
+  ActionInfo,
+  ActionType,
+  ConnectWalletOptionRef,
+} from "./ConnectWallet.types";
 import { CardItem, CardList } from "../../../../components/CardList";
 import { IonCheckbox, IonItemOption } from "@ionic/react";
 import { Alert } from "../../../../components/Alert";
@@ -37,7 +41,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     const pageId = "connect-wallet-placeholder";
     const stateCache = useAppSelector(getStateCache);
     const actionInfo = useRef<ActionInfo>({
-      type: "none",
+      type: ActionType.None,
     });
 
     const [openConnectWallet, setOpenConnectWallet] = useState(false);
@@ -83,7 +87,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
 
     const handleOpenDeleteAlert = (data: ConnectionData) => {
       actionInfo.current = {
-        type: "delete",
+        type: ActionType.Delete,
         data,
       };
 
@@ -92,7 +96,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
 
     const handleOpenConfirmConnectModal = (data: ConnectionData) => {
       actionInfo.current = {
-        type: "connect",
+        type: ActionType.Connect,
         data,
       };
       setOpenConfirmConnectModal(true);
@@ -100,7 +104,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
 
     const closeDeleteAlert = () => {
       actionInfo.current = {
-        type: "none",
+        type: ActionType.None,
       };
       setOpenDeleteAlert(false);
     };
@@ -112,7 +116,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
 
     const handleDeleteConnection = (data: ConnectionData) => {
       actionInfo.current = {
-        type: "none",
+        type: ActionType.None,
       };
 
       // TODO: Implement delete wallet connection logic
@@ -141,11 +145,14 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       setVerifyPasscodeIsOpen(false);
       setVerifyPasswordIsOpen(false);
 
-      if (actionInfo.current.type === "delete" && actionInfo.current.data) {
+      if (
+        actionInfo.current.type === ActionType.Delete &&
+        actionInfo.current.data
+      ) {
         handleDeleteConnection(actionInfo.current.data);
       }
 
-      if ("connect" === actionInfo.current.type) {
+      if (ActionType.Connect === actionInfo.current.type) {
         handleConnectWallet();
       }
     };
