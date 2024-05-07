@@ -45,6 +45,8 @@ class Agent {
     "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
 
   private static instance: Agent;
+  private agentServicesProps!: AgentServicesProps;
+
   private storageSession!: SqliteSession | IonicSession;
 
   private basicStorageService!: BasicStorage;
@@ -65,11 +67,6 @@ class Agent {
   private connectionService!: ConnectionService;
   private credentialService!: CredentialService;
   private signifyNotificationService!: SignifyNotificationService;
-
-  private agentServicesProps: AgentServicesProps = {
-    signifyClient: this.signifyClient,
-    eventService: new EventService(),
-  };
 
   get identifiers() {
     if (!this.identifierService) {
@@ -190,6 +187,10 @@ class Agent {
       this.notificationStorage = new NotificationStorage(
         this.getStorageService<NotificationRecord>(this.storageSession)
       );
+      this.agentServicesProps = {
+        signifyClient: this.signifyClient,
+        eventService: new EventService(),
+      };
       Agent.ready = true;
     }
   }
