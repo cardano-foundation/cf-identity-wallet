@@ -2,8 +2,14 @@ import { Agent } from "../agent";
 import {
   AcdcEventTypes,
   AcdcStateChangedEvent,
+  AgentServicesProps,
   KeriaNotification,
 } from "../agent.types";
+import {
+  CredentialStorage,
+  IdentifierStorage,
+  NotificationStorage,
+} from "../records";
 import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
@@ -29,6 +35,22 @@ class IpexCommunicationService extends AgentService {
     "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
   static readonly SCHEMA_SAID_IIW_DEMO =
     "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu";
+
+  protected readonly identifierStorage: IdentifierStorage;
+  protected readonly credentialStorage: CredentialStorage;
+  protected readonly notificationStorage: NotificationStorage;
+
+  constructor(
+    agentServiceProps: AgentServicesProps,
+    identifierStorage: IdentifierStorage,
+    credentialStorage: CredentialStorage,
+    notificationStorage: NotificationStorage
+  ) {
+    super(agentServiceProps);
+    this.identifierStorage = identifierStorage;
+    this.credentialStorage = credentialStorage;
+    this.notificationStorage = notificationStorage;
+  }
 
   async acceptAcdc(
     id: string,
@@ -71,7 +93,7 @@ class IpexCommunicationService extends AgentService {
       credentialId,
       cred
     );
-    await this.basicStorage.deleteById(id);
+    await this.notificationStorage.deleteById(id);
     this.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
       payload: {
@@ -103,7 +125,7 @@ class IpexCommunicationService extends AgentService {
   private async getNotificationRecordById(
     id: string
   ): Promise<KeriaNotification> {
-    const result = await this.basicStorage.findById(id);
+    const result = await this.notificationStorage.findById(id);
     if (!result) {
       throw new Error(
         `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
@@ -112,7 +134,7 @@ class IpexCommunicationService extends AgentService {
     return {
       id: result.id,
       createdAt: result.createdAt,
-      a: result.content,
+      a: result.a,
     };
   }
 

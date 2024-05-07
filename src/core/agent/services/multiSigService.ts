@@ -7,14 +7,16 @@ import {
   IdentifierResult,
   NotificationRoute,
   CreateIdentifierResult,
+  AgentServicesProps,
 } from "../agent.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
+  IdentifierStorage,
+  NotificationStorage,
 } from "../records";
 import { AgentService } from "./agentService";
 import { MultiSigIcpRequestDetails } from "./identifier.types";
-import { RecordType } from "../../storage/storage.types";
 import {
   Aid,
   MultiSigRoute,
@@ -38,6 +40,19 @@ class MultiSigService extends AgentService {
     "Cannot join multi-sig inception as we do not control any member AID of the multi-sig";
   static readonly UNKNOWN_AIDS_IN_MULTISIG_ICP =
     "Multi-sig join request contains unknown AIDs (not connected)";
+
+  protected readonly identifierStorage: IdentifierStorage;
+  protected readonly notificationStorage!: NotificationStorage;
+
+  constructor(
+    agentServiceProps: AgentServicesProps,
+    identifierStorage: IdentifierStorage,
+    notificationStorage: NotificationStorage
+  ) {
+    super(agentServiceProps);
+    this.identifierStorage = identifierStorage;
+    this.notificationStorage = notificationStorage;
+  }
 
   async createMultisig(
     ourIdentifier: string,
@@ -241,7 +256,7 @@ class MultiSigService extends AgentService {
       aid,
       multiSig.signifyName
     );
-    await this.basicStorage.deleteById(notification.id);
+    await this.notificationStorage.deleteById(notification.id);
     return res.op.name.split(".")[1];
   }
 
@@ -338,7 +353,7 @@ class MultiSigService extends AgentService {
     const msgSaid = notification.a.d as string;
     const hasJoined = await this.hasJoinedMultisig(msgSaid);
     if (hasJoined) {
-      await this.basicStorage.deleteById(notification.id);
+      await this.notificationStorage.deleteById(notification.id);
       return;
     }
     const icpMsg: MultiSigExnMessage[] = await this.signifyClient
@@ -364,7 +379,7 @@ class MultiSigService extends AgentService {
       .get(identifier?.signifyName);
     const signifyName = uuidv4();
     const res = await this.joinMultisigKeri(exn, aid, signifyName);
-    await this.basicStorage.deleteById(notification.id);
+    await this.notificationStorage.deleteById(notification.id);
     const multisigId = res.op.name.split(".")[1];
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
@@ -401,8 +416,7 @@ class MultiSigService extends AgentService {
       isDismissed?: boolean;
     } = {}
   ): Promise<KeriaNotification[]> {
-    const results = await this.basicStorage.findAllByQuery({
-      type: RecordType.KERIA_NOTIFICATION,
+    const results = await this.notificationStorage.findAllByQuery({
       route: NotificationRoute.MultiSigIcp,
       ...filters,
       $or: [
@@ -416,7 +430,7 @@ class MultiSigService extends AgentService {
       return {
         id: result.id,
         createdAt: result.createdAt,
-        a: result.content,
+        a: result.a,
       };
     });
   }

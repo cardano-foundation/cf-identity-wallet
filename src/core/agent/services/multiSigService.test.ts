@@ -6,9 +6,8 @@ import { ConnectionStatus, NotificationRoute } from "../agent.types";
 import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { MultiSigService } from "./multiSigService";
-import { RecordType } from "../../storage/storage.types";
 
-const basicStorage = jest.mocked({
+const notificationStorage = jest.mocked({
   open: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
@@ -102,14 +101,15 @@ const identifierStorage = jest.mocked({
 });
 
 const agentServicesProps = {
-  basicStorage: basicStorage as any,
   signifyClient: signifyClient as any,
   eventService: new EventService(),
-  identifierStorage: identifierStorage as any,
-  credentialStorage: {} as any,
 };
 
-const multiSigService = new MultiSigService(agentServicesProps);
+const multiSigService = new MultiSigService(
+  agentServicesProps,
+  identifierStorage as any,
+  notificationStorage as any
+);
 
 let mockResolveOobi = jest.fn();
 let mockGetIdentifiers = jest.fn();
@@ -389,7 +389,7 @@ describe("Multisig sig service of agent", () => {
 
   test("can join the multisig inception", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
-    basicStorage.findById = jest.fn().mockResolvedValue({
+    notificationStorage.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
       },
@@ -818,7 +818,7 @@ describe("Multisig sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(metadata);
-    basicStorage.findById = jest.fn().mockResolvedValue({
+    notificationStorage.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
       },
@@ -862,7 +862,7 @@ describe("Multisig sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(metadata);
-    basicStorage.findById = jest.fn().mockResolvedValue({
+    notificationStorage.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
       },
@@ -1234,38 +1234,38 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Can get unhandled Multisig Identifier notifications", async () => {
-    const basicRecord = {
+    const notificationRecord = {
       _tags: {
         isDismiss: true,
-        type: RecordType.KERIA_NOTIFICATION,
         route: NotificationRoute.MultiSigIcp,
       },
       id: "AIeGgKkS23FDK4mxpfodpbWhTydFz2tdM64DER6EdgG-",
       createdAt: new Date(),
-      content: {
+      a: {
         r: NotificationRoute.MultiSigIcp,
         d: "EF6Nmxz8hs0oVc4loyh2J5Sq9H3Z7apQVqjO6e4chtsp",
       },
     };
-    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([basicRecord]);
+    notificationStorage.findAllByQuery = jest
+      .fn()
+      .mockResolvedValue([notificationRecord]);
     expect(
       await multiSigService.getUnhandledMultisigIdentifiers()
     ).toStrictEqual([
       {
-        id: basicRecord.id,
-        createdAt: basicRecord.createdAt,
-        a: basicRecord.content,
+        id: notificationRecord.id,
+        createdAt: notificationRecord.createdAt,
+        a: notificationRecord.a,
       },
     ]);
   });
 
   test("Should pass the filter throught findAllByQuery when call getUnhandledMultisigIdentifiers", async () => {
-    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     await multiSigService.getUnhandledMultisigIdentifiers({
       isDismissed: false,
     });
-    expect(basicStorage.findAllByQuery).toBeCalledWith({
-      type: RecordType.KERIA_NOTIFICATION,
+    expect(notificationStorage.findAllByQuery).toBeCalledWith({
       route: NotificationRoute.MultiSigIcp,
       isDismissed: false,
       $or: [

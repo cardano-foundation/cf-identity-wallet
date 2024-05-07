@@ -19,7 +19,7 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
   },
 }));
 
-const basicStorage = jest.mocked({
+const notificationStorage = jest.mocked({
   open: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
@@ -104,33 +104,15 @@ const signifyClient = jest.mocked({
 
   groups: () => ({ getRequest: groupGetRequestMock }),
 });
-const identifierStorage = jest.mocked({
-  getIdentifierMetadata: jest.fn(),
-  getAllIdentifierMetadata: jest.fn(),
-  getKeriIdentifiersMetadata: jest.fn(),
-  updateIdentifierMetadata: jest.fn(),
-  createIdentifierMetadataRecord: jest.fn(),
-});
-
-const credentialStorage = jest.mocked({
-  getAllCredentialMetadata: jest.fn(),
-  deleteCredentialMetadata: jest.fn(),
-  getCredentialMetadata: jest.fn(),
-  getCredentialMetadataByConnectionId: jest.fn(),
-  saveCredentialMetadataRecord: jest.fn(),
-  updateCredentialMetadata: jest.fn(),
-});
 
 const agentServicesProps = {
-  basicStorage: basicStorage as any,
   signifyClient: signifyClient as any,
   eventService: new EventService(),
-  identifierStorage: identifierStorage as any,
-  credentialStorage: credentialStorage as any,
 };
 
 const signifyNotificationService = new SignifyNotificationService(
-  agentServicesProps
+  agentServicesProps,
+  notificationStorage as any
 );
 
 describe("Multi-Sig request", () => {
