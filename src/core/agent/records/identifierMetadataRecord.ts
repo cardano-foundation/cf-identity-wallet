@@ -63,6 +63,7 @@ class IdentifierMetadataRecord
       isArchived: this.isArchived,
       isDeleted: this.isDeleted,
       isPending: this.isPending,
+      groupCreated: this.groupMetadata?.groupCreated,
     };
   }
 }

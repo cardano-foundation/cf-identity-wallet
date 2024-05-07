@@ -652,6 +652,9 @@ class IdentifierService extends AgentService {
       RecordType.IDENTIFIER_METADATA_RECORD,
       {
         isArchived,
+        $not: {
+          groupCreated: true,
+        },
       }
     );
     return basicRecords.map((bc) => {
