@@ -487,11 +487,6 @@ describe("Multisig sig service of agent", () => {
 
   test("cannot join the multisig if cannot get key states for multisig member", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
-    basicStorage.findById = jest.fn().mockResolvedValue({
-      content: {
-        d: "d",
-      },
-    });
     groupGetRequestMock = jest.fn().mockResolvedValue([
       {
         exn: {
