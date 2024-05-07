@@ -4,7 +4,6 @@ import { i18n } from "../../../../../i18n";
 import { OptionModal } from "../../../../components/OptionsModal";
 import { ConfirmConnectModalProps } from "./ConfirmConnectModal.types";
 import "./ConfirmConnectModal.scss";
-import { ellipsisBetweenText } from "../../../../utils/text";
 import { writeToClipboard } from "../../../../utils/clipboard";
 import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../../globals/types";
@@ -46,7 +45,9 @@ const ConfirmConnectModal = ({
       : "connectwallet.connectionhistory.confirmconnect.disconnectbtn"
   );
 
-  const displayUrl = ellipsisBetweenText(connectionData?.url || "");
+  const displayUrl = connectionData
+    ? connectionData.url.substring(0, 5) + "..." + connectionData.url.slice(-5)
+    : "";
 
   const deleteConnection = () => {
     if (!connectionData) return;

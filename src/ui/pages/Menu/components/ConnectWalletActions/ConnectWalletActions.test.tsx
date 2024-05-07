@@ -4,9 +4,7 @@ import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { setCurrentOperation } from "../../../../../store/reducers/stateCache";
-import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
 import { OperationType } from "../../../../globals/types";
-import { ellipsisBetweenText } from "../../../../utils/text";
 import { ConnectWalletActions } from "./ConnectWalletActions";
 
 jest.mock("@ionic/react", () => ({

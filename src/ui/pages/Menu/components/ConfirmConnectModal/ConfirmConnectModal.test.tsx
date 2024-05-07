@@ -6,7 +6,6 @@ import { TabsRoutePath } from "../../../../../routes/paths";
 import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
 import { ToastMsgType } from "../../../../globals/types";
-import { ellipsisBetweenText } from "../../../../utils/text";
 import { ConfirmConnectModal } from "./ConfirmConnectModal";
 
 jest.mock("@ionic/react", () => ({
@@ -67,7 +66,10 @@ describe("Confirm connect modal", () => {
     expect(getByText(walletConnectionsFix[0].name)).toBeVisible();
     expect(getByText(walletConnectionsFix[0].owner)).toBeVisible();
 
-    const ellipsisLink = ellipsisBetweenText(walletConnectionsFix[0].url);
+    const ellipsisLink =
+      walletConnectionsFix[0].url.substring(0, 5) +
+      "..." +
+      walletConnectionsFix[0].url.slice(-5);
 
     expect(getByText(ellipsisLink)).toBeVisible();
 
