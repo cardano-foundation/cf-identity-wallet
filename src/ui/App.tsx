@@ -32,6 +32,13 @@ import { LockPage } from "./pages/LockPage/LockPage";
 
 setupIonicReact();
 
+const LoadingPage = () => {
+  return (
+    <div className="loading-page">
+      <IonSpinner name="crescent" />
+    </div>
+  );
+};
 const App = () => {
   const stateCache = useAppSelector(getStateCache);
   const authentication = useAppSelector(getAuthentication);
@@ -79,32 +86,28 @@ const App = () => {
   }, [authentication.loggedIn, currentRoute]);
 
   useEffect(() => {
-    ScreenOrientation.lock({ orientation: "portrait" });
-
     const platforms = getPlatforms();
-    const isIosAppPlatform =
-      platforms.includes("ios") && !platforms.includes("mobileweb");
+    if (!platforms.includes("mobileweb")) {
+      ScreenOrientation.lock({ orientation: "portrait" });
+      if (platforms.includes("ios")) {
+        StatusBar.setStyle({
+          style: Style.Light,
+        });
+      }
 
-    if (isIosAppPlatform) {
-      StatusBar.setStyle({
-        style: Style.Light,
-      });
+      return () => {
+        ScreenOrientation.unlock();
+      };
     }
-
-    return () => {
-      ScreenOrientation.unlock();
-    };
   }, []);
 
   const renderApp = () => {
-    if (!lockIsRendered && !stateCache.initialized) {
+    if (!lockIsRendered) {
       // We need to include the LockModal in the loading page to track when is rendered
       return (
         <>
           <LockPage didEnter={() => setLockIsRendered(true)} />
-          <div className="loading-page">
-            <IonSpinner name="crescent" />
-          </div>
+          {LoadingPage()}
         </>
       );
     } else if (showScan) {
@@ -124,7 +127,7 @@ const App = () => {
       <AppWrapper>
         <StrictMode>
           {lockIsRendered && !authentication.loggedIn ? <LockPage /> : null}
-          {renderApp()}
+          {stateCache.initialized ? renderApp() : LoadingPage()}
           <SetUserName
             isOpen={showSetUserName}
             setIsOpen={setShowSetUserName}
