@@ -29,6 +29,7 @@ const identifiersRotateMock = jest.fn();
 const oobiResolveMock = jest.fn();
 let groupGetRequestMock = jest.fn();
 let queryKeyStateMock = jest.fn();
+let queryKeyStateGetMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -87,7 +88,7 @@ const signifyClient = jest.mocked({
   },
   keyStates: () => ({
     query: queryKeyStateMock,
-    get: jest.fn(),
+    get: queryKeyStateGetMock,
   }),
 
   groups: () => ({ getRequest: groupGetRequestMock }),
@@ -163,12 +164,7 @@ describe("Multisig sig service of agent", () => {
   test("Can create a keri multisig with KERI contacts", async () => {
     const creatorIdentifier = "creatorIdentifier";
     const multisigIdentifier = "newMultisigIdentifierAid";
-    const signifyName = "newUuidHere";
     identifiersGetMock.mockResolvedValue(aidReturnedBySignify);
-    identifiersCreateMock.mockResolvedValue({
-      identifier: multisigIdentifier,
-      signifyName,
-    });
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
@@ -183,11 +179,18 @@ describe("Multisig sig service of agent", () => {
       alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
     });
 
-    // @TODO - foconnor: We shouldn't be mocking internal functions in the service - handle in next PR.
-    multiSigService.createAidMultisig = jest.fn().mockResolvedValue({
-      op: { name: `group.${multisigIdentifier}`, done: false },
-      icpResult: {},
-      name: "name",
+    identifiersCreateMock.mockImplementation((name, _config) => {
+      return {
+        op: () => {
+          return { name: `group.${multisigIdentifier}`, done: false };
+        },
+        serder: {
+          ked: { i: name },
+        },
+        sigs: [
+          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+        ],
+      };
     });
     const otherIdentifiers = [
       {
@@ -217,11 +220,20 @@ describe("Multisig sig service of agent", () => {
       expect.objectContaining({ id: multisigIdentifier, isPending: true })
     );
 
-    multiSigService.createAidMultisig = jest.fn().mockResolvedValue({
-      op: { name: `group.${multisigIdentifier}1`, done: false },
-      icpResult: {},
-      name: "name",
+    identifiersCreateMock.mockImplementation((name, _config) => {
+      return {
+        op: () => {
+          return { name: `group.${multisigIdentifier}1`, done: false };
+        },
+        serder: {
+          ked: { i: name },
+        },
+        sigs: [
+          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+        ],
+      };
     });
+    1;
     expect(
       await multiSigService.createMultisig(
         creatorIdentifier,
@@ -238,11 +250,20 @@ describe("Multisig sig service of agent", () => {
         id: `${multisigIdentifier}1`,
       })
     );
-    multiSigService.createAidMultisig = jest.fn().mockResolvedValue({
-      op: { name: `group.${multisigIdentifier}2`, done: true },
-      icpResult: {},
-      name: "name",
+    identifiersCreateMock.mockImplementation((name, _config) => {
+      return {
+        op: () => {
+          return { name: `group.${multisigIdentifier}2`, done: false };
+        },
+        serder: {
+          ked: { i: name },
+        },
+        sigs: [
+          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+        ],
+      };
     });
+
     expect(
       await multiSigService.createMultisig(
         creatorIdentifier,
@@ -259,6 +280,40 @@ describe("Multisig sig service of agent", () => {
         id: `${multisigIdentifier}2`,
       })
     );
+  });
+
+  test("Cannot create a keri multisig if the threshold is invalid", async () => {
+    const creatorIdentifier = "creatorIdentifier";
+    const otherIdentifiers = [
+      {
+        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+        oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+        status: ConnectionStatus.CONFIRMED,
+        connectionDate: new Date().toISOString(),
+      },
+    ];
+    const metadata = {
+      theme: 0,
+      displayName: "Multisig",
+    };
+
+    await expect(
+      multiSigService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        metadata as IdentifierMetadataRecordProps,
+        0
+      )
+    ).rejects.toThrowError(MultiSigService.INVALID_THRESHOLD);
+    await expect(
+      multiSigService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        metadata as IdentifierMetadataRecordProps,
+        otherIdentifiers.length + 2
+      )
+    ).rejects.toThrowError(MultiSigService.INVALID_THRESHOLD);
   });
 
   test("Can create a keri delegated multisig with KERI contacts", async () => {
@@ -283,10 +338,18 @@ describe("Multisig sig service of agent", () => {
       response: {},
       alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
     });
-    multiSigService.createAidMultisig = jest.fn().mockResolvedValue({
-      op: { name: `group.${multisigIdentifier}`, done: false },
-      icpResult: {},
-      name: "name",
+    identifiersCreateMock.mockImplementation((name, _config) => {
+      return {
+        op: () => {
+          return { name: `group.${multisigIdentifier}`, done: false };
+        },
+        serder: {
+          ked: { i: name },
+        },
+        sigs: [
+          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+        ],
+      };
     });
     const otherIdentifiers = [
       {
@@ -322,26 +385,6 @@ describe("Multisig sig service of agent", () => {
       identifier: `${multisigIdentifier}`,
       signifyName: expect.any(String),
     });
-    expect(multiSigService.createAidMultisig).toBeCalledWith(
-      {
-        prefix: "aidHere",
-        state: {
-          b: "b",
-          bt: "bt",
-          di: "di",
-          dt: "dt",
-          k: "k",
-          kt: "kt",
-          n: "n",
-          nt: "nt",
-          s: "s",
-        },
-      },
-      [{ state: {} }],
-      expect.any(String),
-      otherIdentifiers.length + 1,
-      { state: {} }
-    );
   });
 
   test("can join the multisig inception", async () => {
@@ -359,14 +402,27 @@ describe("Multisig sig service of agent", () => {
             smids: ["id"],
             rmids: ["id"],
           },
+          e: {
+            icp: "icp",
+          },
         },
       },
     ]);
-    multiSigService.joinMultisigKeri = jest.fn().mockResolvedValue({
-      op: { name: `group.${multisigIdentifier}`, done: false },
-      icpResult: {},
-      name: "name",
+    identifiersRotateMock.mockImplementation((name, _config) => {
+      return {
+        op: () => {
+          return { name: `group.${multisigIdentifier}`, done: false };
+        },
+        serder: {
+          ked: { i: name },
+        },
+        sigs: [
+          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+        ],
+      };
     });
+    identifiersGetMock = jest.fn().mockResolvedValue(aidReturnedBySignify);
+
     mockGetIdentifiers = jest.fn().mockResolvedValue([
       {
         displayName: "displayName",
@@ -376,6 +432,33 @@ describe("Multisig sig service of agent", () => {
         theme: 0,
       },
     ]);
+    queryKeyStateGetMock = jest.fn().mockResolvedValue([
+      {
+        name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+        metadata: {
+          oobi: "testOobi",
+        },
+        done: true,
+        error: null,
+        response: {
+          i: "id",
+        },
+        alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+      },
+    ]);
+    identifiersCreateMock.mockImplementation((name, _config) => {
+      return {
+        op: () => {
+          return { name: `group.${multisigIdentifier}`, done: false };
+        },
+        serder: {
+          ked: { i: name },
+        },
+        sigs: [
+          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+        ],
+      };
+    });
     expect(
       await multiSigService.joinMultisig(
         { id: "id", createdAt: new Date(), a: { d: "d" } },
@@ -400,6 +483,115 @@ describe("Multisig sig service of agent", () => {
         }
       )
     ).rejects.toThrowError();
+  });
+
+  test("cannot join the multisig if cannot get key states for multisig member", async () => {
+    const multisigIdentifier = "newMultisigIdentifierAid";
+    basicStorage.findById = jest.fn().mockResolvedValue({
+      content: {
+        d: "d",
+      },
+    });
+    groupGetRequestMock = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            smids: ["smidId"],
+            rmids: ["rmidId"],
+          },
+          e: {
+            icp: "icp",
+          },
+        },
+      },
+    ]);
+    identifiersRotateMock.mockImplementation((name, _config) => {
+      return {
+        op: () => {
+          return { name: `group.${multisigIdentifier}`, done: false };
+        },
+        serder: {
+          ked: { i: name },
+        },
+        sigs: [
+          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+        ],
+      };
+    });
+    identifiersGetMock = jest.fn().mockResolvedValue(aidReturnedBySignify);
+
+    mockGetIdentifiers = jest.fn().mockResolvedValue([
+      {
+        displayName: "displayName",
+        id: "smidId",
+        signifyName: "signifyName",
+        createdAt: new Date(),
+        theme: 0,
+      },
+    ]);
+    identifiersCreateMock.mockImplementation((name, _config) => {
+      return {
+        op: () => {
+          return { name: `group.${multisigIdentifier}`, done: false };
+        },
+        serder: {
+          ked: { i: name },
+        },
+        sigs: [
+          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+        ],
+      };
+    });
+
+    // Cannot get key states both smid and rmid
+    queryKeyStateGetMock = jest.fn().mockResolvedValue([]);
+    await expect(
+      multiSigService.joinMultisig(
+        { id: "id", createdAt: new Date(), a: { d: "d" } },
+        {
+          theme: 0,
+          displayName: "Multisig",
+        }
+      )
+    ).rejects.toThrowError(
+      MultiSigService.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER
+    );
+
+    // Can get keystate smid but cannot get key states both rmid
+    queryKeyStateGetMock = jest.fn().mockImplementation((id: string) => {
+      if (id === "smidId") {
+        return [
+          {
+            name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+            metadata: {
+              oobi: "testOobi",
+            },
+            done: true,
+            error: null,
+            response: {
+              i: "smidId",
+            },
+            alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+          },
+        ];
+      }
+      return [];
+    });
+
+    // Cannot get key states both smid and rmid
+    queryKeyStateGetMock = jest.fn().mockResolvedValue([]);
+    await expect(
+      multiSigService.joinMultisig(
+        { id: "id", createdAt: new Date(), a: { d: "d" } },
+        {
+          theme: 0,
+          displayName: "Multisig",
+        }
+      )
+    ).rejects.toThrowError(
+      MultiSigService.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER
+    );
   });
 
   test("should can rorate multisig with KERI multisig do not have manageAid and throw error", async () => {
@@ -537,10 +729,18 @@ describe("Multisig sig service of agent", () => {
         theme: 0,
       },
     ]);
-    multiSigService.rotateMultisigAid = jest.fn().mockResolvedValue({
-      op: { name: `group.${multisigIdentifier}`, done: false },
-      icpResult: {},
-      name: "name",
+    identifiersRotateMock.mockImplementation((name, _config) => {
+      return {
+        op: () => {
+          return { name: `group.${multisigIdentifier}`, done: false };
+        },
+        serder: {
+          ked: { i: name },
+        },
+        sigs: [
+          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+        ],
+      };
     });
     const metadata = {
       id: "123456",
@@ -633,7 +833,7 @@ describe("Multisig sig service of agent", () => {
         },
       },
     ]);
-    multiSigService.getIdentifierById = jest.fn().mockResolvedValue([
+    identifiersListMock.mockResolvedValue([
       {
         name: "multisig",
         prefix: "prefix",
@@ -677,16 +877,24 @@ describe("Multisig sig service of agent", () => {
         },
       },
     ]);
-    multiSigService.getIdentifierById = jest.fn().mockResolvedValue([
+    identifiersListMock.mockResolvedValue([
       {
         name: "multisig",
         prefix: "prefix",
       },
     ]);
-    multiSigService.joinMultisigRotationKeri = jest.fn().mockResolvedValue({
-      op: { name: `group.${multisigIdentifier}`, done: false },
-      icpResult: {},
-      name: "name",
+    identifiersRotateMock.mockImplementation((name, _config) => {
+      return {
+        op: () => {
+          return { name: `group.${multisigIdentifier}`, done: false };
+        },
+        serder: {
+          ked: { i: name },
+        },
+        sigs: [
+          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+        ],
+      };
     });
     identifierStorage.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
       {
@@ -698,6 +906,11 @@ describe("Multisig sig service of agent", () => {
         multisigManageAid: "123",
       },
     ]);
+    identifiersGetMock.mockResolvedValue({
+      state: {
+        i: metadata.id,
+      },
+    });
     expect(
       await multiSigService.joinMultisigRotation({
         id: "id",
