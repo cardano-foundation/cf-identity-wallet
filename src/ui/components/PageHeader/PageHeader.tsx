@@ -17,7 +17,6 @@ import { getBackRoute } from "../../../routes/backRoute";
 import "./PageHeader.scss";
 
 const PageHeader = ({
-  translucent,
   backButton,
   beforeBack,
   onBack,

@@ -31,16 +31,22 @@
       margin: 0;
     }
 
-    ion-toolbar.page-footer {
-      display: flex !important;
-      flex-direction: column-reverse !important;
+    .page-footer-content {
+      display: flex;
+      flex-direction: column-reverse;
 
-      .primary-button {
-        order: 2;
+      ion-button {
+        margin-bottom: 1rem;
+
+        &:first-of-type {
+          margin-bottom: 0;
+        }
       }
 
-      .secondary-button {
-        order: 2;
+      @media screen and (min-width: 250px) and (max-width: 370px) {
+        ion-button {
+          margin-bottom: 0.8rem;
+        }
       }
     }
   }

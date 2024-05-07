@@ -1017,6 +1017,7 @@
       }
     },
     "scan": {
+      "cancel": "Cancel",
       "confirm": "Confirm",
       "pasteoobi": "Paste OOBI",
       "initiate": "Initiate multi-sig",

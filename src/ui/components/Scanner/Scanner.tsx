@@ -23,6 +23,9 @@ import { CreateIdentifier } from "../CreateIdentifier";
 import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { PageFooter } from "../PageFooter";
+import { ResponsiveModal } from "../layout/ResponsiveModal";
+import { PageHeader } from "../PageHeader";
+import { CustomInput } from "../CustomInput";
 
 const Scanner = forwardRef(
   ({ setIsValueCaptured, handleReset }: ScannerProps, ref) => {
@@ -33,7 +36,9 @@ const Scanner = forwardRef(
     const currentRoute = useAppSelector(getCurrentRoute);
     const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
       useState(false);
+    const [pasteModalIsOpen, setPasteModalIsOpen] = useState(false);
     const [groupId, setGroupId] = useState("");
+    const [pastedValue, setPastedValue] = useState("");
 
     const checkPermission = async () => {
       const status = await BarcodeScanner.checkPermission({ force: true });
@@ -86,6 +91,32 @@ const Scanner = forwardRef(
       dispatch(setMultiSigGroupCache(newMultiSigGroup));
     };
 
+    const processValue = async (content: string) => {
+      stopScan();
+      // @TODO - foconnor: instead of setting the optype to idle we should
+      // have a loading screen with "waiting for server..." etc,
+      // and it can update to an error if the QR is invalid with a re-scan btn
+      dispatch(setCurrentOperation(OperationType.IDLE));
+      // @TODO - foconnor: when above loading screen in place, handle invalid QR code
+      const invitation = await Agent.agent.connections.receiveInvitationFromUrl(
+        content
+      );
+      if (invitation.type === KeriConnectionType.NORMAL) {
+        handleReset && handleReset();
+        setIsValueCaptured && setIsValueCaptured(true);
+        if (
+          currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
+          currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
+        ) {
+          const groupId = new URL(content).searchParams.get("groupId");
+          groupId && updateConnections(groupId);
+        }
+      } else if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
+        setGroupId(invitation.groupId);
+        setCreateIdentifierModalIsOpen(true);
+      }
+    };
+
     const initScan = async () => {
       if (isPlatform("ios") || isPlatform("android")) {
         const allowed = await checkPermission();
@@ -94,34 +125,7 @@ const Scanner = forwardRef(
           BarcodeScanner.hideBackground();
           const result = await startScan();
           if (result.hasContent) {
-            stopScan();
-            // @TODO - foconnor: instead of setting the optype to idle we should
-            // have a loading screen with "waiting for server..." etc,
-            // and it can update to an error if the QR is invalid with a re-scan btn
-            dispatch(setCurrentOperation(OperationType.IDLE));
-            // @TODO - foconnor: when above loading screen in place, handle invalid QR code
-            const invitation =
-              await Agent.agent.connections.receiveInvitationFromUrl(
-                result.content
-              );
-            if (invitation.type === KeriConnectionType.NORMAL) {
-              handleReset && handleReset();
-              setIsValueCaptured && setIsValueCaptured(true);
-              if (
-                currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
-                currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
-              ) {
-                const groupId = new URL(result.content).searchParams.get(
-                  "groupId"
-                );
-                groupId && updateConnections(groupId);
-              }
-            } else if (
-              invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR
-            ) {
-              setGroupId(invitation.groupId);
-              setCreateIdentifierModalIsOpen(true);
-            }
+            processValue(result.content);
           }
         }
       }
@@ -147,23 +151,14 @@ const Scanner = forwardRef(
       console.log("click primary");
     };
 
-    const handleSecondaryButtonAction = () => {
-      // TODO: Add content to open modal to paste OOBI / other content
-      console.log("click secondary");
+    const handleSubmitPastedValue = () => {
+      setPasteModalIsOpen(false);
+      processValue(pastedValue);
+      setPastedValue("");
     };
 
     const RenderPageFooter = () => {
       switch (currentOperation) {
-        case OperationType.IDLE:
-          return (
-            <PageFooter
-              pageId={componentId}
-              secondaryButtonText={`${i18n.t(
-                "createidentifier.scan.pastecontents"
-              )}`}
-              secondaryButtonAction={handleSecondaryButtonAction}
-            />
-          );
         case OperationType.MULTI_SIG_INITIATOR_SCAN:
           return (
             <PageFooter
@@ -173,7 +168,7 @@ const Scanner = forwardRef(
               secondaryButtonText={`${i18n.t(
                 "createidentifier.scan.pasteoobi"
               )}`}
-              secondaryButtonAction={handleSecondaryButtonAction}
+              secondaryButtonAction={() => setPasteModalIsOpen(true)}
             />
           );
         case OperationType.MULTI_SIG_RECEIVER_SCAN:
@@ -183,11 +178,19 @@ const Scanner = forwardRef(
               secondaryButtonText={`${i18n.t(
                 "createidentifier.scan.pasteoobi"
               )}`}
-              secondaryButtonAction={handleSecondaryButtonAction}
+              secondaryButtonAction={() => setPasteModalIsOpen(true)}
             />
           );
         default:
-          return null;
+          return (
+            <PageFooter
+              pageId={componentId}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pastecontents"
+              )}`}
+              secondaryButtonAction={() => setPasteModalIsOpen(true)}
+            />
+          );
       }
     };
 
@@ -218,6 +221,33 @@ const Scanner = forwardRef(
           setModalIsOpen={setCreateIdentifierModalIsOpen}
           groupId={groupId}
         />
+        <ResponsiveModal
+          modalIsOpen={pasteModalIsOpen}
+          componentId={componentId + "-input-modal"}
+          customClasses={componentId + "-input-modal"}
+          onDismiss={() => setPasteModalIsOpen(false)}
+        >
+          <PageHeader
+            closeButton={true}
+            closeButtonLabel={`${i18n.t("createidentifier.scan.cancel")}`}
+            closeButtonAction={() => setPasteModalIsOpen(false)}
+            title={
+              currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
+              currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
+                ? `${i18n.t("createidentifier.scan.pasteoobi")}`
+                : `${i18n.t("createidentifier.scan.pastecontents")}`
+            }
+            actionButton={true}
+            actionButtonAction={handleSubmitPastedValue}
+            actionButtonLabel={`${i18n.t("createidentifier.scan.confirm")}`}
+          />
+          <CustomInput
+            dataTestId={`${componentId}-input`}
+            autofocus={true}
+            onChangeInput={setPastedValue}
+            value={pastedValue}
+          />
+        </ResponsiveModal>
       </>
     );
   }
