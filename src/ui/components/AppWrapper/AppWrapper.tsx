@@ -221,11 +221,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const initApp = async () => {
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
-    let isInitialized;
     try {
-      isInitialized = await PreferencesStorage.get(
-        PreferencesKeys.APP_ALREADY_INIT
-      );
+      await PreferencesStorage.get(PreferencesKeys.APP_ALREADY_INIT);
     } catch (e) {
       await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
       await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
@@ -250,7 +247,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setPauseQueueIncomingRequest(true));
 
     await loadDatabase();
-    dispatch(setInitialized(isInitialized?.initialized as boolean));
+    dispatch(setInitialized(true));
 
     Agent.agent.connections.onConnectionStateChanged((event) => {
       return connectionStateChangedHandler(event, dispatch);

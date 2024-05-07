@@ -171,16 +171,11 @@ const LockPage = () => {
     });
   };
 
-  const isPublicPage = PublicRoutes.includes(
-    window.location.pathname as RoutePath
-  );
-  const lockApp = !isPublicPage && !authentication.loggedIn;
-
   return (
     <ResponsivePageLayout
       pageId={pageId}
-      activeStatus={lockApp}
-      customClass={`${lockApp ? "show" : "hide"} animation-off max-overlay`}
+      activeStatus={true}
+      customClass={"show animation-off max-overlay"}
     >
       <h2
         className={`${pageId}-title`}
