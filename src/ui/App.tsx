@@ -1,10 +1,5 @@
 import { StrictMode, useEffect, useMemo, useState } from "react";
-import {
-  setupIonicReact,
-  IonApp,
-  getPlatforms,
-  IonSpinner,
-} from "@ionic/react";
+import { setupIonicReact, IonApp, getPlatforms } from "@ionic/react";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { RoutePath, Routes } from "../routes";
