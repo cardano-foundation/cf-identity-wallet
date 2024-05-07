@@ -43,7 +43,9 @@ import { CredentialStatus } from "../../../core/agent/services/credentialService
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
+import { App } from "@capacitor/app";
 import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
+import { useActivityTimer } from "./hooks/useActivityTimer";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -106,47 +108,12 @@ const acdcChangeHandler = async (
   }
 };
 
-let ACTIVITY_TIMEOUT = 60000; // 1min
-if (process.env.NODE_ENV === "development") {
-  ACTIVITY_TIMEOUT = 3600000; // 1h
-}
-
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const [agentInitErr, setAgentInitErr] = useState(false);
-
-  let timer: NodeJS.Timeout;
-  useEffect(() => {
-    const handleActivity = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        dispatch(logout());
-      }, ACTIVITY_TIMEOUT);
-    };
-
-    // TODO: detect appStateChange in android and ios to reduce the ACTIVITY_TIMEOUT
-    // App.addListener("appStateChange", handleAppStateChange);
-    window.addEventListener("load", handleActivity);
-    document.addEventListener("mousemove", handleActivity);
-    document.addEventListener("touchstart", handleActivity);
-    document.addEventListener("touchmove", handleActivity);
-    document.addEventListener("click", handleActivity);
-    document.addEventListener("focus", handleActivity);
-    document.addEventListener("keydown", handleActivity);
-    document.addEventListener("scroll", handleActivity);
-
-    return () => {
-      window.removeEventListener("load", handleActivity);
-      document.removeEventListener("mousemove", handleActivity);
-      document.removeEventListener("touchstart", handleActivity);
-      document.removeEventListener("touchmove", handleActivity);
-      document.removeEventListener("click", handleActivity);
-      document.removeEventListener("focus", handleActivity);
-      document.removeEventListener("keydown", handleActivity);
-      clearTimeout(timer);
-    };
-  }, []);
+  useActivityTimer();
+  //const [activityTimeout, setActivityTimeout] = useState(process.env.NODE_ENV === "development" ? 3600000 : 60000);
 
   useEffect(() => {
     initApp();
