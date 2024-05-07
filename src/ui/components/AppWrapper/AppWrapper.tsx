@@ -2,7 +2,6 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
-  logout,
   setAuthentication,
   setCurrentOperation,
   setInitialized,
@@ -43,7 +42,6 @@ import { CredentialStatus } from "../../../core/agent/services/credentialService
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
-import { App } from "@capacitor/app";
 import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 import { useActivityTimer } from "./hooks/useActivityTimer";
 
@@ -113,7 +111,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const authentication = useAppSelector(getAuthentication);
   const [agentInitErr, setAgentInitErr] = useState(false);
   useActivityTimer();
-  //const [activityTimeout, setActivityTimeout] = useState(process.env.NODE_ENV === "development" ? 3600000 : 60000);
 
   useEffect(() => {
     initApp();
