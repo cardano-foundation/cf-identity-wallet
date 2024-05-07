@@ -2,7 +2,6 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
-  logout,
   setAuthentication,
   setCurrentOperation,
   setInitialized,
@@ -43,9 +42,11 @@ import { CredentialStatus } from "../../../core/agent/services/credentialService
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
-import { IdentifierService } from "../../../core/agent/services";
+import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
+import { useActivityTimer } from "./hooks/useActivityTimer";
 import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
 import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
+import { MultiSigService } from "../../../core/agent/services/multiSigService";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -103,7 +104,7 @@ const processMultiSigIcpNotification = async (
     );
   } catch (error) {
     if (
-      (error as Error).message == IdentifierService.UNKNOWN_AIDS_IN_MULTISIG_ICP
+      (error as Error).message == MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP
     ) {
       await new Promise((resolve) => setTimeout(resolve, retryInterval));
       await processMultiSigIcpNotification(event, dispatch, retryInterval);
@@ -131,40 +132,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const [agentInitErr, setAgentInitErr] = useState(false);
-
-  const ACTIVITY_TIMEOUT = 60000;
-  let timer: NodeJS.Timeout;
-
-  useEffect(() => {
-    const handleActivity = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        dispatch(logout());
-      }, ACTIVITY_TIMEOUT);
-    };
-
-    // TODO: detect appStateChange in android and ios to reduce the ACTIVITY_TIMEOUT
-    // App.addListener("appStateChange", handleAppStateChange);
-    window.addEventListener("load", handleActivity);
-    document.addEventListener("mousemove", handleActivity);
-    document.addEventListener("touchstart", handleActivity);
-    document.addEventListener("touchmove", handleActivity);
-    document.addEventListener("click", handleActivity);
-    document.addEventListener("focus", handleActivity);
-    document.addEventListener("keydown", handleActivity);
-    document.addEventListener("scroll", handleActivity);
-
-    return () => {
-      window.removeEventListener("load", handleActivity);
-      document.removeEventListener("mousemove", handleActivity);
-      document.removeEventListener("touchstart", handleActivity);
-      document.removeEventListener("touchmove", handleActivity);
-      document.removeEventListener("click", handleActivity);
-      document.removeEventListener("focus", handleActivity);
-      document.removeEventListener("keydown", handleActivity);
-      clearTimeout(timer);
-    };
-  }, []);
+  useActivityTimer();
 
   useEffect(() => {
     initApp();
@@ -193,48 +161,80 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
 
   const loadPreferences = async () => {
-    const getPreferenceSafe = async (key: string) => {
-      try {
-        return await PreferencesStorage.get(key);
-      } catch (e) {
-        // TODO: handle error
-      }
-    };
-    const userName = await getPreferenceSafe(PreferencesKeys.APP_USER_NAME);
-
+    let userName: PreferencesStorageItem = { userName: "" };
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
 
-    const updatedAuthentication = {
-      ...authentication,
-      loggedIn: false,
-      userName: userName?.userName as string,
-      passcodeIsSet,
-      seedPhraseIsSet,
-      passwordIsSet,
-    };
+    try {
+      const identifiersFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
+      );
+      dispatch(
+        setFavouritesIdentifiersCache(
+          identifiersFavourites.favourites as FavouriteIdentifier[]
+        )
+      );
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_IDENTIFIERS_FAVOURITES}`
+        )
+      ) {
+        throw e;
+      }
+    }
 
-    dispatch(setAuthentication(updatedAuthentication));
+    try {
+      const credsFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_CREDS_FAVOURITES
+      );
+      dispatch(
+        setFavouritesCredsCache(
+          credsFavourites.favourites as FavouriteIdentifier[]
+        )
+      );
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_CREDS_FAVOURITES}`
+        )
+      ) {
+        throw e;
+      }
+    }
 
-    const identifiersFavourites = await getPreferenceSafe(
-      PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
-    );
+    try {
+      userName = await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME);
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
+        )
+      ) {
+        throw e;
+      }
+    }
+
     dispatch(
-      setFavouritesIdentifiersCache(
-        identifiersFavourites?.favourites as FavouriteIdentifier[]
-      )
-    );
-
-    const credsFavourites = await getPreferenceSafe(
-      PreferencesKeys.APP_CREDS_FAVOURITES
-    );
-    dispatch(
-      setFavouritesCredsCache(
-        credsFavourites?.favourites as FavouriteIdentifier[]
-      )
+      setAuthentication({
+        ...authentication,
+        userName: userName.userName as string,
+        passcodeIsSet,
+        seedPhraseIsSet,
+        passwordIsSet,
+      })
     );
   };
 
@@ -246,7 +246,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
       isInitialized = await PreferencesStorage.get(
         PreferencesKeys.APP_ALREADY_INIT
       );
-      dispatch(setInitialized(isInitialized?.initialized as boolean));
     } catch (e) {
       await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
       await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
@@ -270,9 +269,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
     dispatch(setPauseQueueIncomingRequest(true));
 
-    await loadDatabase().catch((e) => {
-      /* TODO: handle error */
-    });
+    await loadDatabase();
+    dispatch(setInitialized(isInitialized?.initialized as boolean));
 
     Agent.agent.connections.onConnectionStateChanged((event) => {
       return connectionStateChangedHandler(event, dispatch);
@@ -312,7 +310,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.
   // Hence this isn't in i18n.
   if (agentInitErr) {
-    //if (false) {
     return (
       <div className="agent-init-error-msg">
         <p>

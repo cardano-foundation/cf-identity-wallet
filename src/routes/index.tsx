@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { IonReactRouter } from "@ionic/react-router";
-import { IonRouterOutlet, IonSpinner } from "@ionic/react";
-import { Redirect, Route, useLocation } from "react-router-dom";
+import { IonRouterOutlet } from "@ionic/react";
+import { Redirect, Route } from "react-router-dom";
 import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode";
@@ -9,18 +9,16 @@ import { VerifySeedPhrase } from "../ui/pages/VerifySeedPhrase";
 import { CreatePassword } from "../ui/pages/CreatePassword";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
-  getAuthentication,
   getRoutes,
   getStateCache,
   setCurrentRoute,
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
 import { TabsMenu, tabsRoutes } from "../ui/components/navigation/TabsMenu";
-import { PublicRoutes, RoutePath } from "./paths";
+import { RoutePath } from "./paths";
 import { IdentifierDetails } from "../ui/pages/IdentifierDetails";
 import { CredentialDetails } from "../ui/pages/CredentialDetails";
 import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
-import { LockModal } from "../ui/components/LockModal";
 
 const Routes = () => {
   const stateCache = useAppSelector(getStateCache);
