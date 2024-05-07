@@ -1,13 +1,8 @@
 import { StrictMode, useEffect, useMemo, useState } from "react";
-import {
-  setupIonicReact,
-  IonApp,
-  getPlatforms,
-  IonSpinner,
-} from "@ionic/react";
+import { setupIonicReact, IonApp, getPlatforms } from "@ionic/react";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
-import { Routes } from "../routes";
+import { RoutePath, Routes } from "../routes";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";
@@ -25,7 +20,7 @@ import { FullPageScanner } from "./pages/FullPageScanner";
 import { OperationType } from "./globals/types";
 import { IncomingRequest } from "./pages/IncomingRequest";
 import { SetUserName } from "./components/SetUserName";
-import { TabsRoutePath } from "../routes/paths";
+import { PublicRoutes, TabsRoutePath } from "../routes/paths";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
 import { LockPage } from "./pages/LockPage/LockPage";
@@ -107,6 +102,10 @@ const App = () => {
     }
   };
 
+  const isPublicPage = PublicRoutes.includes(
+    window.location.pathname as RoutePath
+  );
+
   return (
     <IonApp>
       <AppWrapper>
@@ -114,7 +113,7 @@ const App = () => {
           {stateCache.initialized ? (
             <>
               {renderApp()}
-              {!authentication.loggedIn ? <LockPage /> : null}
+              {!isPublicPage && !authentication.loggedIn ? <LockPage /> : null}
             </>
           ) : (
             <LoadingPage />
