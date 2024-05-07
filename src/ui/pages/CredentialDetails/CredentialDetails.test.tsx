@@ -1,7 +1,13 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  getByTestId,
+  render,
+  waitFor,
+} from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
-import { MemoryRouter, Route } from "react-router-dom";
+import { MemoryRouter, Redirect, Route } from "react-router-dom";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { SetOptions } from "@capacitor/preferences";
 import { waitForIonicReact } from "@ionic/react-test-utils";
@@ -11,8 +17,16 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { Agent } from "../../../core/agent/agent";
-import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
-import { IdentifierDetails } from "../IdentifierDetails";
+import { PreferencesStorage } from "../../../core/storage";
+import {
+  addFavouritesCredsCache,
+  removeFavouritesCredsCache,
+} from "../../../store/reducers/credsCache";
+import {
+  setCurrentRoute,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../globals/types";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -21,12 +35,17 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       credentials: {
         getCredentialDetailsById: jest.fn(),
-      },
-      genericRecords: {
-        findById: jest.fn(),
+        restoreCredential: jest.fn(() => Promise.resolve(true)),
+        getCredentialShortDetailsById: jest.fn(() => Promise.resolve([])),
       },
     },
   },
+}));
+
+jest.mock("../../hooks/appIonRouterHook", () => ({
+  useAppIonRouter: jest.fn(() => ({
+    push: jest.fn(),
+  })),
 }));
 
 jest.mock("react-router-dom", () => ({
@@ -60,10 +79,6 @@ const initialStateCreds = {
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
 
-const storeMockedCreds = {
-  ...mockStore(initialStateCreds),
-  dispatch: dispatchMock,
-};
 const initialStateNoPasswordCurrent = {
   stateCache: {
     routes: [TabsRoutePath.CREDENTIALS],
@@ -81,7 +96,7 @@ const initialStateNoPasswordCurrent = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  credsCache: { creds: credsFixAcdc },
+  credsCache: { creds: credsFixAcdc, favourites: [] },
 };
 
 const initialStateNoPasswordArchived = {
@@ -140,6 +155,63 @@ describe("Cards Details page - current not archived credential", () => {
       );
       expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
         "false"
+      );
+    });
+  });
+
+  test("Nav back from credential", async () => {
+    const initialStateNoPasswordCurrent = {
+      stateCache: {
+        routes: [TabsRoutePath.CREDENTIALS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase160:
+          "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
+      },
+      credsCache: { creds: credsFixAcdc, favourites: [] },
+      connectionsCache: {
+        connections: [],
+      },
+    };
+
+    storeMocked = {
+      ...mockStore(initialStateNoPasswordCurrent),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredentialDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("tab-done-button")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("tab-done-button"));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setCurrentRoute({
+          path: TabsRoutePath.CREDENTIALS,
+        })
       );
     });
   });
@@ -203,7 +275,13 @@ describe("Cards Details page - current not archived credential", () => {
   });
 
   test("It shows the warning when I click on the big archive button", async () => {
-    const { findByTestId, getAllByText, queryAllByTestId } = render(
+    const {
+      findByTestId,
+      getAllByText,
+      queryAllByTestId,
+      getByTestId,
+      getAllByTestId,
+    } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -229,22 +307,46 @@ describe("Cards Details page - current not archived credential", () => {
         getAllByText(EN_TRANSLATIONS.credentials.details.alert.archive.title)[0]
       ).toBeVisible();
     });
+
+    await waitForIonicReact();
+
+    expect(
+      getAllByTestId("alert-delete-archive-confirm-button")[0]
+    ).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getAllByTestId("alert-delete-archive-confirm-button")[0]);
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(getByTestId("verify-passcode")).toBeVisible();
+      expect(getByTestId("verify-passcode")).toHaveAttribute("is-open", "true");
+    });
   });
 
-  test.skip("It changes to favourite icon on click disabled favourite button", async () => {
+  test("It changes to favourite icon on click disabled favourite button", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateNoPasswordCurrent),
+      dispatch: dispatchMock,
+    };
+
     PreferencesStorage.set = jest
       .fn()
-      .mockImplementation(async (data: SetOptions): Promise<void> => {
-        expect(data.key).toBe(PreferencesKeys.APP_CREDS_FAVOURITES);
-        expect(data.value).toBe(credsFixAcdc[0]);
+      .mockImplementation(async (data: SetOptions): Promise<boolean> => {
+        return Promise.resolve(true);
       });
 
+    const mockNow = 1466424490000;
+    const dateSpy = jest.spyOn(Date, "now").mockReturnValue(mockNow);
+
     const { getByTestId } = render(
-      <Provider store={storeMockedCreds}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={IdentifierDetails}
+            component={CredentialDetails}
           />
         </MemoryRouter>
       </Provider>
@@ -257,13 +359,144 @@ describe("Cards Details page - current not archived credential", () => {
     await waitForIonicReact();
 
     await waitFor(() => {
-      expect(getByTestId("heart-icon-favourite")).toBeVisible();
+      expect(dispatchMock).toBeCalledWith(
+        addFavouritesCredsCache({
+          id: credsFixAcdc[0].id,
+          time: mockNow,
+        })
+      );
+    });
+
+    dateSpy.mockRestore();
+  });
+  test("Remove favourite credential", async () => {
+    const mockNow = 1466424490000;
+
+    const initialStateNoPasswordCurrent = {
+      stateCache: {
+        routes: [TabsRoutePath.CREDENTIALS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase160:
+          "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
+      },
+      credsCache: {
+        creds: credsFixAcdc,
+        favourites: [
+          {
+            id: credsFixAcdc[0].id,
+            time: mockNow,
+          },
+        ],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialStateNoPasswordCurrent),
+      dispatch: dispatchMock,
+    };
+
+    PreferencesStorage.set = jest
+      .fn()
+      .mockImplementation(async (data: SetOptions): Promise<boolean> => {
+        return Promise.resolve(true);
+      });
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredentialDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("heart-button"));
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        removeFavouritesCredsCache(credsFixAcdc[0].id)
+      );
+    });
+  });
+
+  test("Maximum favourite credential", async () => {
+    const mockNow = 1466424490000;
+
+    const initialStateNoPasswordCurrent = {
+      stateCache: {
+        routes: [TabsRoutePath.CREDENTIALS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase160:
+          "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
+      },
+      credsCache: {
+        creds: credsFixAcdc,
+        favourites: new Array(5).map((_, index) => ({
+          id: index,
+          time: mockNow,
+        })),
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialStateNoPasswordCurrent),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredentialDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("heart-button"));
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED)
+      );
     });
   });
 });
 
 describe("Cards Details page - archived credential", () => {
   let storeMocked: Store<unknown, AnyAction>;
+  const credDispatchMock = jest.fn();
   beforeAll(() => {
     jest
       .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
@@ -271,10 +504,9 @@ describe("Cards Details page - archived credential", () => {
   });
   beforeEach(() => {
     const mockStore = configureStore();
-    const dispatchMock = jest.fn();
     storeMocked = {
       ...mockStore(initialStateNoPasswordArchived),
-      dispatch: dispatchMock,
+      dispatch: credDispatchMock,
     };
   });
 
@@ -312,6 +544,59 @@ describe("Cards Details page - archived credential", () => {
       expect(
         queryByText(EN_TRANSLATIONS.credentials.details.alert.restore.title)
       ).toBeVisible();
+    });
+  });
+
+  test("Restore func", async () => {
+    const { queryByText, getByText, queryAllByTestId, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredentialDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByText(EN_TRANSLATIONS.credentials.details.restore)
+      ).toBeVisible();
+    });
+
+    const restoreButton = getByText(
+      EN_TRANSLATIONS.credentials.details.restore
+    );
+
+    act(() => {
+      fireEvent.click(restoreButton);
+    });
+
+    await waitFor(() => {
+      expect(queryAllByTestId("alert-restore")[0]).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(EN_TRANSLATIONS.credentials.details.alert.restore.title)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("alert-restore-confirm-button"));
+    });
+
+    await waitFor(() => {
+      expect(credDispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.CREDENTIAL_RESTORED)
+      );
+
+      expect(credDispatchMock).toBeCalledWith(
+        setCurrentRoute({
+          path: TabsRoutePath.CREDENTIALS,
+        })
+      );
     });
   });
 });

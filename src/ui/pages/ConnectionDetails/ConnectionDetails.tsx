@@ -24,7 +24,6 @@ import {
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { ConnectionOptions } from "../../components/ConnectionOptions";
 import { VerifyPassword } from "../../components/VerifyPassword";
@@ -50,6 +49,7 @@ import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { CardDetailsBlock } from "../../components/CardDetails";
 import { ConnectionNotes } from "./components/ConnectionNotes";
 import { useAppIonRouter } from "../../hooks";
+import { getBackRoute } from "../../../routes/backRoute";
 
 const ConnectionDetails = () => {
   const pageId = "connection-details";
@@ -122,12 +122,13 @@ const ConnectionDetails = () => {
     const data: DataProps = {
       store: { stateCache },
     };
-    const { nextPath, updateRedux } = getNextRoute(
+    const { backPath, updateRedux } = getBackRoute(
       RoutePath.CONNECTION_DETAILS,
       data
     );
-    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    ionicRouter.push(nextPath.pathname, "back", "pop");
+
+    updateReduxState(backPath.pathname, data, dispatch, updateRedux);
+    ionicRouter.goBack();
   };
 
   const handleDelete = () => {
@@ -194,6 +195,10 @@ const ConnectionDetails = () => {
     } else {
       setVerifyPasscodeIsOpen(true);
     }
+  };
+
+  const handleOpenNoteManageModal = () => {
+    setModalIsOpen(true);
   };
 
   return (
@@ -320,7 +325,7 @@ const ConnectionDetails = () => {
               <ConnectionNotes
                 notes={notes}
                 pageId={pageId}
-                onOptionButtonClick={() => setOptionsIsOpen(true)}
+                onOptionButtonClick={handleOpenNoteManageModal}
               />
             </div>
           )}

@@ -92,7 +92,7 @@ describe("Edit Connection Modal", () => {
     expect(getByTestId("close-button")).toBeVisible();
     expect(getByTestId("add-note-button")).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.connections.details.nocurrentnotes)
+      getByText(EN_TRANSLATIONS.connections.details.nocurrentnotesext)
     ).toBeVisible();
   });
 

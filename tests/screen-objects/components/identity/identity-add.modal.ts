@@ -27,11 +27,12 @@ export class IdentityAddModal extends CommonIdentityModal {
     await expect(this.modalTitle).toHaveText("Add an identifier");
     await expect(super.displayNameTitle).toHaveText("Display name");
     await expect(this.displayNameInput).toBeDisplayed();
-    await expect(this.identifierTypeTitle).toHaveText("Identifier type");
-    await expect(this.identifierTypeItem("DIDKEY")).toBeDisplayed();
-    await expect(this.identifierTypeItem("KERI")).toBeDisplayed();
+    await expect(this.identifierTypeTitle).toHaveText("AID type");
+    await expect(this.identifierTypeItem("default")).toBeDisplayed();
+    await expect(this.identifierTypeItem("multisig")).toBeDisplayed();
+    await expect(this.identifierTypeItem("delegated")).toBeDisplayed();
     await expect(super.themeTitle).toHaveText("Choose a theme");
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 2; i++) {
       await expect(super.themeItem(i)).toBeDisplayed();
     }
     await expect(this.createIdentifierButton).toBeDisplayed();

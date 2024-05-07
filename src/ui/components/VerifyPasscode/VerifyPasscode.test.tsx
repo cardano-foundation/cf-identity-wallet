@@ -28,9 +28,6 @@ jest.mock("../../../core/agent/agent", () => ({
       credentials: {
         getCredentialDetailsById: jest.fn(),
       },
-      genericRecords: {
-        findById: jest.fn(),
-      },
     },
   },
 }));

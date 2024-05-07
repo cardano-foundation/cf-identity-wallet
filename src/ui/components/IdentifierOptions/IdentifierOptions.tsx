@@ -18,8 +18,6 @@ import {
   pencilOutline,
   shareOutline,
   trashOutline,
-  copyOutline,
-  downloadOutline,
 } from "ionicons/icons";
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
@@ -39,10 +37,10 @@ import {
 } from "../../../store/reducers/stateCache";
 import { DISPLAY_NAME_LENGTH } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
-import { PageLayout } from "../layout/PageLayout";
-import { writeToClipboard } from "../../utils/clipboard";
 import { Agent } from "../../../core/agent/agent";
 import { IdentifierThemeSelector } from "../CreateIdentifier/components/IdentifierThemeSelector";
+import { OptionItem, OptionModal } from "../OptionsModal";
+import { IdentifierJsonModal } from "./components";
 
 const IdentifierOptions = ({
   optionsIsOpen,
@@ -118,128 +116,60 @@ const IdentifierOptions = ({
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
   };
 
+  const options: OptionItem[] = [
+    {
+      icon: codeSlashOutline,
+      label: i18n.t("identifiers.details.options.view"),
+      onClick: () => {
+        setOptionsIsOpen(false);
+        setViewIsOpen(true);
+      },
+      testId: "view-json-identifier-options",
+    },
+    {
+      icon: pencilOutline,
+      label: i18n.t("identifiers.details.options.edit"),
+      onClick: () => {
+        dispatch(setCurrentOperation(OperationType.UPDATE_IDENTIFIER));
+        setNewDisplayName(cardData.displayName);
+        setOptionsIsOpen(false);
+        setEditorIsOpen(true);
+      },
+      testId: "edit-identifier-options",
+    },
+    {
+      icon: shareOutline,
+      label: i18n.t("identifiers.details.options.share"),
+      onClick: async () => {
+        await Share.share({
+          text: cardData.displayName + " " + cardData.id,
+        });
+      },
+      testId: "share-identifier-options",
+    },
+    {
+      icon: trashOutline,
+      label: i18n.t("identifiers.details.options.delete"),
+      onClick: () => {
+        setOptionsIsOpen(false);
+        handleDelete();
+        dispatch(setCurrentOperation(OperationType.DELETE_IDENTIFIER));
+      },
+      testId: "delete-identifier-options",
+    },
+  ];
+
   return (
     <>
-      <IonModal
-        isOpen={optionsIsOpen}
-        initialBreakpoint={0.4}
-        breakpoints={[0, 0.4]}
-        className="page-layout"
-        data-testid="identifier-options-modal"
-        onDidDismiss={() => setOptionsIsOpen(false)}
-      >
-        <div className="identifier-options modal menu">
-          <IonHeader
-            translucent={true}
-            className="ion-no-border"
-          >
-            <IonToolbar color="light">
-              <IonTitle data-testid="identifier-options-title">
-                <h2>{i18n.t("identifiers.details.options.title")}</h2>
-              </IonTitle>
-            </IonToolbar>
-          </IonHeader>
-          <IonContent
-            className="identifier-options-body"
-            color="light"
-          >
-            <IonGrid className="identifier-options-main">
-              <IonRow>
-                <IonCol size="12">
-                  <span
-                    className="identifier-options-option"
-                    data-testid="view-json-identifier-options"
-                    onClick={() => {
-                      setOptionsIsOpen(false);
-                      setViewIsOpen(true);
-                    }}
-                  >
-                    <span>
-                      <IonButton shape="round">
-                        <IonIcon
-                          slot="icon-only"
-                          icon={codeSlashOutline}
-                        />
-                      </IonButton>
-                    </span>
-                    <span className="identifier-options-label">
-                      {i18n.t("identifiers.details.options.view")}
-                    </span>
-                  </span>
-                  <span
-                    className="identifier-options-option"
-                    data-testid="edit-identifier-options"
-                    onClick={() => {
-                      dispatch(
-                        setCurrentOperation(OperationType.UPDATE_IDENTIFIER)
-                      );
-                      setNewDisplayName(cardData.displayName);
-                      setOptionsIsOpen(false);
-                      setEditorIsOpen(true);
-                    }}
-                  >
-                    <span>
-                      <IonButton shape="round">
-                        <IonIcon
-                          slot="icon-only"
-                          icon={pencilOutline}
-                        />
-                      </IonButton>
-                    </span>
-                    <span className="identifier-options-label">
-                      {i18n.t("identifiers.details.options.edit")}
-                    </span>
-                  </span>
-                  <span
-                    className="identifier-options-option"
-                    data-testid="share-identifier-options"
-                    onClick={async () => {
-                      await Share.share({
-                        text: cardData.displayName + " " + cardData.id,
-                      });
-                    }}
-                  >
-                    <span>
-                      <IonButton shape="round">
-                        <IonIcon
-                          slot="icon-only"
-                          icon={shareOutline}
-                        />
-                      </IonButton>
-                    </span>
-                    <span className="identifier-options-info-block-data">
-                      {i18n.t("identifiers.details.options.share")}
-                    </span>
-                  </span>
-                  <span
-                    className="identifier-options-option"
-                    data-testid="delete-identifier-options"
-                    onClick={() => {
-                      setOptionsIsOpen(false);
-                      handleDelete();
-                      dispatch(
-                        setCurrentOperation(OperationType.DELETE_IDENTIFIER)
-                      );
-                    }}
-                  >
-                    <span>
-                      <IonButton shape="round">
-                        <IonIcon
-                          slot="icon-only"
-                          icon={trashOutline}
-                        />
-                      </IonButton>
-                    </span>
-                    <span className="identifier-options-label">
-                      {i18n.t("identifiers.details.options.delete")}
-                    </span>
-                  </span>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </IonContent>
-        </div>
-      </IonModal>
+      <OptionModal
+        modalIsOpen={optionsIsOpen}
+        componentId="identifier-options-modal"
+        onDismiss={() => setOptionsIsOpen(false)}
+        header={{
+          title: `${i18n.t("identifiers.details.options.title")}`,
+        }}
+        items={options}
+      />
       <IonModal
         isOpen={editorOptionsIsOpen}
         initialBreakpoint={0.65}
@@ -316,7 +246,7 @@ const IdentifierOptions = ({
               <IonButton
                 shape="round"
                 expand="block"
-                className="primary-button"
+                className="primary-button confirm-edit-button"
                 data-testid="continue-button"
                 onClick={handleSubmit}
                 disabled={!verifyDisplayName}
@@ -327,71 +257,11 @@ const IdentifierOptions = ({
           </IonContent>
         </div>
       </IonModal>
-      <IonModal
+      <IdentifierJsonModal
+        cardData={cardData}
         isOpen={viewIsOpen}
-        initialBreakpoint={1}
-        breakpoints={[0, 1]}
-        className="page-layout"
-        data-testid="view-identifier-modal"
-        onDidDismiss={() => setViewIsOpen(false)}
-      >
-        <div className="identifier-options modal viewer">
-          {!cardData ? null : (
-            <PageLayout
-              header={true}
-              closeButton={true}
-              closeButtonLabel={`${i18n.t("identifiers.details.view.cancel")}`}
-              closeButtonAction={() => setViewIsOpen(false)}
-              title={`${i18n.t("identifiers.details.view.title")}`}
-            >
-              <IonGrid className="identifier-options-inner">
-                <pre>{JSON.stringify(cardData, null, 2)}</pre>
-              </IonGrid>
-              <IonGrid>
-                <IonRow>
-                  <IonCol className="footer-col">
-                    <IonButton
-                      data-testid="copy-json-button"
-                      shape="round"
-                      expand="block"
-                      fill="outline"
-                      className="secondary-button"
-                      onClick={() => {
-                        writeToClipboard(JSON.stringify(cardData, null, 2));
-                        dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
-                      }}
-                    >
-                      <IonIcon
-                        slot="icon-only"
-                        size="small"
-                        icon={copyOutline}
-                      />
-                      {i18n.t("identifiers.details.view.copy")}
-                    </IonButton>
-                    <IonButton
-                      data-testid="save-to-device-button"
-                      shape="round"
-                      expand="block"
-                      className="primary-button"
-                      onClick={() => {
-                        // @TODO - sdisalvo: Save to device
-                        return;
-                      }}
-                    >
-                      <IonIcon
-                        slot="icon-only"
-                        size="small"
-                        icon={downloadOutline}
-                      />
-                      {i18n.t("identifiers.details.view.save")}
-                    </IonButton>
-                  </IonCol>
-                </IonRow>
-              </IonGrid>
-            </PageLayout>
-          )}
-        </div>
-      </IonModal>
+        onDissmiss={() => setViewIsOpen(false)}
+      />
     </>
   );
 };

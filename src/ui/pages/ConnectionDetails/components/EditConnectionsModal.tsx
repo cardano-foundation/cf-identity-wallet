@@ -1,7 +1,6 @@
 import { IonButton, IonIcon, IonModal } from "@ionic/react";
-import { createOutline } from "ionicons/icons";
+import { createOutline, addOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
-import { PageLayout } from "../../../components/layout/PageLayout";
 import { i18n } from "../../../../i18n";
 import { ConnectionNote } from "./ConnectionNote";
 import ConnectionDetailsHeader from "./ConnectionDetailsHeader";
@@ -14,6 +13,9 @@ import KeriLogo from "../../../../ui/assets/images/KeriGeneric.jpg";
 import "./EditConnectionsModal.scss";
 import { ConnectionNoteDetails } from "../../../../core/agent/agent.types";
 import { Alert } from "../../../components/Alert";
+import { PageHeader } from "../../../components/PageHeader";
+import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
+import { PageFooter } from "../../../components/PageFooter";
 
 export const EditConnectionsContainer = ({
   notes,
@@ -134,61 +136,72 @@ export const EditConnectionsContainer = ({
 
   return (
     <>
-      <div className="modal">
-        <PageLayout
-          header={true}
-          closeButton={true}
-          closeButtonLabel={`${i18n.t("connections.details.cancel")}`}
-          closeButtonAction={() => {
-            setModalIsOpen(false);
-          }}
-          actionButton={true}
-          actionButtonAction={confirm}
-          actionButtonLabel={`${i18n.t("connections.details.confirm")}`}
-        >
-          <div className="connection-details-content">
-            <ConnectionDetailsHeader
-              logo={connectionDetails?.logo || KeriLogo}
-              label={connectionDetails?.label}
-              date={connectionDetails?.connectionDate}
-            />
-            <div className="connection-details-info-block">
-              {updatedNotes.length ? (
-                <>
-                  <h3 className="note-title">
-                    {i18n.t("connections.details.notes")}
-                  </h3>
-                  {updatedNotes.map((note) => (
-                    <ConnectionNote
-                      data={note}
-                      onNoteDataChange={handleUpdateNotes}
-                      onDeleteNote={openAlert}
-                      key={note.id}
-                    />
-                  ))}
-                </>
-              ) : (
-                <i className="connection-details-info-block-nonotes">
-                  {i18n.t("connections.details.nocurrentnotes")}
-                </i>
-              )}
-            </div>
-            <div className="connection-details-add-note">
-              <IonButton
-                shape="round"
-                className="primary-button"
-                data-testid="add-note-button"
-                onClick={handleAddNewNote}
-              >
-                <IonIcon
-                  slot="icon-only"
-                  icon={createOutline}
+      <ScrollablePageLayout
+        header={
+          <PageHeader
+            closeButton={true}
+            closeButtonLabel={`${i18n.t("connections.details.cancel")}`}
+            closeButtonAction={() => {
+              setModalIsOpen(false);
+            }}
+            actionButton={true}
+            actionButtonAction={confirm}
+            actionButtonLabel={`${i18n.t("connections.details.confirm")}`}
+          />
+        }
+      >
+        <div className="connection-details-content">
+          <ConnectionDetailsHeader
+            logo={connectionDetails?.logo || KeriLogo}
+            label={connectionDetails?.label}
+            date={connectionDetails?.connectionDate}
+          />
+          <div className="connection-details-info-block">
+            {updatedNotes.length ? (
+              <>
+                <h3 className="note-title">
+                  {i18n.t("connections.details.notes")}
+                </h3>
+                {updatedNotes.map((note) => (
+                  <ConnectionNote
+                    data={note}
+                    onNoteDataChange={handleUpdateNotes}
+                    onDeleteNote={openAlert}
+                    key={note.id}
+                  />
+                ))}
+              </>
+            ) : (
+              <>
+                <p className="connection-details-info-block-nonotes">
+                  {i18n.t("connections.details.nocurrentnotesext")}
+                </p>
+                <PageFooter
+                  pageId="edit-connections-modal"
+                  primaryButtonIcon={addOutline}
+                  primaryButtonText={`${i18n.t(
+                    "connections.details.options.labels.add"
+                  )}`}
+                  primaryButtonAction={handleAddNewNote}
                 />
-              </IonButton>
-            </div>
+              </>
+            )}
           </div>
-        </PageLayout>
-      </div>
+          <div className="connection-details-add-note">
+            <IonButton
+              shape="round"
+              className="primary-button"
+              data-testid="add-note-button"
+              onClick={handleAddNewNote}
+            >
+              <IonIcon
+                slot="icon-only"
+                icon={createOutline}
+              />
+            </IonButton>
+          </div>
+        </div>
+      </ScrollablePageLayout>
       <Alert
         isOpen={alertDeleteNoteIsOpen}
         setIsOpen={setAlertDeleteNoteIsOpen}

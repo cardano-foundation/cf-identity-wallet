@@ -2,55 +2,74 @@ import { v4 as uuidv4 } from "uuid";
 import {
   ConnectionDetails,
   ConnectionHistoryItem,
-  ConnectionHistoryType,
-  ConnectionKeriEventTypes,
-  ConnectionKeriStateChangedEvent,
+  ConnectionEventTypes,
+  ConnectionStateChangedEvent,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
   ConnectionStatus,
+  AgentServicesProps,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { Agent } from "../agent";
-import { KeriContact } from "../modules/signify/signifyApi.types";
-import { BasicRecord } from "../records";
-import { RecordType } from "../../storage/storage.types";
+import {
+  ConnectionNoteStorage,
+  ConnectionRecord,
+  CredentialStorage,
+  ConnectionStorage } from "../records";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
+import { waitAndGetDoneOp } from "./utils";
+import { ConnectionHistoryType, KeriaContact } from "./connection.types";
 
 class ConnectionService extends AgentService {
-  // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
-  //   "No domain found in config";
-  static readonly COULD_NOT_CREATE_OOB_VIA_MEDIATOR =
-    "Could not create new mediator oob invitation";
-  static readonly INVALID_CONNECTIONLESS_MSG =
-    "Invalid connectionless OOBI - does not contain d_m parameter";
+  protected readonly connectionStorage!: ConnectionStorage;
+  protected readonly connectionNoteStorage!: ConnectionNoteStorage;
+  protected readonly credentialStorage: CredentialStorage;
+
+  constructor(
+    agentServiceProps: AgentServicesProps,
+    connectionStorage: ConnectionStorage,
+    connectionNoteStorage: ConnectionNoteStorage,
+    credentialStorage: CredentialStorage
+  ) {
+    super(agentServiceProps);
+    this.connectionStorage = connectionStorage;
+    this.connectionNoteStorage = connectionNoteStorage;
+    this.credentialStorage = credentialStorage;
+  }
+
   static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
     "Connection note record not found";
-  static readonly CONNECTION_KERI_METADATA_RECORD_NOT_FOUND =
-    "Connection keri metadata record not found";
+  static readonly CONNECTION_METADATA_RECORD_NOT_FOUND =
+    "Connection metadata record not found";
+  static readonly DEFAULT_ROLE = "agent";
+  static readonly FAILED_TO_RESOLVE_OOBI =
+    "Failed to resolve OOBI, operation not completing...";
 
-  onConnectionKeriStateChanged(
-    callback: (event: ConnectionKeriStateChangedEvent) => void
+  static resolvedOobi: { [key: string]: any } = {};
+
+  onConnectionStateChanged(
+    callback: (event: ConnectionStateChangedEvent) => void
   ) {
     this.eventService.on(
-      ConnectionKeriEventTypes.ConnectionKeriStateChanged,
-      async (event: ConnectionKeriStateChangedEvent) => {
+      ConnectionEventTypes.ConnectionStateChanged,
+      async (event: ConnectionStateChangedEvent) => {
         callback(event);
       }
     );
   }
 
-  async receiveInvitationFromUrl(url: string): Promise<void> {
-    this.eventService.emit<ConnectionKeriStateChangedEvent>({
-      type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+  async connectByOobiUrl(url: string): Promise<void> {
+    this.eventService.emit<ConnectionStateChangedEvent>({
+      type: ConnectionEventTypes.ConnectionStateChanged,
       payload: {
         connectionId: undefined,
         status: ConnectionStatus.PENDING,
       },
     });
-    const operation = await this.signifyApi.resolveOobi(url);
+    const operation = await this.resolveOobi(url);
     const connectionId = operation.response.i;
-    await this.createConnectionKeriMetadata(connectionId, {
+    await this.createConnectionMetadata(connectionId, {
       alias: operation.alias,
       oobi: url,
     });
@@ -76,7 +95,7 @@ class ConnectionService extends AgentService {
         }
 
         // signifyName should always be set
-        const oobi = await Agent.agent.connections.getKeriOobi(
+        const oobi = await Agent.agent.connections.getOobi(
           aids[0].signifyName,
           userName
         );
@@ -100,8 +119,8 @@ class ConnectionService extends AgentService {
       }
     }
 
-    return this.eventService.emit<ConnectionKeriStateChangedEvent>({
-      type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+    return this.eventService.emit<ConnectionStateChangedEvent>({
+      type: ConnectionEventTypes.ConnectionStateChanged,
       payload: {
         connectionId: operation.response.i,
         status: ConnectionStatus.CONFIRMED,
@@ -111,33 +130,33 @@ class ConnectionService extends AgentService {
 
   async getConnections(): Promise<ConnectionShortDetails[]> {
     const connectionsDetails: ConnectionShortDetails[] = [];
-    const connectionKeriMetadatas = await this.getAllConnectionKeriMetadata();
-    connectionKeriMetadatas.forEach(async (connection) => {
-      connectionsDetails.push(this.getConnectionKeriShortDetails(connection));
+    const metadatas = await this.getAllConnectionMetadata();
+    metadatas.forEach(async (connection) => {
+      connectionsDetails.push(this.getConnectionShortDetails(connection));
     });
     return connectionsDetails;
   }
 
-  private getConnectionKeriShortDetails(
-    record: BasicRecord
+  private getConnectionShortDetails(
+    record: ConnectionRecord
   ): ConnectionShortDetails {
     return {
       id: record.id,
-      label: record.content?.alias as string,
+      label: record.alias,
       connectionDate: record.createdAt.toISOString(),
       status: ConnectionStatus.CONFIRMED,
-      oobi: record.content?.oobi as string,
+      oobi: record.oobi,
     };
   }
 
   async getConnectionById(id: string): Promise<ConnectionDetails> {
-    const connection = await this.signifyApi.getContactById(id);
+    const connection = await this.signifyClient.contacts().get(id);
     return {
       label: connection?.alias,
       id: connection.id,
       status: ConnectionStatus.CONFIRMED,
       connectionDate: (
-        await this.getConnectionKeriMetadataById(connection.id)
+        await this.getConnectionMetadataById(connection.id)
       ).createdAt.toISOString(),
       serviceEndpoints: [connection.oobi],
       notes: await this.getConnectNotesByConnectionId(connection.id),
@@ -145,32 +164,30 @@ class ConnectionService extends AgentService {
   }
 
   async deleteConnectionById(id: string): Promise<void> {
-    await this.basicStorage.deleteById(id);
-    // await this.signifyApi.deleteContactById(id); TODO: must open when Keria runs well
+    await this.connectionStorage.deleteById(id);
+    // await this.signifyApi.deleteContactById(id); @TODO - foconnor: Uncomment when KERIA endpoint fixed
     const notes = await this.getConnectNotesByConnectionId(id);
     for (const note of notes) {
-      this.basicStorage.deleteById(note.id);
+      this.connectionNoteStorage.deleteById(note.id);
     }
   }
 
-  async getConnectionKeriShortDetailById(
+  async getConnectionShortDetailById(
     id: string
   ): Promise<ConnectionShortDetails> {
-    const metadata = await this.getConnectionKeriMetadataById(id);
-    return this.getConnectionKeriShortDetails(metadata);
+    const metadata = await this.getConnectionMetadataById(id);
+    return this.getConnectionShortDetails(metadata);
   }
 
   async createConnectionNote(
     connectionId: string,
     note: ConnectionNoteProps
   ): Promise<void> {
-    await this.basicStorage.save({
+    await this.connectionNoteStorage.save({
       id: uuidv4(),
-      content: note,
-      type: RecordType.CONNECTION_NOTE,
-      tags: {
-        connectionId,
-      },
+      title: note.title,
+      message: note.message,
+      connectionId,
     });
   }
 
@@ -178,54 +195,52 @@ class ConnectionService extends AgentService {
     connectionNoteId: string,
     note: ConnectionNoteProps
   ) {
-    const noteRecord = await this.basicStorage.findById(connectionNoteId);
+    const noteRecord = await this.connectionNoteStorage.findById(
+      connectionNoteId
+    );
     if (!noteRecord) {
       throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
     }
-    noteRecord.content = note;
-    await this.basicStorage.update(noteRecord);
+    noteRecord.title = note.title;
+    noteRecord.message = note.message;
+    await this.connectionNoteStorage.update(noteRecord);
   }
 
   async deleteConnectionNoteById(connectionNoteId: string) {
-    return this.basicStorage.deleteById(connectionNoteId);
+    return this.connectionNoteStorage.deleteById(connectionNoteId);
   }
 
-  async getKeriOobi(signifyName: string, alias?: string): Promise<string> {
-    const oobi = await this.signifyApi.getOobi(signifyName);
+  async getOobi(signifyName: string, alias?: string): Promise<string> {
+    const result = await this.signifyClient
+      .oobis()
+      .get(signifyName, ConnectionService.DEFAULT_ROLE);
+    const oobi = result.oobis[0];
     return alias ? `${oobi}?name=${encodeURIComponent(alias)}` : oobi;
   }
 
-  private async createConnectionKeriMetadata(
+  private async createConnectionMetadata(
     connectionId: string,
-    metadata?: Record<string, unknown>
+    metadata: Record<string, unknown>
   ): Promise<void> {
-    await this.basicStorage.save({
+    await this.connectionStorage.save({
       id: connectionId,
-      content: metadata || {},
-      type: RecordType.CONNECTION_KERI_METADATA,
-      tags: {
-        type: RecordType.CONNECTION_KERI_METADATA,
-      },
+      alias: metadata.alias as string,
+      oobi: metadata.oobi as string,
     });
   }
 
-  private async getConnectionKeriMetadataById(
+  private async getConnectionMetadataById(
     connectionId: string
-  ): Promise<BasicRecord> {
-    const connectionKeri = await this.basicStorage.findById(connectionId);
-    if (!connectionKeri) {
-      throw new Error(
-        ConnectionService.CONNECTION_KERI_METADATA_RECORD_NOT_FOUND
-      );
+  ): Promise<ConnectionRecord> {
+    const connection = await this.connectionStorage.findById(connectionId);
+    if (!connection) {
+      throw new Error(ConnectionService.CONNECTION_METADATA_RECORD_NOT_FOUND);
     }
-    return connectionKeri;
+    return connection;
   }
 
-  async getAllConnectionKeriMetadata(): Promise<BasicRecord[]> {
-    const connectionKeris = await this.basicStorage.getAll(
-      RecordType.CONNECTION_KERI_METADATA
-    );
-    return connectionKeris;
+  async getAllConnectionMetadata(): Promise<ConnectionRecord[]> {
+    return this.connectionStorage.getAll();
   }
 
   async getConnectionHistoryById(
@@ -233,7 +248,7 @@ class ConnectionService extends AgentService {
   ): Promise<ConnectionHistoryItem[]> {
     let histories: ConnectionHistoryItem[] = [];
     const credentialRecords =
-      await Agent.agent.credentials.getCredentialMetadataByConnectionId(
+      await this.credentialStorage.getCredentialMetadataByConnectionId(
         connectionId
       );
     histories = histories.concat(
@@ -249,16 +264,16 @@ class ConnectionService extends AgentService {
   }
 
   async syncKeriaContacts() {
-    const signifyContacts = await this.signifyApi.getContacts();
-    const storageContacts = await this.getAllConnectionKeriMetadata();
+    const signifyContacts = await this.signifyClient.contacts().list();
+    const storageContacts = await this.getAllConnectionMetadata();
     const unSyncedData = signifyContacts.filter(
-      (contact: KeriContact) =>
-        !storageContacts.find((item: BasicRecord) => contact.id == item.id)
+      (contact: KeriaContact) =>
+        !storageContacts.find((item: ConnectionRecord) => contact.id == item.id)
     );
     if (unSyncedData.length) {
       //sync the storage with the signify data
       for (const contact of unSyncedData) {
-        await this.createConnectionKeriMetadata(contact.id, {
+        await this.createConnectionMetadata(contact.id, {
           alias: contact.alias,
           oobi: contact.oobi,
         });
@@ -266,20 +281,34 @@ class ConnectionService extends AgentService {
     }
   }
 
+  async resolveOobi(url: string): Promise<any> {
+    if (ConnectionService.resolvedOobi[url]) {
+      return ConnectionService.resolvedOobi[url];
+    }
+    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
+    const operation = await waitAndGetDoneOp(
+      this.signifyClient,
+      await this.signifyClient.oobis().resolve(url, alias)
+    );
+    if (!operation.done) {
+      throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
+    }
+    const oobi = { ...operation, alias };
+    ConnectionService.resolvedOobi[url] = oobi;
+    return oobi;
+  }
+
   private async getConnectNotesByConnectionId(
     connectionId: string
   ): Promise<ConnectionNoteDetails[]> {
-    const notes = await this.basicStorage.findAllByQuery(
-      RecordType.CONNECTION_NOTE,
-      {
-        connectionId,
-      }
-    );
+    const notes = await this.connectionNoteStorage.findAllByQuery({
+      connectionId,
+    });
     return notes.map((note) => {
       return {
         id: note.id,
-        title: note.content.title as string,
-        message: note.content.message as string,
+        title: note.title,
+        message: note.message,
       };
     });
   }

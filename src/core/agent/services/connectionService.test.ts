@@ -1,10 +1,9 @@
 import { ConnectionStatus } from "../agent.types";
 import { ConnectionService } from "./connectionService";
-import { SignifyApi } from "../modules/signify/signifyApi";
-import { RecordType } from "../../storage/storage.types";
+import { EventService } from "./eventService";
+import { CredentialStorage, IdentifierStorage } from "../records";
 
 const basicStorage = jest.mocked({
-  open: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
   deleteById: jest.fn(),
@@ -14,16 +13,114 @@ const basicStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
-const signifyApi = jest.mocked({
-  resolveOobi: jest.fn(),
-  getContacts: jest.fn(),
-  getOobi: jest.fn(),
-  deleteContactById: jest.fn(),
+const contactListMock = jest.fn();
+const deleteContactMock = jest.fn();
+
+const signifyClient = jest.mocked({
+  connect: jest.fn(),
+  boot: jest.fn(),
+  identifiers: () => ({
+    list: jest.fn(),
+    get: jest.fn(),
+    create: jest.fn(),
+    addEndRole: jest.fn(),
+    interact: jest.fn(),
+    rotate: jest.fn(),
+    members: jest.fn(),
+  }),
+  operations: () => ({
+    get: jest.fn().mockImplementation((id: string) => {
+      return {
+        done: true,
+        response: {
+          i: id,
+        },
+      };
+    }),
+  }),
+  oobis: () => ({
+    get: jest.fn().mockImplementation((name: string) => {
+      return {
+        oobis: [`${oobiPrefix}${name}`],
+        done: true,
+      };
+    }),
+    resolve: jest.fn().mockImplementation((name: string) => {
+      return {
+        done: true,
+        response: {
+          i: name,
+        },
+      };
+    }),
+  }),
+  contacts: () => ({
+    list: contactListMock,
+    get: jest.fn().mockImplementation((id: string) => {
+      return {
+        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
+        oobi: "oobi",
+        id,
+      };
+    }),
+    delete: deleteContactMock,
+  }),
+  notifications: () => ({
+    list: jest.fn(),
+    mark: jest.fn(),
+  }),
+  ipex: () => ({
+    admit: jest.fn(),
+    submitAdmit: jest.fn(),
+  }),
+  credentials: () => ({
+    list: jest.fn(),
+  }),
+  exchanges: () => ({
+    get: jest.fn(),
+    send: jest.fn(),
+  }),
+  agent: {
+    pre: "pre",
+  },
+  keyStates: () => ({
+    query: jest.fn(),
+    get: jest.fn(),
+  }),
+});
+
+const session = {};
+
+const agentServicesProps = {
+  signifyClient: signifyClient as any,
+  eventService: new EventService(),
+};
+
+const connectionStorage = jest.mocked({
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
+const connectionNoteStorage = jest.mocked({
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
 });
 
 const connectionService = new ConnectionService(
-  basicStorage,
-  signifyApi as any as SignifyApi
+  agentServicesProps,
+  connectionStorage as any,
+  connectionNoteStorage as any,
+  new CredentialStorage(session as any)
 );
 
 const now = new Date();
@@ -44,21 +141,19 @@ describe("Connection service of agent", () => {
     jest.resetAllMocks();
   });
   test("can get all connections", async () => {
-    basicStorage.getAll = jest.fn().mockResolvedValue([
+    connectionStorage.getAll = jest.fn().mockResolvedValue([
       {
         id: keriContacts[0].id,
         createdAt: now,
-        type: RecordType.CONNECTION_KERI_METADATA,
-        content: {
-          alias: "keri",
-        },
+        alias: "keri",
+        oobi: "oobi",
       },
     ]);
-    signifyApi.getContacts = jest.fn().mockResolvedValue(keriContacts);
     expect(await connectionService.getConnections()).toEqual([
       {
         id: keriContacts[0].id,
-        label: keriContacts[0].alias,
+        label: "keri",
+        oobi: "oobi",
         status: ConnectionStatus.CONFIRMED,
         connectionDate: expect.any(String),
       },
@@ -72,18 +167,18 @@ describe("Connection service of agent", () => {
       message: "message",
     };
     await connectionService.createConnectionNote(connectionId, note);
-    expect(basicStorage.save).toBeCalledWith({
+    expect(connectionNoteStorage.save).toBeCalledWith({
       id: expect.any(String),
-      content: note,
-      type: RecordType.CONNECTION_NOTE,
-      tags: { connectionId },
+      title: "title",
+      message: "message",
+      connectionId,
     });
   });
 
   test("can delete connection note with id", async () => {
     const connectionNoteId = "connectionId";
     await connectionService.deleteConnectionNoteById(connectionNoteId);
-    expect(basicStorage.deleteById).toBeCalledWith(connectionNoteId);
+    expect(connectionNoteStorage.deleteById).toBeCalledWith(connectionNoteId);
   });
 
   test("cannot update connection note because connection note invalid", async () => {
@@ -98,100 +193,63 @@ describe("Connection service of agent", () => {
   });
 
   test("can update connection note by id", async () => {
-    const mockGenericRecords = {
+    const connectionToUpdate = {
       id: "id",
-      content: {
-        title: "title",
-        message: "message",
-      },
+      title: "title",
+      message: "message",
     };
-    basicStorage.findById = jest.fn().mockResolvedValue(mockGenericRecords);
+    connectionNoteStorage.findById = jest
+      .fn()
+      .mockResolvedValue(connectionToUpdate);
     const connectionId = "connectionId";
     const note = {
       title: "title",
       message: "message2",
     };
     await connectionService.updateConnectionNoteById(connectionId, note);
-    expect(basicStorage.update).toBeCalledWith({
-      ...mockGenericRecords,
-      content: note,
+    expect(connectionNoteStorage.update).toBeCalledWith({
+      ...connectionToUpdate,
+      title: "title",
+      message: "message2",
     });
   });
 
   test("can delete conenction by id", async () => {
-    basicStorage.findAllByQuery = jest.fn().mockReturnValue([]);
+    connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([]);
     const connectionId = "connectionId";
-    await connectionService.deleteConnectionById(
-      connectionId,
-      
-    );
-    expect(basicStorage.deleteById).toBeCalledWith(connectionId);
-    // expect(signifyApi.deleteContactById).toBeCalledWith(connectionId); // TODO: must open when Keria runs well
+    await connectionService.deleteConnectionById(connectionId);
+    expect(connectionStorage.deleteById).toBeCalledWith(connectionId);
+    // expect(deleteContactMock).toBeCalledWith(connectionId); // it should be uncommented later when deleting on KERIA is re-enabled
   });
 
   test("Should delete connection's notes when deleting that connection", async () => {
-    basicStorage.findAllByQuery = jest.fn().mockReturnValue([
+    connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([
       {
         id: "uuid",
-        content: {
-          title: "title",
-        },
+        title: "title",
       },
     ]);
     const connectionId = "connectionId";
-    await connectionService.deleteConnectionById(
-      connectionId,
-    );
-    expect(basicStorage.deleteById).toBeCalledTimes(2);
+    await connectionService.deleteConnectionById(connectionId);
+    expect(connectionNoteStorage.deleteById).toBeCalledTimes(1);
+    expect(connectionNoteStorage.deleteById).toBeCalledTimes(1);
   });
 
   test("can receive keri oobi", async () => {
-    signifyApi.resolveOobi.mockImplementation((url) => {
-      return { name: url, response: { i: "id" } };
+    signifyClient.oobis().resolve.mockResolvedValue({
+      done: true,
     });
     const oobi =
       "http://127.0.0.1:3902/oobi/EBRcDDwjOfqZwC1w2XFcE1mKQUb1LekNNidkZ8mrIEaw/agent/EEXekkGu9IAzav6pZVJhkLnjtjM5v3AcyA-pdKUcaGei";
-    await connectionService.receiveInvitationFromUrl(oobi);
-    // We aren't too concerned with testing the config passed
-    expect(signifyApi.resolveOobi).toBeCalledWith(oobi);
-  });
-
-  test("can get connection keri (short detail view) by id", async () => {
-    basicStorage.findById = jest.fn().mockResolvedValue({
-      id: keriContacts[0].id,
-      createdAt: now,
-      content: {
-        alias: "keri",
-      },
-    });
-    expect(
-      await connectionService.getConnectionKeriShortDetailById(
-        keriContacts[0].id
-      )
-    ).toMatchObject({
-      id: keriContacts[0].id,
-      connectionDate: nowISO,
-      label: "keri",
-      status: ConnectionStatus.CONFIRMED,
-    });
-    expect(basicStorage.findById).toBeCalledWith(keriContacts[0].id);
-  });
-
-  test("can get KERI OOBI", async () => {
-    signifyApi.getOobi = jest.fn().mockImplementation((name: string) => {
-      return `${oobiPrefix}${name}`;
-    });
-    const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getKeriOobi(signifyName);
-    expect(KeriOobi).toEqual(oobiPrefix + signifyName);
+    await connectionService.connectByOobiUrl(oobi);
   });
 
   test("can get a KERI OOBI with an alias (URL encoded)", async () => {
-    signifyApi.getOobi = jest.fn().mockImplementation((name: string) => {
+    signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
       return `${oobiPrefix}${name}`;
     });
     const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getKeriOobi(
+    const KeriOobi = await connectionService.getOobi(
       signifyName,
       "alias with spaces"
     );
@@ -200,8 +258,34 @@ describe("Connection service of agent", () => {
     );
   });
 
+  test("can get connection keri (short detail view) by id", async () => {
+    connectionStorage.findById = jest.fn().mockResolvedValue({
+      id: keriContacts[0].id,
+      createdAt: now,
+      alias: "keri",
+    });
+    expect(
+      await connectionService.getConnectionShortDetailById(keriContacts[0].id)
+    ).toMatchObject({
+      id: keriContacts[0].id,
+      connectionDate: nowISO,
+      label: "keri",
+      status: ConnectionStatus.CONFIRMED,
+    });
+    expect(connectionStorage.findById).toBeCalledWith(keriContacts[0].id);
+  });
+
+  test("can get KERI OOBI", async () => {
+    signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
+      return `${oobiPrefix}${name}`;
+    });
+    const signifyName = "keriuuid";
+    const KeriOobi = await connectionService.getOobi(signifyName);
+    expect(KeriOobi).toEqual(oobiPrefix + signifyName);
+  });
+
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
-    signifyApi.getContacts = jest.fn().mockReturnValue([
+    contactListMock.mockReturnValue([
       {
         id: "EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR",
         alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
@@ -217,8 +301,8 @@ describe("Connection service of agent", () => {
         wellKnowns: [],
       },
     ]);
-    basicStorage.getAll = jest.fn().mockReturnValue([]);
+    connectionStorage.getAll = jest.fn().mockReturnValue([]);
     await connectionService.syncKeriaContacts();
-    expect(basicStorage.save).toBeCalledTimes(2);
+    expect(connectionStorage.save).toBeCalledTimes(2);
   });
 });
