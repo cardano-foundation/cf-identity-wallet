@@ -30,6 +30,9 @@ class IdentifierStorage {
     const records = await this.storageService.findAllByQuery(
       {
         isArchived,
+        $not: {
+          groupCreated: true,
+        },
       },
       IdentifierMetadataRecord
     );
@@ -45,7 +48,12 @@ class IdentifierStorage {
     metadata: Partial<
       Pick<
         IdentifierMetadataRecord,
-        "displayName" | "theme" | "isArchived" | "isPending" | "isDeleted"
+        | "displayName"
+        | "theme"
+        | "isArchived"
+        | "isPending"
+        | "isDeleted"
+        | "groupMetadata"
       >
     >
   ): Promise<void> {
@@ -60,6 +68,8 @@ class IdentifierStorage {
       identifierMetadataRecord.isPending = metadata.isPending;
     if (metadata.isDeleted !== undefined)
       identifierMetadataRecord.isDeleted = metadata.isDeleted;
+    if (metadata.groupMetadata !== undefined)
+      identifierMetadataRecord.groupMetadata = metadata.groupMetadata;
     await this.storageService.update(identifierMetadataRecord);
   }
 

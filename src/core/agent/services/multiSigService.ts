@@ -131,7 +131,10 @@ class MultiSigService extends AgentService {
       multisigManageAid: ourIdentifier,
     });
     ourMetadata.groupMetadata.groupCreated = true;
-    await Agent.agent.identifiers.updateIdentifier(ourMetadata.id, ourMetadata);
+    await this.identifierStorage.updateIdentifierMetadata(
+      ourMetadata.id,
+      ourMetadata
+    );
     return { identifier: multisigId, signifyName };
   }
 
