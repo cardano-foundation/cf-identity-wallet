@@ -2,9 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { App } from "@capacitor/app";
 import { useAppDispatch } from "../../../../store/hooks";
 import { logout } from "../../../../store/reducers/stateCache";
-import { useBiometricAuth } from "../../../hooks/useBiometrics";
 
-const timeout = process.env.NODE_ENV === "development" ? 6000 : 60000; //3600000 1h/1min
+const timeout = process.env.NODE_ENV === "development" ? 3600000 : 60000; //3600000 1h/1min
 const pauseTimeout = timeout / 2;
 const useActivityTimer = () => {
   const dispatch = useAppDispatch();
@@ -59,13 +58,13 @@ const useActivityTimer = () => {
       "keydown",
       "scroll",
     ];
-    events.forEach((event) => {
-      window.addEventListener(event, handleActivity);
+    events.forEach(async (event) => {
+      await window.addEventListener(event, handleActivity);
     });
 
     return () => {
-      events.forEach((event) => {
-        window.removeEventListener(event, handleActivity);
+      events.forEach(async (event) => {
+        await window.removeEventListener(event, handleActivity);
       });
       clearTimer();
     };

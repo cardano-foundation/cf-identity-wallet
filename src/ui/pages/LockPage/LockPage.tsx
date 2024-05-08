@@ -93,7 +93,10 @@ const LockPage = () => {
   };
 
   const handleBiometrics = async () => {
-    handleBiometricAuth();
+    const isAuthenticated = await handleBiometricAuth();
+    if (isAuthenticated === true) {
+      dispatch(login());
+    }
   };
   const resetPasscode = () => {
     SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {

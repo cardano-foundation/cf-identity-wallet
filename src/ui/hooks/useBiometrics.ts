@@ -27,7 +27,9 @@ const useBiometricAuth = () => {
     //checkBiometry();
   }, []);
 
-  const handleBiometricAuth = async () => {
+  const handleBiometricAuth = async (): Promise<
+    boolean | BiometryError | undefined
+  > => {
     const biometricResult = await checkBiometry();
     if (!biometricResult?.isAvailable) {
       if (biometricResult?.strongReason?.includes("NSFaceIDUsageDescription")) {
@@ -49,7 +51,7 @@ const useBiometricAuth = () => {
         androidConfirmationRequired: false,
       });
       setPauseTimestamp(new Date().getTime());
-      dispatch(login());
+      return true;
     } catch (error) {
       if (
         error instanceof BiometryError &&
