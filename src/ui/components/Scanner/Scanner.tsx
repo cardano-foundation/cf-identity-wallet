@@ -36,6 +36,7 @@ import { PageFooter } from "../PageFooter";
 import { ResponsiveModal } from "../layout/ResponsiveModal";
 import { PageHeader } from "../PageHeader";
 import { CustomInput } from "../CustomInput";
+import { OptionModal } from "../OptionsModal";
 
 const Scanner = forwardRef(
   ({ setIsValueCaptured, handleReset }: ScannerProps, ref) => {
@@ -248,33 +249,33 @@ const Scanner = forwardRef(
           setModalIsOpen={setCreateIdentifierModalIsOpen}
           groupId={groupId}
         />
-        <ResponsiveModal
+        <OptionModal
           modalIsOpen={pasteModalIsOpen}
           componentId={componentId + "-input-modal"}
           customClasses={componentId + "-input-modal"}
           onDismiss={() => setPasteModalIsOpen(false)}
-        >
-          <PageHeader
-            closeButton={true}
-            closeButtonLabel={`${i18n.t("createidentifier.scan.cancel")}`}
-            closeButtonAction={() => setPasteModalIsOpen(false)}
-            title={
+          header={{
+            closeButton: true,
+            closeButtonAction: () => setPasteModalIsOpen(false),
+            closeButtonLabel: `${i18n.t("createidentifier.scan.cancel")}`,
+            title: `${
               currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
               currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
                 ? `${i18n.t("createidentifier.scan.pasteoobi")}`
                 : `${i18n.t("createidentifier.scan.pastecontents")}`
-            }
-            actionButton={true}
-            actionButtonAction={handleSubmitPastedValue}
-            actionButtonLabel={`${i18n.t("createidentifier.scan.confirm")}`}
-          />
+            }`,
+            actionButton: true,
+            actionButtonAction: handleSubmitPastedValue,
+            actionButtonLabel: `${i18n.t("createidentifier.scan.confirm")}`,
+          }}
+        >
           <CustomInput
             dataTestId={`${componentId}-input`}
             autofocus={true}
             onChangeInput={setPastedValue}
             value={pastedValue}
           />
-        </ResponsiveModal>
+        </OptionModal>
       </>
     );
   }

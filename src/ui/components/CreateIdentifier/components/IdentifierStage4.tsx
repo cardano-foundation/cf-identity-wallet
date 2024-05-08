@@ -123,42 +123,46 @@ const IdentifierStage4 = ({
             </IonItem>
           </IonCard>
         </div>
-        <div>
-          <div className="identifier-list-title">
-            {i18n.t("createidentifier.confirm.selectedmembers")}
+        {otherIdentifierContacts.length && (
+          <div>
+            <div className="identifier-list-title">
+              {i18n.t("createidentifier.confirm.selectedmembers")}
+            </div>
+            <IonCard>
+              {otherIdentifierContacts.map((connection, index) => {
+                return (
+                  <IonItem
+                    key={index}
+                    className="identifier-list-item"
+                  >
+                    <IonLabel>
+                      <img
+                        src={connection?.logo || KeriLogo}
+                        className="connection-logo"
+                        alt="connection-logo"
+                        data-testid={`identifier-stage-3-connection-logo-${index}`}
+                      />
+                      <span className="connection-name">
+                        {connection.label}
+                      </span>
+                      <IonIcon
+                        aria-hidden="true"
+                        icon={pencilOutline}
+                        slot="end"
+                        onClick={() =>
+                          setState((prevState: IdentifierStageProps) => ({
+                            ...prevState,
+                            identifierCreationStage: 2,
+                          }))
+                        }
+                      />
+                    </IonLabel>
+                  </IonItem>
+                );
+              })}
+            </IonCard>
           </div>
-          <IonCard>
-            {otherIdentifierContacts.map((connection, index) => {
-              return (
-                <IonItem
-                  key={index}
-                  className="identifier-list-item"
-                >
-                  <IonLabel>
-                    <img
-                      src={connection?.logo || KeriLogo}
-                      className="connection-logo"
-                      alt="connection-logo"
-                      data-testid={`identifier-stage-3-connection-logo-${index}`}
-                    />
-                    <span className="connection-name">{connection.label}</span>
-                    <IonIcon
-                      aria-hidden="true"
-                      icon={pencilOutline}
-                      slot="end"
-                      onClick={() =>
-                        setState((prevState: IdentifierStageProps) => ({
-                          ...prevState,
-                          identifierCreationStage: 2,
-                        }))
-                      }
-                    />
-                  </IonLabel>
-                </IonItem>
-              );
-            })}
-          </IonCard>
-        </div>
+        )}
         <div>
           <div className="identifier-list-title">
             {i18n.t("createidentifier.confirm.treshold")}
