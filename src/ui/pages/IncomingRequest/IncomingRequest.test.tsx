@@ -108,9 +108,6 @@ const signifyClient = jest.mocked({
 const agentServicesProps = {
   signifyClient: signifyClient as any,
   eventService: new EventService(),
-  identifierStorage: {} as any,
-  credentialStorage: {} as any,
-  peerConnectionStorage: {} as any,
 };
 
 const signifyNotificationService = new SignifyNotificationService(

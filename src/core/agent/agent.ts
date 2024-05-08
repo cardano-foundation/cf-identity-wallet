@@ -201,12 +201,12 @@ class Agent {
         eventService: new EventService(),
       };
 
-      (this.peerConnectionStorage = new PeerConnectionStorage(
+      this.peerConnectionStorage = new PeerConnectionStorage(
         this.getStorageService<PeerConnectionMetadataRecord>(
           this.storageSession
         )
-      )),
-      (Agent.ready = true);
+      );
+      Agent.ready = true;
     }
   }
 
