@@ -199,12 +199,6 @@ class Agent {
       this.agentServicesProps = {
         signifyClient: this.signifyClient,
         eventService: new EventService(),
-        identifierStorage: new IdentifierStorage(
-          this.getStorageService<IdentifierMetadataRecord>(this.storageSession)
-        ),
-        credentialStorage: new CredentialStorage(
-          this.getStorageService<CredentialMetadataRecord>(this.storageSession)
-        ),
       };
 
       (this.peerConnectionStorage = new PeerConnectionStorage(

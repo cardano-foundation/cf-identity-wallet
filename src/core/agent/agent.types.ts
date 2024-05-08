@@ -98,8 +98,6 @@ interface KeriaNotificationMarker {
 interface AgentServicesProps {
   signifyClient: SignifyClient;
   eventService: EventService;
-  identifierStorage: IdentifierStorage;
-  credentialStorage: CredentialStorage;
 }
 
 interface CreateIdentifierResult {
