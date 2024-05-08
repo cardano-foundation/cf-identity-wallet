@@ -135,9 +135,6 @@ const eventService = new EventService();
 const agentServicesProps = {
   signifyClient: signifyClient as any,
   eventService,
-  identifierStorage: identifierStorage as any,
-  credentialStorage: credentialStorage as any,
-  peerConnectionStorage: {} as any,
 };
 
 jest.mock("../../../core/agent/agent", () => ({

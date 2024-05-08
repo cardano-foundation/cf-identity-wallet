@@ -94,9 +94,6 @@ const session = {};
 const agentServicesProps = {
   signifyClient: signifyClient as any,
   eventService: new EventService(),
-  identifierStorage: new IdentifierStorage(session as any),
-  credentialStorage: new CredentialStorage(session as any),
-  peerConnectionStorage: {} as any,
 };
 
 const connectionStorage = jest.mocked({
