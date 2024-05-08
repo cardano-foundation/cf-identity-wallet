@@ -192,7 +192,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       };
       handleMessages();
     }
-  }, [isOnline, authentication, dispatch]);
+  }, [isOnline, authentication.loggedIn, dispatch]);
 
   const checkKeyStore = async (key: string) => {
     try {
