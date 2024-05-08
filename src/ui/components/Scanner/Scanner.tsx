@@ -157,8 +157,9 @@ const Scanner = forwardRef(
     }, [currentOperation, currentRoute]);
 
     const handlePrimaryButtonAction = () => {
-      // TODO: Add content to initiate Multi Sig
-      console.log("click primary");
+      stopScan();
+      dispatch(setCurrentOperation(OperationType.MULTI_SIG_INITIATOR_INIT));
+      handleReset && handleReset();
     };
 
     const handleSubmitPastedValue = () => {
@@ -169,38 +170,39 @@ const Scanner = forwardRef(
 
     const RenderPageFooter = () => {
       switch (currentOperation) {
-        case OperationType.MULTI_SIG_INITIATOR_SCAN:
-          return (
-            <PageFooter
-              pageId={componentId}
-              primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
-              primaryButtonAction={handlePrimaryButtonAction}
-              secondaryButtonText={`${i18n.t(
-                "createidentifier.scan.pasteoobi"
-              )}`}
-              secondaryButtonAction={() => setPasteModalIsOpen(true)}
-            />
-          );
-        case OperationType.MULTI_SIG_RECEIVER_SCAN:
-          return (
-            <PageFooter
-              pageId={componentId}
-              secondaryButtonText={`${i18n.t(
-                "createidentifier.scan.pasteoobi"
-              )}`}
-              secondaryButtonAction={() => setPasteModalIsOpen(true)}
-            />
-          );
-        default:
-          return (
-            <PageFooter
-              pageId={componentId}
-              secondaryButtonText={`${i18n.t(
-                "createidentifier.scan.pastecontents"
-              )}`}
-              secondaryButtonAction={() => setPasteModalIsOpen(true)}
-            />
-          );
+      case OperationType.MULTI_SIG_INITIATOR_SCAN:
+        return (
+          <PageFooter
+            pageId={componentId}
+            primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
+            primaryButtonAction={handlePrimaryButtonAction}
+            primaryButtonDisabled={false} // @TODO: sdisalvo - Get list of scanned QR codes to check if we can enable this button
+            secondaryButtonText={`${i18n.t(
+              "createidentifier.scan.pasteoobi"
+            )}`}
+            secondaryButtonAction={() => setPasteModalIsOpen(true)}
+          />
+        );
+      case OperationType.MULTI_SIG_RECEIVER_SCAN:
+        return (
+          <PageFooter
+            pageId={componentId}
+            secondaryButtonText={`${i18n.t(
+              "createidentifier.scan.pasteoobi"
+            )}`}
+            secondaryButtonAction={() => setPasteModalIsOpen(true)}
+          />
+        );
+      default:
+        return (
+          <PageFooter
+            pageId={componentId}
+            secondaryButtonText={`${i18n.t(
+              "createidentifier.scan.pastecontents"
+            )}`}
+            secondaryButtonAction={() => setPasteModalIsOpen(true)}
+          />
+        );
       }
     };
 
