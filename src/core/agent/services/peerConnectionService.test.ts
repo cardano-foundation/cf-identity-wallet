@@ -119,7 +119,6 @@ const peerConnectionMetadataRecordProps = {
   url: "url",
   iconB64: "icon",
   selectedAid: "aid",
-  isPending: true,
   createdAt: new Date(),
 };
 
@@ -165,7 +164,6 @@ describe("Peer connection service of agent", () => {
       url: "url1",
       iconB64: "icon1",
       selectedAid: "aid1",
-      isPending: true,
       createdAt: new Date(),
     };
     peerConnectionStorage.getPeerConnectionMetadata = jest

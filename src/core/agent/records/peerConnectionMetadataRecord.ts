@@ -5,14 +5,12 @@ interface PeerConnectionMetadataRecordProps {
   name?: string;
   url?: string;
   createdAt?: Date;
-  isPending?: boolean;
   iconB64?: string;
   selectedAid?: string;
 }
 
 class PeerConnectionMetadataRecord extends BaseRecord {
   name?: string;
-  isPending?: boolean;
   url?: string;
   iconB64?: string;
   selectedAid?: string;
@@ -27,7 +25,6 @@ class PeerConnectionMetadataRecord extends BaseRecord {
       this.id = props.id;
       this.name = props.name ?? "";
       this.url = props.url ?? "";
-      this.isPending = props.isPending ?? true;
       this.selectedAid = props.selectedAid ?? "";
       this.createdAt = props.createdAt ?? new Date();
       this.iconB64 = props.iconB64 ?? "";
@@ -37,7 +34,6 @@ class PeerConnectionMetadataRecord extends BaseRecord {
   getTags() {
     return {
       ...this._tags,
-      isPending: this.isPending,
     };
   }
 }

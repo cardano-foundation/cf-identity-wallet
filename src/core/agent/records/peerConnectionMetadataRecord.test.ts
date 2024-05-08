@@ -9,7 +9,6 @@ const mockData: PeerConnectionMetadataRecordProps = {
   url: "url",
   iconB64: "icon",
   selectedAid: "aid",
-  isPending: false,
 };
 
 describe("Peer Connection Record", () => {
@@ -26,9 +25,6 @@ describe("Peer Connection Record", () => {
     expect(settingsRecord.url).toBe(mockData.url);
     expect(settingsRecord.selectedAid).toBe(mockData.selectedAid);
     expect(settingsRecord.iconB64).toBe(mockData.iconB64);
-    expect(settingsRecord.getTags()).toMatchObject({
-      isPending: mockData.isPending,
-    });
     expect(settingsRecord.createdAt).toBe(createdAt);
   });
 });

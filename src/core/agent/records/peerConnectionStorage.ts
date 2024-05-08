@@ -43,7 +43,7 @@ class PeerConnectionStorage {
     metadata: Partial<
       Pick<
         PeerConnectionMetadataRecord,
-        "name" | "url" | "iconB64" | "selectedAid" | "isPending"
+        "name" | "url" | "iconB64" | "selectedAid"
       >
     >
   ): Promise<void> {
@@ -55,8 +55,6 @@ class PeerConnectionStorage {
       identifierMetadataRecord.iconB64 = metadata.iconB64;
     if (metadata.selectedAid !== undefined)
       identifierMetadataRecord.selectedAid = metadata.selectedAid;
-    if (metadata.isPending !== undefined)
-      identifierMetadataRecord.isPending = metadata.isPending;
     await this.storageService.update(identifierMetadataRecord);
   }
 

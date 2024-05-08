@@ -36,7 +36,7 @@ class PeerConnectionService extends AgentService {
     identifier: string,
     data: Pick<
       PeerConnectionMetadataRecordProps,
-      "name" | "url" | "selectedAid" | "iconB64" | "isPending"
+      "name" | "url" | "selectedAid" | "iconB64"
     >
   ): Promise<PeerConnectionMetadataRecord> {
     await this.peerConnectionStorage.updatePeerConnectionMetadata(

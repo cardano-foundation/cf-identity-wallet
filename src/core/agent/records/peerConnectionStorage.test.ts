@@ -19,7 +19,6 @@ const peerConnectionMetadataRecordProps = {
   url: "url",
   iconB64: "icon",
   selectedAid: "aid",
-  isPending: true,
   createdAt: new Date(),
 };
 
@@ -80,7 +79,7 @@ describe("Connection service of agent", () => {
     await peerConnectionStorage.updatePeerConnectionMetadata(
       peerConnectionMetadataRecord.id,
       {
-        isPending: false,
+        name: "update name",
       }
     );
     expect(storageService.update).toBeCalled();
