@@ -29,7 +29,7 @@ body {
       display: none;
     }
 
-    .scanner-spinner-container {
+    .app-spinner-container {
       z-index: 1000;
       position: absolute;
       top: 0;
@@ -43,7 +43,7 @@ body {
     }
   }
 
-  &:not(.full-page-scanner) .scanner-spinner-container {
+  &:not(.full-page-scanner) .app-spinner-container {
     display: none;
   }
 

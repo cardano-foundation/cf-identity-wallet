@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 
 interface PageHeaderProps {
-  translucent?: boolean;
   backButton?: boolean;
   beforeBack?: () => void;
   onBack?: () => void;

@@ -109,8 +109,8 @@ const App = () => {
           />
         ) : (
           <div
-            className="scanner-spinner-container"
-            data-testid="scanner-spinner-container"
+            className="app-spinner-container"
+            data-testid="app-spinner-container"
           >
             <IonSpinner name="circular" />
           </div>
