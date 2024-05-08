@@ -1,5 +1,5 @@
 interface ExperimentalAPIFunctions {
-  getIdentifierOobi: (selectedAid: string) => Promise<string>;
+  getIdentifierOobi: () => Promise<string>;
   sign: (identifier: string, payload: string) => Promise<string>;
 }
 
