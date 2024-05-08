@@ -1121,9 +1121,30 @@
     "usernamecreationerror": "Unable to set name. Please try again.",
     "walletconnectiondeleted": "Delete successfully",
     "connectwalletsuccess": "Connected successfully",
-    "disconnectwallet": "Disconnected successfully"
+    "disconnectwallet": "Disconnected successfully",
+    "unableconnectwallet": "Unable to connect",
+    "peeridsuccess": "Peer ID successful",
+    "peeridnotrecognised": "Peer ID not recognised"
   },
   "request": {
+    "walletconnection": {
+      "stageone": {
+        "title": "Connect Cardano",
+        "back": "Back",
+        "message": "Would you like to establish a CIP-45 Connection?",
+        "alert": {
+          "titleconfirm": "Are you sure you want to decline this connection?",
+          "confirm": "Decline",
+          "cancel": "Cancel"
+        }
+      },
+      "stagetwo": {
+        "title": "Choose identifier",
+        "back": "Back",
+        "message": "Which KERI AID identifier would you like to make the connection with?",
+        "confirm": "Confirm"
+      }
+    },
     "connection": {
       "title": "Connect",
       "requestconnection": " request from",

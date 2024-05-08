@@ -1,0 +1,42 @@
+.input-pid-modal {
+  & ion-buttons.buttons-last-slot {
+    min-width: auto !important;
+
+    .action-button-label {
+      & > p {
+        color: var(--ion-color-action-blue) !important;
+      }
+    }
+  }
+
+  ion-input {
+    border-radius: 0.5rem;
+    border: 1px solid var(--ion-color-dark-grey);
+    margin-top: 0.5rem;
+    min-height: 1.25rem;
+
+    input {
+      overflow: hidden;
+      padding: 0.875rem 1.25rem !important;
+      font-size: 1rem;
+      font-weight: 400 !important;
+      color: var(--ion-color-secondary) !important;
+    }
+
+    &.has-focus {
+      border-color: var(--ion-color-secondary);
+    }
+  }
+
+  .secondary-button {
+    width: 100%;
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    ion-input {
+      input {
+        padding: 0.5rem 1rem !important;
+      }
+    }
+  }
+}
