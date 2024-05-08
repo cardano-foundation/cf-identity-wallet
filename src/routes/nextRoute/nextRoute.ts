@@ -14,23 +14,13 @@ import { RoutePath, TabsRoutePath } from "../paths";
 import { ToastMsgType } from "../../ui/globals/types";
 
 const getNextRootRoute = (store: StoreState) => {
-  const isInitialized = store.stateCache.initialized;
   const authentication = store.stateCache.authentication;
-  const routes = store.stateCache.routes;
-  const initialRoute =
-    routes.some((route) => route.path === "/") || routes.length === 0;
 
   let path;
-  if (routes.length === 1 && !isInitialized) {
-    path = RoutePath.ONBOARDING;
-  } else if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
+  if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
     path = RoutePath.TABS_MENU;
   } else {
-    if (initialRoute) {
-      path = RoutePath.ONBOARDING;
-    } else {
-      path = routes[0].path;
-    }
+    path = RoutePath.ONBOARDING;
   }
 
   return { pathname: path };

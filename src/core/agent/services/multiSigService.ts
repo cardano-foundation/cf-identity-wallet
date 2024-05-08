@@ -7,14 +7,16 @@ import {
   IdentifierResult,
   NotificationRoute,
   CreateIdentifierResult,
+  AgentServicesProps,
 } from "../agent.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
+  IdentifierStorage,
+  NotificationStorage,
 } from "../records";
 import { AgentService } from "./agentService";
 import { MultiSigIcpRequestDetails } from "./identifier.types";
-import { RecordType } from "../../storage/storage.types";
 import {
   Aid,
   MultiSigRoute,
@@ -40,6 +42,19 @@ class MultiSigService extends AgentService {
   static readonly UNKNOWN_AIDS_IN_MULTISIG_ICP =
     "Multi-sig join request contains unknown AIDs (not connected)";
 
+  protected readonly identifierStorage: IdentifierStorage;
+  protected readonly notificationStorage!: NotificationStorage;
+
+  constructor(
+    agentServiceProps: AgentServicesProps,
+    identifierStorage: IdentifierStorage,
+    notificationStorage: NotificationStorage
+  ) {
+    super(agentServiceProps);
+    this.identifierStorage = identifierStorage;
+    this.notificationStorage = notificationStorage;
+  }
+
   async createMultisig(
     ourIdentifier: string,
     otherIdentifierContacts: ConnectionShortDetails[],
@@ -47,6 +62,9 @@ class MultiSigService extends AgentService {
     threshold: number,
     delegateContact?: ConnectionShortDetails
   ): Promise<CreateIdentifierResult> {
+    if (threshold < 1 || threshold > otherIdentifierContacts.length + 1) {
+      throw new Error(MultiSigService.INVALID_THRESHOLD);
+    }
     const ourMetadata = await this.identifierStorage.getIdentifierMetadata(
       ourIdentifier
     );
@@ -95,7 +113,7 @@ class MultiSigService extends AgentService {
     return { identifier: multisigId, signifyName };
   }
 
-  async createAidMultisig(
+  private async createAidMultisig(
     aid: Aid,
     otherAids: Pick<Aid, "state">[],
     name: string,
@@ -106,9 +124,6 @@ class MultiSigService extends AgentService {
     icpResult: EventResult;
     name: string;
   }> {
-    if (threshold < 1 || threshold > otherAids.length + 1) {
-      throw new Error(MultiSigService.INVALID_THRESHOLD);
-    }
     const states = [aid["state"], ...otherAids.map((aid) => aid["state"])];
     const icp = await this.signifyClient.identifiers().create(name, {
       algo: Algos.group,
@@ -242,7 +257,7 @@ class MultiSigService extends AgentService {
       aid,
       multiSig.signifyName
     );
-    await this.basicStorage.deleteById(notification.id);
+    await this.notificationStorage.deleteById(notification.id);
     return res.op.name.split(".")[1];
   }
 
@@ -339,7 +354,7 @@ class MultiSigService extends AgentService {
     const msgSaid = notification.a.d as string;
     const hasJoined = await this.hasJoinedMultisig(msgSaid);
     if (hasJoined) {
-      await this.basicStorage.deleteById(notification.id);
+      await this.notificationStorage.deleteById(notification.id);
       return;
     }
     const icpMsg: MultiSigExnMessage[] = await this.signifyClient
@@ -365,7 +380,7 @@ class MultiSigService extends AgentService {
       .get(identifier?.signifyName);
     const signifyName = uuidv4();
     const res = await this.joinMultisigKeri(exn, aid, signifyName);
-    await this.basicStorage.deleteById(notification.id);
+    await this.notificationStorage.deleteById(notification.id);
     const multisigId = res.op.name.split(".")[1];
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
@@ -403,8 +418,7 @@ class MultiSigService extends AgentService {
       isDismissed?: boolean;
     } = {}
   ): Promise<KeriaNotification[]> {
-    const results = await this.basicStorage.findAllByQuery({
-      type: RecordType.KERIA_NOTIFICATION,
+    const results = await this.notificationStorage.findAllByQuery({
       route: NotificationRoute.MultiSigIcp,
       ...filters,
       $or: [
@@ -418,12 +432,12 @@ class MultiSigService extends AgentService {
       return {
         id: result.id,
         createdAt: result.createdAt,
-        a: result.content,
+        a: result.a,
       };
     });
   }
 
-  async rotateMultisigAid(
+  private async rotateMultisigAid(
     aid: Aid,
     multisigAidMembers: Pick<Aid, "state">[],
     name: string
@@ -472,7 +486,7 @@ class MultiSigService extends AgentService {
     };
   }
 
-  async joinMultisigRotationKeri(
+  private async joinMultisigRotationKeri(
     exn: MultiSigExnMessage["exn"],
     aid: Aid,
     name: string
@@ -521,7 +535,9 @@ class MultiSigService extends AgentService {
     };
   }
 
-  async getIdentifierById(id: string): Promise<IdentifierResult | undefined> {
+  private async getIdentifierById(
+    id: string
+  ): Promise<IdentifierResult | undefined> {
     const allIdentifiers = await this.signifyClient.identifiers().list();
     const identifier = allIdentifiers.aids.find(
       (identifier: IdentifierResult) => identifier.prefix === id
@@ -529,7 +545,7 @@ class MultiSigService extends AgentService {
     return identifier;
   }
 
-  async joinMultisigKeri(
+  private async joinMultisigKeri(
     exn: MultiSigExnMessage["exn"],
     aid: Aid,
     name: string

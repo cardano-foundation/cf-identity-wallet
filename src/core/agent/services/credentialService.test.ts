@@ -5,7 +5,6 @@ import {
 } from "../records/credentialMetadataRecord.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { EventService } from "./eventService";
-import { RecordType } from "../../storage/storage.types";
 import { NotificationRoute } from "../agent.types";
 import { Agent } from "../agent";
 
@@ -120,14 +119,25 @@ jest.mock("../../../core/agent/agent", () => ({
 }));
 
 const agentServicesProps = {
-  basicStorage: basicStorage as any,
   signifyClient: signifyClient as any,
   eventService: new EventService(),
-  identifierStorage: identifierStorage as any,
-  credentialStorage: credentialStorage as any,
 };
 
-const credentialService = new CredentialService(agentServicesProps);
+const notificationStorage = jest.mocked({
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
+const credentialService = new CredentialService(
+  agentServicesProps,
+  credentialStorage as any,
+  notificationStorage as any
+);
 
 const now = new Date();
 const nowISO = now.toISOString();
@@ -421,39 +431,39 @@ describe("Credential service of agent", () => {
 
   test("Should be able to getUnhandledIpexGrantNotifications", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const basicRecord = {
+    const notificationRecord = {
       _tags: {
         isDismiss: true,
-        type: RecordType.KERIA_NOTIFICATION,
         route: NotificationRoute.Credential,
       },
       id: "AIeGgKkS23FDK4mxpfodpbWhTydFz2tdM64DER6EdgG-",
       createdAt: new Date(),
-      content: {
+      a: {
         r: NotificationRoute.Credential,
         d: "EF6Nmxz8hs0oVc4loyh2J5Sq9H3Z7apQVqjO6e4chtsp",
       },
     };
-    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([basicRecord]);
+    notificationStorage.findAllByQuery = jest
+      .fn()
+      .mockResolvedValue([notificationRecord]);
     expect(
       await credentialService.getUnhandledIpexGrantNotifications()
     ).toStrictEqual([
       {
-        id: basicRecord.id,
-        createdAt: basicRecord.createdAt,
-        a: basicRecord.content,
+        id: notificationRecord.id,
+        createdAt: notificationRecord.createdAt,
+        a: notificationRecord.a,
       },
     ]);
   });
 
   test("Should pass the filter throught findAllByQuery when call getUnhandledIpexGrantNotifications", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     await credentialService.getUnhandledIpexGrantNotifications({
       isDismissed: false,
     });
-    expect(basicStorage.findAllByQuery).toBeCalledWith({
-      type: RecordType.KERIA_NOTIFICATION,
+    expect(notificationStorage.findAllByQuery).toBeCalledWith({
       route: NotificationRoute.Credential,
       isDismissed: false,
     });

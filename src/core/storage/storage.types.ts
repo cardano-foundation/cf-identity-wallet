@@ -49,15 +49,6 @@ interface SaveBasicRecordOption {
   tags?: Tags;
 }
 
-enum RecordType {
-  CONNECTION_NOTE = "ConnectionNote",
-  KERIA_CONNECTION_METADATA = "KeriaConnectionMetadata",
-  KERIA_NOTIFICATION = "KeriaNotification",
-  CREDENTIAL_METADATA_RECORD = "CredentialMetadataRecord",
-  IDENTIFIER_METADATA_RECORD = "IdentifierMetadataRecord",
-  OP_PASS_HINT = "OpPassHint",
-}
-
 type SimpleQuery<T extends BaseRecord> = Partial<ReturnType<T["getTags"]>> &
   Tags;
 
@@ -108,7 +99,7 @@ interface BaseRecordConstructor<T> extends Constructor<T> {
   type: string;
 }
 
-export { BaseRecord, RecordType };
+export { BaseRecord };
 export type {
   StorageApi,
   Query,
