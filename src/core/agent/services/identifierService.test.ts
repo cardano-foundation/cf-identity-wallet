@@ -103,7 +103,6 @@ const credentialStorage = jest.mocked({
 });
 
 const agentServicesProps = {
-  basicStorage: basicStorage as any,
   signifyClient: signifyClient as any,
   eventService: new EventService(),
   identifierStorage: identifierStorage as any,
@@ -111,7 +110,10 @@ const agentServicesProps = {
   peerConnectionStorage: {} as any,
 };
 
-const identifierService = new IdentifierService(agentServicesProps);
+const identifierService = new IdentifierService(
+  agentServicesProps,
+  identifierStorage as any
+);
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {

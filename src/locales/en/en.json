@@ -535,7 +535,7 @@
       }
     ]
   },
-  "lockmodal": {
+  "lockpage": {
     "title": "Welcome back",
     "description": "Please enter your passcode to login",
     "error": "Incorrect passcode",
@@ -854,10 +854,37 @@
         "profile": "Profile",
         "crypto": "Crypto",
         "connections": "Connections",
-        "p2p": "P2P",
-        "identity": "Identity",
-        "credentials": "Credentials",
-        "lock": "Lock"
+        "connectwallet": "Connect Wallet",
+        "lock": "Lock",
+        "cip": "CIP-45"
+      }
+    }
+  },
+  "connectwallet": {
+    "sections": {
+      "header": "Cardano Connect",
+      "connectbtn": "Connect with Cardano"
+    },
+    "connectwalletmodal": {
+      "header": "New connection",
+      "cancel": "Cancel",
+      "scanqr": "Scan QR code",
+      "pastePID": "Paste Peer ID"
+    },
+    "connectionhistory": {
+      "title": "Connection History",
+      "action": {
+        "delete": "Delete"
+      },
+      "deletealert": {
+        "message": "Are you sure you want to delete this connection?",
+        "confirm": "Yes, I’m sure",
+        "cancel": "Cancel"
+      },
+      "confirmconnect": {
+        "done": "Done",
+        "connectbtn": "Connect",
+        "disconnectbtn": "Disconnect"
       }
     }
   },
@@ -1074,7 +1101,10 @@
     "noteremoved": "Note removed successfully",
     "maxfavouritesreached": "Maximum of 5 favourites reached",
     "usernamecreationsuccess": "Welcome, {{username}}!",
-    "usernamecreationerror": "Unable to set name. Please try again."
+    "usernamecreationerror": "Unable to set name. Please try again.",
+    "walletconnectiondeleted": "Delete successfully",
+    "connectwalletsuccess": "Connected successfully",
+    "disconnectwallet": "Disconnected successfully"
   },
   "request": {
     "connection": {

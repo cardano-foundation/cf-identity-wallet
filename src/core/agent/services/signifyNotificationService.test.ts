@@ -102,8 +102,20 @@ const agentServicesProps = {
   peerConnectionStorage: {} as any,
 };
 
+const notificationStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
 const signifyNotificationService = new SignifyNotificationService(
-  agentServicesProps
+  agentServicesProps,
+  notificationStorage as any
 );
 
 describe("Signify notification service of agent", () => {
@@ -145,14 +157,14 @@ describe("Signify notification service of agent", () => {
         },
       },
     ];
-    basicStorage.save = jest
+    notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
     jest.useFakeTimers();
     for (const notif of notes) {
       await signifyNotificationService.processNotification(notif, callback);
     }
-    expect(basicStorage.save).toBeCalledTimes(2);
+    expect(notificationStorage.save).toBeCalledTimes(2);
     expect(callback).toBeCalledTimes(2);
   });
 
@@ -166,13 +178,13 @@ describe("Signify notification service of agent", () => {
         this._tags[name] = value;
       },
     };
-    basicStorage.findById = jest.fn().mockResolvedValue(notification);
+    notificationStorage.findById = jest.fn().mockResolvedValue(notification);
     await signifyNotificationService.dismissNotification(notification.id);
-    expect(basicStorage.update).toBeCalledTimes(1);
+    expect(notificationStorage.update).toBeCalledTimes(1);
   });
 
   test("Should throw error when dismiss an invalid notification", async () => {
-    basicStorage.findById = jest.fn().mockResolvedValue(null);
+    notificationStorage.findById = jest.fn().mockResolvedValue(null);
     await expect(
       signifyNotificationService.dismissNotification("not-exist-noti-id")
     ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
@@ -181,6 +193,6 @@ describe("Signify notification service of agent", () => {
   test("can delete keri notification by ID", async () => {
     const id = "uuid";
     await signifyNotificationService.deleteNotificationRecordById(id);
-    expect(basicStorage.deleteById).toBeCalled();
+    expect(notificationStorage.deleteById).toBeCalled();
   });
 });

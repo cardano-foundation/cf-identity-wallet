@@ -1,5 +1,4 @@
 import { IonicStorage } from "./ionicStorage";
-import { RecordType } from "../storage.types";
 import { BasicRecord } from "../../agent/records";
 
 const startTime = new Date();

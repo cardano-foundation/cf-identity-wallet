@@ -18,12 +18,18 @@ import { EventService } from "./services/eventService";
 import {
   BasicRecord,
   BasicStorage,
+  ConnectionNoteRecord,
+  ConnectionNoteStorage,
+  ConnectionRecord,
+  ConnectionStorage,
   CredentialMetadataRecord,
   CredentialStorage,
   IdentifierMetadataRecord,
   IdentifierStorage,
   PeerConnectionMetadataRecord,
   PeerConnectionStorage,
+  NotificationRecord,
+  NotificationStorage,
 } from "./records";
 import { KeyStoreKeys, SecureStorage } from "../storage";
 import { MultiSigService } from "./services/multiSigService";
@@ -47,6 +53,12 @@ class Agent {
   private storageSession!: SqliteSession | IonicSession;
 
   private basicStorageService!: BasicStorage;
+  private identifierStorage!: IdentifierStorage;
+  private credentialStorage!: CredentialStorage;
+  private connectionStorage!: ConnectionStorage;
+  private connectionNoteStorage!: ConnectionNoteStorage;
+  private notificationStorage!: NotificationStorage;
+
   private signifyClient!: SignifyClient;
   static ready = false;
 
@@ -62,14 +74,21 @@ class Agent {
 
   get identifiers() {
     if (!this.identifierService) {
-      this.identifierService = new IdentifierService(this.agentServicesProps);
+      this.identifierService = new IdentifierService(
+        this.agentServicesProps,
+        this.identifierStorage
+      );
     }
     return this.identifierService;
   }
 
   get multiSigs() {
     if (!this.multiSigService) {
-      this.multiSigService = new MultiSigService(this.agentServicesProps);
+      this.multiSigService = new MultiSigService(
+        this.agentServicesProps,
+        this.identifierStorage,
+        this.notificationStorage
+      );
     }
     return this.multiSigService;
   }
@@ -77,7 +96,10 @@ class Agent {
   get ipexCommunications() {
     if (!this.ipexCommunicationService) {
       this.ipexCommunicationService = new IpexCommunicationService(
-        this.agentServicesProps
+        this.agentServicesProps,
+        this.identifierStorage,
+        this.credentialStorage,
+        this.notificationStorage
       );
     }
     return this.ipexCommunicationService;
@@ -85,14 +107,23 @@ class Agent {
 
   get connections() {
     if (!this.connectionService) {
-      this.connectionService = new ConnectionService(this.agentServicesProps);
+      this.connectionService = new ConnectionService(
+        this.agentServicesProps,
+        this.connectionStorage,
+        this.connectionNoteStorage,
+        this.credentialStorage
+      );
     }
     return this.connectionService;
   }
 
   get credentials() {
     if (!this.credentialService) {
-      this.credentialService = new CredentialService(this.agentServicesProps);
+      this.credentialService = new CredentialService(
+        this.agentServicesProps,
+        this.credentialStorage,
+        this.notificationStorage
+      );
     }
     return this.credentialService;
   }
@@ -113,7 +144,8 @@ class Agent {
   get signifyNotifications() {
     if (!this.signifyNotificationService) {
       this.signifyNotificationService = new SignifyNotificationService(
-        this.agentServicesProps
+        this.agentServicesProps,
+        this.notificationStorage
       );
     }
     return this.signifyNotificationService;
@@ -135,6 +167,25 @@ class Agent {
   async start(): Promise<void> {
     if (!Agent.ready) {
       await this.storageSession.open(walletId);
+      this.basicStorageService = new BasicStorage(
+        this.getStorageService<BasicRecord>(this.storageSession)
+      );
+      this.identifierStorage = new IdentifierStorage(
+        this.getStorageService<IdentifierMetadataRecord>(this.storageSession)
+      );
+      this.credentialStorage = new CredentialStorage(
+        this.getStorageService<CredentialMetadataRecord>(this.storageSession)
+      );
+      this.connectionStorage = new ConnectionStorage(
+        this.getStorageService<ConnectionRecord>(this.storageSession)
+      );
+      this.connectionNoteStorage = new ConnectionNoteStorage(
+        this.getStorageService<ConnectionNoteRecord>(this.storageSession)
+      );
+      this.notificationStorage = new NotificationStorage(
+        this.getStorageService<NotificationRecord>(this.storageSession)
+      );
+
       await signifyReady();
       const bran = await this.getBran();
       // @TODO - foconnor: Review of Tier level.
@@ -150,11 +201,8 @@ class Agent {
         await this.signifyClient.boot();
         await this.signifyClient.connect();
       }
-      this.basicStorageService = new BasicStorage(
-        this.getStorageService<BasicRecord>(this.storageSession)
-      );
+
       this.agentServicesProps = {
-        basicStorage: this.basicStorageService,
         signifyClient: this.signifyClient,
         eventService: new EventService(),
         identifierStorage: new IdentifierStorage(
@@ -169,6 +217,7 @@ class Agent {
           )
         ),
       };
+
       Agent.ready = true;
     }
   }

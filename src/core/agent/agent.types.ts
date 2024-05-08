@@ -6,7 +6,6 @@ import {
 import { EventService } from "./services/eventService";
 import { IdentifierStorage } from "./records/identifierStorage";
 import { CredentialStorage } from "./records/credentialStorage";
-import { BasicStorage } from "./records/basicStorage";
 import { ConnectionHistoryType } from "./services/connection.types";
 import { PeerConnectionStorage } from "./records";
 
@@ -97,7 +96,6 @@ interface KeriaNotificationMarker {
 }
 
 interface AgentServicesProps {
-  basicStorage: BasicStorage;
   signifyClient: SignifyClient;
   eventService: EventService;
   identifierStorage: IdentifierStorage;

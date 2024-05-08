@@ -2,7 +2,7 @@ import { EventService } from "./eventService";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import { CredentialStatus } from "./credentialService.types";
 
-const basicStorage = jest.mocked({
+const notificationStorage = jest.mocked({
   open: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
@@ -13,7 +13,7 @@ const basicStorage = jest.mocked({
       return {
         id,
         createdAt: "2024-04-29T11:01:04.903Z",
-        content: {
+        a: {
           d: "saidForUuid",
         },
       };
@@ -133,7 +133,6 @@ const signifyClient = jest.mocked({
 const eventService = new EventService();
 
 const agentServicesProps = {
-  basicStorage: basicStorage as any,
   signifyClient: signifyClient as any,
   eventService,
   identifierStorage: identifierStorage as any,
@@ -152,7 +151,10 @@ jest.mock("../../../core/agent/agent", () => ({
 }));
 
 const ipexCommunicationService = new IpexCommunicationService(
-  agentServicesProps
+  agentServicesProps,
+  identifierStorage as any,
+  credentialStorage as any,
+  notificationStorage as any
 );
 
 describe("Ipex communication service of agent", () => {
@@ -177,7 +179,7 @@ describe("Ipex communication service of agent", () => {
       id: "id",
       status: CredentialStatus.CONFIRMED,
     });
-    expect(basicStorage.deleteById).toBeCalledWith(id);
+    expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 
   test("cannot accept ACDC if the notification is missing in the DB", async () => {
@@ -191,10 +193,10 @@ describe("Ipex communication service of agent", () => {
   test("cannot accept ACDC if identifier is not locally stored", async () => {
     // @TODO - foconnor: Ensure syncing process resovles this edge case of identifier in cloud but not local prior to release.
     const id = "uuid";
-    basicStorage.findById = jest.fn().mockResolvedValue({
+    notificationStorage.findById = jest.fn().mockResolvedValue({
       id,
       createdAt: "2024-04-29T11:01:04.903Z",
-      content: {
+      a: {
         d: "saidForUuid",
       },
     });
@@ -206,7 +208,7 @@ describe("Ipex communication service of agent", () => {
     );
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalled();
     expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
-    expect(basicStorage.deleteById).not.toBeCalled();
+    expect(notificationStorage.deleteById).not.toBeCalled();
   });
 
   // This test should go when this has been made event driven.

@@ -29,7 +29,6 @@ const identifierStorage = jest.mocked({
 });
 
 const agentServicesProps = {
-  basicStorage: {} as any,
   signifyClient: signifyClient as any,
   eventService: new EventService(),
   identifierStorage: identifierStorage as any,
@@ -37,7 +36,10 @@ const agentServicesProps = {
   peerConnectionStorage: {} as any,
 };
 
-const delegationService = new DelegationService(agentServicesProps);
+const delegationService = new DelegationService(
+  agentServicesProps,
+  identifierStorage as any
+);
 
 describe("Delegation sig service of agent", () => {
   beforeEach(() => {
