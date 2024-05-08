@@ -43,6 +43,7 @@ import { NotificationRoute } from "../../../core/agent/modules/signify/signifyAp
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
+import { IdentifierService } from "../../../core/agent/services";
 
 const connectionKeriStateChangedHandler = async (
   event: ConnectionKeriStateChangedEvent,
@@ -76,6 +77,18 @@ const keriNotificationsChangeHandler = async (
       })
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
+    processMultiSigIcpNotification(event, dispatch);
+  } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
+    //TODO: Use dispatch here, handle logic for the multisig rotation notification
+  }
+};
+
+const processMultiSigIcpNotification = async (
+  event: KeriNotification,
+  dispatch: ReturnType<typeof useAppDispatch>,
+  retryInterval = 3000
+) => {
+  try {
     const multisigIcpDetails =
       await Agent.agent.identifiers.getMultisigIcpDetails(event);
     dispatch(
@@ -86,8 +99,15 @@ const keriNotificationsChangeHandler = async (
         multisigIcpDetails: multisigIcpDetails,
       })
     );
-  } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
-    //TODO: Use dispatch here, handle logic for the multisig rotation notification
+  } catch (error) {
+    if (
+      (error as Error).message == IdentifierService.UNKNOWN_AIDS_IN_MULTISIG_ICP
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, retryInterval));
+      await processMultiSigIcpNotification(event, dispatch, retryInterval);
+    } else {
+      throw error;
+    }
   }
 };
 
