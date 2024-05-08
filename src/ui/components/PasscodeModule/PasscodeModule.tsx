@@ -3,6 +3,7 @@ import { backspaceSharp, fingerPrintSharp } from "ionicons/icons";
 import { PasscodeModuleProps } from "./PasscodeModule.types";
 import "./PasscodeModule.scss";
 import { PASSCODE_MAPPING } from "../../globals/types";
+import { useBiometricAuth } from "../../hooks/useBiometrics";
 
 const PasscodeModule = ({
   error,
@@ -11,6 +12,7 @@ const PasscodeModule = ({
   handleRemove,
   handleBiometricButtonClick,
 }: PasscodeModuleProps) => {
+  const { biometricInfo } = useBiometricAuth();
   const numbers = PASSCODE_MAPPING.numbers;
   const labels = PASSCODE_MAPPING.labels;
   const rows = [];
@@ -49,20 +51,23 @@ const PasscodeModule = ({
               >
                 {rowIndex === rows.length - 1 && (
                   <IonCol>
-                    <IonButton
-                      data-testid={"passcode-button-#"}
-                      className="passcode-module-number-button"
-                      onClick={() =>
-                        handleBiometricButtonClick &&
-                        handleBiometricButtonClick()
-                      }
-                    >
-                      <IonIcon
-                        slot="icon-only"
-                        className="passcode-module-fingerprint-icon"
-                        icon={fingerPrintSharp}
-                      />
-                    </IonButton>
+                    {handleBiometricButtonClick &&
+                    biometricInfo?.isAvailable ? (
+                        <IonButton
+                          data-testid={"passcode-button-#"}
+                          className="passcode-module-number-button"
+                          onClick={() =>
+                            handleBiometricButtonClick &&
+                          handleBiometricButtonClick()
+                          }
+                        >
+                          <IonIcon
+                            slot="icon-only"
+                            className="passcode-module-fingerprint-icon"
+                            icon={fingerPrintSharp}
+                          />
+                        </IonButton>
+                      ) : null}
                   </IonCol>
                 )}
 

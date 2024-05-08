@@ -11,7 +11,6 @@ import { useActivityTimer } from "../components/AppWrapper/hooks/useActivityTime
 
 const useBiometricAuth = () => {
   const [biometricInfo, setBiometricInfo] = useState<any>();
-  const dispatch = useDispatch();
   const { setPauseTimestamp } = useActivityTimer();
 
   const checkBiometry = async () => {

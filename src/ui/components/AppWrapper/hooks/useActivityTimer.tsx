@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { App } from "@capacitor/app";
+import { getPlatforms } from "@ionic/react";
 import { useAppDispatch } from "../../../../store/hooks";
 import { logout } from "../../../../store/reducers/stateCache";
 
@@ -28,23 +29,26 @@ const useActivityTimer = () => {
   };
 
   useEffect(() => {
-    const pauseListener = App.addListener("pause", () => {
-      const now = new Date().getTime();
-      setPauseTimestamp(now);
-    });
+    const platforms = getPlatforms();
+    if (!platforms.includes("mobileweb")) {
+      const pauseListener = App.addListener("pause", () => {
+        const now = new Date().getTime();
+        setPauseTimestamp(now);
+      });
 
-    const resumeListener = App.addListener("resume", () => {
-      const now = new Date().getTime();
-      if (now - pauseTimestamp > pauseTimeout) {
-        dispatch(logout());
-      }
-    });
+      const resumeListener = App.addListener("resume", () => {
+        const now = new Date().getTime();
+        if (now - pauseTimestamp > pauseTimeout) {
+          dispatch(logout());
+        }
+      });
 
-    return () => {
-      pauseListener.remove();
-      resumeListener.remove();
-      clearTimer();
-    };
+      return () => {
+        pauseListener.remove();
+        resumeListener.remove();
+        clearTimer();
+      };
+    }
   }, [pauseTimestamp]);
 
   useEffect(() => {
