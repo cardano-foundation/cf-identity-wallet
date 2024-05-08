@@ -37,7 +37,7 @@ describe("Connection service of agent", () => {
   });
 
   test("Should get all credentials", async () => {
-    storageService.findAllByQuery.mockResolvedValue([
+    storageService.getAll.mockResolvedValue([
       peerConnectionMetadataRecord,
       peerConnectionMetadataRecord2,
     ]);
