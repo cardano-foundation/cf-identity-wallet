@@ -30,6 +30,11 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
       ?.classList.add("hide");
   };
 
+  const handleCloseButton = () => {
+    handleReset();
+    dispatch(setCurrentOperation(OperationType.IDLE));
+  };
+
   return (
     <ResponsivePageLayout
       pageId={pageId}
@@ -37,7 +42,7 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
       header={
         <PageHeader
           closeButton={true}
-          closeButtonAction={handleReset}
+          closeButtonAction={handleCloseButton}
           closeButtonIcon={arrowBackOutline}
         />
       }

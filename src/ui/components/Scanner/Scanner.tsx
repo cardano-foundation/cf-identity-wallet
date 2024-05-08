@@ -27,7 +27,10 @@ import { Agent } from "../../../core/agent/agent";
 import { ScannerProps } from "./Scanner.types";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { CreateIdentifier } from "../CreateIdentifier";
-import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
+import {
+  getMultiSigGroupCache,
+  setMultiSigGroupCache,
+} from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { PageFooter } from "../PageFooter";
 import { ResponsiveModal } from "../layout/ResponsiveModal";
@@ -38,6 +41,7 @@ const Scanner = forwardRef(
   ({ setIsValueCaptured, handleReset }: ScannerProps, ref) => {
     const componentId = "scanner";
     const dispatch = useAppDispatch();
+    const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
     const currentOperation = useAppSelector(getCurrentOperation);
     const currentToastMsg = useAppSelector(getToastMsg);
     const currentRoute = useAppSelector(getCurrentRoute);
@@ -176,7 +180,7 @@ const Scanner = forwardRef(
             pageId={componentId}
             primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
             primaryButtonAction={handlePrimaryButtonAction}
-            primaryButtonDisabled={false} // @TODO: sdisalvo - Get list of scanned QR codes to check if we can enable this button
+            primaryButtonDisabled={!multiSigGroupCache?.connections.length}
             secondaryButtonText={`${i18n.t(
               "createidentifier.scan.pasteoobi"
             )}`}
