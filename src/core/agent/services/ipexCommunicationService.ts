@@ -132,6 +132,7 @@ class IpexCommunicationService extends AgentService {
       senderName: holderSignifyName,
       recipient: msg.exn.i,
       acdc: new Serder(acdc.sad),
+      apply: msg.exn.d,
     });
     await this.signifyClient
       .ipex()
@@ -153,7 +154,7 @@ class IpexCommunicationService extends AgentService {
     let holderSignifyName;
     try {
       holderSignifyName = (
-        await this.identifierStorage.getIdentifierMetadata(msg.exn.a.i)
+        await this.identifierStorage.getIdentifierMetadata(exnMessage.i)
       ).signifyName;
     } catch (error) {
       const identifierHolder = await this.getIdentifierById(msg.exn.a.i);
@@ -226,6 +227,7 @@ class IpexCommunicationService extends AgentService {
             IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
           );
         }
+        // @TODO - bao-sotatek: This needs to be refined into a proper type once the UI has been decided. Also should potentially skip over missing credentials instead of throwing.
         return { ...getCredentialShortDetails(metadata), acdc: cred };
       })
     );

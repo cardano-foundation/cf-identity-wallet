@@ -284,6 +284,7 @@ describe("Ipex communication service of agent", () => {
           s: "schemaSaid",
         },
         i: "i",
+        d: "d",
       },
     });
     credentialListMock = jest.fn().mockReturnValue({});
@@ -296,6 +297,7 @@ describe("Ipex communication service of agent", () => {
       senderName: "abc123",
       recipient: "i",
       acdc: expect.anything(),
+      apply: "d",
     });
     expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
