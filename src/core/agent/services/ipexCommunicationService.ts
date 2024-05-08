@@ -33,7 +33,6 @@ class IpexCommunicationService extends AgentService {
   static readonly CREDENTIAL_NOT_FOUND_WITH_SCHEMA =
     "Credential not found with this schema";
 
-  static readonly AID_NOT_FOUND = "Aid not found";
   static readonly CREDENTIAL_NOT_FOUND = "Credential not found";
 
   static readonly CREDENTIAL_SERVER =
@@ -114,19 +113,10 @@ class IpexCommunicationService extends AgentService {
     const keriNoti = await this.getNotificationRecordById(notificationId);
     const msgSaid = keriNoti.a.d as string;
     const msg = await this.signifyClient.exchanges().get(msgSaid);
-    let holderSignifyName;
-    try {
-      holderSignifyName = (
-        await this.identifierStorage.getIdentifierMetadata(msg.exn.a.i)
-      ).signifyName;
-    } catch (error) {
-      const identifierHolder = await this.getIdentifierById(msg.exn.a.i);
-      holderSignifyName = identifierHolder?.name;
-    }
 
-    if (!holderSignifyName) {
-      throw new Error(IpexCommunicationService.AID_NOT_FOUND);
-    }
+    const holderSignifyName = (
+      await this.identifierStorage.getIdentifierMetadata(msg.exn.a.i)
+    ).signifyName;
 
     const [offer, sigs, gend] = await this.signifyClient.ipex().offer({
       senderName: holderSignifyName,
@@ -151,18 +141,9 @@ class IpexCommunicationService extends AgentService {
     if (!pickedCred) {
       throw new Error(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
     }
-    let holderSignifyName;
-    try {
-      holderSignifyName = (
-        await this.identifierStorage.getIdentifierMetadata(exnMessage.i)
-      ).signifyName;
-    } catch (error) {
-      const identifierHolder = await this.getIdentifierById(msg.exn.a.i);
-      holderSignifyName = identifierHolder?.name;
-    }
-    if (!holderSignifyName) {
-      throw new Error(IpexCommunicationService.AID_NOT_FOUND);
-    }
+    const holderSignifyName = (
+      await this.identifierStorage.getIdentifierMetadata(exnMessage.i)
+    ).signifyName;
 
     const [offer, sigs, gend] = await this.signifyClient.ipex().grant({
       senderName: holderSignifyName,
@@ -327,16 +308,6 @@ class IpexCommunicationService extends AgentService {
         error,
       };
     }
-  }
-
-  private async getIdentifierById(
-    id: string
-  ): Promise<IdentifierResult | undefined> {
-    const allIdentifiers = await this.signifyClient.identifiers().list();
-    const identifier = allIdentifiers.aids.find(
-      (identifier: IdentifierResult) => identifier.prefix === id
-    );
-    return identifier;
   }
 }
 

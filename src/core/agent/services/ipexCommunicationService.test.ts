@@ -1,6 +1,7 @@
 import { EventService } from "./eventService";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import { CredentialStatus } from "./credentialService.types";
+import { IdentifierStorage } from "../records";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -43,7 +44,7 @@ const credentialStorage = jest.mocked({
 
 let credentialListMock = jest.fn();
 let credentialGetMock = jest.fn();
-let identifierListMock = jest.fn();
+const identifierListMock = jest.fn();
 let getExchangeMock = jest.fn().mockImplementation((id: string) => {
   if (id == "saidForUuid") {
     return {
@@ -329,11 +330,14 @@ describe("Ipex communication service of agent", () => {
     credentialListMock = jest.fn().mockReturnValue([{}]);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
-      .mockRejectedValue(new Error());
-    identifierListMock = jest.fn().mockReturnValue({ aids: [] });
+      .mockRejectedValue(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
     await expect(
       ipexCommunicationService.offerAcdc(id, "credId")
-    ).rejects.toThrowError(IpexCommunicationService.AID_NOT_FOUND);
+    ).rejects.toThrowError(
+      IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+    );
   });
 
   test("can grant Keri Acdc when received the ipex agree", async () => {
@@ -408,11 +412,17 @@ describe("Ipex communication service of agent", () => {
       },
     });
     credentialListMock = jest.fn().mockReturnValue({ acdc: {} });
-    identifierStorage.getIdentifierMetadata = jest.fn().mockReturnValue(null);
-    identifierListMock = jest.fn().mockReturnValue({ aids: [] });
+    identifierStorage.getIdentifierMetadata =
+      identifierStorage.getIdentifierMetadata = jest
+        .fn()
+        .mockRejectedValue(
+          new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+        );
     await expect(
       ipexCommunicationService.grantApplyAcdc(id)
-    ).rejects.toThrowError(IpexCommunicationService.AID_NOT_FOUND);
+    ).rejects.toThrowError(
+      IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+    );
   });
 
   test("can not grant Keri Acdc if acdc is not existed", async () => {
