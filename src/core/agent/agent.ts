@@ -10,7 +10,6 @@ import {
   ConnectionService,
   CredentialService,
   IdentifierService,
-  PeerConnectionService,
 } from "./services";
 import { SignifyNotificationService } from "./services/signifyNotificationService";
 import { AgentServicesProps } from "./agent.types";
@@ -69,7 +68,6 @@ class Agent {
 
   private connectionService!: ConnectionService;
   private credentialService!: CredentialService;
-  private peerConnectionService!: PeerConnectionService;
   private signifyNotificationService!: SignifyNotificationService;
 
   get identifiers() {
@@ -128,13 +126,8 @@ class Agent {
     return this.credentialService;
   }
 
-  get peerConnections() {
-    if (!this.peerConnectionService) {
-      this.peerConnectionService = new PeerConnectionService(
-        this.agentServicesProps
-      );
-    }
-    return this.peerConnectionService;
+  get peerConnectionStorage() {
+    return this.agentServicesProps.peerConnectionStorage;
   }
 
   get basicStorage() {
