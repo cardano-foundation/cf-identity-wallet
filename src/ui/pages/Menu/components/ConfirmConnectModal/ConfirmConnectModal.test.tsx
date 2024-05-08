@@ -4,6 +4,7 @@ import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { setToastMsg } from "../../../../../store/reducers/stateCache";
+import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
 import { ToastMsgType } from "../../../../globals/types";
 import { ConfirmConnectModal } from "./ConfirmConnectModal";
@@ -31,6 +32,9 @@ const initialState = {
       passcodeIsSet: true,
       passwordIsSet: true,
     },
+  },
+  identifiersCache: {
+    identifiers: [...identifierFix],
   },
 };
 

@@ -7,6 +7,7 @@ import { walletConnectionsFix } from "../../../../__fixtures__/walletConnections
 import { ConnectWallet } from "./ConnectWallet";
 import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../../globals/types";
+import { identifierFix } from "../../../../__fixtures__/identifierFix";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -44,6 +45,9 @@ const initialState = {
     walletConnections: [...walletConnectionsFix],
     connectedWallet: walletConnectionsFix[1],
   },
+  identifiersCache: {
+    identifiers: [...identifierFix],
+  },
 };
 
 const storeMocked = {
@@ -65,6 +69,9 @@ describe("Confirm connect modal", () => {
       },
       walletConnectionsCache: {
         walletConnections: [],
+      },
+      identifiersCache: {
+        identifiers: [...identifierFix],
       },
     };
 

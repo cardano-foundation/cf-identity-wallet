@@ -3,8 +3,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
-import { setCurrentOperation } from "../../../../../store/reducers/stateCache";
-import { OperationType } from "../../../../globals/types";
+import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
 import { ConnectWalletActions } from "./ConnectWalletActions";
 
 jest.mock("@ionic/react", () => ({
@@ -31,6 +30,10 @@ const initialState = {
       passwordIsSet: true,
     },
   },
+  walletConnectionsCache: {
+    walletConnections: [],
+    connectedWallet: null,
+  },
 };
 
 const storeMocked = {
@@ -42,10 +45,12 @@ describe("Connect wallet actions modal", () => {
   test("Render connect wallet actions", async () => {
     const closeFn = jest.fn();
     const openInputPidFn = jest.fn();
+    const onQRScanFn = jest.fn();
 
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <ConnectWalletActions
+          onQRScan={onQRScanFn}
           openModal={true}
           closeModal={closeFn}
           onInputPid={openInputPidFn}
@@ -65,13 +70,101 @@ describe("Connect wallet actions modal", () => {
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentOperation(OperationType.SCAN_CONNECTION)
-      );
+      expect(onQRScanFn).toBeCalled();
     });
 
     act(() => {
       fireEvent.click(getByTestId("connect-wallet-modal-input-pid"));
+    });
+
+    await waitFor(() => {
+      expect(openInputPidFn).toBeCalled();
+    });
+  });
+
+  test("Disconnect alert before create new connection", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+      },
+      walletConnectionsCache: {
+        walletConnections: walletConnectionsFix,
+        connectedWallet: walletConnectionsFix[0],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const closeFn = jest.fn();
+    const openInputPidFn = jest.fn();
+    const onQRScanFn = jest.fn();
+
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <ConnectWalletActions
+          onQRScan={onQRScanFn}
+          openModal={true}
+          closeModal={closeFn}
+          onInputPid={openInputPidFn}
+        />
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("connect-wallet-modal-scan-qr-code"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.connectwallet.connectwalletmodal
+            .disconnectbeforecreatealert.message
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(
+          EN_TRANSLATIONS.connectwallet.connectwalletmodal
+            .disconnectbeforecreatealert.confirm
+        )
+      );
+    });
+
+    await waitFor(() => {
+      expect(onQRScanFn).toBeCalled();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("connect-wallet-modal-input-pid"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.connectwallet.connectwalletmodal
+            .disconnectbeforecreatealert.message
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(
+          EN_TRANSLATIONS.connectwallet.connectwalletmodal
+            .disconnectbeforecreatealert.confirm
+        )
+      );
     });
 
     await waitFor(() => {
