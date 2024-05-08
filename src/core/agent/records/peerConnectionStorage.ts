@@ -31,8 +31,7 @@ class PeerConnectionStorage {
   async getAllPeerConnectionMetadata(): Promise<
     PeerConnectionMetadataRecord[]
     > {
-    const records = await this.storageService.findAllByQuery(
-      {},
+    const records = await this.storageService.getAll(
       PeerConnectionMetadataRecord
     );
     return records;

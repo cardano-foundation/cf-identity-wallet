@@ -57,6 +57,7 @@ class Agent {
   private connectionStorage!: ConnectionStorage;
   private connectionNoteStorage!: ConnectionNoteStorage;
   private notificationStorage!: NotificationStorage;
+  private peerConnectionStorage!: PeerConnectionStorage;
 
   private signifyClient!: SignifyClient;
   static ready = false;
@@ -126,8 +127,8 @@ class Agent {
     return this.credentialService;
   }
 
-  get peerConnectionStorage() {
-    return this.agentServicesProps.peerConnectionStorage;
+  get peerConnectionMetadataStorage() {
+    return this.peerConnectionStorage;
   }
 
   get basicStorage() {
@@ -204,14 +205,14 @@ class Agent {
         credentialStorage: new CredentialStorage(
           this.getStorageService<CredentialMetadataRecord>(this.storageSession)
         ),
-        peerConnectionStorage: new PeerConnectionStorage(
-          this.getStorageService<PeerConnectionMetadataRecord>(
-            this.storageSession
-          )
-        ),
       };
 
-      Agent.ready = true;
+      (this.peerConnectionStorage = new PeerConnectionStorage(
+        this.getStorageService<PeerConnectionMetadataRecord>(
+          this.storageSession
+        )
+      )),
+      (Agent.ready = true);
     }
   }
 

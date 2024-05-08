@@ -100,7 +100,6 @@ interface AgentServicesProps {
   eventService: EventService;
   identifierStorage: IdentifierStorage;
   credentialStorage: CredentialStorage;
-  peerConnectionStorage: PeerConnectionStorage;
 }
 
 interface CreateIdentifierResult {
