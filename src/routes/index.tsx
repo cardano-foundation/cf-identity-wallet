@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
-import { Redirect, Route, useLocation } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode";
-import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
 import { VerifySeedPhrase } from "../ui/pages/VerifySeedPhrase";
 import { CreatePassword } from "../ui/pages/CreatePassword";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
-  getAuthentication,
   getRoutes,
   getStateCache,
   setCurrentRoute,
@@ -21,38 +19,12 @@ import { RoutePath } from "./paths";
 import { IdentifierDetails } from "../ui/pages/IdentifierDetails";
 import { CredentialDetails } from "../ui/pages/CredentialDetails";
 import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
-import { AuthenticatedRouteProps } from "./routes.types";
-
-const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = (props) => {
-  const authentication = useAppSelector(getAuthentication);
-  const location = useLocation();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    authentication.loggedIn
-  );
-
-  useEffect(() => {
-    setIsAuthenticated(authentication.loggedIn);
-  }, [authentication.loggedIn]);
-
-  return isAuthenticated ? (
-    <Route
-      {...props}
-      component={props.component}
-    />
-  ) : (
-    <Redirect
-      from={location.pathname}
-      to={{
-        pathname: props.nextPathname,
-      }}
-    />
-  );
-};
 
 const Routes = () => {
   const stateCache = useAppSelector(getStateCache);
   const dispatch = useAppDispatch();
   const routes = useAppSelector(getRoutes);
+
   const { nextPath } = getNextRoute(RoutePath.ROOT, {
     store: { stateCache },
   });
@@ -65,12 +37,6 @@ const Routes = () => {
     <IonReactRouter>
       <IonRouterOutlet animated={false}>
         <Route
-          path={RoutePath.PASSCODE_LOGIN}
-          component={PasscodeLogin}
-          exact
-        />
-
-        <Route
           path={RoutePath.SET_PASSCODE}
           component={SetPasscode}
           exact
@@ -82,39 +48,39 @@ const Routes = () => {
           exact
         />
 
-        {/* Private Routes */}
-        <AuthenticatedRoute
+        <Route
           path={RoutePath.GENERATE_SEED_PHRASE}
           component={GenerateSeedPhrase}
-          nextPathname={nextPath.pathname}
+          exact
         />
-        <AuthenticatedRoute
+
+        <Route
           path={RoutePath.VERIFY_SEED_PHRASE}
-          exact
           component={VerifySeedPhrase}
-          nextPathname={nextPath.pathname}
+          exact
         />
-        <AuthenticatedRoute
+
+        <Route
           path={RoutePath.TABS_MENU}
-          exact
           component={TabsMenu}
-          nextPathname={nextPath.pathname}
+          exact
         />
-        <AuthenticatedRoute
+
+        <Route
           path={RoutePath.CREATE_PASSWORD}
-          exact
           component={CreatePassword}
-          nextPathname={nextPath.pathname}
-        />
-        <AuthenticatedRoute
-          path={RoutePath.CONNECTION_DETAILS}
           exact
-          component={ConnectionDetails}
-          nextPathname={nextPath.pathname}
         />
+
+        <Route
+          path={RoutePath.CONNECTION_DETAILS}
+          component={ConnectionDetails}
+          exact
+        />
+
         {tabsRoutes.map((tab, index: number) => {
           return (
-            <AuthenticatedRoute
+            <Route
               key={index}
               path={tab.path}
               exact
@@ -124,21 +90,18 @@ const Routes = () => {
                   path={tab.path}
                 />
               )}
-              nextPathname={nextPath.pathname}
             />
           );
         })}
-        <AuthenticatedRoute
+        <Route
           path="/tabs/identifiers/:id"
           component={IdentifierDetails}
           exact
-          nextPathname={nextPath.pathname}
         />
-        <AuthenticatedRoute
+        <Route
           path="/tabs/creds/:id"
           component={CredentialDetails}
           exact
-          nextPathname={nextPath.pathname}
         />
         <Redirect
           exact

@@ -1,7 +1,8 @@
 let { merge } = require("webpack-merge");
+const webpack = require("webpack");
 
 module.exports = merge(require("./webpack.common.cjs"), {
-   mode: 'development',
+   mode: "development",
    module: {
       rules: [
          {
@@ -38,6 +39,8 @@ module.exports = merge(require("./webpack.common.cjs"), {
       },
    },
    plugins: [
-
+      new webpack.DefinePlugin({
+         "process.env.NODE_ENV": JSON.stringify("development"),
+      }),
    ]
 });

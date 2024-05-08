@@ -48,7 +48,7 @@ const IdentifierStage1 = ({
   useEffect(() => {
     async function fetchOobi() {
       try {
-        const oobiValue = await Agent.agent.connections.getKeriOobi(
+        const oobiValue = await Agent.agent.connections.getOobi(
           signifyName,
           userName,
           groupId

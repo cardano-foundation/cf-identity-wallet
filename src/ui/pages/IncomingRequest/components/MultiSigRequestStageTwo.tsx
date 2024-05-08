@@ -9,7 +9,7 @@ import { IdentifierThemeSelector } from "../../../components/CreateIdentifier/co
 import { CustomInput } from "../../../components/CustomInput";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { Agent } from "../../../../core/agent/agent";
-import { IdentifierShortDetails } from "../../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
   getIdentifiersCache,
@@ -30,7 +30,7 @@ const MultiSigRequestStageTwo = ({
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const [displayNameValue, setDisplayNameValue] = useState("");
-  const [selectedTheme, setSelectedTheme] = useState(4);
+  const [selectedTheme, setSelectedTheme] = useState(0);
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
 
@@ -39,7 +39,7 @@ const MultiSigRequestStageTwo = ({
     if (!(requestData.event && requestData.multisigIcpDetails)) {
       // Do some error thing here... maybe it's just a TODO
     } else {
-      const joinMultisigResult = await Agent.agent.identifiers.joinMultisig(
+      const joinMultisigResult = await Agent.agent.multiSigs.joinMultisig(
         requestData.event.id,
         requestData.event.a.d as string,
         {

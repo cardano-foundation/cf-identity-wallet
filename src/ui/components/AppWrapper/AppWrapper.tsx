@@ -32,21 +32,24 @@ import {
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import {
-  KeriNotification,
-  ConnectionKeriStateChangedEvent,
+  KeriaNotification,
+  ConnectionStateChangedEvent,
   ConnectionStatus,
-  AcdcKeriStateChangedEvent,
+  AcdcStateChangedEvent,
+  NotificationRoute,
 } from "../../../core/agent/agent.types";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
-import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
-import { IdentifierService } from "../../../core/agent/services";
+import { useActivityTimer } from "./hooks/useActivityTimer";
+import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
+import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
+import { MultiSigService } from "../../../core/agent/services/multiSigService";
 
-const connectionKeriStateChangedHandler = async (
-  event: ConnectionKeriStateChangedEvent,
+const connectionStateChangedHandler = async (
+  event: ConnectionStateChangedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === ConnectionStatus.PENDING) {
@@ -55,7 +58,7 @@ const connectionKeriStateChangedHandler = async (
   } else {
     const connectionRecordId = event.payload.connectionId!;
     const connectionDetails =
-      await Agent.agent.connections.getConnectionKeriShortDetailById(
+      await Agent.agent.connections.getConnectionShortDetailById(
         connectionRecordId
       );
     dispatch(updateOrAddConnectionCache(connectionDetails));
@@ -63,8 +66,8 @@ const connectionKeriStateChangedHandler = async (
   }
 };
 
-const keriNotificationsChangeHandler = async (
-  event: KeriNotification,
+const keriaNotificationsChangeHandler = async (
+  event: KeriaNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event?.a?.r === NotificationRoute.Credential) {
@@ -84,13 +87,13 @@ const keriNotificationsChangeHandler = async (
 };
 
 const processMultiSigIcpNotification = async (
-  event: KeriNotification,
+  event: KeriaNotification,
   dispatch: ReturnType<typeof useAppDispatch>,
   retryInterval = 3000
 ) => {
   try {
     const multisigIcpDetails =
-      await Agent.agent.identifiers.getMultisigIcpDetails(event);
+      await Agent.agent.multiSigs.getMultisigIcpDetails(event);
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
@@ -101,7 +104,7 @@ const processMultiSigIcpNotification = async (
     );
   } catch (error) {
     if (
-      (error as Error).message == IdentifierService.UNKNOWN_AIDS_IN_MULTISIG_ICP
+      (error as Error).message == MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP
     ) {
       await new Promise((resolve) => setTimeout(resolve, retryInterval));
       await processMultiSigIcpNotification(event, dispatch, retryInterval);
@@ -111,8 +114,8 @@ const processMultiSigIcpNotification = async (
   }
 };
 
-const keriAcdcChangeHandler = async (
-  event: AcdcKeriStateChangedEvent,
+const acdcChangeHandler = async (
+  event: AcdcStateChangedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === CredentialStatus.PENDING) {
@@ -128,8 +131,8 @@ const keriAcdcChangeHandler = async (
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
-  const [initialised, setInitialised] = useState(false);
   const [agentInitErr, setAgentInitErr] = useState(false);
+  useActivityTimer();
 
   useEffect(() => {
     initApp();
@@ -144,46 +147,27 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
   };
 
-  const initApp = async () => {
-    // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
-    // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
-    try {
-      const isInitialized = await PreferencesStorage.get(
-        PreferencesKeys.APP_ALREADY_INIT
-      );
-      dispatch(setInitialized(isInitialized?.initialized as boolean));
-    } catch (e) {
-      await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
-      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
-      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY);
-      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
-      await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
-    }
-
-    await new ConfigurationService().start();
-
-    try {
-      await Agent.agent.start();
-    } catch (e) {
-      // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
-      setAgentInitErr(true);
-      // eslint-disable-next-line no-console
-      console.error(e);
-      return;
-    }
-
-    dispatch(setPauseQueueIncomingRequest(true));
+  const loadDatabase = async () => {
     const connectionsDetails = await Agent.agent.connections.getConnections();
-    let userName: PreferencesStorageItem = { userName: "" };
+
     const credentials = await Agent.agent.credentials.getCredentials();
+    const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
+
+    dispatch(setIdentifiersCache(storedIdentifiers));
+    dispatch(setCredsCache(credentials));
+    dispatch(setConnectionsCache(connectionsDetails));
+    // TODO: Need update after core function completed.
+    dispatch(setWalletConnectionsCache(walletConnectionsFix));
+  };
+
+  const loadPreferences = async () => {
+    let userName: PreferencesStorageItem = { userName: "" };
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
-    const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
 
-    // @TODO - handle error
     try {
       const identifiersFavourites = await PreferencesStorage.get(
         PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
@@ -252,27 +236,58 @@ const AppWrapper = (props: { children: ReactNode }) => {
         passwordIsSet,
       })
     );
+  };
 
-    dispatch(setIdentifiersCache(storedIdentifiers));
-    dispatch(setCredsCache(credentials));
-    dispatch(setConnectionsCache(connectionsDetails));
+  const initApp = async () => {
+    // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
+    // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
+    let isInitialized;
+    try {
+      isInitialized = await PreferencesStorage.get(
+        PreferencesKeys.APP_ALREADY_INIT
+      );
+    } catch (e) {
+      await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
+      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
+      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY);
+      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
+      await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
+    }
 
-    Agent.agent.connections.onConnectionKeriStateChanged((event) => {
-      return connectionKeriStateChangedHandler(event, dispatch);
-    });
-    Agent.agent.signifyNotifications.onNotificationKeriStateChanged((event) => {
-      return keriNotificationsChangeHandler(event, dispatch);
-    });
-    Agent.agent.credentials.onAcdcKeriStateChanged((event) => {
-      return keriAcdcChangeHandler(event, dispatch);
-    });
+    await loadPreferences();
 
-    setInitialised(true);
+    await new ConfigurationService().start();
+
+    try {
+      await Agent.agent.start();
+    } catch (e) {
+      // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
+      setAgentInitErr(true);
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return;
+    }
+    dispatch(setPauseQueueIncomingRequest(true));
+
+    await loadDatabase();
+    dispatch(setInitialized(isInitialized?.initialized as boolean));
+
+    Agent.agent.connections.onConnectionStateChanged((event) => {
+      return connectionStateChangedHandler(event, dispatch);
+    });
+    Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
+      return keriaNotificationsChangeHandler(event, dispatch);
+    });
+    Agent.agent.credentials.onAcdcStateChanged((event) => {
+      return acdcChangeHandler(event, dispatch);
+    });
 
     const oldMessages = (
       await Promise.all([
-        Agent.agent.credentials.getKeriCredentialNotifications(),
-        Agent.agent.identifiers.getUnhandledMultisigIdentifiers({
+        Agent.agent.credentials.getUnhandledIpexGrantNotifications({
+          isDismissed: false,
+        }),
+        Agent.agent.multiSigs.getUnhandledMultisigIdentifiers({
           isDismissed: false,
         }),
       ])
@@ -282,7 +297,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
       });
     oldMessages.forEach(async (message) => {
-      await keriNotificationsChangeHandler(message, dispatch);
+      await keriaNotificationsChangeHandler(message, dispatch);
     });
     // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
     // await Promise.all([
@@ -311,7 +326,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
   }
 
-  return initialised ? <>{props.children}</> : <></>;
+  return <>{props.children}</>;
 };
 
-export { AppWrapper };
+export {
+  AppWrapper,
+  connectionStateChangedHandler,
+  acdcChangeHandler,
+  keriaNotificationsChangeHandler,
+};

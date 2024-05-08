@@ -1,4 +1,4 @@
-import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { ConnectionShortDetails } from "../../pages/Connections/Connections.types";
 

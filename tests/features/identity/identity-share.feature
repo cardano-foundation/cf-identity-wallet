@@ -2,7 +2,7 @@ Feature: Identity Share
 
   Background:
     Given user is onboarded with skipped password creation
-    And identifier is created and user can see Card Details screen for DIDKEY
+    And identifier is created and user can see Card Details screen for KERI
 
   Scenario: Identity Share - Copy identifier
     Given user tap Share button on Card Details screen

@@ -28,7 +28,7 @@ describe("CredentialCardTemplate", () => {
     expect(handleShowCardDetails).toBeCalledTimes(1);
   });
 
-  it.skip("Click pending card", async () => {
+  it("Click pending card", async () => {
     const handleShowCardDetails = jest.fn();
     const { getByTestId } = render(
       <Provider store={store}>

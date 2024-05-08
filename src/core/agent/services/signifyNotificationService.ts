@@ -1,14 +1,29 @@
 import { AgentService } from "./agentService";
-import { KeriNotification, KeriaNotificationMarker } from "../agent.types";
+import {
+  AgentServicesProps,
+  KeriaNotification,
+  KeriaNotificationMarker,
+  NotificationRoute,
+} from "../agent.types";
 import { Notification } from "./credentialService.types";
-import { NotificationRoute } from "../modules/signify/signifyApi.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
-import { RecordType } from "../../storage/storage.types";
+import { NotificationStorage } from "../records";
+
 class SignifyNotificationService extends AgentService {
-  static readonly KERI_NOTIFICATION_NOT_FOUND =
-    "Keri notification record not found";
-  async onNotificationKeriStateChanged(
-    callback: (event: KeriNotification) => void
+  static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
+
+  protected readonly notificationStorage!: NotificationStorage;
+
+  constructor(
+    agentServiceProps: AgentServicesProps,
+    notificationStorage: NotificationStorage
+  ) {
+    super(agentServiceProps);
+    this.notificationStorage = notificationStorage;
+  }
+
+  async onNotificationStateChanged(
+    callback: (event: KeriaNotification) => void
   ) {
     let notificationQuery = {
       nextIndex: 0,
@@ -23,7 +38,7 @@ class SignifyNotificationService extends AgentService {
         (error as Error).message ==
         `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER}`
       ) {
-        /**Set the preference key */
+        // Set the preference key
         await PreferencesStorage.set(
           PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER,
           {
@@ -40,16 +55,15 @@ class SignifyNotificationService extends AgentService {
       const startFetchingIndex =
         notificationQuery.nextIndex > 0 ? notificationQuery.nextIndex - 1 : 0;
 
-      const notifications = await this.signifyApi.getNotifications(
-        startFetchingIndex,
-        startFetchingIndex + 24
-      );
+      const notifications = await this.signifyClient
+        .notifications()
+        .list(startFetchingIndex, startFetchingIndex + 24);
       if (
         notificationQuery.nextIndex > 0 &&
         (notifications.notes.length == 0 ||
           notifications.notes[0].i !== notificationQuery.lastNotificationId)
       ) {
-        /**This is to verify no notifications were deleted for some reason (which affects the batch range) */
+        // This is to verify no notifications were deleted for some reason (which affects the batch range)
         notificationQuery = {
           nextIndex: 0,
           lastNotificationId: "",
@@ -61,7 +75,7 @@ class SignifyNotificationService extends AgentService {
         continue;
       }
       if (notificationQuery.nextIndex > 0) {
-        /**Since the first item is the (next index - 1), we can ignore it */
+        // Since the first item is the (next index - 1), we can ignore it
         notifications.notes.shift();
       }
       for (const notif of notifications.notes) {
@@ -89,9 +103,13 @@ class SignifyNotificationService extends AgentService {
     }
   }
 
+  async deleteNotificationRecordById(id: string): Promise<void> {
+    await this.notificationStorage.deleteById(id);
+  }
+
   async processNotification(
     notif: Notification,
-    callback: (event: KeriNotification) => void
+    callback: (event: KeriaNotification) => void
   ) {
     // We only process with the credential and the multisig at the moment
     if (
@@ -100,52 +118,51 @@ class SignifyNotificationService extends AgentService {
       ) &&
       !notif.r
     ) {
-      const keriNoti = await this.createKeriNotificationRecord(notif);
-      callback(keriNoti);
-      await this.signifyApi.markNotification(notif.i);
+      const keriaNotif = await this.createNotificationRecord(notif);
+      callback(keriaNotif);
+      await this.markNotification(notif.i);
     } else if (!notif.r) {
-      this.signifyApi.markNotification(notif.i);
+      this.markNotification(notif.i);
     }
   }
 
-  private async createKeriNotificationRecord(
+  private async createNotificationRecord(
     event: Notification
-  ): Promise<KeriNotification> {
-    const result = await this.basicStorage.save({
+  ): Promise<KeriaNotification> {
+    const result = await this.notificationStorage.save({
       id: event.i,
-      content: event.a,
-      type: RecordType.NOTIFICATION_KERI,
-      tags: {
-        isDismissed: false,
-        type: RecordType.NOTIFICATION_KERI,
-        route: event.a.r,
-      },
+      a: event.a,
+      isDismissed: false,
+      route: event.a.r,
     });
     return {
       id: result.id,
       createdAt: result.createdAt,
-      a: result.content,
+      a: result.a,
     };
   }
 
   async dismissNotification(notificationId: string) {
-    const notificationRecord = await this.basicStorage.findById(notificationId);
+    const notificationRecord = await this.notificationStorage.findById(
+      notificationId
+    );
     if (!notificationRecord) {
-      throw new Error(SignifyNotificationService.KERI_NOTIFICATION_NOT_FOUND);
+      throw new Error(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
     }
     notificationRecord.setTag("isDismissed", true);
-    await this.basicStorage.update(notificationRecord);
+    await this.notificationStorage.update(notificationRecord);
   }
 
-  /**This allow us to get all dismissed notifications */
+  // This allow us to get all dismissed notifications
   async getDismissedNotifications() {
-    const notifications = await this.basicStorage.findAllByQuery(
-      RecordType.NOTIFICATION_KERI,
-      {
-        isDismissed: true,
-      }
-    );
+    const notifications = await this.notificationStorage.findAllByQuery({
+      isDismissed: true,
+    });
     return notifications;
+  }
+
+  private markNotification(notiSaid: string) {
+    return this.signifyClient.notifications().mark(notiSaid);
   }
 }
 

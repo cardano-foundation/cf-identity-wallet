@@ -2,7 +2,7 @@ Feature: Identity Favourite
 
   Background:
     Given user is onboarded with skipped password creation
-    And identifier is created and user can see Card Details screen for DIDKEY
+    And identifier is created and user can see Card Details screen for KERI
     Then user can see toast message about created identity on Identity screen
 
   Scenario: Identity Favourite - Chose favourite identity

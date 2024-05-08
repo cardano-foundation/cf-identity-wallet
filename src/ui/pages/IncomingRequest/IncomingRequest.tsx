@@ -58,13 +58,13 @@ const IncomingRequest = () => {
     if (
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
-      await Agent.agent.credentials.deleteKeriNotificationRecordById(
+      await Agent.agent.signifyNotifications.deleteNotificationRecordById(
         incomingRequest.id
       );
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      await Agent.agent.credentials.deleteKeriNotificationRecordById(
+      await Agent.agent.signifyNotifications.deleteNotificationRecordById(
         incomingRequest.id
       );
     }
@@ -76,13 +76,7 @@ const IncomingRequest = () => {
     if (
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
-      Agent.agent.credentials.acceptKeriAcdc(incomingRequest.id);
-    } else if (
-      incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
-    ) {
-      Agent.agent.credentials.deleteKeriNotificationRecordById(
-        incomingRequest.id
-      );
+      Agent.agent.ipexCommunications.acceptAcdc(incomingRequest.id);
     }
     setTimeout(() => {
       handleReset();

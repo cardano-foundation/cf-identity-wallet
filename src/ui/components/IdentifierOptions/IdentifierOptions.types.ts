@@ -1,11 +1,11 @@
-import { IdentifierFullDetails } from "../../../core/agent/services/identifierService.types";
+import { IdentifierDetails } from "../../../core/agent/services/identifier.types";
 
 interface IdentifierOptionsProps {
   optionsIsOpen: boolean;
   setOptionsIsOpen: (value: boolean) => void;
-  cardData: IdentifierFullDetails;
-  setCardData: (value: IdentifierFullDetails) => void;
-  handleDeleteIdentifier: () => Promise<void>;
+  cardData: IdentifierDetails;
+  setCardData: (value: IdentifierDetails) => void;
+  handleDeleteIdentifier: () => void;
 }
 
 export type { IdentifierOptionsProps };

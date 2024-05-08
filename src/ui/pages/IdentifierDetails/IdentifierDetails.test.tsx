@@ -31,10 +31,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getIdentifier: jest.fn().mockResolvedValue(identifierFix[0]),
       },
       connections: {
-        getKeriOobi: jest.fn(),
-      },
-      genericRecords: {
-        findById: jest.fn(),
+        getOobi: jest.fn(),
       },
     },
   },
@@ -235,7 +232,7 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getAllByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)[1]
+        getAllByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)[0]
       ).toBeVisible();
     });
 

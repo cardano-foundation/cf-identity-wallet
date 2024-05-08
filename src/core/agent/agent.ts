@@ -1,31 +1,69 @@
 import { Capacitor } from "@capacitor/core";
 import {
+  randomPasscode,
+  SignifyClient,
+  ready as signifyReady,
+  Tier,
+} from "signify-ts";
+import { DataType } from "@aparajita/capacitor-secure-storage";
+import {
   ConnectionService,
   CredentialService,
   IdentifierService,
 } from "./services";
 import { SignifyNotificationService } from "./services/signifyNotificationService";
-import { StorageApi } from "../storage/storage.types";
-import { SqliteStorage } from "../storage/sqliteStorage";
+import { AgentServicesProps } from "./agent.types";
+import { EventService } from "./services/eventService";
+import {
+  BasicRecord,
+  BasicStorage,
+  ConnectionNoteRecord,
+  ConnectionNoteStorage,
+  ConnectionRecord,
+  ConnectionStorage,
+  CredentialMetadataRecord,
+  CredentialStorage,
+  IdentifierMetadataRecord,
+  IdentifierStorage,
+  NotificationRecord,
+  NotificationStorage,
+} from "./records";
+import { KeyStoreKeys, SecureStorage } from "../storage";
+import { MultiSigService } from "./services/multiSigService";
+import { IpexCommunicationService } from "./services/ipexCommunicationService";
+import { SqliteSession } from "../storage/sqliteStorage/sqliteSession";
+import { IonicSession } from "../storage/ionicStorage/ionicSession";
 import { IonicStorage } from "../storage/ionicStorage";
-import { SignifyApi } from "./modules/signify/signifyApi";
+import { SqliteStorage } from "../storage/sqliteStorage";
+import { BaseRecord } from "../storage/storage.types";
 
-const config = {
-  label: "idw-agent",
-  walletConfig: {
-    id: "idw",
-    key: "idw", // Right now, this key isn't used as we don't have encryption.
-  },
-  autoUpdateStorageOnStartup: true,
-};
+const walletId = "idw";
 class Agent {
+  static readonly LOCAL_KERIA_ENDPOINT =
+    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
+    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
+
   private static instance: Agent;
-  private basicRecordStorage!: StorageApi;
-  private signifyApi!: SignifyApi;
+  private agentServicesProps!: AgentServicesProps;
+
+  private storageSession!: SqliteSession | IonicSession;
+
+  private basicStorageService!: BasicStorage;
+  private identifierStorage!: IdentifierStorage;
+  private credentialStorage!: CredentialStorage;
+  private connectionStorage!: ConnectionStorage;
+  private connectionNoteStorage!: ConnectionNoteStorage;
+  private notificationStorage!: NotificationStorage;
+
+  private signifyClient!: SignifyClient;
   static ready = false;
 
   // @TODO - foconnor: Registering these should be more generic, but OK for now
   private identifierService!: IdentifierService;
+  private multiSigService!: MultiSigService;
+  private ipexCommunicationService!: IpexCommunicationService;
+
   private connectionService!: ConnectionService;
   private credentialService!: CredentialService;
   private signifyNotificationService!: SignifyNotificationService;
@@ -33,18 +71,43 @@ class Agent {
   get identifiers() {
     if (!this.identifierService) {
       this.identifierService = new IdentifierService(
-        this.basicRecordStorage,
-        this.signifyApi
+        this.agentServicesProps,
+        this.identifierStorage
       );
     }
     return this.identifierService;
   }
 
+  get multiSigs() {
+    if (!this.multiSigService) {
+      this.multiSigService = new MultiSigService(
+        this.agentServicesProps,
+        this.identifierStorage,
+        this.notificationStorage
+      );
+    }
+    return this.multiSigService;
+  }
+
+  get ipexCommunications() {
+    if (!this.ipexCommunicationService) {
+      this.ipexCommunicationService = new IpexCommunicationService(
+        this.agentServicesProps,
+        this.identifierStorage,
+        this.credentialStorage,
+        this.notificationStorage
+      );
+    }
+    return this.ipexCommunicationService;
+  }
+
   get connections() {
     if (!this.connectionService) {
       this.connectionService = new ConnectionService(
-        this.basicRecordStorage,
-        this.signifyApi
+        this.agentServicesProps,
+        this.connectionStorage,
+        this.connectionNoteStorage,
+        this.credentialStorage
       );
     }
     return this.connectionService;
@@ -53,32 +116,32 @@ class Agent {
   get credentials() {
     if (!this.credentialService) {
       this.credentialService = new CredentialService(
-        this.basicRecordStorage,
-        this.signifyApi
+        this.agentServicesProps,
+        this.credentialStorage,
+        this.notificationStorage
       );
     }
     return this.credentialService;
   }
 
-  get basicStorages() {
-    return this.basicRecordStorage;
+  get basicStorage() {
+    return this.basicStorageService;
   }
 
   get signifyNotifications() {
     if (!this.signifyNotificationService) {
       this.signifyNotificationService = new SignifyNotificationService(
-        this.basicRecordStorage,
-        this.signifyApi
+        this.agentServicesProps,
+        this.notificationStorage
       );
     }
     return this.signifyNotificationService;
   }
 
   private constructor() {
-    this.basicRecordStorage = Capacitor.isNativePlatform()
-      ? new SqliteStorage()
-      : new IonicStorage();
-    this.signifyApi = new SignifyApi();
+    this.storageSession = Capacitor.isNativePlatform()
+      ? new SqliteSession()
+      : new IonicSession();
   }
 
   static get agent() {
@@ -90,10 +153,77 @@ class Agent {
 
   async start(): Promise<void> {
     if (!Agent.ready) {
-      await this.basicRecordStorage.open(config.walletConfig?.id || "idw");
-      await this.signifyApi.start();
+      await this.storageSession.open(walletId);
+      this.basicStorageService = new BasicStorage(
+        this.getStorageService<BasicRecord>(this.storageSession)
+      );
+      this.identifierStorage = new IdentifierStorage(
+        this.getStorageService<IdentifierMetadataRecord>(this.storageSession)
+      );
+      this.credentialStorage = new CredentialStorage(
+        this.getStorageService<CredentialMetadataRecord>(this.storageSession)
+      );
+      this.connectionStorage = new ConnectionStorage(
+        this.getStorageService<ConnectionRecord>(this.storageSession)
+      );
+      this.connectionNoteStorage = new ConnectionNoteStorage(
+        this.getStorageService<ConnectionNoteRecord>(this.storageSession)
+      );
+      this.notificationStorage = new NotificationStorage(
+        this.getStorageService<NotificationRecord>(this.storageSession)
+      );
+
+      await signifyReady();
+      const bran = await this.getBran();
+      // @TODO - foconnor: Review of Tier level.
+      this.signifyClient = new SignifyClient(
+        Agent.LOCAL_KERIA_ENDPOINT,
+        bran,
+        Tier.low,
+        Agent.LOCAL_KERIA_BOOT_ENDPOINT
+      );
+      try {
+        await this.signifyClient.connect();
+      } catch (err) {
+        await this.signifyClient.boot();
+        await this.signifyClient.connect();
+      }
+
+      this.agentServicesProps = {
+        signifyClient: this.signifyClient,
+        eventService: new EventService(),
+      };
+
       Agent.ready = true;
     }
+  }
+
+  private async getBran(): Promise<string> {
+    let bran: DataType | null;
+    try {
+      bran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message ===
+          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
+      ) {
+        bran = randomPasscode();
+        await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
+      } else {
+        throw error;
+      }
+    }
+    return bran as string;
+  }
+
+  private getStorageService<T extends BaseRecord>(
+    instance: IonicSession | SqliteSession
+  ) {
+    if (instance instanceof IonicSession) {
+      return new IonicStorage<T>(instance.session!);
+    }
+    return new SqliteStorage<T>(instance.session!);
   }
 }
 

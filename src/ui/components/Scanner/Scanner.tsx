@@ -112,7 +112,7 @@ const Scanner = forwardRef(
       // and it can update to an error if the QR is invalid with a re-scan btn
       dispatch(setCurrentOperation(OperationType.IDLE));
       // @TODO - foconnor: when above loading screen in place, handle invalid QR code
-      const invitation = await Agent.agent.connections.receiveInvitationFromUrl(
+      const invitation = await Agent.agent.connections.connectByOobiUrl(
         content
       );
       if (invitation.type === KeriConnectionType.NORMAL) {
