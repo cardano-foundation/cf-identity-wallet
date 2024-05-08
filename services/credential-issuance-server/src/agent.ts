@@ -95,10 +95,11 @@ class Agent {
         default:
           break;
       }
-      await this.signifyApi.deleteNotification(notif.i);
     }
+    await this.signifyApi.deleteNotification(notif.i);
   }
   async initKeri(issuerName?: string) {
+    this.onNotificationKeriStateChanged();
     const AIDIssuerName = issuerName ? issuerName : Agent.ISSUER_AID_NAME;
     const existedIndentifier = await this.signifyApi
       .getIdentifierByName(AIDIssuerName)
@@ -106,7 +107,6 @@ class Agent {
     if (existedIndentifier) return existedIndentifier;
     const identifier = await this.signifyApi.createIdentifier(AIDIssuerName);
     this.keriRegistryRegk = await this.signifyApi.createRegistry(AIDIssuerName);
-    this.onNotificationKeriStateChanged();
     return identifier;
   }
 }

@@ -110,32 +110,20 @@ class IpexCommunicationService extends AgentService {
     });
   }
 
-  async offerAcdc(notificationId: string) {
+  async offerAcdc(notificationId: string, acdc: any) {
     const keriNoti = await this.getNotificationRecordById(notificationId);
     const msgSaid = keriNoti.a.d as string;
     const msg = await this.signifyClient.exchanges().get(msgSaid);
-    const schemaSaid = msg.exn.a.s;
-    const creds = await this.signifyClient.credentials().list({
-      filter: {
-        "-s": { $eq: schemaSaid },
-      },
-    });
-    if (!creds || creds.length === 0) {
-      throw new Error(
-        IpexCommunicationService.CREDENTIAL_NOT_FOUND_WITH_SCHEMA
-      );
-    }
-    const pickedCred = creds[0];
     let holderSignifyName;
-    const signifyName = (
-      await this.identifierStorage.getIdentifierMetadata(msg.exn.a.i)
-    ).signifyName;
-    if (signifyName) {
-      holderSignifyName = signifyName;
-    } else {
+    try {
+      holderSignifyName = (
+        await this.identifierStorage.getIdentifierMetadata(msg.exn.a.i)
+      ).signifyName;
+    } catch (error) {
       const identifierHolder = await this.getIdentifierById(msg.exn.a.i);
       holderSignifyName = identifierHolder?.name;
     }
+
     if (!holderSignifyName) {
       throw new Error(IpexCommunicationService.AID_NOT_FOUND);
     }
@@ -143,7 +131,7 @@ class IpexCommunicationService extends AgentService {
     const [offer, sigs, gend] = await this.signifyClient.ipex().offer({
       senderName: holderSignifyName,
       recipient: msg.exn.i,
-      acdc: new Serder(pickedCred),
+      acdc: new Serder(acdc.sad),
     });
     await this.signifyClient
       .ipex()
@@ -156,22 +144,18 @@ class IpexCommunicationService extends AgentService {
     const msgSaid = keriNoti.a.d as string;
     const msg = await this.signifyClient.exchanges().get(msgSaid);
     const exnMessage = JSON.parse(msg.exn.a.m);
-    const creds = await this.signifyClient.credentials().list({
-      filter: {
-        "-d": { $eq: exnMessage.acdc.d },
-      },
-    });
-    if (!creds || creds.length === 0) {
+    const pickedCred = await this.signifyClient
+      .credentials()
+      .get(exnMessage.acdc.d);
+    if (!pickedCred) {
       throw new Error(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
     }
-    const pickedCred = creds[0];
     let holderSignifyName;
-    const signifyName = (
-      await this.identifierStorage.getIdentifierMetadata(msg.exn.a.i)
-    ).signifyName;
-    if (signifyName) {
-      holderSignifyName = signifyName;
-    } else {
+    try {
+      holderSignifyName = (
+        await this.identifierStorage.getIdentifierMetadata(msg.exn.a.i)
+      ).signifyName;
+    } catch (error) {
       const identifierHolder = await this.getIdentifierById(msg.exn.a.i);
       holderSignifyName = identifierHolder?.name;
     }
@@ -212,6 +196,39 @@ class IpexCommunicationService extends AgentService {
       retryTimes++;
     }
     return acdc;
+  }
+
+  async getMatchingCredsForApply(notificationId: string) {
+    const keriNoti = await this.getNotificationRecordById(notificationId);
+    const msgSaid = keriNoti.a.d as string;
+    const msg = await this.signifyClient.exchanges().get(msgSaid);
+    const schemaSaid = msg.exn.a.s;
+    const attributes = msg.exn.a.a;
+    const creds = await this.signifyClient.credentials().list({
+      filter: {
+        "-s": { $eq: schemaSaid },
+        ...(Object.keys(attributes).length > 0
+          ? {
+            "-a": {
+              ...attributes,
+            },
+          }
+          : {}),
+      },
+    });
+    return Promise.all(
+      creds.map(async (cred: any) => {
+        const metadata = await this.credentialStorage.getCredentialMetadata(
+          `metadata:${cred.sad.d}`
+        );
+        if (!metadata) {
+          throw new Error(
+            IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+          );
+        }
+        return { ...getCredentialShortDetails(metadata), acdc: cred };
+      })
+    );
   }
 
   private async getNotificationRecordById(
