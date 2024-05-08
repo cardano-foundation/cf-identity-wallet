@@ -72,6 +72,9 @@ const IdentifierStage1 = ({
       };
       updateConnections();
     }
+
+    currentOperation === OperationType.MULTI_SIG_INITIATOR_INIT &&
+      handleInitiateMultiSig();
   }, [groupMetadata, currentOperation, groupId, multiSigGroupCache]);
 
   const handleDone = () => {
@@ -99,6 +102,7 @@ const IdentifierStage1 = ({
   };
 
   const handleInitiateMultiSig = () => {
+    dispatch(setCurrentOperation(OperationType.IDLE));
     setState((prevState: IdentifierStageProps) => ({
       ...prevState,
       scannedConections,

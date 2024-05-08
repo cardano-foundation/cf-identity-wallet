@@ -6,7 +6,7 @@
   --padding-end: 0px;
 
   ion-button {
-    margin: 0 auto 1rem;
+    margin-bottom: 1rem;
 
     &:last-of-type {
       margin-bottom: 0;
@@ -20,7 +20,7 @@
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
     ion-button {
-      margin: 0 auto 0.8rem;
+      margin-bottom: 0.8rem;
     }
   }
 }

@@ -102,7 +102,19 @@ const App = () => {
     return (
       <>
         {isPreviewMode ? <MobileHeaderPreview /> : null}
-        {showScan && <FullPageScanner setShowScan={setShowScan} />}
+        {showScan ? (
+          <FullPageScanner
+            showScan={showScan}
+            setShowScan={setShowScan}
+          />
+        ) : (
+          <div
+            className="app-spinner-container"
+            data-testid="app-spinner-container"
+          >
+            <IonSpinner name="circular" />
+          </div>
+        )}
         <Routes />
       </>
     );

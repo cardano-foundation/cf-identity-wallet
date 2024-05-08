@@ -24,6 +24,7 @@ enum OperationType {
   RECEIVE_CONNECTION = "receiveConnection",
   MULTI_SIG_INITIATOR_SCAN = "multiSigInitiatorScan",
   MULTI_SIG_RECEIVER_SCAN = "multiSigReceiverScan",
+  MULTI_SIG_INITIATOR_INIT = "multiSigInitiatorInit",
 }
 
 enum ToastMsgType {

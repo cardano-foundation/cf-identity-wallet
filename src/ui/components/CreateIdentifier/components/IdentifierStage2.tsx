@@ -21,7 +21,7 @@ const IdentifierStage2 = ({
 }: IdentifierStageProps) => {
   const [selectedConnections, setSelectedConnections] = useState<
     ConnectionShortDetails[]
-  >([]);
+  >(state.scannedConections);
 
   const handleSelectConnection = (connection: ConnectionShortDetails) => {
     let data = selectedConnections;
@@ -86,7 +86,7 @@ const IdentifierStage2 = ({
                     checked={selectedConnections.includes(connection)}
                     data-testid={`connection-checkbox-${index}`}
                     onIonChange={() => handleSelectConnection(connection)}
-                    aria-label=""
+                    aria-label={`connection-checkbox-${index}`}
                   />
                 </IonLabel>
               </IonItem>

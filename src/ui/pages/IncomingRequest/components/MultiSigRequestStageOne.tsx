@@ -108,45 +108,47 @@ const MultiSigRequestStageOne = ({
             </IonList>
           </IonCard>
         </div>
-        <div className="multisig-request-section">
-          <h4>{i18n.t("request.multisig.stageone.othermembers")}</h4>
-          <IonCard className="multisig-request-details">
-            <IonList lines="none">
-              {requestData.multisigIcpDetails?.otherConnections.map(
-                (connection, index) => {
-                  return (
-                    <IonItem
-                      key={index}
-                      className="multisig-request-item"
-                      data-testid={`multisig-connection-${index}`}
-                    >
-                      <IonGrid>
-                        <IonRow>
-                          <IonCol
-                            size="1.25"
-                            className="multisig-connection-logo"
-                          >
-                            <img
-                              data-testid={`other-multisig-connection-logo-${index}`}
-                              src={connection.logo || KeriLogo}
-                              alt="multisig-connection-logo"
-                            />
-                          </IonCol>
-                          <IonCol
-                            size="10.35"
-                            className="multisig-connection-info"
-                          >
-                            <IonLabel>{connection.label}</IonLabel>
-                          </IonCol>
-                        </IonRow>
-                      </IonGrid>
-                    </IonItem>
-                  );
-                }
-              )}
-            </IonList>
-          </IonCard>
-        </div>
+        {!!requestData.multisigIcpDetails?.otherConnections.length && (
+          <div className="multisig-request-section">
+            <h4>{i18n.t("request.multisig.stageone.othermembers")}</h4>
+            <IonCard className="multisig-request-details">
+              <IonList lines="none">
+                {requestData.multisigIcpDetails?.otherConnections.map(
+                  (connection, index) => {
+                    return (
+                      <IonItem
+                        key={index}
+                        className="multisig-request-item"
+                        data-testid={`multisig-connection-${index}`}
+                      >
+                        <IonGrid>
+                          <IonRow>
+                            <IonCol
+                              size="1.25"
+                              className="multisig-connection-logo"
+                            >
+                              <img
+                                data-testid={`other-multisig-connection-logo-${index}`}
+                                src={connection.logo || KeriLogo}
+                                alt="multisig-connection-logo"
+                              />
+                            </IonCol>
+                            <IonCol
+                              size="10.35"
+                              className="multisig-connection-info"
+                            >
+                              <IonLabel>{connection.label}</IonLabel>
+                            </IonCol>
+                          </IonRow>
+                        </IonGrid>
+                      </IonItem>
+                    );
+                  }
+                )}
+              </IonList>
+            </IonCard>
+          </div>
+        )}
         <div className="multisig-request-section">
           <h4>{i18n.t("request.multisig.stageone.threshold")}</h4>
           <IonCard className="multisig-request-details">
