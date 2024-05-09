@@ -1159,26 +1159,19 @@
       }
     },
     "multisig": {
-      "stageone": {
-        "title": "Identifier request",
-        "subtitle": "Review this multi-sig identifier request",
-        "requestfrom": "Request from",
-        "othermembers": "Other members",
-        "pending": "Pending",
-        "accepted": "Accepted",
-        "threshold": "Threshold",
-        "alert": {
-          "textaccept": "Are you sure you want to approve this request? You won't be able to change your decision later.",
-          "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
-          "accept": "Accept",
-          "decline": "Decline",
-          "cancel": "Cancel"
-        }
-      },
-      "stagetwo": {
-        "title": "Setup identifier",
-        "displayname": "Display name",
-        "chooseatheme": "Choose a theme"
+      "title": "Identifier request",
+      "subtitle": "Review this multi-sig identifier request",
+      "requestfrom": "Request from",
+      "othermembers": "Other members",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "threshold": "Threshold",
+      "alert": {
+        "textaccept": "Are you sure you want to approve this request? You won't be able to change your decision later.",
+        "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
+        "accept": "Accept",
+        "decline": "Decline",
+        "cancel": "Cancel"
       }
     },
     "button": {

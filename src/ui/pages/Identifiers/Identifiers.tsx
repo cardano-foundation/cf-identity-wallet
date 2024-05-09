@@ -269,9 +269,7 @@ const Identifiers = () => {
       </TabLayout>
       <CreateIdentifier
         modalIsOpen={createIdentifierModalIsOpen}
-        setModalIsOpen={(isOpen: boolean) =>
-          setCreateIdentifierModalIsOpen(isOpen)
-        }
+        setModalIsOpen={setCreateIdentifierModalIsOpen}
         resumeMultiSig={resumeMultiSig}
         setResumeMultiSig={setResumeMultiSig}
       />
