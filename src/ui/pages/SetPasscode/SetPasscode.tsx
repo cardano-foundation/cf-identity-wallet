@@ -26,6 +26,7 @@ import { useBiometricAuth } from "../../hooks/useBiometrics";
 import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
 import { BiometryError } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { getPlatforms } from "@ionic/react";
+import { Alert } from "../../components/Alert";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
@@ -33,9 +34,26 @@ const SetPasscode = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const [passcode, setPasscode] = useState("");
+  const [showSetupAndroidBiometryAlert, setShowSetupAndroidBiometryAlert] =
+    useState(false);
+  const [showCancelBiometryAlert, setShowCancelAndroidBiometryAlert] =
+    useState(false);
   const [originalPassCode, setOriginalPassCode] = useState("");
   const { handleBiometricAuth, biometricInfo } = useBiometricAuth();
-  const isIosDevice = getPlatforms().includes("ios");
+  const isAndroidDevice = getPlatforms().includes("android");
+
+  const setupAndroidBiometryHeaderText = i18n.t(
+    "biometry.setupandroidbiometryheader"
+  );
+  const setupAndroidBiometryConfirmtext = i18n.t(
+    "biometry.setupandroidbiometryconfirm"
+  );
+  const setupAndroidBiometryCanceltext = i18n.t(
+    "biometry.setupandroidbiometrycancel"
+  );
+
+  const cancelBiometryHeaderText = i18n.t("biometry.cancelbiometryheader");
+  const cancelBiometryConfirmText = setupAndroidBiometryConfirmtext;
 
   const handlePinChange = async (digit: number) => {
     if (passcode.length < 6) {
@@ -43,20 +61,11 @@ const SetPasscode = () => {
       if (originalPassCode !== "" && passcode.length === 5) {
         if (originalPassCode === passcode + digit) {
           await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, originalPassCode);
-          if (isIosDevice && biometricInfo?.strongBiometryIsAvailable) {
-            const isBiometricAuthenticated = await handleBiometricAuth();
-            if (isBiometricAuthenticated instanceof BiometryError) {
-              if (
-                isBiometricAuthenticated.code === BiometryErrorType.userCancel
-              ) {
-                await handlePassAuth();
-              }
-              if (
-                isBiometricAuthenticated.code ===
-                BiometryErrorType.authenticationFailed
-              ) {
-                return;
-              }
+          if (biometricInfo?.strongBiometryIsAvailable) {
+            if (isAndroidDevice) {
+              setShowSetupAndroidBiometryAlert(true);
+            } else {
+              await processBiometrics();
             }
           }
           await handlePassAuth();
@@ -65,6 +74,19 @@ const SetPasscode = () => {
     }
   };
 
+  const processBiometrics = async () => {
+    const isBiometricAuthenticated = await handleBiometricAuth();
+    if (isBiometricAuthenticated instanceof BiometryError) {
+      if (isBiometricAuthenticated.code === BiometryErrorType.userCancel) {
+        await handlePassAuth();
+      }
+      if (
+        isBiometricAuthenticated.code === BiometryErrorType.authenticationFailed
+      ) {
+        return;
+      }
+    }
+  };
   const handlePassAuth = async () => {
     const data: DataProps = {
       store: { stateCache },
@@ -82,6 +104,13 @@ const SetPasscode = () => {
     });
 
     dispatch(setInitialized(true));
+  };
+
+  const handleSetupAndroidBiometry = async () => {
+    await processBiometrics();
+  };
+  const handleCancelBiometry = async () => {
+    await handlePassAuth();
   };
 
   const handleRemove = () => {
@@ -167,6 +196,23 @@ const SetPasscode = () => {
           data-testid="forgot-your-passcode-placeholder"
         />
       )}
+      <Alert
+        isOpen={showSetupAndroidBiometryAlert}
+        setIsOpen={setShowSetupAndroidBiometryAlert}
+        dataTestId="alert-setup-android-biometry"
+        headerText={setupAndroidBiometryHeaderText}
+        confirmButtonText={setupAndroidBiometryConfirmtext}
+        cancelButtonText={setupAndroidBiometryCanceltext}
+        actionConfirm={handleSetupAndroidBiometry}
+      />
+      <Alert
+        isOpen={showCancelBiometryAlert}
+        setIsOpen={setShowCancelAndroidBiometryAlert}
+        dataTestId="alert-cancel-biometry"
+        headerText={cancelBiometryHeaderText}
+        confirmButtonText={cancelBiometryConfirmText}
+        actionConfirm={handleCancelBiometry}
+      />
     </ResponsivePageLayout>
   );
 };
