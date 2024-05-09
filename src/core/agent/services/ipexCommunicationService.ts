@@ -1,3 +1,4 @@
+import { Serder } from "signify-ts";
 import { Agent } from "../agent";
 import {
   AcdcEventTypes,
@@ -20,6 +21,7 @@ import {
   CredentialStatus,
 } from "./credentialService.types";
 import { getCredentialShortDetails } from "./utils";
+import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -28,6 +30,11 @@ class IpexCommunicationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
     "Credential metadata missing for stored credential";
+  static readonly CREDENTIAL_NOT_FOUND_WITH_SCHEMA =
+    "Credential not found with this schema";
+
+  static readonly CREDENTIAL_NOT_FOUND = "Credential not found";
+  static readonly SCHEMA_NOT_FOUND = "Schema not found";
 
   static readonly CREDENTIAL_SERVER =
     "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
@@ -103,6 +110,56 @@ class IpexCommunicationService extends AgentService {
     });
   }
 
+  async offerAcdcFromApply(notification: KeriaNotification, acdc: any) {
+    const msgSaid = notification.a.d as string;
+    const msg = await this.signifyClient.exchanges().get(msgSaid);
+
+    const holderSignifyName = (
+      await this.identifierStorage.getIdentifierMetadata(msg.exn.a.i)
+    ).signifyName;
+
+    const [offer, sigs, end] = await this.signifyClient.ipex().offer({
+      senderName: holderSignifyName,
+      recipient: msg.exn.i,
+      acdc: new Serder(acdc),
+      apply: msg.exn.d,
+    });
+    await this.signifyClient
+      .ipex()
+      .submitOffer(holderSignifyName, offer, sigs, end, [msg.exn.i]);
+    await this.notificationStorage.deleteById(notification.id);
+  }
+
+  async grantAcdcFromAgree(notification: KeriaNotification) {
+    const msgSaid = notification.a.d as string;
+    const msgAgree = await this.signifyClient.exchanges().get(msgSaid);
+    const msgOffer = await this.signifyClient.exchanges().get(msgAgree.exn.p);
+    const pickedCred = await this.signifyClient
+      .credentials()
+      .get(msgOffer.exn.e.acdc.d);
+    if (!pickedCred) {
+      throw new Error(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
+    }
+    const holderSignifyName = (
+      await this.identifierStorage.getIdentifierMetadata(msgOffer.exn.i)
+    ).signifyName;
+
+    const [grant, sigs, end] = await this.signifyClient.ipex().grant({
+      senderName: holderSignifyName,
+      recipient: msgAgree.exn.i,
+      acdc: new Serder(pickedCred.sad),
+      anc: new Serder(pickedCred.anc),
+      iss: new Serder(pickedCred.iss),
+      acdcAttachment: pickedCred.atc,
+      ancAttachment: pickedCred.ancatc,
+      issAttachment: pickedCred.issAtc,
+    });
+    await this.signifyClient
+      .ipex()
+      .submitGrant(holderSignifyName, grant, sigs, end, [msgAgree.exn.i]);
+    await this.notificationStorage.deleteById(notification.id);
+  }
+
   private async waitForAcdcToAppear(
     credentialId: string,
     waitForAcdcConfig: { maxAttempts: number; interval: number }
@@ -120,6 +177,51 @@ class IpexCommunicationService extends AgentService {
       retryTimes++;
     }
     return acdc;
+  }
+
+  async getMatchingCredsForApply(
+    notification: KeriaNotification
+  ): Promise<CredentialsMatchingApply> {
+    const msgSaid = notification.a.d as string;
+    const msg = await this.signifyClient.exchanges().get(msgSaid);
+    const schemaSaid = msg.exn.a.s;
+    const attributes = msg.exn.a.a;
+    const schemaKeri = await this.signifyClient.schemas().get(schemaSaid);
+    if (!schemaKeri) {
+      throw new Error(IpexCommunicationService.SCHEMA_NOT_FOUND);
+    }
+    const creds = await this.signifyClient.credentials().list({
+      filter: {
+        "-s": { $eq: schemaSaid },
+        ...(Object.keys(attributes).length > 0
+          ? {
+            "-a": {
+              ...attributes,
+            },
+          }
+          : {}),
+      },
+    });
+
+    const credentialMetadatas =
+      await this.credentialStorage.getCredentialMetadatasById(
+        creds.map((cred: any) => `metadata:${cred.sad.d}`)
+      );
+    return {
+      schema: {
+        name: schemaKeri.title,
+        description: schemaKeri.description,
+      },
+      credentials: credentialMetadatas.map((cr) => {
+        const credKeri = creds.find(
+          (cred: any) => `metadata:${cred.sad.d}` === cr.id
+        );
+        return {
+          connectionId: cr.connectionId,
+          acdc: credKeri.sad,
+        };
+      }),
+    };
   }
 
   private async getNotificationRecordById(

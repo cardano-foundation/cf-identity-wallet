@@ -40,7 +40,7 @@ const credentialMetadataRecordB = new CredentialMetadataRecord({
   id: id2,
 });
 
-describe("Connection service of agent", () => {
+describe("Credential storage test", () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -87,5 +87,23 @@ describe("Connection service of agent", () => {
     storageService.findById.mockResolvedValue(null);
     const record = await credentialStorage.getCredentialMetadata("id");
     expect(record).toBe(null);
+  });
+
+  test("Should get credential by ids", async () => {
+    const ids = [credentialMetadataRecordA.id, credentialMetadataRecordB.id];
+    storageService.findAllByQuery.mockResolvedValue([
+      credentialMetadataRecordA,
+      credentialMetadataRecordB,
+    ]);
+    expect(await credentialStorage.getCredentialMetadatasById(ids)).toEqual([
+      credentialMetadataRecordA,
+      credentialMetadataRecordB,
+    ]);
+    expect(storageService.findAllByQuery).toBeCalledWith(
+      {
+        $or: ids.map((id) => ({ id })),
+      },
+      CredentialMetadataRecord
+    );
   });
 });
