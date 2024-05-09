@@ -33,8 +33,6 @@ import {
 } from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { PageFooter } from "../PageFooter";
-import { ResponsiveModal } from "../layout/ResponsiveModal";
-import { PageHeader } from "../PageHeader";
 import { CustomInput } from "../CustomInput";
 import { OptionModal } from "../OptionsModal";
 

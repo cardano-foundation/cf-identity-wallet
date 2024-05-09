@@ -71,7 +71,13 @@ const MultiSigRequest = ({
           isPending: requestData.multisigIcpDetails.threshold >= 2,
           signifyName: joinMultisigResult.signifyName,
         };
-        dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
+        const filteredIdentifiersData = identifiersData.filter(
+          (item) =>
+            item.id !== requestData?.multisigIcpDetails?.ourIdentifier.id
+        );
+        dispatch(
+          setIdentifiersCache([...filteredIdentifiersData, newIdentifier])
+        );
         requestData.multisigIcpDetails.threshold === 1
           ? ToastMsgType.IDENTIFIER_CREATED
           : ToastMsgType.IDENTIFIER_REQUESTED;
