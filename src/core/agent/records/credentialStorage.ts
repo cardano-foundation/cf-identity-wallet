@@ -73,7 +73,7 @@ class CredentialStorage {
     }
   }
 
-  async getCrentialMetadataByIds(ids: string[]) {
+  async getCredentialMetadatasById(ids: string[]) {
     return this.storageService.findAllByQuery(
       {
         $or: ids.map((id) => ({ id })),

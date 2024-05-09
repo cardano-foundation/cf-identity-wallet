@@ -161,20 +161,15 @@ export class SignifyApi {
     return this.signifyClient.contacts().list();
   }
 
-  async agreeOffer(
+  async agreeToAcdcFromOffer(
     senderName: string,
     offerSaid: string,
-    recipient: string,
-    acdc: Object
+    recipient: string
   ) {
     const [apply, sigs] = await this.signifyClient.ipex().agree({
       senderName,
       recipient,
       offer: offerSaid,
-      message: JSON.stringify({
-        i: recipient,
-        acdc,
-      }),
     });
     await this.signifyClient
       .ipex()

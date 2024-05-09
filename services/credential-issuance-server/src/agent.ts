@@ -84,11 +84,10 @@ class Agent {
       switch (notif.a.r) {
         case NotificationRoute.ExnIpexOffer: {
           const msg = await this.signifyApi.getExchangeMsg(notif.a.d!);
-          await this.signifyApi.agreeOffer(
+          await this.signifyApi.agreeToAcdcFromOffer(
             Agent.ISSUER_AID_NAME,
             msg.exn.d,
-            msg.exn.i,
-            msg.exn.e.acdc
+            msg.exn.i
           );
           break;
         }

@@ -95,7 +95,7 @@ describe("Credential storage test", () => {
       credentialMetadataRecordA,
       credentialMetadataRecordB,
     ]);
-    expect(await credentialStorage.getCrentialMetadataByIds(ids)).toEqual([
+    expect(await credentialStorage.getCredentialMetadatasById(ids)).toEqual([
       credentialMetadataRecordA,
       credentialMetadataRecordB,
     ]);
