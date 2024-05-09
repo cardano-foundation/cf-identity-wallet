@@ -1,12 +1,16 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { MemoryRouter } from "react-router-dom";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
 import { ConnectWallet } from "./ConnectWallet";
-import { setToastMsg } from "../../../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../../../globals/types";
+import {
+  setCurrentOperation,
+  setToastMsg,
+} from "../../../../../store/reducers/stateCache";
+import { OperationType, ToastMsgType } from "../../../../globals/types";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
 
 jest.mock("@ionic/react", () => ({
@@ -19,6 +23,16 @@ jest.mock("@ionic/react", () => ({
       {children}
     </div>
   ),
+  IonInput: (props: any) => {
+    return (
+      <input
+        data-testid={props["data-testid"]}
+        onChange={(e) => {
+          props.onIonInput(e);
+        }}
+      />
+    );
+  },
 }));
 
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
@@ -55,7 +69,7 @@ const storeMocked = {
   dispatch: dispatchMock,
 };
 
-describe("Confirm connect modal", () => {
+describe("Wallet connect: empty history", () => {
   test("Confirm connect modal render empty history screen", async () => {
     const initialState = {
       stateCache: {
@@ -101,6 +115,270 @@ describe("Confirm connect modal", () => {
       ).toBeVisible();
     });
   });
+
+  test("Connect wallet modal: scan QR", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+      },
+      identifiersCache: {
+        identifiers: [...identifierFix],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText, getByTestId } = render(
+      <MemoryRouter>
+        <Provider store={storeMocked}>
+          <ConnectWallet />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.connectwallet.sections.connectbtn)
+    ).toBeVisible();
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.connectwallet.sections.connectbtn)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.connectwallet.connectwalletmodal.header)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("scanqr-btn"));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setCurrentOperation(OperationType.SCAN_WALLET_CONNECTION)
+      );
+    });
+  });
+
+  test("Connect wallet modal: paste Pid", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+      },
+      identifiersCache: {
+        identifiers: [...identifierFix],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText, getByTestId, getAllByTestId } = render(
+      <MemoryRouter>
+        <Provider store={storeMocked}>
+          <ConnectWallet />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.connectwallet.sections.connectbtn)
+    ).toBeVisible();
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.connectwallet.sections.connectbtn)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.connectwallet.connectwalletmodal.header)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.connectwallet.connectwalletmodal.pastePID)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.connectwallet.inputpidmodal.header)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.change(getByTestId("input-pid"), {
+        target: { value: "11111" },
+      });
+      fireEvent.click(getAllByTestId("action-button")[1]);
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.PEER_ID_SUCCESS)
+      );
+    });
+  });
+
+  test("Connect wallet modal: alert identifier missing when create new connect", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText, getByTestId } = render(
+      <MemoryRouter>
+        <Provider store={storeMocked}>
+          <ConnectWallet />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.connectwallet.sections.connectbtn)
+    ).toBeVisible();
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.connectwallet.sections.connectbtn)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.connectwallet.connectwalletmodal.header)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.connectwallet.connectwalletmodal.pastePID)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.connectwallet.connectionhistory.missingidentifieralert
+            .message
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(
+          EN_TRANSLATIONS.connectwallet.connectionhistory.missingidentifieralert
+            .confirm
+        )
+      );
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setCurrentOperation(OperationType.CREATE_IDENTIFIER_CONNECT_WALLET)
+      );
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("scanqr-btn"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.connectwallet.connectionhistory.missingidentifieralert
+            .message
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(
+          EN_TRANSLATIONS.connectwallet.connectionhistory.missingidentifieralert
+            .confirm
+        )
+      );
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setCurrentOperation(OperationType.CREATE_IDENTIFIER_CONNECT_WALLET)
+      );
+    });
+  });
+});
+
+describe("Wallet connect", () => {
+  test("Wallet connect render", async () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <ConnectWallet />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.connectwallet.connectionhistory.title)
+    ).toBeVisible();
+    expect(getByText(walletConnectionsFix[0].name)).toBeVisible();
+    expect(getByText(walletConnectionsFix[0].owner)).toBeVisible();
+    expect(getByText(walletConnectionsFix[1].name)).toBeVisible();
+    expect(getByText(walletConnectionsFix[1].owner)).toBeVisible();
+    expect(getByText(walletConnectionsFix[2].name)).toBeVisible();
+    expect(getByText(walletConnectionsFix[2].owner)).toBeVisible();
+    expect(getByText(walletConnectionsFix[3].name)).toBeVisible();
+    expect(getByText(walletConnectionsFix[3].owner)).toBeVisible();
+    expect(getByTestId("connected-wallet-check-mark")).toBeVisible();
+  });
+
   test("Confirm connect modal render", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
@@ -268,6 +546,76 @@ describe("Confirm connect modal", () => {
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
         setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS)
+      );
+    });
+  });
+
+  test("Wallet connect modal: alert identifier missing", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+      },
+      walletConnectionsCache: {
+        walletConnections: [...walletConnectionsFix],
+        connectedWallet: null,
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, getByText } = render(
+      <MemoryRouter>
+        <Provider store={storeMocked}>
+          <ConnectWallet />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId(`card-item-${walletConnectionsFix[0].id}`));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("confirm-connect-btn")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("confirm-connect-btn"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.connectwallet.connectionhistory.missingidentifieralert
+            .message
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(
+          EN_TRANSLATIONS.connectwallet.connectionhistory.missingidentifieralert
+            .confirm
+        )
+      );
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setCurrentOperation(OperationType.CREATE_IDENTIFIER_CONNECT_WALLET)
       );
     });
   });
