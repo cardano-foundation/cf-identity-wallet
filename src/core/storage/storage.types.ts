@@ -1,10 +1,15 @@
-import { v4 as uuidv4 } from "uuid";
+import { instanceToPlain } from "class-transformer";
+import { BasicRecord } from "../agent/records";
 
+// Intented for interop with Askar.
 type Tags = Record<string | number, unknown>;
+
 abstract class BaseRecord {
   protected _tags: Tags = {} as Tags;
 
   id!: string;
+
+  type!: string;
 
   createdAt!: Date;
 
@@ -30,70 +35,57 @@ abstract class BaseRecord {
   replaceTags(tags: Tags & Partial<Tags>) {
     this._tags = tags;
   }
+
+  toJSON(): Record<string, unknown> {
+    return instanceToPlain(this, {
+      exposeDefaultValues: true,
+    });
+  }
 }
 
-interface BasicRecordStorageProps {
-  id?: string;
-  createdAt?: Date;
-  tags?: Tags;
-  content: Record<string, unknown>;
-  type: RecordType;
-}
 interface SaveBasicRecordOption {
   content: Record<string, unknown>;
   id?: string;
   tags?: Tags;
-  type: RecordType;
-}
-
-enum RecordType {
-  CONNECTION_NOTE = "ConnectionNote",
-  CONNECTION_KERI_METADATA = "ConnectionKeriMetadata",
-  NOTIFICATION_KERI = "NotificationKeri",
-}
-
-class BasicRecord extends BaseRecord {
-  content!: Record<string, unknown>;
-  type!: RecordType;
-
-  constructor(props: BasicRecordStorageProps) {
-    super();
-    this.id = props.id ?? uuidv4();
-    this.createdAt = props.createdAt ?? new Date();
-    this.content = props.content;
-    this._tags = props.tags ?? {};
-    this.type = props.type;
-  }
-
-  getTags() {
-    return {
-      ...this._tags,
-    };
-  }
 }
 
 type SimpleQuery<T extends BaseRecord> = Partial<ReturnType<T["getTags"]>> &
   Tags;
+
 interface AdvancedQuery<T extends BaseRecord> {
   $and?: Query<T>[];
   $or?: Query<T>[];
   $not?: Query<T>;
 }
+
 type Query<T extends BaseRecord> = AdvancedQuery<T> | SimpleQuery<T>;
 
 interface StorageApi {
-  open(storageName: string): Promise<void>;
   save({ content, tags, id }: SaveBasicRecordOption): Promise<BasicRecord>;
   delete(record: BasicRecord): Promise<void>;
   deleteById(id: string): Promise<void>;
   update(record: BasicRecord): Promise<void>;
   findById(id: string): Promise<BasicRecord | null>;
-  findAllByQuery(
-    type: RecordType,
-    query: Query<BasicRecord>
-  ): Promise<BasicRecord[]>;
-  getAll(type: RecordType): Promise<BasicRecord[]>;
+  findAllByQuery(query: Query<BasicRecord>): Promise<BasicRecord[]>;
+  getAll(): Promise<BasicRecord[]>;
 }
+
+interface StorageService<T extends BaseRecord> {
+  save(record: T): Promise<T>;
+  delete(record: T): Promise<void>;
+  deleteById(id: string): Promise<void>;
+  update(record: T): Promise<void>;
+  findById(
+    id: string,
+    recordClass: BaseRecordConstructor<T>
+  ): Promise<T | null>;
+  findAllByQuery(
+    query: Query<T>,
+    recordClass: BaseRecordConstructor<T>
+  ): Promise<T[]>;
+  getAll(recordClass: BaseRecordConstructor<T>): Promise<T[]>;
+}
+
 interface StorageRecord {
   name: string;
   value: string;
@@ -101,5 +93,19 @@ interface StorageRecord {
   category: string;
 }
 
-export { BasicRecord, BaseRecord, RecordType };
-export type { StorageApi, Query, SaveBasicRecordOption, StorageRecord, Tags };
+type Constructor<T = BaseRecord> = new (...args: any[]) => T;
+
+interface BaseRecordConstructor<T> extends Constructor<T> {
+  type: string;
+}
+
+export { BaseRecord };
+export type {
+  StorageApi,
+  Query,
+  SaveBasicRecordOption,
+  StorageRecord,
+  Tags,
+  StorageService,
+  BaseRecordConstructor,
+};

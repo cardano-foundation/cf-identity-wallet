@@ -1,27 +1,31 @@
 PODS:
-  - AparajitaCapacitorSecureStorage (5.0.0):
+  - AparajitaCapacitorSecureStorage (5.2.0):
     - Capacitor
-  - Capacitor (5.5.1):
+    - KeychainSwift (~> 21.0)
+  - Capacitor (5.7.4):
     - CapacitorCordova
-  - CapacitorClipboard (5.0.6):
+  - CapacitorClipboard (5.0.7):
     - Capacitor
   - CapacitorCommunityBarcodeScanner (4.0.1):
     - Capacitor
-  - CapacitorCommunitySqlite (5.5.0):
+  - CapacitorCommunitySqlite (5.7.1):
     - Capacitor
     - SQLCipher
     - ZIPFoundation
-  - CapacitorCordova (5.5.1)
-  - CapacitorFilesystem (5.1.4):
+  - CapacitorCordova (5.7.4)
+  - CapacitorKeyboard (5.0.8):
     - Capacitor
-  - CapacitorKeyboard (5.0.6):
+  - CapacitorPreferences (5.0.7):
     - Capacitor
-  - CapacitorPreferences (5.0.6):
+  - CapacitorScreenOrientation (5.0.7):
     - Capacitor
-  - CapacitorShare (5.0.6):
+  - CapacitorShare (5.0.7):
     - Capacitor
-  - CapacitorSplashScreen (5.0.6):
+  - CapacitorSplashScreen (5.0.7):
     - Capacitor
+  - CapacitorStatusBar (5.0.7):
+    - Capacitor
+  - KeychainSwift (21.0.0)
   - SQLCipher (4.5.5):
     - SQLCipher/standard (= 4.5.5)
   - SQLCipher/common (4.5.5)
@@ -36,14 +40,16 @@ DEPENDENCIES:
   - "CapacitorCommunityBarcodeScanner (from `../../node_modules/@capacitor-community/barcode-scanner`)"
   - "CapacitorCommunitySqlite (from `../../node_modules/@capacitor-community/sqlite`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
-  - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
+  - "CapacitorScreenOrientation (from `../../node_modules/@capacitor/screen-orientation`)"
   - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
+  - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
 
 SPEC REPOS:
   trunk:
+    - KeychainSwift
     - SQLCipher
     - ZIPFoundation
 
@@ -60,32 +66,36 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor-community/sqlite"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
-  CapacitorFilesystem:
-    :path: "../../node_modules/@capacitor/filesystem"
   CapacitorKeyboard:
     :path: "../../node_modules/@capacitor/keyboard"
   CapacitorPreferences:
     :path: "../../node_modules/@capacitor/preferences"
+  CapacitorScreenOrientation:
+    :path: "../../node_modules/@capacitor/screen-orientation"
   CapacitorShare:
     :path: "../../node_modules/@capacitor/share"
   CapacitorSplashScreen:
     :path: "../../node_modules/@capacitor/splash-screen"
+  CapacitorStatusBar:
+    :path: "../../node_modules/@capacitor/status-bar"
 
 SPEC CHECKSUMS:
-  AparajitaCapacitorSecureStorage: 4e40b517555ee2a0e6e034d4bd744b413b98483c
-  Capacitor: 9da0a2415e3b6098511f8b5ffdb578d91ee79f8f
-  CapacitorClipboard: 77edf49827ea21da2a9c05c690a4a6a4d07199c4
+  AparajitaCapacitorSecureStorage: 2f3a28fa7cf90053bf5b56834607349cbf9f24ca
+  Capacitor: 4fe9adf012caceb4c71ffea2f1f4d005cdcbeea7
+  CapacitorClipboard: 45e5e25f2271f98712985d422776cdc5a779cca1
   CapacitorCommunityBarcodeScanner: 7feb206489c8555a8ca0c74c57ddf49ead774eb8
-  CapacitorCommunitySqlite: f2dd4fa2f41f48ee509b506dc1930347cd32ba31
-  CapacitorCordova: e128cc7688c070ca0bfa439898a5f609da8dbcfe
-  CapacitorFilesystem: af704badfbc69f6f8623d9ed313e5490e3723dcb
-  CapacitorKeyboard: b978154b024a5f65e044908e37d15b7de58b9d12
-  CapacitorPreferences: f03954bcb0ff09c792909e46bff88e3183c16b10
-  CapacitorShare: cd41743331cb71d217c029de54b681cbd91e0fcc
-  CapacitorSplashScreen: 5fa2ab5e46cf5cc530cf16a51c80c7a986579ccd
+  CapacitorCommunitySqlite: 6e2754dde799d618a8e75e409ccc67ec9c189460
+  CapacitorCordova: a6e87fccc0307dee7aec1560ec9398485f2b0ce7
+  CapacitorKeyboard: aec619a578235c6ce279075009a2689c2cf5c42c
+  CapacitorPreferences: 77ac427e98db83bace772455f8ba447430382c4c
+  CapacitorScreenOrientation: cc638c369cb2b1dfc55f8265485a8b4e0b3cafd9
+  CapacitorShare: c6a1ebbf0114ff9e863b966cd6052678fa25d480
+  CapacitorSplashScreen: dd3de3f3644710fa2a697cfb91ec262eece4d242
+  CapacitorStatusBar: f390fbb49b82ffb754ea4b3cf71dc8b048baf3e7
+  KeychainSwift: 4a71a45c802fd9e73906457c2dcbdbdc06c9419d
   SQLCipher: f2e96b3822e3006b379181a0e4fd145f6de29b56
   ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 
-PODFILE CHECKSUM: 12c7c6ec093cad0df115dcc9a34d57cc41e85bfb
+PODFILE CHECKSUM: 90423924fbe85f2efaaf46e65be5f444629b2f3a
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.15.2

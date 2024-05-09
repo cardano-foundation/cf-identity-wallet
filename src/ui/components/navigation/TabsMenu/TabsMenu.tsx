@@ -25,10 +25,12 @@ import { i18n } from "../../../../i18n";
 import "./TabsMenu.scss";
 import { TabsRoutePath } from "../../../../routes/paths";
 import { Identifiers } from "../../../pages/Identifiers";
-import { Creds } from "../../../pages/Creds";
+import { Creds } from "../../../pages/Credentials";
 import { Scan } from "../../../pages/Scan";
 import { Chat } from "../../../pages/Chat";
 import { Menu } from "../../../pages/Menu";
+import { useAppDispatch } from "../../../../store/hooks";
+import { setCurrentRoute } from "../../../../store/reducers/stateCache";
 
 const tabsRoutes = [
   {
@@ -39,7 +41,7 @@ const tabsRoutes = [
   },
   {
     label: i18n.t("tabsmenu.label.creds"),
-    path: TabsRoutePath.CREDS,
+    path: TabsRoutePath.CREDENTIALS,
     component: Creds,
     icon: [idCard, idCardOutline],
   },
@@ -64,6 +66,11 @@ const tabsRoutes = [
 ];
 const TabsMenu = ({ tab, path }: { tab: ComponentType; path: string }) => {
   const location = useLocation();
+  const dispatch = useAppDispatch();
+
+  const handleTabClick = (tabPath: string) => {
+    dispatch(setCurrentRoute({ path: tabPath }));
+  };
 
   return (
     <IonTabs>
@@ -93,6 +100,9 @@ const TabsMenu = ({ tab, path }: { tab: ComponentType; path: string }) => {
               data-testid={
                 "tab-button-" + tab.label.toLowerCase().replace(/\s/g, "-")
               }
+              onClick={() => {
+                handleTabClick(tab.path);
+              }}
             >
               <div className="border-top" />
               <IonIcon

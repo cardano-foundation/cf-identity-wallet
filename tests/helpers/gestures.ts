@@ -1,4 +1,4 @@
-import {RectReturn} from "@wdio/protocols/build/types";
+import { RectReturn } from "@wdio/protocols/build/types";
 
 /**
  * To make a Gesture methods more robust for multiple devices and also
@@ -20,20 +20,20 @@ interface XY {
  */
 const SWIPE_DIRECTION = {
   down: {
-    start: {x: 50, y: 15},
-    end: {x: 50, y: 85},
+    start: { x: 50, y: 15 },
+    end: { x: 50, y: 85 },
   },
   left: {
-    start: {x: 95, y: 50},
-    end: {x: 5, y: 50},
+    start: { x: 95, y: 50 },
+    end: { x: 5, y: 50 },
   },
   right: {
-    start: {x: 5, y: 50},
-    end: {x: 95, y: 50},
+    start: { x: 5, y: 50 },
+    end: { x: 95, y: 50 },
   },
   up: {
-    start: {x: 50, y: 85},
-    end: {x: 50, y: 15},
+    start: { x: 50, y: 85 },
+    end: { x: 50, y: 15 },
   },
 };
 
@@ -130,26 +130,40 @@ class Gestures {
         // a. Create the event
         type: "pointer",
         id: "finger1",
-        parameters: {pointerType: "touch"},
+        parameters: { pointerType: "touch" },
         actions: [
           // b. Move finger into start position
-          {type: "pointerMove", duration: 0, x: from.x, y: from.y},
+          { type: "pointerMove", duration: 0, x: from.x, y: from.y },
           // c. Finger comes down into contact with screen
-          {type: "pointerDown", button: 0},
+          { type: "pointerDown", button: 0 },
           // d. Pause for a little bit
-          {type: "pause", duration: 100},
+          { type: "pause", duration: 100 },
           // e. Finger moves to end position
           //    We move our finger from the center of the element to the
           //    starting position of the element.
           //    Play with the duration to make the swipe go slower / faster
-          {type: "pointerMove", duration: 1000, x: to.x, y: to.y},
+          { type: "pointerMove", duration: 1000, x: to.x, y: to.y },
           // f. Finger gets up, off the screen
-          {type: "pointerUp", button: 0},
+          { type: "pointerUp", button: 0 },
         ],
       },
     ]);
     // Add a pause, just to make sure the swipe is done
     await driver.pause(1000);
+  }
+
+  static async tapAtPercentageOfScreenHeight(percentageFromTop: number) {
+    const safePercentage = Math.min(Math.max(percentageFromTop, 0), 100);
+    const { height, width } = await driver.getWindowSize();
+    const x = width / 2;
+    const y = (height * safePercentage) / 100;
+    await driver
+      .action('pointer')
+      .move(Math.round(x),Math.round(y))
+      .down()
+      .pause(10)
+      .up()
+      .perform();
   }
 
   /**
@@ -168,7 +182,7 @@ class Gestures {
   /**
    * Calculate the x y coordinates based on a percentage
    */
-  private static calculateXY({x, y}: XY, percentage: number): XY {
+  private static calculateXY({ x, y }: XY, percentage: number): XY {
     return {
       x: x * percentage,
       y: y * percentage,

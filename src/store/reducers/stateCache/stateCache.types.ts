@@ -1,8 +1,5 @@
-import {
-  ConnectionType,
-  KeriNotification,
-} from "../../../core/agent/agent.types";
-import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifierService.types";
+import { KeriaNotification } from "../../../core/agent/agent.types";
+import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifier.types";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
 
 interface PayloadData<T = any> {
@@ -23,9 +20,7 @@ interface AuthenticationCacheProps {
   passwordIsSkipped: boolean;
 }
 enum IncomingRequestType {
-  CONNECTION_RESPONSE = "connection-response",
   CREDENTIAL_OFFER_RECEIVED = "credential-offer-received",
-  CONNECTION_INCOMING = "connection-incoming",
   MULTI_SIG_REQUEST_INCOMING = "multi-sig-request-incoming",
 }
 
@@ -34,8 +29,7 @@ interface IncomingRequestProps {
   type?: IncomingRequestType;
   logo?: string;
   label?: string;
-  source?: ConnectionType;
-  event?: KeriNotification;
+  event?: KeriaNotification;
   multisigIcpDetails?: MultiSigIcpRequestDetails;
 }
 

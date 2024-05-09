@@ -2,13 +2,12 @@ import { useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./CardsStack.scss";
 import {
-  DIDDetails,
+  IdentifierDetails,
   IdentifierShortDetails,
-} from "../../../core/agent/services/identifierService.types";
+} from "../../../core/agent/services/identifier.types";
 import { CardType } from "../../globals/types";
-
 import { IdentifierCardTemplate } from "../IdentifierCardTemplate";
-import { CredCardTemplate } from "../CredCardTemplate";
+import { CredentialCardTemplate } from "../CredentialCardTemplate";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { CardsStackProps } from "./CardsStack.types";
 
@@ -44,7 +43,7 @@ const CardsStack = ({
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
           />
         ) : (
-          <CredCardTemplate
+          <CredentialCardTemplate
             name={name}
             key={index}
             index={index}
@@ -65,7 +64,7 @@ const CardsStack = ({
     let pathname = "";
 
     if (cardsType === CardType.IDENTIFIERS) {
-      const data = cardsData[index] as DIDDetails;
+      const data = cardsData[index] as IdentifierDetails;
       pathname = `/tabs/identifiers/${data.id}`;
     } else {
       const data = cardsData[index] as CredentialShortDetails;

@@ -44,12 +44,6 @@ const getPreviousRoute = (data: DataProps): { pathname: string } => {
 
   if (routes.length === 0) {
     path = RoutePath.ROOT;
-  } else if (
-    routes.length === 2 &&
-    routes[0].path === RoutePath.SET_PASSCODE &&
-    routes[1].path === RoutePath.PASSCODE_LOGIN
-  ) {
-    path = RoutePath.PASSCODE_LOGIN;
   } else if (prevPath) {
     path = prevPath.path;
   } else {
@@ -59,36 +53,11 @@ const getPreviousRoute = (data: DataProps): { pathname: string } => {
   return { pathname: path };
 };
 
-const updateStoreAfterPasscodeLoginRoute = (data: DataProps) => {
-  const seedPhraseISet = data.store.stateCache.authentication.seedPhraseIsSet;
-
-  if (data.state?.resetPasscode && seedPhraseISet) {
-    return setAuthentication({
-      ...data.store.stateCache.authentication,
-      loggedIn: false,
-      time: 0,
-    });
-  } else if (data.state?.resetPasscode) {
-    return setAuthentication({
-      ...data.store.stateCache.authentication,
-      loggedIn: false,
-      time: 0,
-    });
-  } else {
-    return setAuthentication({
-      ...data.store.stateCache.authentication,
-      loggedIn: true,
-      time: Date.now(),
-    });
-  }
-};
-
 const calcPreviousRoute = (
   routes: { path: string; payload?: PayloadProps }[]
 ) => {
-  return routes
-    .slice(1)
-    .find((element) => element.path !== RoutePath.PASSCODE_LOGIN);
+  if (!routes || routes.length < 2) return undefined;
+  return routes[1];
 };
 
 const backPath = (data: DataProps) => getPreviousRoute(data);
@@ -113,9 +82,6 @@ const backRoute: Record<string, any> = {
   [RoutePath.SET_PASSCODE]: {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
-  [RoutePath.PASSCODE_LOGIN]: {
-    updateRedux: [removeCurrentRoute, updateStoreAfterPasscodeLoginRoute],
-  },
   [RoutePath.CREATE_PASSWORD]: {
     updateRedux: [],
   },
@@ -125,7 +91,7 @@ const backRoute: Record<string, any> = {
   [TabsRoutePath.IDENTIFIER_DETAILS]: {
     updateRedux: [removeCurrentRoute],
   },
-  [TabsRoutePath.CRED_DETAILS]: {
+  [TabsRoutePath.CREDENTIAL_DETAILS]: {
     updateRedux: [removeCurrentRoute],
   },
 };
@@ -134,7 +100,6 @@ export {
   getBackRoute,
   calcPreviousRoute,
   getPreviousRoute,
-  updateStoreAfterPasscodeLoginRoute,
   updateStoreSetCurrentRoute,
   backPath,
 };

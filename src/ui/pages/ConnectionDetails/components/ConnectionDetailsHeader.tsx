@@ -1,7 +1,6 @@
 import { formatShortDate } from "../../../utils/formatters";
 import { ConnectionDetailsHeaderProps } from "./ConnectionDetailsHeader.types";
 import "./ConnectionDetailsHeader.scss";
-import { ConnectionType } from "../../../../core/agent/agent.types";
 
 const ConnectionDetailsHeader = ({
   logo,
@@ -16,8 +15,8 @@ const ConnectionDetailsHeader = ({
           alt="connection-logo"
         />
       </div>
-      <h2>{label}</h2>
-      <p>{formatShortDate(`${date}`)}</p>
+      <h2 data-testid="connection-name">{label}</h2>
+      <p data-testid="data-connection-time">{formatShortDate(`${date}`)}</p>
     </div>
   );
 };

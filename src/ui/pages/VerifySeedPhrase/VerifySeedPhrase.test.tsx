@@ -1,4 +1,4 @@
-import { MemoryRouter, Route, Router } from "react-router-dom";
+import { MemoryRouter, Route } from "react-router-dom";
 import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 import { render, waitFor } from "@testing-library/react";
@@ -8,6 +8,7 @@ import {
 } from "@ionic/react-test-utils";
 import { act } from "react-dom/test-utils";
 import configureStore from "redux-mock-store";
+import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { VerifySeedPhrase } from "../VerifySeedPhrase";
 import { RoutePath } from "../../../routes";
@@ -58,9 +59,15 @@ describe("Verify Seed Phrase Page", () => {
   };
   test("The user can navigate from Generate to Verify Seed Phrase page with a default 15 words seed phrase", async () => {
     const seedPhrase: string[] = [];
+    const history = createMemoryHistory();
+    history.push(RoutePath.GENERATE_SEED_PHRASE);
+
     const { getByTestId, queryByText, getByText } = render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}
+        >
           <Route
             path={RoutePath.GENERATE_SEED_PHRASE}
             component={GenerateSeedPhrase}
@@ -69,7 +76,7 @@ describe("Verify Seed Phrase Page", () => {
             path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
           />
-        </MemoryRouter>
+        </IonReactMemoryRouter>
       </Provider>
     );
 
@@ -171,14 +178,20 @@ describe("Verify Seed Phrase Page", () => {
   });
 
   test("The user can't Verify the Seed Phrase", async () => {
+    const history = createMemoryHistory();
+    history.push(RoutePath.VERIFY_SEED_PHRASE);
+
     const { getByTestId, queryByText } = render(
       <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}
+        >
           <Route
             path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
           />
-        </MemoryRouter>
+        </IonReactMemoryRouter>
       </Provider>
     );
 
@@ -229,9 +242,9 @@ describe("Verify Seed Phrase Page", () => {
     history.push(RoutePath.VERIFY_SEED_PHRASE);
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <Router history={history}>
+        <IonReactRouter history={history}>
           <VerifySeedPhrase />
-        </Router>
+        </IonReactRouter>
       </Provider>
     );
 
@@ -293,9 +306,9 @@ describe("Verify Seed Phrase Page", () => {
     history.push(RoutePath.VERIFY_SEED_PHRASE);
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <Router history={history}>
+        <IonReactRouter history={history}>
           <VerifySeedPhrase />
-        </Router>
+        </IonReactRouter>
       </Provider>
     );
 
@@ -364,14 +377,19 @@ describe("Verify Seed Phrase Page", () => {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
+    const history = createMemoryHistory();
+    history.push(RoutePath.VERIFY_SEED_PHRASE);
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}
+        >
           <Route
             path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
           />
-        </MemoryRouter>
+        </IonReactMemoryRouter>
       </Provider>
     );
 
@@ -396,14 +414,20 @@ describe("Verify Seed Phrase Page", () => {
   });
 
   test("The user can remove words from the Seed Phrase", async () => {
+    const history = createMemoryHistory();
+    history.push(RoutePath.VERIFY_SEED_PHRASE);
+
     const { getByTestId } = render(
       <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}
+        >
           <Route
             path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
           />
-        </MemoryRouter>
+        </IonReactMemoryRouter>
       </Provider>
     );
 
@@ -444,9 +468,9 @@ describe("Verify Seed Phrase Page", () => {
     history.push(RoutePath.VERIFY_SEED_PHRASE);
     const { getByTestId, getByText, queryByText } = render(
       <Provider store={storeMocked}>
-        <Router history={history}>
+        <IonReactRouter history={history}>
           <VerifySeedPhrase />
-        </Router>
+        </IonReactRouter>
       </Provider>
     );
 
@@ -495,9 +519,9 @@ describe("Verify Seed Phrase Page", () => {
     history.push(RoutePath.VERIFY_SEED_PHRASE);
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <Router history={history}>
+        <IonReactRouter history={history}>
           <VerifySeedPhrase />
-        </Router>
+        </IonReactRouter>
       </Provider>
     );
 
@@ -532,9 +556,9 @@ describe("Verify Seed Phrase Page", () => {
     history.push(RoutePath.VERIFY_SEED_PHRASE);
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <Router history={history}>
+        <IonReactRouter history={history}>
           <VerifySeedPhrase />
-        </Router>
+        </IonReactRouter>
       </Provider>
     );
 

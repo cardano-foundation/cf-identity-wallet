@@ -10,7 +10,7 @@ import "./ShareIdentifier.scss";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache, setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { PageHeader } from "../PageHeader";
 import { ResponsiveModal } from "../layout/ResponsiveModal";
 
@@ -28,7 +28,7 @@ const ShareIdentifier = ({
   useEffect(() => {
     if (signifyName) {
       const fetchOobi = async () => {
-        const oobiValue = await AriesAgent.agent.connections.getKeriOobi(
+        const oobiValue = await Agent.agent.connections.getOobi(
           `${signifyName}`,
           userName
         );
@@ -57,9 +57,11 @@ const ShareIdentifier = ({
         {i18n.t("shareidentifier.subtitle")}
       </p>
       <div className="share-identifier-body">
-        <div className="share-identifier-body-component">
+        <div
+          className="share-identifier-body-component"
+          data-testid="share-identifier-qr-code"
+        >
           <QRCode
-            data-testid="share-identifier-qr-code"
             value={oobi}
             size={250}
             fgColor={"black"}
@@ -82,21 +84,26 @@ const ShareIdentifier = ({
         <div className="share-identifier-body-component">
           <span
             className="share-identifier-option"
-            data-testid="share-identifier-copy-button"
             onClick={() => {
               writeToClipboard(oobi);
               dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
             }}
           >
             <span>
-              <IonButton shape="round">
+              <IonButton
+                data-testid="share-identifier-copy-button"
+                shape="round"
+              >
                 <IonIcon
                   slot="icon-only"
                   icon={copyOutline}
                 />
               </IonButton>
             </span>
-            <span className="share-identifier-label">
+            <span
+              className="share-identifier-label"
+              data-testid="share-identifier-copy-label"
+            >
               {i18n.t("shareidentifier.copykey")}
             </span>
           </span>
@@ -110,14 +117,20 @@ const ShareIdentifier = ({
             }}
           >
             <span>
-              <IonButton shape="round">
+              <IonButton
+                shape="round"
+                data-testid="share-identifier-more-button"
+              >
                 <IonIcon
                   slot="icon-only"
                   icon={openOutline}
                 />
               </IonButton>
             </span>
-            <span className="share-identifier-info-block-data">
+            <span
+              className="share-identifier-info-block-data"
+              data-testid="share-identifier-more-label"
+            >
               {i18n.t("shareidentifier.more")}
             </span>
           </span>

@@ -191,4 +191,12 @@
       }
     }
   }
+
+  @media screen and (min-width: 480px) {
+    height: 15.375rem;
+
+    &:not(:first-child) {
+      margin-top: -12rem;
+    }
+  }
 }

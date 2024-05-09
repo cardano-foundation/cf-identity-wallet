@@ -1,6 +1,7 @@
 import { SqliteStorage } from "./sqliteStorage";
 import { convertDbQuery } from "./utils";
-import { BasicRecord, RecordType, StorageRecord } from "../storage.types";
+import { StorageRecord } from "../storage.types";
+import { BasicRecord } from "../../agent/records";
 
 const startTime = new Date();
 
@@ -11,14 +12,6 @@ const connectionMock = {
   close: jest.fn(),
   executeTransaction: jest.fn(),
 };
-
-const getKvMock = jest
-  .spyOn(SqliteStorage.prototype, "getKv")
-  .mockImplementation((key) => {
-    if (key === "VERSION_DATABASE_KEY") return "0.0.1";
-    return false as any;
-  });
-
 // ------ MOCKS ------
 const setMock = jest
   .spyOn(SqliteStorage.prototype, "createItem")
@@ -51,19 +44,19 @@ const getMock = jest
 const getAllKvMock = jest
   .spyOn(SqliteStorage.prototype, "scanItems")
   .mockImplementation(
-    async (type: RecordType, query: any): Promise<StorageRecord[]> => {
+    async (type: string, query: any): Promise<StorageRecord[]> => {
       const records = [
         {
-          category: RecordType.CONNECTION_KERI_METADATA,
+          category: BasicRecord.type,
           name: existingRecord.id,
           value: JSON.stringify({
-            id: "test-0",
+            id: existingRecord.id,
             updatedAt: startTime,
           }),
           tags: { firstTag: "exists", secondTag: "exists" },
         },
         {
-          category: RecordType.CONNECTION_KERI_METADATA,
+          category: BasicRecord.type,
           name: newRecord.id,
           value: JSON.stringify({
             id: "storagerecord-0",
@@ -119,12 +112,10 @@ const existingRecord = new BasicRecord({
   content: {
     test: 1,
   },
-  type: RecordType.CONNECTION_KERI_METADATA,
   createdAt: startTime,
 });
 const updatedRecord = new BasicRecord({
   id: "test1",
-  type: RecordType.CONNECTION_KERI_METADATA,
   createdAt: startTime,
   content: {
     test: 1,
@@ -132,22 +123,13 @@ const updatedRecord = new BasicRecord({
 });
 const newRecord = new BasicRecord({
   id: "test3",
-  type: RecordType.CONNECTION_KERI_METADATA,
   createdAt: startTime,
   content: {
     test: 1,
   },
 });
 
-const storageService = new SqliteStorage();
-
-beforeAll(async () => {
-  const walletConfig = {
-    id: "sqlite-storage-service-test-wallet",
-    key: "testkey",
-  };
-  await storageService.open(walletConfig.id);
-});
+const storageService = new SqliteStorage<BasicRecord>({} as any);
 
 describe("Aries - Sqlite Storage Module: Storage Service", () => {
   test("should be able to store a new record", async () => {
@@ -213,23 +195,24 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
   });
 
   test("should get an existing record", async () => {
-    const record = await storageService.findById(existingRecord.id);
+    const record = await storageService.findById(
+      existingRecord.id,
+      BasicRecord
+    );
     expect(getMock).toBeCalledWith(existingRecord.id);
-    expect(record.type).toEqual(RecordType.CONNECTION_KERI_METADATA);
-    expect(record.id).toEqual(existingRecord.id);
+    expect(record!.type).toEqual(BasicRecord.type);
+    expect(record!.id).toEqual(existingRecord.id);
   });
 
-  test("should throw an error if trying to retrieve a record that does not exist", async () => {
-    await expect(storageService.findById(newRecord.id)).rejects.toThrow(
-      `${SqliteStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${newRecord.id}`
-    );
-    expect(getMock).toBeCalledWith(newRecord.id);
+  test("should get an non existing record", async () => {
+    const nonExistingId = "nonExistingId";
+    const record = await storageService.findById(nonExistingId, BasicRecord);
+    expect(getMock).toBeCalledWith(nonExistingId);
+    expect(record).toEqual(null);
   });
 
   test("should return all items for a record type but none others", async () => {
-    const result = await storageService.getAll(
-      RecordType.CONNECTION_KERI_METADATA
-    );
+    const result = await storageService.getAll(BasicRecord);
     expect(getAllKvMock).toBeCalled();
     expect(result.length).toEqual(2);
     expect(result[0].id).toEqual(existingRecord.id);
@@ -237,40 +220,28 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
 
   test("should find an item if every record tag is part of the query", async () => {
     const tags = { firstTag: "exists", secondTag: "exists" };
-    const result = await storageService.findAllByQuery(
-      RecordType.CONNECTION_KERI_METADATA,
-      tags
-    );
+    const result = await storageService.findAllByQuery(tags, BasicRecord);
     expect(getAllKvMock).toBeCalled();
     expect(result.length).toEqual(1);
   });
 
   test("should find an item if every query tag is part of the record tags", async () => {
     const tags = { firstTag: "exists" };
-    const result = await storageService.findAllByQuery(
-      RecordType.CONNECTION_KERI_METADATA,
-      tags
-    );
+    const result = await storageService.findAllByQuery(tags, BasicRecord);
     expect(getAllKvMock).toBeCalled();
     expect(result.length).toEqual(1);
   });
 
   test("should not find an item by tag that doesn't exist", async () => {
     const tags = { doesNotExist: "doesNotExist" };
-    const result = await storageService.findAllByQuery(
-      RecordType.CONNECTION_KERI_METADATA,
-      tags
-    );
+    const result = await storageService.findAllByQuery(tags, BasicRecord);
     expect(getAllKvMock).toBeCalled();
     expect(result.length).toEqual(0);
   });
 
   test("should only return an item if every tag matches", async () => {
     const tags = { firstTag: "exists", secondTag: "doesNotExist" };
-    const result = await storageService.findAllByQuery(
-      RecordType.CONNECTION_KERI_METADATA,
-      tags
-    );
+    const result = await storageService.findAllByQuery(tags, BasicRecord);
     expect(getAllKvMock).toBeCalled();
     expect(result.length).toEqual(0);
   });

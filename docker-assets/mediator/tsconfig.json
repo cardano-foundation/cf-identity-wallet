@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "lib": ["es2018"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2018",
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "pretty": true,
+    "strict": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "declaration": true
+  },
+  "include": ["src/**/*"],
+  "compileOnSave": false
+}

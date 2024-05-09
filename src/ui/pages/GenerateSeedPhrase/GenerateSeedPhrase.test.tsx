@@ -228,7 +228,9 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     const continueButton = getByText(
       EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
-    const alertWrapper = getByTestId("alert-confirm");
+    const alertWrapper = getByTestId(
+      "seed-phrase-generate-alert-continue-container"
+    );
     const termsCheckbox = getByTestId("terms-and-conditions-checkbox");
 
     expect(alertWrapper).toHaveClass("alert-invisible");
@@ -269,7 +271,9 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     const continueButton = getByText(
       EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
-    const alertWrapper = getByTestId("alert-confirm");
+    const alertWrapper = getByTestId(
+      "seed-phrase-generate-alert-continue-container"
+    );
 
     act(() => {
       fireEvent.click(revealSeedPhraseButton);
@@ -308,7 +312,9 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("alert-confirm")).toBeInTheDocument();
+      expect(
+        getByTestId("seed-phrase-generate-alert-continue")
+      ).toBeInTheDocument();
     });
 
     const backdrop = document.querySelector("ion-backdrop");

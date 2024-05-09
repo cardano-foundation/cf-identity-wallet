@@ -1,0 +1,64 @@
+.identifier-card-details {
+  .identifier-card-template {
+    margin-bottom: 0;
+  }
+
+  .multi-sig-contact-list {
+    ion-grid,
+    ion-col {
+      padding: 0;
+    }
+  }
+
+  .page-header {
+    margin-top: 0.625rem;
+  }
+}
+
+.open-animation {
+  .card-details-content {
+    animation: expand 0.7s ease-in-out;
+
+    @keyframes expand {
+      from {
+        height: 0;
+        overflow-y: hidden;
+        opacity: 0;
+      }
+
+      to {
+        height: 100vh;
+        overflow-y: hidden;
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.back-animation {
+  .card-details-content {
+    animation: collapse 0.2s ease-in-out;
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes collapse {
+    from {
+      height: 100vh;
+      overflow-y: hidden;
+      opacity: 1;
+    }
+
+    to {
+      height: 0;
+      overflow-y: hidden;
+      opacity: 0;
+    }
+  }
+}
+
+.identifier-card-detail-spinner-container {
+  height: calc(100vh - 11.5rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

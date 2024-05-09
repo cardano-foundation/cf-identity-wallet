@@ -1,38 +1,5 @@
-import { Agent } from "@aries-framework/core";
+import { EventService } from "./eventService";
 import { SignifyNotificationService } from "./signifyNotificationService";
-import { SignifyApi } from "../modules/signify/signifyApi";
-
-const agent = jest.mocked({
-  modules: {
-    generalStorage: {
-      getAllAvailableIdentifierMetadata: jest.fn(),
-      getAllArchivedIdentifierMetadata: jest.fn(),
-      getIdentifierMetadata: jest.fn(),
-      saveIdentifierMetadataRecord: jest.fn(),
-      archiveIdentifierMetadata: jest.fn(),
-      deleteIdentifierMetadata: jest.fn(),
-      updateIdentifierMetadata: jest.fn(),
-      getKeriIdentifiersMetadata: jest.fn(),
-    },
-    signify: {
-      getIdentifierByName: jest.fn(),
-      createIdentifier: jest.fn(),
-      getAllIdentifiers: jest.fn(),
-      markNotification: jest.fn(),
-    },
-  },
-  dids: {
-    getCreatedDids: jest.fn(),
-    resolve: jest.fn(),
-    create: jest.fn(),
-  },
-  genericRecords: {
-    save: jest.fn(),
-    findAllByQuery: jest.fn(),
-    findById: jest.fn(),
-    deleteById: jest.fn(),
-  },
-});
 
 const basicStorage = jest.mocked({
   open: jest.fn(),
@@ -45,14 +12,99 @@ const basicStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
-const signifyApi = jest.mocked({
-  markNotification: jest.fn(),
+const identifiersListMock = jest.fn();
+const identifiersGetMock = jest.fn();
+const identifiersCreateMock = jest.fn();
+const identifiersMemberMock = jest.fn();
+const identifiersInteractMock = jest.fn();
+const identifiersRotateMock = jest.fn();
+
+const oobiResolveMock = jest.fn();
+const groupGetRequestMock = jest.fn();
+const queryKeyStateMock = jest.fn();
+
+const signifyClient = jest.mocked({
+  connect: jest.fn(),
+  boot: jest.fn(),
+  identifiers: () => ({
+    list: identifiersListMock,
+    get: identifiersGetMock,
+    create: identifiersCreateMock,
+    addEndRole: jest.fn(),
+    interact: identifiersInteractMock,
+    rotate: identifiersRotateMock,
+    members: identifiersMemberMock,
+  }),
+  operations: () => ({
+    get: jest.fn().mockImplementation((id: string) => {
+      return {
+        done: true,
+        response: {
+          i: id,
+        },
+      };
+    }),
+  }),
+  oobis: () => ({
+    get: jest.fn(),
+    resolve: oobiResolveMock,
+  }),
+  contacts: () => ({
+    list: jest.fn(),
+    get: jest.fn().mockImplementation((id: string) => {
+      return {
+        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
+        oobi: "oobi",
+        id,
+      };
+    }),
+    delete: jest.fn(),
+  }),
+  notifications: () => ({
+    list: jest.fn(),
+    mark: jest.fn(),
+  }),
+  ipex: () => ({
+    admit: jest.fn(),
+    submitAdmit: jest.fn(),
+  }),
+  credentials: () => ({
+    list: jest.fn(),
+  }),
+  exchanges: () => ({
+    get: jest.fn(),
+    send: jest.fn(),
+  }),
+  agent: {
+    pre: "pre",
+  },
+  keyStates: () => ({
+    query: queryKeyStateMock,
+    get: jest.fn(),
+  }),
+
+  groups: () => ({ getRequest: groupGetRequestMock }),
+});
+
+const agentServicesProps = {
+  signifyClient: signifyClient as any,
+  eventService: new EventService(),
+};
+
+const notificationStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
 });
 
 const signifyNotificationService = new SignifyNotificationService(
-  agent as any as Agent,
-  basicStorage,
-  signifyApi as any as SignifyApi
+  agentServicesProps,
+  notificationStorage as any
 );
 
 describe("Signify notification service of agent", () => {
@@ -94,14 +146,14 @@ describe("Signify notification service of agent", () => {
         },
       },
     ];
-    basicStorage.save = jest
+    notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
     jest.useFakeTimers();
     for (const notif of notes) {
       await signifyNotificationService.processNotification(notif, callback);
     }
-    expect(basicStorage.save).toBeCalledTimes(2);
+    expect(notificationStorage.save).toBeCalledTimes(2);
     expect(callback).toBeCalledTimes(2);
   });
 
@@ -115,17 +167,21 @@ describe("Signify notification service of agent", () => {
         this._tags[name] = value;
       },
     };
-    basicStorage.findById = jest.fn().mockResolvedValue(notification);
+    notificationStorage.findById = jest.fn().mockResolvedValue(notification);
     await signifyNotificationService.dismissNotification(notification.id);
-    expect(basicStorage.update).toBeCalledTimes(1);
+    expect(notificationStorage.update).toBeCalledTimes(1);
   });
 
   test("Should throw error when dismiss an invalid notification", async () => {
-    basicStorage.findById = jest.fn().mockResolvedValue(null);
+    notificationStorage.findById = jest.fn().mockResolvedValue(null);
     await expect(
       signifyNotificationService.dismissNotification("not-exist-noti-id")
-    ).rejects.toThrowError(
-      SignifyNotificationService.KERI_NOTIFICATION_NOT_FOUND
-    );
+    ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
+  });
+
+  test("can delete keri notification by ID", async () => {
+    const id = "uuid";
+    await signifyNotificationService.deleteNotificationRecordById(id);
+    expect(notificationStorage.deleteById).toBeCalled();
   });
 });

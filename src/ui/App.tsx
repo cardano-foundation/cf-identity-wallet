@@ -1,7 +1,8 @@
 import { StrictMode, useEffect, useMemo, useState } from "react";
-import { setupIonicReact, IonApp, isPlatform } from "@ionic/react";
+import { setupIonicReact, IonApp, getPlatforms } from "@ionic/react";
 import { StatusBar, Style } from "@capacitor/status-bar";
-import { Routes } from "../routes";
+import { ScreenOrientation } from "@capacitor/screen-orientation";
+import { RoutePath, Routes } from "../routes";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";
@@ -11,21 +12,24 @@ import {
   getAuthentication,
   getCurrentOperation,
   getCurrentRoute,
+  getStateCache,
   getToastMsg,
 } from "../store/reducers/stateCache";
 import { useAppSelector } from "../store/hooks";
 import { FullPageScanner } from "./pages/FullPageScanner";
 import { OperationType } from "./globals/types";
 import { IncomingRequest } from "./pages/IncomingRequest";
-import { Settings } from "./pages/Settings";
 import { SetUserName } from "./components/SetUserName";
-import { TabsRoutePath } from "../routes/paths";
+import { PublicRoutes, TabsRoutePath } from "../routes/paths";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
+import { LockPage } from "./pages/LockPage/LockPage";
+import { LoadingPage } from "./pages/LoadingPage/LoadingPage";
 
 setupIonicReact();
 
 const App = () => {
+  const stateCache = useAppSelector(getStateCache);
   const authentication = useAppSelector(getAuthentication);
   const currentRoute = useAppSelector(getCurrentRoute);
   const [showSetUserName, setShowSetUserName] = useState(false);
@@ -60,39 +64,65 @@ const App = () => {
 
   useEffect(() => {
     if (
-      authentication.userName?.length === 0 &&
+      authentication.loggedIn &&
+      (authentication.userName === undefined ||
+        authentication.userName?.length === 0) &&
       currentRoute?.path?.includes(TabsRoutePath.ROOT)
     ) {
       setShowSetUserName(true);
     }
-  }, [authentication, currentRoute]);
+  }, [authentication.loggedIn, currentRoute]);
 
   useEffect(() => {
-    if (isPlatform("ios")) {
-      StatusBar.setStyle({
-        style: Style.Light,
-      });
+    const platforms = getPlatforms();
+    if (!platforms.includes("mobileweb")) {
+      ScreenOrientation.lock({ orientation: "portrait" });
+      if (platforms.includes("ios")) {
+        StatusBar.setStyle({
+          style: Style.Light,
+        });
+      }
+
+      return () => {
+        ScreenOrientation.unlock();
+      };
     }
   }, []);
+
+  const renderApp = () => {
+    if (showScan) {
+      return <FullPageScanner setShowScan={setShowScan} />;
+    } else {
+      return (
+        <>
+          {isPreviewMode ? <MobileHeaderPreview /> : null}
+          <Routes />
+        </>
+      );
+    }
+  };
+
+  const isPublicPage = PublicRoutes.includes(
+    window.location.pathname as RoutePath
+  );
 
   return (
     <IonApp>
       <AppWrapper>
         <StrictMode>
-          {showScan ? (
-            <FullPageScanner setShowScan={setShowScan} />
-          ) : (
+          {stateCache.initialized ? (
             <>
-              {isPreviewMode && <MobileHeaderPreview />}
-              <Routes />
+              {renderApp()}
+              {!isPublicPage && !authentication.loggedIn ? <LockPage /> : null}
             </>
+          ) : (
+            <LoadingPage />
           )}
           <SetUserName
             isOpen={showSetUserName}
             setIsOpen={setShowSetUserName}
           />
           <IncomingRequest />
-          <Settings />
           <CustomToast
             toastMsg={toastMsg}
             showToast={showToast}

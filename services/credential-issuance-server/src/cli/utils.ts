@@ -16,9 +16,4 @@ async function postRequestAndGenQR(endpoint: string, body?: any) {
   qrcode.generate(invitationLink, { small: true });
 }
 
-function getCredentialJsonData(fileName: string) {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  return require(`../../credentials-json/${fileName}`);
-}
-
-export { requestAndGenQR, postRequestAndGenQR, getCredentialJsonData };
+export { requestAndGenQR, postRequestAndGenQR };

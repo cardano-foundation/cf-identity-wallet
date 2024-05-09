@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import { createGenerator } from "ts-json-schema-generator";
 
 export const generateRandomNumbersArray = (): number[] =>
   Array.from({ length: 6 }, () => faker.number.int({ min: 0, max: 9 }));
@@ -6,6 +7,21 @@ export const generateRandomNumbersArray = (): number[] =>
 const getRandomChar = (characters: string): string => {
   const randomIndex = Math.floor(Math.random() * characters.length);
   return characters[randomIndex];
+};
+
+export function jsonSchema(projectFileName: string, typeName: string) {
+  const generator = createGenerator({
+    path: `./tests/helpers/models/${projectFileName}`,
+    type: typeName,
+  });
+
+  return generator.createSchema(typeName);
+}
+
+export const randomNameWithPrefix = async (prefix: string) => {
+  return `test-${prefix}-${faker.lorem.word({
+    length: { min: 3, max: 7 },
+  })}-${faker.number.int({ min: 1000, max: 9999 })}`;
 };
 
 export const returnPassword = async (length: number) => {

@@ -18,6 +18,7 @@ import { PageHeader } from "../../components/PageHeader";
 import { PageFooter } from "../../components/PageFooter";
 import { SeedPhraseModule } from "../../components/SeedPhraseModule";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { useAppIonRouter } from "../../hooks";
 
 const VerifySeedPhrase = () => {
   const pageId = "verify-seed-phrase";
@@ -32,6 +33,7 @@ const VerifySeedPhrase = () => {
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
   const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const ionRouter = useAppIonRouter();
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.VERIFY_SEED_PHRASE) {
@@ -111,7 +113,8 @@ const VerifySeedPhrase = () => {
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     handleClearState();
-    history.push(nextPath.pathname);
+
+    ionRouter.push(nextPath.pathname, "root", "replace");
   };
 
   const handleBack = () => {

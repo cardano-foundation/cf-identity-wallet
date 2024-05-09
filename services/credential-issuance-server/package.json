@@ -7,9 +7,6 @@
         "test": "test",
         "start": "node build/server.js",
         "start:dev": "npx nodemon",
-        "cli:invitation": "npx ts-node ./src/cli/invitation.ts",
-        "cli:offer-credential": "npx ts-node src/cli/invitationWithCredential.ts",
-        "cli:offer-credential-connection-less": "npx ts-node src/cli/invitationWithCredentialConnectionless.ts",
         "cli:keri-oobi": "npx ts-node ./src/cli/keriOobi.ts",
         "cli:multi-sig-incept": "npx ts-node ./src/cli/multiSigIncept.ts",
         "build": "rimraf ./build && tsc"
@@ -17,10 +14,6 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@aries-framework/askar": "0.5.0-alpha.71",
-        "@aries-framework/core": "0.5.0-alpha.71",
-        "@aries-framework/node": "0.5.0-alpha.71",
-        "@hyperledger/aries-askar-nodejs": "^0.2.0-dev.1",
         "axios": "^1.5.0",
         "body-parser": "^1.20.2",
         "cors": "^2.8.5",

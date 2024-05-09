@@ -1,189 +1,242 @@
-import {
-  InitConfig,
-  Agent,
-  AgentDependencies,
-  DidsModule,
-  KeyDidResolver,
-  // MediationRecipientModule,
-  // MediatorPickupStrategy,
-  KeyDidRegistrar,
-  WsOutboundTransport,
-  CredentialsModule,
-  V2CredentialProtocol,
-  JsonLdCredentialFormatService,
-  AutoAcceptCredential,
-  W3cCredentialsModule,
-} from "@aries-framework/core";
-import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
-import { CapacitorFileSystem } from "./dependencies";
-import { IonicStorageModule, GeneralStorageModule } from "./modules";
-import { HttpOutboundTransport } from "./transports";
-import { SqliteStorageModule } from "./modules/sqliteStorage";
+import {
+  randomPasscode,
+  SignifyClient,
+  ready as signifyReady,
+  Tier,
+} from "signify-ts";
+import { DataType } from "@aparajita/capacitor-secure-storage";
 import {
   ConnectionService,
   CredentialService,
   IdentifierService,
-  MessageService,
 } from "./services";
-import { documentLoader } from "./documentLoader";
 import { SignifyNotificationService } from "./services/signifyNotificationService";
-import { StorageApi } from "../storage/storage.types";
-import { SqliteStorage } from "../storage/sqliteStorage";
+import { AgentServicesProps } from "./agent.types";
+import { EventService } from "./services/eventService";
+import {
+  BasicRecord,
+  BasicStorage,
+  ConnectionNoteRecord,
+  ConnectionNoteStorage,
+  ConnectionRecord,
+  ConnectionStorage,
+  CredentialMetadataRecord,
+  CredentialStorage,
+  IdentifierMetadataRecord,
+  IdentifierStorage,
+  PeerConnectionMetadataRecord,
+  PeerConnectionStorage,
+  NotificationRecord,
+  NotificationStorage,
+} from "./records";
+import { KeyStoreKeys, SecureStorage } from "../storage";
+import { MultiSigService } from "./services/multiSigService";
+import { IpexCommunicationService } from "./services/ipexCommunicationService";
+import { SqliteSession } from "../storage/sqliteStorage/sqliteSession";
+import { IonicSession } from "../storage/ionicStorage/ionicSession";
 import { IonicStorage } from "../storage/ionicStorage";
-import { SignifyApi } from "./modules/signify/signifyApi";
+import { SqliteStorage } from "../storage/sqliteStorage";
+import { BaseRecord } from "../storage/storage.types";
 
-const config: InitConfig = {
-  label: "idw-agent",
-  walletConfig: {
-    id: "idw",
-    key: "idw", // Right now, this key isn't used as we don't have encryption.
-  },
-  autoUpdateStorageOnStartup: true,
-};
+const walletId = "idw";
+class Agent {
+  static readonly LOCAL_KERIA_ENDPOINT =
+    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
+    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
 
-const agentDependencies: AgentDependencies = {
-  FileSystem: CapacitorFileSystem,
-  EventEmitterClass: EventEmitter,
-  // eslint-disable-next-line no-undef
-  fetch: global.fetch as unknown as AgentDependencies["fetch"],
-  WebSocketClass:
-    // eslint-disable-next-line no-undef
-    global.WebSocket as unknown as AgentDependencies["WebSocketClass"],
-};
+  private static instance: Agent;
+  private agentServicesProps!: AgentServicesProps;
 
-const agentModules = {
-  generalStorage: new GeneralStorageModule(),
-  dids: new DidsModule({
-    registrars: [new KeyDidRegistrar()],
-    resolvers: [new KeyDidResolver()],
-  }),
-  ...(Capacitor.isNativePlatform()
-    ? { sqliteStorage: new SqliteStorageModule() }
-    : { ionicStorage: new IonicStorageModule() }),
-  // mediationRecipient: new MediationRecipientModule({
-  //   mediatorInvitationUrl:
-  //     "https://dev.mediator.cf-keripy.metadata.dev.cf-deployments.org/invitation?oob=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcvb3V0LW9mLWJhbmQvMS4xL2ludml0YXRpb24iLCJAaWQiOiI0YmU0NDk1OC01YmJhLTRlYTMtYjY2Zi05NWFlNDQ3ZjY0NjUiLCJsYWJlbCI6IkFyaWVzIEZyYW1ld29yayBKYXZhU2NyaXB0IE1lZGlhdG9yIiwiYWNjZXB0IjpbImRpZGNvbW0vYWlwMSIsImRpZGNvbW0vYWlwMjtlbnY9cmZjMTkiXSwiaGFuZHNoYWtlX3Byb3RvY29scyI6WyJodHRwczovL2RpZGNvbW0ub3JnL2RpZGV4Y2hhbmdlLzEuMCIsImh0dHBzOi8vZGlkY29tbS5vcmcvY29ubmVjdGlvbnMvMS4wIl0sInNlcnZpY2VzIjpbeyJpZCI6IiNpbmxpbmUtMCIsInNlcnZpY2VFbmRwb2ludCI6Imh0dHBzOi8vZGV2Lm1lZGlhdG9yLmNmLWtlcmlweS5tZXRhZGF0YS5kZXYuY2YtZGVwbG95bWVudHMub3JnIiwidHlwZSI6ImRpZC1jb21tdW5pY2F0aW9uIiwicmVjaXBpZW50S2V5cyI6WyJkaWQ6a2V5Ono2TWtzQ3Y3TUZLa1UyeVlyeUdzVEd2MWl3U01GcmRSMVd2V3dkbjQ3NFk3emgxVSJdLCJyb3V0aW5nS2V5cyI6W119LHsiaWQiOiIjaW5saW5lLTEiLCJzZXJ2aWNlRW5kcG9pbnQiOiJ3c3M6Ly9kZXYubWVkaWF0b3IuY2Yta2VyaXB5Lm1ldGFkYXRhLmRldi5jZi1kZXBsb3ltZW50cy5vcmciLCJ0eXBlIjoiZGlkLWNvbW11bmljYXRpb24iLCJyZWNpcGllbnRLZXlzIjpbImRpZDprZXk6ejZNa3NDdjdNRktrVTJ5WXJ5R3NUR3YxaXdTTUZyZFIxV3ZXd2RuNDc0WTd6aDFVIl0sInJvdXRpbmdLZXlzIjpbXX1dfQ",
-  //   mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
-  // }),
-  credentials: new CredentialsModule({
-    credentialProtocols: [
-      new V2CredentialProtocol({
-        credentialFormats: [new JsonLdCredentialFormatService()],
-      }),
-    ],
-    autoAcceptCredentials: AutoAcceptCredential.ContentApproved,
-  }),
-  w3cCredentials: new W3cCredentialsModule({
-    documentLoader: documentLoader,
-  }),
-};
+  private storageSession!: SqliteSession | IonicSession;
 
-class AriesAgent {
-  private static instance: AriesAgent;
-  private readonly agent!: Agent<typeof agentModules>;
-  private basicRecordStorage!: StorageApi;
-  private signifyApi!: SignifyApi;
+  private basicStorageService!: BasicStorage;
+  private identifierStorage!: IdentifierStorage;
+  private credentialStorage!: CredentialStorage;
+  private connectionStorage!: ConnectionStorage;
+  private connectionNoteStorage!: ConnectionNoteStorage;
+  private notificationStorage!: NotificationStorage;
+  private peerConnectionStorage!: PeerConnectionStorage;
+
+  private signifyClient!: SignifyClient;
   static ready = false;
 
   // @TODO - foconnor: Registering these should be more generic, but OK for now
   private identifierService!: IdentifierService;
+  private multiSigService!: MultiSigService;
+  private ipexCommunicationService!: IpexCommunicationService;
+
   private connectionService!: ConnectionService;
-  private messageService!: MessageService;
   private credentialService!: CredentialService;
   private signifyNotificationService!: SignifyNotificationService;
 
   get identifiers() {
     if (!this.identifierService) {
       this.identifierService = new IdentifierService(
-        this.agent,
-        this.basicRecordStorage,
-        this.signifyApi
+        this.agentServicesProps,
+        this.identifierStorage
       );
     }
     return this.identifierService;
   }
 
+  get multiSigs() {
+    if (!this.multiSigService) {
+      this.multiSigService = new MultiSigService(
+        this.agentServicesProps,
+        this.identifierStorage,
+        this.notificationStorage
+      );
+    }
+    return this.multiSigService;
+  }
+
+  get ipexCommunications() {
+    if (!this.ipexCommunicationService) {
+      this.ipexCommunicationService = new IpexCommunicationService(
+        this.agentServicesProps,
+        this.identifierStorage,
+        this.credentialStorage,
+        this.notificationStorage
+      );
+    }
+    return this.ipexCommunicationService;
+  }
+
   get connections() {
     if (!this.connectionService) {
       this.connectionService = new ConnectionService(
-        this.agent,
-        this.basicRecordStorage,
-        this.signifyApi
+        this.agentServicesProps,
+        this.connectionStorage,
+        this.connectionNoteStorage,
+        this.credentialStorage
       );
     }
     return this.connectionService;
   }
 
-  get messages() {
-    if (!this.messageService) {
-      this.messageService = new MessageService(
-        this.agent,
-        this.basicRecordStorage,
-        this.signifyApi
-      );
-    }
-    return this.messageService;
-  }
-
   get credentials() {
     if (!this.credentialService) {
       this.credentialService = new CredentialService(
-        this.agent,
-        this.basicRecordStorage,
-        this.signifyApi
+        this.agentServicesProps,
+        this.credentialStorage,
+        this.notificationStorage
       );
     }
     return this.credentialService;
   }
 
-  get genericRecords() {
-    return this.agent.genericRecords;
+  get peerConnectionMetadataStorage() {
+    return this.peerConnectionStorage;
+  }
+
+  get basicStorage() {
+    return this.basicStorageService;
   }
 
   get signifyNotifications() {
     if (!this.signifyNotificationService) {
       this.signifyNotificationService = new SignifyNotificationService(
-        this.agent,
-        this.basicRecordStorage,
-        this.signifyApi
+        this.agentServicesProps,
+        this.notificationStorage
       );
     }
     return this.signifyNotificationService;
   }
 
   private constructor() {
-    this.agent = new Agent({
-      config,
-      dependencies: agentDependencies,
-      modules: agentModules,
-    });
-    this.agent.registerOutboundTransport(new HttpOutboundTransport());
-    this.agent.registerOutboundTransport(new WsOutboundTransport());
-    this.signifyApi = new SignifyApi();
-    this.basicRecordStorage = Capacitor.isNativePlatform()
-      ? new SqliteStorage()
-      : new IonicStorage();
+    this.storageSession = Capacitor.isNativePlatform()
+      ? new SqliteSession()
+      : new IonicSession();
   }
 
   static get agent() {
     if (!this.instance) {
-      this.instance = new AriesAgent();
+      this.instance = new Agent();
     }
     return this.instance;
   }
 
   async start(): Promise<void> {
-    if (!AriesAgent.ready) {
-      await this.basicRecordStorage.open(config.walletConfig?.id || "idw");
-      await this.agent.initialize();
-      await this.signifyApi.start();
-      AriesAgent.ready = true;
-      await this.connections.receiveInvitationFromUrl(
-        "http://keria:3902/oobi/EBGErsBsjjgxXOFBSULFntGXwrz6748XxuThBEae2UTA/agent/EJeMK8Ip3yXAq0zx85hgTbcHnpVrZBHnSfJqz6tvzepI?name=CF%20Credential%20Issuance"
+    if (!Agent.ready) {
+      await this.storageSession.open(walletId);
+      this.basicStorageService = new BasicStorage(
+        this.getStorageService<BasicRecord>(this.storageSession)
       );
+      this.identifierStorage = new IdentifierStorage(
+        this.getStorageService<IdentifierMetadataRecord>(this.storageSession)
+      );
+      this.credentialStorage = new CredentialStorage(
+        this.getStorageService<CredentialMetadataRecord>(this.storageSession)
+      );
+      this.connectionStorage = new ConnectionStorage(
+        this.getStorageService<ConnectionRecord>(this.storageSession)
+      );
+      this.connectionNoteStorage = new ConnectionNoteStorage(
+        this.getStorageService<ConnectionNoteRecord>(this.storageSession)
+      );
+      this.notificationStorage = new NotificationStorage(
+        this.getStorageService<NotificationRecord>(this.storageSession)
+      );
+
+      await signifyReady();
+      const bran = await this.getBran();
+      // @TODO - foconnor: Review of Tier level.
+      this.signifyClient = new SignifyClient(
+        Agent.LOCAL_KERIA_ENDPOINT,
+        bran,
+        Tier.low,
+        Agent.LOCAL_KERIA_BOOT_ENDPOINT
+      );
+      try {
+        await this.signifyClient.connect();
+      } catch (err) {
+        await this.signifyClient.boot();
+        await this.signifyClient.connect();
+      }
+
+      this.agentServicesProps = {
+        signifyClient: this.signifyClient,
+        eventService: new EventService(),
+      };
+
+      this.peerConnectionStorage = new PeerConnectionStorage(
+        this.getStorageService<PeerConnectionMetadataRecord>(
+          this.storageSession
+        )
+      );
+      Agent.ready = true;
     }
+  }
+
+  private async getBran(): Promise<string> {
+    let bran: DataType | null;
+    try {
+      bran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message ===
+          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
+      ) {
+        bran = randomPasscode();
+        await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
+      } else {
+        throw error;
+      }
+    }
+    return bran as string;
+  }
+
+  private getStorageService<T extends BaseRecord>(
+    instance: IonicSession | SqliteSession
+  ) {
+    if (instance instanceof IonicSession) {
+      return new IonicStorage<T>(instance.session!);
+    }
+    return new SqliteStorage<T>(instance.session!);
   }
 }
 
-export { AriesAgent, agentDependencies, agentModules };
+export { Agent };

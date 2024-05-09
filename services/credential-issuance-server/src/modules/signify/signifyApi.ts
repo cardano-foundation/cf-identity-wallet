@@ -1,4 +1,3 @@
-import { utils } from "@aries-framework/core";
 import {
   SignifyClient,
   ready as signifyReady,
@@ -6,9 +5,10 @@ import {
   randomPasscode,
   Operation,
 } from "signify-ts";
-import { AriesAgent } from "../../ariesAgent";
+import { Agent } from "../../agent";
 import { waitAndGetDoneOp } from "./utils";
 import { config } from "../../config";
+import { v4 as uuidv4 } from "uuid";
 
 export class SignifyApi {
   static readonly DEFAULT_ROLE = "agent";
@@ -41,7 +41,7 @@ export class SignifyApi {
       await this.signifyClient.boot();
       await this.signifyClient.connect();
     }
-    await AriesAgent.agent.initKeri();
+    await Agent.agent.initKeri();
   }
 
   async createIdentifier(signifyName: string): Promise<any> {
@@ -70,11 +70,10 @@ export class SignifyApi {
   }
 
   async resolveOobi(url: string): Promise<any> {
-    const alias = utils.uuid();
-    let operation = await this.signifyClient.oobis().resolve(url, alias);
-    operation = await waitAndGetDoneOp(
+    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
+    const operation = await waitAndGetDoneOp(
       this.signifyClient,
-      operation,
+      await this.signifyClient.oobis().resolve(url, alias),
       this.opTimeout,
       this.opRetryInterval
     );
@@ -103,7 +102,7 @@ export class SignifyApi {
     await this.resolveOobi(`${config.oobiEndpoint}/oobi/${schemaId}`);
     
     let vcdata = {}
-    if (schemaId === "EKYv475K1k6uMt9IJw99NM8iLQuQf1bKfSHqA1XIKoQy") {
+    if (schemaId === "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu") {
       vcdata = {
         attendeeName: name,
       };

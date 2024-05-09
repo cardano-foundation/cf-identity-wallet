@@ -1,0 +1,40 @@
+.sub-menu {
+  display: flex !important;
+  background: var(--ion-color-light-grey);
+
+  &.show {
+    transform: translate3d(0, 0, 0);
+    transition-duration: 0.5s;
+  }
+
+  &.hide {
+    transform: translate3d(100%, 0, 0);
+    transition-duration: 0.5s;
+  }
+
+  ion-header ion-toolbar {
+    margin-top: 0.625rem;
+    --background: var(--ion-color-light-grey);
+
+    ion-title.md {
+      margin-left: -3rem;
+    }
+  }
+
+  ion-toolbar ion-buttons ion-button.close-button {
+    --background-activated: var(--ion-color-light);
+    --background-focused: var(--ion-color-light);
+    --background-hover: var(--ion-color-light);
+    background: var(--ion-color-light);
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    ion-header ion-toolbar {
+      margin-top: 0.531rem;
+
+      ion-title.md {
+        margin-left: -2rem;
+      }
+    }
+  }
+}

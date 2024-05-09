@@ -1,15 +1,14 @@
 import { Storage, Drivers } from "@ionic/storage";
 import {
-  BasicRecord,
-  StorageApi,
   Query,
-  SaveBasicRecordOption,
-  RecordType,
+  BaseRecord,
+  StorageService,
+  BaseRecordConstructor,
 } from "../storage.types";
 import { deserializeRecord } from "../utils";
+import { BasicRecord } from "../../agent/records";
 
-class IonicStorage implements StorageApi {
-  private static readonly drivers = [Drivers.IndexedDB];
+class IonicStorage<T extends BaseRecord> implements StorageService<T> {
   private static readonly SESION_IS_NOT_INITIALIZED =
     "Session is not initialized";
 
@@ -20,29 +19,13 @@ class IonicStorage implements StorageApi {
     "Record does not exist with id";
   private session?: Storage;
 
-  async open(storageName: string) {
-    if (!this.session) {
-      this.session = new Storage({
-        name: storageName,
-        driverOrder: IonicStorage.drivers,
-      });
-      await this.session.create();
-    }
+  constructor(session: Storage) {
+    this.session = session;
   }
 
-  async save({
-    type,
-    content,
-    tags,
-    id,
-  }: SaveBasicRecordOption): Promise<BasicRecord> {
+  async save(record: T): Promise<T> {
     this.checkSession(this.session);
-    const record = new BasicRecord({
-      id,
-      content,
-      tags,
-      type,
-    });
+    record.updatedAt = new Date();
     if (await this.session!.get(record.id)) {
       throw new Error(
         `${IonicStorage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`
@@ -57,7 +40,7 @@ class IonicStorage implements StorageApi {
     return record;
   }
 
-  async delete(record: BasicRecord): Promise<void> {
+  async delete(record: T): Promise<void> {
     this.checkSession(this.session);
     if (!(await this.session!.get(record.id))) {
       throw new Error(
@@ -77,7 +60,7 @@ class IonicStorage implements StorageApi {
     await this.session!.remove(id);
   }
 
-  async update(record: BasicRecord): Promise<void> {
+  async update(record: T): Promise<void> {
     this.checkSession(this.session);
     if (!(await this.session!.get(record.id))) {
       throw new Error(
@@ -97,41 +80,45 @@ class IonicStorage implements StorageApi {
     });
   }
 
-  async findById(id: string): Promise<BasicRecord> {
+  async findById(
+    id: string,
+    recordClass: BaseRecordConstructor<T>
+  ): Promise<T | null> {
     this.checkSession(this.session);
     const recordStorage = await this.session!.get(id);
 
     if (!recordStorage) {
-      throw new Error(`${IonicStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${id}`);
+      return null;
     }
-    return deserializeRecord(recordStorage);
+    return deserializeRecord(recordStorage, recordClass);
   }
+
   async findAllByQuery(
-    type: RecordType,
-    query: Query<BasicRecord>
-  ): Promise<BasicRecord[]> {
+    query: Query<T>,
+    recordClass: BaseRecordConstructor<T>
+  ): Promise<T[]> {
     this.checkSession(this.session);
-    const instances: BasicRecord[] = [];
+    const instances: T[] = [];
 
     await this.session!.forEach((record) => {
       if (
         record.category &&
-        record.category === type &&
+        record.category === recordClass.type &&
         this.checkRecordIsValidWithQuery(record, query)
       ) {
-        instances.push(deserializeRecord(record));
+        instances.push(deserializeRecord(record, recordClass));
       }
     });
 
     return instances;
   }
 
-  async getAll(type: RecordType): Promise<BasicRecord[]> {
+  async getAll(recordClass: BaseRecordConstructor<T>): Promise<T[]> {
     this.checkSession(this.session);
-    const instances: BasicRecord[] = [];
+    const instances: T[] = [];
     await this.session!.forEach((value) => {
-      if (value.category && value.category === type) {
-        instances.push(deserializeRecord(value));
+      if (value.category && value.category === recordClass.type) {
+        instances.push(deserializeRecord(value, recordClass));
       }
     });
 

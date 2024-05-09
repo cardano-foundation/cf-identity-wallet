@@ -3,37 +3,15 @@ mockIonicReact();
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { EventEmitter } from "events";
 import { Provider } from "react-redux";
-import { Agent } from "@aries-framework/core";
 import { store } from "../../../store";
 import { IncomingRequest } from "./IncomingRequest";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
-import { AriesAgent } from "../../../core/agent/agent";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { i18n } from "../../../i18n";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import {
-  setQueueIncomingRequest,
-  dequeueCredentialRequest,
-} from "../../../store/reducers/stateCache";
-import { ConnectionType } from "../../../core/agent/agent.types";
-import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
-import { CredentialService } from "../../../core/agent/services";
-import { SignifyApi } from "../../../core/agent/modules/signify/signifyApi";
-
-jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
-    agent: {
-      connections: {
-        acceptRequestConnection: jest.fn(),
-        acceptResponseConnection: jest.fn(),
-      },
-      credentials: {
-        acceptCredentialOffer: jest.fn(),
-        declineCredentialOffer: jest.fn(),
-      },
-    },
-  },
-}));
+import { setQueueIncomingRequest } from "../../../store/reducers/stateCache";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import { EventService } from "../../../core/agent/services/eventService";
+import { SignifyNotificationService } from "../../../core/agent/services/signifyNotificationService";
 
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
@@ -41,53 +19,7 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
   },
 }));
 
-const eventEmitter = new EventEmitter();
-
-const agent = jest.mocked({
-  credentials: {
-    acceptOffer: jest.fn(),
-    proposeCredential: jest.fn(),
-    deleteById: jest.fn(),
-    getById: jest.fn(),
-    findOfferMessage: jest.fn(),
-    negotiateOffer: jest.fn(),
-    findAllByQuery: jest.fn(),
-  },
-  connections: {
-    findById: jest.fn(),
-  },
-  events: {
-    on: eventEmitter.on.bind(eventEmitter),
-    emit: jest.fn(),
-  },
-  eventEmitter: {
-    emit: eventEmitter.emit.bind(eventEmitter),
-  },
-  modules: {
-    generalStorage: {
-      getAllCredentialMetadata: jest.fn(),
-      updateCredentialMetadata: jest.fn(),
-      deleteCredentialMetadata: jest.fn(),
-      getCredentialMetadata: jest.fn(),
-      saveCredentialMetadataRecord: jest.fn(),
-      getCredentialMetadataByCredentialRecordId: jest.fn(),
-      getIdentifierMetadata: jest.fn(),
-    },
-  },
-  w3cCredentials: {
-    getCredentialRecordById: jest.fn(),
-  },
-  dids: {
-    getCreatedDids: jest.fn(),
-  },
-  genericRecords: {
-    save: jest.fn(),
-    findAllByQuery: jest.fn(),
-    findById: jest.fn(),
-    deleteById: jest.fn(),
-  },
-});
-const basicStorage = jest.mocked({
+const notificationStorage = jest.mocked({
   open: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
@@ -98,192 +30,97 @@ const basicStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
-const signifyApi = jest.mocked({
-  admitIpex: jest.fn(),
-  getNotifications: jest.fn(),
-  markNotification: jest.fn(),
-  getKeriExchange: jest.fn(),
-  getCredentials: jest.fn(),
-  getCredentialBySaid: jest.fn(),
+const identifiersListMock = jest.fn();
+const identifiersGetMock = jest.fn();
+const identifiersCreateMock = jest.fn();
+const identifiersMemberMock = jest.fn();
+const identifiersInteractMock = jest.fn();
+const identifiersRotateMock = jest.fn();
+
+const oobiResolveMock = jest.fn();
+const groupGetRequestMock = jest.fn();
+const queryKeyStateMock = jest.fn();
+const credentialListMock = jest.fn();
+
+const signifyClient = jest.mocked({
+  connect: jest.fn(),
+  boot: jest.fn(),
+  identifiers: () => ({
+    list: identifiersListMock,
+    get: identifiersGetMock,
+    create: identifiersCreateMock,
+    addEndRole: jest.fn(),
+    interact: identifiersInteractMock,
+    rotate: identifiersRotateMock,
+    members: identifiersMemberMock,
+  }),
+  operations: () => ({
+    get: jest.fn().mockImplementation((id: string) => {
+      return {
+        done: true,
+        response: {
+          i: id,
+        },
+      };
+    }),
+  }),
+  oobis: () => ({
+    get: jest.fn(),
+    resolve: oobiResolveMock,
+  }),
+  contacts: () => ({
+    list: jest.fn(),
+    get: jest.fn().mockImplementation((id: string) => {
+      return {
+        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
+        oobi: "oobi",
+        id,
+      };
+    }),
+    delete: jest.fn(),
+  }),
+  notifications: () => ({
+    list: jest.fn(),
+    mark: jest.fn(),
+  }),
+  ipex: () => ({
+    admit: jest.fn(),
+    submitAdmit: jest.fn(),
+  }),
+  credentials: () => ({
+    list: credentialListMock,
+  }),
+  exchanges: () => ({
+    get: jest.fn(),
+    send: jest.fn(),
+  }),
+  agent: {
+    pre: "pre",
+  },
+  keyStates: () => ({
+    query: queryKeyStateMock,
+    get: jest.fn(),
+  }),
+
+  groups: () => ({ getRequest: groupGetRequestMock }),
 });
 
-const credentialService = new CredentialService(
-  agent as any as Agent,
-  basicStorage,
-  signifyApi as any as SignifyApi
+const agentServicesProps = {
+  signifyClient: signifyClient as any,
+  eventService: new EventService(),
+};
+
+const signifyNotificationService = new SignifyNotificationService(
+  agentServicesProps,
+  notificationStorage as any
 );
-
-const connectionMock = connectionsFix[0];
-
-describe("Connection request", () => {
-  afterEach(() => {
-    store.dispatch(dequeueCredentialRequest());
-  });
-  test("It renders connection request incoming", async () => {
-    store.dispatch(
-      setQueueIncomingRequest({
-        id: "123",
-        type: IncomingRequestType.CONNECTION_INCOMING,
-        logo: connectionMock.logo,
-        label: connectionMock.label,
-      })
-    );
-    const { container, getByText } = render(
-      <Provider store={store}>
-        <IncomingRequest />
-      </Provider>
-    );
-    await waitFor(
-      () => {
-        const title = container.querySelector("h2");
-        const label = getByText(connectionMock.label);
-        expect(title).toHaveTextContent(
-          i18n.t("request.connection.title").toString()
-        );
-        expect(label).toBeInTheDocument();
-      },
-      { container: container }
-    );
-  });
-
-  test("It renders connection request incoming and confirm request", async () => {
-    const id = "123";
-    store.dispatch(
-      setQueueIncomingRequest({
-        id: id,
-        type: IncomingRequestType.CONNECTION_INCOMING,
-        logo: connectionMock.logo,
-        label: connectionMock.label,
-      })
-    );
-    const acceptRequestConnectionSpy = jest.spyOn(
-      AriesAgent.agent.connections,
-      "acceptRequestConnection"
-    );
-
-    const { findByTestId } = render(
-      <Provider store={store}>
-        <IncomingRequest />
-      </Provider>
-    );
-    const continueButton = await findByTestId(
-      "primary-button-incoming-request"
-    );
-
-    expect(continueButton).toBeInTheDocument();
-
-    act(() => {
-      continueButton.click();
-    });
-
-    await waitFor(() => {
-      expect(acceptRequestConnectionSpy).toBeCalledWith(id);
-    });
-  });
-
-  test("It renders connection response and confirm request", async () => {
-    const id = "123";
-    store.dispatch(
-      setQueueIncomingRequest({
-        id: id,
-        type: IncomingRequestType.CONNECTION_RESPONSE,
-        logo: connectionMock.logo,
-        label: connectionMock.label,
-      })
-    );
-    const acceptResponseConnectionSpy = jest.spyOn(
-      AriesAgent.agent.connections,
-      "acceptResponseConnection"
-    );
-
-    const { findByTestId } = render(
-      <Provider store={store}>
-        <IncomingRequest />
-      </Provider>
-    );
-    const continueButton = await findByTestId(
-      "primary-button-incoming-request"
-    );
-    act(() => {
-      fireEvent.click(continueButton);
-    });
-
-    expect(acceptResponseConnectionSpy).toBeCalledWith(id);
-  });
-});
-
-describe("Credential request", () => {
-  afterEach(() => {
-    store.dispatch(dequeueCredentialRequest());
-  });
-
-  test("It renders credential request and accept credential", async () => {
-    const id = "456";
-    store.dispatch(
-      setQueueIncomingRequest({
-        id: id,
-        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
-        logo: connectionMock.logo,
-        label: connectionMock.label,
-      })
-    );
-    const acceptCredentialOfferSpy = jest.spyOn(
-      AriesAgent.agent.credentials,
-      "acceptCredentialOffer"
-    );
-
-    const { findByTestId } = render(
-      <Provider store={store}>
-        <IncomingRequest />
-      </Provider>
-    );
-    const continueButton = await findByTestId(
-      "primary-button-incoming-request"
-    );
-    act(() => {
-      fireEvent.click(continueButton);
-    });
-
-    expect(acceptCredentialOfferSpy).toBeCalledWith(id);
-  });
-
-  test("It renders credential request and decline credential", async () => {
-    const id = "68";
-    store.dispatch(
-      setQueueIncomingRequest({
-        id: id,
-        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
-      })
-    );
-    const declineCredentialOfferSpy = jest.spyOn(
-      AriesAgent.agent.credentials,
-      "declineCredentialOffer"
-    );
-
-    const { findByText } = render(
-      <Provider store={store}>
-        <IncomingRequest />
-      </Provider>
-    );
-    const btnCancel = await findByText(
-      i18n.t("request.alert.cancel").toString()
-    );
-    act(() => {
-      btnCancel.click();
-    });
-    await waitFor(() => {
-      expect(declineCredentialOfferSpy).toBeCalledWith(id);
-    });
-  });
-});
 
 describe("Multi-Sig request", () => {
   const requestDetails = {
     id: "abc123456",
     type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-    source: ConnectionType.KERI,
     multisigIcpDetails: {
-      ourIdentifier: filteredKeriFix[0],
+      ourIdentifier: filteredIdentifierFix[0],
       sender: connectionsFix[3],
       otherConnections: [connectionsFix[4], connectionsFix[5]],
       threshold: 1,
@@ -291,7 +128,9 @@ describe("Multi-Sig request", () => {
   };
 
   afterEach(async () => {
-    await credentialService.deleteKeriNotificationRecordById(requestDetails.id);
+    await signifyNotificationService.deleteNotificationRecordById(
+      requestDetails.id
+    );
   });
 
   test("It receives incoming Multi-Sig request and render content in MultiSigRequestStageOne", async () => {

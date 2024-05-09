@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IonModal } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
@@ -9,19 +9,16 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
-  getCurrentOperation,
-  getCurrentRoute,
   setAuthentication,
   setCurrentRoute,
-  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { RoutePath } from "../../../routes";
 import { VerifyPasscodeProps } from "./VerifyPasscode.types";
 import "./VerifyPasscode.scss";
-import { TabsRoutePath } from "../../../routes/paths";
-import { OperationType, ToastMsgType } from "../../globals/types";
 import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
 import { PageFooter } from "../PageFooter";
+import { PageHeader } from "../PageHeader";
+import { useAppIonRouter } from "../../hooks";
 
 const VerifyPasscode = ({
   isOpen,
@@ -29,11 +26,9 @@ const VerifyPasscode = ({
   onVerify,
 }: VerifyPasscodeProps) => {
   const componentId = "verify-passcode";
+  const ionRouter = useAppIonRouter();
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const currentOperation = useAppSelector(getCurrentOperation);
-  const currentRoute = useAppSelector(getCurrentRoute);
-  const [toastMsgToDispatch, setToastMsgToDispatch] = useState<ToastMsgType>();
   const authentication = useAppSelector(getAuthentication);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
@@ -49,27 +44,6 @@ const VerifyPasscode = ({
       : i18n.t("verifypasscode.alert.button.restart");
   const cancelButtonText = i18n.t("verifypasscode.alert.button.cancel");
 
-  useEffect(() => {
-    let toastMsg;
-    if (
-      currentRoute?.path?.includes(TabsRoutePath.IDENTIFIERS) &&
-      currentOperation === OperationType.DELETE_IDENTIFIER
-    ) {
-      toastMsg = ToastMsgType.IDENTIFIER_DELETED;
-    } else if (
-      currentRoute?.path?.includes(TabsRoutePath.CREDS) &&
-      currentOperation === OperationType.DELETE_CREDENTIAL
-    ) {
-      toastMsg = ToastMsgType.CREDENTIAL_DELETED;
-    } else if (
-      currentRoute?.path?.includes(RoutePath.CONNECTION_DETAILS) &&
-      currentOperation === OperationType.DELETE_CONNECTION
-    ) {
-      toastMsg = ToastMsgType.CONNECTION_DELETED;
-    }
-    setToastMsgToDispatch(toastMsg);
-  }, [currentRoute?.path, currentOperation]);
-
   const handleClearState = () => {
     setPasscode("");
     setAlertIsOpen(false);
@@ -84,7 +58,6 @@ const VerifyPasscode = ({
         verifyPasscode(passcode + digit)
           .then((verified) => {
             if (verified) {
-              dispatch(setToastMsg(toastMsgToDispatch));
               onVerify();
               handleClearState();
             } else {
@@ -127,7 +100,7 @@ const VerifyPasscode = ({
           path: RoutePath.SET_PASSCODE,
         })
       );
-      history.push(RoutePath.SET_PASSCODE);
+      ionRouter.push(RoutePath.SET_PASSCODE);
       handleClearState();
     });
   };
@@ -139,7 +112,16 @@ const VerifyPasscode = ({
       data-testid={componentId}
       onDidDismiss={() => handleClearState()}
     >
-      <ResponsivePageLayout pageId={`${componentId}-content`}>
+      <ResponsivePageLayout
+        header={
+          <PageHeader
+            closeButton={true}
+            closeButtonLabel={`${i18n.t("verifypasscode.cancel")}`}
+            closeButtonAction={handleClearState}
+          />
+        }
+        pageId={`${componentId}-content`}
+      >
         <h2
           className="verify-passcode-title"
           data-testid="verify-passcode-title"

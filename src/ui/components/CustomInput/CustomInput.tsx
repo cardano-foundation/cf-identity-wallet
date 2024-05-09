@@ -26,7 +26,10 @@ const CustomInput = ({
   };
   return (
     <IonItem className={`custom-input ${error ? "error" : ""}`}>
-      <IonLabel position="stacked">
+      <IonLabel
+        position="stacked"
+        data-testid={`${title?.toLowerCase().replace(" ", "-")}-title`}
+      >
         {title}
         {optional && (
           <span className="custom-input-optional">
@@ -39,6 +42,7 @@ const CustomInput = ({
           id={dataTestId}
           data-testid={dataTestId}
           label={title}
+          aria-label={`input-${title}`}
           labelPlacement="stacked"
           type={hidden ? "password" : "text"}
           autofocus={autofocus}

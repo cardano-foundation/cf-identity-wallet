@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { filteredDidFix } from "../../__fixtures__/filteredIdentifierFix";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { SetUserName } from "./SetUserName";
 import { ToastMsgType } from "../../globals/types";
 import { PreferencesKeys } from "../../../core/storage";
@@ -30,7 +30,7 @@ describe("SetUserName component", () => {
       connections: connectionsFix,
     },
     identifiersCache: {
-      identifiers: filteredDidFix,
+      identifiers: filteredIdentifierFix,
       favourites: [],
     },
   };

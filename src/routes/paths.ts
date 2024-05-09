@@ -2,7 +2,6 @@ enum RoutePath {
   ROOT = "/",
   ONBOARDING = "/onboarding",
   SET_PASSCODE = "/setpasscode",
-  PASSCODE_LOGIN = "/passcodelogin",
   GENERATE_SEED_PHRASE = "/generateseedphrase",
   VERIFY_SEED_PHRASE = "/verifyseedphrase",
   TABS_MENU = "/tabs",
@@ -13,12 +12,18 @@ enum RoutePath {
 enum TabsRoutePath {
   ROOT = "/tabs",
   IDENTIFIERS = "/tabs/identifiers",
-  CREDS = "/tabs/creds",
+  CREDENTIALS = "/tabs/credentials",
   SCAN = "/tabs/scan",
   CHAT = "/tabs/chat",
   MENU = "/tabs/menu",
   IDENTIFIER_DETAILS = "/tabs/identifiers/:id?",
-  CRED_DETAILS = "/tabs/creds/:id?",
+  CREDENTIAL_DETAILS = "/tabs/credentials/:id?",
 }
 
-export { RoutePath, TabsRoutePath };
+const PublicRoutes = [
+  RoutePath.ROOT,
+  RoutePath.ONBOARDING,
+  RoutePath.SET_PASSCODE,
+];
+
+export { RoutePath, TabsRoutePath, PublicRoutes };

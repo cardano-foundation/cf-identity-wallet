@@ -1,26 +1,18 @@
-import { BaseEvent } from "@aries-framework/core";
+import { SignifyClient } from "signify-ts";
 import {
   CredentialShortDetails,
   CredentialStatus,
 } from "./services/credentialService.types";
-
-enum Blockchain {
-  CARDANO = "Cardano",
-}
+import { EventService } from "./services/eventService";
+import { IdentifierStorage } from "./records/identifierStorage";
+import { CredentialStorage } from "./records/credentialStorage";
+import { ConnectionHistoryType } from "./services/connection.types";
+import { PeerConnectionStorage } from "./records";
 
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
   ACCEPTED = "accepted",
-}
-
-enum ConnectionHistoryType {
-  CREDENTIAL_ACCEPTED,
-}
-
-enum ConnectionType {
-  DIDCOMM,
-  KERI,
 }
 
 interface ConnectionHistoryItem {
@@ -33,21 +25,12 @@ enum MiscRecordId {
   OP_PASS_HINT = "app-op-password-hint",
 }
 
-interface CryptoAccountRecordShortDetails {
-  id: string;
-  displayName: string;
-  blockchain: Blockchain;
-  totalADAinUSD: number;
-  usesIdentitySeedPhrase: boolean;
-}
-
 interface ConnectionShortDetails {
   id: string;
   label: string;
   connectionDate: string;
   logo?: string;
   status: ConnectionStatus;
-  type?: ConnectionType;
   oobi?: string;
 }
 
@@ -67,28 +50,24 @@ interface ConnectionDetails extends ConnectionShortDetails {
   notes?: ConnectionNoteDetails[];
 }
 
-enum CredentialType {
-  UNIVERSITY_DEGREE_CREDENTIAL = "UniversityDegreeCredential",
-  ACCESS_PASS_CREDENTIAL = "AccessPassCredential",
-  PERMANENT_RESIDENT_CARD = "PermanentResidentCard",
+enum ConnectionEventTypes {
+  ConnectionStateChanged = "ConnectionStateChanged",
 }
 
-enum ConnectionKeriEventTypes {
-  ConnectionKeriStateChanged = "ConnectionKeriStateChanged",
+enum AcdcEventTypes {
+  AcdcStateChanged = "AcdcStateChanged",
 }
-enum AcdcKeriEventTypes {
-  AcdcKeriStateChanged = "AcdcKeriStateChanged",
-}
-interface ConnectionKeriStateChangedEvent extends BaseEvent {
-  type: typeof ConnectionKeriEventTypes.ConnectionKeriStateChanged;
+
+interface ConnectionStateChangedEvent extends BaseEventEmitter {
+  type: typeof ConnectionEventTypes.ConnectionStateChanged;
   payload: {
     connectionId?: string;
     status: ConnectionStatus;
   };
 }
 
-interface AcdcKeriStateChangedEvent extends BaseEvent {
-  type: typeof AcdcKeriEventTypes.AcdcKeriStateChanged;
+interface AcdcStateChangedEvent extends BaseEventEmitter {
+  type: typeof AcdcEventTypes.AcdcStateChanged;
   payload:
     | {
         status: CredentialStatus.PENDING;
@@ -100,10 +79,15 @@ interface AcdcKeriStateChangedEvent extends BaseEvent {
       };
 }
 
-interface KeriNotification {
+interface KeriaNotification {
   id: string;
   createdAt: Date;
   a: Record<string, unknown>;
+}
+
+interface BaseEventEmitter {
+  type: string;
+  payload: Record<string, unknown>;
 }
 
 interface KeriaNotificationMarker {
@@ -111,25 +95,48 @@ interface KeriaNotificationMarker {
   lastNotificationId: string;
 }
 
+interface AgentServicesProps {
+  signifyClient: SignifyClient;
+  eventService: EventService;
+}
+
+interface CreateIdentifierResult {
+  signifyName: string;
+  identifier: string;
+}
+
+interface IdentifierResult {
+  name: string;
+  prefix: string;
+  salty: any;
+}
+
+enum NotificationRoute {
+  Credential = "/exn/ipex/grant",
+  MultiSigIcp = "/multisig/icp",
+  MultiSigRot = "/multisig/rot",
+}
+
 export {
-  Blockchain,
   ConnectionStatus,
-  ConnectionHistoryType,
   MiscRecordId,
-  ConnectionType,
-  CredentialType,
-  ConnectionKeriEventTypes,
-  AcdcKeriEventTypes,
+  ConnectionEventTypes,
+  AcdcEventTypes,
+  NotificationRoute,
 };
+
 export type {
-  CryptoAccountRecordShortDetails,
   ConnectionShortDetails,
   ConnectionDetails,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionHistoryItem,
-  ConnectionKeriStateChangedEvent,
-  KeriNotification,
-  AcdcKeriStateChangedEvent,
+  ConnectionStateChangedEvent,
+  KeriaNotification,
+  AcdcStateChangedEvent,
+  BaseEventEmitter,
   KeriaNotificationMarker,
+  AgentServicesProps,
+  CreateIdentifierResult,
+  IdentifierResult,
 };

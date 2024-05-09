@@ -54,39 +54,6 @@ services:
       - "traefik.http.routers.keria.service=keria"
       - "traefik.http.services.keria.loadbalancer.server.port=7723"
 
-  caddy:
-    container_name: caddy
-    restart: unless-stopped
-    image: caddy
-    hostname: caddy
-    ports:
-      - 2015:2015
-    volumes:
-      - ./mediator-config/Caddyfile:/etc/caddy/Caddyfile:z
-    healthcheck:
-      test: nc -zv localhost:2019 || exit -1
-      interval: 3s
-      timeout: 3s
-      start_period: 10s
-      retries: 5
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.mediator.rule=Host(`${MEDIATOR_HOST:-mediator-host}`)"
-      - "traefik.http.routers.mediator.entrypoints=websecure"
-      - "traefik.http.routers.mediator.tls.certresolver=myresolver"
-      - "traefik.http.services.mediator.loadbalancer.server.port=2015"
-
-  mediator:
-    container_name: mediator
-    build:
-      context: ../aries-mediator-service/afj
-      dockerfile: ./Dockerfile
-    volumes:
-      - mediator-wallet:/root/.indy_client
-    restart: unless-stopped
-    environment:
-      - AGENT_ENDPOINTS=https://dev.mediator.cf-keripy.metadata.dev.cf-deployments.org,wss://dev.mediator.cf-keripy.metadata.dev.cf-deployments.org
-
   cred-issuance:
     container_name: cred-issuance
     build:
@@ -111,7 +78,6 @@ services:
 
 volumes:
   keria-data:
-  mediator-wallet:
   cred-issuance:
 
 networks:

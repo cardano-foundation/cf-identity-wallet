@@ -16,10 +16,10 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
 import { CardType } from "../../globals/types";
 import { Connections } from "../Connections";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import "./Identifiers.scss";
 import { IdentifiersList } from "./components/IdentifiersList";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { StartAnimationSource } from "./Identifiers.type";
 
 const CLEAR_STATE_DELAY = 1000;
@@ -129,7 +129,7 @@ const Identifiers = () => {
     // and I moved it here since PendingIdentifiers are never going to show up in the stack.
     /**The below code only return false if the identifier is a multisig and it is not ready */
     const checkMultisigComplete =
-      await AriesAgent.agent.identifiers.checkMultisigComplete(identifier.id);
+      await Agent.agent.multiSigs.checkMultisigComplete(identifier.id);
     if (!checkMultisigComplete) {
       return;
     } else {
@@ -160,7 +160,7 @@ const Identifiers = () => {
     }, CLEAR_STATE_DELAY);
   };
 
-  const tabClasses = `identifier-tab ${
+  const tabClasses = `${
     navAnimation === "cards"
       ? "cards-identifier-nav"
       : navAnimation === "favourite"

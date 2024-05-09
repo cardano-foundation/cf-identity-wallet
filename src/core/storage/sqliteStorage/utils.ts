@@ -1,4 +1,5 @@
-import { BasicRecord, Query } from "../storage.types";
+import { BasicRecord } from "../../agent/records";
+import { Query } from "../storage.types";
 import { MIGRATIONS } from "./migrations";
 
 function getUnMigrationSqls(

@@ -8,14 +8,25 @@ import { ShareIdentifierProps } from "./ShareIdentifier.types";
 import { ShareIdentifier } from "./ShareIdentifier";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
-import { keriFix } from "../../__fixtures__/identifierFix";
+import { identifierFix } from "../../__fixtures__/identifierFix";
 
 const setIsOpen = jest.fn();
 const props: ShareIdentifierProps = {
   isOpen: true,
   setIsOpen,
-  signifyName: keriFix[0].signifyName,
+  signifyName: identifierFix[0].signifyName,
 };
+
+jest.mock("../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      connections: {
+        getOobi: jest.fn(),
+      },
+    },
+  },
+}));
+
 describe("Share Indentifier (OOBI)", () => {
   test("Show toast when copy identifier", async () => {
     const mockStore = configureStore();

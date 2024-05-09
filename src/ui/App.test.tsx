@@ -2,7 +2,6 @@ import { render, waitFor } from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
-import { isPlatform } from "@ionic/react";
 import { Style, StyleOptions } from "@capacitor/status-bar";
 import { App } from "./App";
 import { TabsRoutePath } from "../routes/paths";
@@ -10,12 +9,14 @@ import { store } from "../store";
 import { Identifiers } from "./pages/Identifiers";
 
 jest.mock("../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       start: jest.fn(),
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
+      },
+      multiSigs: {
         getUnhandledMultisigIdentifiers: jest.fn(),
       },
       connections: {
@@ -29,7 +30,6 @@ jest.mock("../core/agent/agent", () => ({
         isConnectionConnected: jest.fn(),
         getConnectionShortDetailById: jest.fn(),
         getUnhandledConnections: jest.fn(),
-        onConnectionKeriStateChanged: jest.fn(),
         syncKeriaContacts: jest.fn(),
       },
       credentials: {
@@ -40,8 +40,8 @@ jest.mock("../core/agent/agent", () => ({
         createMetadata: jest.fn(),
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
-        getUnhandledCredentials: jest.fn(),
-        onAcdcKeriStateChanged: jest.fn(),
+        getUnhandledIpexGrantNotifications: jest.fn(),
+        onAcdcStateChanged: jest.fn(),
         syncACDCs: jest.fn(),
       },
       messages: {
@@ -49,7 +49,7 @@ jest.mock("../core/agent/agent", () => ({
         pickupMessagesFromMediator: jest.fn(),
       },
       signifyNotifications: {
-        onNotificationKeriStateChanged: jest.fn(),
+        onNotificationStateChanged: jest.fn(),
       },
     },
   },
@@ -71,11 +71,20 @@ jest.mock("@capacitor/status-bar", () => ({
   },
 }));
 
-const isPlatformMock = jest.fn();
+const lockScreenOrientationMock = jest.fn();
+jest.mock("@capacitor/screen-orientation", () => ({
+  ...jest.requireActual("@capacitor/status-bar"),
+  ScreenOrientation: {
+    lock: (params: StyleOptions) => lockScreenOrientationMock(params),
+    unlock: () => jest.fn(),
+  },
+}));
+
+const getPlatformsMock = jest.fn(() => ["android"]);
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  isPlatform: (env: string) => isPlatformMock(env),
+  getPlatforms: () => getPlatformsMock(),
 }));
 
 const mockStore = configureStore();
@@ -118,7 +127,7 @@ describe("App", () => {
   });
 
   test("Force status bar style is dark mode on ios", async () => {
-    isPlatformMock.mockImplementationOnce(() => true);
+    getPlatformsMock.mockImplementationOnce(() => ["ios"]);
 
     render(
       <Provider store={store}>
@@ -134,7 +143,7 @@ describe("App", () => {
   });
 
   test("Should not force status bar style is dark mode on android or browser", async () => {
-    isPlatformMock.mockImplementationOnce(() => false);
+    getPlatformsMock.mockImplementationOnce(() => ["android", "mobileweb"]);
 
     render(
       <Provider store={store}>
@@ -144,6 +153,23 @@ describe("App", () => {
 
     await waitFor(() => {
       expect(setStyleMock).toBeCalledTimes(0);
+    });
+  });
+
+  test("Should lock screen orientation to portrait mode", async () => {
+    getPlatformsMock.mockImplementationOnce(() => ["android"]);
+
+    render(
+      <Provider store={store}>
+        <App />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(lockScreenOrientationMock).toBeCalledTimes(1);
+      expect(lockScreenOrientationMock).toBeCalledWith({
+        orientation: "portrait",
+      });
     });
   });
 

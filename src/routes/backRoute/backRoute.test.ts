@@ -1,15 +1,8 @@
 import { RootState } from "../../store";
-import { DataProps } from "../nextRoute/nextRoute.types";
-import {
-  calcPreviousRoute,
-  getBackRoute,
-  getPreviousRoute,
-  updateStoreAfterPasscodeLoginRoute,
-} from "./backRoute";
-import { RoutePath } from "../index";
-import { setAuthentication } from "../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../ui/globals/constants";
 import { OperationType } from "../../ui/globals/types";
+import { DataProps } from "../nextRoute/nextRoute.types";
+import { calcPreviousRoute, getBackRoute, getPreviousRoute } from "./backRoute";
 
 jest.mock("../../store/reducers/stateCache", () => ({
   removeCurrentRoute: jest.fn(),
@@ -54,6 +47,10 @@ describe("getBackRoute", () => {
       credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: null,
       },
     };
   });
@@ -109,51 +106,6 @@ describe("getBackRoute", () => {
     expect(result.backPath).toEqual({ pathname: "/route2" });
     expect(result.updateRedux).toHaveLength(2);
   });
-
-  test("should update store correctly after /passcodelogin route", () => {
-    storeMock = {
-      stateCache: {
-        initialized: true,
-        routes: [],
-        authentication: {
-          loggedIn: false,
-          userName: "",
-          time: 0,
-          passcodeIsSet: true,
-          seedPhraseIsSet: false,
-          passwordIsSet: false,
-          passwordIsSkipped: true,
-        },
-        currentOperation: OperationType.IDLE,
-        queueIncomingRequest: {
-          isProcessing: false,
-          queues: [],
-          isPaused: false,
-        },
-      },
-      seedPhraseCache: {
-        seedPhrase160: "",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
-      },
-      identifiersCache: { identifiers: [], favourites: [] },
-      credsCache: { creds: [], favourites: [] },
-      connectionsCache: {
-        connections: [],
-      },
-    };
-    const expectedAuthentication = {
-      ...storeMock.stateCache.authentication,
-      loggedIn: true,
-      time: expect.any(Number),
-    };
-    const result = updateStoreAfterPasscodeLoginRoute({
-      store: storeMock,
-      state,
-    });
-
-    expect(result).toEqual(setAuthentication(expectedAuthentication));
-  });
 });
 
 describe("calcPreviousRoute", () => {
@@ -168,14 +120,6 @@ describe("calcPreviousRoute", () => {
     const result = calcPreviousRoute(routes);
 
     expect(result).toEqual({ path: "/generateseedphrase", payload: {} });
-  });
-
-  test("should return undefined if not available routes", () => {
-    const routes = [{ path: RoutePath.PASSCODE_LOGIN, payload: {} }];
-
-    const result = calcPreviousRoute(routes);
-
-    expect(result).toBeUndefined();
   });
 });
 
@@ -211,6 +155,10 @@ describe("getPreviousRoute", () => {
       credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: null,
       },
     };
   });

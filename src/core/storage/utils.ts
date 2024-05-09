@@ -1,19 +1,23 @@
-import { BasicRecord, StorageRecord, Tags } from "./storage.types";
+import { plainToInstance } from "class-transformer";
+import {
+  BaseRecord,
+  BaseRecordConstructor,
+  StorageRecord,
+  Tags,
+} from "./storage.types";
 
-function deserializeRecord(storageRecord: StorageRecord): BasicRecord {
+function deserializeRecord<T extends BaseRecord>(
+  storageRecord: StorageRecord,
+  recordClass: BaseRecordConstructor<T>
+): T {
   const parsedValue = JSON.parse(storageRecord.value);
-  const record = new BasicRecord({
-    ...parsedValue,
-    id: storageRecord.name,
-    tags: parsedValue._tags,
-    createdAt: new Date(parsedValue.createdAt),
-    ...(parsedValue.updatedAt ?? {
-      updatedAt: new Date(parsedValue.updatedAt),
-    }),
-    type: storageRecord.category,
+  const instance = plainToInstance(recordClass, parsedValue, {
+    exposeDefaultValues: true,
   });
-  record.replaceTags(storageRecord.tags as Tags);
-  return record;
+  instance.replaceTags(storageRecord.tags as Tags);
+  instance.createdAt = new Date(instance.createdAt);
+  if (instance.updatedAt) instance.updatedAt = new Date(instance.updatedAt);
+  return instance;
 }
 
 export { deserializeRecord };
