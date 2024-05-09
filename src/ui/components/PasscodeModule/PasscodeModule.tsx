@@ -27,6 +27,10 @@ const PasscodeModule = ({
   });
   rows.push(currentRow);
 
+  const handleBiometricButton = () => {
+    handleBiometricButtonClick && handleBiometricButtonClick();
+  };
+
   return (
     <>
       <div className="passcode-module-circle-row">
@@ -56,10 +60,12 @@ const PasscodeModule = ({
                         <IonButton
                           data-testid={"passcode-button-#"}
                           className="passcode-module-number-button"
-                          onClick={() =>
-                            handleBiometricButtonClick &&
-                          handleBiometricButtonClick()
-                          }
+                          onClick={() => handleBiometricButton()}
+                          style={{
+                            opacity: biometricInfo.strongBiometryIsAvailable
+                              ? 1
+                              : 0.3,
+                          }}
                         >
                           <IonIcon
                             slot="icon-only"

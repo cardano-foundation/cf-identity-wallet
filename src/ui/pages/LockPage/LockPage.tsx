@@ -8,6 +8,7 @@ import {
   login,
   setAuthentication,
   setCurrentRoute,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import {
   ErrorMessage,
@@ -22,6 +23,7 @@ import { useBiometricAuth } from "../../hooks/useBiometrics";
 
 import "./LockPage.scss";
 import { useActivityTimer } from "../../components/AppWrapper/hooks/useActivityTimer";
+import { ToastMsgType } from "../../globals/types";
 
 const LockPage = () => {
   const pageId = "lock-page";
@@ -33,7 +35,6 @@ const LockPage = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
   const { handleBiometricAuth, biometricInfo } = useBiometricAuth();
-  const { setPauseTimestamp } = useActivityTimer();
 
   const headerText = seedPhrase
     ? i18n.t("lockpage.alert.text.verify")
@@ -93,9 +94,13 @@ const LockPage = () => {
   };
 
   const handleBiometrics = async () => {
-    const isAuthenticated = await handleBiometricAuth();
-    if (isAuthenticated === true) {
-      dispatch(login());
+    if (biometricInfo?.strongBiometryIsAvailable) {
+      const isAuthenticated = await handleBiometricAuth();
+      if (isAuthenticated === true) {
+        dispatch(login());
+      }
+    } else {
+      dispatch(setToastMsg(ToastMsgType.STRONG_BIOMETRY_NOT_AVAILABLE));
     }
   };
   const resetPasscode = () => {

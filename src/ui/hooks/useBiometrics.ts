@@ -1,17 +1,23 @@
-// hooks/useBiometricAuth.js
 import { useState, useEffect } from "react";
 import {
   BiometricAuth,
   BiometryError,
   BiometryErrorType,
 } from "@aparajita/capacitor-biometric-auth";
-import { useDispatch } from "react-redux";
-import { login } from "../../store/reducers/stateCache";
+import {
+  AndroidBiometryStrength,
+  CheckBiometryResult,
+} from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
+import i18n from "i18next";
 import { useActivityTimer } from "../components/AppWrapper/hooks/useActivityTimer";
 
 const useBiometricAuth = () => {
-  const [biometricInfo, setBiometricInfo] = useState<any>();
+  const [biometricInfo, setBiometricInfo] = useState<CheckBiometryResult>();
   const { setPauseTimestamp } = useActivityTimer();
+
+  useEffect(() => {
+    checkBiometry();
+  }, []);
 
   const checkBiometry = async () => {
     try {
@@ -19,12 +25,9 @@ const useBiometricAuth = () => {
       setBiometricInfo(biometricResult);
       return biometricResult;
     } catch (error) {
-      //console.error('Error checking biometry:', error);
+      // TODO: error getting biometricInfo
     }
   };
-  useEffect(() => {
-    //checkBiometry();
-  }, []);
 
   const handleBiometricAuth = async (): Promise<
     boolean | BiometryError | undefined
@@ -32,32 +35,30 @@ const useBiometricAuth = () => {
     const biometricResult = await checkBiometry();
     if (!biometricResult?.isAvailable) {
       if (biometricResult?.strongReason?.includes("NSFaceIDUsageDescription")) {
-        alert(
-          "Please enable Face ID in your device settings or update the app for enhanced security."
-        );
+        // TODO: handle error i18n.t("biometry.iosnotenabled")
       }
       return;
     }
 
     try {
       await BiometricAuth.authenticate({
-        reason: "Please authenticate",
-        cancelTitle: "Cancel",
+        reason: i18n.t("biometry.reason") || "Please authenticate",
+        cancelTitle: i18n.t("biometry.canceltitle") || "Cancel",
         allowDeviceCredential: true,
-        iosFallbackTitle: "Use passcode",
-        androidTitle: "Biometric login",
-        androidSubtitle: "Log in using biometric authentication",
+        iosFallbackTitle: i18n.t("biometry.iosfallbacktitle") || "Use passcode",
+        androidTitle: i18n.t("biometry.androidtitle") || "Biometric login",
+        androidSubtitle:
+          i18n.t("biometry.androidsubtitle") ||
+          "Log in using biometric authentication",
         androidConfirmationRequired: false,
+        androidBiometryStrength: AndroidBiometryStrength.strong,
       });
       setPauseTimestamp(new Date().getTime());
       return true;
     } catch (error) {
-      if (
-        error instanceof BiometryError &&
-        error.code !== BiometryErrorType.userCancel
-      ) {
-        // Handle other biometry errors here
-        //console.error('Biometry Error:', error.message);
+      if (error instanceof BiometryError) {
+        // TODO: Handle other biometry errors here
+        return error;
       }
     }
   };

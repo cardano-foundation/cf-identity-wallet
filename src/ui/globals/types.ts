@@ -49,6 +49,7 @@ enum ToastMsgType {
   WALLET_CONNECTION_DELETED = "walletconnectiondeleted",
   CONNECT_WALLET_SUCCESS = "connectwalletsuccess",
   DISCONNECT_WALLET_SUCCESS = "disconnectwallet",
+  STRONG_BIOMETRY_NOT_AVAILABLE = "strongbiometrynotavailable",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {

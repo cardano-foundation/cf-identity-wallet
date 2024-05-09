@@ -1104,7 +1104,8 @@
     "usernamecreationerror": "Unable to set name. Please try again.",
     "walletconnectiondeleted": "Delete successfully",
     "connectwalletsuccess": "Connected successfully",
-    "disconnectwallet": "Disconnected successfully"
+    "disconnectwallet": "Disconnected successfully",
+    "strongbiometrynotavailable": "Strong biometry not available"
   },
   "request": {
     "connection": {
@@ -1174,5 +1175,13 @@
       "usernameCreated": "Welcome, {{username}}!",
       "usernameError": "Unable to set name. Please try again."
     }
+  },
+  "biometry": {
+    "reason": "Please authenticate",
+    "canceltitle": "Cancel",
+    "iosfallbacktitle": "Use passcode",
+    "androidtitle": "Biometric login",
+    "androidsubtitle": "Log in using biometric authentication",
+    "iosnotenabled": "Please enable Face ID in your device settings or update the app for enhanced security"
   }
 }

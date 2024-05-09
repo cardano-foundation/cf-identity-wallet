@@ -22,6 +22,10 @@ import { PageHeader } from "../../components/PageHeader";
 import "./SetPasscode.scss";
 import { PageFooter } from "../../components/PageFooter";
 import { useAppIonRouter } from "../../hooks";
+import { useBiometricAuth } from "../../hooks/useBiometrics";
+import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
+import { BiometryError } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
+import { getPlatforms } from "@ionic/react";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
@@ -30,33 +34,54 @@ const SetPasscode = () => {
   const stateCache = useAppSelector(getStateCache);
   const [passcode, setPasscode] = useState("");
   const [originalPassCode, setOriginalPassCode] = useState("");
+  const { handleBiometricAuth, biometricInfo } = useBiometricAuth();
+  const isIosDevice = getPlatforms().includes("ios");
 
-  const handlePinChange = (digit: number) => {
+  const handlePinChange = async (digit: number) => {
     if (passcode.length < 6) {
+      setPasscode(passcode + digit);
       if (originalPassCode !== "" && passcode.length === 5) {
         if (originalPassCode === passcode + digit) {
-          SecureStorage.set(KeyStoreKeys.APP_PASSCODE, originalPassCode).then(
-            () => {
-              const data: DataProps = {
-                store: { stateCache },
-              };
-              const { nextPath, updateRedux } = getNextRoute(
-                RoutePath.SET_PASSCODE,
-                data
-              );
-              updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-              ionRouter.push(nextPath.pathname, "forward", "push");
-              handleClearState();
-
-              PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
-                initialized: true,
-              }).then(() => dispatch(setInitialized(true)));
+          await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, originalPassCode);
+          if (isIosDevice && biometricInfo?.strongBiometryIsAvailable) {
+            const isBiometricAuthenticated = await handleBiometricAuth();
+            if (isBiometricAuthenticated instanceof BiometryError) {
+              if (
+                isBiometricAuthenticated.code === BiometryErrorType.userCancel
+              ) {
+                await handlePassAuth();
+              }
+              if (
+                isBiometricAuthenticated.code ===
+                BiometryErrorType.authenticationFailed
+              ) {
+                return;
+              }
             }
-          );
+          }
+          await handlePassAuth();
         }
       }
-      setPasscode(passcode + digit);
     }
+  };
+
+  const handlePassAuth = async () => {
+    const data: DataProps = {
+      store: { stateCache },
+    };
+    const { nextPath, updateRedux } = getNextRoute(
+      RoutePath.SET_PASSCODE,
+      data
+    );
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    ionRouter.push(nextPath.pathname, "forward", "push");
+    handleClearState();
+
+    await PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
+      initialized: true,
+    });
+
+    dispatch(setInitialized(true));
   };
 
   const handleRemove = () => {
