@@ -4,6 +4,8 @@
   --padding-bottom: 0px;
   --padding-start: 0px;
   --padding-end: 0px;
+  --ion-color-light: #f6f6f6;
+  --ion-color-primary: #030321;
 
   ion-button {
     margin: 0 auto 1rem;
@@ -15,6 +17,11 @@
     &.secondary-button.ion-activated {
       --ion-toolbar-color: var(--ion-color-light);
       --ion-toolbar-background: var(--ion-color-primary);
+
+      &.md {
+        --ion-toolbar-color: var(--ion-color-primary);
+        --ion-toolbar-background: var(--ion-color-light);
+      }
     }
   }
 

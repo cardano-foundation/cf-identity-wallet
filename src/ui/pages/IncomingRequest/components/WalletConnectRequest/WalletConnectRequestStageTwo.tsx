@@ -72,6 +72,7 @@ const WalletConnectRequestStageTwo = ({
       // TODO: implement connect wallet logic
       dispatch(setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS));
       handleCancel();
+      setRequestStage?.(0);
     } catch (e) {
       dispatch(setToastMsg(ToastMsgType.UNABLE_CONNECT_WALLET));
     }
