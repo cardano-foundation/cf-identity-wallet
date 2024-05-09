@@ -214,6 +214,7 @@ class ConnectionService extends AgentService {
     return this.connectionNoteStorage.deleteById(connectionNoteId);
   }
 
+  @OnlineOnly
   async getOobi(signifyName: string, alias?: string): Promise<string> {
     const result = await this.signifyClient
       .oobis()

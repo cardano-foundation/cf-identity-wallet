@@ -8,6 +8,7 @@ import {
 import { Notification } from "./credentialService.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { NotificationStorage } from "../records";
+import { Agent } from "../agent";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -57,7 +58,10 @@ class SignifyNotificationService extends AgentService {
 
       const notifications = await this.signifyClient
         .notifications()
-        .list(startFetchingIndex, startFetchingIndex + 24);
+        .list(startFetchingIndex, startFetchingIndex + 24)
+        .catch(() => {
+          Agent.agent.bootAndConnect();
+        });
       if (
         notificationQuery.nextIndex > 0 &&
         (notifications.notes.length == 0 ||

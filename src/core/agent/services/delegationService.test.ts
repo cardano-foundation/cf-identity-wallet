@@ -2,6 +2,7 @@ import { truncate } from "fs";
 import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
 import { EventService } from "./eventService";
 import { DelegationService } from "./delegationService";
+import { Agent } from "../agent";
 
 const identifiersGetMock = jest.fn();
 let identifiersCreateMock = jest.fn();
@@ -44,6 +45,7 @@ describe("Delegation sig service of agent", () => {
   });
 
   test("should call signify.createDelegationIdentifier with the correct parameters and return the result", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const aid = "newIdentifierAid";
     const displayName = "newDisplayName";
     const signifyName = "newUuidHere";
@@ -73,6 +75,7 @@ describe("Delegation sig service of agent", () => {
   });
 
   test("should call the interactDelegation method of the signify module with the given arguments", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const signifyName = "exampleSignifyName";
     const delegatePrefix = "exampleDelegatePrefix";
     identifiersInteractMock.mockResolvedValue({
@@ -88,6 +91,7 @@ describe("Delegation sig service of agent", () => {
     });
   });
   test("should call signify.checkDelegationSuccess and update metadata isPending property to false", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const metadata = {
       id: "123456",
       displayName: "John Doe",
@@ -113,6 +117,7 @@ describe("Delegation sig service of agent", () => {
     );
   });
   test("should call signify.checkDelegationSuccess with isPending is false and return true", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const metadata = {
       id: "123456",
       displayName: "John Doe",
@@ -125,5 +130,31 @@ describe("Delegation sig service of agent", () => {
     expect(await delegationService.checkDelegationSuccess(metadata)).toEqual(
       true
     );
+  });
+
+  test("Should throw an error when KERIA is offline ", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    await expect(
+      delegationService.createDelegatedIdentifier(
+        {
+          displayName: "name",
+          theme: 0,
+        },
+        "delegationPrefix"
+      )
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      delegationService.approveDelegation("name", "delegationPrefix")
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      delegationService.checkDelegationSuccess({
+        id: "123456",
+        displayName: "John Doe",
+        isPending: true,
+        signifyOpName: "op123",
+        signifyName: "john_doe",
+        theme: 0,
+      } as IdentifierMetadataRecord)
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 });

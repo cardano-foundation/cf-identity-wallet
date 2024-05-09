@@ -19,7 +19,7 @@ import {
   CredentialShortDetails,
   CredentialStatus,
 } from "./credentialService.types";
-import { getCredentialShortDetails } from "./utils";
+import { OnlineOnly, getCredentialShortDetails } from "./utils";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -52,6 +52,7 @@ class IpexCommunicationService extends AgentService {
     this.notificationStorage = notificationStorage;
   }
 
+  @OnlineOnly
   async acceptAcdc(
     id: string,
     waitForAcdcConfig = { maxAttempts: 120, interval: 500 }

@@ -343,6 +343,7 @@ describe("Single sig service of agent", () => {
   });
 
   test("should call signify.rotateIdentifier with correct params", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const metadata = {
       id: "123456",
       displayName: "John Doe",
@@ -360,7 +361,7 @@ describe("Single sig service of agent", () => {
     expect(identifiersRotateMock).toHaveBeenCalledWith(metadata.signifyName);
   });
 
-  test("getIdentifier should throw an error when KERIA is offline ", async () => {
+  test("getIdentifier should throw an error when KERIA is offline", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
     await expect(identifierService.getIdentifier("id")).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
@@ -376,6 +377,16 @@ describe("Single sig service of agent", () => {
         displayName: "name",
         theme: 0,
       })
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      identifierService.rotateIdentifier({
+        id: "123456",
+        displayName: "John Doe",
+        isPending: false,
+        signifyOpName: "op123",
+        signifyName: "john_doe",
+        theme: 0,
+      } as IdentifierMetadataRecord)
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 });

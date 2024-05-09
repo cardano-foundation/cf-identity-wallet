@@ -272,6 +272,7 @@ describe("Connection service of agent", () => {
   });
 
   test("can get a KERI OOBI with an alias (URL encoded)", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
       return `${oobiPrefix}${name}`;
     });
@@ -303,6 +304,7 @@ describe("Connection service of agent", () => {
   });
 
   test("can get KERI OOBI", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
       return `${oobiPrefix}${name}`;
     });
@@ -381,5 +383,8 @@ describe("Connection service of agent", () => {
     await expect(
       connectionService.resolveOobi("oobi-url")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(connectionService.getOobi("name")).rejects.toThrowError(
+      Agent.KERIA_CONNECTION_BROKEN
+    );
   });
 });

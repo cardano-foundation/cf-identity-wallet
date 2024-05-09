@@ -197,24 +197,21 @@ class Agent {
         signifyClient: this.signifyClient,
         eventService: new EventService(),
       };
-      try {
-        await this.signifyClient.connect();
-      } catch (err) {
-        await this.signifyClient.boot();
-        await this.signifyClient.connect();
-      }
-
-      this.agentServicesProps = {
-        signifyClient: this.signifyClient,
-        eventService: new EventService(),
-      };
 
       this.peerConnectionStorage = new PeerConnectionStorage(
         this.getStorageService<PeerConnectionMetadataRecord>(
           this.storageSession
         )
       );
-      Agent.isOnline = true;
+
+      try {
+        await this.signifyClient.connect();
+        Agent.isOnline = true;
+      } catch (err) {
+        await this.signifyClient.boot();
+        await this.signifyClient.connect();
+        Agent.isOnline = true;
+      }
     }
   }
 

@@ -118,6 +118,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     initApp();
   }, []);
 
+  setInterval(() => {
+    const isKeriaOnline = Agent.agent.getKeriaOnlineStatus();
+    setIsOnline(isKeriaOnline);
+  }, 1000);
+
   useEffect(() => {
     if (authentication.loggedIn) {
       dispatch(setPauseQueueIncomingRequest(!isOnline));
