@@ -161,31 +161,6 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       ) {
         handleDeleteConnection(actionInfo.current.data);
       }
-
-      if (ActionType.Connect === actionInfo.current.type) {
-        handleConnectWallet();
-      }
-    };
-
-    const handleConfirmConnect = () => {
-      if (
-        identifierCache.length === 0 &&
-        actionInfo.current.data?.id !== connectedWallet?.id
-      ) {
-        setOpenIdentifierMissingAlert(true);
-        return;
-      }
-
-      handleOpenVerify();
-    };
-
-    const handleOpenInputPid = () => {
-      if (identifierCache.length === 0) {
-        setOpenIdentifierMissingAlert(true);
-        return;
-      }
-
-      setOpenPidModal(true);
     };
 
     const handleScanQR = () => {
@@ -272,7 +247,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           isConnectModal={actionInfo.current.data?.id !== connectedWallet?.id}
           openModal={openConfirmConnectModal}
           closeModal={() => setOpenConfirmConnectModal(false)}
-          onConfirm={handleConfirmConnect}
+          onConfirm={handleConnectWallet}
           connectionData={actionInfo.current.data}
           onDeleteConnection={handleOpenDeleteAlert}
         />
