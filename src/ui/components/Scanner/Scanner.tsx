@@ -1,5 +1,12 @@
 import { forwardRef, useEffect, useImperativeHandle } from "react";
-import { IonCol, IonGrid, IonIcon, IonRow, isPlatform } from "@ionic/react";
+import {
+  IonButton,
+  IonCol,
+  IonGrid,
+  IonIcon,
+  IonRow,
+  isPlatform,
+} from "@ionic/react";
 import {
   BarcodeScanner,
   SupportedFormat,
@@ -61,6 +68,15 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
     stopScan,
   }));
 
+  const handleConnect = (content: string) => {
+    if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
+      // TODO: Handle connect wallet
+      return;
+    }
+
+    Agent.agent.connections.connectByOobiUrl(content);
+  };
+
   const initScan = async () => {
     if (isPlatform("ios") || isPlatform("android")) {
       const allowed = await checkPermission();
@@ -76,7 +92,7 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
           dispatch(setCurrentOperation(OperationType.IDLE));
           // @TODO - foconnor: when above loading screen in place, handle invalid QR code
           // @TODO - sdisalvo: connectByOobiUrl should be awaited once we have error handling
-          Agent.agent.connections.connectByOobiUrl(result.content);
+          handleConnect(result.content);
           setIsValueCaptured && setIsValueCaptured(true);
         }
       }
@@ -86,7 +102,10 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
   useEffect(() => {
     if (
       (currentRoute?.path === TabsRoutePath.SCAN ||
-        currentOperation === OperationType.SCAN_CONNECTION) &&
+        [
+          OperationType.SCAN_CONNECTION,
+          OperationType.SCAN_WALLET_CONNECTION,
+        ].includes(currentOperation)) &&
       currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
       currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING
     ) {
@@ -95,6 +114,11 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
       stopScan();
     }
   }, [currentOperation, currentRoute]);
+
+  const handlePasteMkId = () => {
+    stopScan();
+    dispatch(setCurrentOperation(OperationType.PASTE_MKID_CONNECT_WALLET));
+  };
 
   return (
     <>
@@ -116,6 +140,16 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
             className="qr-code-scanner-icon"
           />
         </IonRow>
+        {OperationType.SCAN_WALLET_CONNECTION === currentOperation && (
+          <IonRow className="actions-button">
+            <IonButton
+              onClick={handlePasteMkId}
+              className="paste-mkid-btn secondary-button"
+            >
+              {i18n.t("scan.pastemeerkatid")}
+            </IonButton>
+          </IonRow>
+        )}
       </IonGrid>
     </>
   );

@@ -58,7 +58,12 @@ const App = () => {
   }, [isPreviewMode]);
 
   useEffect(() => {
-    setShowScan(currentOperation === OperationType.SCAN_CONNECTION);
+    setShowScan(
+      [
+        OperationType.SCAN_CONNECTION,
+        OperationType.SCAN_WALLET_CONNECTION,
+      ].includes(currentOperation)
+    );
     setShowToast(toastMsg !== undefined);
   }, [currentOperation, toastMsg]);
 
@@ -90,16 +95,15 @@ const App = () => {
   }, []);
 
   const renderApp = () => {
-    if (showScan) {
-      return <FullPageScanner setShowScan={setShowScan} />;
-    } else {
-      return (
-        <>
-          {isPreviewMode ? <MobileHeaderPreview /> : null}
+    return (
+      <>
+        {showScan && <FullPageScanner setShowScan={setShowScan} />}
+        {!showScan && isPreviewMode ? <MobileHeaderPreview /> : null}
+        <div className={showScan ? "ion-hide" : ""}>
           <Routes />
-        </>
-      );
-    }
+        </div>
+      </>
+    );
   };
 
   const isPublicPage = PublicRoutes.includes(

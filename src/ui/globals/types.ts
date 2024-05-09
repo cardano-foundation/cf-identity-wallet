@@ -23,6 +23,8 @@ enum OperationType {
   ADD_CREDENTIAL = "addCredential",
   RECEIVE_CONNECTION = "receiveConnection",
   CREATE_IDENTIFIER_CONNECT_WALLET = "createIdentifierConnectWallet",
+  SCAN_WALLET_CONNECTION = "scanWalletConnection",
+  PASTE_MKID_CONNECT_WALLET = "pasteMkidConnectWallet",
 }
 
 enum ToastMsgType {
@@ -50,6 +52,9 @@ enum ToastMsgType {
   WALLET_CONNECTION_DELETED = "walletconnectiondeleted",
   CONNECT_WALLET_SUCCESS = "connectwalletsuccess",
   DISCONNECT_WALLET_SUCCESS = "disconnectwallet",
+  UNABLE_CONNECT_WALLET = "unableconnectwallet",
+  PEER_ID_SUCCESS = "peeridsuccess",
+  PEER_ID_NOT_RECOGNISED = "peeridnotrecognised",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {

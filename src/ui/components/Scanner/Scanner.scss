@@ -44,6 +44,19 @@
     }
   }
 
+  .actions-button {
+    position: absolute;
+    bottom: 2.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+
+    .paste-mkid-btn {
+      width: calc(100vw - 2.5rem);
+      --border-radius: 2rem;
+      --background: #f6f6f680;
+    }
+  }
+
   @media screen and (min-width: 250px) and (max-width: 370px) {
     --scale-scan: 0.7;
   }
