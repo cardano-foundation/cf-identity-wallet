@@ -30,7 +30,7 @@ const identifierMetadataRecord2 = new IdentifierMetadataRecord({
   id: "id2",
 });
 
-describe("Connection service of agent", () => {
+describe("Identifier storage test", () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });

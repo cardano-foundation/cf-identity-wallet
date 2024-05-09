@@ -429,17 +429,17 @@ describe("Credential service of agent", () => {
     ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_FOUND);
   });
 
-  test("Should be able to getUnhandledIpexGrantNotifications", async () => {
+  test("Should be able to getExnIpexGrantpexGrantNotifications", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const notificationRecord = {
       _tags: {
         isDismiss: true,
-        route: NotificationRoute.Credential,
+        route: NotificationRoute.ExnIpexGrant,
       },
       id: "AIeGgKkS23FDK4mxpfodpbWhTydFz2tdM64DER6EdgG-",
       createdAt: new Date(),
       a: {
-        r: NotificationRoute.Credential,
+        r: NotificationRoute.ExnIpexGrant,
         d: "EF6Nmxz8hs0oVc4loyh2J5Sq9H3Z7apQVqjO6e4chtsp",
       },
     };
@@ -464,7 +464,7 @@ describe("Credential service of agent", () => {
       isDismissed: false,
     });
     expect(notificationStorage.findAllByQuery).toBeCalledWith({
-      route: NotificationRoute.Credential,
+      route: NotificationRoute.ExnIpexGrant,
       isDismissed: false,
     });
   });

@@ -69,7 +69,7 @@ const keriaNotificationsChangeHandler = async (
   event: KeriaNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  if (event?.a?.r === NotificationRoute.Credential) {
+  if (event?.a?.r === NotificationRoute.ExnIpexGrant) {
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
@@ -91,6 +91,10 @@ const keriaNotificationsChangeHandler = async (
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
     //TODO: Use dispatch here, handle logic for the multisig rotation notification
+  } else if (event?.a?.r === NotificationRoute.ExnIpexApply) {
+    //TODO: Use dispatch here, handle logic for the exchange apply message
+  } else if (event?.a?.r === NotificationRoute.ExnIpexAgree) {
+    //TODO: Use dispatch here, handle logic for the exchange apply agree
   }
 };
 
