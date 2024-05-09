@@ -11,8 +11,7 @@ import { Agent } from "../../agent/agent";
 class IdentityWalletConnect extends CardanoPeerConnect {
   static readonly IDENTIFIER_ID_NOT_LOCATED =
     "The id doesn't correspond with any stored identifier";
-  static readonly NO_IDENTIFIERS_STORED = "No stored identifiers";
-
+  private selectedAid: string;
   getIdentifierOobi: () => Promise<string>;
   sign: (identifier: string, payload: string) => Promise<string>;
 
@@ -22,6 +21,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     walletInfo: IWalletInfo,
     seed: string | null,
     announce: string[],
+    selectedAid: string,
     discoverySeed?: string | null
   ) {
     super(walletInfo, {
@@ -30,16 +30,17 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       discoverySeed: discoverySeed,
       logLevel: "info",
     });
-
+    this.selectedAid = selectedAid;
     this.signerCache = new Map();
 
     this.getIdentifierOobi = async (): Promise<string> => {
-      const identifiers = await Agent.agent.identifiers.getIdentifiers();
-      if (!(identifiers && identifiers.length > 0)) {
-        throw new Error(IdentityWalletConnect.NO_IDENTIFIERS_STORED);
+      const identifier = await Agent.agent.identifiers.getIdentifier(
+        this.selectedAid
+      );
+      if (!identifier) {
+        throw new Error(IdentityWalletConnect.IDENTIFIER_ID_NOT_LOCATED);
       }
-
-      return Agent.agent.connections.getOobi(identifiers[0].signifyName);
+      return Agent.agent.connections.getOobi(identifier.signifyName);
     };
 
     this.sign = async (

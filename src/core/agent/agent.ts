@@ -25,6 +25,8 @@ import {
   CredentialStorage,
   IdentifierMetadataRecord,
   IdentifierStorage,
+  PeerConnectionMetadataRecord,
+  PeerConnectionStorage,
   NotificationRecord,
   NotificationStorage,
 } from "./records";
@@ -58,6 +60,7 @@ class Agent {
   private connectionStorage!: ConnectionStorage;
   private connectionNoteStorage!: ConnectionNoteStorage;
   private notificationStorage!: NotificationStorage;
+  private peerConnectionStorage!: PeerConnectionStorage;
 
   private signifyClient!: SignifyClient;
 
@@ -125,6 +128,10 @@ class Agent {
       );
     }
     return this.credentialService;
+  }
+
+  get peerConnectionMetadataStorage() {
+    return this.peerConnectionStorage;
   }
 
   get basicStorage() {
@@ -196,6 +203,17 @@ class Agent {
         await this.signifyClient.boot();
         await this.signifyClient.connect();
       }
+
+      this.agentServicesProps = {
+        signifyClient: this.signifyClient,
+        eventService: new EventService(),
+      };
+
+      this.peerConnectionStorage = new PeerConnectionStorage(
+        this.getStorageService<PeerConnectionMetadataRecord>(
+          this.storageSession
+        )
+      );
       Agent.isOnline = true;
     }
   }

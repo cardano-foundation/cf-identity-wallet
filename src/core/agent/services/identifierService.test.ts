@@ -94,15 +94,6 @@ const identifierStorage = jest.mocked({
   createIdentifierMetadataRecord: jest.fn(),
 });
 
-const credentialStorage = jest.mocked({
-  getAllCredentialMetadata: jest.fn(),
-  deleteCredentialMetadata: jest.fn(),
-  getCredentialMetadata: jest.fn(),
-  getCredentialMetadataByConnectionId: jest.fn(),
-  saveCredentialMetadataRecord: jest.fn(),
-  updateCredentialMetadata: jest.fn(),
-});
-
 const agentServicesProps = {
   signifyClient: signifyClient as any,
   eventService: new EventService(),
