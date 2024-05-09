@@ -3,9 +3,9 @@ import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
-import { IdentifierStage1 } from "./IdentifierStage1";
-import { IdentifierStage3 } from "./IdentifierStage3";
 import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
+import { IdentifierStage4 } from "./IdentifierStage4";
+import { IdentifierStage2 } from "./IdentifierStage2";
 
 describe("Identifier Theme Selector", () => {
   test("It switches KERI card from theme 0 to theme 1", async () => {
@@ -60,17 +60,22 @@ describe("Render Identifier Stage", () => {
     dispatch: dispatchMock,
   };
 
-  test("Fallback connection logo for identifier stage 1", async () => {
+  test("Fallback connection logo for identifier stage 2", async () => {
     const { getByTestId } = render(
       <Provider store={storeMocked}>
-        <IdentifierStage1
+        <IdentifierStage2
           state={{
             identifierCreationStage: 1,
             displayNameValue: "Duke",
             selectedAidType: 1,
             selectedTheme: 1,
             threshold: 1,
-            scannedConections: [],
+            scannedConections: [
+              {
+                ...connectionsFix[5],
+                logo: "",
+              },
+            ],
             selectedConnections: [],
             ourIdentifier: "",
             newIdentifier: {
@@ -84,20 +89,20 @@ describe("Render Identifier Stage", () => {
           }}
           resetModal={jest.fn()}
           setState={jest.fn()}
-          componentId="11"
+          componentId="create-identifier-modal"
         />
       </Provider>
     );
 
-    expect(getByTestId("identifier-stage-1-logo").getAttribute("src")).not.toBe(
+    expect(getByTestId("identifier-stage-2-logo").getAttribute("src")).not.toBe(
       undefined
     );
   });
 
-  test("Fallback connection logo identifier stage 3", async () => {
+  test("Fallback connection logo identifier stage 4", async () => {
     const { getByTestId } = render(
       <Provider store={storeMocked}>
-        <IdentifierStage3
+        <IdentifierStage4
           state={{
             identifierCreationStage: 1,
             displayNameValue: "Duke",
@@ -123,7 +128,7 @@ describe("Render Identifier Stage", () => {
           }}
           resetModal={jest.fn()}
           setState={jest.fn()}
-          componentId="11"
+          componentId="create-identifier-modal"
         />
       </Provider>
     );

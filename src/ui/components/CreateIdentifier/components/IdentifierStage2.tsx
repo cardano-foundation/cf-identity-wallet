@@ -78,7 +78,7 @@ const IdentifierStage2 = ({
                   <img
                     src={connection?.logo || KeriLogo}
                     className="connection-logo"
-                    data-testid="identifier-stage-1-logo"
+                    data-testid="identifier-stage-2-logo"
                     alt="connection-logo"
                   />
                   <span className="connection-name">{connection.label}</span>
