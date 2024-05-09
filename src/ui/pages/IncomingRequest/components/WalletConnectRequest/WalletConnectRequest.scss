@@ -1,0 +1,98 @@
+.wallet-connect-stage-one {
+  &.incoming-request {
+    &.animation-on .request-animation-center {
+      .wallet-connect-message {
+        animation-delay: 1.5s;
+        animation: fade 1.5s forwards;
+      }
+
+      .request-icons-row .request-user-logo {
+        animation-delay: 1.5s;
+        animation: fade 1.5s forwards;
+      }
+
+      @keyframes fade {
+        0% {
+          opacity: 1;
+        }
+
+        100% {
+          opacity: 0;
+        }
+      }
+    }
+
+    .responsive-page-content {
+      --buttons-height: 7.5rem;
+      justify-content: space-between;
+      height: 100%;
+
+      .request-animation-center {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        .request-icons-row {
+          margin-bottom: 1.5rem;
+        }
+
+        .wallet-connect-message {
+          text-align: center;
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+.wallet-connect-stage-two {
+  &.incoming-request {
+    .responsive-page-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .primary-button {
+        margin: 0;
+        margin-top: 1rem;
+      }
+
+      .title {
+        font-size: 1rem;
+        line-height: 1.115rem;
+        margin-top: 0.75rem;
+        margin-bottom: 1.75rem;
+        font-weight: 400;
+      }
+
+      .identifier-list {
+        .checkbox {
+          width: fit-content;
+          --checkbox-background-checked: var(--ion-color-primary-gradient);
+          --checkmark-color: var(--ion-color-primary);
+          --border-width: 0.115rem;
+
+          &.checkbox-checked {
+            --border-width: 0;
+          }
+        }
+
+        .card-item {
+          --background-activated: transparent;
+        }
+      }
+
+      @media screen and (min-width: 250px) and (max-width: 370px) {
+        .title {
+          font-size: 0.85rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .checkbox {
+          --size: 1.25rem;
+        }
+      }
+    }
+  }
+}
