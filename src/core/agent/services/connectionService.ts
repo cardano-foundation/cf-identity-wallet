@@ -21,6 +21,7 @@ import {
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
+import { ConfigurationService } from "../../configuration";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
@@ -77,7 +78,9 @@ class ConnectionService extends AgentService {
 
     // @TODO - foconnor: This is temporary for ease of development, will be removed soon.
     // This will take our first KERI identifier and get the server to resolve it, so that the connection is resolved from both sides and we can issue to this wallet using its API.
-    if (url.includes("dev.keria.cf-keripy.metadata.dev.cf-deployments.org")) {
+    if (
+      url.includes(ConfigurationService.env.keri.credentials.testServer.oobiUrl)
+    ) {
       // This is inefficient but it will change going forward.
       const aids = await Agent.agent.identifiers.getIdentifiers();
       if (aids.length > 0) {
@@ -102,7 +105,7 @@ class ConnectionService extends AgentService {
         );
         await (
           await fetch(
-            "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/resolveOobi",
+            `${ConfigurationService.env.keri.credentials.testServer.urlExt}/resolveOobi`,
             {
               method: "POST",
               body: JSON.stringify({ oobi }),
