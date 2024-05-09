@@ -1,5 +1,5 @@
 import { IonIcon, IonButton, IonItem, IonLabel, IonList } from "@ionic/react";
-import { qrCodeOutline } from "ionicons/icons";
+import { qrCodeOutline, copyOutline } from "ionicons/icons";
 import { QRCode } from "react-qrcode-logo";
 import { i18n } from "../../../../i18n";
 import { PageHeader } from "../../PageHeader";
@@ -7,6 +7,10 @@ import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierStage1BodyProps } from "../CreateIdentifier.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { PageFooter } from "../../PageFooter";
+import { writeToClipboard } from "../../../utils/clipboard";
+import { useAppDispatch } from "../../../../store/hooks";
+import { setToastMsg } from "../../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../../globals/types";
 
 const IdentifierStage1BodyResume = ({
   componentId,
@@ -17,6 +21,12 @@ const IdentifierStage1BodyResume = ({
   handleScanButton,
   scannedConections,
 }: IdentifierStage1BodyProps) => {
+  const dispatch = useAppDispatch();
+  const copyToClipboard = () => {
+    writeToClipboard(oobi);
+    dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
+  };
+
   return (
     <>
       <ScrollablePageLayout
@@ -66,6 +76,22 @@ const IdentifierStage1BodyResume = ({
               />
             </span>
           </span>
+          <IonButton
+            shape="round"
+            expand="block"
+            fill="outline"
+            className="copy-button secondary-button"
+            data-testid={`copy-button-${componentId}`}
+            onClick={copyToClipboard}
+          >
+            {i18n.t("createidentifier.share.copybutton")}
+            <IonIcon
+              slot="end"
+              size="small"
+              icon={copyOutline}
+              color="primary"
+            />
+          </IonButton>
         </div>
         <p className="multisig-share-note">
           {i18n.t(
