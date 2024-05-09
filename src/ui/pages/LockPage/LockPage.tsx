@@ -1,5 +1,6 @@
 import i18n from "i18next";
 import { useEffect, useState } from "react";
+import { BiometryError } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useAppIonRouter } from "../../hooks";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -22,7 +23,6 @@ import { Alert } from "../../components/Alert";
 import { useBiometricAuth } from "../../hooks/useBiometrics";
 
 import "./LockPage.scss";
-import { useActivityTimer } from "../../components/AppWrapper/hooks/useActivityTimer";
 import { ToastMsgType } from "../../globals/types";
 
 const LockPage = () => {
@@ -34,7 +34,7 @@ const LockPage = () => {
   const seedPhrase = authentication.seedPhraseIsSet;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
-  const { handleBiometricAuth, biometricInfo } = useBiometricAuth();
+  const { handleBiometricAuth } = useBiometricAuth();
 
   const headerText = seedPhrase
     ? i18n.t("lockpage.alert.text.verify")
@@ -94,15 +94,14 @@ const LockPage = () => {
   };
 
   const handleBiometrics = async () => {
-    if (biometricInfo?.strongBiometryIsAvailable) {
-      const isAuthenticated = await handleBiometricAuth();
-      if (isAuthenticated === true) {
-        dispatch(login());
-      }
+    const isAuthenticated = await handleBiometricAuth();
+    if (isAuthenticated instanceof BiometryError) {
+      dispatch(setToastMsg(isAuthenticated.message as ToastMsgType));
     } else {
-      dispatch(setToastMsg(ToastMsgType.STRONG_BIOMETRY_NOT_AVAILABLE));
+      dispatch(login());
     }
   };
+
   const resetPasscode = () => {
     SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {
       dispatch(

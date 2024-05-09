@@ -29,27 +29,35 @@ const useBiometricAuth = () => {
     }
   };
 
-  const handleBiometricAuth = async (): Promise<
-    boolean | BiometryError | undefined
-  > => {
+  const handleBiometricAuth = async (): Promise<boolean | BiometryError> => {
     const biometricResult = await checkBiometry();
     if (!biometricResult?.isAvailable) {
-      if (biometricResult?.strongReason?.includes("NSFaceIDUsageDescription")) {
-        // TODO: handle error i18n.t("biometry.iosnotenabled")
+      if (!biometricInfo?.strongBiometryIsAvailable) {
+        return new BiometryError(
+          i18n.t("biometry.weakbiometry"),
+          BiometryErrorType.biometryNotAvailable
+        );
       }
-      return;
+      if (biometricResult?.strongReason?.includes("NSFaceIDUsageDescription")) {
+        return new BiometryError(
+          i18n.t("biometry.iosnotenabled"),
+          BiometryErrorType.biometryNotAvailable
+        );
+      }
+      return new BiometryError(
+        i18n.t("biometry.notavailable"),
+        BiometryErrorType.biometryNotAvailable
+      );
     }
 
     try {
       await BiometricAuth.authenticate({
-        reason: i18n.t("biometry.reason") || "Please authenticate",
-        cancelTitle: i18n.t("biometry.canceltitle") || "Cancel",
+        reason: i18n.t("biometry.reason") as string,
+        cancelTitle: i18n.t("biometry.canceltitle") as string,
         allowDeviceCredential: true,
-        iosFallbackTitle: i18n.t("biometry.iosfallbacktitle") || "Use passcode",
-        androidTitle: i18n.t("biometry.androidtitle") || "Biometric login",
-        androidSubtitle:
-          i18n.t("biometry.androidsubtitle") ||
-          "Log in using biometric authentication",
+        iosFallbackTitle: i18n.t("biometry.iosfallbacktitle") as string,
+        androidTitle: i18n.t("biometry.androidtitle") as string,
+        androidSubtitle: i18n.t("biometry.androidsubtitle") as string,
         androidConfirmationRequired: false,
         androidBiometryStrength: AndroidBiometryStrength.strong,
       });
@@ -57,9 +65,9 @@ const useBiometricAuth = () => {
       return true;
     } catch (error) {
       if (error instanceof BiometryError) {
-        // TODO: Handle other biometry errors here
         return error;
       }
+      return new BiometryError(`${error}`, BiometryErrorType.none);
     }
   };
 

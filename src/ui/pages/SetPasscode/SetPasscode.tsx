@@ -68,7 +68,6 @@ const SetPasscode = () => {
               await processBiometrics();
             }
           }
-          await handlePassAuth();
         }
       }
     }
@@ -76,17 +75,22 @@ const SetPasscode = () => {
 
   const processBiometrics = async () => {
     const isBiometricAuthenticated = await handleBiometricAuth();
-    if (isBiometricAuthenticated instanceof BiometryError) {
-      if (isBiometricAuthenticated.code === BiometryErrorType.userCancel) {
-        await handlePassAuth();
-      }
-      if (
-        isBiometricAuthenticated.code === BiometryErrorType.authenticationFailed
-      ) {
-        return;
+    if (isBiometricAuthenticated === true) {
+      await PreferencesStorage.set(PreferencesKeys.APP_BIOMETRY, {
+        enabled: true,
+      });
+      await handlePassAuth();
+    } else {
+      if (isBiometricAuthenticated instanceof BiometryError) {
+        if (isBiometricAuthenticated.code === BiometryErrorType.userCancel) {
+          setShowCancelAndroidBiometryAlert(true);
+        } else {
+          return;
+        }
       }
     }
   };
+
   const handlePassAuth = async () => {
     const data: DataProps = {
       store: { stateCache },
@@ -122,6 +126,8 @@ const SetPasscode = () => {
   const handleClearState = () => {
     setPasscode("");
     setOriginalPassCode("");
+    setShowCancelAndroidBiometryAlert(false);
+    setShowSetupAndroidBiometryAlert(false);
   };
 
   const handleBeforeBack = () => {

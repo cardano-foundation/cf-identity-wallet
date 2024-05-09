@@ -1180,13 +1180,14 @@
     "reason": "Please authenticate",
     "canceltitle": "Cancel",
     "iosfallbacktitle": "Use passcode",
-    "androidtitle": "Biometric login",
-    "androidsubtitle": "Log in using biometric authentication",
-    "iosnotenabled": "Please enable Face ID in your device settings or update the app for enhanced security",
+    "androidtitle": "Authentication",
+    "androidsubtitle": "Authentication using biometrics",
+    "iosnotenabled": "Biometry not added in iOS info.plist configuration file",
     "setupandroidbiometryheader": "Do you want to allow “IDW” to use biometrics?",
     "setupandroidbiometryconfirm": "Ok",
     "setupandroidbiometrycancel": "Dont allow",
-    "cancelbiometryheader": "You canceled Biometrics. You can set this up later via the settings page."
-
+    "cancelbiometryheader": "You canceled Biometrics. You can set this up later via the settings page.",
+    "notavailable": "Biometry not available",
+    "weakbiometry": "Biometry too weak"
   }
 }
