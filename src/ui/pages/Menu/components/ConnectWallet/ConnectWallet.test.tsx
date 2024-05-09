@@ -103,17 +103,6 @@ describe("Wallet connect: empty history", () => {
     expect(
       getByText(EN_TRANSLATIONS.connectwallet.sections.connectbtn)
     ).toBeVisible();
-    act(() => {
-      fireEvent.click(
-        getByText(EN_TRANSLATIONS.connectwallet.sections.connectbtn)
-      );
-    });
-
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.connectwallet.connectwalletmodal.header)
-      ).toBeVisible();
-    });
   });
 
   test("Connect wallet modal: scan QR", async () => {
@@ -159,92 +148,8 @@ describe("Wallet connect: empty history", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.connectwallet.connectwalletmodal.header)
-      ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("scanqr-btn"));
-    });
-
-    await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
         setCurrentOperation(OperationType.SCAN_WALLET_CONNECTION)
-      );
-    });
-  });
-
-  test("Connect wallet modal: paste Pid", async () => {
-    const initialState = {
-      stateCache: {
-        routes: [TabsRoutePath.IDENTIFIERS],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-          passwordIsSet: true,
-        },
-      },
-      walletConnectionsCache: {
-        walletConnections: [],
-      },
-      identifiersCache: {
-        identifiers: [...identifierFix],
-      },
-    };
-
-    const storeMocked = {
-      ...mockStore(initialState),
-      dispatch: dispatchMock,
-    };
-
-    const { getByText, getByTestId, getAllByTestId } = render(
-      <MemoryRouter>
-        <Provider store={storeMocked}>
-          <ConnectWallet />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    expect(
-      getByText(EN_TRANSLATIONS.connectwallet.sections.connectbtn)
-    ).toBeVisible();
-
-    act(() => {
-      fireEvent.click(
-        getByText(EN_TRANSLATIONS.connectwallet.sections.connectbtn)
-      );
-    });
-
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.connectwallet.connectwalletmodal.header)
-      ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(
-        getByText(EN_TRANSLATIONS.connectwallet.connectwalletmodal.pastePID)
-      );
-    });
-
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.connectwallet.inputpidmodal.header)
-      ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.change(getByTestId("input-pid"), {
-        target: { value: "11111" },
-      });
-      fireEvent.click(getAllByTestId("action-button")[1]);
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setToastMsg(ToastMsgType.PEER_ID_SUCCESS)
       );
     });
   });
@@ -293,66 +198,11 @@ describe("Wallet connect: empty history", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.connectwallet.connectwalletmodal.header)
-      ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(
-        getByText(EN_TRANSLATIONS.connectwallet.connectwalletmodal.pastePID)
-      );
-    });
-
-    await waitFor(() => {
-      expect(
         getByText(
           EN_TRANSLATIONS.connectwallet.connectionhistory.missingidentifieralert
             .message
         )
       ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(
-        getByText(
-          EN_TRANSLATIONS.connectwallet.connectionhistory.missingidentifieralert
-            .confirm
-        )
-      );
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentOperation(OperationType.CREATE_IDENTIFIER_CONNECT_WALLET)
-      );
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("scanqr-btn"));
-    });
-
-    await waitFor(() => {
-      expect(
-        getByText(
-          EN_TRANSLATIONS.connectwallet.connectionhistory.missingidentifieralert
-            .message
-        )
-      ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(
-        getByText(
-          EN_TRANSLATIONS.connectwallet.connectionhistory.missingidentifieralert
-            .confirm
-        )
-      );
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentOperation(OperationType.CREATE_IDENTIFIER_CONNECT_WALLET)
-      );
     });
   });
 });

@@ -9,7 +9,6 @@ import {
 import { i18n } from "../../../../../i18n";
 import { CardsPlaceholder } from "../../../../components/CardsPlaceholder";
 import "./ConnectWallet.scss";
-import { ConnectWalletActions } from "../ConnectWalletActions";
 import {
   ActionInfo,
   ActionType,
@@ -56,7 +55,6 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       type: ActionType.None,
     });
 
-    const [openConnectWallet, setOpenConnectWallet] = useState(false);
     const [openDeleteAlert, setOpenDeleteAlert] = useState<boolean>(false);
     const [openConfirmConnectModal, setOpenConfirmConnectModal] =
       useState<boolean>(false);
@@ -83,12 +81,8 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     }, [currentOperation]);
 
     useImperativeHandle(ref, () => ({
-      openConnectWallet: handleAddConnect,
+      openConnectWallet: handleScanQR,
     }));
-
-    const handleAddConnect = () => {
-      setOpenConnectWallet(true);
-    };
 
     const handleOpenVerify = () => {
       if (
@@ -268,18 +262,12 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
             <div className="placeholder-container">
               <CardsPlaceholder
                 buttonLabel={i18n.t("connectwallet.sections.connectbtn")}
-                buttonAction={handleAddConnect}
+                buttonAction={handleScanQR}
                 testId={pageId}
               />
             </div>
           )}
         </div>
-        <ConnectWalletActions
-          openModal={openConnectWallet}
-          closeModal={() => setOpenConnectWallet(false)}
-          onInputPid={handleOpenInputPid}
-          onQRScan={handleScanQR}
-        />
         <ConfirmConnectModal
           isConnectModal={actionInfo.current.data?.id !== connectedWallet?.id}
           openModal={openConfirmConnectModal}
