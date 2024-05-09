@@ -72,6 +72,15 @@ class CredentialStorage {
       await this.storageService.update(record);
     }
   }
+
+  async getCrentialMetadataByIds(ids: string[]) {
+    return this.storageService.findAllByQuery(
+      {
+        $or: ids.map((id) => ({ id })),
+      },
+      CredentialMetadataRecord
+    );
+  }
 }
 
 export { CredentialStorage };

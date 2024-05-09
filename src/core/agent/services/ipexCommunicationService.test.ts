@@ -40,6 +40,7 @@ const credentialStorage = jest.mocked({
   getCredentialMetadataByConnectionId: jest.fn(),
   saveCredentialMetadataRecord: jest.fn(),
   updateCredentialMetadata: jest.fn(),
+  getCrentialMetadataByIds: jest.fn(),
 });
 
 let credentialListMock = jest.fn();
@@ -70,6 +71,7 @@ let getExchangeMock = jest.fn().mockImplementation((id: string) => {
 });
 const ipexOfferMock = jest.fn();
 const ipexGrantMock = jest.fn();
+const schemaGetMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -140,6 +142,9 @@ const signifyClient = jest.mocked({
   keyStates: () => ({
     query: jest.fn(),
     get: jest.fn(),
+  }),
+  schemas: () => ({
+    get: schemaGetMock,
   }),
 });
 
@@ -267,18 +272,14 @@ describe("Ipex communication service of agent", () => {
   test("can offer Keri Acdc when received the ipex apply", async () => {
     const id = "uuid";
     const date = new Date();
-    notificationStorage.findById = jest.fn().mockImplementation((id) => {
-      if (id == "uuid") {
-        return {
-          id,
-          createdAt: date,
-          a: {
-            d: "keri",
-          },
-        };
-      }
-      return;
-    });
+    const noti = {
+      id,
+      createdAt: date,
+      a: {
+        d: "keri",
+      },
+    };
+
     getExchangeMock = jest.fn().mockReturnValue({
       exn: {
         a: {
@@ -293,7 +294,7 @@ describe("Ipex communication service of agent", () => {
       signifyName: "abc123",
     });
     ipexOfferMock.mockResolvedValue(["offer", "sigs", "gend"]);
-    await ipexCommunicationService.offerAcdc(id, "credId");
+    await ipexCommunicationService.offerAcdcFromApply(noti, {});
     expect(ipexOfferMock).toBeCalledWith({
       senderName: "abc123",
       recipient: "i",
@@ -306,18 +307,13 @@ describe("Ipex communication service of agent", () => {
   test("can not offer Keri Acdc if aid is not existed", async () => {
     const id = "uuid";
     const date = new Date();
-    notificationStorage.findById = jest.fn().mockImplementation((id) => {
-      if (id == "uuid") {
-        return {
-          id,
-          createdAt: date,
-          a: {
-            d: "keri",
-          },
-        };
-      }
-      return;
-    });
+    const noti = {
+      id,
+      createdAt: date,
+      a: {
+        d: "keri",
+      },
+    };
     getExchangeMock = jest.fn().mockReturnValue({
       exn: {
         a: {
@@ -334,7 +330,7 @@ describe("Ipex communication service of agent", () => {
         new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
       );
     await expect(
-      ipexCommunicationService.offerAcdc(id, "credId")
+      ipexCommunicationService.offerAcdcFromApply(noti, {})
     ).rejects.toThrowError(
       IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
     );
@@ -343,18 +339,13 @@ describe("Ipex communication service of agent", () => {
   test("can grant Keri Acdc when received the ipex agree", async () => {
     const id = "uuid";
     const date = new Date();
-    notificationStorage.findById = jest.fn().mockImplementation((id) => {
-      if (id == "uuid") {
-        return {
-          id,
-          createdAt: date,
-          a: {
-            d: "keri",
-          },
-        };
-      }
-      return;
-    });
+    const noti = {
+      id,
+      createdAt: date,
+      a: {
+        d: "keri",
+      },
+    };
     getExchangeMock = jest.fn().mockReturnValue({
       exn: {
         a: {
@@ -371,7 +362,7 @@ describe("Ipex communication service of agent", () => {
       signifyName: "abc123",
     });
     ipexGrantMock.mockResolvedValue(["offer", "sigs", "gend"]);
-    await ipexCommunicationService.grantApplyAcdc(id);
+    await ipexCommunicationService.grantAcdcFromOffer(noti);
     expect(ipexGrantMock).toBeCalledWith({
       acdc: {},
       acdcAttachment: undefined,
@@ -388,18 +379,13 @@ describe("Ipex communication service of agent", () => {
   test("can not grant Keri Acdc if aid is not existed", async () => {
     const id = "uuid";
     const date = new Date();
-    notificationStorage.findById = jest.fn().mockImplementation((id) => {
-      if (id == "uuid") {
-        return {
-          id,
-          createdAt: date,
-          a: {
-            d: "keri",
-          },
-        };
-      }
-      return;
-    });
+    const noti = {
+      id,
+      createdAt: date,
+      a: {
+        d: "keri",
+      },
+    };
     getExchangeMock = jest.fn().mockReturnValue({
       exn: {
         a: {
@@ -419,7 +405,7 @@ describe("Ipex communication service of agent", () => {
           new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
         );
     await expect(
-      ipexCommunicationService.grantApplyAcdc(id)
+      ipexCommunicationService.grantAcdcFromOffer(noti)
     ).rejects.toThrowError(
       IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
     );
@@ -428,18 +414,13 @@ describe("Ipex communication service of agent", () => {
   test("can not grant Keri Acdc if acdc is not existed", async () => {
     const id = "uuid";
     const date = new Date();
-    notificationStorage.findById = jest.fn().mockImplementation((id) => {
-      if (id == "uuid") {
-        return {
-          id,
-          createdAt: date,
-          a: {
-            d: "keri",
-          },
-        };
-      }
-      return;
-    });
+    const noti = {
+      id,
+      createdAt: date,
+      a: {
+        d: "keri",
+      },
+    };
     getExchangeMock = jest.fn().mockReturnValue({
       exn: {
         a: {
@@ -453,7 +434,7 @@ describe("Ipex communication service of agent", () => {
     });
     credentialGetMock = jest.fn().mockReturnValue(null);
     await expect(
-      ipexCommunicationService.grantApplyAcdc(id)
+      ipexCommunicationService.grantAcdcFromOffer(noti)
     ).rejects.toThrowError(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
   });
 
@@ -470,17 +451,23 @@ describe("Ipex communication service of agent", () => {
         e: {},
       },
     });
-    notificationStorage.findById = jest.fn().mockResolvedValue({
+    const noti = {
       id: notiId,
-      createdAt: "2024-04-29T11:01:04.903Z",
+      createdAt: new Date("2024-04-29T11:01:04.903Z"),
       a: {
         d: "saidForUuid",
       },
+    };
+    schemaGetMock.mockResolvedValue({
+      title: "Qualified vLEI Issuer Credential",
+      description: "Qualified vLEI Issuer Credential",
     });
-    credentialStorage.getCredentialMetadata.mockResolvedValue({
-      id: "id",
-      status: "confirmed",
-    });
+    credentialStorage.getCrentialMetadataByIds.mockResolvedValue([
+      {
+        id: "metadata:d",
+        status: "confirmed",
+      },
+    ]);
     credentialListMock.mockResolvedValue([
       {
         sad: {
@@ -489,54 +476,13 @@ describe("Ipex communication service of agent", () => {
       },
     ]);
     expect(
-      await ipexCommunicationService.getMatchingCredsForApply(notiId)
-    ).toEqual([
-      {
-        acdc: {
-          sad: {
-            d: "d",
-          },
-        },
-        credentialType: undefined,
-        id: "id",
-        issuanceDate: undefined,
-        status: "confirmed",
-      },
-    ]);
-  });
-
-  test("cannot get matching credential for apply if cannot find the credential metdadata", async () => {
-    const notiId = "notiId";
-    getExchangeMock = jest.fn().mockResolvedValue({
-      exn: {
-        a: {
-          i: "uuid",
-          a: {},
-          s: "schemaSaid",
-        },
-        i: "i",
-        e: {},
+      await ipexCommunicationService.getMatchingCredsForApply(noti)
+    ).toEqual({
+      credentials: [{ acdc: { d: "d" }, connectionId: undefined }],
+      schema: {
+        description: "Qualified vLEI Issuer Credential",
+        name: "Qualified vLEI Issuer Credential",
       },
     });
-    notificationStorage.findById = jest.fn().mockResolvedValue({
-      id: notiId,
-      createdAt: "2024-04-29T11:01:04.903Z",
-      a: {
-        d: "saidForUuid",
-      },
-    });
-    credentialStorage.getCredentialMetadata.mockResolvedValue(null);
-    credentialListMock.mockResolvedValue([
-      {
-        sad: {
-          d: "d",
-        },
-      },
-    ]);
-    await expect(
-      ipexCommunicationService.getMatchingCredsForApply(notiId)
-    ).rejects.toThrowError(
-      IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
-    );
   });
 });
