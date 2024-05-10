@@ -94,7 +94,7 @@ enum TagDataType {
 }
 
 function isNil(value: unknown): boolean {
-  if (value === undefined || value === "" || value === null) {
+  if (value === undefined || value === null) {
     return true;
   }
   return false;
@@ -103,10 +103,6 @@ function isNil(value: unknown): boolean {
 function convertDbQuery(params: Query<BasicRecord>): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const [queryKey, queryVal] of Object.entries(params)) {
-    if (isNil(queryVal)) {
-      result[queryKey] = null;
-      continue;
-    }
     if (typeof queryVal === "boolean") {
       result[queryKey] = queryVal ? "1" : "0";
       continue;
@@ -122,4 +118,5 @@ export {
   convertDbQuery,
   resolveTagsFromDb,
   TagDataType,
+  isNil,
 };

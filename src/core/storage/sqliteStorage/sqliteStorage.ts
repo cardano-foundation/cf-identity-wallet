@@ -6,7 +6,7 @@ import {
   StorageService,
   BaseRecordConstructor,
 } from "../storage.types";
-import { TagDataType, convertDbQuery, resolveTagsFromDb } from "./utils";
+import { TagDataType, convertDbQuery, isNil, resolveTagsFromDb } from "./utils";
 import { deserializeRecord } from "../utils";
 import { BasicRecord } from "../../agent/records";
 
@@ -34,8 +34,8 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
     FROM items i WHERE category = ?`;
   static readonly SCAN_TAGS_SQL_EQ =
     "EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?)";
-  static readonly SCAN_TAGS_SQL_IS_NULL =
-    "EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value is NULL)";
+  static readonly SCAN_TAGS_SQL_NOT_EXIST =
+    "NOT EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ?)";
   static readonly SCAN_TAGS_SQL_IN =
     "EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value IN ";
 
@@ -223,12 +223,15 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
   getTagsInsertSql(itemId: string, tags: Record<string, unknown>) {
     const statements = [];
     for (const key in tags) {
+      if (isNil(tags[key])) continue;
       if (Array.isArray(tags[key])) {
         (tags[key] as Array<string>).forEach((value) => {
-          statements.push({
-            statement: SqliteStorage.INSERT_ITEM_TAG_SQL,
-            values: [itemId, key, value, TagDataType.ARRAY],
-          });
+          if (!isNil(tags[key])) {
+            statements.push({
+              statement: SqliteStorage.INSERT_ITEM_TAG_SQL,
+              values: [itemId, key, value, TagDataType.ARRAY],
+            });
+          }
         });
       } else if (typeof tags[key] == "boolean") {
         const value = tags[key] ? "1" : "0";
@@ -282,8 +285,8 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
         );
         values.push(queryKey, ...queryVal);
       } else {
-        if (queryVal === null) {
-          conditions.push(SqliteStorage.SCAN_TAGS_SQL_IS_NULL);
+        if (isNil(queryVal)) {
+          conditions.push(SqliteStorage.SCAN_TAGS_SQL_NOT_EXIST);
           values.push(queryKey);
         } else {
           conditions.push(SqliteStorage.SCAN_TAGS_SQL_EQ);

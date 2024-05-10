@@ -342,26 +342,20 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
       firstTag: null,
     };
     const expectedCondition =
-      "EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value is NULL)";
+      "NOT EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ?)";
     const expectdValues = ["firstTag"];
     const { condition, values } = storageService.getQueryConditionSql(query);
     expect(condition).toEqual(expectedCondition);
     expect(values).toMatchObject(expectdValues);
   });
 
-  test("should generate exactly sql insert tag is null", () => {
+  test("should not generate sql insert tag is null", () => {
     const query = {
       firstTag: null,
     };
-    const expectedCondition =
-      "INSERT INTO items_tags (item_id, name, value, type) VALUES (?,?,?,?)";
-    const expectdValues = ["id", "firstTag", null, "string"];
-    const [{ statement, values }] = storageService.getTagsInsertSql(
-      "id",
-      query
-    );
-    expect(statement).toEqual(expectedCondition);
-    expect(values).toMatchObject(expectdValues);
+
+    const insertSql = storageService.getTagsInsertSql("id", query);
+    expect(insertSql.length).toEqual(0);
   });
 });
 
