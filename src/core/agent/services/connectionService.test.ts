@@ -2,6 +2,7 @@ import { ConnectionStatus } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { EventService } from "./eventService";
 import { CredentialStorage, IdentifierStorage } from "../records";
+import { ConfigurationService } from "../../configuration";
 
 const basicStorage = jest.mocked({
   save: jest.fn(),
@@ -137,6 +138,9 @@ const keriContacts = [
 const oobiPrefix = "oobi.";
 
 describe("Connection service of agent", () => {
+  beforeAll(async () => {
+    await new ConfigurationService().start();
+  });
   beforeEach(() => {
     jest.resetAllMocks();
   });
