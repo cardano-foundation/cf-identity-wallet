@@ -307,15 +307,16 @@ class MultiSigService extends AgentService {
   }
 
   async getMultisigIcpDetails(
-    notification: KeriaNotification
+    notificationSaid: string
   ): Promise<MultiSigIcpRequestDetails> {
-    const msgSaid = notification.a.d as string;
     const icpMsg: MultiSigExnMessage[] = await this.signifyClient
       .groups()
-      .getRequest(msgSaid);
+      .getRequest(notificationSaid);
 
     if (!icpMsg.length) {
-      throw new Error(`${MultiSigService.EXN_MESSAGE_NOT_FOUND} ${msgSaid}`);
+      throw new Error(
+        `${MultiSigService.EXN_MESSAGE_NOT_FOUND} ${notificationSaid}`
+      );
     }
 
     const senderAid = icpMsg[0].exn.i;
