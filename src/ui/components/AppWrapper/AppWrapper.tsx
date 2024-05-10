@@ -116,6 +116,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const [isOnline, setIsOnline] = useState(false);
+  const [isMessagesHandled, setIsMessagesHandled] = useState(false);
   useActivityTimer();
 
   useEffect(() => {
@@ -149,7 +150,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
         //   Agent.agent.credentials.syncACDCs(),
         // ]);
       };
-      handleMessages();
+      if (!isMessagesHandled && isOnline) {
+        handleMessages();
+        setIsMessagesHandled(true);
+      }
       dispatch(setPauseQueueIncomingRequest(!isOnline));
     } else {
       dispatch(setPauseQueueIncomingRequest(true));
