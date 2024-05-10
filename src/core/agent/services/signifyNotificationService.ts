@@ -56,12 +56,19 @@ class SignifyNotificationService extends AgentService {
       const startFetchingIndex =
         notificationQuery.nextIndex > 0 ? notificationQuery.nextIndex - 1 : 0;
 
-      const notifications = await this.signifyClient
-        .notifications()
-        .list(startFetchingIndex, startFetchingIndex + 24)
-        .catch(() => {
-          Agent.agent.bootAndConnect();
-        });
+      let notifications;
+      try {
+        notifications = await this.signifyClient
+          .notifications()
+          .list(startFetchingIndex, startFetchingIndex + 24);
+      } catch (error) {
+        // This will hang the loop until the connection is secured again
+        await Agent.agent.bootAndConnect();
+      }
+      if (!notifications) {
+        // KERIA went down while querying, now back online
+        continue;
+      }
       if (
         notificationQuery.nextIndex > 0 &&
         (notifications.notes.length == 0 ||

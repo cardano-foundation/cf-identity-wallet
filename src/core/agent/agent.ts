@@ -12,7 +12,11 @@ import {
   IdentifierService,
 } from "./services";
 import { SignifyNotificationService } from "./services/signifyNotificationService";
-import { AgentServicesProps } from "./agent.types";
+import {
+  AgentServicesProps,
+  KeriaStatusChangedEvent,
+  KeriaStatusEventTypes,
+} from "./agent.types";
 import { EventService } from "./services/eventService";
 import {
   BasicRecord,
@@ -161,6 +165,17 @@ class Agent {
     return this.instance;
   }
 
+  onKeriaStatusStateChanged(
+    callback: (event: KeriaStatusChangedEvent) => void
+  ) {
+    this.agentServicesProps.eventService.on(
+      KeriaStatusEventTypes.KeriaStatusChanged,
+      async (event: KeriaStatusChangedEvent) => {
+        callback(event);
+      }
+    );
+  }
+
   async start(): Promise<void> {
     if (!Agent.isOnline) {
       await this.storageSession.open(walletId);
@@ -212,15 +227,35 @@ class Agent {
         await this.signifyClient.connect();
         Agent.isOnline = true;
       }
+      this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
+        type: KeriaStatusEventTypes.KeriaStatusChanged,
+        payload: {
+          isOnline: Agent.isOnline,
+        },
+      });
     }
   }
 
   async bootAndConnect(retryInterval = 1000) {
     try {
-      Agent.isOnline = false;
+      if (Agent.isOnline) {
+        Agent.isOnline = false;
+        this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
+          type: KeriaStatusEventTypes.KeriaStatusChanged,
+          payload: {
+            isOnline: false,
+          },
+        });
+      }
       await this.signifyClient.boot();
       await this.signifyClient.connect();
       Agent.isOnline = true;
+      this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
+        type: KeriaStatusEventTypes.KeriaStatusChanged,
+        payload: {
+          isOnline: true,
+        },
+      });
     } catch (error) {
       await new Promise((resolve) => setTimeout(resolve, retryInterval));
       await this.bootAndConnect(retryInterval);

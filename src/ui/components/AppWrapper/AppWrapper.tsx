@@ -116,24 +116,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const [isOnline, setIsOnline] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   useActivityTimer();
 
   useEffect(() => {
     initApp();
   }, []);
 
-  setInterval(() => {
-    const isKeriaOnline = Agent.agent.getKeriaOnlineStatus();
-    setIsOnline(isKeriaOnline);
-  }, 1000);
-
   useEffect(() => {
-    if (authentication.loggedIn) {
-      dispatch(setPauseQueueIncomingRequest(!isOnline));
-    } else {
-      dispatch(setPauseQueueIncomingRequest(true));
-    }
-    if (isOnline) {
+    if (isReady) {
       const handleMessages = async () => {
         Agent.agent.connections.onConnectionStateChanged((event) => {
           return connectionStateChangedHandler(event, dispatch);
@@ -170,6 +161,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
         // ]);
       };
       handleMessages();
+    }
+  }, [isReady, authentication.loggedIn, dispatch]);
+
+  useEffect(() => {
+    if (authentication.loggedIn) {
+      dispatch(setPauseQueueIncomingRequest(!isOnline));
+    } else {
+      dispatch(setPauseQueueIncomingRequest(true));
     }
   }, [isOnline, authentication.loggedIn, dispatch]);
 
@@ -292,6 +291,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     try {
       await Agent.agent.start();
+      setIsReady(true);
       setIsOnline(true);
       await loadDatabase();
     } catch (e) {
@@ -300,12 +300,17 @@ const AppWrapper = (props: { children: ReactNode }) => {
       if (/SignifyClient/gi.test(errorStack)) {
         await loadDatabase();
         Agent.agent.bootAndConnect().then(() => {
+          setIsReady(Agent.agent.getKeriaOnlineStatus());
           setIsOnline(Agent.agent.getKeriaOnlineStatus());
         });
       } else {
         throw e;
       }
     }
+    Agent.agent.onKeriaStatusStateChanged((event) => {
+      setIsOnline(event.payload.isOnline);
+    });
+
     dispatch(setInitialized(true));
   };
 
