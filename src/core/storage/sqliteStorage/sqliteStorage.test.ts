@@ -375,6 +375,7 @@ describe("Aries - Sqlite Storage Module: Util", () => {
       field5: null,
     };
     expect(convertDbQuery(query)).toEqual({
+      field1: null,
       field2: "1",
       field3: "0",
       field4: "string",

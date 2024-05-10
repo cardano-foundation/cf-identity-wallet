@@ -223,7 +223,7 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
   test("should return all items for a record type but none others", async () => {
     const result = await storageService.getAll(BasicRecord);
     expect(forEachMock).toBeCalled();
-    expect(result.length).toEqual(3);
+    expect(result.length).toEqual(4);
     expect(result[0].id).toEqual(existingRecord.id);
   });
 
@@ -285,6 +285,11 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
       },
       {
         _tags: { firstTag: "exists3", secondTag: "exists3" },
+        type: BasicRecord.type,
+        id: "test-0",
+      },
+      {
+        _tags: { firstTag: null, secondTag: "exists3" },
         type: BasicRecord.type,
         id: "test-0",
       },
