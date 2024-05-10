@@ -124,18 +124,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (isReady) {
+    if (authentication.loggedIn) {
       const handleMessages = async () => {
-        Agent.agent.connections.onConnectionStateChanged((event) => {
-          return connectionStateChangedHandler(event, dispatch);
-        });
-        Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
-          return keriaNotificationsChangeHandler(event, dispatch);
-        });
-        Agent.agent.credentials.onAcdcStateChanged((event) => {
-          return acdcChangeHandler(event, dispatch);
-        });
-
         const oldMessages = (
           await Promise.all([
             Agent.agent.credentials.getUnhandledIpexGrantNotifications({
@@ -161,11 +151,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
         // ]);
       };
       handleMessages();
-    }
-  }, [isReady, dispatch]);
-
-  useEffect(() => {
-    if (authentication.loggedIn) {
       dispatch(setPauseQueueIncomingRequest(!isOnline));
     } else {
       dispatch(setPauseQueueIncomingRequest(true));
@@ -310,7 +295,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.onKeriaStatusStateChanged((event) => {
       setIsOnline(event.payload.isOnline);
     });
-
+    Agent.agent.connections.onConnectionStateChanged((event) => {
+      return connectionStateChangedHandler(event, dispatch);
+    });
+    Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
+      return keriaNotificationsChangeHandler(event, dispatch);
+    });
+    Agent.agent.credentials.onAcdcStateChanged((event) => {
+      return acdcChangeHandler(event, dispatch);
+    });
     dispatch(setInitialized(true));
   };
 
