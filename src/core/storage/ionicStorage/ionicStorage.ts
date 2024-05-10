@@ -165,10 +165,8 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
           if (!check) {
             return false;
           }
-        } else if (
-          record.tags[queryKey] !== queryVal &&
-          queryVal !== undefined
-        ) {
+        } else if (record.tags[queryKey] !== queryVal) {
+          // If you query for an unknown tag `m` that is not a part of the record with `{ m: undefined }` all items will match this query. This behaves differently in SQLite storage - this risk is accepted since we will only query for known tags and Ionic Storage is only used in development.
           return false;
         }
       }

@@ -63,6 +63,19 @@ const forEachMock = jest.fn().mockImplementation((fn: () => void) => {
       }),
       tags: { firstTag: "exists3", secondTag: "exists3" },
     },
+
+    {
+      category: BasicRecord.type,
+      name: existingRecord.id,
+      value: JSON.stringify({
+        id: "test-0",
+        updatedAt: startTime,
+        content: {
+          test: "1",
+        },
+      }),
+      tags: { firstTag: null, secondTag: "exists3" },
+    },
   ];
   items.forEach(fn);
 });
@@ -210,7 +223,7 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
   test("should return all items for a record type but none others", async () => {
     const result = await storageService.getAll(BasicRecord);
     expect(forEachMock).toBeCalled();
-    expect(result.length).toEqual(3);
+    expect(result.length).toEqual(4);
     expect(result[0].id).toEqual(existingRecord.id);
   });
 
@@ -275,11 +288,23 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
         type: BasicRecord.type,
         id: "test-0",
       },
+      {
+        _tags: { firstTag: null, secondTag: "exists3" },
+        type: BasicRecord.type,
+        id: "test-0",
+      },
     ]);
   });
 
   test("should find an item with $and query", async () => {
     const tags = { $and: [{ firstTag: "exists" }, { secondTag: "exists" }] };
+    const result = await storageService.findAllByQuery(tags, BasicRecord);
+    expect(forEachMock).toBeCalled();
+    expect(result.length).toEqual(1);
+  });
+
+  test("should find an item with null query", async () => {
+    const tags = { firstTag: null };
     const result = await storageService.findAllByQuery(tags, BasicRecord);
     expect(forEachMock).toBeCalled();
     expect(result.length).toEqual(1);

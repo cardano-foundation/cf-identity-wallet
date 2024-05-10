@@ -336,6 +336,27 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
     expect(condition).toEqual(expectedCondition);
     expect(values).toMatchObject(expectdValues);
   });
+
+  test("should generate exactly sql condition is null", () => {
+    const query = {
+      firstTag: null,
+    };
+    const expectedCondition =
+      "NOT EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ?)";
+    const expectdValues = ["firstTag"];
+    const { condition, values } = storageService.getQueryConditionSql(query);
+    expect(condition).toEqual(expectedCondition);
+    expect(values).toMatchObject(expectdValues);
+  });
+
+  test("should not generate sql insert tag is null", () => {
+    const query = {
+      firstTag: null,
+    };
+
+    const insertSql = storageService.getTagsInsertSql("id", query);
+    expect(insertSql.length).toEqual(0);
+  });
 });
 
 describe("Aries - Sqlite Storage Module: Util", () => {
@@ -345,11 +366,14 @@ describe("Aries - Sqlite Storage Module: Util", () => {
       field2: true,
       field3: false,
       field4: "string",
+      field5: null,
     };
     expect(convertDbQuery(query)).toEqual({
+      field1: undefined,
       field2: "1",
       field3: "0",
       field4: "string",
+      field5: null,
     });
   });
 });
