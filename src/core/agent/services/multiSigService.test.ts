@@ -977,14 +977,9 @@ describe("Multisig sig service of agent", () => {
       .fn()
       .mockResolvedValue(senderData);
     Agent.agent.connections.getConnections = jest.fn().mockResolvedValue([]);
-    const result = await multiSigService.getMultisigIcpDetails({
-      id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
-      createdAt: new Date("2024-03-08T08:52:10.801Z"),
-      a: {
-        r: "/multisig/icp",
-        d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
-      },
-    });
+    const result = await multiSigService.getMultisigIcpDetails(
+      "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW"
+    );
     expect(result.ourIdentifier.id).toBe(identifierMetadata.id);
     expect(result.sender.id).toBe(senderData.id);
     expect(result.otherConnections.length).toBe(0);
@@ -1040,14 +1035,9 @@ describe("Multisig sig service of agent", () => {
       },
     ]);
     await expect(
-      multiSigService.getMultisigIcpDetails({
-        id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
-        createdAt: new Date("2024-03-08T08:52:10.801Z"),
-        a: {
-          r: "/multisig/icp",
-          d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
-        },
-      })
+      multiSigService.getMultisigIcpDetails(
+        "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW"
+      )
     ).rejects.toThrowError(MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP);
   });
 
@@ -1097,14 +1087,9 @@ describe("Multisig sig service of agent", () => {
         status: ConnectionStatus.PENDING,
       },
     ]);
-    const result = await multiSigService.getMultisigIcpDetails({
-      id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
-      createdAt: new Date("2024-03-08T08:52:10.801Z"),
-      a: {
-        r: "/multisig/icp",
-        d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
-      },
-    });
+    const result = await multiSigService.getMultisigIcpDetails(
+      "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW"
+    );
     expect(result.ourIdentifier.id).toBe(identifierMetadata.id);
     expect(result.sender.id).toBe(senderData.id);
     expect(result.otherConnections.length).toBe(1);
@@ -1163,14 +1148,9 @@ describe("Multisig sig service of agent", () => {
       },
     ]);
     await expect(
-      multiSigService.getMultisigIcpDetails({
-        id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
-        createdAt: new Date("2024-03-08T08:52:10.801Z"),
-        a: {
-          r: "/multisig/icp",
-          d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
-        },
-      })
+      multiSigService.getMultisigIcpDetails(
+        "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW"
+      )
     ).rejects.toThrowError(MultiSigService.CANNOT_JOIN_MULTISIG_ICP);
   });
 
@@ -1197,28 +1177,18 @@ describe("Multisig sig service of agent", () => {
         throw new Error("Some error from connection service");
       });
     await expect(
-      multiSigService.getMultisigIcpDetails({
-        id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
-        createdAt: new Date("2024-03-08T08:52:10.801Z"),
-        a: {
-          r: "/multisig/icp",
-          d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
-        },
-      })
+      multiSigService.getMultisigIcpDetails(
+        "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW"
+      )
     ).rejects.toThrowError("Some error from connection service");
   });
 
   test("cannot get multi-sig details from a notification with no matching exn message", async () => {
     groupGetRequestMock = jest.fn().mockResolvedValue([]);
     await expect(
-      multiSigService.getMultisigIcpDetails({
-        id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
-        createdAt: new Date("2024-03-08T08:52:10.801Z"),
-        a: {
-          r: "/multisig/icp",
-          d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
-        },
-      })
+      multiSigService.getMultisigIcpDetails(
+        "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW"
+      )
     ).rejects.toThrowError(
       `${MultiSigService.EXN_MESSAGE_NOT_FOUND} EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW`
     );
