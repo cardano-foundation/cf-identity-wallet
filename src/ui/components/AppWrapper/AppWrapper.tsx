@@ -116,7 +116,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const [isOnline, setIsOnline] = useState(false);
-  const [isReady, setIsReady] = useState(false);
   useActivityTimer();
 
   useEffect(() => {
@@ -276,7 +275,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     try {
       await Agent.agent.start();
-      setIsReady(true);
       setIsOnline(true);
       await loadDatabase();
     } catch (e) {
@@ -285,7 +283,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
       if (/SignifyClient/gi.test(errorStack)) {
         await loadDatabase();
         Agent.agent.bootAndConnect().then(() => {
-          setIsReady(Agent.agent.getKeriaOnlineStatus());
           setIsOnline(Agent.agent.getKeriaOnlineStatus());
         });
       } else {
