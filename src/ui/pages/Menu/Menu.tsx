@@ -95,7 +95,7 @@ const Menu = () => {
           SubMenuKey.ConnectWallet,
           {
             Component: () => <ConnectWallet ref={connectWalletRef} />,
-            title: "connectwallet.sections.header",
+            title: "menu.items.connectwallet.sections.header",
             pageId: "connect-wallet",
             additionalButtons: (
               <IonButton
@@ -145,23 +145,23 @@ const Menu = () => {
     {
       itemKey: SubMenuKey.Profile,
       icon: personCircleOutline,
-      label: `${i18n.t("menu.tab.items.profile")}`,
+      label: `${i18n.t("menu.items.profile.title")}`,
     },
     {
       itemKey: SubMenuKey.Crypto,
       icon: walletOutline,
-      label: `${i18n.t("menu.tab.items.crypto")}`,
+      label: `${i18n.t("menu.items.crypto.title")}`,
     },
     {
       itemKey: SubMenuKey.Connections,
       icon: peopleOutline,
-      label: `${i18n.t("menu.tab.items.connections")}`,
+      label: `${i18n.t("menu.items.connections.title")}`,
     },
     {
       itemKey: SubMenuKey.ConnectWallet,
       icon: linkOutline,
-      label: `${i18n.t("menu.tab.items.connectwallet")}`,
-      subLabel: `${i18n.t("menu.tab.items.cip")}`,
+      label: `${i18n.t("menu.items.connectwallet.title")}`,
+      subLabel: `${i18n.t("menu.items.connectwallet.cip")}`,
     },
   ];
 
@@ -178,7 +178,7 @@ const Menu = () => {
       <TabLayout
         pageId={pageId}
         header={true}
-        title={`${i18n.t("menu.tab.header")}`}
+        title={`${i18n.t("menu.header")}`}
         additionalButtons={<AdditionalButtons />}
       >
         <IonGrid>

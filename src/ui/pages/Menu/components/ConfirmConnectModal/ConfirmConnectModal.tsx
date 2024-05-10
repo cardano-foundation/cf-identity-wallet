@@ -41,8 +41,8 @@ const ConfirmConnectModal = ({
 
   const buttonTitle = i18n.t(
     isConnectModal
-      ? "connectwallet.connectionhistory.confirmconnect.connectbtn"
-      : "connectwallet.connectionhistory.confirmconnect.disconnectbtn"
+      ? "menu.items.connectwallet.connectionhistory.confirmconnect.connectbtn"
+      : "menu.items.connectwallet.connectionhistory.confirmconnect.disconnectbtn"
   );
 
   const displayUrl = connectionData
@@ -76,7 +76,7 @@ const ConfirmConnectModal = ({
         closeButton: true,
         closeButtonAction: closeModal,
         closeButtonLabel: `${i18n.t(
-          "connectwallet.connectionhistory.confirmconnect.done"
+          "menu.items.connectwallet.connectionhistory.confirmconnect.done"
         )}`,
         actionButton: true,
         actionButtonIcon: trashOutline,

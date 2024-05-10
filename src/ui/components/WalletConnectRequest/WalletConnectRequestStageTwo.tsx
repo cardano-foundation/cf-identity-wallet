@@ -69,15 +69,17 @@ const WalletConnectRequestStageTwo = ({
       customClass={classes}
       header={
         <PageHeader
-          title={`${i18n.t("connectwallet.request.stagetwo.title")}`}
+          title={`${i18n.t("menu.items.connectwallet.request.stagetwo.title")}`}
           closeButton
-          closeButtonLabel={`${i18n.t("connectwallet.request.button.back")}`}
+          closeButtonLabel={`${i18n.t(
+            "menu.items.connectwallet.request.button.back"
+          )}`}
           closeButtonAction={onBackClick}
         />
       }
     >
       <h2 className="title">
-        {i18n.t("connectwallet.request.stagetwo.message")}
+        {i18n.t("menu.items.connectwallet.request.stagetwo.message")}
       </h2>
       <IonContent className="identifier-list">
         <CardList
@@ -103,7 +105,7 @@ const WalletConnectRequestStageTwo = ({
       </IonContent>
       <PageFooter
         primaryButtonText={`${i18n.t(
-          "connectwallet.request.stagetwo.confirm"
+          "menu.items.connectwallet.request.stagetwo.confirm"
         )}`}
         primaryButtonAction={handleConnectWallet}
         primaryButtonDisabled={!selectedIdentifier}
