@@ -8,9 +8,11 @@ import {
 import { Notification } from "./credentialService.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { NotificationStorage } from "../records";
+import { Agent } from "../agent";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
+  static readonly POLL_KERIA_INTERVAL = 5000;
 
   protected readonly notificationStorage!: NotificationStorage;
 
@@ -52,12 +54,33 @@ class SignifyNotificationService extends AgentService {
     }
     // eslint-disable-next-line no-constant-condition
     while (true) {
+      if (!Agent.agent.getKeriaOnlineStatus()) {
+        await new Promise((rs) =>
+          setTimeout(rs, SignifyNotificationService.POLL_KERIA_INTERVAL)
+        );
+        continue;
+      }
+
       const startFetchingIndex =
         notificationQuery.nextIndex > 0 ? notificationQuery.nextIndex - 1 : 0;
 
-      const notifications = await this.signifyClient
-        .notifications()
-        .list(startFetchingIndex, startFetchingIndex + 24);
+      let notifications;
+      try {
+        notifications = await this.signifyClient
+          .notifications()
+          .list(startFetchingIndex, startFetchingIndex + 24);
+      } catch (error) {
+        // Possible that bootAndConnect is called from @OnlineOnly in between loops,
+        // so check if its gone down to avoid having 2 bootAndConnect loops
+        if (Agent.agent.getKeriaOnlineStatus()) {
+          // This will hang the loop until the connection is secured again
+          await Agent.agent.bootAndConnect();
+        }
+      }
+      if (!notifications) {
+        // KERIA went down while querying, now back online
+        continue;
+      }
       if (
         notificationQuery.nextIndex > 0 &&
         (notifications.notes.length == 0 ||
@@ -94,11 +117,9 @@ class SignifyNotificationService extends AgentService {
           notificationQuery
         );
       } else {
-        await new Promise((rs) => {
-          setTimeout(() => {
-            rs(true);
-          }, 2000);
-        });
+        await new Promise((rs) =>
+          setTimeout(rs, SignifyNotificationService.POLL_KERIA_INTERVAL)
+        );
       }
     }
   }

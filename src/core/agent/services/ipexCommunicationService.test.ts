@@ -1,6 +1,7 @@
 import { EventService } from "./eventService";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import { CredentialStatus } from "./credentialService.types";
+import { Agent } from "../agent";
 import { IdentifierStorage } from "../records";
 
 const notificationStorage = jest.mocked({
@@ -180,6 +181,7 @@ const ipexCommunicationService = new IpexCommunicationService(
 
 describe("Ipex communication service of agent", () => {
   test("can accept ACDC", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "holder",
@@ -204,6 +206,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("cannot accept ACDC if the notification is missing in the DB", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "not-found-id";
     await expect(ipexCommunicationService.acceptAcdc(id)).rejects.toThrowError(
       `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
@@ -213,6 +216,7 @@ describe("Ipex communication service of agent", () => {
   // This logic must change if we are accepting presentations later.
   test("cannot accept ACDC if identifier is not locally stored", async () => {
     // @TODO - foconnor: Ensure syncing process resovles this edge case of identifier in cloud but not local prior to release.
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     notificationStorage.findById = jest.fn().mockResolvedValue({
       id,
@@ -234,6 +238,7 @@ describe("Ipex communication service of agent", () => {
 
   // This test should go when this has been made event driven.
   test("throws if a credential does not appear in KERIA after admitting", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "holder",
@@ -251,6 +256,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("cannot mark credential as confirmed if metadata is missing", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "holder",
@@ -269,6 +275,12 @@ describe("Ipex communication service of agent", () => {
     expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
   });
 
+  test("Should throw an error when KERIA is offline", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    await expect(
+      ipexCommunicationService.acceptAcdc("id")
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+  });
   test("can offer Keri Acdc when received the ipex apply", async () => {
     const id = "uuid";
     const date = new Date();

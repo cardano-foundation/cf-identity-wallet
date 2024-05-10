@@ -76,6 +76,8 @@ jest.mock("../../../core/agent/agent", () => ({
       signifyNotifications: {
         onNotificationStateChanged: jest.fn(),
       },
+      getKeriaOnlineStatus: jest.fn(),
+      onKeriaStatusStateChanged: jest.fn(),
     },
   },
 }));
