@@ -1,17 +1,17 @@
 import { IonCheckbox, IonContent } from "@ionic/react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
-import { i18n } from "../../../../../i18n";
-import { useAppSelector } from "../../../../../store/hooks";
-import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
-import { setToastMsg } from "../../../../../store/reducers/stateCache";
-import { CardItem, CardList } from "../../../../components/CardList";
-import { PageFooter } from "../../../../components/PageFooter";
-import { PageHeader } from "../../../../components/PageHeader";
-import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
-import { ToastMsgType } from "../../../../globals/types";
-import { combineClassNames } from "../../../../utils/style";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { i18n } from "../../../i18n";
+import { useAppSelector } from "../../../store/hooks";
+import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
+import { setToastMsg } from "../../../store/reducers/stateCache";
+import { CardItem, CardList } from "../CardList";
+import { PageFooter } from "../PageFooter";
+import { PageHeader } from "../PageHeader";
+import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
+import { ToastMsgType } from "../../globals/types";
+import { combineClassNames } from "../../utils/style";
 import "./WalletConnectRequest.scss";
 import { WalletConnectRequestStageTwoProps } from "./WalletConnectRequest.types";
 
@@ -69,17 +69,15 @@ const WalletConnectRequestStageTwo = ({
       customClass={classes}
       header={
         <PageHeader
-          title={`${i18n.t("request.walletconnection.stagetwo.title")}`}
+          title={`${i18n.t("connectwallet.request.stagetwo.title")}`}
           closeButton
-          closeButtonLabel={`${i18n.t(
-            "request.walletconnection.stagetwo.back"
-          )}`}
+          closeButtonLabel={`${i18n.t("connectwallet.request.button.back")}`}
           closeButtonAction={onBackClick}
         />
       }
     >
       <h2 className="title">
-        {i18n.t("request.walletconnection.stagetwo.message")}
+        {i18n.t("connectwallet.request.stagetwo.message")}
       </h2>
       <IonContent className="identifier-list">
         <CardList
@@ -105,7 +103,7 @@ const WalletConnectRequestStageTwo = ({
       </IonContent>
       <PageFooter
         primaryButtonText={`${i18n.t(
-          "request.walletconnection.stagetwo.confirm"
+          "connectwallet.request.stagetwo.confirm"
         )}`}
         primaryButtonAction={handleConnectWallet}
         primaryButtonDisabled={!selectedIdentifier}

@@ -903,6 +903,27 @@
         "connectbtn": "Connect",
         "disconnectbtn": "Disconnect"
       }
+    },
+    "request": {
+      "stageone": {
+        "title": "Connect Cardano",
+        "message": "Would you like to establish a CIP-45 Connection?",
+        "alert": {
+          "titleconfirm": "Are you sure you want to decline this connection?",
+          "confirm": "Decline",
+          "cancel": "Cancel"
+        }
+      },
+      "stagetwo": {
+        "title": "Choose identifier",
+        "message": "Which KERI AID identifier would you like to make the connection with?",
+        "confirm": "Confirm"
+      },
+      "button": {
+        "back": "Back",
+        "accept": "Accept",
+        "decline": "Decline"
+      }
     }
   },
   "settings": {
@@ -1127,24 +1148,6 @@
     "peeridnotrecognised": "Peer ID not recognised"
   },
   "request": {
-    "walletconnection": {
-      "stageone": {
-        "title": "Connect Cardano",
-        "back": "Back",
-        "message": "Would you like to establish a CIP-45 Connection?",
-        "alert": {
-          "titleconfirm": "Are you sure you want to decline this connection?",
-          "confirm": "Decline",
-          "cancel": "Cancel"
-        }
-      },
-      "stagetwo": {
-        "title": "Choose identifier",
-        "back": "Back",
-        "message": "Which KERI AID identifier would you like to make the connection with?",
-        "confirm": "Confirm"
-      }
-    },
     "connection": {
       "title": "Connect",
       "requestconnection": " request from",

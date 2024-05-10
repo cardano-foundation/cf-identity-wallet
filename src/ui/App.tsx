@@ -25,7 +25,7 @@ import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
 import { LockPage } from "./pages/LockPage/LockPage";
 import { LoadingPage } from "./pages/LoadingPage/LoadingPage";
-import { WalletConnectRequest } from "./pages/Menu/components/WalletConnectRequest";
+import { WalletConnectRequest } from "./components/WalletConnectRequest";
 
 setupIonicReact();
 

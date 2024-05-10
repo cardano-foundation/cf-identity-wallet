@@ -1,12 +1,12 @@
 import { IonIcon } from "@ionic/react";
 import { checkmark, personCircleOutline } from "ionicons/icons";
 import { useState } from "react";
-import { i18n } from "../../../../../i18n";
-import { Alert } from "../../../../components/Alert";
-import { PageFooter } from "../../../../components/PageFooter";
-import { PageHeader } from "../../../../components/PageHeader";
-import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
-import { combineClassNames } from "../../../../utils/style";
+import { i18n } from "../../../i18n";
+import { Alert } from "../Alert";
+import { PageFooter } from "../PageFooter";
+import { PageHeader } from "../PageHeader";
+import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
+import { combineClassNames } from "../../utils/style";
 import "./WalletConnectRequest.scss";
 import { WalletConnectRequestStageOneProps } from "./WalletConnectRequest.types";
 
@@ -50,11 +50,9 @@ const WalletConnectRequestStageOne = ({
         customClass={classes}
         header={
           <PageHeader
-            title={`${i18n.t("request.walletconnection.stageone.title")}`}
+            title={`${i18n.t("connectwallet.request.stageone.title")}`}
             closeButton
-            closeButtonLabel={`${i18n.t(
-              "request.walletconnection.stageone.back"
-            )}`}
+            closeButtonLabel={`${i18n.t("connectwallet.request.button.back")}`}
             closeButtonAction={openDecline}
           />
         }
@@ -77,15 +75,17 @@ const WalletConnectRequestStageOne = ({
             data-testid="wallet-connect-message"
             className="wallet-connect-message"
           >
-            {i18n.t("request.walletconnection.stageone.message")}
+            {i18n.t("connectwallet.request.stageone.message")}
           </p>
         </div>
         <PageFooter
           customClass="request-footer"
           pageId="connect-wallet-stage-one"
-          primaryButtonText={`${i18n.t("request.button.accept")}`}
+          primaryButtonText={`${i18n.t("connectwallet.request.button.accept")}`}
           primaryButtonAction={handleAccept}
-          secondaryButtonText={`${i18n.t("request.button.decline")}`}
+          secondaryButtonText={`${i18n.t(
+            "connectwallet.request.button.decline"
+          )}`}
           secondaryButtonAction={openDecline}
         />
       </ResponsivePageLayout>
@@ -93,14 +93,12 @@ const WalletConnectRequestStageOne = ({
         isOpen={openDeclineAlert}
         setIsOpen={setOpenDeclineAlert}
         dataTestId="alert-decline-connect"
-        headerText={i18n.t(
-          "request.walletconnection.stageone.alert.titleconfirm"
-        )}
+        headerText={i18n.t("connectwallet.request.stageone.alert.titleconfirm")}
         confirmButtonText={`${i18n.t(
-          "request.walletconnection.stageone.alert.confirm"
+          "connectwallet.request.stageone.alert.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "request.walletconnection.stageone.alert.cancel"
+          "connectwallet.request.stageone.alert.cancel"
         )}`}
         actionConfirm={handleClose}
         actionCancel={() => setOpenDeclineAlert(false)}

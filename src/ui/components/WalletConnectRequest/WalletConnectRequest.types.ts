@@ -1,4 +1,4 @@
-import { ConnectionData } from "../../../../../store/reducers/walletConnectionsCache";
+import { ConnectionData } from "../../../store/reducers/walletConnectionsCache";
 
 interface WalletConnectRequestStageOneProps {
   isOpen: boolean;

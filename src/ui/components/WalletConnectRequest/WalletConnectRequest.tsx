@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { WalletConnectRequestStageOne } from "./WalletConnectRequestStageOne";
 import { WalletConnectRequestStageTwo } from "./WalletConnectRequestStageTwo";
-import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getPendingConnection,
   setPendingConnections,
-} from "../../../../../store/reducers/walletConnectionsCache";
-import { combineClassNames } from "../../../../utils/style";
+} from "../../../store/reducers/walletConnectionsCache";
+import { combineClassNames } from "../../utils/style";
 
 const WalletConnectRequest = () => {
   const dispatch = useAppDispatch();

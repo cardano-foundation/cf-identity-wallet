@@ -4,16 +4,16 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
-import { store } from "../../../../../store";
-import { IncomingRequestType } from "../../../../../store/reducers/stateCache/stateCache.types";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { store } from "../../../store";
+import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { WalletConnectRequestStageOne } from "./WalletConnectRequestStageOne";
 import { WalletConnectRequestStageTwo } from "./WalletConnectRequestStageTwo";
-import { identifierFix } from "../../../../__fixtures__/identifierFix";
-import { TabsRoutePath } from "../../../../../routes/paths";
-import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
-import { setToastMsg } from "../../../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../../../globals/types";
+import { identifierFix } from "../../__fixtures__/identifierFix";
+import { TabsRoutePath } from "../../../routes/paths";
+import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
+import { setToastMsg } from "../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../globals/types";
 import { WalletConnectRequest } from "./WalletConnectRequest";
 setupIonicReact();
 mockIonicReact();
@@ -56,11 +56,11 @@ describe("Wallet Connect Stage One", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.request.walletconnection.stageone.title)
+      getByText(EN_TRANSLATIONS.connectwallet.request.stageone.title)
     ).toBeVisible();
 
     expect(
-      getByText(EN_TRANSLATIONS.request.walletconnection.stageone.message)
+      getByText(EN_TRANSLATIONS.connectwallet.request.stageone.message)
     ).toBeVisible();
 
     expect(getByText(EN_TRANSLATIONS.request.button.accept)).toBeVisible();
@@ -108,7 +108,7 @@ describe("Wallet Connect Stage One", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.request.walletconnection.stageone.alert.titleconfirm
+          EN_TRANSLATIONS.connectwallet.request.stageone.alert.titleconfirm
         )
       ).toBeInTheDocument();
     });
@@ -116,7 +116,7 @@ describe("Wallet Connect Stage One", () => {
     act(() => {
       fireEvent.click(
         getAllByText(
-          EN_TRANSLATIONS.request.walletconnection.stageone.alert.confirm
+          EN_TRANSLATIONS.connectwallet.request.stageone.alert.confirm
         )[1]
       );
     });
@@ -170,11 +170,11 @@ describe("Wallet Connect Stage Two", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.request.walletconnection.stagetwo.title)
+      getByText(EN_TRANSLATIONS.connectwallet.request.stagetwo.title)
     ).toBeVisible();
 
     expect(
-      getByText(EN_TRANSLATIONS.request.walletconnection.stagetwo.message)
+      getByText(EN_TRANSLATIONS.connectwallet.request.stagetwo.message)
     ).toBeVisible();
 
     expect(getByTestId("primary-button")).toBeVisible();
@@ -256,7 +256,7 @@ describe("Wallet Connect Request", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.request.walletconnection.stageone.title)
+      getByText(EN_TRANSLATIONS.connectwallet.request.stageone.title)
     ).toBeVisible();
 
     act(() => {
@@ -265,7 +265,7 @@ describe("Wallet Connect Request", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.request.walletconnection.stagetwo.title)
+        getByText(EN_TRANSLATIONS.connectwallet.request.stagetwo.title)
       ).toBeVisible();
     });
 
@@ -302,7 +302,7 @@ describe("Wallet Connect Request", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.request.walletconnection.stageone.title)
+      getByText(EN_TRANSLATIONS.connectwallet.request.stageone.title)
     ).toBeVisible();
 
     act(() => {
@@ -313,7 +313,7 @@ describe("Wallet Connect Request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.request.walletconnection.stageone.alert.titleconfirm
+          EN_TRANSLATIONS.connectwallet.request.stageone.alert.titleconfirm
         )
       ).toBeInTheDocument();
     });
@@ -321,7 +321,7 @@ describe("Wallet Connect Request", () => {
     act(() => {
       fireEvent.click(
         getAllByText(
-          EN_TRANSLATIONS.request.walletconnection.stageone.alert.confirm
+          EN_TRANSLATIONS.connectwallet.request.stageone.alert.confirm
         )[1]
       );
     });
