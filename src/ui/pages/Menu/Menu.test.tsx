@@ -53,7 +53,7 @@ describe("Menu Tab", () => {
     await waitForIonicReact();
 
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connectwallet.sections.header)
+      getByText(EN_TRANSLATIONS.menu.items.connectwallet.tabheader)
     ).toBeVisible();
   });
 });

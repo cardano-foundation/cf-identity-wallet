@@ -863,10 +863,8 @@
       "connectwallet": {
         "title": "Connect Wallet",
         "cip": "CIP-45",
-        "sections": {
-          "header": "Cardano Connect",
-          "connectbtn": "Connect with Cardano"
-        },
+        "tabheader": "Cardano Connect",
+        "connectbtn": "Connect with Cardano",
         "connectwalletmodal": {
           "header": "New connection",
           "cancel": "Cancel",

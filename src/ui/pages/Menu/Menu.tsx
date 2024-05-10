@@ -95,7 +95,7 @@ const Menu = () => {
           SubMenuKey.ConnectWallet,
           {
             Component: () => <ConnectWallet ref={connectWalletRef} />,
-            title: "menu.items.connectwallet.sections.header",
+            title: "menu.items.connectwallet.tabheader",
             pageId: "connect-wallet",
             additionalButtons: (
               <IonButton

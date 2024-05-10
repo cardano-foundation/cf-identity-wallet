@@ -91,7 +91,7 @@ describe("Wallet connect: empty history", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connectwallet.sections.connectbtn)
+      getByText(EN_TRANSLATIONS.menu.items.connectwallet.connectbtn)
     ).toBeVisible();
   });
 
@@ -128,12 +128,12 @@ describe("Wallet connect: empty history", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connectwallet.sections.connectbtn)
+      getByText(EN_TRANSLATIONS.menu.items.connectwallet.connectbtn)
     ).toBeVisible();
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.menu.items.connectwallet.sections.connectbtn)
+        getByText(EN_TRANSLATIONS.menu.items.connectwallet.connectbtn)
       );
     });
 
@@ -177,12 +177,12 @@ describe("Wallet connect: empty history", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connectwallet.sections.connectbtn)
+      getByText(EN_TRANSLATIONS.menu.items.connectwallet.connectbtn)
     ).toBeVisible();
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.menu.items.connectwallet.sections.connectbtn)
+        getByText(EN_TRANSLATIONS.menu.items.connectwallet.connectbtn)
       );
     });
 

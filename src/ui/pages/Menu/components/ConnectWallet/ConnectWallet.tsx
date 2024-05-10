@@ -218,9 +218,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           ) : (
             <div className="placeholder-container">
               <CardsPlaceholder
-                buttonLabel={i18n.t(
-                  "menu.items.connectwallet.sections.connectbtn"
-                )}
+                buttonLabel={i18n.t("menu.items.connectwallet.connectbtn")}
                 buttonAction={handleScanQR}
                 testId={pageId}
               />
