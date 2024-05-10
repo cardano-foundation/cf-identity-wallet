@@ -35,6 +35,7 @@ const PasteConnectionPeerIdModal = ({
         actionButton: true,
         actionButtonLabel: `${i18n.t("connectwallet.inputpidmodal.confirm")}`,
         actionButtonAction: confirm,
+        actionButtonDisabled: pid.length === 0,
         title: `${i18n.t("connectwallet.inputpidmodal.header")}`,
       }}
     >
