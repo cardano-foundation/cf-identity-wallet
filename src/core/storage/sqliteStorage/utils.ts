@@ -93,8 +93,8 @@ enum TagDataType {
   BOOLEAN = "boolean",
 }
 
-function isUndefinedOrEmptyString(value: unknown): boolean {
-  if (value === undefined || value === "") {
+function isNil(value: unknown): boolean {
+  if (value === undefined || value === "" || value === null) {
     return true;
   }
   return false;
@@ -103,7 +103,10 @@ function isUndefinedOrEmptyString(value: unknown): boolean {
 function convertDbQuery(params: Query<BasicRecord>): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const [queryKey, queryVal] of Object.entries(params)) {
-    if (isUndefinedOrEmptyString(queryVal)) continue;
+    if (isNil(queryVal)) {
+      result[queryKey] = null;
+      continue;
+    }
     if (typeof queryVal === "boolean") {
       result[queryKey] = queryVal ? "1" : "0";
       continue;
@@ -118,6 +121,5 @@ export {
   versionCompare,
   convertDbQuery,
   resolveTagsFromDb,
-  isUndefinedOrEmptyString as isNilOrEmptyString,
   TagDataType,
 };

@@ -6,12 +6,7 @@ import {
   StorageService,
   BaseRecordConstructor,
 } from "../storage.types";
-import {
-  TagDataType,
-  convertDbQuery,
-  isNilOrEmptyString,
-  resolveTagsFromDb,
-} from "./utils";
+import { TagDataType, convertDbQuery, resolveTagsFromDb } from "./utils";
 import { deserializeRecord } from "../utils";
 import { BasicRecord } from "../../agent/records";
 
@@ -228,15 +223,12 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
   getTagsInsertSql(itemId: string, tags: Record<string, unknown>) {
     const statements = [];
     for (const key in tags) {
-      if (isNilOrEmptyString(tags[key])) continue;
       if (Array.isArray(tags[key])) {
         (tags[key] as Array<string>).forEach((value) => {
-          if (!isNilOrEmptyString(value)) {
-            statements.push({
-              statement: SqliteStorage.INSERT_ITEM_TAG_SQL,
-              values: [itemId, key, value, TagDataType.ARRAY],
-            });
-          }
+          statements.push({
+            statement: SqliteStorage.INSERT_ITEM_TAG_SQL,
+            values: [itemId, key, value, TagDataType.ARRAY],
+          });
         });
       } else if (typeof tags[key] == "boolean") {
         const value = tags[key] ? "1" : "0";

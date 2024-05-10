@@ -165,10 +165,7 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
           if (!check) {
             return false;
           }
-        } else if (
-          record.tags[queryKey] !== queryVal &&
-          queryVal !== undefined
-        ) {
+        } else if (record.tags[queryKey] !== queryVal) {
           return false;
         }
       }
