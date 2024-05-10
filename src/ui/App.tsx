@@ -64,9 +64,11 @@ const App = () => {
 
   useEffect(() => {
     setShowScan(
-      currentOperation === OperationType.SCAN_CONNECTION ||
-        currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
-        currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
+      [
+        OperationType.SCAN_CONNECTION,
+        OperationType.MULTI_SIG_INITIATOR_SCAN,
+        currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN,
+      ].includes(currentOperation)
     );
     setShowToast(toastMsg !== undefined);
   }, [currentOperation, toastMsg]);

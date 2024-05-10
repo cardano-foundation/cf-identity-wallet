@@ -93,7 +93,7 @@ const processMultiSigIcpNotification = async (
 ) => {
   try {
     const multisigIcpDetails =
-      await Agent.agent.multiSigs.getMultisigIcpDetails(event);
+      await Agent.agent.multiSigs.getMultisigIcpDetails(event.a.d as string);
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,

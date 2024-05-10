@@ -48,8 +48,6 @@ body {
   }
 
   &.scanner-active {
-    background-color: var(--ion-color-secondary);
-
     > div:last-child {
       display: block;
       z-index: -10;
