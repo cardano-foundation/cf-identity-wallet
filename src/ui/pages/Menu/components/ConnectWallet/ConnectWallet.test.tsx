@@ -23,16 +23,6 @@ jest.mock("@ionic/react", () => ({
       {children}
     </div>
   ),
-  IonInput: (props: any) => {
-    return (
-      <input
-        data-testid={props["data-testid"]}
-        onChange={(e) => {
-          props.onIonInput(e);
-        }}
-      />
-    );
-  },
 }));
 
 jest.mock("@aparajita/capacitor-secure-storage", () => ({

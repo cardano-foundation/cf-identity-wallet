@@ -1,15 +1,14 @@
-import { IonButton, IonInput } from "@ionic/react";
+import { IonInput } from "@ionic/react";
 import { useState } from "react";
-import { i18n } from "../../../../../i18n";
-import { OptionModal } from "../../../../components/OptionsModal";
-import { PasteConnectionPeerIdModalProps } from "./PasteConnectionPeerIdModal.types";
 import "./PasteConnectionPeerIdModal.scss";
+import { PasteConnectionPeerIdModalProps } from "./PasteConnectionPeerIdModal.types";
+import { OptionModal } from "../OptionsModal";
+import { i18n } from "../../../i18n";
 
 const PasteConnectionPeerIdModal = ({
   openModal,
   onCloseModal,
   onConfirm,
-  onScanQR,
 }: PasteConnectionPeerIdModalProps) => {
   const [pid, setPid] = useState("");
 
@@ -20,11 +19,6 @@ const PasteConnectionPeerIdModal = ({
 
   const confirm = () => {
     onConfirm(pid);
-    handleClose();
-  };
-
-  const handleScanQR = () => {
-    onScanQR();
     handleClose();
   };
 
@@ -45,17 +39,10 @@ const PasteConnectionPeerIdModal = ({
       }}
     >
       <IonInput
-        data-testid="input-pid"
+        data-testid="pid-input"
         value={pid}
         onIonInput={(event) => setPid(event.target.value as string)}
       />
-      <IonButton
-        className="secondary-button"
-        data-testid="scanqr-btn"
-        onClick={handleScanQR}
-      >
-        {i18n.t("connectwallet.inputpidmodal.scanQR")}
-      </IonButton>
     </OptionModal>
   );
 };

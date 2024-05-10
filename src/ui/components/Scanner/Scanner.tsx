@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import {
   IonButton,
   IonCol,
@@ -20,17 +20,23 @@ import {
   getCurrentRoute,
   getToastMsg,
   setCurrentOperation,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { Agent } from "../../../core/agent/agent";
 import { ScannerProps } from "./Scanner.types";
+import { PasteConnectionPeerIdModal } from "../PasteConnectionPeerIdModal";
+import { setPendingConnections } from "../../../store/reducers/walletConnectionsCache";
+import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 
 const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentToastMsg = useAppSelector(getToastMsg);
   const currentRoute = useAppSelector(getCurrentRoute);
+
+  const [openPidModal, setOpenPidModal] = useState<boolean>(false);
 
   const checkPermission = async () => {
     const status = await BarcodeScanner.checkPermission({ force: true });
@@ -68,13 +74,25 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
     stopScan,
   }));
 
+  const handleConnectWallet = (id: string) => {
+    // TODO: Handle connect wallet
+    dispatch(setToastMsg(ToastMsgType.PEER_ID_SUCCESS));
+    dispatch(setPendingConnections(walletConnectionsFix[0]));
+  };
+
   const handleConnect = (content: string) => {
     if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
-      // TODO: Handle connect wallet
+      handleConnectWallet(content);
       return;
     }
 
     Agent.agent.connections.connectByOobiUrl(content);
+  };
+
+  const handleSubmitConnect = (id: string) => {
+    stopScan();
+    dispatch(setCurrentOperation(OperationType.IDLE));
+    handleConnectWallet(id);
   };
 
   const initScan = async () => {
@@ -116,8 +134,7 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
   }, [currentOperation, currentRoute]);
 
   const handlePasteMkId = () => {
-    stopScan();
-    dispatch(setCurrentOperation(OperationType.PASTE_MKID_CONNECT_WALLET));
+    setOpenPidModal(true);
   };
 
   return (
@@ -145,12 +162,18 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
             <IonButton
               onClick={handlePasteMkId}
               className="paste-mkid-btn secondary-button"
+              data-testid="paste-meerkat-id-btn"
             >
               {i18n.t("scan.pastemeerkatid")}
             </IonButton>
           </IonRow>
         )}
       </IonGrid>
+      <PasteConnectionPeerIdModal
+        openModal={openPidModal}
+        onCloseModal={() => setOpenPidModal(false)}
+        onConfirm={handleSubmitConnect}
+      />
     </>
   );
 });
