@@ -162,7 +162,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       };
       handleMessages();
     }
-  }, [isReady, authentication.loggedIn, dispatch]);
+  }, [isReady, dispatch]);
 
   useEffect(() => {
     if (authentication.loggedIn) {
