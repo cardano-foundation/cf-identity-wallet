@@ -219,6 +219,13 @@ class Agent {
         )
       );
 
+      this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
+        type: KeriaStatusEventTypes.KeriaStatusChanged,
+        payload: {
+          isOnline: Agent.isOnline,
+        },
+      });
+
       try {
         await this.signifyClient.connect();
         Agent.isOnline = true;
@@ -227,12 +234,6 @@ class Agent {
         await this.signifyClient.connect();
         Agent.isOnline = true;
       }
-      this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
-        type: KeriaStatusEventTypes.KeriaStatusChanged,
-        payload: {
-          isOnline: Agent.isOnline,
-        },
-      });
     }
   }
 
