@@ -1,13 +1,10 @@
 import { useState } from "react";
 import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
 import { RequestProps } from "../IncomingRequest.types";
+import { ConnectionRequest } from "./ConnectionRequest";
 import { CredentialRequest } from "./CredentialRequest";
 import { MultiSigRequestStageOne } from "./MultiSigRequestStageOne";
 import { MultiSigRequestStageTwo } from "./MultiSigRequestStageTwo";
-import {
-  WalletConnectRequestStageTwo,
-  WalletConnectRequestStageOne,
-} from "./WalletConnectRequest";
 
 const RequestComponent = ({
   pageId,
@@ -49,32 +46,6 @@ const RequestComponent = ({
       />
     ) : (
       <MultiSigRequestStageTwo
-        pageId={pageId}
-        activeStatus={activeStatus}
-        blur={blur}
-        setBlur={setBlur}
-        requestData={requestData}
-        initiateAnimation={initiateAnimation}
-        handleAccept={handleAccept}
-        handleCancel={handleCancel}
-        setRequestStage={setRequestStage}
-      />
-    );
-  case IncomingRequestType.WALLET_CONNECT_RECEIVED:
-    return requestStage === 0 ? (
-      <WalletConnectRequestStageOne
-        pageId={pageId}
-        activeStatus={activeStatus}
-        blur={blur}
-        setBlur={setBlur}
-        requestData={requestData}
-        initiateAnimation={initiateAnimation}
-        handleAccept={handleAccept}
-        handleCancel={handleCancel}
-        setRequestStage={setRequestStage}
-      />
-    ) : (
-      <WalletConnectRequestStageTwo
         pageId={pageId}
         activeStatus={activeStatus}
         blur={blur}

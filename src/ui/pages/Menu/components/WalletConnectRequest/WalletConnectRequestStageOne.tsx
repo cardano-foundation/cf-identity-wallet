@@ -1,28 +1,27 @@
 import { IonIcon } from "@ionic/react";
 import { checkmark, personCircleOutline } from "ionicons/icons";
+import { useState } from "react";
 import { i18n } from "../../../../../i18n";
+import { Alert } from "../../../../components/Alert";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
 import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
-import { RequestProps } from "../../IncomingRequest.types";
-import "./WalletConnectRequest.scss";
 import { combineClassNames } from "../../../../utils/style";
-import { useState } from "react";
-import { Alert } from "../../../../components/Alert";
+import "./WalletConnectRequest.scss";
+import { WalletConnectRequestStageOneProps } from "./WalletConnectRequest.types";
 
 const WalletConnectRequestStageOne = ({
-  pageId,
-  activeStatus,
-  requestData,
-  handleCancel,
-  setRequestStage,
-}: RequestProps) => {
+  isOpen,
+  className,
+  onClose,
+  onAccept,
+}: WalletConnectRequestStageOneProps) => {
   const [openDeclineAlert, setOpenDeclineAlert] = useState(false);
   const [acceptAnimation, setAcceptAnimation] = useState(false);
 
-  const classes = combineClassNames("wallet-connect-stage-one", {
-    show: !!activeStatus,
-    hide: !activeStatus,
+  const classes = combineClassNames(className, {
+    show: !!isOpen,
+    hide: !isOpen,
     "animation-on": acceptAnimation,
     "animation-off": !acceptAnimation,
   });
@@ -32,22 +31,22 @@ const WalletConnectRequestStageOne = ({
   };
 
   const handleClose = () => {
-    handleCancel();
+    onClose();
   };
 
   const handleAccept = () => {
     setAcceptAnimation(true);
 
     setTimeout(() => {
-      setRequestStage?.(1);
-    }, 250);
+      onAccept();
+    }, 700);
   };
 
   return (
     <>
       <ResponsivePageLayout
-        pageId={`${pageId}`}
-        activeStatus={activeStatus}
+        pageId="connect-wallet-stage-one"
+        activeStatus={isOpen}
         customClass={classes}
         header={
           <PageHeader
@@ -82,7 +81,8 @@ const WalletConnectRequestStageOne = ({
           </p>
         </div>
         <PageFooter
-          pageId={pageId}
+          customClass="request-footer"
+          pageId="connect-wallet-stage-one"
           primaryButtonText={`${i18n.t("request.button.accept")}`}
           primaryButtonAction={handleAccept}
           secondaryButtonText={`${i18n.t("request.button.decline")}`}

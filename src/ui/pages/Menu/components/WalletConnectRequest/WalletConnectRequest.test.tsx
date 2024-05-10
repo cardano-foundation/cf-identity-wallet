@@ -11,6 +11,10 @@ import { WalletConnectRequestStageOne } from "./WalletConnectRequestStageOne";
 import { WalletConnectRequestStageTwo } from "./WalletConnectRequestStageTwo";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../../../../../routes/paths";
+import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
+import { setToastMsg } from "../../../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../../../globals/types";
+import { WalletConnectRequest } from "./WalletConnectRequest";
 setupIonicReact();
 mockIonicReact();
 
@@ -37,35 +41,16 @@ describe("Wallet Connect Stage One", () => {
     dispatch: dispatchMock,
   };
 
-  const pageId = "incoming-request";
-  const activeStatus = true;
-  const blur = false;
-  const setBlur = jest.fn();
-  const requestData = {
-    id: "abc123456",
-    type: IncomingRequestType.WALLET_CONNECT_RECEIVED,
-  };
-
-  const initiateAnimation = false;
   const handleAccept = jest.fn();
   const handleCancel = jest.fn();
-  const handleIgnore = jest.fn();
-  const handleChangeStage = jest.fn();
 
   test("Renders content ", async () => {
-    const { getByText, getByTestId } = render(
+    const { getByText } = render(
       <Provider store={storeMocked}>
         <WalletConnectRequestStageOne
-          pageId={pageId}
-          activeStatus={activeStatus}
-          blur={blur}
-          setBlur={setBlur}
-          requestData={requestData}
-          initiateAnimation={initiateAnimation}
-          handleAccept={handleAccept}
-          handleCancel={handleCancel}
-          handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.WALLET_CONNECT_RECEIVED}
+          isOpen={true}
+          onAccept={handleAccept}
+          onClose={handleCancel}
         />
       </Provider>
     );
@@ -87,17 +72,9 @@ describe("Wallet Connect Stage One", () => {
     const { getByText } = render(
       <Provider store={storeMocked}>
         <WalletConnectRequestStageOne
-          pageId={pageId}
-          activeStatus={activeStatus}
-          blur={blur}
-          setBlur={setBlur}
-          requestData={requestData}
-          initiateAnimation={initiateAnimation}
-          handleAccept={handleAccept}
-          handleCancel={handleCancel}
-          handleIgnore={handleIgnore}
-          setRequestStage={handleChangeStage}
-          incomingRequestType={IncomingRequestType.WALLET_CONNECT_RECEIVED}
+          isOpen={true}
+          onAccept={handleAccept}
+          onClose={handleCancel}
         />
       </Provider>
     );
@@ -107,25 +84,17 @@ describe("Wallet Connect Stage One", () => {
     });
 
     await waitFor(() => {
-      expect(handleChangeStage).toBeCalledWith(1);
+      expect(handleAccept).toBeCalled();
     });
   });
 
   test("Click to decline button", async () => {
-    const { getByText } = render(
+    const { getByText, getAllByText } = render(
       <Provider store={storeMocked}>
         <WalletConnectRequestStageOne
-          pageId={pageId}
-          activeStatus={activeStatus}
-          blur={blur}
-          setBlur={setBlur}
-          requestData={requestData}
-          initiateAnimation={initiateAnimation}
-          handleAccept={handleAccept}
-          handleCancel={handleCancel}
-          handleIgnore={handleIgnore}
-          setRequestStage={handleChangeStage}
-          incomingRequestType={IncomingRequestType.WALLET_CONNECT_RECEIVED}
+          isOpen={true}
+          onAccept={handleAccept}
+          onClose={handleCancel}
         />
       </Provider>
     );
@@ -142,6 +111,18 @@ describe("Wallet Connect Stage One", () => {
           EN_TRANSLATIONS.request.walletconnection.stageone.alert.titleconfirm
         )
       ).toBeInTheDocument();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getAllByText(
+          EN_TRANSLATIONS.request.walletconnection.stageone.alert.confirm
+        )[1]
+      );
+    });
+
+    await waitFor(() => {
+      expect(handleCancel).toBeCalled();
     });
   });
 });
@@ -173,35 +154,17 @@ describe("Wallet Connect Stage Two", () => {
     dispatch: dispatchMock,
   };
 
-  const pageId = "incoming-request";
-  const activeStatus = true;
-  const blur = false;
-  const setBlur = jest.fn();
-  const requestData = {
-    id: "abc123456",
-    type: IncomingRequestType.WALLET_CONNECT_RECEIVED,
-  };
-
-  const initiateAnimation = false;
-  const handleAccept = jest.fn();
   const handleCancel = jest.fn();
-  const handleIgnore = jest.fn();
   const handleChangeStage = jest.fn();
 
   test("Renders content ", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <WalletConnectRequestStageTwo
-          pageId={pageId}
-          activeStatus={activeStatus}
-          blur={blur}
-          setBlur={setBlur}
-          requestData={requestData}
-          initiateAnimation={initiateAnimation}
-          handleAccept={handleAccept}
-          handleCancel={handleCancel}
-          handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.WALLET_CONNECT_RECEIVED}
+          isOpen={true}
+          data={walletConnectionsFix[0]}
+          onClose={handleCancel}
+          onBackClick={handleChangeStage}
         />
       </Provider>
     );
@@ -220,20 +183,13 @@ describe("Wallet Connect Stage Two", () => {
   });
 
   test("Click to confirm button", async () => {
-    const { getByText, getByTestId } = render(
+    const { getByTestId } = render(
       <Provider store={storeMocked}>
         <WalletConnectRequestStageTwo
-          pageId={pageId}
-          activeStatus={activeStatus}
-          blur={blur}
-          setBlur={setBlur}
-          requestData={requestData}
-          initiateAnimation={initiateAnimation}
-          handleAccept={handleAccept}
-          handleCancel={handleCancel}
-          handleIgnore={handleIgnore}
-          setRequestStage={handleChangeStage}
-          incomingRequestType={IncomingRequestType.WALLET_CONNECT_RECEIVED}
+          isOpen={true}
+          data={walletConnectionsFix[0]}
+          onClose={handleCancel}
+          onBackClick={handleChangeStage}
         />
       </Provider>
     );
@@ -257,47 +213,122 @@ describe("Wallet Connect Stage Two", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS)
+      );
+    });
+  });
+});
+
+describe("Wallet Connect Request", () => {
+  const mockStore = configureStore();
+
+  const initialState = {
+    stateCache: {
+      routes: [TabsRoutePath.IDENTIFIERS],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+        passwordIsSet: false,
+      },
+    },
+    walletConnectionsCache: {
+      walletConnections: [],
+      pendingConnection: walletConnectionsFix[0],
+    },
+    identifiersCache: {
+      identifiers: [...identifierFix],
+    },
+  };
+
+  const dispatchMock = jest.fn();
+  const storeMocked = {
+    ...mockStore(initialState),
+    dispatch: dispatchMock,
+  };
+
+  test("Renders content ", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <WalletConnectRequest />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.request.walletconnection.stageone.title)
+    ).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-connect-wallet-stage-one"));
     });
 
-    fireEvent.click(getByTestId("passcode-button-1"));
-
     await waitFor(() => {
-      expect(getByTestId("circle-0")).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.request.walletconnection.stagetwo.title)
+      ).toBeVisible();
     });
 
-    fireEvent.click(getByTestId("passcode-button-1"));
+    expect(
+      getByTestId("identifier-select-" + identifierFix[0].id)
+    ).toBeVisible();
 
-    await waitFor(() => {
-      expect(getByTestId("circle-1")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-2")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-3")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-4")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-5")).toBeVisible();
+    act(() => {
+      fireEvent.click(getByTestId("identifier-select-" + identifierFix[0].id));
     });
 
     await waitFor(() => {
-      expect(handleCancel).toBeCalled();
+      expect(getByTestId("primary-button").getAttribute("disabled")).toBe(
+        "false"
+      );
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button"));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS)
+      );
+    });
+  });
+
+  test("Renders close in stage one ", async () => {
+    const { getByTestId, getByText, getAllByText, queryByTestId } = render(
+      <Provider store={storeMocked}>
+        <WalletConnectRequest />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.request.walletconnection.stageone.title)
+    ).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("secondary-button-connect-wallet-stage-one"));
+    });
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.request.walletconnection.stageone.alert.titleconfirm
+        )
+      ).toBeInTheDocument();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getAllByText(
+          EN_TRANSLATIONS.request.walletconnection.stageone.alert.confirm
+        )[1]
+      );
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("connect-wallet-stage-one")).toBe(null);
+      expect(queryByTestId("connect-wallet-stage-two")).toBe(null);
     });
   });
 });
