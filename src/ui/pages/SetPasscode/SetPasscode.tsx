@@ -67,6 +67,8 @@ const SetPasscode = () => {
             } else {
               await processBiometrics();
             }
+          } else {
+            await handlePassAuth();
           }
         }
       }
