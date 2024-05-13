@@ -1,6 +1,5 @@
 import i18n from "i18next";
 import { useEffect, useState } from "react";
-import { BiometryError } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useAppIonRouter } from "../../hooks";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -10,7 +9,6 @@ import {
   login,
   setAuthentication,
   setCurrentRoute,
-  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import {
   ErrorMessage,
@@ -26,8 +24,8 @@ import { RoutePath } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import { PageFooter } from "../../components/PageFooter";
 import { Alert } from "../../components/Alert";
-import { useBiometricAuth } from "../../hooks/useBiometrics";
 import "./LockPage.scss";
+import useBiometricAuth from "../../hooks/useBiometricsHook";
 
 const LockPage = () => {
   const pageId = "lock-page";

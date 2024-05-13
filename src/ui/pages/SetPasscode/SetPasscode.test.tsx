@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
+import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { SetPasscode } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
@@ -246,6 +247,73 @@ describe("SetPasscode Page", () => {
     await waitFor(() =>
       expect(
         queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
+      ).toBeInTheDocument()
+    );
+  });
+
+  test("Android flow", async () => {
+    jest.mock("@ionic/react", () => {
+      const actualIonicReact = jest.requireActual("@ionic/react");
+      return {
+        ...actualIonicReact,
+        getPlatforms: () => ["android"],
+      };
+    });
+
+    jest.mock("../../hooks/useBiometricsHook", () => {
+      const actualUseBiometrics = jest.requireActual(
+        "../../hooks/useBiometricsHook"
+      );
+      return {
+        ...actualUseBiometrics,
+        __esModule: true,
+        useBiometricAuth: jest.fn(() => ({
+          biometricsIsEnabled: false,
+          biometricInfo: {
+            isAvailable: true,
+            hasCredentials: false,
+            biometryType: BiometryType.fingerprintAuthentication,
+            strongBiometryIsAvailable: true,
+          },
+          handleBiometricAuth: jest.fn(async () => true),
+          setBiometricsIsEnabled: jest.fn(),
+        })),
+      };
+    });
+
+    const { getByText, queryByText } = render(
+      <IonReactRouter>
+        <IonRouterOutlet animated={false}>
+          <Provider store={store}>
+            <SetPasscode />
+          </Provider>
+        </IonRouterOutlet>
+      </IonReactRouter>
+    );
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+
+    expect(
+      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
+    ).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.setpasscode.startover.label)
+    ).toBeInTheDocument();
+
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS.biometry.setupandroidbiometryheader)
       ).toBeInTheDocument()
     );
   });

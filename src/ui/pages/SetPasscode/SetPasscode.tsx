@@ -22,11 +22,11 @@ import { PageHeader } from "../../components/PageHeader";
 import "./SetPasscode.scss";
 import { PageFooter } from "../../components/PageFooter";
 import { useAppIonRouter } from "../../hooks";
-import { useBiometricAuth } from "../../hooks/useBiometrics";
 import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
 import { BiometryError } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { getPlatforms } from "@ionic/react";
 import { Alert } from "../../components/Alert";
+import useBiometricAuth from "../../hooks/useBiometricsHook";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
