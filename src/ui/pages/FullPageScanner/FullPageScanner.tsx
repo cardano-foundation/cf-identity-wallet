@@ -17,8 +17,11 @@ import {
 } from "./FullPageScanner.types";
 import { OperationType } from "../../globals/types";
 import "./FullPageScanner.scss";
+import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { PageHeader } from "../../components/PageHeader";
 
-const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
+const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
+  const pageId = "qr-code-scanner-full-page";
   const dispatch = useAppDispatch();
   const scannerRef = useRef<ScannerRefComponent>(null);
 
@@ -30,31 +33,21 @@ const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
       ?.querySelector("body.scanner-active > div:last-child")
       ?.classList.add("hide");
   };
+
   return (
-    <IonPage
-      className="qr-code-scanner-full-page"
-      data-testid="qr-code-scanner-full-page"
+    <ResponsivePageLayout
+      pageId={pageId}
+      activeStatus={showScan}
+      header={
+        <PageHeader
+          closeButton={true}
+          closeButtonAction={handleBackButton}
+          closeButtonIcon={arrowBackOutline}
+        />
+      }
     >
-      <IonHeader className="ion-no-border page-header">
-        <IonToolbar color="transparent">
-          <IonButtons slot="start">
-            <IonButton
-              slot="icon-only"
-              fill="clear"
-              onClick={() => handleBackButton()}
-              className="back-button"
-              data-testid="back-button"
-            >
-              <IonIcon
-                icon={arrowBackOutline}
-                color="primary"
-              />
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
       <Scanner ref={scannerRef} />
-    </IonPage>
+    </ResponsivePageLayout>
   );
 };
 

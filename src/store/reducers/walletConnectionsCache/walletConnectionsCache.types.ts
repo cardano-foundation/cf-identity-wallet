@@ -10,6 +10,7 @@ interface ConnectionData {
 interface WalletConnectState {
   walletConnections: ConnectionData[];
   connectedWallet: ConnectionData | null;
+  pendingConnection: ConnectionData | null;
 }
 
 export type { ConnectionData, WalletConnectState };

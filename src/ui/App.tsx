@@ -25,6 +25,7 @@ import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
 import { LockPage } from "./pages/LockPage/LockPage";
 import { LoadingPage } from "./pages/LoadingPage/LoadingPage";
+import { WalletConnect } from "./components/WalletConnect";
 
 setupIonicReact();
 
@@ -58,7 +59,12 @@ const App = () => {
   }, [isPreviewMode]);
 
   useEffect(() => {
-    setShowScan(currentOperation === OperationType.SCAN_CONNECTION);
+    setShowScan(
+      [
+        OperationType.SCAN_CONNECTION,
+        OperationType.SCAN_WALLET_CONNECTION,
+      ].includes(currentOperation)
+    );
     setShowToast(toastMsg !== undefined);
   }, [currentOperation, toastMsg]);
 
@@ -90,16 +96,20 @@ const App = () => {
   }, []);
 
   const renderApp = () => {
-    if (showScan) {
-      return <FullPageScanner setShowScan={setShowScan} />;
-    } else {
-      return (
-        <>
-          {isPreviewMode ? <MobileHeaderPreview /> : null}
+    return (
+      <>
+        {showScan && (
+          <FullPageScanner
+            showScan={showScan}
+            setShowScan={setShowScan}
+          />
+        )}
+        {!showScan && isPreviewMode ? <MobileHeaderPreview /> : null}
+        <div className={showScan ? "ion-hide" : ""}>
           <Routes />
-        </>
-      );
-    }
+        </div>
+      </>
+    );
   };
 
   const isPublicPage = PublicRoutes.includes(
@@ -128,6 +138,7 @@ const App = () => {
             showToast={showToast}
             setShowToast={setShowToast}
           />
+          <WalletConnect />
         </StrictMode>
       </AppWrapper>
     </IonApp>

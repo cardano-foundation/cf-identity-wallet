@@ -53,6 +53,7 @@ describe("NextRoute", () => {
       walletConnectionsCache: {
         walletConnections: [],
         connectedWallet: null,
+        pendingConnection: null,
       },
     };
     data = {
@@ -159,6 +160,7 @@ describe("getNextRoute", () => {
     walletConnectionsCache: {
       walletConnections: [],
       connectedWallet: null,
+      pendingConnection: null,
     },
   };
   const state = {};

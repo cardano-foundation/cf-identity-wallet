@@ -4,6 +4,7 @@ import { SubMenuProps } from "./SubMenu.types";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../../../components/PageHeader";
 import { combineClassNames } from "../../../../utils/style";
+import { SideSlider } from "../../../../components/SideSlider";
 
 const SubMenu = ({
   showSubMenu,
@@ -14,33 +15,29 @@ const SubMenu = ({
   pageId: customPageId,
 }: SubMenuProps) => {
   const pageId = `sub-menu ${customPageId}`;
-  const classes = combineClassNames({
-    show: showSubMenu,
-    hide: !showSubMenu,
-  });
-
   return (
-    <ScrollablePageLayout
-      pageId={pageId}
-      activeStatus={showSubMenu}
-      header={
-        <PageHeader
-          closeButton={true}
-          closeButtonAction={() => setShowSubMenu(false)}
-          closeButtonIcon={arrowBackOutline}
-          title={title}
-          additionalButtons={additionalButtons}
-        />
-      }
-      customClass={classes}
-    >
-      <div
-        className={`${title?.toLowerCase().replace(" ", "-")}-content`}
-        data-testid={`${title?.toLowerCase().replace(" ", "-")}-content`}
+    <SideSlider open={showSubMenu}>
+      <ScrollablePageLayout
+        pageId={pageId}
+        activeStatus={showSubMenu}
+        header={
+          <PageHeader
+            closeButton={true}
+            closeButtonAction={() => setShowSubMenu(false)}
+            closeButtonIcon={arrowBackOutline}
+            title={title}
+            additionalButtons={additionalButtons}
+          />
+        }
       >
-        {children}
-      </div>
-    </ScrollablePageLayout>
+        <div
+          className={`${title?.toLowerCase().replace(" ", "-")}-content`}
+          data-testid={`${title?.toLowerCase().replace(" ", "-")}-content`}
+        >
+          {children}
+        </div>
+      </ScrollablePageLayout>
+    </SideSlider>
   );
 };
 

@@ -67,7 +67,6 @@ const PageHeader = ({
 
   return (
     <IonHeader
-      translucent={true}
       className={`ion-no-border page-header ${
         hasContent ? "show-header" : "hide-header"
       }`}
