@@ -18,13 +18,14 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
   const scannerRef = useRef<ScannerRefComponent>(null);
 
   useEffect(() => {
-    document?.querySelector("body")?.classList.add("full-page-scanner");
-  }, []);
+    showScan
+      ? document?.querySelector("body")?.classList.add("full-page-scanner")
+      : document?.querySelector("body")?.classList.remove("full-page-scanner");
+  }, [showScan]);
 
   const handleReset = () => {
     setShowScan(false);
     scannerRef.current?.stopScan();
-    document?.querySelector("body")?.classList.remove("full-page-scanner");
     document
       ?.querySelector("body.scanner-active > div:last-child")
       ?.classList.add("hide");

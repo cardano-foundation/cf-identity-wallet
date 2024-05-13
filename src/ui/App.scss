@@ -20,34 +20,13 @@ body {
     text-transform: none;
   }
 
-  &.full-page-scanner {
-    #root
-      ion-app
-      > *:not(.qr-code-scanner-full-page):not(.scanner-input-modal):not(
-        .scanner-spinner-container
-      ) {
+  &.scanner-active {
+    background-color: transparent;
+
+    .create-identifier-modal {
       display: none;
     }
 
-    .app-spinner-container {
-      z-index: 1000;
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: flex;
-      height: 100%;
-      width: 100%;
-      align-items: center;
-      justify-content: center;
-      background: rgba(3, 3, 33, 0.2);
-    }
-  }
-
-  &:not(.full-page-scanner) .app-spinner-container {
-    display: none;
-  }
-
-  &.scanner-active {
     > div:last-child {
       display: block;
       z-index: -10;
