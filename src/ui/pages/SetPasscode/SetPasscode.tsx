@@ -36,8 +36,7 @@ const SetPasscode = () => {
   const [passcode, setPasscode] = useState("");
   const [showSetupAndroidBiometryAlert, setShowSetupAndroidBiometryAlert] =
     useState(false);
-  const [showCancelBiometryAlert, setShowCancelAndroidBiometryAlert] =
-    useState(false);
+  const [showCancelBiometryAlert, setShowCancelBiometryAlert] = useState(false);
   const [originalPassCode, setOriginalPassCode] = useState("");
   const { handleBiometricAuth, biometricInfo } = useBiometricAuth();
   const isAndroidDevice = getPlatforms().includes("android");
@@ -60,7 +59,6 @@ const SetPasscode = () => {
       setPasscode(passcode + digit);
       if (originalPassCode !== "" && passcode.length === 5) {
         if (originalPassCode === passcode + digit) {
-          await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, originalPassCode);
           if (biometricInfo?.strongBiometryIsAvailable) {
             if (isAndroidDevice) {
               setShowSetupAndroidBiometryAlert(true);
@@ -84,16 +82,19 @@ const SetPasscode = () => {
       await handlePassAuth();
     } else {
       if (isBiometricAuthenticated instanceof BiometryError) {
-        if (isBiometricAuthenticated.code === BiometryErrorType.userCancel) {
-          setShowCancelAndroidBiometryAlert(true);
-        } else {
-          return;
+        if (
+          isBiometricAuthenticated.code === BiometryErrorType.userCancel ||
+          isBiometricAuthenticated.code ===
+            BiometryErrorType.biometryNotAvailable
+        ) {
+          setShowCancelBiometryAlert(true);
         }
       }
     }
   };
 
   const handlePassAuth = async () => {
+    await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, originalPassCode);
     const data: DataProps = {
       store: { stateCache },
     };
@@ -115,6 +116,10 @@ const SetPasscode = () => {
   const handleSetupAndroidBiometry = async () => {
     await processBiometrics();
   };
+
+  const handleCancelSetupAndroidBiometry = async () => {
+    setShowCancelBiometryAlert(true);
+  };
   const handleCancelBiometry = async () => {
     await handlePassAuth();
   };
@@ -128,7 +133,7 @@ const SetPasscode = () => {
   const handleClearState = () => {
     setPasscode("");
     setOriginalPassCode("");
-    setShowCancelAndroidBiometryAlert(false);
+    setShowCancelBiometryAlert(false);
     setShowSetupAndroidBiometryAlert(false);
   };
 
@@ -212,14 +217,17 @@ const SetPasscode = () => {
         confirmButtonText={setupAndroidBiometryConfirmtext}
         cancelButtonText={setupAndroidBiometryCanceltext}
         actionConfirm={handleSetupAndroidBiometry}
+        actionCancel={handleCancelSetupAndroidBiometry}
+        backdropDismiss={false}
       />
       <Alert
         isOpen={showCancelBiometryAlert}
-        setIsOpen={setShowCancelAndroidBiometryAlert}
+        setIsOpen={setShowCancelBiometryAlert}
         dataTestId="alert-cancel-biometry"
         headerText={cancelBiometryHeaderText}
         confirmButtonText={cancelBiometryConfirmText}
         actionConfirm={handleCancelBiometry}
+        backdropDismiss={false}
       />
     </ResponsivePageLayout>
   );

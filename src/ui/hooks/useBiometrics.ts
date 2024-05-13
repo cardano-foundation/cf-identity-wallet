@@ -54,7 +54,6 @@ const useBiometricAuth = () => {
       await BiometricAuth.authenticate({
         reason: i18n.t("biometry.reason") as string,
         cancelTitle: i18n.t("biometry.canceltitle") as string,
-        allowDeviceCredential: true,
         iosFallbackTitle: i18n.t("biometry.iosfallbacktitle") as string,
         androidTitle: i18n.t("biometry.androidtitle") as string,
         androidSubtitle: i18n.t("biometry.androidsubtitle") as string,
