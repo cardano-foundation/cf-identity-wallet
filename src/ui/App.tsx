@@ -98,7 +98,12 @@ const App = () => {
   const renderApp = () => {
     return (
       <>
-        {showScan && <FullPageScanner setShowScan={setShowScan} />}
+        {showScan && (
+          <FullPageScanner
+            showScan={showScan}
+            setShowScan={setShowScan}
+          />
+        )}
         {!showScan && isPreviewMode ? <MobileHeaderPreview /> : null}
         <div className={showScan ? "ion-hide" : ""}>
           <Routes />
