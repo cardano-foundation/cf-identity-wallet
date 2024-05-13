@@ -59,21 +59,21 @@ const PasscodeModule = ({
                     biometricsIsEnabled &&
                     biometricInfo?.strongBiometryIsAvailable &&
                     biometricInfo?.isAvailable ? (
-                        <IonButton
-                          data-testid={"passcode-button-#"}
-                          className="passcode-module-number-button"
-                          onClick={() =>
-                            biometricInfo?.strongBiometryIsAvailable &&
+                      <IonButton
+                        data-testid={"passcode-button-#"}
+                        className="passcode-module-number-button"
+                        onClick={() =>
+                          biometricInfo?.strongBiometryIsAvailable &&
                           handleBiometricButton()
-                          }
-                        >
-                          <IonIcon
-                            slot="icon-only"
-                            className="passcode-module-fingerprint-icon"
-                            icon={fingerPrintSharp}
-                          />
-                        </IonButton>
-                      ) : null}
+                        }
+                      >
+                        <IonIcon
+                          slot="icon-only"
+                          className="passcode-module-fingerprint-icon"
+                          icon={fingerPrintSharp}
+                        />
+                      </IonButton>
+                    ) : null}
                   </IonCol>
                 )}
 
