@@ -12,7 +12,7 @@ const PasscodeModule = ({
   handleRemove,
   handleBiometricButtonClick,
 }: PasscodeModuleProps) => {
-  const { biometricInfo } = useBiometricAuth();
+  const { biometricInfo, biometricsIsEnabled } = useBiometricAuth();
   const numbers = PASSCODE_MAPPING.numbers;
   const labels = PASSCODE_MAPPING.labels;
   const rows = [];
@@ -56,16 +56,16 @@ const PasscodeModule = ({
                 {rowIndex === rows.length - 1 && (
                   <IonCol>
                     {handleBiometricButtonClick &&
+                    biometricsIsEnabled &&
+                    biometricInfo?.strongBiometryIsAvailable &&
                     biometricInfo?.isAvailable ? (
                         <IonButton
                           data-testid={"passcode-button-#"}
                           className="passcode-module-number-button"
-                          onClick={() => handleBiometricButton()}
-                          style={{
-                            opacity: biometricInfo.strongBiometryIsAvailable
-                              ? 1
-                              : 0.3,
-                          }}
+                          onClick={() =>
+                            biometricInfo?.strongBiometryIsAvailable &&
+                          handleBiometricButton()
+                          }
                         >
                           <IonIcon
                             slot="icon-only"

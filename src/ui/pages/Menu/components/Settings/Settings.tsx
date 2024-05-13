@@ -5,6 +5,7 @@ import {
   IonLabel,
   IonList,
   IonNote,
+  IonToggle,
 } from "@ionic/react";
 import {
   chevronForward,
@@ -16,13 +17,22 @@ import {
   libraryOutline,
   checkboxOutline,
   layersOutline,
+  fingerPrintOutline,
 } from "ionicons/icons";
 import "./Settings.scss";
 import { i18n } from "../../../../../i18n";
 import pJson from "../../../../../../package.json";
+import { OptionProps } from "./Settings.types";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../../../core/storage";
+import { useBiometricAuth } from "../../../../hooks/useBiometrics";
 
 const Settings = () => {
-  const securityItems = [
+  const { biometricsIsEnabled, setBiometricsIsEnabled } = useBiometricAuth();
+
+  const securityItems: OptionProps[] = [
     {
       icon: lockClosedOutline,
       label: i18n.t("settings.sections.security.changepin"),
@@ -36,6 +46,14 @@ const Settings = () => {
       label: i18n.t("settings.sections.security.seedphrase"),
     },
   ];
+
+  if (biometricsIsEnabled !== undefined) {
+    securityItems.unshift({
+      icon: fingerPrintOutline,
+      label: i18n.t("settings.sections.security.biometry"),
+      ionIcon: <IonToggle checked={biometricsIsEnabled} />,
+    });
+  }
 
   const supportItems = [
     {
@@ -56,6 +74,24 @@ const Settings = () => {
     },
   ];
 
+  const handleOptionClick = async (item: OptionProps) => {
+    switch (item.label) {
+    case i18n.t("settings.sections.security.biometry"): {
+      // TODO: handle biometrics
+      const biometrics = await PreferencesStorage.get(
+        PreferencesKeys.APP_BIOMETRY
+      );
+      setBiometricsIsEnabled(!biometrics.enabled);
+      await PreferencesStorage.set(PreferencesKeys.APP_BIOMETRY, {
+        enabled: !biometrics.enabled,
+      });
+      break;
+    }
+    default:
+      return;
+    }
+  };
+
   return (
     <>
       <div className="settings-section-title">
@@ -66,15 +102,11 @@ const Settings = () => {
           lines="none"
           data-testid="settings-security-items"
         >
-          {securityItems.map((item, index) => {
-            const handleItemClick = () => {
-              // @TODO - sdisalvo: Add custom onClick logic here for each item
-              // console.log(`Clicked item ${index}`);
-            };
+          {securityItems.map((item: OptionProps, index) => {
             return (
               <IonItem
                 key={index}
-                onClick={handleItemClick}
+                onClick={() => handleOptionClick(item)}
                 className="security-item"
                 data-testid={`security-item-${index}`}
               >
@@ -84,11 +116,15 @@ const Settings = () => {
                   slot="start"
                 />
                 <IonLabel>{item.label}</IonLabel>
-                <IonIcon
-                  aria-hidden="true"
-                  icon={chevronForward}
-                  slot="end"
-                />
+                {item.ionIcon ? (
+                  item.ionIcon
+                ) : (
+                  <IonIcon
+                    aria-hidden="true"
+                    icon={chevronForward}
+                    slot="end"
+                  />
+                )}
               </IonItem>
             );
           })}

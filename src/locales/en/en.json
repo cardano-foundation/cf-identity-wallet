@@ -893,6 +893,7 @@
       "header": "Settings",
       "security": {
         "title": "Security",
+        "biometry": "Biometric authentication",
         "changepin": "Change PIN",
         "manageoperationspassword": "Manage Operations Password",
         "seedphrase": "Seed Phrase"

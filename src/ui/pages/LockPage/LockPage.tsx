@@ -6,6 +6,7 @@ import { useAppIonRouter } from "../../hooks";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  getStateCache,
   login,
   setAuthentication,
   setCurrentRoute,
@@ -26,20 +27,19 @@ import { PasscodeModule } from "../../components/PasscodeModule";
 import { PageFooter } from "../../components/PageFooter";
 import { Alert } from "../../components/Alert";
 import { useBiometricAuth } from "../../hooks/useBiometrics";
-
 import "./LockPage.scss";
-import { ToastMsgType } from "../../globals/types";
 
 const LockPage = () => {
   const pageId = "lock-page";
   const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
+  const stateCache = useAppSelector(getStateCache);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = authentication.seedPhraseIsSet;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
-  const { handleBiometricAuth, biometricInfo } = useBiometricAuth();
+  const { handleBiometricAuth } = useBiometricAuth();
 
   const headerText = seedPhrase
     ? i18n.t("lockpage.alert.text.verify")
@@ -76,8 +76,10 @@ const LockPage = () => {
         // TODO: handle error
       }
     };
-    runBiometrics();
-  }, []);
+    if (stateCache.initialized) {
+      runBiometrics();
+    }
+  }, [stateCache.initialized]);
 
   const handlePinChange = (digit: number) => {
     const updatedPasscode = `${passcode}${digit}`;
@@ -116,9 +118,7 @@ const LockPage = () => {
 
   const handleBiometrics = async () => {
     const isAuthenticated = await handleBiometricAuth();
-    if (isAuthenticated instanceof BiometryError) {
-      dispatch(setToastMsg(isAuthenticated.message as ToastMsgType));
-    } else {
+    if (isAuthenticated === true) {
       dispatch(login());
     }
   };

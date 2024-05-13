@@ -10,15 +10,30 @@ import {
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import i18n from "i18next";
 import { useActivityTimer } from "../components/AppWrapper/hooks/useActivityTimer";
+import { PreferencesKeys, PreferencesStorage } from "../../core/storage";
 
 const useBiometricAuth = () => {
   const [biometricInfo, setBiometricInfo] = useState<CheckBiometryResult>();
+  const [biometricsIsEnabled, setBiometricsIsEnabled] = useState<
+    boolean | undefined
+  >(undefined);
   const { setPauseTimestamp } = useActivityTimer();
 
   useEffect(() => {
     checkBiometry();
+    checkBiometryInPreferences();
   }, []);
 
+  const checkBiometryInPreferences = async () => {
+    try {
+      const biometrics = await PreferencesStorage.get(
+        PreferencesKeys.APP_BIOMETRY
+      );
+      setBiometricsIsEnabled(biometrics.enabled as boolean);
+    } catch (e) {
+      // TODO: handle error
+    }
+  };
   const checkBiometry = async () => {
     try {
       const biometricResult = await BiometricAuth.checkBiometry();
@@ -71,8 +86,10 @@ const useBiometricAuth = () => {
   };
 
   return {
+    biometricsIsEnabled,
     biometricInfo,
     handleBiometricAuth,
+    setBiometricsIsEnabled,
   };
 };
 
