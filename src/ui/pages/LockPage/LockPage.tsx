@@ -15,7 +15,12 @@ import {
   ErrorMessage,
   MESSAGE_MILLISECONDS,
 } from "../../components/ErrorMessage";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import {
+  KeyStoreKeys,
+  PreferencesKeys,
+  PreferencesStorage,
+  SecureStorage,
+} from "../../../core/storage";
 import { RoutePath } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import { PageFooter } from "../../components/PageFooter";
@@ -34,7 +39,7 @@ const LockPage = () => {
   const seedPhrase = authentication.seedPhraseIsSet;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
-  const { handleBiometricAuth } = useBiometricAuth();
+  const { handleBiometricAuth, biometricInfo } = useBiometricAuth();
 
   const headerText = seedPhrase
     ? i18n.t("lockpage.alert.text.verify")
@@ -57,6 +62,22 @@ const LockPage = () => {
       }, MESSAGE_MILLISECONDS);
     }
   }, [passcodeIncorrect]);
+
+  useEffect(() => {
+    const runBiometrics = async () => {
+      try {
+        const biometrics = await PreferencesStorage.get(
+          PreferencesKeys.APP_BIOMETRY
+        );
+        if (biometrics.enabled) {
+          await handleBiometrics();
+        }
+      } catch (e) {
+        // TODO: handle error
+      }
+    };
+    runBiometrics();
+  }, []);
 
   const handlePinChange = (digit: number) => {
     const updatedPasscode = `${passcode}${digit}`;
