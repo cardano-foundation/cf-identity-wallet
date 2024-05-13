@@ -1,17 +1,17 @@
 import { IonCheckbox, IonContent } from "@ionic/react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
-import { i18n } from "../../../../../i18n";
-import { useAppSelector } from "../../../../../store/hooks";
-import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
-import { setToastMsg } from "../../../../../store/reducers/stateCache";
-import { CardItem, CardList } from "../../../../components/CardList";
-import { PageFooter } from "../../../../components/PageFooter";
-import { PageHeader } from "../../../../components/PageHeader";
-import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
-import { ToastMsgType } from "../../../../globals/types";
-import { combineClassNames } from "../../../../utils/style";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { i18n } from "../../../i18n";
+import { useAppSelector } from "../../../store/hooks";
+import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
+import { setToastMsg } from "../../../store/reducers/stateCache";
+import { CardItem, CardList } from "../../components/CardList";
+import { PageFooter } from "../../components/PageFooter";
+import { PageHeader } from "../../components/PageHeader";
+import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { ToastMsgType } from "../../globals/types";
+import { combineClassNames } from "../../utils/style";
 import "./WalletConnect.scss";
 import { WalletConnectStageTwoProps } from "./WalletConnect.types";
 

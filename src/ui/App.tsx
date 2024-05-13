@@ -25,6 +25,7 @@ import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
 import { LockPage } from "./pages/LockPage/LockPage";
 import { LoadingPage } from "./pages/LoadingPage/LoadingPage";
+import { WalletConnect } from "./components/WalletConnect";
 
 setupIonicReact();
 
@@ -132,6 +133,7 @@ const App = () => {
             showToast={showToast}
             setShowToast={setShowToast}
           />
+          <WalletConnect />
         </StrictMode>
       </AppWrapper>
     </IonApp>

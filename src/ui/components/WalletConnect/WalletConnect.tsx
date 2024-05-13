@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getPendingConnection,
   setPendingConnections,
-} from "../../../../../store/reducers/walletConnectionsCache";
-import { SideSlider } from "../../../../components/SideSlider";
+} from "../../../store/reducers/walletConnectionsCache";
+import { SideSlider } from "../../components/SideSlider";
 import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
 

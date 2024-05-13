@@ -1,12 +1,12 @@
 import { IonIcon } from "@ionic/react";
 import { checkmark, personCircleOutline } from "ionicons/icons";
 import { useState } from "react";
-import { i18n } from "../../../../../i18n";
-import { Alert } from "../../../../components/Alert";
-import { PageFooter } from "../../../../components/PageFooter";
-import { PageHeader } from "../../../../components/PageHeader";
-import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
-import { combineClassNames } from "../../../../utils/style";
+import { i18n } from "../../../i18n";
+import { Alert } from "../../components/Alert";
+import { PageFooter } from "../../components/PageFooter";
+import { PageHeader } from "../../components/PageHeader";
+import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { combineClassNames } from "../../utils/style";
 import "./WalletConnect.scss";
 import { WalletConnectStageOneProps } from "./WalletConnect.types";
 

@@ -30,7 +30,6 @@ import {
   ConnectWallet,
   ConnectWalletOptionRef,
 } from "./components/ConnectWallet";
-import { WalletConnect } from "./components/WalletConnect";
 
 const emptySubMenu = {
   Component: () => <></>,
@@ -206,7 +205,6 @@ const Menu = () => {
       >
         <selectSubmenu.Component />
       </SubMenu>
-      <WalletConnect />
     </>
   );
 };
