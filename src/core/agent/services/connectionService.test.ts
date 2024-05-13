@@ -7,6 +7,7 @@ import { Agent } from "../agent";
 const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();
 
+const uuidToThrow = "throwMe";
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -21,11 +22,18 @@ const signifyClient = jest.mocked({
   }),
   operations: () => ({
     get: jest.fn().mockImplementation((id: string) => {
+      if (id === `${oobiPrefix}${uuidToThrow}`) {
+        return {
+          done: false,
+          name: id,
+        };
+      }
       return {
         done: true,
         response: {
           i: id,
         },
+        name: id,
       };
     }),
   }),
@@ -37,11 +45,18 @@ const signifyClient = jest.mocked({
       };
     }),
     resolve: jest.fn().mockImplementation((name: string) => {
+      if (name === `${oobiPrefix}${uuidToThrow}`) {
+        return {
+          done: false,
+          name,
+        };
+      }
       return {
         done: true,
         response: {
           i: name,
         },
+        name,
       };
     }),
   }),
@@ -79,6 +94,14 @@ const signifyClient = jest.mocked({
     get: jest.fn(),
   }),
 });
+
+jest.mock("../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      getKeriaOnlineStatus: jest.fn(),
+    },
+  },
+}));
 
 const session = {};
 
@@ -141,6 +164,7 @@ describe("Connection service of agent", () => {
   });
 
   test("Should return connection type to trigger UI to create a new identifier", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const groupId = "123";
     const oobi = `http://localhost/oobi=3423?groupId=${groupId}`;
     signifyClient.oobis().resolve = jest.fn().mockImplementation((url) => {
@@ -158,6 +182,7 @@ describe("Connection service of agent", () => {
   });
 
   test("Can create groupId connections for existing pending multi-sigs", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const groupId = "123";
     const oobi = `http://localhost/oobi=3423?groupId=${groupId}`;
     signifyClient.oobis().resolve = jest.fn().mockImplementation((url) => {
@@ -265,6 +290,7 @@ describe("Connection service of agent", () => {
   });
 
   test("can delete conenction by id", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([]);
     const connectionId = "connectionId";
     await connectionService.deleteConnectionById(connectionId);
@@ -273,6 +299,7 @@ describe("Connection service of agent", () => {
   });
 
   test("Should delete connection's notes when deleting that connection", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([
       {
         id: "uuid",
@@ -285,6 +312,7 @@ describe("Connection service of agent", () => {
   });
 
   test("can receive keri oobi", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     signifyClient.oobis().resolve.mockResolvedValue({
       done: true,
     });
@@ -294,6 +322,7 @@ describe("Connection service of agent", () => {
   });
 
   test("can get a KERI OOBI with an alias (URL encoded)", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
       return `${oobiPrefix}${name}`;
     });
@@ -308,6 +337,7 @@ describe("Connection service of agent", () => {
   });
 
   test("can get KERI OOBI with alias and groupId", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
       return `${oobiPrefix}${name}?groupId=123`;
     });
@@ -341,6 +371,7 @@ describe("Connection service of agent", () => {
   });
 
   test("can get KERI OOBI", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
       return `${oobiPrefix}${name}`;
     });
@@ -350,6 +381,7 @@ describe("Connection service of agent", () => {
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     contactListMock.mockReturnValue([
       {
         id: "EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR",
@@ -394,5 +426,57 @@ describe("Connection service of agent", () => {
         groupId: metadata.groupId,
       },
     ]);
+  });
+
+  test("can resolve oobi with no name parameter", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const url = `${oobiPrefix}keriuuid`;
+    const op = await connectionService.resolveOobi(url);
+    expect(op).toEqual({
+      response: { i: url },
+      name: url,
+      alias: expect.any(String),
+      done: true,
+    });
+  });
+
+  test("can resolve oobi with a name parameter (URL decoded)", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const url = `${oobiPrefix}keriuuid?name=alias%20with%20spaces`;
+    const op = await connectionService.resolveOobi(url);
+    expect(op).toEqual({
+      response: { i: url },
+      name: url,
+      alias: "alias with spaces",
+      done: true,
+    });
+  });
+
+  test("should timeout if oobi resolving is not completing", async () => {
+    signifyClient.operations().get = jest
+      .fn()
+      .mockResolvedValue({ done: false });
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    await expect(
+      connectionService.resolveOobi(`${oobiPrefix}${uuidToThrow}`)
+    ).rejects.toThrowError(ConnectionService.FAILED_TO_RESOLVE_OOBI);
+  }, 15251);
+
+  test("Should throw error when KERIA is offline", async () => {
+    await expect(
+      connectionService.getConnectionById("id")
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(connectionService.syncKeriaContacts()).rejects.toThrowError(
+      Agent.KERIA_CONNECTION_BROKEN
+    );
+    await expect(
+      connectionService.deleteConnectionById("id")
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      connectionService.resolveOobi("oobi-url")
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(connectionService.getOobi("name")).rejects.toThrowError(
+      Agent.KERIA_CONNECTION_BROKEN
+    );
   });
 });

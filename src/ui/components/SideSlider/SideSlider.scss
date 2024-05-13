@@ -1,0 +1,16 @@
+.side-slider-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  transform: translateX(100%);
+  transition-duration: 0.5s;
+  visibility: hidden;
+
+  &.open {
+    transform: translateX(0);
+    transition-duration: 0.5s;
+    visibility: visible;
+  }
+}

@@ -1,31 +1,16 @@
-import { useEffect, useState } from "react";
-import {
-  IonButton,
-  IonButtons,
-  IonCol,
-  IonContent,
-  IonGrid,
-  IonHeader,
-  IonIcon,
-  IonModal,
-  IonRow,
-  IonTitle,
-  IonToolbar,
-} from "@ionic/react";
+import { Capacitor } from "@capacitor/core";
+import { Keyboard } from "@capacitor/keyboard";
 import { Share } from "@capacitor/share";
+import { IonButton } from "@ionic/react";
 import {
   codeSlashOutline,
   pencilOutline,
   shareOutline,
   trashOutline,
 } from "ionicons/icons";
-import { Capacitor } from "@capacitor/core";
-import { Keyboard } from "@capacitor/keyboard";
+import { useEffect, useState } from "react";
+import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
-import { IdentifierOptionsProps } from "./IdentifierOptions.types";
-import "./IdentifierOptions.scss";
-import { CustomInput } from "../CustomInput";
-import { ErrorMessage } from "../ErrorMessage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getIdentifiersCache,
@@ -37,9 +22,12 @@ import {
 } from "../../../store/reducers/stateCache";
 import { DISPLAY_NAME_LENGTH } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
-import { Agent } from "../../../core/agent/agent";
 import { IdentifierThemeSelector } from "../CreateIdentifier/components/IdentifierThemeSelector";
+import { CustomInput } from "../CustomInput";
+import { ErrorMessage } from "../ErrorMessage";
 import { OptionItem, OptionModal } from "../OptionsModal";
+import "./IdentifierOptions.scss";
+import { IdentifierOptionsProps } from "./IdentifierOptions.types";
 import { IdentifierJsonModal } from "./components";
 
 const IdentifierOptions = ({
@@ -170,93 +158,65 @@ const IdentifierOptions = ({
         }}
         items={options}
       />
-      <IonModal
-        isOpen={editorOptionsIsOpen}
-        initialBreakpoint={0.65}
-        breakpoints={[0, 0.65]}
-        className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
-        data-testid="edit-identifier-modal"
-        onDidDismiss={() => {
+      <OptionModal
+        modalIsOpen={editorOptionsIsOpen}
+        customClasses="edit-identifier"
+        onDismiss={() => {
           setEditorIsOpen(false);
           setNewDisplayName(cardData.displayName);
           setNewSelectedTheme(cardData.theme);
         }}
+        componentId="edit-identifier-modal"
+        header={{
+          closeButton: true,
+          closeButtonLabel: `${i18n.t("identifiers.details.options.cancel")}`,
+          closeButtonAction: () => {
+            handleClose();
+            dispatch(setCurrentOperation(OperationType.IDLE));
+          },
+          title: `${i18n.t("identifiers.details.options.edit")}`,
+        }}
       >
-        <div className="identifier-options modal editor">
-          <IonHeader
-            translucent={true}
-            className="ion-no-border"
-          >
-            <IonToolbar color="light">
-              <IonButtons slot="start">
-                <IonButton
-                  className="close-button-label"
-                  onClick={() => {
-                    handleClose();
-                    dispatch(setCurrentOperation(OperationType.IDLE));
-                  }}
-                  data-testid="close-button"
-                >
-                  {i18n.t("identifiers.details.options.cancel")}
-                </IonButton>
-              </IonButtons>
-              <IonTitle data-testid="edit-identifier-title">
-                <h2>{i18n.t("identifiers.details.options.edit")}</h2>
-              </IonTitle>
-            </IonToolbar>
-          </IonHeader>
-          <IonContent
-            className="identifier-options-body"
-            color="light"
-          >
-            <IonGrid className="identifier-options-inner">
-              <IonRow>
-                <IonCol size="12">
-                  <CustomInput
-                    dataTestId="edit-name-input"
-                    title={`${i18n.t(
-                      "identifiers.details.options.inner.label"
-                    )}`}
-                    hiddenInput={false}
-                    autofocus={true}
-                    onChangeInput={setNewDisplayName}
-                    value={newDisplayName}
-                  />
-                </IonCol>
-              </IonRow>
-              <IonRow className="error-message-container">
-                {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
-                  <ErrorMessage
-                    message={`${i18n.t(
-                      "identifiers.details.options.inner.error"
-                    )}`}
-                    timeout={false}
-                  />
-                ) : null}
-              </IonRow>
-              <IonRow>
-                <span className="theme-input-title">{`${i18n.t(
-                  "identifiers.details.options.inner.theme"
-                )}`}</span>
-              </IonRow>
-              <IdentifierThemeSelector
-                selectedTheme={newSelectedTheme}
-                setSelectedTheme={setNewSelectedTheme}
-              />
-              <IonButton
-                shape="round"
-                expand="block"
-                className="primary-button confirm-edit-button"
-                data-testid="continue-button"
-                onClick={handleSubmit}
-                disabled={!verifyDisplayName}
-              >
-                {i18n.t("identifiers.details.options.inner.confirm")}
-              </IonButton>
-            </IonGrid>
-          </IonContent>
+        <div
+          className={`indentifier-input${
+            newDisplayName.length > DISPLAY_NAME_LENGTH ? " has-error" : ""
+          }`}
+        >
+          <CustomInput
+            dataTestId="edit-name-input"
+            title={`${i18n.t("identifiers.details.options.inner.label")}`}
+            hiddenInput={false}
+            autofocus={true}
+            onChangeInput={setNewDisplayName}
+            value={newDisplayName}
+          />
+          {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
+            <ErrorMessage
+              message={`${i18n.t("identifiers.details.options.inner.error")}`}
+              timeout={false}
+            />
+          ) : null}
         </div>
-      </IonModal>
+        <span className="theme-input-title">{`${i18n.t(
+          "identifiers.details.options.inner.theme"
+        )}`}</span>
+        <div className="card-theme">
+          <IdentifierThemeSelector
+            selectedTheme={newSelectedTheme}
+            setSelectedTheme={setNewSelectedTheme}
+          />
+        </div>
+        <IonButton
+          shape="round"
+          expand="block"
+          className="primary-button confirm-edit-button"
+          data-testid="continue-button"
+          onClick={handleSubmit}
+          disabled={!verifyDisplayName}
+        >
+          {i18n.t("identifiers.details.options.inner.confirm")}
+        </IonButton>
+      </OptionModal>
       <IdentifierJsonModal
         cardData={cardData}
         isOpen={viewIsOpen}

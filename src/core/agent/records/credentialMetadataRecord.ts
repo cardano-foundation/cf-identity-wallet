@@ -36,6 +36,7 @@ class CredentialMetadataRecord extends BaseRecord {
       isArchived: this.isArchived,
       isDeleted: this.isDeleted,
       connectionId: this.connectionId,
+      id: this.id,
     };
   }
 }

@@ -2,13 +2,12 @@ import { Algos, d, EventResult, messagize, Serder, Siger } from "signify-ts";
 import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../agent";
 import {
-  ConnectionShortDetails,
-  KeriaNotification,
   IdentifierResult,
   NotificationRoute,
   CreateIdentifierResult,
   AgentServicesProps,
 } from "../agent.types";
+import type { KeriaNotification, ConnectionShortDetails } from "../agent.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -23,6 +22,7 @@ import {
   MultiSigExnMessage,
   CreateMultisigExnPayload,
 } from "./multiSig.types";
+import { OnlineOnly } from "./utils";
 
 class MultiSigService extends AgentService {
   static readonly INVALID_THRESHOLD = "Invalid threshold";
@@ -61,6 +61,7 @@ class MultiSigService extends AgentService {
     this.notificationStorage = notificationStorage;
   }
 
+  @OnlineOnly
   async createMultisig(
     ourIdentifier: string,
     otherIdentifierContacts: ConnectionShortDetails[],
@@ -198,6 +199,7 @@ class MultiSigService extends AgentService {
     };
   }
 
+  @OnlineOnly
   async rotateMultisig(ourIdentifier: string): Promise<string> {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       ourIdentifier
@@ -250,6 +252,7 @@ class MultiSigService extends AgentService {
     return multisigId;
   }
 
+  @OnlineOnly
   async joinMultisigRotation(notification: KeriaNotification): Promise<string> {
     const msgSaid = notification.a.d as string;
     const notifications: MultiSigExnMessage[] = await this.signifyClient
@@ -306,6 +309,7 @@ class MultiSigService extends AgentService {
     return false;
   }
 
+  @OnlineOnly
   async getMultisigIcpDetails(
     notificationSaid: string
   ): Promise<MultiSigIcpRequestDetails> {
@@ -372,6 +376,7 @@ class MultiSigService extends AgentService {
     };
   }
 
+  @OnlineOnly
   async joinMultisig(
     notificationId: string,
     notificationSaid: string,
@@ -431,6 +436,7 @@ class MultiSigService extends AgentService {
     return { identifier: multisigId, signifyName };
   }
 
+  @OnlineOnly
   async markMultisigCompleteIfReady(metadata: IdentifierMetadataRecord) {
     if (!metadata.signifyOpName || !metadata.isPending) {
       return {
@@ -449,6 +455,7 @@ class MultiSigService extends AgentService {
     return { done: false };
   }
 
+  @OnlineOnly
   async getUnhandledMultisigIdentifiers(
     filters: {
       isDismissed?: boolean;

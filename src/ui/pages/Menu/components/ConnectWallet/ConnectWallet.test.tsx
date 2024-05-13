@@ -1,12 +1,17 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { MemoryRouter } from "react-router-dom";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
 import { ConnectWallet } from "./ConnectWallet";
-import { setToastMsg } from "../../../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../../../globals/types";
+import {
+  setCurrentOperation,
+  setToastMsg,
+} from "../../../../../store/reducers/stateCache";
+import { OperationType, ToastMsgType } from "../../../../globals/types";
+import { identifierFix } from "../../../../__fixtures__/identifierFix";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -44,6 +49,9 @@ const initialState = {
     walletConnections: [...walletConnectionsFix],
     connectedWallet: walletConnectionsFix[1],
   },
+  identifiersCache: {
+    identifiers: [...identifierFix],
+  },
 };
 
 const storeMocked = {
@@ -51,7 +59,7 @@ const storeMocked = {
   dispatch: dispatchMock,
 };
 
-describe("Confirm connect modal", () => {
+describe("Wallet connect: empty history", () => {
   test("Confirm connect modal render empty history screen", async () => {
     const initialState = {
       stateCache: {
@@ -65,6 +73,9 @@ describe("Confirm connect modal", () => {
       },
       walletConnectionsCache: {
         walletConnections: [],
+      },
+      identifiersCache: {
+        identifiers: [...identifierFix],
       },
     };
 
@@ -80,20 +91,136 @@ describe("Confirm connect modal", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.connectwallet.sections.connectbtn)
+      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
     ).toBeVisible();
+  });
+
+  test("Connect wallet modal: scan QR", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+      },
+      identifiersCache: {
+        identifiers: [...identifierFix],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText, getByTestId } = render(
+      <MemoryRouter>
+        <Provider store={storeMocked}>
+          <ConnectWallet />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+    ).toBeVisible();
+
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.connectwallet.sections.connectbtn)
+        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+      );
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setCurrentOperation(OperationType.SCAN_WALLET_CONNECTION)
+      );
+    });
+  });
+
+  test("Connect wallet modal: alert identifier missing when create new connect", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText, getByTestId } = render(
+      <MemoryRouter>
+        <Provider store={storeMocked}>
+          <ConnectWallet />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+    ).toBeVisible();
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
       );
     });
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.connectwallet.connectwalletmodal.header)
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+            .missingidentifieralert.message
+        )
       ).toBeVisible();
     });
   });
+});
+
+describe("Wallet connect", () => {
+  test("Wallet connect render", async () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <ConnectWallet />
+      </Provider>
+    );
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
+      )
+    ).toBeVisible();
+    expect(getByText(walletConnectionsFix[0].name)).toBeVisible();
+    expect(getByText(walletConnectionsFix[0].owner)).toBeVisible();
+    expect(getByText(walletConnectionsFix[1].name)).toBeVisible();
+    expect(getByText(walletConnectionsFix[1].owner)).toBeVisible();
+    expect(getByText(walletConnectionsFix[2].name)).toBeVisible();
+    expect(getByText(walletConnectionsFix[2].owner)).toBeVisible();
+    expect(getByText(walletConnectionsFix[3].name)).toBeVisible();
+    expect(getByText(walletConnectionsFix[3].owner)).toBeVisible();
+    expect(getByTestId("connected-wallet-check-mark")).toBeVisible();
+  });
+
   test("Confirm connect modal render", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
@@ -102,7 +229,9 @@ describe("Confirm connect modal", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.connectwallet.connectionhistory.title)
+      getByText(
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
+      )
     ).toBeVisible();
     expect(getByText(walletConnectionsFix[0].name)).toBeVisible();
     expect(getByText(walletConnectionsFix[0].owner)).toBeVisible();
@@ -123,7 +252,9 @@ describe("Confirm connect modal", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.connectwallet.connectionhistory.title)
+      getByText(
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
+      )
     ).toBeVisible();
 
     act(() => {
@@ -135,7 +266,8 @@ describe("Confirm connect modal", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.connectwallet.connectionhistory.deletealert.message
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+            .deletealert.message
         )
       ).toBeVisible();
     });
@@ -143,7 +275,8 @@ describe("Confirm connect modal", () => {
     act(() => {
       fireEvent.click(
         getByText(
-          EN_TRANSLATIONS.connectwallet.connectionhistory.deletealert.confirm
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+            .deletealert.confirm
         )
       );
     });
@@ -203,7 +336,9 @@ describe("Confirm connect modal", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.connectwallet.connectionhistory.title)
+      getByText(
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
+      )
     ).toBeVisible();
 
     act(() => {
@@ -219,48 +354,78 @@ describe("Confirm connect modal", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS)
+      );
+    });
+  });
+
+  test("Wallet connect modal: alert identifier missing", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+      },
+      walletConnectionsCache: {
+        walletConnections: [...walletConnectionsFix],
+        connectedWallet: null,
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, getByText } = render(
+      <MemoryRouter>
+        <Provider store={storeMocked}>
+          <ConnectWallet />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId(`card-item-${walletConnectionsFix[0].id}`));
     });
 
-    fireEvent.click(getByTestId("passcode-button-1"));
-
     await waitFor(() => {
-      expect(getByTestId("circle-0")).toBeVisible();
+      expect(getByTestId("confirm-connect-btn")).toBeVisible();
     });
 
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-1")).toBeVisible();
+    act(() => {
+      fireEvent.click(getByTestId("confirm-connect-btn"));
     });
 
-    fireEvent.click(getByTestId("passcode-button-1"));
-
     await waitFor(() => {
-      expect(getByTestId("circle-2")).toBeVisible();
+      expect(
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+            .missingidentifieralert.message
+        )
+      ).toBeVisible();
     });
 
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-3")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-4")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(getByTestId("circle-5")).toBeVisible();
+    act(() => {
+      fireEvent.click(
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+            .missingidentifieralert.confirm
+        )
+      );
     });
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
-        setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS)
+        setCurrentOperation(OperationType.CREATE_IDENTIFIER_CONNECT_WALLET)
       );
     });
   });
