@@ -4,17 +4,17 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { store } from "../../../store";
-import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
-import { WalletConnectRequestStageOne } from "./WalletConnectRequestStageOne";
-import { WalletConnectRequestStageTwo } from "./WalletConnectRequestStageTwo";
-import { identifierFix } from "../../__fixtures__/identifierFix";
-import { TabsRoutePath } from "../../../routes/paths";
-import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
-import { setToastMsg } from "../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../globals/types";
-import { WalletConnectRequest } from "./WalletConnectRequest";
+import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
+import { store } from "../../../../../store";
+import { IncomingRequestType } from "../../../../../store/reducers/stateCache/stateCache.types";
+import { WalletConnectStageOne } from "./WalletConnectStageOne";
+import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
+import { identifierFix } from "../../../../__fixtures__/identifierFix";
+import { TabsRoutePath } from "../../../../../routes/paths";
+import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
+import { setToastMsg } from "../../../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../../../globals/types";
+import { WalletConnect } from "./WalletConnect";
 setupIonicReact();
 mockIonicReact();
 
@@ -47,7 +47,7 @@ describe("Wallet Connect Stage One", () => {
   test("Renders content ", async () => {
     const { getByText } = render(
       <Provider store={storeMocked}>
-        <WalletConnectRequestStageOne
+        <WalletConnectStageOne
           isOpen={true}
           onAccept={handleAccept}
           onClose={handleCancel}
@@ -56,12 +56,14 @@ describe("Wallet Connect Stage One", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connectwallet.request.stageone.title)
+      getByText(
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.title
+      )
     ).toBeVisible();
 
     expect(
       getByText(
-        EN_TRANSLATIONS.menu.items.connectwallet.request.stageone.message
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.message
       )
     ).toBeVisible();
 
@@ -73,7 +75,7 @@ describe("Wallet Connect Stage One", () => {
   test("Click to acccept button", async () => {
     const { getByText } = render(
       <Provider store={storeMocked}>
-        <WalletConnectRequestStageOne
+        <WalletConnectStageOne
           isOpen={true}
           onAccept={handleAccept}
           onClose={handleCancel}
@@ -93,7 +95,7 @@ describe("Wallet Connect Stage One", () => {
   test("Click to decline button", async () => {
     const { getByText, getAllByText } = render(
       <Provider store={storeMocked}>
-        <WalletConnectRequestStageOne
+        <WalletConnectStageOne
           isOpen={true}
           onAccept={handleAccept}
           onClose={handleCancel}
@@ -110,7 +112,7 @@ describe("Wallet Connect Stage One", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.items.connectwallet.request.stageone.alert
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.alert
             .titleconfirm
         )
       ).toBeInTheDocument();
@@ -119,7 +121,7 @@ describe("Wallet Connect Stage One", () => {
     act(() => {
       fireEvent.click(
         getAllByText(
-          EN_TRANSLATIONS.menu.items.connectwallet.request.stageone.alert
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.alert
             .confirm
         )[1]
       );
@@ -164,7 +166,7 @@ describe("Wallet Connect Stage Two", () => {
   test("Renders content ", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
-        <WalletConnectRequestStageTwo
+        <WalletConnectStageTwo
           isOpen={true}
           data={walletConnectionsFix[0]}
           onClose={handleCancel}
@@ -174,12 +176,14 @@ describe("Wallet Connect Stage Two", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connectwallet.request.stagetwo.title)
+      getByText(
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stagetwo.title
+      )
     ).toBeVisible();
 
     expect(
       getByText(
-        EN_TRANSLATIONS.menu.items.connectwallet.request.stagetwo.message
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stagetwo.message
       )
     ).toBeVisible();
 
@@ -191,7 +195,7 @@ describe("Wallet Connect Stage Two", () => {
   test("Click to confirm button", async () => {
     const { getByTestId } = render(
       <Provider store={storeMocked}>
-        <WalletConnectRequestStageTwo
+        <WalletConnectStageTwo
           isOpen={true}
           data={walletConnectionsFix[0]}
           onClose={handleCancel}
@@ -257,12 +261,14 @@ describe("Wallet Connect Request", () => {
   test("Renders content ", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <WalletConnectRequest />
+        <WalletConnect />
       </Provider>
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connectwallet.request.stageone.title)
+      getByText(
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.title
+      )
     ).toBeVisible();
 
     act(() => {
@@ -272,7 +278,7 @@ describe("Wallet Connect Request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.items.connectwallet.request.stagetwo.title
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stagetwo.title
         )
       ).toBeVisible();
     });
@@ -305,12 +311,14 @@ describe("Wallet Connect Request", () => {
   test("Renders close in stage one ", async () => {
     const { getByTestId, getByText, getAllByText, queryByTestId } = render(
       <Provider store={storeMocked}>
-        <WalletConnectRequest />
+        <WalletConnect />
       </Provider>
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connectwallet.request.stageone.title)
+      getByText(
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.title
+      )
     ).toBeVisible();
 
     act(() => {
@@ -321,7 +329,7 @@ describe("Wallet Connect Request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.items.connectwallet.request.stageone.alert
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.alert
             .titleconfirm
         )
       ).toBeInTheDocument();
@@ -330,7 +338,7 @@ describe("Wallet Connect Request", () => {
     act(() => {
       fireEvent.click(
         getAllByText(
-          EN_TRANSLATIONS.menu.items.connectwallet.request.stageone.alert
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.alert
             .confirm
         )[1]
       );

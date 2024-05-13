@@ -1,29 +1,28 @@
 import { IonCheckbox, IonContent } from "@ionic/react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
-import { i18n } from "../../../i18n";
-import { useAppSelector } from "../../../store/hooks";
-import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
-import { setToastMsg } from "../../../store/reducers/stateCache";
-import { CardItem, CardList } from "../CardList";
-import { PageFooter } from "../PageFooter";
-import { PageHeader } from "../PageHeader";
-import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
-import { ToastMsgType } from "../../globals/types";
-import { combineClassNames } from "../../utils/style";
-import "./WalletConnectRequest.scss";
-import { WalletConnectRequestStageTwoProps } from "./WalletConnectRequest.types";
+import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
+import { i18n } from "../../../../../i18n";
+import { useAppSelector } from "../../../../../store/hooks";
+import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
+import { setToastMsg } from "../../../../../store/reducers/stateCache";
+import { CardItem, CardList } from "../../../../components/CardList";
+import { PageFooter } from "../../../../components/PageFooter";
+import { PageHeader } from "../../../../components/PageHeader";
+import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
+import { ToastMsgType } from "../../../../globals/types";
+import { combineClassNames } from "../../../../utils/style";
+import "./WalletConnect.scss";
+import { WalletConnectStageTwoProps } from "./WalletConnect.types";
 
-const WalletConnectRequestStageTwo = ({
+const WalletConnectStageTwo = ({
   isOpen,
   className,
   onBackClick,
   onClose,
-}: WalletConnectRequestStageTwoProps) => {
+}: WalletConnectStageTwoProps) => {
   const dispatch = useDispatch();
   const indentifierCache = useAppSelector(getIdentifiersCache);
-  const [closeAnimation, setCloseAnimation] = useState(false);
 
   const [selectedIdentifier, setSelectedIdentifier] =
     useState<IdentifierShortDetails | null>(null);
@@ -40,8 +39,6 @@ const WalletConnectRequestStageTwo = ({
   const classes = combineClassNames("wallet-connect-stage-two", className, {
     show: !!isOpen,
     hide: !isOpen,
-    "animation-on": closeAnimation,
-    "animation-off": !closeAnimation,
   });
 
   const handleSelectIdentifier = (data: IdentifierShortDetails) => {
@@ -52,11 +49,7 @@ const WalletConnectRequestStageTwo = ({
     try {
       // TODO: implement connect wallet logic
       dispatch(setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS));
-      setCloseAnimation(true);
-
-      setTimeout(() => {
-        onClose();
-      }, 500);
+      onClose();
     } catch (e) {
       dispatch(setToastMsg(ToastMsgType.UNABLE_CONNECT_WALLET));
     }
@@ -69,17 +62,19 @@ const WalletConnectRequestStageTwo = ({
       customClass={classes}
       header={
         <PageHeader
-          title={`${i18n.t("menu.items.connectwallet.request.stagetwo.title")}`}
+          title={`${i18n.t(
+            "menu.tab.items.connectwallet.request.stagetwo.title"
+          )}`}
           closeButton
           closeButtonLabel={`${i18n.t(
-            "menu.items.connectwallet.request.button.back"
+            "menu.tab.items.connectwallet.request.button.back"
           )}`}
           closeButtonAction={onBackClick}
         />
       }
     >
       <h2 className="title">
-        {i18n.t("menu.items.connectwallet.request.stagetwo.message")}
+        {i18n.t("menu.tab.items.connectwallet.request.stagetwo.message")}
       </h2>
       <IonContent className="identifier-list">
         <CardList
@@ -105,7 +100,7 @@ const WalletConnectRequestStageTwo = ({
       </IonContent>
       <PageFooter
         primaryButtonText={`${i18n.t(
-          "menu.items.connectwallet.request.stagetwo.confirm"
+          "menu.tab.items.connectwallet.request.stagetwo.confirm"
         )}`}
         primaryButtonAction={handleConnectWallet}
         primaryButtonDisabled={!selectedIdentifier}
@@ -114,4 +109,4 @@ const WalletConnectRequestStageTwo = ({
   );
 };
 
-export { WalletConnectRequestStageTwo };
+export { WalletConnectStageTwo };

@@ -1,30 +1,4 @@
-@keyframes slidein {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideback {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(100%);
-  }
-}
-
 .connect-wallet-stage-one {
-  &.open {
-    animation: slidein 0.5s;
-  }
-
-  &.close {
-    animation: slideback 0.5s forwards;
-  }
-
   &.animation-on {
     .request-animation-center {
       .wallet-connect-message {
@@ -145,10 +119,6 @@
 }
 
 .wallet-connect-stage-two {
-  &.close {
-    animation: slideback 0.5s forwards;
-  }
-
   .responsive-page-content {
     display: flex;
     flex-direction: column;

@@ -1,21 +1,21 @@
 import { IonIcon } from "@ionic/react";
 import { checkmark, personCircleOutline } from "ionicons/icons";
 import { useState } from "react";
-import { i18n } from "../../../i18n";
-import { Alert } from "../Alert";
-import { PageFooter } from "../PageFooter";
-import { PageHeader } from "../PageHeader";
-import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
-import { combineClassNames } from "../../utils/style";
-import "./WalletConnectRequest.scss";
-import { WalletConnectRequestStageOneProps } from "./WalletConnectRequest.types";
+import { i18n } from "../../../../../i18n";
+import { Alert } from "../../../../components/Alert";
+import { PageFooter } from "../../../../components/PageFooter";
+import { PageHeader } from "../../../../components/PageHeader";
+import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
+import { combineClassNames } from "../../../../utils/style";
+import "./WalletConnect.scss";
+import { WalletConnectStageOneProps } from "./WalletConnect.types";
 
-const WalletConnectRequestStageOne = ({
+const WalletConnectStageOne = ({
   isOpen,
   className,
   onClose,
   onAccept,
-}: WalletConnectRequestStageOneProps) => {
+}: WalletConnectStageOneProps) => {
   const [openDeclineAlert, setOpenDeclineAlert] = useState(false);
   const [acceptAnimation, setAcceptAnimation] = useState(false);
 
@@ -51,11 +51,11 @@ const WalletConnectRequestStageOne = ({
         header={
           <PageHeader
             title={`${i18n.t(
-              "menu.items.connectwallet.request.stageone.title"
+              "menu.tab.items.connectwallet.request.stageone.title"
             )}`}
             closeButton
             closeButtonLabel={`${i18n.t(
-              "menu.items.connectwallet.request.button.back"
+              "menu.tab.items.connectwallet.request.button.back"
             )}`}
             closeButtonAction={openDecline}
           />
@@ -79,18 +79,18 @@ const WalletConnectRequestStageOne = ({
             data-testid="wallet-connect-message"
             className="wallet-connect-message"
           >
-            {i18n.t("menu.items.connectwallet.request.stageone.message")}
+            {i18n.t("menu.tab.items.connectwallet.request.stageone.message")}
           </p>
         </div>
         <PageFooter
           customClass="request-footer"
           pageId="connect-wallet-stage-one"
           primaryButtonText={`${i18n.t(
-            "menu.items.connectwallet.request.button.accept"
+            "menu.tab.items.connectwallet.request.button.accept"
           )}`}
           primaryButtonAction={handleAccept}
           secondaryButtonText={`${i18n.t(
-            "menu.items.connectwallet.request.button.decline"
+            "menu.tab.items.connectwallet.request.button.decline"
           )}`}
           secondaryButtonAction={openDecline}
         />
@@ -100,13 +100,13 @@ const WalletConnectRequestStageOne = ({
         setIsOpen={setOpenDeclineAlert}
         dataTestId="alert-decline-connect"
         headerText={i18n.t(
-          "menu.items.connectwallet.request.stageone.alert.titleconfirm"
+          "menu.tab.items.connectwallet.request.stageone.alert.titleconfirm"
         )}
         confirmButtonText={`${i18n.t(
-          "menu.items.connectwallet.request.stageone.alert.confirm"
+          "menu.tab.items.connectwallet.request.stageone.alert.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "menu.items.connectwallet.request.stageone.alert.cancel"
+          "menu.tab.items.connectwallet.request.stageone.alert.cancel"
         )}`}
         actionConfirm={handleClose}
         actionCancel={() => setOpenDeclineAlert(false)}
@@ -116,4 +116,4 @@ const WalletConnectRequestStageOne = ({
   );
 };
 
-export { WalletConnectRequestStageOne };
+export { WalletConnectStageOne };
