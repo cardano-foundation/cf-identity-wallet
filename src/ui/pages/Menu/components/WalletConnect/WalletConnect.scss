@@ -46,6 +46,12 @@
     }
   }
 
+  & .page-header {
+    ion-toolbar {
+      --background: transparent;
+    }
+  }
+
   .responsive-page-content {
     --buttons-height: 7.5rem;
     justify-content: space-between;
@@ -119,6 +125,12 @@
 }
 
 .wallet-connect-stage-two {
+  & .page-header {
+    ion-toolbar {
+      --background: transparent;
+    }
+  }
+
   .responsive-page-content {
     display: flex;
     flex-direction: column;

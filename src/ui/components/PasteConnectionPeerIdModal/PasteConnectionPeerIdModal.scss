@@ -29,6 +29,10 @@
       }
     }
 
+    .input-highlight.sc-ion-input-md {
+      display: none;
+    }
+
     @media screen and (min-width: 250px) and (max-width: 370px) {
       ion-input {
         input {
