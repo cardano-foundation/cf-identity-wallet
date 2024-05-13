@@ -21,7 +21,7 @@ import {
   CredentialShortDetails,
   CredentialStatus,
 } from "./credentialService.types";
-import { getCredentialShortDetails } from "./utils";
+import { OnlineOnly, getCredentialShortDetails } from "./utils";
 import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 
 class IpexCommunicationService extends AgentService {
@@ -60,6 +60,7 @@ class IpexCommunicationService extends AgentService {
     this.notificationStorage = notificationStorage;
   }
 
+  @OnlineOnly
   async acceptAcdc(
     id: string,
     waitForAcdcConfig = { maxAttempts: 120, interval: 500 }

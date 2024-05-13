@@ -19,7 +19,7 @@ import {
   ConnectionStorage,
 } from "../records";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
-import { waitAndGetDoneOp } from "./utils";
+import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
 import { ConfigurationService } from "../../configuration";
 
@@ -61,6 +61,7 @@ class ConnectionService extends AgentService {
     );
   }
 
+  @OnlineOnly
   async connectByOobiUrl(url: string): Promise<void> {
     this.eventService.emit<ConnectionStateChangedEvent>({
       type: ConnectionEventTypes.ConnectionStateChanged,
@@ -153,6 +154,7 @@ class ConnectionService extends AgentService {
     };
   }
 
+  @OnlineOnly
   async getConnectionById(id: string): Promise<ConnectionDetails> {
     const connection = await this.signifyClient.contacts().get(id);
     return {
@@ -167,6 +169,7 @@ class ConnectionService extends AgentService {
     };
   }
 
+  @OnlineOnly
   async deleteConnectionById(id: string): Promise<void> {
     await this.connectionStorage.deleteById(id);
     // await this.signifyApi.deleteContactById(id); @TODO - foconnor: Uncomment when KERIA endpoint fixed
@@ -214,6 +217,7 @@ class ConnectionService extends AgentService {
     return this.connectionNoteStorage.deleteById(connectionNoteId);
   }
 
+  @OnlineOnly
   async getOobi(signifyName: string, alias?: string): Promise<string> {
     const result = await this.signifyClient
       .oobis()
@@ -267,6 +271,7 @@ class ConnectionService extends AgentService {
     return histories;
   }
 
+  @OnlineOnly
   async syncKeriaContacts() {
     const signifyContacts = await this.signifyClient.contacts().list();
     const storageContacts = await this.getAllConnectionMetadata();
@@ -285,6 +290,7 @@ class ConnectionService extends AgentService {
     }
   }
 
+  @OnlineOnly
   async resolveOobi(url: string): Promise<any> {
     if (ConnectionService.resolvedOobi[url]) {
       return ConnectionService.resolvedOobi[url];

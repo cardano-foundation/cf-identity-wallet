@@ -58,6 +58,10 @@ enum AcdcEventTypes {
   AcdcStateChanged = "AcdcStateChanged",
 }
 
+enum KeriaStatusEventTypes {
+  KeriaStatusChanged = "KeriaStatusChanged",
+}
+
 interface ConnectionStateChangedEvent extends BaseEventEmitter {
   type: typeof ConnectionEventTypes.ConnectionStateChanged;
   payload: {
@@ -77,6 +81,13 @@ interface AcdcStateChangedEvent extends BaseEventEmitter {
         status: CredentialStatus.CONFIRMED;
         credential: CredentialShortDetails;
       };
+}
+
+interface KeriaStatusChangedEvent extends BaseEventEmitter {
+  type: typeof KeriaStatusEventTypes.KeriaStatusChanged;
+  payload: {
+    isOnline: boolean;
+  };
 }
 
 interface KeriaNotification {
@@ -125,6 +136,7 @@ export {
   ConnectionEventTypes,
   AcdcEventTypes,
   NotificationRoute,
+  KeriaStatusEventTypes,
 };
 
 export type {
@@ -141,4 +153,5 @@ export type {
   AgentServicesProps,
   CreateIdentifierResult,
   IdentifierResult,
+  KeriaStatusChangedEvent,
 };

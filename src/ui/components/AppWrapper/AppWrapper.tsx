@@ -115,12 +115,50 @@ const acdcChangeHandler = async (
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
-  const [agentInitErr, setAgentInitErr] = useState(false);
+  const [isOnline, setIsOnline] = useState(false);
+  const [isMessagesHandled, setIsMessagesHandled] = useState(false);
   useActivityTimer();
 
   useEffect(() => {
     initApp();
   }, []);
+
+  useEffect(() => {
+    if (authentication.loggedIn) {
+      const handleMessages = async () => {
+        const oldMessages = (
+          await Promise.all([
+            Agent.agent.credentials.getUnhandledIpexGrantNotifications({
+              isDismissed: false,
+            }),
+            Agent.agent.multiSigs.getUnhandledMultisigIdentifiers({
+              isDismissed: false,
+            }),
+          ])
+        )
+          .flat()
+          .sort(function (messageA, messageB) {
+            return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
+          });
+        oldMessages.forEach(async (message) => {
+          await keriaNotificationsChangeHandler(message, dispatch);
+        });
+        // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
+        // await Promise.all([
+        //   Agent.agent.identifiers.syncKeriaIdentifiers(),
+        //   Agent.agent.connections.syncKeriaContacts(),
+        //   Agent.agent.credentials.syncACDCs(),
+        // ]);
+      };
+      if (!isMessagesHandled && isOnline) {
+        handleMessages();
+        setIsMessagesHandled(true);
+      }
+      dispatch(setPauseQueueIncomingRequest(!isOnline));
+    } else {
+      dispatch(setPauseQueueIncomingRequest(true));
+    }
+  }, [isOnline, authentication.loggedIn, dispatch]);
 
   const checkKeyStore = async (key: string) => {
     try {
@@ -241,18 +279,23 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     try {
       await Agent.agent.start();
+      setIsOnline(true);
+      await loadDatabase();
     } catch (e) {
-      // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
-      setAgentInitErr(true);
-      // eslint-disable-next-line no-console
-      console.error(e);
-      return;
+      const errorStack = (e as Error).stack as string;
+      // If the error is failed to fetch with signify, we retry until the connection is secured
+      if (/SignifyClient/gi.test(errorStack)) {
+        await loadDatabase();
+        Agent.agent.bootAndConnect().then(() => {
+          setIsOnline(Agent.agent.getKeriaOnlineStatus());
+        });
+      } else {
+        throw e;
+      }
     }
-    dispatch(setPauseQueueIncomingRequest(true));
-
-    await loadDatabase();
-    dispatch(setInitialized(true));
-
+    Agent.agent.onKeriaStatusStateChanged((event) => {
+      setIsOnline(event.payload.isOnline);
+    });
     Agent.agent.connections.onConnectionStateChanged((event) => {
       return connectionStateChangedHandler(event, dispatch);
     });
@@ -262,50 +305,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.credentials.onAcdcStateChanged((event) => {
       return acdcChangeHandler(event, dispatch);
     });
-
-    const oldMessages = (
-      await Promise.all([
-        Agent.agent.credentials.getUnhandledIpexGrantNotifications({
-          isDismissed: false,
-        }),
-        Agent.agent.multiSigs.getUnhandledMultisigIdentifiers({
-          isDismissed: false,
-        }),
-      ])
-    )
-      .flat()
-      .sort(function (messageA, messageB) {
-        return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
-      });
-    oldMessages.forEach(async (message) => {
-      await keriaNotificationsChangeHandler(message, dispatch);
-    });
-    // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-    // await Promise.all([
-    //   AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
-    //   AriesAgent.agent.connections.syncKeriaContacts(),
-    //   AriesAgent.agent.credentials.syncACDCs(),
-    // ]);
+    dispatch(setInitialized(true));
   };
-
-  // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.
-  // Hence this isn't in i18n.
-  if (agentInitErr) {
-    return (
-      <div className="agent-init-error-msg">
-        <p>
-          There’s an issue connecting to the cloud services we depend on right
-          now (KERIA) - please check your internet connection, or if this
-          problem persists, let us know on Discord!
-        </p>
-        <p>
-          We’re working on an offline mode, as well as improving the deployment
-          setup for this pre-production release. Thank you for your
-          understanding!
-        </p>
-      </div>
-    );
-  }
 
   return <>{props.children}</>;
 };
