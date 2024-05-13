@@ -849,79 +849,81 @@
     }
   },
   "menu": {
-    "header": "Menu",
-    "items": {
-      "profile": {
-        "title": "Profile"
-      },
-      "crypto": {
-        "title": "Crypto"
-      },
-      "connections": {
-        "title": "Connections"
-      },
-      "connectwallet": {
-        "title": "Connect Wallet",
-        "cip": "CIP-45",
-        "tabheader": "Cardano Connect",
-        "connectbtn": "Connect with Cardano",
-        "connectwalletmodal": {
-          "header": "New connection",
-          "cancel": "Cancel",
-          "scanqr": "Scan QR code",
-          "pastePID": "Paste Peer ID",
-          "disconnectbeforecreatealert": {
-            "message": "You are currently connected. To connect with a new wallet, you will be disconnected from your current selection. Would you like to disconnect and continue?",
-            "confirm": "Continue",
-            "cancel": "Cancel"
-          }
+    "tab": {
+      "header": "Menu",
+      "items": {
+        "profile": {
+          "title": "Profile"
         },
-        "inputpidmodal": {
-          "header": "Paste Meerkat ID",
-          "cancel": "Cancel",
-          "confirm": "Confirm",
-          "scanQR": "Scan QR code"
+        "crypto": {
+          "title": "Crypto"
         },
-        "connectionhistory": {
-          "title": "Connection History",
-          "action": {
-            "delete": "Delete"
-          },
-          "deletealert": {
-            "message": "Are you sure you want to delete this connection?",
-            "confirm": "Yes, I’m sure",
-            "cancel": "Cancel"
-          },
-          "missingidentifieralert": {
-            "message": "To connect with Cardano, you need to create a KERI AID identifier. Would you like to create one now?",
-            "confirm": "Create identifier",
-            "cancel": "Cancel"
-          },
-          "confirmconnect": {
-            "done": "Done",
-            "connectbtn": "Connect",
-            "disconnectbtn": "Disconnect"
-          }
+        "connections": {
+          "title": "Connections"
         },
-        "request": {
-          "stageone": {
-            "title": "Connect Cardano",
-            "message": "Would you like to establish a CIP-45 Connection?",
-            "alert": {
-              "titleconfirm": "Are you sure you want to decline this connection?",
-              "confirm": "Decline",
+        "connectwallet": {
+          "title": "Connect Wallet",
+          "cip": "CIP-45",
+          "tabheader": "Cardano Connect",
+          "connectbtn": "Connect with Cardano",
+          "connectwalletmodal": {
+            "header": "New connection",
+            "cancel": "Cancel",
+            "scanqr": "Scan QR code",
+            "pastePID": "Paste Peer ID",
+            "disconnectbeforecreatealert": {
+              "message": "You are currently connected. To connect with a new wallet, you will be disconnected from your current selection. Would you like to disconnect and continue?",
+              "confirm": "Continue",
               "cancel": "Cancel"
             }
           },
-          "stagetwo": {
-            "title": "Choose identifier",
-            "message": "Which KERI AID identifier would you like to make the connection with?",
-            "confirm": "Confirm"
+          "inputpidmodal": {
+            "header": "Paste Meerkat ID",
+            "cancel": "Cancel",
+            "confirm": "Confirm",
+            "scanQR": "Scan QR code"
           },
-          "button": {
-            "back": "Back",
-            "accept": "Accept",
-            "decline": "Decline"
+          "connectionhistory": {
+            "title": "Connection History",
+            "action": {
+              "delete": "Delete"
+            },
+            "deletealert": {
+              "message": "Are you sure you want to delete this connection?",
+              "confirm": "Yes, I’m sure",
+              "cancel": "Cancel"
+            },
+            "missingidentifieralert": {
+              "message": "To connect with Cardano, you need to create a KERI AID identifier. Would you like to create one now?",
+              "confirm": "Create identifier",
+              "cancel": "Cancel"
+            },
+            "confirmconnect": {
+              "done": "Done",
+              "connectbtn": "Connect",
+              "disconnectbtn": "Disconnect"
+            }
+          },
+          "request": {
+            "stageone": {
+              "title": "Connect Cardano",
+              "message": "Would you like to establish a CIP-45 Connection?",
+              "alert": {
+                "titleconfirm": "Are you sure you want to decline this connection?",
+                "confirm": "Decline",
+                "cancel": "Cancel"
+              }
+            },
+            "stagetwo": {
+              "title": "Choose identifier",
+              "message": "Which KERI AID identifier would you like to make the connection with?",
+              "confirm": "Confirm"
+            },
+            "button": {
+              "back": "Back",
+              "accept": "Accept",
+              "decline": "Decline"
+            }
           }
         }
       }
