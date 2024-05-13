@@ -146,10 +146,10 @@ const CreatePassword = () => {
       {!confirmPasswordFocus &&
         !!confirmPasswordValue.length &&
         createPasswordValueNotMatching && (
-          <ErrorMessage
-            message={`${i18n.t("createpassword.error.hasNoMatch")}`}
-          />
-        )}
+        <ErrorMessage
+          message={`${i18n.t("createpassword.error.hasNoMatch")}`}
+        />
+      )}
       <CustomInput
         dataTestId="hintValue"
         title={`${i18n.t("createpassword.input.third.title")}`}

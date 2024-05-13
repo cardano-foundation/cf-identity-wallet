@@ -690,7 +690,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     });
 
     await waitFor(() =>
-      expect(getByText('Connected with "Cambridge University"')).toBeVisible()
+      expect(getByText("Connected with \"Cambridge University\"")).toBeVisible()
     );
 
     await waitFor(() => {
@@ -703,7 +703,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     });
 
     await waitFor(() =>
-      expect(getByText('Received "University Degree Credential"')).toBeVisible()
+      expect(getByText("Received \"University Degree Credential\"")).toBeVisible()
     );
 
     await waitFor(() =>
@@ -765,7 +765,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     });
 
     await waitFor(() =>
-      expect(getByText('Connected with "Cardano Foundation"')).toBeVisible()
+      expect(getByText("Connected with \"Cardano Foundation\"")).toBeVisible()
     );
 
     await waitFor(() => {
@@ -778,7 +778,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     });
 
     await waitFor(() =>
-      expect(getByText('Received "Access Pass Credential"')).toBeVisible()
+      expect(getByText("Received \"Access Pass Credential\"")).toBeVisible()
     );
 
     await waitFor(() =>
@@ -840,7 +840,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     });
 
     await waitFor(() =>
-      expect(getByText('Connected with "Passport Office"')).toBeVisible()
+      expect(getByText("Connected with \"Passport Office\"")).toBeVisible()
     );
 
     await waitFor(() => {
@@ -853,7 +853,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     });
 
     await waitFor(() =>
-      expect(getByText('Received "Permanent Resident Card"')).toBeVisible()
+      expect(getByText("Received \"Permanent Resident Card\"")).toBeVisible()
     );
 
     await waitFor(() =>
@@ -915,7 +915,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     });
 
     await waitFor(() =>
-      expect(getByText('Connected with "John Smith"')).toBeVisible()
+      expect(getByText("Connected with \"John Smith\"")).toBeVisible()
     );
 
     await waitFor(() => {
@@ -929,7 +929,7 @@ describe("Checking the Connection Details Page when different Credentials are is
 
     await waitFor(() =>
       expect(
-        getByText('Received "Qualified vLEI Issuer Credential"')
+        getByText("Received \"Qualified vLEI Issuer Credential\"")
       ).toBeVisible()
     );
 

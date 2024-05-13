@@ -13,22 +13,22 @@ const CardDetailsAttributes = ({
     <>
       {attributes.map((item, index) => {
         switch (item[0]) {
-          case "id": {
-            return (
-              <CardDetailsItem
-                key={index}
-                info={item[1] as string}
-                copyButton={true}
-                className="card-details-attribute-item"
-                testId="card-details-attributes-id"
-              />
-            );
-          }
-          case "d": {
-            return;
-          }
-          default: {
-            return typeof item[1] === ("string" || "number") &&
+        case "id": {
+          return (
+            <CardDetailsItem
+              key={index}
+              info={item[1] as string}
+              copyButton={true}
+              className="card-details-attribute-item"
+              testId="card-details-attributes-id"
+            />
+          );
+        }
+        case "d": {
+          return;
+        }
+        default: {
+          return typeof item[1] === ("string" || "number") &&
               !customType &&
               !`${item[1]}`.includes(" ") &&
               `${item[1]}`[10] !== "T" ? (
@@ -47,7 +47,7 @@ const CardDetailsAttributes = ({
                 customType={customType}
               />
             );
-          }
+        }
         }
       })}
     </>

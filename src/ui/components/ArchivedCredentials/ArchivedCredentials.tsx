@@ -261,8 +261,8 @@ const ArchivedCredentialsContainer = forwardRef<
                 {selectedCredentials.length === 1
                   ? i18n.t("credentials.archived.oneselected")
                   : i18next.t("credentials.archived.manyselected", {
-                      amount: selectedCredentials.length,
-                    })}
+                    amount: selectedCredentials.length,
+                  })}
               </div>
               <IonButtons slot="end">
                 <IonButton
