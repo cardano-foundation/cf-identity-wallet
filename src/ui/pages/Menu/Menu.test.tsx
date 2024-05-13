@@ -16,18 +16,18 @@ describe("Menu Tab", () => {
     );
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
-    expect(getByText(EN_TRANSLATIONS.menu.header)).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.menu.tab.header)).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.profile.title)
+      getByText(EN_TRANSLATIONS.menu.tab.items.profile.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.crypto.title)
+      getByText(EN_TRANSLATIONS.menu.tab.items.crypto.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connections.title)
+      getByText(EN_TRANSLATIONS.menu.tab.items.connections.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connectwallet.title)
+      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.title)
     ).toBeInTheDocument();
   });
 
@@ -40,7 +40,7 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connectwallet.title)
+      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.title)
     ).toBeInTheDocument();
     const connectButton = getByTestId(
       `menu-input-item-${SubMenuKey.ConnectWallet}`
@@ -53,7 +53,7 @@ describe("Menu Tab", () => {
     await waitForIonicReact();
 
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connectwallet.tabheader)
+      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.tabheader)
     ).toBeVisible();
   });
 });

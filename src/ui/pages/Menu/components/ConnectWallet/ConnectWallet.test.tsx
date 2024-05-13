@@ -91,7 +91,7 @@ describe("Wallet connect: empty history", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connectwallet.connectbtn)
+      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
     ).toBeVisible();
   });
 
@@ -128,12 +128,12 @@ describe("Wallet connect: empty history", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connectwallet.connectbtn)
+      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
     ).toBeVisible();
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.menu.items.connectwallet.connectbtn)
+        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
       );
     });
 
@@ -177,19 +177,19 @@ describe("Wallet connect: empty history", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.menu.items.connectwallet.connectbtn)
+      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
     ).toBeVisible();
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.menu.items.connectwallet.connectbtn)
+        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
       );
     });
 
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.items.connectwallet.connectionhistory
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
             .missingidentifieralert.message
         )
       ).toBeVisible();
@@ -207,7 +207,7 @@ describe("Wallet connect", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.menu.items.connectwallet.connectionhistory.title
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
       )
     ).toBeVisible();
     expect(getByText(walletConnectionsFix[0].name)).toBeVisible();
@@ -230,7 +230,7 @@ describe("Wallet connect", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.menu.items.connectwallet.connectionhistory.title
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
       )
     ).toBeVisible();
     expect(getByText(walletConnectionsFix[0].name)).toBeVisible();
@@ -253,7 +253,7 @@ describe("Wallet connect", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.menu.items.connectwallet.connectionhistory.title
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
       )
     ).toBeVisible();
 
@@ -266,8 +266,8 @@ describe("Wallet connect", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.items.connectwallet.connectionhistory.deletealert
-            .message
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+            .deletealert.message
         )
       ).toBeVisible();
     });
@@ -275,8 +275,8 @@ describe("Wallet connect", () => {
     act(() => {
       fireEvent.click(
         getByText(
-          EN_TRANSLATIONS.menu.items.connectwallet.connectionhistory.deletealert
-            .confirm
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+            .deletealert.confirm
         )
       );
     });
@@ -337,7 +337,7 @@ describe("Wallet connect", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.menu.items.connectwallet.connectionhistory.title
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
       )
     ).toBeVisible();
 
@@ -408,7 +408,7 @@ describe("Wallet connect", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.items.connectwallet.connectionhistory
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
             .missingidentifieralert.message
         )
       ).toBeVisible();
@@ -417,7 +417,7 @@ describe("Wallet connect", () => {
     act(() => {
       fireEvent.click(
         getByText(
-          EN_TRANSLATIONS.menu.items.connectwallet.connectionhistory
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
             .missingidentifieralert.confirm
         )
       );

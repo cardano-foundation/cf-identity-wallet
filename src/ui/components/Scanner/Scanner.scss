@@ -50,10 +50,8 @@
     left: 50%;
     transform: translateX(-50%);
 
-    .paste-mkid-btn {
+    .secondary-button {
       width: calc(100vw - 2.5rem);
-      --border-radius: 2rem;
-      --background: #f6f6f680;
     }
   }
 

@@ -25,7 +25,6 @@ import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
 import { LockPage } from "./pages/LockPage/LockPage";
 import { LoadingPage } from "./pages/LoadingPage/LoadingPage";
-import { WalletConnectRequest } from "./components/WalletConnectRequest";
 
 setupIonicReact();
 
@@ -128,7 +127,6 @@ const App = () => {
             setIsOpen={setShowSetUserName}
           />
           <IncomingRequest />
-          <WalletConnectRequest />
           <CustomToast
             toastMsg={toastMsg}
             showToast={showToast}

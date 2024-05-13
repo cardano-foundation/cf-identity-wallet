@@ -24,7 +24,6 @@ enum OperationType {
   RECEIVE_CONNECTION = "receiveConnection",
   CREATE_IDENTIFIER_CONNECT_WALLET = "createIdentifierConnectWallet",
   SCAN_WALLET_CONNECTION = "scanWalletConnection",
-  PASTE_MKID_CONNECT_WALLET = "pasteMkidConnectWallet",
 }
 
 enum ToastMsgType {

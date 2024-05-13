@@ -29,6 +29,7 @@ import { ScannerProps } from "./Scanner.types";
 import { PasteConnectionPeerIdModal } from "../PasteConnectionPeerIdModal";
 import { setPendingConnections } from "../../../store/reducers/walletConnectionsCache";
 import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
+import { PageFooter } from "../PageFooter";
 
 const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
   const dispatch = useAppDispatch();
@@ -158,15 +159,11 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
           />
         </IonRow>
         {OperationType.SCAN_WALLET_CONNECTION === currentOperation && (
-          <IonRow className="actions-button">
-            <IonButton
-              onClick={handlePasteMkId}
-              className="paste-mkid-btn secondary-button"
-              data-testid="paste-meerkat-id-btn"
-            >
-              {i18n.t("scan.pastemeerkatid")}
-            </IonButton>
-          </IonRow>
+          <PageFooter
+            customClass="actions-button"
+            secondaryButtonAction={handlePasteMkId}
+            secondaryButtonText={`${i18n.t("scan.pastemeerkatid")}`}
+          />
         )}
       </IonGrid>
       <PasteConnectionPeerIdModal

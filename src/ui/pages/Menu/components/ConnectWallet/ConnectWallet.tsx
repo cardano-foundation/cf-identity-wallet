@@ -181,7 +181,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           {connections.length > 0 ? (
             <>
               <h2 className="connect-wallet-title">
-                {i18n.t("menu.items.connectwallet.connectionhistory.title")}
+                {i18n.t("menu.tab.items.connectwallet.connectionhistory.title")}
               </h2>
               <CardList
                 data={displayConnection}
@@ -196,7 +196,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
                       }}
                     >
                       {i18n.t(
-                        "menu.items.connectwallet.connectionhistory.action.delete"
+                        "menu.tab.items.connectwallet.connectionhistory.action.delete"
                       )}
                     </IonItemOption>
                   );
@@ -218,7 +218,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           ) : (
             <div className="placeholder-container">
               <CardsPlaceholder
-                buttonLabel={i18n.t("menu.items.connectwallet.connectbtn")}
+                buttonLabel={i18n.t("menu.tab.items.connectwallet.connectbtn")}
                 buttonAction={handleScanQR}
                 testId={pageId}
               />
@@ -238,13 +238,13 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           setIsOpen={setOpenDeleteAlert}
           dataTestId="alert-delete"
           headerText={i18n.t(
-            "menu.items.connectwallet.connectionhistory.deletealert.message"
+            "menu.tab.items.connectwallet.connectionhistory.deletealert.message"
           )}
           confirmButtonText={`${i18n.t(
-            "menu.items.connectwallet.connectionhistory.deletealert.confirm"
+            "menu.tab.items.connectwallet.connectionhistory.deletealert.confirm"
           )}`}
           cancelButtonText={`${i18n.t(
-            "menu.items.connectwallet.connectionhistory.deletealert.cancel"
+            "menu.tab.items.connectwallet.connectionhistory.deletealert.cancel"
           )}`}
           actionConfirm={verifyPassCodeBeforeDelete}
           actionCancel={closeDeleteAlert}
@@ -255,13 +255,13 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           setIsOpen={setOpenIdentifierMissingAlert}
           dataTestId="alert-create-keri"
           headerText={i18n.t(
-            "menu.items.connectwallet.connectionhistory.missingidentifieralert.message"
+            "menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.message"
           )}
           confirmButtonText={`${i18n.t(
-            "menu.items.connectwallet.connectionhistory.missingidentifieralert.confirm"
+            "menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.confirm"
           )}`}
           cancelButtonText={`${i18n.t(
-            "menu.items.connectwallet.connectionhistory.missingidentifieralert.cancel"
+            "menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.cancel"
           )}`}
           actionConfirm={handleNavToCreateKeri}
           actionCancel={closeIdentifierMissingAlert}

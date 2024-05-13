@@ -32,15 +32,15 @@ const PasteConnectionPeerIdModal = ({
         closeButton: true,
         closeButtonAction: handleClose,
         closeButtonLabel: `${i18n.t(
-          "menu.items.connectwallet.inputpidmodal.cancel"
+          "menu.tab.items.connectwallet.inputpidmodal.cancel"
         )}`,
         actionButton: true,
         actionButtonLabel: `${i18n.t(
-          "menu.items.connectwallet.inputpidmodal.confirm"
+          "menu.tab.items.connectwallet.inputpidmodal.confirm"
         )}`,
         actionButtonAction: confirm,
         actionButtonDisabled: pid.length === 0,
-        title: `${i18n.t("menu.items.connectwallet.inputpidmodal.header")}`,
+        title: `${i18n.t("menu.tab.items.connectwallet.inputpidmodal.header")}`,
       }}
     >
       <IonInput

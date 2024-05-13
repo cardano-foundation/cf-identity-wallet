@@ -65,10 +65,10 @@ describe("Scanner wallet connect", () => {
 
     expect(getByText(EN_TRANSLATIONS.scan.tab.title)).toBeVisible();
 
-    expect(getByTestId("paste-meerkat-id-btn")).toBeVisible();
+    expect(getByTestId("secondary-button")).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByTestId("paste-meerkat-id-btn"));
+      fireEvent.click(getByTestId("secondary-button"));
     });
 
     await waitFor(() => {
