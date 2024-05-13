@@ -25,6 +25,7 @@ import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
 import { LockPage } from "./pages/LockPage/LockPage";
 import { LoadingPage } from "./pages/LoadingPage/LoadingPage";
+import { WalletConnect } from "./components/WalletConnect";
 
 setupIonicReact();
 
@@ -61,8 +62,9 @@ const App = () => {
     setShowScan(
       [
         OperationType.SCAN_CONNECTION,
+        OperationType.SCAN_WALLET_CONNECTION,
         OperationType.MULTI_SIG_INITIATOR_SCAN,
-        currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN,
+        OperationType.MULTI_SIG_RECEIVER_SCAN,
       ].includes(currentOperation)
     );
     setShowToast(toastMsg !== undefined);
@@ -138,6 +140,7 @@ const App = () => {
             showToast={showToast}
             setShowToast={setShowToast}
           />
+          <WalletConnect />
         </StrictMode>
       </AppWrapper>
     </IonApp>

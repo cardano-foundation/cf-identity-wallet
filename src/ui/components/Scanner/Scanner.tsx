@@ -20,6 +20,7 @@ import {
   getCurrentRoute,
   getToastMsg,
   setCurrentOperation,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { OperationType, ToastMsgType } from "../../globals/types";
@@ -35,6 +36,9 @@ import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifi
 import { PageFooter } from "../PageFooter";
 import { CustomInput } from "../CustomInput";
 import { OptionModal } from "../OptionsModal";
+import { PasteConnectionPeerIdModal } from "../PasteConnectionPeerIdModal";
+import { setPendingConnections } from "../../../store/reducers/walletConnectionsCache";
+import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 
 const Scanner = forwardRef(
   ({ setIsValueCaptured, handleReset }: ScannerProps, ref) => {
@@ -50,6 +54,7 @@ const Scanner = forwardRef(
     const [groupId, setGroupId] = useState("");
     const [pastedValue, setPastedValue] = useState("");
     const [scanning, setScanning] = useState(false);
+    const [openPidModal, setOpenPidModal] = useState<boolean>(false);
 
     const checkPermission = async () => {
       const status = await BarcodeScanner.checkPermission({ force: true });
@@ -90,17 +95,29 @@ const Scanner = forwardRef(
       stopScan,
     }));
 
+    const handleConnectWallet = (id: string) => {
+      // TODO: Handle connect wallet using the id
+      dispatch(setToastMsg(ToastMsgType.PEER_ID_SUCCESS));
+      dispatch(setPendingConnections(walletConnectionsFix[0]));
+    };
+
+    const handleSubmitConnect = (id: string) => {
+      stopScan();
+      dispatch(setCurrentOperation(OperationType.IDLE));
+      handleConnectWallet(id);
+    };
+
     const updateConnections = async (groupId: string) => {
       // TODO: We should avoid calling getMultisigLinkedContacts every time we scan a QR code,
       // ideally once the OOBI is resolved we can insert the connection details into Redux -
       // should change when we do scanner error handling
+
       const connections =
         await Agent.agent.connections.getMultisigLinkedContacts(groupId);
       const newMultiSigGroup: MultiSigGroup = {
         groupId,
         connections,
       };
-
       dispatch(setMultiSigGroupCache(newMultiSigGroup));
     };
 
@@ -114,6 +131,7 @@ const Scanner = forwardRef(
       const invitation = await Agent.agent.connections.connectByOobiUrl(
         content
       );
+
       if (invitation.type === KeriConnectionType.NORMAL) {
         handleReset && handleReset();
         setIsValueCaptured && setIsValueCaptured(true);
@@ -123,6 +141,9 @@ const Scanner = forwardRef(
         ) {
           const groupId = new URL(content).searchParams.get("groupId");
           groupId && updateConnections(groupId);
+        } else if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
+          handleConnectWallet(content);
+          return;
         }
       } else if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
         setGroupId(invitation.groupId);
@@ -133,10 +154,12 @@ const Scanner = forwardRef(
     const initScan = async () => {
       if (isPlatform("ios") || isPlatform("android")) {
         const allowed = await checkPermission();
+
         if (allowed) {
           document?.querySelector("body")?.classList.add("scanner-active");
           BarcodeScanner.hideBackground();
           const result = await startScan();
+
           if (result.hasContent) {
             processValue(result.content);
           }
@@ -147,7 +170,10 @@ const Scanner = forwardRef(
     useEffect(() => {
       if (
         ((currentRoute?.path === TabsRoutePath.SCAN ||
-          currentOperation === OperationType.SCAN_CONNECTION) &&
+          [
+            OperationType.SCAN_CONNECTION,
+            OperationType.SCAN_WALLET_CONNECTION,
+          ].includes(currentOperation)) &&
           currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
           currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING) ||
         currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
@@ -158,6 +184,10 @@ const Scanner = forwardRef(
         stopScan();
       }
     }, [currentOperation, currentRoute]);
+
+    const handlePasteMkId = () => {
+      setOpenPidModal(true);
+    };
 
     const handlePrimaryButtonAction = () => {
       stopScan();
@@ -173,6 +203,14 @@ const Scanner = forwardRef(
 
     const RenderPageFooter = () => {
       switch (currentOperation) {
+      case OperationType.SCAN_WALLET_CONNECTION:
+        return (
+          <PageFooter
+            customClass="actions-button"
+            secondaryButtonAction={handlePasteMkId}
+            secondaryButtonText={`${i18n.t("scan.pastemeerkatid")}`}
+          />
+        );
       case OperationType.MULTI_SIG_INITIATOR_SCAN:
         return (
           <PageFooter
@@ -208,7 +246,6 @@ const Scanner = forwardRef(
         );
       }
     };
-
     return (
       <>
         <IonGrid
@@ -242,6 +279,11 @@ const Scanner = forwardRef(
             </div>
           )}
         </IonGrid>
+        <PasteConnectionPeerIdModal
+          openModal={openPidModal}
+          onCloseModal={() => setOpenPidModal(false)}
+          onConfirm={handleSubmitConnect}
+        />
         <CreateIdentifier
           modalIsOpen={createIdentifierModalIsOpen}
           setModalIsOpen={setCreateIdentifierModalIsOpen}

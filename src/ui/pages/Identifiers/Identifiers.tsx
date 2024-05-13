@@ -1,34 +1,36 @@
 import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
-import { peopleOutline, addOutline } from "ionicons/icons";
+import { addOutline, peopleOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
-import { TabLayout } from "../../components/layout/TabLayout";
+import { useHistory } from "react-router-dom";
+import { Agent } from "../../../core/agent/agent";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
-import { CardsPlaceholder } from "../../components/CardsPlaceholder";
-import { CardsStack } from "../../components/CardsStack";
+import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getFavouritesIdentifiersCache,
   getIdentifiersCache,
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
-import { setCurrentRoute } from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../../../routes/paths";
+import {
+  getCurrentOperation,
+  setCurrentOperation,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
+import { CardsPlaceholder } from "../../components/CardsPlaceholder";
+import { CardsStack } from "../../components/CardsStack";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
-import { CardType } from "../../globals/types";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { CardType, OperationType } from "../../globals/types";
 import { Connections } from "../Connections";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import "./Identifiers.scss";
-import { IdentifiersList } from "./components/IdentifiersList";
-import { Agent } from "../../../core/agent/agent";
 import { StartAnimationSource } from "./Identifiers.type";
-
+import { IdentifiersList } from "./components/IdentifiersList";
 const CLEAR_STATE_DELAY = 1000;
-
 interface AdditionalButtonsProps {
   handleCreateIdentifier: () => void;
   handleConnections: () => void;
 }
-
 const AdditionalButtons = ({
   handleConnections,
   handleCreateIdentifier,
@@ -62,12 +64,13 @@ const AdditionalButtons = ({
     </>
   );
 };
-
 const Identifiers = () => {
   const pageId = "identifiers-tab";
+  const history = useHistory();
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
+  const currentOperation = useAppSelector(getCurrentOperation);
   const [favIdentifiers, setFavIdentifiers] = useState<
     IdentifierShortDetails[]
   >([]);
@@ -90,11 +93,17 @@ const Identifiers = () => {
   const [navAnimation, setNavAnimation] =
     useState<StartAnimationSource>("none");
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
-
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
   });
-
+  useEffect(() => {
+    if (
+      currentOperation === OperationType.CREATE_IDENTIFIER_CONNECT_WALLET &&
+      history.location.pathname === TabsRoutePath.IDENTIFIERS
+    ) {
+      setCreateIdentifierModalIsOpen(true);
+    }
+  }, [currentOperation, history.location.pathname]);
   useEffect(() => {
     setShowPlaceholder(identifiersData.length === 0);
     setAllIdentifiers(
@@ -118,12 +127,10 @@ const Identifiers = () => {
       identifiersData.filter((identifier) => identifier.groupMetadata?.groupId)
     );
   }, [favouritesIdentifiers, identifiersData, toggleClick]);
-
   const findTimeById = (id: string) => {
     const found = favouritesIdentifiers?.find((item) => item.id === id);
     return found ? found.time : null;
   };
-
   const sortedFavIdentifiers = favIdentifiers.sort((a, b) => {
     const timeA = findTimeById(a.id);
     const timeB = findTimeById(b.id);
@@ -132,7 +139,6 @@ const Identifiers = () => {
     if (timeB === null) return -1;
     return timeA - timeB;
   });
-
   const handlePendingClick = async (identifier: IdentifierShortDetails) => {
     // @TODO - sdisalvo: This is a temporary fix Patrick initially added to the CardStack
     // and I moved it here since PendingIdentifiers are never going to show up in the stack.
@@ -152,20 +158,16 @@ const Identifiers = () => {
       setToggleClick(!toggleClick);
     }
   };
-
   const handleMultiSigClick = async (identifier: IdentifierShortDetails) => {
     setResumeMultiSig(identifier);
     setCreateIdentifierModalIsOpen(true);
   };
-
   const handleShowNavAnimation = (source: StartAnimationSource) => {
     if (favouriteContainerElement.current && source !== "favourite") {
       favouriteContainerElement.current.style.height =
         favouriteContainerElement.current.scrollHeight + "px";
     }
-
     setNavAnimation(source);
-
     setTimeout(() => {
       setNavAnimation("none");
       if (favouriteContainerElement.current) {
@@ -173,7 +175,6 @@ const Identifiers = () => {
       }
     }, CLEAR_STATE_DELAY);
   };
-
   const tabClasses = `${
     navAnimation === "cards"
       ? "cards-identifier-nav"
@@ -181,7 +182,15 @@ const Identifiers = () => {
         ? "favorite-identifier-nav"
         : ""
   }`;
-
+  const handleCloseCreateIdentifier = (isOpen: boolean) => {
+    if (
+      !isOpen &&
+      currentOperation === OperationType.CREATE_IDENTIFIER_CONNECT_WALLET
+    ) {
+      dispatch(setCurrentOperation(OperationType.IDLE));
+    }
+    setCreateIdentifierModalIsOpen(isOpen);
+  };
   return (
     <>
       <Connections
@@ -269,12 +278,11 @@ const Identifiers = () => {
       </TabLayout>
       <CreateIdentifier
         modalIsOpen={createIdentifierModalIsOpen}
-        setModalIsOpen={setCreateIdentifierModalIsOpen}
+        setModalIsOpen={handleCloseCreateIdentifier}
         resumeMultiSig={resumeMultiSig}
         setResumeMultiSig={setResumeMultiSig}
       />
     </>
   );
 };
-
-export { Identifiers, AdditionalButtons };
+export { AdditionalButtons, Identifiers };

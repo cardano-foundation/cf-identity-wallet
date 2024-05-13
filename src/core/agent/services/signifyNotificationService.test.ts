@@ -85,20 +85,10 @@ const signifyClient = jest.mocked({
 
   groups: () => ({ getRequest: groupGetRequestMock }),
 });
-const identifierStorage = jest.mocked({
-  getIdentifierMetadata: jest.fn(),
-  getAllIdentifierMetadata: jest.fn(),
-  getKeriIdentifiersMetadata: jest.fn(),
-  updateIdentifierMetadata: jest.fn(),
-  createIdentifierMetadataRecord: jest.fn(),
-});
 
 const agentServicesProps = {
-  basicStorage: basicStorage as any,
   signifyClient: signifyClient as any,
   eventService: new EventService(),
-  identifierStorage: identifierStorage as any,
-  credentialStorage: {} as any,
 };
 
 const notificationStorage = jest.mocked({

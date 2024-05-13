@@ -2,8 +2,10 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import {
   getConnectedWallet,
+  getPendingConnection,
   getWalletConnectionsCache,
   setConnectedWallet,
+  setPendingConnections,
   setWalletConnectionsCache,
   walletConnectionsCacheSlice,
 } from "./walletConnectionsCache";
@@ -16,6 +18,7 @@ describe("walletConnectionsCacheSlice", () => {
   const initialState: WalletConnectState = {
     walletConnections: [],
     connectedWallet: null,
+    pendingConnection: null,
   };
 
   it("should return the initial state", () => {
@@ -51,6 +54,19 @@ describe("walletConnectionsCacheSlice", () => {
       setConnectedWallet(connection)
     );
     expect(newState.connectedWallet).toEqual(connection);
+  });
+  it("should handle setPendingConnection", () => {
+    const connection: ConnectionData = {
+      id: 2,
+      name: "Wallet name #2",
+      owner: "Yoroi",
+      url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+    };
+    const newState = walletConnectionsCacheSlice.reducer(
+      initialState,
+      setPendingConnections(connection)
+    );
+    expect(newState.pendingConnection).toEqual(connection);
   });
 });
 
@@ -96,6 +112,23 @@ describe("Get wallet connections cache", () => {
     const connectionCache = getConnectedWallet(state);
     expect(connectionCache).toEqual(
       state.walletConnectionsCache.connectedWallet
+    );
+  });
+  it("should return pending connection from RootState", () => {
+    const state = {
+      walletConnectionsCache: {
+        pendingConnection: {
+          id: 1,
+          name: "Wallet name #1",
+          owner: "Nami",
+          image: "",
+          url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+        },
+      },
+    } as RootState;
+    const connectionCache = getPendingConnection(state);
+    expect(connectionCache).toEqual(
+      state.walletConnectionsCache.pendingConnection
     );
   });
 });
