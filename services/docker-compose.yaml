@@ -5,7 +5,7 @@ services:
     container_name: idw-keria
     restart: unless-stopped
     build:
-      context: github.com/WebOfTrust/keria#da8e53fe92b9027ec5b547c00d4f54f278fbb1b2
+      context: github.com/cardano-foundation/keria#03a1b13047f91f7f287e0a03d227084835db6616
       dockerfile: ./images/keria.dockerfile
     environment:
       - KERI_AGENT_CORS=true
