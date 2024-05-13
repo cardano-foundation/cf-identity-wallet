@@ -10,8 +10,8 @@ import {
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
+import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { AgentServicesProps, IdentifierResult } from "../agent.types";
-import { waitAndGetDoneOp } from "./utils";
 import { IdentifierStorage } from "../records";
 
 const identifierTypeThemes = [0, 1];
@@ -58,6 +58,7 @@ class IdentifierService extends AgentService {
     return identifiers;
   }
 
+  @OnlineOnly
   async getIdentifier(
     identifier: string
   ): Promise<IdentifierDetails | undefined> {
@@ -113,6 +114,7 @@ class IdentifierService extends AgentService {
     };
   }
 
+  @OnlineOnly
   async createIdentifier(
     metadata: Omit<
       IdentifierMetadataRecordProps,
@@ -181,6 +183,7 @@ class IdentifierService extends AgentService {
     });
   }
 
+  @OnlineOnly
   async getSigner(identifier: string): Promise<Signer> {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
@@ -199,6 +202,7 @@ class IdentifierService extends AgentService {
     }
   }
 
+  @OnlineOnly
   async syncKeriaIdentifiers() {
     const { aids: signifyIdentifiers } = await this.signifyClient
       .identifiers()
@@ -238,6 +242,7 @@ class IdentifierService extends AgentService {
     }
   }
 
+  @OnlineOnly
   async rotateIdentifier(metadata: IdentifierMetadataRecord) {
     const rotateResult = await this.signifyClient
       .identifiers()

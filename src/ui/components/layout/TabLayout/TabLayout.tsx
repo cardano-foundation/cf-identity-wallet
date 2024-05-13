@@ -40,6 +40,7 @@ const TabLayout = ({
   useIonViewDidLeave(() => {
     setIsActive(false);
   });
+
   return (
     <IonPage
       className={`tab-layout ${pageId} ${!isActive ? " " + "ion-hide" : ""} ${

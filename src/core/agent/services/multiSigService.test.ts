@@ -125,6 +125,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getIdentifiers: () => mockGetIdentifiers(),
         updateIdentifier: jest.fn(),
       },
+      getKeriaOnlineStatus: jest.fn(),
     },
   },
 }));
@@ -170,6 +171,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Can create a keri multisig with KERI contacts", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const creatorIdentifier = "creatorIdentifier";
     const multisigIdentifier = "newMultisigIdentifierAid";
     identifiersGetMock.mockResolvedValue(aidReturnedBySignify);
@@ -304,6 +306,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Cannot create a keri multisig if the threshold is invalid", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const creatorIdentifier = "creatorIdentifier";
     const otherIdentifiers = [
       {
@@ -327,6 +330,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Can create a keri delegated multisig with KERI contacts", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const creatorIdentifier = "creatorIdentifier";
     const multisigIdentifier = "newMultisigIdentifierAid";
     const signifyName = "newUuidHere";
@@ -392,6 +396,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("can join the multisig inception", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const multisigIdentifier = "newMultisigIdentifierAid";
     notificationStorage.findById = jest.fn().mockResolvedValue({
       content: {
@@ -481,6 +486,7 @@ describe("Multisig sig service of agent", () => {
 
   test("cannot join multisig by notification if exn messages are missing", async () => {
     groupGetRequestMock = jest.fn().mockResolvedValue([]);
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     await expect(
       multiSigService.joinMultisig("id", "d", {
         theme: 0,
@@ -490,6 +496,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("cannot join the multisig if cannot get key states for multisig member", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const multisigIdentifier = "newMultisigIdentifierAid";
     groupGetRequestMock = jest.fn().mockResolvedValue([
       {
@@ -593,6 +600,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("should can rorate multisig with KERI multisig do not have manageAid and throw error", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const metadata = {
       id: "123456",
       displayName: "John Doe",
@@ -610,6 +618,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("should can rorate multisig with KERI multisig have members do not rotate it AID first and throw error", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const multisigIdentifier = "newMultisigIdentifierAid";
     const signifyName = "newUuidHere";
     identifiersGetMock = jest.fn().mockResolvedValue(aidReturnedBySignify);
@@ -694,6 +703,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("should can rotate a keri multisig with KERI contacts", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const multisigIdentifier = "newMultisigIdentifierAid";
     const signifyName = "newUuidHere";
     identifiersGetMock = jest.fn().mockResolvedValue(aidReturnedBySignify);
@@ -790,6 +800,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("should can join the multisig rotation with no notification and throw error", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     groupGetRequestMock = jest.fn().mockResolvedValue([]);
     expect(
       multiSigService.joinMultisigRotation({
@@ -801,6 +812,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("should can join the multisig rotation with AID is not multisig and throw error", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const metadata = {
       id: "123456",
       displayName: "John Doe",
@@ -843,6 +855,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("should can join the multisig rotation", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const multisigIdentifier = "newMultisigIdentifierAid";
     const metadata = {
       id: "123456",
@@ -915,6 +928,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("cannot join multisig if there's no identifier matched", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     groupGetRequestMock = jest.fn().mockResolvedValue([
       {
         exn: {
@@ -944,6 +958,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Can get multisig icp details of 2 persons multi-sig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const identifierMetadata = {
       displayName: "displayName",
       id: "id",
@@ -987,6 +1002,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Throw error if the Multi-sig join request contains unknown AIDs", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const identifierMetadata = {
       displayName: "displayName",
       id: "id",
@@ -1042,6 +1058,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Can get multisig icp details of 3 persons multi-sig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const identifierMetadata = {
       displayName: "displayName",
       id: "id",
@@ -1100,6 +1117,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Throw error if we do not control any member AID of the multi-sig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const identifierMetadata = {
       displayName: "displayName",
       id: "id",
@@ -1155,6 +1173,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("cannot get multi-sig details from an unknown sender (missing metadata)", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     groupGetRequestMock = jest.fn().mockResolvedValue([
       {
         exn: {
@@ -1184,6 +1203,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("cannot get multi-sig details from a notification with no matching exn message", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     groupGetRequestMock = jest.fn().mockResolvedValue([]);
     await expect(
       multiSigService.getMultisigIcpDetails(
@@ -1195,6 +1215,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Can get unhandled Multisig Identifier notifications", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const notificationRecord = {
       _tags: {
         isDismiss: true,
@@ -1222,6 +1243,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Should pass the filter throught findAllByQuery when call getUnhandledMultisigIdentifiers", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     await multiSigService.getUnhandledMultisigIdentifiers({
       isDismissed: false,
@@ -1239,6 +1261,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Should throw errors when create KERI multisigs with invalid identifier", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const creatorIdentifier = "creatorIdentifier";
     const identifierMetaData = {
       id: "creatorIdentifier",
@@ -1311,7 +1334,8 @@ describe("Multisig sig service of agent", () => {
     ).rejects.toThrowError(MultiSigService.ONLY_ALLOW_GROUP_INITIATOR);
   });
 
-  test.only("Should throw errors when create KERI multisigs with invalid contacts", async () => {
+  test("Should throw errors when create KERI multisigs with invalid contacts", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const creatorIdentifier = "creatorIdentifier";
     const identifierMetaData = {
       id: "creatorIdentifier",
@@ -1347,5 +1371,47 @@ describe("Multisig sig service of agent", () => {
         otherIdentifiers.length + 1
       )
     ).rejects.toThrowError(MultiSigService.ONLY_ALLOW_LINKED_CONTACTS);
+  });
+
+  test("Should throw an error when KERIA is offline ", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    await expect(
+      multiSigService.createMultisig(
+        "creator",
+        [
+          {
+            id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+            label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+            oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+            status: ConnectionStatus.CONFIRMED,
+            connectionDate: new Date().toISOString(),
+          },
+        ],
+        2
+      )
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(multiSigService.rotateMultisig("id")).rejects.toThrowError(
+      Agent.KERIA_CONNECTION_BROKEN
+    );
+    await expect(
+      multiSigService.joinMultisigRotation({
+        id: "id",
+        createdAt: new Date(),
+        a: { d: "d" },
+      })
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      multiSigService.getMultisigIcpDetails("d")
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      multiSigService.joinMultisig("id", "d", {
+        theme: 0,
+        displayName: "Multisig",
+      })
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+
+    await expect(
+      multiSigService.getUnhandledMultisigIdentifiers()
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 });

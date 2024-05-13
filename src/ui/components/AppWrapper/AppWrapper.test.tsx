@@ -76,6 +76,8 @@ jest.mock("../../../core/agent/agent", () => ({
       signifyNotifications: {
         onNotificationStateChanged: jest.fn(),
       },
+      getKeriaOnlineStatus: jest.fn(),
+      onKeriaStatusStateChanged: jest.fn(),
     },
   },
 }));
@@ -205,7 +207,7 @@ describe("AppWrapper handler", () => {
       const keriNoti = {
         id: "id",
         a: {
-          r: NotificationRoute.Credential,
+          r: NotificationRoute.ExnIpexGrant,
         },
         createdAt: new Date(),
       } as KeriaNotification;

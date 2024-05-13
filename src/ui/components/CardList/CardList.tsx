@@ -40,7 +40,7 @@ const CardInfo = <T extends object = object>({
 
   return (
     <IonItem
-      onClick={() => onCardClick?.(card.data)}
+      onClick={(e) => onCardClick?.(card.data, e)}
       data-testid={`card-item-${card.id}`}
       className="card-item"
     >

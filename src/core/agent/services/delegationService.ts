@@ -6,7 +6,7 @@ import {
   IdentifierStorage,
 } from "../records";
 import { AgentService } from "./agentService";
-import { waitAndGetDoneOp } from "./utils";
+import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 
 class DelegationService extends AgentService {
   protected readonly identifierStorage: IdentifierStorage;
@@ -18,6 +18,7 @@ class DelegationService extends AgentService {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
   }
+  @OnlineOnly
   async createDelegatedIdentifier(
     metadata: Omit<
       IdentifierMetadataRecordProps,
@@ -39,6 +40,7 @@ class DelegationService extends AgentService {
     return { identifier, signifyName };
   }
 
+  @OnlineOnly
   async approveDelegation(
     signifyName: string,
     delegatePrefix: string
@@ -56,6 +58,7 @@ class DelegationService extends AgentService {
     return operation.done;
   }
 
+  @OnlineOnly
   async checkDelegationSuccess(
     metadata: IdentifierMetadataRecord
   ): Promise<boolean> {

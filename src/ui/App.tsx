@@ -1,13 +1,8 @@
 import { StrictMode, useEffect, useMemo, useState } from "react";
-import {
-  setupIonicReact,
-  IonApp,
-  getPlatforms,
-  IonSpinner,
-} from "@ionic/react";
+import { setupIonicReact, IonApp, getPlatforms } from "@ionic/react";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
-import { Routes } from "../routes";
+import { RoutePath, Routes } from "../routes";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";
@@ -25,11 +20,12 @@ import { FullPageScanner } from "./pages/FullPageScanner";
 import { OperationType } from "./globals/types";
 import { IncomingRequest } from "./pages/IncomingRequest";
 import { SetUserName } from "./components/SetUserName";
-import { TabsRoutePath } from "../routes/paths";
+import { PublicRoutes, TabsRoutePath } from "../routes/paths";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
 import { LockPage } from "./pages/LockPage/LockPage";
 import { LoadingPage } from "./pages/LoadingPage/LoadingPage";
+import { WalletConnect } from "./components/WalletConnect";
 
 setupIonicReact();
 
@@ -64,9 +60,12 @@ const App = () => {
 
   useEffect(() => {
     setShowScan(
-      currentOperation === OperationType.SCAN_CONNECTION ||
-        currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
-        currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
+      [
+        OperationType.SCAN_CONNECTION,
+        OperationType.SCAN_WALLET_CONNECTION,
+        OperationType.MULTI_SIG_INITIATOR_SCAN,
+        OperationType.MULTI_SIG_RECEIVER_SCAN,
+      ].includes(currentOperation)
     );
     setShowToast(toastMsg !== undefined);
   }, [currentOperation, toastMsg]);
@@ -101,24 +100,23 @@ const App = () => {
   const renderApp = () => {
     return (
       <>
-        {isPreviewMode ? <MobileHeaderPreview /> : null}
-        {showScan ? (
+        {showScan && (
           <FullPageScanner
             showScan={showScan}
             setShowScan={setShowScan}
           />
-        ) : (
-          <div
-            className="app-spinner-container"
-            data-testid="app-spinner-container"
-          >
-            <IonSpinner name="circular" />
-          </div>
         )}
-        <Routes />
+        {!showScan && isPreviewMode ? <MobileHeaderPreview /> : null}
+        <div className={showScan ? "ion-hide" : ""}>
+          <Routes />
+        </div>
       </>
     );
   };
+
+  const isPublicPage = PublicRoutes.includes(
+    window.location.pathname as RoutePath
+  );
 
   return (
     <IonApp>
@@ -127,7 +125,7 @@ const App = () => {
           {stateCache.initialized ? (
             <>
               {renderApp()}
-              {!authentication.loggedIn ? <LockPage /> : null}
+              {!isPublicPage && !authentication.loggedIn ? <LockPage /> : null}
             </>
           ) : (
             <LoadingPage />
@@ -142,6 +140,7 @@ const App = () => {
             showToast={showToast}
             setShowToast={setShowToast}
           />
+          <WalletConnect />
         </StrictMode>
       </AppWrapper>
     </IonApp>
