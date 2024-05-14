@@ -66,7 +66,7 @@ const useBiometricAuth = () => {
   const handleBiometricAuth = async (): Promise<boolean | BiometryError> => {
     const biometricResult = await checkBiometry();
     if (!biometricResult?.isAvailable) {
-      if (!biometricInfo?.strongBiometryIsAvailable) {
+      if (!biometricResult?.strongBiometryIsAvailable) {
         return new BiometryError(
           i18n.t("biometry.weakbiometry"),
           BiometryErrorType.biometryNotAvailable
