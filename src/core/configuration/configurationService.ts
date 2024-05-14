@@ -69,15 +69,9 @@ class ConfigurationService {
       return this.invalid("Missing credential issuance test server config");
     }
 
-    if (
-      !(
-        typeof keri.credentials.testServer.urlExt === "string" &&
-        typeof keri.credentials.testServer.urlInt === "string" &&
-        typeof keri.credentials.testServer.oobiUrl === "string"
-      )
-    ) {
+    if (typeof keri.credentials.testServer.urlInt !== "string") {
       return this.invalid(
-        "Invalid credential issuance test server config (urlExt, urlInt, oobiUrl)"
+        "Invalid credential issuance test server config (urlInt)"
       );
     }
 

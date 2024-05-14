@@ -5,9 +5,7 @@ interface KeriaConfig {
 
 interface CredentialsConfig {
   testServer: {
-    urlExt: string;
     urlInt: string;
-    oobiUrl: string;
   };
 }
 
