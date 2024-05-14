@@ -77,7 +77,6 @@ const Settings = () => {
   const handleOptionClick = async (item: OptionProps) => {
     switch (item.label) {
     case i18n.t("settings.sections.security.biometry"): {
-      // TODO: handle biometrics
       const biometrics = await PreferencesStorage.get(
         PreferencesKeys.APP_BIOMETRY
       );
