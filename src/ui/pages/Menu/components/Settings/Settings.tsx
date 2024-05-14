@@ -51,7 +51,7 @@ const Settings = () => {
     securityItems.unshift({
       icon: fingerPrintOutline,
       label: i18n.t("settings.sections.security.biometry"),
-      ionIcon: <IonToggle checked={biometricsIsEnabled} />,
+      actionIcon: <IonToggle checked={biometricsIsEnabled} />,
     });
   }
 
@@ -115,8 +115,8 @@ const Settings = () => {
                   slot="start"
                 />
                 <IonLabel>{item.label}</IonLabel>
-                {item.ionIcon ? (
-                  item.ionIcon
+                {item.actionIcon ? (
+                  item.actionIcon
                 ) : (
                   <IonIcon
                     aria-hidden="true"
