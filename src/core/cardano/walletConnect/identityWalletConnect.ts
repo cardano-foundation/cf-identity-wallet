@@ -7,11 +7,17 @@ import {
 import { CardanoPeerConnect } from "@fabianbormann/cardano-peer-connect";
 import { Signer } from "signify-ts";
 import { Agent } from "../../agent/agent";
+import {
+  PeerConnectSigningEvent,
+  PeerConnectSigningEventTypes,
+} from "../../agent/agent.types";
+import { EventService } from "../../agent/services/eventService";
 
 class IdentityWalletConnect extends CardanoPeerConnect {
   static readonly IDENTIFIER_ID_NOT_LOCATED =
     "The id doesn't correspond with any stored identifier";
   private selectedAid: string;
+  private eventService: EventService;
   getIdentifierOobi: () => Promise<string>;
   sign: (identifier: string, payload: string) => Promise<string>;
 
@@ -22,6 +28,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     seed: string | null,
     announce: string[],
     selectedAid: string,
+    eventService: EventService,
     discoverySeed?: string | null
   ) {
     super(walletInfo, {
@@ -32,6 +39,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     });
     this.selectedAid = selectedAid;
     this.signerCache = new Map();
+    this.eventService = eventService;
 
     this.getIdentifierOobi = async (): Promise<string> => {
       const identifier = await Agent.agent.identifiers.getIdentifier(
@@ -47,13 +55,35 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       identifier: string,
       payload: string
     ): Promise<string> => {
-      if (this.signerCache.get(identifier) === undefined) {
-        this.signerCache.set(
+      let approved: boolean | undefined = undefined;
+      // Closure that updates approved variable
+      const approvalCallback = (approvalStatus: boolean) => {
+        approved = approvalStatus;
+      };
+      this.eventService.emit<PeerConnectSigningEvent>({
+        type: PeerConnectSigningEventTypes.PeerConnectSign,
+        payload: {
           identifier,
-          await Agent.agent.identifiers.getSigner(identifier)
-        );
+          payload,
+          approvalCallback,
+        },
+      });
+      // Wait until approved is true or false
+      while (approved === undefined) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
-      return this.signerCache.get(identifier)!.sign(Buffer.from(payload)).qb64;
+      if (approved) {
+        if (this.signerCache.get(identifier) === undefined) {
+          this.signerCache.set(
+            identifier,
+            await Agent.agent.identifiers.getSigner(identifier)
+          );
+        }
+        return this.signerCache.get(identifier)!.sign(Buffer.from(payload))
+          .qb64;
+      } else {
+        throw new Error("User declined the signing request");
+      }
     };
   }
 
@@ -93,7 +123,16 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     addr: string,
     payload: string
   ): Promise<Cip30DataSignature> {
-    throw new Error("Method not implemented.");
+    const toHex = (text: string) =>
+      text
+        .split("")
+        .map((char) => char.charCodeAt(0).toString(16))
+        .join("");
+    const signature = await this.sign(addr, payload);
+    return {
+      key: toHex(addr),
+      signature,
+    };
   }
   protected submitTx(tx: string): Promise<string> {
     throw new Error("Method not implemented.");

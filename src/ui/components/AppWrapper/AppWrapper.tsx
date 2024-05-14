@@ -46,6 +46,7 @@ import { PreferencesStorageItem } from "../../../core/storage/preferences/prefer
 import { useActivityTimer } from "./hooks/useActivityTimer";
 import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
 import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
+import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -149,6 +150,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
         //   Agent.agent.connections.syncKeriaContacts(),
         //   Agent.agent.credentials.syncACDCs(),
         // ]);
+        //TODO: Currently use the first identity as the selected, will change later
+        const selectedAid = (await Agent.agent.identifiers.getIdentifiers())[0]
+          .id;
+        await PeerConnection.peerConnection.start(selectedAid);
       };
       if (!isMessagesHandled && isOnline) {
         handleMessages();
@@ -305,6 +310,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.credentials.onAcdcStateChanged((event) => {
       return acdcChangeHandler(event, dispatch);
     });
+    PeerConnection.peerConnection.onPeerConnectRequestSignStateChanged(
+      async (event) => {
+        //TODO: Handle request and open the popup
+        const approvalCallback = event.payload.approvalCallback;
+        approvalCallback(true);
+      }
+    );
     dispatch(setInitialized(true));
   };
 

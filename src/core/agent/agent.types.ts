@@ -62,6 +62,10 @@ enum KeriaStatusEventTypes {
   KeriaStatusChanged = "KeriaStatusChanged",
 }
 
+enum PeerConnectSigningEventTypes {
+  PeerConnectSign = "PeerConnectSign",
+}
+
 interface ConnectionStateChangedEvent extends BaseEventEmitter {
   type: typeof ConnectionEventTypes.ConnectionStateChanged;
   payload: {
@@ -87,6 +91,15 @@ interface KeriaStatusChangedEvent extends BaseEventEmitter {
   type: typeof KeriaStatusEventTypes.KeriaStatusChanged;
   payload: {
     isOnline: boolean;
+  };
+}
+
+interface PeerConnectSigningEvent extends BaseEventEmitter {
+  type: typeof PeerConnectSigningEventTypes.PeerConnectSign;
+  payload: {
+    identifier: string;
+    payload: string;
+    approvalCallback: (approvalStatus: boolean) => void;
   };
 }
 
@@ -137,6 +150,7 @@ export {
   AcdcEventTypes,
   NotificationRoute,
   KeriaStatusEventTypes,
+  PeerConnectSigningEventTypes,
 };
 
 export type {
@@ -154,4 +168,5 @@ export type {
   CreateIdentifierResult,
   IdentifierResult,
   KeriaStatusChangedEvent,
+  PeerConnectSigningEvent,
 };
