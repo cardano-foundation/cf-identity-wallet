@@ -5,10 +5,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
-import {
-  BiometryError,
-  BiometryType,
-} from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
+import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { SetPasscode } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import {
@@ -422,6 +419,65 @@ describe("SetPasscode Page", () => {
       expect(
         queryByText(EN_TRANSLATIONS.biometry.setupandroidbiometrycancel)
       ).toBeInTheDocument()
+    );
+  });
+
+  test("Setup passcode and iOS biometrics", async () => {
+    jest.doMock("@ionic/react", () => {
+      const actualIonicReact = jest.requireActual("@ionic/react");
+      return {
+        ...actualIonicReact,
+        getPlatforms: () => ["ios"],
+      };
+    });
+    require("@ionic/react");
+
+    const { getByText } = render(
+      <IonReactRouter>
+        <IonRouterOutlet animated={false}>
+          <Provider store={store}>
+            <SetPasscode />
+          </Provider>
+        </IonRouterOutlet>
+      </IonReactRouter>
+    );
+
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+
+    expect(
+      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
+    ).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.setpasscode.startover.label)
+    ).toBeInTheDocument();
+
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+
+    await waitFor(() => {
+      expect(setPreferenceStorageSpy).toBeCalledWith(
+        PreferencesKeys.APP_BIOMETRY,
+        {
+          enabled: true,
+        }
+      );
+    });
+
+    expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
+    expect(setPreferenceStorageSpy).toBeCalledWith(
+      PreferencesKeys.APP_ALREADY_INIT,
+      {
+        initialized: true,
+      }
     );
   });
 });
