@@ -313,8 +313,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     PeerConnection.peerConnection.onPeerConnectRequestSignStateChanged(
       async (event) => {
         //TODO: Handle request and open the popup
-        const approvalCallback = event.payload.approvalCallback;
-        approvalCallback(true);
       }
     );
     dispatch(setInitialized(true));

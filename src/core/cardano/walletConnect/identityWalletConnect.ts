@@ -53,7 +53,8 @@ class IdentityWalletConnect extends CardanoPeerConnect {
 
     this.sign = async (
       identifier: string,
-      payload: string
+      payload: string,
+      onSignError?: (error: Error) => void
     ): Promise<string> => {
       let approved: boolean | undefined = undefined;
       // Closure that updates approved variable
@@ -82,6 +83,9 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         return this.signerCache.get(identifier)!.sign(Buffer.from(payload))
           .qb64;
       } else {
+        if (typeof onSignError === "function") {
+          onSignError(new Error("User declined the signing request"));
+        }
         throw new Error("User declined the signing request");
       }
     };
@@ -123,16 +127,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     addr: string,
     payload: string
   ): Promise<Cip30DataSignature> {
-    const toHex = (text: string) =>
-      text
-        .split("")
-        .map((char) => char.charCodeAt(0).toString(16))
-        .join("");
-    const signature = await this.sign(addr, payload);
-    return {
-      key: toHex(addr),
-      signature,
-    };
+    throw new Error("Method not implemented.");
   }
   protected submitTx(tx: string): Promise<string> {
     throw new Error("Method not implemented.");
