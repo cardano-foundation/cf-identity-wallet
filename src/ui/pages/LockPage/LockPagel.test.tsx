@@ -131,6 +131,23 @@ describe("Lock Page", () => {
   });
 
   test("Verifies passcode and hides page upon correct input", async () => {
+    jest.doMock("../../hooks/useBiometricsHook", () => ({
+      useBiometricAuth: jest.fn(() => ({
+        biometricsIsEnabled: false,
+        biometricInfo: {
+          isAvailable: false,
+          hasCredentials: false,
+          biometryType: BiometryType.none,
+          strongBiometryIsAvailable: false,
+        },
+        handleBiometricAuth: jest.fn(() =>
+          Promise.resolve(
+            new BiometryError("", BiometryErrorType.biometryNotAvailable)
+          )
+        ),
+        setBiometricsIsEnabled: jest.fn(),
+      })),
+    }));
     const correctPasscode = "111111";
     jest.spyOn(SecureStorage, "get").mockResolvedValue(correctPasscode);
 
