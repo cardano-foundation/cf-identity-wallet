@@ -5,6 +5,7 @@ import { ConnectionRequest } from "./ConnectionRequest";
 import { CredentialRequest } from "./CredentialRequest";
 import { MultiSigRequestStageOne } from "./MultiSigRequestStageOne";
 import { MultiSigRequestStageTwo } from "./MultiSigRequestStageTwo";
+import { BallotTransactionRequest } from "./BallotTransactionRequest";
 
 const RequestComponent = ({
   pageId,
@@ -46,6 +47,20 @@ const RequestComponent = ({
       />
     ) : (
       <MultiSigRequestStageTwo
+        pageId={pageId}
+        activeStatus={activeStatus}
+        blur={blur}
+        setBlur={setBlur}
+        requestData={requestData}
+        initiateAnimation={initiateAnimation}
+        handleAccept={handleAccept}
+        handleCancel={handleCancel}
+        setRequestStage={setRequestStage}
+      />
+    );
+  case IncomingRequestType.BALLOT_TRANSACTION_REQUEST:
+    return (
+      <BallotTransactionRequest
         pageId={pageId}
         activeStatus={activeStatus}
         blur={blur}

@@ -11,6 +11,7 @@ import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
 import { RequestComponent } from "./RequestComponent";
 import { store } from "../../../../store";
+import { ballotTransactionFix } from "../../../__fixtures__/ballotTransactionFix";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -172,5 +173,98 @@ describe("Multi-Sig request", () => {
     expect(
       getByTestId("other-multisig-connection-logo-1").getAttribute("src")
     ).not.toBe(undefined);
+  });
+});
+
+describe("Ballot request", () => {
+  const mockStore = configureStore();
+  const dispatchMock = jest.fn();
+  const storeMocked = {
+    ...mockStore(store.getState()),
+    dispatch: dispatchMock,
+  };
+
+  const pageId = "incoming-request";
+  const activeStatus = true;
+  const blur = false;
+  const setBlur = jest.fn();
+  const requestData = {
+    id: "abc123456",
+    label: "Cardano",
+    type: IncomingRequestType.BALLOT_TRANSACTION_REQUEST,
+    ballotData: ballotTransactionFix,
+  };
+
+  const initiateAnimation = false;
+  const handleAccept = jest.fn();
+  const handleCancel = jest.fn();
+  const handleIgnore = jest.fn();
+
+  test("It renders content for BALLOT_TRANSACTION_REQUEST ", async () => {
+    const { getByText, getAllByText } = render(
+      <Provider store={storeMocked}>
+        <RequestComponent
+          pageId={pageId}
+          activeStatus={activeStatus}
+          blur={blur}
+          setBlur={setBlur}
+          requestData={requestData}
+          initiateAnimation={initiateAnimation}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          handleIgnore={handleIgnore}
+          incomingRequestType={IncomingRequestType.BALLOT_TRANSACTION_REQUEST}
+        />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.request.ballottransaction.title)
+    ).toBeVisible();
+
+    expect(getByText("Cardano Ballot")).toBeVisible();
+
+    expect(getByText(ballotTransactionFix.action)).toBeVisible();
+    expect(getByText(ballotTransactionFix.actionText)).toBeVisible();
+    expect(getByText(ballotTransactionFix.data.id)).toBeVisible();
+    expect(getByText(ballotTransactionFix.data.category)).toBeVisible();
+    expect(getByText(ballotTransactionFix.data.event)).toBeVisible();
+    expect(getByText(ballotTransactionFix.data.network)).toBeVisible();
+    expect(getByText(ballotTransactionFix.data.proposal)).toBeVisible();
+    expect(getByText(ballotTransactionFix.data.votedAt)).toBeVisible();
+    expect(getByText(ballotTransactionFix.data.votingPower)).toBeVisible();
+    expect(getByText(ballotTransactionFix.eventName)).toBeVisible();
+    expect(getByText(ballotTransactionFix.ownerUrl)).toBeVisible();
+    expect(getByText(ballotTransactionFix.slot)).toBeVisible();
+    expect(getByText(ballotTransactionFix.uri)).toBeVisible();
+    expect(getAllByText(ballotTransactionFix.data.address).length).toBe(2);
+  });
+
+  test("Display fallback image when provider logo is empty: BALLOT_TRANSACTION_REQUEST", async () => {
+    const testData = {
+      ...requestData,
+      logo: "",
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <RequestComponent
+          pageId={pageId}
+          activeStatus={activeStatus}
+          blur={blur}
+          setBlur={setBlur}
+          requestData={testData}
+          initiateAnimation={initiateAnimation}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          handleIgnore={handleIgnore}
+          incomingRequestType={IncomingRequestType.BALLOT_TRANSACTION_REQUEST}
+        />
+      </Provider>
+    );
+
+    expect(getByTestId("ballot-logo")).toBeInTheDocument();
+
+    expect(getByTestId("ballot-logo").getAttribute("src")).not.toBe(undefined);
   });
 });

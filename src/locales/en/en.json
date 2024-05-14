@@ -1151,6 +1151,24 @@
     "peeridnotrecognised": "Peer ID not recognised"
   },
   "request": {
+    "ballottransaction": {
+      "title": "Sign transaction",
+      "transaction": {
+        "address": "Address",
+        "data": "Data",
+        "action": "Action",
+        "actionText": "Action text",
+        "id": "ID",
+        "event": "Event",
+        "category": "Category",
+        "proposal": "Proposal",
+        "votedat": "Voted at",
+        "network": "Network",
+        "votingpower": "Voting power",
+        "slot": "Slot",
+        "uri": "URI"
+      }
+    },
     "connection": {
       "title": "Connect",
       "requestconnection": " request from",
@@ -1198,7 +1216,8 @@
       "back": "Back",
       "accept": "Accept",
       "decline": "Decline",
-      "addidentifier": "Add identifier"
+      "addidentifier": "Add identifier",
+      "sign": "Sign"
     },
     "alert": {
       "cancel": "Cancel"
