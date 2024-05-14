@@ -46,23 +46,44 @@
 
 # Features
 
-| **User Interface**    |  **Private Key Storage**  |  **Standards & Protocols** |  **SSI Services**   |           
-|----------------|---------------|---------------|----------------|
-|  Intuitive User Experience |  Hardware Security Module (HSM)   | [KERI](https://keri.one/) | [KERIA](https://github.com/cardano-foundation/keria) | 
-|  Android  |  Secure Enclave (SE) | [ACDC](https://trustoverip.github.io/tswg-acdc-specification/) |  [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
-| iOS |  | [CESR](https://weboftrust.github.io/ietf-cesr/draft-ssmith-cesr.html) |  [Credential Issuance Modules](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  |   | 
-|  |  | | [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) |
-
+- **User Interface**
+  - Intuitive User Experience
+  - Android
+  - iOS
+- **Private Key Storage**
+  - Hardware Security Module (HSM)
+  - Secure Enclave (SE)
+- **Standards & Protocols**
+  - [KERI](https://keri.one/)
+  - [ACDC](https://trustoverip.github.io/tswg-acdc-specification/)
+  - [CESR](https://weboftrust.github.io/ietf-cesr/draft-ssmith-cesr.html)
+- **SSI Services**
+  - [KERIA](https://github.com/cardano-foundation/keria)
+  - [Signify-TS](https://github.com/cardano-foundation/signify-ts)
+  - [Credential Issuance Modules](https://identity-wallet-credential-issuance-web-interface.vercel.app/)
+  - [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer)
 
 # Potential Future Developments
-
-|**Mobile Application Features**        |  **Decentralized Identifier Recovery**               |     **Standards & Protocols**  |  **Peer-to-Peer (P2P)** |  
-|----------------|---------------|----------------|----------------|
-| Bluetooth |  [Shamir Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing)| Ledger-based Schemas  | Private Messaging | 
-| Biometrics | On-chain Recovery | Direct Mode (Offline) | Social Recovery |  App Integration |
-| NFC|  Local Encrypted|  eIDAS 2.0  | [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) Support | 
-|Aries Askar | Cloud-based | [OID4vc](https://openid.net/sg/openid4vc/specifications/)  | App Integration | 
-
+- **Mobile Application Features**
+  - Bluetooth
+  - Biometrics
+  - NFC
+  - Aries Askar
+- **Decentralized Identifier Recovery**
+  - [Shamir Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing)
+  - On-chain Recovery
+  - Local Encrypted
+  - Cloud-based
+- **Standards & Protocols**
+  - Ledger-based Schemas
+  - Direct Mode (Offline)
+  - eIDAS 2.0
+  - [OID4vc](https://openid.net/sg/openid4vc/specifications/)
+- **Peer-to-Peer (P2P)**
+  - Private Messaging
+  - Social Recovery
+  - [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) Support
+  - App Integration
 
 # Preview in your Browser
 
