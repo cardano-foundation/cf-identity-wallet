@@ -60,6 +60,10 @@
       margin: 0;
     }
 
+    &.no-hide-overflow {
+      display: block;
+    }
+
     .mask {
       overflow: hidden;
       white-space: nowrap;
