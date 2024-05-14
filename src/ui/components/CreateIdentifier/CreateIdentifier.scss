@@ -556,14 +556,18 @@ ion-modal.create-identifier-modal {
 
       #react-qrcode-logo,
       .multisig-share-qr-code-blur-overlay-container {
-        width: 68vw !important;
-        height: 68vw !important;
-        padding: 1.2rem;
-        margin: 0.5rem auto;
+        width: 65vw !important;
+        height: 65vw !important;
+        padding: 0.9rem;
+        margin: 0 auto 0.5rem;
       }
 
       .multisig-share-qr-code-blur-overlay-container {
-        left: calc(50% - 34vw);
+        left: calc(50% - 32.5vw);
+      }
+
+      .share-identifier-scan-button ion-button {
+        margin: 0;
       }
     }
 
