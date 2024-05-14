@@ -164,8 +164,8 @@ const Creds = () => {
     navAnimation === "cards"
       ? "cards-credential-nav"
       : navAnimation === "favourite"
-        ? "favorite-credential-nav"
-        : ""
+      ? "favorite-credential-nav"
+      : ""
   }`;
 
   const handleArchivedCredentialsDisplayChange = (value: boolean) => {

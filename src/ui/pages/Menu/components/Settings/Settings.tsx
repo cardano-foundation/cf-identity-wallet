@@ -76,19 +76,19 @@ const Settings = () => {
 
   const handleOptionClick = async (item: OptionProps) => {
     switch (item.label) {
-    case i18n.t("settings.sections.security.biometry"): {
-      // TODO: handle biometrics
-      const biometrics = await PreferencesStorage.get(
-        PreferencesKeys.APP_BIOMETRY
-      );
-      setBiometricsIsEnabled(!biometrics.enabled);
-      await PreferencesStorage.set(PreferencesKeys.APP_BIOMETRY, {
-        enabled: !biometrics.enabled,
-      });
-      break;
-    }
-    default:
-      return;
+      case i18n.t("settings.sections.security.biometry"): {
+        // TODO: handle biometrics
+        const biometrics = await PreferencesStorage.get(
+          PreferencesKeys.APP_BIOMETRY
+        );
+        setBiometricsIsEnabled(!biometrics.enabled);
+        await PreferencesStorage.set(PreferencesKeys.APP_BIOMETRY, {
+          enabled: !biometrics.enabled,
+        });
+        break;
+      }
+      default:
+        return;
     }
   };
 
