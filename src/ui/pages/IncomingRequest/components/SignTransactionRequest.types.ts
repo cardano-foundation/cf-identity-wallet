@@ -10,7 +10,7 @@ interface SignTransactionData {
   votingPower: string;
 }
 
-interface SignTransation {
+interface SignTransaction {
   action: string;
   actionText: string;
   data: SignTransactionData;
@@ -20,4 +20,4 @@ interface SignTransation {
   eventName: string;
 }
 
-export type { SignTransation, SignTransactionData };
+export type { SignTransaction, SignTransactionData };
