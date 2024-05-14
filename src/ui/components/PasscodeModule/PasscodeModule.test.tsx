@@ -43,7 +43,7 @@ describe("Passcode Module", () => {
   const handleRemove = jest.fn();
 
   test("Clicking on a number button returns a digit", async () => {
-    const { getByText, getByTestId } = render(
+    const { getByText } = render(
       <Provider store={storeMocked(initialState)}>
         <PasscodeModule
           error={errorFunction()}

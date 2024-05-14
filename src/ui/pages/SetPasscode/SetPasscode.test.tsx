@@ -1,6 +1,12 @@
 import { Redirect, Route } from "react-router-dom";
 import { createMemoryHistory } from "history";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  waitFor,
+  RenderResult,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
@@ -93,12 +99,7 @@ describe("SetPasscode Page", () => {
         <SetPasscode />
       </Provider>
     );
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
+    clickButtonRepeatedly(getByText, "1", 6);
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
@@ -115,12 +116,7 @@ describe("SetPasscode Page", () => {
         <SetPasscode />
       </Provider>
     );
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
+    clickButtonRepeatedly(getByText, "1", 6);
 
     const labelElement = getByText(
       EN_TRANSLATIONS.setpasscode.reenterpasscode.title
@@ -221,24 +217,14 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
+    clickButtonRepeatedly(getByText, "1", 6);
 
     const labelElement = getByText(
       EN_TRANSLATIONS.setpasscode.reenterpasscode.title
     );
     expect(labelElement).toBeInTheDocument();
 
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
+    clickButtonRepeatedly(getByText, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -315,12 +301,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
+    clickButtonRepeatedly(getByText, "1", 6);
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
@@ -329,12 +310,7 @@ describe("SetPasscode Page", () => {
       getByText(EN_TRANSLATIONS.setpasscode.startover.label)
     ).toBeInTheDocument();
 
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
+    clickButtonRepeatedly(getByText, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -386,12 +362,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
+    clickButtonRepeatedly(getByText, "1", 6);
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
@@ -400,12 +371,7 @@ describe("SetPasscode Page", () => {
       getByText(EN_TRANSLATIONS.setpasscode.startover.label)
     ).toBeInTheDocument();
 
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
+    clickButtonRepeatedly(getByText, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -459,12 +425,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
+    clickButtonRepeatedly(getByText, "1", 6);
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
@@ -473,12 +434,7 @@ describe("SetPasscode Page", () => {
       getByText(EN_TRANSLATIONS.setpasscode.startover.label)
     ).toBeInTheDocument();
 
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
+    clickButtonRepeatedly(getByText, "1", 6);
 
     await waitFor(() => {
       expect(setPreferenceStorageSpy).toBeCalledWith(
@@ -534,12 +490,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
+    clickButtonRepeatedly(getByText, "1", 6);
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
@@ -548,12 +499,7 @@ describe("SetPasscode Page", () => {
       getByText(EN_TRANSLATIONS.setpasscode.startover.label)
     ).toBeInTheDocument();
 
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
+    clickButtonRepeatedly(getByText, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -562,3 +508,13 @@ describe("SetPasscode Page", () => {
     );
   });
 });
+
+const clickButtonRepeatedly = (
+  getByText: RenderResult["getByText"],
+  buttonLabel: string,
+  times: number
+) => {
+  for (let i = 0; i < times; i++) {
+    fireEvent.click(getByText(buttonLabel));
+  }
+};

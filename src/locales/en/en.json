@@ -1149,7 +1149,7 @@
     "disconnectwallet": "Disconnected successfully",
     "unableconnectwallet": "Unable to connect",
     "peeridsuccess": "Peer ID successful",
-    "peeridnotrecognised": "Peer ID not recognised"
+    "peeridnotrecognised": "Peer ID not recognised",
     "disconnectwallet": "Disconnected successfully",
     "strongbiometrynotavailable": "Strong biometry not available"
   },
