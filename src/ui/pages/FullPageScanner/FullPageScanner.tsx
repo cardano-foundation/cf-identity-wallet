@@ -18,14 +18,13 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
   const scannerRef = useRef<ScannerRefComponent>(null);
 
   useEffect(() => {
-    showScan
-      ? document?.querySelector("body")?.classList.add("full-page-scanner")
-      : document?.querySelector("body")?.classList.remove("full-page-scanner");
-  }, [showScan]);
+    document?.querySelector("body")?.classList.add("full-page-scanner");
+  }, []);
 
   const handleReset = () => {
     setShowScan(false);
     scannerRef.current?.stopScan();
+    document?.querySelector("body")?.classList.remove("full-page-scanner");
     document
       ?.querySelector("body.scanner-active > div:last-child")
       ?.classList.add("hide");
@@ -33,6 +32,7 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
 
   const handleCloseButton = () => {
     handleReset();
+    setShowScan(false);
     dispatch(setCurrentOperation(OperationType.IDLE));
   };
 

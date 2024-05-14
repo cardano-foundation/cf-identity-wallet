@@ -84,6 +84,7 @@ const Scanner = forwardRef(
     };
 
     const stopScan = async () => {
+      console.log("stopScan");
       setScanning(false);
       await BarcodeScanner.stopScan();
       await BarcodeScanner.showBackground();
@@ -131,6 +132,8 @@ const Scanner = forwardRef(
       const invitation = await Agent.agent.connections.connectByOobiUrl(
         content
       );
+
+      console.log(invitation.type);
 
       if (invitation.type === KeriConnectionType.NORMAL) {
         handleReset && handleReset();
@@ -203,47 +206,47 @@ const Scanner = forwardRef(
 
     const RenderPageFooter = () => {
       switch (currentOperation) {
-      case OperationType.SCAN_WALLET_CONNECTION:
-        return (
-          <PageFooter
-            customClass="actions-button"
-            secondaryButtonAction={handlePasteMkId}
-            secondaryButtonText={`${i18n.t("scan.pastemeerkatid")}`}
-          />
-        );
-      case OperationType.MULTI_SIG_INITIATOR_SCAN:
-        return (
-          <PageFooter
-            pageId={componentId}
-            primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
-            primaryButtonAction={handlePrimaryButtonAction}
-            primaryButtonDisabled={!multiSigGroupCache?.connections.length}
-            secondaryButtonText={`${i18n.t(
-              "createidentifier.scan.pasteoobi"
-            )}`}
-            secondaryButtonAction={() => setPasteModalIsOpen(true)}
-          />
-        );
-      case OperationType.MULTI_SIG_RECEIVER_SCAN:
-        return (
-          <PageFooter
-            pageId={componentId}
-            secondaryButtonText={`${i18n.t(
-              "createidentifier.scan.pasteoobi"
-            )}`}
-            secondaryButtonAction={() => setPasteModalIsOpen(true)}
-          />
-        );
-      default:
-        return (
-          <PageFooter
-            pageId={componentId}
-            secondaryButtonText={`${i18n.t(
-              "createidentifier.scan.pastecontents"
-            )}`}
-            secondaryButtonAction={() => setPasteModalIsOpen(true)}
-          />
-        );
+        case OperationType.SCAN_WALLET_CONNECTION:
+          return (
+            <PageFooter
+              customClass="actions-button"
+              secondaryButtonAction={handlePasteMkId}
+              secondaryButtonText={`${i18n.t("scan.pastemeerkatid")}`}
+            />
+          );
+        case OperationType.MULTI_SIG_INITIATOR_SCAN:
+          return (
+            <PageFooter
+              pageId={componentId}
+              primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
+              primaryButtonAction={handlePrimaryButtonAction}
+              primaryButtonDisabled={!multiSigGroupCache?.connections.length}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pasteoobi"
+              )}`}
+              secondaryButtonAction={() => setPasteModalIsOpen(true)}
+            />
+          );
+        case OperationType.MULTI_SIG_RECEIVER_SCAN:
+          return (
+            <PageFooter
+              pageId={componentId}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pasteoobi"
+              )}`}
+              secondaryButtonAction={() => setPasteModalIsOpen(true)}
+            />
+          );
+        default:
+          return (
+            <PageFooter
+              pageId={componentId}
+              secondaryButtonText={`${i18n.t(
+                "createidentifier.scan.pastecontents"
+              )}`}
+              secondaryButtonAction={() => setPasteModalIsOpen(true)}
+            />
+          );
       }
     };
     return (
