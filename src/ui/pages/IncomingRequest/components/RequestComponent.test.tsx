@@ -11,7 +11,7 @@ import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
 import { RequestComponent } from "./RequestComponent";
 import { store } from "../../../../store";
-import { ballotTransactionFix } from "../../../__fixtures__/ballotTransactionFix";
+import { signTransactionFix } from "../../../__fixtures__/signTransactionFix";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -176,7 +176,7 @@ describe("Multi-Sig request", () => {
   });
 });
 
-describe("Ballot request", () => {
+describe("Sign request", () => {
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
   const storeMocked = {
@@ -191,8 +191,8 @@ describe("Ballot request", () => {
   const requestData = {
     id: "abc123456",
     label: "Cardano",
-    type: IncomingRequestType.BALLOT_TRANSACTION_REQUEST,
-    ballotData: ballotTransactionFix,
+    type: IncomingRequestType.SIGN_TRANSACTION_REQUEST,
+    ballotData: signTransactionFix,
   };
 
   const initiateAnimation = false;
@@ -213,31 +213,30 @@ describe("Ballot request", () => {
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.BALLOT_TRANSACTION_REQUEST}
+          incomingRequestType={IncomingRequestType.SIGN_TRANSACTION_REQUEST}
         />
       </Provider>
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.request.ballottransaction.title)
+      getByText(EN_TRANSLATIONS.request.signtransaction.title)
     ).toBeVisible();
 
-    expect(getByText("Cardano Ballot")).toBeVisible();
-
-    expect(getByText(ballotTransactionFix.action)).toBeVisible();
-    expect(getByText(ballotTransactionFix.actionText)).toBeVisible();
-    expect(getByText(ballotTransactionFix.data.id)).toBeVisible();
-    expect(getByText(ballotTransactionFix.data.category)).toBeVisible();
-    expect(getByText(ballotTransactionFix.data.event)).toBeVisible();
-    expect(getByText(ballotTransactionFix.data.network)).toBeVisible();
-    expect(getByText(ballotTransactionFix.data.proposal)).toBeVisible();
-    expect(getByText(ballotTransactionFix.data.votedAt)).toBeVisible();
-    expect(getByText(ballotTransactionFix.data.votingPower)).toBeVisible();
-    expect(getByText(ballotTransactionFix.eventName)).toBeVisible();
-    expect(getByText(ballotTransactionFix.ownerUrl)).toBeVisible();
-    expect(getByText(ballotTransactionFix.slot)).toBeVisible();
-    expect(getByText(ballotTransactionFix.uri)).toBeVisible();
-    expect(getAllByText(ballotTransactionFix.data.address).length).toBe(2);
+    expect(getByText(requestData.label)).toBeVisible();
+    expect(getByText(signTransactionFix.action)).toBeVisible();
+    expect(getByText(signTransactionFix.actionText)).toBeVisible();
+    expect(getByText(signTransactionFix.data.id)).toBeVisible();
+    expect(getByText(signTransactionFix.data.category)).toBeVisible();
+    expect(getByText(signTransactionFix.data.event)).toBeVisible();
+    expect(getByText(signTransactionFix.data.network)).toBeVisible();
+    expect(getByText(signTransactionFix.data.proposal)).toBeVisible();
+    expect(getByText(signTransactionFix.data.votedAt)).toBeVisible();
+    expect(getByText(signTransactionFix.data.votingPower)).toBeVisible();
+    expect(getByText(signTransactionFix.eventName)).toBeVisible();
+    expect(getByText(signTransactionFix.ownerUrl)).toBeVisible();
+    expect(getByText(signTransactionFix.slot)).toBeVisible();
+    expect(getByText(signTransactionFix.uri)).toBeVisible();
+    expect(getAllByText(signTransactionFix.data.address).length).toBe(2);
   });
 
   test("Display fallback image when provider logo is empty: BALLOT_TRANSACTION_REQUEST", async () => {
@@ -258,13 +257,13 @@ describe("Ballot request", () => {
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.BALLOT_TRANSACTION_REQUEST}
+          incomingRequestType={IncomingRequestType.SIGN_TRANSACTION_REQUEST}
         />
       </Provider>
     );
 
-    expect(getByTestId("ballot-logo")).toBeInTheDocument();
+    expect(getByTestId("sign-logo")).toBeInTheDocument();
 
-    expect(getByTestId("ballot-logo").getAttribute("src")).not.toBe(undefined);
+    expect(getByTestId("sign-logo").getAttribute("src")).not.toBe(undefined);
   });
 });

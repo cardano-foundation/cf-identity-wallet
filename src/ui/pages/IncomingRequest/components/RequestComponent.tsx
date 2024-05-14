@@ -5,7 +5,7 @@ import { ConnectionRequest } from "./ConnectionRequest";
 import { CredentialRequest } from "./CredentialRequest";
 import { MultiSigRequestStageOne } from "./MultiSigRequestStageOne";
 import { MultiSigRequestStageTwo } from "./MultiSigRequestStageTwo";
-import { BallotTransactionRequest } from "./BallotTransactionRequest";
+import { SignTransactionRequest } from "./SignTransactionRequest";
 
 const RequestComponent = ({
   pageId,
@@ -58,9 +58,9 @@ const RequestComponent = ({
         setRequestStage={setRequestStage}
       />
     );
-  case IncomingRequestType.BALLOT_TRANSACTION_REQUEST:
+  case IncomingRequestType.SIGN_TRANSACTION_REQUEST:
     return (
-      <BallotTransactionRequest
+      <SignTransactionRequest
         pageId={pageId}
         activeStatus={activeStatus}
         blur={blur}

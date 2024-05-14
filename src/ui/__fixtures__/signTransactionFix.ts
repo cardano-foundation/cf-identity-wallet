@@ -1,6 +1,6 @@
-import { BallotTransation } from "../../store/reducers/stateCache/stateCache.types";
+import { SignTransation } from "../../types/SignTransaction";
 
-const ballotTransactionFix: BallotTransation = {
+const signTransactionFix: SignTransation = {
   action: "CAST_VOTE",
   actionText: "Cast Vote",
   data: {
@@ -19,4 +19,4 @@ const ballotTransactionFix: BallotTransation = {
   eventName: "Cardano Summit Voting Awards",
 };
 
-export { ballotTransactionFix };
+export { signTransactionFix };

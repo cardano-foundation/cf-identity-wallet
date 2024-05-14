@@ -1,35 +1,31 @@
-.ballot-transaction {
+.sign-transaction {
   & .page-header {
     ion-toolbar {
       --background: transparent;
-
-      ion-title.md {
-        width: calc(100% - 3.75rem);
-      }
     }
   }
 
-  .ballot-transaction-header {
+  .sign-transaction-header {
     margin: 1.75rem 0;
     display: flex;
     flex-direction: column;
     align-items: center;
 
-    .ballot-owner-logo {
+    .sign-owner-logo {
       width: 5rem;
       height: 5rem;
       border-radius: 2.5rem;
       margin-bottom: 0.75rem;
     }
 
-    .ballot-name {
+    .sign-name {
       font-size: 1.5rem;
       line-height: 1.75rem;
       margin-bottom: 0.5rem;
       color: var(--ion-color-primary);
     }
 
-    .ballot-subtitle {
+    .sign-subtitle {
       font-weight: 500;
       font-size: 1rem;
       line-height: 1.25rem;
@@ -37,7 +33,7 @@
       color: var(--ion-color-secondary);
     }
 
-    .ballot-link {
+    .sign-link {
       font-weight: 500;
       font-size: 0.75rem;
       line-height: 1rem;
@@ -46,27 +42,25 @@
     }
   }
 
-  .ballot-transaction-content {
+  .sign-transaction-content {
     margin-bottom: 3rem;
 
-    .ballot-address {
+    .sign-address {
       margin-bottom: 1.5rem;
 
-      .card-details-info-block-inner {
-        padding: 1.25rem 1.5rem;
+      .address {
+        display: block;
+        padding: 0.75rem 0;
 
         @media screen and (min-width: 250px) and (max-width: 370px) {
           font-size: 0.8rem;
-          padding: 0.85rem 1.25rem;
+          padding: 0.25rem 0;
         }
       }
     }
 
-    .ballot-data {
-      .card-details-info-block-line {
-        --min-height: initial;
-        margin-bottom: 1rem;
-
+    .sign-data {
+      .sign-info-item {
         &:first-child {
           margin-top: 0.75rem;
         }
@@ -76,11 +70,13 @@
         }
 
         @media screen and (min-width: 250px) and (max-width: 370px) {
-          margin-bottom: 0.75rem;
-        }
+          &:first-child {
+            margin-top: 0.5rem;
+          }
 
-        .card-details-info-content {
-          display: block;
+          &:last-child {
+            margin-bottom: 0.5rem;
+          }
         }
       }
     }

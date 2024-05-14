@@ -1151,7 +1151,7 @@
     "peeridnotrecognised": "Peer ID not recognised"
   },
   "request": {
-    "ballottransaction": {
+    "signtransaction": {
       "title": "Sign transaction",
       "transaction": {
         "address": "Address",

@@ -1,5 +1,6 @@
 import { KeriaNotification } from "../../../core/agent/agent.types";
 import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifier.types";
+import { SignTransation } from "../../../types/SignTransaction";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
 
 interface PayloadData<T = any> {
@@ -22,29 +23,7 @@ interface AuthenticationCacheProps {
 enum IncomingRequestType {
   CREDENTIAL_OFFER_RECEIVED = "credential-offer-received",
   MULTI_SIG_REQUEST_INCOMING = "multi-sig-request-incoming",
-  BALLOT_TRANSACTION_REQUEST = "ballot-transaction-request",
-}
-
-// TODO: Dummy type for ballot transaction. Should be remove when implement logic from core
-interface BallotTransactionData {
-  id: string;
-  address: string;
-  event: string;
-  category: string;
-  proposal: string;
-  network: string;
-  votedAt: string;
-  votingPower: string;
-}
-
-interface BallotTransation {
-  action: string;
-  actionText: string;
-  data: BallotTransactionData;
-  slot: string;
-  uri: string;
-  ownerUrl: string;
-  eventName: string;
+  SIGN_TRANSACTION_REQUEST = "sign-transaction-request",
 }
 
 interface IncomingRequestProps {
@@ -54,7 +33,7 @@ interface IncomingRequestProps {
   label?: string;
   event?: KeriaNotification;
   multisigIcpDetails?: MultiSigIcpRequestDetails;
-  ballotData?: BallotTransation;
+  signTransaction?: SignTransation;
 }
 
 interface QueueProps<T> {
@@ -76,8 +55,6 @@ export { IncomingRequestType };
 
 export type {
   PayloadData,
-  BallotTransation,
-  BallotTransactionData,
   CurrentRouteCacheProps,
   AuthenticationCacheProps,
   StateCacheProps,
