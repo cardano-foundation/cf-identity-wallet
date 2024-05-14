@@ -75,7 +75,7 @@ const LockPage = () => {
       }
     };
     runBiometrics();
-  }, [stateCache.initialized]);
+  }, []);
 
   const handlePinChange = (digit: number) => {
     const updatedPasscode = `${passcode}${digit}`;
