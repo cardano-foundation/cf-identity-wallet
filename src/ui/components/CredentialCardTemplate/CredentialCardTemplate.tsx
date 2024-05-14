@@ -83,16 +83,16 @@ const CredentialCardTemplate = ({
       </div>
       {cardData.status === CredentialMetadataRecordStatus.PENDING &&
         alertIsOpen && (
-          <Alert
-            isOpen={alertIsOpen}
-            setIsOpen={setAlertIsOpen}
-            dataTestId="alert-confirm"
-            headerText={i18n.t("credentials.create.alert.title")}
-            confirmButtonText={`${i18n.t("credentials.create.alert.confirm")}`}
-            actionConfirm={() => setAlertIsOpen(false)}
-            backdropDismiss={false}
-          />
-        )}
+        <Alert
+          isOpen={alertIsOpen}
+          setIsOpen={setAlertIsOpen}
+          dataTestId="alert-confirm"
+          headerText={i18n.t("credentials.create.alert.title")}
+          confirmButtonText={`${i18n.t("credentials.create.alert.confirm")}`}
+          actionConfirm={() => setAlertIsOpen(false)}
+          backdropDismiss={false}
+        />
+      )}
     </div>
   );
 };
