@@ -1,20 +1,60 @@
 import { Redirect, Route } from "react-router-dom";
 import { createMemoryHistory } from "history";
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
-import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
+import {
+  BiometryError,
+  BiometryType,
+} from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { SetPasscode } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
-import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
+import {
+  SecureStorage,
+  KeyStoreKeys,
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
+const setPreferenceStorageSpy = jest
+  .spyOn(PreferencesStorage, "set")
+  .mockResolvedValue();
+
+jest.mock("@ionic/react", () => {
+  const actualIonicReact = jest.requireActual("@ionic/react");
+  return {
+    ...actualIonicReact,
+    getPlatforms: () => ["android"],
+  };
+});
+
+jest.mock("../../hooks/useBiometricsHook", () => {
+  const actualUseBiometrics = jest.requireActual(
+    "../../hooks/useBiometricsHook"
+  );
+  return {
+    ...actualUseBiometrics,
+    __esModule: true,
+    useBiometricAuth: jest.fn(() => ({
+      biometricsIsEnabled: false,
+      biometricInfo: {
+        isAvailable: true,
+        hasCredentials: false,
+        biometryType: BiometryType.fingerprintAuthentication,
+        strongBiometryIsAvailable: true,
+      },
+      handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+      setBiometricsIsEnabled: jest.fn(),
+    })),
+  };
+});
 
 describe("SetPasscode Page", () => {
   test("Renders Create Passcode page with title and description", () => {
@@ -252,36 +292,7 @@ describe("SetPasscode Page", () => {
   });
 
   test("Android flow", async () => {
-    jest.mock("@ionic/react", () => {
-      const actualIonicReact = jest.requireActual("@ionic/react");
-      return {
-        ...actualIonicReact,
-        getPlatforms: () => ["android"],
-      };
-    });
-
-    jest.mock("../../hooks/useBiometricsHook", () => {
-      const actualUseBiometrics = jest.requireActual(
-        "../../hooks/useBiometricsHook"
-      );
-      return {
-        ...actualUseBiometrics,
-        __esModule: true,
-        useBiometricAuth: jest.fn(() => ({
-          biometricsIsEnabled: false,
-          biometricInfo: {
-            isAvailable: true,
-            hasCredentials: false,
-            biometryType: BiometryType.fingerprintAuthentication,
-            strongBiometryIsAvailable: true,
-          },
-          handleBiometricAuth: jest.fn(async () => true),
-          setBiometricsIsEnabled: jest.fn(),
-        })),
-      };
-    });
-
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getByTestId } = render(
       <IonReactRouter>
         <IonRouterOutlet animated={false}>
           <Provider store={store}>
@@ -290,6 +301,7 @@ describe("SetPasscode Page", () => {
         </IonRouterOutlet>
       </IonReactRouter>
     );
+
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/1/));
@@ -315,6 +327,30 @@ describe("SetPasscode Page", () => {
       expect(
         queryByText(EN_TRANSLATIONS.biometry.setupandroidbiometryheader)
       ).toBeInTheDocument()
+    );
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("alert-setup-android-biometry-confirm-button")
+      );
+    });
+
+    // Native biometric fingerprint appears
+    await waitFor(() => {
+      expect(setPreferenceStorageSpy).toBeCalledWith(
+        PreferencesKeys.APP_BIOMETRY,
+        {
+          enabled: true,
+        }
+      );
+    });
+
+    expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
+    expect(setPreferenceStorageSpy).toBeCalledWith(
+      PreferencesKeys.APP_ALREADY_INIT,
+      {
+        initialized: true,
+      }
     );
   });
 });
