@@ -1,8 +1,8 @@
-import { mockIonicReact } from "@ionic/react-test-utils";
+import { mockIonicReact, waitForIonicReact } from "@ionic/react-test-utils";
 import { setupIonicReact } from "@ionic/react";
 setupIonicReact();
 mockIonicReact();
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
@@ -192,7 +192,7 @@ describe("Sign request", () => {
     id: "abc123456",
     label: "Cardano",
     type: IncomingRequestType.SIGN_TRANSACTION_REQUEST,
-    ballotData: signTransactionFix,
+    signTransaction: signTransactionFix,
   };
 
   const initiateAnimation = false;
