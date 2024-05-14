@@ -2,6 +2,10 @@
   & .page-header {
     ion-toolbar {
       --background: transparent;
+
+      ion-title.md {
+        width: calc(100% - 3.75rem);
+      }
     }
   }
 
