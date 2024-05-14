@@ -95,7 +95,7 @@ const Menu = () => {
           SubMenuKey.ConnectWallet,
           {
             Component: () => <ConnectWallet ref={connectWalletRef} />,
-            title: "connectwallet.sections.header",
+            title: "menu.tab.items.connectwallet.tabheader",
             pageId: "connect-wallet",
             additionalButtons: (
               <IonButton
@@ -145,23 +145,23 @@ const Menu = () => {
     {
       itemKey: SubMenuKey.Profile,
       icon: personCircleOutline,
-      label: `${i18n.t("menu.tab.items.profile")}`,
+      label: `${i18n.t("menu.tab.items.profile.title")}`,
     },
     {
       itemKey: SubMenuKey.Crypto,
       icon: walletOutline,
-      label: `${i18n.t("menu.tab.items.crypto")}`,
+      label: `${i18n.t("menu.tab.items.crypto.title")}`,
     },
     {
       itemKey: SubMenuKey.Connections,
       icon: peopleOutline,
-      label: `${i18n.t("menu.tab.items.connections")}`,
+      label: `${i18n.t("menu.tab.items.connections.title")}`,
     },
     {
       itemKey: SubMenuKey.ConnectWallet,
       icon: linkOutline,
-      label: `${i18n.t("menu.tab.items.connectwallet")}`,
-      subLabel: `${i18n.t("menu.tab.items.cip")}`,
+      label: `${i18n.t("menu.tab.items.connectwallet.title")}`,
+      subLabel: `${i18n.t("menu.tab.items.connectwallet.cip")}`,
     },
   ];
 

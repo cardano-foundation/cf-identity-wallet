@@ -1,3 +1,4 @@
+import { IonCheckbox, IonItemOption } from "@ionic/react";
 import {
   forwardRef,
   useImperativeHandle,
@@ -5,48 +6,56 @@ import {
   useRef,
   useState,
 } from "react";
+import { useHistory } from "react-router-dom";
 import { i18n } from "../../../../../i18n";
-import { CardsPlaceholder } from "../../../../components/CardsPlaceholder";
-import "./ConnectWallet.scss";
-import { ConnectWalletActions } from "../ConnectWalletActions";
-import {
-  ActionInfo,
-  ActionType,
-  ConnectWalletOptionRef,
-} from "./ConnectWallet.types";
-import { CardItem, CardList } from "../../../../components/CardList";
-import { IonCheckbox, IonItemOption } from "@ionic/react";
-import { Alert } from "../../../../components/Alert";
+import { TabsRoutePath } from "../../../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
+import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import {
+  getCurrentOperation,
   getStateCache,
+  setCurrentOperation,
   setToastMsg,
 } from "../../../../../store/reducers/stateCache";
-import { VerifyPassword } from "../../../../components/VerifyPassword";
-import { VerifyPasscode } from "../../../../components/VerifyPasscode";
-import { ConfirmConnectModal } from "../ConfirmConnectModal";
-import { ToastMsgType } from "../../../../globals/types";
 import {
   ConnectionData,
   getConnectedWallet,
   getWalletConnectionsCache,
   setConnectedWallet,
 } from "../../../../../store/reducers/walletConnectionsCache";
+import { Alert } from "../../../../components/Alert";
+import { CardItem, CardList } from "../../../../components/CardList";
+import { CardsPlaceholder } from "../../../../components/CardsPlaceholder";
+import { VerifyPasscode } from "../../../../components/VerifyPasscode";
+import { VerifyPassword } from "../../../../components/VerifyPassword";
+import { OperationType, ToastMsgType } from "../../../../globals/types";
+import { ConfirmConnectModal } from "../ConfirmConnectModal";
+import "./ConnectWallet.scss";
+import {
+  ActionInfo,
+  ActionType,
+  ConnectWalletOptionRef,
+} from "./ConnectWallet.types";
 
 const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
   (props, ref) => {
+    const history = useHistory();
     const dispatch = useAppDispatch();
+
+    const identifierCache = useAppSelector(getIdentifiersCache);
     const connections = useAppSelector(getWalletConnectionsCache);
     const connectedWallet = useAppSelector(getConnectedWallet);
+    const currentOperation = useAppSelector(getCurrentOperation);
     const pageId = "connect-wallet-placeholder";
     const stateCache = useAppSelector(getStateCache);
     const actionInfo = useRef<ActionInfo>({
       type: ActionType.None,
     });
 
-    const [openConnectWallet, setOpenConnectWallet] = useState(false);
     const [openDeleteAlert, setOpenDeleteAlert] = useState<boolean>(false);
     const [openConfirmConnectModal, setOpenConfirmConnectModal] =
+      useState<boolean>(false);
+    const [openIdentifierMissingAlert, setOpenIdentifierMissingAlert] =
       useState<boolean>(false);
 
     const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
@@ -63,16 +72,8 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     }, []);
 
     useImperativeHandle(ref, () => ({
-      openConnectWallet: handleAddConnect,
+      openConnectWallet: handleScanQR,
     }));
-
-    const handleAddConnect = () => {
-      setOpenConnectWallet(true);
-    };
-
-    const handleInputPid = () => {
-      setOpenConnectWallet(false);
-    };
 
     const handleOpenVerify = () => {
       if (
@@ -109,7 +110,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       setOpenDeleteAlert(false);
     };
 
-    const handleDelete = () => {
+    const verifyPassCodeBeforeDelete = () => {
       setOpenDeleteAlert(false);
       handleOpenVerify();
     };
@@ -151,14 +152,27 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       ) {
         handleDeleteConnection(actionInfo.current.data);
       }
-
-      if (ActionType.Connect === actionInfo.current.type) {
-        handleConnectWallet();
-      }
     };
 
-    const handleConfirmConnect = () => {
-      handleOpenVerify();
+    const handleScanQR = () => {
+      if (identifierCache.length === 0) {
+        setOpenIdentifierMissingAlert(true);
+        return;
+      }
+
+      dispatch(setCurrentOperation(OperationType.SCAN_WALLET_CONNECTION));
+    };
+
+    const closeIdentifierMissingAlert = () => {
+      setOpenIdentifierMissingAlert(false);
+    };
+
+    const handleNavToCreateKeri = () => {
+      setOpenIdentifierMissingAlert(false);
+      dispatch(
+        setCurrentOperation(OperationType.CREATE_IDENTIFIER_CONNECT_WALLET)
+      );
+      history.push(TabsRoutePath.IDENTIFIERS);
     };
 
     return (
@@ -167,7 +181,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           {connections.length > 0 ? (
             <>
               <h2 className="connect-wallet-title">
-                {i18n.t("connectwallet.connectionhistory.title")}
+                {i18n.t("menu.tab.items.connectwallet.connectionhistory.title")}
               </h2>
               <CardList
                 data={displayConnection}
@@ -181,7 +195,9 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
                         handleOpenDeleteAlert(data);
                       }}
                     >
-                      {i18n.t("connectwallet.connectionhistory.action.delete")}
+                      {i18n.t(
+                        "menu.tab.items.connectwallet.connectionhistory.action.delete"
+                      )}
                     </IonItemOption>
                   );
                 }}
@@ -202,23 +218,18 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           ) : (
             <div className="placeholder-container">
               <CardsPlaceholder
-                buttonLabel={i18n.t("connectwallet.sections.connectbtn")}
-                buttonAction={handleAddConnect}
+                buttonLabel={i18n.t("menu.tab.items.connectwallet.connectbtn")}
+                buttonAction={handleScanQR}
                 testId={pageId}
               />
             </div>
           )}
         </div>
-        <ConnectWalletActions
-          openModal={openConnectWallet}
-          closeModal={() => setOpenConnectWallet(false)}
-          onInputPid={handleInputPid}
-        />
         <ConfirmConnectModal
           isConnectModal={actionInfo.current.data?.id !== connectedWallet?.id}
           openModal={openConfirmConnectModal}
           closeModal={() => setOpenConfirmConnectModal(false)}
-          onConfirm={handleConfirmConnect}
+          onConfirm={handleConnectWallet}
           connectionData={actionInfo.current.data}
           onDeleteConnection={handleOpenDeleteAlert}
         />
@@ -227,17 +238,34 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           setIsOpen={setOpenDeleteAlert}
           dataTestId="alert-delete"
           headerText={i18n.t(
-            "connectwallet.connectionhistory.deletealert.message"
+            "menu.tab.items.connectwallet.connectionhistory.deletealert.message"
           )}
           confirmButtonText={`${i18n.t(
-            "connectwallet.connectionhistory.deletealert.confirm"
+            "menu.tab.items.connectwallet.connectionhistory.deletealert.confirm"
           )}`}
           cancelButtonText={`${i18n.t(
-            "connectwallet.connectionhistory.deletealert.cancel"
+            "menu.tab.items.connectwallet.connectionhistory.deletealert.cancel"
           )}`}
-          actionConfirm={handleDelete}
+          actionConfirm={verifyPassCodeBeforeDelete}
           actionCancel={closeDeleteAlert}
           actionDismiss={closeDeleteAlert}
+        />
+        <Alert
+          isOpen={openIdentifierMissingAlert}
+          setIsOpen={setOpenIdentifierMissingAlert}
+          dataTestId="alert-create-keri"
+          headerText={i18n.t(
+            "menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.message"
+          )}
+          confirmButtonText={`${i18n.t(
+            "menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.confirm"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.cancel"
+          )}`}
+          actionConfirm={handleNavToCreateKeri}
+          actionCancel={closeIdentifierMissingAlert}
+          actionDismiss={closeIdentifierMissingAlert}
         />
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}

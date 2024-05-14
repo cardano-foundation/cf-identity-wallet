@@ -1,26 +1,31 @@
 import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
-import { peopleOutline, addOutline } from "ionicons/icons";
+import { addOutline, peopleOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
-import { TabLayout } from "../../components/layout/TabLayout";
+import { useHistory } from "react-router-dom";
+import { Agent } from "../../../core/agent/agent";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
-import { CardsPlaceholder } from "../../components/CardsPlaceholder";
-import { CardsStack } from "../../components/CardsStack";
+import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getFavouritesIdentifiersCache,
   getIdentifiersCache,
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
-import { setCurrentRoute } from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../../../routes/paths";
+import {
+  getCurrentOperation,
+  setCurrentOperation,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
+import { CardsPlaceholder } from "../../components/CardsPlaceholder";
+import { CardsStack } from "../../components/CardsStack";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
-import { CardType } from "../../globals/types";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { CardType, OperationType } from "../../globals/types";
 import { Connections } from "../Connections";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import "./Identifiers.scss";
-import { IdentifiersList } from "./components/IdentifiersList";
-import { Agent } from "../../../core/agent/agent";
 import { StartAnimationSource } from "./Identifiers.type";
+import { IdentifiersList } from "./components/IdentifiersList";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -65,9 +70,11 @@ const AdditionalButtons = ({
 
 const Identifiers = () => {
   const pageId = "identifiers-tab";
+  const history = useHistory();
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
+  const currentOperation = useAppSelector(getCurrentOperation);
   const [favIdentifiers, setFavIdentifiers] = useState<
     IdentifierShortDetails[]
   >([]);
@@ -89,6 +96,15 @@ const Identifiers = () => {
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
   });
+
+  useEffect(() => {
+    if (
+      currentOperation === OperationType.CREATE_IDENTIFIER_CONNECT_WALLET &&
+      history.location.pathname === TabsRoutePath.IDENTIFIERS
+    ) {
+      setCreateIdentifierModalIsOpen(true);
+    }
+  }, [currentOperation, history.location.pathname]);
 
   useEffect(() => {
     setShowPlaceholder(identifiersData.length === 0);
@@ -168,6 +184,17 @@ const Identifiers = () => {
         : ""
   }`;
 
+  const handleCloseCreateIdentifier = (isOpen: boolean) => {
+    if (
+      !isOpen &&
+      currentOperation === OperationType.CREATE_IDENTIFIER_CONNECT_WALLET
+    ) {
+      dispatch(setCurrentOperation(OperationType.IDLE));
+    }
+
+    setCreateIdentifierModalIsOpen(isOpen);
+  };
+
   return (
     <>
       <Connections
@@ -243,12 +270,10 @@ const Identifiers = () => {
       </TabLayout>
       <CreateIdentifier
         modalIsOpen={createIdentifierModalIsOpen}
-        setModalIsOpen={(isOpen: boolean) =>
-          setCreateIdentifierModalIsOpen(isOpen)
-        }
+        setModalIsOpen={handleCloseCreateIdentifier}
       />
     </>
   );
 };
 
-export { Identifiers, AdditionalButtons };
+export { AdditionalButtons, Identifiers };

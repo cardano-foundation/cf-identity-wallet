@@ -1,5 +1,12 @@
-import { forwardRef, useEffect, useImperativeHandle } from "react";
-import { IonCol, IonGrid, IonIcon, IonRow, isPlatform } from "@ionic/react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import {
+  IonButton,
+  IonCol,
+  IonGrid,
+  IonIcon,
+  IonRow,
+  isPlatform,
+} from "@ionic/react";
 import {
   BarcodeScanner,
   SupportedFormat,
@@ -13,17 +20,24 @@ import {
   getCurrentRoute,
   getToastMsg,
   setCurrentOperation,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { Agent } from "../../../core/agent/agent";
 import { ScannerProps } from "./Scanner.types";
+import { PasteConnectionPeerIdModal } from "../PasteConnectionPeerIdModal";
+import { setPendingConnections } from "../../../store/reducers/walletConnectionsCache";
+import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
+import { PageFooter } from "../PageFooter";
 
 const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentToastMsg = useAppSelector(getToastMsg);
   const currentRoute = useAppSelector(getCurrentRoute);
+
+  const [openPidModal, setOpenPidModal] = useState<boolean>(false);
 
   const checkPermission = async () => {
     const status = await BarcodeScanner.checkPermission({ force: true });
@@ -61,6 +75,27 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
     stopScan,
   }));
 
+  const handleConnectWallet = (id: string) => {
+    // TODO: Handle connect wallet
+    dispatch(setToastMsg(ToastMsgType.PEER_ID_SUCCESS));
+    dispatch(setPendingConnections(walletConnectionsFix[0]));
+  };
+
+  const handleConnect = (content: string) => {
+    if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
+      handleConnectWallet(content);
+      return;
+    }
+
+    Agent.agent.connections.connectByOobiUrl(content);
+  };
+
+  const handleSubmitConnect = (id: string) => {
+    stopScan();
+    dispatch(setCurrentOperation(OperationType.IDLE));
+    handleConnectWallet(id);
+  };
+
   const initScan = async () => {
     if (isPlatform("ios") || isPlatform("android")) {
       const allowed = await checkPermission();
@@ -76,7 +111,7 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
           dispatch(setCurrentOperation(OperationType.IDLE));
           // @TODO - foconnor: when above loading screen in place, handle invalid QR code
           // @TODO - sdisalvo: connectByOobiUrl should be awaited once we have error handling
-          Agent.agent.connections.connectByOobiUrl(result.content);
+          handleConnect(result.content);
           setIsValueCaptured && setIsValueCaptured(true);
         }
       }
@@ -86,7 +121,10 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
   useEffect(() => {
     if (
       (currentRoute?.path === TabsRoutePath.SCAN ||
-        currentOperation === OperationType.SCAN_CONNECTION) &&
+        [
+          OperationType.SCAN_CONNECTION,
+          OperationType.SCAN_WALLET_CONNECTION,
+        ].includes(currentOperation)) &&
       currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
       currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING
     ) {
@@ -95,6 +133,10 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
       stopScan();
     }
   }, [currentOperation, currentRoute]);
+
+  const handlePasteMkId = () => {
+    setOpenPidModal(true);
+  };
 
   return (
     <>
@@ -116,7 +158,19 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
             className="qr-code-scanner-icon"
           />
         </IonRow>
+        {OperationType.SCAN_WALLET_CONNECTION === currentOperation && (
+          <PageFooter
+            customClass="actions-button"
+            secondaryButtonAction={handlePasteMkId}
+            secondaryButtonText={`${i18n.t("scan.pastemeerkatid")}`}
+          />
+        )}
       </IonGrid>
+      <PasteConnectionPeerIdModal
+        openModal={openPidModal}
+        onCloseModal={() => setOpenPidModal(false)}
+        onConfirm={handleSubmitConnect}
+      />
     </>
   );
 });

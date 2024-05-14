@@ -11,14 +11,12 @@ import {
   AgentServicesProps,
 } from "../agent.types";
 import { AgentService } from "./agentService";
-import { Agent } from "../agent";
 import {
   ConnectionNoteStorage,
   ConnectionRecord,
   CredentialStorage,
   ConnectionStorage,
 } from "../records";
-import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
 import { ConfigurationService } from "../../configuration";
@@ -76,53 +74,6 @@ class ConnectionService extends AgentService {
       alias: operation.alias,
       oobi: url,
     });
-
-    // @TODO - foconnor: This is temporary for ease of development, will be removed soon.
-    // This will take our first KERI identifier and get the server to resolve it, so that the connection is resolved from both sides and we can issue to this wallet using its API.
-    if (
-      url.includes(ConfigurationService.env.keri.credentials.testServer.oobiUrl)
-    ) {
-      // This is inefficient but it will change going forward.
-      const aids = await Agent.agent.identifiers.getIdentifiers();
-      if (aids.length > 0) {
-        let userName;
-        try {
-          userName = (
-            await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME)
-          ).userName as string;
-        } catch (error) {
-          if (
-            (error as Error).message !==
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
-          ) {
-            throw error;
-          }
-        }
-
-        // signifyName should always be set
-        const oobi = await Agent.agent.connections.getOobi(
-          aids[0].signifyName,
-          userName
-        );
-        await (
-          await fetch(
-            `${ConfigurationService.env.keri.credentials.testServer.urlExt}/resolveOobi`,
-            {
-              method: "POST",
-              body: JSON.stringify({ oobi }),
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          )
-        ).json();
-      } else {
-        // eslint-disable-next-line no-console
-        console.warn(
-          "Please create a KERI AID first before scanning an OOBI of the deployed server, if you wish to be issued an ACDC automatically."
-        );
-      }
-    }
 
     return this.eventService.emit<ConnectionStateChangedEvent>({
       type: ConnectionEventTypes.ConnectionStateChanged,

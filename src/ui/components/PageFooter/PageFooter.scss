@@ -15,6 +15,11 @@
     &.secondary-button.ion-activated {
       --ion-toolbar-color: var(--ion-color-light);
       --ion-toolbar-background: var(--ion-color-primary);
+
+      &.md {
+        --ion-toolbar-color: var(--ion-color-primary);
+        --ion-toolbar-background: var(--ion-color-light);
+      }
     }
   }
 

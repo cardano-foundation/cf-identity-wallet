@@ -5,6 +5,7 @@ import { ConnectionRequest } from "./ConnectionRequest";
 import { CredentialRequest } from "./CredentialRequest";
 import { MultiSigRequestStageOne } from "./MultiSigRequestStageOne";
 import { MultiSigRequestStageTwo } from "./MultiSigRequestStageTwo";
+import { SignTransactionRequest } from "./SignTransactionRequest";
 
 const RequestComponent = ({
   pageId,
@@ -46,6 +47,20 @@ const RequestComponent = ({
       />
     ) : (
       <MultiSigRequestStageTwo
+        pageId={pageId}
+        activeStatus={activeStatus}
+        blur={blur}
+        setBlur={setBlur}
+        requestData={requestData}
+        initiateAnimation={initiateAnimation}
+        handleAccept={handleAccept}
+        handleCancel={handleCancel}
+        setRequestStage={setRequestStage}
+      />
+    );
+  case IncomingRequestType.SIGN_TRANSACTION_REQUEST:
+    return (
+      <SignTransactionRequest
         pageId={pageId}
         activeStatus={activeStatus}
         blur={blur}

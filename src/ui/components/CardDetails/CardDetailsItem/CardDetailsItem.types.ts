@@ -8,4 +8,5 @@ export interface CardDetailsItemProps {
   infoTestId?: string;
   className?: string;
   mask?: boolean;
+  fullText?: boolean;
 }
