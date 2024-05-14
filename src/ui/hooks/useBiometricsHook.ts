@@ -72,12 +72,6 @@ const useBiometricAuth = () => {
           BiometryErrorType.biometryNotAvailable
         );
       }
-      if (biometricResult?.strongReason?.includes("NSFaceIDUsageDescription")) {
-        return new BiometryError(
-          i18n.t("biometry.iosnotenabled"),
-          BiometryErrorType.biometryNotAvailable
-        );
-      }
       return new BiometryError(
         i18n.t("biometry.notavailable"),
         BiometryErrorType.biometryNotAvailable

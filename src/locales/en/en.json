@@ -1228,7 +1228,6 @@
     "iosfallbacktitle": "Use passcode",
     "androidtitle": "Authentication",
     "androidsubtitle": "Authentication using biometrics",
-    "iosnotenabled": "Biometry not added in iOS info.plist configuration file",
     "setupandroidbiometryheader": "Do you want to allow “IDW” to use biometrics?",
     "setupandroidbiometryconfirm": "Ok",
     "setupandroidbiometrycancel": "Dont allow",
