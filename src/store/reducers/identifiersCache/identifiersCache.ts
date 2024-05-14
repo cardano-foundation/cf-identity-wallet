@@ -66,7 +66,7 @@ const getFavouritesIdentifiersCache = (state: RootState) =>
   state.identifiersCache.favourites;
 
 const getMultiSigGroupCache = (state: RootState) =>
-  state.identifiersCache.multiSigGroup;
+  state.identifiersCache?.multiSigGroup;
 
 export {
   getIdentifiersCache,
