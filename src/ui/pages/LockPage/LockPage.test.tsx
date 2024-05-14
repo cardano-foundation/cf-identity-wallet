@@ -201,3 +201,5 @@ describe("Lock Page", () => {
     });
   });
 });
+
+export type { StoreMockedProps };
