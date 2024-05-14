@@ -6,8 +6,8 @@ import {
 import { EventService } from "./services/eventService";
 import { IdentifierStorage } from "./records/identifierStorage";
 import { CredentialStorage } from "./records/credentialStorage";
-import { BasicStorage } from "./records/basicStorage";
 import { ConnectionHistoryType } from "./services/connection.types";
+import { PeerConnectionStorage } from "./records";
 
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
@@ -58,6 +58,10 @@ enum AcdcEventTypes {
   AcdcStateChanged = "AcdcStateChanged",
 }
 
+enum KeriaStatusEventTypes {
+  KeriaStatusChanged = "KeriaStatusChanged",
+}
+
 interface ConnectionStateChangedEvent extends BaseEventEmitter {
   type: typeof ConnectionEventTypes.ConnectionStateChanged;
   payload: {
@@ -77,6 +81,13 @@ interface AcdcStateChangedEvent extends BaseEventEmitter {
         status: CredentialStatus.CONFIRMED;
         credential: CredentialShortDetails;
       };
+}
+
+interface KeriaStatusChangedEvent extends BaseEventEmitter {
+  type: typeof KeriaStatusEventTypes.KeriaStatusChanged;
+  payload: {
+    isOnline: boolean;
+  };
 }
 
 interface KeriaNotification {
@@ -112,9 +123,11 @@ interface IdentifierResult {
 }
 
 enum NotificationRoute {
-  Credential = "/exn/ipex/grant",
+  ExnIpexGrant = "/exn/ipex/grant",
   MultiSigIcp = "/multisig/icp",
   MultiSigRot = "/multisig/rot",
+  ExnIpexApply = "/exn/ipex/apply",
+  ExnIpexAgree = "/exn/ipex/agree",
 }
 
 export {
@@ -123,6 +136,7 @@ export {
   ConnectionEventTypes,
   AcdcEventTypes,
   NotificationRoute,
+  KeriaStatusEventTypes,
 };
 
 export type {
@@ -139,4 +153,5 @@ export type {
   AgentServicesProps,
   CreateIdentifierResult,
   IdentifierResult,
+  KeriaStatusChangedEvent,
 };

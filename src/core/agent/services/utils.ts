@@ -1,6 +1,7 @@
 import { Operation, SignifyClient } from "signify-ts";
 import { CredentialMetadataRecord } from "../records";
 import { CredentialShortDetails } from "./credentialService.types";
+import { Agent } from "../agent";
 
 async function waitAndGetDoneOp(
   client: SignifyClient,
@@ -26,5 +27,34 @@ function getCredentialShortDetails(
     status: metadata.status,
   };
 }
+
+export const OnlineOnly = (
+  target: any,
+  propertyKey: string,
+  descriptor: PropertyDescriptor
+) => {
+  const originalMethod = descriptor.value;
+  descriptor.value = async function (...args: any[]) {
+    const isKeriOnline = Agent.agent.getKeriaOnlineStatus();
+    if (!isKeriOnline) {
+      throw new Error(Agent.KERIA_CONNECTION_BROKEN);
+    }
+    // Call the original method
+    try {
+      const executeResult = await originalMethod.apply(this, args);
+      return executeResult;
+    } catch (error) {
+      const errorStack = (error as Error).stack;
+      /** If the error is failed to fetch with signify,
+       * we retry until the connection is secured*/
+      if (errorStack && /SignifyClient/gi.test(errorStack)) {
+        Agent.agent.bootAndConnect(1000);
+        throw new Error(Agent.KERIA_CONNECTION_BROKEN);
+      } else {
+        throw error;
+      }
+    }
+  };
+};
 
 export { waitAndGetDoneOp, getCredentialShortDetails };

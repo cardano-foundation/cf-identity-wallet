@@ -12,7 +12,11 @@ import {
   IdentifierService,
 } from "./services";
 import { SignifyNotificationService } from "./services/signifyNotificationService";
-import { AgentServicesProps } from "./agent.types";
+import {
+  AgentServicesProps,
+  KeriaStatusChangedEvent,
+  KeriaStatusEventTypes,
+} from "./agent.types";
 import { EventService } from "./services/eventService";
 import {
   BasicRecord,
@@ -25,6 +29,8 @@ import {
   CredentialStorage,
   IdentifierMetadataRecord,
   IdentifierStorage,
+  PeerConnectionMetadataRecord,
+  PeerConnectionStorage,
   NotificationRecord,
   NotificationStorage,
 } from "./records";
@@ -44,6 +50,9 @@ class Agent {
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
     "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
 
+  static readonly KERIA_CONNECTION_BROKEN =
+    "The app is not connected to KERIA at the moment";
+
   private static instance: Agent;
   private agentServicesProps!: AgentServicesProps;
 
@@ -55,9 +64,9 @@ class Agent {
   private connectionStorage!: ConnectionStorage;
   private connectionNoteStorage!: ConnectionNoteStorage;
   private notificationStorage!: NotificationStorage;
+  private peerConnectionStorage!: PeerConnectionStorage;
 
   private signifyClient!: SignifyClient;
-  static ready = false;
 
   // @TODO - foconnor: Registering these should be more generic, but OK for now
   private identifierService!: IdentifierService;
@@ -67,6 +76,7 @@ class Agent {
   private connectionService!: ConnectionService;
   private credentialService!: CredentialService;
   private signifyNotificationService!: SignifyNotificationService;
+  static isOnline = false;
 
   get identifiers() {
     if (!this.identifierService) {
@@ -124,6 +134,10 @@ class Agent {
     return this.credentialService;
   }
 
+  get peerConnectionMetadataStorage() {
+    return this.peerConnectionStorage;
+  }
+
   get basicStorage() {
     return this.basicStorageService;
   }
@@ -151,8 +165,19 @@ class Agent {
     return this.instance;
   }
 
+  onKeriaStatusStateChanged(
+    callback: (event: KeriaStatusChangedEvent) => void
+  ) {
+    this.agentServicesProps.eventService.on(
+      KeriaStatusEventTypes.KeriaStatusChanged,
+      async (event: KeriaStatusChangedEvent) => {
+        callback(event);
+      }
+    );
+  }
+
   async start(): Promise<void> {
-    if (!Agent.ready) {
+    if (!Agent.isOnline) {
       await this.storageSession.open(walletId);
       this.basicStorageService = new BasicStorage(
         this.getStorageService<BasicRecord>(this.storageSession)
@@ -182,20 +207,64 @@ class Agent {
         Tier.low,
         Agent.LOCAL_KERIA_BOOT_ENDPOINT
       );
-      try {
-        await this.signifyClient.connect();
-      } catch (err) {
-        await this.signifyClient.boot();
-        await this.signifyClient.connect();
-      }
 
       this.agentServicesProps = {
         signifyClient: this.signifyClient,
         eventService: new EventService(),
       };
 
-      Agent.ready = true;
+      this.peerConnectionStorage = new PeerConnectionStorage(
+        this.getStorageService<PeerConnectionMetadataRecord>(
+          this.storageSession
+        )
+      );
+
+      this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
+        type: KeriaStatusEventTypes.KeriaStatusChanged,
+        payload: {
+          isOnline: Agent.isOnline,
+        },
+      });
+
+      try {
+        await this.signifyClient.connect();
+        Agent.isOnline = true;
+      } catch (err) {
+        await this.signifyClient.boot();
+        await this.signifyClient.connect();
+        Agent.isOnline = true;
+      }
     }
+  }
+
+  async bootAndConnect(retryInterval = 1000) {
+    try {
+      if (Agent.isOnline) {
+        Agent.isOnline = false;
+        this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
+          type: KeriaStatusEventTypes.KeriaStatusChanged,
+          payload: {
+            isOnline: false,
+          },
+        });
+      }
+      await this.signifyClient.boot();
+      await this.signifyClient.connect();
+      Agent.isOnline = true;
+      this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
+        type: KeriaStatusEventTypes.KeriaStatusChanged,
+        payload: {
+          isOnline: true,
+        },
+      });
+    } catch (error) {
+      await new Promise((resolve) => setTimeout(resolve, retryInterval));
+      await this.bootAndConnect(retryInterval);
+    }
+  }
+
+  getKeriaOnlineStatus(): boolean {
+    return Agent.isOnline;
   }
 
   private async getBran(): Promise<string> {

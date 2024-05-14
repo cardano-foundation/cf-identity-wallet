@@ -1,3 +1,4 @@
+import { Agent } from "../agent";
 import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
 import { EventService } from "./eventService";
 import { IdentifierService } from "./identifierService";
@@ -93,15 +94,6 @@ const identifierStorage = jest.mocked({
   createIdentifierMetadataRecord: jest.fn(),
 });
 
-const credentialStorage = jest.mocked({
-  getAllCredentialMetadata: jest.fn(),
-  deleteCredentialMetadata: jest.fn(),
-  getCredentialMetadata: jest.fn(),
-  getCredentialMetadataByConnectionId: jest.fn(),
-  saveCredentialMetadataRecord: jest.fn(),
-  updateCredentialMetadata: jest.fn(),
-});
-
 const agentServicesProps = {
   signifyClient: signifyClient as any,
   eventService: new EventService(),
@@ -119,6 +111,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getConnectionShortDetailById: jest.fn(),
         getConnections: jest.fn(),
       },
+      getKeriaOnlineStatus: jest.fn(),
     },
   },
 }));
@@ -186,6 +179,7 @@ describe("Single sig service of agent", () => {
   });
 
   test("identifier exists in the database but not on Signify", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
@@ -198,6 +192,7 @@ describe("Single sig service of agent", () => {
   });
 
   test("can get a keri identifier in detailed view", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
@@ -217,6 +212,7 @@ describe("Single sig service of agent", () => {
   });
 
   test("can create a keri identifier", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const aid = "newIdentifierAid";
     const displayName = "newDisplayName";
     identifiersCreateMock.mockResolvedValue({
@@ -237,6 +233,7 @@ describe("Single sig service of agent", () => {
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
   });
   test("cannot create a keri identifier if theme is not valid", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const displayName = "newDisplayName";
     identifiersCreateMock.mockResolvedValue({
       serder: {
@@ -315,6 +312,7 @@ describe("Single sig service of agent", () => {
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI identifiers", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     identifiersListMock.mockReturnValue({
       aids: [
         {
@@ -345,6 +343,7 @@ describe("Single sig service of agent", () => {
   });
 
   test("should call signify.rotateIdentifier with correct params", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const metadata = {
       id: "123456",
       displayName: "John Doe",
@@ -360,5 +359,34 @@ describe("Single sig service of agent", () => {
     });
     await identifierService.rotateIdentifier(metadata);
     expect(identifiersRotateMock).toHaveBeenCalledWith(metadata.signifyName);
+  });
+
+  test("getIdentifier should throw an error when KERIA is offline", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    await expect(identifierService.getIdentifier("id")).rejects.toThrowError(
+      Agent.KERIA_CONNECTION_BROKEN
+    );
+    await expect(identifierService.syncKeriaIdentifiers()).rejects.toThrowError(
+      Agent.KERIA_CONNECTION_BROKEN
+    );
+    await expect(
+      identifierService.getSigner("identifier")
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      identifierService.createIdentifier({
+        displayName: "name",
+        theme: 0,
+      })
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      identifierService.rotateIdentifier({
+        id: "123456",
+        displayName: "John Doe",
+        isPending: false,
+        signifyOpName: "op123",
+        signifyName: "john_doe",
+        theme: 0,
+      } as IdentifierMetadataRecord)
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 });

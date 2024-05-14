@@ -27,3 +27,53 @@
     margin-top: 1.5rem;
   }
 }
+
+.edit-identifier {
+  &.responsive-modal .responsive-modal-content {
+    & > * {
+      margin-bottom: 0;
+    }
+
+    .theme-input-title {
+      margin-bottom: 0.625rem;
+    }
+
+    .card-theme {
+      margin-bottom: 1.5rem;
+
+      & > .identifier-theme-selector {
+        padding: 0;
+      }
+    }
+
+    .indentifier-input {
+      margin-bottom: 2.375rem;
+      &.has-error {
+        margin-bottom: 0;
+      }
+
+      .label-stacked {
+        font-size: 1rem;
+      }
+    }
+
+    .confirm-edit-button {
+      width: 100%;
+      margin-bottom: 0.25rem;
+    }
+
+    @media screen and (min-width: 250px) and (max-width: 370px) {
+      .theme-input-title {
+        font-size: 0.875rem;
+      }
+
+      .indentifier-input {
+        margin-bottom: 1.725rem;
+
+        .label-stacked {
+          font-size: 0.875rem;
+        }
+      }
+    }
+  }
+}

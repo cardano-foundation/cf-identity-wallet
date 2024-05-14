@@ -1,14 +1,14 @@
 import { IonButton, IonIcon } from "@ionic/react";
-import { personCircleOutline, trashOutline, copyOutline } from "ionicons/icons";
+import { copyOutline, personCircleOutline, trashOutline } from "ionicons/icons";
 import { i18n } from "../../../../../i18n";
-import { OptionModal } from "../../../../components/OptionsModal";
-import { ConfirmConnectModalProps } from "./ConfirmConnectModal.types";
-import "./ConfirmConnectModal.scss";
-import { writeToClipboard } from "../../../../utils/clipboard";
-import { setToastMsg } from "../../../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../../../globals/types";
 import { useAppDispatch } from "../../../../../store/hooks";
+import { setToastMsg } from "../../../../../store/reducers/stateCache";
+import { OptionModal } from "../../../../components/OptionsModal";
+import { ToastMsgType } from "../../../../globals/types";
+import { writeToClipboard } from "../../../../utils/clipboard";
 import { combineClassNames } from "../../../../utils/style";
+import "./ConfirmConnectModal.scss";
+import { ConfirmConnectModalProps } from "./ConfirmConnectModal.types";
 
 const ConfirmConnectModal = ({
   openModal,
@@ -41,8 +41,8 @@ const ConfirmConnectModal = ({
 
   const buttonTitle = i18n.t(
     isConnectModal
-      ? "connectwallet.connectionhistory.confirmconnect.connectbtn"
-      : "connectwallet.connectionhistory.confirmconnect.disconnectbtn"
+      ? "menu.tab.items.connectwallet.connectionhistory.confirmconnect.connectbtn"
+      : "menu.tab.items.connectwallet.connectionhistory.confirmconnect.disconnectbtn"
   );
 
   const displayUrl = connectionData
@@ -57,8 +57,8 @@ const ConfirmConnectModal = ({
   };
 
   const confirm = () => {
-    onConfirm();
     closeModal();
+    onConfirm();
   };
 
   const confirmClass = combineClassNames("confirm-connect-submit", {
@@ -76,7 +76,7 @@ const ConfirmConnectModal = ({
         closeButton: true,
         closeButtonAction: closeModal,
         closeButtonLabel: `${i18n.t(
-          "connectwallet.connectionhistory.confirmconnect.done"
+          "menu.tab.items.connectwallet.connectionhistory.confirmconnect.done"
         )}`,
         actionButton: true,
         actionButtonIcon: trashOutline,
