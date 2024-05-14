@@ -3,6 +3,11 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { IonReactRouter } from "@ionic/react-router";
+import {
+  BiometryError,
+  BiometryType,
+} from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
+import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { RoutePath } from "../../../routes";
@@ -64,6 +69,7 @@ const initialState = {
 
 describe("Lock Page", () => {
   beforeEach(() => {
+    jest.resetModules();
     jest.resetAllMocks();
   });
 
@@ -140,6 +146,37 @@ describe("Lock Page", () => {
 
     await waitFor(() => {
       expect(SecureStorage.get).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("lock-page")).not.toBeInTheDocument();
+    });
+  });
+  test("Login using biometrics", async () => {
+    jest.doMock("../../hooks/useBiometricsHook", () => ({
+      useBiometricAuth: jest.fn(() => ({
+        biometricsIsEnabled: true,
+        biometricInfo: {
+          isAvailable: true,
+          hasCredentials: false,
+          biometryType: BiometryType.fingerprintAuthentication,
+          strongBiometryIsAvailable: true,
+        },
+        handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+        setBiometricsIsEnabled: jest.fn(),
+      })),
+    }));
+
+    const { queryByTestId } = render(
+      <Provider store={storeMocked(initialState)}>
+        <LockPage />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(SecureStorage.get).not.toHaveBeenCalledWith(
+        KeyStoreKeys.APP_PASSCODE
+      );
     });
 
     await waitFor(() => {

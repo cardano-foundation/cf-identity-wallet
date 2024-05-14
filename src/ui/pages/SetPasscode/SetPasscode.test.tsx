@@ -427,6 +427,19 @@ describe("SetPasscode Page", () => {
   });
 
   test("Setup passcode and iOS biometrics", async () => {
+    jest.doMock("../../hooks/useBiometricsHook", () => ({
+      useBiometricAuth: jest.fn(() => ({
+        biometricsIsEnabled: false,
+        biometricInfo: {
+          isAvailable: true,
+          hasCredentials: false,
+          biometryType: BiometryType.faceId,
+          strongBiometryIsAvailable: true,
+        },
+        handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+        setBiometricsIsEnabled: jest.fn(),
+      })),
+    }));
     jest.doMock("@ionic/react", () => {
       const actualIonicReact = jest.requireActual("@ionic/react");
       return {
@@ -492,7 +505,7 @@ describe("SetPasscode Page", () => {
         biometricInfo: {
           isAvailable: true,
           hasCredentials: false,
-          biometryType: BiometryType.fingerprintAuthentication,
+          biometryType: BiometryType.faceId,
           strongBiometryIsAvailable: true,
         },
         handleBiometricAuth: jest.fn(() =>
