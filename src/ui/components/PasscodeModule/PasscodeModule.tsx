@@ -3,7 +3,7 @@ import { backspaceSharp, fingerPrintSharp } from "ionicons/icons";
 import { PasscodeModuleProps } from "./PasscodeModule.types";
 import "./PasscodeModule.scss";
 import { PASSCODE_MAPPING } from "../../globals/types";
-import useBiometricAuth from "../../hooks/useBiometricsHook";
+import { useBiometricAuth } from "../../hooks/useBiometricsHook";
 
 const PasscodeModule = ({
   error,

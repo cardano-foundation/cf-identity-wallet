@@ -27,7 +27,7 @@ import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../../../core/storage";
-import useBiometricAuth from "../../../../hooks/useBiometricsHook";
+import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
 
 const Settings = () => {
   const { biometricsIsEnabled, setBiometricsIsEnabled } = useBiometricAuth();

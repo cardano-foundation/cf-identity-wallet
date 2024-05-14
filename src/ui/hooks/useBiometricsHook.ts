@@ -93,4 +93,4 @@ const useBiometricAuth = () => {
   };
 };
 
-export default useBiometricAuth;
+export { useBiometricAuth };

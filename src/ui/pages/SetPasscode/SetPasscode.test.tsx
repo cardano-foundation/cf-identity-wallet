@@ -27,37 +27,34 @@ const setPreferenceStorageSpy = jest
   .spyOn(PreferencesStorage, "set")
   .mockResolvedValue();
 
-jest.mock("@ionic/react", () => {
-  const actualIonicReact = jest.requireActual("@ionic/react");
-  return {
-    ...actualIonicReact,
-    getPlatforms: () => ["android"],
-  };
-});
-
-jest.mock("../../hooks/useBiometricsHook", () => {
-  const actualUseBiometrics = jest.requireActual(
-    "../../hooks/useBiometricsHook"
-  );
-  return {
-    ...actualUseBiometrics,
-    __esModule: true,
-    useBiometricAuth: jest.fn(() => ({
-      biometricsIsEnabled: false,
-      biometricInfo: {
-        isAvailable: true,
-        hasCredentials: false,
-        biometryType: BiometryType.fingerprintAuthentication,
-        strongBiometryIsAvailable: true,
-      },
-      handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
-      setBiometricsIsEnabled: jest.fn(),
-    })),
-  };
-});
+jest.mock("../../hooks/useBiometricsHook", () => ({
+  useBiometricAuth: jest.fn(() => ({
+    biometricsIsEnabled: false,
+    biometricInfo: {
+      isAvailable: true,
+      hasCredentials: false,
+      biometryType: BiometryType.fingerprintAuthentication,
+      strongBiometryIsAvailable: true,
+    },
+    handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+    setBiometricsIsEnabled: jest.fn(),
+  })),
+}));
 
 describe("SetPasscode Page", () => {
+  beforeEach(() => {
+    jest.resetModules();
+    jest.doMock("@ionic/react", () => {
+      const actualIonicReact = jest.requireActual("@ionic/react");
+      return {
+        ...actualIonicReact,
+        getPlatforms: () => ["mobileweb"],
+      };
+    });
+  });
+
   test("Renders Create Passcode page with title and description", () => {
+    require("@ionic/react");
     const { getByText } = render(
       <Provider store={store}>
         <SetPasscode />
@@ -72,6 +69,7 @@ describe("SetPasscode Page", () => {
   });
 
   test("The user can add and remove digits from the passcode", () => {
+    require("@ionic/react");
     const { getByText, getByTestId } = render(
       <Provider store={store}>
         <SetPasscode />
@@ -88,6 +86,7 @@ describe("SetPasscode Page", () => {
   });
 
   test("Renders Re-enter Passcode title and start over button when passcode is set", () => {
+    require("@ionic/react");
     const { getByText } = render(
       <Provider store={store}>
         <SetPasscode />
@@ -109,6 +108,7 @@ describe("SetPasscode Page", () => {
   });
 
   test("renders enter passcode restarting the process when start over button is clicked", () => {
+    require("@ionic/react");
     const { getByText } = render(
       <Provider store={store}>
         <SetPasscode />
@@ -138,6 +138,7 @@ describe("SetPasscode Page", () => {
   });
 
   test("Entering a wrong passcode at the passcode confirmation returns an error", () => {
+    require("@ionic/react");
     const { getByText } = render(
       <Provider store={store}>
         <SetPasscode />
@@ -195,6 +196,7 @@ describe("SetPasscode Page", () => {
   });
 
   test("Redirects to next page when passcode is entered correctly", async () => {
+    require("@ionic/react");
     const { getByText, queryByText } = render(
       <IonReactRouter>
         <IonRouterOutlet animated={false}>
@@ -246,6 +248,7 @@ describe("SetPasscode Page", () => {
     expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
   });
   test("calls handleOnBack when back button is clicked", async () => {
+    require("@ionic/react");
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const initialState = {
@@ -291,7 +294,16 @@ describe("SetPasscode Page", () => {
     );
   });
 
-  test("Android flow", async () => {
+  test("Setup passcode and Android biometrics", async () => {
+    jest.doMock("@ionic/react", () => {
+      const actualIonicReact = jest.requireActual("@ionic/react");
+      return {
+        ...actualIonicReact,
+        getPlatforms: () => ["android"],
+      };
+    });
+    require("@ionic/react");
+
     const { getByText, queryByText, getByTestId } = render(
       <IonReactRouter>
         <IonRouterOutlet animated={false}>
@@ -335,7 +347,6 @@ describe("SetPasscode Page", () => {
       );
     });
 
-    // Native biometric fingerprint appears
     await waitFor(() => {
       expect(setPreferenceStorageSpy).toBeCalledWith(
         PreferencesKeys.APP_BIOMETRY,
@@ -351,6 +362,66 @@ describe("SetPasscode Page", () => {
       {
         initialized: true,
       }
+    );
+  });
+
+  test("Setup passcode and cancel Android biometrics", async () => {
+    jest.doMock("@ionic/react", () => {
+      const actualIonicReact = jest.requireActual("@ionic/react");
+      return {
+        ...actualIonicReact,
+        getPlatforms: () => ["android"],
+      };
+    });
+    require("@ionic/react");
+
+    const { getByText, queryByText, getByTestId } = render(
+      <IonReactRouter>
+        <IonRouterOutlet animated={false}>
+          <Provider store={store}>
+            <SetPasscode />
+          </Provider>
+        </IonRouterOutlet>
+      </IonReactRouter>
+    );
+
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+
+    expect(
+      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
+    ).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.setpasscode.startover.label)
+    ).toBeInTheDocument();
+
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS.biometry.setupandroidbiometryheader)
+      ).toBeInTheDocument()
+    );
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("alert-setup-android-biometry-cancel-button")
+      );
+    });
+
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS.biometry.setupandroidbiometrycancel)
+      ).toBeInTheDocument()
     );
   });
 });

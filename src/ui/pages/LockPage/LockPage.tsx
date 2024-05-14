@@ -25,7 +25,7 @@ import { PasscodeModule } from "../../components/PasscodeModule";
 import { PageFooter } from "../../components/PageFooter";
 import { Alert } from "../../components/Alert";
 import "./LockPage.scss";
-import useBiometricAuth from "../../hooks/useBiometricsHook";
+import { useBiometricAuth } from "../../hooks/useBiometricsHook";
 
 const LockPage = () => {
   const pageId = "lock-page";
