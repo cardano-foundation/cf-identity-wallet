@@ -139,14 +139,10 @@ const Settings = () => {
           data-testid="settings-support-items"
         >
           {supportItems.map((item, index) => {
-            const handleItemClick = () => {
-              // @TODO - sdisalvo: Add custom onClick logic here for each item
-              // console.log(`Clicked item ${index}`);
-            };
             return (
               <IonItem
                 key={index}
-                onClick={handleItemClick}
+                onClick={() => handleOptionClick(item)}
                 className="support-item"
                 data-testid={`support-item-${index}`}
               >

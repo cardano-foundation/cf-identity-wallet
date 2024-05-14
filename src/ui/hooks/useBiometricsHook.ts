@@ -9,6 +9,7 @@ import {
   CheckBiometryResult,
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import i18n from "i18next";
+import { PluginListenerHandle } from "@capacitor/core";
 import { useActivityTimer } from "../components/AppWrapper/hooks/useActivityTimer";
 import { PreferencesKeys, PreferencesStorage } from "../../core/storage";
 
@@ -22,6 +23,24 @@ const useBiometricAuth = () => {
   useEffect(() => {
     checkBiometry();
     checkBiometryInPreferences();
+  }, []);
+
+  let appListener: PluginListenerHandle;
+  useEffect(() => {
+    const updateBiometrics = async () => {
+      appListener = await BiometricAuth.addResumeListener(setBiometricInfo);
+      try {
+        appListener = await BiometricAuth.addResumeListener(setBiometricInfo);
+      } catch (error) {
+        if (error instanceof Error) {
+          // TODO: handle error
+        }
+      }
+    };
+    updateBiometrics();
+    return () => {
+      appListener?.remove();
+    };
   }, []);
 
   const checkBiometryInPreferences = async () => {

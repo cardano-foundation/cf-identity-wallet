@@ -74,9 +74,7 @@ const LockPage = () => {
         // TODO: handle error
       }
     };
-    if (stateCache.initialized) {
-      runBiometrics();
-    }
+    runBiometrics();
   }, [stateCache.initialized]);
 
   const handlePinChange = (digit: number) => {
