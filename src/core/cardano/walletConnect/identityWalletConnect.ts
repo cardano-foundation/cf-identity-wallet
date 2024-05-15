@@ -10,7 +10,7 @@ import { Agent } from "../../agent/agent";
 import {
   PeerConnectSigningEvent,
   PeerConnectSigningEventTypes,
-} from "../../agent/agent.types";
+} from "./peerConnection.types";
 import { EventService } from "../../agent/services/eventService";
 
 class IdentityWalletConnect extends CardanoPeerConnect {
@@ -69,9 +69,17 @@ class IdentityWalletConnect extends CardanoPeerConnect {
           approvalCallback,
         },
       });
+      let timeLeft = 3600000;
       // Wait until approved is true or false
       while (approved === undefined) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
+        timeLeft -= 1000;
+        if (timeLeft <= 0) {
+          if (typeof onSignError === "function") {
+            onSignError(new Error("Time out"));
+          }
+          throw new Error("Time out");
+        }
       }
       if (approved) {
         if (this.signerCache.get(identifier) === undefined) {

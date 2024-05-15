@@ -2,15 +2,15 @@ import { IConnectMessage } from "@fabianbormann/cardano-peer-connect/dist/src/ty
 import { ExperimentalContainer } from "@fabianbormann/cardano-peer-connect";
 import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { IdentityWalletConnect } from "./identityWalletConnect";
-import { ExperimentalAPIFunctions } from "./peerConnection.types";
 import packageInfo from "../../../../package.json";
 import ICON_BASE64 from "../../../assets/icon-only";
 import { KeyStoreKeys } from "../../storage";
 import { EventService } from "../../agent/services/eventService";
 import {
+  ExperimentalAPIFunctions,
   PeerConnectSigningEvent,
   PeerConnectSigningEventTypes,
-} from "../../agent/agent.types";
+} from "./peerConnection.types";
 
 class PeerConnection {
   static readonly PEER_CONNECTION_START_PENDING =
