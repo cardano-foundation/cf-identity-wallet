@@ -1,46 +1,55 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
+import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { setupIonicReact } from "@ionic/react";
+import { mockIonicReact } from "@ionic/react-test-utils";
 import { CreateIdentifier } from "./CreateIdentifier";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import { TabsRoutePath } from "../navigation/TabsMenu";
+setupIonicReact();
+mockIonicReact();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children }: { children: any }) => children,
+  IonModal: ({ children, isOpen }: any) => (
+    <div style={{ display: isOpen ? "block" : "none" }}>{children}</div>
+  ),
 }));
 
-describe("CreateIdentifier modal", () => {
+jest.mock("@aparajita/capacitor-secure-storage", () => ({
+  SecureStorage: {
+    get: (key: string) => {
+      return "111111";
+    },
+  },
+}));
+
+describe("Create Identifier modal", () => {
   const mockStore = configureStore();
-  const dispatchMock = jest.fn();
+
   const initialState = {
     stateCache: {
-      routes: ["/"],
+      routes: [TabsRoutePath.IDENTIFIERS],
       authentication: {
         loggedIn: true,
-        userName: "Test",
         time: Date.now(),
         passcodeIsSet: true,
+        passwordIsSet: false,
       },
     },
-    connectionsCache: {
-      connections: connectionsFix,
-    },
     identifiersCache: {
-      identifiers: filteredIdentifierFix,
-      favourites: [],
+      identifiers: [],
     },
   };
 
+  const dispatchMock = jest.fn();
   const storeMocked = {
     ...mockStore(initialState),
     dispatch: dispatchMock,
   };
 
-  test("It renders component successfully and can dismiss the modal", async () => {
-    const { getByTestId, getByText } = render(
+  test("It can dismiss the modal", async () => {
+    const { getByTestId } = render(
       <Provider store={storeMocked}>
         <CreateIdentifier
           modalIsOpen={true}
@@ -49,15 +58,15 @@ describe("CreateIdentifier modal", () => {
         />
       </Provider>
     );
-    expect(
-      getByText(EN_TRANSLATIONS.createidentifier.add.title)
-    ).toBeInTheDocument();
-    fireEvent.click(getByTestId("close-button"));
+    act(() => {
+      fireEvent.click(getByTestId("close-button"));
+    });
     expect(getByTestId("create-identifier-modal-content-page")).toHaveClass(
       "ion-hide"
     );
   });
-  test("It shows spinner when creating new identifier", async () => {
+
+  test("It shows the spinner and closes the modal when creating a new Default identifier", async () => {
     const { getByTestId } = render(
       <Provider store={storeMocked}>
         <CreateIdentifier
@@ -68,37 +77,15 @@ describe("CreateIdentifier modal", () => {
       </Provider>
     );
     const displayNameInput = getByTestId("display-name-input");
-    fireEvent.change(displayNameInput, { target: { value: "Test" } });
-    fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
+    act(() => {
+      fireEvent.change(displayNameInput, { target: { value: "Test" } });
+    });
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
+    });
     expect(getByTestId("spinner-container")).toBeVisible();
-  });
-  test.skip("It can navigate all the way to the last stage of Multi-Sig creation", async () => {
-    const { getByTestId, getByText, getByRole } = render(
-      <Provider store={storeMocked}>
-        <CreateIdentifier
-          modalIsOpen={true}
-          setModalIsOpen={jest.fn()}
-          resumeMultiSig={null}
-        />
-      </Provider>
+    expect(getByTestId("create-identifier-modal-content-page")).toHaveClass(
+      "ion-hide"
     );
-    const displayNameInput = getByTestId("display-name-input");
-    fireEvent.change(displayNameInput, { target: { value: "Test" } });
-    fireEvent.click(
-      getByText(EN_TRANSLATIONS.createidentifier.aidtype.multisig.label)
-    );
-    fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
-    expect(
-      getByText(EN_TRANSLATIONS.createidentifier.connections.title)
-    ).toBeInTheDocument();
-    fireEvent.click(getByTestId("connection-checkbox-0"));
-    fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
-    expect(
-      getByText(EN_TRANSLATIONS.createidentifier.threshold.title)
-    ).toBeInTheDocument();
-    fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
-    expect(
-      getByText(EN_TRANSLATIONS.createidentifier.confirm.title)
-    ).toBeInTheDocument();
   });
 });

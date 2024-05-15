@@ -35,7 +35,10 @@ const IdentifierStage1BodyInit = ({
         />
       }
     >
-      <p className="multisig-share-note">
+      <p
+        className="multisig-share-note"
+        data-testid="multisig-share-note-top"
+      >
         {i18n.t(
           groupMetadata?.groupInitiator
             ? "createidentifier.share.notes.top"
@@ -71,7 +74,7 @@ const IdentifierStage1BodyInit = ({
           expand="block"
           fill="outline"
           className="copy-button secondary-button"
-          data-testid={`copy-button-${componentId}`}
+          data-testid={"multisig-copy-oobi-connection-button"}
           onClick={copyToClipboard}
         >
           {i18n.t("createidentifier.share.copybutton")}
@@ -83,14 +86,20 @@ const IdentifierStage1BodyInit = ({
           />
         </IonButton>
       </div>
-      <p className="multisig-share-note">
+      <p
+        className="multisig-share-note"
+        data-testid="multisig-share-note-middle"
+      >
         {i18n.t(
           groupMetadata?.groupInitiator
             ? "createidentifier.share.notes.middle"
             : "createidentifier.receive.notes.middle"
         )}
       </p>
-      <div className="share-identifier-scan-button">
+      <div
+        className="share-identifier-scan-button"
+        data-testid="share-identifier-scan-button-round"
+      >
         <IonButton
           shape="round"
           color={"primary-gradient"}

@@ -158,7 +158,7 @@ const IdentifierStage0 = ({
         header={
           <PageHeader
             closeButton={true}
-            closeButtonAction={() => handleCancel()}
+            closeButtonAction={handleCancel}
             closeButtonLabel={`${i18n.t(
               multiSigGroup
                 ? "createidentifier.back"
@@ -272,7 +272,7 @@ const IdentifierStage0 = ({
             ? "createidentifier.receive.confirmbutton"
             : "createidentifier.add.confirmbutton"
         )}`}
-        primaryButtonAction={async () => handleContinue()}
+        primaryButtonAction={handleContinue}
         primaryButtonDisabled={!displayNameValueIsValid}
       />
     </>

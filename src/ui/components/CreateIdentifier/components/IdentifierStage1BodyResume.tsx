@@ -113,7 +113,10 @@ const IdentifierStage1BodyResume = ({
         </div>
         <h3>{i18n.t("createidentifier.share.subtitle")}</h3>
         {!scannedConections?.length ? (
-          <p className="multisig-share-note multisig-share-note-footer">
+          <p
+            className="multisig-share-note multisig-share-note-footer"
+            data-testid="multisig-share-note-bottom"
+          >
             {i18n.t("createidentifier.share.notes.bottom")}
           </p>
         ) : (
@@ -138,7 +141,7 @@ const IdentifierStage1BodyResume = ({
       </ScrollablePageLayout>
       {groupMetadata?.groupInitiator && (
         <PageFooter
-          pageId={componentId}
+          pageId="initiate-multi-sig"
           primaryButtonText={`${i18n.t(
             "createidentifier.share.initiatebutton"
           )}`}
