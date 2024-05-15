@@ -18,6 +18,8 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     "The id doesn't correspond with any stored identifier";
   private selectedAid: string;
   private eventService: EventService;
+  static readonly MAX_SIGN_TIME = 3600000;
+  static readonly TIME_OUT = 1000;
   getIdentifierOobi: () => Promise<string>;
   sign: (identifier: string, payload: string) => Promise<string>;
 
@@ -69,12 +71,13 @@ class IdentityWalletConnect extends CardanoPeerConnect {
           approvalCallback,
         },
       });
-      let timeLeft = 3600000;
+      const startTime = Date.now();
       // Wait until approved is true or false
       while (approved === undefined) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        timeLeft -= 1000;
-        if (timeLeft <= 0) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, IdentityWalletConnect.TIME_OUT)
+        );
+        if (Date.now() > startTime + IdentityWalletConnect.MAX_SIGN_TIME) {
           if (typeof onSignError === "function") {
             onSignError(new Error("Time out"));
           }
