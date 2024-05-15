@@ -25,6 +25,10 @@ ion-grid.qr-code-scanner {
       margin: 1.5rem 0;
       --ionicon-stroke-width: 0.938rem;
     }
+
+    &.no-footer {
+      margin-bottom: calc(var(--scale-scan) * 2rem);
+    }
   }
 
   .scanner-spinner-container {
@@ -48,5 +52,9 @@ ion-grid.qr-code-scanner {
   @media screen and (min-width: 250px) and (max-width: 370px) {
     --scale-scan: 0.7;
     padding-inline: 0.9rem;
+
+    ion-row.no-footer {
+      margin-bottom: calc(var(--scale-scan) * 5rem);
+    }
   }
 }

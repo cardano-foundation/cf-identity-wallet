@@ -23,6 +23,10 @@
   }
 
   ion-toolbar {
+    ion-buttons.has-action.md {
+      min-width: 10%;
+    }
+
     ion-buttons ion-button {
       color: var(--ion-color-secondary);
 
