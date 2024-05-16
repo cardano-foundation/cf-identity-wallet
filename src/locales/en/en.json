@@ -1065,6 +1065,7 @@
     "share": {
       "title": "Share identifier",
       "subtitle": "You've scanned",
+      "copybutton": "Copy OOBI connection",
       "notes": {
         "top": "Before proceeding, please make sure that everyone you want to include as a signer scans this QR code.",
         "middle": "After everyone has scanned your QR code, please be sure to scan everyone else's QR code as well.",
@@ -1203,26 +1204,19 @@
       }
     },
     "multisig": {
-      "stageone": {
-        "title": "Identifier request",
-        "subtitle": "Review this multi-sig identifier request",
-        "requestfrom": "Request from",
-        "othermembers": "Other members",
-        "pending": "Pending",
-        "accepted": "Accepted",
-        "threshold": "Threshold",
-        "alert": {
-          "textaccept": "Are you sure you want to approve this request? You won't be able to change your decision later.",
-          "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
-          "accept": "Accept",
-          "decline": "Decline",
-          "cancel": "Cancel"
-        }
-      },
-      "stagetwo": {
-        "title": "Setup identifier",
-        "displayname": "Display name",
-        "chooseatheme": "Choose a theme"
+      "title": "Identifier request",
+      "subtitle": "Review this multi-sig identifier request",
+      "requestfrom": "Request from",
+      "othermembers": "Other members",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "threshold": "Threshold",
+      "alert": {
+        "textaccept": "Are you sure you want to approve this request? You won't be able to change your decision later.",
+        "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
+        "accept": "Accept",
+        "decline": "Decline",
+        "cancel": "Cancel"
       }
     },
     "button": {

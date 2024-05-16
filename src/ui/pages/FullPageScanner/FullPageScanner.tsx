@@ -32,6 +32,7 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
 
   const handleCloseButton = () => {
     handleReset();
+    setShowScan(false);
     dispatch(setCurrentOperation(OperationType.IDLE));
   };
 

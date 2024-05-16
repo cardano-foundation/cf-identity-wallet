@@ -1,10 +1,14 @@
 import { IonIcon, IonButton } from "@ionic/react";
-import { scanOutline, qrCodeOutline } from "ionicons/icons";
+import { scanOutline, qrCodeOutline, copyOutline } from "ionicons/icons";
 import { QRCode } from "react-qrcode-logo";
 import { i18n } from "../../../../i18n";
 import { PageHeader } from "../../PageHeader";
 import { ResponsivePageLayout } from "../../layout/ResponsivePageLayout";
 import { IdentifierStage1BodyProps } from "../CreateIdentifier.types";
+import { useAppDispatch } from "../../../../store/hooks";
+import { writeToClipboard } from "../../../utils/clipboard";
+import { setToastMsg } from "../../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../../globals/types";
 
 const IdentifierStage1BodyInit = ({
   componentId,
@@ -13,6 +17,12 @@ const IdentifierStage1BodyInit = ({
   handleScanButton,
   groupMetadata,
 }: IdentifierStage1BodyProps) => {
+  const dispatch = useAppDispatch();
+  const copyToClipboard = () => {
+    writeToClipboard(oobi);
+    dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
+  };
+
   return (
     <ResponsivePageLayout
       pageId={componentId + "-content"}
@@ -25,7 +35,10 @@ const IdentifierStage1BodyInit = ({
         />
       }
     >
-      <p className="multisig-share-note">
+      <p
+        className="multisig-share-note"
+        data-testid="multisig-share-note-top"
+      >
         {i18n.t(
           groupMetadata?.groupInitiator
             ? "createidentifier.share.notes.top"
@@ -56,15 +69,37 @@ const IdentifierStage1BodyInit = ({
             />
           </span>
         </span>
+        <IonButton
+          shape="round"
+          expand="block"
+          fill="outline"
+          className="copy-button secondary-button"
+          data-testid={"multisig-copy-oobi-connection-button"}
+          onClick={copyToClipboard}
+        >
+          {i18n.t("createidentifier.share.copybutton")}
+          <IonIcon
+            slot="end"
+            size="small"
+            icon={copyOutline}
+            color="primary"
+          />
+        </IonButton>
       </div>
-      <p className="multisig-share-note">
+      <p
+        className="multisig-share-note"
+        data-testid="multisig-share-note-middle"
+      >
         {i18n.t(
           groupMetadata?.groupInitiator
             ? "createidentifier.share.notes.middle"
             : "createidentifier.receive.notes.middle"
         )}
       </p>
-      <div className="share-identifier-scan-button">
+      <div
+        className="share-identifier-scan-button"
+        data-testid="share-identifier-scan-button-round"
+      >
         <IonButton
           shape="round"
           color={"primary-gradient"}

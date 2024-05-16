@@ -24,8 +24,8 @@ body {
     #root
       ion-app
       > *:not(.qr-code-scanner-full-page):not(.scanner-input-modal):not(
-        .scanner-spinner-container
-      ) {
+        .app-spinner-container
+      ):not(.input-pid-modal) {
       display: none;
     }
 
@@ -48,7 +48,7 @@ body {
   }
 
   &.scanner-active {
-    background-color: var(--ion-color-secondary);
+    background-color: transparent;
 
     > div:last-child {
       display: block;

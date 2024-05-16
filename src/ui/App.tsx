@@ -1,5 +1,10 @@
 import { StrictMode, useEffect, useMemo, useState } from "react";
-import { setupIonicReact, IonApp, getPlatforms } from "@ionic/react";
+import {
+  setupIonicReact,
+  IonApp,
+  getPlatforms,
+  IonSpinner,
+} from "@ionic/react";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { RoutePath, Routes } from "../routes";
@@ -100,11 +105,18 @@ const App = () => {
   const renderApp = () => {
     return (
       <>
-        {showScan && (
+        {showScan ? (
           <FullPageScanner
             showScan={showScan}
             setShowScan={setShowScan}
           />
+        ) : (
+          <div
+            className="app-spinner-container"
+            data-testid="app-spinner-container"
+          >
+            <IonSpinner name="circular" />
+          </div>
         )}
         {!showScan && isPreviewMode ? <MobileHeaderPreview /> : null}
         <div className={showScan ? "ion-hide" : ""}>

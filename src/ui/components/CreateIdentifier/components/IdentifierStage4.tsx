@@ -32,7 +32,7 @@ const IdentifierStage4 = ({
   // We'll need to work out a proper way to get 'ourIdentifier'.
   const identifiersData = useAppSelector(getIdentifiersCache);
   const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
-  const ourIdentifier = identifiersData[0]?.id;
+  const ourIdentifier = state.ourIdentifier;
   const [otherIdentifierContacts, setOtherIdentifierContacts] = useState<
     ConnectionShortDetails[]
   >([]);
@@ -62,7 +62,12 @@ const IdentifierStage4 = ({
           isPending: state.threshold >= 2,
           signifyName,
         };
-        dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
+        const filteredIdentifiersData = identifiersData.filter(
+          (item) => item.id !== ourIdentifier
+        );
+        dispatch(
+          setIdentifiersCache([...filteredIdentifiersData, newIdentifier])
+        );
         dispatch(
           setToastMsg(
             state.threshold === 1

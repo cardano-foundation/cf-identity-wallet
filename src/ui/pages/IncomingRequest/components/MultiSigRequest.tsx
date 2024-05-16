@@ -7,6 +7,7 @@ import {
   IonCol,
   IonLabel,
   IonIcon,
+  IonSpinner,
 } from "@ionic/react";
 import { personCircleOutline } from "ionicons/icons";
 import { useState } from "react";
@@ -20,22 +21,69 @@ import { PageFooter } from "../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
 import { PageHeader } from "../../../components/PageHeader";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
-import "./MultiSigRequestStageOne.scss";
+import { Agent } from "../../../../core/agent/agent";
+import "./MultiSigRequest.scss";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import {
+  getIdentifiersCache,
+  setIdentifiersCache,
+} from "../../../../store/reducers/identifiersCache";
+import { setToastMsg } from "../../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../../globals/types";
 
-const MultiSigRequestStageOne = ({
+const MultiSigRequest = ({
+  blur,
+  setBlur,
   pageId,
   activeStatus,
   requestData,
+  handleAccept,
   handleCancel,
   handleIgnore,
-  setRequestStage,
 }: RequestProps) => {
+  const dispatch = useAppDispatch();
+  const identifiersData = useAppSelector(getIdentifiersCache);
   const [alertAcceptIsOpen, setAlertAcceptIsOpen] = useState(false);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
 
-  const actionAccept = () => {
+  const actionAccept = async () => {
     setAlertAcceptIsOpen(false);
-    setRequestStage && setRequestStage(1);
+    setBlur && setBlur(true);
+    if (!(requestData.event && requestData.multisigIcpDetails)) {
+      // Do some error thing here... maybe it's just a TODO
+    } else {
+      const joinMultisigResult = await Agent.agent.multiSigs.joinMultisig(
+        requestData.event.id,
+        requestData.event.a.d as string,
+        {
+          theme: requestData.multisigIcpDetails.ourIdentifier.theme,
+          displayName: requestData.multisigIcpDetails.ourIdentifier.displayName,
+        }
+      );
+
+      if (joinMultisigResult) {
+        const newIdentifier: IdentifierShortDetails = {
+          id: joinMultisigResult.identifier,
+          displayName: requestData.multisigIcpDetails.ourIdentifier.displayName,
+          createdAtUTC: `${requestData.event?.createdAt}`,
+          theme: requestData.multisigIcpDetails.ourIdentifier.theme,
+          isPending: requestData.multisigIcpDetails.threshold >= 2,
+          signifyName: joinMultisigResult.signifyName,
+        };
+        const filteredIdentifiersData = identifiersData.filter(
+          (item) =>
+            item.id !== requestData?.multisigIcpDetails?.ourIdentifier.id
+        );
+        dispatch(
+          setIdentifiersCache([...filteredIdentifiersData, newIdentifier])
+        );
+        requestData.multisigIcpDetails.threshold === 1
+          ? ToastMsgType.IDENTIFIER_CREATED
+          : ToastMsgType.IDENTIFIER_REQUESTED;
+      }
+    }
+    handleAccept();
   };
 
   const actionDecline = () => {
@@ -49,24 +97,34 @@ const MultiSigRequestStageOne = ({
 
   return (
     <>
+      {blur && (
+        <div
+          className="multisig-spinner-container"
+          data-testid="multisig-spinner-container"
+        >
+          <IonSpinner name="circular" />
+        </div>
+      )}
       <ScrollablePageLayout
         pageId={pageId}
         activeStatus={activeStatus}
-        customClass={`${activeStatus ? "show" : "hide"}`}
+        customClass={`setup-identifier ${activeStatus ? "show" : "hide"} ${
+          blur ? "blur" : ""
+        }`}
         header={
           <PageHeader
             closeButton={true}
             closeButtonAction={() => actionIgnore()}
             closeButtonLabel={`${i18n.t("request.button.ignore")}`}
-            title={`${i18n.t("request.multisig.stageone.title")}`}
+            title={`${i18n.t("request.multisig.title")}`}
           />
         }
       >
         <p className="multisig-request-subtitle">
-          {i18n.t("request.multisig.stageone.subtitle")}
+          {i18n.t("request.multisig.subtitle")}
         </p>
         <div className="multisig-request-section">
-          <h4>{i18n.t("request.multisig.stageone.requestfrom")}</h4>
+          <h4>{i18n.t("request.multisig.requestfrom")}</h4>
           <IonCard className="multisig-request-details">
             <IonList lines="none">
               <IonItem className="multisig-request-item">
@@ -110,7 +168,7 @@ const MultiSigRequestStageOne = ({
         </div>
         {!!requestData.multisigIcpDetails?.otherConnections.length && (
           <div className="multisig-request-section">
-            <h4>{i18n.t("request.multisig.stageone.othermembers")}</h4>
+            <h4>{i18n.t("request.multisig.othermembers")}</h4>
             <IonCard className="multisig-request-details">
               <IonList lines="none">
                 {requestData.multisigIcpDetails?.otherConnections.map(
@@ -150,7 +208,7 @@ const MultiSigRequestStageOne = ({
           </div>
         )}
         <div className="multisig-request-section">
-          <h4>{i18n.t("request.multisig.stageone.threshold")}</h4>
+          <h4>{i18n.t("request.multisig.threshold")}</h4>
           <IonCard className="multisig-request-details">
             <IonList lines="none">
               <IonItem className="multisig-request-item">
@@ -172,11 +230,9 @@ const MultiSigRequestStageOne = ({
         isOpen={alertAcceptIsOpen}
         setIsOpen={setAlertAcceptIsOpen}
         dataTestId="multisig-request-alert-accept"
-        headerText={i18n.t("request.multisig.stageone.alert.textaccept")}
-        confirmButtonText={`${i18n.t(
-          "request.multisig.stageone.alert.accept"
-        )}`}
-        cancelButtonText={`${i18n.t("request.multisig.stageone.alert.cancel")}`}
+        headerText={i18n.t("request.multisig.alert.textaccept")}
+        confirmButtonText={`${i18n.t("request.multisig.alert.accept")}`}
+        cancelButtonText={`${i18n.t("request.multisig.alert.cancel")}`}
         actionConfirm={() => actionAccept()}
         actionCancel={() => setAlertAcceptIsOpen(false)}
         actionDismiss={() => setAlertAcceptIsOpen(false)}
@@ -185,11 +241,9 @@ const MultiSigRequestStageOne = ({
         isOpen={alertDeclineIsOpen}
         setIsOpen={setAlertDeclineIsOpen}
         dataTestId="multisig-request-alert-decline"
-        headerText={i18n.t("request.multisig.stageone.alert.textdecline")}
-        confirmButtonText={`${i18n.t(
-          "request.multisig.stageone.alert.decline"
-        )}`}
-        cancelButtonText={`${i18n.t("request.multisig.stageone.alert.cancel")}`}
+        headerText={i18n.t("request.multisig.alert.textdecline")}
+        confirmButtonText={`${i18n.t("request.multisig.alert.decline")}`}
+        cancelButtonText={`${i18n.t("request.multisig.alert.cancel")}`}
         actionConfirm={() => actionDecline()}
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}
@@ -198,4 +252,4 @@ const MultiSigRequestStageOne = ({
   );
 };
 
-export { MultiSigRequestStageOne };
+export { MultiSigRequest };

@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
   getCurrentOperation,
+  getQueueIncomingRequest,
   getStateCache,
   setCurrentOperation,
 } from "../../../../store/reducers/stateCache";
@@ -30,6 +31,7 @@ const IdentifierStage1 = ({
   const stateCache = useAppSelector(getStateCache);
   const currentOperation = useAppSelector(getCurrentOperation);
   const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
+  const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
   const signifyName =
@@ -44,6 +46,13 @@ const IdentifierStage1 = ({
   const [scannedConections, setScannedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
+  const incomingRequest = useMemo(() => {
+    return !queueIncomingRequest.isProcessing
+      ? { id: "" }
+      : queueIncomingRequest.queues.length > 0
+        ? queueIncomingRequest.queues[0]
+        : { id: "" };
+  }, [queueIncomingRequest]);
 
   useEffect(() => {
     async function fetchOobi() {
@@ -76,6 +85,11 @@ const IdentifierStage1 = ({
     currentOperation === OperationType.MULTI_SIG_INITIATOR_INIT &&
       handleInitiateMultiSig();
   }, [groupMetadata, currentOperation, groupId, multiSigGroupCache]);
+
+  useEffect(() => {
+    incomingRequest.multisigIcpDetails?.ourIdentifier.groupMetadata?.groupId ===
+      groupId && handleDone();
+  }, [groupMetadata, incomingRequest]);
 
   const handleDone = () => {
     resetModal && resetModal();

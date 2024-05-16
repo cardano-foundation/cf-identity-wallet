@@ -87,7 +87,6 @@ const IncomingRequest = () => {
     if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      // @TODO - sdisalvo: placeholder for ignoring the request
       await Agent.agent.signifyNotifications.dismissNotification(
         incomingRequest.id
       );

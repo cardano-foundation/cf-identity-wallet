@@ -11,7 +11,6 @@ interface RequestProps {
   handleCancel: () => void;
   handleIgnore?: () => void;
   incomingRequestType?: string;
-  setRequestStage?: (stage: number) => void;
 }
 
 export type { RequestProps };

@@ -56,8 +56,10 @@
         }
       }
 
-      &[disabled="true"] {
-        color: var(--ion-color-dark-grey);
+      &[disabled],
+      &.button-disabled > p {
+        color: var(--ion-color-dark-grey) !important;
+        opacity: 1;
       }
 
       ion-icon {
