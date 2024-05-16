@@ -71,12 +71,12 @@ const useBiometricAuth = () => {
     const biometricResult = await checkBiometry();
     if (!biometricResult?.strongBiometryIsAvailable) {
       return new BiometryError(
-        i18n.t("biometry.weakbiometry"),
+        "Biometry too weak",
         BiometryErrorType.biometryNotAvailable
       );
     } else if (!biometricResult?.isAvailable) {
       return new BiometryError(
-        i18n.t("biometry.notavailable"),
+        "Biometry not available",
         BiometryErrorType.biometryNotAvailable
       );
     }

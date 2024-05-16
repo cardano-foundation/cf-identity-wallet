@@ -32,7 +32,6 @@ const LockPage = () => {
   const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
-  const stateCache = useAppSelector(getStateCache);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = authentication.seedPhraseIsSet;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
