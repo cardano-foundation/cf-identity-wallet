@@ -26,6 +26,8 @@ import { Connections } from "../Connections";
 import "./Identifiers.scss";
 import { StartAnimationSource } from "./Identifiers.type";
 import { IdentifiersList } from "./components/IdentifiersList";
+import { useToggleConnections } from "../../hooks";
+
 const CLEAR_STATE_DELAY = 1000;
 interface AdditionalButtonsProps {
   handleCreateIdentifier: () => void;
@@ -86,13 +88,17 @@ const Identifiers = () => {
   const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
-  const [showConnections, setShowConnections] = useState(false);
   const [toggleClick, setToggleClick] = useState(false);
   const [resumeMultiSig, setResumeMultiSig] =
     useState<IdentifierShortDetails | null>(null);
   const [navAnimation, setNavAnimation] =
     useState<StartAnimationSource>("none");
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
+
+  const { showConnections, setShowConnections } = useToggleConnections(
+    TabsRoutePath.IDENTIFIERS
+  );
+
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
   });
