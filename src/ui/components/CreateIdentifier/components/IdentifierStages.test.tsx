@@ -49,7 +49,6 @@ describe("Identifier Stage 0", () => {
     threshold: 1,
     scannedConections: [],
     selectedConnections: [],
-    initialised: false,
     ourIdentifier: "",
     newIdentifier: {
       id: "",
@@ -132,7 +131,6 @@ describe("Identifier Stage 1 Initial", () => {
     threshold: 1,
     scannedConections: [],
     selectedConnections: [],
-    initialised: false,
     ourIdentifier: "",
     newIdentifier: {
       id: "identifier",
@@ -272,7 +270,6 @@ describe("Identifier Stage 1 Resumed State", () => {
     threshold: 1,
     scannedConections: [connectionsFix[3]],
     selectedConnections: [],
-    initialised: false,
     ourIdentifier: "EJFrDZPw6atTkQr__ZoyOrl2ZzsN82wrx0m7I0BREKL2",
     newIdentifier: {
       id: "identifier",

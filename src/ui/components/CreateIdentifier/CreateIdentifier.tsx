@@ -37,7 +37,6 @@ const CreateIdentifier = ({
     threshold: 1,
     scannedConections: [],
     selectedConnections: [],
-    initialised: false,
     ourIdentifier: "",
     newIdentifier: {
       id: "",
