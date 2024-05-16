@@ -62,13 +62,13 @@ const useActivityTimer = () => {
       "keydown",
       "scroll",
     ];
-    events.forEach(async (event) => {
-      await window.addEventListener(event, handleActivity);
+    events.forEach((event) => {
+      window.addEventListener(event, handleActivity);
     });
 
     return () => {
-      events.forEach(async (event) => {
-        await window.removeEventListener(event, handleActivity);
+      events.forEach((event) => {
+        window.removeEventListener(event, handleActivity);
       });
       clearTimer();
     };
