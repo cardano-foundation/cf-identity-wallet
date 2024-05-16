@@ -1232,7 +1232,6 @@
     "setupandroidbiometryconfirm": "Ok",
     "setupandroidbiometrycancel": "Dont allow",
     "cancelbiometryheader": "You canceled Biometrics. You can set this up later via the settings page.",
-    "notavailable": "Biometry not available",
-    "weakbiometry": "Biometry too weak"
+    "notavailable": "Biometry not available"
   }
 }

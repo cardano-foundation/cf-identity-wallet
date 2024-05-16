@@ -50,28 +50,29 @@ const useBiometricAuth = () => {
       );
       setBiometricsIsEnabled(biometrics.enabled as boolean);
     } catch (e) {
-      // TODO: handle error
+      if (
+        e instanceof Error &&
+        e.message ===
+          `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_BIOMETRY}`
+      ) {
+        return;
+      }
     }
   };
   const checkBiometry = async () => {
-    try {
-      const biometricResult = await BiometricAuth.checkBiometry();
-      setBiometricInfo(biometricResult);
-      return biometricResult;
-    } catch (error) {
-      // TODO: error getting biometricInfo
-    }
+    const biometricResult = await BiometricAuth.checkBiometry();
+    setBiometricInfo(biometricResult);
+    return biometricResult;
   };
 
   const handleBiometricAuth = async (): Promise<boolean | BiometryError> => {
     const biometricResult = await checkBiometry();
-    if (!biometricResult?.isAvailable) {
-      if (!biometricResult?.strongBiometryIsAvailable) {
-        return new BiometryError(
-          i18n.t("biometry.weakbiometry"),
-          BiometryErrorType.biometryNotAvailable
-        );
-      }
+    if (!biometricResult?.strongBiometryIsAvailable) {
+      return new BiometryError(
+        "Biometry too weak",
+        BiometryErrorType.biometryNotAvailable
+      );
+    } else if (!biometricResult?.isAvailable) {
       return new BiometryError(
         i18n.t("biometry.notavailable"),
         BiometryErrorType.biometryNotAvailable
