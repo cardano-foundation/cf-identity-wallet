@@ -107,12 +107,35 @@ describe("Settings page", () => {
       );
     });
 
+    jest.doMock("../../../../hooks/useBiometricsHook", () => ({
+      useBiometricAuth: jest.fn(() => ({
+        biometricsIsEnabled: false,
+        biometricInfo: {
+          isAvailable: true,
+          hasCredentials: false,
+          biometryType: BiometryType.faceId,
+          strongBiometryIsAvailable: true,
+        },
+        handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+        setBiometricsIsEnabled: jest.fn(),
+      })),
+    }));
+
     act(() => {
       fireEvent.click(getByTestId("security-item-0"));
     });
 
     await waitFor(() => {
       expect(setPreferenceStorageSpy).toBeCalledTimes(2);
+    });
+
+    await waitFor(() => {
+      expect(setPreferenceStorageSpy).toBeCalledWith(
+        PreferencesKeys.APP_BIOMETRY,
+        {
+          enabled: true,
+        }
+      );
     });
   });
 });

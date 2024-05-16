@@ -60,7 +60,7 @@ const PasscodeModule = ({
                     biometricInfo?.strongBiometryIsAvailable &&
                     biometricInfo?.isAvailable ? (
                         <IonButton
-                          data-testid={"passcode-button-#"}
+                          data-testid="passcode-button-#"
                           className="passcode-module-number-button"
                           onClick={() =>
                             biometricInfo?.strongBiometryIsAvailable &&
