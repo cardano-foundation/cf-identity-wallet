@@ -2,6 +2,7 @@ import { IncomingRequestType } from "../../../../store/reducers/stateCache/state
 import { RequestProps } from "../IncomingRequest.types";
 import { CredentialRequest } from "./CredentialRequest";
 import { MultiSigRequest } from "./MultiSigRequest";
+import { SignTransactionRequest } from "./SignTransactionRequest";
 
 const RequestComponent = ({
   pageId,
@@ -40,6 +41,19 @@ const RequestComponent = ({
         handleAccept={handleAccept}
         handleCancel={handleCancel}
         handleIgnore={handleIgnore}
+      />
+    );
+  case IncomingRequestType.SIGN_TRANSACTION_REQUEST:
+    return (
+      <SignTransactionRequest
+        pageId={pageId}
+        activeStatus={activeStatus}
+        blur={blur}
+        setBlur={setBlur}
+        requestData={requestData}
+        initiateAnimation={initiateAnimation}
+        handleAccept={handleAccept}
+        handleCancel={handleCancel}
       />
     );
   default:
