@@ -4,24 +4,31 @@ import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/defin
 import { Settings } from "./Settings";
 import { store } from "../../../../../store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
-import { PreferencesStorage } from "../../../../../core/storage";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../../../core/storage";
 const setPreferenceStorageSpy = jest
   .spyOn(PreferencesStorage, "set")
   .mockResolvedValue();
 
-jest.mock("../../../../hooks/useBiometricsHook", () => ({
-  useBiometricAuth: jest.fn(() => ({
-    biometricsIsEnabled: true,
-    biometricInfo: {
-      isAvailable: true,
-      hasCredentials: false,
-      biometryType: BiometryType.fingerprintAuthentication,
-      strongBiometryIsAvailable: true,
-    },
-    handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
-    setBiometricsIsEnabled: jest.fn(),
-  })),
-}));
+jest.mock("../../../../hooks/useBiometricsHook", () => {
+  const biometricsIsEnabled = true;
+
+  return {
+    useBiometricAuth: () => ({
+      biometricsIsEnabled,
+      biometricInfo: {
+        isAvailable: true,
+        hasCredentials: false,
+        biometryType: BiometryType.fingerprintAuthentication,
+        strongBiometryIsAvailable: true,
+      },
+      handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+      setBiometricsIsEnabled: jest.fn(),
+    }),
+  };
+});
 
 describe("Settings page", () => {
   beforeEach(() => {
@@ -87,10 +94,25 @@ describe("Settings page", () => {
       fireEvent.click(getByTestId("security-item-0"));
     });
 
+    await waitFor(() => {
+      expect(setPreferenceStorageSpy).toBeCalledTimes(1);
+    });
+
+    await waitFor(() => {
+      expect(setPreferenceStorageSpy).toBeCalledWith(
+        PreferencesKeys.APP_BIOMETRY,
+        {
+          enabled: false,
+        }
+      );
+    });
+
     act(() => {
       fireEvent.click(getByTestId("security-item-0"));
     });
 
-    expect(setPreferenceStorageSpy).toBeCalledTimes(2);
+    await waitFor(() => {
+      expect(setPreferenceStorageSpy).toBeCalledTimes(2);
+    });
   });
 });
