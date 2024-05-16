@@ -69,6 +69,7 @@ export type {
   TypeItemProps,
   IdentifierThemeSelectorProps,
   ThemeItemProps,
+  IdentifierStageStateProps,
   IdentifierStageProps,
   IdentifierStage1BodyProps,
 };

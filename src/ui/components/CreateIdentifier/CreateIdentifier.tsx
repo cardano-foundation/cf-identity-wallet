@@ -1,6 +1,9 @@
 import { IonModal, IonSpinner } from "@ionic/react";
 import { useEffect, useState } from "react";
-import { CreateIdentifierProps } from "./CreateIdentifier.types";
+import {
+  CreateIdentifierProps,
+  IdentifierStageStateProps,
+} from "./CreateIdentifier.types";
 import "./CreateIdentifier.scss";
 import { IdentifierStage0 } from "./components/IdentifierStage0";
 import { IdentifierStage1 } from "./components/IdentifierStage1";
@@ -47,7 +50,7 @@ const CreateIdentifier = ({
       signifyName: "",
     },
   };
-  const [state, setState] = useState(initialState);
+  const [state, setState] = useState<IdentifierStageStateProps>(initialState);
   const [blur, setBlur] = useState(false);
   const groupId = groupIdProp || resumeMultiSig?.groupMetadata?.groupId;
   const [multiSigGroup, setMultiSigGroup] = useState<
