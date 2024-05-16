@@ -102,6 +102,24 @@ class SignifyNotificationService extends AgentService {
         notifications.notes.shift();
       }
       for (const notif of notifications.notes) {
+        if (notif.a.r === NotificationRoute.MultiSigIcp) {
+          const multisigNotification = await this.signifyClient
+            .groups()
+            .getRequest(notif.a.d);
+          const multisigId = multisigNotification[0]?.exn?.a?.gid;
+          if (!multisigId) {
+            continue;
+          }
+          const isMultisigInitiator =
+            await Agent.agent.multiSigs.isMultisigInitiator(multisigId);
+          const notificationForThisMultisig =
+            await Agent.agent.signifyNotifications.findNotificationByMultisigId(
+              multisigId
+            );
+          if (isMultisigInitiator && notificationForThisMultisig) {
+            continue;
+          }
+        }
         await this.processNotification(notif, callback);
       }
       if (notifications.notes.length) {
@@ -150,16 +168,25 @@ class SignifyNotificationService extends AgentService {
   private async createNotificationRecord(
     event: Notification
   ): Promise<KeriaNotification> {
-    const result = await this.notificationStorage.save({
+    const metadata: any = {
       id: event.i,
       a: event.a,
       isDismissed: false,
       route: event.a.r,
-    });
+    };
+    if (event.a.r === NotificationRoute.MultiSigIcp) {
+      const multisigNotification = await this.signifyClient
+        .groups()
+        .getRequest(event.a.d);
+      const multisigId = multisigNotification[0]?.exn?.a?.gid;
+      metadata.multisigId = multisigId;
+    }
+    const result = await this.notificationStorage.save(metadata);
     return {
       id: result.id,
       createdAt: result.createdAt,
       a: result.a,
+      multisigId: result.multisigId,
     };
   }
 
@@ -184,6 +211,13 @@ class SignifyNotificationService extends AgentService {
 
   private markNotification(notiSaid: string) {
     return this.signifyClient.notifications().mark(notiSaid);
+  }
+
+  async findNotificationByMultisigId(multisigId: string) {
+    const notificationRecord = await this.notificationStorage.findAllByQuery({
+      multisigId,
+    });
+    return notificationRecord;
   }
 }
 
