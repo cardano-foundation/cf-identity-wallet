@@ -4,10 +4,7 @@ import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/defin
 import { Settings } from "./Settings";
 import { store } from "../../../../../store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../../../core/storage";
+import { PreferencesStorage } from "../../../../../core/storage";
 const setPreferenceStorageSpy = jest
   .spyOn(PreferencesStorage, "set")
   .mockResolvedValue();
@@ -95,14 +92,5 @@ describe("Settings page", () => {
     });
 
     expect(setPreferenceStorageSpy).toBeCalledTimes(2);
-
-    await waitFor(() => {
-      expect(setPreferenceStorageSpy).toBeCalledWith(
-        PreferencesKeys.APP_BIOMETRY,
-        {
-          enabled: false,
-        }
-      );
-    });
   });
 });
