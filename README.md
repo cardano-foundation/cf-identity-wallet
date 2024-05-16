@@ -46,44 +46,34 @@
 
 # Features
 
-- **User Interface**
-  - Intuitive User Experience
-  - Android
-  - iOS
-- **Private Key Storage**
-  - Hardware Security Module (HSM)
-  - Secure Enclave (SE)
-- **Standards & Protocols**
-  - [KERI](https://keri.one/)
-  - [ACDC](https://trustoverip.github.io/tswg-acdc-specification/)
-  - [CESR](https://weboftrust.github.io/ietf-cesr/draft-ssmith-cesr.html)
-- **SSI Services**
-  - [KERIA](https://github.com/cardano-foundation/keria)
-  - [Signify-TS](https://github.com/cardano-foundation/signify-ts)
-  - [Credential Issuance Modules](https://identity-wallet-credential-issuance-web-interface.vercel.app/)
-  - [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer)
+- :iphone: Android & iOS Support with native biometrics
+- :cloud: High messaging availability with a KERIA cloud agent
+- :closed_lock_with_key: Secure Enclave (SE) / Trusted Execution Environment (TEE) usage for seeds & secrets
+- :id: KERI autonomic identifiers
+  - `Direct-mode`, `witness-backed`, `Cardano-backed`
+  - `Single-sig`, `multi-sig`
+- :ticket: ACDC credentials exchanged using the IPEX protocol
+- :zap: Efficient over-the-wine communications using CESR encoding
+- :desktop_computer: dApp integration using [CIP-45](https://cips.cardano.org/cip/CIP-0045)
+  
+ # Future Developments
+ 
+- :shield: Encryption at rest with local backup & restore (Compatible with Hyperledger [Aries Askar](https://github.com/hyperledger/aries-askar))
+- :calling: Social and multi-device identifier recovery
+- :speech_balloon: P2P Chat
+- :office: Delegated multi-sig for organisational identity
+- :chains: Cardano-backed ACDC verifiable credential schemas
 
-# Potential Future Developments
-- **Mobile Application Features**
-  - Bluetooth
-  - Biometrics
-  - NFC
-  - Aries Askar
-- **Decentralized Identifier Recovery**
-  - [Shamir Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing)
-  - On-chain Recovery
-  - Local Encrypted
-  - Cloud-based
-- **Standards & Protocols**
-  - Ledger-based Schemas
-  - Direct Mode (Offline)
-  - eIDAS 2.0
-  - [OID4vc](https://openid.net/sg/openid4vc/specifications/)
-- **Peer-to-Peer (P2P)**
-  - Private Messaging
-  - Social Recovery
-  - [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) Support
-  - App Integration
+# Standards & Protocols
+- [Key Event Receipt Infrastructure (KERI)](https://keri.one/)
+- [Trust Over IP - Authentic Chained Data Container (ACDC)](https://trustoverip.github.io/tswg-acdc-specification/)
+- [Composable Event Streaming Representation (CESR)](https://weboftrust.github.io/ietf-cesr/draft-ssmith-cesr.html)
+
+# SSI Services
+- [KERIA Cloud Agent](https://github.com/cardano-foundation/keria)
+- [Signify-TS Edge Client](https://github.com/cardano-foundation/signify-ts)
+- [Verifiable Credential Testing Tool](https://identity-wallet-credential-issuance-web-interface.vercel.app/)
+- [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer)
 
 # Preview in your Browser
 
