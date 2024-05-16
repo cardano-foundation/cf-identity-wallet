@@ -52,6 +52,7 @@ class IdentifierService extends AgentService {
         createdAtUTC: metadata.createdAt.toISOString(),
         theme: metadata.theme,
         isPending: metadata.isPending ?? false,
+        groupMetadata: metadata.groupMetadata,
       });
     }
     return identifiers;
@@ -95,6 +96,24 @@ class IdentifierService extends AgentService {
     };
   }
 
+  async getKeriIdentifierByGroupId(
+    groupId: string
+  ): Promise<IdentifierShortDetails | null> {
+    const metadata =
+      await this.identifierStorage.getIdentifierMetadataByGroupId(groupId);
+    if (!metadata) {
+      return null;
+    }
+    return {
+      displayName: metadata.displayName,
+      id: metadata.id,
+      signifyName: metadata.signifyName,
+      createdAtUTC: metadata.createdAt.toISOString(),
+      theme: metadata.theme,
+      isPending: metadata.isPending ?? false,
+    };
+  }
+
   @OnlineOnly
   async createIdentifier(
     metadata: Omit<
@@ -108,9 +127,10 @@ class IdentifierService extends AgentService {
       .identifiers()
       .create(signifyName); //, this.getCreateAidOptions());
     await operation.op();
-    await this.signifyClient
+    const addRoleOperation = await this.signifyClient
       .identifiers()
       .addEndRole(signifyName, "agent", this.signifyClient.agent!.pre);
+    await addRoleOperation.op();
     const identifier = operation.serder.ked.i;
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: identifier,
@@ -148,7 +168,10 @@ class IdentifierService extends AgentService {
 
   async updateIdentifier(
     identifier: string,
-    data: Pick<IdentifierMetadataRecordProps, "theme" | "displayName">
+    data: Pick<
+      IdentifierMetadataRecordProps,
+      "theme" | "displayName" | "groupMetadata"
+    >
   ): Promise<void> {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
@@ -211,7 +234,7 @@ class IdentifierService extends AgentService {
     }
   }
 
-  private validIdentifierMetadata(
+  validIdentifierMetadata(
     metadata: Pick<IdentifierMetadataRecordProps, "theme">
   ): void {
     if (metadata.theme && !identifierTypeThemes.includes(metadata.theme)) {

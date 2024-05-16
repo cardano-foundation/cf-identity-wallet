@@ -117,7 +117,7 @@ describe("Multi-Sig request", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.request.multisig.stageone.title)
+      getByText(EN_TRANSLATIONS.request.multisig.title)
     ).toBeInTheDocument();
   });
 
@@ -163,7 +163,7 @@ describe("Multi-Sig request", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.request.multisig.stageone.title)
+      getByText(EN_TRANSLATIONS.request.multisig.title)
     ).toBeInTheDocument();
 
     expect(queryByTestId("multisig-connection-fallback-logo")).toBeVisible();

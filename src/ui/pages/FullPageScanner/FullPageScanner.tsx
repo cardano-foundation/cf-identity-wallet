@@ -1,13 +1,5 @@
 import { arrowBackOutline } from "ionicons/icons";
-import {
-  IonPage,
-  IonToolbar,
-  IonButtons,
-  IonButton,
-  IonIcon,
-  IonHeader,
-} from "@ionic/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Scanner } from "../../components/Scanner";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { useAppDispatch } from "../../../store/hooks";
@@ -25,13 +17,23 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
   const dispatch = useAppDispatch();
   const scannerRef = useRef<ScannerRefComponent>(null);
 
-  const handleBackButton = () => {
+  useEffect(() => {
+    document?.querySelector("body")?.classList.add("full-page-scanner");
+  }, []);
+
+  const handleReset = () => {
     setShowScan(false);
-    dispatch(setCurrentOperation(OperationType.IDLE));
     scannerRef.current?.stopScan();
+    document?.querySelector("body")?.classList.remove("full-page-scanner");
     document
       ?.querySelector("body.scanner-active > div:last-child")
       ?.classList.add("hide");
+  };
+
+  const handleCloseButton = () => {
+    handleReset();
+    setShowScan(false);
+    dispatch(setCurrentOperation(OperationType.IDLE));
   };
 
   return (
@@ -41,12 +43,15 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
       header={
         <PageHeader
           closeButton={true}
-          closeButtonAction={handleBackButton}
+          closeButtonAction={handleCloseButton}
           closeButtonIcon={arrowBackOutline}
         />
       }
     >
-      <Scanner ref={scannerRef} />
+      <Scanner
+        ref={scannerRef}
+        handleReset={handleReset}
+      />
     </ResponsivePageLayout>
   );
 };

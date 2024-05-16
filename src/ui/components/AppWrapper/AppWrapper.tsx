@@ -46,6 +46,7 @@ import { PreferencesStorageItem } from "../../../core/storage/preferences/prefer
 import { useActivityTimer } from "./hooks/useActivityTimer";
 import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
 import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
+import { MultiSigService } from "../../../core/agent/services/multiSigService";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -79,8 +80,24 @@ const keriaNotificationsChangeHandler = async (
       })
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
+    processMultiSigIcpNotification(event, dispatch);
+  } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
+    //TODO: Use dispatch here, handle logic for the multisig rotation notification
+  } else if (event?.a?.r === NotificationRoute.ExnIpexApply) {
+    //TODO: Use dispatch here, handle logic for the exchange apply message
+  } else if (event?.a?.r === NotificationRoute.ExnIpexAgree) {
+    //TODO: Use dispatch here, handle logic for the exchange apply agree
+  }
+};
+
+const processMultiSigIcpNotification = async (
+  event: KeriaNotification,
+  dispatch: ReturnType<typeof useAppDispatch>,
+  retryInterval = 3000
+) => {
+  try {
     const multisigIcpDetails =
-      await Agent.agent.multiSigs.getMultisigIcpDetails(event);
+      await Agent.agent.multiSigs.getMultisigIcpDetails(event.a.d as string);
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
@@ -89,12 +106,15 @@ const keriaNotificationsChangeHandler = async (
         multisigIcpDetails: multisigIcpDetails,
       })
     );
-  } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
-    //TODO: Use dispatch here, handle logic for the multisig rotation notification
-  } else if (event?.a?.r === NotificationRoute.ExnIpexApply) {
-    //TODO: Use dispatch here, handle logic for the exchange apply message
-  } else if (event?.a?.r === NotificationRoute.ExnIpexAgree) {
-    //TODO: Use dispatch here, handle logic for the exchange apply agree
+  } catch (error) {
+    if (
+      (error as Error).message == MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, retryInterval));
+      await processMultiSigIcpNotification(event, dispatch, retryInterval);
+    } else {
+      throw error;
+    }
   }
 };
 

@@ -1,5 +1,11 @@
 import { BaseRecord } from "../../storage/storage.types";
 
+interface groupMetadata {
+  groupId: string;
+  groupInitiator: boolean;
+  groupCreated: boolean;
+}
+
 interface IdentifierMetadataRecordProps {
   id: string;
   displayName: string;
@@ -11,6 +17,7 @@ interface IdentifierMetadataRecordProps {
   theme: number;
   signifyOpName?: string;
   multisigManageAid?: string;
+  groupMetadata?: groupMetadata;
 }
 
 class IdentifierMetadataRecord extends BaseRecord {
@@ -22,6 +29,7 @@ class IdentifierMetadataRecord extends BaseRecord {
   signifyName!: string;
   theme!: number;
   multisigManageAid?: string | undefined;
+  groupMetadata?: groupMetadata;
 
   static readonly type = "IdentifierMetadataRecord";
   readonly type = IdentifierMetadataRecord.type;
@@ -40,15 +48,19 @@ class IdentifierMetadataRecord extends BaseRecord {
       this.multisigManageAid = props.multisigManageAid;
       this.createdAt = props.createdAt ?? new Date();
       this.theme = props.theme;
+      this.groupMetadata = props.groupMetadata;
     }
   }
 
   getTags() {
     return {
       ...this._tags,
+      signifyName: this.signifyName,
+      groupId: this.groupMetadata?.groupId,
       isArchived: this.isArchived,
       isDeleted: this.isDeleted,
       isPending: this.isPending,
+      groupCreated: this.groupMetadata?.groupCreated,
     };
   }
 }

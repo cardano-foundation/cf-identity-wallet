@@ -43,7 +43,14 @@ describe("getBackRoute", () => {
           isPaused: false,
         },
       },
-      identifiersCache: { identifiers: [], favourites: [] },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
       credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
@@ -152,7 +159,14 @@ describe("getPreviousRoute", () => {
           isPaused: false,
         },
       },
-      identifiersCache: { identifiers: [], favourites: [] },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
       credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],

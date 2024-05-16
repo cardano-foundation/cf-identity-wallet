@@ -6,26 +6,22 @@
   --padding-end: 0px;
 
   ion-button {
-    margin: 0 auto 1rem;
+    margin: 0 0 1rem 0;
 
     &:last-of-type {
       margin-bottom: 0;
     }
 
-    &.secondary-button.ion-activated {
+    &.secondary-button.ion-activated,
+    &.secondary-button.ion-activated.md {
       --ion-toolbar-color: var(--ion-color-light);
       --ion-toolbar-background: var(--ion-color-primary);
-
-      &.md {
-        --ion-toolbar-color: var(--ion-color-primary);
-        --ion-toolbar-background: var(--ion-color-light);
-      }
     }
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
     ion-button {
-      margin: 0 auto 0.8rem;
+      margin-bottom: 0.8rem;
     }
   }
 }
