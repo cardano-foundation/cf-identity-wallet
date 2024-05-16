@@ -109,8 +109,6 @@ const SetPasscode = () => {
     await PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
       initialized: true,
     });
-
-    dispatch(setInitialized(true));
   };
 
   const handleSetupAndroidBiometry = async () => {
