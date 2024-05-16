@@ -71,7 +71,15 @@ const LockPage = () => {
           await handleBiometrics();
         }
       } catch (e) {
-        // TODO: handle error
+        if (
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_BIOMETRY}`
+        ) {
+          return;
+        } else {
+          throw e;
+        }
       }
     };
     runBiometrics();

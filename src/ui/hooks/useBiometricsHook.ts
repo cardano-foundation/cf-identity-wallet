@@ -56,6 +56,8 @@ const useBiometricAuth = () => {
           `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_BIOMETRY}`
       ) {
         return;
+      } else {
+        throw e;
       }
     }
   };
