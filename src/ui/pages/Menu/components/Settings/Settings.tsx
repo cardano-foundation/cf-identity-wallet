@@ -77,12 +77,9 @@ const Settings = () => {
   const handleOptionClick = async (item: OptionProps) => {
     switch (item.label) {
     case i18n.t("settings.sections.security.biometry"): {
-      const biometrics = await PreferencesStorage.get(
-        PreferencesKeys.APP_BIOMETRY
-      );
-      setBiometricsIsEnabled(!biometrics.enabled);
+      setBiometricsIsEnabled(!biometricsIsEnabled);
       await PreferencesStorage.set(PreferencesKeys.APP_BIOMETRY, {
-        enabled: !biometrics.enabled,
+        enabled: !biometricsIsEnabled,
       });
       break;
     }
