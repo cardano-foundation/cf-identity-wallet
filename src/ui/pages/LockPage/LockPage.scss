@@ -9,6 +9,14 @@
     }
   }
 
+  .lock-modal-title {
+    margin-top: 4rem;
+
+    @media screen and (min-height: 300px) and (max-height: 550px) {
+      margin-top: 2rem;
+    }
+  }
+
   .responsive-page-content {
     justify-content: space-around;
   }

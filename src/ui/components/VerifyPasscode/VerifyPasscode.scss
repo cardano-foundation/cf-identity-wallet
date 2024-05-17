@@ -10,6 +10,18 @@
   .responsive-page-content {
     justify-content: space-evenly;
 
+    & > .error-message {
+      margin: 0;
+    }
+
+    & > .error-message-placeholder {
+      margin: 0;
+    }
+
+    & > .passcode-module-container {
+      margin: 0;
+    }
+
     .verify-passcode-title,
     .verify-passcode-description {
       text-align: center;
