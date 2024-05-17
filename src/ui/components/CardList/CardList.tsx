@@ -109,6 +109,7 @@ const CardList = <T extends object = object>({
   return (
     <IonList
       lines={lines}
+      data-testid="card-list"
       className={classes}
     >
       {data.map((card) => (

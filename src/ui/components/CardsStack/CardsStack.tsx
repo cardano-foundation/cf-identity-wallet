@@ -85,7 +85,14 @@ const CardsStack = ({
     pickedCardIndex !== null ? "transition-start" : ""
   }`;
 
-  return <div className={containerClasses}>{renderCards(cardsData)}</div>;
+  return (
+    <div
+      data-testid="card-stack"
+      className={containerClasses}
+    >
+      {renderCards(cardsData)}
+    </div>
+  );
 };
 
 export { CardsStack, NAVIGATION_DELAY, CLEAR_STATE_DELAY };

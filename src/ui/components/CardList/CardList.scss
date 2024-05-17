@@ -15,11 +15,13 @@
     --logo-border-radius: 50%;
     --display-fallback: flex;
     --subtitle-font-size: 0.875rem;
+    --card-width: 2.75rem;
+    --card-height: 2.75rem;
 
     .card-logo {
       border-radius: var(--logo-border-radius);
-      width: 2.75rem;
-      height: 2.75rem;
+      width: var(--card-width);
+      height: var(--card-height);
       margin-right: 1rem;
     }
 
@@ -71,11 +73,11 @@
       --inner-padding-bottom: 0.75rem;
       --title-font-size: 0.875rem;
       --subtitle-font-size: 0.75rem;
+      --card-width: 2.25rem;
+      --card-height: 2.25rem;
 
       .card-logo {
         border-radius: var(--logo-border-radius);
-        width: 2.25rem;
-        height: 2.25rem;
         margin-right: 0.5rem;
       }
     }
