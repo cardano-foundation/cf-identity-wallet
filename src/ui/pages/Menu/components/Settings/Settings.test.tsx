@@ -1,6 +1,7 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
+import { useState } from "react";
 import { Settings } from "./Settings";
 import { store } from "../../../../../store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
@@ -13,20 +14,22 @@ const setPreferenceStorageSpy = jest
   .mockResolvedValue();
 
 jest.mock("../../../../hooks/useBiometricsHook", () => {
-  const biometricsIsEnabled = true;
-
   return {
-    useBiometricAuth: () => ({
-      biometricsIsEnabled,
-      biometricInfo: {
-        isAvailable: true,
-        hasCredentials: false,
-        biometryType: BiometryType.fingerprintAuthentication,
-        strongBiometryIsAvailable: true,
-      },
-      handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
-      setBiometricsIsEnabled: jest.fn(),
-    }),
+    useBiometricAuth: () => {
+      const [biometricsIsEnabled, setBiometricsIsEnabled] = useState(true);
+
+      return {
+        biometricsIsEnabled,
+        biometricInfo: {
+          isAvailable: true,
+          hasCredentials: false,
+          biometryType: BiometryType.fingerprintAuthentication,
+          strongBiometryIsAvailable: true,
+        },
+        handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+        setBiometricsIsEnabled,
+      };
+    },
   };
 });
 
@@ -113,6 +116,15 @@ describe("Settings page", () => {
 
     await waitFor(() => {
       expect(setPreferenceStorageSpy).toBeCalledTimes(2);
+    });
+
+    await waitFor(() => {
+      expect(setPreferenceStorageSpy).toBeCalledWith(
+        PreferencesKeys.APP_BIOMETRY,
+        {
+          enabled: true,
+        }
+      );
     });
   });
 });
