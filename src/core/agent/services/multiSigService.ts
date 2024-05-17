@@ -696,23 +696,14 @@ class MultiSigService extends AgentService {
   }
 
   @OnlineOnly
-  async isMultisigInitiator(multisigId: string): Promise<boolean> {
+  async hasMultisig(multisigId: string): Promise<boolean> {
     const multiSig = await this.identifierStorage
       .getIdentifierMetadata(multisigId)
       .catch(() => undefined);
     if (!multiSig) {
       return false;
     }
-    if (!multiSig.multisigManageAid) {
-      throw new Error(MultiSigService.AID_IS_NOT_MULTI_SIG);
-    }
-    const multisigManager = await this.identifierStorage
-      .getIdentifierMetadata(multiSig.multisigManageAid)
-      .catch(() => undefined);
-    if (multisigManager?.groupMetadata?.groupInitiator) {
-      return true;
-    }
-    return false;
+    return true;
   }
 }
 

@@ -1227,6 +1227,7 @@ describe("Multisig sig service of agent", () => {
         r: NotificationRoute.MultiSigIcp,
         d: "EF6Nmxz8hs0oVc4loyh2J5Sq9H3Z7apQVqjO6e4chtsp",
       },
+      multisigId: "multisig-id",
     };
     notificationStorage.findAllByQuery = jest
       .fn()
@@ -1238,6 +1239,7 @@ describe("Multisig sig service of agent", () => {
         id: notificationRecord.id,
         createdAt: notificationRecord.createdAt,
         a: notificationRecord.a,
+        multisigId: "multisig-id",
       },
     ]);
   });
@@ -1413,5 +1415,19 @@ describe("Multisig sig service of agent", () => {
     await expect(
       multiSigService.getUnhandledMultisigIdentifiers()
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+  });
+
+  test("Should return true if there is a multisig with the provided multisigId", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockResolvedValueOnce(true);
+    const multisigId = "multisig-id";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      id: multisigId,
+      displayName: "Multisig",
+      signifyName: "uuid-here",
+      multisigManageAid: "aid",
+      createdAt: now,
+      theme: 0,
+    });
+    expect(await multiSigService.hasMultisig(multisigId)).toEqual(true);
   });
 });

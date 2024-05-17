@@ -1,17 +1,6 @@
 import { EventService } from "./eventService";
 import { SignifyNotificationService } from "./signifyNotificationService";
 
-const basicStorage = jest.mocked({
-  open: jest.fn(),
-  save: jest.fn(),
-  delete: jest.fn(),
-  deleteById: jest.fn(),
-  update: jest.fn(),
-  findById: jest.fn(),
-  findAllByQuery: jest.fn(),
-  getAll: jest.fn(),
-});
-
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
 const identifiersCreateMock = jest.fn();
@@ -82,7 +71,6 @@ const signifyClient = jest.mocked({
     query: queryKeyStateMock,
     get: jest.fn(),
   }),
-
   groups: () => ({ getRequest: groupGetRequestMock }),
 });
 

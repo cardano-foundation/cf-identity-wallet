@@ -96,15 +96,6 @@ const processMultiSigIcpNotification = async (
   retryInterval = 3000
 ) => {
   try {
-    if (!event.multisigId) {
-      return;
-    }
-    const isMultisigInitiator = await Agent.agent.multiSigs.isMultisigInitiator(
-      event.multisigId
-    );
-    if (isMultisigInitiator) {
-      return;
-    }
     const multisigIcpDetails =
       await Agent.agent.multiSigs.getMultisigIcpDetails(event.a.d as string);
     dispatch(

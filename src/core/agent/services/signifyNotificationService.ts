@@ -102,21 +102,25 @@ class SignifyNotificationService extends AgentService {
         notifications.notes.shift();
       }
       for (const notif of notifications.notes) {
+        await this.markNotification(notif.i);
         if (notif.a.r === NotificationRoute.MultiSigIcp) {
           const multisigNotification = await this.signifyClient
             .groups()
             .getRequest(notif.a.d);
-          const multisigId = multisigNotification[0]?.exn?.a?.gid;
-          if (!multisigId) {
+          if (!multisigNotification || !multisigNotification.length) {
             continue;
           }
-          const isMultisigInitiator =
-            await Agent.agent.multiSigs.isMultisigInitiator(multisigId);
-          const notificationForThisMultisig =
-            await Agent.agent.signifyNotifications.findNotificationByMultisigId(
-              multisigId
-            );
-          if (isMultisigInitiator && notificationForThisMultisig) {
+          const multisigId = multisigNotification[0]?.exn?.a?.gid;
+          if (!multisigId) {
+            await this.markNotification(notif.i);
+            continue;
+          }
+          const hasMultisig = await Agent.agent.multiSigs.hasMultisig(
+            multisigId
+          );
+          const notificationsForThisMultisig =
+            await this.findNotificationsByMultisigId(multisigId);
+          if (hasMultisig || notificationsForThisMultisig.length) {
             continue;
           }
         }
@@ -178,8 +182,9 @@ class SignifyNotificationService extends AgentService {
       const multisigNotification = await this.signifyClient
         .groups()
         .getRequest(event.a.d);
-      const multisigId = multisigNotification[0]?.exn?.a?.gid;
-      metadata.multisigId = multisigId;
+      if (multisigNotification && multisigNotification.length) {
+        metadata.multisigId = multisigNotification[0].exn?.a?.gid;
+      }
     }
     const result = await this.notificationStorage.save(metadata);
     return {
@@ -213,7 +218,7 @@ class SignifyNotificationService extends AgentService {
     return this.signifyClient.notifications().mark(notiSaid);
   }
 
-  async findNotificationByMultisigId(multisigId: string) {
+  async findNotificationsByMultisigId(multisigId: string) {
     const notificationRecord = await this.notificationStorage.findAllByQuery({
       multisigId,
     });
