@@ -5,12 +5,12 @@ import {
   swapHorizontalOutline,
 } from "ionicons/icons";
 import i18next from "i18next";
-import { i18n } from "../../../../i18n";
-import KeriLogo from "../../../../ui/assets/images/KeriGeneric.jpg";
-import { PageFooter } from "../../../components/PageFooter";
+import { i18n } from "../../../../../../i18n";
+import KeriLogo from "../../../../../../ui/assets/images/KeriGeneric.jpg";
+import { PageFooter } from "../../../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
-import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageLayout";
-import { RequestType } from "../../../globals/types";
+import { ResponsivePageLayout } from "../../../../../components/layout/ResponsivePageLayout";
+import { RequestType } from "../../../../../globals/types";
 
 const CredentialRequest = ({
   pageId,
@@ -26,9 +26,7 @@ const CredentialRequest = ({
     <ResponsivePageLayout
       pageId={pageId}
       activeStatus={activeStatus}
-      customClass={`${activeStatus ? "show" : "hide"} ${
-        initiateAnimation ? "animation-on" : "animation-off"
-      }`}
+      customClass={initiateAnimation ? "animation-on" : "animation-off"}
     >
       <h2>{i18n.t("request.credential.title")}</h2>
       <div className="request-animation-center">

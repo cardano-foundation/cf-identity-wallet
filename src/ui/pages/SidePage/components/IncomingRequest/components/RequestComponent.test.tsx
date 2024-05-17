@@ -1,17 +1,17 @@
-import { mockIonicReact, waitForIonicReact } from "@ionic/react-test-utils";
 import { setupIonicReact } from "@ionic/react";
+import { mockIonicReact } from "@ionic/react-test-utils";
+import { render } from "@testing-library/react";
+import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
+import EN_TRANSLATIONS from "../../../../../../locales/en/en.json";
+import { store } from "../../../../../../store";
+import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
+import { connectionsFix } from "../../../../../__fixtures__/connectionsFix";
+import { filteredIdentifierFix } from "../../../../../__fixtures__/filteredIdentifierFix";
+import { signTransactionFix } from "../../../../../__fixtures__/signTransactionFix";
+import { RequestComponent } from "./RequestComponent";
 setupIonicReact();
 mockIonicReact();
-import { render, waitFor } from "@testing-library/react";
-import configureStore from "redux-mock-store";
-import { Provider } from "react-redux";
-import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
-import { connectionsFix } from "../../../__fixtures__/connectionsFix";
-import EN_TRANSLATIONS from "../../../../locales/en/en.json";
-import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
-import { RequestComponent } from "./RequestComponent";
-import { store } from "../../../../store";
-import { signTransactionFix } from "../../../__fixtures__/signTransactionFix";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),

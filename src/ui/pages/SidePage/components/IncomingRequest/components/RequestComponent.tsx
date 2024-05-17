@@ -1,4 +1,4 @@
-import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
+import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
 import { RequestProps } from "../IncomingRequest.types";
 import { CredentialRequest } from "./CredentialRequest";
 import { MultiSigRequest } from "./MultiSigRequest";

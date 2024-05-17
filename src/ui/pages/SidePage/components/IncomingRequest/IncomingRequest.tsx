@@ -1,18 +1,19 @@
 import { useEffect, useState, useMemo } from "react";
 import "./IncomingRequest.scss";
+import { Agent } from "../../../../../core/agent/agent";
+import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import {
-  getQueueIncomingRequest,
   dequeueCredentialRequest,
-} from "../../../store/reducers/stateCache";
-import { Agent } from "../../../core/agent/agent";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+  getQueueIncomingRequest,
+} from "../../../../../store/reducers/stateCache";
+import { SidePageContentProps } from "../../SidePage.types";
+import { RequestComponent } from "./components/RequestComponent";
 import {
   IncomingRequestProps,
   IncomingRequestType,
-} from "../../../store/reducers/stateCache/stateCache.types";
-import { RequestComponent } from "./components/RequestComponent";
+} from "../../../../../store/reducers/stateCache/stateCache.types";
 
-const IncomingRequest = () => {
+const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const pageId = "incoming-request";
   const dispatch = useAppDispatch();
   const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
@@ -23,7 +24,6 @@ const IncomingRequest = () => {
         ? queueIncomingRequest.queues[0]
         : { id: "" };
   }, [queueIncomingRequest]);
-  const [showRequest, setShowRequest] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [requestData, setRequestData] = useState<IncomingRequestProps>();
   const ANIMATION_DELAY = 4000;
@@ -32,7 +32,7 @@ const IncomingRequest = () => {
   useEffect(() => {
     if (incomingRequest.id.length > 0) {
       setRequestData(incomingRequest);
-      setShowRequest(true);
+      setOpenPage(true);
     }
   }, [incomingRequest]);
 
@@ -46,12 +46,12 @@ const IncomingRequest = () => {
 
   const handleReset = () => {
     setInitiateAnimation(false);
-    setShowRequest(false);
+    setOpenPage(false);
     setBlur(false);
 
     setTimeout(() => {
       dispatch(dequeueCredentialRequest());
-    }, 0.5 * 1000);
+    }, 500);
   };
 
   const handleCancel = async () => {
@@ -101,7 +101,7 @@ const IncomingRequest = () => {
   return (
     <RequestComponent
       pageId={pageId}
-      activeStatus={showRequest}
+      activeStatus={open}
       blur={blur}
       setBlur={setBlur}
       requestData={requestData || defaultRequestData}

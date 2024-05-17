@@ -3,15 +3,15 @@ mockIonicReact();
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { EventEmitter } from "events";
 import { Provider } from "react-redux";
-import { store } from "../../../store";
+import { store } from "../../../../../store";
 import { IncomingRequest } from "./IncomingRequest";
-import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
-import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { setQueueIncomingRequest } from "../../../store/reducers/stateCache";
-import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { EventService } from "../../../core/agent/services/eventService";
-import { SignifyNotificationService } from "../../../core/agent/services/signifyNotificationService";
+import { IncomingRequestType } from "../../../../../store/reducers/stateCache/stateCache.types";
+import { connectionsFix } from "../../../../__fixtures__/connectionsFix";
+import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
+import { setQueueIncomingRequest } from "../../../../../store/reducers/stateCache";
+import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
+import { EventService } from "../../../../../core/agent/services/eventService";
+import { SignifyNotificationService } from "../../../../../core/agent/services/signifyNotificationService";
 
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
@@ -138,7 +138,10 @@ describe("Multi-Sig request", () => {
 
     const { getByText } = render(
       <Provider store={store}>
-        <IncomingRequest />
+        <IncomingRequest
+          open={true}
+          setOpenPage={jest.fn()}
+        />
       </Provider>
     );
 
@@ -163,7 +166,10 @@ describe("Multi-Sig request", () => {
     store.dispatch(setQueueIncomingRequest(requestDetails));
     const { getByText } = render(
       <Provider store={store}>
-        <IncomingRequest />
+        <IncomingRequest
+          open={true}
+          setOpenPage={jest.fn()}
+        />
       </Provider>
     );
 
@@ -182,7 +188,10 @@ describe("Multi-Sig request", () => {
     store.dispatch(setQueueIncomingRequest(requestDetails));
     const { getByText } = render(
       <Provider store={store}>
-        <IncomingRequest />
+        <IncomingRequest
+          open={true}
+          setOpenPage={jest.fn()}
+        />
       </Provider>
     );
 

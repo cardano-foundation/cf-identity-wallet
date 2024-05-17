@@ -14,23 +14,21 @@ import { useState } from "react";
 import {
   Alert as AlertAccept,
   Alert as AlertDecline,
-} from "../../../components/Alert";
-import { i18n } from "../../../../i18n";
-import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
-import { PageFooter } from "../../../components/PageFooter";
+} from "../../../../../components/Alert";
+import KeriLogo from "../../../../../assets/images/KeriGeneric.jpg";
 import { RequestProps } from "../IncomingRequest.types";
-import { PageHeader } from "../../../components/PageHeader";
-import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
-import { Agent } from "../../../../core/agent/agent";
-import "./MultiSigRequest.scss";
-import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
-import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../../../store/hooks";
 import {
   getIdentifiersCache,
   setIdentifiersCache,
-} from "../../../../store/reducers/identifiersCache";
-import { setToastMsg } from "../../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../../globals/types";
+} from "../../../../../../store/reducers/identifiersCache";
+import { Agent } from "../../../../../../core/agent/agent";
+import { IdentifierShortDetails } from "../../../../../../core/agent/services/identifier.types";
+import { ToastMsgType } from "../../../../../globals/types";
+import { ScrollablePageLayout } from "../../../../../components/layout/ScrollablePageLayout";
+import { PageHeader } from "../../../../../components/PageHeader";
+import { i18n } from "../../../../../../i18n";
+import { PageFooter } from "../../../../../components/PageFooter";
 
 const MultiSigRequest = ({
   blur,
@@ -108,9 +106,7 @@ const MultiSigRequest = ({
       <ScrollablePageLayout
         pageId={pageId}
         activeStatus={activeStatus}
-        customClass={`setup-identifier ${activeStatus ? "show" : "hide"} ${
-          blur ? "blur" : ""
-        }`}
+        customClass={`setup-identifier ${blur ? "blur" : ""}`}
         header={
           <PageHeader
             closeButton={true}

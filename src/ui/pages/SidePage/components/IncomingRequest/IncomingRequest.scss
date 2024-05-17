@@ -1,20 +1,6 @@
 .incoming-request {
   display: flex !important;
 
-  &.show {
-    transform: translate3d(0, 0, 0);
-    transition-duration: 0.5s;
-  }
-
-  &.hide {
-    transform: translate3d(100%, 0, 0);
-    transition-duration: 0.5s;
-    .responsive-page-content,
-    .scrollable-page-content {
-      visibility: hidden;
-    }
-  }
-
   .responsive-page-content {
     justify-content: space-around;
   }
