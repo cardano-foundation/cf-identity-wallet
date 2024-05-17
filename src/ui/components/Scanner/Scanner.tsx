@@ -27,7 +27,6 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { Agent } from "../../../core/agent/agent";
 import { ScannerProps } from "./Scanner.types";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
-import { CreateIdentifier } from "../CreateIdentifier";
 import {
   getMultiSigGroupCache,
   setMultiSigGroupCache,
@@ -36,9 +35,9 @@ import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifi
 import { PageFooter } from "../PageFooter";
 import { CustomInput } from "../CustomInput";
 import { OptionModal } from "../OptionsModal";
-import { PasteConnectionPeerIdModal } from "../PasteConnectionPeerIdModal";
 import { setPendingConnections } from "../../../store/reducers/walletConnectionsCache";
 import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
+import { CreateIdentifier } from "../CreateIdentifier";
 
 const Scanner = forwardRef(
   ({ setIsValueCaptured, handleReset }: ScannerProps, ref) => {
@@ -54,7 +53,6 @@ const Scanner = forwardRef(
     const [groupId, setGroupId] = useState("");
     const [pastedValue, setPastedValue] = useState("");
     const [scanning, setScanning] = useState(false);
-    const [openPidModal, setOpenPidModal] = useState<boolean>(false);
 
     const checkPermission = async () => {
       const status = await BarcodeScanner.checkPermission({ force: true });
@@ -97,14 +95,9 @@ const Scanner = forwardRef(
 
     const handleConnectWallet = (id: string) => {
       // TODO: Handle connect wallet using the id
+      handleReset?.();
       dispatch(setToastMsg(ToastMsgType.PEER_ID_SUCCESS));
       dispatch(setPendingConnections(walletConnectionsFix[0]));
-    };
-
-    const handleSubmitConnect = (id: string) => {
-      stopScan();
-      dispatch(setCurrentOperation(OperationType.IDLE));
-      handleConnectWallet(id);
     };
 
     const updateConnections = async (groupId: string) => {
@@ -127,6 +120,12 @@ const Scanner = forwardRef(
       // have a loading screen with "waiting for server..." etc,
       // and it can update to an error if the QR is invalid with a re-scan btn
       dispatch(setCurrentOperation(OperationType.IDLE));
+
+      if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
+        handleConnectWallet(content);
+        return;
+      }
+
       // @TODO - foconnor: when above loading screen in place, handle invalid QR code
       const invitation = await Agent.agent.connections.connectByOobiUrl(
         content
@@ -141,13 +140,9 @@ const Scanner = forwardRef(
         ) {
           const groupId = new URL(content).searchParams.get("groupId");
           groupId && updateConnections(groupId);
-        } else if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
-          handleConnectWallet(content);
-          return;
         }
       } else if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
         setGroupId(invitation.groupId);
-        setCreateIdentifierModalIsOpen(true);
       }
     };
 
@@ -203,7 +198,7 @@ const Scanner = forwardRef(
         return (
           <PageFooter
             customClass="actions-button"
-            secondaryButtonAction={() => setOpenPidModal(true)}
+            secondaryButtonAction={() => setPasteModalIsOpen(true)}
             secondaryButtonText={`${i18n.t("scan.pastemeerkatid")}`}
           />
         );
@@ -275,11 +270,6 @@ const Scanner = forwardRef(
             </div>
           )}
         </IonGrid>
-        <PasteConnectionPeerIdModal
-          openModal={openPidModal}
-          onCloseModal={() => setOpenPidModal(false)}
-          onConfirm={handleSubmitConnect}
-        />
         <CreateIdentifier
           modalIsOpen={createIdentifierModalIsOpen}
           setModalIsOpen={setCreateIdentifierModalIsOpen}
@@ -298,9 +288,15 @@ const Scanner = forwardRef(
               currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
               currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
                 ? `${i18n.t("createidentifier.scan.pasteoobi")}`
-                : `${i18n.t("createidentifier.scan.pastecontents")}`
+                : currentOperation === OperationType.SCAN_WALLET_CONNECTION
+                  ? i18n.t("menu.tab.items.connectwallet.inputpidmodal.header")
+                  : `${i18n.t("createidentifier.scan.pastecontents")}`
             }`,
             actionButton: true,
+            actionButtonDisabled:
+              currentOperation === OperationType.SCAN_WALLET_CONNECTION
+                ? !pastedValue
+                : false,
             actionButtonAction: handleSubmitPastedValue,
             actionButtonLabel: `${i18n.t("createidentifier.scan.confirm")}`,
           }}
