@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "webpack serve --config webpack/webpack.dev.cjs --host 0.0.0.0 --port 3003",
-    "build": "cross-env ENVIRONMENT=stg-direct webpack --config webpack/webpack.prod.cjs",
+    "build": "cross-env ENVIRONMENT=stg-comm webpack --config webpack/webpack.prod.cjs",
     "build:cap": "npm run build && npx cap sync",
     "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}' 'credential-issuance-server/src/**/*.{ts,tsx,scss}'",
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
