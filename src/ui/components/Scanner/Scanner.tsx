@@ -125,7 +125,6 @@ const Scanner = forwardRef(
         return;
       }
 
-      dispatch(setCurrentOperation(OperationType.IDLE));
       // @TODO - foconnor: when above loading screen in place, handle invalid QR code
       const invitation = await Agent.agent.connections.connectByOobiUrl(
         content
@@ -144,6 +143,8 @@ const Scanner = forwardRef(
       } else if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
         setGroupId(invitation.groupId);
       }
+
+      dispatch(setCurrentOperation(OperationType.IDLE));
     };
 
     const initScan = async () => {
