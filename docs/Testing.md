@@ -31,6 +31,7 @@ npm run test
 ```
 # Android
 APP_PATH=<LOCAL_PATH/app-release-unsigned.apk>
+#This is required to connect the simulator to the locally running KERIA docker container on your machine.
 KERIA_IP=<IP_V4>
 
 # iOS
