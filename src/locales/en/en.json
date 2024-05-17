@@ -648,7 +648,8 @@
       "create": "Add an identifier",
       "favourites": "Favourites",
       "allidentifiers": "All identifiers",
-      "pendingidentifiers": "Pending identifiers"
+      "pendingidentifiers": "Pending identifiers",
+      "multisigidentifiers": "For multiple signers"
     },
     "layout": {
       "created": "CREATED"
@@ -934,6 +935,7 @@
       "header": "Settings",
       "security": {
         "title": "Security",
+        "biometry": "Biometric authentication",
         "changepin": "Change PIN",
         "manageoperationspassword": "Manage Operations Password",
         "seedphrase": "Seed Phrase"
@@ -1054,31 +1056,67 @@
     "more": "More share options"
   },
   "createidentifier": {
-    "title": "Add an identifier",
     "cancel": "Cancel",
     "back": "Back",
+    "done": "Done",
+    "add": {
+      "title": "Add an identifier",
+      "confirmbutton": "Create identifier"
+    },
+    "share": {
+      "title": "Share identifier",
+      "subtitle": "You've scanned",
+      "copybutton": "Copy OOBI connection",
+      "notes": {
+        "top": "Before proceeding, please make sure that everyone you want to include as a signer scans this QR code.",
+        "middle": "After everyone has scanned your QR code, please be sure to scan everyone else's QR code as well.",
+        "bottom": "To continue with the initiation of the mult-sig you must have scanned at least one other QR code."
+      },
+      "scanbutton": "Scan QR codes",
+      "initiatebutton": "Initiate multi-sig",
+      "scanalert": {
+        "text": "Have all the individuals you want to include as members scanned your QR code?",
+        "confirm": "Confirm and scan",
+        "cancel": "Cancel"
+      }
+    },
+    "receive": {
+      "title": "Setup identifier",
+      "confirmbutton": "Add identifier",
+      "notes": {
+        "top": "Before proceeding, please make sure everyone included as a member scans this QR code.",
+        "middle": "Remember to scan everyone else’s QR code too!"
+      }
+    },
+    "scan": {
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "pasteoobi": "Paste OOBI",
+      "initiate": "Initiate multi-sig",
+      "scanqrcode": "Scan QR code",
+      "pastecontents": "Paste contents"
+    },
     "connections": {
       "title": "Connections",
-      "subtitle": "Select the connections you want to sign this identifier with",
-      "search": "Search connections",
-      "continue": "Choose connections"
+      "subtitle": "These are the members you scanned. Please review before proceeding.",
+      "continue": "Confirm connections"
     },
     "threshold": {
       "title": "Set a Threshold",
       "subtitle": "Set the threshold to determine the level of consensus required",
       "label": "Threshold",
-      "continue": "Review identifier"
+      "continue": "Confirm threshold"
     },
     "confirm": {
       "title": "Confirm",
-      "subtitle": "Double-check all the details for your Keri AID identifier are accurate",
+      "subtitle": "Confirm all details for your Keri AID multi-sig identifier are accurate",
       "displayname": "Display Name",
       "selectedmembers": "Selected Members",
       "treshold": "Threshold",
       "continue": "Confirm identifier",
       "cancel": "Cancel",
       "alert": {
-        "text": "Cancelling now means you'll need to restart the identifier adding process. Are you sure you want to cancel?",
+        "text": "Cancelling now means you'll need to restart the multi-sig initiation process.",
         "cancel": "Yes, cancel",
         "back": "Back"
       }
@@ -1110,7 +1148,6 @@
     "theme": {
       "title": "Choose a theme"
     },
-    "confirmbutton": "Create identifier",
     "error": {
       "maxlength": "Must be less than 32 characters long"
     }
@@ -1148,7 +1185,9 @@
     "disconnectwallet": "Disconnected successfully",
     "unableconnectwallet": "Unable to connect",
     "peeridsuccess": "Peer ID successful",
-    "peeridnotrecognised": "Peer ID not recognised"
+    "peeridnotrecognised": "Peer ID not recognised",
+    "disconnectwallet": "Disconnected successfully",
+    "strongbiometrynotavailable": "Strong biometry not available"
   },
   "request": {
     "signtransaction": {
@@ -1186,26 +1225,19 @@
       }
     },
     "multisig": {
-      "stageone": {
-        "title": "Identifier request",
-        "subtitle": "Review this multi-sig identifier request",
-        "requestfrom": "Request from",
-        "othermembers": "Other members",
-        "pending": "Pending",
-        "accepted": "Accepted",
-        "threshold": "Threshold",
-        "alert": {
-          "textaccept": "Are you sure you want to approve this request? You won't be able to change your decision later.",
-          "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
-          "accept": "Accept",
-          "decline": "Decline",
-          "cancel": "Cancel"
-        }
-      },
-      "stagetwo": {
-        "title": "Setup identifier",
-        "displayname": "Display name",
-        "chooseatheme": "Choose a theme"
+      "title": "Identifier request",
+      "subtitle": "Review this multi-sig identifier request",
+      "requestfrom": "Request from",
+      "othermembers": "Other members",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "threshold": "Threshold",
+      "alert": {
+        "textaccept": "Are you sure you want to approve this request? You won't be able to change your decision later.",
+        "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
+        "accept": "Accept",
+        "decline": "Decline",
+        "cancel": "Cancel"
       }
     },
     "button": {
@@ -1237,5 +1269,16 @@
       "usernameCreated": "Welcome, {{username}}!",
       "usernameError": "Unable to set name. Please try again."
     }
+  },
+  "biometry": {
+    "reason": "Please authenticate",
+    "canceltitle": "Cancel",
+    "iosfallbacktitle": "Use passcode",
+    "androidtitle": "Authentication",
+    "androidsubtitle": "Authentication using biometrics",
+    "setupandroidbiometryheader": "Do you want to allow “IDW” to use biometrics?",
+    "setupandroidbiometryconfirm": "Ok",
+    "setupandroidbiometrycancel": "Dont allow",
+    "cancelbiometryheader": "You canceled Biometrics. You can set this up later via the settings page."
   }
 }

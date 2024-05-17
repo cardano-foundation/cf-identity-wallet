@@ -4,10 +4,7 @@ import {
   CredentialStatus,
 } from "./services/credentialService.types";
 import { EventService } from "./services/eventService";
-import { IdentifierStorage } from "./records/identifierStorage";
-import { CredentialStorage } from "./records/credentialStorage";
 import { ConnectionHistoryType } from "./services/connection.types";
-import { PeerConnectionStorage } from "./records";
 
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
@@ -32,6 +29,7 @@ interface ConnectionShortDetails {
   logo?: string;
   status: ConnectionStatus;
   oobi?: string;
+  groupId?: string;
 }
 
 type ConnectionNoteDetails = {
@@ -96,6 +94,15 @@ interface KeriaNotification {
   a: Record<string, unknown>;
 }
 
+enum KeriConnectionType {
+  NORMAL = "NORMAL",
+  MULTI_SIG_INITIATOR = "MULTI_SIG_INITIATOR",
+}
+
+type OobiScan =
+  | { type: KeriConnectionType.NORMAL }
+  | { type: KeriConnectionType.MULTI_SIG_INITIATOR; groupId: string };
+
 interface BaseEventEmitter {
   type: string;
   payload: Record<string, unknown>;
@@ -136,6 +143,7 @@ export {
   ConnectionEventTypes,
   AcdcEventTypes,
   NotificationRoute,
+  KeriConnectionType,
   KeriaStatusEventTypes,
 };
 
@@ -148,6 +156,7 @@ export type {
   ConnectionStateChangedEvent,
   KeriaNotification,
   AcdcStateChangedEvent,
+  OobiScan,
   BaseEventEmitter,
   KeriaNotificationMarker,
   AgentServicesProps,

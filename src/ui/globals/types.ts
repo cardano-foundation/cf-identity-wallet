@@ -22,6 +22,9 @@ enum OperationType {
   SCAN_CONNECTION = "scanConnection",
   ADD_CREDENTIAL = "addCredential",
   RECEIVE_CONNECTION = "receiveConnection",
+  MULTI_SIG_INITIATOR_SCAN = "multiSigInitiatorScan",
+  MULTI_SIG_RECEIVER_SCAN = "multiSigReceiverScan",
+  MULTI_SIG_INITIATOR_INIT = "multiSigInitiatorInit",
   CREATE_IDENTIFIER_CONNECT_WALLET = "createIdentifierConnectWallet",
   SCAN_WALLET_CONNECTION = "scanWalletConnection",
 }

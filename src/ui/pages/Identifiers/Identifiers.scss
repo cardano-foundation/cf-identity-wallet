@@ -2,6 +2,10 @@
   .identifiers-tab-content-block {
     margin: 1.5rem 0;
 
+    &:first-of-type {
+      margin-bottom: 2.5rem;
+    }
+
     h3 {
       margin-bottom: 0.875rem;
     }

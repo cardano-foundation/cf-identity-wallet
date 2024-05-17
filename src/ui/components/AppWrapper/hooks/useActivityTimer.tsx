@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { App } from "@capacitor/app";
+import { getPlatforms } from "@ionic/react";
 import { useAppDispatch } from "../../../../store/hooks";
 import { logout } from "../../../../store/reducers/stateCache";
 
@@ -7,7 +8,7 @@ const timeout = process.env.NODE_ENV === "development" ? 3600000 : 60000; // 1h/
 const pauseTimeout = timeout / 2;
 const useActivityTimer = () => {
   const dispatch = useAppDispatch();
-  const [pauseTimestamp, setPauseTimestamp] = useState(0);
+  const [pauseTimestamp, setPauseTimestamp] = useState(new Date().getTime());
   const timer = useRef<NodeJS.Timeout | null>(null);
 
   const clearTimer = () => {
@@ -28,24 +29,27 @@ const useActivityTimer = () => {
   };
 
   useEffect(() => {
-    const pauseListener = App.addListener("pause", () => {
-      const now = new Date().getTime();
-      setPauseTimestamp(now);
-    });
+    const platforms = getPlatforms();
+    if (!platforms.includes("mobileweb")) {
+      const pauseListener = App.addListener("pause", () => {
+        const now = new Date().getTime();
+        setPauseTimestamp(now);
+      });
 
-    const resumeListener = App.addListener("resume", () => {
-      const now = new Date().getTime();
-      if (now - pauseTimestamp > pauseTimeout) {
-        dispatch(logout());
-      }
-    });
+      const resumeListener = App.addListener("resume", () => {
+        const now = new Date().getTime();
+        if (now - pauseTimestamp > pauseTimeout) {
+          dispatch(logout());
+        }
+      });
 
-    return () => {
-      pauseListener.remove();
-      resumeListener.remove();
-      clearTimer();
-    };
-  }, []);
+      return () => {
+        pauseListener.remove();
+        resumeListener.remove();
+        clearTimer();
+      };
+    }
+  }, [pauseTimestamp]);
 
   useEffect(() => {
     const events = [
@@ -69,6 +73,9 @@ const useActivityTimer = () => {
       clearTimer();
     };
   }, []);
+  return {
+    setPauseTimestamp,
+  };
 };
 
 export { useActivityTimer };
