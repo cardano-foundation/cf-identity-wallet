@@ -110,15 +110,12 @@ class ConnectionService extends AgentService {
   }
 
   async getConnections(): Promise<ConnectionShortDetails[]> {
-    const connectionsDetails: ConnectionShortDetails[] = [];
-    const metadatas = await this.getAllConnectionMetadata();
-    metadatas.forEach(async (connection) => {
-      // @TODO - foconnor: This filter should be via the SQL, may cause a regression so this is a temp solution.
-      if (connection.getTag("groupId") === undefined) {
-        connectionsDetails.push(this.getConnectionShortDetails(connection));
-      }
+    const connections = await this.connectionStorage.findAllByQuery({
+      groupId: undefined,
     });
-    return connectionsDetails;
+    return connections.map((connection) =>
+      this.getConnectionShortDetails(connection)
+    );
   }
 
   async getMultisigLinkedContacts(
@@ -251,10 +248,6 @@ class ConnectionService extends AgentService {
     return connection;
   }
 
-  async getAllConnectionMetadata(): Promise<ConnectionRecord[]> {
-    return this.connectionStorage.getAll();
-  }
-
   async getConnectionHistoryById(
     connectionId: string
   ): Promise<ConnectionHistoryItem[]> {
@@ -279,7 +272,7 @@ class ConnectionService extends AgentService {
   @OnlineOnly
   async syncKeriaContacts() {
     const signifyContacts = await this.signifyClient.contacts().list();
-    const storageContacts = await this.getAllConnectionMetadata();
+    const storageContacts = await this.connectionStorage.getAll();
     const unSyncedData = signifyContacts.filter(
       (contact: KeriaContact) =>
         !storageContacts.find((item: ConnectionRecord) => contact.id == item.id)

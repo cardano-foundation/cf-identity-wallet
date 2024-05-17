@@ -208,20 +208,13 @@ describe("Connection service of agent", () => {
   });
 
   test("can get all connections and multi-sig related ones are filtered", async () => {
-    connectionStorage.getAll = jest.fn().mockResolvedValue([
+    connectionStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {
         id: keriContacts[0].id,
         createdAt: now,
         alias: "keri",
         oobi: "oobi",
         getTag: jest.fn(),
-      },
-      {
-        id: "second-id",
-        createdAt: now,
-        alias: "keri",
-        oobi: "oobi",
-        getTag: jest.fn().mockReturnValue("group-id"),
       },
     ]);
     expect(await connectionService.getConnections()).toEqual([
