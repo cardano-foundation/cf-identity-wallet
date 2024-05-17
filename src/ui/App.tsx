@@ -23,14 +23,13 @@ import {
 import { useAppSelector } from "../store/hooks";
 import { FullPageScanner } from "./pages/FullPageScanner";
 import { OperationType } from "./globals/types";
-import { IncomingRequest } from "./pages/IncomingRequest";
 import { SetUserName } from "./components/SetUserName";
 import { PublicRoutes, TabsRoutePath } from "../routes/paths";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
 import { LockPage } from "./pages/LockPage/LockPage";
 import { LoadingPage } from "./pages/LoadingPage/LoadingPage";
-import { WalletConnect } from "./components/WalletConnect";
+import { SidePage } from "./pages/SidePage";
 
 setupIonicReact();
 
@@ -146,13 +145,12 @@ const App = () => {
             isOpen={showSetUserName}
             setIsOpen={setShowSetUserName}
           />
-          <IncomingRequest />
           <CustomToast
             toastMsg={toastMsg}
             showToast={showToast}
             setShowToast={setShowToast}
           />
-          <WalletConnect />
+          <SidePage />
         </StrictMode>
       </AppWrapper>
     </IonApp>

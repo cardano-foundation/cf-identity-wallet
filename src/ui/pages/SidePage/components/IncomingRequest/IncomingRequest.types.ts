@@ -1,4 +1,4 @@
-import { IncomingRequestProps } from "../../../store/reducers/stateCache/stateCache.types";
+import { IncomingRequestProps } from "../../../../../store/reducers/stateCache/stateCache.types";
 
 interface RequestProps {
   pageId: string;

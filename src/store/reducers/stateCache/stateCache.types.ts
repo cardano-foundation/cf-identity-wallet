@@ -1,7 +1,7 @@
 import { KeriaNotification } from "../../../core/agent/agent.types";
 import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifier.types";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
-import { SignTransaction } from "../../../ui/pages/IncomingRequest/components/SignTransactionRequest.types";
+import { SignTransaction } from "../../../ui/pages/SidePage/components/IncomingRequest/components/SignTransactionRequest.types";
 
 interface PayloadData<T = any> {
   [key: string]: T;

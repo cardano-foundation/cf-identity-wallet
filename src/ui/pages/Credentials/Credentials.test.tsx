@@ -2,6 +2,8 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
+import { MemoryRouter } from "react-router-dom";
+import { createMemoryHistory } from "history";
 import { Creds } from "./Credentials";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
@@ -78,9 +80,11 @@ describe("Creds Tab", () => {
 
   test("Renders favourites in Creds", () => {
     const { getByText } = render(
-      <Provider store={mockedStore}>
-        <Creds />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={mockedStore}>
+          <Creds />
+        </Provider>
+      </MemoryRouter>
     );
 
     expect(
@@ -94,9 +98,11 @@ describe("Creds Tab", () => {
       dispatch: dispatchMock,
     };
     const { getByText, getByTestId } = render(
-      <Provider store={storeMocked}>
-        <Creds />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Creds />
+        </Provider>
+      </MemoryRouter>
     );
 
     expect(getByTestId("credentials-tab")).toBeInTheDocument();
@@ -109,9 +115,11 @@ describe("Creds Tab", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId } = render(
-      <Provider store={storeMocked}>
-        <Creds />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Creds />
+        </Provider>
+      </MemoryRouter>
     );
 
     expect(
@@ -125,9 +133,11 @@ describe("Creds Tab", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId } = render(
-      <Provider store={storeMocked}>
-        <Creds />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Creds />
+        </Provider>
+      </MemoryRouter>
     );
 
     expect(getByTestId("cred-card-template-favs-index-0")).toBeInTheDocument();
@@ -139,9 +149,11 @@ describe("Creds Tab", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId } = render(
-      <Provider store={storeMocked}>
-        <Creds />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Creds />
+        </Provider>
+      </MemoryRouter>
     );
 
     await waitFor(() => {
@@ -171,9 +183,11 @@ describe("Creds Tab", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId } = render(
-      <Provider store={storeMocked}>
-        <Creds />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Creds />
+        </Provider>
+      </MemoryRouter>
     );
 
     act(() => {
@@ -193,9 +207,11 @@ describe("Creds Tab", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId, queryByTestId, getByText, getAllByText } = render(
-      <Provider store={storeMocked}>
-        <Creds />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Creds />
+        </Provider>
+      </MemoryRouter>
     );
 
     act(() => {
@@ -219,9 +235,11 @@ describe("Creds Tab", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId, queryByTestId } = render(
-      <Provider store={storeMocked}>
-        <Creds />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Creds />
+        </Provider>
+      </MemoryRouter>
     );
 
     act(() => {

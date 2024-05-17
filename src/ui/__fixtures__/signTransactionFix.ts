@@ -1,4 +1,4 @@
-import { SignTransaction } from "../pages/IncomingRequest/components/SignTransactionRequest.types";
+import { SignTransaction } from "../pages/SidePage/components/IncomingRequest/components/SignTransactionRequest.types";
 
 const signTransactionFix: SignTransaction = {
   action: "CAST_VOTE",

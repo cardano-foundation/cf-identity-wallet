@@ -4,15 +4,15 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { store } from "../../../store";
+import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
+import { store } from "../../../../../store";
 import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
-import { identifierFix } from "../../__fixtures__/identifierFix";
-import { TabsRoutePath } from "../../../routes/paths";
-import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
-import { setToastMsg } from "../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../globals/types";
+import { identifierFix } from "../../../../__fixtures__/identifierFix";
+import { TabsRoutePath } from "../../../../../routes/paths";
+import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
+import { setToastMsg } from "../../../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../../../globals/types";
 import { WalletConnect } from "./WalletConnect";
 setupIonicReact();
 mockIonicReact();
@@ -260,7 +260,10 @@ describe("Wallet Connect Request", () => {
   test("Renders content ", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <WalletConnect />
+        <WalletConnect
+          open={true}
+          setOpenPage={jest.fn()}
+        />
       </Provider>
     );
 
@@ -310,7 +313,10 @@ describe("Wallet Connect Request", () => {
   test("Renders close in stage one ", async () => {
     const { getByTestId, getByText, getAllByText, queryByTestId } = render(
       <Provider store={storeMocked}>
-        <WalletConnect />
+        <WalletConnect
+          open={true}
+          setOpenPage={jest.fn()}
+        />
       </Provider>
     );
 

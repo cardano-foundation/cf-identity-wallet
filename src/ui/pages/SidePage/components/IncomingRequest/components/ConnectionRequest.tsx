@@ -5,12 +5,12 @@ import {
   swapHorizontalOutline,
 } from "ionicons/icons";
 import i18next from "i18next";
-import { i18n } from "../../../../i18n";
 import CardanoLogo from "../../../../ui/assets/images/CardanoLogo.jpg";
-import { RequestType } from "../../../globals/types";
-import { PageFooter } from "../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
-import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageLayout";
+import { ResponsivePageLayout } from "../../../../../components/layout/ResponsivePageLayout";
+import { i18n } from "../../../../../../i18n";
+import { RequestType } from "../../../../../globals/types";
+import { PageFooter } from "../../../../../components/PageFooter";
 
 const ConnectionRequest = ({
   pageId,

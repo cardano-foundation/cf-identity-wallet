@@ -21,6 +21,7 @@ const SideSlider = ({
       style={{
         zIndex,
       }}
+      data-testid="side-slider"
       onTransitionEnd={(e) => {
         open ? onOpenAnimationEnd?.(e) : onCloseAnimationEnd?.(e);
       }}
