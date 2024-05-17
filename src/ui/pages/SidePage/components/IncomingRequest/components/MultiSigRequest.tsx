@@ -29,6 +29,7 @@ import { ScrollablePageLayout } from "../../../../../components/layout/Scrollabl
 import { PageHeader } from "../../../../../components/PageHeader";
 import { i18n } from "../../../../../../i18n";
 import { PageFooter } from "../../../../../components/PageFooter";
+import "./MultiSigRequest.scss";
 
 const MultiSigRequest = ({
   blur,
