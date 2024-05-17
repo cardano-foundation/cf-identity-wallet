@@ -95,7 +95,7 @@ const Scanner = forwardRef(
 
     const handleConnectWallet = (id: string) => {
       // TODO: Handle connect wallet using the id
-      handleReset?.();
+      handleReset && handleReset();
       dispatch(setToastMsg(ToastMsgType.PEER_ID_SUCCESS));
       dispatch(setPendingConnections(walletConnectionsFix[0]));
     };
@@ -119,8 +119,9 @@ const Scanner = forwardRef(
       // @TODO - foconnor: instead of setting the optype to idle we should
       // have a loading screen with "waiting for server..." etc,
       // and it can update to an error if the QR is invalid with a re-scan btn
+      dispatch(setCurrentOperation(OperationType.IDLE));
+
       if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
-        dispatch(setCurrentOperation(OperationType.IDLE));
         handleConnectWallet(content);
         return;
       }
@@ -141,11 +142,9 @@ const Scanner = forwardRef(
           groupId && updateConnections(groupId);
         }
       } else if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
-        setCreateIdentifierModalIsOpen(true);
         setGroupId(invitation.groupId);
+        setCreateIdentifierModalIsOpen(true);
       }
-
-      dispatch(setCurrentOperation(OperationType.IDLE));
     };
 
     const initScan = async () => {
