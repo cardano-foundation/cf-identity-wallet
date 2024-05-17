@@ -58,11 +58,11 @@
   
  # Future Developments
  
-- :shield: Encryption at rest with local backup & restore (Compatible with Hyperledger [Aries Askar](https://github.com/hyperledger/aries-askar))
-- :calling: Social and multi-device identifier recovery
-- :speech_balloon: P2P Chat
-- :office: Delegated multi-sig for organisational identity
-- :chains: Cardano-backed ACDC verifiable credential schemas
+- Encryption at rest with local backup & restore (Compatible with Hyperledger [Aries Askar](https://github.com/hyperledger/aries-askar))
+- Social and multi-device identifier recovery
+- P2P Chat
+- Delegated multi-sig for organisational identity
+- Cardano-backed ACDC verifiable credential schemas
 
 # Standards & Protocols
 - [Key Event Receipt Infrastructure (KERI)](https://keri.one/)
