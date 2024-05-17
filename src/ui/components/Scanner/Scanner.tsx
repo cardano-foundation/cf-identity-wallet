@@ -141,6 +141,7 @@ const Scanner = forwardRef(
           groupId && updateConnections(groupId);
         }
       } else if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
+        setCreateIdentifierModalIsOpen(true);
         setGroupId(invitation.groupId);
       }
 
