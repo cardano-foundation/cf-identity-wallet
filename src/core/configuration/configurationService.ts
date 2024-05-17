@@ -1,7 +1,7 @@
 import { Configuration, BackingMode } from "./configurationService.types";
 // eslint-disable-next-line no-undef
 const environment = process.env.ENVIRONMENT || "dev-direct";
-
+const keriaIP = process.env.KERIA_IP;
 class ConfigurationService {
   private static configurationEnv: Configuration;
 
@@ -17,6 +17,7 @@ class ConfigurationService {
           const validyCheck = this.configurationValid(data);
           if (validyCheck.success) {
             ConfigurationService.configurationEnv = data as Configuration;
+            this.setKeriaIp();
           } else {
             rj(
               new Error(
@@ -36,6 +37,20 @@ class ConfigurationService {
 
   static get env() {
     return this.configurationEnv;
+  }
+
+  private setKeriaIp() {
+    const keriaUrl = ConfigurationService.configurationEnv.keri.keria.url;
+    const keriaBootUrl =
+      ConfigurationService.configurationEnv.keri.keria.bootUrl;
+    if (keriaIP) {
+      ConfigurationService.configurationEnv.keri.keria.url = keriaUrl.replace(
+        /\/\/[^:]+/,
+        `//${keriaIP}`
+      );
+      ConfigurationService.configurationEnv.keri.keria.bootUrl =
+        keriaBootUrl.replace(/\/\/[^:]+/, `//${keriaIP}`);
+    }
   }
 
   private configurationValid(
