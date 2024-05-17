@@ -31,14 +31,15 @@ npm run test
 ```
 # Android
 APP_PATH=<LOCAL_PATH/app-release-unsigned.apk>
-#This is required to connect the simulator to the locally running KERIA docker container on your machine.
 KERIA_IP=<IP_V4>
 
 # iOS
 APP_PATH=<LOCAL_PATH/App.app>
 KERIA_IP=<IP_V4>
 ```
+
 #### How to get IP v4 address:
+This is required to connect the simulator to the locally running KERIA docker container on your machine.
 #### MacOS:
 ````bash
 ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | head -1 | awk '{ print $2 }'
