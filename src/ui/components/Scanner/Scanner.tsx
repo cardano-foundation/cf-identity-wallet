@@ -294,10 +294,7 @@ const Scanner = forwardRef(
                   : `${i18n.t("createidentifier.scan.pastecontents")}`
             }`,
             actionButton: true,
-            actionButtonDisabled:
-              currentOperation === OperationType.SCAN_WALLET_CONNECTION
-                ? !pastedValue
-                : false,
+            actionButtonDisabled: !pastedValue,
             actionButtonAction: handleSubmitPastedValue,
             actionButtonLabel: `${i18n.t("createidentifier.scan.confirm")}`,
           }}
