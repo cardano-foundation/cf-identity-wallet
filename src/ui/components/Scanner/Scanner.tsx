@@ -185,10 +185,6 @@ const Scanner = forwardRef(
       }
     }, [currentOperation, currentRoute]);
 
-    const handlePasteMkId = () => {
-      setOpenPidModal(true);
-    };
-
     const handlePrimaryButtonAction = () => {
       stopScan();
       dispatch(setCurrentOperation(OperationType.MULTI_SIG_INITIATOR_INIT));
@@ -207,7 +203,7 @@ const Scanner = forwardRef(
         return (
           <PageFooter
             customClass="actions-button"
-            secondaryButtonAction={handlePasteMkId}
+            secondaryButtonAction={() => setOpenPidModal(true)}
             secondaryButtonText={`${i18n.t("scan.pastemeerkatid")}`}
           />
         );

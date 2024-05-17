@@ -5,6 +5,7 @@ import { useAppIonRouter } from "../../hooks";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  getStateCache,
   login,
   setAuthentication,
   setCurrentRoute,
@@ -13,13 +14,18 @@ import {
   ErrorMessage,
   MESSAGE_MILLISECONDS,
 } from "../../components/ErrorMessage";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import {
+  KeyStoreKeys,
+  PreferencesKeys,
+  PreferencesStorage,
+  SecureStorage,
+} from "../../../core/storage";
 import { RoutePath } from "../../../routes";
-import { PublicRoutes } from "../../../routes/paths";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import { PageFooter } from "../../components/PageFooter";
 import { Alert } from "../../components/Alert";
 import "./LockPage.scss";
+import { useBiometricAuth } from "../../hooks/useBiometricsHook";
 
 const LockPage = () => {
   const pageId = "lock-page";
@@ -30,6 +36,8 @@ const LockPage = () => {
   const seedPhrase = authentication.seedPhraseIsSet;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
+  const { handleBiometricAuth } = useBiometricAuth();
+
   const headerText = seedPhrase
     ? i18n.t("lockpage.alert.text.verify")
     : i18n.t("lockpage.alert.text.restart");
@@ -51,6 +59,30 @@ const LockPage = () => {
       }, MESSAGE_MILLISECONDS);
     }
   }, [passcodeIncorrect]);
+
+  useEffect(() => {
+    const runBiometrics = async () => {
+      try {
+        const biometrics = await PreferencesStorage.get(
+          PreferencesKeys.APP_BIOMETRY
+        );
+        if (biometrics.enabled) {
+          await handleBiometrics();
+        }
+      } catch (e) {
+        if (
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_BIOMETRY}`
+        ) {
+          return;
+        } else {
+          throw e;
+        }
+      }
+    };
+    runBiometrics();
+  }, []);
 
   const handlePinChange = (digit: number) => {
     const updatedPasscode = `${passcode}${digit}`;
@@ -84,6 +116,13 @@ const LockPage = () => {
       return storedPass === pass;
     } catch (e) {
       return false;
+    }
+  };
+
+  const handleBiometrics = async () => {
+    const isAuthenticated = await handleBiometricAuth();
+    if (isAuthenticated === true) {
+      dispatch(login());
     }
   };
 
@@ -137,6 +176,9 @@ const LockPage = () => {
         passcode={passcode}
         handlePinChange={handlePinChange}
         handleRemove={handleRemove}
+        handleBiometricButtonClick={() => {
+          handleBiometrics();
+        }}
       />
       <PageFooter
         pageId={pageId}

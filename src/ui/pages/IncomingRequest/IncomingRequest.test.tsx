@@ -133,7 +133,7 @@ describe("Multi-Sig request", () => {
     );
   });
 
-  test("It receives incoming Multi-Sig request and render content in MultiSigRequestStageOne", async () => {
+  test("It receives incoming Multi-Sig request and render content in MultiSigRequest", async () => {
     store.dispatch(setQueueIncomingRequest(requestDetails));
 
     const { getByText } = render(
@@ -143,7 +143,7 @@ describe("Multi-Sig request", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.request.multisig.stageone.title)
+      getByText(EN_TRANSLATIONS.request.multisig.title)
     ).toBeInTheDocument();
     expect(
       getByText(requestDetails.multisigIcpDetails.sender.label)
@@ -174,7 +174,7 @@ describe("Multi-Sig request", () => {
       fireEvent.click(footerCancelButton);
     });
     expect(
-      getByText(EN_TRANSLATIONS.request.multisig.stageone.alert.textdecline)
+      getByText(EN_TRANSLATIONS.request.multisig.alert.textdecline)
     ).toBeInTheDocument();
   });
 
@@ -191,7 +191,7 @@ describe("Multi-Sig request", () => {
       fireEvent.click(continueButton);
     });
     expect(
-      getByText(EN_TRANSLATIONS.request.multisig.stageone.alert.textaccept)
+      getByText(EN_TRANSLATIONS.request.multisig.alert.textaccept)
     ).toBeInTheDocument();
   });
 });

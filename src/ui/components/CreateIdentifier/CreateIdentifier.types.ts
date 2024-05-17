@@ -27,18 +27,20 @@ interface ThemeItemProps {
   index: number;
 }
 
+interface IdentifierStageStateProps {
+  identifierCreationStage: number;
+  displayNameValue: string;
+  selectedAidType: number;
+  selectedTheme: number;
+  threshold: number;
+  scannedConections: ConnectionShortDetails[];
+  selectedConnections: ConnectionShortDetails[];
+  newIdentifier: IdentifierShortDetails;
+  ourIdentifier: string;
+}
+
 interface IdentifierStageProps {
-  state: {
-    identifierCreationStage: number;
-    displayNameValue: string;
-    selectedAidType: number;
-    selectedTheme: number;
-    threshold: number;
-    scannedConections: ConnectionShortDetails[];
-    selectedConnections: ConnectionShortDetails[];
-    newIdentifier: IdentifierShortDetails;
-    ourIdentifier: string;
-  };
+  state: IdentifierStageStateProps;
   setState: (value: any) => void;
   componentId: string;
   setBlur?: (value: boolean) => void;
@@ -67,6 +69,7 @@ export type {
   TypeItemProps,
   IdentifierThemeSelectorProps,
   ThemeItemProps,
+  IdentifierStageStateProps,
   IdentifierStageProps,
   IdentifierStage1BodyProps,
 };

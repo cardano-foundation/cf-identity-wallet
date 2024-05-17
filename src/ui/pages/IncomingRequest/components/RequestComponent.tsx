@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
 import { RequestProps } from "../IncomingRequest.types";
 import { CredentialRequest } from "./CredentialRequest";
-import { MultiSigRequestStageOne } from "./MultiSigRequestStageOne";
-import { MultiSigRequestStageTwo } from "./MultiSigRequestStageTwo";
+import { MultiSigRequest } from "./MultiSigRequest";
+import { SignTransactionRequest } from "./SignTransactionRequest";
 
 const RequestComponent = ({
   pageId,
@@ -17,7 +16,6 @@ const RequestComponent = ({
   handleIgnore,
   incomingRequestType,
 }: RequestProps) => {
-  const [requestStage, setRequestStage] = useState(0);
   switch (incomingRequestType) {
   case IncomingRequestType.CREDENTIAL_OFFER_RECEIVED:
     return (
@@ -32,8 +30,10 @@ const RequestComponent = ({
       />
     );
   case IncomingRequestType.MULTI_SIG_REQUEST_INCOMING:
-    return requestStage === 0 ? (
-      <MultiSigRequestStageOne
+    return (
+      <MultiSigRequest
+        blur={blur}
+        setBlur={setBlur}
         pageId={pageId}
         activeStatus={activeStatus}
         requestData={requestData}
@@ -41,10 +41,11 @@ const RequestComponent = ({
         handleAccept={handleAccept}
         handleCancel={handleCancel}
         handleIgnore={handleIgnore}
-        setRequestStage={setRequestStage}
       />
-    ) : (
-      <MultiSigRequestStageTwo
+    );
+  case IncomingRequestType.SIGN_TRANSACTION_REQUEST:
+    return (
+      <SignTransactionRequest
         pageId={pageId}
         activeStatus={activeStatus}
         blur={blur}
@@ -53,7 +54,6 @@ const RequestComponent = ({
         initiateAnimation={initiateAnimation}
         handleAccept={handleAccept}
         handleCancel={handleCancel}
-        setRequestStage={setRequestStage}
       />
     );
   default:

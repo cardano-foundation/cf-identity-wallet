@@ -7,19 +7,19 @@ import {
   addFavouriteIdentifierCache,
   removeFavouriteIdentifierCache,
   getFavouritesIdentifiersCache,
+  setMultiSigGroupCache,
+  getMultiSigGroupCache,
 } from "./identifiersCache";
 import { RootState } from "../../index";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
-import { FavouriteIdentifier } from "./identifiersCache.types";
+import { FavouriteIdentifier, MultiSigGroup } from "./identifiersCache.types";
+import { ConnectionStatus } from "../../../core/agent/agent.types";
 
 describe("identifiersCacheSlice", () => {
   const initialState = {
     identifiers: [],
     favourites: [],
-    multiSigGroup: {
-      groupId: "",
-      connections: [],
-    },
+    multiSigGroup: undefined,
   };
   it("should return the initial state", () => {
     expect(
@@ -43,6 +43,26 @@ describe("identifiersCacheSlice", () => {
       setIdentifiersCache(identifiers)
     );
     expect(newState.identifiers).toEqual(identifiers);
+  });
+
+  it("should handle setMultiSigGroupCache", () => {
+    const multiSigGroup: MultiSigGroup = {
+      groupId: "group-id",
+      connections: [
+        {
+          id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
+          label: "Cambridge University",
+          connectionDate: "2017-08-13T19:23:24Z",
+          logo: "logo.png",
+          status: ConnectionStatus.CONFIRMED,
+        },
+      ],
+    };
+    const newState = identifiersCacheSlice.reducer(
+      initialState,
+      setMultiSigGroupCache(multiSigGroup)
+    );
+    expect(newState.multiSigGroup).toEqual(multiSigGroup);
   });
   it("should handle setFavouritesIdentifiersCache", () => {
     const favourites: FavouriteIdentifier[] = [
@@ -77,10 +97,7 @@ describe("identifiersCacheSlice", () => {
           time: 1,
         },
       ],
-      multiSigGroup: {
-        groupId: "",
-        connections: [],
-      },
+      multiSigGroup: undefined,
     };
     const newState = identifiersCacheSlice.reducer(
       initialState,
@@ -128,5 +145,25 @@ describe("get identifier Cache", () => {
     } as RootState;
     const favouriteCache = getFavouritesIdentifiersCache(state);
     expect(favouriteCache).toEqual(state.identifiersCache.favourites);
+  });
+  it("should return the multiSigGroupCache from RootState", () => {
+    const state = {
+      identifiersCache: {
+        multiSigGroup: {
+          groupId: "group-id",
+          connections: [
+            {
+              id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
+              label: "Cambridge University",
+              connectionDate: "2017-08-13T19:23:24Z",
+              logo: "logo.png",
+              status: ConnectionStatus.CONFIRMED,
+            },
+          ],
+        },
+      },
+    } as RootState;
+    const identifiersCache = getMultiSigGroupCache(state);
+    expect(identifiersCache).toEqual(state.identifiersCache.multiSigGroup);
   });
 });

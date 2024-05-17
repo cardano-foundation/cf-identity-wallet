@@ -1,6 +1,7 @@
 import { KeriaNotification } from "../../../core/agent/agent.types";
 import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifier.types";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
+import { SignTransaction } from "../../../ui/pages/IncomingRequest/components/SignTransactionRequest.types";
 
 interface PayloadData<T = any> {
   [key: string]: T;
@@ -22,6 +23,7 @@ interface AuthenticationCacheProps {
 enum IncomingRequestType {
   CREDENTIAL_OFFER_RECEIVED = "credential-offer-received",
   MULTI_SIG_REQUEST_INCOMING = "multi-sig-request-incoming",
+  SIGN_TRANSACTION_REQUEST = "sign-transaction-request",
 }
 
 interface IncomingRequestProps {
@@ -31,6 +33,7 @@ interface IncomingRequestProps {
   label?: string;
   event?: KeriaNotification;
   multisigIcpDetails?: MultiSigIcpRequestDetails;
+  signTransaction?: SignTransaction;
 }
 
 interface QueueProps<T> {

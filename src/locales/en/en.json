@@ -935,6 +935,7 @@
       "header": "Settings",
       "security": {
         "title": "Security",
+        "biometry": "Biometric authentication",
         "changepin": "Change PIN",
         "manageoperationspassword": "Manage Operations Password",
         "seedphrase": "Seed Phrase"
@@ -1065,6 +1066,7 @@
     "share": {
       "title": "Share identifier",
       "subtitle": "You've scanned",
+      "copybutton": "Copy OOBI connection",
       "notes": {
         "top": "Before proceeding, please make sure that everyone you want to include as a signer scans this QR code.",
         "middle": "After everyone has scanned your QR code, please be sure to scan everyone else's QR code as well.",
@@ -1183,9 +1185,29 @@
     "disconnectwallet": "Disconnected successfully",
     "unableconnectwallet": "Unable to connect",
     "peeridsuccess": "Peer ID successful",
-    "peeridnotrecognised": "Peer ID not recognised"
+    "peeridnotrecognised": "Peer ID not recognised",
+    "disconnectwallet": "Disconnected successfully",
+    "strongbiometrynotavailable": "Strong biometry not available"
   },
   "request": {
+    "signtransaction": {
+      "title": "Sign transaction",
+      "transaction": {
+        "address": "Address",
+        "data": "Data",
+        "action": "Action",
+        "actionText": "Action text",
+        "id": "ID",
+        "event": "Event",
+        "category": "Category",
+        "proposal": "Proposal",
+        "votedat": "Voted at",
+        "network": "Network",
+        "votingpower": "Voting power",
+        "slot": "Slot",
+        "uri": "URI"
+      }
+    },
     "connection": {
       "title": "Connect",
       "requestconnection": " request from",
@@ -1203,26 +1225,19 @@
       }
     },
     "multisig": {
-      "stageone": {
-        "title": "Identifier request",
-        "subtitle": "Review this multi-sig identifier request",
-        "requestfrom": "Request from",
-        "othermembers": "Other members",
-        "pending": "Pending",
-        "accepted": "Accepted",
-        "threshold": "Threshold",
-        "alert": {
-          "textaccept": "Are you sure you want to approve this request? You won't be able to change your decision later.",
-          "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
-          "accept": "Accept",
-          "decline": "Decline",
-          "cancel": "Cancel"
-        }
-      },
-      "stagetwo": {
-        "title": "Setup identifier",
-        "displayname": "Display name",
-        "chooseatheme": "Choose a theme"
+      "title": "Identifier request",
+      "subtitle": "Review this multi-sig identifier request",
+      "requestfrom": "Request from",
+      "othermembers": "Other members",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "threshold": "Threshold",
+      "alert": {
+        "textaccept": "Are you sure you want to approve this request? You won't be able to change your decision later.",
+        "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
+        "accept": "Accept",
+        "decline": "Decline",
+        "cancel": "Cancel"
       }
     },
     "button": {
@@ -1233,7 +1248,8 @@
       "back": "Back",
       "accept": "Accept",
       "decline": "Decline",
-      "addidentifier": "Add identifier"
+      "addidentifier": "Add identifier",
+      "sign": "Sign"
     },
     "alert": {
       "cancel": "Cancel"
@@ -1253,5 +1269,16 @@
       "usernameCreated": "Welcome, {{username}}!",
       "usernameError": "Unable to set name. Please try again."
     }
+  },
+  "biometry": {
+    "reason": "Please authenticate",
+    "canceltitle": "Cancel",
+    "iosfallbacktitle": "Use passcode",
+    "androidtitle": "Authentication",
+    "androidsubtitle": "Authentication using biometrics",
+    "setupandroidbiometryheader": "Do you want to allow “IDW” to use biometrics?",
+    "setupandroidbiometryconfirm": "Ok",
+    "setupandroidbiometrycancel": "Dont allow",
+    "cancelbiometryheader": "You canceled Biometrics. You can set this up later via the settings page."
   }
 }

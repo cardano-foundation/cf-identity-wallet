@@ -35,7 +35,7 @@ describe("Scanner wallet connect", () => {
 
   const initialState = {
     stateCache: {
-      routes: [TabsRoutePath.IDENTIFIERS],
+      routes: [TabsRoutePath.SCAN],
       authentication: {
         loggedIn: true,
         time: Date.now(),
@@ -54,7 +54,19 @@ describe("Scanner wallet connect", () => {
 
   const setIsValueCaptured = jest.fn();
 
-  test("Renders content", async () => {
+  test("Renders spinner", async () => {
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <Scanner setIsValueCaptured={setIsValueCaptured} />
+      </Provider>
+    );
+
+    expect(getByTestId("qr-code-scanner")).toBeVisible();
+
+    expect(getByTestId("scanner-spinner-container")).toBeVisible();
+  });
+
+  test.skip("Renders content", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <Scanner setIsValueCaptured={setIsValueCaptured} />

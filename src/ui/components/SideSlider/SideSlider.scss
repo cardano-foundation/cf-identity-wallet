@@ -6,11 +6,11 @@
   width: 100%;
   transform: translateX(100%);
   transition-duration: 0.5s;
-  visibility: hidden;
+  transition-property: transform;
 
   &.open {
     transform: translateX(0);
     transition-duration: 0.5s;
-    visibility: visible;
+    transition-property: transform;
   }
 }

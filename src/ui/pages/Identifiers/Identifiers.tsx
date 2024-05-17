@@ -106,11 +106,6 @@ const Identifiers = () => {
   }, [currentOperation, history.location.pathname]);
   useEffect(() => {
     setShowPlaceholder(identifiersData.length === 0);
-    setFavIdentifiers(
-      identifiersData.filter((identifier) =>
-        favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-      )
-    );
     setAllIdentifiers(
       identifiersData
         .filter((identifier) => !identifier.isPending)
@@ -119,6 +114,11 @@ const Identifiers = () => {
           (identifier) =>
             !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
         )
+    );
+    setFavIdentifiers(
+      identifiersData.filter((identifier) =>
+        favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
+      )
     );
     setPendingIdentifiers(
       identifiersData.filter((identifier) => identifier.isPending)
