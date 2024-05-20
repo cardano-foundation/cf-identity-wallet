@@ -1,4 +1,5 @@
 import { Serder } from "signify-ts";
+import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import {
   AcdcEventTypes,
@@ -286,12 +287,10 @@ class IpexCommunicationService extends AgentService {
   ): Promise<void> {
     // @TODO - foconnor: For now this will only work with our test server, we need to find a better way to handle this in production.
     await Agent.agent.connections.resolveOobi(
-      IpexCommunicationService.CREDENTIAL_SERVER +
-        IpexCommunicationService.SCHEMA_SAID_VLEI
+      `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${IpexCommunicationService.SCHEMA_SAID_VLEI}`
     );
     await Agent.agent.connections.resolveOobi(
-      IpexCommunicationService.CREDENTIAL_SERVER +
-        IpexCommunicationService.SCHEMA_SAID_IIW_DEMO
+      `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${IpexCommunicationService.SCHEMA_SAID_IIW_DEMO}`
     );
     const dt = new Date().toISOString().replace("Z", "000+00:00");
     const [admit, sigs, aend] = await this.signifyClient

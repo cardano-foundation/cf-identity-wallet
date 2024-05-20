@@ -22,6 +22,7 @@ import {
 } from "../records";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
+import { ConfigurationService } from "../../configuration";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;

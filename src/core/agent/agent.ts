@@ -42,14 +42,10 @@ import { IonicSession } from "../storage/ionicStorage/ionicSession";
 import { IonicStorage } from "../storage/ionicStorage";
 import { SqliteStorage } from "../storage/sqliteStorage";
 import { BaseRecord } from "../storage/storage.types";
+import { ConfigurationService } from "../configuration";
 
 const walletId = "idw";
 class Agent {
-  static readonly LOCAL_KERIA_ENDPOINT =
-    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
-    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
-
   static readonly KERIA_CONNECTION_BROKEN =
     "The app is not connected to KERIA at the moment";
 
@@ -202,10 +198,10 @@ class Agent {
       const bran = await this.getBran();
       // @TODO - foconnor: Review of Tier level.
       this.signifyClient = new SignifyClient(
-        Agent.LOCAL_KERIA_ENDPOINT,
+        ConfigurationService.env.keri.keria.url,
         bran,
         Tier.low,
-        Agent.LOCAL_KERIA_BOOT_ENDPOINT
+        ConfigurationService.env.keri.keria.bootUrl
       );
 
       this.agentServicesProps = {

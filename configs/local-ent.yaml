@@ -1,0 +1,13 @@
+keri:
+  keria:
+    url: "http://127.0.0.1:3901"
+    bootUrl: "http://127.0.0.1:3903"
+  credentials:
+    testServer:
+      urlInt: "http://cred-issuance:3001"
+  backing:
+    mode: pools
+    pools: 
+      - BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha
+      - BLskRTInXnMxWaGqcpSyMgo0nYbalW99cGZESrz3zapM
+      - BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfX

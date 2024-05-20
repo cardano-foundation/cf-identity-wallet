@@ -3,9 +3,9 @@ import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import { IdentifierContentProps } from "./IdentifierContent.types";
 import { i18n } from "../../../../i18n";
 import { ConfigurationService } from "../../../../core/configuration";
-import { WitnessMode } from "../../../../core/configuration/configurationService.types";
 import { CardDetailsBlock } from "../../../components/CardDetails/CardDetailsBlock";
 import { CardDetailsItem } from "../../../components/CardDetails/CardDetailsItem";
+import { BackingMode } from "../../../../core/configuration/configurationService.types";
 
 const IdentifierContent = ({ cardData }: IdentifierContentProps) => {
   return (
@@ -138,12 +138,13 @@ const IdentifierContent = ({ cardData }: IdentifierContentProps) => {
         </CardDetailsBlock>
       )}
 
-      {ConfigurationService.env.keri.backerType === WitnessMode.LEDGER && (
+      {/* @TODO - foconnor: We should verify the particular identifier is ledger based, not that our config is. */}
+      {ConfigurationService.env.keri.backing.mode === BackingMode.LEDGER && (
         <CardDetailsBlock
           title={i18n.t("identifiers.details.backeraddress.title")}
         >
           <CardDetailsItem
-            info={ConfigurationService.env.keri.ledger.address}
+            info={ConfigurationService.env.keri.backing.ledger.address}
             copyButton={true}
             icon={personCircleOutline}
             // @TODO - foconnor: This metadata in the future should come with Signify, for now we are "assuming" the address.

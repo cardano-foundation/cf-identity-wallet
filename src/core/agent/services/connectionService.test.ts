@@ -1,7 +1,8 @@
 import { ConnectionStatus, KeriConnectionType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { EventService } from "./eventService";
-import { CredentialStorage } from "../records";
+import { CredentialStorage, IdentifierStorage } from "../records";
+import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 
 const contactListMock = jest.fn();
@@ -159,6 +160,9 @@ const keriContacts = [
 const oobiPrefix = "http://oobi.com/";
 
 describe("Connection service of agent", () => {
+  beforeAll(async () => {
+    await new ConfigurationService().start();
+  });
   beforeEach(() => {
     jest.resetAllMocks();
   });

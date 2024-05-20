@@ -3,6 +3,7 @@ import { IpexCommunicationService } from "./ipexCommunicationService";
 import { CredentialStatus } from "./credentialService.types";
 import { Agent } from "../agent";
 import { IdentifierStorage } from "../records";
+import { ConfigurationService } from "../../configuration";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -180,6 +181,9 @@ const ipexCommunicationService = new IpexCommunicationService(
 );
 
 describe("Ipex communication service of agent", () => {
+  beforeAll(async () => {
+    await new ConfigurationService().start();
+  });
   test("can accept ACDC", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
