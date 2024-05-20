@@ -15,7 +15,7 @@ import {
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
 import { TabsMenu, tabsRoutes } from "../ui/components/navigation/TabsMenu";
-import { RoutePath } from "./paths";
+import { RoutePath, TabsRoutePath } from "./paths";
 import { IdentifierDetails } from "../ui/pages/IdentifierDetails";
 import { CredentialDetails } from "../ui/pages/CredentialDetails";
 import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
@@ -94,12 +94,12 @@ const Routes = () => {
           );
         })}
         <Route
-          path="/tabs/identifiers/:id"
+          path={TabsRoutePath.IDENTIFIER_DETAILS}
           component={IdentifierDetails}
           exact
         />
         <Route
-          path="/tabs/creds/:id"
+          path={TabsRoutePath.CREDENTIAL_DETAILS}
           component={CredentialDetails}
           exact
         />

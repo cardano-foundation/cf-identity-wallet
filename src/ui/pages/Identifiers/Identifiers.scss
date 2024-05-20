@@ -83,7 +83,7 @@
     }
 
     .identifier-cards {
-      h3 {
+      .list-header {
         display: none;
       }
     }
@@ -95,7 +95,7 @@
     }
 
     .identifier-favourite-cards {
-      h3 {
+      .list-header {
         animation: indentifierFavouriteCardHeaderResize 0.25s ease;
         animation-fill-mode: forwards;
 

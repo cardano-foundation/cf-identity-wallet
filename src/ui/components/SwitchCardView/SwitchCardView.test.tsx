@@ -3,6 +3,7 @@ import { identifierFix } from "../../__fixtures__/identifierFix";
 import { CardType } from "../../globals/types";
 import { SwitchCardView } from "./SwitchCardView";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
+import { TabsRoutePath } from "../navigation/TabsMenu";
 
 const historyPushMock = jest.fn();
 
@@ -76,7 +77,7 @@ describe("Card switch view list Tab", () => {
 
     await waitFor(() => {
       expect(historyPushMock).toBeCalledWith({
-        pathname: `/tabs/creds/${credsFixAcdc[0].id}`,
+        pathname: `${TabsRoutePath.CREDENTIALS}/${credsFixAcdc[0].id}`,
       });
     });
 

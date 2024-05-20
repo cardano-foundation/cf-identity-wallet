@@ -10,6 +10,7 @@ import { ListHeader } from "../ListHeader";
 import { CardList } from "./CardList";
 import "./SwitchCardView.scss";
 import { CardListViewType, SwitchCardViewProps } from "./SwitchCardView.types";
+import { TabsRoutePath } from "../navigation/TabsMenu";
 
 const SwitchCardView = ({
   title,
@@ -49,9 +50,9 @@ const SwitchCardView = ({
   ) => {
     let pathname = "";
     if (cardTypes === CardType.IDENTIFIERS) {
-      pathname = `/tabs/identifiers/${data.id}`;
+      pathname = `${TabsRoutePath.IDENTIFIERS}/${data.id}`;
     } else {
-      pathname = `/tabs/creds/${data.id}`;
+      pathname = `${TabsRoutePath.CREDENTIALS}/${data.id}`;
     }
 
     history.push({ pathname: pathname });

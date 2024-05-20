@@ -16,8 +16,8 @@ enum TabsRoutePath {
   SCAN = "/tabs/scan",
   CHAT = "/tabs/chat",
   MENU = "/tabs/menu",
-  IDENTIFIER_DETAILS = "/tabs/identifiers/:id?",
-  CREDENTIAL_DETAILS = "/tabs/credentials/:id?",
+  IDENTIFIER_DETAILS = "/tabs/identifiers/:id",
+  CREDENTIAL_DETAILS = "/tabs/credentials/:id",
 }
 
 const PublicRoutes = [
