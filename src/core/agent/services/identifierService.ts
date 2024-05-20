@@ -277,6 +277,7 @@ class IdentifierService extends AgentService {
         wits: ConfigurationService.env.keri.backing.pools,
       };
     }
+    return {};
   }
 }
 
