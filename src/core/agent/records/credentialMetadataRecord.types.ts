@@ -11,7 +11,7 @@ interface CredentialMetadataRecordProps {
   issuanceDate: string;
   credentialType: string;
   status: CredentialMetadataRecordStatus;
-  connectionId?: string;
+  connectionId: string;
 }
 
 export { CredentialMetadataRecordStatus };
