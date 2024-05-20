@@ -2,12 +2,11 @@
   .list-header {
     margin-bottom: 0.875rem;
   }
+}
 
-  .card-switch-view-list {
+.card-switch-view-list {
+  &.card-list {
     .card-item {
-      --logo-border-radius: 0.25rem;
-      --card-width: auto;
-
       &:last-child {
         --inner-border-width: 0;
       }

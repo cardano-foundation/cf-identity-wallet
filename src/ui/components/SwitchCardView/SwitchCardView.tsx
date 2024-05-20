@@ -1,15 +1,15 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { ListHeader } from "../ListHeader";
-import { CardListViewType, SwitchCardViewProps } from "./SwitchCardView.types";
-import { CardsStack } from "../CardsStack";
-import { CardItem, CardList } from "../CardList";
-import { CardType, IDENTIFIER_BG_MAPPING } from "../../globals/types";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
-import { formatShortDate } from "../../utils/formatters";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
+import { CardType } from "../../globals/types";
 import { combineClassNames } from "../../utils/style";
+import { CardsStack } from "../CardsStack";
+import { ListHeader } from "../ListHeader";
+import { CardList } from "./CardList";
 import "./SwitchCardView.scss";
+import { CardListViewType, SwitchCardViewProps } from "./SwitchCardView.types";
 
 const SwitchCardView = ({
   title,
@@ -17,42 +17,32 @@ const SwitchCardView = ({
   cardTypes,
   name,
   hideHeader,
-  defaultViewType,
   className,
   onShowCardDetails,
 }: SwitchCardViewProps) => {
   const history = useHistory();
-  const [type, setType] = useState<CardListViewType>(
-    defaultViewType ?? CardListViewType.Stack
-  );
+  const [type, setType] = useState<CardListViewType>(CardListViewType.Stack);
 
-  const cardListData = useMemo(() => {
-    return cardsData.map(
-      (item): CardItem<IdentifierShortDetails | CredentialShortDetails> => {
-        if (cardTypes === CardType.IDENTIFIERS) {
-          const identifier = item as IdentifierShortDetails;
+  useEffect(() => {
+    const getDefaultViewType = async () => {
+      try {
+        const storageViewType = await PreferencesStorage.get(
+          PreferencesKeys.APP_IDENTIFIER_VIEW_TYPE
+        );
 
-          return {
-            id: item.id,
-            title: identifier.displayName
-              .replace(/([A-Z][a-z])/g, " $1")
-              .replace(/(\d)/g, " $1"),
-            subtitle: formatShortDate(identifier.createdAtUTC),
-            data: identifier,
-            image: IDENTIFIER_BG_MAPPING[identifier.theme] as string,
-          };
+        if (!storageViewType) {
+          setType(CardListViewType.Stack);
+          return;
         }
 
-        const cred = item as CredentialShortDetails;
-        return {
-          id: item.id,
-          title: cred.credentialType,
-          subtitle: formatShortDate(cred.issuanceDate),
-          data: cred,
-        };
+        setType(Number(storageViewType.viewType) as CardListViewType);
+      } catch (e) {
+        // TODO: handle error
       }
-    );
-  }, [cardsData, cardTypes]);
+    };
+
+    getDefaultViewType();
+  }, []);
 
   const handleOpenDetail = (
     data: IdentifierShortDetails | CredentialShortDetails
@@ -67,6 +57,13 @@ const SwitchCardView = ({
     history.push({ pathname: pathname });
   };
 
+  const setViewType = (viewType: CardListViewType) => {
+    setType(viewType);
+    PreferencesStorage.set(PreferencesKeys.APP_IDENTIFIER_VIEW_TYPE, {
+      viewType,
+    });
+  };
+
   const classes = combineClassNames("card-switch-view", className);
 
   return (
@@ -76,8 +73,8 @@ const SwitchCardView = ({
           hasAction
           activeActionIndex={type}
           title={title}
-          onFirstIconClick={() => setType(CardListViewType.Stack)}
-          onSecondIconClick={() => setType(CardListViewType.List)}
+          onFirstIconClick={() => setViewType(CardListViewType.Stack)}
+          onSecondIconClick={() => setViewType(CardListViewType.List)}
         />
       )}
       {type === CardListViewType.Stack ? (
@@ -89,9 +86,10 @@ const SwitchCardView = ({
         />
       ) : (
         <CardList
-          className="card-switch-view-list"
-          data={cardListData}
+          cardTypes={cardTypes}
+          cardsData={cardsData}
           onCardClick={handleOpenDetail}
+          testId="card-list"
         />
       )}
     </div>

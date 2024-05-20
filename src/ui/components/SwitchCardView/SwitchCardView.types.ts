@@ -11,12 +11,18 @@ interface SwitchCardViewProps {
   title: string;
   cardsData: IdentifierShortDetails[] | CredentialShortDetails[];
   cardTypes: CardType;
-  defaultViewType?: CardListViewType;
   hideHeader?: boolean;
   name: string;
   onShowCardDetails?: () => void;
   className?: string;
 }
 
-export type { SwitchCardViewProps };
+interface CardListProps {
+  cardsData: IdentifierShortDetails[] | CredentialShortDetails[];
+  cardTypes: CardType;
+  testId?: string;
+  onCardClick: (card: IdentifierShortDetails | CredentialShortDetails) => void;
+}
+
+export type { SwitchCardViewProps, CardListProps };
 export { CardListViewType };

@@ -25,10 +25,12 @@ import { CardType, OperationType } from "../../globals/types";
 import { Connections } from "../Connections";
 import "./Identifiers.scss";
 import { StartAnimationSource } from "./Identifiers.type";
-import { IdentifiersList } from "./components/IdentifiersList";
 import { useToggleConnections } from "../../hooks";
 import { ListHeader } from "../../components/ListHeader";
-import { SwitchCardView } from "../../components/SwitchCardView";
+import {
+  CardList as IdentifierCardList,
+  SwitchCardView,
+} from "../../components/SwitchCardView";
 
 const CLEAR_STATE_DELAY = 1000;
 interface AdditionalButtonsProps {
@@ -253,19 +255,19 @@ const Identifiers = () => {
                 cardsData={allIdentifiers}
                 onShowCardDetails={() => handleShowNavAnimation("cards")}
                 title={`${i18n.t("identifiers.tab.allidentifiers")}`}
-                hideHeader={!favIdentifiers.length}
                 name="allidentifiers"
               />
             )}
             {!!multiSigIdentifiers.length && (
               <div className="identifiers-tab-content-block">
                 <h3>{i18n.t("identifiers.tab.multisigidentifiers")}</h3>
-                <IdentifiersList
-                  identifiers={multiSigIdentifiers}
-                  showDate={true}
-                  handleClick={async (identifier) =>
-                    handleMultiSigClick(identifier)
+                <IdentifierCardList
+                  cardTypes={CardType.IDENTIFIERS}
+                  cardsData={multiSigIdentifiers}
+                  onCardClick={async (identifier) =>
+                    handleMultiSigClick(identifier as IdentifierShortDetails)
                   }
+                  testId="identifiers-list"
                 />
               </div>
             )}
@@ -274,12 +276,13 @@ const Identifiers = () => {
                 <ListHeader
                   title={`${i18n.t("identifiers.tab.pendingidentifiers")}`}
                 />
-                <IdentifiersList
-                  identifiers={pendingIdentifiers}
-                  showDate={true}
-                  handleClick={async (identifier) =>
-                    handlePendingClick(identifier)
+                <IdentifierCardList
+                  cardsData={pendingIdentifiers}
+                  cardTypes={CardType.IDENTIFIERS}
+                  onCardClick={async (identifier) =>
+                    handlePendingClick(identifier as IdentifierShortDetails)
                   }
+                  testId="identifiers-list"
                 />
               </div>
             )}
