@@ -1,6 +1,6 @@
 import { Configuration, BackingMode } from "./configurationService.types";
 // eslint-disable-next-line no-undef
-const environment = process.env.ENVIRONMENT || "dev-direct";
+const environment = process.env.ENVIRONMENT || "local-comm";
 const keriaIP = process.env.KERIA_IP;
 class ConfigurationService {
   private static configurationEnv: Configuration;
