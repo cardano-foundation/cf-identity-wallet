@@ -20,9 +20,15 @@ services:
   witness:
     container_name: idw-witness
     restart: unless-stopped
-    build:
-      context: github.com/WebOfTrust/keripy#ae774b135585f850415f109c1fd0b294e823a2c9
-      dockerfile: ./images/witness.demo.dockerfile
+    image: weboftrust/keri:1.1.6
+    environment:
+        - PYTHONUNBUFFERED=1
+        - PYTHONIOENCODING=UTF-8
+    entrypoint:
+        - kli
+    command:
+        - witness
+        - demo
     ports:
       - 5642:5642
       - 5643:5643
