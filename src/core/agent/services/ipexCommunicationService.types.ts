@@ -4,7 +4,7 @@ interface CredentialsMatchingApply {
     description: string;
   };
   credentials: {
-    connectionId?: string;
+    connectionId: string;
     acdc: any;
   }[];
 }
