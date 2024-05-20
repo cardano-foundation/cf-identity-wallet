@@ -1,4 +1,5 @@
 import { SignifyApi } from "./modules/signify/signifyApi";
+import { NotificationRoute } from "./modules/signify/signifyApi.type";
 
 class Agent {
   static readonly ISSUER_AID_NAME = "issuer";
@@ -58,7 +59,46 @@ class Agent {
   async contacts() {
     return this.signifyApi.contacts();
   }
+  async onNotificationKeriStateChanged() {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const notifications = await this.signifyApi.getNotifications();
+      for (const notif of notifications.notes) {
+        await this.processNotification(notif);
+      }
+      await new Promise((rs) => {
+        setTimeout(() => {
+          rs(true);
+        }, 2000);
+      });
+    }
+  }
+
+  private async processNotification(notif: any) {
+    if (
+      Object.values(NotificationRoute).includes(
+        notif.a.r as NotificationRoute
+      ) &&
+      !notif.r
+    ) {
+      switch (notif.a.r) {
+        case NotificationRoute.ExnIpexOffer: {
+          const msg = await this.signifyApi.getExchangeMsg(notif.a.d!);
+          await this.signifyApi.agreeToAcdcFromOffer(
+            Agent.ISSUER_AID_NAME,
+            msg.exn.d,
+            msg.exn.i
+          );
+          break;
+        }
+        default:
+          break;
+      }
+    }
+    await this.signifyApi.deleteNotification(notif.i);
+  }
   async initKeri(issuerName?: string) {
+    this.onNotificationKeriStateChanged();
     const AIDIssuerName = issuerName ? issuerName : Agent.ISSUER_AID_NAME;
     const existedIndentifier = await this.signifyApi
       .getIdentifierByName(AIDIssuerName)

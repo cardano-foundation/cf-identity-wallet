@@ -4,9 +4,6 @@ import {
   CredentialStatus,
 } from "./services/credentialService.types";
 import { EventService } from "./services/eventService";
-import { IdentifierStorage } from "./records/identifierStorage";
-import { CredentialStorage } from "./records/credentialStorage";
-import { BasicStorage } from "./records/basicStorage";
 import { ConnectionHistoryType } from "./services/connection.types";
 
 enum ConnectionStatus {
@@ -32,6 +29,7 @@ interface ConnectionShortDetails {
   logo?: string;
   status: ConnectionStatus;
   oobi?: string;
+  groupId?: string;
 }
 
 type ConnectionNoteDetails = {
@@ -58,6 +56,10 @@ enum AcdcEventTypes {
   AcdcStateChanged = "AcdcStateChanged",
 }
 
+enum KeriaStatusEventTypes {
+  KeriaStatusChanged = "KeriaStatusChanged",
+}
+
 interface ConnectionStateChangedEvent extends BaseEventEmitter {
   type: typeof ConnectionEventTypes.ConnectionStateChanged;
   payload: {
@@ -79,11 +81,27 @@ interface AcdcStateChangedEvent extends BaseEventEmitter {
       };
 }
 
+interface KeriaStatusChangedEvent extends BaseEventEmitter {
+  type: typeof KeriaStatusEventTypes.KeriaStatusChanged;
+  payload: {
+    isOnline: boolean;
+  };
+}
+
 interface KeriaNotification {
   id: string;
   createdAt: Date;
   a: Record<string, unknown>;
 }
+
+enum KeriConnectionType {
+  NORMAL = "NORMAL",
+  MULTI_SIG_INITIATOR = "MULTI_SIG_INITIATOR",
+}
+
+type OobiScan =
+  | { type: KeriConnectionType.NORMAL }
+  | { type: KeriConnectionType.MULTI_SIG_INITIATOR; groupId: string };
 
 interface BaseEventEmitter {
   type: string;
@@ -112,9 +130,11 @@ interface IdentifierResult {
 }
 
 enum NotificationRoute {
-  Credential = "/exn/ipex/grant",
+  ExnIpexGrant = "/exn/ipex/grant",
   MultiSigIcp = "/multisig/icp",
   MultiSigRot = "/multisig/rot",
+  ExnIpexApply = "/exn/ipex/apply",
+  ExnIpexAgree = "/exn/ipex/agree",
 }
 
 export {
@@ -123,6 +143,8 @@ export {
   ConnectionEventTypes,
   AcdcEventTypes,
   NotificationRoute,
+  KeriConnectionType,
+  KeriaStatusEventTypes,
 };
 
 export type {
@@ -134,9 +156,11 @@ export type {
   ConnectionStateChangedEvent,
   KeriaNotification,
   AcdcStateChangedEvent,
+  OobiScan,
   BaseEventEmitter,
   KeriaNotificationMarker,
   AgentServicesProps,
   CreateIdentifierResult,
   IdentifierResult,
+  KeriaStatusChangedEvent,
 };

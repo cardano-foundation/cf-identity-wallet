@@ -9,6 +9,8 @@ import {
   ConnectionShortDetails,
   ConnectionStatus,
   AgentServicesProps,
+  OobiScan,
+  KeriConnectionType,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { Agent } from "../agent";
@@ -16,9 +18,9 @@ import {
   ConnectionNoteStorage,
   ConnectionRecord,
   CredentialStorage,
-  ConnectionStorage } from "../records";
-import { PreferencesKeys, PreferencesStorage } from "../../storage";
-import { waitAndGetDoneOp } from "./utils";
+  ConnectionStorage,
+} from "../records";
+import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
 
 class ConnectionService extends AgentService {
@@ -59,7 +61,12 @@ class ConnectionService extends AgentService {
     );
   }
 
-  async connectByOobiUrl(url: string): Promise<void> {
+  @OnlineOnly
+  async connectByOobiUrl(url: string): Promise<OobiScan> {
+    const multiSigInvite = url.includes("groupId");
+
+    // @TODO - foconnor: We shouldn't emit this if it's a multiSigInvite, but the routing will break if we don't.
+    // To fix once we handle errors for the scanner in general.
     this.eventService.emit<ConnectionStateChangedEvent>({
       type: ConnectionEventTypes.ConnectionStateChanged,
       payload: {
@@ -67,71 +74,58 @@ class ConnectionService extends AgentService {
         status: ConnectionStatus.PENDING,
       },
     });
+
     const operation = await this.resolveOobi(url);
     const connectionId = operation.response.i;
-    await this.createConnectionMetadata(connectionId, {
+    const connectionMetadata: any = {
       alias: operation.alias,
       oobi: url,
-    });
+    };
 
-    // @TODO - foconnor: This is temporary for ease of development, will be removed soon.
-    // This will take our first KERI identifier and get the server to resolve it, so that the connection is resolved from both sides and we can issue to this wallet using its API.
-    if (url.includes("dev.keria.cf-keripy.metadata.dev.cf-deployments.org")) {
-      // This is inefficient but it will change going forward.
-      const aids = await Agent.agent.identifiers.getIdentifiers();
-      if (aids.length > 0) {
-        let userName;
-        try {
-          userName = (
-            await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME)
-          ).userName as string;
-        } catch (error) {
-          if (
-            (error as Error).message !==
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
-          ) {
-            throw error;
-          }
-        }
+    if (multiSigInvite) {
+      const groupId = new URL(url).searchParams.get("groupId") ?? "";
+      connectionMetadata.groupId = groupId;
+      const identifierWithGroupId =
+        await Agent.agent.identifiers.getKeriIdentifierByGroupId(groupId);
 
-        // signifyName should always be set
-        const oobi = await Agent.agent.connections.getOobi(
-          aids[0].signifyName,
-          userName
-        );
-        await (
-          await fetch(
-            "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/resolveOobi",
-            {
-              method: "POST",
-              body: JSON.stringify({ oobi }),
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          )
-        ).json();
-      } else {
-        // eslint-disable-next-line no-console
-        console.warn(
-          "Please create a KERI AID first before scanning an OOBI of the deployed server, if you wish to be issued an ACDC automatically."
-        );
+      // This allows the calling function to create our smid/rmid member identifier.
+      // We let the UI handle it as it requires some metadata from the user like display name.
+      if (!identifierWithGroupId) {
+        await this.createConnectionMetadata(connectionId, connectionMetadata);
+        return { type: KeriConnectionType.MULTI_SIG_INITIATOR, groupId };
       }
     }
+    await this.createConnectionMetadata(connectionId, connectionMetadata);
 
-    return this.eventService.emit<ConnectionStateChangedEvent>({
-      type: ConnectionEventTypes.ConnectionStateChanged,
-      payload: {
-        connectionId: operation.response.i,
-        status: ConnectionStatus.CONFIRMED,
-      },
-    });
+    if (!multiSigInvite) {
+      this.eventService.emit<ConnectionStateChangedEvent>({
+        type: ConnectionEventTypes.ConnectionStateChanged,
+        payload: {
+          connectionId: operation.response.i,
+          status: ConnectionStatus.CONFIRMED,
+        },
+      });
+    }
+    return { type: KeriConnectionType.NORMAL };
   }
 
   async getConnections(): Promise<ConnectionShortDetails[]> {
+    const connections = await this.connectionStorage.findAllByQuery({
+      groupId: undefined,
+    });
+    return connections.map((connection) =>
+      this.getConnectionShortDetails(connection)
+    );
+  }
+
+  async getMultisigLinkedContacts(
+    groupId: string
+  ): Promise<ConnectionShortDetails[]> {
     const connectionsDetails: ConnectionShortDetails[] = [];
-    const metadatas = await this.getAllConnectionMetadata();
-    metadatas.forEach(async (connection) => {
+    const associatedContacts = await this.connectionStorage.findAllByQuery({
+      groupId,
+    });
+    associatedContacts.forEach(async (connection) => {
       connectionsDetails.push(this.getConnectionShortDetails(connection));
     });
     return connectionsDetails;
@@ -140,15 +134,21 @@ class ConnectionService extends AgentService {
   private getConnectionShortDetails(
     record: ConnectionRecord
   ): ConnectionShortDetails {
-    return {
+    const connection: ConnectionShortDetails = {
       id: record.id,
       label: record.alias,
       connectionDate: record.createdAt.toISOString(),
       status: ConnectionStatus.CONFIRMED,
       oobi: record.oobi,
     };
+    const groupId = record.getTag("groupId");
+    if (groupId) {
+      connection.groupId = groupId as string;
+    }
+    return connection;
   }
 
+  @OnlineOnly
   async getConnectionById(id: string): Promise<ConnectionDetails> {
     const connection = await this.signifyClient.contacts().get(id);
     return {
@@ -163,6 +163,7 @@ class ConnectionService extends AgentService {
     };
   }
 
+  @OnlineOnly
   async deleteConnectionById(id: string): Promise<void> {
     await this.connectionStorage.deleteById(id);
     // await this.signifyApi.deleteContactById(id); @TODO - foconnor: Uncomment when KERIA endpoint fixed
@@ -210,12 +211,19 @@ class ConnectionService extends AgentService {
     return this.connectionNoteStorage.deleteById(connectionNoteId);
   }
 
-  async getOobi(signifyName: string, alias?: string): Promise<string> {
+  @OnlineOnly
+  async getOobi(
+    signifyName: string,
+    alias?: string,
+    groupId?: string
+  ): Promise<string> {
     const result = await this.signifyClient
       .oobis()
       .get(signifyName, ConnectionService.DEFAULT_ROLE);
-    const oobi = result.oobis[0];
-    return alias ? `${oobi}?name=${encodeURIComponent(alias)}` : oobi;
+    const oobi = new URL(result.oobis[0]);
+    if (alias !== undefined) oobi.searchParams.set("name", alias);
+    if (groupId !== undefined) oobi.searchParams.set("groupId", groupId);
+    return oobi.toString();
   }
 
   private async createConnectionMetadata(
@@ -226,6 +234,7 @@ class ConnectionService extends AgentService {
       id: connectionId,
       alias: metadata.alias as string,
       oobi: metadata.oobi as string,
+      groupId: metadata.groupId as string,
     });
   }
 
@@ -237,10 +246,6 @@ class ConnectionService extends AgentService {
       throw new Error(ConnectionService.CONNECTION_METADATA_RECORD_NOT_FOUND);
     }
     return connection;
-  }
-
-  async getAllConnectionMetadata(): Promise<ConnectionRecord[]> {
-    return this.connectionStorage.getAll();
   }
 
   async getConnectionHistoryById(
@@ -263,9 +268,11 @@ class ConnectionService extends AgentService {
     return histories;
   }
 
+  // @TODO - foconnor: Contacts that are smid/rmids for multisigs will be synced too.
+  @OnlineOnly
   async syncKeriaContacts() {
     const signifyContacts = await this.signifyClient.contacts().list();
-    const storageContacts = await this.getAllConnectionMetadata();
+    const storageContacts = await this.connectionStorage.getAll();
     const unSyncedData = signifyContacts.filter(
       (contact: KeriaContact) =>
         !storageContacts.find((item: ConnectionRecord) => contact.id == item.id)
@@ -281,6 +288,7 @@ class ConnectionService extends AgentService {
     }
   }
 
+  @OnlineOnly
   async resolveOobi(url: string): Promise<any> {
     if (ConnectionService.resolvedOobi[url]) {
       return ConnectionService.resolvedOobi[url];

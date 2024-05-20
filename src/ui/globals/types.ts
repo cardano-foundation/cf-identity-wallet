@@ -22,6 +22,11 @@ enum OperationType {
   SCAN_CONNECTION = "scanConnection",
   ADD_CREDENTIAL = "addCredential",
   RECEIVE_CONNECTION = "receiveConnection",
+  MULTI_SIG_INITIATOR_SCAN = "multiSigInitiatorScan",
+  MULTI_SIG_RECEIVER_SCAN = "multiSigReceiverScan",
+  MULTI_SIG_INITIATOR_INIT = "multiSigInitiatorInit",
+  CREATE_IDENTIFIER_CONNECT_WALLET = "createIdentifierConnectWallet",
+  SCAN_WALLET_CONNECTION = "scanWalletConnection",
 }
 
 enum ToastMsgType {
@@ -46,6 +51,12 @@ enum ToastMsgType {
   MAX_FAVOURITES_REACHED = "maxFavouritesReached",
   USERNAME_CREATION_SUCCESS = "usernameCreationSuccess",
   USERNAME_CREATION_ERROR = "usernameCreationError",
+  WALLET_CONNECTION_DELETED = "walletconnectiondeleted",
+  CONNECT_WALLET_SUCCESS = "connectwalletsuccess",
+  DISCONNECT_WALLET_SUCCESS = "disconnectwallet",
+  UNABLE_CONNECT_WALLET = "unableconnectwallet",
+  PEER_ID_SUCCESS = "peeridsuccess",
+  PEER_ID_NOT_RECOGNISED = "peeridnotrecognised",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {

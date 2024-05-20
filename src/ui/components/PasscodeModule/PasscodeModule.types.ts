@@ -5,6 +5,7 @@ interface PasscodeModuleProps {
   passcode: string;
   handlePinChange: (digit: number) => void;
   handleRemove: () => void;
+  handleBiometricButtonClick?: () => void;
 }
 
 export type { PasscodeModuleProps };

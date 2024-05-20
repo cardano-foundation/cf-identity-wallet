@@ -1,9 +1,8 @@
 import { RootState } from "../../store";
-import { DataProps } from "../nextRoute/nextRoute.types";
-import { calcPreviousRoute, getBackRoute, getPreviousRoute } from "./backRoute";
-import { setAuthentication } from "../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../ui/globals/constants";
 import { OperationType } from "../../ui/globals/types";
+import { DataProps } from "../nextRoute/nextRoute.types";
+import { calcPreviousRoute, getBackRoute, getPreviousRoute } from "./backRoute";
 
 jest.mock("../../store/reducers/stateCache", () => ({
   removeCurrentRoute: jest.fn(),
@@ -44,10 +43,22 @@ describe("getBackRoute", () => {
           isPaused: false,
         },
       },
-      identifiersCache: { identifiers: [], favourites: [] },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
       credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: null,
+        pendingConnection: null,
       },
     };
   });
@@ -148,10 +159,22 @@ describe("getPreviousRoute", () => {
           isPaused: false,
         },
       },
-      identifiersCache: { identifiers: [], favourites: [] },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
       credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: null,
+        pendingConnection: null,
       },
     };
   });

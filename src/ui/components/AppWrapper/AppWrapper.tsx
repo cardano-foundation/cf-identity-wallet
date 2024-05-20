@@ -2,7 +2,6 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
-  logout,
   setAuthentication,
   setCurrentOperation,
   setInitialized,
@@ -43,6 +42,11 @@ import { CredentialStatus } from "../../../core/agent/services/credentialService
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
+import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
+import { useActivityTimer } from "./hooks/useActivityTimer";
+import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
+import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
+import { MultiSigService } from "../../../core/agent/services/multiSigService";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -66,7 +70,7 @@ const keriaNotificationsChangeHandler = async (
   event: KeriaNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  if (event?.a?.r === NotificationRoute.Credential) {
+  if (event?.a?.r === NotificationRoute.ExnIpexGrant) {
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
@@ -76,8 +80,24 @@ const keriaNotificationsChangeHandler = async (
       })
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
+    processMultiSigIcpNotification(event, dispatch);
+  } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
+    //TODO: Use dispatch here, handle logic for the multisig rotation notification
+  } else if (event?.a?.r === NotificationRoute.ExnIpexApply) {
+    //TODO: Use dispatch here, handle logic for the exchange apply message
+  } else if (event?.a?.r === NotificationRoute.ExnIpexAgree) {
+    //TODO: Use dispatch here, handle logic for the exchange apply agree
+  }
+};
+
+const processMultiSigIcpNotification = async (
+  event: KeriaNotification,
+  dispatch: ReturnType<typeof useAppDispatch>,
+  retryInterval = 3000
+) => {
+  try {
     const multisigIcpDetails =
-      await Agent.agent.multiSigs.getMultisigIcpDetails(event);
+      await Agent.agent.multiSigs.getMultisigIcpDetails(event.a.d as string);
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
@@ -86,8 +106,15 @@ const keriaNotificationsChangeHandler = async (
         multisigIcpDetails: multisigIcpDetails,
       })
     );
-  } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
-    //TODO: Use dispatch here, handle logic for the multisig rotation notification
+  } catch (error) {
+    if (
+      (error as Error).message == MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, retryInterval));
+      await processMultiSigIcpNotification(event, dispatch, retryInterval);
+    } else {
+      throw error;
+    }
   }
 };
 
@@ -108,45 +135,50 @@ const acdcChangeHandler = async (
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
-  const [agentInitErr, setAgentInitErr] = useState(false);
-
-  const ACTIVITY_TIMEOUT = 60000;
-  let timer: NodeJS.Timeout;
-
-  useEffect(() => {
-    const handleActivity = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        dispatch(logout());
-      }, ACTIVITY_TIMEOUT);
-    };
-
-    // TODO: detect appStateChange in android and ios to reduce the ACTIVITY_TIMEOUT
-    // App.addListener("appStateChange", handleAppStateChange);
-    window.addEventListener("load", handleActivity);
-    document.addEventListener("mousemove", handleActivity);
-    document.addEventListener("touchstart", handleActivity);
-    document.addEventListener("touchmove", handleActivity);
-    document.addEventListener("click", handleActivity);
-    document.addEventListener("focus", handleActivity);
-    document.addEventListener("keydown", handleActivity);
-    document.addEventListener("scroll", handleActivity);
-
-    return () => {
-      window.removeEventListener("load", handleActivity);
-      document.removeEventListener("mousemove", handleActivity);
-      document.removeEventListener("touchstart", handleActivity);
-      document.removeEventListener("touchmove", handleActivity);
-      document.removeEventListener("click", handleActivity);
-      document.removeEventListener("focus", handleActivity);
-      document.removeEventListener("keydown", handleActivity);
-      clearTimeout(timer);
-    };
-  }, []);
+  const [isOnline, setIsOnline] = useState(false);
+  const [isMessagesHandled, setIsMessagesHandled] = useState(false);
+  useActivityTimer();
 
   useEffect(() => {
     initApp();
   }, []);
+
+  useEffect(() => {
+    if (authentication.loggedIn) {
+      const handleMessages = async () => {
+        const oldMessages = (
+          await Promise.all([
+            Agent.agent.credentials.getUnhandledIpexGrantNotifications({
+              isDismissed: false,
+            }),
+            Agent.agent.multiSigs.getUnhandledMultisigIdentifiers({
+              isDismissed: false,
+            }),
+          ])
+        )
+          .flat()
+          .sort(function (messageA, messageB) {
+            return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
+          });
+        oldMessages.forEach(async (message) => {
+          await keriaNotificationsChangeHandler(message, dispatch);
+        });
+        // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
+        // await Promise.all([
+        //   Agent.agent.identifiers.syncKeriaIdentifiers(),
+        //   Agent.agent.connections.syncKeriaContacts(),
+        //   Agent.agent.credentials.syncACDCs(),
+        // ]);
+      };
+      if (!isMessagesHandled && isOnline) {
+        handleMessages();
+        setIsMessagesHandled(true);
+      }
+      dispatch(setPauseQueueIncomingRequest(!isOnline));
+    } else {
+      dispatch(setPauseQueueIncomingRequest(true));
+    }
+  }, [isOnline, authentication.loggedIn, dispatch]);
 
   const checkKeyStore = async (key: string) => {
     try {
@@ -166,63 +198,93 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setIdentifiersCache(storedIdentifiers));
     dispatch(setCredsCache(credentials));
     dispatch(setConnectionsCache(connectionsDetails));
+    // TODO: Need update after core function completed.
+    dispatch(setWalletConnectionsCache(walletConnectionsFix));
   };
 
   const loadPreferences = async () => {
-    const getPreferenceSafe = async (key: string) => {
-      try {
-        return await PreferencesStorage.get(key);
-      } catch (e) {
-        // TODO: handle error
-      }
-    };
-    const userName = await getPreferenceSafe(PreferencesKeys.APP_USER_NAME);
-
+    let userName: PreferencesStorageItem = { userName: "" };
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
 
-    const updatedAuthentication = {
-      ...authentication,
-      loggedIn: false,
-      userName: userName?.userName as string,
-      passcodeIsSet,
-      seedPhraseIsSet,
-      passwordIsSet,
-    };
+    try {
+      const identifiersFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
+      );
+      dispatch(
+        setFavouritesIdentifiersCache(
+          identifiersFavourites.favourites as FavouriteIdentifier[]
+        )
+      );
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_IDENTIFIERS_FAVOURITES}`
+        )
+      ) {
+        throw e;
+      }
+    }
 
-    dispatch(setAuthentication(updatedAuthentication));
+    try {
+      const credsFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_CREDS_FAVOURITES
+      );
+      dispatch(
+        setFavouritesCredsCache(
+          credsFavourites.favourites as FavouriteIdentifier[]
+        )
+      );
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_CREDS_FAVOURITES}`
+        )
+      ) {
+        throw e;
+      }
+    }
 
-    const identifiersFavourites = await getPreferenceSafe(
-      PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
-    );
+    try {
+      userName = await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME);
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
+        )
+      ) {
+        throw e;
+      }
+    }
+
     dispatch(
-      setFavouritesIdentifiersCache(
-        identifiersFavourites?.favourites as FavouriteIdentifier[]
-      )
-    );
-
-    const credsFavourites = await getPreferenceSafe(
-      PreferencesKeys.APP_CREDS_FAVOURITES
-    );
-    dispatch(
-      setFavouritesCredsCache(
-        credsFavourites?.favourites as FavouriteIdentifier[]
-      )
+      setAuthentication({
+        ...authentication,
+        userName: userName.userName as string,
+        passcodeIsSet,
+        seedPhraseIsSet,
+        passwordIsSet,
+      })
     );
   };
 
   const initApp = async () => {
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
-    let isInitialized;
     try {
-      isInitialized = await PreferencesStorage.get(
-        PreferencesKeys.APP_ALREADY_INIT
-      );
-      dispatch(setInitialized(isInitialized?.initialized as boolean));
+      await PreferencesStorage.get(PreferencesKeys.APP_ALREADY_INIT);
     } catch (e) {
       await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
       await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
@@ -237,19 +299,23 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     try {
       await Agent.agent.start();
+      setIsOnline(true);
+      await loadDatabase();
     } catch (e) {
-      // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
-      setAgentInitErr(true);
-      // eslint-disable-next-line no-console
-      console.error(e);
-      return;
+      const errorStack = (e as Error).stack as string;
+      // If the error is failed to fetch with signify, we retry until the connection is secured
+      if (/SignifyClient/gi.test(errorStack)) {
+        await loadDatabase();
+        Agent.agent.bootAndConnect().then(() => {
+          setIsOnline(Agent.agent.getKeriaOnlineStatus());
+        });
+      } else {
+        throw e;
+      }
     }
-    dispatch(setPauseQueueIncomingRequest(true));
-
-    await loadDatabase().catch((e) => {
-      /* TODO: handle error */
+    Agent.agent.onKeriaStatusStateChanged((event) => {
+      setIsOnline(event.payload.isOnline);
     });
-
     Agent.agent.connections.onConnectionStateChanged((event) => {
       return connectionStateChangedHandler(event, dispatch);
     });
@@ -259,51 +325,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.credentials.onAcdcStateChanged((event) => {
       return acdcChangeHandler(event, dispatch);
     });
-
-    const oldMessages = (
-      await Promise.all([
-        Agent.agent.credentials.getUnhandledIpexGrantNotifications({
-          isDismissed: false,
-        }),
-        Agent.agent.multiSigs.getUnhandledMultisigIdentifiers({
-          isDismissed: false,
-        }),
-      ])
-    )
-      .flat()
-      .sort(function (messageA, messageB) {
-        return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
-      });
-    oldMessages.forEach(async (message) => {
-      await keriaNotificationsChangeHandler(message, dispatch);
-    });
-    // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-    // await Promise.all([
-    //   AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
-    //   AriesAgent.agent.connections.syncKeriaContacts(),
-    //   AriesAgent.agent.credentials.syncACDCs(),
-    // ]);
+    dispatch(setInitialized(true));
   };
-
-  // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.
-  // Hence this isn't in i18n.
-  if (agentInitErr) {
-    //if (false) {
-    return (
-      <div className="agent-init-error-msg">
-        <p>
-          There’s an issue connecting to the cloud services we depend on right
-          now (KERIA) - please check your internet connection, or if this
-          problem persists, let us know on Discord!
-        </p>
-        <p>
-          We’re working on an offline mode, as well as improving the deployment
-          setup for this pre-production release. Thank you for your
-          understanding!
-        </p>
-      </div>
-    );
-  }
 
   return <>{props.children}</>;
 };

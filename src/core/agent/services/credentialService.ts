@@ -12,6 +12,7 @@ import {
 } from "../records/credentialMetadataRecord.types";
 import { CredentialShortDetails, ACDCDetails } from "./credentialService.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
+import { OnlineOnly } from "./utils";
 import { CredentialStorage, NotificationStorage } from "../records";
 
 class CredentialService extends AgentService {
@@ -75,6 +76,7 @@ class CredentialService extends AgentService {
     return this.getCredentialShortDetails(await this.getMetadataById(id));
   }
 
+  @OnlineOnly
   async getCredentialDetailsById(id: string): Promise<ACDCDetails> {
     const metadata = await this.getMetadataById(id);
     let acdc;
@@ -153,13 +155,14 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
+  @OnlineOnly
   async getUnhandledIpexGrantNotifications(
     filters: {
       isDismissed?: boolean;
     } = {}
   ): Promise<KeriaNotification[]> {
     const results = await this.notificationStorage.findAllByQuery({
-      route: NotificationRoute.Credential,
+      route: NotificationRoute.ExnIpexGrant,
       ...filters,
     });
     return results.map((result) => {
@@ -185,6 +188,7 @@ class CredentialService extends AgentService {
     await this.createMetadata(credentialDetails);
   }
 
+  @OnlineOnly
   async syncACDCs() {
     const signifyCredentials = await this.signifyClient.credentials().list();
     const storedCredentials =

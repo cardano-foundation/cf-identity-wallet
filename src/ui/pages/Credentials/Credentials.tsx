@@ -28,6 +28,7 @@ import {
 } from "../../../store/reducers/credsCache";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { StartAnimationSource } from "../Identifiers/Identifiers.type";
+import { useToggleConnections } from "../../hooks";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -79,13 +80,15 @@ const Creds = () => {
   const [archivedCreds, setArchivedCreds] = useState<CredentialShortDetails[]>(
     []
   );
-  const [showConnections, setShowConnections] = useState(false);
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [navAnimation, setNavAnimation] =
     useState<StartAnimationSource>("none");
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
+  const { showConnections, setShowConnections } = useToggleConnections(
+    TabsRoutePath.CREDENTIALS
+  );
 
   const fetchArchivedCreds = async () => {
     // @TODO - sdisalvo: handle error

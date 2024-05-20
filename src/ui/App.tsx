@@ -7,7 +7,7 @@ import {
 } from "@ionic/react";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
-import { Routes } from "../routes";
+import { RoutePath, Routes } from "../routes";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";
@@ -17,21 +17,24 @@ import {
   getAuthentication,
   getCurrentOperation,
   getCurrentRoute,
+  getStateCache,
   getToastMsg,
 } from "../store/reducers/stateCache";
 import { useAppSelector } from "../store/hooks";
 import { FullPageScanner } from "./pages/FullPageScanner";
 import { OperationType } from "./globals/types";
-import { IncomingRequest } from "./pages/IncomingRequest";
 import { SetUserName } from "./components/SetUserName";
-import { TabsRoutePath } from "../routes/paths";
+import { PublicRoutes, TabsRoutePath } from "../routes/paths";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 import { CustomToast } from "./components/CustomToast/CustomToast";
-import { LockModal } from "./components/LockModal";
+import { LockPage } from "./pages/LockPage/LockPage";
+import { LoadingPage } from "./pages/LoadingPage/LoadingPage";
+import { SidePage } from "./pages/SidePage";
 
 setupIonicReact();
 
 const App = () => {
+  const stateCache = useAppSelector(getStateCache);
   const authentication = useAppSelector(getAuthentication);
   const currentRoute = useAppSelector(getCurrentRoute);
   const [showSetUserName, setShowSetUserName] = useState(false);
@@ -39,7 +42,6 @@ const App = () => {
   const toastMsg = useAppSelector(getToastMsg);
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [lockIsRendered, setLockIsRendered] = useState(false);
 
   const isPreviewMode = useMemo(
     () => new URLSearchParams(window.location.search).has("browserPreview"),
@@ -61,7 +63,14 @@ const App = () => {
   }, [isPreviewMode]);
 
   useEffect(() => {
-    setShowScan(currentOperation === OperationType.SCAN_CONNECTION);
+    setShowScan(
+      [
+        OperationType.SCAN_CONNECTION,
+        OperationType.SCAN_WALLET_CONNECTION,
+        OperationType.MULTI_SIG_INITIATOR_SCAN,
+        OperationType.MULTI_SIG_RECEIVER_SCAN,
+      ].includes(currentOperation)
+    );
     setShowToast(toastMsg !== undefined);
   }, [currentOperation, toastMsg]);
 
@@ -93,44 +102,55 @@ const App = () => {
   }, []);
 
   const renderApp = () => {
-    if (!lockIsRendered) {
-      // We need to include the LockModal in the loading page to track when is rendered
-      return (
-        <>
-          <LockModal didEnter={() => setLockIsRendered(true)} />
-          <div className="loading-page">
-            <IonSpinner name="crescent" />
+    return (
+      <>
+        {showScan ? (
+          <FullPageScanner
+            showScan={showScan}
+            setShowScan={setShowScan}
+          />
+        ) : (
+          <div
+            className="app-spinner-container"
+            data-testid="app-spinner-container"
+          >
+            <IonSpinner name="circular" />
           </div>
-        </>
-      );
-    } else if (showScan) {
-      return <FullPageScanner setShowScan={setShowScan} />;
-    } else {
-      return (
-        <>
-          {isPreviewMode ? <MobileHeaderPreview /> : null}
+        )}
+        {!showScan && isPreviewMode ? <MobileHeaderPreview /> : null}
+        <div className={showScan ? "ion-hide" : ""}>
           <Routes />
-        </>
-      );
-    }
+        </div>
+      </>
+    );
   };
+
+  const isPublicPage = PublicRoutes.includes(
+    window.location.pathname as RoutePath
+  );
 
   return (
     <IonApp>
       <AppWrapper>
         <StrictMode>
-          {lockIsRendered && !authentication.loggedIn ? <LockModal /> : null}
-          {renderApp()}
+          {stateCache.initialized ? (
+            <>
+              {renderApp()}
+              {!isPublicPage && !authentication.loggedIn ? <LockPage /> : null}
+            </>
+          ) : (
+            <LoadingPage />
+          )}
           <SetUserName
             isOpen={showSetUserName}
             setIsOpen={setShowSetUserName}
           />
-          <IncomingRequest />
           <CustomToast
             toastMsg={toastMsg}
             showToast={showToast}
             setShowToast={setShowToast}
           />
+          <SidePage />
         </StrictMode>
       </AppWrapper>
     </IonApp>

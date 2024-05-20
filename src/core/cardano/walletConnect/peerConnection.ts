@@ -29,8 +29,9 @@ class PeerConnection {
 
   private identityWalletConnect: IdentityWalletConnect | undefined;
   private connected = false;
+  private connectedDAppAdress = "";
 
-  async start() {
+  async start(selectedAid: string) {
     let meerkatSeed = null;
 
     try {
@@ -40,20 +41,29 @@ class PeerConnection {
     } catch {
       meerkatSeed = null;
     }
-
+    if (
+      this.identityWalletConnect &&
+      this.connectedDAppAdress.trim().length !== 0
+    ) {
+      this.disconnectDApp(this.connectedDAppAdress);
+    }
     this.identityWalletConnect = new IdentityWalletConnect(
       this.walletInfo,
       meerkatSeed,
-      this.announce
+      this.announce,
+      selectedAid
     );
     this.identityWalletConnect.setOnConnect(
       (connectMessage: IConnectMessage) => {
-        this.connected = true;
+        if (!connectMessage.error) {
+          this.connected = true;
+          this.connectedDAppAdress = connectMessage.dApp.address;
+        }
       }
     );
 
     this.identityWalletConnect.setOnDisconnect(
-      (connectMessage: IConnectMessage) => {
+      (disConnectMessage: IConnectMessage) => {
         this.connected = false;
       }
     );
@@ -73,7 +83,6 @@ class PeerConnection {
 
     const seed = this.identityWalletConnect.connect(dAppIdentifier);
     SecureStorage.set(KeyStoreKeys.MEERKAT_SEED, seed);
-    this.connected = true;
   }
 
   disconnectDApp(dAppIdentifier: string) {

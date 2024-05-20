@@ -19,6 +19,7 @@ const ConnectModal = ({
       icon: scanCircleOutline,
       label: i18n.t("connectmodal.scan"),
       onClick: () => {
+        setConnectModalIsOpen(false);
         dispatch(setCurrentOperation(OperationType.SCAN_CONNECTION));
       },
       testId: "add-connection-modal-scan-qr-code",

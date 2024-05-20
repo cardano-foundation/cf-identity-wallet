@@ -60,21 +60,11 @@ const stateCacheSlice = createSlice({
         ...state.authentication,
         loggedIn: true,
       };
-      state.queueIncomingRequest = {
-        ...state.queueIncomingRequest,
-        isPaused: false,
-        isProcessing: true,
-      };
     },
     logout: (state) => {
       state.authentication = {
         ...state.authentication,
         loggedIn: false,
-      };
-      state.queueIncomingRequest = {
-        ...state.queueIncomingRequest,
-        isPaused: true,
-        isProcessing: false,
       };
     },
     setAuthentication: (

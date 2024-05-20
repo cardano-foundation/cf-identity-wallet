@@ -2,11 +2,13 @@
     "env": {
         "browser": true,
         "es2021": true,
-        "jest": true
+        "jest": true,
+        "node": true
     },
     "globals": {
         "__dirname": true,
-        "NodeJS": true
+        "NodeJS": true,
+        "process": "readonly"
     },
     "extends": [
         "eslint:recommended",

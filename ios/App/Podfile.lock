@@ -1,9 +1,13 @@
 PODS:
+  - AparajitaCapacitorBiometricAuth (8.0.0):
+    - Capacitor
   - AparajitaCapacitorSecureStorage (5.2.0):
     - Capacitor
     - KeychainSwift (~> 21.0)
   - Capacitor (5.7.4):
     - CapacitorCordova
+  - CapacitorApp (5.0.7):
+    - Capacitor
   - CapacitorClipboard (5.0.7):
     - Capacitor
   - CapacitorCommunityBarcodeScanner (4.0.1):
@@ -34,8 +38,10 @@ PODS:
   - ZIPFoundation (0.9.16)
 
 DEPENDENCIES:
+  - "AparajitaCapacitorBiometricAuth (from `../../node_modules/@aparajita/capacitor-biometric-auth`)"
   - "AparajitaCapacitorSecureStorage (from `../../node_modules/@aparajita/capacitor-secure-storage`)"
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorClipboard (from `../../node_modules/@capacitor/clipboard`)"
   - "CapacitorCommunityBarcodeScanner (from `../../node_modules/@capacitor-community/barcode-scanner`)"
   - "CapacitorCommunitySqlite (from `../../node_modules/@capacitor-community/sqlite`)"
@@ -54,10 +60,14 @@ SPEC REPOS:
     - ZIPFoundation
 
 EXTERNAL SOURCES:
+  AparajitaCapacitorBiometricAuth:
+    :path: "../../node_modules/@aparajita/capacitor-biometric-auth"
   AparajitaCapacitorSecureStorage:
     :path: "../../node_modules/@aparajita/capacitor-secure-storage"
   Capacitor:
     :path: "../../node_modules/@capacitor/ios"
+  CapacitorApp:
+    :path: "../../node_modules/@capacitor/app"
   CapacitorClipboard:
     :path: "../../node_modules/@capacitor/clipboard"
   CapacitorCommunityBarcodeScanner:
@@ -80,8 +90,10 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/status-bar"
 
 SPEC CHECKSUMS:
+  AparajitaCapacitorBiometricAuth: b30db5f1a0d68d14c3a46d2ed95a009703eda3f5
   AparajitaCapacitorSecureStorage: 2f3a28fa7cf90053bf5b56834607349cbf9f24ca
   Capacitor: 4fe9adf012caceb4c71ffea2f1f4d005cdcbeea7
+  CapacitorApp: 17fecd0e6cb23feafac7eb0939417389038b0979
   CapacitorClipboard: 45e5e25f2271f98712985d422776cdc5a779cca1
   CapacitorCommunityBarcodeScanner: 7feb206489c8555a8ca0c74c57ddf49ead774eb8
   CapacitorCommunitySqlite: 6e2754dde799d618a8e75e409ccc67ec9c189460
@@ -96,6 +108,6 @@ SPEC CHECKSUMS:
   SQLCipher: f2e96b3822e3006b379181a0e4fd145f6de29b56
   ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 
-PODFILE CHECKSUM: 90423924fbe85f2efaaf46e65be5f444629b2f3a
+PODFILE CHECKSUM: 376fee91162e07308901c11bbed7e5bb1df1add6
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.14.3

@@ -16,7 +16,7 @@ import {
   linkOutline,
   addOutline,
 } from "ionicons/icons";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
@@ -26,7 +26,10 @@ import { i18n } from "../../../i18n";
 import { SubMenu } from "./components/SubMenu";
 import { MenuItemProps, SubMenuData, SubMenuKey } from "./Menu.types";
 import { Settings } from "./components/Settings";
-import { ConnectWallet } from "./components/ConnectWallet";
+import {
+  ConnectWallet,
+  ConnectWalletOptionRef,
+} from "./components/ConnectWallet";
 
 const emptySubMenu = {
   Component: () => <></>,
@@ -74,6 +77,8 @@ const Menu = () => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
   });
 
+  const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
+
   const submenuMap = useMemo(
     () =>
       new Map<SubMenuKey, SubMenuData>([
@@ -89,14 +94,15 @@ const Menu = () => {
         [
           SubMenuKey.ConnectWallet,
           {
-            Component: ConnectWallet,
-            title: "connectwallet.sections.header",
+            Component: () => <ConnectWallet ref={connectWalletRef} />,
+            title: "menu.tab.items.connectwallet.tabheader",
             pageId: "connect-wallet",
             additionalButtons: (
               <IonButton
                 shape="round"
                 className="connect-wallet-button"
                 data-testid="menu-add-connection-button"
+                onClick={() => connectWalletRef.current?.openConnectWallet()}
               >
                 <IonIcon
                   slot="icon-only"
@@ -139,23 +145,23 @@ const Menu = () => {
     {
       itemKey: SubMenuKey.Profile,
       icon: personCircleOutline,
-      label: `${i18n.t("menu.tab.items.profile")}`,
+      label: `${i18n.t("menu.tab.items.profile.title")}`,
     },
     {
       itemKey: SubMenuKey.Crypto,
       icon: walletOutline,
-      label: `${i18n.t("menu.tab.items.crypto")}`,
+      label: `${i18n.t("menu.tab.items.crypto.title")}`,
     },
     {
       itemKey: SubMenuKey.Connections,
       icon: peopleOutline,
-      label: `${i18n.t("menu.tab.items.connections")}`,
+      label: `${i18n.t("menu.tab.items.connections.title")}`,
     },
     {
       itemKey: SubMenuKey.ConnectWallet,
       icon: linkOutline,
-      label: `${i18n.t("menu.tab.items.connectwallet")}`,
-      subLabel: `${i18n.t("menu.tab.items.cip")}`,
+      label: `${i18n.t("menu.tab.items.connectwallet.title")}`,
+      subLabel: `${i18n.t("menu.tab.items.connectwallet.cip")}`,
     },
   ];
 
