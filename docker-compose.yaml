@@ -17,6 +17,17 @@ services:
       - 3902:3902
       - 3903:3903
 
+  witness:
+    container_name: idw-witness
+    restart: unless-stopped
+    build:
+      context: github.com/WebOfTrust/keripy#ae774b135585f850415f109c1fd0b294e823a2c9
+      dockerfile: ./images/witness.demo.dockerfile
+    ports:
+      - 5642:5642
+      - 5643:5643
+      - 5644:5644
+
   cred-issuance:
     container_name: cred-issuance
     build:
