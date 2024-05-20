@@ -13,6 +13,8 @@ import { AgentService } from "./agentService";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { AgentServicesProps, IdentifierResult } from "../agent.types";
 import { IdentifierStorage } from "../records";
+import { ConfigurationService } from "../../configuration";
+import { BackingMode } from "../../configuration/configurationService.types";
 
 const identifierTypeThemes = [0, 1];
 
@@ -254,6 +256,28 @@ class IdentifierService extends AgentService {
     if (!operation.done) {
       throw new Error(IdentifierService.FAILED_TO_ROTATE_AID);
     }
+  }
+
+  private getCreateAidOptions() {
+    if (ConfigurationService.env.keri.backing.mode === BackingMode.LEDGER) {
+      return {
+        toad: 1,
+        wits: [ConfigurationService.env.keri.backing.ledger.aid],
+        count: 1,
+        ncount: 1,
+        isith: "1",
+        nsith: "1",
+        data: [{ ca: ConfigurationService.env.keri.backing.ledger.address }],
+      };
+    } else if (
+      ConfigurationService.env.keri.backing.mode === BackingMode.POOLS
+    ) {
+      return {
+        toad: ConfigurationService.env.keri.backing.pools.length,
+        wits: ConfigurationService.env.keri.backing.pools,
+      };
+    }
+    return {};
   }
 }
 
