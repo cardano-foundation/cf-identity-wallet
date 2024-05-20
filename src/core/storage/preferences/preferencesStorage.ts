@@ -14,6 +14,7 @@ enum PreferencesKeys {
   APP_USER_NAME = "app-user-name",
   APP_BIOMETRY = "app-biometry",
   APP_KERIA_NOTIFICATION_MARKER = "app-keria-notification-marker",
+  APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
 }
 
 class PreferencesStorage {

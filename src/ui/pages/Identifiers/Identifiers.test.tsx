@@ -99,7 +99,9 @@ describe("Identifiers Tab", () => {
     expect(getByTestId("connections-button")).toBeInTheDocument();
     expect(getByTestId("add-button")).toBeInTheDocument();
     expect(getByTestId("identifiers-list")).toBeInTheDocument();
-    expect(getByTestId("identifier-item-0")).toBeInTheDocument();
+    expect(
+      getByTestId(`card-item-${filteredIdentifierFix[2].id}`)
+    ).toBeInTheDocument();
   });
 
   test("Navigate from Identifiers Tab to Card Details and back", async () => {

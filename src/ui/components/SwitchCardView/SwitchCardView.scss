@@ -1,0 +1,15 @@
+.card-switch-view {
+  .list-header {
+    margin-bottom: 0.875rem;
+  }
+}
+
+.card-switch-view-list {
+  &.card-list {
+    .card-item {
+      &:last-child {
+        --inner-border-width: 0;
+      }
+    }
+  }
+}

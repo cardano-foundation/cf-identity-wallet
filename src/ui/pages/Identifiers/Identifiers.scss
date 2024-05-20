@@ -6,7 +6,7 @@
       margin-bottom: 2.5rem;
     }
 
-    h3 {
+    .list-header {
       margin-bottom: 0.875rem;
     }
 
@@ -83,7 +83,7 @@
     }
 
     .identifier-cards {
-      h3 {
+      .list-header {
         display: none;
       }
     }
@@ -95,7 +95,7 @@
     }
 
     .identifier-favourite-cards {
-      h3 {
+      .list-header {
         animation: indentifierFavouriteCardHeaderResize 0.25s ease;
         animation-fill-mode: forwards;
 
@@ -119,7 +119,7 @@
     .identifiers-tab-content-block {
       margin-bottom: 1.6rem;
 
-      h3 {
+      .list-header {
         margin-bottom: 0.7rem;
       }
 
