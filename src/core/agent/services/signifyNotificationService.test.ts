@@ -1,3 +1,4 @@
+import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { SignifyNotificationService } from "./signifyNotificationService";
 
@@ -9,7 +10,9 @@ const identifiersInteractMock = jest.fn();
 const identifiersRotateMock = jest.fn();
 
 const oobiResolveMock = jest.fn();
-const groupGetRequestMock = jest.fn();
+const groupGetRequestMock = jest.fn().mockImplementation((said: string) => {
+  return [{ exn: { a: { gid: "id" } } }];
+});
 const queryKeyStateMock = jest.fn();
 
 const signifyClient = jest.mocked({
@@ -71,7 +74,14 @@ const signifyClient = jest.mocked({
     query: queryKeyStateMock,
     get: jest.fn(),
   }),
-  groups: () => ({ getRequest: groupGetRequestMock }),
+  groups: () => ({
+    getRequest: jest.fn().mockImplementation((said: string) => {
+      if (said == "not-found-said") {
+        return [];
+      }
+      return [{ exn: { a: { gid: "id" } } }];
+    }),
+  }),
 });
 
 const agentServicesProps = {
@@ -95,6 +105,15 @@ const signifyNotificationService = new SignifyNotificationService(
   notificationStorage as any
 );
 
+jest.mock("../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      getKeriaOnlineStatus: jest.fn(),
+      multiSigs: { hasMultisig: jest.fn() },
+    },
+  },
+}));
+
 describe("Signify notification service of agent", () => {
   beforeEach(() => {
     jest.resetAllMocks();
@@ -102,6 +121,8 @@ describe("Signify notification service of agent", () => {
 
   test("callback should be called when there are KERI notifications", async () => {
     const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [
       {
         i: "string",
@@ -171,5 +192,69 @@ describe("Signify notification service of agent", () => {
     const id = "uuid";
     await signifyNotificationService.deleteNotificationRecordById(id);
     expect(notificationStorage.deleteById).toBeCalled();
+  });
+
+  test("Should skip if there is no valid multi-sig notification", async () => {
+    const callback = jest.fn();
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/icp",
+          d: "not-found-said",
+          m: "",
+        },
+      },
+    ];
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(callback).toBeCalledTimes(0);
+  });
+
+  test("Should skip if there is a existed multi-sig notification", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([{}]);
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/icp",
+          d: "d",
+          m: "",
+        },
+      },
+    ];
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(callback).toBeCalledTimes(0);
+  });
+
+  test("Should skip if there is a existed multi-sig", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/icp",
+          d: "d",
+          m: "",
+        },
+      },
+    ];
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(callback).toBeCalledTimes(0);
   });
 });

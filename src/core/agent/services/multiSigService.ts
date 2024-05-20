@@ -699,7 +699,15 @@ class MultiSigService extends AgentService {
   async hasMultisig(multisigId: string): Promise<boolean> {
     const multiSig = await this.identifierStorage
       .getIdentifierMetadata(multisigId)
-      .catch(() => undefined);
+      .catch((error) => {
+        if (
+          error.message === IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+        ) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
     if (!multiSig) {
       return false;
     }

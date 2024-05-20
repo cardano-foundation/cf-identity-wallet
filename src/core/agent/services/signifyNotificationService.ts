@@ -102,28 +102,6 @@ class SignifyNotificationService extends AgentService {
         notifications.notes.shift();
       }
       for (const notif of notifications.notes) {
-        await this.markNotification(notif.i);
-        if (notif.a.r === NotificationRoute.MultiSigIcp) {
-          const multisigNotification = await this.signifyClient
-            .groups()
-            .getRequest(notif.a.d);
-          if (!multisigNotification || !multisigNotification.length) {
-            continue;
-          }
-          const multisigId = multisigNotification[0]?.exn?.a?.gid;
-          if (!multisigId) {
-            await this.markNotification(notif.i);
-            continue;
-          }
-          const hasMultisig = await Agent.agent.multiSigs.hasMultisig(
-            multisigId
-          );
-          const notificationsForThisMultisig =
-            await this.findNotificationsByMultisigId(multisigId);
-          if (hasMultisig || notificationsForThisMultisig.length) {
-            continue;
-          }
-        }
         await this.processNotification(notif, callback);
       }
       if (notifications.notes.length) {
@@ -155,6 +133,27 @@ class SignifyNotificationService extends AgentService {
     callback: (event: KeriaNotification) => void
   ) {
     // We only process with the credential and the multisig at the moment
+    if (notif.a.r === NotificationRoute.MultiSigIcp) {
+      const multisigNotification = await this.signifyClient
+        .groups()
+        .getRequest(notif.a.d);
+      if (!multisigNotification || !multisigNotification.length) {
+        await this.markNotification(notif.i);
+        return;
+      }
+      const multisigId = multisigNotification[0]?.exn?.a?.gid;
+      if (!multisigId) {
+        await this.markNotification(notif.i);
+        return;
+      }
+      const hasMultisig = await Agent.agent.multiSigs.hasMultisig(multisigId);
+      const notificationsForThisMultisig =
+        await this.findNotificationsByMultisigId(multisigId);
+      if (hasMultisig || notificationsForThisMultisig.length) {
+        await this.markNotification(notif.i);
+        return;
+      }
+    }
     if (
       Object.values(NotificationRoute).includes(
         notif.a.r as NotificationRoute
@@ -167,6 +166,7 @@ class SignifyNotificationService extends AgentService {
     } else if (!notif.r) {
       this.markNotification(notif.i);
     }
+    return;
   }
 
   private async createNotificationRecord(
