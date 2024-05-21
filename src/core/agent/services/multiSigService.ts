@@ -419,13 +419,17 @@ class MultiSigService extends AgentService {
     const res = await this.joinMultisigKeri(exn, aid, signifyName);
     await this.notificationStorage.deleteById(notificationId);
     const multisigId = res.op.name.split(".")[1];
+    let isPending = res.op.done ? false : true; //this will be updated once the operation is done
+    if (exn.e.icp.nt == "1") {
+      isPending = false;
+    }
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
       theme: meta.theme,
       signifyName,
       signifyOpName: res.op.name, //we save the signifyOpName here to sync the multisig's status later
-      isPending: res.op.done ? false : true, //this will be updated once the operation is done
+      isPending,
       multisigManageAid: identifier.id,
     });
     identifier.groupMetadata.groupCreated = true;
