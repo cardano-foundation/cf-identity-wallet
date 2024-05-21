@@ -10,9 +10,6 @@ const identifiersInteractMock = jest.fn();
 const identifiersRotateMock = jest.fn();
 
 const oobiResolveMock = jest.fn();
-const groupGetRequestMock = jest.fn().mockImplementation((said: string) => {
-  return [{ exn: { a: { gid: "id" } } }];
-});
 const queryKeyStateMock = jest.fn();
 
 const signifyClient = jest.mocked({
@@ -78,6 +75,8 @@ const signifyClient = jest.mocked({
     getRequest: jest.fn().mockImplementation((said: string) => {
       if (said == "not-found-said") {
         return [];
+      } else if (said == "no-gid-said") {
+        return [{ exn: { a: {} } }];
       }
       return [{ exn: { a: { gid: "id" } } }];
     }),
@@ -248,6 +247,50 @@ describe("Signify notification service of agent", () => {
         a: {
           r: "/multisig/icp",
           d: "d",
+          m: "",
+        },
+      },
+    ];
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(callback).toBeCalledTimes(0);
+  });
+
+  test("Should skip if there is a existed multi-sig", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/icp",
+          d: "d",
+          m: "",
+        },
+      },
+    ];
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(callback).toBeCalledTimes(0);
+  });
+
+  test("Should skip if there is a missing gid multi-sig notification", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/icp",
+          d: "no-gid-said",
           m: "",
         },
       },
