@@ -10,6 +10,7 @@ import { Agent } from "../../agent/agent";
 import {
   PeerConnectSigningEvent,
   PeerConnectSigningEventTypes,
+  TxSignError,
 } from "./peerConnection.types";
 import { EventService } from "../../agent/services/eventService";
 
@@ -21,7 +22,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
   static readonly MAX_SIGN_TIME = 3600000;
   static readonly TIME_OUT = 1000;
   getIdentifierOobi: () => Promise<string>;
-  sign: (identifier: string, payload: string) => Promise<string>;
+  sign: (identifier: string, payload: string) => Promise<any>;
 
   signerCache: Map<string, Signer>;
 
@@ -53,11 +54,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       return Agent.agent.connections.getOobi(identifier.signifyName);
     };
 
-    this.sign = async (
-      identifier: string,
-      payload: string,
-      onSignError?: (error: Error) => void
-    ): Promise<string> => {
+    this.sign = async (identifier: string, payload: string): Promise<any> => {
       let approved: boolean | undefined = undefined;
       // Closure that updates approved variable
       const approvalCallback = (approvalStatus: boolean) => {
@@ -78,10 +75,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
           setTimeout(resolve, IdentityWalletConnect.TIME_OUT)
         );
         if (Date.now() > startTime + IdentityWalletConnect.MAX_SIGN_TIME) {
-          if (typeof onSignError === "function") {
-            onSignError(new Error("Time out"));
-          }
-          throw new Error("Time out");
+          return { error: TxSignError.TimeOut };
         }
       }
       if (approved) {
@@ -94,10 +88,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         return this.signerCache.get(identifier)!.sign(Buffer.from(payload))
           .qb64;
       } else {
-        if (typeof onSignError === "function") {
-          onSignError(new Error("User declined the signing request"));
-        }
-        throw new Error("User declined the signing request");
+        return { error: TxSignError.UserDeclined };
       }
     };
   }
