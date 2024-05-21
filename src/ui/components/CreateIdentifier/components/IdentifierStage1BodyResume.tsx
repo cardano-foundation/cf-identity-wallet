@@ -105,6 +105,7 @@ const IdentifierStage1BodyResume = ({
             shape="round"
             expand="block"
             fill="outline"
+            data-testid="share-resume-identifier-scan-button"
             className="secondary-button"
             onClick={handleScanButton}
           >

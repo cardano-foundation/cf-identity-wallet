@@ -148,6 +148,7 @@ const IdentifierStage4 = ({
                     />
                     <span className="connection-name">{connection.label}</span>
                     <IonIcon
+                      data-testid={`confirm-back-connection-button-${index}`}
                       aria-hidden="true"
                       icon={pencilOutline}
                       slot="end"
@@ -170,8 +171,11 @@ const IdentifierStage4 = ({
           </div>
           <IonCard>
             <IonItem className="identifier-list-item">
-              <IonLabel>{state.threshold}</IonLabel>
+              <IonLabel data-testid="confirm-threshold">
+                {state.threshold}
+              </IonLabel>
               <IonIcon
+                data-testid="confirm-back-threshold-button"
                 aria-hidden="true"
                 icon={pencilOutline}
                 slot="end"

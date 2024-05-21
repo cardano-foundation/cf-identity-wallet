@@ -1,4 +1,4 @@
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -6,6 +6,9 @@ import { setupIonicReact } from "@ionic/react";
 import { mockIonicReact } from "@ionic/react-test-utils";
 import { CreateIdentifier } from "./CreateIdentifier";
 import { TabsRoutePath } from "../navigation/TabsMenu";
+import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
+import { identifierFix } from "../../__fixtures__/identifierFix";
+import EN_TRANSLATION from "../../../locales/en/en.json";
 setupIonicReact();
 mockIonicReact();
 
@@ -24,6 +27,19 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
   },
 }));
 
+const mockGetMultisigConnection = jest.fn((args) => Promise.resolve([]));
+
+jest.mock("../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      connections: {
+        getMultisigLinkedContacts: (args: any) =>
+          mockGetMultisigConnection(args),
+      },
+    },
+  },
+}));
+
 describe("Create Identifier modal", () => {
   const mockStore = configureStore();
 
@@ -35,6 +51,11 @@ describe("Create Identifier modal", () => {
         time: Date.now(),
         passcodeIsSet: true,
         passwordIsSet: false,
+      },
+      queueIncomingRequest: {
+        isProcessing: false,
+        queues: [],
+        isPaused: false,
       },
     },
     identifiersCache: {
@@ -64,6 +85,48 @@ describe("Create Identifier modal", () => {
     expect(getByTestId("create-identifier-modal-content-page")).toHaveClass(
       "ion-hide"
     );
+  });
+
+  test("Update multisig group", async () => {
+    render(
+      <Provider store={storeMocked}>
+        <CreateIdentifier
+          modalIsOpen={true}
+          setModalIsOpen={jest.fn()}
+          groupId="mockId"
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(mockGetMultisigConnection).toBeCalledWith("mockId");
+      expect(dispatchMock).toBeCalledWith(
+        setMultiSigGroupCache({
+          groupId: "mockId",
+          connections: [],
+        })
+      );
+    });
+  });
+
+  test("Resume multisig group", async () => {
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <CreateIdentifier
+          modalIsOpen={true}
+          setModalIsOpen={jest.fn()}
+          groupId="mockId"
+          resumeMultiSig={identifierFix[0]}
+          setResumeMultiSig={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATION.createidentifier.share.title)
+      ).toBeVisible();
+    });
   });
 
   test("It shows the spinner and closes the modal when creating a new Default identifier", async () => {
