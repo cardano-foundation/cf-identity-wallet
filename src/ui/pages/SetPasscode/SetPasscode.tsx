@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import { i18n } from "../../../i18n";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import {
-  SecureStorage,
-  KeyStoreKeys,
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage";
+import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import {
   getStateCache,
@@ -27,6 +22,11 @@ import { BiometryError } from "@aparajita/capacitor-biometric-auth/dist/esm/defi
 import { getPlatforms } from "@ionic/react";
 import { Alert } from "../../components/Alert";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
+import { Agent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
+import { createOrUpdateBasicRecord } from "../../../core/agent/records/createOrUpdateBasicRecord";
+import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
@@ -76,9 +76,13 @@ const SetPasscode = () => {
   const processBiometrics = async () => {
     const isBiometricAuthenticated = await handleBiometricAuth();
     if (isBiometricAuthenticated === true) {
-      await PreferencesStorage.set(PreferencesKeys.APP_BIOMETRY, {
-        enabled: true,
-      });
+      await createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.APP_BIOMETRY,
+          content: { enabled: true },
+        })
+      );
+      dispatch(setEnableBiometryCache(true));
       await handlePassAuth();
     } else {
       if (isBiometricAuthenticated instanceof BiometryError) {
@@ -106,9 +110,12 @@ const SetPasscode = () => {
     ionRouter.push(nextPath.pathname, "forward", "push");
     handleClearState();
 
-    await PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
-      initialized: true,
-    });
+    await createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.APP_ALREADY_INIT,
+        content: { initialized: true },
+      })
+    );
   };
 
   const handleSetupAndroidBiometry = async () => {

@@ -10,7 +10,6 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { Agent } from "../../../core/agent/agent";
 import { ConfigurationService } from "../../../core/configuration";
 
@@ -32,6 +31,10 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       connections: {
         getOobi: jest.fn(),
+      },
+      basicStorage: {
+        findById: jest.fn(),
+        save: jest.fn(),
       },
     },
   },
@@ -282,12 +285,16 @@ describe("Cards Details page", () => {
   });
 
   test.skip("It changes to favourite icon on click disabled favourite button", async () => {
-    PreferencesStorage.set = jest
-      .fn()
-      .mockImplementation(async (data: SetOptions): Promise<void> => {
-        expect(data.key).toBe(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES);
-        expect(data.value).toBe(filteredIdentifierFix[0]);
-      });
+    // PreferencesStorage.set = jest
+    //   .fn()
+    //   .mockImplementation(async (data: SetOptions): Promise<void> => {
+    //     expect(data.key).toBe(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES);
+    //     expect(data.value).toBe(filteredIdentifierFix[0]);
+    //   });
+    //
+    // Mock Agent.agent.basicStorage.save
+    // TODO:#
+    Agent.agent.basicStorage.save = jest.fn().mockResolvedValue(true);
 
     const { getByTestId } = render(
       <Provider store={storeMockedAidKeri}>

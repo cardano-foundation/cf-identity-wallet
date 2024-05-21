@@ -17,7 +17,6 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { Agent } from "../../../core/agent/agent";
-import { PreferencesStorage } from "../../../core/storage";
 import {
   addFavouritesCredsCache,
   removeFavouritesCredsCache,
@@ -37,6 +36,10 @@ jest.mock("../../../core/agent/agent", () => ({
         getCredentialDetailsById: jest.fn(),
         restoreCredential: jest.fn(() => Promise.resolve(true)),
         getCredentialShortDetailsById: jest.fn(() => Promise.resolve([])),
+      },
+      basicStorage: {
+        findById: jest.fn(),
+        save: jest.fn(),
       },
     },
   },
@@ -332,12 +335,6 @@ describe("Cards Details page - current not archived credential", () => {
       dispatch: dispatchMock,
     };
 
-    PreferencesStorage.set = jest
-      .fn()
-      .mockImplementation(async (data: SetOptions): Promise<boolean> => {
-        return Promise.resolve(true);
-      });
-
     const mockNow = 1466424490000;
     const dateSpy = jest.spyOn(Date, "now").mockReturnValue(mockNow);
 
@@ -404,12 +401,6 @@ describe("Cards Details page - current not archived credential", () => {
       ...mockStore(initialStateNoPasswordCurrent),
       dispatch: dispatchMock,
     };
-
-    PreferencesStorage.set = jest
-      .fn()
-      .mockImplementation(async (data: SetOptions): Promise<boolean> => {
-        return Promise.resolve(true);
-      });
 
     const { getByTestId } = render(
       <Provider store={storeMocked}>

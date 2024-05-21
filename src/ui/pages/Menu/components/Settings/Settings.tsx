@@ -23,15 +23,16 @@ import "./Settings.scss";
 import { i18n } from "../../../../../i18n";
 import pJson from "../../../../../../package.json";
 import { OptionProps } from "./Settings.types";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../../../core/storage";
 import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
+import { MiscRecordId } from "../../../../../core/agent/agent.types";
+import { createOrUpdateBasicRecord } from "../../../../../core/agent/records/createOrUpdateBasicRecord";
+import { BasicRecord } from "../../../../../core/agent/records";
+import { useAppDispatch } from "../../../../../store/hooks";
+import { setEnableBiometryCache } from "../../../../../store/reducers/biometryCache";
 
 const Settings = () => {
   const { biometricsIsEnabled, setBiometricsIsEnabled } = useBiometricAuth();
-
+  const dispatch = useAppDispatch();
   const securityItems: OptionProps[] = [
     {
       icon: lockClosedOutline,
@@ -78,9 +79,13 @@ const Settings = () => {
     switch (item.label) {
     case i18n.t("settings.sections.security.biometry"): {
       setBiometricsIsEnabled(!biometricsIsEnabled);
-      await PreferencesStorage.set(PreferencesKeys.APP_BIOMETRY, {
-        enabled: !biometricsIsEnabled,
-      });
+      await createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.APP_BIOMETRY,
+          content: { enabled: !biometricsIsEnabled },
+        })
+      );
+      dispatch(setEnableBiometryCache(!biometricsIsEnabled));
       break;
     }
     default:
