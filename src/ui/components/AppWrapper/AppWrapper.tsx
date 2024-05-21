@@ -46,6 +46,8 @@ import { PreferencesStorageItem } from "../../../core/storage/preferences/prefer
 import { useActivityTimer } from "./hooks/useActivityTimer";
 import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
 import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
+import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
+import { PeerConnectSigningEvent } from "../../../core/cardano/walletConnect/peerConnection.types";
 import { MultiSigService } from "../../../core/agent/services/multiSigService";
 
 const connectionStateChangedHandler = async (
@@ -130,6 +132,13 @@ const acdcChangeHandler = async (
     dispatch(setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED));
     dispatch(setCurrentOperation(OperationType.IDLE));
   }
+};
+
+const peerConnectRequestSignChangeHandler = async (
+  event: PeerConnectSigningEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  //TODO: Handle logic for the accept/decline sing request
 };
 
 const AppWrapper = (props: { children: ReactNode }) => {
@@ -325,6 +334,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.credentials.onAcdcStateChanged((event) => {
       return acdcChangeHandler(event, dispatch);
     });
+    PeerConnection.peerConnection.onPeerConnectRequestSignStateChanged(
+      async (event) => {
+        return peerConnectRequestSignChangeHandler(event, dispatch);
+      }
+    );
     dispatch(setInitialized(true));
   };
 

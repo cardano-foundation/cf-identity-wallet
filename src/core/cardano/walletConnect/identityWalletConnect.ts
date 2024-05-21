@@ -7,13 +7,26 @@ import {
 import { CardanoPeerConnect } from "@fabianbormann/cardano-peer-connect";
 import { Signer } from "signify-ts";
 import { Agent } from "../../agent/agent";
+import {
+  PeerConnectSigningEvent,
+  PeerConnectSigningEventTypes,
+  PeerConnectionError,
+  TxSignError,
+} from "./peerConnection.types";
+import { EventService } from "../../agent/services/eventService";
 
 class IdentityWalletConnect extends CardanoPeerConnect {
   static readonly IDENTIFIER_ID_NOT_LOCATED =
     "The id doesn't correspond with any stored identifier";
   private selectedAid: string;
+  private eventService: EventService;
+  static readonly MAX_SIGN_TIME = 3600000;
+  static readonly TIMEOUT_INTERVAL = 1000;
   getIdentifierOobi: () => Promise<string>;
-  sign: (identifier: string, payload: string) => Promise<string>;
+  sign: (
+    identifier: string,
+    payload: string
+  ) => Promise<string | { error: PeerConnectionError }>;
 
   signerCache: Map<string, Signer>;
 
@@ -22,6 +35,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     seed: string | null,
     announce: string[],
     selectedAid: string,
+    eventService: EventService,
     discoverySeed?: string | null
   ) {
     super(walletInfo, {
@@ -32,6 +46,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     });
     this.selectedAid = selectedAid;
     this.signerCache = new Map();
+    this.eventService = eventService;
 
     this.getIdentifierOobi = async (): Promise<string> => {
       const identifier = await Agent.agent.identifiers.getIdentifier(
@@ -46,14 +61,42 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     this.sign = async (
       identifier: string,
       payload: string
-    ): Promise<string> => {
-      if (this.signerCache.get(identifier) === undefined) {
-        this.signerCache.set(
+    ): Promise<string | { error: PeerConnectionError }> => {
+      let approved: boolean | undefined = undefined;
+      // Closure that updates approved variable
+      const approvalCallback = (approvalStatus: boolean) => {
+        approved = approvalStatus;
+      };
+      this.eventService.emit<PeerConnectSigningEvent>({
+        type: PeerConnectSigningEventTypes.PeerConnectSign,
+        payload: {
           identifier,
-          await Agent.agent.identifiers.getSigner(identifier)
+          payload,
+          approvalCallback,
+        },
+      });
+      const startTime = Date.now();
+      // Wait until approved is true or false
+      while (approved === undefined) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, IdentityWalletConnect.TIMEOUT_INTERVAL)
         );
+        if (Date.now() > startTime + IdentityWalletConnect.MAX_SIGN_TIME) {
+          return { error: TxSignError.TimeOut };
+        }
       }
-      return this.signerCache.get(identifier)!.sign(Buffer.from(payload)).qb64;
+      if (approved) {
+        if (this.signerCache.get(identifier) === undefined) {
+          this.signerCache.set(
+            identifier,
+            await Agent.agent.identifiers.getSigner(identifier)
+          );
+        }
+        return this.signerCache.get(identifier)!.sign(Buffer.from(payload))
+          .qb64;
+      } else {
+        return { error: TxSignError.UserDeclined };
+      }
     };
   }
 

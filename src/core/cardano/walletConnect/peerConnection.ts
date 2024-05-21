@@ -2,10 +2,15 @@ import { IConnectMessage } from "@fabianbormann/cardano-peer-connect/dist/src/ty
 import { ExperimentalContainer } from "@fabianbormann/cardano-peer-connect";
 import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { IdentityWalletConnect } from "./identityWalletConnect";
-import { ExperimentalAPIFunctions } from "./peerConnection.types";
 import packageInfo from "../../../../package.json";
 import ICON_BASE64 from "../../../assets/icon-only";
 import { KeyStoreKeys } from "../../storage";
+import { EventService } from "../../agent/services/eventService";
+import {
+  ExperimentalAPIFunctions,
+  PeerConnectSigningEvent,
+  PeerConnectSigningEventTypes,
+} from "./peerConnection.types";
 
 class PeerConnection {
   static readonly PEER_CONNECTION_START_PENDING =
@@ -30,6 +35,26 @@ class PeerConnection {
   private identityWalletConnect: IdentityWalletConnect | undefined;
   private connected = false;
   private connectedDAppAdress = "";
+  private eventService = new EventService();
+  private static instance: PeerConnection;
+
+  onPeerConnectRequestSignStateChanged(
+    callback: (event: PeerConnectSigningEvent) => void
+  ) {
+    this.eventService.on(
+      PeerConnectSigningEventTypes.PeerConnectSign,
+      async (event: PeerConnectSigningEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  static get peerConnection() {
+    if (!this.instance) {
+      this.instance = new PeerConnection();
+    }
+    return this.instance;
+  }
 
   async start(selectedAid: string) {
     let meerkatSeed = null;
@@ -51,7 +76,8 @@ class PeerConnection {
       this.walletInfo,
       meerkatSeed,
       this.announce,
-      selectedAid
+      selectedAid,
+      this.eventService
     );
     this.identityWalletConnect.setOnConnect(
       (connectMessage: IConnectMessage) => {
