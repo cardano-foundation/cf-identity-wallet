@@ -96,14 +96,6 @@ const signifyClient = jest.mocked({
   }),
 });
 
-jest.mock("../../../core/agent/agent", () => ({
-  Agent: {
-    agent: {
-      getKeriaOnlineStatus: jest.fn(),
-    },
-  },
-}));
-
 const session = {};
 
 const agentServicesProps = {
@@ -141,6 +133,7 @@ const connectionService = new ConnectionService(
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
+      getKeriaOnlineStatus: jest.fn(),
       identifiers: { getKeriIdentifierByGroupId: jest.fn() },
     },
   },

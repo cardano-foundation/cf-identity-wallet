@@ -476,6 +476,7 @@ class MultiSigService extends AgentService {
         id: result.id,
         createdAt: result.createdAt,
         a: result.a,
+        multisigId: result.multisigId,
       };
     });
   }
@@ -692,6 +693,25 @@ class MultiSigService extends AgentService {
     return this.signifyClient
       .exchanges()
       .send(name, "multisig", aid, route, payload, embeds, recp);
+  }
+
+  @OnlineOnly
+  async hasMultisig(multisigId: string): Promise<boolean> {
+    const multiSig = await this.identifierStorage
+      .getIdentifierMetadata(multisigId)
+      .catch((error) => {
+        if (
+          error.message === IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+        ) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
+    if (!multiSig) {
+      return false;
+    }
+    return true;
   }
 }
 

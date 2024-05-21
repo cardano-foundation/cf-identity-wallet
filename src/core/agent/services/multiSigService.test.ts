@@ -6,6 +6,7 @@ import { ConnectionStatus, NotificationRoute } from "../agent.types";
 import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { MultiSigService } from "./multiSigService";
+import { IdentifierStorage } from "../records";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -1227,6 +1228,7 @@ describe("Multisig sig service of agent", () => {
         r: NotificationRoute.MultiSigIcp,
         d: "EF6Nmxz8hs0oVc4loyh2J5Sq9H3Z7apQVqjO6e4chtsp",
       },
+      multisigId: "multisig-id",
     };
     notificationStorage.findAllByQuery = jest
       .fn()
@@ -1238,6 +1240,7 @@ describe("Multisig sig service of agent", () => {
         id: notificationRecord.id,
         createdAt: notificationRecord.createdAt,
         a: notificationRecord.a,
+        multisigId: "multisig-id",
       },
     ]);
   });
@@ -1413,5 +1416,42 @@ describe("Multisig sig service of agent", () => {
     await expect(
       multiSigService.getUnhandledMultisigIdentifiers()
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+  });
+
+  test("Should return true if there is a multisig with the provided multisigId", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockResolvedValueOnce(true);
+    const multisigId = "multisig-id";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      id: multisigId,
+      displayName: "Multisig",
+      signifyName: "uuid-here",
+      multisigManageAid: "aid",
+      createdAt: now,
+      theme: 0,
+    });
+    expect(await multiSigService.hasMultisig(multisigId)).toEqual(true);
+  });
+
+  test("Should return false if there is no multisig with the provided multisigId", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockResolvedValueOnce(true);
+    const multisigId = "multisig-id";
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValue(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+    expect(await multiSigService.hasMultisig(multisigId)).toEqual(false);
+  });
+
+  test("Should throw if there is an unknown error in hasMultisig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockResolvedValueOnce(true);
+    const multisigId = "multisig-id";
+    const error = new Error("other error");
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValue(error);
+    await expect(multiSigService.hasMultisig(multisigId)).rejects.toThrowError(
+      error
+    );
   });
 });

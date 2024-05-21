@@ -92,6 +92,7 @@ interface KeriaNotification {
   id: string;
   createdAt: Date;
   a: Record<string, unknown>;
+  multisigId?: string;
 }
 
 enum KeriConnectionType {
