@@ -8,12 +8,14 @@ interface NotificationRecordStorageProps {
   a: Record<string, unknown>;
   route: string;
   isDismissed: boolean;
+  multisigId?: string;
 }
 
 class NotificationRecord extends BaseRecord {
   a!: Record<string, unknown>;
   route!: string;
   isDismissed!: boolean;
+  multisigId?: string;
   static readonly type = "NotificationRecord";
   readonly type = NotificationRecord.type;
 
@@ -25,6 +27,7 @@ class NotificationRecord extends BaseRecord {
       this.a = props.a;
       this.route = props.route;
       this.isDismissed = props.isDismissed;
+      this.multisigId = props.multisigId ?? undefined;
       this._tags = props.tags ?? {};
     }
   }
@@ -33,6 +36,7 @@ class NotificationRecord extends BaseRecord {
     return {
       route: this.route,
       isDismissed: this.isDismissed,
+      multisigId: this.multisigId,
       ...this._tags,
     };
   }

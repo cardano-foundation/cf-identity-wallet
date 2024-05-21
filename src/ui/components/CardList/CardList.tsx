@@ -40,7 +40,7 @@ const CardInfo = <T extends object = object>({
 
   return (
     <IonItem
-      onClick={() => onCardClick?.(card.data)}
+      onClick={(e) => onCardClick?.(card.data, e)}
       data-testid={`card-item-${card.id}`}
       className="card-item"
     >
@@ -100,15 +100,20 @@ const CardList = <T extends object = object>({
   data,
   className,
   lines,
+  rounded = true,
+  testId,
   onRenderCardAction,
   onCardClick,
   onRenderEndSlot,
 }: CardListProps<T>) => {
-  const classes = combineClassNames("card-list", className);
+  const classes = combineClassNames("card-list", className, {
+    "rounde-img": rounded,
+  });
 
   return (
     <IonList
       lines={lines}
+      data-testid={testId}
       className={classes}
     >
       {data.map((card) => (

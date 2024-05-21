@@ -5,7 +5,10 @@ interface BaseEventEmitter {
 
 interface ExperimentalAPIFunctions {
   getIdentifierOobi: () => Promise<string>;
-  sign: (identifier: string, payload: string) => Promise<any>;
+  sign: (
+    identifier: string,
+    payload: string
+  ) => Promise<string | { error: PeerConnectionError }>;
 }
 
 enum PeerConnectSigningEventTypes {
@@ -21,7 +24,12 @@ interface PeerConnectSigningEvent extends BaseEventEmitter {
   };
 }
 
-export const TxSignError = {
+interface PeerConnectionError {
+  code: number;
+  info: string;
+}
+
+export const TxSignError: { [key: string]: PeerConnectionError } = {
   ProofGeneration: {
     code: 1,
     info: "User has accepted the transaction sign, but the wallet was unable to sign the transaction (e.g. not having some of the private keys).",
@@ -31,4 +39,8 @@ export const TxSignError = {
 };
 
 export { PeerConnectSigningEventTypes };
-export type { ExperimentalAPIFunctions, PeerConnectSigningEvent };
+export type {
+  ExperimentalAPIFunctions,
+  PeerConnectSigningEvent,
+  PeerConnectionError,
+};

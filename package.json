@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "webpack serve --config webpack/webpack.dev.cjs --host 0.0.0.0 --port 3003",
-    "build": "webpack --config webpack/webpack.prod.cjs",
+    "build": "cross-env ENVIRONMENT=remote-dev-comm webpack --config webpack/webpack.prod.cjs",
     "build:cap": "npm run build && npx cap sync",
     "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}' 'credential-issuance-server/src/**/*.{ts,tsx,scss}'",
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
@@ -15,6 +15,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@aparajita/capacitor-biometric-auth": "^8.0.0",
     "@aparajita/capacitor-secure-storage": "^5.0.0",
     "@capacitor-community/barcode-scanner": "^4.0.1",
     "@capacitor-community/sqlite": "^5.5.0",
@@ -89,6 +90,7 @@
     "base64-loader": "^1.0.0",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^7.0.3",
     "css-loader": "^6.7.3",
     "css-minimizer-webpack-plugin": "^4.0.0",
     "date-fns": "^3.6.0",

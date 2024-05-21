@@ -8,6 +8,7 @@ import {
 const initialState: WalletConnectState = {
   walletConnections: [],
   connectedWallet: null,
+  pendingConnection: null,
 };
 const walletConnectionsCacheSlice = createSlice({
   name: "walletConnectionsCache",
@@ -25,13 +26,22 @@ const walletConnectionsCacheSlice = createSlice({
     ) => {
       state.connectedWallet = action.payload;
     },
+    setPendingConnections: (
+      state,
+      action: PayloadAction<ConnectionData | null>
+    ) => {
+      state.pendingConnection = action.payload;
+    },
   },
 });
 
 export { initialState, walletConnectionsCacheSlice };
 
-export const { setWalletConnectionsCache, setConnectedWallet } =
-  walletConnectionsCacheSlice.actions;
+export const {
+  setWalletConnectionsCache,
+  setConnectedWallet,
+  setPendingConnections,
+} = walletConnectionsCacheSlice.actions;
 
 const getWalletConnectionsCache = (state: RootState) =>
   state.walletConnectionsCache.walletConnections;
@@ -39,4 +49,7 @@ const getWalletConnectionsCache = (state: RootState) =>
 const getConnectedWallet = (state: RootState) =>
   state.walletConnectionsCache.connectedWallet;
 
-export { getWalletConnectionsCache, getConnectedWallet };
+const getPendingConnection = (state: RootState) =>
+  state.walletConnectionsCache.pendingConnection;
+
+export { getWalletConnectionsCache, getConnectedWallet, getPendingConnection };

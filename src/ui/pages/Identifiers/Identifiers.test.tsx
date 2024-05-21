@@ -71,9 +71,11 @@ describe("Identifiers Tab", () => {
 
   test("Renders favourites in Identifiers", () => {
     const { getByText } = render(
-      <Provider store={mockedStore}>
-        <Identifiers />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={mockedStore}>
+          <Identifiers />
+        </Provider>
+      </MemoryRouter>
     );
 
     expect(
@@ -83,9 +85,11 @@ describe("Identifiers Tab", () => {
 
   test("Renders Identifiers Tab and all elements in it", () => {
     const { getByText, getByTestId } = render(
-      <Provider store={mockedStore}>
-        <Identifiers />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={mockedStore}>
+          <Identifiers />
+        </Provider>
+      </MemoryRouter>
     );
 
     expect(getByTestId("identifiers-tab")).toBeInTheDocument();
@@ -95,7 +99,9 @@ describe("Identifiers Tab", () => {
     expect(getByTestId("connections-button")).toBeInTheDocument();
     expect(getByTestId("add-button")).toBeInTheDocument();
     expect(getByTestId("identifiers-list")).toBeInTheDocument();
-    expect(getByTestId("identifier-item-0")).toBeInTheDocument();
+    expect(
+      getByTestId(`card-item-${filteredIdentifierFix[2].id}`)
+    ).toBeInTheDocument();
   });
 
   test("Navigate from Identifiers Tab to Card Details and back", async () => {

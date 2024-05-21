@@ -65,15 +65,19 @@ const PageHeader = ({
     }
   };
 
+  const hasAction = backButton || closeButton || actionButton;
+
   return (
     <IonHeader
-      translucent={true}
       className={`ion-no-border page-header ${
         hasContent ? "show-header" : "hide-header"
       }`}
     >
       <IonToolbar>
-        <IonButtons slot="start">
+        <IonButtons
+          className={hasAction ? "has-action" : undefined}
+          slot="start"
+        >
           {backButton && (
             <IonButton
               slot="icon-only"
@@ -142,7 +146,10 @@ const PageHeader = ({
         )}
 
         {!progressBar && (
-          <IonButtons slot="end">
+          <IonButtons
+            className={hasAction ? "has-action" : undefined}
+            slot="end"
+          >
             {actionButton && !actionButtonLabel && (
               <IonButton
                 shape="round"

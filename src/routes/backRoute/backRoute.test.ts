@@ -43,7 +43,14 @@ describe("getBackRoute", () => {
           isPaused: false,
         },
       },
-      identifiersCache: { identifiers: [], favourites: [] },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
       credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
@@ -51,6 +58,7 @@ describe("getBackRoute", () => {
       walletConnectionsCache: {
         walletConnections: [],
         connectedWallet: null,
+        pendingConnection: null,
       },
     };
   });
@@ -151,7 +159,14 @@ describe("getPreviousRoute", () => {
           isPaused: false,
         },
       },
-      identifiersCache: { identifiers: [], favourites: [] },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
       credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
@@ -159,6 +174,7 @@ describe("getPreviousRoute", () => {
       walletConnectionsCache: {
         walletConnections: [],
         connectedWallet: null,
+        pendingConnection: null,
       },
     };
   });

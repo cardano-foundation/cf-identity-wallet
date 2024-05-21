@@ -12,14 +12,16 @@
     --background: var(--ion-color-light);
     --title-font-size: 1rem;
     --title-margin-bottom: 0.25rem;
-    --logo-border-radius: 50%;
+    --logo-border-radius: 0.25rem;
     --display-fallback: flex;
     --subtitle-font-size: 0.875rem;
+    --card-width: auto;
+    --card-height: 2.75rem;
 
     .card-logo {
       border-radius: var(--logo-border-radius);
-      width: 2.75rem;
-      height: 2.75rem;
+      width: var(--card-width);
+      height: var(--card-height);
       margin-right: 1rem;
     }
 
@@ -61,11 +63,25 @@
     }
   }
 
+  &.rounde-img {
+    ion-item.card-item {
+      --logo-border-radius: 50%;
+      --card-width: 2.75rem;
+    }
+  }
+
   ion-item-sliding {
     --inner-padding-end: 0;
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
+    &.rounde-img {
+      ion-item.card-item {
+        --card-width: 2.25rem;
+        --card-height: 2.25rem;
+      }
+    }
+
     ion-item.card-item {
       --inner-padding-top: 0.75rem;
       --inner-padding-bottom: 0.75rem;
@@ -74,8 +90,6 @@
 
       .card-logo {
         border-radius: var(--logo-border-radius);
-        width: 2.25rem;
-        height: 2.25rem;
         margin-right: 0.5rem;
       }
     }

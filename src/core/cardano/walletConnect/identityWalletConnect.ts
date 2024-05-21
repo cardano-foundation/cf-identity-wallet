@@ -10,6 +10,7 @@ import { Agent } from "../../agent/agent";
 import {
   PeerConnectSigningEvent,
   PeerConnectSigningEventTypes,
+  PeerConnectionError,
   TxSignError,
 } from "./peerConnection.types";
 import { EventService } from "../../agent/services/eventService";
@@ -20,9 +21,12 @@ class IdentityWalletConnect extends CardanoPeerConnect {
   private selectedAid: string;
   private eventService: EventService;
   static readonly MAX_SIGN_TIME = 3600000;
-  static readonly TIME_OUT = 1000;
+  static readonly TIMEOUT_INTERVAL = 1000;
   getIdentifierOobi: () => Promise<string>;
-  sign: (identifier: string, payload: string) => Promise<any>;
+  sign: (
+    identifier: string,
+    payload: string
+  ) => Promise<string | { error: PeerConnectionError }>;
 
   signerCache: Map<string, Signer>;
 
@@ -54,7 +58,10 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       return Agent.agent.connections.getOobi(identifier.signifyName);
     };
 
-    this.sign = async (identifier: string, payload: string): Promise<any> => {
+    this.sign = async (
+      identifier: string,
+      payload: string
+    ): Promise<string | { error: PeerConnectionError }> => {
       let approved: boolean | undefined = undefined;
       // Closure that updates approved variable
       const approvalCallback = (approvalStatus: boolean) => {
@@ -72,7 +79,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       // Wait until approved is true or false
       while (approved === undefined) {
         await new Promise((resolve) =>
-          setTimeout(resolve, IdentityWalletConnect.TIME_OUT)
+          setTimeout(resolve, IdentityWalletConnect.TIMEOUT_INTERVAL)
         );
         if (Date.now() > startTime + IdentityWalletConnect.MAX_SIGN_TIME) {
           return { error: TxSignError.TimeOut };

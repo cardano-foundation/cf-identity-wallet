@@ -124,7 +124,7 @@ In this section, you'll find detailed PDF documents outlining the various user f
 - Android Studio: For Android emulation (latest version recommended).
 - Capacitor: Version 4.8.1 (refer to package.json). For detailed environment setup, refer to the [Capacitor Environment Setup Guide](https://capacitorjs.com/docs/getting-started/environment-setup).
 - Mobile Device: iOS or Android for running the app on physical devices.
-- Docker (only required if running the credential server in Docker).
+- Docker, Docker Compose.
 
 Ensure that your system meets these requirements to successfully use and develop the Identity Wallet application.
 
@@ -144,7 +144,11 @@ In the project root directory, run the following commands:
 npm install
 ```
 ## Running in the Browser
+The development server depends on a local KERIA and credential issuance server setup.
+The [Docker Compose](./docker-compose.yaml) file can be used to quickly bring these services up.
+
 ```bash
+docker-compose up -d --build
 npm run dev
 ```
 This command starts the development server and allows you to preview the application on your browser by opening this localhost address:

@@ -45,7 +45,14 @@ describe("NextRoute", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      identifiersCache: { identifiers: [], favourites: [] },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
       credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
@@ -53,6 +60,7 @@ describe("NextRoute", () => {
       walletConnectionsCache: {
         walletConnections: [],
         connectedWallet: null,
+        pendingConnection: null,
       },
     };
     data = {
@@ -151,7 +159,14 @@ describe("getNextRoute", () => {
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
-    identifiersCache: { identifiers: [], favourites: [] },
+    identifiersCache: {
+      identifiers: [],
+      favourites: [],
+      multiSigGroup: {
+        groupId: "",
+        connections: [],
+      },
+    },
     credsCache: { creds: [], favourites: [] },
     connectionsCache: {
       connections: [],
@@ -159,6 +174,7 @@ describe("getNextRoute", () => {
     walletConnectionsCache: {
       walletConnections: [],
       connectedWallet: null,
+      pendingConnection: null,
     },
   };
   const state = {};

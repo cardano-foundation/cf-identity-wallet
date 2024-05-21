@@ -1,5 +1,17 @@
 import { ConnectionShortDetails } from "../agent.types";
 
+interface GroupMetadata {
+  groupId: string;
+  groupInitiator: boolean;
+  groupCreated: boolean;
+}
+
+interface CreateIdentifierInputs {
+  displayName: string;
+  theme: number;
+  groupMetadata?: GroupMetadata;
+}
+
 interface IdentifierShortDetails {
   id: string;
   displayName: string;
@@ -7,6 +19,7 @@ interface IdentifierShortDetails {
   signifyName: string;
   theme: number;
   isPending: boolean;
+  groupMetadata?: GroupMetadata;
 }
 
 interface IdentifierDetails extends IdentifierShortDetails {
@@ -38,5 +51,6 @@ export type {
   IdentifierShortDetails,
   IdentifierDetails,
   MultiSigIcpRequestDetails,
+  CreateIdentifierInputs,
   CreateIdentifierResult,
 };

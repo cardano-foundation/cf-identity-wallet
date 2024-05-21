@@ -13,6 +13,8 @@ import { AgentService } from "./agentService";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { AgentServicesProps, IdentifierResult } from "../agent.types";
 import { IdentifierStorage } from "../records";
+import { ConfigurationService } from "../../configuration";
+import { BackingMode } from "../../configuration/configurationService.types";
 
 const identifierTypeThemes = [0, 1];
 
@@ -52,6 +54,7 @@ class IdentifierService extends AgentService {
         createdAtUTC: metadata.createdAt.toISOString(),
         theme: metadata.theme,
         isPending: metadata.isPending ?? false,
+        groupMetadata: metadata.groupMetadata,
       });
     }
     return identifiers;
@@ -95,6 +98,24 @@ class IdentifierService extends AgentService {
     };
   }
 
+  async getKeriIdentifierByGroupId(
+    groupId: string
+  ): Promise<IdentifierShortDetails | null> {
+    const metadata =
+      await this.identifierStorage.getIdentifierMetadataByGroupId(groupId);
+    if (!metadata) {
+      return null;
+    }
+    return {
+      displayName: metadata.displayName,
+      id: metadata.id,
+      signifyName: metadata.signifyName,
+      createdAtUTC: metadata.createdAt.toISOString(),
+      theme: metadata.theme,
+      isPending: metadata.isPending ?? false,
+    };
+  }
+
   @OnlineOnly
   async createIdentifier(
     metadata: Omit<
@@ -108,9 +129,10 @@ class IdentifierService extends AgentService {
       .identifiers()
       .create(signifyName); //, this.getCreateAidOptions());
     await operation.op();
-    await this.signifyClient
+    const addRoleOperation = await this.signifyClient
       .identifiers()
       .addEndRole(signifyName, "agent", this.signifyClient.agent!.pre);
+    await addRoleOperation.op();
     const identifier = operation.serder.ked.i;
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: identifier,
@@ -148,7 +170,10 @@ class IdentifierService extends AgentService {
 
   async updateIdentifier(
     identifier: string,
-    data: Pick<IdentifierMetadataRecordProps, "theme" | "displayName">
+    data: Pick<
+      IdentifierMetadataRecordProps,
+      "theme" | "displayName" | "groupMetadata"
+    >
   ): Promise<void> {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
@@ -211,7 +236,7 @@ class IdentifierService extends AgentService {
     }
   }
 
-  private validIdentifierMetadata(
+  validIdentifierMetadata(
     metadata: Pick<IdentifierMetadataRecordProps, "theme">
   ): void {
     if (metadata.theme && !identifierTypeThemes.includes(metadata.theme)) {
@@ -231,6 +256,28 @@ class IdentifierService extends AgentService {
     if (!operation.done) {
       throw new Error(IdentifierService.FAILED_TO_ROTATE_AID);
     }
+  }
+
+  private getCreateAidOptions() {
+    if (ConfigurationService.env.keri.backing.mode === BackingMode.LEDGER) {
+      return {
+        toad: 1,
+        wits: [ConfigurationService.env.keri.backing.ledger.aid],
+        count: 1,
+        ncount: 1,
+        isith: "1",
+        nsith: "1",
+        data: [{ ca: ConfigurationService.env.keri.backing.ledger.address }],
+      };
+    } else if (
+      ConfigurationService.env.keri.backing.mode === BackingMode.POOLS
+    ) {
+      return {
+        toad: ConfigurationService.env.keri.backing.pools.length,
+        wits: ConfigurationService.env.keri.backing.pools,
+      };
+    }
+    return {};
   }
 }
 

@@ -18,6 +18,7 @@ const CardDetailsItem = ({
   testId,
   infoTestId,
   className,
+  fullText = false,
   mask = true,
 }: CardDetailsItemProps) => {
   const dispatch = useAppDispatch();
@@ -29,6 +30,10 @@ const CardDetailsItem = ({
   const textClass = combineClassNames("card-details-info-block-data", {
     "card-details-info-block-subtext": !!keyValue,
     mask: mask,
+  });
+
+  const contentClass = combineClassNames("card-details-info-content", {
+    "no-hide-overflow": !!fullText && !copyButton,
   });
 
   return (
@@ -58,7 +63,7 @@ const CardDetailsItem = ({
           {i18n.t(textIcon)}
         </IonText>
       )}
-      <div className="card-details-info-content">
+      <div className={contentClass}>
         <IonText
           className={textClass}
           data-testid={`${testId}-text-value`}
