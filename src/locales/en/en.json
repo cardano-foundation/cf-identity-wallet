@@ -586,7 +586,7 @@
       "identifiers": "Identity",
       "creds": "Credentials",
       "scan": "Scan",
-      "chat": "P2P",
+      "notification": "Notification",
       "menu": "Menu"
     }
   },
@@ -844,7 +844,7 @@
     },
     "pastemeerkatid": "Paste Meerkat ID"
   },
-  "chat": {
+  "notification": {
     "tab": {
       "header": "Under development"
     }

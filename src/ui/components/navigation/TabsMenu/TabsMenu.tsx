@@ -8,8 +8,8 @@ import {
 } from "@ionic/react";
 import { Redirect, Route } from "react-router";
 import {
-  chatbubble,
-  chatbubbleOutline,
+  notifications,
+  notificationsOutline,
   fingerPrint,
   fingerPrintOutline,
   idCard,
@@ -52,10 +52,10 @@ const tabsRoutes = [
     icon: [scan, scanOutline],
   },
   {
-    label: i18n.t("tabsmenu.label.chat"),
-    path: TabsRoutePath.CHAT,
+    label: i18n.t("tabsmenu.label.notification"),
+    path: TabsRoutePath.NOTIFICATION,
     component: Chat,
-    icon: [chatbubble, chatbubbleOutline],
+    icon: [notifications, notificationsOutline],
   },
   {
     label: i18n.t("tabsmenu.label.menu"),

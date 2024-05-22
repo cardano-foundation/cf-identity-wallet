@@ -11,7 +11,7 @@ const Chat = () => {
   const dispatch = useAppDispatch();
 
   useIonViewWillEnter(() => {
-    dispatch(setCurrentRoute({ path: TabsRoutePath.CHAT }));
+    dispatch(setCurrentRoute({ path: TabsRoutePath.NOTIFICATION }));
   });
 
   return (
@@ -20,7 +20,7 @@ const Chat = () => {
       header={true}
     >
       <div className="chat-tab-content">
-        <h2>{i18n.t("chat.tab.header")}</h2>
+        <h2>{i18n.t("notification.tab.header")}</h2>
       </div>
     </TabLayout>
   );
