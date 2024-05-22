@@ -69,7 +69,7 @@ class IpexCommunicationService extends AgentService {
       .exchanges()
       .get(notifRecord.a.d as string);
     const credentialId = exn.exn.e.acdc.d;
-    const connectionId = exn.exn.e.acdc.i;
+    const connectionId = exn.exn.e.anc.i;
     await this.saveAcdcMetadataRecord(
       exn.exn.e.acdc.d,
       exn.exn.e.acdc.a.dt,
