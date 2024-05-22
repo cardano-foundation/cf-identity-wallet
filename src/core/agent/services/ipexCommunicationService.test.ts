@@ -286,6 +286,7 @@ describe("Ipex communication service of agent", () => {
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
   test("can offer Keri Acdc when received the ipex apply", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     const date = new Date();
     const noti = {
@@ -321,6 +322,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("can not offer Keri Acdc if aid is not existed", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     const date = new Date();
     const noti = {
@@ -353,6 +355,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("can grant Keri Acdc when received the ipex agree", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     const date = new Date();
     const noti = {
@@ -401,6 +404,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("can not grant Keri Acdc if aid is not existed", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     const date = new Date();
     const noti = {
@@ -444,6 +448,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("can not grant Keri Acdc if acdc is not existed", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     const date = new Date();
     const noti = {
@@ -479,6 +484,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("can get matching credential for apply", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const notiId = "notiId";
     getExchangeMock = jest.fn().mockResolvedValue({
       exn: {
@@ -527,6 +533,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("cannot get matching credential for apply if cannot get the schema", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const notiId = "notiId";
     getExchangeMock = jest.fn().mockResolvedValue({
       exn: {

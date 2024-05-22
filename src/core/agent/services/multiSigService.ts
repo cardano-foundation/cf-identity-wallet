@@ -695,7 +695,6 @@ class MultiSigService extends AgentService {
       .send(name, "multisig", aid, route, payload, embeds, recp);
   }
 
-  @OnlineOnly
   async hasMultisig(multisigId: string): Promise<boolean> {
     const multiSig = await this.identifierStorage
       .getIdentifierMetadata(multisigId)
