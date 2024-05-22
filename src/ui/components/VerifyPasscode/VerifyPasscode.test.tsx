@@ -50,6 +50,9 @@ const initialStateNoPassword = {
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
   credsCache: { creds: credsFixAcdc },
+  biometryCache: {
+    enabled: false,
+  },
 };
 
 describe("Verify Passcode on Cards Details page", () => {
