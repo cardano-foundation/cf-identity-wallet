@@ -64,9 +64,6 @@ let getExchangeMock = jest.fn().mockImplementation((id: string) => {
               dt: new Date().toISOString(),
             },
           },
-          anc: {
-            i: "connectionId",
-          },
         },
       },
     };
@@ -202,7 +199,7 @@ describe("Ipex communication service of agent", () => {
     await ipexCommunicationService.acceptAcdc(id);
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
       expect.objectContaining({
-        connectionId: "connectionId",
+        connectionId: "i",
       })
     );
     expect(credentialStorage.updateCredentialMetadata).toBeCalledWith("id", {
