@@ -17,7 +17,6 @@ const SignTransactionRequest = ({
   activeStatus,
   requestData,
   handleAccept,
-  handleIgnore,
   handleCancel,
 }: RequestProps) => {
   const signTransaction = requestData.signTransaction;
@@ -64,12 +63,7 @@ const SignTransactionRequest = ({
       pageId={pageId}
       customClass="sign-transaction"
       header={
-        <PageHeader
-          title={`${i18n.t("request.signtransaction.title")}`}
-          closeButton={false}
-          closeButtonLabel={`${i18n.t("request.button.ignore")}`}
-          closeButtonAction={handleIgnore}
-        />
+        <PageHeader title={`${i18n.t("request.signtransaction.title")}`} />
       }
     >
       <div className="sign-transaction-header">

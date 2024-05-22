@@ -39,7 +39,6 @@ const MultiSigRequest = ({
   requestData,
   handleAccept,
   handleCancel,
-  handleIgnore,
 }: RequestProps) => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
@@ -90,10 +89,6 @@ const MultiSigRequest = ({
     handleCancel();
   };
 
-  const actionIgnore = () => {
-    handleIgnore && handleIgnore();
-  };
-
   return (
     <>
       {blur && (
@@ -108,14 +103,7 @@ const MultiSigRequest = ({
         pageId={pageId}
         activeStatus={activeStatus}
         customClass={`setup-identifier ${blur ? "blur" : ""}`}
-        header={
-          <PageHeader
-            closeButton={false}
-            closeButtonAction={() => actionIgnore()}
-            closeButtonLabel={`${i18n.t("request.button.ignore")}`}
-            title={`${i18n.t("request.multisig.title")}`}
-          />
-        }
+        header={<PageHeader title={`${i18n.t("request.multisig.title")}`} />}
       >
         <p className="multisig-request-subtitle">
           {i18n.t("request.multisig.subtitle")}
