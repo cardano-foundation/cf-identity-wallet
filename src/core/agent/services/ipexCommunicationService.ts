@@ -3,9 +3,9 @@ import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import {
   AcdcEventTypes,
-  AcdcStateChangedEvent,
-  AgentServicesProps,
-  KeriaNotification,
+  type AcdcStateChangedEvent,
+  type AgentServicesProps,
+  type KeriaNotification,
 } from "../agent.types";
 import {
   CredentialStorage,
@@ -117,6 +117,7 @@ class IpexCommunicationService extends AgentService {
     });
   }
 
+  @OnlineOnly
   async offerAcdcFromApply(notification: KeriaNotification, acdc: any) {
     const msgSaid = notification.a.d as string;
     const msg = await this.signifyClient.exchanges().get(msgSaid);
@@ -137,6 +138,7 @@ class IpexCommunicationService extends AgentService {
     await this.notificationStorage.deleteById(notification.id);
   }
 
+  @OnlineOnly
   async grantAcdcFromAgree(notification: KeriaNotification) {
     const msgSaid = notification.a.d as string;
     const msgAgree = await this.signifyClient.exchanges().get(msgSaid);
@@ -186,6 +188,7 @@ class IpexCommunicationService extends AgentService {
     return acdc;
   }
 
+  @OnlineOnly
   async getMatchingCredsForApply(
     notification: KeriaNotification
   ): Promise<CredentialsMatchingApply> {

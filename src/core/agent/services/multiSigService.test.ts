@@ -1419,7 +1419,6 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Should return true if there is a multisig with the provided multisigId", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockResolvedValueOnce(true);
     const multisigId = "multisig-id";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       id: multisigId,
@@ -1433,7 +1432,6 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Should return false if there is no multisig with the provided multisigId", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockResolvedValueOnce(true);
     const multisigId = "multisig-id";
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -1444,7 +1442,6 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("Should throw if there is an unknown error in hasMultisig", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockResolvedValueOnce(true);
     const multisigId = "multisig-id";
     const error = new Error("other error");
     identifierStorage.getIdentifierMetadata = jest
