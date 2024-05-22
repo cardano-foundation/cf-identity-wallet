@@ -420,7 +420,7 @@ class MultiSigService extends AgentService {
     await this.notificationStorage.deleteById(notificationId);
     const multisigId = res.op.name.split(".")[1];
     let isPending = res.op.done ? false : true; //this will be updated once the operation is done
-    if (exn.e.icp.nt == "1") {
+    if (exn.e.icp.kt === "1") {
       isPending = false;
     }
     await this.identifierStorage.createIdentifierMetadataRecord({
