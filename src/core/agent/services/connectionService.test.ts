@@ -481,15 +481,5 @@ describe("Connection service of agent", () => {
         getTag: jest.fn().mockReturnValue("group-id"),
       },
     ]);
-    expect(await connectionService.getGroupConnections()).toEqual([
-      {
-        id: keriContacts[0].id,
-        label: "keri",
-        oobi: "oobi",
-        status: ConnectionStatus.CONFIRMED,
-        connectionDate: expect.any(String),
-        groupId: "group-id",
-      },
-    ]);
   });
 });

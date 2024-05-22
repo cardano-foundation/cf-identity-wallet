@@ -333,35 +333,19 @@ class MultiSigService extends AgentService {
     const smids = icpMsg[0].exn.a.smids;
     // @TODO - foconnor: These searches should be optimised, revisit.
     const ourIdentifiers = await Agent.agent.identifiers.getIdentifiers();
-    const ourConnections = await Agent.agent.connections.getGroupConnections();
 
-    let ourIdentifier;
-    const otherConnections = [];
-    for (const member of smids) {
-      if (member === senderAid) {
-        continue;
-      }
-
-      if (!ourIdentifier) {
-        const identifier = ourIdentifiers.find(
-          (identifier) => identifier.id === member
-        );
-        if (identifier) {
-          ourIdentifier = identifier;
-          continue;
-        }
-      }
-
-      for (const connection of ourConnections) {
-        if (connection.id === member) {
-          otherConnections.push(connection);
-        }
-      }
-    }
-
-    if (!ourIdentifier) {
+    const ourIdentifier = ourIdentifiers.find((identifier) =>
+      smids.includes(identifier.id)
+    );
+    if (!ourIdentifier || !ourIdentifier.groupMetadata?.groupId) {
       throw new Error(MultiSigService.CANNOT_JOIN_MULTISIG_ICP);
     }
+
+    const otherConnections = (
+      await Agent.agent.connections.getMultisigLinkedContacts(
+        ourIdentifier.groupMetadata.groupId
+      )
+    ).filter((connection) => connection.id !== senderAid);
 
     if (otherConnections.length !== smids.length - 2) {
       // Should be 2 less for us and the sender
