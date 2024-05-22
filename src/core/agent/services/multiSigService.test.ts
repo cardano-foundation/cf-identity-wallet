@@ -1166,24 +1166,6 @@ describe("Multisig sig service of agent", () => {
     jest
       .spyOn(Agent.agent.connections, "getConnectionShortDetailById")
       .mockResolvedValue(senderData);
-    // jest
-    //   .spyOn(Agent.agent.connections, "getGroupConnections")
-    //   .mockResolvedValue([
-    //     {
-    //       id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-    //       connectionDate: nowISO,
-    //       label: "",
-    //       logo: "logoUrl",
-    //       status: ConnectionStatus.PENDING,
-    //     },
-    //     {
-    //       id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
-    //       connectionDate: nowISO,
-    //       label: "",
-    //       logo: "logoUrl",
-    //       status: ConnectionStatus.CONFIRMED,
-    //     },
-    //   ]);
     await expect(
       multiSigService.getMultisigIcpDetails(
         "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW"
