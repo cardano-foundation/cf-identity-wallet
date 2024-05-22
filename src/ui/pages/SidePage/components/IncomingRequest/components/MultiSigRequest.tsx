@@ -110,7 +110,7 @@ const MultiSigRequest = ({
         customClass={`setup-identifier ${blur ? "blur" : ""}`}
         header={
           <PageHeader
-            closeButton={true}
+            closeButton={false}
             closeButtonAction={() => actionIgnore()}
             closeButtonLabel={`${i18n.t("request.button.ignore")}`}
             title={`${i18n.t("request.multisig.title")}`}

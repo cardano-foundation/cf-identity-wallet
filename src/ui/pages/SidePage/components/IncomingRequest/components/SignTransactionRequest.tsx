@@ -66,7 +66,7 @@ const SignTransactionRequest = ({
       header={
         <PageHeader
           title={`${i18n.t("request.signtransaction.title")}`}
-          closeButton
+          closeButton={false}
           closeButtonLabel={`${i18n.t("request.button.ignore")}`}
           closeButtonAction={handleIgnore}
         />
