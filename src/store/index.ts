@@ -20,7 +20,7 @@ const store = configureStore({
     connectionsCache: connectionsCacheSlice.reducer,
     walletConnectionsCache: walletConnectionsCacheSlice.reducer,
     identifierViewTypeCacheCache: identifierViewTypeCacheSlice.reducer,
-    biometryCacheSlice: biometryCacheSlice.reducer,
+    biometryCache: biometryCacheSlice.reducer,
   },
 });
 

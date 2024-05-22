@@ -5,10 +5,25 @@ import { useState } from "react";
 import { Settings } from "./Settings";
 import { store } from "../../../../../store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
-// TODO:#
-// const setPreferenceStorageSpy = jest
-//   .spyOn(PreferencesStorage, "set")
-//   .mockResolvedValue();
+import { MiscRecordId } from "../../../../../core/agent/agent.types";
+
+jest.mock("../../../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      basicStorage: {
+        findById: jest.fn(),
+        save: jest.fn(),
+        update: jest.fn(),
+      },
+    },
+  },
+}));
+
+const createOrUpdateBasicRecordSpy = jest.spyOn(
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require("../../../../../core/agent/records/createOrUpdateBasicRecord"),
+  "createOrUpdateBasicRecord"
+);
 
 jest.mock("../../../../hooks/useBiometricsHook", () => {
   return {
@@ -93,35 +108,37 @@ describe("Settings page", () => {
     act(() => {
       fireEvent.click(getByTestId("security-item-0"));
     });
-    //TODO:#
-    // await waitFor(() => {
-    //   expect(setPreferenceStorageSpy).toBeCalledTimes(1);
-    // });
-    //
-    // await waitFor(() => {
-    //   expect(setPreferenceStorageSpy).toBeCalledWith(
-    //     PreferencesKeys.APP_BIOMETRY,
-    //     {
-    //       enabled: false,
-    //     }
-    //   );
-    // });
+    await waitFor(() => {
+      expect(createOrUpdateBasicRecordSpy).toBeCalledTimes(1);
+    });
+
+    await waitFor(() => {
+      expect(createOrUpdateBasicRecordSpy).toBeCalledWith(
+        expect.objectContaining({
+          id: MiscRecordId.APP_BIOMETRY,
+          content: {
+            enabled: false,
+          },
+        })
+      );
+    });
 
     act(() => {
       fireEvent.click(getByTestId("security-item-0"));
     });
-    // TODO:#
-    // await waitFor(() => {
-    //   expect(setPreferenceStorageSpy).toBeCalledTimes(2);
-    // });
-    //
-    // await waitFor(() => {
-    //   expect(setPreferenceStorageSpy).toBeCalledWith(
-    //     PreferencesKeys.APP_BIOMETRY,
-    //     {
-    //       enabled: true,
-    //     }
-    //   );
-    // });
+    await waitFor(() => {
+      expect(createOrUpdateBasicRecordSpy).toBeCalledTimes(2);
+    });
+
+    await waitFor(() => {
+      expect(createOrUpdateBasicRecordSpy).toBeCalledWith(
+        expect.objectContaining({
+          id: MiscRecordId.APP_BIOMETRY,
+          content: {
+            enabled: true,
+          },
+        })
+      );
+    });
   });
 });

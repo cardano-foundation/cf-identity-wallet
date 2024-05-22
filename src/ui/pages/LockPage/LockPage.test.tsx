@@ -49,6 +49,9 @@ interface StoreMockedProps {
   cryptoAccountsCache: {
     cryptoAccounts: never[];
   };
+  biometryCache: {
+    enabled: boolean;
+  };
 }
 
 const mockStore = configureStore();
@@ -78,6 +81,9 @@ const initialState = {
   },
   cryptoAccountsCache: {
     cryptoAccounts: [],
+  },
+  biometryCache: {
+    enabled: false,
   },
 };
 

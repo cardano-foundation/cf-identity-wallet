@@ -1,15 +1,8 @@
-import {
-  act,
-  fireEvent,
-  getByTestId,
-  render,
-  waitFor,
-} from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Redirect, Route } from "react-router-dom";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { SetOptions } from "@capacitor/preferences";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import { CredentialDetails } from "./CredentialDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
@@ -100,6 +93,9 @@ const initialStateNoPasswordCurrent = {
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
   credsCache: { creds: credsFixAcdc, favourites: [] },
+  biometryCache: {
+    enabled: false,
+  },
 };
 
 const initialStateNoPasswordArchived = {
@@ -120,6 +116,9 @@ const initialStateNoPasswordArchived = {
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
   credsCache: { creds: [] },
+  biometryCache: {
+    enabled: false,
+  },
 };
 
 describe("Cards Details page - current not archived credential", () => {

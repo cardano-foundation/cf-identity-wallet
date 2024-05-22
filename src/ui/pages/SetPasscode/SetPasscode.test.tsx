@@ -23,12 +23,27 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
+import { MiscRecordId } from "../../../core/agent/agent.types";
 
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
-// TODO:#
-// const setPreferenceStorageSpy = jest
-//   .spyOn(PreferencesStorage, "set")
-//   .mockResolvedValue();
+
+jest.mock("../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      basicStorage: {
+        findById: jest.fn(),
+        save: jest.fn(),
+        update: jest.fn(),
+      },
+    },
+  },
+}));
+
+const createOrUpdateBasicRecordSpy = jest.spyOn(
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require("../../../core/agent/records/createOrUpdateBasicRecord"),
+  "createOrUpdateBasicRecord"
+);
 
 jest.mock("../../hooks/useBiometricsHook", () => ({
   useBiometricAuth: jest.fn(() => ({
@@ -228,7 +243,9 @@ describe("SetPasscode Page", () => {
       ).not.toBeInTheDocument()
     );
 
-    expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
+    await waitFor(() =>
+      expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111")
+    );
   });
   test("calls handleOnBack when back button is clicked", async () => {
     require("@ionic/react");
@@ -320,23 +337,26 @@ describe("SetPasscode Page", () => {
       );
     });
 
-    //TODO:#
-    // await waitFor(() => {
-    //   expect(setPreferenceStorageSpy).toBeCalledWith(
-    //     PreferencesKeys.APP_BIOMETRY,
-    //     {
-    //       enabled: true,
-    //     }
-    //   );
-    // });
-    //
-    // expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
-    // expect(setPreferenceStorageSpy).toBeCalledWith(
-    //   PreferencesKeys.APP_ALREADY_INIT,
-    //   {
-    //     initialized: true,
-    //   }
-    // );
+    await waitFor(() => {
+      expect(createOrUpdateBasicRecordSpy).toBeCalledWith(
+        expect.objectContaining({
+          id: MiscRecordId.APP_BIOMETRY,
+          content: {
+            enabled: true,
+          },
+        })
+      );
+    });
+
+    expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
+    expect(createOrUpdateBasicRecordSpy).toBeCalledWith(
+      expect.objectContaining({
+        id: MiscRecordId.APP_ALREADY_INIT,
+        content: {
+          initialized: true,
+        },
+      })
+    );
   });
 
   test("Setup passcode and cancel Android biometrics", async () => {
@@ -433,24 +453,28 @@ describe("SetPasscode Page", () => {
 
     clickButtonRepeatedly(getByText, "1", 6);
 
-    //TODO:#
-    // await waitFor(() => {
-    //   expect(setPreferenceStorageSpy).toBeCalledWith(
-    //     PreferencesKeys.APP_BIOMETRY,
-    //     {
-    //       enabled: true,
-    //     }
-    //   );
-    // });
+    await waitFor(() => {
+      expect(createOrUpdateBasicRecordSpy).toBeCalledWith(
+        expect.objectContaining({
+          id: MiscRecordId.APP_BIOMETRY,
+          content: {
+            enabled: true,
+          },
+        })
+      );
+    });
 
-    expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
-    //TODO:#
-    // expect(setPreferenceStorageSpy).toBeCalledWith(
-    //   PreferencesKeys.APP_ALREADY_INIT,
-    //   {
-    //     initialized: true,
-    //   }
-    // );
+    await waitFor(() =>
+      expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111")
+    );
+    expect(createOrUpdateBasicRecordSpy).toBeCalledWith(
+      expect.objectContaining({
+        id: MiscRecordId.APP_ALREADY_INIT,
+        content: {
+          initialized: true,
+        },
+      })
+    );
   });
 
   test("Setup passcode and cancel iOS biometrics", async () => {

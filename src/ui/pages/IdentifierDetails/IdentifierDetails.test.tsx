@@ -12,6 +12,8 @@ import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { Agent } from "../../../core/agent/agent";
 import { ConfigurationService } from "../../../core/configuration";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
 
@@ -285,16 +287,12 @@ describe("Cards Details page", () => {
   });
 
   test.skip("It changes to favourite icon on click disabled favourite button", async () => {
-    // PreferencesStorage.set = jest
-    //   .fn()
-    //   .mockImplementation(async (data: SetOptions): Promise<void> => {
-    //     expect(data.key).toBe(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES);
-    //     expect(data.value).toBe(filteredIdentifierFix[0]);
-    //   });
-    //
-    // Mock Agent.agent.basicStorage.save
-    // TODO:#
-    Agent.agent.basicStorage.save = jest.fn().mockResolvedValue(true);
+    Agent.agent.basicStorage.save = jest
+      .fn()
+      .mockImplementation(async (data: BasicRecord): Promise<void> => {
+        expect(data.id).toBe(MiscRecordId.APP_IDENTIFIERS_FAVOURITES);
+        expect(data.content).toBe(filteredIdentifierFix[0]);
+      });
 
     const { getByTestId } = render(
       <Provider store={storeMockedAidKeri}>

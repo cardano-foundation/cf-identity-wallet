@@ -6,6 +6,8 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { SetUserName } from "./SetUserName";
 import { ToastMsgType } from "../../globals/types";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { Agent } from "../../../core/agent/agent";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -104,13 +106,11 @@ describe("SetUserName component", () => {
     });
 
     await waitFor(() => {
-      // TODO: fix this test
-      // expect(mockPreferencesStorage.set).toHaveBeenCalledWith(
-      //   PreferencesKeys.APP_USER_NAME,
-      //   {
-      //     userName: "testUser",
-      //   }
-      // );
+      const mockSave = jest.fn();
+      Agent.agent.basicStorage.save = mockSave;
+      expect(mockSave).toHaveBeenCalledWith(MiscRecordId.APP_USER_NAME, {
+        userName: "testUser",
+      });
     });
 
     await waitFor(() => {
