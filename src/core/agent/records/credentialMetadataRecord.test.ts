@@ -10,6 +10,7 @@ const mockData: CredentialMetadataRecordProps = {
   issuanceDate: "2010-01-01T19:23:24Z",
   credentialType: "test",
   status: CredentialMetadataRecordStatus.CONFIRMED,
+  connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
 };
 
 describe("Credential metadata record", () => {
@@ -38,6 +39,7 @@ describe("Credential metadata record", () => {
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "test",
       status: CredentialMetadataRecordStatus.CONFIRMED,
+      connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
     });
     expect(settingsRecord.createdAt.getTime()).toBeGreaterThan(
       createdAt.getTime()
@@ -52,6 +54,7 @@ describe("Credential metadata record", () => {
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "test",
       status: CredentialMetadataRecordStatus.CONFIRMED,
+      connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
     });
     expect(settingsRecord.isArchived).toBe(false);
   });

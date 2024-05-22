@@ -176,7 +176,8 @@ class CredentialService extends AgentService {
 
   private async saveAcdcMetadataRecord(
     credentialId: string,
-    dateTime: string
+    dateTime: string,
+    connectionId: string
   ): Promise<void> {
     const credentialDetails: CredentialMetadataRecordProps = {
       id: `metadata:${credentialId}`,
@@ -184,6 +185,7 @@ class CredentialService extends AgentService {
       credentialType: "",
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
+      connectionId,
     };
     await this.createMetadata(credentialDetails);
   }
@@ -204,7 +206,8 @@ class CredentialService extends AgentService {
       for (const credential of unSyncedData) {
         await this.saveAcdcMetadataRecord(
           credential.sad.d,
-          credential.sad.a.dt
+          credential.sad.a.dt,
+          credential.sad.i
         );
       }
     }

@@ -10,7 +10,7 @@ class CredentialMetadataRecord extends BaseRecord {
   issuanceDate!: string;
   credentialType!: string;
   status!: CredentialMetadataRecordStatus;
-  connectionId?: string;
+  connectionId!: string;
 
   static readonly type = "CredentialMetadataRecord";
   readonly type = CredentialMetadataRecord.type;

@@ -70,7 +70,12 @@ class IpexCommunicationService extends AgentService {
       .exchanges()
       .get(notifRecord.a.d as string);
     const credentialId = exn.exn.e.acdc.d;
-    await this.saveAcdcMetadataRecord(exn.exn.e.acdc.d, exn.exn.e.acdc.a.dt);
+    const connectionId = exn.exn.i;
+    await this.saveAcdcMetadataRecord(
+      exn.exn.e.acdc.d,
+      exn.exn.e.acdc.a.dt,
+      connectionId
+    );
 
     this.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
@@ -266,7 +271,8 @@ class IpexCommunicationService extends AgentService {
 
   private async saveAcdcMetadataRecord(
     credentialId: string,
-    dateTime: string
+    dateTime: string,
+    connectionId: string
   ): Promise<void> {
     const credentialDetails: CredentialMetadataRecordProps = {
       id: `metadata:${credentialId}`,
@@ -274,6 +280,7 @@ class IpexCommunicationService extends AgentService {
       credentialType: "",
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
+      connectionId,
     };
     await this.credentialStorage.saveCredentialMetadataRecord(
       credentialDetails

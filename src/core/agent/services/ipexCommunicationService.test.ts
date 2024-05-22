@@ -201,7 +201,11 @@ describe("Ipex communication service of agent", () => {
       id: "id",
     });
     await ipexCommunicationService.acceptAcdc(id);
-    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalled();
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
+      expect.objectContaining({
+        connectionId: "i",
+      })
+    );
     expect(credentialStorage.updateCredentialMetadata).toBeCalledWith("id", {
       id: "id",
       status: CredentialStatus.CONFIRMED,
@@ -506,6 +510,7 @@ describe("Ipex communication service of agent", () => {
       {
         id: "metadata:d",
         status: "confirmed",
+        connectionId: "connectionId",
       },
     ]);
     credentialListMock.mockResolvedValue([
@@ -518,7 +523,7 @@ describe("Ipex communication service of agent", () => {
     expect(
       await ipexCommunicationService.getMatchingCredsForApply(noti)
     ).toEqual({
-      credentials: [{ acdc: { d: "d" }, connectionId: undefined }],
+      credentials: [{ acdc: { d: "d" }, connectionId: "connectionId" }],
       schema: {
         description: "Qualified vLEI Issuer Credential",
         name: "Qualified vLEI Issuer Credential",
