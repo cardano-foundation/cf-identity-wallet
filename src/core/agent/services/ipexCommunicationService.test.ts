@@ -558,4 +558,26 @@ describe("Ipex communication service of agent", () => {
       ipexCommunicationService.getMatchingCredsForApply(noti)
     ).rejects.toThrowError(IpexCommunicationService.SCHEMA_NOT_FOUND);
   });
+
+  test("Should throw error when KERIA is offline", async () => {
+    await expect(
+      ipexCommunicationService.acceptAcdc("id")
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    const noti = {
+      id: "id",
+      createdAt: new Date(),
+      a: {
+        d: "keri",
+      },
+    };
+    await expect(
+      ipexCommunicationService.offerAcdcFromApply(noti, {})
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      ipexCommunicationService.grantAcdcFromAgree(noti)
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      ipexCommunicationService.getMatchingCredsForApply(noti)
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+  });
 });
