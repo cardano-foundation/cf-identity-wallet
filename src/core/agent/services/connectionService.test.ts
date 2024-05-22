@@ -469,4 +469,27 @@ describe("Connection service of agent", () => {
       Agent.KERIA_CONNECTION_BROKEN
     );
   });
+
+  test("can get all connections that have multi-sig related", async () => {
+    connectionStorage.findAllByQuery = jest.fn().mockResolvedValue([
+      {
+        id: keriContacts[0].id,
+        createdAt: now,
+        alias: "keri",
+        oobi: "oobi",
+        groupId: "group-id",
+        getTag: jest.fn().mockReturnValue("group-id"),
+      },
+    ]);
+    expect(await connectionService.getGroupConnections()).toEqual([
+      {
+        id: keriContacts[0].id,
+        label: "keri",
+        oobi: "oobi",
+        status: ConnectionStatus.CONFIRMED,
+        connectionDate: expect.any(String),
+        groupId: "group-id",
+      },
+    ]);
+  });
 });

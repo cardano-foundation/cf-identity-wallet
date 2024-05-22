@@ -119,6 +119,17 @@ class ConnectionService extends AgentService {
     );
   }
 
+  async getGroupConnections(): Promise<ConnectionShortDetails[]> {
+    const connections = await this.connectionStorage.findAllByQuery({
+      $not: {
+        groupId: undefined,
+      },
+    });
+    return connections.map((connection) =>
+      this.getConnectionShortDetails(connection)
+    );
+  }
+
   async getMultisigLinkedContacts(
     groupId: string
   ): Promise<ConnectionShortDetails[]> {

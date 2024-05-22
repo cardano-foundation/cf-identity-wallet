@@ -81,8 +81,9 @@ const IdentifierStage4 = ({
   };
 
   useEffect(() => {
+    const otherIdentifierContacts = [...state.selectedConnections];
     setOtherIdentifierContacts(
-      state.selectedConnections.sort(function (a, b) {
+      otherIdentifierContacts.sort(function (a, b) {
         const textA = a.label.toUpperCase();
         const textB = b.label.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;

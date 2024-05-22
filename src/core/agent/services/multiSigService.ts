@@ -333,7 +333,7 @@ class MultiSigService extends AgentService {
     const smids = icpMsg[0].exn.a.smids;
     // @TODO - foconnor: These searches should be optimised, revisit.
     const ourIdentifiers = await Agent.agent.identifiers.getIdentifiers();
-    const ourConnections = await Agent.agent.connections.getConnections();
+    const ourConnections = await Agent.agent.connections.getGroupConnections();
 
     let ourIdentifier;
     const otherConnections = [];
