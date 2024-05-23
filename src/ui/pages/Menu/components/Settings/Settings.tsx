@@ -25,10 +25,10 @@ import pJson from "../../../../../../package.json";
 import { OptionProps } from "./Settings.types";
 import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
 import { MiscRecordId } from "../../../../../core/agent/agent.types";
-import { createOrUpdateBasicRecord } from "../../../../../core/agent/records/createOrUpdateBasicRecord";
 import { BasicRecord } from "../../../../../core/agent/records";
 import { useAppDispatch } from "../../../../../store/hooks";
 import { setEnableBiometryCache } from "../../../../../store/reducers/biometryCache";
+import { Agent } from "../../../../../core/agent/agent";
 
 const Settings = () => {
   const { biometricsIsEnabled, setBiometricsIsEnabled } = useBiometricAuth();
@@ -79,7 +79,7 @@ const Settings = () => {
     switch (item.label) {
     case i18n.t("settings.sections.security.biometry"): {
       setBiometricsIsEnabled(!biometricsIsEnabled);
-      await createOrUpdateBasicRecord(
+      await Agent.agent.basicStorage.createOrUpdateBasicRecord(
         new BasicRecord({
           id: MiscRecordId.APP_BIOMETRY,
           content: { enabled: !biometricsIsEnabled },

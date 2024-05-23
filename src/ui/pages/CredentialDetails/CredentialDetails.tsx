@@ -46,7 +46,6 @@ import { combineClassNames } from "../../utils/style";
 import { useAppIonRouter } from "../../hooks";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
-import { createOrUpdateBasicRecord } from "../../../core/agent/records/createOrUpdateBasicRecord";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -161,7 +160,8 @@ const CredentialDetails = () => {
           favourites: favouritesCredsCache.filter((fav) => fav.id !== id),
         },
       });
-      createOrUpdateBasicRecord(favouriteRecord)
+      Agent.agent.basicStorage
+        .createOrUpdateBasicRecord(favouriteRecord)
         .then(() => {
           dispatch(removeFavouritesCredsCache(id));
         })
@@ -174,14 +174,15 @@ const CredentialDetails = () => {
         return;
       }
 
-      createOrUpdateBasicRecord(
-        new BasicRecord({
-          id: MiscRecordId.APP_CREDS_FAVOURITES,
-          content: {
-            favourites: [{ id, time: Date.now() }, ...favouritesCredsCache],
-          },
-        })
-      )
+      Agent.agent.basicStorage
+        .createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.APP_CREDS_FAVOURITES,
+            content: {
+              favourites: [{ id, time: Date.now() }, ...favouritesCredsCache],
+            },
+          })
+        )
         .then(() => {
           dispatch(addFavouritesCredsCache({ id, time: Date.now() }));
         })

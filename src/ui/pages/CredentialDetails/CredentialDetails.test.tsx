@@ -33,6 +33,7 @@ jest.mock("../../../core/agent/agent", () => ({
       basicStorage: {
         findById: jest.fn(),
         save: jest.fn(),
+        createOrUpdateBasicRecord: jest.fn().mockResolvedValue(undefined),
       },
     },
   },

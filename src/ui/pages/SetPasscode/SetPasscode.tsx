@@ -25,7 +25,6 @@ import { useBiometricAuth } from "../../hooks/useBiometricsHook";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
-import { createOrUpdateBasicRecord } from "../../../core/agent/records/createOrUpdateBasicRecord";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
 
 const SetPasscode = () => {
@@ -76,7 +75,7 @@ const SetPasscode = () => {
   const processBiometrics = async () => {
     const isBiometricAuthenticated = await handleBiometricAuth();
     if (isBiometricAuthenticated === true) {
-      await createOrUpdateBasicRecord(
+      await Agent.agent.basicStorage.createOrUpdateBasicRecord(
         new BasicRecord({
           id: MiscRecordId.APP_BIOMETRY,
           content: { enabled: true },
@@ -110,7 +109,7 @@ const SetPasscode = () => {
     ionRouter.push(nextPath.pathname, "forward", "push");
     handleClearState();
 
-    await createOrUpdateBasicRecord(
+    await Agent.agent.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({
         id: MiscRecordId.APP_ALREADY_INIT,
         content: { initialized: true },

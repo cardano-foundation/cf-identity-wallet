@@ -253,8 +253,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const appUserNameRecord = await Agent.agent.basicStorage.findById(
       MiscRecordId.APP_USER_NAME
     );
-    if (appUserNameRecord)
+    if (appUserNameRecord) {
       userName = appUserNameRecord.content as { userName: string };
+    }
 
     dispatch(
       setAuthentication({

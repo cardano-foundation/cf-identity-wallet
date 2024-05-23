@@ -11,13 +11,13 @@ import "./SwitchCardView.scss";
 import { CardListViewType, SwitchCardViewProps } from "./SwitchCardView.types";
 import { TabsRoutePath } from "../../../routes/paths";
 import { MiscRecordId } from "../../../core/agent/agent.types";
-import { createOrUpdateBasicRecord } from "../../../core/agent/records/createOrUpdateBasicRecord";
 import { BasicRecord } from "../../../core/agent/records";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getIdentifierViewTypeCacheCache,
   setViewTypeCache,
 } from "../../../store/reducers/identifierViewTypeCache";
+import { Agent } from "../../../core/agent/agent";
 
 const SwitchCardView = ({
   title,
@@ -55,14 +55,16 @@ const SwitchCardView = ({
 
   const setViewType = (viewType: CardListViewType) => {
     setType(viewType);
-    createOrUpdateBasicRecord(
-      new BasicRecord({
-        id: MiscRecordId.APP_IDENTIFIER_VIEW_TYPE,
-        content: { viewType },
-      })
-    ).then(() => {
-      dispatch(setViewTypeCache(viewType));
-    });
+    Agent.agent.basicStorage
+      .createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.APP_IDENTIFIER_VIEW_TYPE,
+          content: { viewType },
+        })
+      )
+      .then(() => {
+        dispatch(setViewTypeCache(viewType));
+      });
   };
 
   const classes = combineClassNames("card-switch-view", className);

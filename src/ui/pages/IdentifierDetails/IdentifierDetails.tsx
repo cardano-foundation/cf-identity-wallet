@@ -50,7 +50,6 @@ import { IdentifierDetails as IdentifierDetailsCore } from "../../../core/agent/
 import { useAppIonRouter } from "../../hooks";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
-import { createOrUpdateBasicRecord } from "../../../core/agent/records/createOrUpdateBasicRecord";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -150,16 +149,17 @@ const IdentifierDetails = () => {
 
   const handleSetFavourite = (id: string) => {
     if (isFavourite) {
-      createOrUpdateBasicRecord(
-        new BasicRecord({
-          id: MiscRecordId.APP_IDENTIFIERS_FAVOURITES,
-          content: {
-            favourites: favouritesIdentifiersData.filter(
-              (fav) => fav.id !== id
-            ),
-          },
-        })
-      )
+      Agent.agent.basicStorage
+        .createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.APP_IDENTIFIERS_FAVOURITES,
+            content: {
+              favourites: favouritesIdentifiersData.filter(
+                (fav) => fav.id !== id
+              ),
+            },
+          })
+        )
         .then(() => {
           dispatch(removeFavouriteIdentifierCache(id));
         })
@@ -171,17 +171,18 @@ const IdentifierDetails = () => {
         dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
         return;
       }
-      createOrUpdateBasicRecord(
-        new BasicRecord({
-          id: MiscRecordId.APP_IDENTIFIERS_FAVOURITES,
-          content: {
-            favourites: [
-              { id, time: Date.now() },
-              ...favouritesIdentifiersData,
-            ],
-          },
-        })
-      )
+      Agent.agent.basicStorage
+        .createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.APP_IDENTIFIERS_FAVOURITES,
+            content: {
+              favourites: [
+                { id, time: Date.now() },
+                ...favouritesIdentifiersData,
+              ],
+            },
+          })
+        )
         .then(() => {
           dispatch(addFavouriteIdentifierCache({ id, time: Date.now() }));
         })

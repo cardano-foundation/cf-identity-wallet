@@ -3,7 +3,6 @@ import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { waitForIonicReact } from "@ionic/react-test-utils";
-import { SetOptions } from "@capacitor/preferences";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { IdentifierDetails } from "./IdentifierDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
@@ -37,6 +36,7 @@ jest.mock("../../../core/agent/agent", () => ({
       basicStorage: {
         findById: jest.fn(),
         save: jest.fn(),
+        createOrUpdateBasicRecord: jest.fn().mockResolvedValue(undefined),
       },
     },
   },

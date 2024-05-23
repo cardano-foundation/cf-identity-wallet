@@ -7,6 +7,9 @@ import {
 import { BasicRecord } from "./basicRecord";
 
 class BasicStorage implements StorageApi {
+  static readonly RECORD_DOES_NOT_EXIST_ERROR_MSG =
+    "Record does not exist with id";
+
   private storageService: StorageService<BasicRecord>;
 
   constructor(storageService: StorageService<BasicRecord>) {
@@ -38,6 +41,21 @@ class BasicStorage implements StorageApi {
   }
   getAll(): Promise<BasicRecord[]> {
     return this.storageService.getAll(BasicRecord);
+  }
+  async createOrUpdateBasicRecord(record: BasicRecord): Promise<void> {
+    try {
+      await this.update(record);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message ===
+          `${BasicStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`
+      ) {
+        await this.save(record);
+      } else {
+        throw error;
+      }
+    }
   }
 }
 

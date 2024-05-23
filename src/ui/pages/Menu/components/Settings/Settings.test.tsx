@@ -6,6 +6,7 @@ import { Settings } from "./Settings";
 import { store } from "../../../../../store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { MiscRecordId } from "../../../../../core/agent/agent.types";
+import { Agent } from "../../../../../core/agent/agent";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -14,16 +15,11 @@ jest.mock("../../../../../core/agent/agent", () => ({
         findById: jest.fn(),
         save: jest.fn(),
         update: jest.fn(),
+        createOrUpdateBasicRecord: jest.fn(),
       },
     },
   },
 }));
-
-const createOrUpdateBasicRecordSpy = jest.spyOn(
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require("../../../../../core/agent/records/createOrUpdateBasicRecord"),
-  "createOrUpdateBasicRecord"
-);
 
 jest.mock("../../../../hooks/useBiometricsHook", () => {
   return {
@@ -109,11 +105,13 @@ describe("Settings page", () => {
       fireEvent.click(getByTestId("security-item-0"));
     });
     await waitFor(() => {
-      expect(createOrUpdateBasicRecordSpy).toBeCalledTimes(1);
+      expect(
+        Agent.agent.basicStorage.createOrUpdateBasicRecord
+      ).toBeCalledTimes(1);
     });
 
     await waitFor(() => {
-      expect(createOrUpdateBasicRecordSpy).toBeCalledWith(
+      expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
         expect.objectContaining({
           id: MiscRecordId.APP_BIOMETRY,
           content: {
@@ -127,11 +125,13 @@ describe("Settings page", () => {
       fireEvent.click(getByTestId("security-item-0"));
     });
     await waitFor(() => {
-      expect(createOrUpdateBasicRecordSpy).toBeCalledTimes(2);
+      expect(
+        Agent.agent.basicStorage.createOrUpdateBasicRecord
+      ).toBeCalledTimes(2);
     });
 
     await waitFor(() => {
-      expect(createOrUpdateBasicRecordSpy).toBeCalledWith(
+      expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
         expect.objectContaining({
           id: MiscRecordId.APP_BIOMETRY,
           content: {

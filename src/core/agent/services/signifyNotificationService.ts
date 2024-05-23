@@ -9,7 +9,6 @@ import {
 import { Notification } from "./credentialService.types";
 import { BasicRecord, NotificationStorage } from "../records";
 import { Agent } from "../agent";
-import { createOrUpdateBasicRecord } from "../records/createOrUpdateBasicRecord";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -36,12 +35,10 @@ class SignifyNotificationService extends AgentService {
       MiscRecordId.APP_KERIA_NOTIFICATION_MARKER
     );
     if (!notificationQueryRecord) {
-      await createOrUpdateBasicRecord(
-        new BasicRecord({
-          id: MiscRecordId.APP_KERIA_NOTIFICATION_MARKER,
-          content: notificationQuery,
-        })
-      );
+      await Agent.agent.basicStorage.save({
+        id: MiscRecordId.APP_KERIA_NOTIFICATION_MARKER,
+        content: notificationQuery,
+      });
     } else
       notificationQuery =
         notificationQueryRecord.content as unknown as KeriaNotificationMarker;
@@ -84,7 +81,7 @@ class SignifyNotificationService extends AgentService {
           nextIndex: 0,
           lastNotificationId: "",
         };
-        await createOrUpdateBasicRecord(
+        await Agent.agent.basicStorage.createOrUpdateBasicRecord(
           new BasicRecord({
             id: MiscRecordId.APP_KERIA_NOTIFICATION_MARKER,
             content: notificationQuery,
@@ -107,7 +104,7 @@ class SignifyNotificationService extends AgentService {
           lastNotificationId:
             notifications.notes[notifications.notes.length - 1].i,
         };
-        await createOrUpdateBasicRecord(
+        await Agent.agent.basicStorage.createOrUpdateBasicRecord(
           new BasicRecord({
             id: MiscRecordId.APP_KERIA_NOTIFICATION_MARKER,
             content: notificationQuery,

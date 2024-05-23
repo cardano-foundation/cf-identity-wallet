@@ -24,6 +24,7 @@ import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { MiscRecordId } from "../../../core/agent/agent.types";
+import { Agent } from "../../../core/agent/agent";
 
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 
@@ -34,16 +35,11 @@ jest.mock("../../../core/agent/agent", () => ({
         findById: jest.fn(),
         save: jest.fn(),
         update: jest.fn(),
+        createOrUpdateBasicRecord: jest.fn(),
       },
     },
   },
 }));
-
-const createOrUpdateBasicRecordSpy = jest.spyOn(
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require("../../../core/agent/records/createOrUpdateBasicRecord"),
-  "createOrUpdateBasicRecord"
-);
 
 jest.mock("../../hooks/useBiometricsHook", () => ({
   useBiometricAuth: jest.fn(() => ({
@@ -338,7 +334,7 @@ describe("SetPasscode Page", () => {
     });
 
     await waitFor(() => {
-      expect(createOrUpdateBasicRecordSpy).toBeCalledWith(
+      expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
         expect.objectContaining({
           id: MiscRecordId.APP_BIOMETRY,
           content: {
@@ -349,7 +345,7 @@ describe("SetPasscode Page", () => {
     });
 
     expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
-    expect(createOrUpdateBasicRecordSpy).toBeCalledWith(
+    expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
       expect.objectContaining({
         id: MiscRecordId.APP_ALREADY_INIT,
         content: {
@@ -454,7 +450,7 @@ describe("SetPasscode Page", () => {
     clickButtonRepeatedly(getByText, "1", 6);
 
     await waitFor(() => {
-      expect(createOrUpdateBasicRecordSpy).toBeCalledWith(
+      expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
         expect.objectContaining({
           id: MiscRecordId.APP_BIOMETRY,
           content: {
@@ -467,7 +463,7 @@ describe("SetPasscode Page", () => {
     await waitFor(() =>
       expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111")
     );
-    expect(createOrUpdateBasicRecordSpy).toBeCalledWith(
+    expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
       expect.objectContaining({
         id: MiscRecordId.APP_ALREADY_INIT,
         content: {

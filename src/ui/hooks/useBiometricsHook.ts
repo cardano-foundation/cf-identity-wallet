@@ -16,15 +16,14 @@ import { getBiometryCacheCache } from "../../store/reducers/biometryCache";
 
 const useBiometricAuth = () => {
   const [biometricInfo, setBiometricInfo] = useState<CheckBiometryResult>();
-  const [biometricsIsEnabled, setBiometricsIsEnabled] = useState<
-    boolean | undefined
-  >(undefined);
-  const { setPauseTimestamp } = useActivityTimer();
   const biometryCacheCache = useSelector(getBiometryCacheCache);
+  const [biometricsIsEnabled, setBiometricsIsEnabled] = useState<boolean>(
+    biometryCacheCache.enabled
+  );
+  const { setPauseTimestamp } = useActivityTimer();
 
   useEffect(() => {
     checkBiometry();
-    checkBiometryInCache();
   }, []);
 
   let appListener: PluginListenerHandle;
@@ -45,9 +44,6 @@ const useBiometricAuth = () => {
     };
   }, []);
 
-  const checkBiometryInCache = async () => {
-    setBiometricsIsEnabled(biometryCacheCache.enabled as boolean);
-  };
   const checkBiometry = async () => {
     const biometricResult = await BiometricAuth.checkBiometry();
     setBiometricInfo(biometricResult);
