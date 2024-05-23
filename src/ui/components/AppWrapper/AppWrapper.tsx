@@ -238,13 +238,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
       );
     }
     const viewType = await Agent.agent.basicStorage.findById(
-      MiscRecordId.IDENTIFIER_VIEW_TYPE
+      MiscRecordId.APP_IDENTIFIER_VIEW_TYPE
     );
     if (viewType) {
       dispatch(setViewTypeCache(viewType.content.viewType as CardListViewType));
     }
     const appBiometry = await Agent.agent.basicStorage.findById(
-      MiscRecordId.BIOMETRY
+      MiscRecordId.APP_BIOMETRY
     );
     if (appBiometry) {
       dispatch(setEnableBiometryCache(appBiometry.content.enabled as boolean));
@@ -289,7 +289,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
     const appAlreadyInit = await Agent.agent.basicStorage.findById(
-      MiscRecordId.ALREADY_INIT
+      MiscRecordId.APP_ALREADY_INIT
     );
     if (!appAlreadyInit) {
       await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);

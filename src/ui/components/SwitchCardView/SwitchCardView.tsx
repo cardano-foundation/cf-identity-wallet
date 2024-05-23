@@ -58,7 +58,7 @@ const SwitchCardView = ({
     Agent.agent.basicStorage
       .createOrUpdateBasicRecord(
         new BasicRecord({
-          id: MiscRecordId.IDENTIFIER_VIEW_TYPE,
+          id: MiscRecordId.APP_IDENTIFIER_VIEW_TYPE,
           content: { viewType },
         })
       )

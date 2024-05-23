@@ -336,7 +336,7 @@ describe("SetPasscode Page", () => {
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
         expect.objectContaining({
-          id: MiscRecordId.BIOMETRY,
+          id: MiscRecordId.APP_BIOMETRY,
           content: {
             enabled: true,
           },
@@ -347,7 +347,7 @@ describe("SetPasscode Page", () => {
     expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
     expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
       expect.objectContaining({
-        id: MiscRecordId.ALREADY_INIT,
+        id: MiscRecordId.APP_ALREADY_INIT,
         content: {
           initialized: true,
         },
@@ -452,7 +452,7 @@ describe("SetPasscode Page", () => {
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
         expect.objectContaining({
-          id: MiscRecordId.BIOMETRY,
+          id: MiscRecordId.APP_BIOMETRY,
           content: {
             enabled: true,
           },
@@ -465,7 +465,7 @@ describe("SetPasscode Page", () => {
     );
     expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
       expect.objectContaining({
-        id: MiscRecordId.ALREADY_INIT,
+        id: MiscRecordId.APP_ALREADY_INIT,
         content: {
           initialized: true,
         },

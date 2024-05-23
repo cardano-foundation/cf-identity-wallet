@@ -20,15 +20,15 @@ interface ConnectionHistoryItem {
 
 enum MiscRecordId {
   OP_PASS_HINT = "op-password-hint",
-  ALREADY_INIT = "already-init",
-  STATE_FLAGS = "state-flags",
-  LANGUAGE = "language",
+  APP_ALREADY_INIT = "app-already-init",
+  APP_STATE_FLAGS = "app-state-flags",
+  APP_LANGUAGE = "app-language",
   IDENTIFIERS_FAVOURITES = "identifiers-favourites",
   CREDS_FAVOURITES = "creds-favourites",
   USER_NAME = "user-name",
-  BIOMETRY = "biometry",
+  APP_BIOMETRY = "app-biometry",
   KERIA_NOTIFICATION_MARKER = "keria-notification-marker",
-  IDENTIFIER_VIEW_TYPE = "identifier-view-type",
+  APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
 }
 
 interface ConnectionShortDetails {
