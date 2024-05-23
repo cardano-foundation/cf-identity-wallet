@@ -5,11 +5,7 @@ import "./GenerateSeedPhrase.scss";
 import { generateMnemonic } from "bip39";
 import { Trans } from "react-i18next";
 import { i18n } from "../../../i18n";
-import {
-  MNEMONIC_FIFTEEN_WORDS,
-  FIFTEEN_WORDS_BIT_LENGTH,
-  TWENTYFOUR_WORDS_BIT_LENGTH,
-} from "../../globals/constants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { Alert as AlertConfirm } from "../../components/Alert";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -21,7 +17,6 @@ import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../components/PageHeader";
 import { PageFooter } from "../../components/PageFooter";
-import { MnemonicLengthSegment } from "../../components/MnemonicLengthSegment";
 import { SeedPhraseModule } from "../../components/SeedPhraseModule";
 import { TermsModal } from "../../components/TermsModal";
 import { useAppIonRouter } from "../../hooks";
@@ -35,7 +30,6 @@ const GenerateSeedPhrase = () => {
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
-  const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
   const [hideSeedPhrase, setHideSeedPhrase] = useState(true);
   const [alertConfirmIsOpen, setAlertConfirmIsOpen] = useState(false);
   const [termsModalIsOpen, setTermsModalIsOpen] = useState(false);
@@ -44,25 +38,15 @@ const GenerateSeedPhrase = () => {
 
   const initializeSeedPhrase = () => {
     setHideSeedPhrase(true);
-    const isFifteenWordsSelected =
-      seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
     let seed160;
-    let seed256;
-    if (
-      seedPhraseStore.seedPhrase160.length > 0 &&
-      seedPhraseStore.seedPhrase256.length > 0
-    ) {
+    if (seedPhraseStore.seedPhrase160.length > 0) {
       seed160 = seedPhraseStore.seedPhrase160.split(" ");
       setSeedPhrase160(seed160);
-      seed256 = seedPhraseStore.seedPhrase256.split(" ");
-      setSeedPhrase256(seed256);
     } else {
       seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
       setSeedPhrase160(seed160);
-      seed256 = generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" ");
-      setSeedPhrase256(seed256);
     }
-    setSeedPhrase(isFifteenWordsSelected ? seed160 : seed256);
+    setSeedPhrase(seed160);
   };
 
   useEffect(() => {
@@ -73,20 +57,10 @@ const GenerateSeedPhrase = () => {
 
   const handleClearState = () => {
     setSeedPhrase160([]);
-    setSeedPhrase256([]);
     initializeSeedPhrase();
     setHideSeedPhrase(false);
     setAlertConfirmIsOpen(false);
     setChecked(false);
-  };
-
-  const toggleSeedPhrase = (length: number) => {
-    if (length === FIFTEEN_WORDS_BIT_LENGTH) {
-      setSeedPhrase(seedPhrase160);
-    } else {
-      setSeedPhrase(seedPhrase256);
-    }
-    setHideSeedPhrase(true);
   };
 
   const HandleTerms = () => {
@@ -117,11 +91,7 @@ const GenerateSeedPhrase = () => {
       store: { stateCache },
       state: {
         seedPhrase160: seedPhrase160.join(" "),
-        seedPhrase256: seedPhrase256.join(" "),
-        selected:
-          seedPhrase.length === MNEMONIC_FIFTEEN_WORDS
-            ? FIFTEEN_WORDS_BIT_LENGTH
-            : TWENTYFOUR_WORDS_BIT_LENGTH,
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
     };
     const { nextPath, updateRedux } = getNextRoute(
@@ -153,10 +123,6 @@ const GenerateSeedPhrase = () => {
       <p data-testid={`${pageId}-paragraph-top`}>
         {i18n.t("generateseedphrase.onboarding.paragraph.top")}
       </p>
-      <MnemonicLengthSegment
-        seedPhrase={seedPhrase}
-        toggleSeedPhrase={toggleSeedPhrase}
-      />
       <SeedPhraseModule
         testId="seed-phrase-container"
         seedPhrase={seedPhrase}
@@ -176,7 +142,7 @@ const GenerateSeedPhrase = () => {
         <p>
           <Trans
             i18nKey={i18n.t("generateseedphrase.termsandconditions.text")}
-            components={[<HandleTerms key="" />, <HandlePrivacy key="" />]}
+            components={[<HandleTerms key="" />]}
           />
         </p>
       </div>

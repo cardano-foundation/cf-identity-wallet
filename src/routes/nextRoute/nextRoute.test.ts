@@ -42,7 +42,6 @@ describe("NextRoute", () => {
       },
       seedPhraseCache: {
         seedPhrase160: "",
-        seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       identifiersCache: {
@@ -162,7 +161,6 @@ describe("getNextRoute", () => {
     },
     seedPhraseCache: {
       seedPhrase160: "",
-      seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
     identifiersCache: {
@@ -217,7 +215,6 @@ describe("getNextRoute", () => {
   test("getNextSetPasscodeRoute should return the correct next path when seed phrase is set", () => {
     storeMock.seedPhraseCache = {
       seedPhrase160: "example seed phrase 160",
-      seedPhrase256: "example seed phrase 256",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     };
 
@@ -229,7 +226,6 @@ describe("getNextRoute", () => {
 
   test("getNextSetPasscodeRoute should return the correct next path when seed phrase is not set", () => {
     storeMock.seedPhraseCache.seedPhrase160 = "";
-    storeMock.seedPhraseCache.seedPhrase256 = "";
 
     const result = getNextSetPasscodeRoute(storeMock);
     expect(result).toEqual({

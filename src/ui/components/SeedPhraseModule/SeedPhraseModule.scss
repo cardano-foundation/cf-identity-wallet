@@ -40,12 +40,12 @@
   .seed-phrase-container {
     padding: 0.5rem;
     display: grid;
-    grid-template-columns: 33.3% 33.3% 33.3%;
+    grid-template-columns: 50% 50%;
 
     ion-chip {
       border-radius: 0.5rem;
       font-weight: 400;
-      width: 92%;
+      width: 95%;
       margin: 0.3rem auto;
       padding-inline: 0.625rem;
       font-size: 1rem;
@@ -65,7 +65,8 @@
 
       ion-chip {
         padding-inline: 0.6rem;
-        min-height: 1.75rem;
+        min-height: 1.25rem;
+        margin: 0.2rem auto;
 
         span {
           font-size: 0.8rem;
@@ -92,8 +93,9 @@
     .overlay {
       display: flex;
       flex-direction: column;
-      justify-content: space-evenly;
       position: absolute;
+      gap: 1rem;
+      justify-content: center;
       top: 0;
       z-index: 2;
       height: 100%;

@@ -21,7 +21,6 @@ describe("getBackRoute", () => {
     storeMock = {
       seedPhraseCache: {
         seedPhrase160: "",
-        seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       stateCache: {
@@ -143,7 +142,6 @@ describe("getPreviousRoute", () => {
     storeMock = {
       seedPhraseCache: {
         seedPhrase160: "",
-        seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       stateCache: {

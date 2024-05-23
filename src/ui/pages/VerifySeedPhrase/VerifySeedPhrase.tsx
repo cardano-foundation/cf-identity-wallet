@@ -10,7 +10,6 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { getStateCache } from "../../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { getBackRoute } from "../../../routes/backRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { Addresses } from "../../../core/cardano";
@@ -26,10 +25,7 @@ const VerifySeedPhrase = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
-  const originalSeedPhrase =
-    seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
-      ? seedPhraseStore.seedPhrase160.split(" ")
-      : seedPhraseStore.seedPhrase256.split(" ");
+  const originalSeedPhrase = seedPhraseStore.seedPhrase160.split(" ");
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
   const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -136,6 +132,10 @@ const VerifySeedPhrase = () => {
     });
   };
 
+  const closeFailAlert = () => {
+    setAlertIsOpen(false);
+  };
+
   return (
     <ResponsivePageLayout
       pageId={pageId}
@@ -189,10 +189,7 @@ const VerifySeedPhrase = () => {
         confirmButtonText={`${i18n.t(
           "verifyseedphrase.alert.fail.button.confirm"
         )}`}
-        cancelButtonText={`${i18n.t(
-          "verifyseedphrase.alert.fail.button.cancel"
-        )}`}
-        actionConfirm={handleBack}
+        actionConfirm={closeFailAlert}
       />
     </ResponsivePageLayout>
   );
