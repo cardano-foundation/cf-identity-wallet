@@ -78,6 +78,10 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       getKeriaOnlineStatus: jest.fn(),
       onKeriaStatusStateChanged: jest.fn(),
+      basicStorage: {
+        findById: jest.fn(),
+        save: jest.fn(),
+      },
     },
   },
 }));

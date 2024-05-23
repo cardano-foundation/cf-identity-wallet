@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   BiometricAuth,
   BiometryError,
@@ -10,19 +10,16 @@ import {
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import i18n from "i18next";
 import { PluginListenerHandle } from "@capacitor/core";
+import { useSelector } from "react-redux";
 import { useActivityTimer } from "../components/AppWrapper/hooks/useActivityTimer";
-import { PreferencesKeys, PreferencesStorage } from "../../core/storage";
+import { getBiometryCacheCache } from "../../store/reducers/biometryCache";
 
 const useBiometricAuth = () => {
   const [biometricInfo, setBiometricInfo] = useState<CheckBiometryResult>();
-  const [biometricsIsEnabled, setBiometricsIsEnabled] = useState<
-    boolean | undefined
-  >(undefined);
   const { setPauseTimestamp } = useActivityTimer();
 
   useEffect(() => {
     checkBiometry();
-    checkBiometryInPreferences();
   }, []);
 
   let appListener: PluginListenerHandle;
@@ -43,24 +40,6 @@ const useBiometricAuth = () => {
     };
   }, []);
 
-  const checkBiometryInPreferences = async () => {
-    try {
-      const biometrics = await PreferencesStorage.get(
-        PreferencesKeys.APP_BIOMETRY
-      );
-      setBiometricsIsEnabled(biometrics.enabled as boolean);
-    } catch (e) {
-      if (
-        e instanceof Error &&
-        e.message ===
-          `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_BIOMETRY}`
-      ) {
-        return;
-      } else {
-        throw e;
-      }
-    }
-  };
   const checkBiometry = async () => {
     const biometricResult = await BiometricAuth.checkBiometry();
     setBiometricInfo(biometricResult);
@@ -102,10 +81,8 @@ const useBiometricAuth = () => {
   };
 
   return {
-    biometricsIsEnabled,
     biometricInfo,
     handleBiometricAuth,
-    setBiometricsIsEnabled,
   };
 };
 

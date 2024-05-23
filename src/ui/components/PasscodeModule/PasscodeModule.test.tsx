@@ -26,6 +26,9 @@ const initialState = {
   cryptoAccountsCache: {
     cryptoAccounts: [],
   },
+  biometryCache: {
+    enabled: false,
+  },
 };
 
 const mockStore = configureStore();

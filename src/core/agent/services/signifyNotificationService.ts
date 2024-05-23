@@ -3,11 +3,11 @@ import {
   AgentServicesProps,
   KeriaNotification,
   KeriaNotificationMarker,
+  MiscRecordId,
   NotificationRoute,
 } from "../agent.types";
 import { Notification } from "./credentialService.types";
-import { PreferencesKeys, PreferencesStorage } from "../../storage";
-import { NotificationStorage } from "../records";
+import { BasicRecord, NotificationStorage } from "../records";
 import { Agent } from "../agent";
 
 class SignifyNotificationService extends AgentService {
@@ -31,27 +31,17 @@ class SignifyNotificationService extends AgentService {
       nextIndex: 0,
       lastNotificationId: "",
     };
-    try {
-      notificationQuery = (await PreferencesStorage.get(
-        PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER
-      )) as unknown as KeriaNotificationMarker;
-    } catch (error) {
-      if (
-        (error as Error).message ==
-        `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER}`
-      ) {
-        // Set the preference key
-        await PreferencesStorage.set(
-          PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER,
-          {
-            nextIndex: 0,
-            lastNotificationId: "",
-          }
-        );
-      } else {
-        throw error;
-      }
-    }
+    const notificationQueryRecord = await Agent.agent.basicStorage.findById(
+      MiscRecordId.KERIA_NOTIFICATION_MARKER
+    );
+    if (!notificationQueryRecord) {
+      await Agent.agent.basicStorage.save({
+        id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
+        content: notificationQuery,
+      });
+    } else
+      notificationQuery =
+        notificationQueryRecord.content as unknown as KeriaNotificationMarker;
     // eslint-disable-next-line no-constant-condition
     while (true) {
       if (!Agent.agent.getKeriaOnlineStatus()) {
@@ -91,9 +81,11 @@ class SignifyNotificationService extends AgentService {
           nextIndex: 0,
           lastNotificationId: "",
         };
-        await PreferencesStorage.set(
-          PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER,
-          notificationQuery
+        await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
+            content: notificationQuery,
+          })
         );
         continue;
       }
@@ -112,9 +104,11 @@ class SignifyNotificationService extends AgentService {
           lastNotificationId:
             notifications.notes[notifications.notes.length - 1].i,
         };
-        await PreferencesStorage.set(
-          PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER,
-          notificationQuery
+        await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
+            content: notificationQuery,
+          })
         );
       } else {
         await new Promise((rs) =>

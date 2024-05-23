@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
-import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { CardType } from "../../globals/types";
 import { combineClassNames } from "../../utils/style";
 import { CardsStack } from "../CardsStack";
@@ -10,7 +9,15 @@ import { ListHeader } from "../ListHeader";
 import { CardList } from "./CardList";
 import "./SwitchCardView.scss";
 import { CardListViewType, SwitchCardViewProps } from "./SwitchCardView.types";
-import { TabsRoutePath } from "../navigation/TabsMenu";
+import { TabsRoutePath } from "../../../routes/paths";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getIdentifierViewTypeCacheCache,
+  setViewTypeCache,
+} from "../../../store/reducers/identifierViewTypeCache";
+import { Agent } from "../../../core/agent/agent";
 
 const SwitchCardView = ({
   title,
@@ -22,28 +29,16 @@ const SwitchCardView = ({
   onShowCardDetails,
 }: SwitchCardViewProps) => {
   const history = useHistory();
+  const dispatch = useAppDispatch();
   const [type, setType] = useState<CardListViewType>(CardListViewType.Stack);
-
+  const viewTypeCache = useAppSelector(getIdentifierViewTypeCacheCache);
   useEffect(() => {
-    const getDefaultViewType = async () => {
-      try {
-        const storageViewType = await PreferencesStorage.get(
-          PreferencesKeys.APP_IDENTIFIER_VIEW_TYPE
-        );
-
-        if (!storageViewType) {
-          setType(CardListViewType.Stack);
-          return;
-        }
-
-        setType(Number(storageViewType.viewType) as CardListViewType);
-      } catch (e) {
-        // TODO: handle error
-      }
-    };
-
-    getDefaultViewType();
-  }, []);
+    if (!viewTypeCache) {
+      setType(CardListViewType.Stack);
+      return;
+    }
+    setViewType(viewTypeCache.viewType as CardListViewType);
+  }, [viewTypeCache]);
 
   const handleOpenDetail = (
     data: IdentifierShortDetails | CredentialShortDetails
@@ -60,9 +55,16 @@ const SwitchCardView = ({
 
   const setViewType = (viewType: CardListViewType) => {
     setType(viewType);
-    PreferencesStorage.set(PreferencesKeys.APP_IDENTIFIER_VIEW_TYPE, {
-      viewType,
-    });
+    Agent.agent.basicStorage
+      .createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.APP_IDENTIFIER_VIEW_TYPE,
+          content: { viewType },
+        })
+      )
+      .then(() => {
+        dispatch(setViewTypeCache(viewType));
+      });
   };
 
   const classes = combineClassNames("card-switch-view", className);

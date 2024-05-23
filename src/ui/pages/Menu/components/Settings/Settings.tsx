@@ -20,18 +20,22 @@ import {
   fingerPrintOutline,
 } from "ionicons/icons";
 import "./Settings.scss";
+import { useSelector } from "react-redux";
 import { i18n } from "../../../../../i18n";
 import pJson from "../../../../../../package.json";
 import { OptionProps } from "./Settings.types";
+import { MiscRecordId } from "../../../../../core/agent/agent.types";
+import { BasicRecord } from "../../../../../core/agent/records";
+import { useAppDispatch } from "../../../../../store/hooks";
 import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../../../core/storage";
-import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
+  getBiometryCacheCache,
+  setEnableBiometryCache,
+} from "../../../../../store/reducers/biometryCache";
+import { Agent } from "../../../../../core/agent/agent";
 
 const Settings = () => {
-  const { biometricsIsEnabled, setBiometricsIsEnabled } = useBiometricAuth();
-
+  const biometryCache = useSelector(getBiometryCacheCache);
+  const dispatch = useAppDispatch();
   const securityItems: OptionProps[] = [
     {
       icon: lockClosedOutline,
@@ -47,11 +51,11 @@ const Settings = () => {
     },
   ];
 
-  if (biometricsIsEnabled !== undefined) {
+  if (biometryCache.enabled !== undefined) {
     securityItems.unshift({
       icon: fingerPrintOutline,
       label: i18n.t("settings.sections.security.biometry"),
-      actionIcon: <IonToggle checked={biometricsIsEnabled} />,
+      actionIcon: <IonToggle checked={biometryCache.enabled} />,
     });
   }
 
@@ -77,10 +81,13 @@ const Settings = () => {
   const handleOptionClick = async (item: OptionProps) => {
     switch (item.label) {
     case i18n.t("settings.sections.security.biometry"): {
-      setBiometricsIsEnabled(!biometricsIsEnabled);
-      await PreferencesStorage.set(PreferencesKeys.APP_BIOMETRY, {
-        enabled: !biometricsIsEnabled,
-      });
+      await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.APP_BIOMETRY,
+          content: { enabled: !biometryCache.enabled },
+        })
+      );
+      dispatch(setEnableBiometryCache(!biometryCache.enabled));
       break;
     }
     default:

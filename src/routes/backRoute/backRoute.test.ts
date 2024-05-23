@@ -60,6 +60,12 @@ describe("getBackRoute", () => {
         connectedWallet: null,
         pendingConnection: null,
       },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      biometryCache: {
+        enabled: false,
+      },
     };
   });
 
@@ -175,6 +181,12 @@ describe("getPreviousRoute", () => {
         walletConnections: [],
         connectedWallet: null,
         pendingConnection: null,
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      biometryCache: {
+        enabled: false,
       },
     };
   });

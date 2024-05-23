@@ -52,6 +52,9 @@ jest.mock("../core/agent/agent", () => ({
         onNotificationStateChanged: jest.fn(),
       },
       onKeriaStatusStateChanged: jest.fn(),
+      basicStorage: {
+        findById: jest.fn(),
+      },
     },
   },
 }));
