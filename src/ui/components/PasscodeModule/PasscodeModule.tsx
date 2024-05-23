@@ -4,6 +4,9 @@ import { PasscodeModuleProps } from "./PasscodeModule.types";
 import "./PasscodeModule.scss";
 import { PASSCODE_MAPPING } from "../../globals/types";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
+import { useSelector } from "react-redux";
+import { getBiometryCacheCache } from "../../../store/reducers/biometryCache";
+import { useState } from "react";
 
 const PasscodeModule = ({
   error,
@@ -12,7 +15,9 @@ const PasscodeModule = ({
   handleRemove,
   handleBiometricButtonClick,
 }: PasscodeModuleProps) => {
-  const { biometricInfo, biometricsIsEnabled } = useBiometricAuth();
+  const biometryCacheCache = useSelector(getBiometryCacheCache);
+  const [biometricsIsEnabled] = useState<boolean>(biometryCacheCache.enabled);
+  const { biometricInfo } = useBiometricAuth();
   const numbers = PASSCODE_MAPPING.numbers;
   const labels = PASSCODE_MAPPING.labels;
   const rows = [];

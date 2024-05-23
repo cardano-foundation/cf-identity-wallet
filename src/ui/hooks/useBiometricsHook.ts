@@ -16,10 +16,6 @@ import { getBiometryCacheCache } from "../../store/reducers/biometryCache";
 
 const useBiometricAuth = () => {
   const [biometricInfo, setBiometricInfo] = useState<CheckBiometryResult>();
-  const biometryCacheCache = useSelector(getBiometryCacheCache);
-  const [biometricsIsEnabled, setBiometricsIsEnabled] = useState<boolean>(
-    biometryCacheCache.enabled
-  );
   const { setPauseTimestamp } = useActivityTimer();
 
   useEffect(() => {
@@ -85,10 +81,8 @@ const useBiometricAuth = () => {
   };
 
   return {
-    biometricsIsEnabled,
     biometricInfo,
     handleBiometricAuth,
-    setBiometricsIsEnabled,
   };
 };
 

@@ -20,18 +20,25 @@ import {
   fingerPrintOutline,
 } from "ionicons/icons";
 import "./Settings.scss";
+import { useSelector } from "react-redux";
+import { useState } from "react";
 import { i18n } from "../../../../../i18n";
 import pJson from "../../../../../../package.json";
 import { OptionProps } from "./Settings.types";
-import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
 import { MiscRecordId } from "../../../../../core/agent/agent.types";
 import { BasicRecord } from "../../../../../core/agent/records";
 import { useAppDispatch } from "../../../../../store/hooks";
-import { setEnableBiometryCache } from "../../../../../store/reducers/biometryCache";
+import {
+  getBiometryCacheCache,
+  setEnableBiometryCache,
+} from "../../../../../store/reducers/biometryCache";
 import { Agent } from "../../../../../core/agent/agent";
 
 const Settings = () => {
-  const { biometricsIsEnabled, setBiometricsIsEnabled } = useBiometricAuth();
+  const biometryCacheCache = useSelector(getBiometryCacheCache);
+  const [biometricsIsEnabled, setBiometricsIsEnabled] = useState<boolean>(
+    biometryCacheCache.enabled
+  );
   const dispatch = useAppDispatch();
   const securityItems: OptionProps[] = [
     {
