@@ -21,7 +21,6 @@ import {
 } from "ionicons/icons";
 import "./Settings.scss";
 import { useSelector } from "react-redux";
-import { useState } from "react";
 import { i18n } from "../../../../../i18n";
 import pJson from "../../../../../../package.json";
 import { OptionProps } from "./Settings.types";
@@ -35,10 +34,7 @@ import {
 import { Agent } from "../../../../../core/agent/agent";
 
 const Settings = () => {
-  const biometryCacheCache = useSelector(getBiometryCacheCache);
-  const [biometricsIsEnabled, setBiometricsIsEnabled] = useState<boolean>(
-    biometryCacheCache.enabled
-  );
+  const biometryCache = useSelector(getBiometryCacheCache);
   const dispatch = useAppDispatch();
   const securityItems: OptionProps[] = [
     {
@@ -55,11 +51,11 @@ const Settings = () => {
     },
   ];
 
-  if (biometricsIsEnabled !== undefined) {
+  if (biometryCache.enabled !== undefined) {
     securityItems.unshift({
       icon: fingerPrintOutline,
       label: i18n.t("settings.sections.security.biometry"),
-      actionIcon: <IonToggle checked={biometricsIsEnabled} />,
+      actionIcon: <IonToggle checked={biometryCache.enabled} />,
     });
   }
 
@@ -85,14 +81,13 @@ const Settings = () => {
   const handleOptionClick = async (item: OptionProps) => {
     switch (item.label) {
     case i18n.t("settings.sections.security.biometry"): {
-      setBiometricsIsEnabled(!biometricsIsEnabled);
       await Agent.agent.basicStorage.createOrUpdateBasicRecord(
         new BasicRecord({
           id: MiscRecordId.APP_BIOMETRY,
-          content: { enabled: !biometricsIsEnabled },
+          content: { enabled: !biometryCache.enabled },
         })
       );
-      dispatch(setEnableBiometryCache(!biometricsIsEnabled));
+      dispatch(setEnableBiometryCache(!biometryCache.enabled));
       break;
     }
     default:

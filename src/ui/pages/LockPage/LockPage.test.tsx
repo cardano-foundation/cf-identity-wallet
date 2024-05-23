@@ -83,7 +83,7 @@ const initialState = {
     cryptoAccounts: [],
   },
   biometryCache: {
-    enabled: false,
+    enabled: true,
   },
 };
 

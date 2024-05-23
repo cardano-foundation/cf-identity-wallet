@@ -115,7 +115,7 @@ describe("Settings page", () => {
         expect.objectContaining({
           id: MiscRecordId.APP_BIOMETRY,
           content: {
-            enabled: false,
+            enabled: true,
           },
         })
       );
