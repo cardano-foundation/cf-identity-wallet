@@ -32,11 +32,11 @@ class SignifyNotificationService extends AgentService {
       lastNotificationId: "",
     };
     const notificationQueryRecord = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_KERIA_NOTIFICATION_MARKER
+      MiscRecordId.KERIA_NOTIFICATION_MARKER
     );
     if (!notificationQueryRecord) {
       await Agent.agent.basicStorage.save({
-        id: MiscRecordId.APP_KERIA_NOTIFICATION_MARKER,
+        id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
         content: notificationQuery,
       });
     } else
@@ -83,7 +83,7 @@ class SignifyNotificationService extends AgentService {
         };
         await Agent.agent.basicStorage.createOrUpdateBasicRecord(
           new BasicRecord({
-            id: MiscRecordId.APP_KERIA_NOTIFICATION_MARKER,
+            id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
             content: notificationQuery,
           })
         );
@@ -106,7 +106,7 @@ class SignifyNotificationService extends AgentService {
         };
         await Agent.agent.basicStorage.createOrUpdateBasicRecord(
           new BasicRecord({
-            id: MiscRecordId.APP_KERIA_NOTIFICATION_MARKER,
+            id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
             content: notificationQuery,
           })
         );

@@ -152,7 +152,7 @@ const IdentifierDetails = () => {
       Agent.agent.basicStorage
         .createOrUpdateBasicRecord(
           new BasicRecord({
-            id: MiscRecordId.APP_IDENTIFIERS_FAVOURITES,
+            id: MiscRecordId.IDENTIFIERS_FAVOURITES,
             content: {
               favourites: favouritesIdentifiersData.filter(
                 (fav) => fav.id !== id
@@ -174,7 +174,7 @@ const IdentifierDetails = () => {
       Agent.agent.basicStorage
         .createOrUpdateBasicRecord(
           new BasicRecord({
-            id: MiscRecordId.APP_IDENTIFIERS_FAVOURITES,
+            id: MiscRecordId.IDENTIFIERS_FAVOURITES,
             content: {
               favourites: [
                 { id, time: Date.now() },

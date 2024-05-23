@@ -290,7 +290,7 @@ describe("Cards Details page", () => {
     Agent.agent.basicStorage.save = jest
       .fn()
       .mockImplementation(async (data: BasicRecord): Promise<void> => {
-        expect(data.id).toBe(MiscRecordId.APP_IDENTIFIERS_FAVOURITES);
+        expect(data.id).toBe(MiscRecordId.IDENTIFIERS_FAVOURITES);
         expect(data.content).toBe(filteredIdentifierFix[0]);
       });
 

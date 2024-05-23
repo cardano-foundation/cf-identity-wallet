@@ -113,7 +113,7 @@ describe("Settings page", () => {
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
         expect.objectContaining({
-          id: MiscRecordId.APP_BIOMETRY,
+          id: MiscRecordId.BIOMETRY,
           content: {
             enabled: false,
           },
@@ -133,7 +133,7 @@ describe("Settings page", () => {
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
         expect.objectContaining({
-          id: MiscRecordId.APP_BIOMETRY,
+          id: MiscRecordId.BIOMETRY,
           content: {
             enabled: true,
           },

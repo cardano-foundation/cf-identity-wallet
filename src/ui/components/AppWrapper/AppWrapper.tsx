@@ -218,7 +218,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
 
     const identifiersFavourites = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_IDENTIFIERS_FAVOURITES
+      MiscRecordId.IDENTIFIERS_FAVOURITES
     );
     if (identifiersFavourites)
       dispatch(
@@ -228,7 +228,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       );
 
     const credsFavourites = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_CREDS_FAVOURITES
+      MiscRecordId.CREDS_FAVOURITES
     );
     if (credsFavourites) {
       dispatch(
@@ -238,20 +238,20 @@ const AppWrapper = (props: { children: ReactNode }) => {
       );
     }
     const viewType = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_IDENTIFIER_VIEW_TYPE
+      MiscRecordId.IDENTIFIER_VIEW_TYPE
     );
     if (viewType) {
       dispatch(setViewTypeCache(viewType.content.viewType as CardListViewType));
     }
     const appBiometry = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_BIOMETRY
+      MiscRecordId.BIOMETRY
     );
     if (appBiometry) {
       dispatch(setEnableBiometryCache(appBiometry.content.enabled as boolean));
     }
 
     const appUserNameRecord = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_USER_NAME
+      MiscRecordId.USER_NAME
     );
     if (appUserNameRecord) {
       userName = appUserNameRecord.content as { userName: string };
@@ -289,7 +289,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
     const appAlreadyInit = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_ALREADY_INIT
+      MiscRecordId.ALREADY_INIT
     );
     if (!appAlreadyInit) {
       await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);

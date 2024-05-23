@@ -19,16 +19,16 @@ interface ConnectionHistoryItem {
 }
 
 enum MiscRecordId {
-  OP_PASS_HINT = "app-op-password-hint",
-  APP_ALREADY_INIT = "app-already-init",
-  APP_STATE_FLAGS = "app-state-flags",
-  APP_LANGUAGE = "app-language",
-  APP_IDENTIFIERS_FAVOURITES = "app-identifiers-favourites",
-  APP_CREDS_FAVOURITES = "app-creds-favourites",
-  APP_USER_NAME = "app-user-name",
-  APP_BIOMETRY = "app-biometry",
-  APP_KERIA_NOTIFICATION_MARKER = "app-keria-notification-marker",
-  APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
+  OP_PASS_HINT = "op-password-hint",
+  ALREADY_INIT = "already-init",
+  STATE_FLAGS = "state-flags",
+  LANGUAGE = "language",
+  IDENTIFIERS_FAVOURITES = "identifiers-favourites",
+  CREDS_FAVOURITES = "creds-favourites",
+  USER_NAME = "user-name",
+  BIOMETRY = "biometry",
+  KERIA_NOTIFICATION_MARKER = "keria-notification-marker",
+  IDENTIFIER_VIEW_TYPE = "identifier-view-type",
 }
 
 interface ConnectionShortDetails {

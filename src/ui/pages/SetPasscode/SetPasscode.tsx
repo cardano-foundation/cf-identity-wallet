@@ -77,7 +77,7 @@ const SetPasscode = () => {
     if (isBiometricAuthenticated === true) {
       await Agent.agent.basicStorage.createOrUpdateBasicRecord(
         new BasicRecord({
-          id: MiscRecordId.APP_BIOMETRY,
+          id: MiscRecordId.BIOMETRY,
           content: { enabled: true },
         })
       );
@@ -111,7 +111,7 @@ const SetPasscode = () => {
 
     await Agent.agent.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({
-        id: MiscRecordId.APP_ALREADY_INIT,
+        id: MiscRecordId.ALREADY_INIT,
         content: { initialized: true },
       })
     );

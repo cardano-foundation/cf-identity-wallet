@@ -155,7 +155,7 @@ const CredentialDetails = () => {
   const handleSetFavourite = (id: string) => {
     if (isFavourite) {
       const favouriteRecord = new BasicRecord({
-        id: MiscRecordId.APP_CREDS_FAVOURITES,
+        id: MiscRecordId.CREDS_FAVOURITES,
         content: {
           favourites: favouritesCredsCache.filter((fav) => fav.id !== id),
         },
@@ -177,7 +177,7 @@ const CredentialDetails = () => {
       Agent.agent.basicStorage
         .createOrUpdateBasicRecord(
           new BasicRecord({
-            id: MiscRecordId.APP_CREDS_FAVOURITES,
+            id: MiscRecordId.CREDS_FAVOURITES,
             content: {
               favourites: [{ id, time: Date.now() }, ...favouritesCredsCache],
             },

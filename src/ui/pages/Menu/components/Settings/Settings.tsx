@@ -81,7 +81,7 @@ const Settings = () => {
       setBiometricsIsEnabled(!biometricsIsEnabled);
       await Agent.agent.basicStorage.createOrUpdateBasicRecord(
         new BasicRecord({
-          id: MiscRecordId.APP_BIOMETRY,
+          id: MiscRecordId.BIOMETRY,
           content: { enabled: !biometricsIsEnabled },
         })
       );

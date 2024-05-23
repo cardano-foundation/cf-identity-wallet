@@ -108,7 +108,7 @@ describe("SetUserName component", () => {
     await waitFor(() => {
       const mockSave = jest.fn();
       Agent.agent.basicStorage.save = mockSave;
-      expect(mockSave).toHaveBeenCalledWith(MiscRecordId.APP_USER_NAME, {
+      expect(mockSave).toHaveBeenCalledWith(MiscRecordId.USER_NAME, {
         userName: "testUser",
       });
     });

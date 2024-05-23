@@ -24,7 +24,7 @@ const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
   const handleConfirm = () => {
     Agent.agent.basicStorage
       .save({
-        id: MiscRecordId.APP_USER_NAME,
+        id: MiscRecordId.USER_NAME,
         content: {
           userName,
         },
