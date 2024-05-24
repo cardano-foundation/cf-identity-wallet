@@ -174,26 +174,6 @@ class Agent {
 
   async start(): Promise<void> {
     if (!Agent.isOnline) {
-      await this.storageSession.open(walletId);
-      this.basicStorageService = new BasicStorage(
-        this.getStorageService<BasicRecord>(this.storageSession)
-      );
-      this.identifierStorage = new IdentifierStorage(
-        this.getStorageService<IdentifierMetadataRecord>(this.storageSession)
-      );
-      this.credentialStorage = new CredentialStorage(
-        this.getStorageService<CredentialMetadataRecord>(this.storageSession)
-      );
-      this.connectionStorage = new ConnectionStorage(
-        this.getStorageService<ConnectionRecord>(this.storageSession)
-      );
-      this.connectionNoteStorage = new ConnectionNoteStorage(
-        this.getStorageService<ConnectionNoteRecord>(this.storageSession)
-      );
-      this.notificationStorage = new NotificationStorage(
-        this.getStorageService<NotificationRecord>(this.storageSession)
-      );
-
       await signifyReady();
       const bran = await this.getBran();
       // @TODO - foconnor: Review of Tier level.
@@ -208,12 +188,6 @@ class Agent {
         signifyClient: this.signifyClient,
         eventService: new EventService(),
       };
-
-      this.peerConnectionStorage = new PeerConnectionStorage(
-        this.getStorageService<PeerConnectionMetadataRecord>(
-          this.storageSession
-        )
-      );
 
       this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
         type: KeriaStatusEventTypes.KeriaStatusChanged,
@@ -231,6 +205,31 @@ class Agent {
         Agent.isOnline = true;
       }
     }
+  }
+
+  async startDatabaseConnection(): Promise<void> {
+    await this.storageSession.open(walletId);
+    this.basicStorageService = new BasicStorage(
+      this.getStorageService<BasicRecord>(this.storageSession)
+    );
+    this.identifierStorage = new IdentifierStorage(
+      this.getStorageService<IdentifierMetadataRecord>(this.storageSession)
+    );
+    this.credentialStorage = new CredentialStorage(
+      this.getStorageService<CredentialMetadataRecord>(this.storageSession)
+    );
+    this.connectionStorage = new ConnectionStorage(
+      this.getStorageService<ConnectionRecord>(this.storageSession)
+    );
+    this.connectionNoteStorage = new ConnectionNoteStorage(
+      this.getStorageService<ConnectionNoteRecord>(this.storageSession)
+    );
+    this.notificationStorage = new NotificationStorage(
+      this.getStorageService<NotificationRecord>(this.storageSession)
+    );
+    this.peerConnectionStorage = new PeerConnectionStorage(
+      this.getStorageService<PeerConnectionMetadataRecord>(this.storageSession)
+    );
   }
 
   async bootAndConnect(retryInterval = 1000) {
