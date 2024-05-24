@@ -293,7 +293,10 @@ class Agent {
   async isMnemonicValid(mnemonic: string): Promise<boolean> {
     const bran = (await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN)) as string;
     return (
-      bran === Buffer.from(mnemonicToEntropy(mnemonic), "hex").toString("utf-8")
+      bran ===
+      Buffer.from(mnemonicToEntropy(mnemonic), "hex")
+        .toString("utf-8")
+        .replace(/\0/g, "")
     );
   }
 }
