@@ -6,6 +6,8 @@ import { PASSCODE_MAPPING } from "../../globals/types";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
 import { useSelector } from "react-redux";
 import { getBiometryCacheCache } from "../../../store/reducers/biometryCache";
+import faceIdIcon from "../../assets/images/face-id.png";
+import { BiometryType } from "@aparajita/capacitor-biometric-auth";
 
 const PasscodeModule = ({
   error,
@@ -32,6 +34,31 @@ const PasscodeModule = ({
 
   const handleBiometricButton = () => {
     handleBiometricButtonClick && handleBiometricButtonClick();
+  };
+
+  const getBiometricIcon = () => {
+    if (!biometricInfo) return null;
+
+    if (
+      [BiometryType.faceAuthentication, BiometryType.faceId].includes(
+        biometricInfo?.biometryType
+      )
+    ) {
+      return (
+        <img
+          src={faceIdIcon}
+          alt="face-id"
+        />
+      );
+    }
+
+    return (
+      <IonIcon
+        slot="icon-only"
+        className="passcode-module-fingerprint-icon"
+        icon={fingerPrintSharp}
+      />
+    );
   };
 
   return (
@@ -70,11 +97,7 @@ const PasscodeModule = ({
                           handleBiometricButton()
                           }
                         >
-                          <IonIcon
-                            slot="icon-only"
-                            className="passcode-module-fingerprint-icon"
-                            icon={fingerPrintSharp}
-                          />
+                          {getBiometricIcon()}
                         </IonButton>
                       ) : null}
                   </IonCol>
