@@ -1,11 +1,12 @@
 import { IonButton, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
-import { backspaceSharp, fingerPrintSharp } from "ionicons/icons";
+import { backspaceSharp } from "ionicons/icons";
 import { PasscodeModuleProps } from "./PasscodeModule.types";
 import "./PasscodeModule.scss";
 import { PASSCODE_MAPPING } from "../../globals/types";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
 import { useSelector } from "react-redux";
 import { getBiometryCacheCache } from "../../../store/reducers/biometryCache";
+import faceIdIcon from "../../assets/images/face-id.png";
 
 const PasscodeModule = ({
   error,
@@ -70,10 +71,9 @@ const PasscodeModule = ({
                           handleBiometricButton()
                           }
                         >
-                          <IonIcon
-                            slot="icon-only"
-                            className="passcode-module-fingerprint-icon"
-                            icon={fingerPrintSharp}
+                          <img
+                            src={faceIdIcon}
+                            alt="face-id"
                           />
                         </IonButton>
                       ) : null}
