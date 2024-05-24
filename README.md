@@ -50,8 +50,8 @@
 - :cloud: High messaging availability with a KERIA cloud agent
 - :closed_lock_with_key: Secure Enclave (SE) / Trusted Execution Environment (TEE) usage for seeds & secrets
 - :id: KERI autonomic identifiers
-  - `Direct-mode`, `witness-backed`, `Cardano-backed`
-  - `Single-sig`, `multi-sig`
+  - Direct-mode, witness-backed, Cardano-backed
+  - Single-sig, multi-sig
 - :ticket: ACDC credentials exchanged using the IPEX protocol
 - :zap: Efficient over-the-wine communications using CESR encoding
 - :desktop_computer: dApp integration using [CIP-45](https://cips.cardano.org/cip/CIP-0045)
