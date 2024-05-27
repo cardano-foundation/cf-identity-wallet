@@ -29,7 +29,7 @@ enum MiscRecordId {
   APP_BIOMETRY = "app-biometry",
   KERIA_NOTIFICATION_MARKER = "keria-notification-marker",
   APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
-  KERI_URL = "keri-url",
+  KERIA_CONNECT_URL = "keria-connect-url",
   KERI_BOOT_URL = "keri-boot-url",
 }
 

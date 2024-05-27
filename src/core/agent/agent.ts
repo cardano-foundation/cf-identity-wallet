@@ -50,6 +50,10 @@ const walletId = "idw";
 class Agent {
   static readonly KERIA_CONNECTION_BROKEN =
     "The app is not connected to KERIA at the moment";
+  static readonly KERIA_BOOT_FAILED = "Failed to boot signify client";
+  static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT =
+    "Signify client is already booted but cannot connect";
+  static readonly KERI_CONNECTION_URL_NOT_SET = "Keria url is not set";
 
   private static instance: Agent;
   private agentServicesProps!: AgentServicesProps;
@@ -174,48 +178,22 @@ class Agent {
     );
   }
 
-  async start(agentUrls: Partial<AgentUrls>): Promise<void> {
+  async start(keriUrl?: string): Promise<void> {
     if (!Agent.isOnline) {
-      const exitsUrls = await this.getAgentUrl();
-      if (
-        (!exitsUrls.url || !exitsUrls.bootUrl) &&
-        (!agentUrls.url || !agentUrls.bootUrl)
-      ) {
-        //  @TODO
-        throw new Error("Require KERI URL and Boot URL to start the agent.");
+      const exitsUrls = await this.getAgentUrls();
+      if (!keriUrl && !exitsUrls.url) {
+        throw new Error(Agent.KERI_CONNECTION_URL_NOT_SET);
       }
       await signifyReady();
       const bran = await this.getBran();
-
-      if (agentUrls.url && !exitsUrls.url) {
-        // @TODO - foconnor: Review of Tier level.
-        this.signifyClient = new SignifyClient(
-          agentUrls.url,
-          bran,
-          Tier.low,
-          agentUrls.bootUrl
-        );
-        await this.signifyClient.boot();
-        await this.signifyClient.connect();
-        // Save databases
-        await this.saveAgentUrls({
-          url: agentUrls.url,
-          bootUrl: agentUrls.bootUrl as string,
-        });
-      } else {
-        this.signifyClient = new SignifyClient(
-          exitsUrls.url as string,
-          bran,
-          Tier.low,
-          exitsUrls.bootUrl
-        );
-        await this.signifyClient.connect();
-      }
-
+      this.signifyClient = new SignifyClient(
+        (keriUrl ? keriUrl : exitsUrls.url) as string,
+        bran,
+        Tier.low
+      );
+      await this.signifyClient.connect();
       Agent.isOnline = true;
-
       this.agentServicesProps.signifyClient = this.signifyClient;
-
       this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
         type: KeriaStatusEventTypes.KeriaStatusChanged,
         payload: {
@@ -225,17 +203,49 @@ class Agent {
     }
   }
 
-  async getAgentUrl(): Promise<Partial<AgentUrls>> {
+  async bootAndConnect(agentUrls: AgentUrls): Promise<void> {
+    if (!Agent.isOnline) {
+      await signifyReady();
+      const bran = await this.getBran();
+      this.signifyClient = new SignifyClient(
+        agentUrls.url,
+        bran,
+        Tier.low,
+        agentUrls.bootUrl
+      );
+      try {
+        await this.signifyClient.boot();
+      } catch (e) {
+        throw new Error(Agent.KERIA_BOOT_FAILED);
+      }
+      try {
+        await this.signifyClient.connect();
+      } catch (e) {
+        throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
+      }
+      await this.saveAgentUrls(agentUrls);
+      Agent.isOnline = true;
+      this.agentServicesProps.signifyClient = this.signifyClient;
+      this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
+        type: KeriaStatusEventTypes.KeriaStatusChanged,
+        payload: {
+          isOnline: Agent.isOnline,
+        },
+      });
+    }
+  }
+
+  async getAgentUrls(): Promise<Partial<AgentUrls>> {
     const keriUrlRecord = await this.basicStorageService.findById(
-      MiscRecordId.KERI_URL
+      MiscRecordId.KERIA_CONNECT_URL
     );
     const keriBootUrlRecord = await this.basicStorageService.findById(
       MiscRecordId.KERI_BOOT_URL
     );
     if (!keriUrlRecord || !keriBootUrlRecord) {
       return {
-        url: ConfigurationService.env.keri?.keria?.url,
-        bootUrl: ConfigurationService.env.keri?.keria?.bootUrl,
+        url: undefined,
+        bootUrl: undefined,
       };
     }
     return {
@@ -243,10 +253,16 @@ class Agent {
       bootUrl: keriBootUrlRecord.content.url as string,
     };
   }
+  async getDefaultAgentUrls(): Promise<Partial<AgentUrls>> {
+    return {
+      url: ConfigurationService.env.keri.keria?.url,
+      bootUrl: ConfigurationService.env.keri.keria?.bootUrl,
+    };
+  }
 
   async saveAgentUrls(agentUrls: AgentUrls): Promise<void> {
     await this.basicStorageService.save({
-      id: MiscRecordId.KERI_URL,
+      id: MiscRecordId.KERIA_CONNECT_URL,
       content: {
         url: agentUrls.url,
       },

@@ -43,15 +43,13 @@ class ConfigurationService {
     const keriaUrl = ConfigurationService.configurationEnv.keri?.keria?.url;
     const keriaBootUrl =
       ConfigurationService.configurationEnv.keri?.keria?.bootUrl;
-    if (
-      keriaIP &&
-      ConfigurationService.configurationEnv.keri?.keria?.url &&
-      ConfigurationService.configurationEnv.keri?.keria?.bootUrl
-    ) {
+    if (keriaIP && ConfigurationService.configurationEnv.keri?.keria?.url) {
       ConfigurationService.configurationEnv.keri.keria.url = keriaUrl?.replace(
         /\/\/[^:]+/,
         `//${keriaIP}`
       );
+    }
+    if (keriaIP && ConfigurationService.configurationEnv.keri?.keria?.bootUrl) {
       ConfigurationService.configurationEnv.keri.keria.bootUrl =
         keriaBootUrl?.replace(/\/\/[^:]+/, `//${keriaIP}`);
     }
@@ -61,6 +59,10 @@ class ConfigurationService {
     data: Configuration
   ): { success: true } | { success: false; reason: string } {
     const keri = data.keri;
+    if (typeof keri !== "object") {
+      return this.invalid("Missing top-level KERI object");
+    }
+
     // CREDENTIALS config
     if (typeof keri.credentials !== "object") {
       return this.invalid("Missing credentials config");

@@ -284,14 +284,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     }
     await loadCacheBasicStorage();
-    const getAgentUrl = await Agent.agent.getAgentUrl();
     // eslint-disable-next-line no-useless-catch
     try {
-      await Agent.agent.start(getAgentUrl);
+      await Agent.agent.start();
       setIsOnline(true);
       await loadDatabase();
     } catch (e) {
-      // @TODO: handle error
+      // @TODO: handle bootAndConnect or recovery
     }
 
     Agent.agent.onKeriaStatusStateChanged((event) => {
