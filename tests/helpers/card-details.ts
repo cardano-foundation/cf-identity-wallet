@@ -5,6 +5,10 @@ import Assert from "./assert.js";
 import IdentityCardDetailsScreen from "../screen-objects/identity/identity-card-details.screen.js";
 
 export function cardDetails() {
+  const backerAddressName = "backer-address"
+  const nextKeyName = "next-key-0"
+  const signingKeyName = "signing-key-0"
+
   const copyAndVerifyDetailsFor = async (blockName: string) => {
     await driver.setClipboard("");
     await (
@@ -15,9 +19,9 @@ export function cardDetails() {
   };
 
   const keriIdentityDetailsToVerify = async () => {
-    await copyAndVerifyDetailsFor("signing-key-0");
-    await copyAndVerifyDetailsFor("next-key-0");
-    await copyAndVerifyDetailsFor("backer-address");
+    await copyAndVerifyDetailsFor(signingKeyName);
+    await copyAndVerifyDetailsFor(nextKeyName);
+    await copyAndVerifyDetailsFor(backerAddressName);
   };
 
   const assertKeriPartialBlockFor = async (
@@ -47,10 +51,10 @@ export function cardDetails() {
   };
 
   const cardBlocksForKeri = async () => {
-    await assertKeriBlockFor("list of signing keys", "signing-key-0");
-    await assertKeriBlockFor("list of next key digests", "next-key-0");
+    await assertKeriBlockFor("list of signing keys", signingKeyName);
+    await assertKeriBlockFor("list of next key digests", nextKeyName);
     await assertKeriPartialBlockFor("creation timestamp", "creation-timestamp");
-    await assertKeriBlockFor("backer address", "backer-address");
+    await assertKeriBlockFor("backer address", backerAddressName);
   };
 
   return {
