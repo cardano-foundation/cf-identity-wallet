@@ -283,14 +283,26 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     }
+    await loadDatabase();
     await loadCacheBasicStorage();
-    // eslint-disable-next-line no-useless-catch
-    try {
-      await Agent.agent.start();
-      setIsOnline(true);
-      await loadDatabase();
-    } catch (e) {
-      // @TODO: handle bootAndConnect or recovery
+    const agentUrls = await Agent.agent.getAgentUrls();
+    if (agentUrls.url) {
+      try {
+        await Agent.agent.start(agentUrls.url);
+        setIsOnline(true);
+      } catch (e) {
+        const errorStack = (e as Error).stack as string;
+        // If the error is failed to fetch with signify, we retry until the connection is secured
+        if (/SignifyClient/gi.test(errorStack)) {
+          Agent.agent.connect().then(() => {
+            setIsOnline(Agent.agent.getKeriaOnlineStatus());
+          });
+        } else {
+          throw e;
+        }
+      }
+    } else {
+      // @TODO: on the onboarding screen to enter it
     }
 
     Agent.agent.onKeriaStatusStateChanged((event) => {

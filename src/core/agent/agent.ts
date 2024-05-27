@@ -53,7 +53,6 @@ class Agent {
   static readonly KERIA_BOOT_FAILED = "Failed to boot signify client";
   static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT =
     "Signify client is already booted but cannot connect";
-  static readonly KERI_CONNECTION_URL_NOT_SET = "Keria url is not set";
 
   private static instance: Agent;
   private agentServicesProps!: AgentServicesProps;
@@ -178,19 +177,11 @@ class Agent {
     );
   }
 
-  async start(keriUrl?: string): Promise<void> {
+  async start(keriUrl: string): Promise<void> {
     if (!Agent.isOnline) {
-      const exitsUrls = await this.getAgentUrls();
-      if (!keriUrl && !exitsUrls.url) {
-        throw new Error(Agent.KERI_CONNECTION_URL_NOT_SET);
-      }
       await signifyReady();
       const bran = await this.getBran();
-      this.signifyClient = new SignifyClient(
-        (keriUrl ? keriUrl : exitsUrls.url) as string,
-        bran,
-        Tier.low
-      );
+      this.signifyClient = new SignifyClient(keriUrl, bran, Tier.low);
       await this.signifyClient.connect();
       Agent.isOnline = true;
       this.agentServicesProps.signifyClient = this.signifyClient;
@@ -251,12 +242,6 @@ class Agent {
     return {
       url: keriUrlRecord.content.url as string,
       bootUrl: keriBootUrlRecord.content.url as string,
-    };
-  }
-  async getDefaultAgentUrls(): Promise<Partial<AgentUrls>> {
-    return {
-      url: ConfigurationService.env.keri.keria?.url,
-      bootUrl: ConfigurationService.env.keri.keria?.bootUrl,
     };
   }
 
