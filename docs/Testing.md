@@ -60,15 +60,12 @@ npm run wdio:ios:15promax -- --spec ./tests/features/passcode.feature:18
 ```
 - If there are issues with appium service run by WDIO, please start appium in terminal separately
 - In case WDIO tests will not exit on its own kill the process yourself e.g. ``` pkill -9 -f wdio ```
-3. Set ALLURE_RESULTS_DIR on your local
+
+3. Generate allure report
 ```
-ALLURE_RESULTS_DIR=tests/.reports/allure-results
+allure generate tests/.reports/allure-results -o tests/.reports/allure-report --clean
 ```
-4. Generate allure report
-```
-allure generate $ALLURE_RESULTS_DIR -o tests/.reports/allure-report --clean
-```
-5. Open allure report
+4. Open allure report
 ```
 allure open tests/.reports/allure-report
 ```
