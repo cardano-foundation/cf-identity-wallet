@@ -63,6 +63,12 @@ describe("NextRoute", () => {
         pendingConnection: null,
         pendingDAppMeerKat: null,
       },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      biometryCache: {
+        enabled: false,
+      },
     };
     data = {
       store: storeMock,
@@ -177,6 +183,12 @@ describe("getNextRoute", () => {
       connectedWallet: null,
       pendingConnection: null,
       pendingDAppMeerKat: null,
+    },
+    identifierViewTypeCacheCache: {
+      viewType: null,
+    },
+    biometryCache: {
+      enabled: false,
     },
   };
   const state = {};

@@ -61,6 +61,12 @@ describe("getBackRoute", () => {
         pendingConnection: null,
         pendingDAppMeerKat: null,
       },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      biometryCache: {
+        enabled: false,
+      },
     };
   });
 
@@ -177,6 +183,12 @@ describe("getPreviousRoute", () => {
         connectedWallet: null,
         pendingConnection: null,
         pendingDAppMeerKat: null,
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      biometryCache: {
+        enabled: false,
       },
     };
   });

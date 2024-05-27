@@ -40,7 +40,6 @@ import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { IdentifierOptions } from "../../components/IdentifierOptions";
 import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
-import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { PageFooter } from "../../components/PageFooter";
 import "../../components/CardDetails/CardDetails.scss";
 import "./IdentifierDetails.scss";
@@ -49,6 +48,8 @@ import { PageHeader } from "../../components/PageHeader";
 import { combineClassNames } from "../../utils/style";
 import { IdentifierDetails as IdentifierDetailsCore } from "../../../core/agent/services/identifier.types";
 import { useAppIonRouter } from "../../hooks";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -148,9 +149,17 @@ const IdentifierDetails = () => {
 
   const handleSetFavourite = (id: string) => {
     if (isFavourite) {
-      PreferencesStorage.set(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES, {
-        favourites: favouritesIdentifiersData.filter((fav) => fav.id !== id),
-      })
+      Agent.agent.basicStorage
+        .createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.IDENTIFIERS_FAVOURITES,
+            content: {
+              favourites: favouritesIdentifiersData.filter(
+                (fav) => fav.id !== id
+              ),
+            },
+          })
+        )
         .then(() => {
           dispatch(removeFavouriteIdentifierCache(id));
         })
@@ -162,10 +171,18 @@ const IdentifierDetails = () => {
         dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
         return;
       }
-
-      PreferencesStorage.set(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES, {
-        favourites: [{ id, time: Date.now() }, ...favouritesIdentifiersData],
-      })
+      Agent.agent.basicStorage
+        .createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.IDENTIFIERS_FAVOURITES,
+            content: {
+              favourites: [
+                { id, time: Date.now() },
+                ...favouritesIdentifiersData,
+              ],
+            },
+          })
+        )
         .then(() => {
           dispatch(addFavouriteIdentifierCache({ id, time: Date.now() }));
         })

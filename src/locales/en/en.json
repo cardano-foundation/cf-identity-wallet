@@ -1186,8 +1186,7 @@
     "unableconnectwallet": "Unable to connect",
     "peeridsuccess": "Peer ID successful",
     "peeridnotrecognised": "Peer ID not recognised",
-    "disconnectwallet": "Disconnected successfully",
-    "strongbiometrynotavailable": "Strong biometry not available"
+    "setupbiometricsuccess": "Biometrics setup successfully"
   },
   "request": {
     "signtransaction": {
@@ -1278,7 +1277,7 @@
     "androidsubtitle": "Authentication using biometrics",
     "setupandroidbiometryheader": "Do you want to allow “IDW” to use biometrics?",
     "setupandroidbiometryconfirm": "Ok",
-    "setupandroidbiometrycancel": "Dont allow",
+    "setupandroidbiometrycancel": "Don't allow",
     "cancelbiometryheader": "You canceled Biometrics. You can set this up later via the settings page."
   }
 }

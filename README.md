@@ -46,23 +46,34 @@
 
 # Features
 
-| **User Interface**    |  **Private Key Storage**  |  **Standards & Protocols** |  **SSI Services**   |           
-|----------------|---------------|---------------|----------------|
-|  Intuitive User Experience |  Hardware Security Module (HSM)   | [KERI](https://keri.one/) | [KERIA](https://github.com/cardano-foundation/keria) | 
-|  Android  |  Secure Enclave (SE) | [ACDC](https://trustoverip.github.io/tswg-acdc-specification/) |  [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
-| iOS |  | [CESR](https://weboftrust.github.io/ietf-cesr/draft-ssmith-cesr.html) |  [Credential Issuance Modules](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  |   | 
-|  |  | | [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) |
+- :iphone: Android & iOS Support with native biometrics
+- :cloud: High messaging availability with a KERIA cloud agent
+- :closed_lock_with_key: Secure Enclave (SE) / Trusted Execution Environment (TEE) usage for seeds & secrets
+- :id: KERI autonomic identifiers
+  - Direct-mode, witness-backed, Cardano-backed
+  - Single-sig, multi-sig
+- :ticket: ACDC credentials exchanged using the IPEX protocol
+- :zap: Efficient over-the-wine communications using CESR encoding
+- :desktop_computer: dApp integration using [CIP-45](https://cips.cardano.org/cip/CIP-0045)
+  
+ # Future Developments
+ 
+- Encryption at rest with local backup & restore (Compatible with Hyperledger [Aries Askar](https://github.com/hyperledger/aries-askar))
+- Social and multi-device identifier recovery
+- P2P Chat
+- Delegated multi-sig for organisational identity
+- Cardano-backed ACDC verifiable credential schemas
 
+# Standards & Protocols
+- [Key Event Receipt Infrastructure (KERI)](https://keri.one/)
+- [Trust Over IP - Authentic Chained Data Container (ACDC)](https://trustoverip.github.io/tswg-acdc-specification/)
+- [Composable Event Streaming Representation (CESR)](https://weboftrust.github.io/ietf-cesr/draft-ssmith-cesr.html)
 
-# Potential Future Developments
-
-|**Mobile Application Features**        |  **Decentralized Identifier Recovery**               |     **Standards & Protocols**  |  **Peer-to-Peer (P2P)** |  
-|----------------|---------------|----------------|----------------|
-| Bluetooth |  [Shamir Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing)| Ledger-based Schemas  | Private Messaging | 
-| Biometrics | On-chain Recovery | Direct Mode (Offline) | Social Recovery |  App Integration |
-| NFC|  Local Encrypted|  eIDAS 2.0  | [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) Support | 
-|Aries Askar | Cloud-based | [OID4vc](https://openid.net/sg/openid4vc/specifications/)  | App Integration | 
-
+# SSI Services
+- [KERIA Cloud Agent](https://github.com/cardano-foundation/keria)
+- [Signify-TS Edge Client](https://github.com/cardano-foundation/signify-ts)
+- [Verifiable Credential Testing Tool](https://identity-wallet-credential-issuance-web-interface.vercel.app/)
+- [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer)
 
 # Preview in your Browser
 

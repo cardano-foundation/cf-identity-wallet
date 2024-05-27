@@ -57,6 +57,9 @@ const initialStateFull = {
   connectionsCache: {
     connections: connectionsFix,
   },
+  biometryCache: {
+    enabled: false,
+  },
 };
 
 describe("ConnectionDetails Page", () => {

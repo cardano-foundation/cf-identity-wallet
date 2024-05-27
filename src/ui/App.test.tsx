@@ -56,6 +56,9 @@ jest.mock("../core/agent/agent", () => ({
         getAllPeerConnectionMetadata: jest.fn(),
         getPeerConnectionMetadata: jest.fn(),
       },
+      basicStorage: {
+        findById: jest.fn(),
+      },
     },
   },
 }));

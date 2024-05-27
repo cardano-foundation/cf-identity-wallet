@@ -22,6 +22,7 @@ import { PageFooter } from "../../components/PageFooter";
 import { passwordStrengthChecker } from "../../utils/passwordStrengthChecker";
 import { PasswordValidation } from "../../components/PasswordValidation";
 import { useAppIonRouter } from "../../hooks";
+import { BasicRecord } from "../../../core/agent/records";
 
 const CreatePassword = () => {
   const pageId = "create-password";
@@ -64,10 +65,12 @@ const CreatePassword = () => {
         createPasswordValue
       );
       if (hintValue) {
-        await Agent.agent.basicStorage.save({
-          id: MiscRecordId.OP_PASS_HINT,
-          content: { value: hintValue },
-        });
+        await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.OP_PASS_HINT,
+            content: { value: hintValue },
+          })
+        );
       }
     }
 

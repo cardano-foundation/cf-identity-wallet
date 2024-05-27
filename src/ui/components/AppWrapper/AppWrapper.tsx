@@ -9,12 +9,7 @@ import {
   setQueueIncomingRequest,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import {
-  KeyStoreKeys,
-  SecureStorage,
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
@@ -37,17 +32,20 @@ import {
   ConnectionStatus,
   AcdcStateChangedEvent,
   NotificationRoute,
+  MiscRecordId,
 } from "../../../core/agent/agent.types";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
-import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 import { useActivityTimer } from "./hooks/useActivityTimer";
 import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
 import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
 import { PeerConnectSigningEvent } from "../../../core/cardano/walletConnect/peerConnection.types";
 import { MultiSigService } from "../../../core/agent/services/multiSigService";
+import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCache";
+import { CardListViewType } from "../SwitchCardView";
+import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -217,71 +215,52 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setWalletConnectionsCache(storedPeerConnections));
   };
 
-  const loadPreferences = async () => {
-    let userName: PreferencesStorageItem = { userName: "" };
+  const loadCacheBasicStorage = async () => {
+    let userName: { userName: string } = { userName: "" };
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
 
-    try {
-      const identifiersFavourites = await PreferencesStorage.get(
-        PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
-      );
+    const identifiersFavourites = await Agent.agent.basicStorage.findById(
+      MiscRecordId.IDENTIFIERS_FAVOURITES
+    );
+    if (identifiersFavourites)
       dispatch(
         setFavouritesIdentifiersCache(
-          identifiersFavourites.favourites as FavouriteIdentifier[]
+          identifiersFavourites.content.favourites as FavouriteIdentifier[]
         )
       );
-    } catch (e) {
-      if (
-        !(e instanceof Error) ||
-        !(
-          e instanceof Error &&
-          e.message ===
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_IDENTIFIERS_FAVOURITES}`
-        )
-      ) {
-        throw e;
-      }
-    }
 
-    try {
-      const credsFavourites = await PreferencesStorage.get(
-        PreferencesKeys.APP_CREDS_FAVOURITES
-      );
+    const credsFavourites = await Agent.agent.basicStorage.findById(
+      MiscRecordId.CREDS_FAVOURITES
+    );
+    if (credsFavourites) {
       dispatch(
         setFavouritesCredsCache(
-          credsFavourites.favourites as FavouriteIdentifier[]
+          credsFavourites.content.favourites as FavouriteIdentifier[]
         )
       );
-    } catch (e) {
-      if (
-        !(e instanceof Error) ||
-        !(
-          e instanceof Error &&
-          e.message ===
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_CREDS_FAVOURITES}`
-        )
-      ) {
-        throw e;
-      }
+    }
+    const viewType = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_IDENTIFIER_VIEW_TYPE
+    );
+    if (viewType) {
+      dispatch(setViewTypeCache(viewType.content.viewType as CardListViewType));
+    }
+    const appBiometry = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_BIOMETRY
+    );
+    if (appBiometry) {
+      dispatch(setEnableBiometryCache(appBiometry.content.enabled as boolean));
     }
 
-    try {
-      userName = await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME);
-    } catch (e) {
-      if (
-        !(e instanceof Error) ||
-        !(
-          e instanceof Error &&
-          e.message ===
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
-        )
-      ) {
-        throw e;
-      }
+    const appUserNameRecord = await Agent.agent.basicStorage.findById(
+      MiscRecordId.USER_NAME
+    );
+    if (appUserNameRecord) {
+      userName = appUserNameRecord.content as { userName: string };
     }
 
     dispatch(
@@ -296,22 +275,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
 
   const initApp = async () => {
-    // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
-    // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
-    try {
-      await PreferencesStorage.get(PreferencesKeys.APP_ALREADY_INIT);
-    } catch (e) {
-      await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
-      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
-      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY);
-      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
-      await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
-    }
-
-    await loadPreferences();
-
     await new ConfigurationService().start();
-
     try {
       await Agent.agent.start();
       setIsOnline(true);
@@ -328,6 +292,20 @@ const AppWrapper = (props: { children: ReactNode }) => {
         throw e;
       }
     }
+    // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
+    // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
+    const appAlreadyInit = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_ALREADY_INIT
+    );
+    if (!appAlreadyInit) {
+      await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
+      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
+      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY);
+      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
+      await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
+    }
+    await loadCacheBasicStorage();
+
     Agent.agent.onKeriaStatusStateChanged((event) => {
       setIsOnline(event.payload.isOnline);
     });

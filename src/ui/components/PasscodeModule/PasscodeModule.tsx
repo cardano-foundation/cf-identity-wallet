@@ -4,6 +4,10 @@ import { PasscodeModuleProps } from "./PasscodeModule.types";
 import "./PasscodeModule.scss";
 import { PASSCODE_MAPPING } from "../../globals/types";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
+import { useSelector } from "react-redux";
+import { getBiometryCacheCache } from "../../../store/reducers/biometryCache";
+import faceIdIcon from "../../assets/images/face-id.png";
+import { BiometryType } from "@aparajita/capacitor-biometric-auth";
 
 const PasscodeModule = ({
   error,
@@ -12,7 +16,8 @@ const PasscodeModule = ({
   handleRemove,
   handleBiometricButtonClick,
 }: PasscodeModuleProps) => {
-  const { biometricInfo, biometricsIsEnabled } = useBiometricAuth();
+  const biometryCache = useSelector(getBiometryCacheCache);
+  const { biometricInfo } = useBiometricAuth();
   const numbers = PASSCODE_MAPPING.numbers;
   const labels = PASSCODE_MAPPING.labels;
   const rows = [];
@@ -29,6 +34,31 @@ const PasscodeModule = ({
 
   const handleBiometricButton = () => {
     handleBiometricButtonClick && handleBiometricButtonClick();
+  };
+
+  const getBiometricIcon = () => {
+    if (!biometricInfo) return null;
+
+    if (
+      [BiometryType.faceAuthentication, BiometryType.faceId].includes(
+        biometricInfo?.biometryType
+      )
+    ) {
+      return (
+        <img
+          src={faceIdIcon}
+          alt="face-id"
+        />
+      );
+    }
+
+    return (
+      <IonIcon
+        slot="icon-only"
+        className="passcode-module-fingerprint-icon"
+        icon={fingerPrintSharp}
+      />
+    );
   };
 
   return (
@@ -56,7 +86,7 @@ const PasscodeModule = ({
                 {rowIndex === rows.length - 1 && (
                   <IonCol>
                     {handleBiometricButtonClick &&
-                    biometricsIsEnabled &&
+                    biometryCache.enabled &&
                     biometricInfo?.strongBiometryIsAvailable &&
                     biometricInfo?.isAvailable ? (
                         <IonButton
@@ -67,11 +97,7 @@ const PasscodeModule = ({
                           handleBiometricButton()
                           }
                         >
-                          <IonIcon
-                            slot="icon-only"
-                            className="passcode-module-fingerprint-icon"
-                            icon={fingerPrintSharp}
-                          />
+                          {getBiometricIcon()}
                         </IonButton>
                       ) : null}
                   </IonCol>

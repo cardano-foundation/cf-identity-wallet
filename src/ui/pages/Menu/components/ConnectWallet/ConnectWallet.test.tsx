@@ -52,6 +52,9 @@ const initialState = {
   identifiersCache: {
     identifiers: [...identifierFix],
   },
+  biometryCache: {
+    enabled: false,
+  },
 };
 
 const storeMocked = {
@@ -76,6 +79,9 @@ describe("Wallet connect: empty history", () => {
       },
       identifiersCache: {
         identifiers: [...identifierFix],
+      },
+      biometryCache: {
+        enabled: false,
       },
     };
 
@@ -111,6 +117,9 @@ describe("Wallet connect: empty history", () => {
       },
       identifiersCache: {
         identifiers: [...identifierFix],
+      },
+      biometryCache: {
+        enabled: false,
       },
     };
 
@@ -160,6 +169,9 @@ describe("Wallet connect: empty history", () => {
       },
       identifiersCache: {
         identifiers: [],
+      },
+      biometryCache: {
+        enabled: false,
       },
     };
 
@@ -393,6 +405,9 @@ describe("Wallet connect", () => {
       },
       identifiersCache: {
         identifiers: [],
+      },
+      biometryCache: {
+        enabled: false,
       },
     };
 

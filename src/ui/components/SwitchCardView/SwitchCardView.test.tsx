@@ -1,4 +1,7 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { AnyAction, Store } from "@reduxjs/toolkit";
+import configureStore from "redux-mock-store";
+import { Provider } from "react-redux";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { CardType } from "../../globals/types";
 import { SwitchCardView } from "./SwitchCardView";
@@ -6,7 +9,17 @@ import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 
 const historyPushMock = jest.fn();
-
+jest.mock("../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      basicStorage: {
+        findById: jest.fn(),
+        save: jest.fn(),
+        createOrUpdateBasicRecord: () => Promise.resolve(),
+      },
+    },
+  },
+}));
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useHistory: () => ({
@@ -15,15 +28,44 @@ jest.mock("react-router-dom", () => ({
   }),
 }));
 
+const initialState = {
+  stateCache: {
+    routes: [TabsRoutePath.IDENTIFIERS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+      passwordIsSet: true,
+    },
+    identifierViewTypeCacheCache: {
+      viewType: null,
+    },
+  },
+};
+let mockedStore: Store<unknown, AnyAction>;
+const dispatchMock = jest.fn();
+
 describe("Card switch view list Tab", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    const mockStore = configureStore();
+
+    mockedStore = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+  });
+
   test("Renders switch view: identifier", async () => {
     const { getByText, getByTestId } = render(
-      <SwitchCardView
-        cardTypes={CardType.IDENTIFIERS}
-        cardsData={identifierFix}
-        title="title"
-        name="allidentifiers"
-      />
+      <Provider store={mockedStore}>
+        <SwitchCardView
+          cardTypes={CardType.IDENTIFIERS}
+          cardsData={identifierFix}
+          title="title"
+          name="allidentifiers"
+        />
+      </Provider>
     );
 
     expect(getByText("title")).toBeInTheDocument();
@@ -51,12 +93,14 @@ describe("Card switch view list Tab", () => {
 
   test("Renders switch view: cred", async () => {
     const { getByText, getByTestId } = render(
-      <SwitchCardView
-        cardTypes={CardType.CREDENTIALS}
-        cardsData={credsFixAcdc}
-        title="title"
-        name="allidentifiers"
-      />
+      <Provider store={mockedStore}>
+        <SwitchCardView
+          cardTypes={CardType.CREDENTIALS}
+          cardsData={credsFixAcdc}
+          title="title"
+          name="allidentifiers"
+        />
+      </Provider>
     );
 
     expect(getByText("title")).toBeInTheDocument();

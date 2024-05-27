@@ -1,15 +1,8 @@
-import {
-  act,
-  fireEvent,
-  getByTestId,
-  render,
-  waitFor,
-} from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Redirect, Route } from "react-router-dom";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { SetOptions } from "@capacitor/preferences";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import { CredentialDetails } from "./CredentialDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
@@ -17,7 +10,6 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { Agent } from "../../../core/agent/agent";
-import { PreferencesStorage } from "../../../core/storage";
 import {
   addFavouritesCredsCache,
   removeFavouritesCredsCache,
@@ -37,6 +29,11 @@ jest.mock("../../../core/agent/agent", () => ({
         getCredentialDetailsById: jest.fn(),
         restoreCredential: jest.fn(() => Promise.resolve(true)),
         getCredentialShortDetailsById: jest.fn(() => Promise.resolve([])),
+      },
+      basicStorage: {
+        findById: jest.fn(),
+        save: jest.fn(),
+        createOrUpdateBasicRecord: jest.fn().mockResolvedValue(undefined),
       },
     },
   },
@@ -97,6 +94,9 @@ const initialStateNoPasswordCurrent = {
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
   credsCache: { creds: credsFixAcdc, favourites: [] },
+  biometryCache: {
+    enabled: false,
+  },
 };
 
 const initialStateNoPasswordArchived = {
@@ -117,6 +117,9 @@ const initialStateNoPasswordArchived = {
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
   credsCache: { creds: [] },
+  biometryCache: {
+    enabled: false,
+  },
 };
 
 describe("Cards Details page - current not archived credential", () => {
@@ -332,12 +335,6 @@ describe("Cards Details page - current not archived credential", () => {
       dispatch: dispatchMock,
     };
 
-    PreferencesStorage.set = jest
-      .fn()
-      .mockImplementation(async (data: SetOptions): Promise<boolean> => {
-        return Promise.resolve(true);
-      });
-
     const mockNow = 1466424490000;
     const dateSpy = jest.spyOn(Date, "now").mockReturnValue(mockNow);
 
@@ -404,12 +401,6 @@ describe("Cards Details page - current not archived credential", () => {
       ...mockStore(initialStateNoPasswordCurrent),
       dispatch: dispatchMock,
     };
-
-    PreferencesStorage.set = jest
-      .fn()
-      .mockImplementation(async (data: SetOptions): Promise<boolean> => {
-        return Promise.resolve(true);
-      });
 
     const { getByTestId } = render(
       <Provider store={storeMocked}>

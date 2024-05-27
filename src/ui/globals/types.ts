@@ -57,6 +57,7 @@ enum ToastMsgType {
   UNABLE_CONNECT_WALLET = "unableconnectwallet",
   PEER_ID_SUCCESS = "peeridsuccess",
   PEER_ID_NOT_RECOGNISED = "peeridnotrecognised",
+  SETUP_BIOMETRIC_AUTHENTICATION_SUCCESS = "setupbiometricsuccess",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {
