@@ -16,6 +16,8 @@ import {
   AgentServicesProps,
   KeriaStatusChangedEvent,
   KeriaStatusEventTypes,
+  AgentUrls,
+  MiscRecordId,
 } from "./agent.types";
 import { EventService } from "./services/eventService";
 import {
@@ -172,22 +174,47 @@ class Agent {
     );
   }
 
-  async start(): Promise<void> {
+  async start(agentUrls: Partial<AgentUrls>): Promise<void> {
     if (!Agent.isOnline) {
+      const exitsUrls = await this.getAgentUrl();
+      if (
+        (!exitsUrls.url || !exitsUrls.bootUrl) &&
+        (!agentUrls.url || !agentUrls.bootUrl)
+      ) {
+        //  @TODO
+        throw new Error("Require KERI URL and Boot URL to start the agent.");
+      }
       await signifyReady();
       const bran = await this.getBran();
-      // @TODO - foconnor: Review of Tier level.
-      this.signifyClient = new SignifyClient(
-        ConfigurationService.env.keri.keria.url,
-        bran,
-        Tier.low,
-        ConfigurationService.env.keri.keria.bootUrl
-      );
 
-      this.agentServicesProps = {
-        signifyClient: this.signifyClient,
-        eventService: new EventService(),
-      };
+      if (agentUrls.url && !exitsUrls.url) {
+        // @TODO - foconnor: Review of Tier level.
+        this.signifyClient = new SignifyClient(
+          agentUrls.url,
+          bran,
+          Tier.low,
+          agentUrls.bootUrl
+        );
+        await this.signifyClient.boot();
+        await this.signifyClient.connect();
+        // Save databases
+        await this.saveAgentUrls({
+          url: agentUrls.url,
+          bootUrl: agentUrls.bootUrl as string,
+        });
+      } else {
+        this.signifyClient = new SignifyClient(
+          exitsUrls.url as string,
+          bran,
+          Tier.low,
+          exitsUrls.bootUrl
+        );
+        await this.signifyClient.connect();
+      }
+
+      Agent.isOnline = true;
+
+      this.agentServicesProps.signifyClient = this.signifyClient;
 
       this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
         type: KeriaStatusEventTypes.KeriaStatusChanged,
@@ -195,19 +222,44 @@ class Agent {
           isOnline: Agent.isOnline,
         },
       });
-
-      try {
-        await this.signifyClient.connect();
-        Agent.isOnline = true;
-      } catch (err) {
-        await this.signifyClient.boot();
-        await this.signifyClient.connect();
-        Agent.isOnline = true;
-      }
     }
   }
 
-  async startDatabaseConnection(): Promise<void> {
+  async getAgentUrl(): Promise<Partial<AgentUrls>> {
+    const keriUrlRecord = await this.basicStorageService.findById(
+      MiscRecordId.KERI_URL
+    );
+    const keriBootUrlRecord = await this.basicStorageService.findById(
+      MiscRecordId.KERI_BOOT_URL
+    );
+    if (!keriUrlRecord || !keriBootUrlRecord) {
+      return {
+        url: ConfigurationService.env.keri?.keria?.url,
+        bootUrl: ConfigurationService.env.keri?.keria?.bootUrl,
+      };
+    }
+    return {
+      url: keriUrlRecord.content.url as string,
+      bootUrl: keriBootUrlRecord.content.url as string,
+    };
+  }
+
+  async saveAgentUrls(agentUrls: AgentUrls): Promise<void> {
+    await this.basicStorageService.save({
+      id: MiscRecordId.KERI_URL,
+      content: {
+        url: agentUrls.url,
+      },
+    });
+    await this.basicStorageService.save({
+      id: MiscRecordId.KERI_BOOT_URL,
+      content: {
+        url: agentUrls.bootUrl,
+      },
+    });
+  }
+
+  async initDatabaseConnection(): Promise<void> {
     await this.storageSession.open(walletId);
     this.basicStorageService = new BasicStorage(
       this.getStorageService<BasicRecord>(this.storageSession)
@@ -230,9 +282,14 @@ class Agent {
     this.peerConnectionStorage = new PeerConnectionStorage(
       this.getStorageService<PeerConnectionMetadataRecord>(this.storageSession)
     );
+
+    this.agentServicesProps = {
+      signifyClient: this.signifyClient,
+      eventService: new EventService(),
+    };
   }
 
-  async bootAndConnect(retryInterval = 1000) {
+  async connect(retryInterval = 1000) {
     try {
       if (Agent.isOnline) {
         Agent.isOnline = false;
@@ -243,7 +300,6 @@ class Agent {
           },
         });
       }
-      await this.signifyClient.boot();
       await this.signifyClient.connect();
       Agent.isOnline = true;
       this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
@@ -254,7 +310,7 @@ class Agent {
       });
     } catch (error) {
       await new Promise((resolve) => setTimeout(resolve, retryInterval));
-      await this.bootAndConnect(retryInterval);
+      await this.connect(retryInterval);
     }
   }
 

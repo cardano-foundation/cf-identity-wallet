@@ -270,22 +270,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   const initApp = async () => {
     await new ConfigurationService().start();
-    try {
-      await Agent.agent.start();
-      setIsOnline(true);
-      await loadDatabase();
-    } catch (e) {
-      const errorStack = (e as Error).stack as string;
-      // If the error is failed to fetch with signify, we retry until the connection is secured
-      if (/SignifyClient/gi.test(errorStack)) {
-        await loadDatabase();
-        Agent.agent.bootAndConnect().then(() => {
-          setIsOnline(Agent.agent.getKeriaOnlineStatus());
-        });
-      } else {
-        throw e;
-      }
-    }
+    await Agent.agent.initDatabaseConnection();
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
     const appAlreadyInit = await Agent.agent.basicStorage.findById(
@@ -299,6 +284,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     }
     await loadCacheBasicStorage();
+    const getAgentUrl = await Agent.agent.getAgentUrl();
+    // eslint-disable-next-line no-useless-catch
+    try {
+      await Agent.agent.start(getAgentUrl);
+      setIsOnline(true);
+      await loadDatabase();
+    } catch (e) {
+      // @TODO: handle error
+    }
 
     Agent.agent.onKeriaStatusStateChanged((event) => {
       setIsOnline(event.payload.isOnline);

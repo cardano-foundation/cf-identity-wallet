@@ -64,7 +64,7 @@ class SignifyNotificationService extends AgentService {
         // so check if its gone down to avoid having 2 bootAndConnect loops
         if (Agent.agent.getKeriaOnlineStatus()) {
           // This will hang the loop until the connection is secured again
-          await Agent.agent.bootAndConnect();
+          await Agent.agent.connect();
         }
       }
       if (!notifications) {
