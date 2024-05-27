@@ -14,7 +14,7 @@ export const config: Options.Testrunner = {
   specs: ["../features/**/*.feature"],
   specFileRetries: 2,
   specFileRetriesDelay: 3,
-  specFileRetriesDeferred: true,
+  specFileRetriesDeferred: false,
   capabilities: [],
   logLevel: "debug",
   bail: 0,
