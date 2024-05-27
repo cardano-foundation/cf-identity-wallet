@@ -78,6 +78,10 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       getKeriaOnlineStatus: jest.fn(),
       onKeriaStatusStateChanged: jest.fn(),
+      peerConnectionMetadataStorage: {
+        getAllPeerConnectionMetadata: jest.fn(),
+        getPeerConnectionMetadata: jest.fn(),
+      },
     },
   },
 }));

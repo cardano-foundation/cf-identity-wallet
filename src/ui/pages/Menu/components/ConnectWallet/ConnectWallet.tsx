@@ -64,9 +64,10 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     const displayConnection = useMemo((): CardItem<ConnectionData>[] => {
       return connections.map((connection) => ({
         id: connection.id,
-        title: connection.name,
-        subtitle: connection.owner,
-        image: connection.image,
+        title: connection.name as string,
+        url: connection.url,
+        subtitle: connection.selectedAid,
+        image: connection.iconB64,
         data: connection,
       }));
     }, []);

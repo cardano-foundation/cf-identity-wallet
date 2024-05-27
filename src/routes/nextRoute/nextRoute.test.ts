@@ -61,6 +61,7 @@ describe("NextRoute", () => {
         walletConnections: [],
         connectedWallet: null,
         pendingConnection: null,
+        pendingDAppMeerKat: null,
       },
     };
     data = {
@@ -175,6 +176,7 @@ describe("getNextRoute", () => {
       walletConnections: [],
       connectedWallet: null,
       pendingConnection: null,
+      pendingDAppMeerKat: null,
     },
   };
   const state = {};

@@ -5,7 +5,7 @@ import {
   setPauseQueueIncomingRequest,
 } from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getPendingConnection } from "../../../store/reducers/walletConnectionsCache";
+import { getPendingDAppMeerkat } from "../../../store/reducers/walletConnectionsCache";
 import { IncomingRequest } from "./components/IncomingRequest";
 import { WalletConnect } from "./components/WalletConnect";
 
@@ -15,11 +15,11 @@ const SidePage = () => {
   const pauseIncommingRequestByConnection = useRef(false);
 
   const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
-  const pendingConnection = useAppSelector(getPendingConnection);
+  const pendingDAppMeerkat = useAppSelector(getPendingDAppMeerkat);
 
   const canOpenIncomingRequest =
     queueIncomingRequest.queues.length > 0 && !queueIncomingRequest.isPaused;
-  const canOpenPendingWalletConnection = !!pendingConnection;
+  const canOpenPendingWalletConnection = !!pendingDAppMeerkat;
 
   useEffect(() => {
     if (canOpenIncomingRequest) return;

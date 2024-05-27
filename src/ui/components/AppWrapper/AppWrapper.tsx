@@ -45,7 +45,6 @@ import { ConfigurationService } from "../../../core/configuration";
 import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 import { useActivityTimer } from "./hooks/useActivityTimer";
 import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
-import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
 import { PeerConnectSigningEvent } from "../../../core/cardano/walletConnect/peerConnection.types";
 import { MultiSigService } from "../../../core/agent/services/multiSigService";
@@ -138,7 +137,13 @@ const peerConnectRequestSignChangeHandler = async (
   event: PeerConnectSigningEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  //TODO: Handle logic for the accept/decline sing request
+  dispatch(
+    setQueueIncomingRequest({
+      id: "peer-connect-signing",
+      peerConnectionEvent: event,
+      type: IncomingRequestType.SIGN_DATA_REQUEST,
+    })
+  );
 };
 
 const AppWrapper = (props: { children: ReactNode }) => {
@@ -203,12 +208,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     const credentials = await Agent.agent.credentials.getCredentials();
     const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
+    const storedPeerConnections =
+      await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
 
     dispatch(setIdentifiersCache(storedIdentifiers));
     dispatch(setCredsCache(credentials));
     dispatch(setConnectionsCache(connectionsDetails));
-    // TODO: Need update after core function completed.
-    dispatch(setWalletConnectionsCache(walletConnectionsFix));
+    dispatch(setWalletConnectionsCache(storedPeerConnections));
   };
 
   const loadPreferences = async () => {

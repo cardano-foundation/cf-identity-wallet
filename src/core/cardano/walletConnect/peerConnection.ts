@@ -11,6 +11,8 @@ import {
   PeerConnectSigningEvent,
   PeerConnectSigningEventTypes,
 } from "./peerConnection.types";
+import { Agent } from "../../agent/agent";
+import { PeerConnectionStorage } from "../../agent/records";
 
 class PeerConnection {
   static readonly PEER_CONNECTION_START_PENDING =
@@ -80,10 +82,20 @@ class PeerConnection {
       this.eventService
     );
     this.identityWalletConnect.setOnConnect(
-      (connectMessage: IConnectMessage) => {
+      async (connectMessage: IConnectMessage) => {
         if (!connectMessage.error) {
           this.connected = true;
-          this.connectedDAppAdress = connectMessage.dApp.address;
+          const { name, url, address } = connectMessage.dApp;
+          this.connectedDAppAdress = address;
+          await Agent.agent.peerConnectionMetadataStorage.updatePeerConnectionMetadata(
+            address,
+            {
+              name,
+              selectedAid,
+              url,
+              iconB64: ICON_BASE64,
+            }
+          );
         }
       }
     );
@@ -102,12 +114,44 @@ class PeerConnection {
     );
   }
 
-  connectWithDApp(dAppIdentifier: string) {
+  async connectWithDApp(dAppIdentifier: string) {
     if (this.identityWalletConnect === undefined) {
       throw new Error(PeerConnection.PEER_CONNECTION_START_PENDING);
     }
-
+    const existedPeerConnection =
+      await Agent.agent.peerConnectionMetadataStorage
+        .getPeerConnectionMetadata(dAppIdentifier)
+        .catch((error) => {
+          if (
+            error.message ===
+            PeerConnectionStorage.PEER_CONNECTION_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
+    if (!existedPeerConnection) {
+      await Agent.agent.peerConnectionMetadataStorage.createPeerConnectionMetadataRecord(
+        {
+          id: dAppIdentifier,
+          iconB64: ICON_BASE64,
+        }
+      );
+    } else {
+      //Set other fields back to pending state
+      await Agent.agent.peerConnectionMetadataStorage.updatePeerConnectionMetadata(
+        dAppIdentifier,
+        {
+          name: undefined,
+          selectedAid: undefined,
+          url: undefined,
+          iconB64: ICON_BASE64,
+        }
+      );
+    }
     const seed = this.identityWalletConnect.connect(dAppIdentifier);
+
     SecureStorage.set(KeyStoreKeys.MEERKAT_SEED, seed);
   }
 

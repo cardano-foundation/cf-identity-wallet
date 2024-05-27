@@ -59,6 +59,7 @@ describe("getBackRoute", () => {
         walletConnections: [],
         connectedWallet: null,
         pendingConnection: null,
+        pendingDAppMeerKat: null,
       },
     };
   });
@@ -175,6 +176,7 @@ describe("getPreviousRoute", () => {
         walletConnections: [],
         connectedWallet: null,
         pendingConnection: null,
+        pendingDAppMeerKat: null,
       },
     };
   });

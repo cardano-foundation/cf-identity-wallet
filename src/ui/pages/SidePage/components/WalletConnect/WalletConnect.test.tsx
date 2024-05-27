@@ -17,6 +17,23 @@ import { WalletConnect } from "./WalletConnect";
 setupIonicReact();
 mockIonicReact();
 
+jest.mock("../../../../../core/cardano/walletConnect/peerConnection", () => ({
+  PeerConnection: {
+    peerConnection: {
+      start: jest.fn(),
+      connectWithDApp: jest.fn(),
+    },
+  },
+}));
+jest.mock("../../../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      peerConnectionMetadataStorage: {
+        getPeerConnectionMetadata: jest.fn(),
+      },
+    },
+  },
+}));
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children, isOpen }: any) => (
@@ -167,7 +184,7 @@ describe("Wallet Connect Stage Two", () => {
       <Provider store={storeMocked}>
         <WalletConnectStageTwo
           isOpen={true}
-          data={walletConnectionsFix[0]}
+          pendingDAppMeerkat={"pending-meerkat"}
           onClose={handleCancel}
           onBackClick={handleChangeStage}
         />
@@ -196,7 +213,7 @@ describe("Wallet Connect Stage Two", () => {
       <Provider store={storeMocked}>
         <WalletConnectStageTwo
           isOpen={true}
-          data={walletConnectionsFix[0]}
+          pendingDAppMeerkat={"pending-meerkat"}
           onClose={handleCancel}
           onBackClick={handleChangeStage}
         />
@@ -244,6 +261,7 @@ describe("Wallet Connect Request", () => {
     },
     walletConnectionsCache: {
       walletConnections: [],
+      pendingDAppMeerKat: "pending-meerkat",
       pendingConnection: walletConnectionsFix[0],
     },
     identifiersCache: {

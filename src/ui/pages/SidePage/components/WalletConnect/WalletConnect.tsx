@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import {
-  getPendingConnection,
-  setPendingConnections,
+  getPendingDAppMeerkat,
+  setPendingDAppMeerKat,
 } from "../../../../../store/reducers/walletConnectionsCache";
 import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
@@ -10,12 +10,12 @@ import { SidePageContentProps } from "../../SidePage.types";
 
 const WalletConnect = ({ setOpenPage }: SidePageContentProps) => {
   const dispatch = useAppDispatch();
-  const pendingConnection = useAppSelector(getPendingConnection);
+  const pendingDAppMeerkat = useAppSelector(getPendingDAppMeerkat);
   const [requestStage, setRequestStage] = useState(0);
 
   useEffect(() => {
-    setTimeout(() => setOpenPage(!!pendingConnection), 10);
-  }, [pendingConnection]);
+    setTimeout(() => setOpenPage(!!pendingDAppMeerkat), 10);
+  }, [pendingDAppMeerkat]);
 
   const changeToStageTwo = () => {
     setRequestStage(1);
@@ -25,25 +25,26 @@ const WalletConnect = ({ setOpenPage }: SidePageContentProps) => {
     setOpenPage(false);
 
     setTimeout(() => {
-      dispatch(setPendingConnections(null));
+      dispatch(setPendingDAppMeerKat(null));
     }, 500);
   };
 
-  if (!pendingConnection) return null;
+  if (!pendingDAppMeerkat) return null;
 
-  if (requestStage === 0)
+  if (requestStage === 0) {
     return (
       <WalletConnectStageOne
-        isOpen={!!pendingConnection}
+        isOpen={!!pendingDAppMeerkat}
         onClose={handleCloseWalletConnect}
         onAccept={changeToStageTwo}
       />
     );
+  }
 
   return (
     <WalletConnectStageTwo
-      data={pendingConnection}
-      isOpen={!!pendingConnection}
+      pendingDAppMeerkat={pendingDAppMeerkat}
+      isOpen={!!pendingDAppMeerkat}
       onClose={handleCloseWalletConnect}
       onBackClick={() => setRequestStage(0)}
     />

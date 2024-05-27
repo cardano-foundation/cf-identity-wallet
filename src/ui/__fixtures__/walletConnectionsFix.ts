@@ -3,29 +3,29 @@ import KeriLogo from "../assets/images/KeriGeneric.jpg";
 
 const walletConnectionsFix: ConnectionData[] = [
   {
-    id: 1,
+    id: "1",
     name: "Wallet name #1",
-    owner: "Nami",
-    image: KeriLogo,
+    selectedAid: "Nami",
+    iconB64: KeriLogo,
     url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
   },
   {
-    id: 2,
+    id: "2",
     name: "Wallet name #2",
-    owner: "Yoroi",
+    selectedAid: "Yoroi",
     url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
   },
   {
-    id: 3,
+    id: "3",
     name: "Wallet name #3",
-    owner: "Flint",
+    selectedAid: "Flint",
     url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
-    image: KeriLogo,
+    iconB64: KeriLogo,
   },
   {
-    id: 4,
+    id: "4",
     name: "Wallet name #4",
-    owner: "Yume",
+    selectedAid: "Yume",
     url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
   },
 ];

@@ -58,7 +58,7 @@ describe("Confirm connect modal", () => {
           onDeleteConnection={deleteFn}
           connectionData={{
             ...walletConnectionsFix[0],
-            image: "imagelink",
+            iconB64: "imagelink",
           }}
           isConnectModal={true}
         />
@@ -67,13 +67,15 @@ describe("Confirm connect modal", () => {
 
     expect(getByTestId("wallet-connection-logo")).toBeVisible();
 
-    expect(getByText(walletConnectionsFix[0].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[0].owner)).toBeVisible();
+    expect(getByText(walletConnectionsFix[0].name as string)).toBeVisible();
+    expect(
+      getByText(walletConnectionsFix[0].selectedAid as string)
+    ).toBeVisible();
 
     const ellipsisLink =
-      walletConnectionsFix[0].url.substring(0, 5) +
+      (walletConnectionsFix[0].url as string).substring(0, 5) +
       "..." +
-      walletConnectionsFix[0].url.slice(-5);
+      (walletConnectionsFix[0].url as string).slice(-5);
 
     expect(getByText(ellipsisLink)).toBeVisible();
 
@@ -113,7 +115,7 @@ describe("Confirm connect modal", () => {
           onDeleteConnection={deleteFn}
           connectionData={{
             ...walletConnectionsFix[0],
-            image: undefined,
+            iconB64: undefined,
           }}
           isConnectModal={false}
         />

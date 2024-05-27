@@ -210,14 +210,22 @@ describe("Wallet connect", () => {
         EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
       )
     ).toBeVisible();
-    expect(getByText(walletConnectionsFix[0].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[0].owner)).toBeVisible();
-    expect(getByText(walletConnectionsFix[1].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[1].owner)).toBeVisible();
-    expect(getByText(walletConnectionsFix[2].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[2].owner)).toBeVisible();
-    expect(getByText(walletConnectionsFix[3].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[3].owner)).toBeVisible();
+    expect(getByText(walletConnectionsFix[0].name as string)).toBeVisible();
+    expect(
+      getByText(walletConnectionsFix[0].selectedAid as string)
+    ).toBeVisible();
+    expect(getByText(walletConnectionsFix[1].name as string)).toBeVisible();
+    expect(
+      getByText(walletConnectionsFix[1].selectedAid as string)
+    ).toBeVisible();
+    expect(getByText(walletConnectionsFix[2].name as string)).toBeVisible();
+    expect(
+      getByText(walletConnectionsFix[2].selectedAid as string)
+    ).toBeVisible();
+    expect(getByText(walletConnectionsFix[3].name as string)).toBeVisible();
+    expect(
+      getByText(walletConnectionsFix[3].selectedAid as string)
+    ).toBeVisible();
     expect(getByTestId("connected-wallet-check-mark")).toBeVisible();
   });
 
@@ -233,14 +241,22 @@ describe("Wallet connect", () => {
         EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
       )
     ).toBeVisible();
-    expect(getByText(walletConnectionsFix[0].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[0].owner)).toBeVisible();
-    expect(getByText(walletConnectionsFix[1].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[1].owner)).toBeVisible();
-    expect(getByText(walletConnectionsFix[2].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[2].owner)).toBeVisible();
-    expect(getByText(walletConnectionsFix[3].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[3].owner)).toBeVisible();
+    expect(getByText(walletConnectionsFix[0].name as string)).toBeVisible();
+    expect(
+      getByText(walletConnectionsFix[0].selectedAid as string)
+    ).toBeVisible();
+    expect(getByText(walletConnectionsFix[1].name as string)).toBeVisible();
+    expect(
+      getByText(walletConnectionsFix[1].selectedAid as string)
+    ).toBeVisible();
+    expect(getByText(walletConnectionsFix[2].name as string)).toBeVisible();
+    expect(
+      getByText(walletConnectionsFix[2].selectedAid as string)
+    ).toBeVisible();
+    expect(getByText(walletConnectionsFix[3].name as string)).toBeVisible();
+    expect(
+      getByText(walletConnectionsFix[3].selectedAid as string)
+    ).toBeVisible();
     expect(getByTestId("connected-wallet-check-mark")).toBeVisible();
   });
 
