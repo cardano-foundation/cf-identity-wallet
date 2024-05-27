@@ -36,6 +36,7 @@
     "@ionic/storage": "^3.0.6",
     "@reduxjs/toolkit": "^1.9.5",
     "bip39": "^3.0.4",
+    "capacitor-native-settings": "^5.0.1",
     "dotenv": "^16.4.5",
     "i18next": "^22.4.14",
     "i18next-browser-languagedetector": "^7.0.1",

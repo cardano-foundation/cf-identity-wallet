@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   BiometricAuth,
   BiometryError,
@@ -8,11 +7,10 @@ import {
   AndroidBiometryStrength,
   CheckBiometryResult,
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
-import i18n from "i18next";
 import { PluginListenerHandle } from "@capacitor/core";
-import { useSelector } from "react-redux";
+import i18n from "i18next";
+import { useEffect, useState } from "react";
 import { useActivityTimer } from "../components/AppWrapper/hooks/useActivityTimer";
-import { getBiometryCacheCache } from "../../store/reducers/biometryCache";
 
 const useBiometricAuth = () => {
   const [biometricInfo, setBiometricInfo] = useState<CheckBiometryResult>();
