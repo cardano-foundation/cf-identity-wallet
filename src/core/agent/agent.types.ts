@@ -30,7 +30,7 @@ enum MiscRecordId {
   KERIA_NOTIFICATION_MARKER = "keria-notification-marker",
   APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
   KERIA_CONNECT_URL = "keria-connect-url",
-  KERI_BOOT_URL = "keri-boot-url",
+  KERIA_BOOT_URL = "keria-boot-url",
 }
 
 interface ConnectionShortDetails {

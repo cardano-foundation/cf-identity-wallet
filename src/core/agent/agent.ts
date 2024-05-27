@@ -240,7 +240,7 @@ class Agent {
       MiscRecordId.KERIA_CONNECT_URL
     );
     const keriBootUrlRecord = await this.basicStorageService.findById(
-      MiscRecordId.KERI_BOOT_URL
+      MiscRecordId.KERIA_BOOT_URL
     );
     if (!keriUrlRecord || !keriBootUrlRecord) {
       return {
@@ -268,7 +268,7 @@ class Agent {
       },
     });
     await this.basicStorageService.save({
-      id: MiscRecordId.KERI_BOOT_URL,
+      id: MiscRecordId.KERIA_BOOT_URL,
       content: {
         url: agentUrls.bootUrl,
       },
