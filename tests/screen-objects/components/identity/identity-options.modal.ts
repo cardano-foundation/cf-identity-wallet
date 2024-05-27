@@ -1,10 +1,6 @@
 import { CommonIdentityModal } from "./common-identity.modal.js";
 
 export class IdentityOptionsModal extends CommonIdentityModal {
-  get alertModal() {
-    return "[data-testid=\"alert-confirm-identifier-delete-options\"]";
-  }
-
   get deleteIdentifierOption() {
     return $("[data-testid=\"delete-identifier-options\"]");
   }
