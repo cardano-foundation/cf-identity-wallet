@@ -27,7 +27,6 @@ enum OperationType {
   MULTI_SIG_INITIATOR_INIT = "multiSigInitiatorInit",
   CREATE_IDENTIFIER_CONNECT_WALLET = "createIdentifierConnectWallet",
   SCAN_WALLET_CONNECTION = "scanWalletConnection",
-  REINIT_APP = "initApp",
 }
 
 enum ToastMsgType {

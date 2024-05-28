@@ -87,7 +87,6 @@ const VerifySeedPhrase = () => {
     await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, entropy);
 
     await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, seedPhraseStore.bran);
-    dispatch(setCurrentOperation(OperationType.REINIT_APP));
 
     handleNavigate();
   };

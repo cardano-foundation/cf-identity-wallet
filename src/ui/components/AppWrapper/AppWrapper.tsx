@@ -153,13 +153,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (operation === OperationType.REINIT_APP) {
-      dispatch(setCurrentOperation(OperationType.IDLE));
-      initApp();
-    }
-  }, [operation]);
-
-  useEffect(() => {
     if (authentication.loggedIn) {
       const handleMessages = async () => {
         const oldMessages = (

@@ -76,6 +76,17 @@ const GenerateSeedPhrase = () => {
     );
   };
 
+  const HandlePrivacy = () => {
+    return (
+      <u
+        data-testid="privacy-policy-modal-handler"
+        onClick={() => setPrivacyModalIsOpen(true)}
+      >
+        {i18n.t("generateseedphrase.termsandconditions.privacy")}
+      </u>
+    );
+  };
+
   const handleContinue = () => {
     setAlertConfirmIsOpen(false);
     const data: DataProps = {
@@ -133,7 +144,7 @@ const GenerateSeedPhrase = () => {
         <p>
           <Trans
             i18nKey={i18n.t("generateseedphrase.termsandconditions.text")}
-            components={[<HandleTerms key="" />]}
+            components={[<HandleTerms key="" />, <HandlePrivacy key="" />]}
           />
         </p>
       </div>

@@ -13,7 +13,6 @@ import { RoutePath } from "../../../routes";
 import { store } from "../../../store";
 import { OperationType } from "../../globals/types";
 import { GenerateSeedPhrase } from "./GenerateSeedPhrase";
-import { MNEMONIC_SIXTEEN_WORDS } from "../../globals/constants";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -21,7 +20,7 @@ jest.mock("../../../core/agent/agent", () => ({
       getBranAndMnemonic: () =>
         Promise.resolve({
           mnemonic:
-            "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15 example16",
+            "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15 example16 example17 example18",
           bran: "brand",
         }),
     },
@@ -259,7 +258,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
       const seedNumberElements = seedPhraseContainer.querySelectorAll(
         "span[data-testid*=\"word-index-number\"]"
       );
-      expect(seedNumberElements.length).toBe(MNEMONIC_SIXTEEN_WORDS);
+      expect(seedNumberElements.length).toBe(18);
     });
   });
 });
