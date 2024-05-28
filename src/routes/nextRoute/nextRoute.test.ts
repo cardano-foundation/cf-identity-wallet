@@ -9,7 +9,6 @@ import {
 import { RootState } from "../../store";
 import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../ui/globals/constants";
 import { DataProps } from "./nextRoute.types";
 import { OperationType } from "../../ui/globals/types";
 
@@ -41,8 +40,8 @@ describe("NextRoute", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase160: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        seedPhrase: "",
+        bran: "",
       },
       identifiersCache: {
         identifiers: [],
@@ -160,8 +159,8 @@ describe("getNextRoute", () => {
       },
     },
     seedPhraseCache: {
-      seedPhrase160: "",
-      selected: FIFTEEN_WORDS_BIT_LENGTH,
+      seedPhrase: "",
+      bran: "",
     },
     identifiersCache: {
       identifiers: [],
@@ -214,8 +213,8 @@ describe("getNextRoute", () => {
 
   test("getNextSetPasscodeRoute should return the correct next path when seed phrase is set", () => {
     storeMock.seedPhraseCache = {
-      seedPhrase160: "example seed phrase 160",
-      selected: FIFTEEN_WORDS_BIT_LENGTH,
+      seedPhrase: "example seed phrase 160",
+      bran: "bran",
     };
 
     const result = getNextSetPasscodeRoute(storeMock);
@@ -225,7 +224,7 @@ describe("getNextRoute", () => {
   });
 
   test("getNextSetPasscodeRoute should return the correct next path when seed phrase is not set", () => {
-    storeMock.seedPhraseCache.seedPhrase160 = "";
+    storeMock.seedPhraseCache.seedPhrase = "";
 
     const result = getNextSetPasscodeRoute(storeMock);
     expect(result).toEqual({

@@ -56,7 +56,7 @@ const getNextCredentialDetailsRoute = () => {
 };
 
 const getNextSetPasscodeRoute = (store: StoreState) => {
-  const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase160;
+  const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase;
 
   const nextPath: string = seedPhraseIsSet
     ? RoutePath.TABS_MENU
@@ -91,8 +91,8 @@ const getNextVerifySeedPhraseRoute = () => {
 
 const updateStoreSetSeedPhrase = (data: DataProps) => {
   return setSeedPhraseCache({
-    seedPhrase160: data.state?.seedPhrase160,
-    selected: data.state?.selected,
+    seedPhrase: data.state?.seedPhrase,
+    bran: data.state?.bran,
   });
 };
 const updateStoreCurrentRoute = (data: DataProps) => {

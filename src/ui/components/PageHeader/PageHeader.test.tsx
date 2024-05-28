@@ -3,7 +3,6 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { PageHeader } from "./PageHeader";
 import { RoutePath } from "../../../routes";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 
 describe("Page Header", () => {
   const mockStore = configureStore();
@@ -18,9 +17,8 @@ describe("Page Header", () => {
       },
     },
     seedPhraseCache: {
-      seedPhrase160: "",
-      seedPhrase256: "",
-      selected: FIFTEEN_WORDS_BIT_LENGTH,
+      seedPhrase: "",
+      bran: "",
     },
   };
 

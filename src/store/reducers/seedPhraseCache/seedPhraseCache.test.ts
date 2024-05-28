@@ -8,7 +8,6 @@ import {
   setSeedPhraseCache,
 } from "./seedPhraseCache";
 import { RootState } from "../../index";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../ui/globals/constants";
 
 describe("SeedPhraseCache", () => {
   test("should return the initial state on first run", () => {
@@ -18,17 +17,16 @@ describe("SeedPhraseCache", () => {
   });
 
   test("should set the seed phrase cache", () => {
-    const seedPhrase160 = "test seed phrase 160";
-    const seedPhrase256 = "test seed phrase 256";
-    const selected = FIFTEEN_WORDS_BIT_LENGTH;
+    const seedPhrase = "test seed phrase 160";
+    const bran = "brand";
 
     const action = setSeedPhraseCache({
-      seedPhrase160,
-      selected,
+      seedPhrase,
+      bran,
     });
     const nextState = seedPhraseCacheSlice.reducer(initialState, action);
 
-    expect(nextState.seedPhrase160).toEqual(seedPhrase160);
+    expect(nextState.seedPhrase).toEqual(seedPhrase);
     expect(nextState).not.toBe(initialState);
 
     const rootState = { seedPhraseCache: nextState } as RootState;
@@ -36,15 +34,15 @@ describe("SeedPhraseCache", () => {
   });
 
   test("should clear the seed phrase cache", () => {
-    const seedPhrase160 = "test seed phrase 160";
-    const selected = FIFTEEN_WORDS_BIT_LENGTH;
+    const seedPhrase = "test seed phrase 160";
+    const bran = "bran";
 
     const action = setSeedPhraseCache({
-      seedPhrase160,
-      selected,
+      seedPhrase,
+      bran,
     });
     let nextState = seedPhraseCacheSlice.reducer(initialState, action);
-    expect(nextState.seedPhrase160).toEqual(seedPhrase160);
+    expect(nextState.seedPhrase).toEqual(seedPhrase);
 
     const clearAction = clearSeedPhraseCache();
     nextState = seedPhraseCacheSlice.reducer(initialState, clearAction);

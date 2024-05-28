@@ -1,15 +1,11 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
-import configureStore from "redux-mock-store";
-import { Provider } from "react-redux";
-import { MemoryRouter, Redirect, Route } from "react-router-dom";
-import { AnyAction, Store } from "@reduxjs/toolkit";
 import { waitForIonicReact } from "@ionic/react-test-utils";
-import { CredentialDetails } from "./CredentialDetails";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
-import { credsFixAcdc } from "../../__fixtures__/credsFix";
+import { AnyAction, Store } from "@reduxjs/toolkit";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { MemoryRouter, Route } from "react-router-dom";
+import configureStore from "redux-mock-store";
 import { Agent } from "../../../core/agent/agent";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
   addFavouritesCredsCache,
   removeFavouritesCredsCache,
@@ -18,7 +14,10 @@ import {
   setCurrentRoute,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
+import { credsFixAcdc } from "../../__fixtures__/credsFix";
+import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
+import { CredentialDetails } from "./CredentialDetails";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -63,10 +62,9 @@ const initialStateCreds = {
     },
   },
   seedPhraseCache: {
-    seedPhrase160:
+    seedPhrase:
       "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-    seedPhrase256: "",
-    selected: FIFTEEN_WORDS_BIT_LENGTH,
+    bran: "bran",
   },
   identifiersCache: {
     identifiers: credsFixAcdc,
@@ -88,10 +86,9 @@ const initialStateNoPasswordCurrent = {
     },
   },
   seedPhraseCache: {
-    seedPhrase160:
+    seedPhrase:
       "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-    seedPhrase256: "",
-    selected: FIFTEEN_WORDS_BIT_LENGTH,
+    bran: "bran",
   },
   credsCache: { creds: credsFixAcdc, favourites: [] },
   biometryCache: {
@@ -111,10 +108,9 @@ const initialStateNoPasswordArchived = {
     },
   },
   seedPhraseCache: {
-    seedPhrase160:
+    seedPhrase:
       "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-    seedPhrase256: "",
-    selected: FIFTEEN_WORDS_BIT_LENGTH,
+    bran: "bran",
   },
   credsCache: { creds: [] },
   biometryCache: {
@@ -175,10 +171,9 @@ describe("Cards Details page - current not archived credential", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase160:
+        seedPhrase:
           "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        bran: "bran",
       },
       credsCache: { creds: credsFixAcdc, favourites: [] },
       connectionsCache: {
@@ -381,10 +376,9 @@ describe("Cards Details page - current not archived credential", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase160:
+        seedPhrase:
           "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        bran: "bran",
       },
       credsCache: {
         creds: credsFixAcdc,
@@ -441,10 +435,9 @@ describe("Cards Details page - current not archived credential", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase160:
+        seedPhrase:
           "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        bran: "bran",
       },
       credsCache: {
         creds: credsFixAcdc,
