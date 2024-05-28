@@ -22,6 +22,7 @@ import {
   getConnectedWallet,
   getWalletConnectionsCache,
   setConnectedWallet,
+  setWalletConnectionsCache,
 } from "../../../../../store/reducers/walletConnectionsCache";
 import { Alert } from "../../../../components/Alert";
 import { CardItem, CardList } from "../../../../components/CardList";
@@ -36,6 +37,7 @@ import {
   ActionType,
   ConnectWalletOptionRef,
 } from "./ConnectWallet.types";
+import { Agent } from "../../../../../core/agent/agent";
 
 const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
   (props, ref) => {
@@ -116,21 +118,21 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       handleOpenVerify();
     };
 
-    const handleDeleteConnection = (data: ConnectionData) => {
+    const handleDeleteConnection = async (data: ConnectionData) => {
       actionInfo.current = {
         type: ActionType.None,
       };
-
-      // TODO: Implement delete wallet connection logic
-
+      await Agent.agent.peerConnectionMetadataStorage.deletePeerConnectionMetadataRecord(
+        data.id
+      );
+      const connections =
+        await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
+      dispatch(setWalletConnectionsCache(connections));
       dispatch(setToastMsg(ToastMsgType.WALLET_CONNECTION_DELETED));
     };
 
     const handleConnectWallet = () => {
       if (!actionInfo.current.data) return;
-
-      // TODO: Implement logic connect/disconnect wallet
-
       const isConnectedItem =
         actionInfo.current.data.id === connectedWallet?.id;
       dispatch(

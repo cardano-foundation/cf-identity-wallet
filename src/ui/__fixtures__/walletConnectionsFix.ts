@@ -5,28 +5,28 @@ const walletConnectionsFix: ConnectionData[] = [
   {
     id: "1",
     name: "Wallet name #1",
-    selectedAid: "Nami",
+    selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
     iconB64: KeriLogo,
-    url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+    url: "http://localhost:3001/",
   },
   {
     id: "2",
     name: "Wallet name #2",
-    selectedAid: "Yoroi",
-    url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+    selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
+    url: "http://localhost:3001/",
   },
   {
     id: "3",
     name: "Wallet name #3",
-    selectedAid: "Flint",
-    url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+    selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRe",
+    url: "http://localhost:3001/",
     iconB64: KeriLogo,
   },
   {
     id: "4",
     name: "Wallet name #4",
-    selectedAid: "Yume",
-    url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+    selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRf",
+    url: "http://localhost:3001/",
   },
 ];
 

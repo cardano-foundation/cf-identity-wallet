@@ -1190,7 +1190,8 @@
   },
   "request": {
     "signtransaction": {
-      "title": "Sign transaction",
+      "title": "Sign",
+      "identifier": "Identifier",
       "transaction": {
         "address": "Address",
         "data": "Data",

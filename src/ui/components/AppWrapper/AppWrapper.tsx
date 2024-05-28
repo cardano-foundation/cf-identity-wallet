@@ -138,8 +138,8 @@ const peerConnectRequestSignChangeHandler = async (
   dispatch(
     setQueueIncomingRequest({
       id: "peer-connect-signing",
-      peerConnectionEvent: event,
-      type: IncomingRequestType.SIGN_DATA_REQUEST,
+      signTransaction: event,
+      type: IncomingRequestType.SIGN_TRANSACTION_REQUEST,
     })
   );
 };

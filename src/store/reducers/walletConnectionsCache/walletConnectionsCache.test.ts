@@ -2,7 +2,7 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import {
   getConnectedWallet,
-  getPendingConnection,
+  getPendingDAppMeerkat,
   getWalletConnectionsCache,
   setConnectedWallet,
   setPendingDAppMeerKat,
@@ -18,7 +18,6 @@ describe("walletConnectionsCacheSlice", () => {
   const initialState: WalletConnectState = {
     walletConnections: [],
     connectedWallet: null,
-    pendingConnection: null,
     pendingDAppMeerKat: null,
   };
 
@@ -33,8 +32,8 @@ describe("walletConnectionsCacheSlice", () => {
       {
         id: "2",
         name: "Wallet name #2",
-        selectedAid: "Yoroi",
-        url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+        selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
+        url: "http://localhost:3001/",
       },
     ];
     const newState = walletConnectionsCacheSlice.reducer(
@@ -47,8 +46,8 @@ describe("walletConnectionsCacheSlice", () => {
     const connection: ConnectionData = {
       id: "2",
       name: "Wallet name #2",
-      selectedAid: "Yoroi",
-      url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+      selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
+      url: "http://localhost:3001/",
     };
     const newState = walletConnectionsCacheSlice.reducer(
       initialState,
@@ -56,18 +55,12 @@ describe("walletConnectionsCacheSlice", () => {
     );
     expect(newState.connectedWallet).toEqual(connection);
   });
-  it("should handle setPendingDAppMeerkat", () => {
-    const connection: ConnectionData = {
-      id: "2",
-      name: "Wallet name #2",
-      selectedAid: "Yoroi",
-      url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
-    };
-    // const newState = walletConnectionsCacheSlice.reducer(
-    //   initialState,
-    //   setPendingDAppMeerKat(connection)
-    // );
-    // expect(newState.pendingConnection).toEqual(connection);
+  it("should handle setPendingDAppMeerKat", () => {
+    const newState = walletConnectionsCacheSlice.reducer(
+      initialState,
+      setPendingDAppMeerKat("pending-meerkat")
+    );
+    expect(newState.pendingDAppMeerKat).toEqual("pending-meerkat");
   });
 });
 
@@ -79,15 +72,15 @@ describe("Get wallet connections cache", () => {
           {
             id: "1",
             name: "Wallet name #1",
-            selectedAid: "Nami",
+            selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
             image: "",
-            url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+            url: "http://localhost:3001/",
           },
           {
             id: "2",
             name: "Wallet name #2",
-            selectedAid: "Yoroi",
-            url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+            selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
+            url: "http://localhost:3001/",
           },
         ],
       },
@@ -104,9 +97,9 @@ describe("Get wallet connections cache", () => {
         connectedWallet: {
           id: "1",
           name: "Wallet name #1",
-          selectedAid: "Nami",
+          selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
           iconB64: "",
-          url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+          url: "http://localhost:3001/",
         },
       },
     } as RootState;
@@ -115,21 +108,15 @@ describe("Get wallet connections cache", () => {
       state.walletConnectionsCache.connectedWallet
     );
   });
-  it("should return pending connection from RootState", () => {
+  it("should return pending DApp MeerKat from RootState", () => {
     const state = {
       walletConnectionsCache: {
-        pendingConnection: {
-          id: "1",
-          name: "Wallet name #1",
-          selectedAid: "Nami",
-          iconB64: "",
-          url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
-        },
+        pendingDAppMeerKat: "pending-meerkat",
       },
     } as RootState;
-    const connectionCache = getPendingConnection(state);
-    expect(connectionCache).toEqual(
-      state.walletConnectionsCache.pendingConnection
+    const pendingMeerKatCache = getPendingDAppMeerkat(state);
+    expect(pendingMeerKatCache).toEqual(
+      state.walletConnectionsCache.pendingDAppMeerKat
     );
   });
 });

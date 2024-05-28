@@ -223,20 +223,6 @@ describe("Sign request", () => {
     ).toBeVisible();
 
     expect(getByText(requestData.label)).toBeVisible();
-    expect(getByText(signTransactionFix.action)).toBeVisible();
-    expect(getByText(signTransactionFix.actionText)).toBeVisible();
-    expect(getByText(signTransactionFix.data.id)).toBeVisible();
-    expect(getByText(signTransactionFix.data.category)).toBeVisible();
-    expect(getByText(signTransactionFix.data.event)).toBeVisible();
-    expect(getByText(signTransactionFix.data.network)).toBeVisible();
-    expect(getByText(signTransactionFix.data.proposal)).toBeVisible();
-    expect(getByText(signTransactionFix.data.votedAt)).toBeVisible();
-    expect(getByText(signTransactionFix.data.votingPower)).toBeVisible();
-    expect(getByText(signTransactionFix.eventName)).toBeVisible();
-    expect(getByText(signTransactionFix.ownerUrl)).toBeVisible();
-    expect(getByText(signTransactionFix.slot)).toBeVisible();
-    expect(getByText(signTransactionFix.uri)).toBeVisible();
-    expect(getAllByText(signTransactionFix.data.address).length).toBe(2);
   });
 
   test("Display fallback image when provider logo is empty: BALLOT_TRANSACTION_REQUEST", async () => {

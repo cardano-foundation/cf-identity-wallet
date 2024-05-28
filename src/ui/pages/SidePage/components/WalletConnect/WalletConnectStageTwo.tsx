@@ -16,7 +16,10 @@ import "./WalletConnect.scss";
 import { WalletConnectStageTwoProps } from "./WalletConnect.types";
 import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
 import { Agent } from "../../../../../core/agent/agent";
-import { setPendingConnections } from "../../../../../store/reducers/walletConnectionsCache";
+import {
+  getWalletConnectionsCache,
+  setWalletConnectionsCache,
+} from "../../../../../store/reducers/walletConnectionsCache";
 
 const WalletConnectStageTwo = ({
   isOpen,
@@ -27,6 +30,7 @@ const WalletConnectStageTwo = ({
 }: WalletConnectStageTwoProps) => {
   const dispatch = useDispatch();
   const indentifierCache = useAppSelector(getIdentifiersCache);
+  const existingConnections = useAppSelector(getWalletConnectionsCache);
 
   const [selectedIdentifier, setSelectedIdentifier] =
     useState<IdentifierShortDetails | null>(null);
@@ -54,11 +58,10 @@ const WalletConnectStageTwo = ({
       if (selectedIdentifier && pendingDAppMeerkat) {
         await PeerConnection.peerConnection.start(selectedIdentifier.id);
         await PeerConnection.peerConnection.connectWithDApp(pendingDAppMeerkat);
-        const connection =
-          await Agent.agent.peerConnectionMetadataStorage.getPeerConnectionMetadata(
-            pendingDAppMeerkat
-          );
-        dispatch(setPendingConnections(connection));
+        // Refresh the connections list
+        const existingConnections =
+          await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
+        dispatch(setWalletConnectionsCache(existingConnections));
       }
       dispatch(setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS));
       onClose();

@@ -58,7 +58,6 @@ describe("getBackRoute", () => {
       walletConnectionsCache: {
         walletConnections: [],
         connectedWallet: null,
-        pendingConnection: null,
         pendingDAppMeerKat: null,
       },
       identifierViewTypeCacheCache: {
@@ -181,7 +180,6 @@ describe("getPreviousRoute", () => {
       walletConnectionsCache: {
         walletConnections: [],
         connectedWallet: null,
-        pendingConnection: null,
         pendingDAppMeerKat: null,
       },
       identifierViewTypeCacheCache: {

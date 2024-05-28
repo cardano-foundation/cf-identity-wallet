@@ -10,7 +10,6 @@ import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../../../../../routes/paths";
-import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
 import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../../globals/types";
 import { WalletConnect } from "./WalletConnect";
@@ -30,6 +29,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
     agent: {
       peerConnectionMetadataStorage: {
         getPeerConnectionMetadata: jest.fn(),
+        getAllPeerConnectionMetadata: jest.fn(),
       },
     },
   },
@@ -262,7 +262,6 @@ describe("Wallet Connect Request", () => {
     walletConnectionsCache: {
       walletConnections: [],
       pendingDAppMeerKat: "pending-meerkat",
-      pendingConnection: walletConnectionsFix[0],
     },
     identifiersCache: {
       identifiers: [...identifierFix],

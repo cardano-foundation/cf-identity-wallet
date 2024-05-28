@@ -1,5 +1,5 @@
 import { IonText } from "@ionic/react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { i18n } from "../../../../../../i18n";
 import {
   CardDetailsAttributes,
@@ -20,38 +20,30 @@ const SignTransactionRequest = ({
   handleCancel,
 }: RequestProps) => {
   const signTransaction = requestData.signTransaction;
+  const [isSigningObject, setIsSigningObject] = useState(false);
   const ballotLogo = requestData.logo ? requestData.logo : CardanoLogo;
 
   const signDetails = useMemo(() => {
     if (!signTransaction) return {};
 
-    return {
-      [`${i18n.t("request.signtransaction.transaction.action")}`]:
-        signTransaction.action,
-      [`${i18n.t("request.signtransaction.transaction.actionText")}`]:
-        signTransaction.actionText,
-      [`${i18n.t("request.signtransaction.transaction.id")}`]:
-        signTransaction.data.id,
-      [`${i18n.t("request.signtransaction.transaction.address")}`]:
-        signTransaction.data.address,
-      [`${i18n.t("request.signtransaction.transaction.event")}`]:
-        signTransaction.data.event,
-      [`${i18n.t("request.signtransaction.transaction.category")}`]:
-        signTransaction.data.category,
-      [`${i18n.t("request.signtransaction.transaction.proposal")}`]:
-        signTransaction.data.proposal,
-      [`${i18n.t("request.signtransaction.transaction.network")}`]:
-        signTransaction.data.network,
-      [`${i18n.t("request.signtransaction.transaction.votedat")}`]:
-        signTransaction.data.votedAt,
-      [`${i18n.t("request.signtransaction.transaction.votingpower")}`]:
-        signTransaction.data.votingPower,
-      [`${i18n.t("request.signtransaction.transaction.slot")}`]:
-        signTransaction.slot,
-      [`${i18n.t("request.signtransaction.transaction.uri")}`]:
-        signTransaction.uri,
-    };
-  }, [signTransaction]);
+    let signTransactionContent;
+    try {
+      signTransactionContent = JSON.parse(signTransaction.payload.payload);
+      setIsSigningObject(true);
+    } catch (error) {
+      signTransactionContent = signTransaction.payload.payload;
+    }
+    if (isSigningObject) {
+      return {
+        [`${i18n.t("request.signtransaction.transaction.action")}`]:
+          signTransaction.type,
+        [`${i18n.t("request.signtransaction.transaction.actionText")}`]:
+          signTransactionContent,
+      };
+    } else {
+      return signTransactionContent;
+    }
+  }, [requestData.signTransaction]);
 
   const handleSign = () => {
     handleAccept();
@@ -74,29 +66,34 @@ const SignTransactionRequest = ({
           alt={requestData.label}
         />
         <h2 className="sign-name">{requestData.label}</h2>
-        <h3 className="sign-subtitle">{signTransaction?.eventName}</h3>
-        <p className="sign-link">{signTransaction?.ownerUrl}</p>
+        <h3 className="sign-subtitle">{signTransaction?.type}</h3>
       </div>
       <div className="sign-transaction-content">
         <CardDetailsBlock
           className="sign-address"
-          title={`${i18n.t("request.signtransaction.transaction.address")}`}
+          title={`${i18n.t("request.signtransaction.identifier")}`}
         >
-          <IonText className="address">{signTransaction?.data.address}</IonText>
+          <IonText className="address">
+            {signTransaction?.payload.identifier}
+          </IonText>
         </CardDetailsBlock>
         <CardDetailsBlock
           className="sign-data"
           title={i18n.t("request.signtransaction.transaction.data")}
         >
-          <CardDetailsAttributes
-            data={signDetails}
-            itemProps={{
-              mask: false,
-              fullText: true,
-              copyButton: false,
-              className: "sign-info-item",
-            }}
-          />
+          {isSigningObject ? (
+            <CardDetailsAttributes
+              data={signDetails}
+              itemProps={{
+                mask: false,
+                fullText: true,
+                copyButton: false,
+                className: "sign-info-item",
+              }}
+            />
+          ) : (
+            signDetails.toString()
+          )}
         </CardDetailsBlock>
       </div>
       <PageFooter

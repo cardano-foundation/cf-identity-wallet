@@ -85,15 +85,25 @@ class PeerConnection {
       async (connectMessage: IConnectMessage) => {
         if (!connectMessage.error) {
           this.connected = true;
-          const { name, url, address } = connectMessage.dApp;
+          const { name, url, address, icon } = connectMessage.dApp;
           this.connectedDAppAdress = address;
+          let iconB64 = ICON_BASE64;
+          // Check if the icon is base64
+          if (
+            icon &&
+            /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(
+              icon
+            )
+          ) {
+            iconB64 = icon;
+          }
           await Agent.agent.peerConnectionMetadataStorage.updatePeerConnectionMetadata(
             address,
             {
               name,
               selectedAid,
               url,
-              iconB64: ICON_BASE64,
+              iconB64: iconB64,
             }
           );
         }
@@ -118,7 +128,7 @@ class PeerConnection {
     if (this.identityWalletConnect === undefined) {
       throw new Error(PeerConnection.PEER_CONNECTION_START_PENDING);
     }
-    const existedPeerConnection =
+    const existingPeerConnection =
       await Agent.agent.peerConnectionMetadataStorage
         .getPeerConnectionMetadata(dAppIdentifier)
         .catch((error) => {
@@ -131,21 +141,10 @@ class PeerConnection {
             throw error;
           }
         });
-    if (!existedPeerConnection) {
+    if (!existingPeerConnection) {
       await Agent.agent.peerConnectionMetadataStorage.createPeerConnectionMetadataRecord(
         {
           id: dAppIdentifier,
-          iconB64: ICON_BASE64,
-        }
-      );
-    } else {
-      //Set other fields back to pending state
-      await Agent.agent.peerConnectionMetadataStorage.updatePeerConnectionMetadata(
-        dAppIdentifier,
-        {
-          name: undefined,
-          selectedAid: undefined,
-          url: undefined,
           iconB64: ICON_BASE64,
         }
       );
