@@ -10,39 +10,30 @@ import { PageHeader } from "../../../../../components/PageHeader";
 import { ScrollablePageLayout } from "../../../../../components/layout/ScrollablePageLayout";
 import CardanoLogo from "../../../../../assets/images/CardanoLogo.jpg";
 import { RequestProps } from "../IncomingRequest.types";
-import "./SignTransactionRequest.scss";
+import "./SignRequest.scss";
 
-const SignTransactionRequest = ({
+const SignRequest = ({
   pageId,
   activeStatus,
   requestData,
   handleAccept,
   handleCancel,
 }: RequestProps) => {
-  const signTransaction = requestData.signTransaction;
+  const signRequest = requestData.signTransaction;
   const [isSigningObject, setIsSigningObject] = useState(false);
-  const ballotLogo = requestData.logo ? requestData.logo : CardanoLogo;
+  const logo = requestData.logo ? requestData.logo : CardanoLogo;
 
   const signDetails = useMemo(() => {
-    if (!signTransaction) return {};
+    if (!signRequest) return {};
 
     let signTransactionContent;
     try {
-      signTransactionContent = JSON.parse(signTransaction.payload.payload);
+      signTransactionContent = JSON.parse(signRequest.payload.payload);
       setIsSigningObject(true);
     } catch (error) {
-      signTransactionContent = signTransaction.payload.payload;
+      signTransactionContent = signRequest.payload.payload;
     }
-    if (isSigningObject) {
-      return {
-        [`${i18n.t("request.signtransaction.transaction.action")}`]:
-          signTransaction.type,
-        [`${i18n.t("request.signtransaction.transaction.actionText")}`]:
-          signTransactionContent,
-      };
-    } else {
-      return signTransactionContent;
-    }
+    return signTransactionContent;
   }, [requestData.signTransaction]);
 
   const handleSign = () => {
@@ -62,19 +53,18 @@ const SignTransactionRequest = ({
         <img
           className="sign-owner-logo"
           data-testid="sign-logo"
-          src={ballotLogo}
+          src={logo}
           alt={requestData.label}
         />
         <h2 className="sign-name">{requestData.label}</h2>
-        <h3 className="sign-subtitle">{signTransaction?.type}</h3>
       </div>
       <div className="sign-transaction-content">
         <CardDetailsBlock
-          className="sign-address"
+          className="sign-identifier"
           title={`${i18n.t("request.signtransaction.identifier")}`}
         >
-          <IonText className="address">
-            {signTransaction?.payload.identifier}
+          <IonText className="identifier">
+            {signRequest?.payload.identifier}
           </IonText>
         </CardDetailsBlock>
         <CardDetailsBlock
@@ -106,4 +96,4 @@ const SignTransactionRequest = ({
   );
 };
 
-export { SignTransactionRequest };
+export { SignRequest };

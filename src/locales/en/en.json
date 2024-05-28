@@ -1193,19 +1193,7 @@
       "title": "Sign",
       "identifier": "Identifier",
       "transaction": {
-        "address": "Address",
-        "data": "Data",
-        "action": "Action",
-        "actionText": "Action text",
-        "id": "ID",
-        "event": "Event",
-        "category": "Category",
-        "proposal": "Proposal",
-        "votedat": "Voted at",
-        "network": "Network",
-        "votingpower": "Voting power",
-        "slot": "Slot",
-        "uri": "URI"
+        "data": "data"
       }
     },
     "connection": {

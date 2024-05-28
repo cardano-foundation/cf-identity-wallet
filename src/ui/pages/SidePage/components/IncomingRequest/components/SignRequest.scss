@@ -25,14 +25,6 @@
       color: var(--ion-color-primary);
     }
 
-    .sign-subtitle {
-      font-weight: 500;
-      font-size: 1rem;
-      line-height: 1.25rem;
-      margin-bottom: 0.5rem;
-      color: var(--ion-color-secondary);
-    }
-
     .sign-link {
       font-weight: 500;
       font-size: 0.75rem;
@@ -45,10 +37,10 @@
   .sign-transaction-content {
     margin-bottom: 3rem;
 
-    .sign-address {
+    .sign-identifier {
       margin-bottom: 1.5rem;
 
-      .address {
+      .identifier {
         display: block;
         padding: 0.75rem 0;
 

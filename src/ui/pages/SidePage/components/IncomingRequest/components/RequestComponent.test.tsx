@@ -8,7 +8,10 @@ import { store } from "../../../../../../store";
 import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
 import { connectionsFix } from "../../../../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../../../../__fixtures__/filteredIdentifierFix";
-import { signTransactionFix } from "../../../../../__fixtures__/signTransactionFix";
+import {
+  signTransactionFix,
+  signObjectFix,
+} from "../../../../../__fixtures__/signTransactionFix";
 import { RequestComponent } from "./RequestComponent";
 setupIonicReact();
 mockIonicReact();
@@ -218,11 +221,84 @@ describe("Sign request", () => {
       </Provider>
     );
 
-    expect(
-      getByText(EN_TRANSLATIONS.request.signtransaction.title)
-    ).toBeVisible();
+    expect(getByText(requestData.label)).toBeVisible();
+  });
+
+  test("Display fallback image when provider logo is empty: BALLOT_TRANSACTION_REQUEST", async () => {
+    const testData = {
+      ...requestData,
+      logo: "",
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <RequestComponent
+          pageId={pageId}
+          activeStatus={activeStatus}
+          blur={blur}
+          setBlur={setBlur}
+          requestData={testData}
+          initiateAnimation={initiateAnimation}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          handleIgnore={handleIgnore}
+          incomingRequestType={IncomingRequestType.SIGN_TRANSACTION_REQUEST}
+        />
+      </Provider>
+    );
+
+    expect(getByTestId("sign-logo")).toBeInTheDocument();
+
+    expect(getByTestId("sign-logo").getAttribute("src")).not.toBe(undefined);
+  });
+});
+
+describe("Sign JSON", () => {
+  const mockStore = configureStore();
+  const dispatchMock = jest.fn();
+  const storeMocked = {
+    ...mockStore(store.getState()),
+    dispatch: dispatchMock,
+  };
+
+  const pageId = "incoming-request";
+  const activeStatus = true;
+  const blur = false;
+  const setBlur = jest.fn();
+  const requestData = {
+    id: "abc123456",
+    label: "Cardano",
+    type: IncomingRequestType.SIGN_TRANSACTION_REQUEST,
+    signTransaction: signObjectFix,
+  };
+
+  const initiateAnimation = false;
+  const handleAccept = jest.fn();
+  const handleCancel = jest.fn();
+  const handleIgnore = jest.fn();
+
+  test("It renders content for BALLOT_TRANSACTION_REQUEST ", async () => {
+    const { getByText, getAllByText } = render(
+      <Provider store={storeMocked}>
+        <RequestComponent
+          pageId={pageId}
+          activeStatus={activeStatus}
+          blur={blur}
+          setBlur={setBlur}
+          requestData={requestData}
+          initiateAnimation={initiateAnimation}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          handleIgnore={handleIgnore}
+          incomingRequestType={IncomingRequestType.SIGN_TRANSACTION_REQUEST}
+        />
+      </Provider>
+    );
 
     expect(getByText(requestData.label)).toBeVisible();
+    expect(
+      getByText(JSON.parse(signObjectFix.payload.payload).data.id)
+    ).toBeVisible();
   });
 
   test("Display fallback image when provider logo is empty: BALLOT_TRANSACTION_REQUEST", async () => {

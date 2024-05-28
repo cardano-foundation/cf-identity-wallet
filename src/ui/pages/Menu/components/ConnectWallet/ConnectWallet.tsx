@@ -68,7 +68,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
         id: connection.id,
         title: connection.name as string,
         url: connection.url,
-        subtitle: connection.selectedAid,
+        subtitle: connection.url,
         image: connection.iconB64,
         data: connection,
       }));
@@ -125,9 +125,12 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       await Agent.agent.peerConnectionMetadataStorage.deletePeerConnectionMetadataRecord(
         data.id
       );
-      const connections =
-        await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
-      dispatch(setWalletConnectionsCache(connections));
+
+      dispatch(
+        setWalletConnectionsCache(
+          connections.filter((connection) => connection.id !== data.id)
+        )
+      );
       dispatch(setToastMsg(ToastMsgType.WALLET_CONNECTION_DELETED));
     };
 

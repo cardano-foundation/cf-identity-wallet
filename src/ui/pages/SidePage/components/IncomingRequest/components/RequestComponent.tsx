@@ -2,7 +2,7 @@ import { IncomingRequestType } from "../../../../../../store/reducers/stateCache
 import { RequestProps } from "../IncomingRequest.types";
 import { CredentialRequest } from "./CredentialRequest";
 import { MultiSigRequest } from "./MultiSigRequest";
-import { SignTransactionRequest } from "./SignTransactionRequest";
+import { SignRequest } from "./SignRequest";
 
 const RequestComponent = ({
   pageId,
@@ -45,7 +45,7 @@ const RequestComponent = ({
     );
   case IncomingRequestType.SIGN_TRANSACTION_REQUEST:
     return (
-      <SignTransactionRequest
+      <SignRequest
         pageId={pageId}
         activeStatus={activeStatus}
         blur={blur}
