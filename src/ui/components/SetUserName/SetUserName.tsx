@@ -14,6 +14,7 @@ import { CustomInput } from "../CustomInput";
 import { PageFooter } from "../PageFooter";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
 
 const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
   const dispatch = useAppDispatch();
@@ -23,12 +24,14 @@ const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
 
   const handleConfirm = () => {
     Agent.agent.basicStorage
-      .save({
-        id: MiscRecordId.USER_NAME,
-        content: {
-          userName,
-        },
-      })
+      .createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.USER_NAME,
+          content: {
+            userName,
+          },
+        })
+      )
       .then(() => {
         dispatch(
           setAuthentication({
