@@ -86,4 +86,11 @@ describe("Identifier storage test", () => {
     );
     expect(storageService.update).toBeCalled();
   });
+
+  test("Should get pending keri identifiers metadata", async () => {
+    storageService.findAllByQuery.mockResolvedValue([identifierMetadataRecord]);
+    expect(await identifierStorage.getAllPendingIdentifierMetadata()).toEqual([
+      identifierMetadataRecord,
+    ]);
+  });
 });

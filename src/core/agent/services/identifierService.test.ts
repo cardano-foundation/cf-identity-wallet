@@ -219,7 +219,9 @@ describe("Single sig service of agent", () => {
           i: aid,
         },
       },
-      op: jest.fn(),
+      op: jest.fn().mockResolvedValue({
+        name: "op123",
+      }),
     });
     expect(
       await identifierService.createIdentifier({
