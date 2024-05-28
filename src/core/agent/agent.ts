@@ -177,11 +177,11 @@ class Agent {
     );
   }
 
-  async start(keriUrl: string): Promise<void> {
+  async start(keriaConnectUrl: string): Promise<void> {
     if (!Agent.isOnline) {
       await signifyReady();
       const bran = await this.getBran();
-      this.signifyClient = new SignifyClient(keriUrl, bran, Tier.low);
+      this.signifyClient = new SignifyClient(keriaConnectUrl, bran, Tier.low);
       await this.signifyClient.connect();
       Agent.isOnline = true;
       this.agentServicesProps.signifyClient = this.signifyClient;
@@ -205,13 +205,24 @@ class Agent {
         agentUrls.bootUrl
       );
       try {
-        await this.signifyClient.boot();
+        const bootResponse = await this.signifyClient.boot();
+        const bootResponseBody = await bootResponse.json();
+        if (
+          bootResponse.status !== 202 &&
+          bootResponseBody?.title !== "agent already exists"
+        ) {
+          throw new Error(Agent.KERIA_BOOT_FAILED);
+        }
       } catch (e) {
+        /* eslint-disable no-console */
+        console.error(e);
         throw new Error(Agent.KERIA_BOOT_FAILED);
       }
       try {
         await this.signifyClient.connect();
       } catch (e) {
+        /* eslint-disable no-console */
+        console.error(e);
         throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
       }
       await this.saveAgentUrls(agentUrls);
@@ -226,26 +237,7 @@ class Agent {
     }
   }
 
-  async getAgentUrls(): Promise<Partial<AgentUrls>> {
-    const keriUrlRecord = await this.basicStorageService.findById(
-      MiscRecordId.KERIA_CONNECT_URL
-    );
-    const keriBootUrlRecord = await this.basicStorageService.findById(
-      MiscRecordId.KERIA_BOOT_URL
-    );
-    if (!keriUrlRecord || !keriBootUrlRecord) {
-      return {
-        url: undefined,
-        bootUrl: undefined,
-      };
-    }
-    return {
-      url: keriUrlRecord.content.url as string,
-      bootUrl: keriBootUrlRecord.content.url as string,
-    };
-  }
-
-  async saveAgentUrls(agentUrls: AgentUrls): Promise<void> {
+  private async saveAgentUrls(agentUrls: AgentUrls): Promise<void> {
     await this.basicStorageService.save({
       id: MiscRecordId.KERIA_CONNECT_URL,
       content: {

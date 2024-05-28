@@ -285,10 +285,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
     await loadDatabase();
     await loadCacheBasicStorage();
-    const agentUrls = await Agent.agent.getAgentUrls();
-    if (agentUrls.url) {
+    const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
+      MiscRecordId.KERIA_CONNECT_URL
+    );
+    if (keriaConnectUrlRecord) {
       try {
-        await Agent.agent.start(agentUrls.url);
+        await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
         setIsOnline(true);
       } catch (e) {
         const errorStack = (e as Error).stack as string;
