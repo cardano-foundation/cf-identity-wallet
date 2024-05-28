@@ -144,7 +144,8 @@ class Agent {
     if (!this.signifyNotificationService) {
       this.signifyNotificationService = new SignifyNotificationService(
         this.agentServicesProps,
-        this.notificationStorage
+        this.notificationStorage,
+        this.identifierStorage
       );
     }
     return this.signifyNotificationService;

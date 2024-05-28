@@ -14,6 +14,7 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
+  updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   setCredsCache,
@@ -48,6 +49,7 @@ import { MultiSigService } from "../../../core/agent/services/multiSigService";
 import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCache";
 import { CardListViewType } from "../SwitchCardView";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -138,6 +140,15 @@ const peerConnectRequestSignChangeHandler = async (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   //TODO: Handle logic for the accept/decline sing request
+};
+
+const signifyOperationStateChangeHandler = async (
+  aid: IdentifierShortDetails,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  dispatch(updateOrAddIdentifiersCache(aid));
+  dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
+  dispatch(setCurrentOperation(OperationType.IDLE));
 };
 
 const AppWrapper = (props: { children: ReactNode }) => {
@@ -324,6 +335,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return peerConnectRequestSignChangeHandler(event, dispatch);
       }
     );
+    Agent.agent.signifyNotifications.onSignifyOperationStateChanged((event) => {
+      return signifyOperationStateChangeHandler(event, dispatch);
+    });
     dispatch(setInitialized(true));
   };
 
@@ -335,4 +349,5 @@ export {
   connectionStateChangedHandler,
   acdcChangeHandler,
   keriaNotificationsChangeHandler,
+  signifyOperationStateChangeHandler,
 };

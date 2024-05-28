@@ -128,7 +128,8 @@ class IdentifierService extends AgentService {
     const operation = await this.signifyClient
       .identifiers()
       .create(signifyName); //, this.getCreateAidOptions());
-    await operation.op();
+    const op = await operation.op();
+    const signifyOpName = op.name;
     const addRoleOperation = await this.signifyClient
       .identifiers()
       .addEndRole(signifyName, "agent", this.signifyClient.agent!.pre);
@@ -137,6 +138,8 @@ class IdentifierService extends AgentService {
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: identifier,
       ...metadata,
+      signifyOpName: signifyOpName,
+      isPending: !op.done,
       signifyName: signifyName,
     });
     return { identifier, signifyName };

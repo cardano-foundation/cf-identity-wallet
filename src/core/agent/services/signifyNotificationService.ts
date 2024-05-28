@@ -7,21 +7,29 @@ import {
   NotificationRoute,
 } from "../agent.types";
 import { Notification } from "./credentialService.types";
-import { BasicRecord, NotificationStorage } from "../records";
+import {
+  BasicRecord,
+  IdentifierStorage,
+  NotificationStorage,
+} from "../records";
 import { Agent } from "../agent";
+import { IdentifierShortDetails } from "./identifier.types";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
   static readonly POLL_KERIA_INTERVAL = 5000;
 
   protected readonly notificationStorage!: NotificationStorage;
+  protected readonly identifierStorage: IdentifierStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
-    notificationStorage: NotificationStorage
+    notificationStorage: NotificationStorage,
+    identifierStorage: IdentifierStorage
   ) {
     super(agentServiceProps);
     this.notificationStorage = notificationStorage;
+    this.identifierStorage = identifierStorage;
   }
 
   async onNotificationStateChanged(
@@ -217,6 +225,50 @@ class SignifyNotificationService extends AgentService {
       multisigId,
     });
     return notificationRecord;
+  }
+  async onSignifyOperationStateChanged(
+    callback: (identifierShortDetails: IdentifierShortDetails) => void
+  ) {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const pendingIdentifiers =
+        await this.identifierStorage.getAllPendingIdentifierMetadata();
+      if (pendingIdentifiers.length > 0) {
+        const promises = await Promise.allSettled(
+          pendingIdentifiers.map((aid) => {
+            return this.signifyClient.operations().get(aid.signifyOpName!);
+          })
+        );
+        for (const pm of promises) {
+          if (pm.status === "fulfilled") {
+            const operation = pm.value;
+            if (operation.done) {
+              const aid = pendingIdentifiers.find(
+                (aid) => aid.signifyOpName === operation.name
+              )!;
+              await this.identifierStorage.updateIdentifierMetadata(aid.id, {
+                isPending: false,
+              });
+              callback({
+                displayName: aid.displayName,
+                id: aid.id,
+                signifyName: aid.signifyName,
+                createdAtUTC: aid.createdAt.toISOString(),
+                theme: aid.theme,
+                isPending: false,
+              });
+            }
+          } else {
+            //TODO: must handle case get operation failed
+          }
+        }
+      }
+      await new Promise((rs) => {
+        setTimeout(() => {
+          rs(true);
+        }, 5000);
+      });
+    }
   }
 }
 
