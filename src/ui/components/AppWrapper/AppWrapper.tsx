@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  getCurrentOperation,
   setAuthentication,
   setCurrentOperation,
   setInitialized,
@@ -142,6 +143,7 @@ const peerConnectRequestSignChangeHandler = async (
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
+  const operation = useAppSelector(getCurrentOperation);
   const [isOnline, setIsOnline] = useState(false);
   const [isMessagesHandled, setIsMessagesHandled] = useState(false);
   useActivityTimer();
@@ -149,6 +151,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
   useEffect(() => {
     initApp();
   }, []);
+
+  useEffect(() => {
+    if (operation === OperationType.REINIT_APP) {
+      dispatch(setCurrentOperation(OperationType.IDLE));
+      initApp();
+    }
+  }, [operation]);
 
   useEffect(() => {
     if (authentication.loggedIn) {
@@ -276,12 +285,17 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await loadDatabase();
     } catch (e) {
       const errorStack = (e as Error).stack as string;
+      const errorMessage = (e as Error).message;
+
       // If the error is failed to fetch with signify, we retry until the connection is secured
       if (/SignifyClient/gi.test(errorStack)) {
         await loadDatabase();
         Agent.agent.bootAndConnect().then(() => {
           setIsOnline(Agent.agent.getKeriaOnlineStatus());
         });
+      } else if (/signify-bran/gi.test(errorMessage)) {
+        dispatch(setInitialized(true));
+        return;
       } else {
         throw e;
       }

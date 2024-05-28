@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { IonCheckbox } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import "./GenerateSeedPhrase.scss";
-import { generateMnemonic } from "bip39";
 import { Trans } from "react-i18next";
 import { i18n } from "../../../i18n";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { Alert as AlertConfirm } from "../../components/Alert";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -20,6 +18,8 @@ import { PageFooter } from "../../components/PageFooter";
 import { SeedPhraseModule } from "../../components/SeedPhraseModule";
 import { TermsModal } from "../../components/TermsModal";
 import { useAppIonRouter } from "../../hooks";
+import { Agent } from "../../../core/agent/agent";
+import { BranAndMnemonic } from "../../../core/agent/agent.types";
 
 const GenerateSeedPhrase = () => {
   const pageId = "generate-seed-phrase";
@@ -28,25 +28,27 @@ const GenerateSeedPhrase = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
+  const [brandNMnemonic, setBrandNMnemonic] = useState<BranAndMnemonic>();
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
-  const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [hideSeedPhrase, setHideSeedPhrase] = useState(true);
   const [alertConfirmIsOpen, setAlertConfirmIsOpen] = useState(false);
   const [termsModalIsOpen, setTermsModalIsOpen] = useState(false);
   const [privacyModalIsOpen, setPrivacyModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
 
-  const initializeSeedPhrase = () => {
+  const initializeSeedPhrase = async () => {
     setHideSeedPhrase(true);
-    let seed160;
-    if (seedPhraseStore.seedPhrase160.length > 0) {
-      seed160 = seedPhraseStore.seedPhrase160.split(" ");
-      setSeedPhrase160(seed160);
+    if (seedPhraseStore.seedPhrase.length > 0) {
+      setSeedPhrase(seedPhraseStore.seedPhrase.split(" "));
+      setBrandNMnemonic({
+        mnemonic: seedPhraseStore.seedPhrase,
+        bran: seedPhraseStore.bran,
+      });
     } else {
-      seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
-      setSeedPhrase160(seed160);
+      const branAndMnemonic = await Agent.agent.getBranAndMnemonic();
+      setSeedPhrase(branAndMnemonic.mnemonic.split(" "));
+      setBrandNMnemonic(branAndMnemonic);
     }
-    setSeedPhrase(seed160);
   };
 
   useEffect(() => {
@@ -56,7 +58,7 @@ const GenerateSeedPhrase = () => {
   }, [history?.location.pathname]);
 
   const handleClearState = () => {
-    setSeedPhrase160([]);
+    setSeedPhrase([]);
     initializeSeedPhrase();
     setHideSeedPhrase(false);
     setAlertConfirmIsOpen(false);
@@ -74,24 +76,13 @@ const GenerateSeedPhrase = () => {
     );
   };
 
-  const HandlePrivacy = () => {
-    return (
-      <u
-        data-testid="privacy-policy-modal-handler"
-        onClick={() => setPrivacyModalIsOpen(true)}
-      >
-        {i18n.t("generateseedphrase.termsandconditions.privacy")}
-      </u>
-    );
-  };
-
   const handleContinue = () => {
     setAlertConfirmIsOpen(false);
     const data: DataProps = {
       store: { stateCache },
       state: {
-        seedPhrase160: seedPhrase160.join(" "),
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        seedPhrase: brandNMnemonic?.mnemonic,
+        bran: brandNMnemonic?.bran,
       },
     };
     const { nextPath, updateRedux } = getNextRoute(

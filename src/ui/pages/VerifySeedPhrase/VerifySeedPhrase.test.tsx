@@ -1,26 +1,22 @@
-import { MemoryRouter, Route } from "react-router-dom";
-import { createMemoryHistory } from "history";
-import { Provider } from "react-redux";
-import { render, waitFor } from "@testing-library/react";
+import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
 import {
   ionFireEvent as fireEvent,
   waitForIonicReact,
 } from "@ionic/react-test-utils";
+import { render, waitFor } from "@testing-library/react";
+import { createMemoryHistory } from "history";
 import { act } from "react-dom/test-utils";
+import { Provider } from "react-redux";
+import { Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
-import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
-import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
-import { VerifySeedPhrase } from "../VerifySeedPhrase";
+import { Addresses } from "../../../core/cardano";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { store } from "../../../store";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import {
-  FIFTEEN_WORDS_BIT_LENGTH,
-  MNEMONIC_FIFTEEN_WORDS,
-  TWENTYFOUR_WORDS_BIT_LENGTH,
-} from "../../globals/constants";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { Addresses } from "../../../core/cardano";
+import { MNEMONIC_SIXTEEN_WORDS } from "../../globals/constants";
+import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
+import { VerifySeedPhrase } from "../VerifySeedPhrase";
 
 const entropy = "entropy";
 const rootKeyBech32 = "rootKeyBech32";
@@ -46,10 +42,9 @@ describe("Verify Seed Phrase Page", () => {
       },
     },
     seedPhraseCache: {
-      seedPhrase160:
-        "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-      seedPhrase256: "",
-      selected: FIFTEEN_WORDS_BIT_LENGTH,
+      seedPhrase:
+        "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15 example16",
+      bran: "",
     },
   };
 
@@ -63,7 +58,7 @@ describe("Verify Seed Phrase Page", () => {
     history.push(RoutePath.GENERATE_SEED_PHRASE);
 
     const { getByTestId, queryByText, getByText } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <IonReactMemoryRouter
           history={history}
           initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}
@@ -146,19 +141,19 @@ describe("Verify Seed Phrase Page", () => {
     );
     await waitFor(() =>
       expect(originalSeedPhraseContainer.childNodes.length).toBe(
-        MNEMONIC_FIFTEEN_WORDS
+        MNEMONIC_SIXTEEN_WORDS
       )
     );
 
     expect(continueButton).toBeDisabled();
 
-    for (let index = 0; index < MNEMONIC_FIFTEEN_WORDS; index++) {
+    for (let index = 0; index < MNEMONIC_SIXTEEN_WORDS; index++) {
       fireEvent.click(originalSeedPhraseContainer.childNodes[0]);
     }
 
     await waitFor(() =>
       expect(matchingSeedPhraseContainer.childNodes.length).toBe(
-        MNEMONIC_FIFTEEN_WORDS
+        MNEMONIC_SIXTEEN_WORDS
       )
     );
 
@@ -199,21 +194,19 @@ describe("Verify Seed Phrase Page", () => {
     );
     await waitFor(() =>
       expect(originalSeedPhraseContainer.childNodes.length).toBe(
-        MNEMONIC_FIFTEEN_WORDS
+        MNEMONIC_SIXTEEN_WORDS
       )
     );
 
     expect(continueButton).toBeDisabled();
 
-    initialState.seedPhraseCache.seedPhrase160
-      .split(" ")
-      .forEach(async (word) => {
-        fireEvent.click(getByText(`${word}`));
-      });
+    initialState.seedPhraseCache.seedPhrase.split(" ").forEach(async (word) => {
+      fireEvent.click(getByText(`${word}`));
+    });
 
     await waitFor(() =>
       expect(matchingSeedPhraseContainer.childNodes.length).toBe(
-        MNEMONIC_FIFTEEN_WORDS
+        MNEMONIC_SIXTEEN_WORDS
       )
     );
 
@@ -223,7 +216,7 @@ describe("Verify Seed Phrase Page", () => {
 
     fireEvent.click(continueButton);
 
-    const seedPhraseString = initialState.seedPhraseCache.seedPhrase160;
+    const seedPhraseString = initialState.seedPhraseCache.seedPhrase;
     const entropy = Addresses.convertToEntropy(seedPhraseString);
     const Bech32XPrv = Addresses.entropyToBip32NoPasscode(seedPhraseString);
     expect(Addresses.convertToEntropy).toBeCalledWith(seedPhraseString);
@@ -263,21 +256,19 @@ describe("Verify Seed Phrase Page", () => {
     );
     await waitFor(() =>
       expect(originalSeedPhraseContainer.childNodes.length).toBe(
-        MNEMONIC_FIFTEEN_WORDS
+        MNEMONIC_SIXTEEN_WORDS
       )
     );
 
     expect(continueButton).toBeDisabled();
 
-    initialState.seedPhraseCache.seedPhrase160
-      .split(" ")
-      .forEach(async (word) => {
-        fireEvent.click(getByText(`${word}`));
-      });
+    initialState.seedPhraseCache.seedPhrase.split(" ").forEach(async (word) => {
+      fireEvent.click(getByText(`${word}`));
+    });
 
     await waitFor(() =>
       expect(matchingSeedPhraseContainer.childNodes.length).toBe(
-        MNEMONIC_FIFTEEN_WORDS
+        MNEMONIC_SIXTEEN_WORDS
       )
     );
 
@@ -287,7 +278,7 @@ describe("Verify Seed Phrase Page", () => {
 
     fireEvent.click(continueButton);
 
-    const seedPhraseString = initialState.seedPhraseCache.seedPhrase160;
+    const seedPhraseString = initialState.seedPhraseCache.seedPhrase;
     const entropy = Addresses.convertToEntropy(seedPhraseString);
     const Bech32XPrv = Addresses.entropyToBip32NoPasscode(seedPhraseString);
     expect(Addresses.convertToEntropy).toBeCalledWith(seedPhraseString);
@@ -309,9 +300,8 @@ describe("Verify Seed Phrase Page", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase160: "example1 example2 example3 example4 example5",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        seedPhrase: "example1 example2 example3 example4 example5",
+        bran: "bran",
       },
     };
 
@@ -382,23 +372,23 @@ describe("Verify Seed Phrase Page", () => {
     );
     await waitFor(() =>
       expect(originalSeedPhraseContainer.childNodes.length).toBe(
-        MNEMONIC_FIFTEEN_WORDS
+        MNEMONIC_SIXTEEN_WORDS
       )
     );
 
     expect(continueButton).toBeDisabled();
 
-    for (let index = 0; index < MNEMONIC_FIFTEEN_WORDS; index++) {
+    for (let index = 0; index < MNEMONIC_SIXTEEN_WORDS; index++) {
       fireEvent.click(originalSeedPhraseContainer.childNodes[0]);
     }
 
     await waitFor(() =>
       expect(matchingSeedPhraseContainer.childNodes.length).toBe(
-        MNEMONIC_FIFTEEN_WORDS
+        MNEMONIC_SIXTEEN_WORDS
       )
     );
 
-    for (let index = 0; index < MNEMONIC_FIFTEEN_WORDS; index++) {
+    for (let index = 0; index < MNEMONIC_SIXTEEN_WORDS; index++) {
       fireEvent.click(matchingSeedPhraseContainer.childNodes[0]);
     }
 
@@ -425,21 +415,19 @@ describe("Verify Seed Phrase Page", () => {
     );
     await waitFor(() =>
       expect(originalSeedPhraseContainer.childNodes.length).toBe(
-        MNEMONIC_FIFTEEN_WORDS
+        MNEMONIC_SIXTEEN_WORDS
       )
     );
 
     expect(continueButton).toBeDisabled();
 
-    initialState.seedPhraseCache.seedPhrase160
-      .split(" ")
-      .forEach(async (word) => {
-        fireEvent.click(getByText(`${word}`));
-      });
+    initialState.seedPhraseCache.seedPhrase.split(" ").forEach(async (word) => {
+      fireEvent.click(getByText(`${word}`));
+    });
 
     await waitFor(() =>
       expect(matchingSeedPhraseContainer.childNodes.length).toBe(
-        MNEMONIC_FIFTEEN_WORDS
+        MNEMONIC_SIXTEEN_WORDS
       )
     );
 
@@ -476,21 +464,19 @@ describe("Verify Seed Phrase Page", () => {
 
     await waitFor(() =>
       expect(originalSeedPhraseContainer.childNodes.length).toBe(
-        MNEMONIC_FIFTEEN_WORDS
+        MNEMONIC_SIXTEEN_WORDS
       )
     );
 
-    initialState.seedPhraseCache.seedPhrase160
-      .split(" ")
-      .forEach(async (word) => {
-        fireEvent.click(getByText(`${word}`));
-      });
+    initialState.seedPhraseCache.seedPhrase.split(" ").forEach(async (word) => {
+      fireEvent.click(getByText(`${word}`));
+    });
 
     await waitFor(() => {
       const seedNumberElements = matchingSeedPhraseContainer.querySelectorAll(
         "span[data-testid*=\"word-index-number\"]"
       );
-      expect(seedNumberElements.length).toBe(MNEMONIC_FIFTEEN_WORDS);
+      expect(seedNumberElements.length).toBe(MNEMONIC_SIXTEEN_WORDS);
     });
   });
   test("Hidden seed phrase number on original section", async () => {

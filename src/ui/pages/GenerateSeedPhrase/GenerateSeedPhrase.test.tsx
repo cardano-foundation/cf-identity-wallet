@@ -11,12 +11,22 @@ import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { store } from "../../../store";
-import {
-  FIFTEEN_WORDS_BIT_LENGTH,
-  MNEMONIC_FIFTEEN_WORDS,
-} from "../../globals/constants";
 import { OperationType } from "../../globals/types";
 import { GenerateSeedPhrase } from "./GenerateSeedPhrase";
+import { MNEMONIC_SIXTEEN_WORDS } from "../../globals/constants";
+
+jest.mock("../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      getBranAndMnemonic: () =>
+        Promise.resolve({
+          mnemonic:
+            "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15 example16",
+          bran: "brand",
+        }),
+    },
+  },
+}));
 
 interface StoreMocked {
   stateCache: {
@@ -30,9 +40,8 @@ interface StoreMocked {
     currentOperation: OperationType;
   };
   seedPhraseCache: {
-    seedPhrase160: string;
-    seedPhrase256: string;
-    selected: number;
+    seedPhrase: string;
+    bran: string;
   };
 }
 
@@ -231,9 +240,8 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
         currentOperation: OperationType.IDLE,
       },
       seedPhraseCache: {
-        seedPhrase160: "",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        seedPhrase: "",
+        bran: "",
       },
     };
 
@@ -247,13 +255,11 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     const seedPhraseContainer = getByTestId("seed-phrase-container");
 
-    expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS);
-
     await waitFor(() => {
       const seedNumberElements = seedPhraseContainer.querySelectorAll(
         "span[data-testid*=\"word-index-number\"]"
       );
-      expect(seedNumberElements.length).toBe(MNEMONIC_FIFTEEN_WORDS);
+      expect(seedNumberElements.length).toBe(MNEMONIC_SIXTEEN_WORDS);
     });
   });
 });
