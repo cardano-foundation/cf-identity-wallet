@@ -6,14 +6,12 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { Alert as AlertFail } from "../../components/Alert";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import "./VerifySeedPhrase.scss";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { getBackRoute } from "../../../routes/backRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { Addresses } from "../../../core/cardano";
 import { PageHeader } from "../../components/PageHeader";
 import { PageFooter } from "../../components/PageFooter";
 import { SeedPhraseModule } from "../../components/SeedPhraseModule";
@@ -74,27 +72,12 @@ const VerifySeedPhrase = () => {
     setSeedPhraseSelected(newMatch);
   };
 
-  const storeIdentitySeedPhrase = async () => {
-    // @TODO - sdisalvo: handle error
-    const seedPhraseString = originalSeedPhrase.join(" ");
-    const entropy = Addresses.convertToEntropy(seedPhraseString);
-    await SecureStorage.set(
-      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-      Addresses.bech32ToHexBip32Private(
-        Addresses.entropyToBip32NoPasscode(entropy)
-      )
-    );
-    await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, entropy);
-
-    handleNavigate();
-  };
-
   const handleContinue = async () => {
     if (
       originalSeedPhrase.length === seedPhraseSelected.length &&
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      storeIdentitySeedPhrase();
+      handleNavigate();
     } else {
       setAlertIsOpen(true);
     }

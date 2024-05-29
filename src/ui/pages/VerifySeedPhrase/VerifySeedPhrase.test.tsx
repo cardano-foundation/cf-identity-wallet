@@ -19,18 +19,8 @@ import {
   MNEMONIC_FIFTEEN_WORDS,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../globals/constants";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { Addresses } from "../../../core/cardano";
-
-const entropy = "entropy";
-const rootKeyBech32 = "rootKeyBech32";
-const rootKeyHex = "rootKeyHex";
 
 jest.mock("../../../core/storage");
-jest.mock("../../../core/cardano/addresses");
-Addresses.convertToEntropy = jest.fn().mockReturnValue(entropy);
-Addresses.entropyToBip32NoPasscode = jest.fn().mockReturnValue(rootKeyBech32);
-Addresses.bech32ToHexBip32Private = jest.fn().mockReturnValue(rootKeyHex);
 
 describe("Verify Seed Phrase Page", () => {
   const mockStore = configureStore();
@@ -231,10 +221,6 @@ describe("Verify Seed Phrase Page", () => {
         queryByText(EN_TRANSLATIONS.verifyseedphrase.alert.fail.text)
       ).toBeVisible()
     );
-
-    expect(Addresses.convertToEntropy).not.toBeCalled();
-    expect(Addresses.entropyToBip32NoPasscode).not.toBeCalled();
-    expect(SecureStorage.set).not.toBeCalled();
   });
 
   test("The user can Verify the Seed Phrase when Onboarding", async () => {
@@ -280,25 +266,6 @@ describe("Verify Seed Phrase Page", () => {
     );
 
     fireEvent.click(continueButton);
-
-    const seedPhraseString = initialState.seedPhraseCache.seedPhrase160;
-    const entropy = Addresses.convertToEntropy(seedPhraseString);
-    const Bech32XPrv = Addresses.entropyToBip32NoPasscode(seedPhraseString);
-    expect(Addresses.convertToEntropy).toBeCalledWith(seedPhraseString);
-    expect(Addresses.entropyToBip32NoPasscode).toBeCalledWith(entropy);
-    expect(Addresses.bech32ToHexBip32Private).toBeCalledWith(Bech32XPrv);
-
-    expect(SecureStorage.set).toBeCalledWith(
-      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-      rootKeyHex
-    );
-
-    await waitFor(() =>
-      expect(SecureStorage.set).toBeCalledWith(
-        KeyStoreKeys.IDENTITY_ENTROPY,
-        entropy
-      )
-    );
   });
 
   test("The user can Verify the Seed Phrase when generating a new seed phrase", async () => {
@@ -344,13 +311,6 @@ describe("Verify Seed Phrase Page", () => {
     );
 
     fireEvent.click(continueButton);
-
-    const seedPhraseString = initialState.seedPhraseCache.seedPhrase160;
-    const entropy = Addresses.convertToEntropy(seedPhraseString);
-    const Bech32XPrv = Addresses.entropyToBip32NoPasscode(seedPhraseString);
-    expect(Addresses.convertToEntropy).toBeCalledWith(seedPhraseString);
-    expect(Addresses.entropyToBip32NoPasscode).toBeCalledWith(entropy);
-    expect(Addresses.bech32ToHexBip32Private).toBeCalledWith(Bech32XPrv);
   });
 
   test("calls handleOnBack when back button is clicked", async () => {
