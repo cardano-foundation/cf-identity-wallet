@@ -100,11 +100,13 @@ const notificationStorage = jest.mocked({
 });
 
 const identifierStorage = jest.mocked({});
+const operationPendingStorage = jest.mocked({});
 
 const signifyNotificationService = new SignifyNotificationService(
   agentServicesProps,
   notificationStorage as any,
-  identifierStorage as any
+  identifierStorage as any,
+  operationPendingStorage as any,
 );
 
 jest.mock("../../../core/agent/agent", () => ({

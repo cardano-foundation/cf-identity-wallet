@@ -11,9 +11,11 @@ import {
   BasicRecord,
   IdentifierStorage,
   NotificationStorage,
+  OperationPendingStorage,
 } from "../records";
 import { Agent } from "../agent";
 import { IdentifierShortDetails } from "./identifier.types";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -21,15 +23,18 @@ class SignifyNotificationService extends AgentService {
 
   protected readonly notificationStorage!: NotificationStorage;
   protected readonly identifierStorage: IdentifierStorage;
-
+  protected readonly operationPendingStorage: OperationPendingStorage;
+  
   constructor(
     agentServiceProps: AgentServicesProps,
     notificationStorage: NotificationStorage,
-    identifierStorage: IdentifierStorage
+    identifierStorage: IdentifierStorage,
+    operationPendingStorage: OperationPendingStorage
   ) {
     super(agentServiceProps);
     this.notificationStorage = notificationStorage;
     this.identifierStorage = identifierStorage;
+    this.operationPendingStorage = operationPendingStorage;
   }
 
   async onNotificationStateChanged(
@@ -227,46 +232,46 @@ class SignifyNotificationService extends AgentService {
     return notificationRecord;
   }
   async onSignifyOperationStateChanged(
-    callback: (identifierShortDetails: IdentifierShortDetails) => void
+    callback: ({ record, recordType }: {record: IdentifierShortDetails, recordType: OperationPendingRecordType}) => void
   ) {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const pendingIdentifiers =
-        await this.identifierStorage.getAllPendingIdentifierMetadata();
-      if (pendingIdentifiers.length > 0) {
-        const promises = await Promise.allSettled(
-          pendingIdentifiers.map((aid) => {
-            return this.signifyClient.operations().get(aid.signifyOpName!);
-          })
-        );
-        for (const pm of promises) {
-          if (pm.status === "fulfilled") {
-            const operation = pm.value;
-            if (operation.done) {
-              const aid = pendingIdentifiers.find(
-                (aid) => aid.signifyOpName === operation.name
-              )!;
+      const pendingOperations =
+        await this.operationPendingStorage.getAll();
+      if (pendingOperations.length > 0) {
+        for (const pendingOperation of pendingOperations) {
+          const operation = await  this.signifyClient.operations().get(pendingOperation.id);
+          if (operation.done) {
+            switch (pendingOperation.recordType) {
+            case OperationPendingRecordType.IDENTIFIER: {
+              const aid = await this.identifierStorage.getIdentifierMetadata(pendingOperation.recordId);
               await this.identifierStorage.updateIdentifierMetadata(aid.id, {
                 isPending: false,
               });
               callback({
-                displayName: aid.displayName,
-                id: aid.id,
-                signifyName: aid.signifyName,
-                createdAtUTC: aid.createdAt.toISOString(),
-                theme: aid.theme,
-                isPending: false,
+                recordType: pendingOperation.recordType,
+                record: {
+                  displayName: aid.displayName,
+                  id: aid.id,
+                  signifyName: aid.signifyName,
+                  createdAtUTC: aid.createdAt.toISOString(),
+                  theme: aid.theme,
+                  isPending: false,
+                }
               });
+              await this.operationPendingStorage.deleteById(pendingOperation.id);
+              break;
             }
-          } else {
-            //TODO: must handle case get operation failed
+            default:
+              break;
+            }
           }
         }
       }
       await new Promise((rs) => {
         setTimeout(() => {
           rs(true);
-        }, 5000);
+        }, 20000);
       });
     }
   }

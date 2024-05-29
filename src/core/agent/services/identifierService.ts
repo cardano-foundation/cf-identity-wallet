@@ -1,20 +1,15 @@
 import { v4 as uuidv4 } from "uuid";
 import { Signer } from "signify-ts";
-import {
-  CreateIdentifierResult,
-  IdentifierDetails,
-  IdentifierShortDetails,
-} from "./identifier.types";
-import {
-  IdentifierMetadataRecord,
-  IdentifierMetadataRecordProps,
-} from "../records/identifierMetadataRecord";
+import { CreateIdentifierResult, IdentifierDetails, IdentifierShortDetails } from "./identifier.types";
+import { IdentifierMetadataRecord, IdentifierMetadataRecordProps } from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { AgentServicesProps, IdentifierResult } from "../agent.types";
 import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
 import { BackingMode } from "../../configuration/configurationService.types";
+import { OperationPendingStorage } from "../records/operationPendingStorage";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 
 const identifierTypeThemes = [0, 1];
 
@@ -31,13 +26,17 @@ class IdentifierService extends AgentService {
     "Failed to obtain key manager for given AID";
 
   protected readonly identifierStorage: IdentifierStorage;
+  protected readonly operationPendingStorage: OperationPendingStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
-    identifierStorage: IdentifierStorage
+    identifierStorage: IdentifierStorage,
+    operationPendingStorage: OperationPendingStorage,
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
+    this.operationPendingStorage = operationPendingStorage;
+    
   }
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
@@ -128,13 +127,24 @@ class IdentifierService extends AgentService {
     const operation = await this.signifyClient
       .identifiers()
       .create(signifyName); //, this.getCreateAidOptions());
-    const op = await operation.op();
+    let op = await operation.op();
     const signifyOpName = op.name;
     const addRoleOperation = await this.signifyClient
       .identifiers()
       .addEndRole(signifyName, "agent", this.signifyClient.agent!.pre);
     await addRoleOperation.op();
     const identifier = operation.serder.ked.i;
+    const isPending = !op.done;
+    if (isPending) {
+      op = await waitAndGetDoneOp(this.signifyClient, op, 2000);
+      if (!op.done) {
+        await this.operationPendingStorage.save({
+          id: op.name,
+          recordType: OperationPendingRecordType.IDENTIFIER,
+          recordId: identifier,
+        })
+      }
+    }
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: identifier,
       ...metadata,
@@ -142,7 +152,8 @@ class IdentifierService extends AgentService {
       isPending: !op.done,
       signifyName: signifyName,
     });
-    return { identifier, signifyName };
+    // TODO: TEST !op.done
+    return { identifier, signifyName, isPending:  !op.done };
   }
 
   async archiveIdentifier(identifier: string): Promise<void> {

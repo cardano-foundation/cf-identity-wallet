@@ -1,8 +1,8 @@
 import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import {
-  AppWrapper,
   acdcChangeHandler,
+  AppWrapper,
   connectionStateChangedHandler,
   keriaNotificationsChangeHandler,
   signifyOperationStateChangeHandler,
@@ -10,11 +10,7 @@ import {
 import { store } from "../../../store";
 import { Agent } from "../../../core/agent/agent";
 import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
-import {
-  setCurrentOperation,
-  setQueueIncomingRequest,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
+import { setCurrentOperation, setQueueIncomingRequest, setToastMsg } from "../../../store/reducers/stateCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import {
   AcdcEventTypes,
@@ -28,12 +24,10 @@ import {
 } from "../../../core/agent/agent.types";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
-import {
-  CredentialShortDetails,
-  CredentialStatus,
-} from "../../../core/agent/services/credentialService.types";
+import { CredentialShortDetails, CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { updateOrAddIdentifiersCache } from "../../../store/reducers/identifiersCache";
+import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -261,7 +255,7 @@ describe("Signify operation state changed handler", () => {
       isPending: false,
       delegated: {},
     } as IdentifierShortDetails;
-    await signifyOperationStateChangeHandler(aid, dispatch);
+    await signifyOperationStateChangeHandler({ recordType: OperationPendingRecordType.IDENTIFIER, record: aid }, dispatch);
     expect(dispatch).toBeCalledWith(updateOrAddIdentifiersCache(aid));
     expect(dispatch).toBeCalledWith(setCurrentOperation(OperationType.IDLE));
     expect(dispatch).toBeCalledWith(

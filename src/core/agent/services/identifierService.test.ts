@@ -84,6 +84,8 @@ const identifierStorage = jest.mocked({
   getIdentifierMetadataByGroupId: jest.fn(),
 });
 
+const operationPendingStorage = jest.mocked({});
+
 const agentServicesProps = {
   signifyClient: signifyClient as any,
   eventService: new EventService(),
@@ -91,7 +93,8 @@ const agentServicesProps = {
 
 const identifierService = new IdentifierService(
   agentServicesProps,
-  identifierStorage as any
+  identifierStorage as any,
+  operationPendingStorage as any,
 );
 
 jest.mock("../../../core/agent/agent", () => ({

@@ -45,6 +45,8 @@ import { IonicStorage } from "../storage/ionicStorage";
 import { SqliteStorage } from "../storage/sqliteStorage";
 import { BaseRecord } from "../storage/storage.types";
 import { ConfigurationService } from "../configuration";
+import { OperationPendingStorage } from "./records/operationPendingStorage";
+import { OperationPendingRecord } from "./records/operationPendingRecord";
 
 const walletId = "idw";
 class Agent {
@@ -63,6 +65,7 @@ class Agent {
   private connectionNoteStorage!: ConnectionNoteStorage;
   private notificationStorage!: NotificationStorage;
   private peerConnectionStorage!: PeerConnectionStorage;
+  private operationPendingStorage!: OperationPendingStorage;
 
   private signifyClient!: SignifyClient;
 
@@ -80,7 +83,8 @@ class Agent {
     if (!this.identifierService) {
       this.identifierService = new IdentifierService(
         this.agentServicesProps,
-        this.identifierStorage
+        this.identifierStorage,
+        this.operationPendingStorage,
       );
     }
     return this.identifierService;
@@ -145,7 +149,8 @@ class Agent {
       this.signifyNotificationService = new SignifyNotificationService(
         this.agentServicesProps,
         this.notificationStorage,
-        this.identifierStorage
+        this.identifierStorage,
+        this.operationPendingStorage,
       );
     }
     return this.signifyNotificationService;
@@ -196,6 +201,10 @@ class Agent {
       this.notificationStorage = new NotificationStorage(
         this.getStorageService<NotificationRecord>(this.storageSession)
       );
+      
+      this.operationPendingStorage = new OperationPendingStorage(
+        this.getStorageService<OperationPendingRecord>(this.storageSession)
+      )
 
       await signifyReady();
       const bran = await this.getBran();

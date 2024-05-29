@@ -50,6 +50,7 @@ import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCach
 import { CardListViewType } from "../SwitchCardView";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -143,12 +144,17 @@ const peerConnectRequestSignChangeHandler = async (
 };
 
 const signifyOperationStateChangeHandler = async (
-  aid: IdentifierShortDetails,
+  { record, recordType }: {record: IdentifierShortDetails, recordType: OperationPendingRecordType},
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  dispatch(updateOrAddIdentifiersCache(aid));
-  dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
-  dispatch(setCurrentOperation(OperationType.IDLE));
+  switch (recordType) {
+  case OperationPendingRecordType.IDENTIFIER:
+    dispatch(updateOrAddIdentifiersCache(record));
+    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
+    dispatch(setCurrentOperation(OperationType.IDLE));
+    break;
+    
+  }
 };
 
 const AppWrapper = (props: { children: ReactNode }) => {
