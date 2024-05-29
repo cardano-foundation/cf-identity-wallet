@@ -80,7 +80,7 @@ const SignRequest = ({
               }}
             />
           ) : (
-            signDetails.toString()
+            <IonText className="sign-string">{signDetails.toString()}</IonText>
           )}
         </CardDetailsBlock>
       </div>
