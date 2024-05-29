@@ -19,6 +19,7 @@ interface AuthenticationCacheProps {
   seedPhraseIsSet: boolean;
   passwordIsSet: boolean;
   passwordIsSkipped: boolean;
+  ssiAgentIsSet: boolean;
 }
 enum IncomingRequestType {
   CREDENTIAL_OFFER_RECEIVED = "credential-offer-received",
