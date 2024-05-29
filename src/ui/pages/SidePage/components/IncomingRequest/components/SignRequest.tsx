@@ -51,9 +51,9 @@ const SignRequest = ({
           className="sign-owner-logo"
           data-testid="sign-logo"
           src={logo}
-          alt={requestData.label}
+          alt={requestData.peerConnection?.name}
         />
-        <h2 className="sign-name">{requestData.label}</h2>
+        <h2 className="sign-name">{requestData.peerConnection?.name}</h2>
         <p className="sign-link">{requestData.peerConnection?.url}</p>
       </div>
       <div className="sign-content">

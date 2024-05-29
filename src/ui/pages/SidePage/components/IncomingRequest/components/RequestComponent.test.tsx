@@ -204,6 +204,7 @@ describe("Sign request", () => {
     label: "Cardano",
     type: IncomingRequestType.PEER_CONNECT_SIGN,
     signTransaction: signTransactionFix,
+    peerConnection: { id: "id", name: "DApp" },
   };
 
   const initiateAnimation = false;
@@ -229,7 +230,7 @@ describe("Sign request", () => {
       </Provider>
     );
 
-    expect(getByText(requestData.label)).toBeVisible();
+    expect(getByText(requestData.peerConnection?.name)).toBeVisible();
     expect(
       getByText(requestData.signTransaction.payload.payload)
     ).toBeVisible();
@@ -284,6 +285,7 @@ describe("Sign JSON", () => {
     label: "Cardano",
     type: IncomingRequestType.PEER_CONNECT_SIGN,
     signTransaction: signObjectFix,
+    peerConnection: { id: "id", name: "DApp" },
   };
 
   const initiateAnimation = false;
@@ -309,7 +311,7 @@ describe("Sign JSON", () => {
       </Provider>
     );
 
-    expect(getByText(requestData.label)).toBeVisible();
+    expect(getByText(requestData.peerConnection?.name)).toBeVisible();
     expect(
       getByText(JSON.parse(signObjectFix.payload.payload).data.id)
     ).toBeVisible();
