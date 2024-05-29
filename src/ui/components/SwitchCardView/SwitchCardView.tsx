@@ -33,7 +33,7 @@ const SwitchCardView = ({
   const [type, setType] = useState<CardListViewType>(CardListViewType.Stack);
   const viewTypeCache = useAppSelector(getIdentifierViewTypeCacheCache);
   useEffect(() => {
-    if (!viewTypeCache) {
+    if (!viewTypeCache.viewType) {
       setType(CardListViewType.Stack);
       return;
     }

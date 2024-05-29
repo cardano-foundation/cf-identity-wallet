@@ -18,4 +18,20 @@
   .page-footer {
     margin-top: auto;
   }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    &.responsive-page-layout {
+      padding: 0 0.9rem;
+
+      .responsive-page-content {
+        & > * {
+          margin: 0;
+        }
+
+        & > .paragraph-top {
+          margin: 0.2rem 0;
+        }
+      }
+    }
+  }
 }

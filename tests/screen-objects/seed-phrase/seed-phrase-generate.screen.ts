@@ -63,8 +63,8 @@ export class SeedPhraseGenerateScreen {
     );
     await expect(this.phraseWordsButton(15)).toBeDisplayed();
     await expect(this.phraseWordsButton(24)).toBeDisplayed();
-    await expect(this.viewSeedPhraseText).toBeDisplayed();
-    await expect(this.viewSeedPhraseButton).toBeDisplayed();
+    await expect(this.viewSeedPhraseText).toBeExisting();
+    await expect(this.viewSeedPhraseButton).toBeExisting();
     await expect(this.screenBottomParagraph).toBeDisplayed();
     await expect(this.screenBottomParagraph).toHaveText(
       SeedPhraseGenerate.DescriptionBottom

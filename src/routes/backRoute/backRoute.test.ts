@@ -1,5 +1,4 @@
 import { RootState } from "../../store";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../ui/globals/constants";
 import { OperationType } from "../../ui/globals/types";
 import { DataProps } from "../nextRoute/nextRoute.types";
 import { calcPreviousRoute, getBackRoute, getPreviousRoute } from "./backRoute";
@@ -20,9 +19,8 @@ describe("getBackRoute", () => {
   beforeEach(() => {
     storeMock = {
       seedPhraseCache: {
-        seedPhrase160: "",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        seedPhrase: "",
+        bran: "",
       },
       stateCache: {
         initialized: true,
@@ -142,9 +140,8 @@ describe("getPreviousRoute", () => {
   beforeEach(() => {
     storeMock = {
       seedPhraseCache: {
-        seedPhrase160: "",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        seedPhrase: "",
+        bran: "",
       },
       stateCache: {
         initialized: true,

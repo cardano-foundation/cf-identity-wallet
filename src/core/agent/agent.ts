@@ -6,6 +6,7 @@ import {
   Tier,
 } from "signify-ts";
 import { DataType } from "@aparajita/capacitor-secure-storage";
+import { entropyToMnemonic, mnemonicToEntropy } from "bip39";
 import {
   ConnectionService,
   CredentialService,
@@ -14,6 +15,7 @@ import {
 import { SignifyNotificationService } from "./services/signifyNotificationService";
 import {
   AgentServicesProps,
+  BranAndMnemonic,
   KeriaStatusChangedEvent,
   KeriaStatusEventTypes,
 } from "./agent.types";
@@ -264,22 +266,7 @@ class Agent {
   }
 
   private async getBran(): Promise<string> {
-    let bran: DataType | null;
-    try {
-      bran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
-    } catch (error) {
-      if (
-        error instanceof Error &&
-        error.message ===
-          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
-      ) {
-        bran = randomPasscode();
-        await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
-      } else {
-        throw error;
-      }
-    }
-    return bran as string;
+    return (await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN)) as string;
   }
 
   private getStorageService<T extends BaseRecord>(
@@ -289,6 +276,28 @@ class Agent {
       return new IonicStorage<T>(instance.session!);
     }
     return new SqliteStorage<T>(instance.session!);
+  }
+
+  getBranAndMnemonic(): BranAndMnemonic {
+    // This converts the 21 character Signify-TS passcode/bran to a BIP-39 compatible word list.
+    // The passcode is assumed as UTF-8 in our recovery. In actuality, it is the qb64 CESR salt without the code.
+    // We believe it's easier to encode it as UTF-8 in case there is a change in Signify TS in how the passcode is handled.
+    const bran = randomPasscode().substring(0, 21);
+    const passcodeBytes = Buffer.concat([
+      Buffer.from(bran, "utf-8"),
+      Buffer.alloc(3),
+    ]);
+    return { bran, mnemonic: entropyToMnemonic(passcodeBytes) };
+  }
+
+  async isMnemonicValid(mnemonic: string): Promise<boolean> {
+    const bran = (await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN)) as string;
+    return (
+      bran ===
+      Buffer.from(mnemonicToEntropy(mnemonic), "hex")
+        .toString("utf-8")
+        .replace(/\0/g, "")
+    );
   }
 }
 

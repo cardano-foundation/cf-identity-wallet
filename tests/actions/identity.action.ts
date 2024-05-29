@@ -10,7 +10,6 @@ import { randomNameWithPrefix } from "../helpers/generate.js";
 export async function editAndReturnIdentifierName() {
   const identityName = await randomNameWithPrefix("edit-identity");
   await (await IdentityEditModal.displayNameInput).setValue(identityName);
-  await Gestures.tapAtPercentageOfScreenHeight(40);
   return identityName;
 }
 
