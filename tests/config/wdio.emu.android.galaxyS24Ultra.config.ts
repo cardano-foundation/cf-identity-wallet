@@ -1,22 +1,21 @@
 import process from "process";
 import {config as sharedConfig} from "./wdio.appium.config.js";
 
-
 export const config = {
   ...sharedConfig,
   ...{
     capabilities: [
       {
         // The defaults you need to have in your config
-        platformName: "iOS",
+        platformName: "Android",
         maxInstances: 1,
         // For W3C the appium capabilities need to have an extension prefix
         // This is `appium:` for all Appium Capabilities which can be found here
         // http://appium.io/docs/en/writing-running-appium/caps/
-        "appium:deviceName": "iPhone 12 Pro",
-        "appium:platformVersion": "16.4",
+        "appium:deviceName": "Galaxy S24 Ultra",
+        "appium:platformVersion": "14",
         "appium:orientation": "PORTRAIT",
-        "appium:automationName": "XCUITest",
+        "appium:automationName": "UiAutomator2",
         "appium:autoWebview": true,
         "appium:noReset": false,
         // The path to the app
@@ -24,5 +23,5 @@ export const config = {
         "appium:newCommandTimeout": 240,
       },
     ],
-  },
+  }
 };

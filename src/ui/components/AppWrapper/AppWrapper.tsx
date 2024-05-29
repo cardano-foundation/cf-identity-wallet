@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  getCurrentOperation,
   setAuthentication,
   setCurrentOperation,
   setInitialized,
@@ -142,6 +143,7 @@ const peerConnectRequestSignChangeHandler = async (
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
+  const operation = useAppSelector(getCurrentOperation);
   const [isOnline, setIsOnline] = useState(false);
   const [isMessagesHandled, setIsMessagesHandled] = useState(false);
   useActivityTimer();

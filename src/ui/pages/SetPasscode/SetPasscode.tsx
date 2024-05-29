@@ -6,6 +6,7 @@ import { PasscodeModule } from "../../components/PasscodeModule";
 import {
   getStateCache,
   setInitialized,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -26,6 +27,7 @@ import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
+import { ToastMsgType } from "../../globals/types";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
@@ -82,6 +84,9 @@ const SetPasscode = () => {
         })
       );
       dispatch(setEnableBiometryCache(true));
+      dispatch(
+        setToastMsg(ToastMsgType.SETUP_BIOMETRIC_AUTHENTICATION_SUCCESS)
+      );
       await handlePassAuth();
     } else {
       if (isBiometricAuthenticated instanceof BiometryError) {
