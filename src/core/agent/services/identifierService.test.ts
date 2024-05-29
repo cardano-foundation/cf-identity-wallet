@@ -94,7 +94,7 @@ const agentServicesProps = {
 const identifierService = new IdentifierService(
   agentServicesProps,
   identifierStorage as any,
-  operationPendingStorage as any,
+  operationPendingStorage as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -231,7 +231,11 @@ describe("Single sig service of agent", () => {
         displayName,
         theme: 0,
       })
-    ).toEqual({ identifier: aid, signifyName: expect.any(String) });
+    ).toEqual({
+      identifier: aid,
+      signifyName: expect.any(String),
+      isPending: false,
+    });
     expect(identifiersCreateMock).toBeCalled();
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
   });
