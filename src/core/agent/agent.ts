@@ -166,6 +166,15 @@ class Agent {
     return this.instance;
   }
 
+  set signifyClientInstance(signifyClient: SignifyClient) {
+    this.connectionService.signifyClientInstance = signifyClient;
+    this.credentialService.signifyClientInstance = signifyClient;
+    this.identifierService.signifyClientInstance = signifyClient;
+    this.ipexCommunicationService.signifyClientInstance = signifyClient;
+    this.multiSigService.signifyClientInstance = signifyClient;
+    this.signifyNotificationService.signifyClientInstance = signifyClient;
+  }
+
   onKeriaStatusStateChanged(
     callback: (event: KeriaStatusChangedEvent) => void
   ) {
@@ -185,6 +194,7 @@ class Agent {
       await this.signifyClient.connect();
       Agent.isOnline = true;
       this.agentServicesProps.signifyClient = this.signifyClient;
+      this.signifyClientInstance = this.signifyClient;
       this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
         type: KeriaStatusEventTypes.KeriaStatusChanged,
         payload: {
@@ -228,6 +238,7 @@ class Agent {
       await this.saveAgentUrls(agentUrls);
       Agent.isOnline = true;
       this.agentServicesProps.signifyClient = this.signifyClient;
+      this.signifyClientInstance = this.signifyClient;
       this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
         type: KeriaStatusEventTypes.KeriaStatusChanged,
         payload: {
