@@ -218,6 +218,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
+    const connectUrl = await Agent.agent.basicStorage.findById(
+      MiscRecordId.KERIA_CONNECT_URL
+    );
 
     const identifiersFavourites = await Agent.agent.basicStorage.findById(
       MiscRecordId.IDENTIFIERS_FAVOURITES
@@ -266,6 +269,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
+        ssiAgentIsSet: !!connectUrl && !!connectUrl.content,
       })
     );
   };
@@ -305,8 +309,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
           throw e;
         }
       }
-    } else {
-      // @TODO: on the onboarding screen to enter it
     }
 
     Agent.agent.onKeriaStatusStateChanged((event) => {

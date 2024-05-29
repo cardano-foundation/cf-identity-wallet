@@ -1,0 +1,43 @@
+.create-ssi-agent {
+  --background: var(--ion-color-light);
+
+  .ssi-spinner-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 101;
+  }
+
+  &.responsive-page-layout .responsive-page-content {
+    & > ion-item {
+      margin-bottom: 0;
+    }
+  }
+
+  .error-message-placeholder {
+    display: none;
+  }
+
+  .error-message {
+    text-align: left;
+
+    > p {
+      margin: 0;
+    }
+  }
+
+  .page-header {
+    ion-toolbar {
+      --background: transparent;
+    }
+  }
+
+  .page-footer {
+    margin-top: auto;
+  }
+}
