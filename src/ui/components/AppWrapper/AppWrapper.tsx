@@ -46,6 +46,7 @@ import { MultiSigService } from "../../../core/agent/services/multiSigService";
 import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCache";
 import { CardListViewType } from "../SwitchCardView";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
+import { i18n } from "../../../i18n";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -138,6 +139,7 @@ const peerConnectRequestSignChangeHandler = async (
   dispatch(
     setQueueIncomingRequest({
       id: "peer-connect-signing",
+      label: `${i18n.t("request.signtransaction.label")}`,
       signTransaction: event,
       type: IncomingRequestType.SIGN_TRANSACTION_REQUEST,
     })

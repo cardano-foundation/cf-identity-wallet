@@ -1,11 +1,11 @@
-.sign-transaction {
+.sign-request {
   & .page-header {
     ion-toolbar {
       --background: transparent;
     }
   }
 
-  .sign-transaction-header {
+  .sign-header {
     margin: 1.75rem 0;
     display: flex;
     flex-direction: column;
@@ -34,7 +34,7 @@
     }
   }
 
-  .sign-transaction-content {
+  .sign-content {
     margin-bottom: 3rem;
 
     .sign-identifier {

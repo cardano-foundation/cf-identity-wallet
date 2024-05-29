@@ -1191,9 +1191,10 @@
   "request": {
     "signtransaction": {
       "title": "Sign",
+      "label": "Cardano Ballot",
       "identifier": "Identifier",
       "transaction": {
-        "data": "data"
+        "data": "Data"
       }
     },
     "connection": {

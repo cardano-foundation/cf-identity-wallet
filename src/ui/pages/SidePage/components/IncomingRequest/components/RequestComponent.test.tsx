@@ -20,7 +20,15 @@ jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonAlert: ({ children }: { children: any }) => children,
 }));
-
+jest.mock("../../../../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      peerConnectionMetadataStorage: {
+        getPeerConnectionMetadata: jest.fn(),
+      },
+    },
+  },
+}));
 describe("Multi-Sig request", () => {
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
