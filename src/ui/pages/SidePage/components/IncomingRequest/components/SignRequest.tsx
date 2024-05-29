@@ -1,5 +1,5 @@
 import { IonText } from "@ionic/react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { i18n } from "../../../../../../i18n";
 import {
   CardDetailsAttributes,
@@ -10,9 +10,6 @@ import { ScrollablePageLayout } from "../../../../../components/layout/Scrollabl
 import CardanoLogo from "../../../../../assets/images/CardanoLogo.jpg";
 import { RequestProps } from "../IncomingRequest.types";
 import "./SignRequest.scss";
-import { PeerConnection } from "../../../../../../core/cardano/walletConnect/peerConnection";
-import { Agent } from "../../../../../../core/agent/agent";
-import { PeerConnectionMetadataRecord } from "../../../../../../core/agent/records";
 
 const SignRequest = ({
   pageId,
@@ -23,33 +20,19 @@ const SignRequest = ({
 }: RequestProps) => {
   const signRequest = requestData.signTransaction;
   const [isSigningObject, setIsSigningObject] = useState(false);
-  const [peerConnection, setPeerConnection] =
-    useState<PeerConnectionMetadataRecord>();
   const logo = requestData.logo ? requestData.logo : CardanoLogo;
-
-  useEffect(() => {
-    (async () => {
-      const connectedDAppAddress =
-        PeerConnection.peerConnection.getConnectedDAppAddress();
-      const peerConnectionData =
-        await Agent.agent.peerConnectionMetadataStorage.getPeerConnectionMetadata(
-          connectedDAppAddress
-        );
-      setPeerConnection(peerConnectionData);
-    })();
-  }, []);
 
   const signDetails = useMemo(() => {
     if (!signRequest) return {};
 
-    let signTransactionContent;
+    let signContent;
     try {
-      signTransactionContent = JSON.parse(signRequest.payload.payload);
+      signContent = JSON.parse(signRequest.payload.payload);
       setIsSigningObject(true);
     } catch (error) {
-      signTransactionContent = signRequest.payload.payload;
+      signContent = signRequest.payload.payload;
     }
-    return signTransactionContent;
+    return signContent;
   }, [requestData.signTransaction]);
 
   const handleSign = () => {
@@ -61,7 +44,7 @@ const SignRequest = ({
       activeStatus={activeStatus}
       pageId={pageId}
       customClass="sign-request"
-      header={<h2>{`${i18n.t("request.signtransaction.title")}`}</h2>}
+      header={<h2>{`${i18n.t("request.sign.title")}`}</h2>}
     >
       <div className="sign-header">
         <img
@@ -71,12 +54,12 @@ const SignRequest = ({
           alt={requestData.label}
         />
         <h2 className="sign-name">{requestData.label}</h2>
-        <p className="sign-link">{peerConnection?.url}</p>
+        <p className="sign-link">{requestData.peerConnection?.url}</p>
       </div>
       <div className="sign-content">
         <CardDetailsBlock
           className="sign-identifier"
-          title={`${i18n.t("request.signtransaction.identifier")}`}
+          title={`${i18n.t("request.sign.identifier")}`}
         >
           <IonText className="identifier">
             {signRequest?.payload.identifier}
@@ -84,7 +67,7 @@ const SignRequest = ({
         </CardDetailsBlock>
         <CardDetailsBlock
           className="sign-data"
-          title={i18n.t("request.signtransaction.transaction.data")}
+          title={i18n.t("request.sign.transaction.data")}
         >
           {isSigningObject ? (
             <CardDetailsAttributes

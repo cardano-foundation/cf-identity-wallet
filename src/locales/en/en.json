@@ -1188,9 +1188,8 @@
     "setupbiometricsuccess": "Biometrics setup successfully"
   },
   "request": {
-    "signtransaction": {
+    "sign": {
       "title": "Sign",
-      "label": "Cardano Ballot",
       "identifier": "Identifier",
       "transaction": {
         "data": "Data"

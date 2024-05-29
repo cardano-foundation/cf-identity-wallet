@@ -67,9 +67,7 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
       await Agent.agent.signifyNotifications.deleteNotificationRecordById(
         incomingRequest.id
       );
-    } else if (
-      incomingRequest.type === IncomingRequestType.SIGN_TRANSACTION_REQUEST
-    ) {
+    } else if (incomingRequest.type === IncomingRequestType.PEER_CONNECT_SIGN) {
       incomingRequest.signTransaction?.payload.approvalCallback(false);
     }
     handleReset();
@@ -81,9 +79,7 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
       Agent.agent.ipexCommunications.acceptAcdc(incomingRequest.id);
-    } else if (
-      incomingRequest.type === IncomingRequestType.SIGN_TRANSACTION_REQUEST
-    ) {
+    } else if (incomingRequest.type === IncomingRequestType.PEER_CONNECT_SIGN) {
       incomingRequest.signTransaction?.payload.approvalCallback(true);
     }
     setTimeout(() => {

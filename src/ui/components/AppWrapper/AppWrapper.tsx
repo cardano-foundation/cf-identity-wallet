@@ -137,12 +137,19 @@ const peerConnectRequestSignChangeHandler = async (
   event: PeerConnectSigningEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
+  const connectedDAppAddress =
+    PeerConnection.peerConnection.getConnectedDAppAddress();
+  const peerConnection =
+    await Agent.agent.peerConnectionMetadataStorage.getPeerConnectionMetadata(
+      connectedDAppAddress
+    );
   dispatch(
     setQueueIncomingRequest({
       id: "peer-connect-signing",
-      label: `${i18n.t("request.signtransaction.label")}`,
+      label: peerConnection.name,
       signTransaction: event,
-      type: IncomingRequestType.SIGN_TRANSACTION_REQUEST,
+      peerConnection,
+      type: IncomingRequestType.PEER_CONNECT_SIGN,
     })
   );
 };

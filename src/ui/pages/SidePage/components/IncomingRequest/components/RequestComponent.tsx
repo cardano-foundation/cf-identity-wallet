@@ -43,7 +43,7 @@ const RequestComponent = ({
         handleIgnore={handleIgnore}
       />
     );
-  case IncomingRequestType.SIGN_TRANSACTION_REQUEST:
+  case IncomingRequestType.PEER_CONNECT_SIGN:
     return (
       <SignRequest
         pageId={pageId}

@@ -202,7 +202,7 @@ describe("Sign request", () => {
   const requestData = {
     id: "abc123456",
     label: "Cardano",
-    type: IncomingRequestType.SIGN_TRANSACTION_REQUEST,
+    type: IncomingRequestType.PEER_CONNECT_SIGN,
     signTransaction: signTransactionFix,
   };
 
@@ -224,12 +224,18 @@ describe("Sign request", () => {
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.SIGN_TRANSACTION_REQUEST}
+          incomingRequestType={IncomingRequestType.PEER_CONNECT_SIGN}
         />
       </Provider>
     );
 
     expect(getByText(requestData.label)).toBeVisible();
+    expect(
+      getByText(requestData.signTransaction.payload.payload)
+    ).toBeVisible();
+    expect(
+      getByText(requestData.signTransaction.payload.identifier)
+    ).toBeVisible();
   });
 
   test("Display fallback image when provider logo is empty: BALLOT_TRANSACTION_REQUEST", async () => {
@@ -250,7 +256,7 @@ describe("Sign request", () => {
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.SIGN_TRANSACTION_REQUEST}
+          incomingRequestType={IncomingRequestType.PEER_CONNECT_SIGN}
         />
       </Provider>
     );
@@ -276,7 +282,7 @@ describe("Sign JSON", () => {
   const requestData = {
     id: "abc123456",
     label: "Cardano",
-    type: IncomingRequestType.SIGN_TRANSACTION_REQUEST,
+    type: IncomingRequestType.PEER_CONNECT_SIGN,
     signTransaction: signObjectFix,
   };
 
@@ -298,7 +304,7 @@ describe("Sign JSON", () => {
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.SIGN_TRANSACTION_REQUEST}
+          incomingRequestType={IncomingRequestType.PEER_CONNECT_SIGN}
         />
       </Provider>
     );
@@ -327,7 +333,7 @@ describe("Sign JSON", () => {
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.SIGN_TRANSACTION_REQUEST}
+          incomingRequestType={IncomingRequestType.PEER_CONNECT_SIGN}
         />
       </Provider>
     );

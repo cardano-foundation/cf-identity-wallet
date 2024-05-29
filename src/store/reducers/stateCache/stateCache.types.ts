@@ -2,6 +2,7 @@ import { KeriaNotification } from "../../../core/agent/agent.types";
 import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifier.types";
 import { PeerConnectSigningEvent } from "../../../core/cardano/walletConnect/peerConnection.types";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
+import { ConnectionData } from "../walletConnectionsCache";
 
 interface PayloadData<T = any> {
   [key: string]: T;
@@ -23,7 +24,7 @@ interface AuthenticationCacheProps {
 enum IncomingRequestType {
   CREDENTIAL_OFFER_RECEIVED = "credential-offer-received",
   MULTI_SIG_REQUEST_INCOMING = "multi-sig-request-incoming",
-  SIGN_TRANSACTION_REQUEST = "sign-transaction-request",
+  PEER_CONNECT_SIGN = "peer-connect-sign",
 }
 
 interface IncomingRequestProps {
@@ -34,6 +35,7 @@ interface IncomingRequestProps {
   event?: KeriaNotification;
   multisigIcpDetails?: MultiSigIcpRequestDetails;
   signTransaction?: PeerConnectSigningEvent;
+  peerConnection?: ConnectionData;
 }
 
 interface QueueProps<T> {
