@@ -57,7 +57,10 @@ class Agent {
     "Signify client is already booted but cannot connect";
 
   private static instance: Agent;
-  private agentServicesProps!: AgentServicesProps;
+  private agentServicesProps: AgentServicesProps = {
+    eventService: undefined as any,
+    signifyClient: undefined as any,
+  };
 
   private storageSession!: SqliteSession | IonicSession;
 
@@ -168,15 +171,6 @@ class Agent {
     return this.instance;
   }
 
-  set signifyClientInstance(signifyClient: SignifyClient) {
-    this.connections.signifyClientInstance = signifyClient;
-    this.credentials.signifyClientInstance = signifyClient;
-    this.identifiers.signifyClientInstance = signifyClient;
-    this.ipexCommunications.signifyClientInstance = signifyClient;
-    this.multiSigs.signifyClientInstance = signifyClient;
-    this.signifyNotifications.signifyClientInstance = signifyClient;
-  }
-
   onKeriaStatusStateChanged(
     callback: (event: KeriaStatusChangedEvent) => void
   ) {
@@ -196,7 +190,6 @@ class Agent {
       await this.signifyClient.connect();
       Agent.isOnline = true;
       this.agentServicesProps.signifyClient = this.signifyClient;
-      this.signifyClientInstance = this.signifyClient;
       this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
         type: KeriaStatusEventTypes.KeriaStatusChanged,
         payload: {
@@ -240,7 +233,6 @@ class Agent {
       await this.saveAgentUrls(agentUrls);
       Agent.isOnline = true;
       this.agentServicesProps.signifyClient = this.signifyClient;
-      this.signifyClientInstance = this.signifyClient;
       this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
         type: KeriaStatusEventTypes.KeriaStatusChanged,
         payload: {

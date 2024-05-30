@@ -36,7 +36,7 @@ class CredentialService extends AgentService {
   }
 
   onAcdcStateChanged(callback: (event: AcdcStateChangedEvent) => void) {
-    this.eventService.on(
+    this.props.eventService.on(
       AcdcEventTypes.AcdcStateChanged,
       async (event: AcdcStateChangedEvent) => {
         callback(event);
@@ -81,7 +81,7 @@ class CredentialService extends AgentService {
     const metadata = await this.getMetadataById(id);
     let acdc;
 
-    const results = await this.signifyClient.credentials().list({
+    const results = await this.props.signifyClient.credentials().list({
       filter: {
         "-d": { $eq: metadata.id.replace("metadata:", "") },
       },
@@ -192,7 +192,9 @@ class CredentialService extends AgentService {
 
   @OnlineOnly
   async syncACDCs() {
-    const signifyCredentials = await this.signifyClient.credentials().list();
+    const signifyCredentials = await this.props.signifyClient
+      .credentials()
+      .list();
     const storedCredentials =
       await this.credentialStorage.getAllCredentialMetadata();
     const unSyncedData = signifyCredentials.filter(

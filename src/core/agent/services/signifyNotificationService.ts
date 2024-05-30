@@ -56,7 +56,7 @@ class SignifyNotificationService extends AgentService {
 
       let notifications;
       try {
-        notifications = await this.signifyClient
+        notifications = await this.props.signifyClient
           .notifications()
           .list(startFetchingIndex, startFetchingIndex + 24);
       } catch (error) {
@@ -128,7 +128,7 @@ class SignifyNotificationService extends AgentService {
   ) {
     // We only process with the credential and the multisig at the moment
     if (notif.a.r === NotificationRoute.MultiSigIcp) {
-      const multisigNotification = await this.signifyClient
+      const multisigNotification = await this.props.signifyClient
         .groups()
         .getRequest(notif.a.d);
       if (!multisigNotification || !multisigNotification.length) {
@@ -173,7 +173,7 @@ class SignifyNotificationService extends AgentService {
       route: event.a.r,
     };
     if (event.a.r === NotificationRoute.MultiSigIcp) {
-      const multisigNotification = await this.signifyClient
+      const multisigNotification = await this.props.signifyClient
         .groups()
         .getRequest(event.a.d);
       if (multisigNotification && multisigNotification.length) {
@@ -209,7 +209,7 @@ class SignifyNotificationService extends AgentService {
   }
 
   private markNotification(notiSaid: string) {
-    return this.signifyClient.notifications().mark(notiSaid);
+    return this.props.signifyClient.notifications().mark(notiSaid);
   }
 
   async findNotificationsByMultisigId(multisigId: string) {
