@@ -13,6 +13,7 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { VerifySeedPhrase } from "../VerifySeedPhrase";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 
 const MNEMONIC_WORDS = 18;
 
@@ -232,6 +233,13 @@ describe("Verify Seed Phrase Page", () => {
     );
 
     fireEvent.click(continueButton);
+
+    await waitFor(() =>
+      expect(SecureStorage.set).toBeCalledWith(
+        KeyStoreKeys.SIGNIFY_BRAN,
+        initialState.seedPhraseCache.bran
+      )
+    );
   });
 
   test("calls handleOnBack when back button is clicked", async () => {

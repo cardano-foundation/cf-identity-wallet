@@ -27,15 +27,13 @@ export default {
     "tsx",
     "json",
     "node",
-    "yaml"
+    "yaml",
   ],
   moduleNameMapper: {
     "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
       "<rootDir>/src/ui/__mocks__/fileMock.ts",
     "\\.(css|scss)$": "<rootDir>/src/ui/__mocks__/styleMock.ts",
     // Jest cannot import the browser version so we can map in the NodeJS version instead.
-    "@dcspark/cardano-multiplatform-lib-browser":
-      "@dcspark/cardano-multiplatform-lib-nodejs",
   },
   testEnvironment: "jsdom",
   testMatch: ["**/src/**/?(*.)+(test).[tj]s?(x)"],
