@@ -7,7 +7,6 @@ import { identifierFix } from "../../__fixtures__/identifierFix";
 import { IdentifierDetails } from "./IdentifierDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { Agent } from "../../../core/agent/agent";
 import { ConfigurationService } from "../../../core/configuration";
@@ -56,10 +55,9 @@ const initialStateKeri = {
     },
   },
   seedPhraseCache: {
-    seedPhrase160:
+    seedPhrase:
       "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-    seedPhrase256: "",
-    selected: FIFTEEN_WORDS_BIT_LENGTH,
+    bran: "bran",
   },
   identifiersCache: {
     identifiers: filteredIdentifierFix,

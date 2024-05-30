@@ -2,7 +2,6 @@ import { driver } from "@wdio/globals";
 import { expect } from "expect-webdriverio";
 import Ajv from "ajv";
 import { log } from "./logger.js";
-import { delay } from "../screen-objects/base.screen.js";
 
 export class Assert {
   get toastMessageOverlay() {
@@ -10,7 +9,6 @@ export class Assert {
   }
 
   async clipboard() {
-    await delay(2000);
     const clipboardValue = atob(await driver.getClipboard());
     log.info(`CLIPBOARD VALUE: ${clipboardValue}`);
     await expect(clipboardValue).not.toBe("");

@@ -14,7 +14,7 @@ export const config = {
         // This is `appium:` for all Appium Capabilities which can be found here
         // http://appium.io/docs/en/writing-running-appium/caps/
         "appium:deviceName": "iPhone 15 Pro",
-        "appium:platformVersion": "17.0",
+        "appium:platformVersion": "17.5",
         "appium:orientation": "PORTRAIT",
         "appium:automationName": "XCUITest",
         "appium:autoWebview": true,

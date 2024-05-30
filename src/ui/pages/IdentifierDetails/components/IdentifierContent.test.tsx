@@ -5,7 +5,6 @@ import { MemoryRouter, Route } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 import { identifierFix } from "../../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../../../components/navigation/TabsMenu";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../globals/constants";
 import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
 import { IdentifierDetails } from "..";
 import { Agent } from "../../../../core/agent/agent";
@@ -48,10 +47,9 @@ const initialState = {
     },
   },
   seedPhraseCache: {
-    seedPhrase160:
+    seedPhrase:
       "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-    seedPhrase256: "",
-    selected: FIFTEEN_WORDS_BIT_LENGTH,
+    bran: "bran",
   },
   identifiersCache: {
     identifiers: filteredIdentifierFix,

@@ -2,7 +2,7 @@ import { CommonIdentityModal } from "./common-identity.modal.js";
 
 export class IdentifierJsonModal extends CommonIdentityModal {
   get copyJsonButton() {
-    return $("[data-testid=\"copy-json-button\"]");
+    return $("[data-testid=\"identifier-copy-json\"]");
   }
 
   get saveToDeviceButton() {

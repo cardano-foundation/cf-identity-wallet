@@ -147,6 +147,11 @@ enum NotificationRoute {
   ExnIpexAgree = "/exn/ipex/agree",
 }
 
+interface BranAndMnemonic {
+  bran: string;
+  mnemonic: string;
+}
+
 export {
   ConnectionStatus,
   MiscRecordId,
@@ -173,4 +178,5 @@ export type {
   CreateIdentifierResult,
   IdentifierResult,
   KeriaStatusChangedEvent,
+  BranAndMnemonic,
 };
