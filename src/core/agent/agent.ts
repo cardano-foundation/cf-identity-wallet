@@ -169,12 +169,12 @@ class Agent {
   }
 
   set signifyClientInstance(signifyClient: SignifyClient) {
-    this.connectionService.signifyClientInstance = signifyClient;
-    this.credentialService.signifyClientInstance = signifyClient;
-    this.identifierService.signifyClientInstance = signifyClient;
-    this.ipexCommunicationService.signifyClientInstance = signifyClient;
-    this.multiSigService.signifyClientInstance = signifyClient;
-    this.signifyNotificationService.signifyClientInstance = signifyClient;
+    this.connections.signifyClientInstance = signifyClient;
+    this.credentials.signifyClientInstance = signifyClient;
+    this.identifiers.signifyClientInstance = signifyClient;
+    this.ipexCommunications.signifyClientInstance = signifyClient;
+    this.multiSigs.signifyClientInstance = signifyClient;
+    this.signifyNotifications.signifyClientInstance = signifyClient;
   }
 
   onKeriaStatusStateChanged(
