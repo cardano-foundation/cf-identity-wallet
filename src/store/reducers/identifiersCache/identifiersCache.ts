@@ -36,11 +36,14 @@ const identifiersCacheSlice = createSlice({
       action: PayloadAction<Pick<IdentifierShortDetails, "id" | "isPending">>
     ) => {
       const identifier = state.identifiers.find(
-        (aid) => aid.id !== action.payload.id
+        (aid) => aid.id === action.payload.id
       );
       if (identifier) {
         identifier.isPending = action.payload.isPending;
-        state.identifiers = [...state.identifiers, identifier];
+        state.identifiers = [
+          ...state.identifiers.filter((aid) => aid.id !== action.payload.id),
+          identifier,
+        ];
       }
     },
     setFavouritesIdentifiersCache: (

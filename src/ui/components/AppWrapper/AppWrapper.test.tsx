@@ -269,8 +269,9 @@ describe("Signify operation state changed handler", () => {
       { opType: OperationPendingRecordType.Witness, oid: aid.id },
       dispatch
     );
-    expect(dispatch).toBeCalledWith(updateIsPending(aid));
-    expect(dispatch).toBeCalledWith(setCurrentOperation(OperationType.IDLE));
+    expect(dispatch).toBeCalledWith(
+      updateIsPending({ id: aid.id, isPending: false })
+    );
     expect(dispatch).toBeCalledWith(
       setToastMsg(ToastMsgType.IDENTIFIER_UPDATED)
     );
