@@ -1,3 +1,3 @@
 export enum OperationPendingRecordType {
-  IDENTIFIER = "Identifier",
+  Witness = "Witness",
 }

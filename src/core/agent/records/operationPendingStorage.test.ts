@@ -26,7 +26,7 @@ const now = new Date();
 const operationPendingRecordStorageProps: OperationPendingRecordStorageProps = {
   id: id1,
   createdAt: now,
-  recordType: OperationPendingRecordType.IDENTIFIER,
+  recordType: OperationPendingRecordType.Witness,
   recordId: "1",
   tags: {},
 };

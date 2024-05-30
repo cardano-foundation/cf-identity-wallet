@@ -7,7 +7,7 @@ import { OperationPendingRecordType } from "./operationPendingRecord.type";
 const mockData: OperationPendingRecordStorageProps = {
   id: "id",
   recordId: "1",
-  recordType: OperationPendingRecordType.IDENTIFIER,
+  recordType: OperationPendingRecordType.Witness,
 };
 
 describe("Operation pending  record", () => {

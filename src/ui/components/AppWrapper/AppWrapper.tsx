@@ -14,6 +14,7 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
+  updateIsPending,
   updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
@@ -144,16 +145,14 @@ const peerConnectRequestSignChangeHandler = async (
 };
 
 const signifyOperationStateChangeHandler = async (
-  { record, recordType }: {record: IdentifierShortDetails, recordType: OperationPendingRecordType},
+  { oid, opType }: { oid: string; opType: OperationPendingRecordType },
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  switch (recordType) {
-  case OperationPendingRecordType.IDENTIFIER:
-    dispatch(updateOrAddIdentifiersCache(record));
+  switch (opType) {
+  case OperationPendingRecordType.Witness:
+    dispatch(updateIsPending({ id: oid, isPending: false }));
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
-    dispatch(setCurrentOperation(OperationType.IDLE));
     break;
-    
   }
 };
 

@@ -1,7 +1,14 @@
 import { v4 as uuidv4 } from "uuid";
 import { Signer } from "signify-ts";
-import { CreateIdentifierResult, IdentifierDetails, IdentifierShortDetails } from "./identifier.types";
-import { IdentifierMetadataRecord, IdentifierMetadataRecordProps } from "../records/identifierMetadataRecord";
+import {
+  CreateIdentifierResult,
+  IdentifierDetails,
+  IdentifierShortDetails,
+} from "./identifier.types";
+import {
+  IdentifierMetadataRecord,
+  IdentifierMetadataRecordProps,
+} from "../records/identifierMetadataRecord";
 import { AgentService } from "./agentService";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { AgentServicesProps, IdentifierResult } from "../agent.types";
@@ -31,12 +38,11 @@ class IdentifierService extends AgentService {
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
-    operationPendingStorage: OperationPendingStorage,
+    operationPendingStorage: OperationPendingStorage
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
-    
   }
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
@@ -140,9 +146,9 @@ class IdentifierService extends AgentService {
       if (!op.done) {
         await this.operationPendingStorage.save({
           id: op.name,
-          recordType: OperationPendingRecordType.IDENTIFIER,
+          recordType: OperationPendingRecordType.Witness,
           recordId: identifier,
-        })
+        });
       }
     }
     await this.identifierStorage.createIdentifierMetadataRecord({
@@ -152,8 +158,7 @@ class IdentifierService extends AgentService {
       isPending: !op.done,
       signifyName: signifyName,
     });
-    // TODO: TEST !op.done
-    return { identifier, signifyName, isPending:  !op.done };
+    return { identifier, signifyName, isPending: !op.done };
   }
 
   async archiveIdentifier(identifier: string): Promise<void> {

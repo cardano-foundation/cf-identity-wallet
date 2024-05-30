@@ -94,14 +94,6 @@ class IdentifierStorage {
     }
     return null;
   }
-  async getAllPendingIdentifierMetadata(): Promise<IdentifierMetadataRecord[]> {
-    return this.storageService.findAllByQuery(
-      {
-        isPending: true,
-      },
-      IdentifierMetadataRecord
-    );
-  }
 }
 
 export { IdentifierStorage };
