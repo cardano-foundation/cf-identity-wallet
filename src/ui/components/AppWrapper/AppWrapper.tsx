@@ -40,9 +40,17 @@ import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/id
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 import { useActivityTimer } from "./hooks/useActivityTimer";
-import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
+import {
+  getConnectedWallet,
+  setConnectedWallet,
+  setWalletConnectionsCache,
+} from "../../../store/reducers/walletConnectionsCache";
 import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
-import { PeerConnectSigningEvent } from "../../../core/cardano/walletConnect/peerConnection.types";
+import {
+  PeerConnectSigningEvent,
+  PeerConnectedEvent,
+  PeerDisconnectedEvent,
+} from "../../../core/cardano/walletConnect/peerConnection.types";
 import { MultiSigService } from "../../../core/agent/services/multiSigService";
 import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCache";
 import { CardListViewType } from "../SwitchCardView";
@@ -153,11 +161,39 @@ const peerConnectRequestSignChangeHandler = async (
   );
 };
 
+const peerConnectedChangeHandler = async (
+  event: PeerConnectedEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  const peerConnection =
+    await Agent.agent.peerConnectionMetadataStorage.getPeerConnectionMetadata(
+      event.payload.dAppAddress
+    );
+  const existingConnections =
+    await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
+  dispatch(setWalletConnectionsCache(existingConnections));
+  dispatch(setConnectedWallet(peerConnection));
+  dispatch(setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS));
+};
+
+const peerDisconnectedChangeHandler = async (
+  event: PeerDisconnectedEvent,
+  connectedMeerKat: string | undefined,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  if (connectedMeerKat === event.payload.dAppAddress) {
+    dispatch(setConnectedWallet(null));
+    dispatch(setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
+  }
+};
+
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const operation = useAppSelector(getCurrentOperation);
+  const connectedWallet = useAppSelector(getConnectedWallet);
   const [isOnline, setIsOnline] = useState(false);
+  const [connectedMeerKat, setConnectedMeerKat] = useState<string>();
   const [isMessagesHandled, setIsMessagesHandled] = useState(false);
   useActivityTimer();
 
@@ -165,6 +201,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     initApp();
   }, []);
 
+  useEffect(() => {
+    if (connectedWallet) {
+      setConnectedMeerKat(connectedWallet.id);
+    }
+  }, [connectedWallet]);
   useEffect(() => {
     if (authentication.loggedIn) {
       const handleMessages = async () => {
@@ -336,6 +377,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
     PeerConnection.peerConnection.onPeerConnectRequestSignStateChanged(
       async (event) => {
         return peerConnectRequestSignChangeHandler(event, dispatch);
+      }
+    );
+    PeerConnection.peerConnection.onPeerConnectedStateChanged(async (event) => {
+      return peerConnectedChangeHandler(event, dispatch);
+    });
+    PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
+      async (event) => {
+        return peerDisconnectedChangeHandler(event, connectedMeerKat, dispatch);
       }
     );
     dispatch(setInitialized(true));

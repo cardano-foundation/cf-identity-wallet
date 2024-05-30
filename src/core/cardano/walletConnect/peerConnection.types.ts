@@ -11,16 +11,34 @@ interface ExperimentalAPIFunctions {
   ) => Promise<string | { error: PeerConnectionError }>;
 }
 
-enum PeerConnectSigningEventTypes {
+enum PeerConnectionEventTypes {
   PeerConnectSign = "PeerConnectSign",
+  PeerConnected = "PeerConnected",
+  PeerDisconnected = "PeerDisconnected",
 }
 
 interface PeerConnectSigningEvent extends BaseEventEmitter {
-  type: typeof PeerConnectSigningEventTypes.PeerConnectSign;
+  type: typeof PeerConnectionEventTypes.PeerConnectSign;
   payload: {
     identifier: string;
     payload: string;
     approvalCallback: (approvalStatus: boolean) => void;
+  };
+}
+
+interface PeerConnectedEvent extends BaseEventEmitter {
+  type: typeof PeerConnectionEventTypes.PeerConnected;
+  payload: {
+    identifier: string;
+    dAppAddress: string;
+  };
+}
+
+interface PeerDisconnectedEvent extends BaseEventEmitter {
+  type: typeof PeerConnectionEventTypes.PeerDisconnected;
+  payload: {
+    identifier: string;
+    dAppAddress: string;
   };
 }
 
@@ -38,9 +56,11 @@ export const TxSignError: { [key: string]: PeerConnectionError } = {
   TimeOut: { code: 3, info: "Time out" },
 };
 
-export { PeerConnectSigningEventTypes };
+export { PeerConnectionEventTypes };
 export type {
   ExperimentalAPIFunctions,
   PeerConnectSigningEvent,
+  PeerConnectedEvent,
+  PeerDisconnectedEvent,
   PeerConnectionError,
 };

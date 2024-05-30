@@ -12,6 +12,8 @@ import {
 } from "../../../../../store/reducers/stateCache";
 import { OperationType, ToastMsgType } from "../../../../globals/types";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
+import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
+import { setPendingDAppMeerKat } from "../../../../../store/reducers/walletConnectionsCache";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -20,6 +22,14 @@ jest.mock("../../../../../core/agent/agent", () => ({
         getAllPeerConnectionMetadata: jest.fn(),
         deletePeerConnectionMetadataRecord: jest.fn(),
       },
+    },
+  },
+}));
+
+jest.mock("../../../../../core/cardano/walletConnect/peerConnection", () => ({
+  PeerConnection: {
+    peerConnection: {
+      disconnectDApp: jest.fn(),
     },
   },
 }));
@@ -378,7 +388,24 @@ describe("Wallet connect", () => {
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
-        setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS)
+        setPendingDAppMeerKat(walletConnectionsFix[0].id)
+      );
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId(`card-item-${walletConnectionsFix[1].id}`));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("confirm-connect-btn")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("confirm-connect-btn"));
+    });
+    await waitFor(() => {
+      expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledWith(
+        walletConnectionsFix[1].id
       );
     });
   });

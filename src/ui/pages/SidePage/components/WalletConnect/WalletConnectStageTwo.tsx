@@ -63,7 +63,6 @@ const WalletConnectStageTwo = ({
           await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
         dispatch(setWalletConnectionsCache(existingConnections));
       }
-      dispatch(setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS));
       onClose();
     } catch (e) {
       dispatch(setToastMsg(ToastMsgType.UNABLE_CONNECT_WALLET));

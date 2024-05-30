@@ -9,7 +9,9 @@ import { EventService } from "../../agent/services/eventService";
 import {
   ExperimentalAPIFunctions,
   PeerConnectSigningEvent,
-  PeerConnectSigningEventTypes,
+  PeerConnectedEvent,
+  PeerConnectionEventTypes,
+  PeerDisconnectedEvent,
 } from "./peerConnection.types";
 import { Agent } from "../../agent/agent";
 import { PeerConnectionStorage } from "../../agent/records";
@@ -43,8 +45,28 @@ class PeerConnection {
     callback: (event: PeerConnectSigningEvent) => void
   ) {
     this.eventService.on(
-      PeerConnectSigningEventTypes.PeerConnectSign,
+      PeerConnectionEventTypes.PeerConnectSign,
       async (event: PeerConnectSigningEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  onPeerConnectedStateChanged(callback: (event: PeerConnectedEvent) => void) {
+    this.eventService.on(
+      PeerConnectionEventTypes.PeerConnected,
+      async (event: PeerConnectedEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  onPeerDisconnectedStateChanged(
+    callback: (event: PeerDisconnectedEvent) => void
+  ) {
+    this.eventService.on(
+      PeerConnectionEventTypes.PeerDisconnected,
+      async (event: PeerDisconnectedEvent) => {
         callback(event);
       }
     );
@@ -104,6 +126,13 @@ class PeerConnection {
               iconB64: iconB64,
             }
           );
+          this.eventService.emit<PeerConnectedEvent>({
+            type: PeerConnectionEventTypes.PeerConnected,
+            payload: {
+              identifier: selectedAid,
+              dAppAddress: address,
+            },
+          });
         }
       }
     );
@@ -111,6 +140,13 @@ class PeerConnection {
     this.identityWalletConnect.setOnDisconnect(
       (disConnectMessage: IConnectMessage) => {
         this.connectedDAppAdress = "";
+        this.eventService.emit<PeerDisconnectedEvent>({
+          type: PeerConnectionEventTypes.PeerDisconnected,
+          payload: {
+            identifier: selectedAid,
+            dAppAddress: disConnectMessage.address as string,
+          },
+        });
       }
     );
 

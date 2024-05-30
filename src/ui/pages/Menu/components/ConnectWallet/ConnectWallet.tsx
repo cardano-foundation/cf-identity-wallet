@@ -21,7 +21,7 @@ import {
   ConnectionData,
   getConnectedWallet,
   getWalletConnectionsCache,
-  setConnectedWallet,
+  setPendingDAppMeerKat,
   setWalletConnectionsCache,
 } from "../../../../../store/reducers/walletConnectionsCache";
 import { Alert } from "../../../../components/Alert";
@@ -38,6 +38,7 @@ import {
   ConnectWalletOptionRef,
 } from "./ConnectWallet.types";
 import { Agent } from "../../../../../core/agent/agent";
+import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
 
 const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
   (props, ref) => {
@@ -72,7 +73,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
         image: connection.iconB64,
         data: connection,
       }));
-    }, []);
+    }, [connections]);
 
     useImperativeHandle(ref, () => ({
       openConnectWallet: handleScanQR,
@@ -138,14 +139,11 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       if (!actionInfo.current.data) return;
       const isConnectedItem =
         actionInfo.current.data.id === connectedWallet?.id;
-      dispatch(
-        setConnectedWallet(!isConnectedItem ? actionInfo.current.data : null)
-      );
-
-      const toast = !isConnectedItem
-        ? ToastMsgType.CONNECT_WALLET_SUCCESS
-        : ToastMsgType.DISCONNECT_WALLET_SUCCESS;
-      dispatch(setToastMsg(toast));
+      if (isConnectedItem) {
+        PeerConnection.peerConnection.disconnectDApp(connectedWallet.id);
+      } else {
+        dispatch(setPendingDAppMeerKat(actionInfo.current.data.id));
+      }
     };
 
     const handleAfterVerify = () => {

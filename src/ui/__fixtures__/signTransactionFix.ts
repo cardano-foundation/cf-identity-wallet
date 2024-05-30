@@ -1,10 +1,10 @@
 import {
   PeerConnectSigningEvent,
-  PeerConnectSigningEventTypes,
+  PeerConnectionEventTypes,
 } from "../../core/cardano/walletConnect/peerConnection.types";
 
 const signTransactionFix: PeerConnectSigningEvent = {
-  type: PeerConnectSigningEventTypes.PeerConnectSign,
+  type: PeerConnectionEventTypes.PeerConnectSign,
   payload: {
     identifier: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
     payload: "Hello",
@@ -13,7 +13,7 @@ const signTransactionFix: PeerConnectSigningEvent = {
 };
 
 const signObjectFix: PeerConnectSigningEvent = {
-  type: PeerConnectSigningEventTypes.PeerConnectSign,
+  type: PeerConnectionEventTypes.PeerConnectSign,
   payload: {
     identifier: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
     payload: JSON.stringify({

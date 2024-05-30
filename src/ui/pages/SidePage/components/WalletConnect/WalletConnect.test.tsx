@@ -13,6 +13,7 @@ import { TabsRoutePath } from "../../../../../routes/paths";
 import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../../globals/types";
 import { WalletConnect } from "./WalletConnect";
+import { setWalletConnectionsCache } from "../../../../../store/reducers/walletConnectionsCache";
 setupIonicReact();
 mockIonicReact();
 
@@ -239,9 +240,7 @@ describe("Wallet Connect Stage Two", () => {
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS)
-      );
+      expect(dispatchMock).toBeCalled();
     });
   });
 });
@@ -321,9 +320,7 @@ describe("Wallet Connect Request", () => {
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS)
-      );
+      expect(dispatchMock).toBeCalled();
     });
   });
 
