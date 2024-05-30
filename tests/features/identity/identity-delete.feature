@@ -17,7 +17,7 @@ Feature: Identity Delete
     When user chose newly created identity on Identity screen
     And user tap Options button on Card Details screen
     And tap Delete identifier option from Identity Options modal
-    And tap Confirm button on alert modal for Identifier Options modal
+    And tap Confirm button on alert modal on Identifier Card Details screen
     And user enter passcode on Verify Passcode screen
     Then user can see toast message about deleted identity on Identity screen
     And user can see Add An Identifier button on Identity screen

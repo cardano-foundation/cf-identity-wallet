@@ -37,9 +37,9 @@ const initialState = {
       passcodeIsSet: true,
       passwordIsSet: true,
     },
-    identifierViewTypeCacheCache: {
-      viewType: null,
-    },
+  },
+  identifierViewTypeCacheCache: {
+    viewType: null,
   },
 };
 let mockedStore: Store<unknown, AnyAction>;

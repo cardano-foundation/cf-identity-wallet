@@ -48,28 +48,28 @@
   },
   "generateseedphrase": {
     "onboarding": {
-      "title": "Generate your Seed Phrase",
+      "title": "Generate seed phrase",
       "paragraph": {
-        "top": "It is critical that you securely store this secret recovery phrase, also referred to as a mnemonic, seed, or backup phrase. You will require this phrase in the event that you change mobile devices or need to regain access to your identity wallet profile.",
-        "bottom": "This phrase is essentially a representation of your Identity Wallet profile private key. This means that anyone with access to it can control your identity. We strongly recommend not using screenshots or storing this phrase without encryption."
+        "top": "Think of your secret recovery phrase as a safety net for your identity. If you ever lose your phone or switch to a new wallet, this phrase will help you recover your identity.",
+        "bottom": "It's important to keep these words safe and sound! Store them in a secure location, like a password manager, and remember to never share them with anyone."
       },
       "button": {
-        "continue": "Continue"
+        "continue": "Generate"
       }
     },
     "segment": "{{length}} words",
     "privacy": {
       "overlay": {
-        "text": "Select the 'View Seed Phrase' when you are ready. Remember to ensure that other people cannot also view your screen.",
+        "text": "Press the ‘view’ button when you’re ready to see your seed phrase. Remember to make sure nobody is looking!",
         "button": "View Seed Phrase"
       }
     },
     "alert": {
       "confirm": {
-        "text": "Take a moment now to confirm you have stored your seed phrase accurately and in the correct order.",
+        "text": "Have you double-checked you’ve copied your 18 word phrase correctly?",
         "button": {
-          "confirm": "My seed phrase is stored correctly",
-          "cancel": "I need to review my seed phrase"
+          "confirm": "Yes, copied",
+          "cancel": "Cancel"
         }
       },
       "exit": {
@@ -103,8 +103,8 @@
   "termsofuse": {
     "done": "Done",
     "intro": {
-      "title": "Terms of Use",
-      "text": "Please read these terms of use (\"Terms of Use\" or \"Terms\") carefully before using the services offered by Cardano Foundation (together with our subsidiaries and affiliates, referred to as \"Foundation,\" \"We,\" \"Us\" or \"Our\" in these Terms of Use). These Terms of Use set forth the legally binding terms and conditions for your use of this website and all of the related websites, mobile apps, products and services offered by the Foundation and its affiliated entities including our APK's, API's, plug-ins and browser extensions (collectively, the \"Products\"). By using the Products in any manner, you agree to be bound by these Terms of Use."
+      "title": "Terms & conditions",
+      "text": "Please read these terms of use (\"Terms & conditions\" or \"Terms\") carefully before using the services offered by Cardano Foundation (together with our subsidiaries and affiliates, referred to as \"Foundation,\" \"We,\" \"Us\" or \"Our\" in these Terms of Use). These Terms of Use set forth the legally binding terms and conditions for your use of this website and all of the related websites, mobile apps, products and services offered by the Foundation and its affiliated entities including our APK's, API's, plug-ins and browser extensions (collectively, the \"Products\"). By using the Products in any manner, you agree to be bound by these Terms of Use."
     },
     "sections": [
       {
@@ -558,18 +558,17 @@
     "onboarding": {
       "title": "Verify your Seed Phrase",
       "button": {
-        "continue": "Continue"
+        "continue": "Verify"
       }
     },
     "paragraph": {
-      "top": "Please select every word from your seed phrase in the correct order. If you select a word in the wrong order, select it again to move it back down to the list of available words."
+      "top": "Please select each word in the order it was presented to you."
     },
     "alert": {
       "fail": {
-        "text": "Your seed phrase couldn’t be verified. Please, try again or choose an alternative method",
+        "text": "Sorry, the seed phrase you have entered is incorrect!",
         "button": {
-          "confirm": "View my seed phrase",
-          "cancel": "Cancel"
+          "confirm": "Try again"
         }
       },
       "exit": {

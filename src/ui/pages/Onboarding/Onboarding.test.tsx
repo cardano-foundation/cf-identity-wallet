@@ -4,11 +4,9 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Onboarding } from "./index";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { OperationType } from "../../globals/types";
 import { CreatePassword } from "../CreatePassword";
 
@@ -86,9 +84,8 @@ describe("Onboarding Page", () => {
         currentOperation: OperationType.IDLE,
       },
       seedPhraseCache: {
-        seedPhrase160: "",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        seedPhrase: "",
+        brand: "",
       },
     };
     const storeMocked = mockStore(initialState);

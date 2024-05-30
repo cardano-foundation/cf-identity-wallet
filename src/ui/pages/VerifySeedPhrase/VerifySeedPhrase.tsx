@@ -9,7 +9,6 @@ import "./VerifySeedPhrase.scss";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { getStateCache } from "../../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { getBackRoute } from "../../../routes/backRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { PageHeader } from "../../components/PageHeader";
@@ -17,6 +16,7 @@ import { PageFooter } from "../../components/PageFooter";
 import { SeedPhraseModule } from "../../components/SeedPhraseModule";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useAppIonRouter } from "../../hooks";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 
 const VerifySeedPhrase = () => {
   const pageId = "verify-seed-phrase";
@@ -24,10 +24,7 @@ const VerifySeedPhrase = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
-  const originalSeedPhrase =
-    seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
-      ? seedPhraseStore.seedPhrase160.split(" ")
-      : seedPhraseStore.seedPhrase256.split(" ");
+  const originalSeedPhrase = seedPhraseStore.seedPhrase.split(" ");
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
   const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -72,12 +69,17 @@ const VerifySeedPhrase = () => {
     setSeedPhraseSelected(newMatch);
   };
 
+  const storeIdentitySeedPhrase = async () => {
+    await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, seedPhraseStore.bran);
+    handleNavigate();
+  };
+
   const handleContinue = async () => {
     if (
       originalSeedPhrase.length === seedPhraseSelected.length &&
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      handleNavigate();
+      storeIdentitySeedPhrase();
     } else {
       setAlertIsOpen(true);
     }
@@ -119,6 +121,10 @@ const VerifySeedPhrase = () => {
     });
   };
 
+  const closeFailAlert = () => {
+    setAlertIsOpen(false);
+  };
+
   return (
     <ResponsivePageLayout
       pageId={pageId}
@@ -139,7 +145,10 @@ const VerifySeedPhrase = () => {
       <h2 data-testid={`${pageId}-title`}>
         {i18n.t("verifyseedphrase.onboarding.title")}
       </h2>
-      <p data-testid={`${pageId}-paragraph-top`}>
+      <p
+        className="paragraph-top"
+        data-testid={`${pageId}-paragraph-top`}
+      >
         {i18n.t("verifyseedphrase.paragraph.top")}
       </p>
       <SeedPhraseModule
@@ -172,10 +181,7 @@ const VerifySeedPhrase = () => {
         confirmButtonText={`${i18n.t(
           "verifyseedphrase.alert.fail.button.confirm"
         )}`}
-        cancelButtonText={`${i18n.t(
-          "verifyseedphrase.alert.fail.button.cancel"
-        )}`}
-        actionConfirm={handleBack}
+        actionConfirm={closeFailAlert}
       />
     </ResponsivePageLayout>
   );

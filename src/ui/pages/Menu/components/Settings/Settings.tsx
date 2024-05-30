@@ -21,6 +21,13 @@ import {
 } from "ionicons/icons";
 import "./Settings.scss";
 import { useSelector } from "react-redux";
+import { useEffect, useRef, useState } from "react";
+import {
+  NativeSettings,
+  AndroidSettings,
+  IOSSettings,
+} from "capacitor-native-settings";
+import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
 import { i18n } from "../../../../../i18n";
 import pJson from "../../../../../../package.json";
 import { OptionProps } from "./Settings.types";
@@ -32,10 +39,21 @@ import {
   setEnableBiometryCache,
 } from "../../../../../store/reducers/biometryCache";
 import { Agent } from "../../../../../core/agent/agent";
+import { VerifyPassword } from "../../../../components/VerifyPassword";
+import { VerifyPasscode } from "../../../../components/VerifyPasscode";
+import { getStateCache } from "../../../../../store/reducers/stateCache";
+import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
 
 const Settings = () => {
+  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+
+  const stateCache = useSelector(getStateCache);
   const biometryCache = useSelector(getBiometryCacheCache);
   const dispatch = useAppDispatch();
+  const { biometricInfo, handleBiometricAuth } = useBiometricAuth();
+  const inBiometricSetup = useRef(false);
+
   const securityItems: OptionProps[] = [
     {
       icon: lockClosedOutline,
@@ -78,20 +96,67 @@ const Settings = () => {
     },
   ];
 
+  const handleToggleBiometricAuth = async () => {
+    await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.APP_BIOMETRY,
+        content: { enabled: !biometryCache.enabled },
+      })
+    );
+    dispatch(setEnableBiometryCache(!biometryCache.enabled));
+  };
+
+  const handleBiometricUpdate = () => {
+    inBiometricSetup.current = false;
+
+    if (biometryCache.enabled) {
+      handleToggleBiometricAuth();
+      return;
+    }
+
+    if (
+      !biometricInfo?.strongBiometryIsAvailable &&
+      biometricInfo?.code === BiometryErrorType.biometryNotEnrolled
+    ) {
+      NativeSettings.open({
+        optionAndroid: AndroidSettings.Security,
+        optionIOS: IOSSettings.TouchIdPasscode,
+      }).then((result) => {
+        inBiometricSetup.current = result.status;
+      });
+
+      return;
+    }
+
+    if (
+      !stateCache?.authentication.passwordIsSkipped &&
+      stateCache?.authentication.passwordIsSet
+    ) {
+      setVerifyPasswordIsOpen(true);
+    } else {
+      setVerifyPasscodeIsOpen(true);
+    }
+  };
+
+  const biometricAuth = async () => {
+    const result = await handleBiometricAuth();
+    if (result) handleToggleBiometricAuth();
+  };
+
+  useEffect(() => {
+    if (biometricInfo?.strongBiometryIsAvailable && inBiometricSetup.current) {
+      handleBiometricUpdate();
+    }
+  }, [biometricInfo]);
+
   const handleOptionClick = async (item: OptionProps) => {
     switch (item.label) {
-    case i18n.t("settings.sections.security.biometry"): {
-      await Agent.agent.basicStorage.createOrUpdateBasicRecord(
-        new BasicRecord({
-          id: MiscRecordId.APP_BIOMETRY,
-          content: { enabled: !biometryCache.enabled },
-        })
-      );
-      dispatch(setEnableBiometryCache(!biometryCache.enabled));
-      break;
-    }
-    default:
-      return;
+      case i18n.t("settings.sections.security.biometry"): {
+        handleBiometricUpdate();
+        break;
+      }
+      default:
+        return;
     }
   };
 
@@ -174,6 +239,16 @@ const Settings = () => {
           </IonItem>
         </IonList>
       </IonCard>
+      <VerifyPassword
+        isOpen={verifyPasswordIsOpen}
+        setIsOpen={setVerifyPasswordIsOpen}
+        onVerify={biometricAuth}
+      />
+      <VerifyPasscode
+        isOpen={verifyPasscodeIsOpen}
+        setIsOpen={setVerifyPasscodeIsOpen}
+        onVerify={biometricAuth}
+      />
     </>
   );
 };

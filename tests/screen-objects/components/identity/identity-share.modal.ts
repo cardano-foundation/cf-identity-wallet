@@ -6,6 +6,10 @@ export class IdentityShareModal extends CommonIdentityModal {
     return $("[data-testid=\"share-identifier-copy-button\"]");
   }
 
+  get copyButton2() {
+    return $(".share-identifier-option");
+  }
+
   get copyButtonLabel() {
     return $("[data-testid=\"share-identifier-copy-label\"]");
   }

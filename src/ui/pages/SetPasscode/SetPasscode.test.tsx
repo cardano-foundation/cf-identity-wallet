@@ -22,7 +22,6 @@ import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { Agent } from "../../../core/agent/agent";
 
@@ -257,9 +256,8 @@ describe("SetPasscode Page", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase160: "",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        seedPhrase: "",
+        bran: "",
       },
     };
 
