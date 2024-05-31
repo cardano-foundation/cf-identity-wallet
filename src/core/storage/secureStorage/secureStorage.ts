@@ -5,8 +5,6 @@ import {
 
 enum KeyStoreKeys {
   APP_PASSCODE = "app-login-passcode",
-  IDENTITY_ENTROPY = "identity-entropy",
-  IDENTITY_ROOT_XPRV_KEY = "identity-root-xprv-key",
   APP_OP_PASSWORD = "app-operations-password",
   SIGNIFY_BRAN = "signify-bran",
   MEERKAT_SEED = "app-meerkat-seed",
