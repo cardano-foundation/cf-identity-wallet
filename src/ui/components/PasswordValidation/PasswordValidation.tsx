@@ -5,28 +5,28 @@ import { i18n } from "../../../i18n";
 import { ErrorMessage } from "../ErrorMessage";
 import "./PasswordValidation.scss";
 
-const PasswordValidation = ({ password }: { password: string }) => {
-  const ValidationItem = ({
-    condition,
-    label,
-    testId,
-  }: {
-    condition: boolean;
-    label: string;
-    testId: string;
-  }) => {
-    return (
-      <IonItem data-testid={testId}>
-        <IonIcon
-          slot="start"
-          icon={condition ? checkmarkOutline : closeOutline}
-          className={`password-criteria-icon${condition ? " pass" : " fails"}`}
-        />
-        <IonLabel>{label}</IonLabel>
-      </IonItem>
-    );
-  };
+const ValidationItem = ({
+  condition,
+  label,
+  testId,
+}: {
+  condition: boolean;
+  label: string;
+  testId: string;
+}) => {
+  return (
+    <IonItem data-testid={testId}>
+      <IonIcon
+        slot="start"
+        icon={condition ? checkmarkOutline : closeOutline}
+        className={`password-criteria-icon${condition ? " pass" : " fails"}`}
+      />
+      <IonLabel>{label}</IonLabel>
+    </IonItem>
+  );
+};
 
+const PasswordValidation = ({ password }: { password: string }) => {
   return (
     <IonList
       lines="none"

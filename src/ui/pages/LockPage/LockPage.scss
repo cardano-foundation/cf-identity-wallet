@@ -1,0 +1,32 @@
+.lock-page {
+  display: flex !important;
+  z-index: 2147483647; // max value
+
+  &.hide {
+    .responsive-page-content,
+    .scrollable-page-content {
+      visibility: hidden;
+    }
+  }
+
+  .lock-modal-title {
+    margin-top: 4rem;
+
+    @media screen and (min-height: 300px) and (max-height: 550px) {
+      margin-top: 2rem;
+    }
+  }
+
+  .responsive-page-content {
+    justify-content: space-around;
+  }
+
+  .lock-page-title,
+  .lock-page-description {
+    text-align: center;
+  }
+
+  .lock-page-title {
+    margin-top: 4rem;
+  }
+}

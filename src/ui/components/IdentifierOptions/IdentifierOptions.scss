@@ -23,81 +23,57 @@
     text-align: center;
   }
 
-  &.modal.viewer {
-    ion-title h2 {
-      text-align: center;
-    }
-
-    .identifier-options-inner {
-      overflow: scroll;
-      height: calc(
-        calc(var(--scale-h) * 92) - (11.5rem + env(safe-area-inset-bottom))
-      );
-    }
-
-    .footer-col ion-button {
-      --color-selected: white !important;
-
-      &:first-child {
-        margin-bottom: 0.63rem;
-      }
-
-      ion-icon {
-        margin-right: 0.5rem;
-      }
-    }
+  .confirm-edit-button {
+    margin-top: 1.5rem;
   }
+}
 
-  .identifier-options-main {
-    margin-top: 0.5rem;
-
-    ion-col {
-      display: flex;
-      flex-direction: column;
+.edit-identifier {
+  &.responsive-modal .responsive-modal-content {
+    & > * {
+      margin-bottom: 0;
     }
 
-    ion-button,
-    ion-button.md {
-      width: 2.8125rem;
-      height: 2.8125rem;
-      margin: 0;
-      --background: transparent;
-      --box-shadow: none;
-      --color: var(--ion-color-secondary);
-      --background-activated: var(--ion-color-light-grey);
+    .theme-input-title {
+      margin-bottom: 0.625rem;
+    }
 
-      &::part(native) {
+    .card-theme {
+      margin-bottom: 1.5rem;
+
+      & > .identifier-theme-selector {
         padding: 0;
       }
     }
 
-    ion-icon {
-      width: 1.475rem;
-      height: 1.475rem;
-      margin: 0;
-    }
-
-    .identifier-options-option {
-      display: flex;
-
-      > * {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+    .indentifier-input {
+      margin-bottom: 2.375rem;
+      &.has-error {
+        margin-bottom: 0;
       }
 
-      &:not(:last-child) {
-        margin-bottom: 0.5rem;
+      .label-stacked {
+        font-size: 1rem;
       }
     }
-  }
 
-  pre {
-    overflow: hidden;
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
-    word-wrap: break-word;
+    .confirm-edit-button {
+      width: 100%;
+      margin-bottom: 0.25rem;
+    }
+
+    @media screen and (min-width: 250px) and (max-width: 370px) {
+      .theme-input-title {
+        font-size: 0.875rem;
+      }
+
+      .indentifier-input {
+        margin-bottom: 1.725rem;
+
+        .label-stacked {
+          font-size: 0.875rem;
+        }
+      }
+    }
   }
 }

@@ -16,6 +16,7 @@ import introImg3 from "../../assets/images/intro-3.png";
 import introImg4 from "../../assets/images/intro-4.png";
 import { PageFooter } from "../../components/PageFooter";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { useEffect, useState } from "react";
 
 export type IntroImg0Type = typeof introImg0;
 
@@ -24,6 +25,12 @@ const Onboarding = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+  const [hiddenPage, setHiddenPage] = useState(false);
+
+  useEffect(() => {
+    setHiddenPage(history?.location?.pathname !== RoutePath.ONBOARDING);
+  }, [hiddenPage, history?.location?.pathname]);
+
   const items: SlideItem[] = [
     {
       title: i18n.t("onboarding.slides.0.title"),
@@ -69,6 +76,8 @@ const Onboarding = () => {
       state: data.state,
     });
   };
+
+  if (hiddenPage) return null;
 
   return (
     <ResponsivePageLayout pageId={pageId}>

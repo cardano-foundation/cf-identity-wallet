@@ -1,16 +1,12 @@
-import BackgroundDid0 from "../assets/images/did-0.png";
-import BackgroundDid1 from "../assets/images/did-1.png";
-import BackgroundDid2 from "../assets/images/did-2.png";
-import BackgroundDid3 from "../assets/images/did-3.png";
 import BackgroundKERI0 from "../assets/images/keri-0.png";
 import BackgroundKERI1 from "../assets/images/keri-1.png";
 
 enum CardType {
-  CREDS = "creds",
+  CREDENTIALS = "credentials",
   IDENTIFIERS = "identifiers",
 }
 
-enum DIDCommRequestType {
+enum RequestType {
   CONNECTION = "Connection",
   CREDENTIAL = "Credential",
 }
@@ -26,7 +22,11 @@ enum OperationType {
   SCAN_CONNECTION = "scanConnection",
   ADD_CREDENTIAL = "addCredential",
   RECEIVE_CONNECTION = "receiveConnection",
-  SHOW_SETTINGS = "showSettings",
+  MULTI_SIG_INITIATOR_SCAN = "multiSigInitiatorScan",
+  MULTI_SIG_RECEIVER_SCAN = "multiSigReceiverScan",
+  MULTI_SIG_INITIATOR_INIT = "multiSigInitiatorInit",
+  CREATE_IDENTIFIER_CONNECT_WALLET = "createIdentifierConnectWallet",
+  SCAN_WALLET_CONNECTION = "scanWalletConnection",
 }
 
 enum ToastMsgType {
@@ -49,15 +49,20 @@ enum ToastMsgType {
   NOTES_UPDATED = "notesUpdated",
   NOTE_REMOVED = "noteRemoved",
   MAX_FAVOURITES_REACHED = "maxFavouritesReached",
+  USERNAME_CREATION_SUCCESS = "usernameCreationSuccess",
+  USERNAME_CREATION_ERROR = "usernameCreationError",
+  WALLET_CONNECTION_DELETED = "walletconnectiondeleted",
+  CONNECT_WALLET_SUCCESS = "connectwalletsuccess",
+  DISCONNECT_WALLET_SUCCESS = "disconnectwallet",
+  UNABLE_CONNECT_WALLET = "unableconnectwallet",
+  PEER_ID_SUCCESS = "peeridsuccess",
+  PEER_ID_NOT_RECOGNISED = "peeridnotrecognised",
+  SETUP_BIOMETRIC_AUTHENTICATION_SUCCESS = "setupbiometricsuccess",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {
-  0: BackgroundDid0,
-  1: BackgroundDid1,
-  2: BackgroundDid2,
-  3: BackgroundDid3,
-  4: BackgroundKERI0,
-  5: BackgroundKERI1,
+  0: BackgroundKERI0,
+  1: BackgroundKERI1,
 };
 
 const PASSCODE_MAPPING = {
@@ -80,7 +85,7 @@ export {
   CardType,
   OperationType,
   ToastMsgType,
-  DIDCommRequestType,
+  RequestType,
   IDENTIFIER_BG_MAPPING,
   PASSCODE_MAPPING,
 };

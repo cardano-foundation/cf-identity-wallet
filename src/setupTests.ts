@@ -3,9 +3,9 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
-import { TextDecoder, TextEncoder } from "util";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { TextDecoder, TextEncoder, ReadableStream } = require("node:util");
 
-Object.defineProperties(globalThis, {
-  TextDecoder: { value: TextDecoder },
-  TextEncoder: { value: TextEncoder },
-});
+Reflect.set(globalThis, "TextDecoder", TextDecoder);
+Reflect.set(globalThis, "TextEncoder", TextEncoder);
+Reflect.set(globalThis, "ReadableStream", { ...ReadableStream, prototype: {} });

@@ -1,0 +1,9 @@
+keri:
+  keria:
+    url: "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org"
+    bootUrl: "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org"
+  credentials:
+    testServer:
+      urlInt: "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org"
+  backing:
+    mode: direct

@@ -62,15 +62,14 @@
     position: initial;
 
     h2,
-    h3 {
+    h4 {
       margin-bottom: 0;
       text-align: left;
-      color: var(--ion-color-secondary);
     }
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
-    padding-inline: 1.063rem;
+    padding-inline: 0.9rem;
     font-size: 0.8rem;
 
     ion-header ion-toolbar {

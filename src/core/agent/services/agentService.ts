@@ -1,11 +1,14 @@
-import { agentModules } from "../agent";
-import { Agent } from "@aries-framework/core";
+import { SignifyClient } from "signify-ts";
+import { EventService } from "./eventService";
+import { AgentServicesProps } from "../agent.types";
 
 abstract class AgentService {
-  protected readonly agent: Agent<typeof agentModules>;
+  protected readonly signifyClient: SignifyClient;
+  protected readonly eventService: EventService;
 
-  constructor(agent: Agent) {
-    this.agent = agent;
+  constructor(agentServicesProps: AgentServicesProps) {
+    this.signifyClient = agentServicesProps.signifyClient;
+    this.eventService = agentServicesProps.eventService;
   }
 }
 

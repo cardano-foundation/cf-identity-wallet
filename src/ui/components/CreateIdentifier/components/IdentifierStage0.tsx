@@ -2,28 +2,33 @@ import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
 import { IonGrid, IonRow, IonCol } from "@ionic/react";
 import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { i18n } from "../../../../i18n";
 import { CustomInput } from "../../CustomInput";
 import { ErrorMessage } from "../../ErrorMessage";
 import { PageFooter } from "../../PageFooter";
 import { PageHeader } from "../../PageHeader";
-import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
 import { TypeItem } from "./TypeItem";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
-import { ColorGenerator } from "../../../utils/colorGenerator";
 import {
+  CreateIdentifierInputs,
   IdentifierShortDetails,
-  IdentifierType,
-} from "../../../../core/agent/services/identifierService.types";
-import { AriesAgent } from "../../../../core/agent/agent";
+} from "../../../../core/agent/services/identifier.types";
+import { Agent } from "../../../../core/agent/agent";
 import {
   getIdentifiersCache,
   setIdentifiersCache,
+  setMultiSigGroupCache,
 } from "../../../../store/reducers/identifiersCache";
-import { setToastMsg } from "../../../../store/reducers/stateCache";
+import {
+  setCurrentOperation,
+  setToastMsg,
+} from "../../../../store/reducers/stateCache";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
-import { ToastMsgType } from "../../../globals/types";
+import { OperationType, ToastMsgType } from "../../../globals/types";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
+import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
+import { MultiSigGroup } from "../../../../store/reducers/identifiersCache/identifiersCache.types";
 
 const IdentifierStage0 = ({
   state,
@@ -31,9 +36,10 @@ const IdentifierStage0 = ({
   componentId,
   setBlur,
   resetModal,
+  multiSigGroup,
 }: IdentifierStageProps) => {
   const dispatch = useAppDispatch();
-  const identifierData = useAppSelector(getIdentifiersCache);
+  const identifiersData = useAppSelector(getIdentifiersCache);
   const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const [displayNameValue, setDisplayNameValue] = useState(
@@ -42,7 +48,6 @@ const IdentifierStage0 = ({
   const [selectedTheme, setSelectedTheme] = useState(state.selectedTheme);
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
-  const typeIsSelectedIsValid = state.selectedIdentifierType !== undefined;
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -54,16 +59,6 @@ const IdentifierStage0 = ({
       });
     }
   }, []);
-
-  const identifierTypeSelector = (index: number) => {
-    if (state.selectedIdentifierType !== index) {
-      setSelectedTheme(index === 0 ? 0 : 4);
-    }
-    setState((prevState: IdentifierStageProps) => ({
-      ...prevState,
-      selectedIdentifierType: index,
-    }));
-  };
 
   useEffect(() => {
     setState((prevState: IdentifierStageProps) => ({
@@ -80,31 +75,79 @@ const IdentifierStage0 = ({
   }, [selectedTheme, setState]);
 
   const handleCreateIdentifier = async () => {
-    const colorGenerator = new ColorGenerator();
-    const newColor = colorGenerator.generateNextColor();
-    const type =
-      state.selectedIdentifierType === 0
-        ? IdentifierType.KEY
-        : IdentifierType.KERI;
-    const identifier = await AriesAgent.agent.identifiers.createIdentifier({
+    const metadata: CreateIdentifierInputs = {
       displayName: state.displayNameValue,
-      method: type,
-      colors: [newColor[1], newColor[0]],
       theme: state.selectedTheme,
-    });
+    };
+    let groupMetadata;
+    if (multiSigGroup) {
+      groupMetadata = {
+        groupId: multiSigGroup.groupId,
+        groupInitiator: false,
+        groupCreated: false,
+      };
+    } else if (state.selectedAidType == 1) {
+      groupMetadata = {
+        groupId: uuidv4(),
+        groupInitiator: true,
+        groupCreated: false,
+      };
+    }
+    metadata.groupMetadata = groupMetadata;
+    const { identifier, signifyName } =
+      await Agent.agent.identifiers.createIdentifier(metadata);
     if (identifier) {
       const newIdentifier: IdentifierShortDetails = {
         id: identifier,
-        method: type,
         displayName: state.displayNameValue,
         createdAtUTC: new Date().toISOString(),
-        colors: [newColor[1], newColor[0]],
         theme: state.selectedTheme,
+        isPending: false,
+        signifyName,
       };
-      dispatch(setIdentifiersCache([...identifierData, newIdentifier]));
-      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
-      resetModal && resetModal();
+      if (groupMetadata) {
+        newIdentifier.groupMetadata = groupMetadata;
+      }
+      dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
+      if (multiSigGroup) {
+        const connections =
+          await Agent.agent.connections.getMultisigLinkedContacts(
+            multiSigGroup.groupId
+          );
+        const newMultiSigGroup: MultiSigGroup = {
+          groupId: multiSigGroup.groupId,
+          connections,
+        };
+        dispatch(setMultiSigGroupCache(newMultiSigGroup));
+      }
+      if (state.selectedAidType !== 0 || multiSigGroup) {
+        setState((prevState: IdentifierStageProps) => ({
+          ...prevState,
+          ourIdentifier: identifier,
+          identifierCreationStage: 1,
+          newIdentifier,
+        }));
+        multiSigGroup && dispatch(setCurrentOperation(OperationType.IDLE));
+      }
     }
+  };
+
+  const handleContinue = async () => {
+    setBlur && setBlur(true);
+    setTimeout(async () => {
+      await handleCreateIdentifier();
+      if (state.selectedAidType !== 0 || multiSigGroup) {
+        setBlur && setBlur(false);
+      } else {
+        resetModal && resetModal();
+      }
+      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
+    }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
+  };
+
+  const handleCancel = async () => {
+    multiSigGroup && dispatch(setCurrentOperation(OperationType.IDLE));
+    resetModal && resetModal();
   };
 
   return (
@@ -115,9 +158,17 @@ const IdentifierStage0 = ({
         header={
           <PageHeader
             closeButton={true}
-            closeButtonAction={() => resetModal && resetModal()}
-            closeButtonLabel={`${i18n.t("createidentifier.cancel")}`}
-            title={`${i18n.t("createidentifier.title")}`}
+            closeButtonAction={handleCancel}
+            closeButtonLabel={`${i18n.t(
+              multiSigGroup
+                ? "createidentifier.back"
+                : "createidentifier.cancel"
+            )}`}
+            title={`${i18n.t(
+              multiSigGroup
+                ? "createidentifier.receive.title"
+                : "createidentifier.add.title"
+            )}`}
           />
         }
       >
@@ -147,35 +198,7 @@ const IdentifierStage0 = ({
             )}
           </div>
         </div>
-        <div className="identifier-type">
-          <div className="type-input-title">{`${i18n.t(
-            "createidentifier.identifiertype.title"
-          )}`}</div>
-          <IonGrid
-            className="identifier-type-selector"
-            data-testid="identifier-type-selector"
-          >
-            <IonRow>
-              <IonCol>
-                <TypeItem
-                  index={0}
-                  text={i18n.t("createidentifier.identifiertype.didkey")}
-                  clickEvent={() => identifierTypeSelector(0)}
-                  selectedType={state.selectedIdentifierType}
-                />
-              </IonCol>
-              <IonCol>
-                <TypeItem
-                  index={1}
-                  text={i18n.t("createidentifier.identifiertype.keri")}
-                  clickEvent={() => identifierTypeSelector(1)}
-                  selectedType={state.selectedIdentifierType}
-                />
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        </div>
-        {state.selectedIdentifierType === 1 && (
+        {!multiSigGroup && (
           <div className="aid-type">
             <div className="type-input-title">{`${i18n.t(
               "createidentifier.aidtype.title"
@@ -187,6 +210,7 @@ const IdentifierStage0 = ({
               <IonRow>
                 <IonCol>
                   <TypeItem
+                    dataTestId="identifier-aidtype-default"
                     index={0}
                     text={i18n.t("createidentifier.aidtype.default.label")}
                     clickEvent={() =>
@@ -200,6 +224,7 @@ const IdentifierStage0 = ({
                 </IonCol>
                 <IonCol>
                   <TypeItem
+                    dataTestId="identifier-aidtype-multisig"
                     index={1}
                     text={i18n.t("createidentifier.aidtype.multisig.label")}
                     clickEvent={() =>
@@ -213,6 +238,7 @@ const IdentifierStage0 = ({
                 </IonCol>
                 <IonCol>
                   <TypeItem
+                    dataTestId="identifier-aidtype-delegated"
                     index={2}
                     text={i18n.t("createidentifier.aidtype.delegated.label")}
                     clickEvent={() =>
@@ -233,7 +259,6 @@ const IdentifierStage0 = ({
             "createidentifier.theme.title"
           )}`}</div>
           <IdentifierThemeSelector
-            identifierType={state.selectedIdentifierType}
             selectedTheme={selectedTheme}
             setSelectedTheme={setSelectedTheme}
           />
@@ -242,26 +267,13 @@ const IdentifierStage0 = ({
       <PageFooter
         pageId={componentId}
         customClass={keyboardIsOpen ? "ion-hide" : ""}
-        primaryButtonText={`${i18n.t("createidentifier.confirmbutton")}`}
-        primaryButtonAction={() => {
-          if (
-            state.selectedIdentifierType === 1 &&
-            state.selectedAidType !== 0
-          ) {
-            setState((prevState: IdentifierStageProps) => ({
-              ...prevState,
-              identifierCreationStage: 1,
-            }));
-          } else {
-            setBlur && setBlur(true);
-            setTimeout(() => {
-              handleCreateIdentifier();
-            }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
-          }
-        }}
-        primaryButtonDisabled={
-          !(displayNameValueIsValid && typeIsSelectedIsValid)
-        }
+        primaryButtonText={`${i18n.t(
+          multiSigGroup
+            ? "createidentifier.receive.confirmbutton"
+            : "createidentifier.add.confirmbutton"
+        )}`}
+        primaryButtonAction={handleContinue}
+        primaryButtonDisabled={!displayNameValueIsValid}
       />
     </>
   );

@@ -1,5 +1,6 @@
-import { ConnectionStatus, ConnectionType } from "../../core/agent/agent.types";
+import { ConnectionStatus } from "../../core/agent/agent.types";
 import CardanoLogo from "../assets/images/CardanoLogo.jpg";
+import UserPicture from "../assets/images/UserPicture.jpg";
 import { ConnectionShortDetails } from "../pages/Connections/Connections.types";
 
 const connectionsFix: ConnectionShortDetails[] = [
@@ -9,7 +10,6 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2017-01-14T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.PENDING,
-    type: ConnectionType.DIDCOMM,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec21",
@@ -17,7 +17,6 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2017-01-16T08:21:54Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
-    type: ConnectionType.DIDCOMM,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec22",
@@ -25,29 +24,27 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2017-01-13T10:15:11Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
-    type: ConnectionType.DIDCOMM,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec23",
-    label: "45fc3e98-af6b-4797-bdf3-e2124a8089ee",
+    label: "John Smith",
     connectionDate: "2024-02-13T11:39:20Z",
-    logo: CardanoLogo,
+    logo: UserPicture,
     status: ConnectionStatus.CONFIRMED,
-    type: ConnectionType.KERI,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec24",
     label: "Starling Bank",
     connectionDate: "2016-01-10T19:23:24Z",
     logo: CardanoLogo,
-    status: ConnectionStatus.CONFIRMED,
+    status: ConnectionStatus.PENDING,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec25",
     label: "Friends' Bank",
     connectionDate: "2018-01-14T19:23:24Z",
     logo: CardanoLogo,
-    status: ConnectionStatus.CONFIRMED,
+    status: ConnectionStatus.ACCEPTED,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec26",

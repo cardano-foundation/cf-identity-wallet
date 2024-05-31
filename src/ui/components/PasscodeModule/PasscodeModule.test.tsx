@@ -1,19 +1,58 @@
 import { fireEvent, render } from "@testing-library/react";
+import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
 import { PasscodeModule } from "./PasscodeModule";
+import { StoreMockedProps } from "../../pages/LockPage/LockPage.test";
+import { RoutePath } from "../../../routes";
+import { OperationType } from "../../globals/types";
+
+const initialState = {
+  stateCache: {
+    routes: [RoutePath.GENERATE_SEED_PHRASE],
+    authentication: {
+      loggedIn: false,
+      time: Date.now(),
+      passcodeIsSet: true,
+      seedPhraseIsSet: false,
+    },
+    currentOperation: OperationType.IDLE,
+  },
+  seedPhraseCache: {
+    seedPhrase: "",
+    bran: "",
+  },
+  cryptoAccountsCache: {
+    cryptoAccounts: [],
+  },
+  biometryCache: {
+    enabled: false,
+  },
+};
+
+const mockStore = configureStore();
+const dispatchMock = jest.fn();
+const storeMocked = (initialState: StoreMockedProps) => {
+  return {
+    ...mockStore(initialState),
+    dispatch: dispatchMock,
+  };
+};
 
 describe("Passcode Module", () => {
   const errorFunction = jest.fn();
   let handlePinChange = jest.fn(() => 0);
   const handleRemove = jest.fn();
 
-  test("Clicking on a number button returns a digit", () => {
+  test("Clicking on a number button returns a digit", async () => {
     const { getByText } = render(
-      <PasscodeModule
-        error={errorFunction()}
-        passcode="passcode"
-        handlePinChange={handlePinChange}
-        handleRemove={handleRemove()}
-      />
+      <Provider store={storeMocked(initialState)}>
+        <PasscodeModule
+          error={errorFunction()}
+          passcode="passcode"
+          handlePinChange={handlePinChange}
+          handleRemove={handleRemove()}
+        />
+      </Provider>
     );
     for (let i = 0; i < 9; i++) {
       const buttonElement = getByText(i);

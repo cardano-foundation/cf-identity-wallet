@@ -1,0 +1,12 @@
+keri:
+  keria:
+    url: "http://127.0.0.1:3901"
+    bootUrl: "http://127.0.0.1:3903"
+  credentials:
+    testServer:
+      urlInt: "http://cred-issuance:3001"
+  backing:
+    mode: ledger
+    ledger:
+      aid: BD39IWoiPYhhq5yn2l7FTQykcjhZma1KmfWrWr9ZYUFD
+      address: addr_test1vqefk7cyhcyet03humlzkyl2cj8jwezvr6gu8cg8jrkdq7cf30wpu

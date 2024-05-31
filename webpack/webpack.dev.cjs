@@ -1,7 +1,8 @@
 let { merge } = require("webpack-merge");
+const webpack = require("webpack");
 
 module.exports = merge(require("./webpack.common.cjs"), {
-   mode: 'development',
+   mode: "development",
    module: {
       rules: [
          {
@@ -38,6 +39,18 @@ module.exports = merge(require("./webpack.common.cjs"), {
       },
    },
    plugins: [
-
+      new webpack.DefinePlugin({
+         "process.env.NODE_ENV": JSON.stringify("development"),
+      }),
+      {
+         apply: (compiler) => {
+            compiler.hooks.compile.tap('[Warning] ', () => {
+               const keriaIP = process.env.KERIA_IP;
+               if (keriaIP) {
+                  console.warn(`⚠️ You are running the development server with the KERIA_IP=${keriaIP} environment variable set ⚠️`);
+               }
+            });
+         }
+      },
    ]
 });

@@ -20,6 +20,33 @@ body {
     text-transform: none;
   }
 
+  &.full-page-scanner {
+    #root
+      ion-app
+      > *:not(.qr-code-scanner-full-page):not(.scanner-input-modal):not(
+        .app-spinner-container
+      ):not(.input-pid-modal) {
+      display: none;
+    }
+
+    .app-spinner-container {
+      z-index: 1000;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      height: 100%;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+      background: rgba(3, 3, 33, 0.2);
+    }
+  }
+
+  &:not(.full-page-scanner) .app-spinner-container {
+    display: none;
+  }
+
   &.scanner-active {
     background-color: transparent;
 
@@ -57,30 +84,39 @@ h1 {
 }
 
 h2 {
-  margin: 0;
   font-size: 1.5rem;
   line-height: 1.756rem;
 }
 
 h3 {
-  margin: 0;
-  font-size: 1rem;
+  font-size: 1.25rem;
+}
+
+h3,
+h4 {
   line-height: 1.172rem;
 }
 
 h1,
 h2,
-h3 {
+h3,
+h4 {
   color: var(--ion-color-primary);
 }
 
 h2,
-h3 {
+h3,
+h4 {
+  margin: 0;
   font-weight: 700;
 }
 
-p {
+p,
+h4 {
   font-size: 1rem;
+}
+
+p {
   margin: 0.5rem 0;
   padding-inline: 0;
   line-height: 1.375rem;
@@ -97,9 +133,16 @@ p {
     font-size: 1.25rem;
   }
 
-  p,
   h3 {
+    font-size: 1rem;
+  }
+
+  p,
+  h4 {
     font-size: 0.8rem;
+  }
+
+  p {
     margin: 0.35rem 0;
     line-height: 1rem;
   }
@@ -251,55 +294,3 @@ ion-segment {
     }
   }
 }
-
-/* Legacy styles that we need to keep for now */
-.modal {
-  padding-inline: 1.25rem;
-  background-color: var(--ion-color-light);
-  border-radius: 1rem 1rem 0px 0px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-
-  ion-toolbar {
-    padding: 0.5rem 0 0 !important;
-    height: 4rem;
-  }
-
-  ion-content {
-    &.ios {
-      height: calc(
-        calc(var(--scale-h) * 100) - (6rem + env(safe-area-inset-top))
-      );
-    }
-
-    &.md {
-      height: calc(calc(var(--scale-h) * 100) - 6rem);
-    }
-  }
-
-  ion-title {
-    position: absolute;
-    width: 100%;
-    height: 3rem;
-    top: 0;
-    left: 0;
-  }
-
-  h2 {
-    margin: 0 auto;
-    font-size: 1.5rem;
-  }
-
-  .action-button-label,
-  .close-button-label {
-    color: var(--ion-color-primary);
-  }
-}
-
-.extended-modal::part(content) {
-  height: 50rem;
-}
-/* End of legacy styles */

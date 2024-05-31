@@ -4,26 +4,22 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { Identifiers } from "./Identifiers";
-import { store } from "../../../store";
 import { TabsRoutePath } from "../../../routes/paths";
-import { IdentifierCardDetails } from "../IdentifierCardDetails";
+import { IdentifierDetails } from "../IdentifierDetails";
 import {
   CLEAR_STATE_DELAY,
   NAVIGATION_DELAY,
 } from "../../components/CardsStack";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       identifiers: {
         getIdentifier: jest.fn().mockResolvedValue({}),
-      },
-      genericRecords: {
-        findById: jest.fn(),
+        checkMultisigComplete: jest.fn().mockResolvedValue(true),
       },
     },
   },
@@ -39,11 +35,13 @@ const initialState = {
       passwordIsSet: true,
     },
   },
+  identifierViewTypeCacheCache: {
+    viewType: null,
+  },
   seedPhraseCache: {
-    seedPhrase160:
+    seedPhrase:
       "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-    seedPhrase256: "",
-    selected: FIFTEEN_WORDS_BIT_LENGTH,
+    brand: "brand",
   },
   identifiersCache: {
     identifiers: filteredIdentifierFix,
@@ -74,19 +72,25 @@ describe("Identifiers Tab", () => {
 
   test("Renders favourites in Identifiers", () => {
     const { getByText } = render(
-      <Provider store={mockedStore}>
-        <Identifiers />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={mockedStore}>
+          <Identifiers />
+        </Provider>
+      </MemoryRouter>
     );
 
-    expect(getByText(EN_TRANSLATIONS.creds.tab.favourites)).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.identifiers.tab.favourites)
+    ).toBeInTheDocument();
   });
 
   test("Renders Identifiers Tab and all elements in it", () => {
     const { getByText, getByTestId } = render(
-      <Provider store={store}>
-        <Identifiers />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={mockedStore}>
+          <Identifiers />
+        </Provider>
+      </MemoryRouter>
     );
 
     expect(getByTestId("identifiers-tab")).toBeInTheDocument();
@@ -95,6 +99,10 @@ describe("Identifiers Tab", () => {
     ).toBeInTheDocument();
     expect(getByTestId("connections-button")).toBeInTheDocument();
     expect(getByTestId("add-button")).toBeInTheDocument();
+    expect(getByTestId("identifiers-list")).toBeInTheDocument();
+    expect(
+      getByTestId(`card-item-${filteredIdentifierFix[2].id}`)
+    ).toBeInTheDocument();
   });
 
   test("Navigate from Identifiers Tab to Card Details and back", async () => {
@@ -112,6 +120,9 @@ describe("Identifiers Tab", () => {
       seedPhraseCache: {},
       identifiersCache: {
         identifiers: filteredIdentifierFix,
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -133,7 +144,7 @@ describe("Identifiers Tab", () => {
           />
           <Route
             path={TabsRoutePath.IDENTIFIER_DETAILS}
-            component={IdentifierCardDetails}
+            component={IdentifierDetails}
           />
         </Provider>
       </MemoryRouter>
@@ -141,7 +152,7 @@ describe("Identifiers Tab", () => {
 
     expect(
       getByText(
-        filteredIdentifierFix[0].id.substring(8, 13) +
+        filteredIdentifierFix[0].id.substring(0, 5) +
           "..." +
           filteredIdentifierFix[0].id.slice(-5)
       )
@@ -154,13 +165,11 @@ describe("Identifiers Tab", () => {
       jest.advanceTimersByTime(NAVIGATION_DELAY);
     });
 
-    expect(
-      getByText(EN_TRANSLATIONS.identifiers.card.details.done)
-    ).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.identifiers.details.done)).toBeVisible();
 
     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
 
-    const doneButton = getByTestId("tab-done-button");
+    const doneButton = getByTestId("close-button");
 
     act(() => {
       fireEvent.click(doneButton);

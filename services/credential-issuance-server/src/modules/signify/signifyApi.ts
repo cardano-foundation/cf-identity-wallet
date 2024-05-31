@@ -1,21 +1,20 @@
-import { utils } from "@aries-framework/core";
 import {
   SignifyClient,
   ready as signifyReady,
   Tier,
-  Operation,
   randomPasscode,
+  Operation,
 } from "signify-ts";
-import { AriesAgent } from "../../ariesAgent";
+import { Agent } from "../../agent";
+import { waitAndGetDoneOp } from "./utils";
+import { config } from "../../config";
+import { v4 as uuidv4 } from "uuid";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT =
-    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
-    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
+  static readonly UNKNOW_SCHEMA_ID = "Unknow Schema ID: ";
   private signifyClient!: SignifyClient;
   private opTimeout: number;
   private opRetryInterval: number;
@@ -26,15 +25,15 @@ export class SignifyApi {
   }
 
   /**
-   * Must be called first. (guard rails pending)
+   * Must be called first.
    */
   async start(): Promise<void> {
     await signifyReady();
     this.signifyClient = new SignifyClient(
-      SignifyApi.LOCAL_KERIA_ENDPOINT,
+      config.keria.url,
       randomPasscode(), // Different on every restart but this is OK for our purposes.
       Tier.low,
-      SignifyApi.LOCAL_KERIA_BOOT_ENDPOINT
+      config.keria.bootUrl
     );
     try {
       await this.signifyClient.connect();
@@ -42,7 +41,7 @@ export class SignifyApi {
       await this.signifyClient.boot();
       await this.signifyClient.connect();
     }
-    await AriesAgent.agent.initKeri();
+    await Agent.agent.initKeri();
   }
 
   async createIdentifier(signifyName: string): Promise<any> {
@@ -71,10 +70,10 @@ export class SignifyApi {
   }
 
   async resolveOobi(url: string): Promise<any> {
-    const alias = utils.uuid();
-    let operation = await this.signifyClient.oobis().resolve(url, alias);
-    operation = await this.waitAndGetDoneOp(
-      operation,
+    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
+    const operation = await waitAndGetDoneOp(
+      this.signifyClient,
+      await this.signifyClient.oobis().resolve(url, alias),
       this.opTimeout,
       this.opRetryInterval
     );
@@ -97,15 +96,29 @@ export class SignifyApi {
     issuerName: string,
     registryId: string,
     schemaId: string,
-    recipient: string
+    recipient: string,
+    name?: string
   ) {
-    const vcdata = {
-      LEI: "5493001KJTIIGC8Y1R17",
-    };
+    await this.resolveOobi(`${config.oobiEndpoint}/oobi/${schemaId}`);
+
+    let vcdata = {};
+    if (schemaId === "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu") {
+      vcdata = {
+        attendeeName: name,
+      };
+    } else if (schemaId === "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao") {
+      vcdata = {
+        LEI: "5493001KJTIIGC8Y1R17",
+      };
+    } else {
+      throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);
+    }
+
     const result = await this.signifyClient
       .credentials()
       .issue({ issuerName, registryId, schemaId, recipient, data: vcdata });
-    await this.waitAndGetDoneOp(
+    await waitAndGetDoneOp(
+      this.signifyClient,
       result.op,
       this.opTimeout,
       this.opRetryInterval
@@ -140,28 +153,23 @@ export class SignifyApi {
       .submitApply(senderName, apply, sigs, [recipient]);
   }
 
-  async agreeOffer(
+  async contacts(): Promise<any> {
+    return this.signifyClient.contacts().list();
+  }
+
+  async agreeToAcdcFromOffer(
     senderName: string,
     offerSaid: string,
-    recipient: string,
-    acdc: Object
+    recipient: string
   ) {
     const [apply, sigs] = await this.signifyClient.ipex().agree({
       senderName,
       recipient,
       offer: offerSaid,
-      message: JSON.stringify({
-        i: recipient,
-        acdc,
-      }),
     });
     await this.signifyClient
       .ipex()
       .submitAgree(senderName, apply, sigs, [recipient]);
-  }
-
-  async contacts(): Promise<any> {
-    return this.signifyClient.contacts().list();
   }
 
   async getNotifications() {

@@ -12,7 +12,7 @@
 # Disclaimer
 
 <div align="justify"> 
-<b> Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development and security audits have yet to be conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions. Furthermore, any seed phrase generated during the onboarding process is currently not being utilised. We are in the process of reviewing the ideal key management and social recovery methodologies for development in 2024. </b>
+<b> Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development with security audits and threat modelling still pending. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions. Furthermore, any seed phrase generated during the onboarding process is currently not being utilised. We are in the process of reviewing the ideal key management and social recovery methodologies for development in 2024. </b>
 </div>
 <br>
 <div align="center">   
@@ -28,7 +28,7 @@
 # Overview
 
 <div align="justify"> 
-<b> The Identity Wallet is an open source application developed by the Cardano Foundation.  This project is the result of ongoing research and development pertaining to the principles of Self-Sovereign Identity (SSI), Decentralized Identifiers (DIDs), Self-Certifying Identifiers (SCIs), Verifiable Credentials, Verifiable Data Registries (VDRs) and the standards, frameworks and implementations available within the Cardano ecosystem and externally.  The first release of Identity Wallet provides an open source reference implementation demonstrating W3C Decentralized Identifiers, Verifiable Credentials, and Key Event Receipt Infrastructure (KERI) on Cardano. </b>
+<b> The Identity Wallet is an open source application developed by the Cardano Foundation. This project is the result of ongoing research and development pertaining to the principles of Self-Sovereign Identity (SSI), Self-Certifying Identifiers (SCIs), Verifiable Data Registries (VDRs), and the standards, frameworks, and implementations available within the Cardano ecosystem and externally. The first release of Identity Wallet provides an open source reference implementation demonstrating the Key Event Receipt Infrastructure (KERI) on Cardano. </b>
 </div>
 
 <br>
@@ -46,22 +46,34 @@
 
 # Features
 
-| **User Interface**    |  **Secure Storage**  |**Interoperability**   |  **Standards & Protocols** | **Connections & Credential Issuance**  |     **SSI Agents**   |           
-|----------------|---------------|---------------|----------------|---------------|----------------|
-|  Intuitive User Experience |  Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material |  [Aries RFCs](https://github.com/hyperledger/aries-rfcs) |  [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) |  Holder-to-Holder |  [Open Wallet Foundation](https://github.com/openwallet-foundation/agent-framework-javascript)| 
-|  Android and iOS support |  Hierarchical Deterministic (HD) Identity Wallet | [W3C](https://www.w3.org/) | [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID)  |  Issuer-to-Holder |  [KERIA](https://github.com/cardano-foundation/keria) | 
-|  | | [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) |  [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) |  [Credential Issuance Testing Tool](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  |  [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
-|  | | [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | |  | |
+- :iphone: Android & iOS Support with native biometrics
+- :cloud: High messaging availability with a KERIA cloud agent
+- :closed_lock_with_key: Secure Enclave (SE) / Trusted Execution Environment (TEE) usage for seeds & secrets
+- :id: KERI autonomic identifiers
+  - Direct-mode, witness-backed, Cardano-backed
+  - Single-sig, multi-sig
+- :ticket: ACDC credentials exchanged using the IPEX protocol
+- :zap: Efficient over-the-wine communications using CESR encoding
+- :desktop_computer: dApp integration using [CIP-45](https://cips.cardano.org/cip/CIP-0045)
+  
+ # Future Developments
+ 
+- Encryption at rest with local backup & restore (Compatible with Hyperledger [Aries Askar](https://github.com/hyperledger/aries-askar))
+- Social and multi-device identifier recovery
+- P2P Chat
+- Delegated multi-sig for organisational identity
+- Cardano-backed ACDC verifiable credential schemas
 
-# Potential Future Developments
+# Standards & Protocols
+- [Key Event Receipt Infrastructure (KERI)](https://keri.one/)
+- [Trust Over IP - Authentic Chained Data Container (ACDC)](https://trustoverip.github.io/tswg-acdc-specification/)
+- [Composable Event Streaming Representation (CESR)](https://weboftrust.github.io/ietf-cesr/draft-ssmith-cesr.html)
 
-|**App Features**            |  **Identity Recovery**               |     **Identifiers**           |     **Verifiable Credentials**  |    **Communications** |   **Peer-to-Peer (P2P)** |  
-|----------------|---------------|---------------|----------------|----------------|----------------|
-| Bluetooth |  [Shamir Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing)|  [did:webs](https://labs.hyperledger.org/labs/didwebs.html#:~:text=did%3Awebs%20extends%20the%20web,%2C%20X509%2C%20and%20certificate%20authorities.) |  [OID4vc](https://openid.net/sg/openid4vc/specifications/)| Messaging | [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) Support  | 
-| Biometrics | On-chain Recovery | [did:keri](https://identity.foundation/keri/did_methods/)  | On-Chain Schemas | Social Recovery |  App Integration |
-| NFC|  Local Encrypted|  | [AnonCreds](https://www.hyperledger.org/projects/anoncreds) | [DIDComm v2](https://identity.foundation/didcomm-messaging/spec/) | | 
-|Aries Askar | Cloud-based |  | [Cheqd](https://cheqd.io/) | |  |
-
+# SSI Services
+- [KERIA Cloud Agent](https://github.com/cardano-foundation/keria)
+- [Signify-TS Edge Client](https://github.com/cardano-foundation/signify-ts)
+- [Verifiable Credential Testing Tool](https://identity-wallet-credential-issuance-web-interface.vercel.app/)
+- [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer)
 
 # Preview in your Browser
 
@@ -72,7 +84,7 @@ To experience the mobile application within the browser, please select one of th
 <div align="center"> 
 <p><u>🔗  Preview the latest version of the Identity Wallet on your browser 🔗 </u></p>
 <br>
-<p><a href="https://cf-identity-wallet.vercel.app/?browserPreview">* On a desktop computer</a></p>
+<p><a href="https://cf-identity-wallet.vercel.app/?browserPreview" target="_blank">* On a desktop computer</a></p>
 <br>
 <p><a href="https://cf-identity-wallet.vercel.app">* On a mobile phone</a></p>
 </div>
@@ -123,7 +135,7 @@ In this section, you'll find detailed PDF documents outlining the various user f
 - Android Studio: For Android emulation (latest version recommended).
 - Capacitor: Version 4.8.1 (refer to package.json). For detailed environment setup, refer to the [Capacitor Environment Setup Guide](https://capacitorjs.com/docs/getting-started/environment-setup).
 - Mobile Device: iOS or Android for running the app on physical devices.
-- Docker (only required if running the credential server in Docker).
+- Docker, Docker Compose.
 
 Ensure that your system meets these requirements to successfully use and develop the Identity Wallet application.
 
@@ -143,7 +155,11 @@ In the project root directory, run the following commands:
 npm install
 ```
 ## Running in the Browser
+The development server depends on a local KERIA and credential issuance server setup.
+The [Docker Compose](./docker-compose.yaml) file can be used to quickly bring these services up.
+
 ```bash
+docker-compose up -d --build
 npm run dev
 ```
 This command starts the development server and allows you to preview the application on your browser by opening this localhost address:
@@ -177,17 +193,11 @@ Please be aware that from time-to-time the hosted pre-production KERI services r
 <br>
 
 <div align="center"> 
-      <a href="https://discord.gg/Wh25yBqwpz">👨‍💻 Join our Discord! 👩‍💻
+      <a href="https://discord.gg/Wh25yBqwpz">👨‍💻 Join our Discord! 👩‍💻<a>
 </div>
 
 
 # Resources
-
-## W3C
-- [DID Core Specification](https://www.w3.org/TR/did-core/)
-- [DID Methods Registry](https://www.w3.org/TR/did-spec-registries/)
-- [Verifiable Credentials Data Model](https://www.w3.org/TR/vc-data-model/)
-- [Verifiable Credential V2](https://www.w3.org/TR/vc-data-model-2.0/)
 
 ## KERI
 - [Key Event Receipt Infrastructure](https://keri.one/)
@@ -197,8 +207,6 @@ Please be aware that from time-to-time the hosted pre-production KERI services r
 - [Cardano Backer](https://github.com/cardano-foundation/cardano-backer)
 
 ## Standards, Frameworks and Governance
-- [Aries Framework JavaScript](https://github.com/openwallet-foundation/agent-framework-javascript)
-- [Veramo](https://veramo.io/)
 - [SSI Frameworks Overview](https://europeanblockchainassociation.org/ssi-frameworks-sdks-overview/)
 - [Global Legal Entity Identifier Foundation (GLIEF)](https://www.gleif.org/en)
 - [Decentralized Identity Foundation](https://identity.foundation/)

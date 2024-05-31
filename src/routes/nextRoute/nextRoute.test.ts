@@ -9,7 +9,6 @@ import {
 import { RootState } from "../../store";
 import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../ui/globals/constants";
 import { DataProps } from "./nextRoute.types";
 import { OperationType } from "../../ui/globals/types";
 
@@ -26,6 +25,7 @@ describe("NextRoute", () => {
         routes: [],
         authentication: {
           loggedIn: false,
+          userName: "",
           time: 0,
           passcodeIsSet: false,
           seedPhraseIsSet: false,
@@ -40,14 +40,31 @@ describe("NextRoute", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase160: "",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        seedPhrase: "",
+        bran: "",
       },
-      identifiersCache: { identifiers: [], favourites: [] },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
       credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: null,
+        pendingConnection: null,
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      biometryCache: {
+        enabled: false,
       },
     };
     data = {
@@ -127,6 +144,7 @@ describe("getNextRoute", () => {
       routes: [],
       authentication: {
         loggedIn: false,
+        userName: "",
         time: 0,
         passcodeIsSet: true,
         seedPhraseIsSet: false,
@@ -141,14 +159,31 @@ describe("getNextRoute", () => {
       },
     },
     seedPhraseCache: {
-      seedPhrase160: "",
-      seedPhrase256: "",
-      selected: FIFTEEN_WORDS_BIT_LENGTH,
+      seedPhrase: "",
+      bran: "",
     },
-    identifiersCache: { identifiers: [], favourites: [] },
+    identifiersCache: {
+      identifiers: [],
+      favourites: [],
+      multiSigGroup: {
+        groupId: "",
+        connections: [],
+      },
+    },
     credsCache: { creds: [], favourites: [] },
     connectionsCache: {
       connections: [],
+    },
+    walletConnectionsCache: {
+      walletConnections: [],
+      connectedWallet: null,
+      pendingConnection: null,
+    },
+    identifierViewTypeCacheCache: {
+      viewType: null,
+    },
+    biometryCache: {
+      enabled: false,
     },
   };
   const state = {};
@@ -178,9 +213,8 @@ describe("getNextRoute", () => {
 
   test("getNextSetPasscodeRoute should return the correct next path when seed phrase is set", () => {
     storeMock.seedPhraseCache = {
-      seedPhrase160: "example seed phrase 160",
-      seedPhrase256: "example seed phrase 256",
-      selected: FIFTEEN_WORDS_BIT_LENGTH,
+      seedPhrase: "example seed phrase 160",
+      bran: "bran",
     };
 
     const result = getNextSetPasscodeRoute(storeMock);
@@ -190,8 +224,7 @@ describe("getNextRoute", () => {
   });
 
   test("getNextSetPasscodeRoute should return the correct next path when seed phrase is not set", () => {
-    storeMock.seedPhraseCache.seedPhrase160 = "";
-    storeMock.seedPhraseCache.seedPhrase256 = "";
+    storeMock.seedPhraseCache.seedPhrase = "";
 
     const result = getNextSetPasscodeRoute(storeMock);
     expect(result).toEqual({

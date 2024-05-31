@@ -2,6 +2,28 @@
   .responsive-page-content {
     justify-content: space-evenly;
 
+    @media screen and (min-height: 581px) {
+      & > .passcode-module-circle-row {
+        margin: 0;
+      }
+    }
+
+    & > .set-passcode-title {
+      margin: 0;
+    }
+
+    & > .error-message {
+      margin: 0;
+    }
+
+    & > .error-message-placeholder {
+      margin: 0;
+    }
+
+    & > .passcode-module-container {
+      margin: 0;
+    }
+
     .set-passcode-title,
     .set-passcode-description {
       text-align: center;
@@ -15,6 +37,12 @@
       .forgot-your-passcode-placeholder {
         height: 4.5rem;
       }
+    }
+  }
+
+  .page-header {
+    ion-toolbar {
+      --background: transparent;
     }
   }
 }

@@ -9,8 +9,10 @@ import "./VerifySeedPhrase.scss";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import { getStateCache } from "../../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
+import {
+  getStateCache,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
 import { getBackRoute } from "../../../routes/backRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { Addresses } from "../../../core/cardano";
@@ -18,6 +20,8 @@ import { PageHeader } from "../../components/PageHeader";
 import { PageFooter } from "../../components/PageFooter";
 import { SeedPhraseModule } from "../../components/SeedPhraseModule";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { useAppIonRouter } from "../../hooks";
+import { OperationType } from "../../globals/types";
 
 const VerifySeedPhrase = () => {
   const pageId = "verify-seed-phrase";
@@ -25,13 +29,11 @@ const VerifySeedPhrase = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
-  const originalSeedPhrase =
-    seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
-      ? seedPhraseStore.seedPhrase160.split(" ")
-      : seedPhraseStore.seedPhrase256.split(" ");
+  const originalSeedPhrase = seedPhraseStore.seedPhrase.split(" ");
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
   const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const ionRouter = useAppIonRouter();
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.VERIFY_SEED_PHRASE) {
@@ -84,6 +86,8 @@ const VerifySeedPhrase = () => {
     );
     await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, entropy);
 
+    await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, seedPhraseStore.bran);
+
     handleNavigate();
   };
 
@@ -111,7 +115,8 @@ const VerifySeedPhrase = () => {
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     handleClearState();
-    history.push(nextPath.pathname);
+
+    ionRouter.push(nextPath.pathname, "root", "replace");
   };
 
   const handleBack = () => {
@@ -131,6 +136,10 @@ const VerifySeedPhrase = () => {
     history.push({
       pathname: backPath.pathname,
     });
+  };
+
+  const closeFailAlert = () => {
+    setAlertIsOpen(false);
   };
 
   return (
@@ -153,7 +162,10 @@ const VerifySeedPhrase = () => {
       <h2 data-testid={`${pageId}-title`}>
         {i18n.t("verifyseedphrase.onboarding.title")}
       </h2>
-      <p data-testid={`${pageId}-paragraph-top`}>
+      <p
+        className="paragraph-top"
+        data-testid={`${pageId}-paragraph-top`}
+      >
         {i18n.t("verifyseedphrase.paragraph.top")}
       </p>
       <SeedPhraseModule
@@ -166,6 +178,7 @@ const VerifySeedPhrase = () => {
         testId="original-seed-phrase-container"
         seedPhrase={seedPhraseRemaining}
         addSeedPhraseSelected={addSeedPhraseSelected}
+        hideSeedNumber
       />
       <PageFooter
         pageId={pageId}
@@ -185,10 +198,7 @@ const VerifySeedPhrase = () => {
         confirmButtonText={`${i18n.t(
           "verifyseedphrase.alert.fail.button.confirm"
         )}`}
-        cancelButtonText={`${i18n.t(
-          "verifyseedphrase.alert.fail.button.cancel"
-        )}`}
-        actionConfirm={handleBack}
+        actionConfirm={closeFailAlert}
       />
     </ResponsivePageLayout>
   );

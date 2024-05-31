@@ -14,25 +14,13 @@ import { RoutePath, TabsRoutePath } from "../paths";
 import { ToastMsgType } from "../../ui/globals/types";
 
 const getNextRootRoute = (store: StoreState) => {
-  const isInitialized = store.stateCache.initialized;
   const authentication = store.stateCache.authentication;
-  const routes = store.stateCache.routes;
-  const initialRoute =
-    routes.some((route) => route.path === "/") || routes.length === 0;
 
   let path;
-  if (authentication.passcodeIsSet && !authentication.loggedIn) {
-    path = RoutePath.PASSCODE_LOGIN;
-  } else if (routes.length === 1 && !isInitialized) {
-    path = RoutePath.ONBOARDING;
-  } else if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
+  if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
     path = RoutePath.TABS_MENU;
   } else {
-    if (initialRoute) {
-      path = RoutePath.ONBOARDING;
-    } else {
-      path = routes[0].path;
-    }
+    path = RoutePath.ONBOARDING;
   }
 
   return { pathname: path };
@@ -52,7 +40,7 @@ const getNextOnboardingRoute = (data: DataProps) => {
 };
 
 const getNextConnectionDetailsRoute = () => {
-  const path = TabsRoutePath.CREDS;
+  const path = TabsRoutePath.CREDENTIALS;
   return { pathname: path };
 };
 
@@ -63,12 +51,12 @@ const getNextCredentialsRoute = () => {
 
 const getNextCredentialDetailsRoute = () => {
   // @TODO - foconnor: if we close an archived credential, it should return to the archived view.
-  const path = TabsRoutePath.CREDS;
+  const path = TabsRoutePath.CREDENTIALS;
   return { pathname: path };
 };
 
 const getNextSetPasscodeRoute = (store: StoreState) => {
-  const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase160;
+  const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase;
 
   const nextPath: string = seedPhraseIsSet
     ? RoutePath.TABS_MENU
@@ -103,9 +91,8 @@ const getNextVerifySeedPhraseRoute = () => {
 
 const updateStoreSetSeedPhrase = (data: DataProps) => {
   return setSeedPhraseCache({
-    seedPhrase160: data.state?.seedPhrase160,
-    seedPhrase256: data.state?.seedPhrase256,
-    selected: data.state?.selected,
+    seedPhrase: data.state?.seedPhrase,
+    bran: data.state?.bran,
   });
 };
 const updateStoreCurrentRoute = (data: DataProps) => {
@@ -131,7 +118,7 @@ const getNextScanRoute = (data: DataProps) => {
     currentToastMsg === ToastMsgType.CONNECTION_REQUEST_PENDING ||
     currentToastMsg === ToastMsgType.CREDENTIAL_REQUEST_PENDING
   ) {
-    path = TabsRoutePath.CREDS;
+    path = TabsRoutePath.CREDENTIALS;
     // @TODO - foconnor: We need to open the connection list if it is CONNECTION_REQUEST_PENDING.
   }
   return { pathname: path };
@@ -183,7 +170,7 @@ const nextRoute: Record<string, any> = {
     nextPath: () => getNextConnectionDetailsRoute(),
     updateRedux: [],
   },
-  [TabsRoutePath.CREDS]: {
+  [TabsRoutePath.CREDENTIALS]: {
     nextPath: () => getNextCredentialsRoute(),
     updateRedux: [],
   },
@@ -191,7 +178,7 @@ const nextRoute: Record<string, any> = {
     nextPath: (data: DataProps) => getNextScanRoute(data),
     updateRedux: [],
   },
-  [TabsRoutePath.CRED_DETAILS]: {
+  [TabsRoutePath.CREDENTIAL_DETAILS]: {
     nextPath: () => getNextCredentialDetailsRoute(),
     updateRedux: [],
   },

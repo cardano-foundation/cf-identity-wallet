@@ -1,3 +1,12 @@
 .scan-tab {
   padding: 0;
+
+  ion-grid {
+    padding-top: 10vh;
+    padding-bottom: 10vh;
+
+    .qr-code-scanner-icon {
+      margin: 0;
+    }
+  }
 }

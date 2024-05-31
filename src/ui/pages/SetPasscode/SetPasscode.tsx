@@ -1,17 +1,12 @@
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import {
-  SecureStorage,
-  KeyStoreKeys,
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage";
+import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import {
   getStateCache,
   setInitialized,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -22,41 +17,120 @@ import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayo
 import { PageHeader } from "../../components/PageHeader";
 import "./SetPasscode.scss";
 import { PageFooter } from "../../components/PageFooter";
+import { useAppIonRouter } from "../../hooks";
+import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
+import { BiometryError } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
+import { getPlatforms } from "@ionic/react";
+import { Alert } from "../../components/Alert";
+import { useBiometricAuth } from "../../hooks/useBiometricsHook";
+import { Agent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
+import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
+import { ToastMsgType } from "../../globals/types";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
-  const history = useHistory();
+  const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const [passcode, setPasscode] = useState("");
+  const [showSetupAndroidBiometryAlert, setShowSetupAndroidBiometryAlert] =
+    useState(false);
+  const [showCancelBiometryAlert, setShowCancelBiometryAlert] = useState(false);
   const [originalPassCode, setOriginalPassCode] = useState("");
+  const { handleBiometricAuth, biometricInfo } = useBiometricAuth();
+  const isAndroidDevice = getPlatforms().includes("android");
 
-  const handlePinChange = (digit: number) => {
+  const setupAndroidBiometryHeaderText = i18n.t(
+    "biometry.setupandroidbiometryheader"
+  );
+  const setupAndroidBiometryConfirmtext = i18n.t(
+    "biometry.setupandroidbiometryconfirm"
+  );
+  const setupAndroidBiometryCanceltext = i18n.t(
+    "biometry.setupandroidbiometrycancel"
+  );
+
+  const cancelBiometryHeaderText = i18n.t("biometry.cancelbiometryheader");
+  const cancelBiometryConfirmText = setupAndroidBiometryConfirmtext;
+
+  const handlePinChange = async (digit: number) => {
     if (passcode.length < 6) {
+      setPasscode(passcode + digit);
       if (originalPassCode !== "" && passcode.length === 5) {
         if (originalPassCode === passcode + digit) {
-          SecureStorage.set(KeyStoreKeys.APP_PASSCODE, originalPassCode).then(
-            () => {
-              const data: DataProps = {
-                store: { stateCache },
-              };
-              const { nextPath, updateRedux } = getNextRoute(
-                RoutePath.SET_PASSCODE,
-                data
-              );
-              updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-              history.push(nextPath.pathname);
-              handleClearState();
-
-              PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
-                initialized: true,
-              }).then(() => dispatch(setInitialized(true)));
+          if (biometricInfo?.strongBiometryIsAvailable) {
+            if (isAndroidDevice) {
+              setShowSetupAndroidBiometryAlert(true);
+            } else {
+              await processBiometrics();
             }
-          );
+          } else {
+            await handlePassAuth();
+          }
         }
       }
-      setPasscode(passcode + digit);
     }
+  };
+
+  const processBiometrics = async () => {
+    const isBiometricAuthenticated = await handleBiometricAuth();
+    if (isBiometricAuthenticated === true) {
+      await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.APP_BIOMETRY,
+          content: { enabled: true },
+        })
+      );
+      dispatch(setEnableBiometryCache(true));
+      dispatch(
+        setToastMsg(ToastMsgType.SETUP_BIOMETRIC_AUTHENTICATION_SUCCESS)
+      );
+      await handlePassAuth();
+    } else {
+      if (isBiometricAuthenticated instanceof BiometryError) {
+        if (
+          isBiometricAuthenticated.code === BiometryErrorType.userCancel ||
+          isBiometricAuthenticated.code ===
+            BiometryErrorType.biometryNotAvailable
+        ) {
+          setShowCancelBiometryAlert(true);
+        }
+      }
+    }
+  };
+
+  const handlePassAuth = async () => {
+    await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, originalPassCode);
+    const data: DataProps = {
+      store: { stateCache },
+    };
+    const { nextPath, updateRedux } = getNextRoute(
+      RoutePath.SET_PASSCODE,
+      data
+    );
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    ionRouter.push(nextPath.pathname, "forward", "push");
+    handleClearState();
+
+    await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.APP_ALREADY_INIT,
+        content: { initialized: true },
+      })
+    );
+  };
+
+  const handleSetupAndroidBiometry = async () => {
+    await processBiometrics();
+  };
+
+  const handleCancelSetupAndroidBiometry = async () => {
+    setShowCancelBiometryAlert(true);
+  };
+  const handleCancelBiometry = async () => {
+    await handlePassAuth();
   };
 
   const handleRemove = () => {
@@ -68,6 +142,8 @@ const SetPasscode = () => {
   const handleClearState = () => {
     setPasscode("");
     setOriginalPassCode("");
+    setShowCancelBiometryAlert(false);
+    setShowSetupAndroidBiometryAlert(false);
   };
 
   const handleBeforeBack = () => {
@@ -81,12 +157,16 @@ const SetPasscode = () => {
     }
   }, [originalPassCode, passcode]);
 
+  const isOnReenterPasscodeStep =
+    originalPassCode.length > 0 && passcode.length < 6;
+
   return (
     <ResponsivePageLayout
       pageId={pageId}
       header={
         <PageHeader
           backButton={true}
+          onBack={isOnReenterPasscodeStep ? handleClearState : undefined}
           beforeBack={handleBeforeBack}
           currentPath={RoutePath.SET_PASSCODE}
           progressBar={true}
@@ -138,6 +218,26 @@ const SetPasscode = () => {
           data-testid="forgot-your-passcode-placeholder"
         />
       )}
+      <Alert
+        isOpen={showSetupAndroidBiometryAlert}
+        setIsOpen={setShowSetupAndroidBiometryAlert}
+        dataTestId="alert-setup-android-biometry"
+        headerText={setupAndroidBiometryHeaderText}
+        confirmButtonText={setupAndroidBiometryConfirmtext}
+        cancelButtonText={setupAndroidBiometryCanceltext}
+        actionConfirm={handleSetupAndroidBiometry}
+        actionCancel={handleCancelSetupAndroidBiometry}
+        backdropDismiss={false}
+      />
+      <Alert
+        isOpen={showCancelBiometryAlert}
+        setIsOpen={setShowCancelBiometryAlert}
+        dataTestId="alert-cancel-biometry"
+        headerText={cancelBiometryHeaderText}
+        confirmButtonText={cancelBiometryConfirmText}
+        actionConfirm={handleCancelBiometry}
+        backdropDismiss={false}
+      />
     </ResponsivePageLayout>
   );
 };

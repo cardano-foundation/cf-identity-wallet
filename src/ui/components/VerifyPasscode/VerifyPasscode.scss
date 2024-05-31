@@ -1,6 +1,26 @@
 .verify-passcode {
+  .responsive-page-layout {
+    .page-header {
+      ion-toolbar {
+        --background: transparent;
+      }
+    }
+  }
+
   .responsive-page-content {
     justify-content: space-evenly;
+
+    & > .error-message {
+      margin: 0;
+    }
+
+    & > .error-message-placeholder {
+      margin: 0;
+    }
+
+    & > .passcode-module-container {
+      margin: 0;
+    }
 
     .verify-passcode-title,
     .verify-passcode-description {
@@ -10,8 +30,8 @@
     .verify-passcode-title {
       margin-top: 4rem;
 
-      @media screen and (min-height: 300px) and (max-height: 550px) {
-        margin-top: 2rem;
+      @media screen and (min-height: 300px), screen and (max-height: 550px) {
+        margin-top: 0.5rem;
       }
     }
   }

@@ -1,138 +1,146 @@
-import {
-  Agent,
-  ConnectionEventTypes,
-  ConnectionRecord,
-  ConnectionStateChangedEvent,
-  DidExchangeRole,
-  DidExchangeState,
-  OutOfBandInvitation,
-  OutOfBandRecord,
-  OutOfBandRole,
-  OutOfBandState,
-} from "@aries-framework/core";
-import { EventEmitter } from "events";
-import {
-  ConnectionHistoryType,
-  ConnectionType,
-  ConnectionStatus,
-  GenericRecordType,
-} from "../agent.types";
+import { ConnectionStatus, KeriConnectionType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
+import { EventService } from "./eventService";
+import { CredentialStorage, IdentifierStorage } from "../records";
+import { ConfigurationService } from "../../configuration";
+import { Agent } from "../agent";
 
-const eventEmitter = new EventEmitter();
+const contactListMock = jest.fn();
+const deleteContactMock = jest.fn();
 
-const agent = jest.mocked({
-  oob: {
-    receiveInvitationFromUrl: jest.fn(),
-    createInvitation: jest.fn(),
-    getById: jest.fn(),
+const uuidToThrow = "throwMe";
+const signifyClient = jest.mocked({
+  connect: jest.fn(),
+  boot: jest.fn(),
+  identifiers: () => ({
+    list: jest.fn(),
+    get: jest.fn(),
+    create: jest.fn(),
+    addEndRole: jest.fn(),
+    interact: jest.fn(),
+    rotate: jest.fn(),
+    members: jest.fn(),
+  }),
+  operations: () => ({
+    get: jest.fn().mockImplementation((id: string) => {
+      if (id === `${oobiPrefix}${uuidToThrow}`) {
+        return {
+          done: false,
+          name: id,
+        };
+      }
+      return {
+        done: true,
+        response: {
+          i: id,
+        },
+        name: id,
+      };
+    }),
+  }),
+  oobis: () => ({
+    get: jest.fn().mockImplementation((name: string) => {
+      return {
+        oobis: [`${oobiPrefix}${name}`],
+        done: true,
+      };
+    }),
+    resolve: jest.fn().mockImplementation((name: string) => {
+      if (name === `${oobiPrefix}${uuidToThrow}`) {
+        return {
+          done: false,
+          name,
+        };
+      }
+      return {
+        done: true,
+        response: {
+          i: name,
+        },
+        name,
+      };
+    }),
+  }),
+  contacts: () => ({
+    list: contactListMock,
+    get: jest.fn().mockImplementation((id: string) => {
+      return {
+        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
+        oobi: "oobi",
+        id,
+      };
+    }),
+    delete: deleteContactMock,
+  }),
+  notifications: () => ({
+    list: jest.fn(),
+    mark: jest.fn(),
+  }),
+  ipex: () => ({
+    admit: jest.fn(),
+    submitAdmit: jest.fn(),
+  }),
+  credentials: () => ({
+    list: jest.fn(),
+  }),
+  exchanges: () => ({
+    get: jest.fn(),
+    send: jest.fn(),
+  }),
+  agent: {
+    pre: "pre",
   },
-  connections: {
-    acceptRequest: jest.fn(),
-    acceptResponse: jest.fn(),
-    getAll: jest.fn(),
-    getById: jest.fn(),
-    findAllByQuery: jest.fn(),
-    deleteById: jest.fn(),
-  },
-  modules: {
-    generalStorage: {
-      getCredentialMetadataByConnectionId: jest.fn(),
+  keyStates: () => ({
+    query: jest.fn(),
+    get: jest.fn(),
+  }),
+});
+
+const session = {};
+
+const agentServicesProps = {
+  signifyClient: signifyClient as any,
+  eventService: new EventService(),
+};
+
+const connectionStorage = jest.mocked({
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
+const connectionNoteStorage = jest.mocked({
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
+const connectionService = new ConnectionService(
+  agentServicesProps,
+  connectionStorage as any,
+  connectionNoteStorage as any,
+  new CredentialStorage(session as any)
+);
+
+jest.mock("../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      getKeriaOnlineStatus: jest.fn(),
+      identifiers: { getKeriIdentifierByGroupId: jest.fn() },
     },
-    signify: {
-      resolveOobi: jest.fn(),
-      getContacts: jest.fn(),
-      getOobi: jest.fn(),
-      deleteContactById: jest.fn(),
-    },
   },
-  receiveMessage: jest.fn(),
-  events: {
-    on: eventEmitter.on.bind(eventEmitter),
-    emit: jest.fn(),
-  },
-  eventEmitter: {
-    emit: eventEmitter.emit.bind(eventEmitter),
-  },
-  genericRecords: {
-    save: jest.fn(),
-    deleteById: jest.fn(),
-    findById: jest.fn(),
-    update: jest.fn(),
-    findAllByQuery: jest.fn(),
-  },
-});
-
-const connectionService = new ConnectionService(agent as any as Agent);
-
-const oobi = new OutOfBandInvitation({
-  label: "label",
-  services: ["http://localhost:5341"],
-});
-const oobRecord = new OutOfBandRecord({
-  outOfBandInvitation: oobi,
-  role: OutOfBandRole.Sender,
-  state: OutOfBandState.PrepareResponse,
-});
-const oobUrlStart =
-  "didcomm://invite?oob=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcvb3V0LW9mLWJhbmQvMS4xL2ludml0YXRpb24iLCJAaWQiOi";
-const oobUrlEnd =
-  "iLCJsYWJlbCI6ImxhYmVsIiwic2VydmljZXMiOlsiaHR0cDovL2xvY2FsaG9zdDo1MzQxIl19";
+}));
 
 const now = new Date();
 const nowISO = now.toISOString();
-const id1 = "id1";
-const id2 = "id2";
-const label = "connectionLabel";
-const logoUrl = "http://somelogo";
-const oobiId = "outOfBandId";
-
-const incomingConnectionRecordNoAutoAccept = new ConnectionRecord({
-  id: id1,
-  createdAt: now,
-  state: DidExchangeState.RequestReceived,
-  role: DidExchangeRole.Responder,
-  autoAcceptConnection: false,
-  theirLabel: label,
-  imageUrl: logoUrl,
-});
-const incomingConnectionRecordAutoAccept = new ConnectionRecord({
-  state: DidExchangeState.RequestReceived,
-  role: DidExchangeRole.Responder,
-  autoAcceptConnection: true,
-});
-const connectionAcceptedRecordAutoAccept = new ConnectionRecord({
-  state: DidExchangeState.ResponseSent,
-  role: DidExchangeRole.Responder,
-  autoAcceptConnection: false,
-});
-const connectionAcceptedRecord = new ConnectionRecord({
-  state: DidExchangeState.ResponseSent,
-  role: DidExchangeRole.Responder,
-  autoAcceptConnection: true,
-});
-const requestedConnectionRecord = new ConnectionRecord({
-  state: DidExchangeState.RequestSent,
-  role: DidExchangeRole.Requester,
-});
-const requestedConnectionAcceptedRecord = new ConnectionRecord({
-  state: DidExchangeState.ResponseReceived,
-  role: DidExchangeRole.Requester,
-});
-const requestedConnectionAcceptedRecordAutoAccept = new ConnectionRecord({
-  state: DidExchangeState.ResponseReceived,
-  role: DidExchangeRole.Requester,
-  autoAcceptConnection: true,
-});
-const completedConnectionRecord = new ConnectionRecord({
-  id: id2,
-  createdAt: now,
-  theirLabel: label,
-  imageUrl: logoUrl,
-  state: DidExchangeState.Completed,
-  role: DidExchangeRole.Requester,
-  outOfBandId: oobiId,
-});
 const keriContacts = [
   {
     alias: "keri",
@@ -142,366 +150,79 @@ const keriContacts = [
     wellKnowns: [],
   },
 ];
-const oobiPrefix = "oobi.";
-
-// Callbacks need to be tested at an integration/e2e test level
-describe("Connection service of agent - ConnectionRecord helpers", () => {
-  // There are a number of permutations for these but these are the main cases to cover in case connectionService regresses by accident.
-
-  // Incoming connections
-  test("connection record represents incoming connection", () => {
-    expect(
-      connectionService.isConnectionRequestReceived(
-        incomingConnectionRecordNoAutoAccept
-      )
-    ).toBe(true);
-  });
-
-  test("incoming connection should be ignored if auto accept is true", () => {
-    expect(
-      connectionService.isConnectionRequestReceived(
-        incomingConnectionRecordAutoAccept
-      )
-    ).toBe(false);
-  });
-
-  test("accepted connections are not incoming (ready to be accepted)", () => {
-    expect(
-      connectionService.isConnectionRequestReceived(
-        connectionAcceptedRecordAutoAccept
-      )
-    ).toBe(false);
-  });
-
-  test("accepted connections are not incoming (ready to be accepted)", () => {
-    expect(
-      connectionService.isConnectionRequestReceived(
-        connectionAcceptedRecordAutoAccept
-      )
-    ).toBe(false);
-  });
-
-  test("connection record represents accepted", () => {
-    expect(
-      connectionService.isConnectionResponseSent(connectionAcceptedRecord)
-    ).toBe(true);
-  });
-
-  // Acceptance to incoming connections
-  test("connection record represents accepted incoming connection", () => {
-    expect(
-      connectionService.isConnectionResponseSent(
-        connectionAcceptedRecordAutoAccept
-      )
-    ).toBe(true);
-  });
-
-  test("incoming connections are not responses", () => {
-    expect(
-      connectionService.isConnectionResponseSent(
-        incomingConnectionRecordAutoAccept
-      )
-    ).toBe(false);
-  });
-
-  test("requested connection response is not an incoming connection response", async () => {
-    expect(
-      connectionService.isConnectionResponseSent(
-        requestedConnectionAcceptedRecord
-      )
-    ).toBe(false);
-  });
-
-  // Connection requests
-  test("connection record represents a requested connection", () => {
-    expect(
-      connectionService.isConnectionRequestSent(requestedConnectionRecord)
-    ).toBe(true);
-  });
-
-  test("incoming connection is not a requested connection", () => {
-    expect(
-      connectionService.isConnectionRequestSent(
-        incomingConnectionRecordAutoAccept
-      )
-    ).toBe(false);
-  });
-
-  test("acceptance to initially requested connection is not the first request", () => {
-    expect(
-      connectionService.isConnectionRequestSent(
-        requestedConnectionAcceptedRecord
-      )
-    ).toBe(false);
-  });
-
-  // Requested connection response
-  test("connection record represents other party's acceptance of a requested connection", () => {
-    expect(
-      connectionService.isConnectionResponseReceived(
-        requestedConnectionAcceptedRecord
-      )
-    ).toBe(true);
-  });
-
-  test("auto accept true records are ignored when checking for other party's acceptance of a requested connection", () => {
-    expect(
-      connectionService.isConnectionResponseReceived(
-        requestedConnectionAcceptedRecordAutoAccept
-      )
-    ).toBe(false);
-  });
-
-  test("initial request is not other party's acceptance yet", () => {
-    expect(
-      connectionService.isConnectionResponseReceived(requestedConnectionRecord)
-    ).toBe(false);
-  });
-
-  // Connected
-  test("connection record represents completed connection", () => {
-    expect(
-      connectionService.isConnectionConnected(completedConnectionRecord)
-    ).toBe(true);
-  });
-
-  test("non completed connection check", () => {
-    expect(
-      connectionService.isConnectionConnected(requestedConnectionRecord)
-    ).toBe(false);
-  });
-});
+const oobiPrefix = "http://oobi.com/";
 
 describe("Connection service of agent", () => {
+  beforeAll(async () => {
+    await new ConfigurationService().start();
+  });
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  test("can receive an OOBI", async () => {
-    const oobi = "http://localhost?oob=3423";
-    await connectionService.receiveInvitationFromUrl(oobi);
-    // We aren't too concerned with testing the config passed
-    expect(agent.oob.receiveInvitationFromUrl).toBeCalledWith(
-      oobi,
-      expect.any(Object)
-    );
-  });
-
-  test("can accept a request by connection id", async () => {
-    const connectionId = "connectionId";
-    await connectionService.acceptRequestConnection(connectionId);
-    expect(agent.connections.acceptRequest).toBeCalledWith(connectionId);
-  });
-
-  test("can accept a response by connection id", async () => {
-    const connectionId = "connectionId";
-    await connectionService.acceptResponseConnection(connectionId);
-    expect(agent.connections.acceptResponse).toBeCalledWith(connectionId);
-  });
-
-  test("can create an invitation via the mediator", async () => {
-    agent.oob.createInvitation = jest.fn().mockResolvedValue(oobRecord);
-    const invitation = await connectionService.createMediatorInvitation();
-    expect(invitation.invitation).toBe(oobi);
-    expect(invitation.record).toBe(oobRecord);
-    expect(invitation.invitationUrl.startsWith(oobUrlStart)).toBe(true);
-    expect(invitation.invitationUrl.endsWith(oobUrlEnd)).toBe(true);
-  });
-
-  test("errors appropriately if we invitation is wrong", async () => {
-    await expect(
-      connectionService.createMediatorInvitation()
-    ).rejects.toThrowError(ConnectionService.COULD_NOT_CREATE_OOB_VIA_MEDIATOR);
-  });
-
-  test("can get all connections", async () => {
-    agent.genericRecords.findAllByQuery.mockImplementation(() => {
-      return [
-        {
-          id: keriContacts[0].id,
-          createdAt: now,
-          content: {
-            alias: "keri",
-          },
-        },
-      ];
+  test("Should return connection type to trigger UI to create a new identifier", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const groupId = "123";
+    const oobi = `http://localhost/oobi=3423?groupId=${groupId}`;
+    signifyClient.oobis().resolve = jest.fn().mockImplementation((url) => {
+      return { name: url, response: { i: "id" } };
     });
-    agent.connections.getAll = jest
+    Agent.agent.identifiers.getKeriIdentifierByGroupId = jest
       .fn()
-      .mockResolvedValue([
-        incomingConnectionRecordNoAutoAccept,
-        completedConnectionRecord,
-      ]);
-    agent.modules.signify.getContacts = jest
+      .mockResolvedValue(null);
+    const result = await connectionService.connectByOobiUrl(oobi);
+    expect(result).toStrictEqual({
+      type: KeriConnectionType.MULTI_SIG_INITIATOR,
+      groupId,
+    });
+    expect(connectionStorage.save).toBeCalled();
+  });
+
+  test("Can create groupId connections for existing pending multi-sigs", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const groupId = "123";
+    const oobi = `http://localhost/oobi=3423?groupId=${groupId}`;
+    signifyClient.oobis().resolve = jest.fn().mockImplementation((url) => {
+      return { alias: "alias", name: url, response: { i: "id" } };
+    });
+    Agent.agent.identifiers.getKeriIdentifierByGroupId = jest
       .fn()
-      .mockResolvedValue(keriContacts);
-    expect(await connectionService.getConnections()).toEqual([
-      {
-        id: id1,
-        connectionDate: nowISO,
-        label,
-        logo: logoUrl,
-        status: ConnectionStatus.PENDING,
-        type: ConnectionType.DIDCOMM,
-      },
-      {
-        id: id2,
-        connectionDate: nowISO,
-        label,
-        logo: logoUrl,
-        status: ConnectionStatus.CONFIRMED,
-        type: ConnectionType.DIDCOMM,
-      },
+      .mockResolvedValue({
+        displayName: "displayName",
+        id: "id",
+        signifyName: "uuid",
+        createdAtUTC: new Date().toISOString(),
+        theme: 0,
+        isPending: false,
+        groupMetadata: {
+          groupId,
+          groupCreated: false,
+          groupInitiator: true,
+        },
+      });
+    await connectionService.connectByOobiUrl(oobi);
+    expect(connectionStorage.save).toBeCalled();
+  });
+
+  test("can get all connections and multi-sig related ones are filtered", async () => {
+    connectionStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {
         id: keriContacts[0].id,
-        label: keriContacts[0].alias,
+        createdAt: now,
+        alias: "keri",
+        oobi: "oobi",
+        getTag: jest.fn(),
+      },
+    ]);
+    expect(await connectionService.getConnections()).toEqual([
+      {
+        id: keriContacts[0].id,
+        label: "keri",
+        oobi: "oobi",
         status: ConnectionStatus.CONFIRMED,
-        type: ConnectionType.KERI,
         connectionDate: expect.any(String),
       },
     ]);
-    expect(agent.connections.getAll).toBeCalled();
-  });
-
-  test("can get all connections if there are none", async () => {
-    agent.connections.getAll = jest.fn().mockResolvedValue([]);
-    agent.genericRecords.findAllByQuery = jest.fn().mockResolvedValue([]);
-    expect(await connectionService.getConnections()).toStrictEqual([]);
-    expect(agent.connections.getAll).toBeCalled();
-  });
-
-  // @TODO - foconnor: Add some tests for diff combos of handshake protocols + request attachments
-  test("can get connection (detailed view) by id that had oobi", async () => {
-    agent.connections.getById = jest
-      .fn()
-      .mockResolvedValue(completedConnectionRecord);
-    agent.genericRecords.findAllByQuery = jest.fn().mockResolvedValue([]);
-    agent.oob.getById = jest.fn().mockResolvedValue(oobRecord);
-    expect(
-      await connectionService.getConnectionById(completedConnectionRecord.id)
-    ).toStrictEqual({
-      id: id2,
-      connectionDate: nowISO,
-      label,
-      logo: logoUrl,
-      status: ConnectionStatus.CONFIRMED,
-      goalCode: oobi.goalCode,
-      handshakeProtocols: oobi.handshakeProtocols,
-      requestAttachments: oobi.appendedAttachments,
-      serviceEndpoints: [], // @TODO - foconnor: This shouldn't be empty
-      notes: [],
-    });
-    expect(agent.connections.getById).toBeCalledWith(
-      completedConnectionRecord.id
-    );
-    expect(agent.oob.getById).toBeCalledWith(
-      completedConnectionRecord.outOfBandId
-    );
-  });
-
-  test("can get connection (detailed view) by id that had no oobi", async () => {
-    agent.connections.getById = jest
-      .fn()
-      .mockResolvedValue(incomingConnectionRecordNoAutoAccept);
-    agent.genericRecords.findAllByQuery = jest.fn().mockResolvedValue([]);
-    agent.oob.getById = jest.fn().mockResolvedValue(oobRecord);
-    expect(
-      await connectionService.getConnectionById(
-        incomingConnectionRecordNoAutoAccept.id
-      )
-    ).toStrictEqual({
-      id: id1,
-      connectionDate: nowISO,
-      label,
-      logo: logoUrl,
-      status: ConnectionStatus.PENDING,
-      goalCode: undefined,
-      handshakeProtocols: undefined,
-      requestAttachments: undefined,
-      serviceEndpoints: undefined,
-      notes: [],
-    });
-    expect(agent.connections.getById).toBeCalledWith(
-      incomingConnectionRecordNoAutoAccept.id
-    );
-    expect(agent.oob.getById).not.toBeCalled();
-  });
-
-  test("must call fetch url first when invitation url contains /shorten", async () => {
-    const shortUrl = "http://localhost:3000/shorten/abc123";
-    const fullUrl = "http://localhost?oob=3423";
-    // eslint-disable-next-line no-undef
-    global.fetch = jest.fn().mockResolvedValue({
-      text: async function () {
-        return fullUrl;
-      },
-    });
-    await connectionService.receiveInvitationFromUrl(shortUrl);
-    expect(agent.oob.receiveInvitationFromUrl).toBeCalledWith(
-      fullUrl,
-      expect.any(Object)
-    );
-  });
-
-  test("get shorten url success", async () => {
-    const shortUrlMock = "http://localhost:3000/shorten/abc123";
-    const fullUrl =
-      "http://localhost?oob=12312312312312312312312312312312312312312312";
-    // eslint-disable-next-line no-undef
-    global.fetch = jest.fn().mockResolvedValue({
-      text: async function () {
-        return `{"data": "${shortUrlMock}"}`;
-      },
-    });
-    const shortUrl = await connectionService.getShortenUrl(fullUrl);
-    expect(shortUrl).toEqual(shortUrlMock);
-  });
-
-  test("can get connection (short detail view) by id", async () => {
-    agent.connections.getById = jest
-      .fn()
-      .mockResolvedValue(completedConnectionRecord);
-    expect(
-      await connectionService.getConnectionShortDetailById(
-        completedConnectionRecord.id
-      )
-    ).toEqual({
-      id: id2,
-      connectionDate: nowISO,
-      label,
-      logo: logoUrl,
-      status: ConnectionStatus.CONFIRMED,
-      type: ConnectionType.DIDCOMM,
-    });
-    expect(agent.connections.getById).toBeCalledWith(
-      completedConnectionRecord.id
-    );
-  });
-
-  test("can receive offer credential with connectionless", async () => {
-    const url = "http://localhost:4320?d_m=InRlc3QgbWVzc2FnZSI=";
-    await connectionService.receiveInvitationFromUrl(url);
-    expect(agent.oob.receiveInvitationFromUrl).toBeCalledWith(
-      url,
-      expect.any(Object)
-    );
-  });
-
-  test("callback will run when have a event listener", async () => {
-    const callback = jest.fn();
-    connectionService.onConnectionStateChanged(callback);
-    const event: ConnectionStateChangedEvent = {
-      type: ConnectionEventTypes.ConnectionStateChanged,
-      payload: {
-        connectionRecord: completedConnectionRecord,
-        previousState: DidExchangeState.ResponseReceived,
-      },
-      metadata: {
-        contextCorrelationId: id1,
-      },
-    };
-    agent.eventEmitter.emit(ConnectionEventTypes.ConnectionStateChanged, event);
-    expect(callback).toBeCalledWith(event);
   });
 
   test("can save connection note with generic records", async () => {
@@ -511,17 +232,18 @@ describe("Connection service of agent", () => {
       message: "message",
     };
     await connectionService.createConnectionNote(connectionId, note);
-    expect(agent.genericRecords.save).toBeCalledWith({
+    expect(connectionNoteStorage.save).toBeCalledWith({
       id: expect.any(String),
-      content: note,
-      tags: { connectionId, type: GenericRecordType.CONNECTION_NOTE },
+      title: "title",
+      message: "message",
+      connectionId,
     });
   });
 
   test("can delete connection note with id", async () => {
     const connectionNoteId = "connectionId";
     await connectionService.deleteConnectionNoteById(connectionNoteId);
-    expect(agent.genericRecords.deleteById).toBeCalledWith(connectionNoteId);
+    expect(connectionNoteStorage.deleteById).toBeCalledWith(connectionNoteId);
   });
 
   test("cannot update connection note because connection note invalid", async () => {
@@ -536,159 +258,121 @@ describe("Connection service of agent", () => {
   });
 
   test("can update connection note by id", async () => {
-    const mockGenericRecords = {
+    const connectionToUpdate = {
       id: "id",
-      content: {
-        title: "title",
-        message: "message",
-      },
+      title: "title",
+      message: "message",
     };
-    agent.genericRecords.findById = jest
+    connectionNoteStorage.findById = jest
       .fn()
-      .mockResolvedValue(mockGenericRecords);
+      .mockResolvedValue(connectionToUpdate);
     const connectionId = "connectionId";
     const note = {
       title: "title",
       message: "message2",
     };
     await connectionService.updateConnectionNoteById(connectionId, note);
-    expect(agent.genericRecords.update).toBeCalledWith({
-      ...mockGenericRecords,
-      content: note,
-    });
-  });
-
-  test("must call filler credential by query when get connection history", async () => {
-    const connectionIdTest = "testId";
-    agent.modules.generalStorage.getCredentialMetadataByConnectionId = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          credentialId: 1,
-          createdAt: now,
-          credentialType: "ACDC",
-        },
-      ]);
-    expect(
-      await connectionService.getConnectionHistoryById(connectionIdTest)
-    ).toEqual([
-      {
-        type: ConnectionHistoryType.CREDENTIAL_ACCEPTED,
-        timestamp: nowISO,
-        credentialType: "ACDC",
-      },
-    ]);
-    expect(
-      agent.modules.generalStorage.getCredentialMetadataByConnectionId
-    ).toBeCalledWith(connectionIdTest);
-  });
-
-  test("can get unhandled connections to re-processing", async () => {
-    agent.connections.findAllByQuery = jest
-      .fn()
-      .mockResolvedValue([connectionAcceptedRecordAutoAccept]);
-    expect(await connectionService.getUnhandledConnections()).toEqual([
-      connectionAcceptedRecordAutoAccept,
-    ]);
-    expect(agent.connections.findAllByQuery).toBeCalledWith({
-      $or: [
-        {
-          state: DidExchangeState.ResponseReceived,
-          role: DidExchangeRole.Requester,
-        },
-        {
-          state: DidExchangeState.RequestReceived,
-          role: DidExchangeRole.Responder,
-        },
-      ],
+    expect(connectionNoteStorage.update).toBeCalledWith({
+      ...connectionToUpdate,
+      title: "title",
+      message: "message2",
     });
   });
 
   test("can delete conenction by id", async () => {
-    agent.genericRecords.findAllByQuery = jest.fn().mockReturnValue([]);
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([]);
     const connectionId = "connectionId";
-    await connectionService.deleteConnectionById(
-      connectionId,
-      ConnectionType.KERI
-    );
-    expect(agent.genericRecords.deleteById).toBeCalledWith(connectionId);
-    expect(agent.modules.signify.deleteContactById).toBeCalledWith(
-      connectionId
-    );
-    await connectionService.deleteConnectionById(
-      connectionId,
-      ConnectionType.DIDCOMM
-    );
-    expect(agent.connections.deleteById).toBeCalledWith(connectionId);
+    await connectionService.deleteConnectionById(connectionId);
+    expect(connectionStorage.deleteById).toBeCalledWith(connectionId);
+    // expect(deleteContactMock).toBeCalledWith(connectionId); // it should be uncommented later when deleting on KERIA is re-enabled
   });
 
   test("Should delete connection's notes when deleting that connection", async () => {
-    agent.genericRecords.findAllByQuery = jest.fn().mockReturnValue([
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([
       {
         id: "uuid",
-        content: {
-          title: "title",
-        },
+        title: "title",
       },
     ]);
     const connectionId = "connectionId";
-    await connectionService.deleteConnectionById(
-      connectionId,
-      ConnectionType.KERI
-    );
-    await connectionService.deleteConnectionById(
-      connectionId,
-      ConnectionType.DIDCOMM
-    );
-    expect(agent.genericRecords.deleteById).toBeCalledTimes(3);
+    await connectionService.deleteConnectionById(connectionId);
+    expect(connectionNoteStorage.deleteById).toBeCalledTimes(1);
   });
 
   test("can receive keri oobi", async () => {
-    agent.modules.signify.resolveOobi.mockImplementation((url) => {
-      return { name: url, response: { i: "id" } };
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    signifyClient.oobis().resolve.mockResolvedValue({
+      done: true,
     });
     const oobi =
       "http://127.0.0.1:3902/oobi/EBRcDDwjOfqZwC1w2XFcE1mKQUb1LekNNidkZ8mrIEaw/agent/EEXekkGu9IAzav6pZVJhkLnjtjM5v3AcyA-pdKUcaGei";
-    await connectionService.receiveInvitationFromUrl(oobi);
-    // We aren't too concerned with testing the config passed
-    expect(agent.modules.signify.resolveOobi).toBeCalledWith(oobi);
+    await connectionService.connectByOobiUrl(oobi);
+  });
+
+  test("can get a KERI OOBI with an alias (URL encoded)", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
+      return `${oobiPrefix}${name}`;
+    });
+    const signifyName = "keriuuid";
+    const KeriOobi = await connectionService.getOobi(
+      signifyName,
+      "alias with spaces"
+    );
+    expect(KeriOobi).toEqual(
+      `${oobiPrefix}${signifyName}?name=alias+with+spaces`
+    );
+  });
+
+  test("can get KERI OOBI with alias and groupId", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
+      return `${oobiPrefix}${name}?groupId=123`;
+    });
+    const signifyName = "keriuuid";
+    const KeriOobi = await connectionService.getOobi(
+      signifyName,
+      "alias",
+      "123"
+    );
+    expect(KeriOobi).toEqual(
+      `${oobiPrefix}${signifyName}?name=alias&groupId=123`
+    );
   });
 
   test("can get connection keri (short detail view) by id", async () => {
-    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+    connectionStorage.findById = jest.fn().mockResolvedValue({
       id: keriContacts[0].id,
       createdAt: now,
-      content: {
-        alias: "keri",
-      },
+      alias: "keri",
+      getTag: jest.fn(),
     });
     expect(
-      await connectionService.getConnectionKeriShortDetailById(
-        keriContacts[0].id
-      )
+      await connectionService.getConnectionShortDetailById(keriContacts[0].id)
     ).toMatchObject({
       id: keriContacts[0].id,
       connectionDate: nowISO,
       label: "keri",
       status: ConnectionStatus.CONFIRMED,
-      type: ConnectionType.KERI,
     });
-    expect(agent.genericRecords.findById).toBeCalledWith(keriContacts[0].id);
+    expect(connectionStorage.findById).toBeCalledWith(keriContacts[0].id);
   });
 
   test("can get KERI OOBI", async () => {
-    agent.modules.signify.getOobi = jest
-      .fn()
-      .mockImplementation((name: string) => {
-        return `${oobiPrefix}${name}`;
-      });
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
+      return `${oobiPrefix}${name}`;
+    });
     const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getKeriOobi(signifyName);
+    const KeriOobi = await connectionService.getOobi(signifyName);
     expect(KeriOobi).toEqual(oobiPrefix + signifyName);
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
-    agent.modules.signify.getContacts = jest.fn().mockReturnValue([
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    contactListMock.mockReturnValue([
       {
         id: "EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR",
         alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
@@ -704,8 +388,98 @@ describe("Connection service of agent", () => {
         wellKnowns: [],
       },
     ]);
-    agent.genericRecords.findAllByQuery = jest.fn().mockReturnValue([]);
+    connectionStorage.getAll = jest.fn().mockReturnValue([]);
     await connectionService.syncKeriaContacts();
-    expect(agent.genericRecords.save).toBeCalledTimes(2);
+    expect(connectionStorage.save).toBeCalledTimes(2);
+  });
+
+  test("Can get multisig linked contacts", async () => {
+    const groupId = "123";
+    const metadata = {
+      id: "id",
+      alias: "alias",
+      oobi: `localhost/oobi=2442?groupId=${groupId}`,
+      groupId,
+      createdAt: new Date(),
+      getTag: jest.fn().mockReturnValue(groupId),
+    };
+    connectionStorage.findAllByQuery = jest.fn().mockResolvedValue([metadata]);
+    expect(
+      await connectionService.getMultisigLinkedContacts(groupId)
+    ).toStrictEqual([
+      {
+        id: metadata.id,
+        label: metadata.alias,
+        connectionDate: metadata.createdAt.toISOString(),
+        status: ConnectionStatus.CONFIRMED,
+        oobi: metadata.oobi,
+        groupId: metadata.groupId,
+      },
+    ]);
+  });
+
+  test("can resolve oobi with no name parameter", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const url = `${oobiPrefix}keriuuid`;
+    const op = await connectionService.resolveOobi(url);
+    expect(op).toEqual({
+      response: { i: url },
+      name: url,
+      alias: expect.any(String),
+      done: true,
+    });
+  });
+
+  test("can resolve oobi with a name parameter (URL decoded)", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const url = `${oobiPrefix}keriuuid?name=alias%20with%20spaces`;
+    const op = await connectionService.resolveOobi(url);
+    expect(op).toEqual({
+      response: { i: url },
+      name: url,
+      alias: "alias with spaces",
+      done: true,
+    });
+  });
+
+  test("should timeout if oobi resolving is not completing", async () => {
+    signifyClient.operations().get = jest
+      .fn()
+      .mockResolvedValue({ done: false });
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    await expect(
+      connectionService.resolveOobi(`${oobiPrefix}${uuidToThrow}`)
+    ).rejects.toThrowError(ConnectionService.FAILED_TO_RESOLVE_OOBI);
+  }, 15251);
+
+  test("Should throw error when KERIA is offline", async () => {
+    await expect(
+      connectionService.getConnectionById("id")
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(connectionService.syncKeriaContacts()).rejects.toThrowError(
+      Agent.KERIA_CONNECTION_BROKEN
+    );
+    await expect(
+      connectionService.deleteConnectionById("id")
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      connectionService.resolveOobi("oobi-url")
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(connectionService.getOobi("name")).rejects.toThrowError(
+      Agent.KERIA_CONNECTION_BROKEN
+    );
+  });
+
+  test("can get all connections that have multi-sig related", async () => {
+    connectionStorage.findAllByQuery = jest.fn().mockResolvedValue([
+      {
+        id: keriContacts[0].id,
+        createdAt: now,
+        alias: "keri",
+        oobi: "oobi",
+        groupId: "group-id",
+        getTag: jest.fn().mockReturnValue("group-id"),
+      },
+    ]);
   });
 });

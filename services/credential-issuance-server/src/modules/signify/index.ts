@@ -1,1 +1,1 @@
-export * from "./signifyModule";
+export * from "./signifyApi";

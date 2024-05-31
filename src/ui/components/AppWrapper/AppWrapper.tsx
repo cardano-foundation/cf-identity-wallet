@@ -1,14 +1,8 @@
 import { ReactNode, useEffect, useState } from "react";
-import {
-  BasicMessageStateChangedEvent,
-  ConnectionRecord,
-  ConnectionStateChangedEvent,
-  CredentialExchangeRecord,
-  CredentialStateChangedEvent,
-} from "@aries-framework/core";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  getCurrentOperation,
   setAuthentication,
   setCurrentOperation,
   setInitialized,
@@ -16,12 +10,7 @@ import {
   setQueueIncomingRequest,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import {
-  KeyStoreKeys,
-  SecureStorage,
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
@@ -31,145 +20,37 @@ import {
   setFavouritesCredsCache,
   updateOrAddCredsCache,
 } from "../../../store/reducers/credsCache";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import {
   setConnectionsCache,
   updateOrAddConnectionCache,
 } from "../../../store/reducers/connectionsCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { OperationType, ToastMsgType } from "../../globals/types";
-import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { ColorGenerator } from "../../utils/colorGenerator";
 import {
-  KeriNotification,
-  ConnectionKeriStateChangedEvent,
+  KeriaNotification,
+  ConnectionStateChangedEvent,
   ConnectionStatus,
-  AcdcKeriStateChangedEvent,
-  ConnectionType,
+  AcdcStateChangedEvent,
+  NotificationRoute,
+  MiscRecordId,
 } from "../../../core/agent/agent.types";
-import {
-  CredentialShortDetails,
-  CredentialStatus,
-} from "../../../core/agent/services/credentialService.types";
+import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
-import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
+import { useActivityTimer } from "./hooks/useActivityTimer";
+import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
+import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
+import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
+import { PeerConnectSigningEvent } from "../../../core/cardano/walletConnect/peerConnection.types";
+import { MultiSigService } from "../../../core/agent/services/multiSigService";
+import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCache";
+import { CardListViewType } from "../SwitchCardView";
+import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
-  dispatch: ReturnType<typeof useAppDispatch>
-) => {
-  const connectionRecord = event.payload.connectionRecord;
-  if (AriesAgent.agent.connections.isConnectionRequestSent(connectionRecord)) {
-    const connectionDetails =
-      AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
-    dispatch(updateOrAddConnectionCache(connectionDetails));
-    dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
-  } else if (
-    AriesAgent.agent.connections.isConnectionResponseReceived(connectionRecord)
-  ) {
-    const connectionDetails =
-      AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
-    dispatch(
-      setQueueIncomingRequest({
-        id: connectionRecord.id,
-        type: IncomingRequestType.CONNECTION_RESPONSE,
-        logo: connectionDetails.logo,
-        label: connectionDetails.label,
-      })
-    );
-  } else if (
-    AriesAgent.agent.connections.isConnectionRequestReceived(connectionRecord)
-  ) {
-    const connectionDetails =
-      AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
-    dispatch(updateOrAddConnectionCache(connectionDetails));
-    dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_INCOMING));
-    dispatch(
-      setQueueIncomingRequest({
-        id: connectionRecord.id,
-        type: IncomingRequestType.CONNECTION_INCOMING,
-        logo: connectionDetails.logo,
-        label: connectionDetails.label,
-      })
-    );
-  } else if (
-    AriesAgent.agent.connections.isConnectionResponseSent(connectionRecord)
-  ) {
-    dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
-  } else if (
-    AriesAgent.agent.connections.isConnectionConnected(connectionRecord)
-  ) {
-    const connectionDetails =
-      AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
-    dispatch(updateOrAddConnectionCache(connectionDetails));
-    dispatch(setToastMsg(ToastMsgType.NEW_CONNECTION_ADDED));
-  }
-};
-
-const credentialStateChangedHandler = async (
-  event: CredentialStateChangedEvent,
-  dispatch: ReturnType<typeof useAppDispatch>
-) => {
-  const credentialRecord = event.payload.credentialRecord;
-  if (
-    AriesAgent.agent.credentials.isCredentialOfferReceived(credentialRecord)
-  ) {
-    let connection;
-    if (credentialRecord.connectionId) {
-      connection =
-        await AriesAgent.agent.connections.getConnectionShortDetailById(
-          credentialRecord?.connectionId
-        );
-    }
-    dispatch(
-      setQueueIncomingRequest({
-        id: credentialRecord.id,
-        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
-        logo: connection?.logo,
-        label: connection?.label,
-      })
-    );
-  } else if (
-    AriesAgent.agent.credentials.isCredentialRequestSent(credentialRecord)
-  ) {
-    const credentialDetails: CredentialShortDetails = {
-      id: `metadata:${credentialRecord.id}`,
-      isArchived: false,
-      colors: new ColorGenerator().generateNextColor() as [string, string],
-      credentialType: "",
-      issuanceDate: credentialRecord.createdAt.toISOString(),
-      status: CredentialMetadataRecordStatus.PENDING,
-      connectionType: ConnectionType.DIDCOMM,
-    };
-    await AriesAgent.agent.credentials.createMetadata({
-      ...credentialDetails,
-      credentialRecordId: credentialRecord.id,
-      connectionId: credentialRecord.connectionId,
-    });
-    dispatch(setCurrentOperation(OperationType.ADD_CREDENTIAL));
-    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING));
-    dispatch(updateOrAddCredsCache(credentialDetails));
-  } else if (AriesAgent.agent.credentials.isCredentialDone(credentialRecord)) {
-    const credentialShortDetails =
-      await AriesAgent.agent.credentials.updateMetadataCompleted(
-        credentialRecord
-      );
-    dispatch(setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED));
-    dispatch(updateOrAddCredsCache(credentialShortDetails));
-  }
-};
-
-const messageStateChangedHandler = async (
-  event: BasicMessageStateChangedEvent,
-  dispatch: ReturnType<typeof useAppDispatch>
-) => {
-  const messageRecord = event.payload.basicMessageRecord;
-};
-
-const connectionKeriStateChangedHandler = async (
-  event: ConnectionKeriStateChangedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === ConnectionStatus.PENDING) {
@@ -178,7 +59,7 @@ const connectionKeriStateChangedHandler = async (
   } else {
     const connectionRecordId = event.payload.connectionId!;
     const connectionDetails =
-      await AriesAgent.agent.connections.getConnectionKeriShortDetailById(
+      await Agent.agent.connections.getConnectionShortDetailById(
         connectionRecordId
       );
     dispatch(updateOrAddConnectionCache(connectionDetails));
@@ -186,22 +67,21 @@ const connectionKeriStateChangedHandler = async (
   }
 };
 
-const keriNotificationsChangeHandler = async (
-  event: KeriNotification,
+const keriaNotificationsChangeHandler = async (
+  event: KeriaNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  if (event?.a?.r === NotificationRoute.Credential) {
+  if (event?.a?.r === NotificationRoute.ExnIpexGrant) {
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
         type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
         logo: "", // TODO: must define Keri logo
         label: "Credential Issuance Server", // TODO: must define it
-        source: ConnectionType.KERI,
       })
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
-    //TODO: Use dispatch here, handle logic for the multisig notification
+    processMultiSigIcpNotification(event, dispatch);
   } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
     //TODO: Use dispatch here, handle logic for the multisig rotation notification
   } else if (event?.a?.r === NotificationRoute.ExnIpexApply) {
@@ -211,8 +91,36 @@ const keriNotificationsChangeHandler = async (
   }
 };
 
-const keriAcdcChangeHandler = async (
-  event: AcdcKeriStateChangedEvent,
+const processMultiSigIcpNotification = async (
+  event: KeriaNotification,
+  dispatch: ReturnType<typeof useAppDispatch>,
+  retryInterval = 3000
+) => {
+  try {
+    const multisigIcpDetails =
+      await Agent.agent.multiSigs.getMultisigIcpDetails(event.a.d as string);
+    dispatch(
+      setQueueIncomingRequest({
+        id: event?.id,
+        event: event,
+        type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
+        multisigIcpDetails: multisigIcpDetails,
+      })
+    );
+  } catch (error) {
+    if (
+      (error as Error).message == MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, retryInterval));
+      await processMultiSigIcpNotification(event, dispatch, retryInterval);
+    } else {
+      throw error;
+    }
+  }
+};
+
+const acdcChangeHandler = async (
+  event: AcdcStateChangedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === CredentialStatus.PENDING) {
@@ -225,15 +133,61 @@ const keriAcdcChangeHandler = async (
   }
 };
 
+const peerConnectRequestSignChangeHandler = async (
+  event: PeerConnectSigningEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  //TODO: Handle logic for the accept/decline sing request
+};
+
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
-  const [initialised, setInitialised] = useState(false);
-  const [agentInitErr, setAgentInitErr] = useState(false);
+  const operation = useAppSelector(getCurrentOperation);
+  const [isOnline, setIsOnline] = useState(false);
+  const [isMessagesHandled, setIsMessagesHandled] = useState(false);
+  useActivityTimer();
 
   useEffect(() => {
     initApp();
   }, []);
+
+  useEffect(() => {
+    if (authentication.loggedIn) {
+      const handleMessages = async () => {
+        const oldMessages = (
+          await Promise.all([
+            Agent.agent.credentials.getUnhandledIpexGrantNotifications({
+              isDismissed: false,
+            }),
+            Agent.agent.multiSigs.getUnhandledMultisigIdentifiers({
+              isDismissed: false,
+            }),
+          ])
+        )
+          .flat()
+          .sort(function (messageA, messageB) {
+            return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
+          });
+        oldMessages.forEach(async (message) => {
+          await keriaNotificationsChangeHandler(message, dispatch);
+        });
+        // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
+        // await Promise.all([
+        //   Agent.agent.identifiers.syncKeriaIdentifiers(),
+        //   Agent.agent.connections.syncKeriaContacts(),
+        //   Agent.agent.credentials.syncACDCs(),
+        // ]);
+      };
+      if (!isMessagesHandled && isOnline) {
+        handleMessages();
+        setIsMessagesHandled(true);
+      }
+      dispatch(setPauseQueueIncomingRequest(!isOnline));
+    } else {
+      dispatch(setPauseQueueIncomingRequest(true));
+    }
+  }, [isOnline, authentication.loggedIn, dispatch]);
 
   const checkKeyStore = async (key: string) => {
     try {
@@ -244,186 +198,141 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
   };
 
-  const initApp = async () => {
-    try {
-      const isInitialized = await PreferencesStorage.get(
-        PreferencesKeys.APP_ALREADY_INIT
-      );
-      dispatch(setInitialized(isInitialized?.initialized as boolean));
-    } catch (e) {
-      // TODO
-      await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, "");
-      await SecureStorage.set(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY, "");
-      await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, "");
-    }
+  const loadDatabase = async () => {
+    const connectionsDetails = await Agent.agent.connections.getConnections();
 
-    await new ConfigurationService().start();
+    const credentials = await Agent.agent.credentials.getCredentials();
+    const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
 
-    try {
-      await AriesAgent.agent.start();
-    } catch (e) {
-      // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
-      setAgentInitErr(true);
-      // eslint-disable-next-line no-console
-      console.error(e);
-      return;
-    }
+    dispatch(setIdentifiersCache(storedIdentifiers));
+    dispatch(setCredsCache(credentials));
+    dispatch(setConnectionsCache(connectionsDetails));
+    // TODO: Need update after core function completed.
+    dispatch(setWalletConnectionsCache(walletConnectionsFix));
+  };
 
-    dispatch(setPauseQueueIncomingRequest(true));
-    const connectionsDetails =
-      await AriesAgent.agent.connections.getConnections();
-    const credentials = await AriesAgent.agent.credentials.getCredentials();
+  const loadCacheBasicStorage = async () => {
+    let userName: { userName: string } = { userName: "" };
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
-    const storedIdentifiers =
-      await AriesAgent.agent.identifiers.getIdentifiers();
 
-    // @TODO - handle error
-    try {
-      const identifiersFavourites = await PreferencesStorage.get(
-        PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
-      );
+    const identifiersFavourites = await Agent.agent.basicStorage.findById(
+      MiscRecordId.IDENTIFIERS_FAVOURITES
+    );
+    if (identifiersFavourites)
       dispatch(
         setFavouritesIdentifiersCache(
-          identifiersFavourites.favourites as FavouriteIdentifier[]
+          identifiersFavourites.content.favourites as FavouriteIdentifier[]
         )
       );
-    } catch (e) {
-      if (
-        !(e instanceof Error) ||
-        !(
-          e instanceof Error &&
-          e.message ===
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_IDENTIFIERS_FAVOURITES}`
-        )
-      ) {
-        throw e;
-      }
-    }
 
-    try {
-      const credsFavourites = await PreferencesStorage.get(
-        PreferencesKeys.APP_CREDS_FAVOURITES
-      );
+    const credsFavourites = await Agent.agent.basicStorage.findById(
+      MiscRecordId.CREDS_FAVOURITES
+    );
+    if (credsFavourites) {
       dispatch(
         setFavouritesCredsCache(
-          credsFavourites.favourites as FavouriteIdentifier[]
+          credsFavourites.content.favourites as FavouriteIdentifier[]
         )
       );
-    } catch (e) {
-      if (
-        !(e instanceof Error) ||
-        !(
-          e instanceof Error &&
-          e.message ===
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_CREDS_FAVOURITES}`
-        )
-      ) {
-        throw e;
-      }
+    }
+    const viewType = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_IDENTIFIER_VIEW_TYPE
+    );
+    if (viewType) {
+      dispatch(setViewTypeCache(viewType.content.viewType as CardListViewType));
+    }
+    const appBiometry = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_BIOMETRY
+    );
+    if (appBiometry) {
+      dispatch(setEnableBiometryCache(appBiometry.content.enabled as boolean));
+    }
+
+    const appUserNameRecord = await Agent.agent.basicStorage.findById(
+      MiscRecordId.USER_NAME
+    );
+    if (appUserNameRecord) {
+      userName = appUserNameRecord.content as { userName: string };
     }
 
     dispatch(
       setAuthentication({
         ...authentication,
+        userName: userName.userName as string,
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
       })
     );
-
-    dispatch(setIdentifiersCache(storedIdentifiers));
-    dispatch(setCredsCache(credentials));
-    dispatch(setConnectionsCache(connectionsDetails));
-
-    AriesAgent.agent.connections.onConnectionStateChanged((event) => {
-      return connectionStateChangedHandler(event, dispatch);
-    });
-    AriesAgent.agent.credentials.onCredentialStateChanged((event) => {
-      return credentialStateChangedHandler(event, dispatch);
-    });
-    AriesAgent.agent.messages.onBasicMessageStateChanged((event) => {
-      return messageStateChangedHandler(event, dispatch);
-    });
-    AriesAgent.agent.connections.onConnectionKeriStateChanged((event) => {
-      return connectionKeriStateChangedHandler(event, dispatch);
-    });
-    AriesAgent.agent.signifyNotifications.onNotificationKeriStateChanged(
-      (event) => {
-        return keriNotificationsChangeHandler(event, dispatch);
-      }
-    );
-    AriesAgent.agent.credentials.onAcdcKeriStateChanged((event) => {
-      return keriAcdcChangeHandler(event, dispatch);
-    });
-    // pickup messages
-    AriesAgent.agent.messages.pickupMessagesFromMediator();
-    setInitialised(true);
-
-    const oldMessages = (
-      await Promise.all([
-        AriesAgent.agent.connections.getUnhandledConnections(),
-        AriesAgent.agent.credentials.getUnhandledCredentials(),
-      ])
-    )
-      .flat()
-      .sort(function (messageA, messageB) {
-        return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
-      });
-    oldMessages.forEach(async (message) => {
-      if (message instanceof ConnectionRecord) {
-        await connectionStateChangedHandler(
-          {
-            payload: { connectionRecord: message },
-          } as unknown as ConnectionStateChangedEvent,
-          dispatch
-        );
-      } else if (message instanceof CredentialExchangeRecord) {
-        await credentialStateChangedHandler(
-          {
-            payload: { credentialRecord: message },
-          } as unknown as CredentialStateChangedEvent,
-          dispatch
-        );
-      } else {
-        await keriNotificationsChangeHandler(message, dispatch);
-      }
-    });
-    // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-    await Promise.all([
-      AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
-      AriesAgent.agent.connections.syncKeriaContacts(),
-      AriesAgent.agent.credentials.syncACDCs(),
-    ]);
   };
 
-  // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.
-  // Hence this isn't in i18n.
-  if (agentInitErr) {
-    return (
-      <div className="agent-init-error-msg">
-        <p>
-          There’s an issue connecting to the cloud services we depend on right
-          now (DIDComm mediator, KERIA) - please check your internet connection,
-          or if this problem persists, let us know on Discord!
-        </p>
-        <p>
-          We’re working on an offline mode, as well as improving the deployment
-          setup for this pre-production release. Thank you for your
-          understanding!
-        </p>
-      </div>
-    );
-  }
+  const initApp = async () => {
+    await new ConfigurationService().start();
+    try {
+      await Agent.agent.start();
+      setIsOnline(true);
+      await loadDatabase();
+    } catch (e) {
+      const errorStack = (e as Error).stack as string;
+      const errorMessage = (e as Error).message;
 
-  return initialised ? <>{props.children}</> : <></>;
+      // If the error is failed to fetch with signify, we retry until the connection is secured
+      if (/SignifyClient/gi.test(errorStack)) {
+        await loadDatabase();
+        Agent.agent.bootAndConnect().then(() => {
+          setIsOnline(Agent.agent.getKeriaOnlineStatus());
+        });
+      } else if (/signify-bran/gi.test(errorMessage)) {
+        dispatch(setInitialized(true));
+        return;
+      } else {
+        throw e;
+      }
+    }
+    // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
+    // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
+    const appAlreadyInit = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_ALREADY_INIT
+    );
+    if (!appAlreadyInit) {
+      await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
+      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
+      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY);
+      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
+      await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
+    }
+    await loadCacheBasicStorage();
+
+    Agent.agent.onKeriaStatusStateChanged((event) => {
+      setIsOnline(event.payload.isOnline);
+    });
+    Agent.agent.connections.onConnectionStateChanged((event) => {
+      return connectionStateChangedHandler(event, dispatch);
+    });
+    Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
+      return keriaNotificationsChangeHandler(event, dispatch);
+    });
+    Agent.agent.credentials.onAcdcStateChanged((event) => {
+      return acdcChangeHandler(event, dispatch);
+    });
+    PeerConnection.peerConnection.onPeerConnectRequestSignStateChanged(
+      async (event) => {
+        return peerConnectRequestSignChangeHandler(event, dispatch);
+      }
+    );
+    dispatch(setInitialized(true));
+  };
+
+  return <>{props.children}</>;
 };
 
 export {
   AppWrapper,
   connectionStateChangedHandler,
-  credentialStateChangedHandler,
+  acdcChangeHandler,
+  keriaNotificationsChangeHandler,
 };

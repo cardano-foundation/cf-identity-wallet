@@ -1,38 +1,48 @@
 import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import {
-  ConnectionStateChangedEvent,
-  CredentialStateChangedEvent,
-} from "@aries-framework/core";
-import {
   AppWrapper,
+  acdcChangeHandler,
   connectionStateChangedHandler,
-  credentialStateChangedHandler,
+  keriaNotificationsChangeHandler,
 } from "./AppWrapper";
 import { store } from "../../../store";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
 import {
+  setCurrentOperation,
   setQueueIncomingRequest,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../globals/types";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import {
+  AcdcEventTypes,
+  AcdcStateChangedEvent,
+  ConnectionEventTypes,
   ConnectionShortDetails,
-  ConnectionType,
+  ConnectionStateChangedEvent,
+  ConnectionStatus,
+  KeriaNotification,
+  NotificationRoute,
 } from "../../../core/agent/agent.types";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
-import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import {
+  CredentialShortDetails,
+  CredentialStatus,
+} from "../../../core/agent/services/credentialService.types";
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       start: jest.fn(),
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
+      },
+      multiSigs: {
+        getUnhandledMultisigIdentifiers: jest.fn(),
+        getMultisigIcpDetails: jest.fn().mockResolvedValue({}),
       },
       connections: {
         getConnections: jest.fn().mockResolvedValue([]),
@@ -45,7 +55,6 @@ jest.mock("../../../core/agent/agent", () => ({
         isConnectionConnected: jest.fn(),
         getConnectionShortDetailById: jest.fn(),
         getUnhandledConnections: jest.fn(),
-        onConnectionKeriStateChanged: jest.fn(),
         syncKeriaContacts: jest.fn(),
       },
       credentials: {
@@ -56,8 +65,8 @@ jest.mock("../../../core/agent/agent", () => ({
         createMetadata: jest.fn(),
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
-        getUnhandledCredentials: jest.fn(),
-        onAcdcKeriStateChanged: jest.fn(),
+        getUnhandledIpexGrantNotifications: jest.fn(),
+        onAcdcStateChanged: jest.fn(),
         syncACDCs: jest.fn(),
       },
       messages: {
@@ -65,15 +74,23 @@ jest.mock("../../../core/agent/agent", () => ({
         pickupMessagesFromMediator: jest.fn(),
       },
       signifyNotifications: {
-        onNotificationKeriStateChanged: jest.fn(),
+        onNotificationStateChanged: jest.fn(),
+      },
+      getKeriaOnlineStatus: jest.fn(),
+      onKeriaStatusStateChanged: jest.fn(),
+      basicStorage: {
+        findById: jest.fn(),
+        save: jest.fn(),
       },
     },
   },
 }));
+
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
     set: jest.fn(),
     get: jest.fn(),
+    remove: jest.fn(),
   },
 }));
 
@@ -94,10 +111,12 @@ describe("App Wrapper", () => {
 });
 
 const connectionStateChangedEventMock = {
+  type: ConnectionEventTypes.ConnectionStateChanged,
   payload: {
-    connectionRecord: { id: "id", imageUrl: "png", theirLabel: "idw" },
+    status: ConnectionStatus.PENDING,
   },
 } as ConnectionStateChangedEvent;
+
 const connectionShortDetailsMock = {
   id: "id",
   label: "idw",
@@ -105,205 +124,125 @@ const connectionShortDetailsMock = {
 } as ConnectionShortDetails;
 
 const dispatch = jest.fn();
-describe("Connection state changed handler", () => {
-  beforeAll(() => {
-    const getConnectionShortDetailsSpy = jest.spyOn(
-      AriesAgent.agent.connections,
-      "getConnectionShortDetails"
-    );
-    getConnectionShortDetailsSpy.mockReturnValue(connectionShortDetailsMock);
+describe("AppWrapper handler", () => {
+  describe("Connection state changed handler", () => {
+    beforeAll(() => {
+      const getConnectionShortDetailsSpy = jest.spyOn(
+        Agent.agent.connections,
+        "getConnectionShortDetailById"
+      );
+      getConnectionShortDetailsSpy.mockResolvedValue(
+        connectionShortDetailsMock
+      );
+    });
+
+    test("handles connection state pending", async () => {
+      await connectionStateChangedHandler(
+        connectionStateChangedEventMock,
+        dispatch
+      );
+      expect(dispatch).toBeCalledWith(
+        setCurrentOperation(OperationType.RECEIVE_CONNECTION)
+      );
+      expect(dispatch).toBeCalledWith(
+        setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
+      );
+    });
+
+    test("handles connection state succuss", async () => {
+      const connectionStateChangedEventMockSuccess = {
+        ...connectionStateChangedEventMock,
+        payload: {
+          status: ConnectionStatus.CONFIRMED,
+          connectionId: "connectionId",
+        },
+      };
+      await connectionStateChangedHandler(
+        connectionStateChangedEventMockSuccess,
+        dispatch
+      );
+      expect(dispatch).toBeCalledWith(
+        updateOrAddConnectionCache(connectionShortDetailsMock)
+      );
+      expect(dispatch).toBeCalledWith(
+        setToastMsg(ToastMsgType.NEW_CONNECTION_ADDED)
+      );
+    });
   });
 
-  test("handles connection state request sent", async () => {
-    const isConnectionRequestSentSpy = jest.spyOn(
-      AriesAgent.agent.connections,
-      "isConnectionRequestSent"
-    );
-    isConnectionRequestSentSpy.mockImplementationOnce(() => true);
-    await connectionStateChangedHandler(
-      connectionStateChangedEventMock,
-      dispatch
-    );
-    expect(dispatch).toBeCalledWith(
-      updateOrAddConnectionCache(connectionShortDetailsMock)
-    );
-    expect(dispatch).toBeCalledWith(
-      setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
-    );
+  describe("Credential state changed handler", () => {
+    test("handles credential state pending", async () => {
+      const credentialStateChangedEventMock = {
+        type: AcdcEventTypes.AcdcStateChanged,
+        payload: {
+          status: CredentialStatus.PENDING,
+          credentialId: "credentialId",
+        },
+      } as AcdcStateChangedEvent;
+      await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
+      expect(dispatch).toBeCalledWith(
+        setCurrentOperation(OperationType.ADD_CREDENTIAL)
+      );
+      expect(dispatch).toBeCalledWith(
+        setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING)
+      );
+    });
+
+    test("handles credential state pending", async () => {
+      const credentialMock = {} as CredentialShortDetails;
+      const credentialStateChangedEventMock = {
+        type: AcdcEventTypes.AcdcStateChanged,
+        payload: {
+          status: CredentialStatus.CONFIRMED,
+          credential: credentialMock,
+        },
+      } as AcdcStateChangedEvent;
+      await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
+      expect(dispatch).toBeCalledWith(updateOrAddCredsCache(credentialMock));
+      expect(dispatch).toBeCalledWith(setCurrentOperation(OperationType.IDLE));
+      expect(dispatch).toBeCalledWith(
+        setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED)
+      );
+    });
   });
 
-  test("handles connection state response received", async () => {
-    const isConnectionResponseReceivedSpy = jest.spyOn(
-      AriesAgent.agent.connections,
-      "isConnectionResponseReceived"
-    );
-    isConnectionResponseReceivedSpy.mockImplementationOnce(() => true);
-    await connectionStateChangedHandler(
-      connectionStateChangedEventMock,
-      dispatch
-    );
-    expect(dispatch).toBeCalledWith(
-      setQueueIncomingRequest({
+  describe("Keria notification state changed handler", () => {
+    test("handles credential notification", async () => {
+      const keriNoti = {
         id: "id",
-        type: IncomingRequestType.CONNECTION_RESPONSE,
-        logo: "png",
-        label: "idw",
-      })
-    );
-  });
+        a: {
+          r: NotificationRoute.ExnIpexGrant,
+        },
+        createdAt: new Date(),
+      } as KeriaNotification;
+      await keriaNotificationsChangeHandler(keriNoti, dispatch);
+      expect(dispatch).toBeCalledWith(
+        setQueueIncomingRequest({
+          id: keriNoti.id,
+          type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
+          logo: "", // TODO: must define Keri logo
+          label: "Credential Issuance Server", // TODO: must define it
+        })
+      );
+    });
 
-  test("handles connection state request received", async () => {
-    const isConnectionRequestReceivedSpy = jest.spyOn(
-      AriesAgent.agent.connections,
-      "isConnectionRequestReceived"
-    );
-    isConnectionRequestReceivedSpy.mockImplementationOnce(() => true);
-    await connectionStateChangedHandler(
-      connectionStateChangedEventMock,
-      dispatch
-    );
-    expect(dispatch).toBeCalledWith(
-      updateOrAddConnectionCache(connectionShortDetailsMock)
-    );
-    expect(dispatch).toBeCalledWith(
-      setToastMsg(ToastMsgType.CONNECTION_REQUEST_INCOMING)
-    );
-    expect(dispatch).toBeCalledWith(
-      setQueueIncomingRequest({
+    test("handles multisig notification", async () => {
+      const keriNoti = {
         id: "id",
-        type: IncomingRequestType.CONNECTION_INCOMING,
-        logo: "png",
-        label: "idw",
-      })
-    );
-  });
-
-  test("handles connection state request sent", async () => {
-    const isConnectionResponseSentSpy = jest.spyOn(
-      AriesAgent.agent.connections,
-      "isConnectionResponseSent"
-    );
-    isConnectionResponseSentSpy.mockImplementationOnce(() => true);
-    await connectionStateChangedHandler(
-      connectionStateChangedEventMock,
-      dispatch
-    );
-    expect(dispatch).toBeCalledWith(
-      setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
-    );
-  });
-
-  test("handles connection state connected", async () => {
-    const isConnectionResponseSentSpy = jest.spyOn(
-      AriesAgent.agent.connections,
-      "isConnectionConnected"
-    );
-    isConnectionResponseSentSpy.mockImplementationOnce(() => true);
-    await connectionStateChangedHandler(
-      connectionStateChangedEventMock,
-      dispatch
-    );
-    expect(dispatch).toBeCalledWith(
-      updateOrAddConnectionCache(connectionShortDetailsMock)
-    );
-    expect(dispatch).toBeCalledWith(
-      setToastMsg(ToastMsgType.NEW_CONNECTION_ADDED)
-    );
-  });
-});
-
-jest.mock("../../utils/colorGenerator", () => ({
-  ColorGenerator: jest.fn(() => ({
-    generateNextColor: jest.fn().mockReturnValue(["#000000", "#000000"]),
-  })),
-}));
-const now = new Date();
-const credentialStateChangedEventMock = {
-  payload: {
-    credentialRecord: { id: "id", createdAt: now, connectionId: "cid2" },
-  },
-} as CredentialStateChangedEvent;
-describe("Credential state changed handler", () => {
-  test("handles credential state offer received", async () => {
-    const isCredentialOfferReceivedSpy = jest.spyOn(
-      AriesAgent.agent.credentials,
-      "isCredentialOfferReceived"
-    );
-    isCredentialOfferReceivedSpy.mockImplementationOnce(() => true);
-    jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionShortDetailById")
-      .mockResolvedValue(connectionShortDetailsMock);
-    await credentialStateChangedHandler(
-      credentialStateChangedEventMock,
-      dispatch
-    );
-    expect(dispatch).toBeCalledWith(
-      setQueueIncomingRequest({
-        id: credentialStateChangedEventMock.payload.credentialRecord.id,
-        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
-        label: connectionShortDetailsMock.label,
-        logo: connectionShortDetailsMock.logo,
-      })
-    );
-  });
-
-  test("handles credential state request sent", async () => {
-    const isCredentialRequestSentSpy = jest.spyOn(
-      AriesAgent.agent.credentials,
-      "isCredentialRequestSent"
-    );
-    isCredentialRequestSentSpy.mockImplementationOnce(() => true);
-    await credentialStateChangedHandler(
-      credentialStateChangedEventMock,
-      dispatch
-    );
-
-    expect(dispatch).toBeCalledWith(
-      setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING)
-    );
-    expect(dispatch).toBeCalledWith(
-      updateOrAddCredsCache({
-        id: `metadata:${credentialStateChangedEventMock.payload.credentialRecord.id}`,
-        isArchived: false,
-        colors: ["#000000", "#000000"],
-        credentialType: "",
-        issuanceDate:
-          credentialStateChangedEventMock.payload.credentialRecord.createdAt.toISOString(),
-        status: CredentialMetadataRecordStatus.PENDING,
-        connectionType: ConnectionType.DIDCOMM,
-      })
-    );
-  });
-
-  test("handles credential state done", async () => {
-    const credentialShortDetail = {
-      id: `metadata:${credentialStateChangedEventMock.payload.credentialRecord.id}`,
-      isArchived: false,
-      colors: ["#000000", "#000000"],
-      credentialType: "",
-      issuanceDate:
-        credentialStateChangedEventMock.payload.credentialRecord.createdAt.toISOString(),
-      status: CredentialMetadataRecordStatus.CONFIRMED,
-    } as CredentialShortDetails;
-    const isCredentialDoneSpy = jest.spyOn(
-      AriesAgent.agent.credentials,
-      "isCredentialDone"
-    );
-    isCredentialDoneSpy.mockImplementationOnce(() => true);
-    const updateMetadataCompletedSpy = jest.spyOn(
-      AriesAgent.agent.credentials,
-      "updateMetadataCompleted"
-    );
-    updateMetadataCompletedSpy.mockResolvedValue(credentialShortDetail);
-    await credentialStateChangedHandler(
-      credentialStateChangedEventMock,
-      dispatch
-    );
-    expect(dispatch).toBeCalledWith(
-      setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED)
-    );
-    expect(dispatch).toBeCalledWith(
-      updateOrAddCredsCache(credentialShortDetail)
-    );
+        a: {
+          r: NotificationRoute.MultiSigIcp,
+        },
+        createdAt: new Date(),
+      } as KeriaNotification;
+      await keriaNotificationsChangeHandler(keriNoti, dispatch);
+      expect(dispatch).toBeCalledWith(
+        setQueueIncomingRequest({
+          id: keriNoti?.id,
+          event: keriNoti,
+          type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
+          multisigIcpDetails: {} as any,
+        })
+      );
+    });
   });
 });

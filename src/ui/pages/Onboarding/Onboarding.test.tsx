@@ -4,29 +4,31 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Onboarding } from "./index";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { OperationType } from "../../globals/types";
 import { CreatePassword } from "../CreatePassword";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
     const { getByText } = render(
-      <Provider store={store}>
-        <Onboarding />
-      </Provider>
+      <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
+        <Provider store={store}>
+          <Onboarding />
+        </Provider>
+      </MemoryRouter>
     );
     const slide1 = getByText(EN_TRANSLATIONS.onboarding.slides[0].title);
     expect(slide1).toBeInTheDocument();
   });
   test("Render 'Get Started' button", () => {
     const { getByText } = render(
-      <Provider store={store}>
-        <Onboarding />
-      </Provider>
+      <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
+        <Provider store={store}>
+          <Onboarding />
+        </Provider>
+      </MemoryRouter>
     );
     const button = getByText(
       EN_TRANSLATIONS.onboarding.getstarted.button.label
@@ -35,9 +37,11 @@ describe("Onboarding Page", () => {
   });
   test("Render 'I already have a wallet' option", () => {
     const { getByText } = render(
-      <Provider store={store}>
-        <Onboarding />
-      </Provider>
+      <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
+        <Provider store={store}>
+          <Onboarding />
+        </Provider>
+      </MemoryRouter>
     );
     const alreadyWallet = getByText(
       EN_TRANSLATIONS.onboarding.alreadywallet.button.label
@@ -80,9 +84,8 @@ describe("Onboarding Page", () => {
         currentOperation: OperationType.IDLE,
       },
       seedPhraseCache: {
-        seedPhrase160: "",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        seedPhrase: "",
+        brand: "",
       },
     };
     const storeMocked = mockStore(initialState);

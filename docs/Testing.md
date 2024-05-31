@@ -27,14 +27,32 @@ npm run test
   - install driver for chrome ``` appium driver install chromium ```
   - install driver for safari ``` appium driver install safari ```
 - Android Emulator for [Samsung Galaxy S23 Ultra](https://developer.samsung.com/galaxy-emulator-skin/guide.html) is configured or iOS Simulator for [iPhone 15 Pro / 15 Pro Max](https://developer.apple.com/documentation/xcode/installing-additional-simulator-runtimes)
-- Create .env file in your local root project folder with APP_PATH property with path to app build for chosen platform
+- Create .env file in your local root project folder with APP_PATH, KERIA_IP property with path to app build for chosen platform
 ```
 # Android
-# APP_PATH=<LOCAL_PATH/app-release-unsigned.apk>
+APP_PATH=<LOCAL_PATH/app-release-unsigned.apk>
+KERIA_IP=<IP_V4>
 
 # iOS
 APP_PATH=<LOCAL_PATH/App.app>
+KERIA_IP=<IP_V4>
 ```
+
+#### How to get IP v4 address:
+This is required to connect the simulator to the locally running KERIA docker container on your machine.
+#### MacOS:
+````bash
+ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | head -1 | awk '{ print $2 }'
+````
+#### Windows:
+````bash
+ipconfig | findstr /R /C:"IPv4 Address"
+````
+#### Linux:
+````bash
+ip addr show  | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | head -1 | awk '{ print $2 }'
+````
+
 ### Test run in Local:
 
 1. Install all packages locally
@@ -60,15 +78,12 @@ npm run wdio:ios:15promax -- --spec ./tests/features/passcode.feature:18
 ```
 - If there are issues with appium service run by WDIO, please start appium in terminal separately
 - In case WDIO tests will not exit on its own kill the process yourself e.g. ``` pkill -9 -f wdio ```
-3. Set ALLURE_RESULTS_DIR on your local
+
+3. Generate allure report
 ```
-ALLURE_RESULTS_DIR=tests/.reports/allure-results
+allure generate tests/.reports/allure-results -o tests/.reports/allure-report --clean
 ```
-4. Generate allure report
-```
-allure generate $ALLURE_RESULTS_DIR -o tests/.reports/allure-report --clean
-```
-5. Open allure report
+4. Open allure report
 ```
 allure open tests/.reports/allure-report
 ```

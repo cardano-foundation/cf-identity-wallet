@@ -1,33 +1,15 @@
-import { BaseEvent } from "@aries-framework/core";
-import { IdentifierMetadataRecordProps } from "./modules";
+import { SignifyClient } from "signify-ts";
 import {
   CredentialShortDetails,
   CredentialStatus,
 } from "./services/credentialService.types";
-
-enum Blockchain {
-  CARDANO = "Cardano",
-}
+import { EventService } from "./services/eventService";
+import { ConnectionHistoryType } from "./services/connection.types";
 
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
-}
-
-enum GenericRecordType {
-  CONNECTION_NOTE = "connection-note",
-  CONNECTION_KERI_METADATA = "connection-keri-metadata",
-  NOTIFICATION_KERI = "notification-keri",
-  IPEX_MESSAGE = "ipex-message",
-}
-
-enum ConnectionHistoryType {
-  CREDENTIAL_ACCEPTED,
-}
-
-enum ConnectionType {
-  DIDCOMM,
-  KERI,
+  ACCEPTED = "accepted",
 }
 
 interface ConnectionHistoryItem {
@@ -37,15 +19,16 @@ interface ConnectionHistoryItem {
 }
 
 enum MiscRecordId {
-  OP_PASS_HINT = "app-op-password-hint",
-}
-
-interface CryptoAccountRecordShortDetails {
-  id: string;
-  displayName: string;
-  blockchain: Blockchain;
-  totalADAinUSD: number;
-  usesIdentitySeedPhrase: boolean;
+  OP_PASS_HINT = "op-password-hint",
+  APP_ALREADY_INIT = "app-already-init",
+  APP_STATE_FLAGS = "app-state-flags",
+  APP_LANGUAGE = "app-language",
+  IDENTIFIERS_FAVOURITES = "identifiers-favourites",
+  CREDS_FAVOURITES = "creds-favourites",
+  USER_NAME = "user-name",
+  APP_BIOMETRY = "app-biometry",
+  KERIA_NOTIFICATION_MARKER = "keria-notification-marker",
+  APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
 }
 
 interface ConnectionShortDetails {
@@ -54,8 +37,8 @@ interface ConnectionShortDetails {
   connectionDate: string;
   logo?: string;
   status: ConnectionStatus;
-  type?: ConnectionType;
   oobi?: string;
+  groupId?: string;
 }
 
 type ConnectionNoteDetails = {
@@ -100,28 +83,28 @@ interface ConnectionDetails extends ConnectionShortDetails {
   linkedIpexMessages?: IpexMessageDetails[];
 }
 
-enum CredentialType {
-  UNIVERSITY_DEGREE_CREDENTIAL = "UniversityDegreeCredential",
-  ACCESS_PASS_CREDENTIAL = "AccessPassCredential",
-  PERMANENT_RESIDENT_CARD = "PermanentResidentCard",
+enum ConnectionEventTypes {
+  ConnectionStateChanged = "ConnectionStateChanged",
 }
 
-enum ConnectionKeriEventTypes {
-  ConnectionKeriStateChanged = "ConnectionKeriStateChanged",
+enum AcdcEventTypes {
+  AcdcStateChanged = "AcdcStateChanged",
 }
-enum AcdcKeriEventTypes {
-  AcdcKeriStateChanged = "AcdcKeriStateChanged",
+
+enum KeriaStatusEventTypes {
+  KeriaStatusChanged = "KeriaStatusChanged",
 }
-interface ConnectionKeriStateChangedEvent extends BaseEvent {
-  type: typeof ConnectionKeriEventTypes.ConnectionKeriStateChanged;
+
+interface ConnectionStateChangedEvent extends BaseEventEmitter {
+  type: typeof ConnectionEventTypes.ConnectionStateChanged;
   payload: {
     connectionId?: string;
     status: ConnectionStatus;
   };
 }
 
-interface AcdcKeriStateChangedEvent extends BaseEvent {
-  type: typeof AcdcKeriEventTypes.AcdcKeriStateChanged;
+interface AcdcStateChangedEvent extends BaseEventEmitter {
+  type: typeof AcdcEventTypes.AcdcStateChanged;
   payload:
     | {
         status: CredentialStatus.PENDING;
@@ -133,33 +116,93 @@ interface AcdcKeriStateChangedEvent extends BaseEvent {
       };
 }
 
-interface KeriNotification {
+interface KeriaStatusChangedEvent extends BaseEventEmitter {
+  type: typeof KeriaStatusEventTypes.KeriaStatusChanged;
+  payload: {
+    isOnline: boolean;
+  };
+}
+
+interface KeriaNotification {
   id: string;
   createdAt: Date;
   a: Record<string, unknown>;
+  multisigId?: string;
+}
+
+enum KeriConnectionType {
+  NORMAL = "NORMAL",
+  MULTI_SIG_INITIATOR = "MULTI_SIG_INITIATOR",
+}
+
+type OobiScan =
+  | { type: KeriConnectionType.NORMAL }
+  | { type: KeriConnectionType.MULTI_SIG_INITIATOR; groupId: string };
+
+interface BaseEventEmitter {
+  type: string;
+  payload: Record<string, unknown>;
+}
+
+interface KeriaNotificationMarker {
+  nextIndex: number;
+  lastNotificationId: string;
+}
+
+interface AgentServicesProps {
+  signifyClient: SignifyClient;
+  eventService: EventService;
+}
+
+interface CreateIdentifierResult {
+  signifyName: string;
+  identifier: string;
+}
+
+interface IdentifierResult {
+  name: string;
+  prefix: string;
+  salty: any;
+}
+
+enum NotificationRoute {
+  ExnIpexGrant = "/exn/ipex/grant",
+  MultiSigIcp = "/multisig/icp",
+  MultiSigRot = "/multisig/rot",
+  ExnIpexApply = "/exn/ipex/apply",
+  ExnIpexAgree = "/exn/ipex/agree",
+}
+
+interface BranAndMnemonic {
+  bran: string;
+  mnemonic: string;
 }
 
 export {
-  Blockchain,
   ConnectionStatus,
-  GenericRecordType,
-  ConnectionHistoryType,
   MiscRecordId,
-  ConnectionType,
-  CredentialType,
-  ConnectionKeriEventTypes,
-  AcdcKeriEventTypes,
+  ConnectionEventTypes,
+  AcdcEventTypes,
+  NotificationRoute,
+  KeriConnectionType,
+  KeriaStatusEventTypes,
 };
+
 export type {
-  CryptoAccountRecordShortDetails,
   ConnectionShortDetails,
   ConnectionDetails,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionHistoryItem,
-  ConnectionKeriStateChangedEvent,
-  KeriNotification,
-  AcdcKeriStateChangedEvent,
-  IpexMessages,
-  IpexMessageDetails,
+  ConnectionStateChangedEvent,
+  KeriaNotification,
+  AcdcStateChangedEvent,
+  OobiScan,
+  BaseEventEmitter,
+  KeriaNotificationMarker,
+  AgentServicesProps,
+  CreateIdentifierResult,
+  IdentifierResult,
+  KeriaStatusChangedEvent,
+  BranAndMnemonic,
 };

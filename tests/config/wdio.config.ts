@@ -1,6 +1,6 @@
-import type {Options} from "@wdio/types"
-import {driver} from "@wdio/globals";
-import "dotenv/config"
+import type { Options } from "@wdio/types";
+import "dotenv/config";
+import { returnBoolean } from "../helpers/parse.js";
 
 export const config: Options.Testrunner = {
   runner: "local",
@@ -8,10 +8,13 @@ export const config: Options.Testrunner = {
     autoCompile: true,
     tsNodeOpts: {
       transpileOnly: true,
-      project: "tsconfig.json"
-    }
+      project: "tsconfig.json",
+    },
   },
-  specs: ["../features/*.feature"],
+  specs: ["../features/**/*.feature"],
+  specFileRetries: 2,
+  specFileRetriesDelay: 3,
+  specFileRetriesDeferred: false,
   capabilities: [],
   logLevel: "debug",
   bail: 0,
@@ -22,14 +25,18 @@ export const config: Options.Testrunner = {
   services: [],
   framework: "cucumber",
   reporters: [
-    "spec", 
-    ["allure", {
-      outputDir: "./tests/.reports/allure-results",
-      addConsoleLogs: true,
-      disableWebdriverStepsReporting: true,
-      disableWebdriverScreenshotsReporting: true,
-      useCucumberStepReporter: true,
-    }]],
+    "spec",
+    [
+      "allure",
+      {
+        outputDir: "./tests/.reports/allure-results",
+        addConsoleLogs: true,
+        disableWebdriverStepsReporting: true,
+        disableWebdriverScreenshotsReporting: true,
+        useCucumberStepReporter: true,
+      },
+    ],
+  ],
   cucumberOpts: {
     backtrace: false,
     requireModule: [],
@@ -42,7 +49,7 @@ export const config: Options.Testrunner = {
     snippets: true,
     source: true,
     profile: [],
-    require: ["./tests/steps-definitions/**/*.ts"],
+    require: ["./tests/steps-definitions/**/*.ts", "./tests/actions/**/*.ts"],
     // <string> (expression) only execute the features or scenarios with tags matching the expression
     tags: "",
     // <number> timeout for step definitions
@@ -158,8 +165,9 @@ export const config: Options.Testrunner = {
    * @param {number}                 result.duration  duration of scenario in milliseconds
    * @param {Object}                 context          Cucumber World object
    */
-  afterScenario:  async function (world, result, context) {
-    await driver.reloadSession()
+  afterScenario: async function (world, result, context) {
+    if (returnBoolean(process.env.RELOAD_SESSION as string))
+      await driver.reloadSession();
   },
   /**
    *

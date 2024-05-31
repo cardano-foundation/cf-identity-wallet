@@ -2,12 +2,16 @@ import { expect } from "expect-webdriverio";
 import { CreatePassword } from "../constants/text.constants.js";
 
 export class CreatePasswordScreen {
+  get alertModal() {
+    return "[data-testid=\"create-password-alert-skip\"]";
+  }
+
   get backArrowIcon() {
     return $("[data-testid=\"back-button\"]");
   }
 
   get confirmPasswordInput() {
-    return $("#ion-input-1");
+    return $("#confirm-password-value input");
   }
 
   get createPasswordButton() {
@@ -15,7 +19,7 @@ export class CreatePasswordScreen {
   }
 
   get createPasswordInput() {
-    return $("#ion-input-0");
+    return $("#createPasswordValue input");
   }
 
   get errorMessageText() {
@@ -23,7 +27,11 @@ export class CreatePasswordScreen {
   }
 
   get hintInput() {
-    return $("#ion-input-2");
+    return $("#hintValue input");
+  }
+
+  get id() {
+    return "[data-testid=\"create-password-page\"]";
   }
 
   get screenTitle() {

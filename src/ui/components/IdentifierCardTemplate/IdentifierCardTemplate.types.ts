@@ -1,4 +1,4 @@
-import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 
 interface IdentifierCardTemplateProps {
   name?: string;
@@ -6,6 +6,7 @@ interface IdentifierCardTemplateProps {
   isActive: boolean;
   index?: number;
   onHandleShowCardDetails?: (index: number | undefined) => void;
+  pickedCard?: boolean;
 }
 
 export type { IdentifierCardTemplateProps };

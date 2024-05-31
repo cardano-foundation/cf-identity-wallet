@@ -22,6 +22,9 @@ const Alert = ({
       id: "confirm-alert-button",
       text: confirmButtonText,
       role: "confirm",
+      htmlAttributes: {
+        "data-testid": `${dataTestId}-confirm-button`,
+      },
       handler: () => {
         setIsOpen(false);
         actionConfirm && actionConfirm();
@@ -34,6 +37,9 @@ const Alert = ({
       id: "cancel-alert-button",
       text: cancelButtonText,
       role: "cancel",
+      htmlAttributes: {
+        "data-testid": `${dataTestId}-cancel-button`,
+      },
       handler: () => {
         setIsOpen(false);
         actionCancel && actionCancel();
@@ -50,10 +56,13 @@ const Alert = ({
 
   return (
     <div
-      data-testid={dataTestId}
-      className={isOpen ? "alert-visible" : "alert-invisible"}
+      data-testid={dataTestId + "-container"}
+      className={`custom-alert-container ${
+        isOpen ? "alert-visible" : "alert-invisible"
+      }`}
     >
       <IonAlert
+        data-testid={dataTestId}
         isOpen={isOpen}
         backdropDismiss={backdropDismiss}
         cssClass="custom-alert"

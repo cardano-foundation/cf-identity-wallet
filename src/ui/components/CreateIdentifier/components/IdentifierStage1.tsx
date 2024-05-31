@@ -1,137 +1,167 @@
-import {
-  IonSearchbar,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonCheckbox,
-} from "@ionic/react";
-import { useEffect, useState } from "react";
-import { i18n } from "../../../../i18n";
-import { PageFooter } from "../../PageFooter";
-import { PageHeader } from "../../PageHeader";
-import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
+import { useEffect, useMemo, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import {
+  getCurrentOperation,
+  getQueueIncomingRequest,
+  getStateCache,
+  setCurrentOperation,
+} from "../../../../store/reducers/stateCache";
+import { Agent } from "../../../../core/agent/agent";
+import { IdentifierStage1BodyInit } from "./IdentifierStage1BodyInit";
+import { IdentifierStage1BodyResume } from "./IdentifierStage1BodyResume";
+import { Alert } from "../../Alert";
+import { i18n } from "../../../../i18n";
+import { TabsRoutePath } from "../../navigation/TabsMenu";
+import { OperationType } from "../../../globals/types";
+import { getMultiSigGroupCache } from "../../../../store/reducers/identifiersCache";
 import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
-import { useAppSelector } from "../../../../store/hooks";
-import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
-import CardanoLogo from "../../../assets/images/CardanoLogo.jpg";
-import { ConnectionType } from "../../../../core/agent/agent.types";
 
 const IdentifierStage1 = ({
   state,
   setState,
   componentId,
+  resetModal,
+  resumeMultiSig,
+  multiSigGroup,
 }: IdentifierStageProps) => {
-  const connectionsCache = useAppSelector(getConnectionsCache);
-  const [selectedConnections, setSelectedConnections] = useState<string[]>(
-    state.selectedConnections
-  );
-  const [sortedConnections, setSortedConnections] = useState<
+  const history = useHistory();
+  const dispatch = useAppDispatch();
+  const stateCache = useAppSelector(getStateCache);
+  const currentOperation = useAppSelector(getCurrentOperation);
+  const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
+  const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
+  const userName = stateCache.authentication.userName;
+  const [oobi, setOobi] = useState("");
+  const signifyName =
+    resumeMultiSig?.signifyName || state.newIdentifier.signifyName;
+  const groupId =
+    resumeMultiSig?.groupMetadata?.groupId ||
+    state.newIdentifier.groupMetadata?.groupId;
+  const groupMetadata =
+    resumeMultiSig?.groupMetadata || state.newIdentifier.groupMetadata;
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [initiated, setInitiated] = useState(false);
+  const [scannedConections, setScannedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
+  const incomingRequest = useMemo(() => {
+    return !queueIncomingRequest.isProcessing
+      ? { id: "" }
+      : queueIncomingRequest.queues.length > 0
+        ? queueIncomingRequest.queues[0]
+        : { id: "" };
+  }, [queueIncomingRequest]);
 
   useEffect(() => {
-    if (connectionsCache.length) {
-      const keriConnections = connectionsCache.filter(
-        (connection) => connection.type === ConnectionType.KERI
-      );
-      const sortedConnections = [...keriConnections].sort(function (a, b) {
-        const textA = a.label.toUpperCase();
-        const textB = b.label.toUpperCase();
-        return textA < textB ? -1 : textA > textB ? 1 : 0;
-      });
-      setSortedConnections(sortedConnections);
-      setState((prevState: IdentifierStageProps) => ({
-        ...prevState,
-        sortedConnections: sortedConnections,
-      }));
+    async function fetchOobi() {
+      try {
+        const oobiValue = await Agent.agent.connections.getOobi(
+          signifyName,
+          userName,
+          groupId
+        );
+        if (oobiValue) {
+          setOobi(oobiValue);
+        }
+      } catch (e) {
+        // @TODO - Error handling.
+      }
     }
-  }, [connectionsCache, setState]);
 
-  const handleSelectConnection = (id: string) => {
-    let data = selectedConnections;
-    if (data.find((item) => item === id)) {
-      data = data.filter((item) => item !== id);
-    } else {
-      data = [...selectedConnections, id];
+    fetchOobi();
+  }, [groupId, signifyName, userName]);
+
+  useEffect(() => {
+    if (groupId) {
+      const updateConnections = async () => {
+        const connections = multiSigGroupCache?.connections;
+        connections && setScannedConnections(connections);
+      };
+      updateConnections();
     }
-    setSelectedConnections(data);
+
+    currentOperation === OperationType.MULTI_SIG_INITIATOR_INIT &&
+      handleInitiateMultiSig();
+  }, [groupMetadata, currentOperation, groupId, multiSigGroupCache]);
+
+  useEffect(() => {
+    incomingRequest.multisigIcpDetails?.ourIdentifier.groupMetadata?.groupId ===
+      groupId && handleDone();
+  }, [groupMetadata, incomingRequest]);
+
+  const handleDone = () => {
+    resetModal && resetModal();
+    if (multiSigGroup?.groupId) {
+      history.push({
+        pathname: TabsRoutePath.IDENTIFIERS,
+      });
+    }
   };
 
-  useEffect(() => {
+  const handleScanButton = () => {
+    scannedConections.length >= 1 ? handleInitiateScan() : setAlertIsOpen(true);
+  };
+
+  const handleInitiateScan = () => {
+    dispatch(
+      setCurrentOperation(
+        groupMetadata?.groupInitiator
+          ? OperationType.MULTI_SIG_INITIATOR_SCAN
+          : OperationType.MULTI_SIG_RECEIVER_SCAN
+      )
+    );
+    setInitiated(true);
+  };
+
+  const handleInitiateMultiSig = () => {
+    dispatch(setCurrentOperation(OperationType.IDLE));
     setState((prevState: IdentifierStageProps) => ({
       ...prevState,
-      selectedConnections: selectedConnections,
+      scannedConections,
+      displayNameValue: state.displayNameValue || resumeMultiSig?.displayName,
+      ourIdentifier: state.ourIdentifier || resumeMultiSig?.id,
+      identifierCreationStage: 2,
     }));
-  }, [selectedConnections, setState]);
+  };
 
   return (
     <>
-      <ScrollablePageLayout
-        pageId={componentId + "-content"}
-        header={
-          <PageHeader
-            closeButton={true}
-            closeButtonAction={() => {
-              setState((prevState: IdentifierStageProps) => ({
-                ...prevState,
-                identifierCreationStage: 0,
-                selectedConnections: [],
-              }));
-            }}
-            closeButtonLabel={`${i18n.t("createidentifier.back")}`}
-            title={`${i18n.t("createidentifier.connections.title")}`}
-          />
-        }
-      >
-        <p className="multisig-subtitle">
-          {i18n.t("createidentifier.connections.subtitle")}
-        </p>
-        <IonSearchbar
-          placeholder={`${i18n.t("createidentifier.connections.search")}`}
+      {resumeMultiSig?.signifyName.length || initiated ? (
+        <IdentifierStage1BodyResume
+          componentId={componentId}
+          handleDone={handleDone}
+          handleInitiateMultiSig={handleInitiateMultiSig}
+          oobi={oobi}
+          groupMetadata={groupMetadata}
+          handleScanButton={handleScanButton}
+          scannedConections={scannedConections}
         />
-        <IonList>
-          {sortedConnections.map((connection, index) => {
-            return (
-              <IonItem
-                key={index}
-                onClick={() => handleSelectConnection(connection.id)}
-                className={`${
-                  selectedConnections.includes(connection.id) &&
-                  "selected-connection"
-                }`}
-              >
-                <IonLabel className="connection-item">
-                  <img
-                    src={connection?.logo ?? CardanoLogo}
-                    className="connection-logo"
-                    alt="connection-logo"
-                  />
-                  <span className="connection-name">{connection.label}</span>
-                  <IonCheckbox
-                    checked={selectedConnections.includes(connection.id)}
-                    data-testid={`connection-checkbox-${index}`}
-                    onIonChange={() => {
-                      handleSelectConnection(connection.id);
-                    }}
-                    aria-label=""
-                  />
-                </IonLabel>
-              </IonItem>
-            );
-          })}
-        </IonList>
-      </ScrollablePageLayout>
-      <PageFooter
-        pageId={componentId}
-        primaryButtonText={`${i18n.t("createidentifier.connections.continue")}`}
-        primaryButtonAction={() =>
-          setState((prevState: IdentifierStageProps) => ({
-            ...prevState,
-            identifierCreationStage: 2,
-          }))
-        }
-        primaryButtonDisabled={!selectedConnections.length}
+      ) : (
+        <IdentifierStage1BodyInit
+          componentId={componentId}
+          handleDone={handleDone}
+          oobi={oobi}
+          groupMetadata={groupMetadata}
+          handleScanButton={handleScanButton}
+          scannedConections={scannedConections}
+        />
+      )}
+      <Alert
+        isOpen={alertIsOpen}
+        setIsOpen={setAlertIsOpen}
+        dataTestId="multisig-share-scan-alert"
+        headerText={i18n.t("createidentifier.share.scanalert.text")}
+        confirmButtonText={`${i18n.t(
+          "createidentifier.share.scanalert.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "createidentifier.share.scanalert.cancel"
+        )}`}
+        actionConfirm={handleInitiateScan}
+        actionCancel={() => setAlertIsOpen(false)}
+        actionDismiss={() => setAlertIsOpen(false)}
       />
     </>
   );

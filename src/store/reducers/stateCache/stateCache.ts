@@ -14,6 +14,7 @@ const initialState: StateCacheProps = {
   routes: [],
   authentication: {
     loggedIn: false,
+    userName: "",
     time: 0,
     passcodeIsSet: false,
     seedPhraseIsSet: false,
@@ -54,6 +55,18 @@ const stateCacheSlice = createSlice({
         (route) => route.path !== RoutePath.SET_PASSCODE
       );
     },
+    login: (state) => {
+      state.authentication = {
+        ...state.authentication,
+        loggedIn: true,
+      };
+    },
+    logout: (state) => {
+      state.authentication = {
+        ...state.authentication,
+        loggedIn: false,
+      };
+    },
     setAuthentication: (
       state,
       action: PayloadAction<AuthenticationCacheProps>
@@ -83,7 +96,7 @@ const stateCacheSlice = createSlice({
       }
       state.queueIncomingRequest.queues.push(action.payload);
     },
-    dequeueCredentialCredentialRequest: (state) => {
+    dequeueCredentialRequest: (state) => {
       if (state.queueIncomingRequest.queues.length > 0) {
         state.queueIncomingRequest.queues.shift();
         const isPaused = state.queueIncomingRequest.isPaused;
@@ -116,10 +129,12 @@ const {
   removeCurrentRoute,
   removeSetPasscodeRoute,
   removeRoute,
+  login,
+  logout,
   setAuthentication,
   setCurrentOperation,
   setToastMsg,
-  dequeueCredentialCredentialRequest,
+  dequeueCredentialRequest,
   setQueueIncomingRequest,
   setPauseQueueIncomingRequest,
   enqueueIncomingRequest,
@@ -155,6 +170,8 @@ export {
   setCurrentRoute,
   removeCurrentRoute,
   removeSetPasscodeRoute,
+  login,
+  logout,
   getAuthentication,
   setAuthentication,
   getCurrentOperation,
@@ -164,6 +181,6 @@ export {
   getQueueIncomingRequest,
   setPauseQueueIncomingRequest,
   setQueueIncomingRequest,
-  dequeueCredentialCredentialRequest,
+  dequeueCredentialRequest,
   enqueueIncomingRequest,
 };

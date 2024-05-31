@@ -1,13 +1,5 @@
 import { arrowBackOutline } from "ionicons/icons";
-import {
-  IonPage,
-  IonToolbar,
-  IonButtons,
-  IonButton,
-  IonIcon,
-  IonHeader,
-} from "@ionic/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Scanner } from "../../components/Scanner";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { useAppDispatch } from "../../../store/hooks";
@@ -16,44 +8,51 @@ import {
   ScannerRefComponent,
 } from "./FullPageScanner.types";
 import { OperationType } from "../../globals/types";
+import "./FullPageScanner.scss";
+import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { PageHeader } from "../../components/PageHeader";
 
-const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
+const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
+  const pageId = "qr-code-scanner-full-page";
   const dispatch = useAppDispatch();
   const scannerRef = useRef<ScannerRefComponent>(null);
 
-  const handleBackButton = () => {
+  useEffect(() => {
+    document?.querySelector("body")?.classList.add("full-page-scanner");
+  }, []);
+
+  const handleReset = () => {
     setShowScan(false);
-    dispatch(setCurrentOperation(OperationType.IDLE));
     scannerRef.current?.stopScan();
+    document?.querySelector("body")?.classList.remove("full-page-scanner");
     document
       ?.querySelector("body.scanner-active > div:last-child")
       ?.classList.add("hide");
   };
+
+  const handleCloseButton = () => {
+    handleReset();
+    setShowScan(false);
+    dispatch(setCurrentOperation(OperationType.IDLE));
+  };
+
   return (
-    <IonPage
-      className="qr-code-scanner-full-page"
-      data-testid="qr-code-scanner-full-page"
+    <ResponsivePageLayout
+      pageId={pageId}
+      activeStatus={showScan}
+      header={
+        <PageHeader
+          closeButton={true}
+          closeButtonAction={handleCloseButton}
+          closeButtonIcon={arrowBackOutline}
+        />
+      }
     >
-      <IonHeader className="ion-no-border page-header">
-        <IonToolbar color="transparent">
-          <IonButtons slot="start">
-            <IonButton
-              slot="icon-only"
-              fill="clear"
-              onClick={() => handleBackButton()}
-              className="back-button"
-              data-testid="back-button"
-            >
-              <IonIcon
-                icon={arrowBackOutline}
-                color="primary"
-              />
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
-      <Scanner ref={scannerRef} />
-    </IonPage>
+      <Scanner
+        ref={scannerRef}
+        handleReset={handleReset}
+      />
+    </ResponsivePageLayout>
   );
 };
 

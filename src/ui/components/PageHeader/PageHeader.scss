@@ -23,6 +23,10 @@
   }
 
   ion-toolbar {
+    ion-buttons.has-action.md {
+      min-width: 10%;
+    }
+
     ion-buttons ion-button {
       color: var(--ion-color-secondary);
 
@@ -56,8 +60,10 @@
         }
       }
 
-      &[disabled="true"] {
-        color: var(--ion-color-dark-grey);
+      &[disabled],
+      &.button-disabled > p {
+        color: var(--ion-color-dark-grey) !important;
+        opacity: 1;
       }
 
       ion-icon {
