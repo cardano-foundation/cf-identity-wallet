@@ -875,6 +875,10 @@
               "message": "You are currently connected. To connect with a new wallet, you will be disconnected from your current selection. Would you like to disconnect and continue?",
               "confirm": "Continue",
               "cancel": "Cancel"
+            },
+            "connectionbrokenalert": {
+              "message": "Your connection has been disconnected as you have deleted the chosen identifier paired with this connection. Please choose a new identifier to re-establish this connection.",
+              "confirm": "Ok"
             }
           },
           "inputpidmodal": {

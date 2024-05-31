@@ -10,6 +10,7 @@ import {
   ExperimentalAPIFunctions,
   PeerConnectSigningEvent,
   PeerConnectedEvent,
+  PeerConnectionBrokenEvent,
   PeerConnectionEventTypes,
   PeerDisconnectedEvent,
 } from "./peerConnection.types";
@@ -67,6 +68,17 @@ class PeerConnection {
     this.eventService.on(
       PeerConnectionEventTypes.PeerDisconnected,
       async (event: PeerDisconnectedEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  onPeerConnectionBrokenStateChanged(
+    callback: (event: PeerConnectionBrokenEvent) => void
+  ) {
+    this.eventService.on(
+      PeerConnectionEventTypes.PeerConnectionBroken,
+      async (event: PeerConnectionBrokenEvent) => {
         callback(event);
       }
     );
@@ -154,6 +166,7 @@ class PeerConnection {
       new ExperimentalContainer<ExperimentalAPIFunctions>({
         getIdentifierOobi: this.identityWalletConnect.getIdentifierOobi,
         sign: this.identityWalletConnect.sign,
+        getConnectingAid: this.identityWalletConnect.getConnectingAid,
       })
     );
   }
@@ -179,6 +192,7 @@ class PeerConnection {
       await Agent.agent.peerConnectionMetadataStorage.createPeerConnectionMetadataRecord(
         {
           id: dAppIdentifier,
+          selectedAid: this.identityWalletConnect.getConnectingAid(),
           iconB64: ICON_BASE64,
         }
       );
@@ -188,16 +202,30 @@ class PeerConnection {
     SecureStorage.set(KeyStoreKeys.MEERKAT_SEED, seed);
   }
 
-  disconnectDApp(dAppIdentifier: string) {
+  disconnectDApp(dAppIdentifier: string, isBroken?: boolean) {
     if (this.identityWalletConnect === undefined) {
       throw new Error(PeerConnection.PEER_CONNECTION_START_PENDING);
     }
 
     this.identityWalletConnect.disconnect(dAppIdentifier);
+
+    if (isBroken) {
+      this.eventService.emit<PeerConnectionBrokenEvent>({
+        type: PeerConnectionEventTypes.PeerConnectionBroken,
+        payload: {
+          identifier: this.identityWalletConnect.getConnectingAid(),
+          dAppAddress: dAppIdentifier,
+        },
+      });
+    }
   }
 
   getConnectedDAppAddress() {
     return this.connectedDAppAdress;
+  }
+
+  getConnectingAid() {
+    return this.identityWalletConnect?.getConnectingAid();
   }
 }
 

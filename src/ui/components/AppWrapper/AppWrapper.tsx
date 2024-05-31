@@ -49,6 +49,7 @@ import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnecti
 import {
   PeerConnectSigningEvent,
   PeerConnectedEvent,
+  PeerConnectionBrokenEvent,
   PeerDisconnectedEvent,
 } from "../../../core/cardano/walletConnect/peerConnection.types";
 import { MultiSigService } from "../../../core/agent/services/multiSigService";
@@ -56,6 +57,7 @@ import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCach
 import { CardListViewType } from "../SwitchCardView";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
 import { i18n } from "../../../i18n";
+import { Alert } from "../Alert";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -187,6 +189,14 @@ const peerDisconnectedChangeHandler = async (
   }
 };
 
+const peerConnectionBrokenChangeHandler = async (
+  event: PeerConnectionBrokenEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  dispatch(setConnectedWallet(null));
+  dispatch(setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
+};
+
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -195,6 +205,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const [isOnline, setIsOnline] = useState(false);
   const [connectedMeerKat, setConnectedMeerKat] = useState<string>();
   const [isMessagesHandled, setIsMessagesHandled] = useState(false);
+  const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
   useActivityTimer();
 
   useEffect(() => {
@@ -387,10 +398,33 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return peerDisconnectedChangeHandler(event, connectedMeerKat, dispatch);
       }
     );
+    PeerConnection.peerConnection.onPeerConnectionBrokenStateChanged(
+      async (event) => {
+        setIsAlertPeerBrokenOpen(true);
+        return peerConnectionBrokenChangeHandler(event, dispatch);
+      }
+    );
     dispatch(setInitialized(true));
   };
 
-  return <>{props.children}</>;
+  return (
+    <>
+      {props.children}
+      <Alert
+        isOpen={isAlertPeerBrokenOpen}
+        setIsOpen={setIsAlertPeerBrokenOpen}
+        dataTestId="alert-confirm-connection-broken"
+        headerText={i18n.t(
+          "menu.tab.items.connectwallet.connectwalletmodal.connectionbrokenalert.message"
+        )}
+        confirmButtonText={`${i18n.t(
+          "menu.tab.items.connectwallet.connectwalletmodal.connectionbrokenalert.confirm"
+        )}`}
+        actionConfirm={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+      />
+    </>
+  );
 };
 
 export {

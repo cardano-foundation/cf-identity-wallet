@@ -1,3 +1,4 @@
+import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { Agent } from "../agent";
 import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
 import { EventService } from "./eventService";
@@ -102,6 +103,16 @@ jest.mock("../../../core/agent/agent", () => ({
         getConnections: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
+    },
+  },
+}));
+
+jest.mock("../../cardano/walletConnect/peerConnection", () => ({
+  PeerConnection: {
+    peerConnection: {
+      getConnectedDAppAddress: jest.fn(),
+      getConnectingAid: jest.fn(),
+      disconnectDApp: jest.fn(),
     },
   },
 }));
@@ -265,6 +276,33 @@ describe("Single sig service of agent", () => {
       {
         isDeleted: true,
       }
+    );
+  });
+
+  test("can delete an archived identifier and disconnect DApp", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(archivedMetadataRecord);
+    identifierStorage.updateIdentifierMetadata = jest.fn();
+    PeerConnection.peerConnection.getConnectedDAppAddress = jest
+      .fn()
+      .mockReturnValue("dApp-address");
+    PeerConnection.peerConnection.getConnectingAid = jest
+      .fn()
+      .mockReturnValue(archivedMetadataRecord.id);
+    await identifierService.deleteIdentifier(archivedMetadataRecord.id);
+    expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
+      archivedMetadataRecord.id
+    );
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      archivedMetadataRecord.id,
+      {
+        isDeleted: true,
+      }
+    );
+    expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledWith(
+      "dApp-address",
+      true
     );
   });
 
