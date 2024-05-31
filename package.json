@@ -55,7 +55,6 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.1",
     "@capacitor/cli": "^5.0.0",
-    "@dcspark/cardano-multiplatform-lib-nodejs": "^3.1.2",
     "@faker-js/faker": "^8.4.1",
     "@ionic/react-test-utils": "^0.4.0",
     "@testing-library/dom": "^9.3.1",
