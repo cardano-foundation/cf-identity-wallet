@@ -128,6 +128,7 @@ class IdentifierService extends AgentService {
       "id" | "createdAt" | "isArchived" | "signifyName"
     >
   ): Promise<CreateIdentifierResult> {
+    const startTime = Date.now();
     this.validIdentifierMetadata(metadata);
     const signifyName = uuidv4();
     const operation = await this.signifyClient
@@ -142,7 +143,11 @@ class IdentifierService extends AgentService {
     const identifier = operation.serder.ked.i;
     const isPending = !op.done;
     if (isPending) {
-      op = await waitAndGetDoneOp(this.signifyClient, op, 2000);
+      op = await waitAndGetDoneOp(
+        this.signifyClient,
+        op,
+        2000 - (Date.now() - startTime)
+      );
       if (!op.done) {
         await this.operationPendingStorage.save({
           id: op.name,
