@@ -7,6 +7,7 @@ import {
   keriaNotificationsChangeHandler,
   peerConnectRequestSignChangeHandler,
   peerConnectedChangeHandler,
+  peerConnectionBrokenChangeHandler,
   peerDisconnectedChangeHandler,
 } from "./AppWrapper";
 import { store } from "../../../store";
@@ -37,6 +38,7 @@ import {
 import {
   PeerConnectSigningEvent,
   PeerConnectedEvent,
+  PeerConnectionBrokenEvent,
   PeerConnectionEventTypes,
   PeerDisconnectedEvent,
 } from "../../../core/cardano/walletConnect/peerConnection.types";
@@ -167,6 +169,14 @@ const peerSignRequestEventMock = {
     payload: "Hello",
   },
 } as PeerConnectSigningEvent;
+
+const peerConnectionBrokenEventMock = {
+  type: PeerConnectionEventTypes.PeerConnectionBroken,
+  payload: {
+    identifier: "identifier",
+    dAppAddress: "dApp-address",
+  },
+} as PeerConnectionBrokenEvent;
 
 const peerConnectionMock: ConnectionData = {
   id: "dApp-address",
@@ -342,6 +352,17 @@ describe("AppWrapper handler", () => {
           peerConnection: peerConnectionMock,
           type: IncomingRequestType.PEER_CONNECT_SIGN,
         })
+      );
+    });
+
+    test("handle peer connection broken event", async () => {
+      await peerConnectionBrokenChangeHandler(
+        peerConnectionBrokenEventMock,
+        dispatch
+      );
+      expect(dispatch).toBeCalledWith(setConnectedWallet(null));
+      expect(dispatch).toBeCalledWith(
+        setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS)
       );
     });
   });

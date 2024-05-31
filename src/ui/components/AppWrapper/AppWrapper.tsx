@@ -435,4 +435,5 @@ export {
   peerConnectedChangeHandler,
   peerDisconnectedChangeHandler,
   peerConnectRequestSignChangeHandler,
+  peerConnectionBrokenChangeHandler,
 };
