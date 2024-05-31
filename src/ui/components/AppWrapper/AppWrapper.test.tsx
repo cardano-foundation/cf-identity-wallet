@@ -5,6 +5,9 @@ import {
   acdcChangeHandler,
   connectionStateChangedHandler,
   keriaNotificationsChangeHandler,
+  peerConnectRequestSignChangeHandler,
+  peerConnectedChangeHandler,
+  peerDisconnectedChangeHandler,
 } from "./AppWrapper";
 import { store } from "../../../store";
 import { Agent } from "../../../core/agent/agent";
@@ -31,6 +34,17 @@ import {
   CredentialShortDetails,
   CredentialStatus,
 } from "../../../core/agent/services/credentialService.types";
+import {
+  PeerConnectSigningEvent,
+  PeerConnectedEvent,
+  PeerConnectionEventTypes,
+  PeerDisconnectedEvent,
+} from "../../../core/cardano/walletConnect/peerConnection.types";
+import {
+  ConnectionData,
+  setConnectedWallet,
+  setWalletConnectionsCache,
+} from "../../../store/reducers/walletConnectionsCache";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -127,6 +141,40 @@ const connectionShortDetailsMock = {
   logo: "png",
 } as ConnectionShortDetails;
 
+const peerConnectedEventMock = {
+  type: PeerConnectionEventTypes.PeerConnected,
+  payload: {
+    identifier: "identifier",
+    dAppAddress: "dApp-address",
+  },
+} as PeerConnectedEvent;
+
+const peerDisconnectedEventMock = {
+  type: PeerConnectionEventTypes.PeerDisconnected,
+  payload: {
+    identifier: "identifier",
+    dAppAddress: "dApp-address",
+  },
+} as PeerDisconnectedEvent;
+
+const peerSignRequestEventMock = {
+  type: PeerConnectionEventTypes.PeerConnectSign,
+  payload: {
+    identifier: "identifier",
+    approvalCallback: function () {
+      return;
+    },
+    payload: "Hello",
+  },
+} as PeerConnectSigningEvent;
+
+const peerConnectionMock: ConnectionData = {
+  id: "dApp-address",
+  name: "dApp-name",
+  iconB64: "icon",
+  selectedAid: "identifier",
+  url: "http://localhost:3000",
+};
 const dispatch = jest.fn();
 describe("AppWrapper handler", () => {
   describe("Connection state changed handler", () => {
@@ -245,6 +293,54 @@ describe("AppWrapper handler", () => {
           event: keriNoti,
           type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
           multisigIcpDetails: {} as any,
+        })
+      );
+    });
+  });
+
+  describe("Peer connection states changed handler", () => {
+    test("handle peer connected event", async () => {
+      Agent.agent.peerConnectionMetadataStorage.getPeerConnectionMetadata = jest
+        .fn()
+        .mockResolvedValue(peerConnectionMock);
+      Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata =
+        jest.fn().mockResolvedValue([peerConnectionMock]);
+      await peerConnectedChangeHandler(peerConnectedEventMock, dispatch);
+      expect(dispatch).toBeCalledWith(setConnectedWallet(peerConnectionMock));
+      expect(dispatch).toBeCalledWith(
+        setWalletConnectionsCache([peerConnectionMock])
+      );
+      expect(dispatch).toBeCalledWith(
+        setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS)
+      );
+    });
+
+    test("handle peer disconnected event", async () => {
+      await peerDisconnectedChangeHandler(
+        peerDisconnectedEventMock,
+        peerConnectionMock.id,
+        dispatch
+      );
+      expect(dispatch).toBeCalledWith(setConnectedWallet(null));
+      expect(dispatch).toBeCalledWith(
+        setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS)
+      );
+    });
+
+    test("handle peer sign request event", async () => {
+      Agent.agent.peerConnectionMetadataStorage.getPeerConnectionMetadata = jest
+        .fn()
+        .mockResolvedValue(peerConnectionMock);
+      await peerConnectRequestSignChangeHandler(
+        peerSignRequestEventMock,
+        dispatch
+      );
+      expect(dispatch).toBeCalledWith(
+        setQueueIncomingRequest({
+          id: "peer-connect-signing",
+          signTransaction: peerSignRequestEventMock,
+          peerConnection: peerConnectionMock,
+          type: IncomingRequestType.PEER_CONNECT_SIGN,
         })
       );
     });

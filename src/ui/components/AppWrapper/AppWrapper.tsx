@@ -398,4 +398,7 @@ export {
   connectionStateChangedHandler,
   acdcChangeHandler,
   keriaNotificationsChangeHandler,
+  peerConnectedChangeHandler,
+  peerDisconnectedChangeHandler,
+  peerConnectRequestSignChangeHandler,
 };
