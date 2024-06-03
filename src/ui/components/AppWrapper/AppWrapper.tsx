@@ -269,9 +269,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const loadCacheBasicStorage = async () => {
     let userName: { userName: string } = { userName: "" };
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
-    const seedPhraseIsSet = await checkKeyStore(
-      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
-    );
+    const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
+
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
 
     const identifiersFavourites = await Agent.agent.basicStorage.findById(
@@ -355,8 +354,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
     if (!appAlreadyInit) {
       await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
-      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
-      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY);
       await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     }
