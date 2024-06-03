@@ -45,6 +45,8 @@ import { IonicStorage } from "../storage/ionicStorage";
 import { SqliteStorage } from "../storage/sqliteStorage";
 import { BaseRecord } from "../storage/storage.types";
 import { ConfigurationService } from "../configuration";
+import { IpexMessageStorage } from "./records/ipexMessageStorage";
+import { IpexMessageRecord } from "./records/ipexMessageRecord";
 
 const walletId = "idw";
 class Agent {
@@ -63,6 +65,7 @@ class Agent {
   private connectionNoteStorage!: ConnectionNoteStorage;
   private notificationStorage!: NotificationStorage;
   private peerConnectionStorage!: PeerConnectionStorage;
+  private ipexMessageStorage!: IpexMessageStorage;
 
   private signifyClient!: SignifyClient;
 
@@ -103,7 +106,8 @@ class Agent {
         this.agentServicesProps,
         this.identifierStorage,
         this.credentialStorage,
-        this.notificationStorage
+        this.notificationStorage,
+        this.ipexMessageStorage
       );
     }
     return this.ipexCommunicationService;
@@ -115,7 +119,8 @@ class Agent {
         this.agentServicesProps,
         this.connectionStorage,
         this.connectionNoteStorage,
-        this.credentialStorage
+        this.credentialStorage,
+        this.ipexMessageStorage
       );
     }
     return this.connectionService;
@@ -194,6 +199,9 @@ class Agent {
       );
       this.notificationStorage = new NotificationStorage(
         this.getStorageService<NotificationRecord>(this.storageSession)
+      );
+      this.ipexMessageStorage = new IpexMessageStorage(
+        this.getStorageService<IpexMessageRecord>(this.storageSession)
       );
 
       await signifyReady();

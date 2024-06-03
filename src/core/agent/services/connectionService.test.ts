@@ -4,6 +4,7 @@ import { EventService } from "./eventService";
 import { CredentialStorage, IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
+import { IpexMessageStorage } from "../records/ipexMessageStorage";
 
 const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();
@@ -127,7 +128,8 @@ const connectionService = new ConnectionService(
   agentServicesProps,
   connectionStorage as any,
   connectionNoteStorage as any,
-  new CredentialStorage(session as any)
+  new CredentialStorage(session as any),
+  new IpexMessageStorage(session as any)
 );
 
 jest.mock("../../../core/agent/agent", () => ({

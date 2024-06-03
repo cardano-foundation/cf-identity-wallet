@@ -205,4 +205,6 @@ export type {
   IdentifierResult,
   KeriaStatusChangedEvent,
   BranAndMnemonic,
+  IpexMessages,
+  IpexMessageDetails,
 };

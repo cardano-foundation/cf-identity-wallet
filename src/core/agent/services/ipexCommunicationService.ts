@@ -1,8 +1,10 @@
+import { v4 as uuidv4 } from "uuid";
 import { Serder } from "signify-ts";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import {
   AcdcEventTypes,
+  IpexMessages,
   type AcdcStateChangedEvent,
   type AgentServicesProps,
   type KeriaNotification,
@@ -23,6 +25,7 @@ import {
 } from "./credentialService.types";
 import { OnlineOnly, getCredentialShortDetails } from "./utils";
 import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
+import { IpexMessageStorage } from "../records/ipexMessageStorage";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -47,17 +50,20 @@ class IpexCommunicationService extends AgentService {
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;
   protected readonly notificationStorage: NotificationStorage;
+  protected readonly ipexMessageStorage: IpexMessageStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
     credentialStorage: CredentialStorage,
-    notificationStorage: NotificationStorage
+    notificationStorage: NotificationStorage,
+    ipexMessageStorage: IpexMessageStorage
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
     this.credentialStorage = credentialStorage;
     this.notificationStorage = notificationStorage;
+    this.ipexMessageStorage = ipexMessageStorage;
   }
 
   @OnlineOnly
@@ -69,6 +75,7 @@ class IpexCommunicationService extends AgentService {
     const exn = await this.signifyClient
       .exchanges()
       .get(notifRecord.a.d as string);
+
     const credentialId = exn.exn.e.acdc.d;
     const connectionId = exn.exn.i;
     await this.saveAcdcMetadataRecord(
@@ -76,6 +83,7 @@ class IpexCommunicationService extends AgentService {
       exn.exn.e.acdc.a.dt,
       connectionId
     );
+    await this.createLinkedIpexMessageRecord(exn.exn.i, exn);
 
     this.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
@@ -328,6 +336,17 @@ class IpexCommunicationService extends AgentService {
         error,
       };
     }
+  }
+
+  private async createLinkedIpexMessageRecord(
+    connectionId: string,
+    message: IpexMessages
+  ): Promise<void> {
+    await this.ipexMessageStorage.createIpexMessageRecord({
+      id: uuidv4(),
+      content: message,
+      connectionId,
+    });
   }
 }
 
