@@ -9,7 +9,7 @@ interface ConnectionData {
 
 interface WalletConnectState {
   walletConnections: ConnectionData[];
-  connectedWallet: ConnectionData | null;
+  connectedWallet: string | null;
   pendingDAppMeerKat: string | null;
 }
 

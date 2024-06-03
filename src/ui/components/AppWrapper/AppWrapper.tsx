@@ -165,20 +165,16 @@ const peerConnectedChangeHandler = async (
   event: PeerConnectedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  const peerConnection =
-    await Agent.agent.peerConnectionMetadataStorage.getPeerConnectionMetadata(
-      event.payload.dAppAddress
-    );
   const existingConnections =
     await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
   dispatch(setWalletConnectionsCache(existingConnections));
-  dispatch(setConnectedWallet(peerConnection));
+  dispatch(setConnectedWallet(event.payload.dAppAddress));
   dispatch(setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS));
 };
 
 const peerDisconnectedChangeHandler = async (
   event: PeerDisconnectedEvent,
-  connectedMeerKat: string | undefined,
+  connectedMeerKat: string,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (connectedMeerKat === event.payload.dAppAddress) {
@@ -193,7 +189,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const operation = useAppSelector(getCurrentOperation);
   const connectedWallet = useAppSelector(getConnectedWallet);
   const [isOnline, setIsOnline] = useState(false);
-  const [connectedMeerKat, setConnectedMeerKat] = useState<string>();
   const [isMessagesHandled, setIsMessagesHandled] = useState(false);
   useActivityTimer();
 
@@ -201,11 +196,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     initApp();
   }, []);
 
-  useEffect(() => {
-    if (connectedWallet) {
-      setConnectedMeerKat(connectedWallet.id);
-    }
-  }, [connectedWallet]);
   useEffect(() => {
     if (authentication.loggedIn) {
       const handleMessages = async () => {
@@ -381,7 +371,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
     });
     PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
       async (event) => {
-        return peerDisconnectedChangeHandler(event, connectedMeerKat, dispatch);
+        if (connectedWallet) {
+          return peerDisconnectedChangeHandler(
+            event,
+            connectedWallet,
+            dispatch
+          );
+        }
       }
     );
     dispatch(setInitialized(true));
