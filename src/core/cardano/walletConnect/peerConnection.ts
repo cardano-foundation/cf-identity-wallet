@@ -212,10 +212,7 @@ class PeerConnection {
     if (isBroken) {
       this.eventService.emit<PeerConnectionBrokenEvent>({
         type: PeerConnectionEventTypes.PeerConnectionBroken,
-        payload: {
-          identifier: this.identityWalletConnect.getConnectingAid(),
-          dAppAddress: dAppIdentifier,
-        },
+        payload: {},
       });
     }
   }

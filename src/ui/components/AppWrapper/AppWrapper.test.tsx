@@ -172,10 +172,7 @@ const peerSignRequestEventMock = {
 
 const peerConnectionBrokenEventMock = {
   type: PeerConnectionEventTypes.PeerConnectionBroken,
-  payload: {
-    identifier: "identifier",
-    dAppAddress: "dApp-address",
-  },
+  payload: {},
 } as PeerConnectionBrokenEvent;
 
 const peerConnectionMock: ConnectionData = {
