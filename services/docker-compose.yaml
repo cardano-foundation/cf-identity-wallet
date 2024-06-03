@@ -5,7 +5,7 @@ services:
     container_name: idw-keria
     restart: unless-stopped
     build:
-      context: github.com/cardano-foundation/keria#03a1b13047f91f7f287e0a03d227084835db6616
+      context: github.com/cardano-foundation/keria.git#03a1b13047f91f7f287e0a03d227084835db6616
       dockerfile: ./images/keria.dockerfile
     environment:
       - KERI_AGENT_CORS=true
@@ -41,7 +41,7 @@ services:
     container_name: vlei-server
     restart: unless-stopped
     build:
-      context: github.com/WebOfTrust/vLEI#ed982313dab86bfada3825857601a10d71ce9631
+      context: github.com/WebOfTrust/vLEI.git#ed982313dab86bfada3825857601a10d71ce9631
       dockerfile: ./container/Dockerfile
     entrypoint: vLEI-server -s ./schema/acdc -c ./samples/acdc/ -o ./samples/oobis/
     ports:
