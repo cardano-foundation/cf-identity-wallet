@@ -14,8 +14,8 @@ import {
   OperationPendingStorage,
 } from "../records";
 import { Agent } from "../agent";
-import { IdentifierShortDetails } from "./identifier.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { OperationPendingRecord } from "../records/operationPendingRecord";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -24,6 +24,8 @@ class SignifyNotificationService extends AgentService {
   protected readonly notificationStorage!: NotificationStorage;
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
+
+  protected pendingOperations: OperationPendingRecord[] = [];
 
   constructor(
     agentServiceProps: AgentServicesProps,
@@ -231,6 +233,7 @@ class SignifyNotificationService extends AgentService {
     });
     return notificationRecord;
   }
+
   async onSignifyOperationStateChanged(
     callback: ({
       oid,
@@ -240,35 +243,38 @@ class SignifyNotificationService extends AgentService {
       opType: OperationPendingRecordType;
     }) => void
   ) {
+    this.pendingOperations = await this.operationPendingStorage.getAll();
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const pendingOperations = await this.operationPendingStorage.getAll();
-      if (pendingOperations.length > 0) {
-        for (const pendingOperation of pendingOperations) {
+      if (this.pendingOperations.length > 0) {
+        for (const pendingOperation of this.pendingOperations) {
           const operation = await this.signifyClient
             .operations()
             .get(pendingOperation.id);
           if (operation.done) {
             switch (pendingOperation.recordType) {
             case OperationPendingRecordType.Witness: {
-              const aid = await this.identifierStorage.getIdentifierMetadata(
-                pendingOperation.recordId
+              await this.identifierStorage.updateIdentifierMetadata(
+                pendingOperation.recordId,
+                {
+                  isPending: false,
+                }
               );
-              await this.identifierStorage.updateIdentifierMetadata(aid.id, {
-                isPending: false,
-              });
               callback({
                 opType: pendingOperation.recordType,
-                oid: aid.id,
+                oid: pendingOperation.recordId,
               });
-              await this.operationPendingStorage.deleteById(
-                pendingOperation.id
-              );
+
               break;
             }
             default:
               break;
             }
+            await this.operationPendingStorage.deleteById(pendingOperation.id);
+            this.pendingOperations.splice(
+              this.pendingOperations.indexOf(pendingOperation),
+              1
+            );
           }
         }
       }
@@ -278,6 +284,10 @@ class SignifyNotificationService extends AgentService {
         }, 250);
       });
     }
+  }
+
+  addPendingOperationToQueue(pendingOperation: OperationPendingRecord) {
+    this.pendingOperations.push(pendingOperation);
   }
 }
 

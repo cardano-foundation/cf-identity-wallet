@@ -7,6 +7,14 @@ const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
 const identifiersCreateMock = jest.fn();
 const identifiersRotateMock = jest.fn();
+const operationGetMock = jest.fn().mockImplementation((id: string) => {
+  return {
+    done: true,
+    response: {
+      i: id,
+    },
+  };
+});
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -21,14 +29,7 @@ const signifyClient = jest.mocked({
     members: jest.fn(),
   }),
   operations: () => ({
-    get: jest.fn().mockImplementation((id: string) => {
-      return {
-        done: true,
-        response: {
-          i: id,
-        },
-      };
-    }),
+    get: operationGetMock,
   }),
   oobis: () => ({
     get: jest.fn(),
@@ -84,7 +85,9 @@ const identifierStorage = jest.mocked({
   getIdentifierMetadataByGroupId: jest.fn(),
 });
 
-const operationPendingStorage = jest.mocked({});
+const operationPendingStorage = jest.mocked({
+  save: jest.fn(),
+});
 
 const agentServicesProps = {
   signifyClient: signifyClient as any,
@@ -103,6 +106,9 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         getConnectionShortDetailById: jest.fn(),
         getConnections: jest.fn(),
+      },
+      signifyNotifications: {
+        addPendingOperationToQueue: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
     },
@@ -224,6 +230,7 @@ describe("Single sig service of agent", () => {
       },
       op: jest.fn().mockResolvedValue({
         name: "op123",
+        done: true,
       }),
     });
     expect(
@@ -238,6 +245,44 @@ describe("Single sig service of agent", () => {
     });
     expect(identifiersCreateMock).toBeCalled();
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
+  });
+
+  test("can create a keri identifier with pending operation", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const aid = "newIdentifierAid";
+    const displayName = "newDisplayName";
+    identifiersCreateMock.mockResolvedValue({
+      serder: {
+        ked: {
+          i: aid,
+        },
+      },
+      op: jest.fn().mockResolvedValue({
+        name: "op123",
+        done: false,
+      }),
+    });
+    operationGetMock.mockImplementation((id: string) => {
+      return {
+        done: false,
+        response: {
+          i: id,
+        },
+      };
+    });
+    expect(
+      await identifierService.createIdentifier({
+        displayName,
+        theme: 0,
+      })
+    ).toEqual({
+      identifier: aid,
+      signifyName: expect.any(String),
+      isPending: true,
+    });
+    expect(identifiersCreateMock).toBeCalled();
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
+    expect(operationPendingStorage.save).toBeCalledTimes(1);
   });
 
   test("cannot create a keri identifier if theme is not valid", async () => {

@@ -17,6 +17,7 @@ import { ConfigurationService } from "../../configuration";
 import { BackingMode } from "../../configuration/configurationService.types";
 import { OperationPendingStorage } from "../records/operationPendingStorage";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { Agent } from "../agent";
 
 const identifierTypeThemes = [0, 1];
 
@@ -149,11 +150,14 @@ class IdentifierService extends AgentService {
         2000 - (Date.now() - startTime)
       );
       if (!op.done) {
-        await this.operationPendingStorage.save({
+        const pendingOperation = await this.operationPendingStorage.save({
           id: op.name,
           recordType: OperationPendingRecordType.Witness,
           recordId: identifier,
         });
+        Agent.agent.signifyNotifications.addPendingOperationToQueue(
+          pendingOperation
+        );
       }
     }
     await this.identifierStorage.createIdentifierMetadataRecord({
