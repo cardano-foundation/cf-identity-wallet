@@ -37,7 +37,8 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   useEffect(() => {
     if (
       incomingRequest.type === IncomingRequestType.PEER_CONNECT_SIGN &&
-      !connectedWallet
+      (!connectedWallet ||
+        connectedWallet !== incomingRequest.peerConnection?.id)
     ) {
       handleReset();
     }
