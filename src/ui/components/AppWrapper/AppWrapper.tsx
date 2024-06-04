@@ -40,14 +40,22 @@ import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/id
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 import { useActivityTimer } from "./hooks/useActivityTimer";
-import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
-import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
+import {
+  getConnectedWallet,
+  setConnectedWallet,
+  setWalletConnectionsCache,
+} from "../../../store/reducers/walletConnectionsCache";
 import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
-import { PeerConnectSigningEvent } from "../../../core/cardano/walletConnect/peerConnection.types";
+import {
+  PeerConnectSigningEvent,
+  PeerConnectedEvent,
+  PeerDisconnectedEvent,
+} from "../../../core/cardano/walletConnect/peerConnection.types";
 import { MultiSigService } from "../../../core/agent/services/multiSigService";
 import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCache";
 import { CardListViewType } from "../SwitchCardView";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
+import { i18n } from "../../../i18n";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -137,13 +145,49 @@ const peerConnectRequestSignChangeHandler = async (
   event: PeerConnectSigningEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  //TODO: Handle logic for the accept/decline sing request
+  const connectedDAppAddress =
+    PeerConnection.peerConnection.getConnectedDAppAddress();
+  const peerConnection =
+    await Agent.agent.peerConnectionMetadataStorage.getPeerConnectionMetadata(
+      connectedDAppAddress
+    );
+  dispatch(
+    setQueueIncomingRequest({
+      id: "peer-connect-signing",
+      signTransaction: event,
+      peerConnection,
+      type: IncomingRequestType.PEER_CONNECT_SIGN,
+    })
+  );
+};
+
+const peerConnectedChangeHandler = async (
+  event: PeerConnectedEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  const existingConnections =
+    await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
+  dispatch(setWalletConnectionsCache(existingConnections));
+  dispatch(setConnectedWallet(event.payload.dAppAddress));
+  dispatch(setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS));
+};
+
+const peerDisconnectedChangeHandler = async (
+  event: PeerDisconnectedEvent,
+  connectedMeerKat: string,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  if (connectedMeerKat === event.payload.dAppAddress) {
+    dispatch(setConnectedWallet(null));
+    dispatch(setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
+  }
 };
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const operation = useAppSelector(getCurrentOperation);
+  const connectedWallet = useAppSelector(getConnectedWallet);
   const [isOnline, setIsOnline] = useState(false);
   const [isMessagesHandled, setIsMessagesHandled] = useState(false);
   useActivityTimer();
@@ -203,12 +247,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     const credentials = await Agent.agent.credentials.getCredentials();
     const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
+    const storedPeerConnections =
+      await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
 
     dispatch(setIdentifiersCache(storedIdentifiers));
     dispatch(setCredsCache(credentials));
     dispatch(setConnectionsCache(connectionsDetails));
-    // TODO: Need update after core function completed.
-    dispatch(setWalletConnectionsCache(walletConnectionsFix));
+    dispatch(setWalletConnectionsCache(storedPeerConnections));
   };
 
   const loadCacheBasicStorage = async () => {
@@ -321,6 +366,20 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return peerConnectRequestSignChangeHandler(event, dispatch);
       }
     );
+    PeerConnection.peerConnection.onPeerConnectedStateChanged(async (event) => {
+      return peerConnectedChangeHandler(event, dispatch);
+    });
+    PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
+      async (event) => {
+        if (connectedWallet) {
+          return peerDisconnectedChangeHandler(
+            event,
+            connectedWallet,
+            dispatch
+          );
+        }
+      }
+    );
     dispatch(setInitialized(true));
   };
 
@@ -332,4 +391,7 @@ export {
   connectionStateChangedHandler,
   acdcChangeHandler,
   keriaNotificationsChangeHandler,
+  peerConnectedChangeHandler,
+  peerDisconnectedChangeHandler,
+  peerConnectRequestSignChangeHandler,
 };

@@ -9,7 +9,7 @@ import { Signer } from "signify-ts";
 import { Agent } from "../../agent/agent";
 import {
   PeerConnectSigningEvent,
-  PeerConnectSigningEventTypes,
+  PeerConnectionEventTypes,
   PeerConnectionError,
   TxSignError,
 } from "./peerConnection.types";
@@ -68,7 +68,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         approved = approvalStatus;
       };
       this.eventService.emit<PeerConnectSigningEvent>({
-        type: PeerConnectSigningEventTypes.PeerConnectSign,
+        type: PeerConnectionEventTypes.PeerConnectSign,
         payload: {
           identifier,
           payload,

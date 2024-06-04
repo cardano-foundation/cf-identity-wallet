@@ -1,5 +1,3 @@
-import { ConnectionData } from "../../../../../store/reducers/walletConnectionsCache";
-
 interface WalletConnectStageOneProps {
   isOpen: boolean;
   onClose: () => void;
@@ -9,7 +7,7 @@ interface WalletConnectStageOneProps {
 
 interface WalletConnectStageTwoProps {
   isOpen: boolean;
-  data: ConnectionData;
+  pendingDAppMeerkat: string;
   onClose: () => void;
   onBackClick: () => void;
   className?: string;

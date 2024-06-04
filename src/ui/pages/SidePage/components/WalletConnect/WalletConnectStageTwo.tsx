@@ -14,15 +14,23 @@ import { ToastMsgType } from "../../../../globals/types";
 import { combineClassNames } from "../../../../utils/style";
 import "./WalletConnect.scss";
 import { WalletConnectStageTwoProps } from "./WalletConnect.types";
+import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
+import { Agent } from "../../../../../core/agent/agent";
+import {
+  getWalletConnectionsCache,
+  setWalletConnectionsCache,
+} from "../../../../../store/reducers/walletConnectionsCache";
 
 const WalletConnectStageTwo = ({
   isOpen,
+  pendingDAppMeerkat,
   className,
   onBackClick,
   onClose,
 }: WalletConnectStageTwoProps) => {
   const dispatch = useDispatch();
   const indentifierCache = useAppSelector(getIdentifiersCache);
+  const existingConnections = useAppSelector(getWalletConnectionsCache);
 
   const [selectedIdentifier, setSelectedIdentifier] =
     useState<IdentifierShortDetails | null>(null);
@@ -47,8 +55,17 @@ const WalletConnectStageTwo = ({
 
   const handleConnectWallet = async () => {
     try {
-      // TODO: implement connect wallet logic
-      dispatch(setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS));
+      if (selectedIdentifier && pendingDAppMeerkat) {
+        await PeerConnection.peerConnection.start(selectedIdentifier.id);
+        await PeerConnection.peerConnection.connectWithDApp(pendingDAppMeerkat);
+        // Refresh the connections list
+        dispatch(
+          setWalletConnectionsCache([
+            { id: pendingDAppMeerkat, selectedAid: selectedIdentifier.id },
+            ...existingConnections,
+          ])
+        );
+      }
       onClose();
     } catch (e) {
       dispatch(setToastMsg(ToastMsgType.UNABLE_CONNECT_WALLET));

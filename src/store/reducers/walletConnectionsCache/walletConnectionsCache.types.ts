@@ -1,16 +1,16 @@
-// TODO: mock data type for connect wallet ui. Need update after core function completed.
 interface ConnectionData {
-  id: number | string;
-  name: string;
-  owner: string;
-  image?: string;
-  url: string;
+  id: string;
+  name?: string;
+  url?: string;
+  createdAt?: Date;
+  iconB64?: string;
+  selectedAid?: string;
 }
 
 interface WalletConnectState {
   walletConnections: ConnectionData[];
-  connectedWallet: ConnectionData | null;
-  pendingConnection: ConnectionData | null;
+  connectedWallet: string | null;
+  pendingDAppMeerKat: string | null;
 }
 
 export type { ConnectionData, WalletConnectState };

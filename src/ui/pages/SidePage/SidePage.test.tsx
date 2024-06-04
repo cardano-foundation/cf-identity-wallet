@@ -31,7 +31,7 @@ describe("Side Page: wallet connect", () => {
       identifiers: [...identifierFix],
     },
     walletConnectionsCache: {
-      pendingConnection: walletConnectionsFix[0],
+      pendingDAppMeerKat: "pending-meerkat",
     },
   };
 
@@ -111,9 +111,7 @@ describe("Side Page: incoming request", () => {
     identifiersCache: {
       identifiers: [...identifierFix],
     },
-    walletConnectionsCache: {
-      pendingConnection: walletConnectionsFix[0],
-    },
+    walletConnectionsCache: {},
   };
 
   const mockStore = configureStore();
