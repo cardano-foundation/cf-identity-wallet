@@ -48,6 +48,7 @@ const SideSlider = ({
         data-testid="side-slider"
         enterAnimation={enterAnimation}
         leaveAnimation={leaveAnimation}
+        className="side-slider-modal"
       >
         {children}
       </IonModal>
@@ -65,7 +66,7 @@ const SideSlider = ({
         zIndex,
       }}
       data-testid="side-slider"
-      onTransitionEnd={(e) => {
+      onTransitionEnd={() => {
         open ? onOpenAnimationEnd?.() : onCloseAnimationEnd?.();
       }}
       className={classes}
