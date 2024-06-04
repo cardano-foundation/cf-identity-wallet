@@ -133,10 +133,13 @@ const Scanner = forwardRef(
           OperationType.SCAN_SSI_CONNECT_URL,
         ].includes(currentOperation)
       ) {
-        if (OperationType.SCAN_SSI_BOOT_URL === currentOperation)
+        if (OperationType.SCAN_SSI_BOOT_URL === currentOperation) {
           dispatch(setBootUrl(content));
-        if (OperationType.SCAN_SSI_CONNECT_URL === currentOperation)
+        }
+
+        if (OperationType.SCAN_SSI_CONNECT_URL === currentOperation) {
           dispatch(setConnectUrl(content));
+        }
 
         handleReset && handleReset();
         return;

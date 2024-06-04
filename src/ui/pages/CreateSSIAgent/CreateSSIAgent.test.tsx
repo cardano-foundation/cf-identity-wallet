@@ -209,6 +209,37 @@ describe("SSI agent page", () => {
     });
   });
 
+  test("Remove last slash", async () => {
+    const mockStore = configureStore();
+    const initialState = {
+      ssiAgentCache: {
+        bootUrl: undefined,
+        connectUrl: "https://connectUrl.com/",
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <CreateSSIAgent />
+      </Provider>
+    );
+
+    act(() => {
+      ionFireEvent.ionBlur(getByTestId("connect-url-input"));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setConnectUrl("https://connectUrl.com")
+      );
+    });
+  });
+
   test("Display error when input invalid urls", async () => {
     const mockStore = configureStore();
     const initialState = {

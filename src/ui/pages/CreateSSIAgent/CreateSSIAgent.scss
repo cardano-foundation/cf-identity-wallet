@@ -13,9 +13,25 @@
     z-index: 101;
   }
 
-  &.responsive-page-layout .responsive-page-content {
+  .ssi-error-placeholder {
+    height: 1.375rem;
+
+    @media screen and (min-width: 250px) and (max-width: 370px) {
+      height: 1rem;
+    }
+  }
+
+  &.scrollable-page-layout .scrollable-page-content {
+    & > * {
+      margin: 0.5rem 0 0;
+    }
+
     & > ion-item {
-      margin-bottom: 0;
+      margin-top: 0;
+    }
+
+    & > .page-footer {
+      margin-top: 2rem;
     }
   }
 
@@ -35,9 +51,5 @@
     ion-toolbar {
       --background: transparent;
     }
-  }
-
-  .page-footer {
-    margin-top: auto;
   }
 }

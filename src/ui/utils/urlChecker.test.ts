@@ -5,18 +5,25 @@ const validUrl = [
   "www.police.academy",
   "https://x.com/?twitter?",
   "http://example.com?a=%bc&d=%ef&g=%H",
+  "https://12.34.56.78:9000",
+  "www.12.32.44.22:9323",
 ];
 
-const inValidUrl = ["https://a", "//x.com/?twitter?", "dsadasda"];
+const inValidUrl = [
+  "https://a",
+  "//x.com/?twitter?",
+  "dsadasda",
+  "3213.323.321.333",
+];
 
 describe("Url checker", () => {
-  test("valid format", () => {
+  test("Valid format", () => {
     validUrl.forEach((url) => {
       expect(isValidHttpUrl(url)).toBe(true);
     });
   });
 
-  test("invalid format", () => {
+  test("Invalid format", () => {
     inValidUrl.forEach((url) => {
       expect(isValidHttpUrl(url)).toBe(false);
     });

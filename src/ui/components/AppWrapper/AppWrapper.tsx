@@ -218,7 +218,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
-    const connectUrl = await Agent.agent.basicStorage.findById(
+    const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
       MiscRecordId.KERIA_CONNECT_URL
     );
 
@@ -269,9 +269,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
-        ssiAgentIsSet: !!connectUrl && !!connectUrl.content,
+        ssiAgentIsSet:
+          !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
       })
     );
+
+    return {
+      keriaConnectUrlRecord,
+    };
   };
 
   const initApp = async () => {
@@ -290,10 +295,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     }
     await loadDatabase();
-    await loadCacheBasicStorage();
-    const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
-      MiscRecordId.KERIA_CONNECT_URL
-    );
+    const { keriaConnectUrlRecord } = await loadCacheBasicStorage();
+
     if (keriaConnectUrlRecord) {
       try {
         await Agent.agent.start(keriaConnectUrlRecord.content.url as string);

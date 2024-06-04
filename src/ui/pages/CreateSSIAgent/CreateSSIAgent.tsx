@@ -14,7 +14,6 @@ import { CustomInput } from "../../components/CustomInput";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
-import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { OperationType } from "../../globals/types";
 import { useAppIonRouter } from "../../hooks";
 import "./CreateSSIAgent.scss";
@@ -27,6 +26,23 @@ import {
 import { isValidHttpUrl } from "../../utils/urlChecker";
 import { TermsModal } from "../../components/TermsModal";
 import { Agent } from "../../../core/agent/agent";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
+
+const SSI_URLS_EMPTY = "SSI url is empty";
+
+const InputError = ({
+  showError,
+  errorMessage,
+}: {
+  showError: boolean;
+  errorMessage: string;
+}) => {
+  return showError ? (
+    <ErrorMessage message={errorMessage} />
+  ) : (
+    <div className="ssi-error-placeholder" />
+  );
+};
 
 const CreateSSIAgent = () => {
   const pageId = "create-ssi-agent";
@@ -40,6 +56,7 @@ const CreateSSIAgent = () => {
   const [openInfo, setOpenInfo] = useState(false);
   const [loading, setLoading] = useState(false);
   const [hasMismatchError, setHasMismatchError] = useState(false);
+  const [isInvalidBootUrl, setIsInvalidBootUrl] = useState(false);
 
   const setTouchedConnectUrlInput = () => {
     setConnectUrlTouched(true);
@@ -76,9 +93,13 @@ const CreateSSIAgent = () => {
   const handleValidate = async () => {
     setLoading(true);
     try {
+      if (!ssiAgent.bootUrl || !ssiAgent.connectUrl) {
+        throw new Error(SSI_URLS_EMPTY);
+      }
+
       await Agent.agent.bootAndConnect({
-        bootUrl: ssiAgent.bootUrl || "",
-        url: ssiAgent.connectUrl || "",
+        bootUrl: ssiAgent.bootUrl,
+        url: ssiAgent.connectUrl,
       });
 
       const { nextPath, updateRedux } = getNextRoute(RoutePath.SSI_AGENT, {
@@ -101,6 +122,10 @@ const CreateSSIAgent = () => {
       if (Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT === errorMessage) {
         setHasMismatchError(true);
       }
+
+      if (Agent.KERIA_BOOT_FAILED === errorMessage) {
+        setIsInvalidBootUrl(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -116,9 +141,19 @@ const CreateSSIAgent = () => {
     dispatch(setCurrentOperation(OperationType.SCAN_SSI_CONNECT_URL));
   };
 
+  const removeLastSlash = (url: string) => {
+    let result = url;
+
+    while (result && result.length > 0 && url[result.length - 1] === "/") {
+      result = result.substring(0, result.length - 1);
+    }
+
+    return result;
+  };
+
   return (
     <>
-      <ResponsivePageLayout
+      <ScrollablePageLayout
         pageId={pageId}
         header={
           <PageHeader
@@ -165,20 +200,28 @@ const CreateSSIAgent = () => {
           placeholder={`${i18n.t("ssiagent.input.boot.placeholder")}`}
           actionIcon={scanOutline}
           action={scanBootUrl}
-          onChangeInput={(bootUrl: string) => dispatch(setBootUrl(bootUrl))}
+          onChangeInput={(bootUrl: string) => {
+            setIsInvalidBootUrl(false);
+            dispatch(setBootUrl(bootUrl));
+          }}
           value={ssiAgent.bootUrl || ""}
-          onChangeFocus={setTouchedBootUrlInput}
-          error={!!displayBootUrlError}
-        />
-        {!!displayBootUrlError && (
-          <ErrorMessage
-            message={
-              displayConnectUrlError
-                ? `${i18n.t("ssiagent.error.invalidurl")}`
-                : `${i18n.t("ssiagent.error.invalidbooturl")}`
+          onChangeFocus={(result) => {
+            setTouchedBootUrlInput();
+
+            if (!result && ssiAgent.bootUrl) {
+              dispatch(setBootUrl(removeLastSlash(ssiAgent.bootUrl.trim())));
             }
-          />
-        )}
+          }}
+          error={!!displayBootUrlError || isInvalidBootUrl}
+        />
+        <InputError
+          showError={!!displayBootUrlError || isInvalidBootUrl}
+          errorMessage={
+            (displayBootUrlError || isInvalidBootUrl) && !displayConnectUrlError
+              ? `${i18n.t("ssiagent.error.invalidbooturl")}`
+              : `${i18n.t("ssiagent.error.invalidurl")}`
+          }
+        />
         <CustomInput
           dataTestId="connect-url-input"
           title={`${i18n.t("ssiagent.input.connect.label")}`}
@@ -189,31 +232,35 @@ const CreateSSIAgent = () => {
             setHasMismatchError(false);
             dispatch(setConnectUrl(connectionUrl));
           }}
-          onChangeFocus={setTouchedConnectUrlInput}
+          onChangeFocus={(result) => {
+            setTouchedConnectUrlInput();
+
+            if (!result && ssiAgent.connectUrl) {
+              dispatch(
+                setConnectUrl(removeLastSlash(ssiAgent.connectUrl.trim()))
+              );
+            }
+          }}
           value={ssiAgent.connectUrl || ""}
           error={!!displayConnectUrlError || hasMismatchError}
         />
-        {!!displayConnectUrlError && (
-          <ErrorMessage
-            message={
-              displayBootUrlError
+        <InputError
+          showError={!!displayConnectUrlError || hasMismatchError}
+          errorMessage={
+            hasMismatchError
+              ? `${i18n.t("ssiagent.error.mismatchconnecturl")}`
+              : displayBootUrlError
                 ? `${i18n.t("ssiagent.error.invalidurl")}`
                 : `${i18n.t("ssiagent.error.invalidconnecturl")}`
-            }
-          />
-        )}
-        {hasMismatchError && (
-          <ErrorMessage
-            message={`${i18n.t("ssiagent.error.mismatchconnecturl")}`}
-          />
-        )}
+          }
+        />
         <PageFooter
           pageId={pageId}
           primaryButtonText={`${i18n.t("ssiagent.button.validate")}`}
           primaryButtonAction={() => handleValidate()}
           primaryButtonDisabled={!validated}
         />
-      </ResponsivePageLayout>
+      </ScrollablePageLayout>
       <TermsModal
         name="about-ssi-agent"
         isOpen={openInfo}
