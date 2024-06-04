@@ -50,9 +50,6 @@ type ConnectionNoteDetails = {
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 
 interface ConnectionDetails extends ConnectionShortDetails {
-  goalCode?: string;
-  handshakeProtocols?: string[];
-  requestAttachments?: string[];
   serviceEndpoints?: string[];
   notes?: ConnectionNoteDetails[];
 }
