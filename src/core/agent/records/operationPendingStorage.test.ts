@@ -27,7 +27,6 @@ const operationPendingRecordStorageProps: OperationPendingRecordStorageProps = {
   id: id1,
   createdAt: now,
   recordType: OperationPendingRecordType.Witness,
-  recordId: "1",
   tags: {},
 };
 

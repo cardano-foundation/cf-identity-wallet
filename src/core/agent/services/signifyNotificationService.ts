@@ -236,10 +236,10 @@ class SignifyNotificationService extends AgentService {
 
   async onSignifyOperationStateChanged(
     callback: ({
-      oid,
+      recordId,
       opType,
     }: {
-      oid: string;
+      recordId: string;
       opType: OperationPendingRecordType;
     }) => void
   ) {
@@ -252,17 +252,21 @@ class SignifyNotificationService extends AgentService {
             .operations()
             .get(pendingOperation.id);
           if (operation.done) {
+            const recordId = pendingOperation.id.replace(
+              `${pendingOperation.recordType}.`,
+              ""
+            );
             switch (pendingOperation.recordType) {
             case OperationPendingRecordType.Witness: {
               await this.identifierStorage.updateIdentifierMetadata(
-                pendingOperation.recordId,
+                recordId,
                 {
                   isPending: false,
                 }
               );
               callback({
                 opType: pendingOperation.recordType,
-                oid: pendingOperation.recordId,
+                recordId: recordId,
               });
 
               break;

@@ -6,7 +6,6 @@ import { OperationPendingRecordType } from "./operationPendingRecord.type";
 
 const mockData: OperationPendingRecordStorageProps = {
   id: "id",
-  recordId: "1",
   recordType: OperationPendingRecordType.Witness,
 };
 
@@ -20,10 +19,8 @@ describe("Operation pending  record", () => {
     settingsRecord.getTags();
     expect(settingsRecord.id).toBe(mockData.id);
     expect(settingsRecord.createdAt).toBe(createdAt);
-    expect(settingsRecord.recordId).toBe(mockData.recordId);
     expect(settingsRecord.recordType).toBe(mockData.recordType);
     expect(settingsRecord.getTags()).toMatchObject({
-      recordId: mockData.recordId,
       recordType: mockData.recordType,
     });
   });
@@ -33,7 +30,6 @@ describe("Operation pending  record", () => {
     await new Promise((resolve) => setTimeout(resolve, 10));
     const settingsRecord = new OperationPendingRecord({
       id: mockData.id,
-      recordId: mockData.recordId,
       recordType: mockData.recordType,
     });
     expect(settingsRecord.createdAt.getTime()).toBeGreaterThan(

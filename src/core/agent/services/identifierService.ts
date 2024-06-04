@@ -132,9 +132,12 @@ class IdentifierService extends AgentService {
     const startTime = Date.now();
     this.validIdentifierMetadata(metadata);
     const signifyName = uuidv4();
+    const createAidOptions = this.getCreateAidOptions();
     const operation = await this.signifyClient
       .identifiers()
-      .create(signifyName); //, this.getCreateAidOptions());
+      .create(signifyName, {
+        ...createAidOptions,
+      }); //, this.getCreateAidOptions());
     let op = await operation.op();
     const signifyOpName = op.name;
     const addRoleOperation = await this.signifyClient
@@ -153,7 +156,6 @@ class IdentifierService extends AgentService {
         const pendingOperation = await this.operationPendingStorage.save({
           id: op.name,
           recordType: OperationPendingRecordType.Witness,
-          recordId: identifier,
         });
         Agent.agent.signifyNotifications.addPendingOperationToQueue(
           pendingOperation

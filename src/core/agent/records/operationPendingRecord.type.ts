@@ -1,3 +1,3 @@
 export enum OperationPendingRecordType {
-  Witness = "Witness",
+  Witness = "witness",
 }
