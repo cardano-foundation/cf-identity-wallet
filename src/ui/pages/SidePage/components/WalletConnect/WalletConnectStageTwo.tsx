@@ -29,13 +29,12 @@ const WalletConnectStageTwo = ({
   onClose,
 }: WalletConnectStageTwoProps) => {
   const dispatch = useDispatch();
-  const indentifierCache = useAppSelector(getIdentifiersCache);
+  const identifierCache = useAppSelector(getIdentifiersCache);
   const existingConnections = useAppSelector(getWalletConnectionsCache);
 
   const [selectedIdentifier, setSelectedIdentifier] =
     useState<IdentifierShortDetails | null>(null);
-
-  const displayIdentifiers = indentifierCache.map(
+  const displayIdentifiers = identifierCache.map(
     (identifier, index): CardItem<IdentifierShortDetails> => ({
       id: index,
       title: identifier.displayName,
