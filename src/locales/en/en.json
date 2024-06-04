@@ -535,6 +535,14 @@
       }
     ]
   },
+  "aboutssiagent": {
+    "done": "Done",
+    "intro": {
+      "title": "About SSI agent",
+      "text": ""
+    },
+    "sections": []
+  },
   "lockpage": {
     "title": "Welcome back",
     "description": "Please enter your passcode to login",
@@ -630,6 +638,30 @@
       "hasNoSymbol": "Must contain a valid symbol",
       "hasNoMatch": "Passwords do not match",
       "hintSameAsPassword": "Your hint cannot be your password"
+    }
+  },
+  "ssiagent": {
+    "title": "Enter your SSI agent details",
+    "description": "To continue, please enter the SSI agent boot and connect URLs (in your email or from your command line).",
+    "button": {
+      "info": "Get more information",
+      "validate": "Validate"
+    },
+    "input": {
+      "boot": {
+        "label": "Boot URL",
+        "placeholder": "Paste or scan your boot URL"
+      },
+      "connect": {
+        "label": "Connect URL",
+        "placeholder": "Paste or scan your connect URL"
+      }
+    },
+    "error": {
+      "invalidurl": "Enter a valid URL",
+      "invalidbooturl": "Enter a valid boot URL",
+      "invalidconnecturl": "Enter a valid connect URL",
+      "mismatchconnecturl": "This connect URL doesn’t match the boot URL"
     }
   },
   "operationspasswordregex": {

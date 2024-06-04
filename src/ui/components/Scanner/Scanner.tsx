@@ -38,6 +38,7 @@ import { OptionModal } from "../OptionsModal";
 import { setPendingConnections } from "../../../store/reducers/walletConnectionsCache";
 import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 import { CreateIdentifier } from "../CreateIdentifier";
+import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 
 const Scanner = forwardRef(
   ({ setIsValueCaptured, handleReset }: ScannerProps, ref) => {
@@ -126,6 +127,24 @@ const Scanner = forwardRef(
         return;
       }
 
+      if (
+        [
+          OperationType.SCAN_SSI_BOOT_URL,
+          OperationType.SCAN_SSI_CONNECT_URL,
+        ].includes(currentOperation)
+      ) {
+        if (OperationType.SCAN_SSI_BOOT_URL === currentOperation) {
+          dispatch(setBootUrl(content));
+        }
+
+        if (OperationType.SCAN_SSI_CONNECT_URL === currentOperation) {
+          dispatch(setConnectUrl(content));
+        }
+
+        handleReset && handleReset();
+        return;
+      }
+
       // @TODO - foconnor: when above loading screen in place, handle invalid QR code
       const invitation = await Agent.agent.connections.connectByOobiUrl(
         content
@@ -169,6 +188,8 @@ const Scanner = forwardRef(
           [
             OperationType.SCAN_CONNECTION,
             OperationType.SCAN_WALLET_CONNECTION,
+            OperationType.SCAN_SSI_BOOT_URL,
+            OperationType.SCAN_SSI_CONNECT_URL,
           ].includes(currentOperation)) &&
           currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
           currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING) ||
@@ -226,6 +247,9 @@ const Scanner = forwardRef(
             secondaryButtonAction={() => setPasteModalIsOpen(true)}
           />
         );
+      case OperationType.SCAN_SSI_BOOT_URL:
+      case OperationType.SCAN_SSI_CONNECT_URL:
+        return <div></div>;
       default:
         return (
           <PageFooter

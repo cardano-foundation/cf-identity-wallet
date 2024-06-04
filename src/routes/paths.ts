@@ -6,6 +6,7 @@ enum RoutePath {
   VERIFY_SEED_PHRASE = "/verifyseedphrase",
   TABS_MENU = "/tabs",
   CREATE_PASSWORD = "/createpassword",
+  SSI_AGENT = "/ssiagent",
   CONNECTION_DETAILS = "/connectiondetails",
 }
 
