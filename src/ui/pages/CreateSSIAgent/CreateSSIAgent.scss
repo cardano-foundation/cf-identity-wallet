@@ -1,18 +1,6 @@
 .create-ssi-agent {
   --background: var(--ion-color-light);
 
-  .ssi-spinner-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 101;
-  }
-
   .ssi-error-placeholder {
     height: 1.375rem;
 
@@ -31,7 +19,7 @@
     }
 
     & > .page-footer {
-      margin-top: 2rem;
+      margin-top: 1rem;
     }
   }
 
@@ -52,4 +40,16 @@
       --background: transparent;
     }
   }
+}
+
+.ssi-spinner-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 101;
 }

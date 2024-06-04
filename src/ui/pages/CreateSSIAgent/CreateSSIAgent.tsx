@@ -166,14 +166,6 @@ const CreateSSIAgent = () => {
           />
         }
       >
-        {loading && (
-          <div
-            className="ssi-spinner-container"
-            data-testid="ssi-spinner-container"
-          >
-            <IonSpinner name="circular" />
-          </div>
-        )}
         <h2 data-testid={`${pageId}-title`}>{i18n.t("ssiagent.title")}</h2>
         <p
           className="page-paragraph"
@@ -261,6 +253,14 @@ const CreateSSIAgent = () => {
           primaryButtonDisabled={!validated}
         />
       </ScrollablePageLayout>
+      {loading && (
+        <div
+          className="ssi-spinner-container"
+          data-testid="ssi-spinner-container"
+        >
+          <IonSpinner name="circular" />
+        </div>
+      )}
       <TermsModal
         name="about-ssi-agent"
         isOpen={openInfo}
