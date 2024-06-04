@@ -30,6 +30,10 @@ const SidePage = () => {
     }
   }, [canOpenIncomingRequest, canOpenPendingWalletConnection]);
 
+  useEffect(() => {
+    setOpenSidePage(canOpenIncomingRequest || canOpenPendingWalletConnection);
+  }, [canOpenIncomingRequest, canOpenPendingWalletConnection]);
+
   const unpauseIncomingRequest = () => {
     if (pauseIncommingRequestByConnection.current) {
       dispatch(setPauseQueueIncomingRequest(false));
@@ -57,6 +61,7 @@ const SidePage = () => {
 
   return (
     <SideSlider
+      renderAsModal
       onCloseAnimationEnd={unpauseIncomingRequest}
       open={openSidePage}
     >
