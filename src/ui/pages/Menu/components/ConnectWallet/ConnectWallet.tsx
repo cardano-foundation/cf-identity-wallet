@@ -136,6 +136,10 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     };
 
     const handleConnectWallet = () => {
+      if (identifierCache.length === 0) {
+        setOpenIdentifierMissingAlert(true);
+        return;
+      }
       if (!actionInfo.current.data) return;
       const isConnectedItem = actionInfo.current.data.id === connectedWallet;
       if (isConnectedItem) {

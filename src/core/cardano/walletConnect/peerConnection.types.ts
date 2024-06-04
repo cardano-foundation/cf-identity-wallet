@@ -9,12 +9,14 @@ interface ExperimentalAPIFunctions {
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
+  getConnectingAid: () => string;
 }
 
 enum PeerConnectionEventTypes {
   PeerConnectSign = "PeerConnectSign",
   PeerConnected = "PeerConnected",
   PeerDisconnected = "PeerDisconnected",
+  PeerConnectionBroken = "PeerConnectionBroken",
 }
 
 interface PeerConnectSigningEvent extends BaseEventEmitter {
@@ -41,6 +43,10 @@ interface PeerDisconnectedEvent extends BaseEventEmitter {
   };
 }
 
+interface PeerConnectionBrokenEvent extends BaseEventEmitter {
+  type: typeof PeerConnectionEventTypes.PeerConnectionBroken;
+}
+
 interface PeerConnectionError {
   code: number;
   info: string;
@@ -61,5 +67,6 @@ export type {
   PeerConnectSigningEvent,
   PeerConnectedEvent,
   PeerDisconnectedEvent,
+  PeerConnectionBrokenEvent,
   PeerConnectionError,
 };

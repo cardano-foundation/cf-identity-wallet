@@ -27,6 +27,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
+  getConnectingAid: () => string;
 
   signerCache: Map<string, Signer>;
 
@@ -97,6 +98,10 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       } else {
         return { error: TxSignError.UserDeclined };
       }
+    };
+
+    this.getConnectingAid = () => {
+      return this.selectedAid;
     };
   }
 

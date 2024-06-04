@@ -12,17 +12,22 @@ import {
   IncomingRequestProps,
   IncomingRequestType,
 } from "../../../../../store/reducers/stateCache/stateCache.types";
+import { getConnectedWallet } from "../../../../../store/reducers/walletConnectionsCache";
 
 const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const pageId = "incoming-request";
   const dispatch = useAppDispatch();
   const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
+  const connectedWallet = useAppSelector(getConnectedWallet);
   const incomingRequest = useMemo(() => {
-    return !queueIncomingRequest.isProcessing
-      ? { id: "" }
-      : queueIncomingRequest.queues.length > 0
-        ? queueIncomingRequest.queues[0]
-        : { id: "" };
+    if (
+      !queueIncomingRequest.isProcessing ||
+      !queueIncomingRequest.queues.length
+    ) {
+      return { id: "" };
+    } else {
+      return queueIncomingRequest.queues[0];
+    }
   }, [queueIncomingRequest]);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [requestData, setRequestData] = useState<IncomingRequestProps>();
@@ -30,6 +35,13 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const [blur, setBlur] = useState(false);
 
   useEffect(() => {
+    if (
+      incomingRequest.type === IncomingRequestType.PEER_CONNECT_SIGN &&
+      (!connectedWallet ||
+        connectedWallet !== incomingRequest.peerConnection?.id)
+    ) {
+      handleReset();
+    }
     if (incomingRequest.id.length > 0) {
       setRequestData(incomingRequest);
       setOpenPage(true);
