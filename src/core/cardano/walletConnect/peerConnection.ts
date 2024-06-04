@@ -155,7 +155,6 @@ class PeerConnection {
         this.eventService.emit<PeerDisconnectedEvent>({
           type: PeerConnectionEventTypes.PeerDisconnected,
           payload: {
-            identifier: selectedAid,
             dAppAddress: disConnectMessage.address as string,
           },
         });

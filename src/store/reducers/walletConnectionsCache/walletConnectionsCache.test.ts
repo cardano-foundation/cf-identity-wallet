@@ -51,9 +51,9 @@ describe("walletConnectionsCacheSlice", () => {
     };
     const newState = walletConnectionsCacheSlice.reducer(
       initialState,
-      setConnectedWallet(connection)
+      setConnectedWallet(connection.id)
     );
-    expect(newState.connectedWallet).toEqual(connection);
+    expect(newState.connectedWallet).toEqual(connection.id);
   });
   it("should handle setPendingDAppMeerKat", () => {
     const newState = walletConnectionsCacheSlice.reducer(
@@ -94,13 +94,7 @@ describe("Get wallet connections cache", () => {
   it("should return connected wallet from RootState", () => {
     const state = {
       walletConnectionsCache: {
-        connectedWallet: {
-          id: "1",
-          name: "Wallet name #1",
-          selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
-          iconB64: "",
-          url: "http://localhost:3001/",
-        },
+        connectedWallet: "1",
       },
     } as RootState;
     const connectionCache = getConnectedWallet(state);

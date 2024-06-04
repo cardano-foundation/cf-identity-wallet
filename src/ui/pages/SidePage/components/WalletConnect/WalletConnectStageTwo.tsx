@@ -58,9 +58,12 @@ const WalletConnectStageTwo = ({
         await PeerConnection.peerConnection.start(selectedIdentifier.id);
         await PeerConnection.peerConnection.connectWithDApp(pendingDAppMeerkat);
         // Refresh the connections list
-        const existingConnections =
-          await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
-        dispatch(setWalletConnectionsCache(existingConnections));
+        dispatch(
+          setWalletConnectionsCache([
+            { id: pendingDAppMeerkat, selectedAid: selectedIdentifier.id },
+            ...existingConnections,
+          ])
+        );
       }
       onClose();
     } catch (e) {

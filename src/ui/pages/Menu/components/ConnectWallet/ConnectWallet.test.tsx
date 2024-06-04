@@ -68,7 +68,7 @@ const initialState = {
   },
   walletConnectionsCache: {
     walletConnections: [...walletConnectionsFix],
-    connectedWallet: walletConnectionsFix[1],
+    connectedWallet: walletConnectionsFix[1].id,
   },
   identifiersCache: {
     identifiers: [...identifierFix],

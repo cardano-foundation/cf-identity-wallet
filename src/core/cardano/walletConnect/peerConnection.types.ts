@@ -39,7 +39,6 @@ interface PeerConnectedEvent extends BaseEventEmitter {
 interface PeerDisconnectedEvent extends BaseEventEmitter {
   type: typeof PeerConnectionEventTypes.PeerDisconnected;
   payload: {
-    identifier: string;
     dAppAddress: string;
   };
 }

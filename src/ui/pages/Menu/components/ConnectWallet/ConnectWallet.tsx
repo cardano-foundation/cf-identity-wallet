@@ -141,10 +141,9 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
         return;
       }
       if (!actionInfo.current.data) return;
-      const isConnectedItem =
-        actionInfo.current.data.id === connectedWallet?.id;
+      const isConnectedItem = actionInfo.current.data.id === connectedWallet;
       if (isConnectedItem) {
-        PeerConnection.peerConnection.disconnectDApp(connectedWallet.id);
+        PeerConnection.peerConnection.disconnectDApp(connectedWallet);
       } else {
         dispatch(setPendingDAppMeerKat(actionInfo.current.data.id));
       }
@@ -210,7 +209,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
                   );
                 }}
                 onRenderEndSlot={(data) => {
-                  if (data.id !== connectedWallet?.id) return null;
+                  if (data.id !== connectedWallet) return null;
 
                   return (
                     <IonCheckbox
@@ -234,7 +233,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           )}
         </div>
         <ConfirmConnectModal
-          isConnectModal={actionInfo.current.data?.id !== connectedWallet?.id}
+          isConnectModal={actionInfo.current.data?.id !== connectedWallet}
           openModal={openConfirmConnectModal}
           closeModal={() => setOpenConfirmConnectModal(false)}
           onConfirm={handleConnectWallet}

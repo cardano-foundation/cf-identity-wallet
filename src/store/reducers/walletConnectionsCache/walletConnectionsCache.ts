@@ -20,10 +20,7 @@ const walletConnectionsCacheSlice = createSlice({
     ) => {
       state.walletConnections = action.payload;
     },
-    setConnectedWallet: (
-      state,
-      action: PayloadAction<ConnectionData | null>
-    ) => {
+    setConnectedWallet: (state, action: PayloadAction<string | null>) => {
       state.connectedWallet = action.payload;
     },
     setPendingDAppMeerKat: (state, action: PayloadAction<string | null>) => {
