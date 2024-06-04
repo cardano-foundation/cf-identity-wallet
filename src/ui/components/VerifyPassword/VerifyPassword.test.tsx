@@ -61,6 +61,7 @@ const initialStateNoPassword = {
     bran: "bran",
   },
   credsCache: { creds: credsFixAcdc },
+  credsArchived: { creds: credsFixAcdc },
 };
 
 const initialStateWithPassword = {
@@ -80,6 +81,7 @@ const initialStateWithPassword = {
     bran: "bran",
   },
   credsCache: { creds: credsFixAcdc },
+  credsArchived: { creds: credsFixAcdc },
 };
 
 describe("Verify Password on Cards Details page", () => {

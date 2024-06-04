@@ -48,6 +48,7 @@ import { MultiSigService } from "../../../core/agent/services/multiSigService";
 import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCache";
 import { CardListViewType } from "../SwitchCardView";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
+import { setCredsArchived } from "../../../store/reducers/credsArchived";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -201,11 +202,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const loadDatabase = async () => {
     const connectionsDetails = await Agent.agent.connections.getConnections();
 
-    const credentials = await Agent.agent.credentials.getCredentials();
+    const credsCache = await Agent.agent.credentials.getCredentials();
+    const credsArchived = await Agent.agent.credentials.getCredentials(true);
     const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
 
     dispatch(setIdentifiersCache(storedIdentifiers));
-    dispatch(setCredsCache(credentials));
+    dispatch(setCredsCache(credsCache));
+    dispatch(setCredsArchived(credsArchived));
     dispatch(setConnectionsCache(connectionsDetails));
     // TODO: Need update after core function completed.
     dispatch(setWalletConnectionsCache(walletConnectionsFix));

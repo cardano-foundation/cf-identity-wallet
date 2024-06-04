@@ -9,6 +9,7 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
   addFavouritesCredsCache,
   removeFavouritesCredsCache,
+  setCredsCache,
 } from "../../../store/reducers/credsCache";
 import {
   setCurrentRoute,
@@ -18,6 +19,7 @@ import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
 import { CredentialDetails } from "./CredentialDetails";
+import { setCredsArchived } from "../../../store/reducers/credsArchived";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -28,6 +30,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getCredentialDetailsById: jest.fn(),
         restoreCredential: jest.fn(() => Promise.resolve(true)),
         getCredentialShortDetailsById: jest.fn(() => Promise.resolve([])),
+        getCredentials: jest.fn(() => Promise.resolve(true)),
       },
       basicStorage: {
         findById: jest.fn(),
@@ -91,6 +94,7 @@ const initialStateNoPasswordCurrent = {
     bran: "bran",
   },
   credsCache: { creds: credsFixAcdc, favourites: [] },
+  credsArchived: { creds: credsFixAcdc },
   biometryCache: {
     enabled: false,
   },
@@ -113,6 +117,7 @@ const initialStateNoPasswordArchived = {
     bran: "bran",
   },
   credsCache: { creds: [] },
+  credsArchived: { creds: [] },
   biometryCache: {
     enabled: false,
   },
@@ -176,6 +181,7 @@ describe("Cards Details page - current not archived credential", () => {
         bran: "bran",
       },
       credsCache: { creds: credsFixAcdc, favourites: [] },
+      credsArchived: { creds: credsFixAcdc },
       connectionsCache: {
         connections: [],
       },
@@ -581,6 +587,14 @@ describe("Cards Details page - archived credential", () => {
           path: TabsRoutePath.CREDENTIALS,
         })
       );
+
+      credDispatchMock.mockImplementation((action) => {
+        expect(action).toEqual(setCredsCache(credsFixAcdc));
+      });
+
+      credDispatchMock.mockImplementation((action) => {
+        expect(action).toEqual(setCredsArchived(credsFixAcdc));
+      });
     });
   });
 });
