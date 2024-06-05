@@ -266,7 +266,7 @@ describe("Signify operation state changed handler", () => {
       delegated: {},
     } as IdentifierShortDetails;
     await signifyOperationStateChangeHandler(
-      { opType: OperationPendingRecordType.Witness, recordId: aid.id },
+      { opType: OperationPendingRecordType.Witness, oid: aid.id },
       dispatch
     );
     expect(dispatch).toBeCalledWith(

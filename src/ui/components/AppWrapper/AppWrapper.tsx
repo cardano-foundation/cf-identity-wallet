@@ -145,15 +145,12 @@ const peerConnectRequestSignChangeHandler = async (
 };
 
 const signifyOperationStateChangeHandler = async (
-  {
-    recordId,
-    opType,
-  }: { recordId: string; opType: OperationPendingRecordType },
+  { oid, opType }: { oid: string; opType: OperationPendingRecordType },
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   switch (opType) {
   case OperationPendingRecordType.Witness:
-    dispatch(updateIsPending({ id: recordId, isPending: false }));
+    dispatch(updateIsPending({ id: oid, isPending: false }));
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     break;
   }

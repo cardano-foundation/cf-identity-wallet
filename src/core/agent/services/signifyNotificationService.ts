@@ -236,10 +236,10 @@ class SignifyNotificationService extends AgentService {
 
   async onSignifyOperationStateChanged(
     callback: ({
-      recordId,
+      oid,
       opType,
     }: {
-      recordId: string;
+      oid: string;
       opType: OperationPendingRecordType;
     }) => void
   ) {
@@ -266,7 +266,7 @@ class SignifyNotificationService extends AgentService {
               );
               callback({
                 opType: pendingOperation.recordType,
-                recordId: recordId,
+                oid: recordId,
               });
 
               break;
