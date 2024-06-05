@@ -1,6 +1,11 @@
 import { IonButton, IonIcon, IonSpinner } from "@ionic/react";
 import { informationCircleOutline, scanOutline } from "ionicons/icons";
-import { useState, MouseEvent as ReactMouseEvent, useMemo } from "react";
+import {
+  useState,
+  MouseEvent as ReactMouseEvent,
+  useMemo,
+  useEffect,
+} from "react";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -27,6 +32,7 @@ import { isValidHttpUrl } from "../../utils/urlChecker";
 import { TermsModal } from "../../components/TermsModal";
 import { Agent } from "../../../core/agent/agent";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
+import { ConfigurationService } from "../../../core/configuration";
 
 const SSI_URLS_EMPTY = "SSI url is empty";
 
@@ -57,6 +63,17 @@ const CreateSSIAgent = () => {
   const [loading, setLoading] = useState(false);
   const [hasMismatchError, setHasMismatchError] = useState(false);
   const [isInvalidBootUrl, setIsInvalidBootUrl] = useState(false);
+
+  useEffect(() => {
+    if (!ssiAgent.bootUrl && !ssiAgent.connectUrl) {
+      dispatch(
+        setConnectUrl(ConfigurationService.env?.keri?.keria?.url || undefined)
+      );
+      dispatch(
+        setBootUrl(ConfigurationService.env?.keri?.keria?.bootUrl || undefined)
+      );
+    }
+  }, []);
 
   const setTouchedConnectUrlInput = () => {
     setConnectUrlTouched(true);
