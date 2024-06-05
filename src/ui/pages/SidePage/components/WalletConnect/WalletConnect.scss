@@ -39,38 +39,8 @@
           }
         }
 
-        .request-checkmark-logo {
-          width: 4.875rem;
-          height: 4.875rem;
-          position: absolute;
-          transform: scale(0);
-          opacity: 0;
-
-          span {
-            border-radius: 50%;
-            width: 100%;
-            height: 100%;
-            align-items: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            background: var(--ion-color-primary-gradient);
-            margin: 0 auto;
-
-            & > ion-icon {
-              width: 50%;
-              height: 50%;
-            }
-          }
-        }
-
         @media screen and (min-width: 250px) and (max-width: 370px) {
           .request-user-logo {
-            width: 3.5rem;
-            height: 3.5rem;
-          }
-
-          .request-checkmark-logo {
             width: 3.5rem;
             height: 3.5rem;
           }

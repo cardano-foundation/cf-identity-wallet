@@ -1,5 +1,5 @@
 import { IonIcon } from "@ionic/react";
-import { checkmark, personCircleOutline } from "ionicons/icons";
+import { personCircleOutline } from "ionicons/icons";
 import { useState } from "react";
 import { i18n } from "../../../../../i18n";
 import { Alert } from "../../../../components/Alert";
@@ -61,11 +61,6 @@ const WalletConnectStageOne = ({
                 icon={personCircleOutline}
                 color="light"
               />
-            </div>
-            <div className="request-checkmark-logo">
-              <span>
-                <IonIcon icon={checkmark} />
-              </span>
             </div>
           </div>
           <p
