@@ -1,0 +1,55 @@
+.create-ssi-agent {
+  --background: var(--ion-color-light);
+
+  .ssi-error-placeholder {
+    height: 1.375rem;
+
+    @media screen and (min-width: 250px) and (max-width: 370px) {
+      height: 1rem;
+    }
+  }
+
+  &.scrollable-page-layout .scrollable-page-content {
+    & > * {
+      margin: 0.5rem 0 0;
+    }
+
+    & > ion-item {
+      margin-top: 0;
+    }
+
+    & > .page-footer {
+      margin-top: 1rem;
+    }
+  }
+
+  .error-message-placeholder {
+    display: none;
+  }
+
+  .error-message {
+    text-align: left;
+
+    > p {
+      margin: 0;
+    }
+  }
+
+  .page-header {
+    ion-toolbar {
+      --background: transparent;
+    }
+  }
+}
+
+.ssi-spinner-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 101;
+}

@@ -52,6 +52,7 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       start: jest.fn(),
+      initDatabaseConnection: jest.fn(),
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),

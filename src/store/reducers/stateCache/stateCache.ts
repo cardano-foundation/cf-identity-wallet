@@ -20,6 +20,7 @@ const initialState: StateCacheProps = {
     seedPhraseIsSet: false,
     passwordIsSet: false,
     passwordIsSkipped: true,
+    ssiAgentIsSet: false,
   },
   currentOperation: OperationType.IDLE,
   queueIncomingRequest: {
