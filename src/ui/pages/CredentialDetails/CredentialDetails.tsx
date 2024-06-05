@@ -46,6 +46,7 @@ import { combineClassNames } from "../../utils/style";
 import { useAppIonRouter } from "../../hooks";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
+import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -121,6 +122,7 @@ const CredentialDetails = () => {
       handleSetFavourite(params.id);
     }
     dispatch(setCredsCache(creds));
+
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
   };
 
@@ -137,6 +139,7 @@ const CredentialDetails = () => {
       params.id
     );
     dispatch(setCredsCache([...credsCache, creds]));
+
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
     handleDone();
   };

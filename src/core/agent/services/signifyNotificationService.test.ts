@@ -106,7 +106,7 @@ const signifyNotificationService = new SignifyNotificationService(
   agentServicesProps,
   notificationStorage as any,
   identifierStorage as any,
-  operationPendingStorage as any,
+  operationPendingStorage as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({

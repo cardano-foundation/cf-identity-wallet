@@ -1,15 +1,19 @@
 import { Query, StorageService } from "../../storage/storage.types";
-import { OperationPendingRecord, OperationPendingRecordStorageProps } from "./operationPendingRecord";
-
+import {
+  OperationPendingRecord,
+  OperationPendingRecordStorageProps,
+} from "./operationPendingRecord";
 
 class OperationPendingStorage {
   private storageService: StorageService<OperationPendingRecord>;
-  
+
   constructor(storageService: StorageService<OperationPendingRecord>) {
     this.storageService = storageService;
   }
-  
-  save(props: OperationPendingRecordStorageProps): Promise<OperationPendingRecord> {
+
+  save(
+    props: OperationPendingRecordStorageProps
+  ): Promise<OperationPendingRecord> {
     const record = new OperationPendingRecord(props);
     return this.storageService.save(record);
   }
@@ -25,7 +29,9 @@ class OperationPendingStorage {
   findById(id: string): Promise<OperationPendingRecord | null> {
     return this.storageService.findById(id, OperationPendingRecord);
   }
-  findAllByQuery(query: Query<OperationPendingRecord>): Promise<OperationPendingRecord[]> {
+  findAllByQuery(
+    query: Query<OperationPendingRecord>
+  ): Promise<OperationPendingRecord[]> {
     return this.storageService.findAllByQuery(query, OperationPendingRecord);
   }
   getAll(): Promise<OperationPendingRecord[]> {

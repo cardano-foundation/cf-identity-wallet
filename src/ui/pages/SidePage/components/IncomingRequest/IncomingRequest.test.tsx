@@ -127,7 +127,7 @@ const signifyNotificationService = new SignifyNotificationService(
   agentServicesProps,
   notificationStorage as any,
   identifierStorage as any,
-  operationPendingStorage as any,
+  operationPendingStorage as any
 );
 
 describe("Multi-Sig request", () => {
