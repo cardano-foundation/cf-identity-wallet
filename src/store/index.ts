@@ -5,12 +5,10 @@ import { identifiersCacheSlice } from "./reducers/identifiersCache";
 import { credsCacheSlice } from "./reducers/credsCache";
 import { connectionsCacheSlice } from "./reducers/connectionsCache";
 import { walletConnectionsCacheSlice } from "./reducers/walletConnectionsCache";
-import {
-  getIdentifierViewTypeCacheCache,
-  identifierViewTypeCacheSlice,
-} from "./reducers/identifierViewTypeCache";
+import { identifierViewTypeCacheSlice } from "./reducers/identifierViewTypeCache";
 import { biometryCacheSlice } from "./reducers/biometryCache";
 import { credsArchivedCacheSlice } from "./reducers/credsArchivedCache";
+import { ssiAgentSlice } from "./reducers/ssiAgent";
 
 const store = configureStore({
   reducer: {
@@ -23,6 +21,7 @@ const store = configureStore({
     walletConnectionsCache: walletConnectionsCacheSlice.reducer,
     identifierViewTypeCacheCache: identifierViewTypeCacheSlice.reducer,
     biometryCache: biometryCacheSlice.reducer,
+    ssiAgentCache: ssiAgentSlice.reducer,
   },
 });
 

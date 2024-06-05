@@ -30,6 +30,19 @@ const notificationStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
+const identifierStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
+const operationPendingStorage = jest.mocked({});
+
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
 const identifiersCreateMock = jest.fn();
@@ -112,7 +125,9 @@ const agentServicesProps = {
 
 const signifyNotificationService = new SignifyNotificationService(
   agentServicesProps,
-  notificationStorage as any
+  notificationStorage as any,
+  identifierStorage as any,
+  operationPendingStorage as any
 );
 
 describe("Multi-Sig request", () => {

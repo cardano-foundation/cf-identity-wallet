@@ -19,6 +19,7 @@ import { RoutePath, TabsRoutePath } from "./paths";
 import { IdentifierDetails } from "../ui/pages/IdentifierDetails";
 import { CredentialDetails } from "../ui/pages/CredentialDetails";
 import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
+import { CreateSSIAgent } from "../ui/pages/CreateSSIAgent";
 
 const Routes = () => {
   const stateCache = useAppSelector(getStateCache);
@@ -69,6 +70,12 @@ const Routes = () => {
         <Route
           path={RoutePath.CREATE_PASSWORD}
           component={CreatePassword}
+          exact
+        />
+
+        <Route
+          path={RoutePath.SSI_AGENT}
+          component={CreateSSIAgent}
           exact
         />
 

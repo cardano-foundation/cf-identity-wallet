@@ -14,6 +14,8 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
+  updateIsPending,
+  updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   setCredsCache,
@@ -57,6 +59,8 @@ import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCach
 import { CardListViewType } from "../SwitchCardView";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import { i18n } from "../../../i18n";
 import { Alert } from "../Alert";
 
@@ -194,6 +198,18 @@ const peerConnectionBrokenChangeHandler = async (
   dispatch(setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
 };
 
+const signifyOperationStateChangeHandler = async (
+  { oid, opType }: { oid: string; opType: OperationPendingRecordType },
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  switch (opType) {
+  case OperationPendingRecordType.Witness:
+    dispatch(updateIsPending({ id: oid, isPending: false }));
+    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
+    break;
+  }
+};
+
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -278,6 +294,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
 
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
+    const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
+      MiscRecordId.KERIA_CONNECT_URL
+    );
 
     const identifiersFavourites = await Agent.agent.basicStorage.findById(
       MiscRecordId.IDENTIFIERS_FAVOURITES
@@ -326,33 +345,19 @@ const AppWrapper = (props: { children: ReactNode }) => {
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
+        ssiAgentIsSet:
+          !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
       })
     );
+
+    return {
+      keriaConnectUrlRecord,
+    };
   };
 
   const initApp = async () => {
     await new ConfigurationService().start();
-    try {
-      await Agent.agent.start();
-      setIsOnline(true);
-      await loadDatabase();
-    } catch (e) {
-      const errorStack = (e as Error).stack as string;
-      const errorMessage = (e as Error).message;
-
-      // If the error is failed to fetch with signify, we retry until the connection is secured
-      if (/SignifyClient/gi.test(errorStack)) {
-        await loadDatabase();
-        Agent.agent.bootAndConnect().then(() => {
-          setIsOnline(Agent.agent.getKeriaOnlineStatus());
-        });
-      } else if (/signify-bran/gi.test(errorMessage)) {
-        dispatch(setInitialized(true));
-        return;
-      } else {
-        throw e;
-      }
-    }
+    await Agent.agent.initDatabaseConnection();
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
     const appAlreadyInit = await Agent.agent.basicStorage.findById(
@@ -363,7 +368,25 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     }
-    await loadCacheBasicStorage();
+    await loadDatabase();
+    const { keriaConnectUrlRecord } = await loadCacheBasicStorage();
+
+    if (keriaConnectUrlRecord) {
+      try {
+        await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
+        setIsOnline(true);
+      } catch (e) {
+        const errorStack = (e as Error).stack as string;
+        // If the error is failed to fetch with signify, we retry until the connection is secured
+        if (/SignifyClient/gi.test(errorStack)) {
+          Agent.agent.connect().then(() => {
+            setIsOnline(Agent.agent.getKeriaOnlineStatus());
+          });
+        } else {
+          throw e;
+        }
+      }
+    }
 
     Agent.agent.onKeriaStatusStateChanged((event) => {
       setIsOnline(event.payload.isOnline);
@@ -402,6 +425,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return peerConnectionBrokenChangeHandler(event, dispatch);
       }
     );
+    Agent.agent.signifyNotifications.onSignifyOperationStateChanged((event) => {
+      return signifyOperationStateChangeHandler(event, dispatch);
+    });
     dispatch(setInitialized(true));
   };
 
@@ -434,4 +460,5 @@ export {
   peerDisconnectedChangeHandler,
   peerConnectRequestSignChangeHandler,
   peerConnectionBrokenChangeHandler,
+  signifyOperationStateChangeHandler,
 };

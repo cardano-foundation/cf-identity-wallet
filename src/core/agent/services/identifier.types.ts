@@ -45,6 +45,7 @@ interface MultiSigIcpRequestDetails {
 interface CreateIdentifierResult {
   identifier: string;
   signifyName: string;
+  isPending: boolean;
 }
 
 export type {
