@@ -23,6 +23,7 @@ const SideSlider = ({
         .easing("ease-out")
         .duration(500)
         .fromTo("transform", "translateX(100%)", "translateX(0)")
+        .fromTo("opacity", 1, 1)
         .afterStyles({
           opacity: 1,
         });
