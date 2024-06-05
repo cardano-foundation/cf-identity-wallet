@@ -20,9 +20,9 @@ const ConfirmConnectModal = ({
 }: ConfirmConnectModalProps) => {
   const dispatch = useAppDispatch();
 
-  const cardImg = connectionData?.image ? (
+  const cardImg = connectionData?.iconB64 ? (
     <img
-      src={connectionData.image}
+      src={connectionData.iconB64}
       alt={connectionData.name}
       className="wallet-connect-logo"
       data-testid="wallet-connection-logo"
@@ -46,7 +46,9 @@ const ConfirmConnectModal = ({
   );
 
   const displayUrl = connectionData
-    ? connectionData.url.substring(0, 5) + "..." + connectionData.url.slice(-5)
+    ? (connectionData.url as string).substring(0, 5) +
+      "..." +
+      (connectionData.url as string).slice(-5)
     : "";
 
   const deleteConnection = () => {
@@ -85,11 +87,11 @@ const ConfirmConnectModal = ({
     >
       {cardImg}
       <h3 className="confirm-modal-name-title">{connectionData?.name}</h3>
-      <p className="confirm-modal-name">{connectionData?.owner}</p>
+      <p className="confirm-modal-name">{connectionData?.selectedAid}</p>
       <div
         onClick={() => {
           if (!connectionData) return;
-          writeToClipboard(connectionData.url);
+          writeToClipboard(connectionData.url as string);
           dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
         }}
         className="confirm-modal-id"

@@ -9,8 +9,13 @@ import { EventService } from "../../agent/services/eventService";
 import {
   ExperimentalAPIFunctions,
   PeerConnectSigningEvent,
-  PeerConnectSigningEventTypes,
+  PeerConnectedEvent,
+  PeerConnectionBrokenEvent,
+  PeerConnectionEventTypes,
+  PeerDisconnectedEvent,
 } from "./peerConnection.types";
+import { Agent } from "../../agent/agent";
+import { PeerConnectionStorage } from "../../agent/records";
 
 class PeerConnection {
   static readonly PEER_CONNECTION_START_PENDING =
@@ -33,7 +38,6 @@ class PeerConnection {
   ];
 
   private identityWalletConnect: IdentityWalletConnect | undefined;
-  private connected = false;
   private connectedDAppAdress = "";
   private eventService = new EventService();
   private static instance: PeerConnection;
@@ -42,8 +46,39 @@ class PeerConnection {
     callback: (event: PeerConnectSigningEvent) => void
   ) {
     this.eventService.on(
-      PeerConnectSigningEventTypes.PeerConnectSign,
+      PeerConnectionEventTypes.PeerConnectSign,
       async (event: PeerConnectSigningEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  onPeerConnectedStateChanged(callback: (event: PeerConnectedEvent) => void) {
+    this.eventService.on(
+      PeerConnectionEventTypes.PeerConnected,
+      async (event: PeerConnectedEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  onPeerDisconnectedStateChanged(
+    callback: (event: PeerDisconnectedEvent) => void
+  ) {
+    this.eventService.on(
+      PeerConnectionEventTypes.PeerDisconnected,
+      async (event: PeerDisconnectedEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  onPeerConnectionBrokenStateChanged(
+    callback: (event: PeerConnectionBrokenEvent) => void
+  ) {
+    this.eventService.on(
+      PeerConnectionEventTypes.PeerConnectionBroken,
+      async (event: PeerConnectionBrokenEvent) => {
         callback(event);
       }
     );
@@ -80,17 +115,49 @@ class PeerConnection {
       this.eventService
     );
     this.identityWalletConnect.setOnConnect(
-      (connectMessage: IConnectMessage) => {
+      async (connectMessage: IConnectMessage) => {
         if (!connectMessage.error) {
-          this.connected = true;
-          this.connectedDAppAdress = connectMessage.dApp.address;
+          const { name, url, address, icon } = connectMessage.dApp;
+          this.connectedDAppAdress = address;
+          let iconB64 = ICON_BASE64;
+          // Check if the icon is base64
+          if (
+            icon &&
+            /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(
+              icon
+            )
+          ) {
+            iconB64 = icon;
+          }
+          await Agent.agent.peerConnectionMetadataStorage.updatePeerConnectionMetadata(
+            address,
+            {
+              name,
+              selectedAid,
+              url,
+              iconB64: iconB64,
+            }
+          );
+          this.eventService.emit<PeerConnectedEvent>({
+            type: PeerConnectionEventTypes.PeerConnected,
+            payload: {
+              identifier: selectedAid,
+              dAppAddress: address,
+            },
+          });
         }
       }
     );
 
     this.identityWalletConnect.setOnDisconnect(
       (disConnectMessage: IConnectMessage) => {
-        this.connected = false;
+        this.connectedDAppAdress = "";
+        this.eventService.emit<PeerDisconnectedEvent>({
+          type: PeerConnectionEventTypes.PeerDisconnected,
+          payload: {
+            dAppAddress: disConnectMessage.address as string,
+          },
+        });
       }
     );
 
@@ -98,30 +165,63 @@ class PeerConnection {
       new ExperimentalContainer<ExperimentalAPIFunctions>({
         getIdentifierOobi: this.identityWalletConnect.getIdentifierOobi,
         sign: this.identityWalletConnect.sign,
+        getConnectingAid: this.identityWalletConnect.getConnectingAid,
       })
     );
   }
 
-  connectWithDApp(dAppIdentifier: string) {
+  async connectWithDApp(dAppIdentifier: string) {
     if (this.identityWalletConnect === undefined) {
       throw new Error(PeerConnection.PEER_CONNECTION_START_PENDING);
     }
-
+    const existingPeerConnection =
+      await Agent.agent.peerConnectionMetadataStorage
+        .getPeerConnectionMetadata(dAppIdentifier)
+        .catch((error) => {
+          if (
+            error.message ===
+            PeerConnectionStorage.PEER_CONNECTION_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
+    if (!existingPeerConnection) {
+      await Agent.agent.peerConnectionMetadataStorage.createPeerConnectionMetadataRecord(
+        {
+          id: dAppIdentifier,
+          selectedAid: this.identityWalletConnect.getConnectingAid(),
+          iconB64: ICON_BASE64,
+        }
+      );
+    }
     const seed = this.identityWalletConnect.connect(dAppIdentifier);
+
     SecureStorage.set(KeyStoreKeys.MEERKAT_SEED, seed);
   }
 
-  disconnectDApp(dAppIdentifier: string) {
+  disconnectDApp(dAppIdentifier: string, isBroken?: boolean) {
     if (this.identityWalletConnect === undefined) {
       throw new Error(PeerConnection.PEER_CONNECTION_START_PENDING);
     }
 
     this.identityWalletConnect.disconnect(dAppIdentifier);
-    this.connected = false;
+
+    if (isBroken) {
+      this.eventService.emit<PeerConnectionBrokenEvent>({
+        type: PeerConnectionEventTypes.PeerConnectionBroken,
+        payload: {},
+      });
+    }
   }
 
-  isConnected() {
-    return this.connected;
+  getConnectedDAppAddress() {
+    return this.connectedDAppAdress;
+  }
+
+  getConnectingAid() {
+    return this.identityWalletConnect?.getConnectingAid();
   }
 }
 

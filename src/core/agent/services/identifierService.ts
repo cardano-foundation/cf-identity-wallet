@@ -18,6 +18,7 @@ import { BackingMode } from "../../configuration/configurationService.types";
 import { OperationPendingStorage } from "../records/operationPendingStorage";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { Agent } from "../agent";
+import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 
 const identifierTypeThemes = [0, 1];
 
@@ -179,10 +180,16 @@ class IdentifierService extends AgentService {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
     );
+    const connectedDApp =
+      PeerConnection.peerConnection.getConnectedDAppAddress();
+    const peerConnectingAid = PeerConnection.peerConnection.getConnectingAid();
     this.validArchivedIdentifier(metadata);
     await this.identifierStorage.updateIdentifierMetadata(identifier, {
       isDeleted: true,
     });
+    if (connectedDApp !== "" && metadata.id === peerConnectingAid) {
+      PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
+    }
   }
 
   async restoreIdentifier(identifier: string): Promise<void> {

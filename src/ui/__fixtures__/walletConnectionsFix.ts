@@ -3,30 +3,30 @@ import KeriLogo from "../assets/images/KeriGeneric.jpg";
 
 const walletConnectionsFix: ConnectionData[] = [
   {
-    id: 1,
+    id: "1",
     name: "Wallet name #1",
-    owner: "Nami",
-    image: KeriLogo,
-    url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+    selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
+    iconB64: KeriLogo,
+    url: "http://localhost:3001/",
   },
   {
-    id: 2,
+    id: "2",
     name: "Wallet name #2",
-    owner: "Yoroi",
-    url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+    selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
+    url: "http://localhost:3002/",
   },
   {
-    id: 3,
+    id: "3",
     name: "Wallet name #3",
-    owner: "Flint",
-    url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
-    image: KeriLogo,
+    selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRe",
+    url: "http://localhost:3003/",
+    iconB64: KeriLogo,
   },
   {
-    id: 4,
+    id: "4",
     name: "Wallet name #4",
-    owner: "Yume",
-    url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+    selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRf",
+    url: "http://localhost:3004/",
   },
 ];
 

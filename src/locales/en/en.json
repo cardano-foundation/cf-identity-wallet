@@ -877,6 +877,10 @@
               "cancel": "Cancel"
             }
           },
+          "connectionbrokenalert": {
+            "message": "Your connection has been disconnected as you have deleted the chosen identifier paired with this connection. Please choose a new identifier to re-establish this connection.",
+            "confirm": "Ok"
+          },
           "inputpidmodal": {
             "header": "Paste Meerkat ID",
             "cancel": "Cancel",
@@ -1188,22 +1192,11 @@
     "setupbiometricsuccess": "Biometrics setup successfully"
   },
   "request": {
-    "signtransaction": {
-      "title": "Sign transaction",
+    "sign": {
+      "title": "Sign",
+      "identifier": "Identifier",
       "transaction": {
-        "address": "Address",
-        "data": "Data",
-        "action": "Action",
-        "actionText": "Action text",
-        "id": "ID",
-        "event": "Event",
-        "category": "Category",
-        "proposal": "Proposal",
-        "votedat": "Voted at",
-        "network": "Network",
-        "votingpower": "Voting power",
-        "slot": "Slot",
-        "uri": "URI"
+        "data": "Data"
       }
     },
     "connection": {

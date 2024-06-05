@@ -53,6 +53,10 @@ jest.mock("../core/agent/agent", () => ({
         onSignifyOperationStateChanged: jest.fn(),
       },
       onKeriaStatusStateChanged: jest.fn(),
+      peerConnectionMetadataStorage: {
+        getAllPeerConnectionMetadata: jest.fn(),
+        getPeerConnectionMetadata: jest.fn(),
+      },
       basicStorage: {
         findById: jest.fn(),
       },
