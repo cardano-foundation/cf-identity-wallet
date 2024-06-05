@@ -44,7 +44,6 @@ import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
 import { CredentialItem } from "./CredentialItem";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 
 const ArchivedCredentialsContainer = forwardRef<
   ArchivedCredentialsContainerRef,
@@ -323,9 +322,6 @@ const ArchivedCredentialsContainer = forwardRef<
                 : ToastMsgType.CREDENTIALS_RESTORED
             )
           );
-          const newArchivedCredsCache =
-            await Agent.agent.credentials.getCredentials(true);
-          dispatch(setCredsArchivedCache(newArchivedCredsCache));
           resetList();
         }}
         actionCancel={handleCancelAction}

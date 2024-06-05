@@ -591,10 +591,6 @@ describe("Cards Details page - archived credential", () => {
       credDispatchMock.mockImplementation((action) => {
         expect(action).toEqual(setCredsCache(credsFixAcdc));
       });
-
-      credDispatchMock.mockImplementation((action) => {
-        expect(action).toEqual(setCredsArchivedCache(credsFixAcdc));
-      });
     });
   });
 });

@@ -123,11 +123,6 @@ const CredentialDetails = () => {
     }
     dispatch(setCredsCache(creds));
 
-    const newArchivedCredsCache = await Agent.agent.credentials.getCredentials(
-      true
-    );
-    dispatch(setCredsArchivedCache(newArchivedCredsCache));
-
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
   };
 
@@ -144,11 +139,6 @@ const CredentialDetails = () => {
       params.id
     );
     dispatch(setCredsCache([...credsCache, creds]));
-
-    const newArchivedCredsCache = await Agent.agent.credentials.getCredentials(
-      true
-    );
-    dispatch(setCredsArchivedCache(newArchivedCredsCache));
 
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
     handleDone();
