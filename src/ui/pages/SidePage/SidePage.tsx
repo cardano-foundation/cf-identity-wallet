@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { SideSlider } from "../../components/SideSlider";
 import {
   getQueueIncomingRequest,
+  getStateCache,
   setPauseQueueIncomingRequest,
 } from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -16,13 +17,14 @@ const SidePage = () => {
 
   const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
   const pendingDAppMeerkat = useAppSelector(getPendingDAppMeerkat);
+  const stateCache = useAppSelector(getStateCache);
 
   const canOpenIncomingRequest =
     queueIncomingRequest.queues.length > 0 && !queueIncomingRequest.isPaused;
   const canOpenPendingWalletConnection = !!pendingDAppMeerkat;
 
   useEffect(() => {
-    if (canOpenIncomingRequest) return;
+    if (canOpenIncomingRequest || !stateCache.authentication.loggedIn) return;
 
     if (canOpenPendingWalletConnection && !queueIncomingRequest.isPaused) {
       dispatch(setPauseQueueIncomingRequest(true));
@@ -31,8 +33,13 @@ const SidePage = () => {
   }, [canOpenIncomingRequest, canOpenPendingWalletConnection]);
 
   useEffect(() => {
+    if (!stateCache.authentication.loggedIn) return;
     setOpenSidePage(canOpenIncomingRequest || canOpenPendingWalletConnection);
-  }, [canOpenIncomingRequest, canOpenPendingWalletConnection]);
+  }, [
+    canOpenIncomingRequest,
+    canOpenPendingWalletConnection,
+    stateCache.authentication.loggedIn,
+  ]);
 
   const unpauseIncomingRequest = () => {
     if (pauseIncommingRequestByConnection.current) {
