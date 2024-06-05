@@ -17,13 +17,10 @@ const WalletConnectStageOne = ({
   onAccept,
 }: WalletConnectStageOneProps) => {
   const [openDeclineAlert, setOpenDeclineAlert] = useState(false);
-  const [acceptAnimation, setAcceptAnimation] = useState(false);
 
   const classes = combineClassNames(className, {
     show: !!isOpen,
     hide: !isOpen,
-    "animation-on": acceptAnimation,
-    "animation-off": !acceptAnimation,
   });
 
   const openDecline = () => {
@@ -35,11 +32,7 @@ const WalletConnectStageOne = ({
   };
 
   const handleAccept = () => {
-    setAcceptAnimation(true);
-
-    setTimeout(() => {
-      onAccept();
-    }, 700);
+    onAccept();
   };
 
   return (
