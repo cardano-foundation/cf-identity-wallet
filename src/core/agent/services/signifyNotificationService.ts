@@ -246,6 +246,13 @@ class SignifyNotificationService extends AgentService {
     this.pendingOperations = await this.operationPendingStorage.getAll();
     // eslint-disable-next-line no-constant-condition
     while (true) {
+      if (!Agent.agent.getKeriaOnlineStatus()) {
+        await new Promise((rs) =>
+          setTimeout(rs, SignifyNotificationService.POLL_KERIA_INTERVAL)
+        );
+        continue;
+      }
+
       if (this.pendingOperations.length > 0) {
         for (const pendingOperation of this.pendingOperations) {
           const operation = await this.signifyClient
