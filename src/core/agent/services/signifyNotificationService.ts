@@ -255,10 +255,21 @@ class SignifyNotificationService extends AgentService {
 
       if (this.pendingOperations.length > 0) {
         for (const pendingOperation of this.pendingOperations) {
-          const operation = await this.props.signifyClient
-            .operations()
-            .get(pendingOperation.id);
-          if (operation.done) {
+          let operation;
+          try {
+            operation = await this.props.signifyClient
+              .operations()
+              .get(pendingOperation.id);
+          } catch (error) {
+            // Possible that bootAndConnect is called from @OnlineOnly in between loops,
+            // so check if its gone down to avoid having 2 bootAndConnect loops
+            if (Agent.agent.getKeriaOnlineStatus()) {
+              // This will hang the loop until the connection is secured again
+              await Agent.agent.connect();
+            }
+          }
+
+          if (operation && operation.done) {
             const recordId = pendingOperation.id.replace(
               `${pendingOperation.recordType}.`,
               ""
