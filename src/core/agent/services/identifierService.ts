@@ -77,7 +77,7 @@ class IdentifierService extends AgentService {
     if (metadata.isPending && metadata.signifyOpName) {
       return undefined;
     }
-    const aid = await this.signifyClient
+    const aid = await this.props.signifyClient
       .identifiers()
       .get(metadata.signifyName);
 
@@ -133,20 +133,20 @@ class IdentifierService extends AgentService {
     const startTime = Date.now();
     this.validIdentifierMetadata(metadata);
     const signifyName = uuidv4();
-    const operation = await this.signifyClient
+    const operation = await this.props.signifyClient
       .identifiers()
       .create(signifyName); //, this.getCreateAidOptions());
     let op = await operation.op();
     const signifyOpName = op.name;
-    const addRoleOperation = await this.signifyClient
+    const addRoleOperation = await this.props.signifyClient
       .identifiers()
-      .addEndRole(signifyName, "agent", this.signifyClient.agent!.pre);
+      .addEndRole(signifyName, "agent", this.props.signifyClient.agent!.pre);
     await addRoleOperation.op();
     const identifier = operation.serder.ked.i;
     const isPending = !op.done;
     if (isPending) {
       op = await waitAndGetDoneOp(
-        this.signifyClient,
+        this.props.signifyClient,
         op,
         2000 - (Date.now() - startTime)
       );
@@ -226,11 +226,11 @@ class IdentifierService extends AgentService {
     );
     this.validIdentifierMetadata(metadata);
 
-    const aid = await this.signifyClient
+    const aid = await this.props.signifyClient
       .identifiers()
       .get(metadata.signifyName);
 
-    const manager = this.signifyClient.manager;
+    const manager = this.props.signifyClient.manager;
     if (manager) {
       return (await manager.get(aid)).signers[0];
     } else {
@@ -240,7 +240,7 @@ class IdentifierService extends AgentService {
 
   @OnlineOnly
   async syncKeriaIdentifiers() {
-    const { aids: signifyIdentifiers } = await this.signifyClient
+    const { aids: signifyIdentifiers } = await this.props.signifyClient
       .identifiers()
       .list();
     const storageIdentifiers =
@@ -280,11 +280,11 @@ class IdentifierService extends AgentService {
 
   @OnlineOnly
   async rotateIdentifier(metadata: IdentifierMetadataRecord) {
-    const rotateResult = await this.signifyClient
+    const rotateResult = await this.props.signifyClient
       .identifiers()
       .rotate(metadata.signifyName);
     const operation = await waitAndGetDoneOp(
-      this.signifyClient,
+      this.props.signifyClient,
       await rotateResult.op()
     );
     if (!operation.done) {

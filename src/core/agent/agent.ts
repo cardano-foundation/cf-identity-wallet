@@ -18,6 +18,8 @@ import {
   BranAndMnemonic,
   KeriaStatusChangedEvent,
   KeriaStatusEventTypes,
+  AgentUrls,
+  MiscRecordId,
 } from "./agent.types";
 import { EventService } from "./services/eventService";
 import {
@@ -52,9 +54,15 @@ const walletId = "idw";
 class Agent {
   static readonly KERIA_CONNECTION_BROKEN =
     "The app is not connected to KERIA at the moment";
+  static readonly KERIA_BOOT_FAILED = "Failed to boot signify client";
+  static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT =
+    "Signify client is already booted but cannot connect";
 
   private static instance: Agent;
-  private agentServicesProps!: AgentServicesProps;
+  private agentServicesProps: AgentServicesProps = {
+    eventService: undefined as any,
+    signifyClient: undefined as any,
+  };
 
   private storageSession!: SqliteSession | IonicSession;
 
@@ -84,7 +92,7 @@ class Agent {
       this.identifierService = new IdentifierService(
         this.agentServicesProps,
         this.identifierStorage,
-        this.operationPendingStorage,
+        this.operationPendingStorage
       );
     }
     return this.identifierService;
@@ -150,7 +158,7 @@ class Agent {
         this.agentServicesProps,
         this.notificationStorage,
         this.identifierStorage,
-        this.operationPendingStorage,
+        this.operationPendingStorage
       );
     }
     return this.signifyNotificationService;
@@ -180,72 +188,112 @@ class Agent {
     );
   }
 
-  async start(): Promise<void> {
+  async start(keriaConnectUrl: string): Promise<void> {
     if (!Agent.isOnline) {
-      await this.storageSession.open(walletId);
-      this.basicStorageService = new BasicStorage(
-        this.getStorageService<BasicRecord>(this.storageSession)
-      );
-      this.identifierStorage = new IdentifierStorage(
-        this.getStorageService<IdentifierMetadataRecord>(this.storageSession)
-      );
-      this.credentialStorage = new CredentialStorage(
-        this.getStorageService<CredentialMetadataRecord>(this.storageSession)
-      );
-      this.connectionStorage = new ConnectionStorage(
-        this.getStorageService<ConnectionRecord>(this.storageSession)
-      );
-      this.connectionNoteStorage = new ConnectionNoteStorage(
-        this.getStorageService<ConnectionNoteRecord>(this.storageSession)
-      );
-      this.notificationStorage = new NotificationStorage(
-        this.getStorageService<NotificationRecord>(this.storageSession)
-      );
-      
-      this.operationPendingStorage = new OperationPendingStorage(
-        this.getStorageService<OperationPendingRecord>(this.storageSession)
-      )
-
       await signifyReady();
       const bran = await this.getBran();
-      // @TODO - foconnor: Review of Tier level.
-      this.signifyClient = new SignifyClient(
-        ConfigurationService.env.keri.keria.url,
-        bran,
-        Tier.low,
-        ConfigurationService.env.keri.keria.bootUrl
-      );
-
-      this.agentServicesProps = {
-        signifyClient: this.signifyClient,
-        eventService: new EventService(),
-      };
-
-      this.peerConnectionStorage = new PeerConnectionStorage(
-        this.getStorageService<PeerConnectionMetadataRecord>(
-          this.storageSession
-        )
-      );
-
+      this.signifyClient = new SignifyClient(keriaConnectUrl, bran, Tier.low);
+      await this.signifyClient.connect();
+      Agent.isOnline = true;
+      this.agentServicesProps.signifyClient = this.signifyClient;
       this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
         type: KeriaStatusEventTypes.KeriaStatusChanged,
         payload: {
           isOnline: Agent.isOnline,
         },
       });
-
-      try {
-        await this.signifyClient.connect();
-        Agent.isOnline = true;
-      } catch (err) {
-        await this.signifyClient.boot();
-        await this.signifyClient.connect();
-        Agent.isOnline = true;
-      }
     }
   }
 
-  async bootAndConnect(retryInterval = 1000) {
+  async bootAndConnect(agentUrls: AgentUrls): Promise<void> {
+    if (!Agent.isOnline) {
+      await signifyReady();
+      const bran = await this.getBran();
+      this.signifyClient = new SignifyClient(
+        agentUrls.url,
+        bran,
+        Tier.low,
+        agentUrls.bootUrl
+      );
+      try {
+        const bootResponse = await this.signifyClient.boot();
+        const bootResponseBody = await bootResponse.json();
+        if (
+          bootResponse.status !== 202 &&
+          bootResponseBody?.title !== "agent already exists"
+        ) {
+          throw new Error(Agent.KERIA_BOOT_FAILED);
+        }
+      } catch (e) {
+        /* eslint-disable no-console */
+        console.error(e);
+        throw new Error(Agent.KERIA_BOOT_FAILED);
+      }
+      try {
+        await this.signifyClient.connect();
+      } catch (e) {
+        /* eslint-disable no-console */
+        console.error(e);
+        throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
+      }
+      await this.saveAgentUrls(agentUrls);
+      Agent.isOnline = true;
+      this.agentServicesProps.signifyClient = this.signifyClient;
+      this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
+        type: KeriaStatusEventTypes.KeriaStatusChanged,
+        payload: {
+          isOnline: Agent.isOnline,
+        },
+      });
+    }
+  }
+
+  private async saveAgentUrls(agentUrls: AgentUrls): Promise<void> {
+    await this.basicStorageService.save({
+      id: MiscRecordId.KERIA_CONNECT_URL,
+      content: {
+        url: agentUrls.url,
+      },
+    });
+    await this.basicStorageService.save({
+      id: MiscRecordId.KERIA_BOOT_URL,
+      content: {
+        url: agentUrls.bootUrl,
+      },
+    });
+  }
+
+  async initDatabaseConnection(): Promise<void> {
+    await this.storageSession.open(walletId);
+    this.basicStorageService = new BasicStorage(
+      this.getStorageService<BasicRecord>(this.storageSession)
+    );
+    this.identifierStorage = new IdentifierStorage(
+      this.getStorageService<IdentifierMetadataRecord>(this.storageSession)
+    );
+    this.credentialStorage = new CredentialStorage(
+      this.getStorageService<CredentialMetadataRecord>(this.storageSession)
+    );
+    this.connectionStorage = new ConnectionStorage(
+      this.getStorageService<ConnectionRecord>(this.storageSession)
+    );
+    this.connectionNoteStorage = new ConnectionNoteStorage(
+      this.getStorageService<ConnectionNoteRecord>(this.storageSession)
+    );
+    this.notificationStorage = new NotificationStorage(
+      this.getStorageService<NotificationRecord>(this.storageSession)
+    );
+    this.peerConnectionStorage = new PeerConnectionStorage(
+      this.getStorageService<PeerConnectionMetadataRecord>(this.storageSession)
+    );
+
+    this.agentServicesProps = {
+      signifyClient: this.signifyClient,
+      eventService: new EventService(),
+    };
+  }
+
+  async connect(retryInterval = 1000) {
     try {
       if (Agent.isOnline) {
         Agent.isOnline = false;
@@ -256,7 +304,6 @@ class Agent {
           },
         });
       }
-      await this.signifyClient.boot();
       await this.signifyClient.connect();
       Agent.isOnline = true;
       this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
@@ -267,7 +314,7 @@ class Agent {
       });
     } catch (error) {
       await new Promise((resolve) => setTimeout(resolve, retryInterval));
-      await this.bootAndConnect(retryInterval);
+      await this.connect(retryInterval);
     }
   }
 

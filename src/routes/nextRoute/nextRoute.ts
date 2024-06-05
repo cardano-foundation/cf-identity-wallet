@@ -17,7 +17,11 @@ const getNextRootRoute = (store: StoreState) => {
   const authentication = store.stateCache.authentication;
 
   let path;
-  if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
+  if (
+    authentication.passcodeIsSet &&
+    authentication.seedPhraseIsSet &&
+    authentication.ssiAgentIsSet
+  ) {
     path = RoutePath.TABS_MENU;
   } else {
     path = RoutePath.ONBOARDING;
@@ -27,13 +31,22 @@ const getNextRootRoute = (store: StoreState) => {
 };
 
 const getNextOnboardingRoute = (data: DataProps) => {
-  let path;
+  let path = RoutePath.SET_PASSCODE;
+
   if (data.store.stateCache.authentication.passcodeIsSet) {
-    path = data.store.stateCache.authentication.passwordIsSet
-      ? RoutePath.GENERATE_SEED_PHRASE
-      : RoutePath.CREATE_PASSWORD;
-  } else {
-    path = RoutePath.SET_PASSCODE;
+    path = RoutePath.CREATE_PASSWORD;
+  }
+
+  if (data.store.stateCache.authentication.passwordIsSet) {
+    path = RoutePath.GENERATE_SEED_PHRASE;
+  }
+
+  if (data.store.stateCache.authentication.seedPhraseIsSet) {
+    path = RoutePath.SSI_AGENT;
+  }
+
+  if (data.store.stateCache.authentication.ssiAgentIsSet) {
+    path = RoutePath.TABS_MENU;
   }
 
   return { pathname: path };
@@ -57,10 +70,17 @@ const getNextCredentialDetailsRoute = () => {
 
 const getNextSetPasscodeRoute = (store: StoreState) => {
   const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase;
+  const ssiAgentIsSet = store.stateCache.authentication.ssiAgentIsSet;
 
-  const nextPath: string = seedPhraseIsSet
-    ? RoutePath.TABS_MENU
-    : RoutePath.CREATE_PASSWORD;
+  let nextPath = RoutePath.CREATE_PASSWORD;
+
+  if (seedPhraseIsSet) {
+    nextPath = RoutePath.SSI_AGENT;
+  }
+
+  if (ssiAgentIsSet) {
+    nextPath = RoutePath.TABS_MENU;
+  }
 
   return { pathname: nextPath };
 };
@@ -80,11 +100,23 @@ const updateStoreAfterVerifySeedPhraseRoute = (data: DataProps) => {
   });
 };
 
+const updateStoreAfterSetupSSI = (data: DataProps) => {
+  return setAuthentication({
+    ...data.store.stateCache.authentication,
+    ssiAgentIsSet: true,
+  });
+};
+
 const getNextGenerateSeedPhraseRoute = () => {
   return { pathname: RoutePath.VERIFY_SEED_PHRASE };
 };
 
 const getNextVerifySeedPhraseRoute = () => {
+  const nextPath = RoutePath.SSI_AGENT;
+  return { pathname: nextPath };
+};
+
+const getNextCreateSSIAgentRoute = () => {
   const nextPath = RoutePath.TABS_MENU;
   return { pathname: nextPath };
 };
@@ -162,6 +194,10 @@ const nextRoute: Record<string, any> = {
     nextPath: () => getNextVerifySeedPhraseRoute(),
     updateRedux: [updateStoreAfterVerifySeedPhraseRoute, clearSeedPhraseCache],
   },
+  [RoutePath.SSI_AGENT]: {
+    nextPath: () => getNextCreateSSIAgentRoute(),
+    updateRedux: [updateStoreAfterSetupSSI],
+  },
   [RoutePath.CREATE_PASSWORD]: {
     nextPath: () => getNextCreatePasswordRoute(),
     updateRedux: [updateStoreAfterCreatePassword],
@@ -197,4 +233,5 @@ export {
   updateStoreAfterVerifySeedPhraseRoute,
   getNextCreatePasswordRoute,
   updateStoreAfterCreatePassword,
+  getNextCreateSSIAgentRoute,
 };

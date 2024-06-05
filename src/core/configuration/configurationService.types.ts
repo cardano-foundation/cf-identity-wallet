@@ -1,6 +1,6 @@
 interface KeriaConfig {
-  url: string;
-  bootUrl: string;
+  url?: string;
+  bootUrl?: string;
 }
 
 interface CredentialsConfig {
@@ -33,7 +33,7 @@ type BackingConfig =
 
 interface Configuration {
   keri: {
-    keria: KeriaConfig;
+    keria?: KeriaConfig;
     credentials: CredentialsConfig;
     backing: BackingConfig;
   };

@@ -71,7 +71,7 @@ class SignifyNotificationService extends AgentService {
 
       let notifications;
       try {
-        notifications = await this.signifyClient
+        notifications = await this.props.signifyClient
           .notifications()
           .list(startFetchingIndex, startFetchingIndex + 24);
       } catch (error) {
@@ -79,7 +79,7 @@ class SignifyNotificationService extends AgentService {
         // so check if its gone down to avoid having 2 bootAndConnect loops
         if (Agent.agent.getKeriaOnlineStatus()) {
           // This will hang the loop until the connection is secured again
-          await Agent.agent.bootAndConnect();
+          await Agent.agent.connect();
         }
       }
       if (!notifications) {
@@ -143,7 +143,7 @@ class SignifyNotificationService extends AgentService {
   ) {
     // We only process with the credential and the multisig at the moment
     if (notif.a.r === NotificationRoute.MultiSigIcp) {
-      const multisigNotification = await this.signifyClient
+      const multisigNotification = await this.props.signifyClient
         .groups()
         .getRequest(notif.a.d);
       if (!multisigNotification || !multisigNotification.length) {
@@ -188,7 +188,7 @@ class SignifyNotificationService extends AgentService {
       route: event.a.r,
     };
     if (event.a.r === NotificationRoute.MultiSigIcp) {
-      const multisigNotification = await this.signifyClient
+      const multisigNotification = await this.props.signifyClient
         .groups()
         .getRequest(event.a.d);
       if (multisigNotification && multisigNotification.length) {
@@ -224,7 +224,7 @@ class SignifyNotificationService extends AgentService {
   }
 
   private markNotification(notiSaid: string) {
-    return this.signifyClient.notifications().mark(notiSaid);
+    return this.props.signifyClient.notifications().mark(notiSaid);
   }
 
   async findNotificationsByMultisigId(multisigId: string) {
@@ -255,7 +255,7 @@ class SignifyNotificationService extends AgentService {
 
       if (this.pendingOperations.length > 0) {
         for (const pendingOperation of this.pendingOperations) {
-          const operation = await this.signifyClient
+          const operation = await this.props.signifyClient
             .operations()
             .get(pendingOperation.id);
           if (operation.done) {

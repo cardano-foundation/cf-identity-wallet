@@ -27,7 +27,7 @@ class DelegationService extends AgentService {
     delegatorPrefix: string
   ): Promise<CreateIdentifierResult> {
     const signifyName = uuidv4();
-    const operation = await this.signifyClient
+    const operation = await this.props.signifyClient
       .identifiers()
       .create(signifyName, { delpre: delegatorPrefix });
     const identifier = operation.serder.ked.i;
@@ -50,11 +50,11 @@ class DelegationService extends AgentService {
       s: "0",
       d: delegatePrefix,
     };
-    const ixnResult = await this.signifyClient
+    const ixnResult = await this.props.signifyClient
       .identifiers()
       .interact(signifyName, anchor);
     const operation = await ixnResult.op();
-    await waitAndGetDoneOp(this.signifyClient, operation);
+    await waitAndGetDoneOp(this.props.signifyClient, operation);
     return operation.done;
   }
 
@@ -65,13 +65,13 @@ class DelegationService extends AgentService {
     if (!metadata.isPending) {
       return true;
     }
-    const identifier = await this.signifyClient
+    const identifier = await this.props.signifyClient
       .identifiers()
       .get(metadata.signifyName);
-    const operation = await this.signifyClient
+    const operation = await this.props.signifyClient
       .keyStates()
       .query(identifier.state.di, "1");
-    await waitAndGetDoneOp(this.signifyClient, operation);
+    await waitAndGetDoneOp(this.props.signifyClient, operation);
     const isDone = operation.done;
     if (isDone) {
       await this.identifierStorage.updateIdentifierMetadata(metadata.id, {
