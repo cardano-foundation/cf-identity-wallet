@@ -22,6 +22,30 @@ const identifiersCacheSlice = createSlice({
     ) => {
       state.identifiers = action.payload;
     },
+    updateOrAddIdentifiersCache: (
+      state,
+      action: PayloadAction<IdentifierShortDetails>
+    ) => {
+      const identifiers = state.identifiers.filter(
+        (aid) => aid.id !== action.payload.id
+      );
+      state.identifiers = [...identifiers, action.payload];
+    },
+    updateIsPending: (
+      state,
+      action: PayloadAction<Pick<IdentifierShortDetails, "id" | "isPending">>
+    ) => {
+      const identifier = state.identifiers.find(
+        (aid) => aid.id === action.payload.id
+      );
+      if (identifier) {
+        identifier.isPending = action.payload.isPending;
+        state.identifiers = [
+          ...state.identifiers.filter((aid) => aid.id !== action.payload.id),
+          identifier,
+        ];
+      }
+    },
     setFavouritesIdentifiersCache: (
       state,
       action: PayloadAction<FavouriteIdentifier[]>
@@ -54,6 +78,8 @@ export { initialState, identifiersCacheSlice };
 export const {
   setIdentifiersCache,
   setFavouritesIdentifiersCache,
+  updateOrAddIdentifiersCache,
+  updateIsPending,
   addFavouriteIdentifierCache,
   removeFavouriteIdentifierCache,
   setMultiSigGroupCache,

@@ -7,21 +7,36 @@ import {
   NotificationRoute,
 } from "../agent.types";
 import { Notification } from "./credentialService.types";
-import { BasicRecord, NotificationStorage } from "../records";
+import {
+  BasicRecord,
+  IdentifierStorage,
+  NotificationStorage,
+  OperationPendingStorage,
+} from "../records";
 import { Agent } from "../agent";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { OperationPendingRecord } from "../records/operationPendingRecord";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
   static readonly POLL_KERIA_INTERVAL = 5000;
 
   protected readonly notificationStorage!: NotificationStorage;
+  protected readonly identifierStorage: IdentifierStorage;
+  protected readonly operationPendingStorage: OperationPendingStorage;
+
+  protected pendingOperations: OperationPendingRecord[] = [];
 
   constructor(
     agentServiceProps: AgentServicesProps,
-    notificationStorage: NotificationStorage
+    notificationStorage: NotificationStorage,
+    identifierStorage: IdentifierStorage,
+    operationPendingStorage: OperationPendingStorage
   ) {
     super(agentServiceProps);
     this.notificationStorage = notificationStorage;
+    this.identifierStorage = identifierStorage;
+    this.operationPendingStorage = operationPendingStorage;
   }
 
   async onNotificationStateChanged(
@@ -217,6 +232,84 @@ class SignifyNotificationService extends AgentService {
       multisigId,
     });
     return notificationRecord;
+  }
+
+  async onSignifyOperationStateChanged(
+    callback: ({
+      oid,
+      opType,
+    }: {
+      oid: string;
+      opType: OperationPendingRecordType;
+    }) => void
+  ) {
+    this.pendingOperations = await this.operationPendingStorage.getAll();
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      if (!Agent.agent.getKeriaOnlineStatus()) {
+        await new Promise((rs) =>
+          setTimeout(rs, SignifyNotificationService.POLL_KERIA_INTERVAL)
+        );
+        continue;
+      }
+
+      if (this.pendingOperations.length > 0) {
+        for (const pendingOperation of this.pendingOperations) {
+          let operation;
+          try {
+            operation = await this.props.signifyClient
+              .operations()
+              .get(pendingOperation.id);
+          } catch (error) {
+            // Possible that bootAndConnect is called from @OnlineOnly in between loops,
+            // so check if its gone down to avoid having 2 bootAndConnect loops
+            if (Agent.agent.getKeriaOnlineStatus()) {
+              // This will hang the loop until the connection is secured again
+              await Agent.agent.connect();
+            }
+          }
+
+          if (operation && operation.done) {
+            const recordId = pendingOperation.id.replace(
+              `${pendingOperation.recordType}.`,
+              ""
+            );
+            switch (pendingOperation.recordType) {
+            case OperationPendingRecordType.Witness: {
+              await this.identifierStorage.updateIdentifierMetadata(
+                recordId,
+                {
+                  isPending: false,
+                }
+              );
+              callback({
+                opType: pendingOperation.recordType,
+                oid: recordId,
+              });
+
+              break;
+            }
+            default:
+              break;
+            }
+            await this.operationPendingStorage.deleteById(pendingOperation.id);
+            this.pendingOperations.splice(
+              this.pendingOperations.indexOf(pendingOperation),
+              1
+            );
+          }
+        }
+      }
+      await new Promise((rs) => {
+        setTimeout(() => {
+          rs(true);
+        }, 250);
+      });
+    }
+  }
+
+  addPendingOperationToQueue(pendingOperation: OperationPendingRecord) {
+    this.pendingOperations.push(pendingOperation);
   }
 }
 

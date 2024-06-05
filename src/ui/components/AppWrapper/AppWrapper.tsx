@@ -14,6 +14,8 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
+  updateIsPending,
+  updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   setCredsCache,
@@ -56,6 +58,8 @@ import { MultiSigService } from "../../../core/agent/services/multiSigService";
 import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCache";
 import { CardListViewType } from "../SwitchCardView";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import { i18n } from "../../../i18n";
 import { Alert } from "../Alert";
 
@@ -191,6 +195,18 @@ const peerConnectionBrokenChangeHandler = async (
 ) => {
   dispatch(setConnectedWallet(null));
   dispatch(setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
+};
+
+const signifyOperationStateChangeHandler = async (
+  { oid, opType }: { oid: string; opType: OperationPendingRecordType },
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  switch (opType) {
+  case OperationPendingRecordType.Witness:
+    dispatch(updateIsPending({ id: oid, isPending: false }));
+    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
+    break;
+  }
 };
 
 const AppWrapper = (props: { children: ReactNode }) => {
@@ -404,6 +420,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return peerConnectionBrokenChangeHandler(event, dispatch);
       }
     );
+    Agent.agent.signifyNotifications.onSignifyOperationStateChanged((event) => {
+      return signifyOperationStateChangeHandler(event, dispatch);
+    });
     dispatch(setInitialized(true));
   };
 
@@ -436,4 +455,5 @@ export {
   peerDisconnectedChangeHandler,
   peerConnectRequestSignChangeHandler,
   peerConnectionBrokenChangeHandler,
+  signifyOperationStateChangeHandler,
 };

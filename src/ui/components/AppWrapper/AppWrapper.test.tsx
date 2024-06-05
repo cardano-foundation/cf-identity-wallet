@@ -1,14 +1,15 @@
 import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import {
-  AppWrapper,
   acdcChangeHandler,
+  AppWrapper,
   connectionStateChangedHandler,
   keriaNotificationsChangeHandler,
   peerConnectRequestSignChangeHandler,
   peerConnectedChangeHandler,
   peerConnectionBrokenChangeHandler,
   peerDisconnectedChangeHandler,
+  signifyOperationStateChangeHandler,
 } from "./AppWrapper";
 import { store } from "../../../store";
 import { Agent } from "../../../core/agent/agent";
@@ -47,6 +48,12 @@ import {
   setConnectedWallet,
   setWalletConnectionsCache,
 } from "../../../store/reducers/walletConnectionsCache";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import {
+  updateIsPending,
+  updateOrAddIdentifiersCache,
+} from "../../../store/reducers/identifiersCache";
+import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -92,6 +99,7 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       signifyNotifications: {
         onNotificationStateChanged: jest.fn(),
+        onSignifyOperationStateChanged: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
       onKeriaStatusStateChanged: jest.fn(),
@@ -365,5 +373,28 @@ describe("AppWrapper handler", () => {
         setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS)
       );
     });
+  });
+});
+describe("Signify operation state changed handler", () => {
+  test("handles operation updated", async () => {
+    const aid = {
+      id: "id",
+      displayName: "string",
+      createdAtUTC: "string",
+      signifyName: "string",
+      theme: 0,
+      isPending: false,
+      delegated: {},
+    } as IdentifierShortDetails;
+    await signifyOperationStateChangeHandler(
+      { opType: OperationPendingRecordType.Witness, oid: aid.id },
+      dispatch
+    );
+    expect(dispatch).toBeCalledWith(
+      updateIsPending({ id: aid.id, isPending: false })
+    );
+    expect(dispatch).toBeCalledWith(
+      setToastMsg(ToastMsgType.IDENTIFIER_UPDATED)
+    );
   });
 });
