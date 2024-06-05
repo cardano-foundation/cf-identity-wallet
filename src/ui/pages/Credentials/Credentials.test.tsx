@@ -33,7 +33,7 @@ const initialStateEmpty = {
   credsCache: {
     creds: [],
   },
-  credsArchived: {
+  credsArchivedCache: {
     creds: filteredCredsFix,
   },
   connectionsCache: {
@@ -60,7 +60,7 @@ const initialStateFull = {
       },
     ],
   },
-  credsArchived: {
+  credsArchivedCache: {
     creds: filteredCredsFix,
   },
   connectionsCache: {

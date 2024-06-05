@@ -1,24 +1,24 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
-  credsArchivedSlice,
-  getCredsArchived,
-  setCredsArchived,
-} from "./credsArchived";
+  credsArchivedCacheSlice,
+  setCredsArchivedCache,
+  getCredsArchivedCache,
+} from "./credsArchivedCache";
 import { RootState } from "../../index";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
-describe("credsArchivedSlice", () => {
+describe("credsArchivedCacheSlice", () => {
   const initialState = {
     creds: [],
   };
   it("should return the initial state", () => {
-    expect(credsArchivedSlice.reducer(undefined, {} as PayloadAction)).toEqual(
-      initialState
-    );
+    expect(
+      credsArchivedCacheSlice.reducer(undefined, {} as PayloadAction)
+    ).toEqual(initialState);
   });
 
-  it("should handle setCredsArchived", () => {
+  it("should handle setCredsArchivedCache", () => {
     const creds: CredentialShortDetails[] = [
       {
         id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
@@ -27,18 +27,18 @@ describe("credsArchivedSlice", () => {
         status: CredentialMetadataRecordStatus.CONFIRMED,
       },
     ];
-    const newState = credsArchivedSlice.reducer(
+    const newState = credsArchivedCacheSlice.reducer(
       initialState,
-      setCredsArchived(creds)
+      setCredsArchivedCache(creds)
     );
     expect(newState.creds).toEqual(creds);
   });
 });
 
-describe("get methods for CredsArchived", () => {
-  it("should return the creds archived from RootState", () => {
+describe("get methods for CredsArchivedCache", () => {
+  it("should return the creds archived cache from RootState", () => {
     const state = {
-      credsArchived: {
+      credsArchivedCache: {
         creds: [
           {
             id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
@@ -56,7 +56,7 @@ describe("get methods for CredsArchived", () => {
         ],
       },
     } as RootState;
-    const credsArchived = getCredsArchived(state);
-    expect(credsArchived).toEqual(state.credsArchived.creds);
+    const credsArchivedCache = getCredsArchivedCache(state);
+    expect(credsArchivedCache).toEqual(state.credsArchivedCache.creds);
   });
 });

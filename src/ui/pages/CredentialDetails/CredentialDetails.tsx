@@ -46,7 +46,7 @@ import { combineClassNames } from "../../utils/style";
 import { useAppIonRouter } from "../../hooks";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
-import { setCredsArchived } from "../../../store/reducers/credsArchived";
+import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -123,8 +123,10 @@ const CredentialDetails = () => {
     }
     dispatch(setCredsCache(creds));
 
-    const newArchivedCreds = await Agent.agent.credentials.getCredentials(true);
-    dispatch(setCredsArchived(newArchivedCreds));
+    const newArchivedCredsCache = await Agent.agent.credentials.getCredentials(
+      true
+    );
+    dispatch(setCredsArchivedCache(newArchivedCredsCache));
 
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
   };
@@ -143,8 +145,10 @@ const CredentialDetails = () => {
     );
     dispatch(setCredsCache([...credsCache, creds]));
 
-    const newArchivedCreds = await Agent.agent.credentials.getCredentials(true);
-    dispatch(setCredsArchived(newArchivedCreds));
+    const newArchivedCredsCache = await Agent.agent.credentials.getCredentials(
+      true
+    );
+    dispatch(setCredsArchivedCache(newArchivedCredsCache));
 
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
     handleDone();

@@ -54,7 +54,7 @@ const initialStateFull = {
   credsCache: {
     creds: filteredCredsFix,
   },
-  credsArchived: {
+  credsArchivedCache: {
     creds: filteredCredsFix,
   },
   connectionsCache: {

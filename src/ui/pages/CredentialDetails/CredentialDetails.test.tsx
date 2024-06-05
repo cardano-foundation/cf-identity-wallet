@@ -19,7 +19,7 @@ import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
 import { CredentialDetails } from "./CredentialDetails";
-import { setCredsArchived } from "../../../store/reducers/credsArchived";
+import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -94,7 +94,7 @@ const initialStateNoPasswordCurrent = {
     bran: "bran",
   },
   credsCache: { creds: credsFixAcdc, favourites: [] },
-  credsArchived: { creds: credsFixAcdc },
+  credsArchivedCache: { creds: credsFixAcdc },
   biometryCache: {
     enabled: false,
   },
@@ -117,7 +117,7 @@ const initialStateNoPasswordArchived = {
     bran: "bran",
   },
   credsCache: { creds: [] },
-  credsArchived: { creds: [] },
+  credsArchivedCache: { creds: [] },
   biometryCache: {
     enabled: false,
   },
@@ -181,7 +181,7 @@ describe("Cards Details page - current not archived credential", () => {
         bran: "bran",
       },
       credsCache: { creds: credsFixAcdc, favourites: [] },
-      credsArchived: { creds: credsFixAcdc },
+      credsArchivedCache: { creds: credsFixAcdc },
       connectionsCache: {
         connections: [],
       },
@@ -593,7 +593,7 @@ describe("Cards Details page - archived credential", () => {
       });
 
       credDispatchMock.mockImplementation((action) => {
-        expect(action).toEqual(setCredsArchived(credsFixAcdc));
+        expect(action).toEqual(setCredsArchivedCache(credsFixAcdc));
       });
     });
   });

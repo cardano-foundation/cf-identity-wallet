@@ -56,7 +56,7 @@ import { MultiSigService } from "../../../core/agent/services/multiSigService";
 import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCache";
 import { CardListViewType } from "../SwitchCardView";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
-import { setCredsArchived } from "../../../store/reducers/credsArchived";
+import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 import { i18n } from "../../../i18n";
 import { Alert } from "../Alert";
 
@@ -258,14 +258,16 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const connectionsDetails = await Agent.agent.connections.getConnections();
 
     const credsCache = await Agent.agent.credentials.getCredentials();
-    const credsArchived = await Agent.agent.credentials.getCredentials(true);
+    const credsArchivedCache = await Agent.agent.credentials.getCredentials(
+      true
+    );
     const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
     const storedPeerConnections =
       await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
 
     dispatch(setIdentifiersCache(storedIdentifiers));
     dispatch(setCredsCache(credsCache));
-    dispatch(setCredsArchived(credsArchived));
+    dispatch(setCredsArchivedCache(credsArchivedCache));
     dispatch(setConnectionsCache(connectionsDetails));
     dispatch(setWalletConnectionsCache(storedPeerConnections));
   };

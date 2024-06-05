@@ -30,9 +30,9 @@ import { CredentialShortDetails } from "../../../core/agent/services/credentialS
 import { StartAnimationSource } from "../Identifiers/Identifiers.type";
 import { useToggleConnections } from "../../hooks";
 import {
-  getCredsArchived,
-  setCredsArchived,
-} from "../../../store/reducers/credsArchived";
+  getCredsArchivedCache,
+  setCredsArchivedCache,
+} from "../../../store/reducers/credsArchivedCache";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -79,7 +79,7 @@ const Creds = () => {
   const pageId = "credentials-tab";
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
-  const archivedCreds = useAppSelector(getCredsArchived);
+  const archivedCreds = useAppSelector(getCredsArchivedCache);
   const favCredsCache = useAppSelector(getFavouritesCredsCache);
   const toastMsg = useAppSelector(getToastMsg);
 
@@ -96,7 +96,7 @@ const Creds = () => {
   const fetchArchivedCreds = async () => {
     // @TODO - sdisalvo: handle error
     const creds = await Agent.agent.credentials.getCredentials(true);
-    dispatch(setCredsArchived(creds));
+    dispatch(setCredsArchivedCache(creds));
   };
 
   useEffect(() => {

@@ -52,7 +52,7 @@ describe("NextRoute", () => {
         },
       },
       credsCache: { creds: [], favourites: [] },
-      credsArchived: { creds: [] },
+      credsArchivedCache: { creds: [] },
       connectionsCache: {
         connections: [],
       },
@@ -172,7 +172,7 @@ describe("getNextRoute", () => {
       },
     },
     credsCache: { creds: [], favourites: [] },
-    credsArchived: { creds: [] },
+    credsArchivedCache: { creds: [] },
     connectionsCache: {
       connections: [],
     },

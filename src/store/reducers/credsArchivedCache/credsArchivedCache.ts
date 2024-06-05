@@ -7,11 +7,11 @@ const initialState: {
 } = {
   creds: [],
 };
-const credsArchivedSlice = createSlice({
-  name: "credsArchived",
+const credsArchivedCacheSlice = createSlice({
+  name: "credsArchivedCache",
   initialState,
   reducers: {
-    setCredsArchived: (
+    setCredsArchivedCache: (
       state,
       action: PayloadAction<CredentialShortDetails[]>
     ) => {
@@ -20,10 +20,11 @@ const credsArchivedSlice = createSlice({
   },
 });
 
-export { initialState, credsArchivedSlice };
+export { initialState, credsArchivedCacheSlice };
 
-export const { setCredsArchived } = credsArchivedSlice.actions;
+export const { setCredsArchivedCache } = credsArchivedCacheSlice.actions;
 
-const getCredsArchived = (state: RootState) => state.credsArchived.creds;
+const getCredsArchivedCache = (state: RootState) =>
+  state.credsArchivedCache.creds;
 
-export { getCredsArchived };
+export { getCredsArchivedCache };
