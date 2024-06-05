@@ -8,7 +8,10 @@ import { store } from "../../../../../../store";
 import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
 import { connectionsFix } from "../../../../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../../../../__fixtures__/filteredIdentifierFix";
-import { signTransactionFix } from "../../../../../__fixtures__/signTransactionFix";
+import {
+  signTransactionFix,
+  signObjectFix,
+} from "../../../../../__fixtures__/signTransactionFix";
 import { RequestComponent } from "./RequestComponent";
 setupIonicReact();
 mockIonicReact();
@@ -17,7 +20,15 @@ jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonAlert: ({ children }: { children: any }) => children,
 }));
-
+jest.mock("../../../../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      peerConnectionMetadataStorage: {
+        getPeerConnectionMetadata: jest.fn(),
+      },
+    },
+  },
+}));
 describe("Multi-Sig request", () => {
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
@@ -191,8 +202,9 @@ describe("Sign request", () => {
   const requestData = {
     id: "abc123456",
     label: "Cardano",
-    type: IncomingRequestType.SIGN_TRANSACTION_REQUEST,
+    type: IncomingRequestType.PEER_CONNECT_SIGN,
     signTransaction: signTransactionFix,
+    peerConnection: { id: "id", name: "DApp" },
   };
 
   const initiateAnimation = false;
@@ -213,30 +225,18 @@ describe("Sign request", () => {
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.SIGN_TRANSACTION_REQUEST}
+          incomingRequestType={IncomingRequestType.PEER_CONNECT_SIGN}
         />
       </Provider>
     );
 
+    expect(getByText(requestData.peerConnection?.name)).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.request.signtransaction.title)
+      getByText(requestData.signTransaction.payload.payload)
     ).toBeVisible();
-
-    expect(getByText(requestData.label)).toBeVisible();
-    expect(getByText(signTransactionFix.action)).toBeVisible();
-    expect(getByText(signTransactionFix.actionText)).toBeVisible();
-    expect(getByText(signTransactionFix.data.id)).toBeVisible();
-    expect(getByText(signTransactionFix.data.category)).toBeVisible();
-    expect(getByText(signTransactionFix.data.event)).toBeVisible();
-    expect(getByText(signTransactionFix.data.network)).toBeVisible();
-    expect(getByText(signTransactionFix.data.proposal)).toBeVisible();
-    expect(getByText(signTransactionFix.data.votedAt)).toBeVisible();
-    expect(getByText(signTransactionFix.data.votingPower)).toBeVisible();
-    expect(getByText(signTransactionFix.eventName)).toBeVisible();
-    expect(getByText(signTransactionFix.ownerUrl)).toBeVisible();
-    expect(getByText(signTransactionFix.slot)).toBeVisible();
-    expect(getByText(signTransactionFix.uri)).toBeVisible();
-    expect(getAllByText(signTransactionFix.data.address).length).toBe(2);
+    expect(
+      getByText(requestData.signTransaction.payload.identifier)
+    ).toBeVisible();
   });
 
   test("Display fallback image when provider logo is empty: BALLOT_TRANSACTION_REQUEST", async () => {
@@ -257,7 +257,85 @@ describe("Sign request", () => {
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.SIGN_TRANSACTION_REQUEST}
+          incomingRequestType={IncomingRequestType.PEER_CONNECT_SIGN}
+        />
+      </Provider>
+    );
+
+    expect(getByTestId("sign-logo")).toBeInTheDocument();
+
+    expect(getByTestId("sign-logo").getAttribute("src")).not.toBe(undefined);
+  });
+});
+
+describe("Sign JSON", () => {
+  const mockStore = configureStore();
+  const dispatchMock = jest.fn();
+  const storeMocked = {
+    ...mockStore(store.getState()),
+    dispatch: dispatchMock,
+  };
+
+  const pageId = "incoming-request";
+  const activeStatus = true;
+  const blur = false;
+  const setBlur = jest.fn();
+  const requestData = {
+    id: "abc123456",
+    label: "Cardano",
+    type: IncomingRequestType.PEER_CONNECT_SIGN,
+    signTransaction: signObjectFix,
+    peerConnection: { id: "id", name: "DApp" },
+  };
+
+  const initiateAnimation = false;
+  const handleAccept = jest.fn();
+  const handleCancel = jest.fn();
+  const handleIgnore = jest.fn();
+
+  test("It renders content for BALLOT_TRANSACTION_REQUEST ", async () => {
+    const { getByText, getAllByText } = render(
+      <Provider store={storeMocked}>
+        <RequestComponent
+          pageId={pageId}
+          activeStatus={activeStatus}
+          blur={blur}
+          setBlur={setBlur}
+          requestData={requestData}
+          initiateAnimation={initiateAnimation}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          handleIgnore={handleIgnore}
+          incomingRequestType={IncomingRequestType.PEER_CONNECT_SIGN}
+        />
+      </Provider>
+    );
+
+    expect(getByText(requestData.peerConnection?.name)).toBeVisible();
+    expect(
+      getByText(JSON.parse(signObjectFix.payload.payload).data.id)
+    ).toBeVisible();
+  });
+
+  test("Display fallback image when provider logo is empty: BALLOT_TRANSACTION_REQUEST", async () => {
+    const testData = {
+      ...requestData,
+      logo: "",
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <RequestComponent
+          pageId={pageId}
+          activeStatus={activeStatus}
+          blur={blur}
+          setBlur={setBlur}
+          requestData={testData}
+          initiateAnimation={initiateAnimation}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          handleIgnore={handleIgnore}
+          incomingRequestType={IncomingRequestType.PEER_CONNECT_SIGN}
         />
       </Provider>
     );

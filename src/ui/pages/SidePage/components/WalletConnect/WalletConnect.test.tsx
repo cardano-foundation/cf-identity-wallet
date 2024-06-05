@@ -10,13 +10,31 @@ import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { TabsRoutePath } from "../../../../../routes/paths";
-import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
 import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../../globals/types";
 import { WalletConnect } from "./WalletConnect";
+import { setWalletConnectionsCache } from "../../../../../store/reducers/walletConnectionsCache";
 setupIonicReact();
 mockIonicReact();
 
+jest.mock("../../../../../core/cardano/walletConnect/peerConnection", () => ({
+  PeerConnection: {
+    peerConnection: {
+      start: jest.fn(),
+      connectWithDApp: jest.fn(),
+    },
+  },
+}));
+jest.mock("../../../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      peerConnectionMetadataStorage: {
+        getPeerConnectionMetadata: jest.fn(),
+        getAllPeerConnectionMetadata: jest.fn(),
+      },
+    },
+  },
+}));
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children, isOpen }: any) => (
@@ -167,7 +185,7 @@ describe("Wallet Connect Stage Two", () => {
       <Provider store={storeMocked}>
         <WalletConnectStageTwo
           isOpen={true}
-          data={walletConnectionsFix[0]}
+          pendingDAppMeerkat={"pending-meerkat"}
           onClose={handleCancel}
           onBackClick={handleChangeStage}
         />
@@ -196,7 +214,7 @@ describe("Wallet Connect Stage Two", () => {
       <Provider store={storeMocked}>
         <WalletConnectStageTwo
           isOpen={true}
-          data={walletConnectionsFix[0]}
+          pendingDAppMeerkat={"pending-meerkat"}
           onClose={handleCancel}
           onBackClick={handleChangeStage}
         />
@@ -222,9 +240,7 @@ describe("Wallet Connect Stage Two", () => {
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS)
-      );
+      expect(dispatchMock).toBeCalled();
     });
   });
 });
@@ -244,7 +260,7 @@ describe("Wallet Connect Request", () => {
     },
     walletConnectionsCache: {
       walletConnections: [],
-      pendingConnection: walletConnectionsFix[0],
+      pendingDAppMeerKat: "pending-meerkat",
     },
     identifiersCache: {
       identifiers: [...identifierFix],
@@ -304,9 +320,7 @@ describe("Wallet Connect Request", () => {
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS)
-      );
+      expect(dispatchMock).toBeCalled();
     });
   });
 

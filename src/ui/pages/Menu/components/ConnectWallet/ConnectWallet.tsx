@@ -21,7 +21,8 @@ import {
   ConnectionData,
   getConnectedWallet,
   getWalletConnectionsCache,
-  setConnectedWallet,
+  setPendingDAppMeerKat,
+  setWalletConnectionsCache,
 } from "../../../../../store/reducers/walletConnectionsCache";
 import { Alert } from "../../../../components/Alert";
 import { CardItem, CardList } from "../../../../components/CardList";
@@ -36,6 +37,8 @@ import {
   ActionType,
   ConnectWalletOptionRef,
 } from "./ConnectWallet.types";
+import { Agent } from "../../../../../core/agent/agent";
+import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
 
 const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
   (props, ref) => {
@@ -64,12 +67,13 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     const displayConnection = useMemo((): CardItem<ConnectionData>[] => {
       return connections.map((connection) => ({
         id: connection.id,
-        title: connection.name,
-        subtitle: connection.owner,
-        image: connection.image,
+        title: connection.name as string,
+        url: connection.url,
+        subtitle: connection.url,
+        image: connection.iconB64,
         data: connection,
       }));
-    }, []);
+    }, [connections]);
 
     useImperativeHandle(ref, () => ({
       openConnectWallet: handleScanQR,
@@ -115,31 +119,34 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       handleOpenVerify();
     };
 
-    const handleDeleteConnection = (data: ConnectionData) => {
+    const handleDeleteConnection = async (data: ConnectionData) => {
       actionInfo.current = {
         type: ActionType.None,
       };
+      await Agent.agent.peerConnectionMetadataStorage.deletePeerConnectionMetadataRecord(
+        data.id
+      );
 
-      // TODO: Implement delete wallet connection logic
-
+      dispatch(
+        setWalletConnectionsCache(
+          connections.filter((connection) => connection.id !== data.id)
+        )
+      );
       dispatch(setToastMsg(ToastMsgType.WALLET_CONNECTION_DELETED));
     };
 
     const handleConnectWallet = () => {
+      if (identifierCache.length === 0) {
+        setOpenIdentifierMissingAlert(true);
+        return;
+      }
       if (!actionInfo.current.data) return;
-
-      // TODO: Implement logic connect/disconnect wallet
-
-      const isConnectedItem =
-        actionInfo.current.data.id === connectedWallet?.id;
-      dispatch(
-        setConnectedWallet(!isConnectedItem ? actionInfo.current.data : null)
-      );
-
-      const toast = !isConnectedItem
-        ? ToastMsgType.CONNECT_WALLET_SUCCESS
-        : ToastMsgType.DISCONNECT_WALLET_SUCCESS;
-      dispatch(setToastMsg(toast));
+      const isConnectedItem = actionInfo.current.data.id === connectedWallet;
+      if (isConnectedItem) {
+        PeerConnection.peerConnection.disconnectDApp(connectedWallet);
+      } else {
+        dispatch(setPendingDAppMeerKat(actionInfo.current.data.id));
+      }
     };
 
     const handleAfterVerify = () => {
@@ -202,7 +209,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
                   );
                 }}
                 onRenderEndSlot={(data) => {
-                  if (data.id !== connectedWallet?.id) return null;
+                  if (data.id !== connectedWallet) return null;
 
                   return (
                     <IonCheckbox
@@ -226,7 +233,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           )}
         </div>
         <ConfirmConnectModal
-          isConnectModal={actionInfo.current.data?.id !== connectedWallet?.id}
+          isConnectModal={actionInfo.current.data?.id !== connectedWallet}
           openModal={openConfirmConnectModal}
           closeModal={() => setOpenConfirmConnectModal(false)}
           onConfirm={handleConnectWallet}

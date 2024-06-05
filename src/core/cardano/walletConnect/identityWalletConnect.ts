@@ -9,7 +9,7 @@ import { Signer } from "signify-ts";
 import { Agent } from "../../agent/agent";
 import {
   PeerConnectSigningEvent,
-  PeerConnectSigningEventTypes,
+  PeerConnectionEventTypes,
   PeerConnectionError,
   TxSignError,
 } from "./peerConnection.types";
@@ -27,6 +27,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
+  getConnectingAid: () => string;
 
   signerCache: Map<string, Signer>;
 
@@ -68,7 +69,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         approved = approvalStatus;
       };
       this.eventService.emit<PeerConnectSigningEvent>({
-        type: PeerConnectSigningEventTypes.PeerConnectSign,
+        type: PeerConnectionEventTypes.PeerConnectSign,
         payload: {
           identifier,
           payload,
@@ -97,6 +98,10 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       } else {
         return { error: TxSignError.UserDeclined };
       }
+    };
+
+    this.getConnectingAid = () => {
+      return this.selectedAid;
     };
   }
 

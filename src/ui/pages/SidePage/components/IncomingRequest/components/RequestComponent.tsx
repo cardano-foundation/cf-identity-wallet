@@ -2,7 +2,7 @@ import { IncomingRequestType } from "../../../../../../store/reducers/stateCache
 import { RequestProps } from "../IncomingRequest.types";
 import { CredentialRequest } from "./CredentialRequest";
 import { MultiSigRequest } from "./MultiSigRequest";
-import { SignTransactionRequest } from "./SignTransactionRequest";
+import { SignRequest } from "./SignRequest";
 
 const RequestComponent = ({
   pageId,
@@ -43,9 +43,9 @@ const RequestComponent = ({
         handleIgnore={handleIgnore}
       />
     );
-  case IncomingRequestType.SIGN_TRANSACTION_REQUEST:
+  case IncomingRequestType.PEER_CONNECT_SIGN:
     return (
-      <SignTransactionRequest
+      <SignRequest
         pageId={pageId}
         activeStatus={activeStatus}
         blur={blur}
