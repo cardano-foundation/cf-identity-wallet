@@ -89,7 +89,7 @@ class MultiSigService extends AgentService {
     if (notLinkedContacts.length) {
       throw new Error(MultiSigService.ONLY_ALLOW_LINKED_CONTACTS);
     }
-    const ourAid: Aid = await this.signifyClient
+    const ourAid: Aid = await this.props.signifyClient
       .identifiers()
       .get(ourMetadata.signifyName as string);
     const otherAids = await Promise.all(
@@ -151,7 +151,7 @@ class MultiSigService extends AgentService {
     name: string;
   }> {
     const states = [aid["state"], ...otherAids.map((aid) => aid["state"])];
-    const icp = await this.signifyClient.identifiers().create(name, {
+    const icp = await this.props.signifyClient.identifiers().create(name, {
       algo: Algos.group,
       mhab: aid,
       isith: threshold,
@@ -212,7 +212,7 @@ class MultiSigService extends AgentService {
         metadata.multisigManageAid
       );
 
-    const multiSig = await this.signifyClient
+    const multiSig = await this.props.signifyClient
       .identifiers()
       .get(metadata.signifyName);
     if (!multiSig) {
@@ -220,7 +220,7 @@ class MultiSigService extends AgentService {
     }
     const nextSequence = (Number(multiSig.state.s) + 1).toString();
 
-    const members = await this.signifyClient
+    const members = await this.props.signifyClient
       .identifiers()
       .members(metadata.signifyName);
     const multisigMembers = members?.signing;
@@ -228,7 +228,7 @@ class MultiSigService extends AgentService {
     const multisigMumberAids: Aid[] = [];
     await Promise.allSettled(
       multisigMembers.map(async (signing: any) => {
-        const aid = await this.signifyClient
+        const aid = await this.props.signifyClient
           .keyStates()
           .query(signing.aid, nextSequence);
         if (aid.done) {
@@ -239,7 +239,7 @@ class MultiSigService extends AgentService {
     if (multisigMembers.length !== multisigMumberAids.length) {
       throw new Error(MultiSigService.NOT_FOUND_ALL_MEMBER_OF_MULTISIG);
     }
-    const aid = await this.signifyClient
+    const aid = await this.props.signifyClient
       .identifiers()
       .get(identifierManageAid?.signifyName);
 
@@ -255,7 +255,7 @@ class MultiSigService extends AgentService {
   @OnlineOnly
   async joinMultisigRotation(notification: KeriaNotification): Promise<string> {
     const msgSaid = notification.a.d as string;
-    const notifications: MultiSigExnMessage[] = await this.signifyClient
+    const notifications: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
       .getRequest(msgSaid);
     if (!notifications.length) {
@@ -277,7 +277,7 @@ class MultiSigService extends AgentService {
         multiSig.multisigManageAid
       );
 
-    const aid = await this.signifyClient
+    const aid = await this.props.signifyClient
       .identifiers()
       .get(identifierManageAid.signifyName);
     const res = await this.joinMultisigRotationKeri(
@@ -290,7 +290,7 @@ class MultiSigService extends AgentService {
   }
 
   private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
-    const notifications: MultiSigExnMessage[] = await this.signifyClient
+    const notifications: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
       .getRequest(msgSaid);
     if (!notifications.length) {
@@ -313,7 +313,7 @@ class MultiSigService extends AgentService {
   async getMultisigIcpDetails(
     notificationSaid: string
   ): Promise<MultiSigIcpRequestDetails> {
-    const icpMsg: MultiSigExnMessage[] = await this.signifyClient
+    const icpMsg: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
       .getRequest(notificationSaid);
 
@@ -372,7 +372,7 @@ class MultiSigService extends AgentService {
       await this.notificationStorage.deleteById(notificationId);
       return;
     }
-    const icpMsg: MultiSigExnMessage[] = await this.signifyClient
+    const icpMsg: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
       .getRequest(notificationSaid);
 
@@ -396,7 +396,7 @@ class MultiSigService extends AgentService {
       throw new Error(MultiSigService.MISSING_GROUP_METADATA);
     }
 
-    const aid = await this.signifyClient
+    const aid = await this.props.signifyClient
       .identifiers()
       .get(identifier?.signifyName);
     const signifyName = uuidv4();
@@ -431,7 +431,7 @@ class MultiSigService extends AgentService {
         done: true,
       };
     }
-    const pendingOperation = await this.signifyClient
+    const pendingOperation = await this.props.signifyClient
       .operations()
       .get(metadata.signifyOpName);
     if (pendingOperation && pendingOperation.done) {
@@ -478,7 +478,7 @@ class MultiSigService extends AgentService {
     icpResult: EventResult;
   }> {
     const states = [...multisigAidMembers.map((aid) => aid["state"])];
-    const icp = await this.signifyClient
+    const icp = await this.props.signifyClient
       .identifiers()
       .rotate(name, { states: states, rstates: states });
     const op = await icp.op();
@@ -528,7 +528,7 @@ class MultiSigService extends AgentService {
     name: string;
   }> {
     const rstates = exn.a.rstates;
-    const icpResult = await this.signifyClient
+    const icpResult = await this.props.signifyClient
       .identifiers()
       .rotate(name, { states: rstates, rstates: rstates });
     const op = await icpResult.op();
@@ -570,7 +570,7 @@ class MultiSigService extends AgentService {
   private async getIdentifierById(
     id: string
   ): Promise<IdentifierResult | undefined> {
-    const allIdentifiers = await this.signifyClient.identifiers().list();
+    const allIdentifiers = await this.props.signifyClient.identifiers().list();
     const identifier = allIdentifiers.aids.find(
       (identifier: IdentifierResult) => identifier.prefix === id
     );
@@ -591,7 +591,7 @@ class MultiSigService extends AgentService {
     // @TODO - foconnor: We can skip our member and get state from aid param.
     const states = await Promise.all(
       exn.a.smids.map(async (member) => {
-        const result = await this.signifyClient.keyStates().get(member);
+        const result = await this.props.signifyClient.keyStates().get(member);
         if (result.length === 0) {
           throw new Error(
             MultiSigService.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER
@@ -604,7 +604,7 @@ class MultiSigService extends AgentService {
     // @TODO - foconnor: Check if smids === rmids, and if so, skip this.
     const rstates = await Promise.all(
       exn.a.rmids.map(async (member) => {
-        const result = await this.signifyClient.keyStates().get(member);
+        const result = await this.props.signifyClient.keyStates().get(member);
         if (result.length === 0) {
           throw new Error(
             MultiSigService.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER
@@ -613,16 +613,18 @@ class MultiSigService extends AgentService {
         return result[0];
       })
     );
-    const icpResult = await this.signifyClient.identifiers().create(name, {
-      algo: Algos.group,
-      mhab: aid,
-      isith: icp.kt,
-      nsith: icp.nt,
-      toad: parseInt(icp.bt),
-      wits: icp.b,
-      states,
-      rstates,
-    });
+    const icpResult = await this.props.signifyClient
+      .identifiers()
+      .create(name, {
+        algo: Algos.group,
+        mhab: aid,
+        isith: icp.kt,
+        nsith: icp.nt,
+        toad: parseInt(icp.bt),
+        wits: icp.b,
+        states,
+        rstates,
+      });
     const op = await icpResult.op();
     const serder = icpResult.serder;
     const sigs = icpResult.sigs;
@@ -678,7 +680,7 @@ class MultiSigService extends AgentService {
     recp: any,
     payload: CreateMultisigExnPayload
   ): Promise<any> {
-    return this.signifyClient
+    return this.props.signifyClient
       .exchanges()
       .send(name, "multisig", aid, route, payload, embeds, recp);
   }

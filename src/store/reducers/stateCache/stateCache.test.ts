@@ -56,6 +56,7 @@ describe("State Cache", () => {
       seedPhraseIsSet: false,
       passwordIsSet: false,
       passwordIsSkipped: false,
+      ssiAgentIsSet: false,
     };
     const action = setAuthentication(authentication);
     const nextState = stateCacheSlice.reducer(initialState, action);

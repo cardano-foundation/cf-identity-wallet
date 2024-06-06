@@ -29,6 +29,8 @@ enum MiscRecordId {
   APP_BIOMETRY = "app-biometry",
   KERIA_NOTIFICATION_MARKER = "keria-notification-marker",
   APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
+  KERIA_CONNECT_URL = "keria-connect-url",
+  KERIA_BOOT_URL = "keria-boot-url",
 }
 
 interface ConnectionShortDetails {
@@ -136,6 +138,11 @@ interface IdentifierResult {
   salty: any;
 }
 
+interface AgentUrls {
+  url: string;
+  bootUrl: string;
+}
+
 enum NotificationRoute {
   ExnIpexGrant = "/exn/ipex/grant",
   MultiSigIcp = "/multisig/icp",
@@ -175,5 +182,6 @@ export type {
   CreateIdentifierResult,
   IdentifierResult,
   KeriaStatusChangedEvent,
+  AgentUrls,
   BranAndMnemonic,
 };

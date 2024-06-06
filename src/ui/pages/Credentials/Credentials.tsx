@@ -29,6 +29,10 @@ import {
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { StartAnimationSource } from "../Identifiers/Identifiers.type";
 import { useToggleConnections } from "../../hooks";
+import {
+  getCredsArchivedCache,
+  setCredsArchivedCache,
+} from "../../../store/reducers/credsArchivedCache";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -75,11 +79,10 @@ const Creds = () => {
   const pageId = "credentials-tab";
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
+  const archivedCreds = useAppSelector(getCredsArchivedCache);
   const favCredsCache = useAppSelector(getFavouritesCredsCache);
   const toastMsg = useAppSelector(getToastMsg);
-  const [archivedCreds, setArchivedCreds] = useState<CredentialShortDetails[]>(
-    []
-  );
+
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
@@ -93,7 +96,7 @@ const Creds = () => {
   const fetchArchivedCreds = async () => {
     // @TODO - sdisalvo: handle error
     const creds = await Agent.agent.credentials.getCredentials(true);
-    setArchivedCreds(creds);
+    dispatch(setCredsArchivedCache(creds));
   };
 
   useEffect(() => {
@@ -120,7 +123,6 @@ const Creds = () => {
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDENTIALS }));
-    fetchArchivedCreds();
   });
 
   const findTimeById = (id: string) => {
