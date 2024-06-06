@@ -69,7 +69,7 @@ const MultiSigRequest = ({
           displayName: requestData.multisigIcpDetails.ourIdentifier.displayName,
           createdAtUTC: `${requestData.event?.createdAt}`,
           theme: requestData.multisigIcpDetails.ourIdentifier.theme,
-          isPending: isPending ? true : false,
+          isPending: !!isPending,
           signifyName,
         };
         const filteredIdentifiersData = identifiersData.filter(

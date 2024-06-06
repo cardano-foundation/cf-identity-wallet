@@ -59,7 +59,7 @@ const IdentifierStage4 = ({
           displayName: state.displayNameValue,
           createdAtUTC: new Date().toISOString(),
           theme: state.selectedTheme,
-          isPending: isPending ? true : false,
+          isPending: !!isPending,
           signifyName,
         };
         const filteredIdentifiersData = identifiersData.filter(
