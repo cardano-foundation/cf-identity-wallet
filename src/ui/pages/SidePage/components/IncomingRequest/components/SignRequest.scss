@@ -1,8 +1,23 @@
 .sign-request {
+  .sign-request-header {
+    height: 44px;
+  }
+
   & .page-header {
     ion-toolbar {
       --background: transparent;
+
+      & > ion-title.md {
+        margin: 0;
+      }
     }
+  }
+
+  .content-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: calc(100vh - (5.25rem + var(--ion-safe-area-top)));
   }
 
   .sign-header {
@@ -52,7 +67,13 @@
     }
 
     .sign-data {
-      .sign-info-item {
+      .card-details-nested-content {
+        & > .card-details-info-block-inner {
+          padding: 1rem;
+        }
+      }
+
+      & > .card-details-info-block-inner > .sign-info-item {
         &:first-child {
           margin-top: 0.75rem;
         }

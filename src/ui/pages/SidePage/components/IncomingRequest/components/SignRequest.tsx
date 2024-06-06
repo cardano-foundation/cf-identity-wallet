@@ -11,6 +11,7 @@ import CardanoLogo from "../../../../../assets/images/CardanoLogo.jpg";
 import { RequestProps } from "../IncomingRequest.types";
 import "./SignRequest.scss";
 import { Spinner } from "../../../../../components/Spinner";
+import { PageHeader } from "../../../../../components/PageHeader";
 
 const SignRequest = ({
   pageId,
@@ -47,54 +48,58 @@ const SignRequest = ({
         activeStatus={activeStatus}
         pageId={pageId}
         customClass="sign-request"
-        header={<h2>{`${i18n.t("request.sign.title")}`}</h2>}
+        header={<PageHeader title={`${i18n.t("request.sign.title")}`} />}
       >
-        <div className="sign-header">
-          <img
-            className="sign-owner-logo"
-            data-testid="sign-logo"
-            src={logo}
-            alt={requestData.peerConnection?.name}
-          />
-          <h2 className="sign-name">{requestData.peerConnection?.name}</h2>
-          <p className="sign-link">{requestData.peerConnection?.url}</p>
-        </div>
-        <div className="sign-content">
-          <CardDetailsBlock
-            className="sign-identifier"
-            title={`${i18n.t("request.sign.identifier")}`}
-          >
-            <IonText className="identifier">
-              {signRequest?.payload.identifier}
-            </IonText>
-          </CardDetailsBlock>
-          <CardDetailsBlock
-            className="sign-data"
-            title={i18n.t("request.sign.transaction.data")}
-          >
-            {isSigningObject ? (
-              <CardDetailsAttributes
-                data={signDetails}
-                itemProps={{
-                  mask: false,
-                  fullText: true,
-                  copyButton: false,
-                  className: "sign-info-item",
-                }}
+        <div className="content-container">
+          <div className="content">
+            <div className="sign-header">
+              <img
+                className="sign-owner-logo"
+                data-testid="sign-logo"
+                src={logo}
+                alt={requestData.peerConnection?.name}
               />
-            ) : (
-              <IonText className="sign-string">
-                {signDetails.toString()}
-              </IonText>
-            )}
-          </CardDetailsBlock>
+              <h2 className="sign-name">{requestData.peerConnection?.name}</h2>
+              <p className="sign-link">{requestData.peerConnection?.url}</p>
+            </div>
+            <div className="sign-content">
+              <CardDetailsBlock
+                className="sign-identifier"
+                title={`${i18n.t("request.sign.identifier")}`}
+              >
+                <IonText className="identifier">
+                  {signRequest?.payload.identifier}
+                </IonText>
+              </CardDetailsBlock>
+              <CardDetailsBlock
+                className="sign-data"
+                title={i18n.t("request.sign.transaction.data")}
+              >
+                {isSigningObject ? (
+                  <CardDetailsAttributes
+                    data={signDetails}
+                    itemProps={{
+                      mask: false,
+                      fullText: true,
+                      copyButton: false,
+                      className: "sign-info-item",
+                    }}
+                  />
+                ) : (
+                  <IonText className="sign-string">
+                    {signDetails.toString()}
+                  </IonText>
+                )}
+              </CardDetailsBlock>
+            </div>
+          </div>
+          <PageFooter
+            primaryButtonText={`${i18n.t("request.button.sign")}`}
+            primaryButtonAction={handleSign}
+            secondaryButtonText={`${i18n.t("request.button.cancel")}`}
+            secondaryButtonAction={handleCancel}
+          />
         </div>
-        <PageFooter
-          primaryButtonText={`${i18n.t("request.button.sign")}`}
-          primaryButtonAction={handleSign}
-          secondaryButtonText={`${i18n.t("request.button.cancel")}`}
-          secondaryButtonAction={handleCancel}
-        />
       </ScrollablePageLayout>
       <Spinner show={initiateAnimation} />
     </>
