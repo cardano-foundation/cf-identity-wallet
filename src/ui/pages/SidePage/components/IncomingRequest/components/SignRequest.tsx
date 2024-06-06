@@ -49,56 +49,55 @@ const SignRequest = ({
         pageId={pageId}
         customClass="sign-request"
         header={<PageHeader title={`${i18n.t("request.sign.title")}`} />}
-      >
-        <div className="content-container">
-          <div className="content">
-            <div className="sign-header">
-              <img
-                className="sign-owner-logo"
-                data-testid="sign-logo"
-                src={logo}
-                alt={requestData.peerConnection?.name}
-              />
-              <h2 className="sign-name">{requestData.peerConnection?.name}</h2>
-              <p className="sign-link">{requestData.peerConnection?.url}</p>
-            </div>
-            <div className="sign-content">
-              <CardDetailsBlock
-                className="sign-identifier"
-                title={`${i18n.t("request.sign.identifier")}`}
-              >
-                <IonText className="identifier">
-                  {signRequest?.payload.identifier}
-                </IonText>
-              </CardDetailsBlock>
-              <CardDetailsBlock
-                className="sign-data"
-                title={i18n.t("request.sign.transaction.data")}
-              >
-                {isSigningObject ? (
-                  <CardDetailsAttributes
-                    data={signDetails}
-                    itemProps={{
-                      mask: false,
-                      fullText: true,
-                      copyButton: false,
-                      className: "sign-info-item",
-                    }}
-                  />
-                ) : (
-                  <IonText className="sign-string">
-                    {signDetails.toString()}
-                  </IonText>
-                )}
-              </CardDetailsBlock>
-            </div>
-          </div>
+        footer={
           <PageFooter
+            customClass="sign-footer"
             primaryButtonText={`${i18n.t("request.button.sign")}`}
             primaryButtonAction={handleSign}
-            secondaryButtonText={`${i18n.t("request.button.cancel")}`}
+            secondaryButtonText={`${i18n.t("request.button.dontallow")}`}
             secondaryButtonAction={handleCancel}
           />
+        }
+      >
+        <div className="sign-header">
+          <img
+            className="sign-owner-logo"
+            data-testid="sign-logo"
+            src={logo}
+            alt={requestData.peerConnection?.name}
+          />
+          <h2 className="sign-name">{requestData.peerConnection?.name}</h2>
+          <p className="sign-link">{requestData.peerConnection?.url}</p>
+        </div>
+        <div className="sign-content">
+          <CardDetailsBlock
+            className="sign-identifier"
+            title={`${i18n.t("request.sign.identifier")}`}
+          >
+            <IonText className="identifier">
+              {signRequest?.payload.identifier}
+            </IonText>
+          </CardDetailsBlock>
+          <CardDetailsBlock
+            className="sign-data"
+            title={i18n.t("request.sign.transaction.data")}
+          >
+            {isSigningObject ? (
+              <CardDetailsAttributes
+                data={signDetails}
+                itemProps={{
+                  mask: false,
+                  fullText: true,
+                  copyButton: false,
+                  className: "sign-info-item",
+                }}
+              />
+            ) : (
+              <IonText className="sign-string">
+                {signDetails.toString()}
+              </IonText>
+            )}
+          </CardDetailsBlock>
         </div>
       </ScrollablePageLayout>
       <Spinner show={initiateAnimation} />

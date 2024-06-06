@@ -14,6 +14,7 @@ const ScrollablePageLayout = ({
   activeStatus,
   children,
   customClass,
+  footer,
 }: ScrollablePageLayoutProps) => {
   const [isActive, setIsActive] = useState(false);
   useIonViewDidEnter(() => {
@@ -39,6 +40,7 @@ const ScrollablePageLayout = ({
     >
       {header}
       <IonContent className="scrollable-page-content">{children}</IonContent>
+      {footer}
     </IonPage>
   );
 };

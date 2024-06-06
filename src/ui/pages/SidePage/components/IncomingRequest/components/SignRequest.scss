@@ -13,11 +13,8 @@
     }
   }
 
-  .content-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: calc(100vh - (5.25rem + var(--ion-safe-area-top)));
+  .sign-footer {
+    padding: 1rem 0;
   }
 
   .sign-header {
@@ -50,8 +47,6 @@
   }
 
   .sign-content {
-    margin-bottom: 3rem;
-
     .sign-identifier {
       margin-bottom: 1.5rem;
 

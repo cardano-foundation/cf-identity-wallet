@@ -1272,7 +1272,8 @@
       "accept": "Accept",
       "decline": "Decline",
       "addidentifier": "Add identifier",
-      "sign": "Sign"
+      "sign": "Sign", 
+      "dontallow": "Don't allow"
     },
     "alert": {
       "cancel": "Cancel"
