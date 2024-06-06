@@ -1,8 +1,20 @@
 .sign-request {
+  .sign-request-header {
+    height: 44px;
+  }
+
   & .page-header {
     ion-toolbar {
       --background: transparent;
+
+      & > ion-title.md {
+        margin: 0;
+      }
     }
+  }
+
+  .sign-footer {
+    padding: 1rem 0;
   }
 
   .sign-header {
@@ -35,8 +47,6 @@
   }
 
   .sign-content {
-    margin-bottom: 3rem;
-
     .sign-identifier {
       margin-bottom: 1.5rem;
 
@@ -52,7 +62,13 @@
     }
 
     .sign-data {
-      .sign-info-item {
+      .card-details-nested-content {
+        & > .card-details-info-block-inner {
+          padding: 1rem;
+        }
+      }
+
+      & > .card-details-info-block-inner > .sign-info-item {
         &:first-child {
           margin-top: 0.75rem;
         }

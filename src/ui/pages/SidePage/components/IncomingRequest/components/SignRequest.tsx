@@ -11,6 +11,7 @@ import CardanoLogo from "../../../../../assets/images/CardanoLogo.jpg";
 import { RequestProps } from "../IncomingRequest.types";
 import "./SignRequest.scss";
 import { Spinner } from "../../../../../components/Spinner";
+import { PageHeader } from "../../../../../components/PageHeader";
 
 const SignRequest = ({
   pageId,
@@ -47,7 +48,16 @@ const SignRequest = ({
         activeStatus={activeStatus}
         pageId={pageId}
         customClass="sign-request"
-        header={<h2>{`${i18n.t("request.sign.title")}`}</h2>}
+        header={<PageHeader title={`${i18n.t("request.sign.title")}`} />}
+        footer={
+          <PageFooter
+            customClass="sign-footer"
+            primaryButtonText={`${i18n.t("request.button.sign")}`}
+            primaryButtonAction={handleSign}
+            secondaryButtonText={`${i18n.t("request.button.dontallow")}`}
+            secondaryButtonAction={handleCancel}
+          />
+        }
       >
         <div className="sign-header">
           <img
@@ -89,12 +99,6 @@ const SignRequest = ({
             )}
           </CardDetailsBlock>
         </div>
-        <PageFooter
-          primaryButtonText={`${i18n.t("request.button.sign")}`}
-          primaryButtonAction={handleSign}
-          secondaryButtonText={`${i18n.t("request.button.cancel")}`}
-          secondaryButtonAction={handleCancel}
-        />
       </ScrollablePageLayout>
       <Spinner show={initiateAnimation} />
     </>
