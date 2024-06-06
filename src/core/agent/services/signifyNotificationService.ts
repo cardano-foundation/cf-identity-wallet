@@ -275,6 +275,7 @@ class SignifyNotificationService extends AgentService {
               ""
             );
             switch (pendingOperation.recordType) {
+            case OperationPendingRecordType.Group:
             case OperationPendingRecordType.Witness: {
               await this.identifierStorage.updateIdentifierMetadata(
                 recordId,
@@ -289,6 +290,7 @@ class SignifyNotificationService extends AgentService {
 
               break;
             }
+
             default:
               break;
             }

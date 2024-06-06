@@ -130,6 +130,7 @@ interface AgentServicesProps {
 interface CreateIdentifierResult {
   signifyName: string;
   identifier: string;
+  isPending?: boolean;
 }
 
 interface IdentifierResult {

@@ -390,6 +390,10 @@ describe("Signify operation state changed handler", () => {
       { opType: OperationPendingRecordType.Witness, oid: aid.id },
       dispatch
     );
+    await signifyOperationStateChangeHandler(
+      { opType: OperationPendingRecordType.Group, oid: aid.id },
+      dispatch
+    );
     expect(dispatch).toBeCalledWith(
       updateIsPending({ id: aid.id, isPending: false })
     );

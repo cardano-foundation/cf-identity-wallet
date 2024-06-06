@@ -13,6 +13,7 @@ import {
   IdentifierMetadataRecordProps,
   IdentifierStorage,
   NotificationStorage,
+  OperationPendingStorage,
 } from "../records";
 import { AgentService } from "./agentService";
 import { MultiSigIcpRequestDetails } from "./identifier.types";
@@ -22,7 +23,8 @@ import {
   MultiSigExnMessage,
   CreateMultisigExnPayload,
 } from "./multiSig.types";
-import { OnlineOnly } from "./utils";
+import { OnlineOnly, waitAndGetDoneOp } from "./utils";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 
 class MultiSigService extends AgentService {
   static readonly INVALID_THRESHOLD = "Invalid threshold";
@@ -50,15 +52,18 @@ class MultiSigService extends AgentService {
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly notificationStorage!: NotificationStorage;
+  protected readonly operationPendingStorage: OperationPendingStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
-    notificationStorage: NotificationStorage
+    notificationStorage: NotificationStorage,
+    operationPendingStorage: OperationPendingStorage
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
     this.notificationStorage = notificationStorage;
+    this.operationPendingStorage = operationPendingStorage;
   }
 
   @OnlineOnly
@@ -116,11 +121,18 @@ class MultiSigService extends AgentService {
       threshold,
       delegateAid
     );
-    const multisigId = result.op.name.split(".")[1];
-    //this will be updated once the operation is done
-    let isPending = true;
-    if (result.op.done || threshold === 1) {
-      isPending = false;
+    const op = result.op;
+    const multisigId = op.name.split(".")[1];
+    const isPending = !op.done;
+
+    if (isPending) {
+      const pendingOperation = await this.operationPendingStorage.save({
+        id: op.name,
+        recordType: OperationPendingRecordType.Group,
+      });
+      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+        pendingOperation
+      );
     }
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
@@ -136,7 +148,7 @@ class MultiSigService extends AgentService {
       ourMetadata.id,
       ourMetadata
     );
-    return { identifier: multisigId, signifyName };
+    return { identifier: multisigId, signifyName, isPending };
   }
 
   private async createAidMultisig(
@@ -402,17 +414,26 @@ class MultiSigService extends AgentService {
     const signifyName = uuidv4();
     const res = await this.joinMultisigKeri(exn, aid, signifyName);
     await this.notificationStorage.deleteById(notificationId);
-    const multisigId = res.op.name.split(".")[1];
-    let isPending = res.op.done ? false : true; //this will be updated once the operation is done
-    if (exn.e.icp.kt === "1") {
-      isPending = false;
+    const op = res.op;
+    const multisigId = op.name.split(".")[1];
+    const isPending = !op.done;
+
+    if (isPending) {
+      const pendingOperation = await this.operationPendingStorage.save({
+        id: op.name,
+        recordType: OperationPendingRecordType.Group,
+      });
+      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+        pendingOperation
+      );
     }
+
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
       theme: meta.theme,
       signifyName,
-      signifyOpName: res.op.name, //we save the signifyOpName here to sync the multisig's status later
+      signifyOpName: op.name, //we save the signifyOpName here to sync the multisig's status later
       isPending,
       multisigManageAid: identifier.id,
     });
@@ -421,7 +442,8 @@ class MultiSigService extends AgentService {
       identifier.id,
       identifier
     );
-    return { identifier: multisigId, signifyName };
+
+    return { identifier: multisigId, signifyName, isPending };
   }
 
   @OnlineOnly

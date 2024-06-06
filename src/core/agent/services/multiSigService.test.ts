@@ -101,6 +101,10 @@ const identifierStorage = jest.mocked({
   createIdentifierMetadataRecord: jest.fn(),
 });
 
+const operationPendingStorage = jest.mocked({
+  save: jest.fn(),
+});
+
 const agentServicesProps = {
   signifyClient: signifyClient as any,
   eventService: new EventService(),
@@ -109,7 +113,8 @@ const agentServicesProps = {
 const multiSigService = new MultiSigService(
   agentServicesProps,
   identifierStorage as any,
-  notificationStorage as any
+  notificationStorage as any,
+  operationPendingStorage as any
 );
 
 let mockResolveOobi = jest.fn();
@@ -126,6 +131,9 @@ jest.mock("../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifiers: () => mockGetIdentifiers(),
         updateIdentifier: jest.fn(),
+      },
+      signifyNotifications: {
+        addPendingOperationToQueue: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
     },
@@ -222,11 +230,14 @@ describe("Multisig sig service of agent", () => {
       )
     ).toEqual({
       identifier: multisigIdentifier,
+      isPending: true,
       signifyName: expect.any(String),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
       expect.objectContaining({ id: multisigIdentifier, isPending: true })
     );
+
+    expect(operationPendingStorage.save).toBeCalledTimes(1);
 
     (keriMetadataRecord.groupMetadata as any).groupCreated = false;
     identifiersCreateMock.mockImplementation((name, _config) => {
@@ -250,6 +261,7 @@ describe("Multisig sig service of agent", () => {
       )
     ).toEqual({
       identifier: `${multisigIdentifier}1`,
+      isPending: true,
       signifyName: expect.any(String),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
@@ -281,6 +293,7 @@ describe("Multisig sig service of agent", () => {
       )
     ).toEqual({
       identifier: `${multisigIdentifier}2`,
+      isPending: true,
       signifyName: expect.any(String),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
@@ -393,6 +406,7 @@ describe("Multisig sig service of agent", () => {
       )
     ).toEqual({
       identifier: multisigIdentifier,
+      isPending: true,
       signifyName: expect.any(String),
     });
   });
@@ -482,8 +496,11 @@ describe("Multisig sig service of agent", () => {
       })
     ).toEqual({
       identifier: multisigIdentifier,
+      isPending: true,
       signifyName: expect.any(String),
     });
+
+    expect(operationPendingStorage.save).toBeCalledTimes(1);
   });
 
   test("cannot join multisig by notification if exn messages are missing", async () => {

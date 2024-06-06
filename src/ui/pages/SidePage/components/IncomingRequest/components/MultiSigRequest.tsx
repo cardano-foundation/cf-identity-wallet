@@ -30,6 +30,7 @@ import { PageHeader } from "../../../../../components/PageHeader";
 import { i18n } from "../../../../../../i18n";
 import { PageFooter } from "../../../../../components/PageFooter";
 import "./MultiSigRequest.scss";
+import { CreateIdentifierResult } from "../../../../../../core/agent/agent.types";
 
 const MultiSigRequest = ({
   blur,
@@ -51,23 +52,25 @@ const MultiSigRequest = ({
     if (!(requestData.event && requestData.multisigIcpDetails)) {
       // Do some error thing here... maybe it's just a TODO
     } else {
-      const joinMultisigResult = await Agent.agent.multiSigs.joinMultisig(
-        requestData.event.id,
-        requestData.event.a.d as string,
-        {
-          theme: requestData.multisigIcpDetails.ourIdentifier.theme,
-          displayName: requestData.multisigIcpDetails.ourIdentifier.displayName,
-        }
-      );
+      const { identifier, signifyName, isPending } =
+        (await Agent.agent.multiSigs.joinMultisig(
+          requestData.event.id,
+          requestData.event.a.d as string,
+          {
+            theme: requestData.multisigIcpDetails.ourIdentifier.theme,
+            displayName:
+              requestData.multisigIcpDetails.ourIdentifier.displayName,
+          }
+        )) as CreateIdentifierResult;
 
-      if (joinMultisigResult) {
+      if (identifier) {
         const newIdentifier: IdentifierShortDetails = {
-          id: joinMultisigResult.identifier,
+          id: identifier,
           displayName: requestData.multisigIcpDetails.ourIdentifier.displayName,
           createdAtUTC: `${requestData.event?.createdAt}`,
           theme: requestData.multisigIcpDetails.ourIdentifier.theme,
-          isPending: requestData.multisigIcpDetails.threshold >= 2,
-          signifyName: joinMultisigResult.signifyName,
+          isPending: !!isPending,
+          signifyName,
         };
         const filteredIdentifiersData = identifiersData.filter(
           (item) =>

@@ -46,6 +46,7 @@ jest.mock("../../../../core/agent/agent", () => ({
         getIdentifiersCache: jest.fn(),
         createIdentifier: jest.fn(() => ({
           identifier: "mock-id",
+          isPending: true,
           signifyName: "mock name",
         })),
       },

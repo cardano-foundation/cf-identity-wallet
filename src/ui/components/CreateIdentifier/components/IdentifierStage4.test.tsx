@@ -16,6 +16,7 @@ mockIonicReact();
 
 const createMultiSignMock = jest.fn((...arg: any) => ({
   identifier: "mock-id",
+  isPending: true,
   signifyName: "mock-name",
 }));
 
