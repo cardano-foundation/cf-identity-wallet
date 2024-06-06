@@ -1,0 +1,126 @@
+import { Agent } from "../../agent/agent";
+import {
+  PeerConnectSigningEvent,
+  PeerConnectionEventTypes,
+  TxSignError,
+} from "./peerConnection.types";
+import { EventService } from "../../agent/services/eventService";
+require("fake-indexeddb/auto");
+import { IdentityWalletConnect } from "./identityWalletConnect"; // Adjust the path accordingly
+
+jest.mock("../../agent/agent", () => ({
+  Agent: {
+    agent: {
+      connections: {
+        getConnectionShortDetailById: jest.fn(),
+        getMultisigLinkedContacts: jest.fn(),
+      },
+      identifiers: {
+        updateIdentifier: jest.fn(),
+      },
+      getKeriaOnlineStatus: jest.fn(),
+    },
+  },
+}));
+
+const walletInfo = {
+  name: "Test Wallet",
+  version: "1.0.0",
+  icon: "",
+  requestAutoconnect: false,
+};
+const selectedAid = "ELToRvQwhQ299vCk9GFMhggSdLHAAarm6LG8tyemik9G";
+const seed = "test-seed";
+const announce = ["announce-1", "announce-2"];
+const eventServiceMock = new EventService();
+const identityWalletConnect = new IdentityWalletConnect(
+  walletInfo,
+  seed,
+  announce,
+  selectedAid,
+  eventServiceMock
+);
+describe("IdentityWalletConnect", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.clearAllTimers();
+  });
+
+  it("should throw an error if identifier is not located", async () => {
+    Agent.agent.identifiers.getIdentifier = jest
+      .fn()
+      .mockResolvedValue(undefined);
+
+    await expect(identityWalletConnect.getIdentifierOobi()).rejects.toThrow(
+      IdentityWalletConnect.IDENTIFIER_ID_NOT_LOCATED
+    );
+  });
+
+  it("should return OOBI if identifier is located", async () => {
+    const mockIdentifier = { signifyName: "test-signify-name" };
+    Agent.agent.identifiers.getIdentifier = jest
+      .fn()
+      .mockResolvedValue(mockIdentifier);
+    Agent.agent.connections.getOobi = jest.fn().mockResolvedValue("test-oobi");
+
+    const result = await identityWalletConnect.getIdentifierOobi();
+    expect(result).toBe("test-oobi");
+  });
+
+  it("should return connecting aid", () => {
+    expect(identityWalletConnect.getConnectingAid()).toBe(selectedAid);
+  });
+
+  it("should sign payload if approved", async () => {
+    const identifier = "test-identifier";
+    const payload = "test-payload";
+    const mockSigner = {
+      sign: jest.fn().mockReturnValue({ qb64: "signed-payload" }),
+    };
+
+    Agent.agent.identifiers.getSigner = jest.fn().mockResolvedValue(mockSigner);
+    eventServiceMock.emit = jest
+      .fn()
+      .mockImplementation((event: PeerConnectSigningEvent) => {
+        event.payload.approvalCallback(true);
+      });
+
+    const result = await identityWalletConnect.sign(identifier, payload);
+    expect(result).toBe("signed-payload");
+  });
+
+  it("should return timeout error if signing takes too long", async () => {
+    const identifier = "test-identifier";
+    const payload = "test-payload";
+
+    const mockApprovalCallback = jest.fn();
+
+    eventServiceMock.emit = jest.fn();
+    jest.spyOn(global.Date, "now").mockImplementationOnce(() => 1);
+    const result = await identityWalletConnect.sign(identifier, payload);
+    expect(result).toEqual({ error: TxSignError.TimeOut });
+    expect(eventServiceMock.emit).toHaveBeenCalledWith({
+      type: PeerConnectionEventTypes.PeerConnectSign,
+      payload: {
+        identifier,
+        payload,
+        approvalCallback: expect.any(Function),
+      },
+    });
+    expect(mockApprovalCallback).not.toHaveBeenCalled();
+  });
+
+  it("should return user declined error if approval is false", async () => {
+    const identifier = "test-identifier";
+    const payload = "test-payload";
+
+    eventServiceMock.emit = jest
+      .fn()
+      .mockImplementation((event: PeerConnectSigningEvent) => {
+        event.payload.approvalCallback(false);
+      });
+
+    const result = await identityWalletConnect.sign(identifier, payload);
+    expect(result).toEqual({ error: TxSignError.UserDeclined });
+  });
+});
