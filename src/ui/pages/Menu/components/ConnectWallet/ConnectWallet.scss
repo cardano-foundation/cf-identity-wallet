@@ -10,6 +10,14 @@
     height: calc(100vh - 8rem);
   }
 
+  .card-list {
+    ion-item-sliding:last-child {
+      .card-item {
+        --inner-border-width: 0;
+      }
+    }
+  }
+
   @media screen and (min-width: 250px) and (max-width: 370px) {
     .connect-wallet-title {
       font-size: 1rem;
