@@ -18,6 +18,10 @@
     --card-width: auto;
     --card-height: 2.75rem;
 
+    &:last-child {
+      --inner-border-width: 0;
+    }
+
     .card-logo {
       border-radius: var(--logo-border-radius);
       width: var(--card-width);
@@ -72,6 +76,12 @@
 
   ion-item-sliding {
     --inner-padding-end: 0;
+
+    &:last-child {
+      .card-item {
+        --inner-border-width: 0;
+      }
+    }
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
