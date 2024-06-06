@@ -6,7 +6,7 @@ import { ConnectionStatus, NotificationRoute } from "../agent.types";
 import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { MultiSigService } from "./multiSigService";
-import { IdentifierStorage, OperationPendingStorage } from "../records";
+import { IdentifierStorage } from "../records";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -101,6 +101,10 @@ const identifierStorage = jest.mocked({
   createIdentifierMetadataRecord: jest.fn(),
 });
 
+const operationPendingStorage = jest.mocked({
+  save: jest.fn(),
+});
+
 const agentServicesProps = {
   signifyClient: signifyClient as any,
   eventService: new EventService(),
@@ -110,7 +114,7 @@ const multiSigService = new MultiSigService(
   agentServicesProps,
   identifierStorage as any,
   notificationStorage as any,
-  OperationPendingStorage as any
+  operationPendingStorage as any
 );
 
 let mockResolveOobi = jest.fn();
@@ -127,6 +131,9 @@ jest.mock("../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifiers: () => mockGetIdentifiers(),
         updateIdentifier: jest.fn(),
+      },
+      signifyNotifications: {
+        addPendingOperationToQueue: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
     },
@@ -229,6 +236,8 @@ describe("Multisig sig service of agent", () => {
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
       expect.objectContaining({ id: multisigIdentifier, isPending: true })
     );
+
+    expect(operationPendingStorage.save).toBeCalledTimes(1);
 
     (keriMetadataRecord.groupMetadata as any).groupCreated = false;
     identifiersCreateMock.mockImplementation((name, _config) => {
@@ -487,9 +496,11 @@ describe("Multisig sig service of agent", () => {
       })
     ).toEqual({
       identifier: multisigIdentifier,
-      isPending: false,
+      isPending: true,
       signifyName: expect.any(String),
     });
+
+    expect(operationPendingStorage.save).toBeCalledTimes(1);
   });
 
   test("cannot join multisig by notification if exn messages are missing", async () => {

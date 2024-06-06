@@ -73,8 +73,6 @@ class MultiSigService extends AgentService {
     threshold: number,
     delegateContact?: ConnectionShortDetails
   ): Promise<CreateIdentifierResult> {
-    const startTime = Date.now();
-
     if (threshold < 1 || threshold > otherIdentifierContacts.length + 1) {
       throw new Error(MultiSigService.INVALID_THRESHOLD);
     }
@@ -123,27 +121,18 @@ class MultiSigService extends AgentService {
       threshold,
       delegateAid
     );
-    let op = result.op;
-
+    const op = result.op;
     const multisigId = op.name.split(".")[1];
     const isPending = !op.done;
 
     if (isPending) {
-      op = await waitAndGetDoneOp(
-        this.props.signifyClient,
-        op,
-        2000 - (Date.now() - startTime)
+      const pendingOperation = await this.operationPendingStorage.save({
+        id: op.name,
+        recordType: OperationPendingRecordType.Group,
+      });
+      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+        pendingOperation
       );
-
-      if (!op.done) {
-        const pendingOperation = await this.operationPendingStorage.save({
-          id: op.name,
-          recordType: OperationPendingRecordType.Group,
-        });
-        Agent.agent.signifyNotifications.addPendingOperationToQueue(
-          pendingOperation
-        );
-      }
     }
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
@@ -390,8 +379,6 @@ class MultiSigService extends AgentService {
     meta: Pick<IdentifierMetadataRecordProps, "displayName" | "theme">
   ): Promise<CreateIdentifierResult | undefined> {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
-    const startTime = Date.now();
-
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {
       await this.notificationStorage.deleteById(notificationId);
@@ -427,28 +414,18 @@ class MultiSigService extends AgentService {
     const signifyName = uuidv4();
     const res = await this.joinMultisigKeri(exn, aid, signifyName);
     await this.notificationStorage.deleteById(notificationId);
-    let op = res.op;
-
+    const op = res.op;
     const multisigId = op.name.split(".")[1];
-    let isPending = !op.done;
+    const isPending = !op.done;
 
     if (isPending) {
-      op = await waitAndGetDoneOp(
-        this.props.signifyClient,
-        op,
-        2000 - (Date.now() - startTime)
+      const pendingOperation = await this.operationPendingStorage.save({
+        id: op.name,
+        recordType: OperationPendingRecordType.Group,
+      });
+      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+        pendingOperation
       );
-
-      if (!op.done) {
-        const pendingOperation = await this.operationPendingStorage.save({
-          id: op.name,
-          recordType: OperationPendingRecordType.Group,
-        });
-        Agent.agent.signifyNotifications.addPendingOperationToQueue(
-          pendingOperation
-        );
-      }
-      isPending = !op.done;
     }
 
     await this.identifierStorage.createIdentifierMetadataRecord({
