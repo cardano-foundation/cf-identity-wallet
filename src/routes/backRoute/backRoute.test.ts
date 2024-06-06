@@ -55,6 +55,7 @@ describe("getBackRoute", () => {
         },
       },
       credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
       connectionsCache: {
         connections: [],
       },
@@ -181,6 +182,7 @@ describe("getPreviousRoute", () => {
         },
       },
       credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
       connectionsCache: {
         connections: [],
       },

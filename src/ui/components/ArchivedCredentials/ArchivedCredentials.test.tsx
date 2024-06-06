@@ -10,11 +10,12 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 const deleteCredentailsMock = jest.fn((id: string) => Promise.resolve(true));
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       credentials: {
         restoreCredential: jest.fn((id: string) => Promise.resolve(id)),
         deleteCredential: (id: string) => deleteCredentailsMock(id),
+        getCredentials: jest.fn().mockResolvedValue([]),
       },
     },
   },
@@ -135,7 +136,7 @@ describe("Creds Tab", () => {
     );
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledTimes(1);
+      expect(dispatchMock).toBeCalledTimes(2);
     });
   });
 

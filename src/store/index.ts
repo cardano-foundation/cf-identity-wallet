@@ -7,6 +7,7 @@ import { connectionsCacheSlice } from "./reducers/connectionsCache";
 import { walletConnectionsCacheSlice } from "./reducers/walletConnectionsCache";
 import { identifierViewTypeCacheSlice } from "./reducers/identifierViewTypeCache";
 import { biometryCacheSlice } from "./reducers/biometryCache";
+import { credsArchivedCacheSlice } from "./reducers/credsArchivedCache";
 import { ssiAgentSlice } from "./reducers/ssiAgent";
 
 const store = configureStore({
@@ -15,6 +16,7 @@ const store = configureStore({
     seedPhraseCache: seedPhraseCacheSlice.reducer,
     identifiersCache: identifiersCacheSlice.reducer,
     credsCache: credsCacheSlice.reducer,
+    credsArchivedCache: credsArchivedCacheSlice.reducer,
     connectionsCache: connectionsCacheSlice.reducer,
     walletConnectionsCache: walletConnectionsCacheSlice.reducer,
     identifierViewTypeCacheCache: identifierViewTypeCacheSlice.reducer,
