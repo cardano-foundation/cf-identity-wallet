@@ -289,6 +289,21 @@ class SignifyNotificationService extends AgentService {
 
               break;
             }
+
+            case OperationPendingRecordType.Group: {
+              await this.identifierStorage.updateIdentifierMetadata(
+                recordId,
+                {
+                  isPending: false,
+                }
+              );
+              callback({
+                opType: pendingOperation.recordType,
+                oid: recordId,
+              });
+
+              break;
+            }
             default:
               break;
             }

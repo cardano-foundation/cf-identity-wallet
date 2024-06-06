@@ -47,7 +47,7 @@ const IdentifierStage4 = ({
       );
       return;
     } else {
-      const { identifier, signifyName } =
+      const { identifier, signifyName, isPending } =
         await Agent.agent.multiSigs.createMultisig(
           ourIdentifier,
           otherIdentifierContacts,
@@ -59,7 +59,7 @@ const IdentifierStage4 = ({
           displayName: state.displayNameValue,
           createdAtUTC: new Date().toISOString(),
           theme: state.selectedTheme,
-          isPending: state.threshold >= 2,
+          isPending: isPending ? true : false,
           signifyName,
         };
         const filteredIdentifiersData = identifiersData.filter(

@@ -103,7 +103,8 @@ class Agent {
       this.multiSigService = new MultiSigService(
         this.agentServicesProps,
         this.identifierStorage,
-        this.notificationStorage
+        this.notificationStorage,
+        this.operationPendingStorage
       );
     }
     return this.multiSigService;
@@ -286,7 +287,9 @@ class Agent {
     this.peerConnectionStorage = new PeerConnectionStorage(
       this.getStorageService<PeerConnectionMetadataRecord>(this.storageSession)
     );
-
+    this.operationPendingStorage = new OperationPendingStorage(
+      this.getStorageService<OperationPendingRecord>(this.storageSession)
+    );
     this.agentServicesProps = {
       signifyClient: this.signifyClient,
       eventService: new EventService(),
