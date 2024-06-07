@@ -46,7 +46,7 @@ describe("IdentityWalletConnect", () => {
     jest.clearAllTimers();
   });
 
-  it("should throw an error if identifier is not located", async () => {
+  test("should throw an error if identifier is not located", async () => {
     Agent.agent.identifiers.getIdentifier = jest
       .fn()
       .mockResolvedValue(undefined);
@@ -56,7 +56,7 @@ describe("IdentityWalletConnect", () => {
     );
   });
 
-  it("should return OOBI if identifier is located", async () => {
+  test("should return OOBI if identifier is located", async () => {
     const mockIdentifier = { signifyName: "test-signify-name" };
     Agent.agent.identifiers.getIdentifier = jest
       .fn()
@@ -67,11 +67,11 @@ describe("IdentityWalletConnect", () => {
     expect(result).toBe("test-oobi");
   });
 
-  it("should return connecting aid", () => {
+  test("should return connecting aid", () => {
     expect(identityWalletConnect.getConnectingAid()).toBe(selectedAid);
   });
 
-  it("should sign payload if approved", async () => {
+  test("should sign payload if approved", async () => {
     const identifier = "test-identifier";
     const payload = "test-payload";
     const mockSigner = {
@@ -89,7 +89,7 @@ describe("IdentityWalletConnect", () => {
     expect(result).toBe("signed-payload");
   });
 
-  it("should return timeout error if signing takes too long", async () => {
+  test("should return timeout error if signing takes too long", async () => {
     const identifier = "test-identifier";
     const payload = "test-payload";
 
@@ -110,7 +110,7 @@ describe("IdentityWalletConnect", () => {
     expect(mockApprovalCallback).not.toHaveBeenCalled();
   });
 
-  it("should return user declined error if approval is false", async () => {
+  test("should return user declined error if approval is false", async () => {
     const identifier = "test-identifier";
     const payload = "test-payload";
 

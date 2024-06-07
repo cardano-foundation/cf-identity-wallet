@@ -205,7 +205,6 @@ class PeerConnection {
     if (this.identityWalletConnect === undefined) {
       throw new Error(PeerConnection.PEER_CONNECTION_START_PENDING);
     }
-
     this.identityWalletConnect.disconnect(dAppIdentifier);
 
     if (isBroken) {
