@@ -58,6 +58,7 @@ interface PeerConnection {
   url?: string;
   iconB64?: string;
   selectedAid?: string;
+  createdAt?: string;
 }
 
 export const TxSignError: { [key: string]: PeerConnectionError } = {

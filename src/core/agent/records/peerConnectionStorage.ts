@@ -15,21 +15,14 @@ class PeerConnectionStorage {
   }
 
   async getPeerConnection(id: string): Promise<PeerConnection> {
-    const metadata = await this.storageService.findById(
-      id,
-      PeerConnectionMetadataRecord
-    );
-    if (!metadata) {
-      throw new Error(
-        PeerConnectionStorage.PEER_CONNECTION_METADATA_RECORD_MISSING
-      );
-    }
+    const metadata = await this.getPeerConnectionMetadata(id);
     return {
       id: metadata.id,
       iconB64: metadata.iconB64,
       name: metadata.name,
       selectedAid: metadata.selectedAid,
       url: metadata.url,
+      createdAt: metadata.createdAt.toISOString(),
     };
   }
 
@@ -58,6 +51,7 @@ class PeerConnectionStorage {
       name: record.name,
       selectedAid: record.selectedAid,
       url: record.url,
+      createdAt: record.createdAt.toISOString(),
     }));
   }
 

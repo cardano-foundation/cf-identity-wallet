@@ -49,6 +49,7 @@ describe("Connection service of agent", () => {
           name: record.name,
           selectedAid: record.selectedAid,
           url: record.url,
+          createdAt: record.createdAt.toISOString(),
         })
       )
     );
@@ -75,6 +76,7 @@ describe("Connection service of agent", () => {
       name: peerConnectionMetadataRecord.name,
       selectedAid: peerConnectionMetadataRecord.selectedAid,
       url: peerConnectionMetadataRecord.url,
+      createdAt: peerConnectionMetadataRecord.createdAt.toISOString(),
     });
   });
 
