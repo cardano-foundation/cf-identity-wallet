@@ -23,6 +23,15 @@ const store = configureStore({
     biometryCache: biometryCacheSlice.reducer,
     ssiAgentCache: ssiAgentSlice.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these field paths in all actions
+        ignoredActionPaths: [
+          "payload.signTransaction.payload.approvalCallback",
+        ],
+      },
+    }),
 });
 
 type RootState = ReturnType<typeof store.getState>;
