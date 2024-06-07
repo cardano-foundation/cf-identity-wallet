@@ -44,6 +44,10 @@
       margin: 0;
       color: rgba(54, 60, 74, 0.75);
     }
+
+    @media screen and (min-width: 250px) and (max-width: 370px) {
+      margin: 1rem 0;
+    }
   }
 
   .sign-content {
