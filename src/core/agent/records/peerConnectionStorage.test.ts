@@ -36,24 +36,46 @@ describe("Connection service of agent", () => {
     jest.resetAllMocks();
   });
 
-  test("Should get all credentials", async () => {
+  test("Should get all peer connection", async () => {
     storageService.getAll.mockResolvedValue([
       peerConnectionMetadataRecord,
       peerConnectionMetadataRecord2,
     ]);
-    expect(await peerConnectionStorage.getAllPeerConnectionMetadata()).toEqual([
-      peerConnectionMetadataRecord,
-      peerConnectionMetadataRecord2,
-    ]);
+    expect(await peerConnectionStorage.getAllPeerConnectionMetadata()).toEqual(
+      [peerConnectionMetadataRecord, peerConnectionMetadataRecord2].map(
+        (record) => ({
+          id: record.id,
+          iconB64: record.iconB64,
+          name: record.name,
+          selectedAid: record.selectedAid,
+          url: record.url,
+        })
+      )
+    );
   });
 
-  test("Should get credential metadata", async () => {
+  test("Should get peer connection meta data record", async () => {
     storageService.findById.mockResolvedValue(peerConnectionMetadataRecord);
     expect(
       await peerConnectionStorage.getPeerConnectionMetadata(
         peerConnectionMetadataRecord.id
       )
     ).toEqual(peerConnectionMetadataRecord);
+  });
+
+  test("Should get peer connection", async () => {
+    storageService.findById.mockResolvedValue(peerConnectionMetadataRecord);
+    expect(
+      await peerConnectionStorage.getPeerConnection(
+        peerConnectionMetadataRecord.id
+      )
+    ).toEqual({
+      id: peerConnectionMetadataRecord.id,
+      iconB64: peerConnectionMetadataRecord.iconB64,
+      name: peerConnectionMetadataRecord.name,
+      selectedAid: peerConnectionMetadataRecord.selectedAid,
+      url: peerConnectionMetadataRecord.url,
+    });
   });
 
   test("Should throw if peerConnection metadata record is missing", async () => {
@@ -74,7 +96,7 @@ describe("Connection service of agent", () => {
     expect(storageService.save).toBeCalledWith(peerConnectionMetadataRecord);
   });
 
-  test("Should update credential metadata record", async () => {
+  test("Should update peer connection metadata record", async () => {
     storageService.findById.mockResolvedValue(peerConnectionMetadataRecord);
     await peerConnectionStorage.updatePeerConnectionMetadata(
       peerConnectionMetadataRecord.id,

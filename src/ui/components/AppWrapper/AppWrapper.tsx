@@ -155,7 +155,7 @@ const peerConnectRequestSignChangeHandler = async (
   const connectedDAppAddress =
     PeerConnection.peerConnection.getConnectedDAppAddress();
   const peerConnection =
-    await Agent.agent.peerConnectionMetadataStorage.getPeerConnectionMetadata(
+    await Agent.agent.peerConnectionMetadataStorage.getPeerConnection(
       connectedDAppAddress
     );
   dispatch(

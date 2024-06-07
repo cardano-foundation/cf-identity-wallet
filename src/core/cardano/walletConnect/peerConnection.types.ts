@@ -52,6 +52,14 @@ interface PeerConnectionError {
   info: string;
 }
 
+interface PeerConnection {
+  id: string;
+  name?: string;
+  url?: string;
+  iconB64?: string;
+  selectedAid?: string;
+}
+
 export const TxSignError: { [key: string]: PeerConnectionError } = {
   ProofGeneration: {
     code: 1,
@@ -69,4 +77,5 @@ export type {
   PeerDisconnectedEvent,
   PeerConnectionBrokenEvent,
   PeerConnectionError,
+  PeerConnection,
 };

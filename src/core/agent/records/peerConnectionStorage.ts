@@ -1,3 +1,4 @@
+import { PeerConnection } from "../../cardano/walletConnect/peerConnection.types";
 import { StorageService } from "../../storage/storage.types";
 import {
   PeerConnectionMetadataRecord,
@@ -11,6 +12,25 @@ class PeerConnectionStorage {
 
   constructor(storageService: StorageService<PeerConnectionMetadataRecord>) {
     this.storageService = storageService;
+  }
+
+  async getPeerConnection(id: string): Promise<PeerConnection> {
+    const metadata = await this.storageService.findById(
+      id,
+      PeerConnectionMetadataRecord
+    );
+    if (!metadata) {
+      throw new Error(
+        PeerConnectionStorage.PEER_CONNECTION_METADATA_RECORD_MISSING
+      );
+    }
+    return {
+      id: metadata.id,
+      iconB64: metadata.iconB64,
+      name: metadata.name,
+      selectedAid: metadata.selectedAid,
+      url: metadata.url,
+    };
   }
 
   async getPeerConnectionMetadata(
@@ -28,13 +48,17 @@ class PeerConnectionStorage {
     return metadata;
   }
 
-  async getAllPeerConnectionMetadata(): Promise<
-    PeerConnectionMetadataRecord[]
-    > {
+  async getAllPeerConnectionMetadata(): Promise<PeerConnection[]> {
     const records = await this.storageService.getAll(
       PeerConnectionMetadataRecord
     );
-    return records;
+    return records.map((record) => ({
+      id: record.id,
+      iconB64: record.iconB64,
+      name: record.name,
+      selectedAid: record.selectedAid,
+      url: record.url,
+    }));
   }
 
   async updatePeerConnectionMetadata(
