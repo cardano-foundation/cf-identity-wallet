@@ -36,6 +36,9 @@ const initialState = {
   identifiersCache: {
     identifiers: [...identifierFix],
   },
+  walletConnectionsCache: {
+    pendingDAppMeerKat: undefined,
+  },
 };
 
 const storeMocked = {
@@ -68,14 +71,12 @@ describe("Confirm connect modal", () => {
     expect(getByTestId("wallet-connection-logo")).toBeVisible();
 
     expect(getByText(walletConnectionsFix[0].name as string)).toBeVisible();
-    expect(
-      getByText(walletConnectionsFix[0].selectedAid as string)
-    ).toBeVisible();
+    expect(getByText(walletConnectionsFix[0].url || "")).toBeVisible();
 
     const ellipsisLink =
-      (walletConnectionsFix[0].url as string).substring(0, 5) +
+      (walletConnectionsFix[0].id as string).substring(0, 5) +
       "..." +
-      (walletConnectionsFix[0].url as string).slice(-5);
+      (walletConnectionsFix[0].id as string).slice(-5);
 
     expect(getByText(ellipsisLink)).toBeVisible();
 
@@ -136,7 +137,7 @@ describe("Confirm connect modal", () => {
     const confirmFn = jest.fn();
     const deleteFn = jest.fn();
 
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, queryByTestId } = render(
       <Provider store={storeMocked}>
         <ConfirmConnectModal
           openModal={true}
@@ -156,18 +157,63 @@ describe("Confirm connect modal", () => {
       )
     ).toBeVisible();
 
-    act(() => {
-      fireEvent.click(getByTestId("connection-id"));
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).not.toBeCalled();
-    });
+    expect(queryByTestId("connection-id")).toBe(null);
 
     act(() => {
       fireEvent.click(getByTestId("action-button"));
     });
 
     expect(deleteFn).not.toBeCalled();
+  });
+
+  test("Confirm connect modal render: connecting", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+      },
+      identifiersCache: {
+        identifiers: [...identifierFix],
+      },
+      walletConnectionsCache: {
+        pendingDAppMeerKat: walletConnectionsFix[0].id,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const closeFn = jest.fn();
+    const confirmFn = jest.fn();
+    const deleteFn = jest.fn();
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <ConfirmConnectModal
+          openModal={true}
+          closeModal={closeFn}
+          onConfirm={confirmFn}
+          onDeleteConnection={deleteFn}
+          isConnectModal={false}
+          connectionData={{
+            ...walletConnectionsFix[0],
+            name: undefined,
+            iconB64: "imagelink",
+          }}
+        />
+      </Provider>
+    );
+
+    expect(getByTestId("confirm-connect-btn").getAttribute("disabled")).toBe(
+      "true"
+    );
+    expect(getByTestId("pending-chip")).toBeVisible();
   });
 });

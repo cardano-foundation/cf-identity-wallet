@@ -1,11 +1,18 @@
-import { IonButton, IonIcon } from "@ionic/react";
-import { copyOutline, personCircleOutline, trashOutline } from "ionicons/icons";
+import { IonButton, IonChip, IonIcon } from "@ionic/react";
+import {
+  copyOutline,
+  hourglassOutline,
+  personCircleOutline,
+  trashOutline,
+} from "ionicons/icons";
 import { i18n } from "../../../../../i18n";
-import { useAppDispatch } from "../../../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import { setToastMsg } from "../../../../../store/reducers/stateCache";
+import { getPendingDAppMeerkat } from "../../../../../store/reducers/walletConnectionsCache";
 import { OptionModal } from "../../../../components/OptionsModal";
 import { ToastMsgType } from "../../../../globals/types";
 import { writeToClipboard } from "../../../../utils/clipboard";
+import { ellipsisText } from "../../../../utils/formatters";
 import { combineClassNames } from "../../../../utils/style";
 import "./ConfirmConnectModal.scss";
 import { ConfirmConnectModalProps } from "./ConfirmConnectModal.types";
@@ -19,6 +26,7 @@ const ConfirmConnectModal = ({
   onDeleteConnection,
 }: ConfirmConnectModalProps) => {
   const dispatch = useAppDispatch();
+  const pendingMeerkatId = useAppSelector(getPendingDAppMeerkat);
 
   const cardImg = connectionData?.iconB64 ? (
     <img
@@ -39,17 +47,26 @@ const ConfirmConnectModal = ({
     </div>
   );
 
+  const isConnecting =
+    !!pendingMeerkatId && pendingMeerkatId === connectionData?.id;
+  const dAppName = !connectionData?.name
+    ? ellipsisText(connectionData?.id || "", 25)
+    : connectionData?.name;
+
   const buttonTitle = i18n.t(
-    isConnectModal
-      ? "menu.tab.items.connectwallet.connectionhistory.confirmconnect.connectbtn"
-      : "menu.tab.items.connectwallet.connectionhistory.confirmconnect.disconnectbtn"
+    isConnecting
+      ? "menu.tab.items.connectwallet.connectionhistory.confirmconnect.connectingbtn"
+      : isConnectModal
+        ? "menu.tab.items.connectwallet.connectionhistory.confirmconnect.connectbtn"
+        : "menu.tab.items.connectwallet.connectionhistory.confirmconnect.disconnectbtn"
   );
 
-  const displayUrl = connectionData
-    ? (connectionData.url as string).substring(0, 5) +
-      "..." +
-      (connectionData.url as string).slice(-5)
-    : "";
+  const displayMeerkatId =
+    connectionData && connectionData.id && connectionData.name
+      ? (connectionData.id as string).substring(0, 5) +
+        "..." +
+        (connectionData.id as string).slice(-5)
+      : null;
 
   const deleteConnection = () => {
     if (!connectionData) return;
@@ -86,21 +103,50 @@ const ConfirmConnectModal = ({
       }}
     >
       {cardImg}
-      <h3 className="confirm-modal-name-title">{connectionData?.name}</h3>
-      <p className="confirm-modal-name">{connectionData?.selectedAid}</p>
-      <div
-        onClick={() => {
-          if (!connectionData) return;
-          writeToClipboard(connectionData.url as string);
-          dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
-        }}
-        className="confirm-modal-id"
-        data-testid="connection-id"
+      <h3
+        data-testid="connect-wallet-title"
+        className="confirm-modal-name-title"
       >
-        <span>{displayUrl}</span>
-        <IonIcon icon={copyOutline} />
-      </div>
+        {dAppName}
+      </h3>
+      {!isConnecting && (
+        <p
+          data-testid="connect-wallet-indetifier-name"
+          className="confirm-modal-name"
+        >
+          {connectionData?.url}
+        </p>
+      )}
+      {!isConnecting && displayMeerkatId && (
+        <div
+          onClick={() => {
+            if (!connectionData?.id) return;
+            writeToClipboard(connectionData.id as string);
+            dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
+          }}
+          className="confirm-modal-id"
+          data-testid="connection-id"
+        >
+          <span>{displayMeerkatId}</span>
+          <IonIcon icon={copyOutline} />
+        </div>
+      )}
+      {isConnecting && (
+        <IonChip className="pending-chip">
+          <IonIcon
+            data-testid="pending-chip"
+            icon={hourglassOutline}
+            color="primary"
+          ></IonIcon>
+          <span>
+            {i18n.t(
+              "menu.tab.items.connectwallet.connectionhistory.confirmconnect.pending"
+            )}
+          </span>
+        </IonChip>
+      )}
       <IonButton
+        disabled={isConnecting}
         className={confirmClass}
         data-testid="confirm-connect-btn"
         onClick={confirm}

@@ -5,21 +5,28 @@ import { IdentifierShortDetails } from "../../../../../core/agent/services/ident
 import { i18n } from "../../../../../i18n";
 import { useAppSelector } from "../../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
-import { setToastMsg } from "../../../../../store/reducers/stateCache";
+import {
+  setCurrentOperation,
+  setToastMsg,
+} from "../../../../../store/reducers/stateCache";
 import { CardItem, CardList } from "../../../../components/CardList";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
 import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
-import { ToastMsgType } from "../../../../globals/types";
+import {
+  IDENTIFIER_BG_MAPPING,
+  OperationType,
+  ToastMsgType,
+} from "../../../../globals/types";
 import { combineClassNames } from "../../../../utils/style";
 import "./WalletConnect.scss";
 import { WalletConnectStageTwoProps } from "./WalletConnect.types";
 import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
-import { Agent } from "../../../../../core/agent/agent";
 import {
   getWalletConnectionsCache,
   setWalletConnectionsCache,
 } from "../../../../../store/reducers/walletConnectionsCache";
+import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 
 const WalletConnectStageTwo = ({
   isOpen,
@@ -38,7 +45,7 @@ const WalletConnectStageTwo = ({
     (identifier, index): CardItem<IdentifierShortDetails> => ({
       id: index,
       title: identifier.displayName,
-      image: "",
+      image: (IDENTIFIER_BG_MAPPING[identifier.theme] as string) || KeriLogo,
       data: identifier,
     })
   );
@@ -68,7 +75,18 @@ const WalletConnectStageTwo = ({
               ...existingConnections,
             ])
           );
+        } else {
+          existingConnection.selectedAid = selectedIdentifier.id;
+          dispatch(
+            setWalletConnectionsCache([
+              ...existingConnections
+            ])
+          );
         }
+
+        dispatch(
+          setCurrentOperation(OperationType.OPEN_WALLET_CONNECTION_DETAIL)
+        );
       }
       onClose();
     } catch (e) {

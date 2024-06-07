@@ -1,12 +1,15 @@
-import { IonCheckbox, IonItemOption } from "@ionic/react";
+import { IonCheckbox, IonChip, IonIcon, IonItemOption } from "@ionic/react";
 import {
   forwardRef,
+  useCallback,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
 } from "react";
 import { useHistory } from "react-router-dom";
+import { hourglassOutline } from "ionicons/icons";
 import { i18n } from "../../../../../i18n";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
@@ -14,13 +17,16 @@ import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCa
 import {
   getCurrentOperation,
   getStateCache,
+  getToastMsg,
   setCurrentOperation,
   setToastMsg,
 } from "../../../../../store/reducers/stateCache";
 import {
   ConnectionData,
   getConnectedWallet,
+  getPendingDAppMeerkat,
   getWalletConnectionsCache,
+  setConnectedWallet,
   setPendingDAppMeerKat,
   setWalletConnectionsCache,
 } from "../../../../../store/reducers/walletConnectionsCache";
@@ -39,19 +45,22 @@ import {
 } from "./ConnectWallet.types";
 import { Agent } from "../../../../../core/agent/agent";
 import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
+import { ellipsisText } from "../../../../utils/formatters";
 
 const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
   (props, ref) => {
     const history = useHistory();
     const dispatch = useAppDispatch();
 
+    const toastMsg = useAppSelector(getToastMsg);
+    const pendingDAppMeerkat = useAppSelector(getPendingDAppMeerkat);
     const identifierCache = useAppSelector(getIdentifiersCache);
     const connections = useAppSelector(getWalletConnectionsCache);
     const connectedWallet = useAppSelector(getConnectedWallet);
     const currentOperation = useAppSelector(getCurrentOperation);
     const pageId = "connect-wallet-placeholder";
     const stateCache = useAppSelector(getStateCache);
-    const actionInfo = useRef<ActionInfo>({
+    const [actionInfo, setActionInfo] = useState<ActionInfo>({
       type: ActionType.None,
     });
 
@@ -64,15 +73,27 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
     const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
+    const getIdentifierName = useCallback(
+      (id?: string) =>
+        identifierCache.find((item) => item.id === id)?.displayName,
+      [identifierCache]
+    );
+
     const displayConnection = useMemo((): CardItem<ConnectionData>[] => {
-      return connections.map((connection) => ({
-        id: connection.id,
-        title: connection.name as string,
-        url: connection.url,
-        subtitle: connection.url,
-        image: connection.iconB64,
-        data: connection,
-      }));
+      return connections.map((connection) => {
+        const dAppName = connection.name
+          ? connection.name
+          : ellipsisText(connection.id, 25);
+
+        return {
+          id: connection.id,
+          title: dAppName,
+          url: connection.url,
+          subtitle: connection.url,
+          image: connection.iconB64,
+          data: connection,
+        };
+      });
     }, [connections]);
 
     useImperativeHandle(ref, () => ({
@@ -91,26 +112,27 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     };
 
     const handleOpenDeleteAlert = (data: ConnectionData) => {
-      actionInfo.current = {
+      setActionInfo({
         type: ActionType.Delete,
         data,
-      };
+      });
 
       setOpenDeleteAlert(true);
     };
 
     const handleOpenConfirmConnectModal = (data: ConnectionData) => {
-      actionInfo.current = {
+      setActionInfo({
         type: ActionType.Connect,
         data,
-      };
+      });
       setOpenConfirmConnectModal(true);
     };
 
     const closeDeleteAlert = () => {
-      actionInfo.current = {
+      setActionInfo({
         type: ActionType.None,
-      };
+      });
+
       setOpenDeleteAlert(false);
     };
 
@@ -120,9 +142,9 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     };
 
     const handleDeleteConnection = async (data: ConnectionData) => {
-      actionInfo.current = {
+      setActionInfo({
         type: ActionType.None,
-      };
+      });
       await Agent.agent.peerConnectionMetadataStorage.deletePeerConnectionMetadataRecord(
         data.id
       );
@@ -140,12 +162,13 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
         setOpenIdentifierMissingAlert(true);
         return;
       }
-      if (!actionInfo.current.data) return;
-      const isConnectedItem = actionInfo.current.data.id === connectedWallet;
+      if (!actionInfo.data) return;
+      const isConnectedItem = actionInfo.data.id === connectedWallet;
       if (isConnectedItem) {
         PeerConnection.peerConnection.disconnectDApp(connectedWallet);
+        dispatch(setConnectedWallet(null));
       } else {
-        dispatch(setPendingDAppMeerKat(actionInfo.current.data.id));
+        dispatch(setPendingDAppMeerKat(actionInfo.data.id));
       }
     };
 
@@ -153,11 +176,8 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       setVerifyPasscodeIsOpen(false);
       setVerifyPasswordIsOpen(false);
 
-      if (
-        actionInfo.current.type === ActionType.Delete &&
-        actionInfo.current.data
-      ) {
-        handleDeleteConnection(actionInfo.current.data);
+      if (actionInfo.type === ActionType.Delete && actionInfo.data) {
+        handleDeleteConnection(actionInfo.data);
       }
     };
 
@@ -181,6 +201,51 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       );
       history.push(TabsRoutePath.IDENTIFIERS);
     };
+
+    const getDisplayConnection = useCallback(
+      (id?: string | null) => {
+        const connectionData = connections.find((data) => data.id === id);
+
+        if (!connectionData) return;
+
+        const identifierName = getIdentifierName(connectionData.selectedAid);
+
+        return {
+          ...connectionData,
+          identifierName,
+        };
+      },
+      [connections, getIdentifierName]
+    );
+
+    // NOTE: Reload connection data after connect success
+    useEffect(() => {
+      const connectConnection = getDisplayConnection(actionInfo.data?.id);
+
+      if (
+        toastMsg === ToastMsgType.CONNECT_WALLET_SUCCESS &&
+        !pendingDAppMeerkat &&
+        connectConnection
+      ) {
+        handleOpenConfirmConnectModal(connectConnection);
+      }
+    }, [getDisplayConnection, toastMsg, pendingDAppMeerkat]);
+
+    useEffect(() => {
+      const pendingConnection = getDisplayConnection(pendingDAppMeerkat);
+
+      if (!pendingConnection) return;
+
+      if (
+        OperationType.OPEN_WALLET_CONNECTION_DETAIL === currentOperation &&
+        pendingDAppMeerkat
+      ) {
+        dispatch(setCurrentOperation(OperationType.IDLE));
+        setTimeout(() => {
+          handleOpenConfirmConnectModal(pendingConnection);
+        }, 500);
+      }
+    }, [currentOperation, pendingDAppMeerkat]);
 
     return (
       <>
@@ -209,6 +274,17 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
                   );
                 }}
                 onRenderEndSlot={(data) => {
+                  if (data.id === pendingDAppMeerkat) {
+                    return (
+                      <IonChip className="connection-pending">
+                        <IonIcon
+                          icon={hourglassOutline}
+                          color="primary"
+                        ></IonIcon>
+                      </IonChip>
+                    );
+                  }
+
                   if (data.id !== connectedWallet) return null;
 
                   return (
@@ -233,11 +309,11 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           )}
         </div>
         <ConfirmConnectModal
-          isConnectModal={actionInfo.current.data?.id !== connectedWallet}
+          isConnectModal={actionInfo.data?.id !== connectedWallet}
           openModal={openConfirmConnectModal}
           closeModal={() => setOpenConfirmConnectModal(false)}
           onConfirm={handleConnectWallet}
-          connectionData={actionInfo.current.data}
+          connectionData={actionInfo.data}
           onDeleteConnection={handleOpenDeleteAlert}
         />
         <Alert

@@ -937,7 +937,9 @@
             "confirmconnect": {
               "done": "Done",
               "connectbtn": "Connect",
-              "disconnectbtn": "Disconnect"
+              "disconnectbtn": "Disconnect",
+              "connectingbtn": "Connecting...",
+              "pending": "Pending"
             }
           },
           "request": {

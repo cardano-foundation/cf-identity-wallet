@@ -45,6 +45,7 @@ import { useActivityTimer } from "./hooks/useActivityTimer";
 import {
   getConnectedWallet,
   setConnectedWallet,
+  setPendingDAppMeerKat,
   setWalletConnectionsCache,
 } from "../../../store/reducers/walletConnectionsCache";
 import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
@@ -176,6 +177,7 @@ const peerConnectedChangeHandler = async (
     await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
   dispatch(setWalletConnectionsCache(existingConnections));
   dispatch(setConnectedWallet(event.payload.dAppAddress));
+  dispatch(setPendingDAppMeerKat(null));
   dispatch(setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS));
 };
 
