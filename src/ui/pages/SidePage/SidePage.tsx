@@ -6,9 +6,13 @@ import {
   setPauseQueueIncomingRequest,
 } from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getPendingDAppMeerkat } from "../../../store/reducers/walletConnectionsCache";
+import {
+  getPendingDAppMeerkat,
+  getWalletConnectionsCache,
+} from "../../../store/reducers/walletConnectionsCache";
 import { IncomingRequest } from "./components/IncomingRequest";
 import { WalletConnect } from "./components/WalletConnect";
+import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 
 const SidePage = () => {
   const dispatch = useAppDispatch();
@@ -17,11 +21,16 @@ const SidePage = () => {
 
   const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
   const pendingDAppMeerkat = useAppSelector(getPendingDAppMeerkat);
+  const walletConnectionCache = useAppSelector(getWalletConnectionsCache);
   const stateCache = useAppSelector(getStateCache);
 
   const canOpenIncomingRequest =
     queueIncomingRequest.queues.length > 0 && !queueIncomingRequest.isPaused;
-  const canOpenPendingWalletConnection = !!pendingDAppMeerkat;
+  const canOpenPendingWalletConnection =
+    !!pendingDAppMeerkat &&
+    !walletConnectionCache.some(
+      (item) => item.id === pendingDAppMeerkat && !item.name
+    );
 
   useEffect(() => {
     if (canOpenIncomingRequest || !stateCache.authentication.loggedIn) return;

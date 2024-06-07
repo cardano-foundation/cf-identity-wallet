@@ -614,9 +614,6 @@ describe("Wallet connect", () => {
 
     await waitFor(() => {
       expect(getByTestId("connect-wallet-title")).toBeVisible();
-      expect(
-        getByText(ellipsisText(walletConnectionsFix[0].id, 25))
-      ).toBeVisible();
     });
 
     rerender(

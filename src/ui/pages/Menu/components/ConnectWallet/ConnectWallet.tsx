@@ -81,9 +81,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
 
     const displayConnection = useMemo((): CardItem<ConnectionData>[] => {
       return connections.map((connection) => {
-        const dAppName = connection.name
-          ? connection.name
-          : ellipsisText(connection.id, 25);
+        const dAppName = connection.name ? connection.name : connection.id;
 
         return {
           id: connection.id,
@@ -154,6 +152,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           connections.filter((connection) => connection.id !== data.id)
         )
       );
+      dispatch(setPendingDAppMeerKat(null));
       dispatch(setToastMsg(ToastMsgType.WALLET_CONNECTION_DELETED));
     };
 

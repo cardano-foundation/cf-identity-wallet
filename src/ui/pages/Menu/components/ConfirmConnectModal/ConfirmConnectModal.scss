@@ -108,6 +108,12 @@
       }
     }
 
+    & .page-header.md {
+      ion-toolbar {
+        max-height: none !important;
+      }
+    }
+
     &.responsive-modal .responsive-modal-content {
       .confirm-modal-id {
         padding: 0.875rem 1.5rem;
@@ -115,6 +121,15 @@
         & > span {
           font-size: 0.875rem;
         }
+      }
+
+      .wallet-connect-fallback-logo {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+
+      .confirm-modal-name-title {
+        font-size: 0.875rem;
       }
 
       .confirm-connect-submit {
