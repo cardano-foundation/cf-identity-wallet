@@ -155,7 +155,7 @@ class PeerConnection {
         this.eventService.emit<PeerDisconnectedEvent>({
           type: PeerConnectionEventTypes.PeerDisconnected,
           payload: {
-            dAppAddress: disConnectMessage.address as string,
+            dAppAddress: disConnectMessage.dApp.address as string,
           },
         });
       }
@@ -205,7 +205,6 @@ class PeerConnection {
     if (this.identityWalletConnect === undefined) {
       throw new Error(PeerConnection.PEER_CONNECTION_START_PENDING);
     }
-
     this.identityWalletConnect.disconnect(dAppIdentifier);
 
     if (isBroken) {

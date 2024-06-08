@@ -8,6 +8,19 @@ const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
 const identifiersCreateMock = jest.fn();
 const identifiersRotateMock = jest.fn();
+const mockSigner = {
+  _code: "A",
+  _size: -1,
+  _raw: {},
+  _verfer: {},
+};
+const managerMock = {
+  get: () => {
+    return {
+      signers: [mockSigner],
+    };
+  },
+};
 const operationGetMock = jest.fn().mockImplementation((id: string) => {
   return {
     done: true,
@@ -76,6 +89,7 @@ const signifyClient = jest.mocked({
     query: jest.fn(),
     get: jest.fn(),
   }),
+  manager: undefined,
 });
 const identifierStorage = jest.mocked({
   getIdentifierMetadata: jest.fn(),
@@ -477,6 +491,29 @@ describe("Single sig service of agent", () => {
         keriMetadataRecord.groupMetadata?.groupId as string
       )
     ).toStrictEqual(null);
+  });
+
+  test("Should throw error if we failed to obtain key manager when call getSigner", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    identifiersGetMock.mockResolvedValue(aidReturnedBySignify);
+    await expect(
+      identifierService.getSigner(keriMetadataRecord.id)
+    ).rejects.toThrowError(IdentifierService.FAILED_TO_OBTAIN_KEY_MANAGER);
+  });
+
+  test("Can get signer", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    identifiersGetMock.mockResolvedValue(aidReturnedBySignify);
+    signifyClient.manager = managerMock as any;
+    expect(
+      await identifierService.getSigner(keriMetadataRecord.id)
+    ).toStrictEqual(mockSigner);
   });
 
   test("getIdentifier should throw an error when KERIA is offline", async () => {

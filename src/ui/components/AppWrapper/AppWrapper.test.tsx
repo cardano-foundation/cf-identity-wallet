@@ -106,6 +106,7 @@ jest.mock("../../../core/agent/agent", () => ({
       peerConnectionMetadataStorage: {
         getAllPeerConnectionMetadata: jest.fn(),
         getPeerConnectionMetadata: jest.fn(),
+        getPeerConnection: jest.fn(),
       },
       basicStorage: {
         findById: jest.fn(),
@@ -346,7 +347,7 @@ describe("AppWrapper handler", () => {
     });
 
     test("handle peer sign request event", async () => {
-      Agent.agent.peerConnectionMetadataStorage.getPeerConnectionMetadata = jest
+      Agent.agent.peerConnectionMetadataStorage.getPeerConnection = jest
         .fn()
         .mockResolvedValue(peerConnectionMock);
       await peerConnectRequestSignChangeHandler(
