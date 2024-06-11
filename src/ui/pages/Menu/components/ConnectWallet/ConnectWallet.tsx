@@ -45,7 +45,6 @@ import {
 } from "./ConnectWallet.types";
 import { Agent } from "../../../../../core/agent/agent";
 import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
-import { ellipsisText } from "../../../../utils/formatters";
 
 const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
   (props, ref) => {
@@ -161,6 +160,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
         setOpenIdentifierMissingAlert(true);
         return;
       }
+
       if (!actionInfo.data) return;
       const isConnectedItem = actionInfo.data.id === connectedWallet;
       if (isConnectedItem) {
