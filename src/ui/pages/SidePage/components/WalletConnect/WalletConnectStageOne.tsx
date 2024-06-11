@@ -10,7 +10,9 @@ import { combineClassNames } from "../../../../utils/style";
 import "./WalletConnect.scss";
 import { WalletConnectStageOneProps } from "./WalletConnect.types";
 import { useAppDispatch } from "../../../../../store/hooks";
-import { setPendingDAppMeerKat } from "../../../../../store/reducers/walletConnectionsCache";
+import { setPendingConnection } from "../../../../../store/reducers/walletConnectionsCache";
+
+const ANIMATION_DURATION = 500;
 
 const WalletConnectStageOne = ({
   isOpen,
@@ -34,8 +36,8 @@ const WalletConnectStageOne = ({
     onClose();
 
     setTimeout(() => {
-      dispatch(setPendingDAppMeerKat(null));
-    }, 500);
+      dispatch(setPendingConnection(null));
+    }, ANIMATION_DURATION);
   };
 
   const handleAccept = () => {

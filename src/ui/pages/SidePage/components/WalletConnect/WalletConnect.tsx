@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useAppSelector } from "../../../../../store/hooks";
-import { getPendingDAppMeerkat } from "../../../../../store/reducers/walletConnectionsCache";
+import { getPendingConnection } from "../../../../../store/reducers/walletConnectionsCache";
 import { SideSlider } from "../../../../components/SideSlider";
 import { SidePageContentProps } from "../../SidePage.types";
 import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
 
 const WalletConnect = ({ setOpenPage }: SidePageContentProps) => {
-  const pendingDAppMeerkat = useAppSelector(getPendingDAppMeerkat);
+  const pendingConnection = useAppSelector(getPendingConnection);
   const [requestStage, setRequestStage] = useState(0);
   const [hiddenStageOne, setHiddenStageOne] = useState(false);
 
@@ -25,21 +25,21 @@ const WalletConnect = ({ setOpenPage }: SidePageContentProps) => {
     setOpenPage(false);
   };
 
-  if (!pendingDAppMeerkat) return null;
+  if (!pendingConnection) return null;
 
   return (
     <div className="wallet-connect-container">
       {!hiddenStageOne && (
         <WalletConnectStageOne
-          isOpen={!!pendingDAppMeerkat}
+          isOpen={!!pendingConnection}
           onClose={handleCloseWalletConnect}
           onAccept={changeToStageTwo}
         />
       )}
       <SideSlider open={requestStage === 1}>
         <WalletConnectStageTwo
-          pendingDAppMeerkat={pendingDAppMeerkat}
-          isOpen={!!pendingDAppMeerkat}
+          pendingDAppMeerkat={pendingConnection.id}
+          isOpen={!!pendingConnection}
           onClose={handleCloseWalletConnect}
           onBackClick={backToStageOne}
         />

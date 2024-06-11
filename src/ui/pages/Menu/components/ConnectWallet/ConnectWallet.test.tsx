@@ -13,8 +13,7 @@ import {
 import { OperationType, ToastMsgType } from "../../../../globals/types";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
-import { setPendingDAppMeerKat } from "../../../../../store/reducers/walletConnectionsCache";
-import { ellipsisText } from "../../../../utils/formatters";
+import { setPendingConnection } from "../../../../../store/reducers/walletConnectionsCache";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -69,7 +68,7 @@ const initialState = {
   },
   walletConnectionsCache: {
     walletConnections: [...walletConnectionsFix],
-    connectedWallet: walletConnectionsFix[1].id,
+    connectedWallet: walletConnectionsFix[1],
   },
   identifiersCache: {
     identifiers: [...identifierFix],
@@ -388,8 +387,26 @@ describe("Wallet connect", () => {
     });
 
     await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet
+            .disconnectbeforecreatealert.message
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet
+            .disconnectbeforecreatealert.confirm
+        )
+      );
+    });
+
+    await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
-        setPendingDAppMeerKat(walletConnectionsFix[0].id)
+        setPendingConnection(walletConnectionsFix[0])
       );
     });
 
@@ -506,7 +523,7 @@ describe("Wallet connect", () => {
           },
         ],
         connectedWallet: null,
-        pendingDAppMeerKat: walletConnectionsFix[0].id,
+        pendingConnection: walletConnectionsFix[0],
       },
       identifiersCache: {
         identifiers: [
@@ -573,7 +590,7 @@ describe("Wallet connect", () => {
           },
         ],
         connectedWallet: null,
-        pendingDAppMeerKat: null,
+        pendingConnection: null,
       },
       identifiersCache: {
         identifiers: [

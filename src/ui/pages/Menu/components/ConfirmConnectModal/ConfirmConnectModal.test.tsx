@@ -37,7 +37,7 @@ const initialState = {
     identifiers: [...identifierFix],
   },
   walletConnectionsCache: {
-    pendingDAppMeerKat: undefined,
+    pendingConnection: null,
   },
 };
 
@@ -181,7 +181,7 @@ describe("Confirm connect modal", () => {
         identifiers: [...identifierFix],
       },
       walletConnectionsCache: {
-        pendingDAppMeerKat: walletConnectionsFix[0].id,
+        pendingConnection: walletConnectionsFix[0],
       },
     };
 

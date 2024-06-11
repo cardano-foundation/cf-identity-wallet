@@ -322,9 +322,9 @@ describe("AppWrapper handler", () => {
       Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata =
         jest.fn().mockResolvedValue([peerConnectionMock]);
       await peerConnectedChangeHandler(peerConnectedEventMock, dispatch);
-      expect(dispatch).toBeCalledWith(
-        setConnectedWallet(peerConnectionMock.id)
-      );
+      await waitFor(() => {
+        expect(dispatch).toBeCalledWith(setConnectedWallet(peerConnectionMock));
+      });
       expect(dispatch).toBeCalledWith(
         setWalletConnectionsCache([peerConnectionMock])
       );

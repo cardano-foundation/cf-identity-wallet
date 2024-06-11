@@ -36,7 +36,7 @@ describe("Side Page: wallet connect", () => {
       identifiers: [...identifierFix],
     },
     walletConnectionsCache: {
-      pendingDAppMeerKat: "pending-meerkat",
+      pendingConnection: "pending-meerkat",
       walletConnections: [],
     },
   };

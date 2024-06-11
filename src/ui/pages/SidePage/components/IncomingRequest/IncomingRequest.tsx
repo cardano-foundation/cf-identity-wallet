@@ -14,6 +14,8 @@ import {
 } from "../../../../../store/reducers/stateCache/stateCache.types";
 import { getConnectedWallet } from "../../../../../store/reducers/walletConnectionsCache";
 
+const ANIMATION_DURATION = 500;
+
 const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const pageId = "incoming-request";
   const dispatch = useAppDispatch();
@@ -38,7 +40,7 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
     if (
       incomingRequest.type === IncomingRequestType.PEER_CONNECT_SIGN &&
       (!connectedWallet ||
-        connectedWallet !== incomingRequest.peerConnection?.id)
+        connectedWallet.id !== incomingRequest.peerConnection?.id)
     ) {
       handleReset();
     }
@@ -63,7 +65,7 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
 
     setTimeout(() => {
       dispatch(dequeueCredentialRequest());
-    }, 500);
+    }, ANIMATION_DURATION);
   };
 
   const handleCancel = async () => {

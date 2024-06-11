@@ -8,7 +8,7 @@ import {
 import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import { setToastMsg } from "../../../../../store/reducers/stateCache";
-import { getPendingDAppMeerkat } from "../../../../../store/reducers/walletConnectionsCache";
+import { getPendingConnection } from "../../../../../store/reducers/walletConnectionsCache";
 import { OptionModal } from "../../../../components/OptionsModal";
 import { ToastMsgType } from "../../../../globals/types";
 import { writeToClipboard } from "../../../../utils/clipboard";
@@ -26,7 +26,7 @@ const ConfirmConnectModal = ({
   onDeleteConnection,
 }: ConfirmConnectModalProps) => {
   const dispatch = useAppDispatch();
-  const pendingMeerkatId = useAppSelector(getPendingDAppMeerkat);
+  const pendingConnection = useAppSelector(getPendingConnection);
 
   const cardImg = connectionData?.iconB64 ? (
     <img
@@ -48,7 +48,7 @@ const ConfirmConnectModal = ({
   );
 
   const isConnecting =
-    !!pendingMeerkatId && pendingMeerkatId === connectionData?.id;
+    !!pendingConnection && pendingConnection.id === connectionData?.id;
   const dAppName = !connectionData?.name
     ? ellipsisText(connectionData?.id || "", 25)
     : connectionData?.name;
@@ -61,9 +61,9 @@ const ConfirmConnectModal = ({
         : "menu.tab.items.connectwallet.connectionhistory.confirmconnect.disconnectbtn"
   );
 
-  const meerkatId =
-    (connectionData?.id as string).substring(0, 5) +
-    (connectionData?.id as string).slice(-5);
+  const meerkatId = connectionData?.id
+    ? connectionData.id.substring(0, 5) + "..." + connectionData.id.slice(-5)
+    : "";
 
   const deleteConnection = () => {
     if (!connectionData) return;
