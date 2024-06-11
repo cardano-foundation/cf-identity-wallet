@@ -61,12 +61,9 @@ const ConfirmConnectModal = ({
         : "menu.tab.items.connectwallet.connectionhistory.confirmconnect.disconnectbtn"
   );
 
-  const displayMeerkatId =
-    connectionData && connectionData.id && connectionData.name
-      ? (connectionData.id as string).substring(0, 5) +
-        "..." +
-        (connectionData.id as string).slice(-5)
-      : null;
+  const meerkatId =
+    (connectionData?.id as string).substring(0, 5) +
+    (connectionData?.id as string).slice(-5);
 
   const deleteConnection = () => {
     if (!connectionData) return;
@@ -117,7 +114,7 @@ const ConfirmConnectModal = ({
           {connectionData?.url}
         </p>
       )}
-      {!isConnecting && displayMeerkatId && (
+      {!isConnecting && connectionData?.name && (
         <div
           onClick={() => {
             if (!connectionData?.id) return;
@@ -127,7 +124,7 @@ const ConfirmConnectModal = ({
           className="confirm-modal-id"
           data-testid="connection-id"
         >
-          <span>{displayMeerkatId}</span>
+          <span>{meerkatId}</span>
           <IonIcon icon={copyOutline} />
         </div>
       )}

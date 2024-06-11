@@ -13,11 +13,7 @@ import { CardItem, CardList } from "../../../../components/CardList";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
 import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
-import {
-  IDENTIFIER_BG_MAPPING,
-  OperationType,
-  ToastMsgType,
-} from "../../../../globals/types";
+import { OperationType, ToastMsgType } from "../../../../globals/types";
 import { combineClassNames } from "../../../../utils/style";
 import "./WalletConnect.scss";
 import { WalletConnectStageTwoProps } from "./WalletConnect.types";
@@ -45,7 +41,7 @@ const WalletConnectStageTwo = ({
     (identifier, index): CardItem<IdentifierShortDetails> => ({
       id: index,
       title: identifier.displayName,
-      image: (IDENTIFIER_BG_MAPPING[identifier.theme] as string) || KeriLogo,
+      image: KeriLogo,
       data: identifier,
     })
   );
@@ -67,19 +63,15 @@ const WalletConnectStageTwo = ({
         const existingConnection = existingConnections.find(
           (connection) => connection.id === pendingDAppMeerkat
         );
-        if (!existingConnection) {
+        if (existingConnection) {
+          existingConnection.selectedAid = selectedIdentifier.id;
+          dispatch(setWalletConnectionsCache([...existingConnections]));
+        } else {
           // Insert a new connection if needed
           dispatch(
             setWalletConnectionsCache([
               { id: pendingDAppMeerkat, selectedAid: selectedIdentifier.id },
               ...existingConnections,
-            ])
-          );
-        } else {
-          existingConnection.selectedAid = selectedIdentifier.id;
-          dispatch(
-            setWalletConnectionsCache([
-              ...existingConnections
             ])
           );
         }

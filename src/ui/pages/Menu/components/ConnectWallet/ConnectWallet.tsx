@@ -155,7 +155,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       dispatch(setToastMsg(ToastMsgType.WALLET_CONNECTION_DELETED));
     };
 
-    const handleConnectWallet = () => {
+    const toggleConnected = () => {
       if (identifierCache.length === 0) {
         setOpenIdentifierMissingAlert(true);
         return;
@@ -224,9 +224,13 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       if (
         toastMsg === ToastMsgType.CONNECT_WALLET_SUCCESS &&
         !pendingDAppMeerkat &&
-        connectConnection
+        connectConnection &&
+        openConfirmConnectModal
       ) {
-        handleOpenConfirmConnectModal(connectConnection);
+        setActionInfo({
+          type: ActionType.Connect,
+          data: connectConnection,
+        });
       }
     }, [getDisplayConnection, toastMsg, pendingDAppMeerkat]);
 
@@ -311,7 +315,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           isConnectModal={actionInfo.data?.id !== connectedWallet}
           openModal={openConfirmConnectModal}
           closeModal={() => setOpenConfirmConnectModal(false)}
-          onConfirm={handleConnectWallet}
+          onConfirm={toggleConnected}
           connectionData={actionInfo.data}
           onDeleteConnection={handleOpenDeleteAlert}
         />
