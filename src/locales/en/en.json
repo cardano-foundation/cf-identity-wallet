@@ -898,16 +898,10 @@
           "cip": "CIP-45",
           "tabheader": "Cardano Connect",
           "connectbtn": "Connect with Cardano",
-          "connectwalletmodal": {
-            "header": "New connection",
-            "cancel": "Cancel",
-            "scanqr": "Scan QR code",
-            "pastePID": "Paste Peer ID",
-            "disconnectbeforecreatealert": {
-              "message": "You are currently connected. To connect with a new wallet, you will be disconnected from your current selection. Would you like to disconnect and continue?",
-              "confirm": "Continue",
-              "cancel": "Cancel"
-            }
+          "disconnectbeforecreatealert": {
+            "message": "You are currently connected. To connect with a new wallet, you will be disconnected from your current selection. Would you like to disconnect and continue?",
+            "confirm": "Continue",
+            "cancel": "Cancel"
           },
           "connectionbrokenalert": {
             "message": "Your connection has been disconnected as you have deleted the chosen identifier paired with this connection. Please choose a new identifier to re-establish this connection.",
@@ -937,7 +931,9 @@
             "confirmconnect": {
               "done": "Done",
               "connectbtn": "Connect",
-              "disconnectbtn": "Disconnect"
+              "disconnectbtn": "Disconnect",
+              "connectingbtn": "Connecting...",
+              "pending": "Pending"
             }
           },
           "request": {

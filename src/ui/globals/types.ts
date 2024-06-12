@@ -29,6 +29,7 @@ enum OperationType {
   SCAN_WALLET_CONNECTION = "scanWalletConnection",
   SCAN_SSI_BOOT_URL = "scanSSIBootUrl",
   SCAN_SSI_CONNECT_URL = "scanSSIConnectUrl",
+  OPEN_WALLET_CONNECTION_DETAIL = "openWalletConnection",
 }
 
 enum ToastMsgType {

@@ -34,10 +34,15 @@ const formatCurrencyUSD = (amount: number) => {
   return currencyFormat.format(amount);
 };
 
+const ellipsisText = (raw: string, length: number, suffix = "...") => {
+  return raw.substring(0, length || raw.length) + suffix;
+};
+
 export {
   formatShortDate,
   formatLongDate,
   formatShortTime,
   formatTimeToSec,
   formatCurrencyUSD,
+  ellipsisText,
 };

@@ -14,6 +14,7 @@ import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../../globals/types";
 import { WalletConnect } from "./WalletConnect";
 import { setWalletConnectionsCache } from "../../../../../store/reducers/walletConnectionsCache";
+import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
 setupIonicReact();
 mockIonicReact();
 
@@ -260,7 +261,7 @@ describe("Wallet Connect Request", () => {
     },
     walletConnectionsCache: {
       walletConnections: [],
-      pendingDAppMeerKat: "pending-meerkat",
+      pendingConnection: walletConnectionsFix[0],
     },
     identifiersCache: {
       identifiers: [...identifierFix],
