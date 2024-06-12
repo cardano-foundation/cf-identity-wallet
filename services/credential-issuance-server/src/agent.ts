@@ -48,11 +48,12 @@ class Agent {
     );
   }
 
-  async requestDisclosure(schemaSaid, aid) {
+  async requestDisclosure(schemaSaid, aid, attributes) {
     return this.signifyApi.requestDisclosure(
       Agent.ISSUER_AID_NAME,
       schemaSaid,
-      aid
+      aid,
+      attributes
     );
   }
 

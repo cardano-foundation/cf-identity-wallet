@@ -141,12 +141,14 @@ export class SignifyApi {
   async requestDisclosure(
     senderName: string,
     schemaSaid: string,
-    recipient: string
+    recipient: string,
+    attributes: { [key: string]: string }
   ) {
     const [apply, sigs] = await this.signifyClient.ipex().apply({
       senderName,
       recipient,
       schema: schemaSaid,
+      attributes,
     });
     await this.signifyClient
       .ipex()
