@@ -119,7 +119,7 @@ class PeerConnection {
         if (!connectMessage.error) {
           const { name, url, address, icon } = connectMessage.dApp;
           this.connectedDAppAdress = address;
-          let iconB64 = ICON_BASE64;
+          let iconB64;
           // Check if the icon is base64
           if (
             icon &&

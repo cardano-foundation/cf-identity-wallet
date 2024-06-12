@@ -8,7 +8,7 @@ import {
 const initialState: WalletConnectState = {
   walletConnections: [],
   connectedWallet: null,
-  pendingDAppMeerKat: null,
+  pendingConnection: null,
 };
 const walletConnectionsCacheSlice = createSlice({
   name: "walletConnectionsCache",
@@ -20,11 +20,17 @@ const walletConnectionsCacheSlice = createSlice({
     ) => {
       state.walletConnections = action.payload;
     },
-    setConnectedWallet: (state, action: PayloadAction<string | null>) => {
+    setConnectedWallet: (
+      state,
+      action: PayloadAction<ConnectionData | null>
+    ) => {
       state.connectedWallet = action.payload;
     },
-    setPendingDAppMeerKat: (state, action: PayloadAction<string | null>) => {
-      state.pendingDAppMeerKat = action.payload;
+    setPendingConnection: (
+      state,
+      action: PayloadAction<ConnectionData | null>
+    ) => {
+      state.pendingConnection = action.payload;
     },
   },
 });
@@ -34,7 +40,7 @@ export { initialState, walletConnectionsCacheSlice };
 export const {
   setWalletConnectionsCache,
   setConnectedWallet,
-  setPendingDAppMeerKat,
+  setPendingConnection,
 } = walletConnectionsCacheSlice.actions;
 
 const getWalletConnectionsCache = (state: RootState) =>
@@ -43,7 +49,7 @@ const getWalletConnectionsCache = (state: RootState) =>
 const getConnectedWallet = (state: RootState) =>
   state.walletConnectionsCache.connectedWallet;
 
-const getPendingDAppMeerkat = (state: RootState) =>
-  state.walletConnectionsCache.pendingDAppMeerKat;
+const getPendingConnection = (state: RootState) =>
+  state.walletConnectionsCache.pendingConnection;
 
-export { getWalletConnectionsCache, getConnectedWallet, getPendingDAppMeerkat };
+export { getWalletConnectionsCache, getConnectedWallet, getPendingConnection };

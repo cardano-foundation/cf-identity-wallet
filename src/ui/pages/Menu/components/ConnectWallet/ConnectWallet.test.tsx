@@ -13,7 +13,7 @@ import {
 import { OperationType, ToastMsgType } from "../../../../globals/types";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
-import { setPendingDAppMeerKat } from "../../../../../store/reducers/walletConnectionsCache";
+import { setPendingConnection } from "../../../../../store/reducers/walletConnectionsCache";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -68,7 +68,7 @@ const initialState = {
   },
   walletConnectionsCache: {
     walletConnections: [...walletConnectionsFix],
-    connectedWallet: walletConnectionsFix[1].id,
+    connectedWallet: walletConnectionsFix[1],
   },
   identifiersCache: {
     identifiers: [...identifierFix],
@@ -387,8 +387,26 @@ describe("Wallet connect", () => {
     });
 
     await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet
+            .disconnectbeforecreatealert.message
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet
+            .disconnectbeforecreatealert.confirm
+        )
+      );
+    });
+
+    await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
-        setPendingDAppMeerKat(walletConnectionsFix[0].id)
+        setPendingConnection(walletConnectionsFix[0])
       );
     });
 
@@ -480,6 +498,151 @@ describe("Wallet connect", () => {
       expect(dispatchMock).toBeCalledWith(
         setCurrentOperation(OperationType.CREATE_IDENTIFIER_CONNECT_WALLET)
       );
+    });
+  });
+
+  test("Show connection modal after create connect to wallet", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+        currentOperation: OperationType.OPEN_WALLET_CONNECTION_DETAIL,
+      },
+      walletConnectionsCache: {
+        walletConnections: [
+          ...walletConnectionsFix,
+          {
+            ...walletConnectionsFix[0],
+            name: undefined,
+            url: undefined,
+          },
+        ],
+        connectedWallet: null,
+        pendingConnection: walletConnectionsFix[0],
+      },
+      identifiersCache: {
+        identifiers: [
+          {
+            signifyName: "Test",
+            id: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
+            displayName: "Professional ID",
+            createdAtUTC: "2023-01-01T19:23:24Z",
+            isPending: false,
+            theme: 0,
+            s: 4, // Sequence number, only show if s > 0
+            dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
+            kt: 2, // Keys signing threshold (only show if kt > 1)
+            k: [
+              // List of signing keys - array
+              "DCF6b0c5aVm_26_sCTgLB4An6oUxEM5pVDDLqxxXDxH-",
+            ],
+            nt: 3, // Next keys signing threshold, only show if nt > 1
+            n: [
+              // Next keys digests - array
+              "EIZ-n_hHHY5ERGTzvpXYBkB6_yBAM4RXcjQG3-JykFvF",
+            ],
+            bt: 1, // Backer threshold and backer keys below
+            b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"], // List of backers
+            di: "test", // Delegated identifier prefix, don't show if ""
+          },
+        ],
+      },
+      biometryCache: {
+        enabled: false,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, getByText, rerender } = render(
+      <MemoryRouter>
+        <Provider store={storeMocked}>
+          <ConnectWallet />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const updatedStore = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+        currentOperation: OperationType.IDLE,
+        toastMsg: ToastMsgType.CONNECT_WALLET_SUCCESS,
+      },
+      walletConnectionsCache: {
+        walletConnections: [
+          ...walletConnectionsFix,
+          {
+            ...walletConnectionsFix[0],
+          },
+        ],
+        connectedWallet: null,
+        pendingConnection: null,
+      },
+      identifiersCache: {
+        identifiers: [
+          {
+            signifyName: "Test",
+            id: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
+            displayName: "Professional ID",
+            createdAtUTC: "2023-01-01T19:23:24Z",
+            isPending: false,
+            theme: 0,
+            s: 4, // Sequence number, only show if s > 0
+            dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
+            kt: 2, // Keys signing threshold (only show if kt > 1)
+            k: [
+              // List of signing keys - array
+              "DCF6b0c5aVm_26_sCTgLB4An6oUxEM5pVDDLqxxXDxH-",
+            ],
+            nt: 3, // Next keys signing threshold, only show if nt > 1
+            n: [
+              // Next keys digests - array
+              "EIZ-n_hHHY5ERGTzvpXYBkB6_yBAM4RXcjQG3-JykFvF",
+            ],
+            bt: 1, // Backer threshold and backer keys below
+            b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"], // List of backers
+            di: "test", // Delegated identifier prefix, don't show if ""
+          },
+        ],
+      },
+      biometryCache: {
+        enabled: false,
+      },
+    };
+
+    const updateStoreMocked = {
+      ...mockStore(updatedStore),
+      dispatch: dispatchMock,
+    };
+
+    await waitFor(() => {
+      expect(getByTestId("connect-wallet-title")).toBeVisible();
+    });
+
+    rerender(
+      <MemoryRouter>
+        <Provider store={updateStoreMocked}>
+          <ConnectWallet />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("connection-id")).toBeVisible();
     });
   });
 });

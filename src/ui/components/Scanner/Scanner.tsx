@@ -35,7 +35,7 @@ import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifi
 import { PageFooter } from "../PageFooter";
 import { CustomInput } from "../CustomInput";
 import { OptionModal } from "../OptionsModal";
-import { setPendingDAppMeerKat } from "../../../store/reducers/walletConnectionsCache";
+import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
 import { CreateIdentifier } from "../CreateIdentifier";
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 
@@ -96,7 +96,11 @@ const Scanner = forwardRef(
     const handleConnectWallet = (id: string) => {
       handleReset && handleReset();
       dispatch(setToastMsg(ToastMsgType.PEER_ID_SUCCESS));
-      dispatch(setPendingDAppMeerKat(id));
+      dispatch(
+        setPendingConnection({
+          id,
+        })
+      );
     };
 
     const updateConnections = async (groupId: string) => {

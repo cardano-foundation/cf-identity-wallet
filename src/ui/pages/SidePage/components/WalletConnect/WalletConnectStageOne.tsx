@@ -9,6 +9,9 @@ import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePa
 import { combineClassNames } from "../../../../utils/style";
 import "./WalletConnect.scss";
 import { WalletConnectStageOneProps } from "./WalletConnect.types";
+import { useAppDispatch } from "../../../../../store/hooks";
+import { setPendingConnection } from "../../../../../store/reducers/walletConnectionsCache";
+import { ANIMATION_DURATION } from "../../../../components/SideSlider/SideSlider.types";
 
 const WalletConnectStageOne = ({
   isOpen,
@@ -16,6 +19,7 @@ const WalletConnectStageOne = ({
   onClose,
   onAccept,
 }: WalletConnectStageOneProps) => {
+  const dispatch = useAppDispatch();
   const [openDeclineAlert, setOpenDeclineAlert] = useState(false);
 
   const classes = combineClassNames(className, {
@@ -29,6 +33,10 @@ const WalletConnectStageOne = ({
 
   const handleClose = () => {
     onClose();
+
+    setTimeout(() => {
+      dispatch(setPendingConnection(null));
+    }, ANIMATION_DURATION);
   };
 
   const handleAccept = () => {

@@ -5,7 +5,6 @@ import { act } from "react-dom/test-utils";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { SidePage } from "./SidePage";
 import { TabsRoutePath } from "../../../routes/paths";
-import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { setPauseQueueIncomingRequest } from "../../../store/reducers/stateCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
@@ -37,7 +36,8 @@ describe("Side Page: wallet connect", () => {
       identifiers: [...identifierFix],
     },
     walletConnectionsCache: {
-      pendingDAppMeerKat: "pending-meerkat",
+      pendingConnection: "pending-meerkat",
+      walletConnections: [],
     },
   };
 
