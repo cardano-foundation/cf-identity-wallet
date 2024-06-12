@@ -51,7 +51,7 @@ describe("IdentityWalletConnect", () => {
       .fn()
       .mockResolvedValue(undefined);
 
-    await expect(identityWalletConnect.getIdentifierOobi()).rejects.toThrow(
+    await expect(identityWalletConnect.getKeriIdentifier()).rejects.toThrow(
       IdentityWalletConnect.IDENTIFIER_ID_NOT_LOCATED
     );
   });
@@ -63,12 +63,9 @@ describe("IdentityWalletConnect", () => {
       .mockResolvedValue(mockIdentifier);
     Agent.agent.connections.getOobi = jest.fn().mockResolvedValue("test-oobi");
 
-    const result = await identityWalletConnect.getIdentifierOobi();
-    expect(result).toBe("test-oobi");
-  });
-
-  test("should return connecting aid", () => {
-    expect(identityWalletConnect.getConnectingAid()).toBe(selectedAid);
+    const result = await identityWalletConnect.getKeriIdentifier();
+    expect(result.oobi).toBe("test-oobi");
+    expect(result.id).toBe(selectedAid);
   });
 
   test("should sign payload if approved", async () => {
@@ -85,7 +82,7 @@ describe("IdentityWalletConnect", () => {
         event.payload.approvalCallback(true);
       });
 
-    const result = await identityWalletConnect.sign(identifier, payload);
+    const result = await identityWalletConnect.signKeri(identifier, payload);
     expect(result).toBe("signed-payload");
   });
 
@@ -97,7 +94,7 @@ describe("IdentityWalletConnect", () => {
 
     eventServiceMock.emit = jest.fn();
     jest.spyOn(global.Date, "now").mockImplementationOnce(() => 1);
-    const result = await identityWalletConnect.sign(identifier, payload);
+    const result = await identityWalletConnect.signKeri(identifier, payload);
     expect(result).toEqual({ error: TxSignError.TimeOut });
     expect(eventServiceMock.emit).toHaveBeenCalledWith({
       type: PeerConnectionEventTypes.PeerConnectSign,
@@ -120,7 +117,7 @@ describe("IdentityWalletConnect", () => {
         event.payload.approvalCallback(false);
       });
 
-    const result = await identityWalletConnect.sign(identifier, payload);
+    const result = await identityWalletConnect.signKeri(identifier, payload);
     expect(result).toEqual({ error: TxSignError.UserDeclined });
   });
 });
