@@ -21,9 +21,6 @@ const ConnectionRequest = ({
   handleAccept,
   handleCancel,
 }: RequestProps<IncomingRequestType.CREDENTIAL_OFFER_RECEIVED>) => {
-  if (requestData.type !== IncomingRequestType.CREDENTIAL_OFFER_RECEIVED) {
-    return null;
-  }
   return (
     <ResponsivePageLayout
       pageId={pageId}
