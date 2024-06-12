@@ -57,7 +57,8 @@ class Agent {
   static readonly KERIA_BOOT_FAILED = "Failed to boot signify client";
   static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT =
     "Signify client is already booted but cannot connect";
-
+  static readonly KERA_RECOVERY_FAILED = "Failed to recover signify client";
+  static readonly KERIA_SEEDPHRASE_INVALID = " Seed Phrase is invalid";
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {
     eventService: undefined as any,
@@ -238,30 +239,62 @@ class Agent {
         throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
       }
       await this.saveAgentUrls(agentUrls);
-      Agent.isOnline = true;
-      this.agentServicesProps.signifyClient = this.signifyClient;
-      this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
-        type: KeriaStatusEventTypes.KeriaStatusChanged,
-        payload: {
-          isOnline: Agent.isOnline,
-        },
-      });
+      this.activeSignifyClient();
     }
+  }
+  async recovery(seedPhrase: string[], connectUrl: string): Promise<void> {
+    try {
+      const mnemonic = seedPhrase.join(" ");
+      const bran = Buffer.from(mnemonicToEntropy(mnemonic), "hex")
+        .toString("utf-8")
+        .replace(/\0/g, "");
+
+      this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
+
+      await this.signifyClient.connect();
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === "Invalid mnemonic")
+          throw new Error(Agent.KERIA_SEEDPHRASE_INVALID);
+
+        throw Error(Agent.KERA_RECOVERY_FAILED);
+      }
+    }
+
+    await this.saveAgentUrls({
+      url: connectUrl,
+      bootUrl: "",
+    });
+
+    this.activeSignifyClient();
+  }
+
+  private activeSignifyClient() {
+    Agent.isOnline = true;
+    this.agentServicesProps.signifyClient = this.signifyClient;
+    this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
+      type: KeriaStatusEventTypes.KeriaStatusChanged,
+      payload: {
+        isOnline: Agent.isOnline,
+      },
+    });
   }
 
   private async saveAgentUrls(agentUrls: AgentUrls): Promise<void> {
-    await this.basicStorageService.save({
-      id: MiscRecordId.KERIA_CONNECT_URL,
-      content: {
-        url: agentUrls.url,
-      },
-    });
-    await this.basicStorageService.save({
-      id: MiscRecordId.KERIA_BOOT_URL,
-      content: {
-        url: agentUrls.bootUrl,
-      },
-    });
+    if (agentUrls.url)
+      await this.basicStorageService.save({
+        id: MiscRecordId.KERIA_CONNECT_URL,
+        content: {
+          url: agentUrls.url,
+        },
+      });
+    if (agentUrls.bootUrl)
+      await this.basicStorageService.save({
+        id: MiscRecordId.KERIA_BOOT_URL,
+        content: {
+          url: agentUrls.bootUrl,
+        },
+      });
   }
 
   async initDatabaseConnection(): Promise<void> {
