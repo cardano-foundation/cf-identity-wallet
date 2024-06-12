@@ -5,7 +5,10 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../../../locales/en/en.json";
 import { store } from "../../../../../../store";
-import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
+import {
+  IncomingRequestProps,
+  IncomingRequestType,
+} from "../../../../../../store/reducers/stateCache/stateCache.types";
 import { connectionsFix } from "../../../../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../../../../__fixtures__/filteredIdentifierFix";
 import {
@@ -44,12 +47,23 @@ describe("Multi-Sig request", () => {
   const requestData = {
     id: "abc123456",
     type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
+    event: {
+      id: "event-id",
+      createdAt: new Date(),
+      a: { d: "d" },
+    },
     multisigIcpDetails: {
       ourIdentifier: filteredIdentifierFix[0],
       sender: connectionsFix[3],
       otherConnections: [connectionsFix[4], connectionsFix[5]],
       threshold: 1,
     },
+  };
+  const credentialRequestData = {
+    id: "id",
+    type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
+    logo: "logo",
+    label: "label",
   };
   const initiateAnimation = false;
   const handleAccept = jest.fn();
@@ -64,7 +78,7 @@ describe("Multi-Sig request", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={requestData}
+          requestData={credentialRequestData as IncomingRequestProps}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
@@ -80,11 +94,6 @@ describe("Multi-Sig request", () => {
   });
 
   test("Display fallback image when provider logo is empty: CREDENTIAL_OFFER_RECEIVED", async () => {
-    const testData = {
-      ...requestData,
-      logo: "",
-    };
-
     const { getByTestId } = render(
       <Provider store={storeMocked}>
         <RequestComponent
@@ -92,7 +101,7 @@ describe("Multi-Sig request", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={testData}
+          requestData={credentialRequestData as IncomingRequestProps}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
@@ -117,7 +126,7 @@ describe("Multi-Sig request", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={requestData}
+          requestData={requestData as IncomingRequestProps}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
@@ -163,7 +172,7 @@ describe("Multi-Sig request", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={requestData}
+          requestData={requestData as IncomingRequestProps}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
@@ -220,7 +229,7 @@ describe("Sign request", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={requestData}
+          requestData={requestData as IncomingRequestProps}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
@@ -252,7 +261,7 @@ describe("Sign request", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={testData}
+          requestData={testData as IncomingRequestProps}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
@@ -301,7 +310,7 @@ describe("Sign JSON", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={requestData}
+          requestData={requestData as IncomingRequestProps}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
@@ -330,7 +339,7 @@ describe("Sign JSON", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={testData}
+          requestData={testData as IncomingRequestProps}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}

@@ -180,7 +180,7 @@ const peerConnectedChangeHandler = async (
 
 const peerDisconnectedChangeHandler = async (
   event: PeerDisconnectedEvent,
-  connectedMeerKat: string,
+  connectedMeerKat: string | null,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (connectedMeerKat === event.payload.dAppAddress) {
@@ -259,7 +259,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
     } else {
       dispatch(setPauseQueueIncomingRequest(true));
     }
-  }, [isOnline, authentication.loggedIn, dispatch]);
+  }, [isOnline, authentication.loggedIn, isMessagesHandled, dispatch]);
+
+  useEffect(() => {
+    PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
+      async (event) => {
+        return peerDisconnectedChangeHandler(event, connectedWallet, dispatch);
+      }
+    );
+  }, [connectedWallet, dispatch]);
 
   const checkKeyStore = async (key: string) => {
     try {
@@ -408,17 +416,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     PeerConnection.peerConnection.onPeerConnectedStateChanged(async (event) => {
       return peerConnectedChangeHandler(event, dispatch);
     });
-    PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
-      async (event) => {
-        if (connectedWallet) {
-          return peerDisconnectedChangeHandler(
-            event,
-            connectedWallet,
-            dispatch
-          );
-        }
-      }
-    );
     PeerConnection.peerConnection.onPeerConnectionBrokenStateChanged(
       async (event) => {
         setIsAlertPeerBrokenOpen(true);

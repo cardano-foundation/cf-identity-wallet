@@ -122,20 +122,16 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
     handleReset();
   };
 
-  const defaultRequestData: IncomingRequestProps = {
-    id: "",
-    logo: "",
-    label: "",
-    type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
-  };
-
+  if (!requestData) {
+    return null;
+  }
   return (
     <RequestComponent
       pageId={pageId}
       activeStatus={open}
       blur={blur}
       setBlur={setBlur}
-      requestData={requestData || defaultRequestData}
+      requestData={requestData}
       initiateAnimation={initiateAnimation}
       handleAccept={handleAccept}
       handleCancel={handleCancel}

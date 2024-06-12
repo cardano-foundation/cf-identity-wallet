@@ -77,4 +77,5 @@ export type {
   StateCacheProps,
   IncomingRequestProps,
   QueueProps,
+  PeerConnectSigningEventRequest,
 };

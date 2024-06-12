@@ -11,6 +11,7 @@ import { ResponsivePageLayout } from "../../../../../components/layout/Responsiv
 import { i18n } from "../../../../../../i18n";
 import { RequestType } from "../../../../../globals/types";
 import { PageFooter } from "../../../../../components/PageFooter";
+import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
 
 const ConnectionRequest = ({
   pageId,
@@ -20,6 +21,9 @@ const ConnectionRequest = ({
   handleAccept,
   handleCancel,
 }: RequestProps) => {
+  if (requestData.type !== IncomingRequestType.CREDENTIAL_OFFER_RECEIVED) {
+    return null;
+  }
   return (
     <ResponsivePageLayout
       pageId={pageId}
