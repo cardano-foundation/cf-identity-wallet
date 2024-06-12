@@ -11,8 +11,7 @@ import "./WalletConnect.scss";
 import { WalletConnectStageOneProps } from "./WalletConnect.types";
 import { useAppDispatch } from "../../../../../store/hooks";
 import { setPendingConnection } from "../../../../../store/reducers/walletConnectionsCache";
-
-const ANIMATION_DURATION = 500;
+import { ANIMATION_DURATION } from "../../../../components/SideSlider/SideSlider.types";
 
 const WalletConnectStageOne = ({
   isOpen,

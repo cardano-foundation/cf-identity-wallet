@@ -44,8 +44,7 @@ import {
 } from "./ConnectWallet.types";
 import { Agent } from "../../../../../core/agent/agent";
 import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
-
-const ANIMATION_DURATION = 500;
+import { ANIMATION_DURATION } from "../../../../components/SideSlider/SideSlider.types";
 
 const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
   (props, ref) => {

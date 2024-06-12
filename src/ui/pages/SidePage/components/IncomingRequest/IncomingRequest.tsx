@@ -13,8 +13,7 @@ import {
   IncomingRequestType,
 } from "../../../../../store/reducers/stateCache/stateCache.types";
 import { getConnectedWallet } from "../../../../../store/reducers/walletConnectionsCache";
-
-const ANIMATION_DURATION = 500;
+import { ANIMATION_DURATION } from "../../../../components/SideSlider/SideSlider.types";
 
 const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const pageId = "incoming-request";
@@ -65,7 +64,7 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
 
     setTimeout(() => {
       dispatch(dequeueCredentialRequest());
-    }, ANIMATION_DURATION);
+    }, 500);
   };
 
   const handleCancel = async () => {
