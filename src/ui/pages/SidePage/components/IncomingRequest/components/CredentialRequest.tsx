@@ -11,6 +11,7 @@ import { PageFooter } from "../../../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
 import { ResponsivePageLayout } from "../../../../../components/layout/ResponsivePageLayout";
 import { RequestType } from "../../../../../globals/types";
+import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
 
 const CredentialRequest = ({
   pageId,
@@ -19,7 +20,7 @@ const CredentialRequest = ({
   initiateAnimation,
   handleAccept,
   handleCancel,
-}: RequestProps) => {
+}: RequestProps<IncomingRequestType.CREDENTIAL_OFFER_RECEIVED>) => {
   const fallbackLogo = KeriLogo;
 
   return (

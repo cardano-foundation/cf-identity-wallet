@@ -31,6 +31,7 @@ import { i18n } from "../../../../../../i18n";
 import { PageFooter } from "../../../../../components/PageFooter";
 import "./MultiSigRequest.scss";
 import { CreateIdentifierResult } from "../../../../../../core/agent/agent.types";
+import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
 
 const MultiSigRequest = ({
   blur,
@@ -40,12 +41,11 @@ const MultiSigRequest = ({
   requestData,
   handleAccept,
   handleCancel,
-}: RequestProps) => {
+}: RequestProps<IncomingRequestType.MULTI_SIG_REQUEST_INCOMING>) => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const [alertAcceptIsOpen, setAlertAcceptIsOpen] = useState(false);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
-
   const actionAccept = async () => {
     setAlertAcceptIsOpen(false);
     setBlur && setBlur(true);

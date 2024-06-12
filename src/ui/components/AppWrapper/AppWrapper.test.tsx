@@ -356,7 +356,6 @@ describe("AppWrapper handler", () => {
       );
       expect(dispatch).toBeCalledWith(
         setQueueIncomingRequest({
-          id: "peer-connect-signing",
           signTransaction: peerSignRequestEventMock,
           peerConnection: peerConnectionMock,
           type: IncomingRequestType.PEER_CONNECT_SIGN,
