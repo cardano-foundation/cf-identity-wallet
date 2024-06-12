@@ -4,12 +4,11 @@ interface BaseEventEmitter {
 }
 
 interface ExperimentalAPIFunctions {
-  getIdentifierOobi: () => Promise<string>;
-  sign: (
+  getKeriIdentifier: () => Promise<{ id: string; oobi: string }>;
+  signKeri: (
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
-  getConnectingAid: () => string;
 }
 
 enum PeerConnectionEventTypes {

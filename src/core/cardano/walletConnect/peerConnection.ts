@@ -163,9 +163,8 @@ class PeerConnection {
 
     this.identityWalletConnect.setEnableExperimentalApi(
       new ExperimentalContainer<ExperimentalAPIFunctions>({
-        getIdentifierOobi: this.identityWalletConnect.getIdentifierOobi,
-        sign: this.identityWalletConnect.sign,
-        getConnectingAid: this.identityWalletConnect.getConnectingAid,
+        getKeriIdentifier: this.identityWalletConnect.getKeriIdentifier,
+        signKeri: this.identityWalletConnect.signKeri,
       })
     );
   }
@@ -188,10 +187,13 @@ class PeerConnection {
           }
         });
     if (!existingPeerConnection) {
+      const connectingIdentifier =
+        await this.identityWalletConnect.getKeriIdentifier();
       await Agent.agent.peerConnectionMetadataStorage.createPeerConnectionMetadataRecord(
         {
           id: dAppIdentifier,
-          selectedAid: this.identityWalletConnect.getConnectingAid(),
+          selectedAid: connectingIdentifier.id,
+          iconB64: ICON_BASE64,
         }
       );
     }
@@ -218,8 +220,11 @@ class PeerConnection {
     return this.connectedDAppAdress;
   }
 
-  getConnectingAid() {
-    return this.identityWalletConnect?.getConnectingAid();
+  async getConnectingIdentifier() {
+    if (this.identityWalletConnect === undefined) {
+      throw new Error(PeerConnection.PEER_CONNECTION_START_PENDING);
+    }
+    return this.identityWalletConnect.getKeriIdentifier();
   }
 }
 

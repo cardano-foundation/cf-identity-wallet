@@ -22,12 +22,11 @@ class IdentityWalletConnect extends CardanoPeerConnect {
   private eventService: EventService;
   static readonly MAX_SIGN_TIME = 3600000;
   static readonly TIMEOUT_INTERVAL = 1000;
-  getIdentifierOobi: () => Promise<string>;
-  sign: (
+  getKeriIdentifier: () => Promise<{ id: string; oobi: string }>;
+  signKeri: (
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
-  getConnectingAid: () => string;
 
   signerCache: Map<string, Signer>;
 
@@ -49,17 +48,23 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     this.signerCache = new Map();
     this.eventService = eventService;
 
-    this.getIdentifierOobi = async (): Promise<string> => {
+    this.getKeriIdentifier = async (): Promise<{
+      id: string;
+      oobi: string;
+    }> => {
       const identifier = await Agent.agent.identifiers.getIdentifier(
         this.selectedAid
       );
       if (!identifier) {
         throw new Error(IdentityWalletConnect.IDENTIFIER_ID_NOT_LOCATED);
       }
-      return Agent.agent.connections.getOobi(identifier.signifyName);
+      return {
+        id: this.selectedAid,
+        oobi: await Agent.agent.connections.getOobi(identifier.signifyName),
+      };
     };
 
-    this.sign = async (
+    this.signKeri = async (
       identifier: string,
       payload: string
     ): Promise<string | { error: PeerConnectionError }> => {
@@ -98,10 +103,6 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       } else {
         return { error: TxSignError.UserDeclined };
       }
-    };
-
-    this.getConnectingAid = () => {
-      return this.selectedAid;
     };
   }
 
