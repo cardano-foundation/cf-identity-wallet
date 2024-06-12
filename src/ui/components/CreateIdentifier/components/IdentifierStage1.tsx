@@ -91,7 +91,7 @@ const IdentifierStage1 = ({
     if (
       incomingRequest?.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      incomingRequest.multisigIcpDetails?.ourIdentifier.groupMetadata
+      incomingRequest.multisigIcpDetails.ourIdentifier.groupMetadata
         ?.groupId === groupId && handleDone();
     }
   }, [groupMetadata, incomingRequest]);
