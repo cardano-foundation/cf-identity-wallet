@@ -100,6 +100,8 @@ describe("State Cache", () => {
     const connectionCredentialRequestProps: IncomingRequestProps = {
       id: "123",
       type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
+      logo: "logo",
+      label: "label",
     };
     const action = setQueueIncomingRequest(connectionCredentialRequestProps);
     const nextState = stateCacheSlice.reducer(initialState, action);
@@ -116,16 +118,22 @@ describe("State Cache", () => {
       {
         id: "123",
         type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
+        logo: "logo1",
+        label: "label1",
       },
     ];
     const batchIncomingRequestProps: IncomingRequestProps[] = [
       {
         id: "456",
         type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
+        logo: "logo2",
+        label: "label2",
       },
       {
         id: "789",
         type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
+        logo: "logo3",
+        label: "label3",
       },
     ];
     const action = enqueueIncomingRequest(batchIncomingRequestProps);
@@ -144,10 +152,14 @@ describe("State Cache", () => {
       {
         id: "123",
         type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
+        logo: "logo1",
+        label: "label1",
       },
       {
         id: "456",
         type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
+        logo: "logo2",
+        label: "label2",
       },
     ];
     const action = dequeueCredentialRequest();
@@ -168,6 +180,8 @@ describe("State Cache", () => {
     const connectionCredentialRequestProps: IncomingRequestProps = {
       id: "123",
       type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
+      logo: "logo",
+      label: "label",
     };
     const action2 = setQueueIncomingRequest(connectionCredentialRequestProps);
     const nextState2 = stateCacheSlice.reducer(nextState1, action2);
@@ -185,10 +199,14 @@ describe("State Cache", () => {
       {
         id: "123",
         type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
+        logo: "logo1",
+        label: "label1",
       },
       {
         id: "",
         type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
+        logo: "logo2",
+        label: "label2",
       },
     ];
     const action = dequeueCredentialRequest();

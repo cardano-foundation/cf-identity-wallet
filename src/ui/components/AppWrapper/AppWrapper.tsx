@@ -2,7 +2,6 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
-  getCurrentOperation,
   setAuthentication,
   setCurrentOperation,
   setInitialized,
@@ -45,6 +44,7 @@ import { useActivityTimer } from "./hooks/useActivityTimer";
 import {
   getConnectedWallet,
   setConnectedWallet,
+  setPendingConnection,
   setWalletConnectionsCache,
 } from "../../../store/reducers/walletConnectionsCache";
 import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
@@ -59,7 +59,6 @@ import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCach
 import { CardListViewType } from "../SwitchCardView";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import { i18n } from "../../../i18n";
 import { Alert } from "../Alert";
@@ -160,7 +159,6 @@ const peerConnectRequestSignChangeHandler = async (
     );
   dispatch(
     setQueueIncomingRequest({
-      id: "peer-connect-signing",
       signTransaction: event,
       peerConnection,
       type: IncomingRequestType.PEER_CONNECT_SIGN,
@@ -175,13 +173,19 @@ const peerConnectedChangeHandler = async (
   const existingConnections =
     await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
   dispatch(setWalletConnectionsCache(existingConnections));
-  dispatch(setConnectedWallet(event.payload.dAppAddress));
+  const connectedWallet = existingConnections.find(
+    (connection) => connection.id === event.payload.dAppAddress
+  );
+  if (connectedWallet) {
+    dispatch(setConnectedWallet(connectedWallet));
+  }
+  dispatch(setPendingConnection(null));
   dispatch(setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS));
 };
 
 const peerDisconnectedChangeHandler = async (
   event: PeerDisconnectedEvent,
-  connectedMeerKat: string,
+  connectedMeerKat: string | null,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (connectedMeerKat === event.payload.dAppAddress) {
@@ -214,7 +218,6 @@ const signifyOperationStateChangeHandler = async (
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
-  const operation = useAppSelector(getCurrentOperation);
   const connectedWallet = useAppSelector(getConnectedWallet);
   const [isOnline, setIsOnline] = useState(false);
   const [isMessagesHandled, setIsMessagesHandled] = useState(false);
@@ -260,7 +263,22 @@ const AppWrapper = (props: { children: ReactNode }) => {
     } else {
       dispatch(setPauseQueueIncomingRequest(true));
     }
-  }, [isOnline, authentication.loggedIn, dispatch]);
+  }, [isOnline, authentication.loggedIn, isMessagesHandled, dispatch]);
+
+  useEffect(() => {
+    PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
+      async (event) => {
+        if (!connectedWallet) {
+          return;
+        }
+        return peerDisconnectedChangeHandler(
+          event,
+          connectedWallet.id,
+          dispatch
+        );
+      }
+    );
+  }, [connectedWallet, dispatch]);
 
   const checkKeyStore = async (key: string) => {
     try {
@@ -409,17 +427,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     PeerConnection.peerConnection.onPeerConnectedStateChanged(async (event) => {
       return peerConnectedChangeHandler(event, dispatch);
     });
-    PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
-      async (event) => {
-        if (connectedWallet) {
-          return peerDisconnectedChangeHandler(
-            event,
-            connectedWallet,
-            dispatch
-          );
-        }
-      }
-    );
     PeerConnection.peerConnection.onPeerConnectionBrokenStateChanged(
       async (event) => {
         setIsAlertPeerBrokenOpen(true);

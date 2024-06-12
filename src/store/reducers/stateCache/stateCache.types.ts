@@ -28,16 +28,30 @@ enum IncomingRequestType {
   PEER_CONNECT_SIGN = "peer-connect-sign",
 }
 
-interface IncomingRequestProps {
+type MultiSigRequest = {
   id: string;
-  type?: IncomingRequestType;
-  logo?: string;
-  label?: string;
-  event?: KeriaNotification;
-  multisigIcpDetails?: MultiSigIcpRequestDetails;
-  signTransaction?: PeerConnectSigningEvent;
-  peerConnection?: ConnectionData;
-}
+  event: KeriaNotification;
+  type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING;
+  multisigIcpDetails: MultiSigIcpRequestDetails;
+};
+
+type PeerConnectSigningEventRequest = {
+  type: IncomingRequestType.PEER_CONNECT_SIGN;
+  signTransaction: PeerConnectSigningEvent;
+  peerConnection: ConnectionData;
+};
+
+type KeriaNotificationRequest = {
+  id: string;
+  type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED;
+  logo: string;
+  label: string;
+};
+
+type IncomingRequestProps =
+  | KeriaNotificationRequest
+  | MultiSigRequest
+  | PeerConnectSigningEventRequest;
 
 interface QueueProps<T> {
   isPaused: boolean;
@@ -63,4 +77,5 @@ export type {
   StateCacheProps,
   IncomingRequestProps,
   QueueProps,
+  PeerConnectSigningEventRequest,
 };

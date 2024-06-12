@@ -334,6 +334,10 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(archivedMetadataRecord);
+    PeerConnection.peerConnection.getConnectingIdentifier = jest
+      .fn()
+      .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
+
     identifierStorage.updateIdentifierMetadata = jest.fn();
     await identifierService.deleteIdentifier(archivedMetadataRecord.id);
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
@@ -355,9 +359,9 @@ describe("Single sig service of agent", () => {
     PeerConnection.peerConnection.getConnectedDAppAddress = jest
       .fn()
       .mockReturnValue("dApp-address");
-    PeerConnection.peerConnection.getConnectingAid = jest
+    PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
-      .mockReturnValue(archivedMetadataRecord.id);
+      .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
     await identifierService.deleteIdentifier(archivedMetadataRecord.id);
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
       archivedMetadataRecord.id

@@ -7,11 +7,12 @@ import {
 } from "../../../../../components/CardDetails";
 import { PageFooter } from "../../../../../components/PageFooter";
 import { ScrollablePageLayout } from "../../../../../components/layout/ScrollablePageLayout";
-import CardanoLogo from "../../../../../assets/images/CardanoLogo.jpg";
+import UserIcon from "../../../../../assets/images/KeriGeneric.jpg";
 import { RequestProps } from "../IncomingRequest.types";
 import "./SignRequest.scss";
 import { Spinner } from "../../../../../components/Spinner";
 import { PageHeader } from "../../../../../components/PageHeader";
+import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
 
 const SignRequest = ({
   pageId,
@@ -20,23 +21,25 @@ const SignRequest = ({
   initiateAnimation,
   handleAccept,
   handleCancel,
-}: RequestProps) => {
-  const signRequest = requestData.signTransaction;
+}: RequestProps<IncomingRequestType.PEER_CONNECT_SIGN>) => {
   const [isSigningObject, setIsSigningObject] = useState(false);
-  const logo = requestData.logo ? requestData.logo : CardanoLogo;
-
   const signDetails = useMemo(() => {
-    if (!signRequest) return {};
+    if (!requestData.signTransaction) {
+      return {};
+    }
 
     let signContent;
     try {
-      signContent = JSON.parse(signRequest.payload.payload);
+      signContent = JSON.parse(requestData.signTransaction.payload.payload);
       setIsSigningObject(true);
     } catch (error) {
-      signContent = signRequest.payload.payload;
+      signContent = requestData.signTransaction.payload.payload;
     }
     return signContent;
-  }, [requestData.signTransaction]);
+  }, [requestData.type]);
+
+  const signRequest = requestData.signTransaction;
+  const logo = requestData.peerConnection.iconB64 || UserIcon;
 
   const handleSign = () => {
     handleAccept();

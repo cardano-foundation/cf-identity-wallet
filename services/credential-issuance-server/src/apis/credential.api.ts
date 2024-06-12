@@ -24,8 +24,8 @@ async function issueAcdcCredential(req: Request, res: Response): Promise<void> {
 }
 
 async function requestDisclosure(req: Request, res: Response): Promise<void> {
-  const { schemaSaid, aid } = req.body;
-  await Agent.agent.requestDisclosure(schemaSaid, aid);
+  const { schemaSaid, aid, attributes } = req.body;
+  await Agent.agent.requestDisclosure(schemaSaid, aid, attributes);
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,

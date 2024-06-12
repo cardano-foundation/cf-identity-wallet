@@ -15,8 +15,10 @@ jest.mock("../../agent/agent", () => ({
       connections: {
         getConnectionShortDetailById: jest.fn(),
         getMultisigLinkedContacts: jest.fn(),
+        getOobi: jest.fn(),
       },
       identifiers: {
+        getIdentifier: jest.fn(),
         updateIdentifier: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
@@ -83,6 +85,11 @@ describe("PeerConnection", () => {
 
   test("should connect with a DApp if there is not existing connection", async () => {
     const dAppIdentifier = "testDApp";
+    Agent.agent.identifiers.getIdentifier = jest.fn().mockResolvedValue({
+      id: "id",
+      signifyName: "signifyName",
+    });
+    Agent.agent.connections.getOobi = jest.fn().mockResolvedValue("test-oobi");
     Agent.agent.peerConnectionMetadataStorage.getPeerConnectionMetadata = jest
       .fn()
       .mockRejectedValue(
@@ -175,8 +182,8 @@ describe("PeerConnection", () => {
     expect(peerConnection.getConnectedDAppAddress()).toBe("");
   });
 
-  test("should return the connecting Aid", () => {
+  test("should return the connecting Aid", async () => {
     peerConnection.start("testAid");
-    expect(peerConnection.getConnectingAid()).toBe("testAid");
+    expect((await peerConnection.getConnectingIdentifier()).id).toBe("testAid");
   });
 });

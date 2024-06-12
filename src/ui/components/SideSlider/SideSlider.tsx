@@ -1,5 +1,5 @@
 import { IonModal, createAnimation } from "@ionic/react";
-import { SideSliderProps } from "./SideSlider.types";
+import { ANIMATION_DURATION, SideSliderProps } from "./SideSlider.types";
 import { combineClassNames } from "../../utils/style";
 import "./SideSlider.scss";
 
@@ -21,7 +21,7 @@ const SideSlider = ({
       return createAnimation()
         .addElement(modalWrapper)
         .easing("ease-out")
-        .duration(500)
+        .duration(ANIMATION_DURATION)
         .fromTo("transform", "translateX(100%)", "translateX(0)")
         .fromTo("opacity", 1, 1)
         .afterStyles({

@@ -323,9 +323,9 @@ describe("AppWrapper handler", () => {
       Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata =
         jest.fn().mockResolvedValue([peerConnectionMock]);
       await peerConnectedChangeHandler(peerConnectedEventMock, dispatch);
-      expect(dispatch).toBeCalledWith(
-        setConnectedWallet(peerConnectionMock.id)
-      );
+      await waitFor(() => {
+        expect(dispatch).toBeCalledWith(setConnectedWallet(peerConnectionMock));
+      });
       expect(dispatch).toBeCalledWith(
         setWalletConnectionsCache([peerConnectionMock])
       );
@@ -356,7 +356,6 @@ describe("AppWrapper handler", () => {
       );
       expect(dispatch).toBeCalledWith(
         setQueueIncomingRequest({
-          id: "peer-connect-signing",
           signTransaction: peerSignRequestEventMock,
           peerConnection: peerConnectionMock,
           type: IncomingRequestType.PEER_CONNECT_SIGN,
