@@ -58,6 +58,7 @@ class Agent {
   static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT =
     "Signify client is already booted but cannot connect";
   static readonly KERA_RECOVERY_FAILED = "Failed to recover signify client";
+  static readonly KERA_BOOT_URL_NOT_FOUND = "Boot URL not found";
   static readonly KERIA_SEEDPHRASE_INVALID = " Seed Phrase is invalid";
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {
@@ -256,7 +257,8 @@ class Agent {
       if (error instanceof Error) {
         if (error.message === "Invalid mnemonic")
           throw new Error(Agent.KERIA_SEEDPHRASE_INVALID);
-
+        if (error.message.includes("agent does not exist for controller"))
+          throw new Error(Agent.KERA_BOOT_URL_NOT_FOUND);
         throw Error(Agent.KERA_RECOVERY_FAILED);
       }
     }
