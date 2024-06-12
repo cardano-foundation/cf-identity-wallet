@@ -2,10 +2,10 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import {
   getConnectedWallet,
-  getPendingDAppMeerkat,
+  getPendingConnection,
   getWalletConnectionsCache,
   setConnectedWallet,
-  setPendingDAppMeerKat,
+  setPendingConnection,
   setWalletConnectionsCache,
   walletConnectionsCacheSlice,
 } from "./walletConnectionsCache";
@@ -18,7 +18,7 @@ describe("walletConnectionsCacheSlice", () => {
   const initialState: WalletConnectState = {
     walletConnections: [],
     connectedWallet: null,
-    pendingDAppMeerKat: null,
+    pendingConnection: null,
   };
 
   it("should return the initial state", () => {
@@ -51,16 +51,18 @@ describe("walletConnectionsCacheSlice", () => {
     };
     const newState = walletConnectionsCacheSlice.reducer(
       initialState,
-      setConnectedWallet(connection.id)
+      setConnectedWallet(connection)
     );
-    expect(newState.connectedWallet).toEqual(connection.id);
+    expect(newState.connectedWallet).toEqual(connection);
   });
-  it("should handle setPendingDAppMeerKat", () => {
+  it("should handle setPendingConnection", () => {
     const newState = walletConnectionsCacheSlice.reducer(
       initialState,
-      setPendingDAppMeerKat("pending-meerkat")
+      setPendingConnection({
+        id: "pending-meerkat",
+      })
     );
-    expect(newState.pendingDAppMeerKat).toEqual("pending-meerkat");
+    expect(newState.pendingConnection?.id).toEqual("pending-meerkat");
   });
 });
 
@@ -94,7 +96,9 @@ describe("Get wallet connections cache", () => {
   it("should return connected wallet from RootState", () => {
     const state = {
       walletConnectionsCache: {
-        connectedWallet: "1",
+        connectedWallet: {
+          id: "1",
+        },
       },
     } as RootState;
     const connectionCache = getConnectedWallet(state);
@@ -105,12 +109,14 @@ describe("Get wallet connections cache", () => {
   it("should return pending DApp MeerKat from RootState", () => {
     const state = {
       walletConnectionsCache: {
-        pendingDAppMeerKat: "pending-meerkat",
+        pendingConnection: {
+          id: "pending-meerkat",
+        },
       },
     } as RootState;
-    const pendingMeerKatCache = getPendingDAppMeerkat(state);
+    const pendingMeerKatCache = getPendingConnection(state);
     expect(pendingMeerKatCache).toEqual(
-      state.walletConnectionsCache.pendingDAppMeerKat
+      state.walletConnectionsCache.pendingConnection
     );
   });
 });

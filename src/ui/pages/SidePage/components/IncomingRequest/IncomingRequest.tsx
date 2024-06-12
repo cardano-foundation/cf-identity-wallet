@@ -13,6 +13,7 @@ import {
   IncomingRequestType,
 } from "../../../../../store/reducers/stateCache/stateCache.types";
 import { getConnectedWallet } from "../../../../../store/reducers/walletConnectionsCache";
+import { ANIMATION_DURATION } from "../../../../components/SideSlider/SideSlider.types";
 
 const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const pageId = "incoming-request";
@@ -41,7 +42,7 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
     if (
       incomingRequest.type === IncomingRequestType.PEER_CONNECT_SIGN &&
       (!connectedWallet ||
-        connectedWallet !== incomingRequest.peerConnection?.id)
+        connectedWallet.id !== incomingRequest.peerConnection?.id)
     ) {
       handleReset();
     }

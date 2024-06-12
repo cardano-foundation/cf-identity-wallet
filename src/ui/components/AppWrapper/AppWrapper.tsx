@@ -2,7 +2,6 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
-  getCurrentOperation,
   setAuthentication,
   setCurrentOperation,
   setInitialized,
@@ -45,6 +44,7 @@ import { useActivityTimer } from "./hooks/useActivityTimer";
 import {
   getConnectedWallet,
   setConnectedWallet,
+  setPendingConnection,
   setWalletConnectionsCache,
 } from "../../../store/reducers/walletConnectionsCache";
 import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
@@ -59,7 +59,6 @@ import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCach
 import { CardListViewType } from "../SwitchCardView";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import { i18n } from "../../../i18n";
 import { Alert } from "../Alert";
@@ -174,7 +173,13 @@ const peerConnectedChangeHandler = async (
   const existingConnections =
     await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
   dispatch(setWalletConnectionsCache(existingConnections));
-  dispatch(setConnectedWallet(event.payload.dAppAddress));
+  const connectedWallet = existingConnections.find(
+    (connection) => connection.id === event.payload.dAppAddress
+  );
+  if (connectedWallet) {
+    dispatch(setConnectedWallet(connectedWallet));
+  }
+  dispatch(setPendingConnection(null));
   dispatch(setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS));
 };
 
@@ -213,7 +218,6 @@ const signifyOperationStateChangeHandler = async (
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
-  const operation = useAppSelector(getCurrentOperation);
   const connectedWallet = useAppSelector(getConnectedWallet);
   const [isOnline, setIsOnline] = useState(false);
   const [isMessagesHandled, setIsMessagesHandled] = useState(false);
@@ -264,7 +268,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
   useEffect(() => {
     PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
       async (event) => {
-        return peerDisconnectedChangeHandler(event, connectedWallet, dispatch);
+        if (!connectedWallet) {
+          return;
+        }
+        return peerDisconnectedChangeHandler(
+          event,
+          connectedWallet.id,
+          dispatch
+        );
       }
     );
   }, [connectedWallet, dispatch]);
