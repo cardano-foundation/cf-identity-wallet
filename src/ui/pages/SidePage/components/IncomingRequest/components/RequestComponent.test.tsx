@@ -78,12 +78,11 @@ describe("Multi-Sig request", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={credentialRequestData as IncomingRequestProps}
+          requestData={credentialRequestData as any}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.CREDENTIAL_OFFER_RECEIVED}
         />
       </Provider>
     );
@@ -101,12 +100,11 @@ describe("Multi-Sig request", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={credentialRequestData as IncomingRequestProps}
+          requestData={credentialRequestData as any}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.CREDENTIAL_OFFER_RECEIVED}
         />
       </Provider>
     );
@@ -131,7 +129,6 @@ describe("Multi-Sig request", () => {
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.MULTI_SIG_REQUEST_INCOMING}
         />
       </Provider>
     );
@@ -177,7 +174,6 @@ describe("Multi-Sig request", () => {
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.MULTI_SIG_REQUEST_INCOMING}
         />
       </Provider>
     );
@@ -234,7 +230,6 @@ describe("Sign request", () => {
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.PEER_CONNECT_SIGN}
         />
       </Provider>
     );
@@ -266,7 +261,6 @@ describe("Sign request", () => {
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.PEER_CONNECT_SIGN}
         />
       </Provider>
     );
@@ -315,7 +309,6 @@ describe("Sign JSON", () => {
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.PEER_CONNECT_SIGN}
         />
       </Provider>
     );
@@ -344,7 +337,6 @@ describe("Sign JSON", () => {
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.PEER_CONNECT_SIGN}
         />
       </Provider>
     );

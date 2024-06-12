@@ -20,7 +20,7 @@ const ConnectionRequest = ({
   initiateAnimation,
   handleAccept,
   handleCancel,
-}: RequestProps) => {
+}: RequestProps<IncomingRequestType.CREDENTIAL_OFFER_RECEIVED>) => {
   if (requestData.type !== IncomingRequestType.CREDENTIAL_OFFER_RECEIVED) {
     return null;
   }

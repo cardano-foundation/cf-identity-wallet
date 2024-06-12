@@ -7,7 +7,7 @@ import {
 } from "../../../../../components/CardDetails";
 import { PageFooter } from "../../../../../components/PageFooter";
 import { ScrollablePageLayout } from "../../../../../components/layout/ScrollablePageLayout";
-import CardanoLogo from "../../../../../assets/images/CardanoLogo.jpg";
+import UserIcon from "../../../../../assets/images/KeriGeneric.jpg";
 import { RequestProps } from "../IncomingRequest.types";
 import "./SignRequest.scss";
 import { Spinner } from "../../../../../components/Spinner";
@@ -21,14 +21,12 @@ const SignRequest = ({
   initiateAnimation,
   handleAccept,
   handleCancel,
-}: RequestProps) => {
+}: RequestProps<IncomingRequestType.PEER_CONNECT_SIGN>) => {
   const [isSigningObject, setIsSigningObject] = useState(false);
   const signDetails = useMemo(() => {
-    if (
-      requestData.type !== IncomingRequestType.PEER_CONNECT_SIGN ||
-      !requestData.signTransaction
-    )
+    if (!requestData.signTransaction) {
       return {};
+    }
 
     let signContent;
     try {
@@ -40,11 +38,8 @@ const SignRequest = ({
     return signContent;
   }, [requestData.type]);
 
-  if (requestData.type !== IncomingRequestType.PEER_CONNECT_SIGN) {
-    return null;
-  }
   const signRequest = requestData.signTransaction;
-  const logo = CardanoLogo;
+  const logo = requestData.peerConnection.iconB64 || UserIcon;
 
   const handleSign = () => {
     handleAccept();

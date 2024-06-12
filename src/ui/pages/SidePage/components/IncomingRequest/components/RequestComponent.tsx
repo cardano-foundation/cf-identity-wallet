@@ -14,9 +14,8 @@ const RequestComponent = ({
   handleAccept,
   handleCancel,
   handleIgnore,
-  incomingRequestType,
-}: RequestProps) => {
-  switch (incomingRequestType) {
+}: RequestProps<IncomingRequestType>) => {
+  switch (requestData.type) {
   case IncomingRequestType.CREDENTIAL_OFFER_RECEIVED:
     return (
       <CredentialRequest
@@ -26,7 +25,6 @@ const RequestComponent = ({
         initiateAnimation={initiateAnimation}
         handleAccept={handleAccept}
         handleCancel={handleCancel}
-        incomingRequestType={incomingRequestType}
       />
     );
   case IncomingRequestType.MULTI_SIG_REQUEST_INCOMING:

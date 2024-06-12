@@ -137,7 +137,6 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
       handleAccept={handleAccept}
       handleCancel={handleCancel}
       handleIgnore={handleIgnore}
-      incomingRequestType={incomingRequest?.type}
     />
   );
 };

@@ -41,14 +41,11 @@ const MultiSigRequest = ({
   requestData,
   handleAccept,
   handleCancel,
-}: RequestProps) => {
+}: RequestProps<IncomingRequestType.MULTI_SIG_REQUEST_INCOMING>) => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const [alertAcceptIsOpen, setAlertAcceptIsOpen] = useState(false);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
-  if (requestData.type !== IncomingRequestType.MULTI_SIG_REQUEST_INCOMING) {
-    return null;
-  }
   const actionAccept = async () => {
     setAlertAcceptIsOpen(false);
     setBlur && setBlur(true);

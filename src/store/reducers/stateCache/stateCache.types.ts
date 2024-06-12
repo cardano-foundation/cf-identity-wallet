@@ -28,25 +28,25 @@ enum IncomingRequestType {
   PEER_CONNECT_SIGN = "peer-connect-sign",
 }
 
-interface MultiSigRequest {
+type MultiSigRequest = {
   id: string;
   event: KeriaNotification;
   type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING;
   multisigIcpDetails: MultiSigIcpRequestDetails;
-}
+};
 
-interface PeerConnectSigningEventRequest {
+type PeerConnectSigningEventRequest = {
   type: IncomingRequestType.PEER_CONNECT_SIGN;
   signTransaction: PeerConnectSigningEvent;
   peerConnection: ConnectionData;
-}
+};
 
-interface KeriaNotificationRequest {
+type KeriaNotificationRequest = {
   id: string;
   type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED;
   logo: string;
   label: string;
-}
+};
 
 type IncomingRequestProps =
   | KeriaNotificationRequest

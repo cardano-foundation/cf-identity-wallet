@@ -20,11 +20,8 @@ const CredentialRequest = ({
   initiateAnimation,
   handleAccept,
   handleCancel,
-}: RequestProps) => {
+}: RequestProps<IncomingRequestType.CREDENTIAL_OFFER_RECEIVED>) => {
   const fallbackLogo = KeriLogo;
-  if (requestData.type !== IncomingRequestType.CREDENTIAL_OFFER_RECEIVED) {
-    return null;
-  }
 
   return (
     <ResponsivePageLayout
