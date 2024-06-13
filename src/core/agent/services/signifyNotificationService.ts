@@ -181,11 +181,15 @@ class SignifyNotificationService extends AgentService {
   private async createNotificationRecord(
     event: Notification
   ): Promise<KeriaNotification> {
+    const exchange = await this.props.signifyClient.exchanges().get(event.a.d);
+
     const metadata: any = {
       id: event.i,
       a: event.a,
-      isDismissed: false,
+      isReadByUser: false,
       route: event.a.r,
+      timeStamp: new Date().getTime(),
+      connectionId: exchange.exn.i,
     };
     if (event.a.r === NotificationRoute.MultiSigIcp) {
       const multisigNotification = await this.props.signifyClient
@@ -201,25 +205,32 @@ class SignifyNotificationService extends AgentService {
       createdAt: result.createdAt,
       a: result.a,
       multisigId: result.multisigId,
+      timeStamp: result.timeStamp,
+      connectionId: result.connectionId,
     };
   }
 
-  async dismissNotification(notificationId: string) {
+  async readNotification(notificationId: string) {
     const notificationRecord = await this.notificationStorage.findById(
       notificationId
     );
     if (!notificationRecord) {
       throw new Error(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
     }
-    notificationRecord.setTag("isDismissed", true);
+    notificationRecord.setTag("isReadByUser", true);
     await this.notificationStorage.update(notificationRecord);
   }
 
-  // This allow us to get all dismissed notifications
-  async getDismissedNotifications() {
+  // This allow us to get all read notifications
+  async getReadNotifications() {
     const notifications = await this.notificationStorage.findAllByQuery({
-      isDismissed: true,
+      isReadByUser: true,
     });
+    return notifications;
+  }
+
+  async getAllNotifications() {
+    const notifications = await this.notificationStorage.getAll();
     return notifications;
   }
 

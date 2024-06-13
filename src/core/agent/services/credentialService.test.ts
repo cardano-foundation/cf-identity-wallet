@@ -434,7 +434,7 @@ describe("Credential service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const notificationRecord = {
       _tags: {
-        isDismiss: true,
+        isReadByUser: true,
         route: NotificationRoute.ExnIpexGrant,
       },
       id: "AIeGgKkS23FDK4mxpfodpbWhTydFz2tdM64DER6EdgG-",
@@ -443,6 +443,8 @@ describe("Credential service of agent", () => {
         r: NotificationRoute.ExnIpexGrant,
         d: "EF6Nmxz8hs0oVc4loyh2J5Sq9H3Z7apQVqjO6e4chtsp",
       },
+      timeStamp: new Date().getTime(),
+      connectionId: "connection-id",
     };
     notificationStorage.findAllByQuery = jest
       .fn()
@@ -454,6 +456,8 @@ describe("Credential service of agent", () => {
         id: notificationRecord.id,
         createdAt: notificationRecord.createdAt,
         a: notificationRecord.a,
+        timeStamp: notificationRecord.timeStamp,
+        connectionId: notificationRecord.connectionId,
       },
     ]);
   });
@@ -462,11 +466,11 @@ describe("Credential service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     await credentialService.getUnhandledIpexGrantNotifications({
-      isDismissed: false,
+      isReadByUser: false,
     });
     expect(notificationStorage.findAllByQuery).toBeCalledWith({
       route: NotificationRoute.ExnIpexGrant,
-      isDismissed: false,
+      isReadByUser: false,
     });
   });
 });

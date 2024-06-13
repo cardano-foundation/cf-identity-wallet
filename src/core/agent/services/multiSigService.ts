@@ -468,7 +468,7 @@ class MultiSigService extends AgentService {
   @OnlineOnly
   async getUnhandledMultisigIdentifiers(
     filters: {
-      isDismissed?: boolean;
+      isReadByUser?: boolean;
     } = {}
   ): Promise<KeriaNotification[]> {
     const results = await this.notificationStorage.findAllByQuery({
@@ -487,6 +487,8 @@ class MultiSigService extends AgentService {
         createdAt: result.createdAt,
         a: result.a,
         multisigId: result.multisigId,
+        timeStamp: result.timeStamp,
+        connectionId: result.connectionId,
       };
     });
   }

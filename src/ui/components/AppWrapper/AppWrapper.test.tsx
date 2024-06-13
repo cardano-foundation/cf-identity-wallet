@@ -283,6 +283,8 @@ describe("AppWrapper handler", () => {
           r: NotificationRoute.ExnIpexGrant,
         },
         createdAt: new Date(),
+        timeStamp: new Date().getTime(),
+        connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       } as KeriaNotification;
       await keriaNotificationsChangeHandler(keriNoti, dispatch);
       expect(dispatch).toBeCalledWith(
@@ -302,6 +304,8 @@ describe("AppWrapper handler", () => {
           r: NotificationRoute.MultiSigIcp,
         },
         createdAt: new Date(),
+        timeStamp: new Date().getTime(),
+        connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       } as KeriaNotification;
       await keriaNotificationsChangeHandler(keriNoti, dispatch);
       expect(dispatch).toBeCalledWith(

@@ -234,10 +234,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
         const oldMessages = (
           await Promise.all([
             Agent.agent.credentials.getUnhandledIpexGrantNotifications({
-              isDismissed: false,
+              isReadByUser: false,
             }),
             Agent.agent.multiSigs.getUnhandledMultisigIdentifiers({
-              isDismissed: false,
+              isReadByUser: false,
             }),
           ])
         )
@@ -245,9 +245,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
           .sort(function (messageA, messageB) {
             return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
           });
-        oldMessages.forEach(async (message) => {
-          await keriaNotificationsChangeHandler(message, dispatch);
-        });
         // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
         // await Promise.all([
         //   Agent.agent.identifiers.syncKeriaIdentifiers(),
@@ -412,9 +409,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     });
     Agent.agent.connections.onConnectionStateChanged((event) => {
       return connectionStateChangedHandler(event, dispatch);
-    });
-    Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
-      return keriaNotificationsChangeHandler(event, dispatch);
     });
     Agent.agent.credentials.onAcdcStateChanged((event) => {
       return acdcChangeHandler(event, dispatch);

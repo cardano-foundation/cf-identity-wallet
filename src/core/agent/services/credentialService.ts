@@ -158,7 +158,7 @@ class CredentialService extends AgentService {
   @OnlineOnly
   async getUnhandledIpexGrantNotifications(
     filters: {
-      isDismissed?: boolean;
+      isReadByUser?: boolean;
     } = {}
   ): Promise<KeriaNotification[]> {
     const results = await this.notificationStorage.findAllByQuery({
@@ -170,6 +170,8 @@ class CredentialService extends AgentService {
         id: result.id,
         createdAt: result.createdAt,
         a: result.a,
+        timeStamp: result.timeStamp,
+        connectionId: result.connectionId,
       };
     });
   }

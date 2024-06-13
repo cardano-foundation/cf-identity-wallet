@@ -249,6 +249,8 @@ class IpexCommunicationService extends AgentService {
       id: result.id,
       createdAt: result.createdAt,
       a: result.a,
+      timeStamp: result.timeStamp,
+      connectionId: result.connectionId,
     };
   }
 
