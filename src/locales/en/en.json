@@ -593,7 +593,7 @@
       "identifiers": "Identity",
       "creds": "Credentials",
       "scan": "Scan",
-      "notification": "Notification",
+      "notifications": "Notifications",
       "menu": "Menu"
     }
   },
@@ -875,9 +875,20 @@
     },
     "pastemeerkatid": "Paste Meerkat ID"
   },
-  "notification": {
+  "notifications": {
     "tab": {
-      "header": "Under development"
+      "header": "Notifications",
+      "chips": {
+        "all": "All",
+        "identifiers": "Identifiers",
+        "credentials": "Credentials",
+        "connections": "Connections",
+        "cardanoconnect": "Cardano Connect"
+      },
+      "sections": {
+        "new": "New",
+        "earlier": "Earlier"
+      }
     }
   },
   "menu": {
@@ -1268,7 +1279,7 @@
       "accept": "Accept",
       "decline": "Decline",
       "addidentifier": "Add identifier",
-      "sign": "Sign", 
+      "sign": "Sign",
       "dontallow": "Don't allow"
     },
     "alert": {

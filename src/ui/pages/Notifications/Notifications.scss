@@ -1,0 +1,55 @@
+.notifications-tab {
+  .notifications-tab-chips {
+    margin-top: 0.5rem;
+    display: flex;
+    overflow-x: scroll;
+    scrollbar-width: none;
+
+    span {
+      min-width: fit-content;
+    }
+  }
+
+  .notifications-tab-content {
+    .notifications-tab-section {
+      margin-top: 1.5rem;
+
+      .notifications-tab-section-title {
+        margin-bottom: 0.5rem;
+      }
+
+      .notifications-tab-item {
+        height: 4.5rem;
+        padding-inline: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        background: var(--ion-color-light);
+
+        &::part(native) {
+          padding: 0;
+          min-width: 100%;
+          background: transparent;
+        }
+
+        .notifications-tab-item-logo {
+          border-radius: 3rem;
+          width: 3rem;
+          height: 3rem;
+          margin-right: 1rem;
+        }
+
+        .notifications-tab-item-fallback-logo {
+          background-color: var(--ion-color-primary);
+          display: var(--display-fallback);
+          justify-content: center;
+          align-items: center;
+
+          ion-icon {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
+  }
+}

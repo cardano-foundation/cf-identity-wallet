@@ -27,7 +27,7 @@ import { TabsRoutePath } from "../../../../routes/paths";
 import { Identifiers } from "../../../pages/Identifiers";
 import { Creds } from "../../../pages/Credentials";
 import { Scan } from "../../../pages/Scan";
-import { Chat } from "../../../pages/Chat";
+import { Notifications } from "../../../pages/Notifications";
 import { Menu } from "../../../pages/Menu";
 import { useAppDispatch } from "../../../../store/hooks";
 import { setCurrentRoute } from "../../../../store/reducers/stateCache";
@@ -52,9 +52,9 @@ const tabsRoutes = [
     icon: [scan, scanOutline],
   },
   {
-    label: i18n.t("tabsmenu.label.notification"),
-    path: TabsRoutePath.NOTIFICATION,
-    component: Chat,
+    label: i18n.t("tabsmenu.label.notifications"),
+    path: TabsRoutePath.NOTIFICATIONS,
+    component: Notifications,
     icon: [notifications, notificationsOutline],
   },
   {
