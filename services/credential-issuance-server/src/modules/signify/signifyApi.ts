@@ -97,7 +97,8 @@ export class SignifyApi {
     registryId: string,
     schemaId: string,
     recipient: string,
-    name?: string
+    name?: string,
+    LEI?: string
   ) {
     await this.resolveOobi(`${config.oobiEndpoint}/oobi/${schemaId}`);
 
@@ -108,7 +109,7 @@ export class SignifyApi {
       };
     } else if (schemaId === "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao") {
       vcdata = {
-        LEI: "5493001KJTIIGC8Y1R17",
+        LEI,
       };
     } else {
       throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);

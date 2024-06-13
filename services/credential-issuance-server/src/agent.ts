@@ -38,13 +38,14 @@ class Agent {
     return this.signifyApi.resolveOobi(url);
   }
 
-  async issueAcdcCredentialByAid(schemaSaid, aid, name?) {
+  async issueAcdcCredentialByAid(schemaSaid, aid, name?, LEI?) {
     return this.signifyApi.issueCredential(
       Agent.ISSUER_AID_NAME,
       this.keriRegistryRegk,
       schemaSaid,
       aid,
-      name
+      name,
+      LEI
     );
   }
 
