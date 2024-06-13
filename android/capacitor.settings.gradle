@@ -23,9 +23,6 @@ project(':capacitor-clipboard').projectDir = new File('../node_modules/@capacito
 include ':capacitor-keyboard'
 project(':capacitor-keyboard').projectDir = new File('../node_modules/@capacitor/keyboard/android')
 
-include ':capacitor-preferences'
-project(':capacitor-preferences').projectDir = new File('../node_modules/@capacitor/preferences/android')
-
 include ':capacitor-screen-orientation'
 project(':capacitor-screen-orientation').projectDir = new File('../node_modules/@capacitor/screen-orientation/android')
 
@@ -37,3 +34,6 @@ project(':capacitor-splash-screen').projectDir = new File('../node_modules/@capa
 
 include ':capacitor-status-bar'
 project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacitor/status-bar/android')
+
+include ':capacitor-native-settings'
+project(':capacitor-native-settings').projectDir = new File('../node_modules/capacitor-native-settings/android')

@@ -19,7 +19,7 @@ PODS:
   - CapacitorCordova (5.7.4)
   - CapacitorKeyboard (5.0.8):
     - Capacitor
-  - CapacitorPreferences (5.0.7):
+  - CapacitorNativeSettings (5.0.1):
     - Capacitor
   - CapacitorScreenOrientation (5.0.7):
     - Capacitor
@@ -47,7 +47,7 @@ DEPENDENCIES:
   - "CapacitorCommunitySqlite (from `../../node_modules/@capacitor-community/sqlite`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
-  - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
+  - CapacitorNativeSettings (from `../../node_modules/capacitor-native-settings`)
   - "CapacitorScreenOrientation (from `../../node_modules/@capacitor/screen-orientation`)"
   - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
@@ -78,8 +78,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorKeyboard:
     :path: "../../node_modules/@capacitor/keyboard"
-  CapacitorPreferences:
-    :path: "../../node_modules/@capacitor/preferences"
+  CapacitorNativeSettings:
+    :path: "../../node_modules/capacitor-native-settings"
   CapacitorScreenOrientation:
     :path: "../../node_modules/@capacitor/screen-orientation"
   CapacitorShare:
@@ -99,7 +99,7 @@ SPEC CHECKSUMS:
   CapacitorCommunitySqlite: 6e2754dde799d618a8e75e409ccc67ec9c189460
   CapacitorCordova: a6e87fccc0307dee7aec1560ec9398485f2b0ce7
   CapacitorKeyboard: aec619a578235c6ce279075009a2689c2cf5c42c
-  CapacitorPreferences: 77ac427e98db83bace772455f8ba447430382c4c
+  CapacitorNativeSettings: 6e94ed3c0465206756f320df18efc52f053ce3c7
   CapacitorScreenOrientation: cc638c369cb2b1dfc55f8265485a8b4e0b3cafd9
   CapacitorShare: c6a1ebbf0114ff9e863b966cd6052678fa25d480
   CapacitorSplashScreen: dd3de3f3644710fa2a697cfb91ec262eece4d242
@@ -108,6 +108,6 @@ SPEC CHECKSUMS:
   SQLCipher: f2e96b3822e3006b379181a0e4fd145f6de29b56
   ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 
-PODFILE CHECKSUM: 376fee91162e07308901c11bbed7e5bb1df1add6
+PODFILE CHECKSUM: 227349d5dcfc878b902c4a3bda2c6e701c6df134
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2
