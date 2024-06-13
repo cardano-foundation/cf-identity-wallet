@@ -38,6 +38,7 @@ describe("getBackRoute", () => {
           userName: "",
           time: 0,
           ssiAgentIsSet: false,
+          recoveryWalletProgress: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -165,6 +166,7 @@ describe("getPreviousRoute", () => {
           userName: "",
           time: 0,
           ssiAgentIsSet: false,
+          recoveryWalletProgress: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {

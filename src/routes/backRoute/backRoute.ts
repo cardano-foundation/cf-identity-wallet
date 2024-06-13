@@ -2,7 +2,6 @@ import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
 import {
   removeCurrentRoute,
-  setAuthentication,
   setCurrentRoute,
 } from "../../store/reducers/stateCache";
 import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
@@ -77,6 +76,9 @@ const backRoute: Record<string, any> = {
     ],
   },
   [RoutePath.VERIFY_SEED_PHRASE]: {
+    updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
+  },
+  [RoutePath.VERIFY_RECOVERY_SEED_PHRASE]: {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
   [RoutePath.SSI_AGENT]: {

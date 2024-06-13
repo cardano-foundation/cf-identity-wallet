@@ -6,8 +6,11 @@ import {
 enum KeyStoreKeys {
   APP_PASSCODE = "app-login-passcode",
   APP_OP_PASSWORD = "app-operations-password",
+  PASSWORD_SKIPPED = "app-password-skip",
   SIGNIFY_BRAN = "signify-bran",
   MEERKAT_SEED = "app-meerkat-seed",
+  RECOVERY_WALLET = "recovery-wallet",
+  RECOVERY_WALLET_LAST_FAIL_ATTEMPT_TIME = "recovery-wallet-last-fail-attempt-time",
 }
 
 class SecureStorage {
