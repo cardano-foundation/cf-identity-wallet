@@ -394,14 +394,19 @@ class Agent {
     return { bran, mnemonic: entropyToMnemonic(passcodeBytes) };
   }
 
-  async verifySeedPhrase(seedPhrase: string[]): Promise<string> {
-    const mnemonic = seedPhrase.join(" ");
+  async isMnemonicValid(mnemonic: string): Promise<boolean> {
     try {
-      return Buffer.from(mnemonicToEntropy(mnemonic), "hex")
+      Buffer.from(mnemonicToEntropy(mnemonic), "hex")
         .toString("utf-8")
         .replace(/\0/g, "");
+      return true;
     } catch (error) {
-      throw new Error(Agent.INVALID_MNEMONIC);
+      if (error instanceof Error) {
+        if (error.message === "Invalid mnemonic") {
+          return false;
+        }
+      }
+      throw error;
     }
   }
 }
