@@ -320,6 +320,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const passwordIsSkipped = await checkKeyStore(
       KeyStoreKeys.APP_PASSWORD_SKIPPED
     );
+    const recoveryWalletProgress = await checkKeyStore(
+      KeyStoreKeys.RECOVERY_WALLET
+    );
 
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
     const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
@@ -386,6 +389,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         passwordIsSkipped,
         ssiAgentIsSet:
           !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
+        recoveryWalletProgress,
       })
     );
 
