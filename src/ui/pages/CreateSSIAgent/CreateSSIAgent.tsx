@@ -157,8 +157,14 @@ const CreateSSIAgent = () => {
         [SSI_URLS_EMPTY, SEED_PHRASE_EMPTY, Agent.INVALID_MNEMONIC].includes(
           errorMessage
         )
-      )
+      ) {
         return;
+      }
+
+      if (Agent.KERIA_NOT_BOOTED === errorMessage) {
+        setHasMismatchError(true);
+        return;
+      }
 
       setInvalidConnectUrl(true);
     } finally {
