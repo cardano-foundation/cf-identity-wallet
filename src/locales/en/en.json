@@ -887,7 +887,9 @@
       },
       "sections": {
         "new": "New",
-        "earlier": "Earlier"
+        "earlier": "Earlier",
+        "hours": "h",
+        "days": "d"
       }
     }
   },

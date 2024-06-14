@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   IonButton,
   IonChip,
@@ -18,10 +19,34 @@ import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import "./Notifications.scss";
 import { i18n } from "../../../i18n";
+import { NotificationsProps } from "./Notifications.types";
+import { notificationsFix } from "../../__fixtures__/notificationsFix";
+import { timeDifference } from "../../utils/formatters";
 
 const Notifications = () => {
   const pageId = "notifications-tab";
   const dispatch = useAppDispatch();
+  const [selectedFilter, setSelectedFilter] = useState("all");
+  const notificationsAll = notificationsFix;
+  const [notifications, setNotifications] =
+    useState<NotificationsProps[]>(notificationsAll);
+
+  useEffect(() => {
+    setNotifications(
+      selectedFilter === "all"
+        ? notificationsAll
+        : notificationsAll.filter(
+          (notification) => notification.type === selectedFilter
+        )
+    );
+  }, [selectedFilter]);
+
+  const notificationsNew = notifications.filter(
+    (notification) => timeDifference(notification.timestamp)[1] === "h"
+  );
+  const notificationsEarlier = notifications.filter(
+    (notification) => timeDifference(notification.timestamp)[1] === "d"
+  );
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.NOTIFICATIONS }));
@@ -48,13 +73,40 @@ const Notifications = () => {
     );
   };
 
-  const notifications = [
-    { logo: "", label: i18n.t("notifications.tab.label") },
-  ];
-
   const handleNotificationClick = (index: number) => {
     // TODO: Implement notification page
   };
+
+  const filterOptions = [
+    { filter: "all", label: i18n.t("notifications.tab.chips.all") },
+    {
+      filter: "identifiers",
+      label: i18n.t("notifications.tab.chips.identifiers"),
+    },
+    {
+      filter: "credentials",
+      label: i18n.t("notifications.tab.chips.credentials"),
+    },
+    {
+      filter: "connections",
+      label: i18n.t("notifications.tab.chips.connections"),
+    },
+    {
+      filter: "cardanoconnect",
+      label: i18n.t("notifications.tab.chips.cardanoconnect"),
+    },
+  ];
+
+  const Chip = ({ filter, label }: { filter: string; label: string }) => (
+    <span>
+      <IonChip
+        className={selectedFilter === filter ? "selected" : ""}
+        onClick={() => setSelectedFilter(filter)}
+      >
+        {label}
+      </IonChip>
+    </span>
+  );
 
   return (
     <TabLayout
@@ -64,68 +116,129 @@ const Notifications = () => {
       additionalButtons={<AdditionalButtons />}
     >
       <div className="notifications-tab-chips">
-        <span>
-          <IonChip>{i18n.t("notifications.tab.chips.all")}</IonChip>
-        </span>
-        <span>
-          <IonChip>{i18n.t("notifications.tab.chips.identifiers")}</IonChip>
-        </span>
-        <span>
-          <IonChip>{i18n.t("notifications.tab.chips.credentials")}</IonChip>
-        </span>
-        <span>
-          <IonChip>{i18n.t("notifications.tab.chips.connections")}</IonChip>
-        </span>
-        <span>
-          <IonChip>{i18n.t("notifications.tab.chips.cardanoconnect")}</IonChip>
-        </span>
+        {filterOptions.map((option) => (
+          <Chip
+            key={option.filter}
+            filter={option.filter}
+            label={option.label}
+          />
+        ))}
       </div>
       <div className="notifications-tab-content">
-        <div className="notifications-tab-section">
-          <h3 className="notifications-tab-section-title">
-            {i18n.t("notifications.tab.sections.new")}
-          </h3>
-          <IonList
-            lines="none"
-            data-testid="notifications-items"
-          >
-            {notifications.map((item, index) => {
-              return (
-                <IonItem
-                  key={index}
-                  onClick={() => handleNotificationClick(index)}
-                  className="notifications-tab-item"
-                  data-testid={`notifications-tab-item-${index}`}
-                >
-                  {item.logo ? (
-                    <img
-                      src={item.logo}
-                      alt={item.label}
-                      className="notifications-tab-item-logo"
-                      data-testid="notifications-tab-item-logo"
-                    />
-                  ) : (
-                    <div
-                      data-testid="notifications-tab-item-fallback-logo"
-                      className="notifications-tab-item-logo notifications-tab-item-fallback-logo"
-                    >
-                      <IonIcon
-                        icon={personCircleOutline}
-                        color="light"
+        {!!notificationsNew.length && (
+          <div className="notifications-tab-section">
+            <h3 className="notifications-tab-section-title">
+              {i18n.t("notifications.tab.sections.new")}
+            </h3>
+            <IonList
+              lines="none"
+              data-testid="notifications-items"
+            >
+              {notificationsNew.map((item, index) => {
+                return (
+                  <IonItem
+                    key={index}
+                    onClick={() => handleNotificationClick(index)}
+                    className="notifications-tab-item"
+                    data-testid={`notifications-tab-item-${index}`}
+                  >
+                    {item.logo ? (
+                      <img
+                        src={item.logo}
+                        alt={item.label}
+                        className="notifications-tab-item-logo"
+                        data-testid="notifications-tab-item-logo"
                       />
-                    </div>
-                  )}
-                  <IonLabel>{item.label}</IonLabel>
-                  <IonIcon
-                    aria-hidden="true"
-                    icon={ellipsisHorizontal}
-                    slot="end"
-                  />
-                </IonItem>
-              );
-            })}
-          </IonList>
-        </div>
+                    ) : (
+                      <div
+                        data-testid="notifications-tab-item-fallback-logo"
+                        className="notifications-tab-item-logo notifications-tab-item-fallback-logo"
+                      >
+                        <IonIcon
+                          icon={personCircleOutline}
+                          color="light"
+                        />
+                      </div>
+                    )}
+                    <IonLabel>
+                      {item.label}
+                      <br />
+                      <span className="notifications-tab-item-time">
+                        {timeDifference(item.timestamp)[0]}
+                        {timeDifference(item.timestamp)[1] === "d"
+                          ? i18n.t("notifications.tab.sections.days")
+                          : i18n.t("notifications.tab.sections.hours")}
+                      </span>
+                    </IonLabel>
+                    <IonIcon
+                      aria-hidden="true"
+                      icon={ellipsisHorizontal}
+                      slot="end"
+                      className="notifications-tab-item-ellipsis"
+                    />
+                  </IonItem>
+                );
+              })}
+            </IonList>
+          </div>
+        )}
+        {!!notificationsEarlier.length && (
+          <div className="notifications-tab-section">
+            <h3 className="notifications-tab-section-title">
+              {i18n.t("notifications.tab.sections.earlier")}
+            </h3>
+            <IonList
+              lines="none"
+              data-testid="notifications-items"
+            >
+              {notificationsEarlier.map((item, index) => {
+                return (
+                  <IonItem
+                    key={index}
+                    onClick={() => handleNotificationClick(index)}
+                    className="notifications-tab-item"
+                    data-testid={`notifications-tab-item-${index}`}
+                  >
+                    {item.logo ? (
+                      <img
+                        src={item.logo}
+                        alt={item.label}
+                        className="notifications-tab-item-logo"
+                        data-testid="notifications-tab-item-logo"
+                      />
+                    ) : (
+                      <div
+                        data-testid="notifications-tab-item-fallback-logo"
+                        className="notifications-tab-item-logo notifications-tab-item-fallback-logo"
+                      >
+                        <IonIcon
+                          icon={personCircleOutline}
+                          color="light"
+                        />
+                      </div>
+                    )}
+                    <IonLabel>
+                      {item.label}
+                      <br />
+                      <span className="notifications-tab-item-time">
+                        {timeDifference(item.timestamp)[0]}
+                        {timeDifference(item.timestamp)[1] === "d"
+                          ? i18n.t("notifications.tab.sections.days")
+                          : i18n.t("notifications.tab.sections.hours")}
+                      </span>
+                    </IonLabel>
+                    <IonIcon
+                      aria-hidden="true"
+                      icon={ellipsisHorizontal}
+                      slot="end"
+                      className="notifications-tab-item-ellipsis"
+                    />
+                  </IonItem>
+                );
+              })}
+            </IonList>
+          </div>
+        )}
       </div>
     </TabLayout>
   );

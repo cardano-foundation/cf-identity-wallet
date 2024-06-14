@@ -25,6 +25,30 @@ const formatTimeToSec = (date: string) => {
   return new Date(date).toLocaleTimeString("en-GB");
 };
 
+const timeDifference = (timestamp: string) => {
+  const startDate = new Date(timestamp);
+  const endDate = Date.now();
+  const timeDifferenceMS = endDate - startDate.getTime();
+  const timeDifferenceMins = Math.floor(timeDifferenceMS / 60000);
+  const timeDifferenceHours = Math.floor(timeDifferenceMS / 3600000);
+  const timeDifferenceDays = Math.floor(timeDifferenceMS / 86400000);
+  const timeDifferenceWeeks = Math.floor(timeDifferenceMS / 604800000);
+  // Approximate calculation for years based on average days in a year
+  const timeDifferenceYears = Math.floor(timeDifferenceDays / 365.25);
+
+  if (timeDifferenceHours < 1) {
+    return [timeDifferenceMins, "m"];
+  } else if (timeDifferenceHours < 24) {
+    return [timeDifferenceHours, "h"];
+  } else if (timeDifferenceDays < 7) {
+    return [timeDifferenceDays, "d"];
+  } else if (timeDifferenceDays < 30) {
+    return [timeDifferenceWeeks, "w"];
+  } else if (timeDifferenceDays < 365) {
+    return [timeDifferenceYears, "y"];
+  }
+};
+
 const formatCurrencyUSD = (amount: number) => {
   const currencyFormat = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -43,6 +67,7 @@ export {
   formatLongDate,
   formatShortTime,
   formatTimeToSec,
+  timeDifference,
   formatCurrencyUSD,
   ellipsisText,
 };
