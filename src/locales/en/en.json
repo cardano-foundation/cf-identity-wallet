@@ -679,6 +679,7 @@
   "ssiagent": {
     "title": "Enter your SSI agent details",
     "description": "To continue, please enter the SSI agent boot and connect URLs (in your email or from your command line).",
+    "verifydescription":  "To continue, please enter the SSI agent connect URLs (in your email or from your command line).",
     "button": {
       "info": "Get more information",
       "validate": "Validate"

@@ -267,7 +267,11 @@ const CreateSSIAgent = () => {
           className="page-paragraph"
           data-testid={`${pageId}-top-paragraph`}
         >
-          {i18n.t("ssiagent.description")}
+          {i18n.t(
+            isRecoveryMode
+              ? "ssiagent.verifydescription"
+              : "ssiagent.description"
+          )}
         </p>
         <div>
           <IonButton
