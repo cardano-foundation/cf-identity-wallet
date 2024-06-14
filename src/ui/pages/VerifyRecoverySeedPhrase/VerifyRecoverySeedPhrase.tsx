@@ -250,6 +250,9 @@ const VerifyRecoverySeedPhrase = () => {
           bran: "",
         })
       );
+      SecureStorage.delete(KeyStoreKeys.RECOVERY_WALLET_LAST_FAIL_ATTEMPT_TIME);
+      setFailAttempt(0);
+
       handleNavigate();
     } catch (e) {
       setFailAttempt((value) => value + 1);
