@@ -213,7 +213,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     if (authentication.loggedIn) {
-      const handleMessages = async () => {
+      const syncWithKeria = async () => {
         // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
         // await Promise.all([
         //   Agent.agent.identifiers.syncKeriaIdentifiers(),
@@ -222,7 +222,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         // ]);
       };
       if (!isMessagesHandled && isOnline) {
-        handleMessages();
+        syncWithKeria();
         setIsMessagesHandled(true);
       }
       dispatch(setPauseQueueIncomingRequest(!isOnline));
