@@ -1238,58 +1238,6 @@ describe("Multisig sig service of agent", () => {
     );
   });
 
-  test("Can get unhandled Multisig Identifier notifications", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const notificationRecord = {
-      _tags: {
-        isReadByUser: true,
-        route: NotificationRoute.MultiSigIcp,
-      },
-      id: "AIeGgKkS23FDK4mxpfodpbWhTydFz2tdM64DER6EdgG-",
-      createdAt: new Date(),
-      a: {
-        r: NotificationRoute.MultiSigIcp,
-        d: "EF6Nmxz8hs0oVc4loyh2J5Sq9H3Z7apQVqjO6e4chtsp",
-      },
-      multisigId: "multisig-id",
-      timeStamp: new Date().getTime(),
-      connectionId: "connection-id",
-    };
-    notificationStorage.findAllByQuery = jest
-      .fn()
-      .mockResolvedValue([notificationRecord]);
-    expect(
-      await multiSigService.getUnhandledMultisigIdentifiers()
-    ).toStrictEqual([
-      {
-        id: notificationRecord.id,
-        createdAt: notificationRecord.createdAt,
-        a: notificationRecord.a,
-        multisigId: "multisig-id",
-        timeStamp: notificationRecord.timeStamp,
-        connectionId: notificationRecord.connectionId,
-      },
-    ]);
-  });
-
-  test("Should pass the filter throught findAllByQuery when call getUnhandledMultisigIdentifiers", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
-    await multiSigService.getUnhandledMultisigIdentifiers({
-      isReadByUser: false,
-    });
-    expect(notificationStorage.findAllByQuery).toBeCalledWith({
-      route: NotificationRoute.MultiSigIcp,
-      isReadByUser: false,
-      $or: [
-        { route: NotificationRoute.MultiSigIcp },
-        {
-          route: NotificationRoute.MultiSigRot,
-        },
-      ],
-    });
-  });
-
   test("Should throw errors when create KERI multisigs with invalid identifier", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const creatorIdentifier = "creatorIdentifier";
@@ -1440,10 +1388,6 @@ describe("Multisig sig service of agent", () => {
         theme: 0,
         displayName: "Multisig",
       })
-    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
-
-    await expect(
-      multiSigService.getUnhandledMultisigIdentifiers()
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 

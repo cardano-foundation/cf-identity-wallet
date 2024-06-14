@@ -85,24 +85,7 @@ const keriaNotificationsChangeHandler = async (
   event: KeriaNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  if (event?.a?.r === NotificationRoute.ExnIpexGrant) {
-    dispatch(
-      setQueueIncomingRequest({
-        id: event?.id,
-        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
-        logo: "", // TODO: must define Keri logo
-        label: "Credential Issuance Server", // TODO: must define it
-      })
-    );
-  } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
-    processMultiSigIcpNotification(event, dispatch);
-  } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
-    //TODO: Use dispatch here, handle logic for the multisig rotation notification
-  } else if (event?.a?.r === NotificationRoute.ExnIpexApply) {
-    //TODO: Use dispatch here, handle logic for the exchange apply message
-  } else if (event?.a?.r === NotificationRoute.ExnIpexAgree) {
-    //TODO: Use dispatch here, handle logic for the exchange apply agree
-  }
+  // TODO: update notification counter and emit push notifications
 };
 
 const processMultiSigIcpNotification = async (
@@ -231,20 +214,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   useEffect(() => {
     if (authentication.loggedIn) {
       const handleMessages = async () => {
-        const oldMessages = (
-          await Promise.all([
-            Agent.agent.credentials.getUnhandledIpexGrantNotifications({
-              isReadByUser: false,
-            }),
-            Agent.agent.multiSigs.getUnhandledMultisigIdentifiers({
-              isReadByUser: false,
-            }),
-          ])
-        )
-          .flat()
-          .sort(function (messageA, messageB) {
-            return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
-          });
         // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
         // await Promise.all([
         //   Agent.agent.identifiers.syncKeriaIdentifiers(),
@@ -409,6 +378,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     });
     Agent.agent.connections.onConnectionStateChanged((event) => {
       return connectionStateChangedHandler(event, dispatch);
+    });
+    Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
+      return keriaNotificationsChangeHandler(event, dispatch);
     });
     Agent.agent.credentials.onAcdcStateChanged((event) => {
       return acdcChangeHandler(event, dispatch);

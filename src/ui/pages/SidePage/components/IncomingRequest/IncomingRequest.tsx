@@ -109,10 +109,6 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
     }, ANIMATION_DELAY);
   };
 
-  const handleIgnore = async () => {
-    handleReset();
-  };
-
   if (!requestData) {
     return null;
   }
@@ -126,7 +122,7 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
       initiateAnimation={initiateAnimation}
       handleAccept={handleAccept}
       handleCancel={handleCancel}
-      handleIgnore={handleIgnore}
+      handleIgnore={handleReset}
     />
   );
 };

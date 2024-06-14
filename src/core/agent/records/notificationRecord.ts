@@ -7,7 +7,7 @@ interface NotificationRecordStorageProps {
   tags?: Tags;
   a: Record<string, unknown>;
   route: string;
-  isReadByUser: boolean;
+  read: boolean;
   multisigId?: string;
   timeStamp: number;
   connectionId: string;
@@ -16,7 +16,7 @@ interface NotificationRecordStorageProps {
 class NotificationRecord extends BaseRecord {
   a!: Record<string, unknown>;
   route!: string;
-  isReadByUser!: boolean;
+  read!: boolean;
   multisigId?: string;
   timeStamp!: number;
   connectionId!: string;
@@ -30,7 +30,7 @@ class NotificationRecord extends BaseRecord {
       this.createdAt = props.createdAt ?? new Date();
       this.a = props.a;
       this.route = props.route;
-      this.isReadByUser = props.isReadByUser;
+      this.read = props.read;
       this.multisigId = props.multisigId ?? undefined;
       this.timeStamp = props.timeStamp;
       this.connectionId = props.connectionId;
@@ -41,7 +41,7 @@ class NotificationRecord extends BaseRecord {
   getTags() {
     return {
       route: this.route,
-      isReadByUser: this.isReadByUser,
+      read: this.read,
       multisigId: this.multisigId,
       ...this._tags,
     };

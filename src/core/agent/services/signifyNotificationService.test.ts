@@ -174,7 +174,7 @@ describe("Signify notification service of agent", () => {
     const notification = {
       id: "id",
       _tags: {
-        isReadByUser: false,
+        read: false,
       } as any,
       setTag: function (name: string, value: any) {
         this._tags[name] = value;

@@ -186,7 +186,7 @@ class SignifyNotificationService extends AgentService {
     const metadata: any = {
       id: event.i,
       a: event.a,
-      isReadByUser: false,
+      read: false,
       route: event.a.r,
       timeStamp: new Date().getTime(),
       connectionId: exchange.exn.i,
@@ -217,16 +217,8 @@ class SignifyNotificationService extends AgentService {
     if (!notificationRecord) {
       throw new Error(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
     }
-    notificationRecord.setTag("isReadByUser", true);
+    notificationRecord.setTag("read", true);
     await this.notificationStorage.update(notificationRecord);
-  }
-
-  // This allow us to get all read notifications
-  async getReadNotifications() {
-    const notifications = await this.notificationStorage.findAllByQuery({
-      isReadByUser: true,
-    });
-    return notifications;
   }
 
   async getAllNotifications() {

@@ -65,7 +65,6 @@ jest.mock("../../../core/agent/agent", () => ({
         syncKeriaIdentifiers: jest.fn(),
       },
       multiSigs: {
-        getUnhandledMultisigIdentifiers: jest.fn(),
         getMultisigIcpDetails: jest.fn().mockResolvedValue({}),
       },
       connections: {
@@ -89,7 +88,6 @@ jest.mock("../../../core/agent/agent", () => ({
         createMetadata: jest.fn(),
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
-        getUnhandledIpexGrantNotifications: jest.fn(),
         onAcdcStateChanged: jest.fn(),
         syncACDCs: jest.fn(),
       },
@@ -271,50 +269,6 @@ describe("AppWrapper handler", () => {
       expect(dispatch).toBeCalledWith(setCurrentOperation(OperationType.IDLE));
       expect(dispatch).toBeCalledWith(
         setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED)
-      );
-    });
-  });
-
-  describe("Keria notification state changed handler", () => {
-    test("handles credential notification", async () => {
-      const keriNoti = {
-        id: "id",
-        a: {
-          r: NotificationRoute.ExnIpexGrant,
-        },
-        createdAt: new Date(),
-        timeStamp: new Date().getTime(),
-        connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
-      } as KeriaNotification;
-      await keriaNotificationsChangeHandler(keriNoti, dispatch);
-      expect(dispatch).toBeCalledWith(
-        setQueueIncomingRequest({
-          id: keriNoti.id,
-          type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
-          logo: "", // TODO: must define Keri logo
-          label: "Credential Issuance Server", // TODO: must define it
-        })
-      );
-    });
-
-    test("handles multisig notification", async () => {
-      const keriNoti = {
-        id: "id",
-        a: {
-          r: NotificationRoute.MultiSigIcp,
-        },
-        createdAt: new Date(),
-        timeStamp: new Date().getTime(),
-        connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
-      } as KeriaNotification;
-      await keriaNotificationsChangeHandler(keriNoti, dispatch);
-      expect(dispatch).toBeCalledWith(
-        setQueueIncomingRequest({
-          id: keriNoti?.id,
-          event: keriNoti,
-          type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-          multisigIcpDetails: {} as any,
-        })
       );
     });
   });

@@ -155,27 +155,6 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  @OnlineOnly
-  async getUnhandledIpexGrantNotifications(
-    filters: {
-      isReadByUser?: boolean;
-    } = {}
-  ): Promise<KeriaNotification[]> {
-    const results = await this.notificationStorage.findAllByQuery({
-      route: NotificationRoute.ExnIpexGrant,
-      ...filters,
-    });
-    return results.map((result) => {
-      return {
-        id: result.id,
-        createdAt: result.createdAt,
-        a: result.a,
-        timeStamp: result.timeStamp,
-        connectionId: result.connectionId,
-      };
-    });
-  }
-
   private async saveAcdcMetadataRecord(
     credentialId: string,
     dateTime: string,
