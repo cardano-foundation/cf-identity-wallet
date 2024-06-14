@@ -57,7 +57,9 @@ class Agent {
   static readonly KERIA_BOOT_FAILED = "Failed to boot signify client";
   static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT =
     "Signify client is already booted but cannot connect";
-
+  static readonly KERIA_NOT_BOOTED =
+    "Agent has not been booted for a given Signify passcode";
+  static readonly INVALID_MNEMONIC = "Seed phrase is invalid";
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {
     eventService: undefined as any,
@@ -238,30 +240,72 @@ class Agent {
         throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
       }
       await this.saveAgentUrls(agentUrls);
-      Agent.isOnline = true;
-      this.agentServicesProps.signifyClient = this.signifyClient;
-      this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
-        type: KeriaStatusEventTypes.KeriaStatusChanged,
-        payload: {
-          isOnline: Agent.isOnline,
-        },
-      });
+      this.markAgentOnline();
     }
+  }
+  async recoverKeriaAgent(
+    seedPhrase: string[],
+    connectUrl: string
+  ): Promise<void> {
+    let bran = "";
+    try {
+      const mnemonic = seedPhrase.join(" ");
+      bran = Buffer.from(mnemonicToEntropy(mnemonic), "hex")
+        .toString("utf-8")
+        .replace(/\0/g, "");
+
+      this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
+
+      await this.signifyClient.connect();
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === "Invalid mnemonic") {
+          throw new Error(Agent.INVALID_MNEMONIC);
+        }
+        if (error.message.includes("agent does not exist for controller")) {
+          throw new Error(Agent.KERIA_NOT_BOOTED);
+        }
+        throw error;
+      }
+    }
+
+    await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
+    await this.saveAgentUrls({
+      url: connectUrl,
+      bootUrl: "",
+    });
+
+    this.markAgentOnline();
+  }
+
+  private markAgentOnline() {
+    Agent.isOnline = true;
+    this.agentServicesProps.signifyClient = this.signifyClient;
+    this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
+      type: KeriaStatusEventTypes.KeriaStatusChanged,
+      payload: {
+        isOnline: Agent.isOnline,
+      },
+    });
   }
 
   private async saveAgentUrls(agentUrls: AgentUrls): Promise<void> {
-    await this.basicStorageService.save({
-      id: MiscRecordId.KERIA_CONNECT_URL,
-      content: {
-        url: agentUrls.url,
-      },
-    });
-    await this.basicStorageService.save({
-      id: MiscRecordId.KERIA_BOOT_URL,
-      content: {
-        url: agentUrls.bootUrl,
-      },
-    });
+    if (agentUrls.url) {
+      await this.basicStorageService.save({
+        id: MiscRecordId.KERIA_CONNECT_URL,
+        content: {
+          url: agentUrls.url,
+        },
+      });
+    }
+    if (agentUrls.bootUrl) {
+      await this.basicStorageService.save({
+        id: MiscRecordId.KERIA_BOOT_URL,
+        content: {
+          url: agentUrls.bootUrl,
+        },
+      });
+    }
   }
 
   async initDatabaseConnection(): Promise<void> {
@@ -351,13 +395,19 @@ class Agent {
   }
 
   async isMnemonicValid(mnemonic: string): Promise<boolean> {
-    const bran = (await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN)) as string;
-    return (
-      bran ===
+    try {
       Buffer.from(mnemonicToEntropy(mnemonic), "hex")
         .toString("utf-8")
-        .replace(/\0/g, "")
-    );
+        .replace(/\0/g, "");
+      return true;
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === "Invalid mnemonic") {
+          return false;
+        }
+      }
+      throw error;
+    }
   }
 }
 
