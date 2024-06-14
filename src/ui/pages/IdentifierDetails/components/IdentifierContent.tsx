@@ -92,7 +92,7 @@ const IdentifierContent = ({ cardData }: IdentifierContentProps) => {
           testId="creation-timestamp"
         />
       </CardDetailsBlock>
-      {cardData.s > 0 && cardData.dt && (
+      {parseInt(cardData.s, 16) > 0 && cardData.dt && (
         <CardDetailsBlock
           title={i18n.t("identifiers.details.rotationtimestamp.title")}
         >
@@ -108,7 +108,7 @@ const IdentifierContent = ({ cardData }: IdentifierContentProps) => {
           />
         </CardDetailsBlock>
       )}
-      {cardData.s > 0 && (
+      {parseInt(cardData.s, 16) > 0 && (
         <CardDetailsBlock
           title={i18n.t("identifiers.details.sequencenumber.title")}
         >
