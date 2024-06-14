@@ -180,15 +180,17 @@ class IdentifierService extends AgentService {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
     );
-    const connectedDApp =
-      PeerConnection.peerConnection.getConnectedDAppAddress();
-    const peerConnectingIdentifier =
-      await PeerConnection.peerConnection.getConnectingIdentifier();
     this.validArchivedIdentifier(metadata);
     await this.identifierStorage.updateIdentifierMetadata(identifier, {
       isDeleted: true,
     });
-    if (connectedDApp !== "" && metadata.id === peerConnectingIdentifier.id) {
+    const connectedDApp =
+      PeerConnection.peerConnection.getConnectedDAppAddress();
+    if (
+      connectedDApp !== "" &&
+      metadata.id ===
+        (await PeerConnection.peerConnection.getConnectingIdentifier()).id
+    ) {
       PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
     }
   }
