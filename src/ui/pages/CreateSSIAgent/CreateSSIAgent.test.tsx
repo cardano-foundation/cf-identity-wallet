@@ -403,7 +403,7 @@ describe("SSI agent page: recovery mode", () => {
     );
 
     expect(getByText(ENG_Trans.ssiagent.title)).toBeVisible();
-    expect(getByText(ENG_Trans.ssiagent.description)).toBeVisible();
+    expect(getByText(ENG_Trans.ssiagent.verifydescription)).toBeVisible();
     expect(getByText(ENG_Trans.ssiagent.button.info)).toBeVisible();
     expect(getByText(ENG_Trans.ssiagent.button.validate)).toBeVisible();
     expect(
