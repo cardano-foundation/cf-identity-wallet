@@ -116,6 +116,7 @@ const updateStoreAfterSetupSSI = (data: DataProps) => {
     ...data.store.stateCache.authentication,
     ssiAgentIsSet: true,
     recoveryWalletProgress: false,
+    seedPhraseIsSet: true,
   });
 };
 
@@ -219,7 +220,7 @@ const nextRoute: Record<string, any> = {
   },
   [RoutePath.VERIFY_RECOVERY_SEED_PHRASE]: {
     nextPath: () => getNextVerifySeedPhraseRoute(),
-    updateRedux: [updateStoreAfterVerifySeedPhraseRoute],
+    updateRedux: [],
   },
   [RoutePath.SSI_AGENT]: {
     nextPath: () => getNextCreateSSIAgentRoute(),
