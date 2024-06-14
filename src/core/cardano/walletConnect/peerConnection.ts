@@ -38,7 +38,7 @@ class PeerConnection {
   ];
 
   private identityWalletConnect: IdentityWalletConnect | undefined;
-  private connectedDAppAdress = "";
+  private connectedDAppAddress = "";
   private eventService = new EventService();
   private static instance: PeerConnection;
 
@@ -103,9 +103,9 @@ class PeerConnection {
     }
     if (
       this.identityWalletConnect &&
-      this.connectedDAppAdress.trim().length !== 0
+      this.connectedDAppAddress.trim().length !== 0
     ) {
-      this.disconnectDApp(this.connectedDAppAdress);
+      this.disconnectDApp(this.connectedDAppAddress);
     }
     this.identityWalletConnect = new IdentityWalletConnect(
       this.walletInfo,
@@ -118,7 +118,7 @@ class PeerConnection {
       async (connectMessage: IConnectMessage) => {
         if (!connectMessage.error) {
           const { name, url, address, icon } = connectMessage.dApp;
-          this.connectedDAppAdress = address;
+          this.connectedDAppAddress = address;
           let iconB64;
           // Check if the icon is base64
           if (
@@ -151,7 +151,7 @@ class PeerConnection {
 
     this.identityWalletConnect.setOnDisconnect(
       (disConnectMessage: IConnectMessage) => {
-        this.connectedDAppAdress = "";
+        this.connectedDAppAddress = "";
         this.eventService.emit<PeerDisconnectedEvent>({
           type: PeerConnectionEventTypes.PeerDisconnected,
           payload: {
@@ -217,7 +217,7 @@ class PeerConnection {
   }
 
   getConnectedDAppAddress() {
-    return this.connectedDAppAdress;
+    return this.connectedDAppAddress;
   }
 
   async getConnectingIdentifier() {
