@@ -22,6 +22,7 @@ import { SeedPhraseModuleRef } from "../../components/SeedPhraseModule/SeedPhras
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { setSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { Agent } from "../../../core/agent/agent";
+import { SeedPhraseInfo } from "./VerifyRecoverySeedPhrase.types";
 
 const SEED_PHRASE_LENGTH = 18;
 const SUGGEST_SEED_PHRASE_LENGTH = 4;
@@ -42,16 +43,48 @@ const VerifyRecoverySeedPhrase = () => {
   const [alertManyAttempOpen, setAlertManyAttempOpen] = useState(false);
   const ionRouter = useAppIonRouter();
 
-  const [seedPhrase, setSeedPhrase] = useState<string[]>([""]);
-  const [suggestSeedPhrase, setSuggestSeedPhrase] = useState<string[]>([]);
-  const [errorInputIndex, setErrorInputIndex] = useState<number[]>([]);
+  const [seedPhraseInfo, setSeedPhraseInfo] = useState<SeedPhraseInfo[]>([
+    {
+      value: "",
+      suggestions: [],
+    },
+  ]);
 
   const [failAttempt, setFailAttempt] = useState(0);
   const [lastLockTime, setLastLockTime] = useState<Date | null>(null);
   const [lockFailAttempt, setLockFailAttempt] = useState(false);
+  const [lastFocusIndex, setLastFocusIndex] = useState<number | null>(null);
+  const [isTyping, setIsTyping] = useState<boolean>(false);
 
-  const lastFocusIndex = useRef<number | null>(null);
   const seedPhraseRef = useRef<SeedPhraseModuleRef>(null);
+
+  const seedPhrase = seedPhraseInfo.map((item) => item.value);
+  const suggestSeedPhrase =
+    (isTyping &&
+      seedPhraseInfo.find((_, index) => index === lastFocusIndex)
+        ?.suggestions) ||
+    [];
+  const errorInputIndex = seedPhraseInfo.reduce((result, nextItem, index) => {
+    if (nextItem.suggestions.includes(nextItem.value)) return result;
+
+    if (nextItem.value && nextItem.suggestions.length === 0) {
+      result.push(index);
+    }
+
+    if (
+      nextItem.value &&
+      nextItem.suggestions.length &&
+      (index !== lastFocusIndex || !isTyping)
+    ) {
+      result.push(index);
+    }
+
+    if (!nextItem.value && index !== seedPhrase.length - 1) {
+      result.push(index);
+    }
+
+    return result;
+  }, [] as number[]);
 
   const removeLockAttempt = () => {
     SecureStorage.delete(KeyStoreKeys.RECOVERY_WALLET_LAST_FAIL_ATTEMPT_TIME);
@@ -128,27 +161,22 @@ const VerifyRecoverySeedPhrase = () => {
   }, [lastLockTime]);
 
   const handleClearState = () => {
-    setSeedPhrase([""]);
-    setSuggestSeedPhrase([]);
+    setSeedPhraseInfo([
+      {
+        value: "",
+        suggestions: [],
+      },
+    ]);
+    setLastFocusIndex(null);
     setAlertIsOpen(false);
     seedPhraseRef.current?.focusInputByIndex(0);
-  };
-
-  const clearErrorIndex = (errorIndex: number | null) => {
-    if (errorIndex === null) return;
-
-    setErrorInputIndex((errorIndexs) => {
-      return errorIndexs.filter((index) => index !== errorIndex);
-    });
   };
 
   const renderSuggestSeedPhrase = (inputWord: string) => {
     inputWord = inputWord.toLowerCase().trim();
 
     if (!inputWord) {
-      clearErrorIndex(lastFocusIndex.current);
-      setSuggestSeedPhrase([]);
-      return;
+      return [];
     }
 
     const suggestionWords: string[] = [];
@@ -164,26 +192,18 @@ const VerifyRecoverySeedPhrase = () => {
       }
     }
 
-    setErrorInputIndex((errorIndexs) => {
-      if (lastFocusIndex.current === null) return errorIndexs;
-
-      if (suggestionWords.length > 0) {
-        return errorIndexs.filter((index) => index !== lastFocusIndex.current);
-      }
-
-      errorIndexs.push(lastFocusIndex.current);
-      return [...errorIndexs];
-    });
-
-    setSuggestSeedPhrase(suggestionWords);
+    return suggestionWords;
   };
 
   const handleUpdateSeedPhrase = (value: string, index: number) => {
-    const currentValue = [...seedPhrase];
+    const currentValue = [...seedPhraseInfo];
 
-    renderSuggestSeedPhrase(value);
+    const suggestions = renderSuggestSeedPhrase(value);
 
-    currentValue[index] = value;
+    currentValue[index] = {
+      value,
+      suggestions: suggestions,
+    };
 
     if (!value && index === currentValue.length - 2) {
       currentValue.splice(currentValue.length - 2, 1);
@@ -191,23 +211,24 @@ const VerifyRecoverySeedPhrase = () => {
       index + 1 === currentValue.length &&
       index + 1 < SEED_PHRASE_LENGTH
     ) {
-      currentValue.push("");
+      currentValue.push({
+        value: "",
+        suggestions: [],
+      });
     }
 
-    setSeedPhrase(currentValue);
+    setSeedPhraseInfo(currentValue);
 
     return currentValue;
   };
 
   const addSeedPhraseSelected = (word: string) => {
-    if (lastFocusIndex.current === null) return;
+    if (lastFocusIndex === null) return;
 
-    const newValue = handleUpdateSeedPhrase(word, lastFocusIndex.current);
-    setSuggestSeedPhrase([]);
-    clearErrorIndex(lastFocusIndex.current);
+    const newValue = handleUpdateSeedPhrase(word, lastFocusIndex);
 
     if (
-      lastFocusIndex.current !== SEED_PHRASE_LENGTH - 1 &&
+      lastFocusIndex !== SEED_PHRASE_LENGTH - 1 &&
       filledSeedPhrase.length !== SEED_PHRASE_LENGTH
     ) {
       seedPhraseRef.current?.focusInputByIndex(newValue.length - 1);
@@ -295,7 +316,8 @@ const VerifyRecoverySeedPhrase = () => {
   };
 
   const onFocusInput = (index: number) => {
-    lastFocusIndex.current = index;
+    setLastFocusIndex(index);
+    setIsTyping(true);
     const word = seedPhrase[index];
     renderSuggestSeedPhrase(word);
   };
@@ -306,22 +328,8 @@ const VerifyRecoverySeedPhrase = () => {
     );
   };
 
-  const validateOnBlur = (selectWord: string | undefined, index: number) => {
-    if (index === seedPhrase.length - 1 && !selectWord) return;
-
-    if (checkMatchWithSuggestion(selectWord)) {
-      setErrorInputIndex((errorIndexs) =>
-        errorIndexs.filter((errorIndex) => index !== errorIndex)
-      );
-    } else {
-      setErrorInputIndex((errorIndexs) => [...errorIndexs, index]);
-    }
-  };
-
   const onBlurInput = (index: number) => {
-    const word = seedPhrase[index];
-    validateOnBlur(word, index);
-    setSuggestSeedPhrase([]);
+    setIsTyping(false);
   };
 
   const verifyButtonLabel = `${i18n.t(
