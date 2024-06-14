@@ -146,7 +146,6 @@ const CreateSSIAgent = () => {
         updateRedux
       );
 
-      SecureStorage.delete(KeyStoreKeys.RECOVERY_WALLET_LAST_FAIL_ATTEMPT_TIME);
       SecureStorage.delete(KeyStoreKeys.RECOVERY_WALLET);
 
       ionRouter.push(nextPath.pathname, "forward", "push");

@@ -465,9 +465,6 @@ describe("SSI agent page: recovery mode", () => {
       expect(secureStorageDeleteFunc).toBeCalledWith(
         KeyStoreKeys.RECOVERY_WALLET
       );
-      expect(secureStorageDeleteFunc).toBeCalledWith(
-        KeyStoreKeys.RECOVERY_WALLET_LAST_FAIL_ATTEMPT_TIME
-      );
     });
   });
 });
