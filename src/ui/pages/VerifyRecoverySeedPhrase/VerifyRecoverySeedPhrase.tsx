@@ -367,7 +367,10 @@ const VerifyRecoverySeedPhrase = () => {
       >
         <div className="content-container">
           <div className="page-content">
-            <h2 data-testid={`${pageId}-title`}>
+            <h2
+              className="page-title"
+              data-testid={`${pageId}-title`}
+            >
               {i18n.t("verifyrecoveryseedphrase.title")}
             </h2>
             <p
