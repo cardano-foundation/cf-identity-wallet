@@ -5,7 +5,6 @@ import {
   ready as signifyReady,
   Tier,
 } from "signify-ts";
-import { DataType } from "@aparajita/capacitor-secure-storage";
 import { entropyToMnemonic, mnemonicToEntropy } from "bip39";
 import {
   ConnectionService,
@@ -46,7 +45,6 @@ import { IonicSession } from "../storage/ionicStorage/ionicSession";
 import { IonicStorage } from "../storage/ionicStorage";
 import { SqliteStorage } from "../storage/sqliteStorage";
 import { BaseRecord } from "../storage/storage.types";
-import { ConfigurationService } from "../configuration";
 import { OperationPendingStorage } from "./records/operationPendingStorage";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
 
@@ -60,6 +58,7 @@ class Agent {
   static readonly KERIA_NOT_BOOTED =
     "Agent has not been booted for a given Signify passcode";
   static readonly INVALID_MNEMONIC = "Seed phrase is invalid";
+
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {
     eventService: undefined as any,
@@ -243,6 +242,7 @@ class Agent {
       this.markAgentOnline();
     }
   }
+
   async recoverKeriaAgent(
     seedPhrase: string[],
     connectUrl: string
