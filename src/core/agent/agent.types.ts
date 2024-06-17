@@ -19,7 +19,18 @@ interface ConnectionHistoryItem {
 }
 
 enum MiscRecordId {
-  OP_PASS_HINT = "app-op-password-hint",
+  OP_PASS_HINT = "op-password-hint",
+  APP_ALREADY_INIT = "app-already-init",
+  APP_STATE_FLAGS = "app-state-flags",
+  APP_LANGUAGE = "app-language",
+  IDENTIFIERS_FAVOURITES = "identifiers-favourites",
+  CREDS_FAVOURITES = "creds-favourites",
+  USER_NAME = "user-name",
+  APP_BIOMETRY = "app-biometry",
+  KERIA_NOTIFICATION_MARKER = "keria-notification-marker",
+  APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
+  KERIA_CONNECT_URL = "keria-connect-url",
+  KERIA_BOOT_URL = "keria-boot-url",
 }
 
 interface ConnectionShortDetails {
@@ -41,9 +52,6 @@ type ConnectionNoteDetails = {
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 
 interface ConnectionDetails extends ConnectionShortDetails {
-  goalCode?: string;
-  handshakeProtocols?: string[];
-  requestAttachments?: string[];
   serviceEndpoints?: string[];
   notes?: ConnectionNoteDetails[];
 }
@@ -92,6 +100,7 @@ interface KeriaNotification {
   id: string;
   createdAt: Date;
   a: Record<string, unknown>;
+  multisigId?: string;
 }
 
 enum KeriConnectionType {
@@ -121,6 +130,7 @@ interface AgentServicesProps {
 interface CreateIdentifierResult {
   signifyName: string;
   identifier: string;
+  isPending?: boolean;
 }
 
 interface IdentifierResult {
@@ -129,12 +139,22 @@ interface IdentifierResult {
   salty: any;
 }
 
+interface AgentUrls {
+  url: string;
+  bootUrl: string;
+}
+
 enum NotificationRoute {
   ExnIpexGrant = "/exn/ipex/grant",
   MultiSigIcp = "/multisig/icp",
   MultiSigRot = "/multisig/rot",
   ExnIpexApply = "/exn/ipex/apply",
   ExnIpexAgree = "/exn/ipex/agree",
+}
+
+interface BranAndMnemonic {
+  bran: string;
+  mnemonic: string;
 }
 
 export {
@@ -163,4 +183,6 @@ export type {
   CreateIdentifierResult,
   IdentifierResult,
   KeriaStatusChangedEvent,
+  AgentUrls,
+  BranAndMnemonic,
 };

@@ -5,7 +5,6 @@ import { PasscodeModule } from "./PasscodeModule";
 import { StoreMockedProps } from "../../pages/LockPage/LockPage.test";
 import { RoutePath } from "../../../routes";
 import { OperationType } from "../../globals/types";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 
 const initialState = {
   stateCache: {
@@ -19,12 +18,14 @@ const initialState = {
     currentOperation: OperationType.IDLE,
   },
   seedPhraseCache: {
-    seedPhrase160: "",
-    seedPhrase256: "",
-    selected: FIFTEEN_WORDS_BIT_LENGTH,
+    seedPhrase: "",
+    bran: "",
   },
   cryptoAccountsCache: {
     cryptoAccounts: [],
+  },
+  biometryCache: {
+    enabled: false,
   },
 };
 

@@ -37,7 +37,6 @@ import {
 } from "../../../store/reducers/credsCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { CredentialCardTemplate } from "../../components/CredentialCardTemplate";
-import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { ACDCDetails } from "../../../core/agent/services/credentialService.types";
 import "../../components/CardDetails/CardDetails.scss";
 import "./CredentialDetails.scss";
@@ -45,6 +44,9 @@ import { PageFooter } from "../../components/PageFooter";
 import { CredentialContent } from "./components/CredentialContent";
 import { combineClassNames } from "../../utils/style";
 import { useAppIonRouter } from "../../hooks";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
+import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -120,6 +122,7 @@ const CredentialDetails = () => {
       handleSetFavourite(params.id);
     }
     dispatch(setCredsCache(creds));
+
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
   };
 
@@ -136,6 +139,7 @@ const CredentialDetails = () => {
       params.id
     );
     dispatch(setCredsCache([...credsCache, creds]));
+
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
     handleDone();
   };
@@ -153,9 +157,14 @@ const CredentialDetails = () => {
 
   const handleSetFavourite = (id: string) => {
     if (isFavourite) {
-      PreferencesStorage.set(PreferencesKeys.APP_CREDS_FAVOURITES, {
-        favourites: favouritesCredsCache.filter((fav) => fav.id !== id),
-      })
+      const favouriteRecord = new BasicRecord({
+        id: MiscRecordId.CREDS_FAVOURITES,
+        content: {
+          favourites: favouritesCredsCache.filter((fav) => fav.id !== id),
+        },
+      });
+      Agent.agent.basicStorage
+        .createOrUpdateBasicRecord(favouriteRecord)
         .then(() => {
           dispatch(removeFavouritesCredsCache(id));
         })
@@ -168,9 +177,15 @@ const CredentialDetails = () => {
         return;
       }
 
-      PreferencesStorage.set(PreferencesKeys.APP_CREDS_FAVOURITES, {
-        favourites: [{ id, time: Date.now() }, ...favouritesCredsCache],
-      })
+      Agent.agent.basicStorage
+        .createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.CREDS_FAVOURITES,
+            content: {
+              favourites: [{ id, time: Date.now() }, ...favouritesCredsCache],
+            },
+          })
+        )
         .then(() => {
           dispatch(addFavouritesCredsCache({ id, time: Date.now() }));
         })

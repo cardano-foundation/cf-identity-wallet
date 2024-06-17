@@ -1,32 +1,25 @@
-import {
-  act,
-  fireEvent,
-  getByTestId,
-  render,
-  waitFor,
-} from "@testing-library/react";
-import configureStore from "redux-mock-store";
-import { Provider } from "react-redux";
-import { MemoryRouter, Redirect, Route } from "react-router-dom";
-import { AnyAction, Store } from "@reduxjs/toolkit";
-import { SetOptions } from "@capacitor/preferences";
 import { waitForIonicReact } from "@ionic/react-test-utils";
-import { CredentialDetails } from "./CredentialDetails";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
-import { credsFixAcdc } from "../../__fixtures__/credsFix";
+import { AnyAction, Store } from "@reduxjs/toolkit";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { MemoryRouter, Route } from "react-router-dom";
+import configureStore from "redux-mock-store";
 import { Agent } from "../../../core/agent/agent";
-import { PreferencesStorage } from "../../../core/storage";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
   addFavouritesCredsCache,
   removeFavouritesCredsCache,
+  setCredsCache,
 } from "../../../store/reducers/credsCache";
 import {
   setCurrentRoute,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
+import { credsFixAcdc } from "../../__fixtures__/credsFix";
+import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
+import { CredentialDetails } from "./CredentialDetails";
+import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -37,6 +30,12 @@ jest.mock("../../../core/agent/agent", () => ({
         getCredentialDetailsById: jest.fn(),
         restoreCredential: jest.fn(() => Promise.resolve(true)),
         getCredentialShortDetailsById: jest.fn(() => Promise.resolve([])),
+        getCredentials: jest.fn(() => Promise.resolve(true)),
+      },
+      basicStorage: {
+        findById: jest.fn(),
+        save: jest.fn(),
+        createOrUpdateBasicRecord: jest.fn().mockResolvedValue(undefined),
       },
     },
   },
@@ -66,10 +65,9 @@ const initialStateCreds = {
     },
   },
   seedPhraseCache: {
-    seedPhrase160:
+    seedPhrase:
       "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-    seedPhrase256: "",
-    selected: FIFTEEN_WORDS_BIT_LENGTH,
+    bran: "bran",
   },
   identifiersCache: {
     identifiers: credsFixAcdc,
@@ -91,12 +89,15 @@ const initialStateNoPasswordCurrent = {
     },
   },
   seedPhraseCache: {
-    seedPhrase160:
+    seedPhrase:
       "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-    seedPhrase256: "",
-    selected: FIFTEEN_WORDS_BIT_LENGTH,
+    bran: "bran",
   },
   credsCache: { creds: credsFixAcdc, favourites: [] },
+  credsArchivedCache: { creds: credsFixAcdc },
+  biometryCache: {
+    enabled: false,
+  },
 };
 
 const initialStateNoPasswordArchived = {
@@ -111,12 +112,15 @@ const initialStateNoPasswordArchived = {
     },
   },
   seedPhraseCache: {
-    seedPhrase160:
+    seedPhrase:
       "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-    seedPhrase256: "",
-    selected: FIFTEEN_WORDS_BIT_LENGTH,
+    bran: "bran",
   },
   credsCache: { creds: [] },
+  credsArchivedCache: { creds: [] },
+  biometryCache: {
+    enabled: false,
+  },
 };
 
 describe("Cards Details page - current not archived credential", () => {
@@ -172,12 +176,12 @@ describe("Cards Details page - current not archived credential", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase160:
+        seedPhrase:
           "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        bran: "bran",
       },
       credsCache: { creds: credsFixAcdc, favourites: [] },
+      credsArchivedCache: { creds: credsFixAcdc },
       connectionsCache: {
         connections: [],
       },
@@ -332,12 +336,6 @@ describe("Cards Details page - current not archived credential", () => {
       dispatch: dispatchMock,
     };
 
-    PreferencesStorage.set = jest
-      .fn()
-      .mockImplementation(async (data: SetOptions): Promise<boolean> => {
-        return Promise.resolve(true);
-      });
-
     const mockNow = 1466424490000;
     const dateSpy = jest.spyOn(Date, "now").mockReturnValue(mockNow);
 
@@ -384,10 +382,9 @@ describe("Cards Details page - current not archived credential", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase160:
+        seedPhrase:
           "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        bran: "bran",
       },
       credsCache: {
         creds: credsFixAcdc,
@@ -404,12 +401,6 @@ describe("Cards Details page - current not archived credential", () => {
       ...mockStore(initialStateNoPasswordCurrent),
       dispatch: dispatchMock,
     };
-
-    PreferencesStorage.set = jest
-      .fn()
-      .mockImplementation(async (data: SetOptions): Promise<boolean> => {
-        return Promise.resolve(true);
-      });
 
     const { getByTestId } = render(
       <Provider store={storeMocked}>
@@ -450,10 +441,9 @@ describe("Cards Details page - current not archived credential", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase160:
+        seedPhrase:
           "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        bran: "bran",
       },
       credsCache: {
         creds: credsFixAcdc,
@@ -597,6 +587,10 @@ describe("Cards Details page - archived credential", () => {
           path: TabsRoutePath.CREDENTIALS,
         })
       );
+
+      credDispatchMock.mockImplementation((action) => {
+        expect(action).toEqual(setCredsCache(credsFixAcdc));
+      });
     });
   });
 });

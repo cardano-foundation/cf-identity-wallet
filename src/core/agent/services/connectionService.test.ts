@@ -1,7 +1,8 @@
 import { ConnectionStatus, KeriConnectionType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { EventService } from "./eventService";
-import { CredentialStorage } from "../records";
+import { CredentialStorage, IdentifierStorage } from "../records";
+import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 
 const contactListMock = jest.fn();
@@ -95,14 +96,6 @@ const signifyClient = jest.mocked({
   }),
 });
 
-jest.mock("../../../core/agent/agent", () => ({
-  Agent: {
-    agent: {
-      getKeriaOnlineStatus: jest.fn(),
-    },
-  },
-}));
-
 const session = {};
 
 const agentServicesProps = {
@@ -140,6 +133,7 @@ const connectionService = new ConnectionService(
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
+      getKeriaOnlineStatus: jest.fn(),
       identifiers: { getKeriIdentifierByGroupId: jest.fn() },
     },
   },
@@ -159,6 +153,9 @@ const keriContacts = [
 const oobiPrefix = "http://oobi.com/";
 
 describe("Connection service of agent", () => {
+  beforeAll(async () => {
+    await new ConfigurationService().start();
+  });
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -471,5 +468,18 @@ describe("Connection service of agent", () => {
     await expect(connectionService.getOobi("name")).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
     );
+  });
+
+  test("can get all connections that have multi-sig related", async () => {
+    connectionStorage.findAllByQuery = jest.fn().mockResolvedValue([
+      {
+        id: keriContacts[0].id,
+        createdAt: now,
+        alias: "keri",
+        oobi: "oobi",
+        groupId: "group-id",
+        getTag: jest.fn().mockReturnValue("group-id"),
+      },
+    ]);
   });
 });

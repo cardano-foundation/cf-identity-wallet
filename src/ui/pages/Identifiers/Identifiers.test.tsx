@@ -12,7 +12,6 @@ import {
 } from "../../components/CardsStack";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -36,11 +35,13 @@ const initialState = {
       passwordIsSet: true,
     },
   },
+  identifierViewTypeCacheCache: {
+    viewType: null,
+  },
   seedPhraseCache: {
-    seedPhrase160:
+    seedPhrase:
       "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-    seedPhrase256: "",
-    selected: FIFTEEN_WORDS_BIT_LENGTH,
+    brand: "brand",
   },
   identifiersCache: {
     identifiers: filteredIdentifierFix,
@@ -99,7 +100,9 @@ describe("Identifiers Tab", () => {
     expect(getByTestId("connections-button")).toBeInTheDocument();
     expect(getByTestId("add-button")).toBeInTheDocument();
     expect(getByTestId("identifiers-list")).toBeInTheDocument();
-    expect(getByTestId("identifier-item-0")).toBeInTheDocument();
+    expect(
+      getByTestId(`card-item-${filteredIdentifierFix[2].id}`)
+    ).toBeInTheDocument();
   });
 
   test("Navigate from Identifiers Tab to Card Details and back", async () => {
@@ -117,6 +120,9 @@ describe("Identifiers Tab", () => {
       seedPhraseCache: {},
       identifiersCache: {
         identifiers: filteredIdentifierFix,
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
       },
       connectionsCache: {
         connections: connectionsFix,

@@ -4,13 +4,14 @@ import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from 'node:process';
 import { SignifyApi } from "../modules/signify/signifyApi";
 import { waitAndGetDoneOp } from "../modules/signify/utils";
+import { config } from "../config";
 
 async function getClient(): Promise<SignifyClient> {
   const client = new SignifyClient(
-    SignifyApi.LOCAL_KERIA_ENDPOINT,
+    config.keria.url,
     randomPasscode(),
     Tier.low,
-    SignifyApi.LOCAL_KERIA_BOOT_ENDPOINT
+    config.keria.bootUrl,
   );
 
   await client.boot();

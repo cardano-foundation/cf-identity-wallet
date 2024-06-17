@@ -11,7 +11,6 @@ import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { RoutePath } from "../../../routes";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { OperationType } from "../../globals/types";
 import { SetPasscode } from "../SetPasscode";
 import { LockPage } from "./LockPage";
@@ -42,12 +41,14 @@ interface StoreMockedProps {
     currentOperation: OperationType;
   };
   seedPhraseCache: {
-    seedPhrase160: string;
-    seedPhrase256: string;
-    selected: number;
+    seedPhrase: string;
+    bran: string;
   };
   cryptoAccountsCache: {
     cryptoAccounts: never[];
+  };
+  biometryCache: {
+    enabled: boolean;
   };
 }
 
@@ -72,12 +73,14 @@ const initialState = {
     currentOperation: OperationType.IDLE,
   },
   seedPhraseCache: {
-    seedPhrase160: "",
-    seedPhrase256: "",
-    selected: FIFTEEN_WORDS_BIT_LENGTH,
+    seedPhrase: "",
+    bran: "",
   },
   cryptoAccountsCache: {
     cryptoAccounts: [],
+  },
+  biometryCache: {
+    enabled: true,
   },
 };
 

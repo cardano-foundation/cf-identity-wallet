@@ -1,24 +1,31 @@
-import { render, waitFor } from "@testing-library/react";
-import { createMemoryHistory } from "history";
-import { act } from "react-dom/test-utils";
 import {
   ionFireEvent as fireEvent,
   waitForIonicReact,
 } from "@ionic/react-test-utils";
+import { render, waitFor } from "@testing-library/react";
+import { createMemoryHistory } from "history";
+import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
 import { Router } from "react-router-dom";
-import { GenerateSeedPhrase } from "./GenerateSeedPhrase";
-import {
-  MNEMONIC_FIFTEEN_WORDS,
-  MNEMONIC_TWENTYFOUR_WORDS,
-  FIFTEEN_WORDS_BIT_LENGTH,
-  TWENTYFOUR_WORDS_BIT_LENGTH,
-} from "../../globals/constants";
-import { OperationType } from "../../globals/types";
+import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
+import { store } from "../../../store";
+import { OperationType } from "../../globals/types";
+import { GenerateSeedPhrase } from "./GenerateSeedPhrase";
+
+jest.mock("../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      getBranAndMnemonic: () =>
+        Promise.resolve({
+          mnemonic:
+            "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15 example16 example17 example18",
+          bran: "brand",
+        }),
+    },
+  },
+}));
 
 interface StoreMocked {
   stateCache: {
@@ -32,9 +39,8 @@ interface StoreMocked {
     currentOperation: OperationType;
   };
   seedPhraseCache: {
-    seedPhrase160: string;
-    seedPhrase256: string;
-    selected: number;
+    seedPhrase: string;
+    bran: string;
   };
 }
 
@@ -82,7 +88,6 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     const seedPhraseModule = getByTestId("seed-phrase-module");
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
-    const segment = getByTestId("mnemonic-length-segment");
 
     expect(seedPhraseModule).toHaveClass("seed-phrase-hidden");
 
@@ -91,127 +96,6 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     });
     await waitFor(() =>
       expect(seedPhraseModule).toHaveClass("seed-phrase-visible")
-    );
-
-    act(() => {
-      fireEvent.ionChange(segment, `${TWENTYFOUR_WORDS_BIT_LENGTH}`);
-    });
-
-    await waitFor(() =>
-      expect(seedPhraseModule).toHaveClass("seed-phrase-hidden")
-    );
-  });
-
-  test("User can toggle the 15/24 words seed phrase segment using the seed phrases from Redux", async () => {
-    const initialState = {
-      stateCache: {
-        routes: [RoutePath.GENERATE_SEED_PHRASE],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-        },
-        currentOperation: OperationType.IDLE,
-      },
-      seedPhraseCache: {
-        seedPhrase160:
-          "example example example example example example example example example example example example example example example",
-        seedPhrase256:
-          "example example example example example example example example example example example example example example example example example example example example example example example example",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
-      },
-    };
-
-    const { getByTestId } = render(
-      <Provider store={storeMocked(initialState)}>
-        <Router history={history}>
-          <GenerateSeedPhrase />
-        </Router>
-      </Provider>
-    );
-
-    const segment = getByTestId("mnemonic-length-segment");
-    const seedPhraseContainer = getByTestId("seed-phrase-container");
-
-    expect(segment).toHaveValue(`${FIFTEEN_WORDS_BIT_LENGTH}`);
-
-    expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS);
-
-    act(() => {
-      fireEvent.ionChange(segment, `${TWENTYFOUR_WORDS_BIT_LENGTH}`);
-    });
-    await waitFor(() =>
-      expect(segment).toHaveValue(`${TWENTYFOUR_WORDS_BIT_LENGTH}`)
-    );
-    await waitFor(() =>
-      expect(seedPhraseContainer.childNodes.length).toBe(
-        MNEMONIC_TWENTYFOUR_WORDS
-      )
-    );
-
-    act(() => {
-      fireEvent.ionChange(segment, `${FIFTEEN_WORDS_BIT_LENGTH}`);
-    });
-    await waitFor(() =>
-      expect(segment).toHaveValue(`${FIFTEEN_WORDS_BIT_LENGTH}`)
-    );
-    await waitFor(() =>
-      expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS)
-    );
-  });
-  test("User can toggle the 15/24 words seed phrase segment", async () => {
-    const initialState = {
-      stateCache: {
-        routes: [RoutePath.GENERATE_SEED_PHRASE],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-        },
-        currentOperation: OperationType.IDLE,
-      },
-      seedPhraseCache: {
-        seedPhrase160: "",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
-      },
-    };
-
-    const { getByTestId } = render(
-      <Provider store={storeMocked(initialState)}>
-        <Router history={history}>
-          <GenerateSeedPhrase />
-        </Router>
-      </Provider>
-    );
-
-    const segment = getByTestId("mnemonic-length-segment");
-    const seedPhraseContainer = getByTestId("seed-phrase-container");
-
-    expect(segment).toHaveValue(`${FIFTEEN_WORDS_BIT_LENGTH}`);
-
-    expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS);
-
-    act(() => {
-      fireEvent.ionChange(segment, `${TWENTYFOUR_WORDS_BIT_LENGTH}`);
-    });
-    await waitFor(() =>
-      expect(segment).toHaveValue(`${TWENTYFOUR_WORDS_BIT_LENGTH}`)
-    );
-    await waitFor(() =>
-      expect(seedPhraseContainer.childNodes.length).toBe(
-        MNEMONIC_TWENTYFOUR_WORDS
-      )
-    );
-
-    act(() => {
-      fireEvent.ionChange(segment, `${FIFTEEN_WORDS_BIT_LENGTH}`);
-    });
-    await waitFor(() =>
-      expect(segment).toHaveValue(`${FIFTEEN_WORDS_BIT_LENGTH}`)
-    );
-    await waitFor(() =>
-      expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS)
     );
   });
 
@@ -355,9 +239,8 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
         currentOperation: OperationType.IDLE,
       },
       seedPhraseCache: {
-        seedPhrase160: "",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        seedPhrase: "",
+        bran: "",
       },
     };
 
@@ -371,13 +254,11 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     const seedPhraseContainer = getByTestId("seed-phrase-container");
 
-    expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS);
-
     await waitFor(() => {
       const seedNumberElements = seedPhraseContainer.querySelectorAll(
         "span[data-testid*=\"word-index-number\"]"
       );
-      expect(seedNumberElements.length).toBe(MNEMONIC_FIFTEEN_WORDS);
+      expect(seedNumberElements.length).toBe(18);
     });
   });
 });

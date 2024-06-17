@@ -13,6 +13,8 @@ describe("Chat Tab", () => {
     );
 
     expect(getByTestId("chat-tab")).toBeInTheDocument();
-    expect(getByText(EN_TRANSLATIONS.chat.tab.header)).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.notification.tab.header)
+    ).toBeInTheDocument();
   });
 });

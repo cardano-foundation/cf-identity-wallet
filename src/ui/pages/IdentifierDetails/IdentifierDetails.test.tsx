@@ -3,16 +3,15 @@ import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { waitForIonicReact } from "@ionic/react-test-utils";
-import { SetOptions } from "@capacitor/preferences";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { IdentifierDetails } from "./IdentifierDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { Agent } from "../../../core/agent/agent";
 import { ConfigurationService } from "../../../core/configuration";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
 
@@ -33,6 +32,11 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         getOobi: jest.fn(),
       },
+      basicStorage: {
+        findById: jest.fn(),
+        save: jest.fn(),
+        createOrUpdateBasicRecord: jest.fn().mockResolvedValue(undefined),
+      },
     },
   },
 }));
@@ -51,10 +55,9 @@ const initialStateKeri = {
     },
   },
   seedPhraseCache: {
-    seedPhrase160:
+    seedPhrase:
       "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-    seedPhrase256: "",
-    selected: FIFTEEN_WORDS_BIT_LENGTH,
+    bran: "bran",
   },
   identifiersCache: {
     identifiers: filteredIdentifierFix,
@@ -282,11 +285,11 @@ describe("Cards Details page", () => {
   });
 
   test.skip("It changes to favourite icon on click disabled favourite button", async () => {
-    PreferencesStorage.set = jest
+    Agent.agent.basicStorage.save = jest
       .fn()
-      .mockImplementation(async (data: SetOptions): Promise<void> => {
-        expect(data.key).toBe(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES);
-        expect(data.value).toBe(filteredIdentifierFix[0]);
+      .mockImplementation(async (data: BasicRecord): Promise<void> => {
+        expect(data.id).toBe(MiscRecordId.IDENTIFIERS_FAVOURITES);
+        expect(data.content).toBe(filteredIdentifierFix[0]);
       });
 
     const { getByTestId } = render(

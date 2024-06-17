@@ -6,6 +6,7 @@ interface ScrollablePageLayoutProps {
   activeStatus?: boolean;
   children?: ReactNode;
   customClass?: string;
+  footer?: ReactNode;
 }
 
 export type { ScrollablePageLayoutProps };

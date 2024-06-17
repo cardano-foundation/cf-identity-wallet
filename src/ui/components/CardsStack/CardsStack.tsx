@@ -10,6 +10,7 @@ import { IdentifierCardTemplate } from "../IdentifierCardTemplate";
 import { CredentialCardTemplate } from "../CredentialCardTemplate";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { CardsStackProps } from "./CardsStack.types";
+import { TabsRoutePath } from "../navigation/TabsMenu";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -65,10 +66,10 @@ const CardsStack = ({
 
     if (cardsType === CardType.IDENTIFIERS) {
       const data = cardsData[index] as IdentifierDetails;
-      pathname = `/tabs/identifiers/${data.id}`;
+      pathname = `${TabsRoutePath.IDENTIFIERS}/${data.id}`;
     } else {
       const data = cardsData[index] as CredentialShortDetails;
-      pathname = `/tabs/creds/${data.id}`;
+      pathname = `${TabsRoutePath.CREDENTIALS}/${data.id}`;
     }
 
     setTimeout(() => {
@@ -85,7 +86,14 @@ const CardsStack = ({
     pickedCardIndex !== null ? "transition-start" : ""
   }`;
 
-  return <div className={containerClasses}>{renderCards(cardsData)}</div>;
+  return (
+    <div
+      data-testid="card-stack"
+      className={containerClasses}
+    >
+      {renderCards(cardsData)}
+    </div>
+  );
 };
 
 export { CardsStack, NAVIGATION_DELAY, CLEAR_STATE_DELAY };

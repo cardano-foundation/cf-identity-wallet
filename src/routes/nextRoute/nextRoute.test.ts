@@ -5,11 +5,11 @@ import {
   getNextRoute,
   updateStoreAfterSetPasscodeRoute,
   getNextVerifySeedPhraseRoute,
+  getNextCreateSSIAgentRoute,
 } from "./nextRoute";
 import { RootState } from "../../store";
 import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../ui/globals/constants";
 import { DataProps } from "./nextRoute.types";
 import { OperationType } from "../../ui/globals/types";
 
@@ -32,6 +32,7 @@ describe("NextRoute", () => {
           seedPhraseIsSet: false,
           passwordIsSet: false,
           passwordIsSkipped: true,
+          ssiAgentIsSet: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -41,9 +42,8 @@ describe("NextRoute", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase160: "",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        seedPhrase: "",
+        bran: "",
       },
       identifiersCache: {
         identifiers: [],
@@ -54,6 +54,7 @@ describe("NextRoute", () => {
         },
       },
       credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
       connectionsCache: {
         connections: [],
       },
@@ -61,6 +62,16 @@ describe("NextRoute", () => {
         walletConnections: [],
         connectedWallet: null,
         pendingConnection: null,
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      biometryCache: {
+        enabled: false,
+      },
+      ssiAgentCache: {
+        bootUrl: "",
+        connectUrl: "",
       },
     };
     data = {
@@ -128,6 +139,14 @@ describe("NextRoute", () => {
     const result = getNextVerifySeedPhraseRoute();
 
     expect(result).toEqual({
+      pathname: RoutePath.SSI_AGENT,
+    });
+  });
+
+  test("should return correct route for /ssiagent", () => {
+    const result = getNextCreateSSIAgentRoute();
+
+    expect(result).toEqual({
       pathname: RoutePath.TABS_MENU,
     });
   });
@@ -146,6 +165,7 @@ describe("getNextRoute", () => {
         seedPhraseIsSet: false,
         passwordIsSet: false,
         passwordIsSkipped: true,
+        ssiAgentIsSet: false,
       },
       currentOperation: OperationType.IDLE,
       queueIncomingRequest: {
@@ -155,9 +175,8 @@ describe("getNextRoute", () => {
       },
     },
     seedPhraseCache: {
-      seedPhrase160: "",
-      seedPhrase256: "",
-      selected: FIFTEEN_WORDS_BIT_LENGTH,
+      seedPhrase: "",
+      bran: "",
     },
     identifiersCache: {
       identifiers: [],
@@ -168,6 +187,7 @@ describe("getNextRoute", () => {
       },
     },
     credsCache: { creds: [], favourites: [] },
+    credsArchivedCache: { creds: [] },
     connectionsCache: {
       connections: [],
     },
@@ -175,6 +195,16 @@ describe("getNextRoute", () => {
       walletConnections: [],
       connectedWallet: null,
       pendingConnection: null,
+    },
+    identifierViewTypeCacheCache: {
+      viewType: null,
+    },
+    biometryCache: {
+      enabled: false,
+    },
+    ssiAgentCache: {
+      bootUrl: "",
+      connectUrl: "",
     },
   };
   const state = {};
@@ -204,20 +234,18 @@ describe("getNextRoute", () => {
 
   test("getNextSetPasscodeRoute should return the correct next path when seed phrase is set", () => {
     storeMock.seedPhraseCache = {
-      seedPhrase160: "example seed phrase 160",
-      seedPhrase256: "example seed phrase 256",
-      selected: FIFTEEN_WORDS_BIT_LENGTH,
+      seedPhrase: "example seed phrase 160",
+      bran: "bran",
     };
 
     const result = getNextSetPasscodeRoute(storeMock);
     expect(result).toEqual({
-      pathname: RoutePath.TABS_MENU,
+      pathname: RoutePath.SSI_AGENT,
     });
   });
 
   test("getNextSetPasscodeRoute should return the correct next path when seed phrase is not set", () => {
-    storeMock.seedPhraseCache.seedPhrase160 = "";
-    storeMock.seedPhraseCache.seedPhrase256 = "";
+    storeMock.seedPhraseCache.seedPhrase = "";
 
     const result = getNextSetPasscodeRoute(storeMock);
     expect(result).toEqual({

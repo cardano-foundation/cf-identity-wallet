@@ -16,6 +16,8 @@ const CustomInput = ({
   optional,
   value,
   error,
+  action,
+  actionIcon,
 }: CustomInputProps) => {
   const [hidden, setHidden] = useState(hiddenInput);
 
@@ -62,6 +64,21 @@ const CustomInput = ({
             <IonIcon
               slot="icon-only"
               icon={hidden ? eyeOutline : eyeOffOutline}
+              color="primary"
+            />
+          </IonButton>
+        )}
+        {action && actionIcon && (
+          <IonButton
+            shape="round"
+            data-testid={`${dataTestId}-action`}
+            onClick={(e) => {
+              action(e);
+            }}
+          >
+            <IonIcon
+              slot="icon-only"
+              icon={actionIcon}
               color="primary"
             />
           </IonButton>

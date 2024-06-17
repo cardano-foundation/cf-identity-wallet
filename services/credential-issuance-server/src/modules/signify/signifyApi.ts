@@ -11,10 +11,6 @@ import { config } from "../../config";
 import { v4 as uuidv4 } from "uuid";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT =
-    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
-    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
@@ -29,15 +25,15 @@ export class SignifyApi {
   }
 
   /**
-   * Must be called first. (guard rails pending)
+   * Must be called first.
    */
   async start(): Promise<void> {
     await signifyReady();
     this.signifyClient = new SignifyClient(
-      SignifyApi.LOCAL_KERIA_ENDPOINT,
+      config.keria.url,
       randomPasscode(), // Different on every restart but this is OK for our purposes.
       Tier.low,
-      SignifyApi.LOCAL_KERIA_BOOT_ENDPOINT
+      config.keria.bootUrl
     );
     try {
       await this.signifyClient.connect();
@@ -101,19 +97,16 @@ export class SignifyApi {
     registryId: string,
     schemaId: string,
     recipient: string,
-    name?: string
+    attribute: { [key: string]: string }
   ) {
-    await this.resolveOobi(`${config.endpoint}/oobi/${schemaId}`);
+    await this.resolveOobi(`${config.oobiEndpoint}/oobi/${schemaId}`);
 
     let vcdata = {};
-    if (schemaId === "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu") {
-      vcdata = {
-        attendeeName: name,
-      };
-    } else if (schemaId === "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao") {
-      vcdata = {
-        LEI: "5493001KJTIIGC8Y1R17",
-      };
+    if (
+      schemaId === "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu" ||
+      schemaId === "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao"
+    ) {
+      vcdata = attribute;
     } else {
       throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);
     }
@@ -145,12 +138,14 @@ export class SignifyApi {
   async requestDisclosure(
     senderName: string,
     schemaSaid: string,
-    recipient: string
+    recipient: string,
+    attributes: { [key: string]: string }
   ) {
     const [apply, sigs] = await this.signifyClient.ipex().apply({
       senderName,
       recipient,
       schema: schemaSaid,
+      attributes,
     });
     await this.signifyClient
       .ipex()

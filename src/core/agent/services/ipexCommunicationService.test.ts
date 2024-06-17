@@ -3,6 +3,7 @@ import { IpexCommunicationService } from "./ipexCommunicationService";
 import { CredentialStatus } from "./credentialService.types";
 import { Agent } from "../agent";
 import { IdentifierStorage } from "../records";
+import { ConfigurationService } from "../../configuration";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -180,6 +181,9 @@ const ipexCommunicationService = new IpexCommunicationService(
 );
 
 describe("Ipex communication service of agent", () => {
+  beforeAll(async () => {
+    await new ConfigurationService().start();
+  });
   test("can accept ACDC", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
@@ -197,7 +201,11 @@ describe("Ipex communication service of agent", () => {
       id: "id",
     });
     await ipexCommunicationService.acceptAcdc(id);
-    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalled();
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
+      expect.objectContaining({
+        connectionId: "i",
+      })
+    );
     expect(credentialStorage.updateCredentialMetadata).toBeCalledWith("id", {
       id: "id",
       status: CredentialStatus.CONFIRMED,
@@ -282,6 +290,7 @@ describe("Ipex communication service of agent", () => {
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
   test("can offer Keri Acdc when received the ipex apply", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     const date = new Date();
     const noti = {
@@ -317,6 +326,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("can not offer Keri Acdc if aid is not existed", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     const date = new Date();
     const noti = {
@@ -349,6 +359,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("can grant Keri Acdc when received the ipex agree", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     const date = new Date();
     const noti = {
@@ -397,6 +408,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("can not grant Keri Acdc if aid is not existed", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     const date = new Date();
     const noti = {
@@ -440,6 +452,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("can not grant Keri Acdc if acdc is not existed", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
     const date = new Date();
     const noti = {
@@ -475,6 +488,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("can get matching credential for apply", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const notiId = "notiId";
     getExchangeMock = jest.fn().mockResolvedValue({
       exn: {
@@ -502,6 +516,7 @@ describe("Ipex communication service of agent", () => {
       {
         id: "metadata:d",
         status: "confirmed",
+        connectionId: "connectionId",
       },
     ]);
     credentialListMock.mockResolvedValue([
@@ -514,7 +529,7 @@ describe("Ipex communication service of agent", () => {
     expect(
       await ipexCommunicationService.getMatchingCredsForApply(noti)
     ).toEqual({
-      credentials: [{ acdc: { d: "d" }, connectionId: undefined }],
+      credentials: [{ acdc: { d: "d" }, connectionId: "connectionId" }],
       schema: {
         description: "Qualified vLEI Issuer Credential",
         name: "Qualified vLEI Issuer Credential",
@@ -523,6 +538,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("cannot get matching credential for apply if cannot get the schema", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const notiId = "notiId";
     getExchangeMock = jest.fn().mockResolvedValue({
       exn: {
@@ -546,5 +562,27 @@ describe("Ipex communication service of agent", () => {
     await expect(
       ipexCommunicationService.getMatchingCredsForApply(noti)
     ).rejects.toThrowError(IpexCommunicationService.SCHEMA_NOT_FOUND);
+  });
+
+  test("Should throw error when KERIA is offline", async () => {
+    await expect(
+      ipexCommunicationService.acceptAcdc("id")
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    const noti = {
+      id: "id",
+      createdAt: new Date(),
+      a: {
+        d: "keri",
+      },
+    };
+    await expect(
+      ipexCommunicationService.offerAcdcFromApply(noti, {})
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      ipexCommunicationService.grantAcdcFromAgree(noti)
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(
+      ipexCommunicationService.getMatchingCredsForApply(noti)
+    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 });

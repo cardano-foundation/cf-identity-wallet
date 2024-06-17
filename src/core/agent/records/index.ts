@@ -12,3 +12,4 @@ export * from "./basicStorage";
 export * from "./connectionStorage";
 export * from "./connectionNoteStorage";
 export * from "./notificationStorage";
+export * from "./operationPendingStorage";

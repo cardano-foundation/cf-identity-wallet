@@ -69,6 +69,8 @@ const App = () => {
         OperationType.SCAN_WALLET_CONNECTION,
         OperationType.MULTI_SIG_INITIATOR_SCAN,
         OperationType.MULTI_SIG_RECEIVER_SCAN,
+        OperationType.SCAN_SSI_BOOT_URL,
+        OperationType.SCAN_SSI_CONNECT_URL,
       ].includes(currentOperation)
     );
     setShowToast(toastMsg !== undefined);

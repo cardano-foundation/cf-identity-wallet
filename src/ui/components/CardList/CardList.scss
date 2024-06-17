@@ -8,18 +8,25 @@
   ion-item.card-item {
     --inner-padding-top: 1rem;
     --inner-padding-bottom: 1rem;
+    --inner-padding-end: 0;
     --padding-start: 0;
     --background: var(--ion-color-light);
     --title-font-size: 1rem;
     --title-margin-bottom: 0.25rem;
-    --logo-border-radius: 50%;
+    --logo-border-radius: 0.25rem;
     --display-fallback: flex;
     --subtitle-font-size: 0.875rem;
+    --card-width: auto;
+    --card-height: 2.75rem;
+
+    &:last-child {
+      --inner-border-width: 0;
+    }
 
     .card-logo {
       border-radius: var(--logo-border-radius);
-      width: 2.75rem;
-      height: 2.75rem;
+      width: var(--card-width);
+      height: var(--card-height);
       margin-right: 1rem;
     }
 
@@ -37,6 +44,7 @@
 
     .card-info {
       flex: 1;
+      overflow: hidden;
 
       .card-title {
         font-size: var(--title-font-size);
@@ -45,6 +53,9 @@
         font-weight: 500;
         color: var(--ion-color-primary);
         margin-top: 0;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
 
         &.no-margin {
           --title-margin-bottom: 0;
@@ -61,11 +72,31 @@
     }
   }
 
+  &.rounde-img {
+    ion-item.card-item {
+      --logo-border-radius: 50%;
+      --card-width: 2.75rem;
+    }
+  }
+
   ion-item-sliding {
     --inner-padding-end: 0;
+
+    &:last-child {
+      .card-item {
+        --inner-border-width: 0;
+      }
+    }
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
+    &.rounde-img {
+      ion-item.card-item {
+        --card-width: 2.25rem;
+        --card-height: 2.25rem;
+      }
+    }
+
     ion-item.card-item {
       --inner-padding-top: 0.75rem;
       --inner-padding-bottom: 0.75rem;
@@ -74,8 +105,6 @@
 
       .card-logo {
         border-radius: var(--logo-border-radius);
-        width: 2.25rem;
-        height: 2.25rem;
         margin-right: 0.5rem;
       }
     }

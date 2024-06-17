@@ -20,6 +20,8 @@ interface CardListProps<T extends object = object>
   data: CardItem<T>[];
   lines?: "full" | "inset" | "none";
   className?: string;
+  rounded?: boolean;
+  testId?: string;
 }
 
 export type { CardItem, CardListProps, CardItemProps };

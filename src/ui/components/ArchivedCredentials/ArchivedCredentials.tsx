@@ -43,6 +43,7 @@ import { CredentialShortDetails } from "../../../core/agent/services/credentialS
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
 import { CredentialItem } from "./CredentialItem";
+import { TabsRoutePath } from "../navigation/TabsMenu";
 
 const ArchivedCredentialsContainer = forwardRef<
   ArchivedCredentialsContainerRef,
@@ -82,7 +83,7 @@ const ArchivedCredentialsContainer = forwardRef<
   };
 
   const handleShowCardDetails = (id: string) => {
-    const pathname = `/tabs/creds/${id}`;
+    const pathname = `${TabsRoutePath.CREDENTIALS}/${id}`;
     history.push({ pathname: pathname });
     setArchivedCredentialsIsOpen(false);
   };

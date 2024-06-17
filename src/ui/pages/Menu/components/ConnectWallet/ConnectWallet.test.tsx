@@ -12,6 +12,27 @@ import {
 } from "../../../../../store/reducers/stateCache";
 import { OperationType, ToastMsgType } from "../../../../globals/types";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
+import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
+import { setPendingConnection } from "../../../../../store/reducers/walletConnectionsCache";
+
+jest.mock("../../../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      peerConnectionMetadataStorage: {
+        getAllPeerConnectionMetadata: jest.fn(),
+        deletePeerConnectionMetadataRecord: jest.fn(),
+      },
+    },
+  },
+}));
+
+jest.mock("../../../../../core/cardano/walletConnect/peerConnection", () => ({
+  PeerConnection: {
+    peerConnection: {
+      disconnectDApp: jest.fn(),
+    },
+  },
+}));
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -52,6 +73,9 @@ const initialState = {
   identifiersCache: {
     identifiers: [...identifierFix],
   },
+  biometryCache: {
+    enabled: false,
+  },
 };
 
 const storeMocked = {
@@ -76,6 +100,9 @@ describe("Wallet connect: empty history", () => {
       },
       identifiersCache: {
         identifiers: [...identifierFix],
+      },
+      biometryCache: {
+        enabled: false,
       },
     };
 
@@ -111,6 +138,9 @@ describe("Wallet connect: empty history", () => {
       },
       identifiersCache: {
         identifiers: [...identifierFix],
+      },
+      biometryCache: {
+        enabled: false,
       },
     };
 
@@ -161,6 +191,9 @@ describe("Wallet connect: empty history", () => {
       identifiersCache: {
         identifiers: [],
       },
+      biometryCache: {
+        enabled: false,
+      },
     };
 
     const storeMocked = {
@@ -210,14 +243,14 @@ describe("Wallet connect", () => {
         EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
       )
     ).toBeVisible();
-    expect(getByText(walletConnectionsFix[0].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[0].owner)).toBeVisible();
-    expect(getByText(walletConnectionsFix[1].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[1].owner)).toBeVisible();
-    expect(getByText(walletConnectionsFix[2].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[2].owner)).toBeVisible();
-    expect(getByText(walletConnectionsFix[3].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[3].owner)).toBeVisible();
+    expect(getByText(walletConnectionsFix[0].name as string)).toBeVisible();
+    expect(getByText(walletConnectionsFix[0].url as string)).toBeVisible();
+    expect(getByText(walletConnectionsFix[1].name as string)).toBeVisible();
+    expect(getByText(walletConnectionsFix[1].url as string)).toBeVisible();
+    expect(getByText(walletConnectionsFix[2].name as string)).toBeVisible();
+    expect(getByText(walletConnectionsFix[2].url as string)).toBeVisible();
+    expect(getByText(walletConnectionsFix[3].name as string)).toBeVisible();
+    expect(getByText(walletConnectionsFix[3].url as string)).toBeVisible();
     expect(getByTestId("connected-wallet-check-mark")).toBeVisible();
   });
 
@@ -233,14 +266,14 @@ describe("Wallet connect", () => {
         EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
       )
     ).toBeVisible();
-    expect(getByText(walletConnectionsFix[0].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[0].owner)).toBeVisible();
-    expect(getByText(walletConnectionsFix[1].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[1].owner)).toBeVisible();
-    expect(getByText(walletConnectionsFix[2].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[2].owner)).toBeVisible();
-    expect(getByText(walletConnectionsFix[3].name)).toBeVisible();
-    expect(getByText(walletConnectionsFix[3].owner)).toBeVisible();
+    expect(getByText(walletConnectionsFix[0].name as string)).toBeVisible();
+    expect(getByText(walletConnectionsFix[0].url as string)).toBeVisible();
+    expect(getByText(walletConnectionsFix[1].name as string)).toBeVisible();
+    expect(getByText(walletConnectionsFix[1].url as string)).toBeVisible();
+    expect(getByText(walletConnectionsFix[2].name as string)).toBeVisible();
+    expect(getByText(walletConnectionsFix[2].url as string)).toBeVisible();
+    expect(getByText(walletConnectionsFix[3].name as string)).toBeVisible();
+    expect(getByText(walletConnectionsFix[3].url as string)).toBeVisible();
     expect(getByTestId("connected-wallet-check-mark")).toBeVisible();
   });
 
@@ -354,8 +387,43 @@ describe("Wallet connect", () => {
     });
 
     await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet
+            .disconnectbeforecreatealert.message
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet
+            .disconnectbeforecreatealert.confirm
+        )
+      );
+    });
+
+    await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
-        setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS)
+        setPendingConnection(walletConnectionsFix[0])
+      );
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId(`card-item-${walletConnectionsFix[1].id}`));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("confirm-connect-btn")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("confirm-connect-btn"));
+    });
+    await waitFor(() => {
+      expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledWith(
+        walletConnectionsFix[1].id
       );
     });
   });
@@ -377,6 +445,9 @@ describe("Wallet connect", () => {
       },
       identifiersCache: {
         identifiers: [],
+      },
+      biometryCache: {
+        enabled: false,
       },
     };
 
@@ -427,6 +498,151 @@ describe("Wallet connect", () => {
       expect(dispatchMock).toBeCalledWith(
         setCurrentOperation(OperationType.CREATE_IDENTIFIER_CONNECT_WALLET)
       );
+    });
+  });
+
+  test("Show connection modal after create connect to wallet", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+        currentOperation: OperationType.OPEN_WALLET_CONNECTION_DETAIL,
+      },
+      walletConnectionsCache: {
+        walletConnections: [
+          ...walletConnectionsFix,
+          {
+            ...walletConnectionsFix[0],
+            name: undefined,
+            url: undefined,
+          },
+        ],
+        connectedWallet: null,
+        pendingConnection: walletConnectionsFix[0],
+      },
+      identifiersCache: {
+        identifiers: [
+          {
+            signifyName: "Test",
+            id: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
+            displayName: "Professional ID",
+            createdAtUTC: "2023-01-01T19:23:24Z",
+            isPending: false,
+            theme: 0,
+            s: 4, // Sequence number, only show if s > 0
+            dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
+            kt: 2, // Keys signing threshold (only show if kt > 1)
+            k: [
+              // List of signing keys - array
+              "DCF6b0c5aVm_26_sCTgLB4An6oUxEM5pVDDLqxxXDxH-",
+            ],
+            nt: 3, // Next keys signing threshold, only show if nt > 1
+            n: [
+              // Next keys digests - array
+              "EIZ-n_hHHY5ERGTzvpXYBkB6_yBAM4RXcjQG3-JykFvF",
+            ],
+            bt: 1, // Backer threshold and backer keys below
+            b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"], // List of backers
+            di: "test", // Delegated identifier prefix, don't show if ""
+          },
+        ],
+      },
+      biometryCache: {
+        enabled: false,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, getByText, rerender } = render(
+      <MemoryRouter>
+        <Provider store={storeMocked}>
+          <ConnectWallet />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const updatedStore = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+        currentOperation: OperationType.IDLE,
+        toastMsg: ToastMsgType.CONNECT_WALLET_SUCCESS,
+      },
+      walletConnectionsCache: {
+        walletConnections: [
+          ...walletConnectionsFix,
+          {
+            ...walletConnectionsFix[0],
+          },
+        ],
+        connectedWallet: null,
+        pendingConnection: null,
+      },
+      identifiersCache: {
+        identifiers: [
+          {
+            signifyName: "Test",
+            id: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
+            displayName: "Professional ID",
+            createdAtUTC: "2023-01-01T19:23:24Z",
+            isPending: false,
+            theme: 0,
+            s: 4, // Sequence number, only show if s > 0
+            dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
+            kt: 2, // Keys signing threshold (only show if kt > 1)
+            k: [
+              // List of signing keys - array
+              "DCF6b0c5aVm_26_sCTgLB4An6oUxEM5pVDDLqxxXDxH-",
+            ],
+            nt: 3, // Next keys signing threshold, only show if nt > 1
+            n: [
+              // Next keys digests - array
+              "EIZ-n_hHHY5ERGTzvpXYBkB6_yBAM4RXcjQG3-JykFvF",
+            ],
+            bt: 1, // Backer threshold and backer keys below
+            b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"], // List of backers
+            di: "test", // Delegated identifier prefix, don't show if ""
+          },
+        ],
+      },
+      biometryCache: {
+        enabled: false,
+      },
+    };
+
+    const updateStoreMocked = {
+      ...mockStore(updatedStore),
+      dispatch: dispatchMock,
+    };
+
+    await waitFor(() => {
+      expect(getByTestId("connect-wallet-title")).toBeVisible();
+    });
+
+    rerender(
+      <MemoryRouter>
+        <Provider store={updateStoreMocked}>
+          <ConnectWallet />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("connection-id")).toBeVisible();
     });
   });
 });

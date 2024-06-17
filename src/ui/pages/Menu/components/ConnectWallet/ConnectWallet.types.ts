@@ -18,4 +18,4 @@ enum ActionType {
 
 export { ActionType };
 
-export type { ConnectWalletOptionRef, ActionInfo };
+export type { ConnectWalletOptionRef, ActionInfo, ConnectionData };

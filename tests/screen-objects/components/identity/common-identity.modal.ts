@@ -16,7 +16,7 @@ export class CommonIdentityModal {
   }
 
   async displayNameInputElement(elementName: string) {
-    return $(`#${elementName}-name-input > label > div > input`);
+    return $(`#${elementName}-name-input input`);
   }
 
   async getIdElementLocator(elementName: string) {

@@ -22,6 +22,7 @@ import {
 } from "../records";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
+import { ConfigurationService } from "../../configuration";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
@@ -53,7 +54,7 @@ class ConnectionService extends AgentService {
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
   ) {
-    this.eventService.on(
+    this.props.eventService.on(
       ConnectionEventTypes.ConnectionStateChanged,
       async (event: ConnectionStateChangedEvent) => {
         callback(event);
@@ -67,7 +68,7 @@ class ConnectionService extends AgentService {
 
     // @TODO - foconnor: We shouldn't emit this if it's a multiSigInvite, but the routing will break if we don't.
     // To fix once we handle errors for the scanner in general.
-    this.eventService.emit<ConnectionStateChangedEvent>({
+    this.props.eventService.emit<ConnectionStateChangedEvent>({
       type: ConnectionEventTypes.ConnectionStateChanged,
       payload: {
         connectionId: undefined,
@@ -98,7 +99,7 @@ class ConnectionService extends AgentService {
     await this.createConnectionMetadata(connectionId, connectionMetadata);
 
     if (!multiSigInvite) {
-      this.eventService.emit<ConnectionStateChangedEvent>({
+      this.props.eventService.emit<ConnectionStateChangedEvent>({
         type: ConnectionEventTypes.ConnectionStateChanged,
         payload: {
           connectionId: operation.response.i,
@@ -150,7 +151,7 @@ class ConnectionService extends AgentService {
 
   @OnlineOnly
   async getConnectionById(id: string): Promise<ConnectionDetails> {
-    const connection = await this.signifyClient.contacts().get(id);
+    const connection = await this.props.signifyClient.contacts().get(id);
     return {
       label: connection?.alias,
       id: connection.id,
@@ -217,7 +218,7 @@ class ConnectionService extends AgentService {
     alias?: string,
     groupId?: string
   ): Promise<string> {
-    const result = await this.signifyClient
+    const result = await this.props.signifyClient
       .oobis()
       .get(signifyName, ConnectionService.DEFAULT_ROLE);
     const oobi = new URL(result.oobis[0]);
@@ -271,7 +272,7 @@ class ConnectionService extends AgentService {
   // @TODO - foconnor: Contacts that are smid/rmids for multisigs will be synced too.
   @OnlineOnly
   async syncKeriaContacts() {
-    const signifyContacts = await this.signifyClient.contacts().list();
+    const signifyContacts = await this.props.signifyClient.contacts().list();
     const storageContacts = await this.connectionStorage.getAll();
     const unSyncedData = signifyContacts.filter(
       (contact: KeriaContact) =>
@@ -295,8 +296,8 @@ class ConnectionService extends AgentService {
     }
     const alias = new URL(url).searchParams.get("name") ?? uuidv4();
     const operation = await waitAndGetDoneOp(
-      this.signifyClient,
-      await this.signifyClient.oobis().resolve(url, alias)
+      this.props.signifyClient,
+      await this.props.signifyClient.oobis().resolve(url, alias)
     );
     if (!operation.done) {
       throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);

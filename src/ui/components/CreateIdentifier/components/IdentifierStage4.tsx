@@ -47,7 +47,7 @@ const IdentifierStage4 = ({
       );
       return;
     } else {
-      const { identifier, signifyName } =
+      const { identifier, signifyName, isPending } =
         await Agent.agent.multiSigs.createMultisig(
           ourIdentifier,
           otherIdentifierContacts,
@@ -59,7 +59,7 @@ const IdentifierStage4 = ({
           displayName: state.displayNameValue,
           createdAtUTC: new Date().toISOString(),
           theme: state.selectedTheme,
-          isPending: state.threshold >= 2,
+          isPending: !!isPending,
           signifyName,
         };
         const filteredIdentifiersData = identifiersData.filter(
@@ -81,8 +81,9 @@ const IdentifierStage4 = ({
   };
 
   useEffect(() => {
+    const otherIdentifierContacts = [...state.selectedConnections];
     setOtherIdentifierContacts(
-      state.selectedConnections.sort(function (a, b) {
+      otherIdentifierContacts.sort(function (a, b) {
         const textA = a.label.toUpperCase();
         const textB = b.label.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;
@@ -148,6 +149,7 @@ const IdentifierStage4 = ({
                     />
                     <span className="connection-name">{connection.label}</span>
                     <IonIcon
+                      data-testid={`confirm-back-connection-button-${index}`}
                       aria-hidden="true"
                       icon={pencilOutline}
                       slot="end"
@@ -170,8 +172,11 @@ const IdentifierStage4 = ({
           </div>
           <IonCard>
             <IonItem className="identifier-list-item">
-              <IonLabel>{state.threshold}</IonLabel>
+              <IonLabel data-testid="confirm-threshold">
+                {state.threshold}
+              </IonLabel>
               <IonIcon
+                data-testid="confirm-back-threshold-button"
                 aria-hidden="true"
                 icon={pencilOutline}
                 slot="end"

@@ -5,7 +5,7 @@ import {
   getPendingConnection,
   getWalletConnectionsCache,
   setConnectedWallet,
-  setPendingConnections,
+  setPendingConnection,
   setWalletConnectionsCache,
   walletConnectionsCacheSlice,
 } from "./walletConnectionsCache";
@@ -30,10 +30,10 @@ describe("walletConnectionsCacheSlice", () => {
   it("should handle setWalletConnectionsCache", () => {
     const connections: ConnectionData[] = [
       {
-        id: 2,
+        id: "2",
         name: "Wallet name #2",
-        owner: "Yoroi",
-        url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+        selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
+        url: "http://localhost:3001/",
       },
     ];
     const newState = walletConnectionsCacheSlice.reducer(
@@ -44,10 +44,10 @@ describe("walletConnectionsCacheSlice", () => {
   });
   it("should handle setConnectedWallet", () => {
     const connection: ConnectionData = {
-      id: 2,
+      id: "2",
       name: "Wallet name #2",
-      owner: "Yoroi",
-      url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+      selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
+      url: "http://localhost:3001/",
     };
     const newState = walletConnectionsCacheSlice.reducer(
       initialState,
@@ -56,17 +56,13 @@ describe("walletConnectionsCacheSlice", () => {
     expect(newState.connectedWallet).toEqual(connection);
   });
   it("should handle setPendingConnection", () => {
-    const connection: ConnectionData = {
-      id: 2,
-      name: "Wallet name #2",
-      owner: "Yoroi",
-      url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
-    };
     const newState = walletConnectionsCacheSlice.reducer(
       initialState,
-      setPendingConnections(connection)
+      setPendingConnection({
+        id: "pending-meerkat",
+      })
     );
-    expect(newState.pendingConnection).toEqual(connection);
+    expect(newState.pendingConnection?.id).toEqual("pending-meerkat");
   });
 });
 
@@ -76,17 +72,17 @@ describe("Get wallet connections cache", () => {
       walletConnectionsCache: {
         walletConnections: [
           {
-            id: 1,
+            id: "1",
             name: "Wallet name #1",
-            owner: "Nami",
+            selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
             image: "",
-            url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+            url: "http://localhost:3001/",
           },
           {
-            id: 2,
+            id: "2",
             name: "Wallet name #2",
-            owner: "Yoroi",
-            url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+            selectedAid: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRc",
+            url: "http://localhost:3001/",
           },
         ],
       },
@@ -101,11 +97,7 @@ describe("Get wallet connections cache", () => {
     const state = {
       walletConnectionsCache: {
         connectedWallet: {
-          id: 1,
-          name: "Wallet name #1",
-          owner: "Nami",
-          image: "",
-          url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+          id: "1",
         },
       },
     } as RootState;
@@ -114,20 +106,16 @@ describe("Get wallet connections cache", () => {
       state.walletConnectionsCache.connectedWallet
     );
   });
-  it("should return pending connection from RootState", () => {
+  it("should return pending DApp MeerKat from RootState", () => {
     const state = {
       walletConnectionsCache: {
         pendingConnection: {
-          id: 1,
-          name: "Wallet name #1",
-          owner: "Nami",
-          image: "",
-          url: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
+          id: "pending-meerkat",
         },
       },
     } as RootState;
-    const connectionCache = getPendingConnection(state);
-    expect(connectionCache).toEqual(
+    const pendingMeerKatCache = getPendingConnection(state);
+    expect(pendingMeerKatCache).toEqual(
       state.walletConnectionsCache.pendingConnection
     );
   });

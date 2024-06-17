@@ -1,11 +1,11 @@
 import i18n from "i18next";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useAppIonRouter } from "../../hooks";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
-  getStateCache,
   login,
   setAuthentication,
   setCurrentRoute,
@@ -14,18 +14,14 @@ import {
   ErrorMessage,
   MESSAGE_MILLISECONDS,
 } from "../../components/ErrorMessage";
-import {
-  KeyStoreKeys,
-  PreferencesKeys,
-  PreferencesStorage,
-  SecureStorage,
-} from "../../../core/storage";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { RoutePath } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import { PageFooter } from "../../components/PageFooter";
 import { Alert } from "../../components/Alert";
 import "./LockPage.scss";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
+import { getBiometryCacheCache } from "../../../store/reducers/biometryCache";
 
 const LockPage = () => {
   const pageId = "lock-page";
@@ -37,6 +33,7 @@ const LockPage = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
   const { handleBiometricAuth } = useBiometricAuth();
+  const biometryCacheCache = useSelector(getBiometryCacheCache);
 
   const headerText = seedPhrase
     ? i18n.t("lockpage.alert.text.verify")
@@ -62,23 +59,8 @@ const LockPage = () => {
 
   useEffect(() => {
     const runBiometrics = async () => {
-      try {
-        const biometrics = await PreferencesStorage.get(
-          PreferencesKeys.APP_BIOMETRY
-        );
-        if (biometrics.enabled) {
-          await handleBiometrics();
-        }
-      } catch (e) {
-        if (
-          e instanceof Error &&
-          e.message ===
-            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_BIOMETRY}`
-        ) {
-          return;
-        } else {
-          throw e;
-        }
+      if (biometryCacheCache.enabled) {
+        await handleBiometrics();
       }
     };
     runBiometrics();

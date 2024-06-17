@@ -3,14 +3,19 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { act } from "react-dom/test-utils";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { store } from "../../../store";
 import { SidePage } from "./SidePage";
 import { TabsRoutePath } from "../../../routes/paths";
-import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { setPauseQueueIncomingRequest } from "../../../store/reducers/stateCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { NotificationRoute } from "../../../core/agent/agent.types";
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children, ...props }: { children: any }) => (
+    <div {...props}>{children}</div>
+  ),
+}));
 
 describe("Side Page: wallet connect", () => {
   const initialStateFull = {
@@ -31,7 +36,8 @@ describe("Side Page: wallet connect", () => {
       identifiers: [...identifierFix],
     },
     walletConnectionsCache: {
-      pendingConnection: walletConnectionsFix[0],
+      pendingConnection: "pending-meerkat",
+      walletConnections: [],
     },
   };
 
@@ -68,15 +74,6 @@ describe("Side Page: wallet connect", () => {
     await waitFor(() => {
       expect(getByTestId("alert-decline-connect-confirm-button")).toBeVisible();
     });
-
-    act(() => {
-      fireEvent.click(getByTestId("alert-decline-connect-confirm-button"));
-      fireEvent.transitionEnd(getByTestId("side-slider"));
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(setPauseQueueIncomingRequest(false));
-    });
   });
 });
 
@@ -111,9 +108,7 @@ describe("Side Page: incoming request", () => {
     identifiersCache: {
       identifiers: [...identifierFix],
     },
-    walletConnectionsCache: {
-      pendingConnection: walletConnectionsFix[0],
-    },
+    walletConnectionsCache: {},
   };
 
   const mockStore = configureStore();

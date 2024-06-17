@@ -79,6 +79,9 @@ const backRoute: Record<string, any> = {
   [RoutePath.VERIFY_SEED_PHRASE]: {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
+  [RoutePath.SSI_AGENT]: {
+    updateRedux: [],
+  },
   [RoutePath.SET_PASSCODE]: {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },

@@ -2,7 +2,7 @@ import { IncomingRequestType } from "../../../../../../store/reducers/stateCache
 import { RequestProps } from "../IncomingRequest.types";
 import { CredentialRequest } from "./CredentialRequest";
 import { MultiSigRequest } from "./MultiSigRequest";
-import { SignTransactionRequest } from "./SignTransactionRequest";
+import { SignRequest } from "./SignRequest";
 
 const RequestComponent = ({
   pageId,
@@ -14,9 +14,8 @@ const RequestComponent = ({
   handleAccept,
   handleCancel,
   handleIgnore,
-  incomingRequestType,
-}: RequestProps) => {
-  switch (incomingRequestType) {
+}: RequestProps<IncomingRequestType>) => {
+  switch (requestData.type) {
   case IncomingRequestType.CREDENTIAL_OFFER_RECEIVED:
     return (
       <CredentialRequest
@@ -26,7 +25,6 @@ const RequestComponent = ({
         initiateAnimation={initiateAnimation}
         handleAccept={handleAccept}
         handleCancel={handleCancel}
-        incomingRequestType={incomingRequestType}
       />
     );
   case IncomingRequestType.MULTI_SIG_REQUEST_INCOMING:
@@ -43,9 +41,9 @@ const RequestComponent = ({
         handleIgnore={handleIgnore}
       />
     );
-  case IncomingRequestType.SIGN_TRANSACTION_REQUEST:
+  case IncomingRequestType.PEER_CONNECT_SIGN:
     return (
-      <SignTransactionRequest
+      <SignRequest
         pageId={pageId}
         activeStatus={activeStatus}
         blur={blur}

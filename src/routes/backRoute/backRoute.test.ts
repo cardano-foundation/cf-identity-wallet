@@ -1,5 +1,4 @@
 import { RootState } from "../../store";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../ui/globals/constants";
 import { OperationType } from "../../ui/globals/types";
 import { DataProps } from "../nextRoute/nextRoute.types";
 import { calcPreviousRoute, getBackRoute, getPreviousRoute } from "./backRoute";
@@ -20,9 +19,12 @@ describe("getBackRoute", () => {
   beforeEach(() => {
     storeMock = {
       seedPhraseCache: {
-        seedPhrase160: "",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        seedPhrase: "",
+        bran: "",
+      },
+      ssiAgentCache: {
+        bootUrl: "",
+        connectUrl: "",
       },
       stateCache: {
         initialized: true,
@@ -35,6 +37,7 @@ describe("getBackRoute", () => {
           loggedIn: false,
           userName: "",
           time: 0,
+          ssiAgentIsSet: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -52,6 +55,7 @@ describe("getBackRoute", () => {
         },
       },
       credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
       connectionsCache: {
         connections: [],
       },
@@ -59,6 +63,12 @@ describe("getBackRoute", () => {
         walletConnections: [],
         connectedWallet: null,
         pendingConnection: null,
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      biometryCache: {
+        enabled: false,
       },
     };
   });
@@ -136,9 +146,12 @@ describe("getPreviousRoute", () => {
   beforeEach(() => {
     storeMock = {
       seedPhraseCache: {
-        seedPhrase160: "",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
+        seedPhrase: "",
+        bran: "",
+      },
+      ssiAgentCache: {
+        bootUrl: "",
+        connectUrl: "",
       },
       stateCache: {
         initialized: true,
@@ -151,6 +164,7 @@ describe("getPreviousRoute", () => {
           loggedIn: false,
           userName: "",
           time: 0,
+          ssiAgentIsSet: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -168,6 +182,7 @@ describe("getPreviousRoute", () => {
         },
       },
       credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
       connectionsCache: {
         connections: [],
       },
@@ -175,6 +190,12 @@ describe("getPreviousRoute", () => {
         walletConnections: [],
         connectedWallet: null,
         pendingConnection: null,
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      biometryCache: {
+        enabled: false,
       },
     };
   });

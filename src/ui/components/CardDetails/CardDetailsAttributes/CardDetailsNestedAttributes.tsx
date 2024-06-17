@@ -12,7 +12,9 @@ const CardDetailsNestedAttributes = ({
   attribute,
   cardKeyValue,
   customType,
+  itemProps,
 }: CardDetailsNestedAttributesProps) => {
+  const { className, ...restItemProps } = itemProps || {};
   const key = attribute[0];
   const item = attribute[1] as any;
 
@@ -32,9 +34,13 @@ const CardDetailsNestedAttributes = ({
   }, []);
 
   const isObjectItem = typeof item === "object" && item !== null;
-  const detailItemsClass = combineClassNames("card-details-attribute-item", {
-    "has-nested-item": isObjectItem,
-  });
+  const detailItemsClass = combineClassNames(
+    "card-details-attribute-item",
+    className,
+    {
+      "has-nested-item": isObjectItem,
+    }
+  );
 
   const infoTestId = item[10] === "T" ? "cred-detail-time" : undefined;
   const innerCardKeyValue =
@@ -48,6 +54,7 @@ const CardDetailsNestedAttributes = ({
         infoTestId={infoTestId}
         className={detailItemsClass}
         mask={false}
+        {...restItemProps}
       />
       {isObjectItem && (
         <CardDetailsBlock className="card-details-nested-content">
@@ -57,6 +64,7 @@ const CardDetailsNestedAttributes = ({
                 key={i}
                 cardKeyValue={sub[0].replace(/([a-z])([A-Z])/g, "$1 $2") + ":"}
                 attribute={sub}
+                itemProps={itemProps}
               />
             );
           })}

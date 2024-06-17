@@ -42,13 +42,6 @@ When(
 );
 
 When(
-  /^tap Confirm button on alert modal for Identifier Options modal$/,
-  async function () {
-    await AlertModal.clickConfirmButtonOf(IdentityOptionsModal.alertModal);
-  }
-);
-
-When(
   /^tap Confirm button on alert modal for Seed Phrase Generate screen$/,
   async function () {
     await AlertModal.clickConfirmButtonOf(SeedPhraseGenerateScreen.alertModal);

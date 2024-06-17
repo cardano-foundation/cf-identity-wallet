@@ -25,8 +25,12 @@ import { CardType, OperationType } from "../../globals/types";
 import { Connections } from "../Connections";
 import "./Identifiers.scss";
 import { StartAnimationSource } from "./Identifiers.type";
-import { IdentifiersList } from "./components/IdentifiersList";
 import { useToggleConnections } from "../../hooks";
+import { ListHeader } from "../../components/ListHeader";
+import {
+  CardList as IdentifierCardList,
+  SwitchCardView,
+} from "../../components/SwitchCardView";
 
 const CLEAR_STATE_DELAY = 1000;
 interface AdditionalButtonsProps {
@@ -232,7 +236,9 @@ const Identifiers = () => {
                 className="identifiers-tab-content-block identifier-favourite-cards"
               >
                 {!!allIdentifiers.length && (
-                  <h3>{i18n.t("identifiers.tab.favourites")}</h3>
+                  <ListHeader
+                    title={`${i18n.t("identifiers.tab.favourites")}`}
+                  />
                 )}
                 <CardsStack
                   name="favs"
@@ -243,39 +249,40 @@ const Identifiers = () => {
               </div>
             )}
             {!!allIdentifiers.length && (
-              <div className="identifiers-tab-content-block identifier-cards">
-                {!!favIdentifiers.length && (
-                  <h3>{i18n.t("identifiers.tab.allidentifiers")}</h3>
-                )}
-                <CardsStack
-                  name="allidentifiers"
-                  cardsType={CardType.IDENTIFIERS}
-                  cardsData={allIdentifiers}
-                  onShowCardDetails={() => handleShowNavAnimation("cards")}
-                />
-              </div>
+              <SwitchCardView
+                className="identifiers-tab-content-block identifier-cards"
+                cardTypes={CardType.IDENTIFIERS}
+                cardsData={allIdentifiers}
+                onShowCardDetails={() => handleShowNavAnimation("cards")}
+                title={`${i18n.t("identifiers.tab.allidentifiers")}`}
+                name="allidentifiers"
+              />
             )}
             {!!multiSigIdentifiers.length && (
               <div className="identifiers-tab-content-block">
                 <h3>{i18n.t("identifiers.tab.multisigidentifiers")}</h3>
-                <IdentifiersList
-                  identifiers={multiSigIdentifiers}
-                  showDate={true}
-                  handleClick={async (identifier) =>
-                    handleMultiSigClick(identifier)
+                <IdentifierCardList
+                  cardTypes={CardType.IDENTIFIERS}
+                  cardsData={multiSigIdentifiers}
+                  onCardClick={async (identifier) =>
+                    handleMultiSigClick(identifier as IdentifierShortDetails)
                   }
+                  testId="identifiers-list"
                 />
               </div>
             )}
             {!!pendingIdentifiers.length && (
               <div className="identifiers-tab-content-block">
-                <h3>{i18n.t("identifiers.tab.pendingidentifiers")}</h3>
-                <IdentifiersList
-                  identifiers={pendingIdentifiers}
-                  showDate={true}
-                  handleClick={async (identifier) =>
-                    handlePendingClick(identifier)
+                <ListHeader
+                  title={`${i18n.t("identifiers.tab.pendingidentifiers")}`}
+                />
+                <IdentifierCardList
+                  cardsData={pendingIdentifiers}
+                  cardTypes={CardType.IDENTIFIERS}
+                  onCardClick={async (identifier) =>
+                    handlePendingClick(identifier as IdentifierShortDetails)
                   }
+                  testId="identifiers-list"
                 />
               </div>
             )}

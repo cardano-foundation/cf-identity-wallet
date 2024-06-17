@@ -10,6 +10,16 @@
     height: calc(100vh - 8rem);
   }
 
+  .connection-pending {
+    width: 2rem;
+    height: 2rem;
+    padding: 0.5rem;
+
+    & > ion-icon {
+      margin: 0;
+    }
+  }
+
   @media screen and (min-width: 250px) and (max-width: 370px) {
     .connect-wallet-title {
       font-size: 1rem;

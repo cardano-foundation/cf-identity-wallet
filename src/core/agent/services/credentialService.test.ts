@@ -150,6 +150,7 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   issuanceDate: nowISO,
   credentialType: "credType",
   status: CredentialMetadataRecordStatus.CONFIRMED,
+  connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(

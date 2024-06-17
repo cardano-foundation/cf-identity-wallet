@@ -6,6 +6,7 @@ import { ConnectionStatus, NotificationRoute } from "../agent.types";
 import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { MultiSigService } from "./multiSigService";
+import { IdentifierStorage } from "../records";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -100,6 +101,10 @@ const identifierStorage = jest.mocked({
   createIdentifierMetadataRecord: jest.fn(),
 });
 
+const operationPendingStorage = jest.mocked({
+  save: jest.fn(),
+});
+
 const agentServicesProps = {
   signifyClient: signifyClient as any,
   eventService: new EventService(),
@@ -108,7 +113,8 @@ const agentServicesProps = {
 const multiSigService = new MultiSigService(
   agentServicesProps,
   identifierStorage as any,
-  notificationStorage as any
+  notificationStorage as any,
+  operationPendingStorage as any
 );
 
 let mockResolveOobi = jest.fn();
@@ -120,10 +126,14 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         getConnectionShortDetailById: jest.fn(),
         resolveOobi: () => mockResolveOobi(),
+        getMultisigLinkedContacts: jest.fn(),
       },
       identifiers: {
         getIdentifiers: () => mockGetIdentifiers(),
         updateIdentifier: jest.fn(),
+      },
+      signifyNotifications: {
+        addPendingOperationToQueue: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
     },
@@ -220,11 +230,14 @@ describe("Multisig sig service of agent", () => {
       )
     ).toEqual({
       identifier: multisigIdentifier,
+      isPending: true,
       signifyName: expect.any(String),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
       expect.objectContaining({ id: multisigIdentifier, isPending: true })
     );
+
+    expect(operationPendingStorage.save).toBeCalledTimes(1);
 
     (keriMetadataRecord.groupMetadata as any).groupCreated = false;
     identifiersCreateMock.mockImplementation((name, _config) => {
@@ -248,6 +261,7 @@ describe("Multisig sig service of agent", () => {
       )
     ).toEqual({
       identifier: `${multisigIdentifier}1`,
+      isPending: true,
       signifyName: expect.any(String),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
@@ -279,6 +293,7 @@ describe("Multisig sig service of agent", () => {
       )
     ).toEqual({
       identifier: `${multisigIdentifier}2`,
+      isPending: true,
       signifyName: expect.any(String),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
@@ -391,6 +406,7 @@ describe("Multisig sig service of agent", () => {
       )
     ).toEqual({
       identifier: multisigIdentifier,
+      isPending: true,
       signifyName: expect.any(String),
     });
   });
@@ -480,8 +496,11 @@ describe("Multisig sig service of agent", () => {
       })
     ).toEqual({
       identifier: multisigIdentifier,
+      isPending: true,
       signifyName: expect.any(String),
     });
+
+    expect(operationPendingStorage.save).toBeCalledTimes(1);
   });
 
   test("cannot join multisig by notification if exn messages are missing", async () => {
@@ -965,6 +984,9 @@ describe("Multisig sig service of agent", () => {
       signifyName: undefined,
       createdAt: new Date(),
       theme: 0,
+      groupMetadata: {
+        groupId: "group-id",
+      },
     };
     const senderData = {
       id: "senderId",
@@ -991,7 +1013,9 @@ describe("Multisig sig service of agent", () => {
     Agent.agent.connections.getConnectionShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
-    Agent.agent.connections.getConnections = jest.fn().mockResolvedValue([]);
+    Agent.agent.connections.getMultisigLinkedContacts = jest
+      .fn()
+      .mockResolvedValue([]);
     const result = await multiSigService.getMultisigIcpDetails(
       "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW"
     );
@@ -1009,6 +1033,9 @@ describe("Multisig sig service of agent", () => {
       signifyName: undefined,
       createdAt: new Date(),
       theme: 0,
+      groupMetadata: {
+        groupId: "group-id",
+      },
     };
     const senderData = {
       id: "senderId",
@@ -1034,22 +1061,24 @@ describe("Multisig sig service of agent", () => {
     Agent.agent.connections.getConnectionShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
-    Agent.agent.connections.getConnections = jest.fn().mockResolvedValue([
-      {
-        id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-        connectionDate: nowISO,
-        label: "",
-        logo: "logoUrl",
-        status: ConnectionStatus.PENDING,
-      },
-      {
-        id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
-        connectionDate: nowISO,
-        label: "",
-        logo: "logoUrl",
-        status: ConnectionStatus.CONFIRMED,
-      },
-    ]);
+    Agent.agent.connections.getMultisigLinkedContacts = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.PENDING,
+        },
+        {
+          id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.CONFIRMED,
+        },
+      ]);
     await expect(
       multiSigService.getMultisigIcpDetails(
         "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW"
@@ -1065,6 +1094,9 @@ describe("Multisig sig service of agent", () => {
       signifyName: undefined,
       createdAt: new Date(),
       theme: 0,
+      groupMetadata: {
+        groupId: "group-id",
+      },
     };
     const senderData = {
       id: "senderId",
@@ -1095,15 +1127,17 @@ describe("Multisig sig service of agent", () => {
     Agent.agent.connections.getConnectionShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
-    Agent.agent.connections.getConnections = jest.fn().mockResolvedValue([
-      {
-        id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-        connectionDate: nowISO,
-        label: "",
-        logo: "logoUrl",
-        status: ConnectionStatus.PENDING,
-      },
-    ]);
+    Agent.agent.connections.getMultisigLinkedContacts = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.PENDING,
+        },
+      ]);
     const result = await multiSigService.getMultisigIcpDetails(
       "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW"
     );
@@ -1149,22 +1183,6 @@ describe("Multisig sig service of agent", () => {
     jest
       .spyOn(Agent.agent.connections, "getConnectionShortDetailById")
       .mockResolvedValue(senderData);
-    jest.spyOn(Agent.agent.connections, "getConnections").mockResolvedValue([
-      {
-        id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-        connectionDate: nowISO,
-        label: "",
-        logo: "logoUrl",
-        status: ConnectionStatus.PENDING,
-      },
-      {
-        id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
-        connectionDate: nowISO,
-        label: "",
-        logo: "logoUrl",
-        status: ConnectionStatus.CONFIRMED,
-      },
-    ]);
     await expect(
       multiSigService.getMultisigIcpDetails(
         "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW"
@@ -1227,6 +1245,7 @@ describe("Multisig sig service of agent", () => {
         r: NotificationRoute.MultiSigIcp,
         d: "EF6Nmxz8hs0oVc4loyh2J5Sq9H3Z7apQVqjO6e4chtsp",
       },
+      multisigId: "multisig-id",
     };
     notificationStorage.findAllByQuery = jest
       .fn()
@@ -1238,6 +1257,7 @@ describe("Multisig sig service of agent", () => {
         id: notificationRecord.id,
         createdAt: notificationRecord.createdAt,
         a: notificationRecord.a,
+        multisigId: "multisig-id",
       },
     ]);
   });
@@ -1413,5 +1433,39 @@ describe("Multisig sig service of agent", () => {
     await expect(
       multiSigService.getUnhandledMultisigIdentifiers()
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+  });
+
+  test("Should return true if there is a multisig with the provided multisigId", async () => {
+    const multisigId = "multisig-id";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      id: multisigId,
+      displayName: "Multisig",
+      signifyName: "uuid-here",
+      multisigManageAid: "aid",
+      createdAt: now,
+      theme: 0,
+    });
+    expect(await multiSigService.hasMultisig(multisigId)).toEqual(true);
+  });
+
+  test("Should return false if there is no multisig with the provided multisigId", async () => {
+    const multisigId = "multisig-id";
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValue(
+        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+      );
+    expect(await multiSigService.hasMultisig(multisigId)).toEqual(false);
+  });
+
+  test("Should throw if there is an unknown error in hasMultisig", async () => {
+    const multisigId = "multisig-id";
+    const error = new Error("other error");
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockRejectedValue(error);
+    await expect(multiSigService.hasMultisig(multisigId)).rejects.toThrowError(
+      error
+    );
   });
 });

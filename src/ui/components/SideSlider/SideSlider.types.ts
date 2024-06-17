@@ -5,8 +5,11 @@ interface SideSliderProps {
   children: ReactNode;
   duration?: number;
   zIndex?: number;
-  onOpenAnimationEnd?: (event: TransitionEvent<HTMLDivElement>) => void;
-  onCloseAnimationEnd?: (event: TransitionEvent<HTMLDivElement>) => void;
+  renderAsModal?: boolean;
+  onOpenAnimationEnd?: () => void;
+  onCloseAnimationEnd?: () => void;
 }
+
+export const ANIMATION_DURATION = 500;
 
 export type { SideSliderProps };

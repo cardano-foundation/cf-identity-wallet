@@ -14,4 +14,5 @@ export interface CardDetailsNestedAttributesProps {
   attribute: [string, JSONValue];
   customType?: string;
   cardKeyValue?: string;
+  itemProps?: Omit<CardDetailsItemProps, "info">;
 }

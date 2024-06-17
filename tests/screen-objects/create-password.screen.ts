@@ -11,7 +11,7 @@ export class CreatePasswordScreen {
   }
 
   get confirmPasswordInput() {
-    return $("#ion-input-1");
+    return $("#confirm-password-value input");
   }
 
   get createPasswordButton() {
@@ -19,7 +19,7 @@ export class CreatePasswordScreen {
   }
 
   get createPasswordInput() {
-    return $("#ion-input-0");
+    return $("#createPasswordValue input");
   }
 
   get errorMessageText() {
@@ -27,7 +27,7 @@ export class CreatePasswordScreen {
   }
 
   get hintInput() {
-    return $("#ion-input-2");
+    return $("#hintValue input");
   }
 
   get id() {
