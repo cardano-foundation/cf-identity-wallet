@@ -72,8 +72,6 @@ const CreatePassword = () => {
           })
         );
       }
-    } else {
-      await SecureStorage.set(KeyStoreKeys.PASSWORD_SKIPPED, String(true));
     }
 
     const { nextPath, updateRedux } = getNextRoute(RoutePath.CREATE_PASSWORD, {

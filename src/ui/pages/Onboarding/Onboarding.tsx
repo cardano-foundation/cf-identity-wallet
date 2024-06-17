@@ -17,7 +17,6 @@ import introImg4 from "../../assets/images/intro-4.png";
 import { PageFooter } from "../../components/PageFooter";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useEffect, useState } from "react";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 
 export type IntroImg0Type = typeof introImg0;
 
@@ -63,19 +62,15 @@ const Onboarding = () => {
 
   // @TODO - foconnor: This should be op: OperationType when available (non optional)
   const handleNavigation = (op?: string) => {
+    if (op) {
+      // @TODO - sdisalvo: Remove this condition and default to dispatch when the restore route is ready
+      return;
+    }
     const data: DataProps = {
       store: { stateCache },
-      state: {
-        recoveryWalletProgress: !!op,
-      },
     };
     const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-
-    if (op) {
-      SecureStorage.set(KeyStoreKeys.RECOVERY_WALLET, String(!!op));
-    }
-
     history.push({
       pathname: nextPath.pathname,
       state: data.state,

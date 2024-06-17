@@ -57,7 +57,6 @@ describe("State Cache", () => {
       passwordIsSet: false,
       passwordIsSkipped: false,
       ssiAgentIsSet: false,
-      recoveryWalletProgress: false,
     };
     const action = setAuthentication(authentication);
     const nextState = stateCacheSlice.reducer(initialState, action);

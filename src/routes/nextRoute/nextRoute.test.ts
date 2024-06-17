@@ -33,7 +33,6 @@ describe("NextRoute", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
           ssiAgentIsSet: false,
-          recoveryWalletProgress: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -167,7 +166,6 @@ describe("getNextRoute", () => {
         passwordIsSet: false,
         passwordIsSkipped: true,
         ssiAgentIsSet: false,
-        recoveryWalletProgress: false,
       },
       currentOperation: OperationType.IDLE,
       queueIncomingRequest: {

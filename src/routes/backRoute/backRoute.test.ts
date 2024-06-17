@@ -38,7 +38,6 @@ describe("getBackRoute", () => {
           userName: "",
           time: 0,
           ssiAgentIsSet: false,
-          recoveryWalletProgress: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -99,7 +98,7 @@ describe("getBackRoute", () => {
     const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
-    expect(result.updateRedux).toHaveLength(4);
+    expect(result.updateRedux).toHaveLength(3);
   });
 
   test("should return the correct back path when currentPath is /verifyseedphrase", () => {
@@ -166,7 +165,6 @@ describe("getPreviousRoute", () => {
           userName: "",
           time: 0,
           ssiAgentIsSet: false,
-          recoveryWalletProgress: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {

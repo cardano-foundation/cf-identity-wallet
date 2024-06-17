@@ -50,26 +50,9 @@
       padding-inline: 0.625rem;
       font-size: 1rem;
 
-      &:focus-within {
-        border: 1px dashed var(--ion-color-secondary);
-        background-color: transparent;
-      }
-
-      .word-input {
-        min-height: auto;
-
-        .input-highlight.sc-ion-input-md {
-          display: none;
-        }
-      }
-
       &.empty-word {
         border: 1px dashed var(--ion-color-dark-grey);
         background-color: transparent;
-
-        &.error {
-          border-color: var(--ion-color-danger);
-        }
       }
 
       .index {
@@ -86,10 +69,6 @@
         margin: 0.2rem auto;
 
         span {
-          font-size: 0.8rem;
-        }
-
-        .word-input {
           font-size: 0.8rem;
         }
 
