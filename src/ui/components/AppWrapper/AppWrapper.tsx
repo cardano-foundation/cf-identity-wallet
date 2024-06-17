@@ -211,6 +211,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
+    if (authentication.loggedIn) {
+      dispatch(setPauseQueueIncomingRequest(!isOnline));
+    } else {
+      dispatch(setPauseQueueIncomingRequest(true));
+    }
+  }, [isOnline, authentication.loggedIn, dispatch]);
+
+  useEffect(() => {
     const syncWithKeria = async () => {
       // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
       await Promise.all([
@@ -222,12 +230,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     if (isOnline) {
       syncWithKeria();
     }
-    if (authentication.loggedIn) {
-      dispatch(setPauseQueueIncomingRequest(!isOnline));
-    } else {
-      dispatch(setPauseQueueIncomingRequest(true));
-    }
-  }, [isOnline, authentication.loggedIn, dispatch]);
+  }, [isOnline, dispatch]);
 
   useEffect(() => {
     PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
