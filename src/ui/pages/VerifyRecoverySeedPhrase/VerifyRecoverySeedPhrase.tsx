@@ -294,7 +294,7 @@ const VerifyRecoverySeedPhrase = () => {
   const handleBack = () => {
     handleClearState();
     const { backPath, updateRedux } = getBackRoute(
-      RoutePath.VERIFY_SEED_PHRASE,
+      RoutePath.VERIFY_RECOVERY_SEED_PHRASE,
       {
         store: { stateCache },
       }
@@ -358,7 +358,7 @@ const VerifyRecoverySeedPhrase = () => {
               handleClearState();
               handleBack();
             }}
-            currentPath={RoutePath.VERIFY_SEED_PHRASE}
+            currentPath={RoutePath.VERIFY_RECOVERY_SEED_PHRASE}
             progressBar={true}
             progressBarValue={0.75}
             progressBarBuffer={1}
@@ -467,9 +467,11 @@ const VerifyRecoverySeedPhrase = () => {
         isOpen={alertManyAttempOpen}
         setIsOpen={setAlertManyAttempOpen}
         dataTestId="alert-fail"
-        headerText={i18n.t("verifyrecoveryseedphrase.alert.manyattemp.text")}
+        headerText={i18n.t(
+          "verifyrecoveryseedphrase.alert.toomanyattempts.text"
+        )}
         confirmButtonText={`${i18n.t(
-          "verifyrecoveryseedphrase.alert.manyattemp.button.confirm"
+          "verifyrecoveryseedphrase.alert.toomanyattempts.button.confirm"
         )}`}
         actionConfirm={handleClearState}
         actionCancel={closeClearAlert}

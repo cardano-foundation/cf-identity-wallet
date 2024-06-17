@@ -308,7 +308,7 @@ describe("Verify Recovery Seed Phrase", () => {
 
     await waitFor(() => {
       expect(
-        getByText(ENG_Trans.verifyrecoveryseedphrase.alert.manyattemp.text)
+        getByText(ENG_Trans.verifyrecoveryseedphrase.alert.toomanyattempts.text)
       ).toBeVisible();
       expect(
         getByText(ENG_Trans.verifyrecoveryseedphrase.button.lock)

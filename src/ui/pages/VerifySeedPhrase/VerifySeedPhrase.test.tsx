@@ -298,7 +298,7 @@ describe("Verify Seed Phrase Page", () => {
       fireEvent.click(backButton);
     });
 
-    expect(continueButton.disabled).toBe(true);
+    expect(dispatchMock).toBeCalledTimes(2);
   });
 
   test("The user can remove words from the Seed Phrase", async () => {
