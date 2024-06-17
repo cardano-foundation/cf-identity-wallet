@@ -127,7 +127,9 @@ const App = () => {
     );
   };
 
-  const isPublicPage = PublicRoutes.includes(currentRoute?.path as RoutePath);
+  const isPublicPage = PublicRoutes.includes(
+    window.location.pathname as RoutePath
+  );
 
   return (
     <IonApp>

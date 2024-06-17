@@ -1,5 +1,4 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
-import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { RootState } from "../../store";
 import {
   removeCurrentRoute,
@@ -9,56 +8,6 @@ import {
 import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 import { DataProps, PayloadProps } from "../nextRoute/nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { KeyStoreKeys } from "../../core/storage";
-
-const getDefaultPreviousPath = (path: string, data: DataProps) => {
-  const isRecoveryMode =
-    data.store.stateCache.authentication.recoveryWalletProgress;
-
-  if (RoutePath.SSI_AGENT === path) {
-    return isRecoveryMode
-      ? RoutePath.VERIFY_RECOVERY_SEED_PHRASE
-      : RoutePath.GENERATE_SEED_PHRASE;
-  }
-
-  if (RoutePath.VERIFY_SEED_PHRASE === path) {
-    return RoutePath.GENERATE_SEED_PHRASE;
-  }
-
-  if (
-    [
-      RoutePath.VERIFY_RECOVERY_SEED_PHRASE,
-      RoutePath.GENERATE_SEED_PHRASE,
-    ].includes(path as RoutePath)
-  ) {
-    return RoutePath.CREATE_PASSWORD;
-  }
-
-  return RoutePath.ONBOARDING;
-};
-
-const clearSecureStore = (path: string) => {
-  if (
-    [
-      RoutePath.VERIFY_RECOVERY_SEED_PHRASE,
-      RoutePath.GENERATE_SEED_PHRASE,
-    ].includes(path as RoutePath)
-  ) {
-    SecureStorage.remove(KeyStoreKeys.PASSWORD_SKIPPED);
-    SecureStorage.remove(KeyStoreKeys.APP_OP_PASSWORD);
-    return;
-  }
-
-  if (path === RoutePath.CREATE_PASSWORD) {
-    SecureStorage.remove(KeyStoreKeys.RECOVERY_WALLET);
-    return;
-  }
-
-  if (path === RoutePath.SSI_AGENT) {
-    SecureStorage.remove(KeyStoreKeys.SIGNIFY_BRAN);
-    return;
-  }
-};
 
 const getBackRoute = (
   currentPath: string,
@@ -68,7 +17,6 @@ const getBackRoute = (
   updateRedux: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
   const { updateRedux } = backRoute[currentPath];
-  clearSecureStore(currentPath);
 
   return {
     backPath: backPath(data),
@@ -83,12 +31,11 @@ const updateStoreSetCurrentRoute = (data: DataProps) => {
   if (prevPath) {
     path = prevPath.path;
   } else {
-    path = getDefaultPreviousPath(data.store.stateCache.routes[0].path, data);
+    path = data.store.stateCache.routes[0].path;
   }
 
   return setCurrentRoute({ path });
 };
-
 const getPreviousRoute = (data: DataProps): { pathname: string } => {
   const routes = data.store.stateCache.routes;
 
@@ -100,7 +47,7 @@ const getPreviousRoute = (data: DataProps): { pathname: string } => {
   } else if (prevPath) {
     path = prevPath.path;
   } else {
-    path = getDefaultPreviousPath(routes[0].path, data);
+    path = routes[0].path;
   }
 
   return { pathname: path };
@@ -115,14 +62,6 @@ const calcPreviousRoute = (
 
 const backPath = (data: DataProps) => getPreviousRoute(data);
 
-const clearPasswordState = (data: DataProps) => {
-  return setAuthentication({
-    ...data.store.stateCache.authentication,
-    passwordIsSkipped: false,
-    passwordIsSet: false,
-  });
-};
-
 const backRoute: Record<string, any> = {
   [RoutePath.ROOT]: {
     updateRedux: [],
@@ -135,27 +74,19 @@ const backRoute: Record<string, any> = {
       removeCurrentRoute,
       updateStoreSetCurrentRoute,
       clearSeedPhraseCache,
-      clearPasswordState,
     ],
   },
   [RoutePath.VERIFY_SEED_PHRASE]: {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
-  [RoutePath.VERIFY_RECOVERY_SEED_PHRASE]: {
-    updateRedux: [
-      removeCurrentRoute,
-      updateStoreSetCurrentRoute,
-      clearPasswordState,
-    ],
-  },
   [RoutePath.SSI_AGENT]: {
-    updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
+    updateRedux: [],
   },
   [RoutePath.SET_PASSCODE]: {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
   [RoutePath.CREATE_PASSWORD]: {
-    updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
+    updateRedux: [],
   },
   [RoutePath.CONNECTION_DETAILS]: {
     updateRedux: [removeCurrentRoute],

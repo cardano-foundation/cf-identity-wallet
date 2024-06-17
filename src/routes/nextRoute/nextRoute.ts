@@ -16,24 +16,15 @@ import { ToastMsgType } from "../../ui/globals/types";
 const getNextRootRoute = (store: StoreState) => {
   const authentication = store.stateCache.authentication;
 
-  let path = RoutePath.ONBOARDING;
-
-  if (authentication.passcodeIsSet) {
-    path = RoutePath.CREATE_PASSWORD;
-  }
-
-  if (authentication.passwordIsSet || authentication.passwordIsSkipped) {
-    path = authentication.recoveryWalletProgress
-      ? RoutePath.VERIFY_RECOVERY_SEED_PHRASE
-      : RoutePath.GENERATE_SEED_PHRASE;
-  }
-
-  if (authentication.seedPhraseIsSet) {
-    path = RoutePath.SSI_AGENT;
-  }
-
-  if (authentication.ssiAgentIsSet) {
+  let path;
+  if (
+    authentication.passcodeIsSet &&
+    authentication.seedPhraseIsSet &&
+    authentication.ssiAgentIsSet
+  ) {
     path = RoutePath.TABS_MENU;
+  } else {
+    path = RoutePath.ONBOARDING;
   }
 
   return { pathname: path };
@@ -47,9 +38,7 @@ const getNextOnboardingRoute = (data: DataProps) => {
   }
 
   if (data.store.stateCache.authentication.passwordIsSet) {
-    path = data.state?.recoveryWalletProgress
-      ? RoutePath.VERIFY_RECOVERY_SEED_PHRASE
-      : RoutePath.GENERATE_SEED_PHRASE;
+    path = RoutePath.GENERATE_SEED_PHRASE;
   }
 
   if (data.store.stateCache.authentication.seedPhraseIsSet) {
@@ -115,15 +104,6 @@ const updateStoreAfterSetupSSI = (data: DataProps) => {
   return setAuthentication({
     ...data.store.stateCache.authentication,
     ssiAgentIsSet: true,
-    recoveryWalletProgress: false,
-    seedPhraseIsSet: true,
-  });
-};
-
-const updateStoreRecoveryWallet = (data: DataProps) => {
-  return setAuthentication({
-    ...data.store.stateCache.authentication,
-    recoveryWalletProgress: data.state?.recoveryWalletProgress,
   });
 };
 
@@ -151,11 +131,7 @@ const updateStoreCurrentRoute = (data: DataProps) => {
   return setCurrentRoute({ path: data.state?.nextRoute });
 };
 
-const getNextCreatePasswordRoute = (data: DataProps) => {
-  if (data.store.stateCache.authentication.recoveryWalletProgress) {
-    return { pathname: RoutePath.VERIFY_RECOVERY_SEED_PHRASE };
-  }
-
+const getNextCreatePasswordRoute = () => {
   return { pathname: RoutePath.GENERATE_SEED_PHRASE };
 };
 const updateStoreAfterCreatePassword = (data: DataProps) => {
@@ -204,7 +180,7 @@ const nextRoute: Record<string, any> = {
   },
   [RoutePath.ONBOARDING]: {
     nextPath: (data: DataProps) => getNextOnboardingRoute(data),
-    updateRedux: [updateStoreRecoveryWallet],
+    updateRedux: [],
   },
   [RoutePath.SET_PASSCODE]: {
     nextPath: (data: DataProps) => getNextSetPasscodeRoute(data.store),
@@ -218,16 +194,12 @@ const nextRoute: Record<string, any> = {
     nextPath: () => getNextVerifySeedPhraseRoute(),
     updateRedux: [updateStoreAfterVerifySeedPhraseRoute, clearSeedPhraseCache],
   },
-  [RoutePath.VERIFY_RECOVERY_SEED_PHRASE]: {
-    nextPath: () => getNextVerifySeedPhraseRoute(),
-    updateRedux: [],
-  },
   [RoutePath.SSI_AGENT]: {
     nextPath: () => getNextCreateSSIAgentRoute(),
     updateRedux: [updateStoreAfterSetupSSI],
   },
   [RoutePath.CREATE_PASSWORD]: {
-    nextPath: (data: DataProps) => getNextCreatePasswordRoute(data),
+    nextPath: () => getNextCreatePasswordRoute(),
     updateRedux: [updateStoreAfterCreatePassword],
   },
   [RoutePath.CONNECTION_DETAILS]: {

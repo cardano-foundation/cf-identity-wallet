@@ -7,15 +7,6 @@ interface SeedPhraseModuleProps {
   removeSeedPhraseSelected?: (index: number) => void;
   emptyWord?: boolean;
   hideSeedNumber?: boolean;
-  inputMode?: boolean;
-  onInputChange?: (value: string, index: number) => void;
-  onInputFocus?: (index: number) => void;
-  onInputBlur?: (index: number) => void;
-  errorInputIndexs?: number[];
 }
 
-interface SeedPhraseModuleRef {
-  focusInputByIndex: (index: number) => void;
-}
-
-export type { SeedPhraseModuleProps, SeedPhraseModuleRef };
+export type { SeedPhraseModuleProps };

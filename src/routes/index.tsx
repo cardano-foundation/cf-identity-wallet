@@ -20,7 +20,6 @@ import { IdentifierDetails } from "../ui/pages/IdentifierDetails";
 import { CredentialDetails } from "../ui/pages/CredentialDetails";
 import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
 import { CreateSSIAgent } from "../ui/pages/CreateSSIAgent";
-import { VerifyRecoverySeedPhrase } from "../ui/pages/VerifyRecoverySeedPhrase";
 
 const Routes = () => {
   const stateCache = useAppSelector(getStateCache);
@@ -71,12 +70,6 @@ const Routes = () => {
         <Route
           path={RoutePath.CREATE_PASSWORD}
           component={CreatePassword}
-          exact
-        />
-
-        <Route
-          path={RoutePath.VERIFY_RECOVERY_SEED_PHRASE}
-          component={VerifyRecoverySeedPhrase}
           exact
         />
 
