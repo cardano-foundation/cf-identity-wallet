@@ -1,12 +1,6 @@
 name: Build and publish docker artifacts
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    types: [ opened, synchronize ]
   workflow_dispatch:
 
 env:
