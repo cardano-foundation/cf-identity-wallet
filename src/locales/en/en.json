@@ -588,6 +588,42 @@
       }
     }
   },
+  "verifyrecoveryseedphrase": {
+    "title": "Recover wallet",
+    "button": {
+      "continue": "Verify",
+      "lock": "Try again in 1 minute",
+      "clear": "Clear all"
+    },
+    "paragraph": {
+      "top": "Please verify your seed phrase to recover your wallet. To start typing click on the first option."
+    },
+    "suggestions": {
+      "title": "Suggestions",
+      "error": "All words must be compatible with the suggestions"
+    },
+    "alert": {
+      "fail": {
+        "text": "Sorry, the seed phrase you have entered is incorrect!",
+        "button": {
+          "confirm": "Try again"
+        }
+      },
+      "clear": {
+        "text": "Are you sure you want to clear all the words you have entered so far?",
+        "button": {
+          "confirm": "Clear all",
+          "cancel": "Cancel"
+        }
+      },
+      "toomanyattempts": {
+        "text": "Too many failed attempts. Please try again later.",
+        "button": {
+          "confirm": "Ok"
+        }
+      }
+    }
+  },
   "tabsmenu": {
     "label": {
       "identifiers": "Identity",
@@ -643,6 +679,7 @@
   "ssiagent": {
     "title": "Enter your SSI agent details",
     "description": "To continue, please enter the SSI agent boot and connect URLs (in your email or from your command line).",
+    "verifydescription":  "To continue, please enter the SSI agent connect URLs (in your email or from your command line).",
     "button": {
       "info": "Get more information",
       "validate": "Validate"
