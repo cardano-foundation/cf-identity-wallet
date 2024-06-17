@@ -2,6 +2,7 @@ import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
 import {
   removeCurrentRoute,
+  setAuthentication,
   setCurrentRoute,
 } from "../../store/reducers/stateCache";
 import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
@@ -88,6 +89,7 @@ const updateStoreSetCurrentRoute = (data: DataProps) => {
 
   return setCurrentRoute({ path });
 };
+
 const getPreviousRoute = (data: DataProps): { pathname: string } => {
   const routes = data.store.stateCache.routes;
 
@@ -119,6 +121,14 @@ const calcPreviousRoute = (
 
 const backPath = (data: DataProps) => getPreviousRoute(data);
 
+const clearPasswordState = (data: DataProps) => {
+  return setAuthentication({
+    ...data.store.stateCache.authentication,
+    passwordIsSkipped: false,
+    passwordIsSet: false,
+  });
+};
+
 const backRoute: Record<string, any> = {
   [RoutePath.ROOT]: {
     updateRedux: [],
@@ -131,13 +141,18 @@ const backRoute: Record<string, any> = {
       removeCurrentRoute,
       updateStoreSetCurrentRoute,
       clearSeedPhraseCache,
+      clearPasswordState,
     ],
   },
   [RoutePath.VERIFY_SEED_PHRASE]: {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
   [RoutePath.VERIFY_RECOVERY_SEED_PHRASE]: {
-    updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
+    updateRedux: [
+      removeCurrentRoute,
+      updateStoreSetCurrentRoute,
+      clearPasswordState,
+    ],
   },
   [RoutePath.SSI_AGENT]: {
     updateRedux: [removeCurrentRoute],

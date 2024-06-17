@@ -616,7 +616,7 @@
           "cancel": "Cancel"
         }
       },
-      "manyattemp": {
+      "toomanyattempts": {
         "text": "Too many failed attempts. Please try again later.",
         "button": {
           "confirm": "Ok"
