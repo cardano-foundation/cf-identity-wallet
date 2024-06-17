@@ -203,7 +203,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const authentication = useAppSelector(getAuthentication);
   const connectedWallet = useAppSelector(getConnectedWallet);
   const [isOnline, setIsOnline] = useState(false);
-  const [isMessagesHandled, setIsMessagesHandled] = useState(false);
   const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
   useActivityTimer();
 
@@ -212,24 +211,23 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
+    const syncWithKeria = async () => {
+      // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
+      await Promise.all([
+        Agent.agent.identifiers.syncKeriaIdentifiers(),
+        Agent.agent.connections.syncKeriaContacts(),
+        Agent.agent.credentials.syncACDCs(),
+      ]);
+    };
+    if (isOnline) {
+      syncWithKeria();
+    }
     if (authentication.loggedIn) {
-      const syncWithKeria = async () => {
-        // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-        // await Promise.all([
-        //   Agent.agent.identifiers.syncKeriaIdentifiers(),
-        //   Agent.agent.connections.syncKeriaContacts(),
-        //   Agent.agent.credentials.syncACDCs(),
-        // ]);
-      };
-      if (!isMessagesHandled && isOnline) {
-        syncWithKeria();
-        setIsMessagesHandled(true);
-      }
       dispatch(setPauseQueueIncomingRequest(!isOnline));
     } else {
       dispatch(setPauseQueueIncomingRequest(true));
     }
-  }, [isOnline, authentication.loggedIn, isMessagesHandled, dispatch]);
+  }, [isOnline, authentication.loggedIn, dispatch]);
 
   useEffect(() => {
     PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
