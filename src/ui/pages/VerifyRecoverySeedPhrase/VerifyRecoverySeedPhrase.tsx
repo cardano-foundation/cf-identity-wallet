@@ -82,7 +82,7 @@ const VerifyRecoverySeedPhrase = () => {
     >
       <RecoverySeedPhraseModule
         title={`${i18n.t("verifyrecoveryseedphrase.title")}`}
-        description={i18n.t("verifyrecoveryseedphrase.paragraph.top")}
+        description={`${i18n.t("verifyrecoveryseedphrase.paragraph.top")}`}
         ref={ref}
         testId={pageId}
         onVerifySuccess={handleNavigate}

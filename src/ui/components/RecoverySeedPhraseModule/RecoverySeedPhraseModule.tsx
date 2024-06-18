@@ -325,12 +325,14 @@ const RecoverySeedPhraseModule = forwardRef<
               {title}
             </h2>
           )}
-          <p
-            className="paragraph-top"
-            data-testid={`${testId}-paragraph-top`}
-          >
-            {description}
-          </p>
+          {description && (
+            <p
+              className="paragraph-top"
+              data-testid={`${testId}-paragraph-top`}
+            >
+              {description}
+            </p>
+          )}
           <SeedPhraseModule
             testId="user-input-seed-phrase-container"
             seedPhrase={seedPhrase}

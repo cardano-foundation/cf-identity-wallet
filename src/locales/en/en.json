@@ -44,6 +44,9 @@
     },
     "startover": {
       "label": "Forgot your passcode?"
+    },
+    "cantremember": {
+      "label": "Can't remember?"
     }
   },
   "generateseedphrase": {
@@ -1113,6 +1116,21 @@
         "restart": "Start again",
         "cancel": "Cancel"
       }
+    }
+  },
+  "forgotauth": {
+    "cancel": "Cancel",
+    "passcode": {
+      "title": "Forgot passcode",
+      "description": "Please verify your seed phrase to reset your passcode. To start typing click on the first option."
+    },
+    "password": {
+      "title": "Forgot password",
+      "description": "Please verify your seed phrase to reset your password. To start typing click on the first option."
+    },
+    "newpasscode": {
+      "title": "New passcode",
+      "description": "Create a new passcode to re-secure your wallet and perform operations"
     }
   },
   "shareidentifier": {

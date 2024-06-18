@@ -5,7 +5,7 @@ interface SeedPhraseInfo {
 
 interface RecoverySeedPhraseModuleProps {
   title?: string;
-  description: string;
+  description?: string;
   testId: string;
   onVerifySuccess: () => void;
 }
