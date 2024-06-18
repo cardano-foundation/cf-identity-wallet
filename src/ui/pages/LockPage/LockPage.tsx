@@ -1,31 +1,25 @@
 import i18n from "i18next";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
-import { useAppIonRouter } from "../../hooks";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getAuthentication,
-  login,
-  setAuthentication,
-  setCurrentRoute,
-} from "../../../store/reducers/stateCache";
+import { getBiometryCacheCache } from "../../../store/reducers/biometryCache";
+import { getAuthentication, login } from "../../../store/reducers/stateCache";
+import { Alert } from "../../components/Alert";
 import {
   ErrorMessage,
   MESSAGE_MILLISECONDS,
 } from "../../components/ErrorMessage";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { RoutePath } from "../../../routes";
-import { PasscodeModule } from "../../components/PasscodeModule";
+import { ForgotAuthInfo } from "../../components/ForgotAuthInfo";
+import { ForgotType } from "../../components/ForgotAuthInfo/ForgotAuthInfo.types";
 import { PageFooter } from "../../components/PageFooter";
-import { Alert } from "../../components/Alert";
-import "./LockPage.scss";
+import { PasscodeModule } from "../../components/PasscodeModule";
+import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
-import { getBiometryCacheCache } from "../../../store/reducers/biometryCache";
+import "./LockPage.scss";
 
 const LockPage = () => {
   const pageId = "lock-page";
-  const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const [passcode, setPasscode] = useState("");
@@ -34,13 +28,10 @@ const LockPage = () => {
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
   const { handleBiometricAuth } = useBiometricAuth();
   const biometryCacheCache = useSelector(getBiometryCacheCache);
+  const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
 
-  const headerText = seedPhrase
-    ? i18n.t("lockpage.alert.text.verify")
-    : i18n.t("lockpage.alert.text.restart");
-  const confirmButtonText = seedPhrase
-    ? i18n.t("lockpage.alert.button.verify")
-    : i18n.t("lockpage.alert.button.restart");
+  const headerText = i18n.t("lockpage.alert.text.verify");
+  const confirmButtonText = i18n.t("lockpage.alert.button.verify");
   const cancelButtonText = i18n.t("lockpage.alert.button.cancel");
 
   const handleClearState = () => {
@@ -109,23 +100,8 @@ const LockPage = () => {
   };
 
   const resetPasscode = () => {
-    SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {
-      dispatch(
-        setAuthentication({
-          ...authentication,
-          passcodeIsSet: false,
-        })
-      );
-      dispatch(
-        setCurrentRoute({
-          path: RoutePath.SET_PASSCODE,
-        })
-      );
-      ionRouter.push(RoutePath.SET_PASSCODE, "back", "pop");
-      handleClearState();
-    });
+    setOpenRecoveryAuth(true);
   };
-
   return (
     <ResponsivePageLayout
       pageId={pageId}
@@ -175,6 +151,11 @@ const LockPage = () => {
         confirmButtonText={confirmButtonText}
         cancelButtonText={cancelButtonText}
         actionConfirm={resetPasscode}
+      />
+      <ForgotAuthInfo
+        isOpen={openRecoveryAuth}
+        onClose={() => setOpenRecoveryAuth(false)}
+        type={ForgotType.Passcode}
       />
     </ResponsivePageLayout>
   );

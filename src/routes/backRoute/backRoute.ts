@@ -1,5 +1,4 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
-import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { RootState } from "../../store";
 import {
   removeCurrentRoute,
@@ -9,7 +8,7 @@ import {
 import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 import { DataProps, PayloadProps } from "../nextRoute/nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { KeyStoreKeys } from "../../core/storage";
+import { KeyStoreKeys, SecureStorage } from "../../core/storage";
 
 const getDefaultPreviousPath = (path: string, data: DataProps) => {
   const isRecoveryMode =
@@ -44,18 +43,18 @@ const clearSecureStore = (path: string) => {
       RoutePath.GENERATE_SEED_PHRASE,
     ].includes(path as RoutePath)
   ) {
-    SecureStorage.remove(KeyStoreKeys.PASSWORD_SKIPPED);
-    SecureStorage.remove(KeyStoreKeys.APP_OP_PASSWORD);
+    SecureStorage.delete(KeyStoreKeys.PASSWORD_SKIPPED);
+    SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
     return;
   }
 
   if (path === RoutePath.CREATE_PASSWORD) {
-    SecureStorage.remove(KeyStoreKeys.RECOVERY_WALLET);
+    SecureStorage.delete(KeyStoreKeys.RECOVERY_WALLET);
     return;
   }
 
   if (path === RoutePath.SSI_AGENT) {
-    SecureStorage.remove(KeyStoreKeys.SIGNIFY_BRAN);
+    SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     return;
   }
 };

@@ -79,7 +79,7 @@ describe("SetPasscode Page", () => {
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.startover.label)
+      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
     ).toBeInTheDocument();
   });
 
@@ -98,7 +98,7 @@ describe("SetPasscode Page", () => {
     expect(labelElement).toBeInTheDocument();
 
     const startOverElement = getByText(
-      EN_TRANSLATIONS.setpasscode.startover.label
+      EN_TRANSLATIONS.setpasscode.cantremember.label
     );
     fireEvent.click(startOverElement);
 

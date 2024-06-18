@@ -13,14 +13,11 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { Redirect, Route } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { RoutePath } from "../../../routes";
 import { store } from "../../../store";
-import { GenerateSeedPhrase } from "../../pages/GenerateSeedPhrase";
 import { CreatePasscodeModule } from "./CreatePasscodeModule";
 
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
@@ -176,7 +173,7 @@ describe("SetPasscode Page", () => {
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.startover.label)
+      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
     ).toBeInTheDocument();
 
     clickButtonRepeatedly(getByText, "1", 6);
@@ -240,7 +237,7 @@ describe("SetPasscode Page", () => {
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.startover.label)
+      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
     ).toBeInTheDocument();
 
     clickButtonRepeatedly(getByText, "1", 6);
@@ -310,7 +307,7 @@ describe("SetPasscode Page", () => {
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.startover.label)
+      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
     ).toBeInTheDocument();
 
     clickButtonRepeatedly(getByText, "1", 6);
@@ -380,7 +377,7 @@ describe("SetPasscode Page", () => {
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.startover.label)
+      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
     ).toBeInTheDocument();
 
     clickButtonRepeatedly(getByText, "1", 6);
