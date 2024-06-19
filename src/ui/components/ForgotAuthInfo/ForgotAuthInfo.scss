@@ -14,4 +14,10 @@
   .create-passcode-module {
     min-height: calc(100vh - (5rem + var(--ion-safe-area-top)));
   }
+
+  .page-header {
+    ion-toolbar {
+      --background: transparent;
+    }
+  }
 }
