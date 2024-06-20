@@ -141,6 +141,14 @@ class SignifyNotificationService extends AgentService {
     notif: Notification,
     callback: (event: KeriaNotification) => void
   ) {
+    if (notif.a.r === NotificationRoute.MultiSigExn) {
+      //TODO: these codes are only used to show the flow
+      await Agent.agent.multiSigs.joinGrantMessage(notif.a.d);
+    }
+    if (notif.a.r === NotificationRoute.MultiSigRpy) {
+      //TODO: these codes are only used to show the flow
+      await Agent.agent.multiSigs.joinAuthorization(notif.a.d);
+    }
     // We only process with the credential and the multisig at the moment
     if (notif.a.r === NotificationRoute.MultiSigIcp) {
       const multisigNotification = await this.props.signifyClient

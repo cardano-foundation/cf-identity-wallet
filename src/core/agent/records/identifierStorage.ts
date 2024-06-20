@@ -39,6 +39,16 @@ class IdentifierStorage {
     return records;
   }
 
+  async getMultisigMemebersMetadata(): Promise<IdentifierMetadataRecord[]> {
+    const records = await this.storageService.findAllByQuery(
+      {
+        groupCreated: true,
+      },
+      IdentifierMetadataRecord
+    );
+    return records;
+  }
+
   async getKeriIdentifiersMetadata(): Promise<IdentifierMetadataRecord[]> {
     return this.storageService.getAll(IdentifierMetadataRecord);
   }

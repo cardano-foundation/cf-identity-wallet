@@ -146,8 +146,10 @@ interface AgentUrls {
 
 enum NotificationRoute {
   ExnIpexGrant = "/exn/ipex/grant",
+  MultiSigExn = "/multisig/exn",
   MultiSigIcp = "/multisig/icp",
   MultiSigRot = "/multisig/rot",
+  MultiSigRpy = "/multisig/rpy",
   ExnIpexApply = "/exn/ipex/apply",
   ExnIpexAgree = "/exn/ipex/agree",
 }
