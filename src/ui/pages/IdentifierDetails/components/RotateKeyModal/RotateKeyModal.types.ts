@@ -2,7 +2,8 @@ interface RotateKeyModalProps {
   isOpen: boolean;
   onClose: () => void;
   signingKey: string;
-  onRotateKeyClick: () => Promise<void>;
+  identifierId: string;
+  onReloadData: () => Promise<void>;
 }
 
 export type { RotateKeyModalProps };

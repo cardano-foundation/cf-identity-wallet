@@ -30,7 +30,7 @@ import { OptionItem, OptionModal } from "../OptionsModal";
 import "./IdentifierOptions.scss";
 import { IdentifierOptionsProps } from "./IdentifierOptions.types";
 import { IdentifierJsonModal } from "./components";
-import { RotateKeyModal } from "./components/RotateKeyModal/RotateKeyModal";
+import { RotateKeyModal } from "../../pages/IdentifierDetails/components/RotateKeyModal/RotateKeyModal";
 
 const IdentifierOptions = ({
   optionsIsOpen,
@@ -47,8 +47,6 @@ const IdentifierOptions = ({
   const [newSelectedTheme, setNewSelectedTheme] = useState(cardData.theme);
   const [viewIsOpen, setViewIsOpen] = useState(false);
   const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
-
-  const [openRotateKeyModal, setOpenRotateKeyModal] = useState(false);
 
   const verifyDisplayName =
     newDisplayName.length > 0 &&
@@ -135,7 +133,7 @@ const IdentifierOptions = ({
       icon: refreshOutline,
       label: i18n.t("identifiers.details.options.rotatekeys"),
       onClick: () => {
-        setOpenRotateKeyModal(true);
+        handleRotateKey();
       },
       testId: "rotate-keys",
     },
@@ -235,12 +233,6 @@ const IdentifierOptions = ({
         cardData={cardData}
         isOpen={viewIsOpen}
         onDissmiss={() => setViewIsOpen(false)}
-      />
-      <RotateKeyModal
-        onRotateKeyClick={handleRotateKey}
-        isOpen={openRotateKeyModal}
-        onClose={() => setOpenRotateKeyModal(false)}
-        signingKey={cardData?.k[0] || ""}
       />
     </>
   );

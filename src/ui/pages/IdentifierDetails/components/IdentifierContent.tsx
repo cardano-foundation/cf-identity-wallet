@@ -1,4 +1,8 @@
-import { calendarNumberOutline, personCircleOutline , refreshOutline } from "ionicons/icons";
+import {
+  calendarNumberOutline,
+  personCircleOutline,
+  refreshOutline,
+} from "ionicons/icons";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import { IdentifierContentProps } from "./IdentifierContent.types";
 import { i18n } from "../../../../i18n";
@@ -9,7 +13,7 @@ import { BackingMode } from "../../../../core/configuration/configurationService
 
 const IdentifierContent = ({
   cardData,
-  rotateKeys,
+  onOpenRotateKey,
 }: IdentifierContentProps) => {
   return (
     <>
@@ -36,7 +40,7 @@ const IdentifierContent = ({
                 textIcon="identifiers.details.signingkeyslist.icon"
                 testId={`signing-key-${index}`}
                 actionIcon={refreshOutline}
-                actionIconClick={rotateKeys}
+                actionIconClick={onOpenRotateKey}
               />
             );
           })}

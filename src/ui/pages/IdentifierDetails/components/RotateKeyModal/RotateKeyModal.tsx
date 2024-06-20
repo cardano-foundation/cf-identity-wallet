@@ -1,23 +1,33 @@
 import { IonButton, IonIcon } from "@ionic/react";
 import { refreshOutline } from "ionicons/icons";
 import { i18n } from "../../../../../i18n";
-import { CardDetailsBlock, CardDetailsItem } from "../../../CardDetails";
-import { OptionModal } from "../../../OptionsModal";
+import {
+  CardDetailsBlock,
+  CardDetailsItem,
+} from "../../../../components/CardDetails";
+import { OptionModal } from "../../../../components/OptionsModal";
 import { RotateKeyModalProps } from "./RotateKeyModal.types";
 import "./RotateKeyModal.scss";
-import { VerifyPasscode } from "../../../VerifyPasscode";
-import { VerifyPassword } from "../../../VerifyPassword";
+import { VerifyPasscode } from "../../../../components/VerifyPasscode";
+import { VerifyPassword } from "../../../../components/VerifyPassword";
 import { useState } from "react";
-import { getStateCache } from "../../../../../store/reducers/stateCache";
-import { useAppSelector } from "../../../../../store/hooks";
-import { Spinner } from "../../../Spinner";
+import {
+  getStateCache,
+  setToastMsg,
+} from "../../../../../store/reducers/stateCache";
+import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
+import { Spinner } from "../../../../components/Spinner";
+import { Agent } from "../../../../../core/agent/agent";
+import { ToastMsgType } from "../../../../globals/types";
 
 const RotateKeyModal = ({
   isOpen,
   signingKey,
+  identifierId,
   onClose,
-  onRotateKeyClick,
+  onReloadData,
 }: RotateKeyModalProps) => {
+  const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
@@ -36,8 +46,16 @@ const RotateKeyModal = ({
 
   const handleAfterVerify = async () => {
     setLoading(true);
-    await onRotateKeyClick();
-    setLoading(false);
+
+    try {
+      await Agent.agent.identifiers.rotateIdentifier(identifierId);
+      await onReloadData();
+      dispatch(setToastMsg(ToastMsgType.ROTATE_KEY_SUCCESS));
+    } catch (e) {
+      dispatch(setToastMsg(ToastMsgType.ROTATE_KEY_ERROR));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
