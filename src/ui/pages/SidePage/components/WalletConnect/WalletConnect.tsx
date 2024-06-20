@@ -1,52 +1,50 @@
-import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
-import {
-  getPendingConnection,
-  setPendingConnections,
-} from "../../../../../store/reducers/walletConnectionsCache";
+import { useState } from "react";
+import { useAppSelector } from "../../../../../store/hooks";
+import { getPendingConnection } from "../../../../../store/reducers/walletConnectionsCache";
+import { SideSlider } from "../../../../components/SideSlider";
+import { SidePageContentProps } from "../../SidePage.types";
 import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
-import { SidePageContentProps } from "../../SidePage.types";
 
 const WalletConnect = ({ setOpenPage }: SidePageContentProps) => {
-  const dispatch = useAppDispatch();
   const pendingConnection = useAppSelector(getPendingConnection);
   const [requestStage, setRequestStage] = useState(0);
-
-  useEffect(() => {
-    setTimeout(() => setOpenPage(!!pendingConnection), 10);
-  }, [pendingConnection]);
+  const [hiddenStageOne, setHiddenStageOne] = useState(false);
 
   const changeToStageTwo = () => {
+    setTimeout(() => setHiddenStageOne(true), 400);
     setRequestStage(1);
+  };
+
+  const backToStageOne = () => {
+    setHiddenStageOne(false);
+    setRequestStage(0);
   };
 
   const handleCloseWalletConnect = () => {
     setOpenPage(false);
-
-    setTimeout(() => {
-      dispatch(setPendingConnections(null));
-    }, 500);
   };
 
   if (!pendingConnection) return null;
 
-  if (requestStage === 0)
-    return (
-      <WalletConnectStageOne
-        isOpen={!!pendingConnection}
-        onClose={handleCloseWalletConnect}
-        onAccept={changeToStageTwo}
-      />
-    );
-
   return (
-    <WalletConnectStageTwo
-      data={pendingConnection}
-      isOpen={!!pendingConnection}
-      onClose={handleCloseWalletConnect}
-      onBackClick={() => setRequestStage(0)}
-    />
+    <div className="wallet-connect-container">
+      {!hiddenStageOne && (
+        <WalletConnectStageOne
+          isOpen={!!pendingConnection}
+          onClose={handleCloseWalletConnect}
+          onAccept={changeToStageTwo}
+        />
+      )}
+      <SideSlider open={requestStage === 1}>
+        <WalletConnectStageTwo
+          pendingDAppMeerkat={pendingConnection.id}
+          isOpen={!!pendingConnection}
+          onClose={handleCloseWalletConnect}
+          onBackClick={backToStageOne}
+        />
+      </SideSlider>
+    </div>
   );
 };
 

@@ -2,7 +2,6 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
-  getCurrentOperation,
   setAuthentication,
   setCurrentOperation,
   setInitialized,
@@ -14,6 +13,8 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
+  updateIsPending,
+  updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   setCredsCache,
@@ -40,14 +41,31 @@ import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/id
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 import { useActivityTimer } from "./hooks/useActivityTimer";
-import { setWalletConnectionsCache } from "../../../store/reducers/walletConnectionsCache";
-import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
+import {
+  getConnectedWallet,
+  setConnectedWallet,
+  setPendingConnection,
+  setWalletConnectionsCache,
+} from "../../../store/reducers/walletConnectionsCache";
 import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
-import { PeerConnectSigningEvent } from "../../../core/cardano/walletConnect/peerConnection.types";
+import {
+  PeerConnectSigningEvent,
+  PeerConnectedEvent,
+  PeerConnectionBrokenEvent,
+  PeerDisconnectedEvent,
+} from "../../../core/cardano/walletConnect/peerConnection.types";
 import { MultiSigService } from "../../../core/agent/services/multiSigService";
 import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCache";
 import { CardListViewType } from "../SwitchCardView";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
+import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
+import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
+import { i18n } from "../../../i18n";
+import { Alert } from "../Alert";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences/preferencesStorage";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -137,15 +155,77 @@ const peerConnectRequestSignChangeHandler = async (
   event: PeerConnectSigningEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  //TODO: Handle logic for the accept/decline sing request
+  const connectedDAppAddress =
+    PeerConnection.peerConnection.getConnectedDAppAddress();
+  const peerConnection =
+    await Agent.agent.peerConnectionMetadataStorage.getPeerConnection(
+      connectedDAppAddress
+    );
+  dispatch(
+    setQueueIncomingRequest({
+      signTransaction: event,
+      peerConnection,
+      type: IncomingRequestType.PEER_CONNECT_SIGN,
+    })
+  );
+};
+
+const peerConnectedChangeHandler = async (
+  event: PeerConnectedEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  const existingConnections =
+    await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
+  dispatch(setWalletConnectionsCache(existingConnections));
+  const connectedWallet = existingConnections.find(
+    (connection) => connection.id === event.payload.dAppAddress
+  );
+  if (connectedWallet) {
+    dispatch(setConnectedWallet(connectedWallet));
+  }
+  dispatch(setPendingConnection(null));
+  dispatch(setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS));
+};
+
+const peerDisconnectedChangeHandler = async (
+  event: PeerDisconnectedEvent,
+  connectedMeerKat: string | null,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  if (connectedMeerKat === event.payload.dAppAddress) {
+    dispatch(setConnectedWallet(null));
+    dispatch(setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
+  }
+};
+
+const peerConnectionBrokenChangeHandler = async (
+  event: PeerConnectionBrokenEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  dispatch(setConnectedWallet(null));
+  dispatch(setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
+};
+
+const signifyOperationStateChangeHandler = async (
+  { oid, opType }: { oid: string; opType: OperationPendingRecordType },
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  switch (opType) {
+  case OperationPendingRecordType.Witness:
+  case OperationPendingRecordType.Group:
+    dispatch(updateIsPending({ id: oid, isPending: false }));
+    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
+    break;
+  }
 };
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
-  const operation = useAppSelector(getCurrentOperation);
+  const connectedWallet = useAppSelector(getConnectedWallet);
   const [isOnline, setIsOnline] = useState(false);
   const [isMessagesHandled, setIsMessagesHandled] = useState(false);
+  const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
   useActivityTimer();
 
   useEffect(() => {
@@ -187,7 +267,22 @@ const AppWrapper = (props: { children: ReactNode }) => {
     } else {
       dispatch(setPauseQueueIncomingRequest(true));
     }
-  }, [isOnline, authentication.loggedIn, dispatch]);
+  }, [isOnline, authentication.loggedIn, isMessagesHandled, dispatch]);
+
+  useEffect(() => {
+    PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
+      async (event) => {
+        if (!connectedWallet) {
+          return;
+        }
+        return peerDisconnectedChangeHandler(
+          event,
+          connectedWallet.id,
+          dispatch
+        );
+      }
+    );
+  }, [connectedWallet, dispatch]);
 
   const checkKeyStore = async (key: string) => {
     try {
@@ -201,23 +296,30 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const loadDatabase = async () => {
     const connectionsDetails = await Agent.agent.connections.getConnections();
 
-    const credentials = await Agent.agent.credentials.getCredentials();
+    const credsCache = await Agent.agent.credentials.getCredentials();
+    const credsArchivedCache = await Agent.agent.credentials.getCredentials(
+      true
+    );
     const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
+    const storedPeerConnections =
+      await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
 
     dispatch(setIdentifiersCache(storedIdentifiers));
-    dispatch(setCredsCache(credentials));
+    dispatch(setCredsCache(credsCache));
+    dispatch(setCredsArchivedCache(credsArchivedCache));
     dispatch(setConnectionsCache(connectionsDetails));
-    // TODO: Need update after core function completed.
-    dispatch(setWalletConnectionsCache(walletConnectionsFix));
+    dispatch(setWalletConnectionsCache(storedPeerConnections));
   };
 
   const loadCacheBasicStorage = async () => {
     let userName: { userName: string } = { userName: "" };
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
-    const seedPhraseIsSet = await checkKeyStore(
-      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
-    );
+    const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
+
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
+    const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
+      MiscRecordId.KERIA_CONNECT_URL
+    );
 
     const identifiersFavourites = await Agent.agent.basicStorage.findById(
       MiscRecordId.IDENTIFIERS_FAVOURITES
@@ -266,46 +368,49 @@ const AppWrapper = (props: { children: ReactNode }) => {
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
+        ssiAgentIsSet:
+          !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
       })
     );
+
+    return {
+      keriaConnectUrlRecord,
+    };
   };
 
   const initApp = async () => {
     await new ConfigurationService().start();
-    try {
-      await Agent.agent.start();
-      setIsOnline(true);
-      await loadDatabase();
-    } catch (e) {
-      const errorStack = (e as Error).stack as string;
-      const errorMessage = (e as Error).message;
-
-      // If the error is failed to fetch with signify, we retry until the connection is secured
-      if (/SignifyClient/gi.test(errorStack)) {
-        await loadDatabase();
-        Agent.agent.bootAndConnect().then(() => {
-          setIsOnline(Agent.agent.getKeriaOnlineStatus());
-        });
-      } else if (/signify-bran/gi.test(errorMessage)) {
-        dispatch(setInitialized(true));
-        return;
-      } else {
-        throw e;
-      }
-    }
+    await Agent.agent.initDatabaseConnection();
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
-    const appAlreadyInit = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_ALREADY_INIT
-    );
-    if (!appAlreadyInit) {
+    try {
+      // @TODO - foconnor: This should use our normal DB - keeping Preferences temporarily to not break existing mobile builds.
+      // Will remove preferences again once we have better handling on APP_ALREADY_INIT with user input.
+      await PreferencesStorage.get(PreferencesKeys.APP_ALREADY_INIT);
+    } catch (e) {
       await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
-      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
-      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY);
       await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     }
-    await loadCacheBasicStorage();
+    await loadDatabase();
+    const { keriaConnectUrlRecord } = await loadCacheBasicStorage();
+
+    if (keriaConnectUrlRecord) {
+      try {
+        await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
+        setIsOnline(true);
+      } catch (e) {
+        const errorStack = (e as Error).stack as string;
+        // If the error is failed to fetch with signify, we retry until the connection is secured
+        if (/SignifyClient/gi.test(errorStack)) {
+          Agent.agent.connect().then(() => {
+            setIsOnline(Agent.agent.getKeriaOnlineStatus());
+          });
+        } else {
+          throw e;
+        }
+      }
+    }
 
     Agent.agent.onKeriaStatusStateChanged((event) => {
       setIsOnline(event.payload.isOnline);
@@ -324,10 +429,39 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return peerConnectRequestSignChangeHandler(event, dispatch);
       }
     );
+    PeerConnection.peerConnection.onPeerConnectedStateChanged(async (event) => {
+      return peerConnectedChangeHandler(event, dispatch);
+    });
+    PeerConnection.peerConnection.onPeerConnectionBrokenStateChanged(
+      async (event) => {
+        setIsAlertPeerBrokenOpen(true);
+        return peerConnectionBrokenChangeHandler(event, dispatch);
+      }
+    );
+    Agent.agent.signifyNotifications.onSignifyOperationStateChanged((event) => {
+      return signifyOperationStateChangeHandler(event, dispatch);
+    });
     dispatch(setInitialized(true));
   };
 
-  return <>{props.children}</>;
+  return (
+    <>
+      {props.children}
+      <Alert
+        isOpen={isAlertPeerBrokenOpen}
+        setIsOpen={setIsAlertPeerBrokenOpen}
+        dataTestId="alert-confirm-connection-broken"
+        headerText={i18n.t(
+          "menu.tab.items.connectwallet.connectionbrokenalert.message"
+        )}
+        confirmButtonText={`${i18n.t(
+          "menu.tab.items.connectwallet.connectionbrokenalert.confirm"
+        )}`}
+        actionConfirm={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+      />
+    </>
+  );
 };
 
 export {
@@ -335,4 +469,9 @@ export {
   connectionStateChangedHandler,
   acdcChangeHandler,
   keriaNotificationsChangeHandler,
+  peerConnectedChangeHandler,
+  peerDisconnectedChangeHandler,
+  peerConnectRequestSignChangeHandler,
+  peerConnectionBrokenChangeHandler,
+  signifyOperationStateChangeHandler,
 };

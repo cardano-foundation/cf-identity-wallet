@@ -35,9 +35,9 @@ import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifi
 import { PageFooter } from "../PageFooter";
 import { CustomInput } from "../CustomInput";
 import { OptionModal } from "../OptionsModal";
-import { setPendingConnections } from "../../../store/reducers/walletConnectionsCache";
-import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
+import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
 import { CreateIdentifier } from "../CreateIdentifier";
+import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 
 const Scanner = forwardRef(
   ({ setIsValueCaptured, handleReset }: ScannerProps, ref) => {
@@ -94,10 +94,13 @@ const Scanner = forwardRef(
     }));
 
     const handleConnectWallet = (id: string) => {
-      // TODO: Handle connect wallet using the id
       handleReset && handleReset();
       dispatch(setToastMsg(ToastMsgType.PEER_ID_SUCCESS));
-      dispatch(setPendingConnections(walletConnectionsFix[0]));
+      dispatch(
+        setPendingConnection({
+          id,
+        })
+      );
     };
 
     const updateConnections = async (groupId: string) => {
@@ -123,6 +126,24 @@ const Scanner = forwardRef(
 
       if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
         handleConnectWallet(content);
+        return;
+      }
+
+      if (
+        [
+          OperationType.SCAN_SSI_BOOT_URL,
+          OperationType.SCAN_SSI_CONNECT_URL,
+        ].includes(currentOperation)
+      ) {
+        if (OperationType.SCAN_SSI_BOOT_URL === currentOperation) {
+          dispatch(setBootUrl(content));
+        }
+
+        if (OperationType.SCAN_SSI_CONNECT_URL === currentOperation) {
+          dispatch(setConnectUrl(content));
+        }
+
+        handleReset && handleReset();
         return;
       }
 
@@ -169,6 +190,8 @@ const Scanner = forwardRef(
           [
             OperationType.SCAN_CONNECTION,
             OperationType.SCAN_WALLET_CONNECTION,
+            OperationType.SCAN_SSI_BOOT_URL,
+            OperationType.SCAN_SSI_CONNECT_URL,
           ].includes(currentOperation)) &&
           currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
           currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING) ||
@@ -226,6 +249,9 @@ const Scanner = forwardRef(
             secondaryButtonAction={() => setPasteModalIsOpen(true)}
           />
         );
+      case OperationType.SCAN_SSI_BOOT_URL:
+      case OperationType.SCAN_SSI_CONNECT_URL:
+        return <div></div>;
       default:
         return (
           <PageFooter

@@ -52,6 +52,7 @@ const CardDetailsAttributes = ({
                 key={index}
                 attribute={item}
                 customType={customType}
+                itemProps={itemProps}
               />
             );
         }

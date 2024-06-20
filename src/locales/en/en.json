@@ -535,6 +535,14 @@
       }
     ]
   },
+  "aboutssiagent": {
+    "done": "Done",
+    "intro": {
+      "title": "About SSI agent",
+      "text": ""
+    },
+    "sections": []
+  },
   "lockpage": {
     "title": "Welcome back",
     "description": "Please enter your passcode to login",
@@ -630,6 +638,30 @@
       "hasNoSymbol": "Must contain a valid symbol",
       "hasNoMatch": "Passwords do not match",
       "hintSameAsPassword": "Your hint cannot be your password"
+    }
+  },
+  "ssiagent": {
+    "title": "Enter your SSI agent details",
+    "description": "To continue, please enter the SSI agent boot and connect URLs (in your email or from your command line).",
+    "button": {
+      "info": "Get more information",
+      "validate": "Validate"
+    },
+    "input": {
+      "boot": {
+        "label": "Boot URL",
+        "placeholder": "Paste or scan your boot URL"
+      },
+      "connect": {
+        "label": "Connect URL",
+        "placeholder": "Paste or scan your connect URL"
+      }
+    },
+    "error": {
+      "invalidurl": "Enter a valid URL",
+      "invalidbooturl": "Enter a valid boot URL",
+      "invalidconnecturl": "Enter a valid connect URL",
+      "mismatchconnecturl": "This connect URL doesn’t match the boot URL"
     }
   },
   "operationspasswordregex": {
@@ -866,16 +898,14 @@
           "cip": "CIP-45",
           "tabheader": "Cardano Connect",
           "connectbtn": "Connect with Cardano",
-          "connectwalletmodal": {
-            "header": "New connection",
-            "cancel": "Cancel",
-            "scanqr": "Scan QR code",
-            "pastePID": "Paste Peer ID",
-            "disconnectbeforecreatealert": {
-              "message": "You are currently connected. To connect with a new wallet, you will be disconnected from your current selection. Would you like to disconnect and continue?",
-              "confirm": "Continue",
-              "cancel": "Cancel"
-            }
+          "disconnectbeforecreatealert": {
+            "message": "You are currently connected. To connect with a new wallet, you will be disconnected from your current selection. Would you like to disconnect and continue?",
+            "confirm": "Continue",
+            "cancel": "Cancel"
+          },
+          "connectionbrokenalert": {
+            "message": "Your connection has been disconnected as you have deleted the chosen identifier paired with this connection. Please choose a new identifier to re-establish this connection.",
+            "confirm": "Ok"
           },
           "inputpidmodal": {
             "header": "Paste Meerkat ID",
@@ -901,7 +931,9 @@
             "confirmconnect": {
               "done": "Done",
               "connectbtn": "Connect",
-              "disconnectbtn": "Disconnect"
+              "disconnectbtn": "Disconnect",
+              "connectingbtn": "Connecting...",
+              "pending": "Pending"
             }
           },
           "request": {
@@ -1188,22 +1220,11 @@
     "setupbiometricsuccess": "Biometrics setup successfully"
   },
   "request": {
-    "signtransaction": {
-      "title": "Sign transaction",
+    "sign": {
+      "title": "Sign",
+      "identifier": "Identifier",
       "transaction": {
-        "address": "Address",
-        "data": "Data",
-        "action": "Action",
-        "actionText": "Action text",
-        "id": "ID",
-        "event": "Event",
-        "category": "Category",
-        "proposal": "Proposal",
-        "votedat": "Voted at",
-        "network": "Network",
-        "votingpower": "Voting power",
-        "slot": "Slot",
-        "uri": "URI"
+        "data": "Data"
       }
     },
     "connection": {
@@ -1247,7 +1268,8 @@
       "accept": "Accept",
       "decline": "Decline",
       "addidentifier": "Add identifier",
-      "sign": "Sign"
+      "sign": "Sign", 
+      "dontallow": "Don't allow"
     },
     "alert": {
       "cancel": "Cancel"

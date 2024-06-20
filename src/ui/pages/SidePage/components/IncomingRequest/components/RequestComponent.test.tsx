@@ -5,10 +5,16 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../../../locales/en/en.json";
 import { store } from "../../../../../../store";
-import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
+import {
+  IncomingRequestProps,
+  IncomingRequestType,
+} from "../../../../../../store/reducers/stateCache/stateCache.types";
 import { connectionsFix } from "../../../../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../../../../__fixtures__/filteredIdentifierFix";
-import { signTransactionFix } from "../../../../../__fixtures__/signTransactionFix";
+import {
+  signTransactionFix,
+  signObjectFix,
+} from "../../../../../__fixtures__/signTransactionFix";
 import { RequestComponent } from "./RequestComponent";
 setupIonicReact();
 mockIonicReact();
@@ -17,7 +23,15 @@ jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonAlert: ({ children }: { children: any }) => children,
 }));
-
+jest.mock("../../../../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      peerConnectionMetadataStorage: {
+        getPeerConnectionMetadata: jest.fn(),
+      },
+    },
+  },
+}));
 describe("Multi-Sig request", () => {
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
@@ -33,12 +47,23 @@ describe("Multi-Sig request", () => {
   const requestData = {
     id: "abc123456",
     type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
+    event: {
+      id: "event-id",
+      createdAt: new Date(),
+      a: { d: "d" },
+    },
     multisigIcpDetails: {
       ourIdentifier: filteredIdentifierFix[0],
       sender: connectionsFix[3],
       otherConnections: [connectionsFix[4], connectionsFix[5]],
       threshold: 1,
     },
+  };
+  const credentialRequestData = {
+    id: "id",
+    type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
+    logo: "logo",
+    label: "label",
   };
   const initiateAnimation = false;
   const handleAccept = jest.fn();
@@ -53,12 +78,11 @@ describe("Multi-Sig request", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={requestData}
+          requestData={credentialRequestData as any}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.CREDENTIAL_OFFER_RECEIVED}
         />
       </Provider>
     );
@@ -69,11 +93,6 @@ describe("Multi-Sig request", () => {
   });
 
   test("Display fallback image when provider logo is empty: CREDENTIAL_OFFER_RECEIVED", async () => {
-    const testData = {
-      ...requestData,
-      logo: "",
-    };
-
     const { getByTestId } = render(
       <Provider store={storeMocked}>
         <RequestComponent
@@ -81,12 +100,11 @@ describe("Multi-Sig request", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={testData}
+          requestData={credentialRequestData as any}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.CREDENTIAL_OFFER_RECEIVED}
         />
       </Provider>
     );
@@ -106,12 +124,11 @@ describe("Multi-Sig request", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={requestData}
+          requestData={requestData as IncomingRequestProps}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.MULTI_SIG_REQUEST_INCOMING}
         />
       </Provider>
     );
@@ -152,12 +169,11 @@ describe("Multi-Sig request", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={requestData}
+          requestData={requestData as IncomingRequestProps}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.MULTI_SIG_REQUEST_INCOMING}
         />
       </Provider>
     );
@@ -191,8 +207,9 @@ describe("Sign request", () => {
   const requestData = {
     id: "abc123456",
     label: "Cardano",
-    type: IncomingRequestType.SIGN_TRANSACTION_REQUEST,
+    type: IncomingRequestType.PEER_CONNECT_SIGN,
     signTransaction: signTransactionFix,
+    peerConnection: { id: "id", name: "DApp" },
   };
 
   const initiateAnimation = false;
@@ -208,35 +225,22 @@ describe("Sign request", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={requestData}
+          requestData={requestData as IncomingRequestProps}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.SIGN_TRANSACTION_REQUEST}
         />
       </Provider>
     );
 
+    expect(getByText(requestData.peerConnection?.name)).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.request.signtransaction.title)
+      getByText(requestData.signTransaction.payload.payload)
     ).toBeVisible();
-
-    expect(getByText(requestData.label)).toBeVisible();
-    expect(getByText(signTransactionFix.action)).toBeVisible();
-    expect(getByText(signTransactionFix.actionText)).toBeVisible();
-    expect(getByText(signTransactionFix.data.id)).toBeVisible();
-    expect(getByText(signTransactionFix.data.category)).toBeVisible();
-    expect(getByText(signTransactionFix.data.event)).toBeVisible();
-    expect(getByText(signTransactionFix.data.network)).toBeVisible();
-    expect(getByText(signTransactionFix.data.proposal)).toBeVisible();
-    expect(getByText(signTransactionFix.data.votedAt)).toBeVisible();
-    expect(getByText(signTransactionFix.data.votingPower)).toBeVisible();
-    expect(getByText(signTransactionFix.eventName)).toBeVisible();
-    expect(getByText(signTransactionFix.ownerUrl)).toBeVisible();
-    expect(getByText(signTransactionFix.slot)).toBeVisible();
-    expect(getByText(signTransactionFix.uri)).toBeVisible();
-    expect(getAllByText(signTransactionFix.data.address).length).toBe(2);
+    expect(
+      getByText(requestData.signTransaction.payload.identifier)
+    ).toBeVisible();
   });
 
   test("Display fallback image when provider logo is empty: BALLOT_TRANSACTION_REQUEST", async () => {
@@ -252,12 +256,87 @@ describe("Sign request", () => {
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={testData}
+          requestData={testData as IncomingRequestProps}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
           handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.SIGN_TRANSACTION_REQUEST}
+        />
+      </Provider>
+    );
+
+    expect(getByTestId("sign-logo")).toBeInTheDocument();
+
+    expect(getByTestId("sign-logo").getAttribute("src")).not.toBe(undefined);
+  });
+});
+
+describe("Sign JSON", () => {
+  const mockStore = configureStore();
+  const dispatchMock = jest.fn();
+  const storeMocked = {
+    ...mockStore(store.getState()),
+    dispatch: dispatchMock,
+  };
+
+  const pageId = "incoming-request";
+  const activeStatus = true;
+  const blur = false;
+  const setBlur = jest.fn();
+  const requestData = {
+    id: "abc123456",
+    label: "Cardano",
+    type: IncomingRequestType.PEER_CONNECT_SIGN,
+    signTransaction: signObjectFix,
+    peerConnection: { id: "id", name: "DApp" },
+  };
+
+  const initiateAnimation = false;
+  const handleAccept = jest.fn();
+  const handleCancel = jest.fn();
+  const handleIgnore = jest.fn();
+
+  test("It renders content for BALLOT_TRANSACTION_REQUEST ", async () => {
+    const { getByText, getAllByText } = render(
+      <Provider store={storeMocked}>
+        <RequestComponent
+          pageId={pageId}
+          activeStatus={activeStatus}
+          blur={blur}
+          setBlur={setBlur}
+          requestData={requestData as IncomingRequestProps}
+          initiateAnimation={initiateAnimation}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          handleIgnore={handleIgnore}
+        />
+      </Provider>
+    );
+
+    expect(getByText(requestData.peerConnection?.name)).toBeVisible();
+    expect(
+      getByText(JSON.parse(signObjectFix.payload.payload).data.id)
+    ).toBeVisible();
+  });
+
+  test("Display fallback image when provider logo is empty: BALLOT_TRANSACTION_REQUEST", async () => {
+    const testData = {
+      ...requestData,
+      logo: "",
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <RequestComponent
+          pageId={pageId}
+          activeStatus={activeStatus}
+          blur={blur}
+          setBlur={setBlur}
+          requestData={testData as IncomingRequestProps}
+          initiateAnimation={initiateAnimation}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          handleIgnore={handleIgnore}
         />
       </Provider>
     );

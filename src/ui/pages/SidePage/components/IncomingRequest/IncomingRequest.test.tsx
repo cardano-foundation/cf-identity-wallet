@@ -5,7 +5,10 @@ import { EventEmitter } from "events";
 import { Provider } from "react-redux";
 import { store } from "../../../../../store";
 import { IncomingRequest } from "./IncomingRequest";
-import { IncomingRequestType } from "../../../../../store/reducers/stateCache/stateCache.types";
+import {
+  IncomingRequestProps,
+  IncomingRequestType,
+} from "../../../../../store/reducers/stateCache/stateCache.types";
 import { connectionsFix } from "../../../../__fixtures__/connectionsFix";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { setQueueIncomingRequest } from "../../../../../store/reducers/stateCache";
@@ -29,6 +32,19 @@ const notificationStorage = jest.mocked({
   findAllByQuery: jest.fn(),
   getAll: jest.fn(),
 });
+
+const identifierStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
+const operationPendingStorage = jest.mocked({});
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -112,13 +128,20 @@ const agentServicesProps = {
 
 const signifyNotificationService = new SignifyNotificationService(
   agentServicesProps,
-  notificationStorage as any
+  notificationStorage as any,
+  identifierStorage as any,
+  operationPendingStorage as any
 );
 
 describe("Multi-Sig request", () => {
   const requestDetails = {
     id: "abc123456",
     type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
+    event: {
+      id: "event-id",
+      createdAt: new Date(),
+      a: { d: "d" },
+    },
     multisigIcpDetails: {
       ourIdentifier: filteredIdentifierFix[0],
       sender: connectionsFix[3],
@@ -134,7 +157,9 @@ describe("Multi-Sig request", () => {
   });
 
   test("It receives incoming Multi-Sig request and render content in MultiSigRequest", async () => {
-    store.dispatch(setQueueIncomingRequest(requestDetails));
+    store.dispatch(
+      setQueueIncomingRequest(requestDetails as IncomingRequestProps)
+    );
 
     const { getByText } = render(
       <Provider store={store}>
@@ -163,7 +188,9 @@ describe("Multi-Sig request", () => {
   });
 
   test("Selecting Cancel will open the Alert pop-up", async () => {
-    store.dispatch(setQueueIncomingRequest(requestDetails));
+    store.dispatch(
+      setQueueIncomingRequest(requestDetails as IncomingRequestProps)
+    );
     const { getByText } = render(
       <Provider store={store}>
         <IncomingRequest
@@ -185,7 +212,9 @@ describe("Multi-Sig request", () => {
   });
 
   test("Selecting Accept will open the Alert pop-up", async () => {
-    store.dispatch(setQueueIncomingRequest(requestDetails));
+    store.dispatch(
+      setQueueIncomingRequest(requestDetails as IncomingRequestProps)
+    );
     const { getByText } = render(
       <Provider store={store}>
         <IncomingRequest

@@ -1,5 +1,5 @@
 import { IonIcon } from "@ionic/react";
-import { checkmark, personCircleOutline } from "ionicons/icons";
+import { personCircleOutline } from "ionicons/icons";
 import { useState } from "react";
 import { i18n } from "../../../../../i18n";
 import { Alert } from "../../../../components/Alert";
@@ -9,6 +9,9 @@ import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePa
 import { combineClassNames } from "../../../../utils/style";
 import "./WalletConnect.scss";
 import { WalletConnectStageOneProps } from "./WalletConnect.types";
+import { useAppDispatch } from "../../../../../store/hooks";
+import { setPendingConnection } from "../../../../../store/reducers/walletConnectionsCache";
+import { ANIMATION_DURATION } from "../../../../components/SideSlider/SideSlider.types";
 
 const WalletConnectStageOne = ({
   isOpen,
@@ -16,14 +19,12 @@ const WalletConnectStageOne = ({
   onClose,
   onAccept,
 }: WalletConnectStageOneProps) => {
+  const dispatch = useAppDispatch();
   const [openDeclineAlert, setOpenDeclineAlert] = useState(false);
-  const [acceptAnimation, setAcceptAnimation] = useState(false);
 
   const classes = combineClassNames(className, {
     show: !!isOpen,
     hide: !isOpen,
-    "animation-on": acceptAnimation,
-    "animation-off": !acceptAnimation,
   });
 
   const openDecline = () => {
@@ -32,14 +33,14 @@ const WalletConnectStageOne = ({
 
   const handleClose = () => {
     onClose();
+
+    setTimeout(() => {
+      dispatch(setPendingConnection(null));
+    }, ANIMATION_DURATION);
   };
 
   const handleAccept = () => {
-    setAcceptAnimation(true);
-
-    setTimeout(() => {
-      onAccept();
-    }, 700);
+    onAccept();
   };
 
   return (
@@ -68,11 +69,6 @@ const WalletConnectStageOne = ({
                 icon={personCircleOutline}
                 color="light"
               />
-            </div>
-            <div className="request-checkmark-logo">
-              <span>
-                <IonIcon icon={checkmark} />
-              </span>
             </div>
           </div>
           <p

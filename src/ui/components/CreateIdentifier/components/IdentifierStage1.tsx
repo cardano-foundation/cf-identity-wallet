@@ -17,6 +17,7 @@ import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { OperationType } from "../../../globals/types";
 import { getMultiSigGroupCache } from "../../../../store/reducers/identifiersCache";
 import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
+import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
 
 const IdentifierStage1 = ({
   state,
@@ -48,10 +49,10 @@ const IdentifierStage1 = ({
   >([]);
   const incomingRequest = useMemo(() => {
     return !queueIncomingRequest.isProcessing
-      ? { id: "" }
+      ? undefined
       : queueIncomingRequest.queues.length > 0
         ? queueIncomingRequest.queues[0]
-        : { id: "" };
+        : undefined;
   }, [queueIncomingRequest]);
 
   useEffect(() => {
@@ -87,8 +88,12 @@ const IdentifierStage1 = ({
   }, [groupMetadata, currentOperation, groupId, multiSigGroupCache]);
 
   useEffect(() => {
-    incomingRequest.multisigIcpDetails?.ourIdentifier.groupMetadata?.groupId ===
-      groupId && handleDone();
+    if (
+      incomingRequest?.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
+    ) {
+      incomingRequest.multisigIcpDetails.ourIdentifier.groupMetadata
+        ?.groupId === groupId && handleDone();
+    }
   }, [groupMetadata, incomingRequest]);
 
   const handleDone = () => {

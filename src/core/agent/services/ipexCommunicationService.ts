@@ -72,7 +72,7 @@ class IpexCommunicationService extends AgentService {
     waitForAcdcConfig = { maxAttempts: 120, interval: 500 }
   ): Promise<void> {
     const notifRecord = await this.getNotificationRecordById(id);
-    const exn = await this.signifyClient
+    const exn = await this.props.signifyClient
       .exchanges()
       .get(notifRecord.a.d as string);
 
@@ -85,7 +85,7 @@ class IpexCommunicationService extends AgentService {
     );
     await this.createLinkedIpexMessageRecord(exn.exn.i, exn);
 
-    this.eventService.emit<AcdcStateChangedEvent>({
+    this.props.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
       payload: {
         credentialId,
@@ -116,7 +116,7 @@ class IpexCommunicationService extends AgentService {
       cred
     );
     await this.notificationStorage.deleteById(id);
-    this.eventService.emit<AcdcStateChangedEvent>({
+    this.props.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
       payload: {
         status: CredentialStatus.CONFIRMED,
@@ -128,19 +128,19 @@ class IpexCommunicationService extends AgentService {
   @OnlineOnly
   async offerAcdcFromApply(notification: KeriaNotification, acdc: any) {
     const msgSaid = notification.a.d as string;
-    const msg = await this.signifyClient.exchanges().get(msgSaid);
+    const msg = await this.props.signifyClient.exchanges().get(msgSaid);
 
     const holderSignifyName = (
       await this.identifierStorage.getIdentifierMetadata(msg.exn.a.i)
     ).signifyName;
 
-    const [offer, sigs, end] = await this.signifyClient.ipex().offer({
+    const [offer, sigs, end] = await this.props.signifyClient.ipex().offer({
       senderName: holderSignifyName,
       recipient: msg.exn.i,
       acdc: new Serder(acdc),
       apply: msg.exn.d,
     });
-    await this.signifyClient
+    await this.props.signifyClient
       .ipex()
       .submitOffer(holderSignifyName, offer, sigs, end, [msg.exn.i]);
     await this.notificationStorage.deleteById(notification.id);
@@ -149,9 +149,11 @@ class IpexCommunicationService extends AgentService {
   @OnlineOnly
   async grantAcdcFromAgree(notification: KeriaNotification) {
     const msgSaid = notification.a.d as string;
-    const msgAgree = await this.signifyClient.exchanges().get(msgSaid);
-    const msgOffer = await this.signifyClient.exchanges().get(msgAgree.exn.p);
-    const pickedCred = await this.signifyClient
+    const msgAgree = await this.props.signifyClient.exchanges().get(msgSaid);
+    const msgOffer = await this.props.signifyClient
+      .exchanges()
+      .get(msgAgree.exn.p);
+    const pickedCred = await this.props.signifyClient
       .credentials()
       .get(msgOffer.exn.e.acdc.d);
     if (!pickedCred) {
@@ -161,7 +163,7 @@ class IpexCommunicationService extends AgentService {
       await this.identifierStorage.getIdentifierMetadata(msgOffer.exn.i)
     ).signifyName;
 
-    const [grant, sigs, end] = await this.signifyClient.ipex().grant({
+    const [grant, sigs, end] = await this.props.signifyClient.ipex().grant({
       senderName: holderSignifyName,
       recipient: msgAgree.exn.i,
       acdc: new Serder(pickedCred.sad),
@@ -171,7 +173,7 @@ class IpexCommunicationService extends AgentService {
       ancAttachment: pickedCred.ancatc,
       issAttachment: pickedCred.issAtc,
     });
-    await this.signifyClient
+    await this.props.signifyClient
       .ipex()
       .submitGrant(holderSignifyName, grant, sigs, end, [msgAgree.exn.i]);
     await this.notificationStorage.deleteById(notification.id);
@@ -201,14 +203,14 @@ class IpexCommunicationService extends AgentService {
     notification: KeriaNotification
   ): Promise<CredentialsMatchingApply> {
     const msgSaid = notification.a.d as string;
-    const msg = await this.signifyClient.exchanges().get(msgSaid);
+    const msg = await this.props.signifyClient.exchanges().get(msgSaid);
     const schemaSaid = msg.exn.a.s;
     const attributes = msg.exn.a.a;
-    const schemaKeri = await this.signifyClient.schemas().get(schemaSaid);
+    const schemaKeri = await this.props.signifyClient.schemas().get(schemaSaid);
     if (!schemaKeri) {
       throw new Error(IpexCommunicationService.SCHEMA_NOT_FOUND);
     }
-    const creds = await this.signifyClient.credentials().list({
+    const creds = await this.props.signifyClient.credentials().list({
       filter: {
         "-s": { $eq: schemaSaid },
         ...(Object.keys(attributes).length > 0
@@ -311,10 +313,10 @@ class IpexCommunicationService extends AgentService {
       `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${IpexCommunicationService.SCHEMA_SAID_IIW_DEMO}`
     );
     const dt = new Date().toISOString().replace("Z", "000+00:00");
-    const [admit, sigs, aend] = await this.signifyClient
+    const [admit, sigs, aend] = await this.props.signifyClient
       .ipex()
       .admit(holderAidName, "", notificationD, dt);
-    await this.signifyClient
+    await this.props.signifyClient
       .ipex()
       .submitAdmit(holderAidName, admit, sigs, aend, [issuerAid]);
   }
@@ -323,7 +325,7 @@ class IpexCommunicationService extends AgentService {
     sad: string
   ): Promise<{ acdc?: any; error?: unknown }> {
     try {
-      const results = await this.signifyClient.credentials().list({
+      const results = await this.props.signifyClient.credentials().list({
         filter: {
           "-d": { $eq: sad },
         },

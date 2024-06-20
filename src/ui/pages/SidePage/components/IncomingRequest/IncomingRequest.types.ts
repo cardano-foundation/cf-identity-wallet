@@ -1,16 +1,18 @@
-import { IncomingRequestProps } from "../../../../../store/reducers/stateCache/stateCache.types";
+import {
+  IncomingRequestProps,
+  IncomingRequestType,
+} from "../../../../../store/reducers/stateCache/stateCache.types";
 
-interface RequestProps {
+interface RequestProps<T extends IncomingRequestType> {
   pageId: string;
   activeStatus?: boolean;
   blur?: boolean;
   setBlur?: (value: boolean) => void;
-  requestData: IncomingRequestProps;
+  requestData: IncomingRequestProps & { type: T };
   initiateAnimation: boolean;
   handleAccept: () => void;
   handleCancel: () => void;
   handleIgnore?: () => void;
-  incomingRequestType?: string;
 }
 
 export type { RequestProps };

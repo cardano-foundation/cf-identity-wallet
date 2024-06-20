@@ -9,6 +9,8 @@ import {
   getFavouritesIdentifiersCache,
   setMultiSigGroupCache,
   getMultiSigGroupCache,
+  updateOrAddIdentifiersCache,
+  updateIsPending,
 } from "./identifiersCache";
 import { RootState } from "../../index";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
@@ -104,6 +106,66 @@ describe("identifiersCacheSlice", () => {
       removeFavouriteIdentifierCache("abcd")
     );
     expect(newState.favourites).toEqual([]);
+  });
+
+  it("should handle updateOrAddIdentifiersCache", () => {
+    const identifiers: IdentifierShortDetails[] = [
+      {
+        id: "id-1",
+        displayName: "example-name",
+        createdAtUTC: "example-date",
+        theme: 0,
+        isPending: false,
+        signifyName: "Test",
+      },
+    ];
+    const currentState = identifiersCacheSlice.reducer(
+      initialState,
+      setIdentifiersCache(identifiers)
+    );
+    const identifier: IdentifierShortDetails = {
+      id: "id-2",
+      displayName: "example-name",
+      createdAtUTC: "example-date",
+      theme: 0,
+      isPending: false,
+      signifyName: "Test",
+    };
+    const newState = identifiersCacheSlice.reducer(
+      currentState,
+      updateOrAddIdentifiersCache(identifier)
+    );
+    expect(newState.identifiers).toEqual([...identifiers, identifier]);
+  });
+
+  it("should handle updateIsPending", () => {
+    const identifiers: IdentifierShortDetails[] = [
+      {
+        id: "id-1",
+        displayName: "example-name",
+        createdAtUTC: "example-date",
+        theme: 0,
+        isPending: true,
+        signifyName: "Test",
+      },
+    ];
+    const currentState = identifiersCacheSlice.reducer(
+      initialState,
+      setIdentifiersCache(identifiers)
+    );
+    const identifier: IdentifierShortDetails = {
+      id: "id-1",
+      displayName: "example-name",
+      createdAtUTC: "example-date",
+      theme: 0,
+      isPending: false,
+      signifyName: "Test",
+    };
+    const newState = identifiersCacheSlice.reducer(
+      currentState,
+      updateIsPending({ id: identifier.id, isPending: identifier.isPending })
+    );
+    expect(newState.identifiers).toEqual([identifier]);
   });
 });
 

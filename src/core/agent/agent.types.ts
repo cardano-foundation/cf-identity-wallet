@@ -29,6 +29,8 @@ enum MiscRecordId {
   APP_BIOMETRY = "app-biometry",
   KERIA_NOTIFICATION_MARKER = "keria-notification-marker",
   APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
+  KERIA_CONNECT_URL = "keria-connect-url",
+  KERIA_BOOT_URL = "keria-boot-url",
 }
 
 interface ConnectionShortDetails {
@@ -75,9 +77,6 @@ type IpexMessageDetails = {
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 
 interface ConnectionDetails extends ConnectionShortDetails {
-  goalCode?: string;
-  handshakeProtocols?: string[];
-  requestAttachments?: string[];
   serviceEndpoints?: string[];
   notes?: ConnectionNoteDetails[];
   linkedIpexMessages?: IpexMessageDetails[];
@@ -157,12 +156,18 @@ interface AgentServicesProps {
 interface CreateIdentifierResult {
   signifyName: string;
   identifier: string;
+  isPending?: boolean;
 }
 
 interface IdentifierResult {
   name: string;
   prefix: string;
   salty: any;
+}
+
+interface AgentUrls {
+  url: string;
+  bootUrl: string;
 }
 
 enum NotificationRoute {
@@ -204,6 +209,7 @@ export type {
   CreateIdentifierResult,
   IdentifierResult,
   KeriaStatusChangedEvent,
+  AgentUrls,
   BranAndMnemonic,
   IpexMessages,
   IpexMessageDetails,

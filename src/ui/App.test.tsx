@@ -12,6 +12,7 @@ jest.mock("../core/agent/agent", () => ({
   Agent: {
     agent: {
       start: jest.fn(),
+      initDatabaseConnection: jest.fn(),
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
@@ -50,8 +51,13 @@ jest.mock("../core/agent/agent", () => ({
       },
       signifyNotifications: {
         onNotificationStateChanged: jest.fn(),
+        onSignifyOperationStateChanged: jest.fn(),
       },
       onKeriaStatusStateChanged: jest.fn(),
+      peerConnectionMetadataStorage: {
+        getAllPeerConnectionMetadata: jest.fn(),
+        getPeerConnectionMetadata: jest.fn(),
+      },
       basicStorage: {
         findById: jest.fn(),
       },

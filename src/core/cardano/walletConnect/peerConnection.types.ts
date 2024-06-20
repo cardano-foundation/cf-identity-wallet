@@ -4,19 +4,22 @@ interface BaseEventEmitter {
 }
 
 interface ExperimentalAPIFunctions {
-  getIdentifierOobi: () => Promise<string>;
-  sign: (
+  getKeriIdentifier: () => Promise<{ id: string; oobi: string }>;
+  signKeri: (
     identifier: string,
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
 }
 
-enum PeerConnectSigningEventTypes {
+enum PeerConnectionEventTypes {
   PeerConnectSign = "PeerConnectSign",
+  PeerConnected = "PeerConnected",
+  PeerDisconnected = "PeerDisconnected",
+  PeerConnectionBroken = "PeerConnectionBroken",
 }
 
 interface PeerConnectSigningEvent extends BaseEventEmitter {
-  type: typeof PeerConnectSigningEventTypes.PeerConnectSign;
+  type: typeof PeerConnectionEventTypes.PeerConnectSign;
   payload: {
     identifier: string;
     payload: string;
@@ -24,9 +27,37 @@ interface PeerConnectSigningEvent extends BaseEventEmitter {
   };
 }
 
+interface PeerConnectedEvent extends BaseEventEmitter {
+  type: typeof PeerConnectionEventTypes.PeerConnected;
+  payload: {
+    identifier: string;
+    dAppAddress: string;
+  };
+}
+
+interface PeerDisconnectedEvent extends BaseEventEmitter {
+  type: typeof PeerConnectionEventTypes.PeerDisconnected;
+  payload: {
+    dAppAddress: string;
+  };
+}
+
+interface PeerConnectionBrokenEvent extends BaseEventEmitter {
+  type: typeof PeerConnectionEventTypes.PeerConnectionBroken;
+}
+
 interface PeerConnectionError {
   code: number;
   info: string;
+}
+
+interface PeerConnection {
+  id: string;
+  name?: string;
+  url?: string;
+  iconB64?: string;
+  selectedAid?: string;
+  createdAt?: string;
 }
 
 export const TxSignError: { [key: string]: PeerConnectionError } = {
@@ -38,9 +69,13 @@ export const TxSignError: { [key: string]: PeerConnectionError } = {
   TimeOut: { code: 3, info: "Time out" },
 };
 
-export { PeerConnectSigningEventTypes };
+export { PeerConnectionEventTypes };
 export type {
   ExperimentalAPIFunctions,
   PeerConnectSigningEvent,
+  PeerConnectedEvent,
+  PeerDisconnectedEvent,
+  PeerConnectionBrokenEvent,
   PeerConnectionError,
+  PeerConnection,
 };

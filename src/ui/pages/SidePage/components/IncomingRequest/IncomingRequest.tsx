@@ -12,17 +12,23 @@ import {
   IncomingRequestProps,
   IncomingRequestType,
 } from "../../../../../store/reducers/stateCache/stateCache.types";
+import { getConnectedWallet } from "../../../../../store/reducers/walletConnectionsCache";
+import { ANIMATION_DURATION } from "../../../../components/SideSlider/SideSlider.types";
 
 const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const pageId = "incoming-request";
   const dispatch = useAppDispatch();
   const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
+  const connectedWallet = useAppSelector(getConnectedWallet);
   const incomingRequest = useMemo(() => {
-    return !queueIncomingRequest.isProcessing
-      ? { id: "" }
-      : queueIncomingRequest.queues.length > 0
-        ? queueIncomingRequest.queues[0]
-        : { id: "" };
+    if (
+      !queueIncomingRequest.isProcessing ||
+      !queueIncomingRequest.queues.length
+    ) {
+      return;
+    } else {
+      return queueIncomingRequest.queues[0];
+    }
   }, [queueIncomingRequest]);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [requestData, setRequestData] = useState<IncomingRequestProps>();
@@ -30,7 +36,17 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const [blur, setBlur] = useState(false);
 
   useEffect(() => {
-    if (incomingRequest.id.length > 0) {
+    if (!incomingRequest) {
+      return;
+    }
+    if (
+      incomingRequest.type === IncomingRequestType.PEER_CONNECT_SIGN &&
+      (!connectedWallet ||
+        connectedWallet.id !== incomingRequest.peerConnection?.id)
+    ) {
+      handleReset();
+    }
+    if (incomingRequest) {
       setRequestData(incomingRequest);
       setOpenPage(true);
     }
@@ -55,6 +71,9 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   };
 
   const handleCancel = async () => {
+    if (!incomingRequest) {
+      return handleReset();
+    }
     if (
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
@@ -67,16 +86,23 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
       await Agent.agent.signifyNotifications.deleteNotificationRecordById(
         incomingRequest.id
       );
+    } else if (incomingRequest.type === IncomingRequestType.PEER_CONNECT_SIGN) {
+      incomingRequest.signTransaction?.payload.approvalCallback(false);
     }
     handleReset();
   };
 
   const handleAccept = async () => {
+    if (!incomingRequest) {
+      return handleReset();
+    }
     setInitiateAnimation(true);
     if (
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
       Agent.agent.ipexCommunications.acceptAcdc(incomingRequest.id);
+    } else if (incomingRequest.type === IncomingRequestType.PEER_CONNECT_SIGN) {
+      incomingRequest.signTransaction?.payload.approvalCallback(true);
     }
     setTimeout(() => {
       handleReset();
@@ -84,6 +110,9 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   };
 
   const handleIgnore = async () => {
+    if (!incomingRequest) {
+      return handleReset();
+    }
     if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
@@ -94,22 +123,20 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
     handleReset();
   };
 
-  const defaultRequestData: IncomingRequestProps = {
-    id: "",
-  };
-
+  if (!requestData) {
+    return null;
+  }
   return (
     <RequestComponent
       pageId={pageId}
       activeStatus={open}
       blur={blur}
       setBlur={setBlur}
-      requestData={requestData || defaultRequestData}
+      requestData={requestData}
       initiateAnimation={initiateAnimation}
       handleAccept={handleAccept}
       handleCancel={handleCancel}
       handleIgnore={handleIgnore}
-      incomingRequestType={incomingRequest.type}
     />
   );
 };

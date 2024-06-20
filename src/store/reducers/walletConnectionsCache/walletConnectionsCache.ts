@@ -26,7 +26,7 @@ const walletConnectionsCacheSlice = createSlice({
     ) => {
       state.connectedWallet = action.payload;
     },
-    setPendingConnections: (
+    setPendingConnection: (
       state,
       action: PayloadAction<ConnectionData | null>
     ) => {
@@ -40,7 +40,7 @@ export { initialState, walletConnectionsCacheSlice };
 export const {
   setWalletConnectionsCache,
   setConnectedWallet,
-  setPendingConnections,
+  setPendingConnection,
 } = walletConnectionsCacheSlice.actions;
 
 const getWalletConnectionsCache = (state: RootState) =>

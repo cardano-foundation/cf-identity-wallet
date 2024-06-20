@@ -1,3 +1,4 @@
+import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { Agent } from "../agent";
 import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
 import { EventService } from "./eventService";
@@ -7,6 +8,27 @@ const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
 const identifiersCreateMock = jest.fn();
 const identifiersRotateMock = jest.fn();
+const mockSigner = {
+  _code: "A",
+  _size: -1,
+  _raw: {},
+  _verfer: {},
+};
+const managerMock = {
+  get: () => {
+    return {
+      signers: [mockSigner],
+    };
+  },
+};
+const operationGetMock = jest.fn().mockImplementation((id: string) => {
+  return {
+    done: true,
+    response: {
+      i: id,
+    },
+  };
+});
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -21,14 +43,7 @@ const signifyClient = jest.mocked({
     members: jest.fn(),
   }),
   operations: () => ({
-    get: jest.fn().mockImplementation((id: string) => {
-      return {
-        done: true,
-        response: {
-          i: id,
-        },
-      };
-    }),
+    get: operationGetMock,
   }),
   oobis: () => ({
     get: jest.fn(),
@@ -74,6 +89,7 @@ const signifyClient = jest.mocked({
     query: jest.fn(),
     get: jest.fn(),
   }),
+  manager: undefined,
 });
 const identifierStorage = jest.mocked({
   getIdentifierMetadata: jest.fn(),
@@ -84,6 +100,10 @@ const identifierStorage = jest.mocked({
   getIdentifierMetadataByGroupId: jest.fn(),
 });
 
+const operationPendingStorage = jest.mocked({
+  save: jest.fn(),
+});
+
 const agentServicesProps = {
   signifyClient: signifyClient as any,
   eventService: new EventService(),
@@ -91,7 +111,8 @@ const agentServicesProps = {
 
 const identifierService = new IdentifierService(
   agentServicesProps,
-  identifierStorage as any
+  identifierStorage as any,
+  operationPendingStorage as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -101,7 +122,20 @@ jest.mock("../../../core/agent/agent", () => ({
         getConnectionShortDetailById: jest.fn(),
         getConnections: jest.fn(),
       },
+      signifyNotifications: {
+        addPendingOperationToQueue: jest.fn(),
+      },
       getKeriaOnlineStatus: jest.fn(),
+    },
+  },
+}));
+
+jest.mock("../../cardano/walletConnect/peerConnection", () => ({
+  PeerConnection: {
+    peerConnection: {
+      getConnectedDAppAddress: jest.fn(),
+      getConnectingAid: jest.fn(),
+      disconnectDApp: jest.fn(),
     },
   },
 }));
@@ -219,16 +253,61 @@ describe("Single sig service of agent", () => {
           i: aid,
         },
       },
-      op: jest.fn(),
+      op: jest.fn().mockResolvedValue({
+        name: "op123",
+        done: true,
+      }),
     });
     expect(
       await identifierService.createIdentifier({
         displayName,
         theme: 0,
       })
-    ).toEqual({ identifier: aid, signifyName: expect.any(String) });
+    ).toEqual({
+      identifier: aid,
+      signifyName: expect.any(String),
+      isPending: false,
+    });
     expect(identifiersCreateMock).toBeCalled();
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
+  });
+
+  test("can create a keri identifier with pending operation", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const aid = "newIdentifierAid";
+    const displayName = "newDisplayName";
+    identifiersCreateMock.mockResolvedValue({
+      serder: {
+        ked: {
+          i: aid,
+        },
+      },
+      op: jest.fn().mockResolvedValue({
+        name: "op123",
+        done: false,
+      }),
+    });
+    operationGetMock.mockImplementation((id: string) => {
+      return {
+        done: false,
+        response: {
+          i: id,
+        },
+      };
+    });
+    expect(
+      await identifierService.createIdentifier({
+        displayName,
+        theme: 0,
+      })
+    ).toEqual({
+      identifier: aid,
+      signifyName: expect.any(String),
+      isPending: true,
+    });
+    expect(identifiersCreateMock).toBeCalled();
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
+    expect(operationPendingStorage.save).toBeCalledTimes(1);
   });
 
   test("cannot create a keri identifier if theme is not valid", async () => {
@@ -255,6 +334,10 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(archivedMetadataRecord);
+    PeerConnection.peerConnection.getConnectingIdentifier = jest
+      .fn()
+      .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
+
     identifierStorage.updateIdentifierMetadata = jest.fn();
     await identifierService.deleteIdentifier(archivedMetadataRecord.id);
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
@@ -265,6 +348,33 @@ describe("Single sig service of agent", () => {
       {
         isDeleted: true,
       }
+    );
+  });
+
+  test("can delete an archived identifier and disconnect DApp", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(archivedMetadataRecord);
+    identifierStorage.updateIdentifierMetadata = jest.fn();
+    PeerConnection.peerConnection.getConnectedDAppAddress = jest
+      .fn()
+      .mockReturnValue("dApp-address");
+    PeerConnection.peerConnection.getConnectingIdentifier = jest
+      .fn()
+      .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
+    await identifierService.deleteIdentifier(archivedMetadataRecord.id);
+    expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
+      archivedMetadataRecord.id
+    );
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      archivedMetadataRecord.id,
+      {
+        isDeleted: true,
+      }
+    );
+    expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledWith(
+      "dApp-address",
+      true
     );
   });
 
@@ -385,6 +495,29 @@ describe("Single sig service of agent", () => {
         keriMetadataRecord.groupMetadata?.groupId as string
       )
     ).toStrictEqual(null);
+  });
+
+  test("Should throw error if we failed to obtain key manager when call getSigner", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    identifiersGetMock.mockResolvedValue(aidReturnedBySignify);
+    await expect(
+      identifierService.getSigner(keriMetadataRecord.id)
+    ).rejects.toThrowError(IdentifierService.FAILED_TO_OBTAIN_KEY_MANAGER);
+  });
+
+  test("Can get signer", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    identifiersGetMock.mockResolvedValue(aidReturnedBySignify);
+    signifyClient.manager = managerMock as any;
+    expect(
+      await identifierService.getSigner(keriMetadataRecord.id)
+    ).toStrictEqual(mockSigner);
   });
 
   test("getIdentifier should throw an error when KERIA is offline", async () => {

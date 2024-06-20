@@ -22,6 +22,10 @@ describe("getBackRoute", () => {
         seedPhrase: "",
         bran: "",
       },
+      ssiAgentCache: {
+        bootUrl: "",
+        connectUrl: "",
+      },
       stateCache: {
         initialized: true,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
@@ -33,6 +37,7 @@ describe("getBackRoute", () => {
           loggedIn: false,
           userName: "",
           time: 0,
+          ssiAgentIsSet: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -50,6 +55,7 @@ describe("getBackRoute", () => {
         },
       },
       credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
       connectionsCache: {
         connections: [],
       },
@@ -143,6 +149,10 @@ describe("getPreviousRoute", () => {
         seedPhrase: "",
         bran: "",
       },
+      ssiAgentCache: {
+        bootUrl: "",
+        connectUrl: "",
+      },
       stateCache: {
         initialized: true,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
@@ -154,6 +164,7 @@ describe("getPreviousRoute", () => {
           loggedIn: false,
           userName: "",
           time: 0,
+          ssiAgentIsSet: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -171,6 +182,7 @@ describe("getPreviousRoute", () => {
         },
       },
       credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
       connectionsCache: {
         connections: [],
       },

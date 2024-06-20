@@ -15,6 +15,10 @@ import { AgentServicesProps, IdentifierResult } from "../agent.types";
 import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
 import { BackingMode } from "../../configuration/configurationService.types";
+import { OperationPendingStorage } from "../records/operationPendingStorage";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { Agent } from "../agent";
+import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 
 const identifierTypeThemes = [0, 1];
 
@@ -31,13 +35,16 @@ class IdentifierService extends AgentService {
     "Failed to obtain key manager for given AID";
 
   protected readonly identifierStorage: IdentifierStorage;
+  protected readonly operationPendingStorage: OperationPendingStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
-    identifierStorage: IdentifierStorage
+    identifierStorage: IdentifierStorage,
+    operationPendingStorage: OperationPendingStorage
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
+    this.operationPendingStorage = operationPendingStorage;
   }
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
@@ -70,7 +77,7 @@ class IdentifierService extends AgentService {
     if (metadata.isPending && metadata.signifyOpName) {
       return undefined;
     }
-    const aid = await this.signifyClient
+    const aid = await this.props.signifyClient
       .identifiers()
       .get(metadata.signifyName);
 
@@ -123,23 +130,44 @@ class IdentifierService extends AgentService {
       "id" | "createdAt" | "isArchived" | "signifyName"
     >
   ): Promise<CreateIdentifierResult> {
+    const startTime = Date.now();
     this.validIdentifierMetadata(metadata);
     const signifyName = uuidv4();
-    const operation = await this.signifyClient
+    const operation = await this.props.signifyClient
       .identifiers()
       .create(signifyName); //, this.getCreateAidOptions());
-    await operation.op();
-    const addRoleOperation = await this.signifyClient
+    let op = await operation.op();
+    const signifyOpName = op.name;
+    const addRoleOperation = await this.props.signifyClient
       .identifiers()
-      .addEndRole(signifyName, "agent", this.signifyClient.agent!.pre);
+      .addEndRole(signifyName, "agent", this.props.signifyClient.agent!.pre);
     await addRoleOperation.op();
     const identifier = operation.serder.ked.i;
+    const isPending = !op.done;
+    if (isPending) {
+      op = await waitAndGetDoneOp(
+        this.props.signifyClient,
+        op,
+        2000 - (Date.now() - startTime)
+      );
+      if (!op.done) {
+        const pendingOperation = await this.operationPendingStorage.save({
+          id: op.name,
+          recordType: OperationPendingRecordType.Witness,
+        });
+        Agent.agent.signifyNotifications.addPendingOperationToQueue(
+          pendingOperation
+        );
+      }
+    }
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: identifier,
       ...metadata,
+      signifyOpName: signifyOpName,
+      isPending: !op.done,
       signifyName: signifyName,
     });
-    return { identifier, signifyName };
+    return { identifier, signifyName, isPending: !op.done };
   }
 
   async archiveIdentifier(identifier: string): Promise<void> {
@@ -156,6 +184,15 @@ class IdentifierService extends AgentService {
     await this.identifierStorage.updateIdentifierMetadata(identifier, {
       isDeleted: true,
     });
+    const connectedDApp =
+      PeerConnection.peerConnection.getConnectedDAppAddress();
+    if (
+      connectedDApp !== "" &&
+      metadata.id ===
+        (await PeerConnection.peerConnection.getConnectingIdentifier()).id
+    ) {
+      PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
+    }
   }
 
   async restoreIdentifier(identifier: string): Promise<void> {
@@ -192,11 +229,11 @@ class IdentifierService extends AgentService {
     );
     this.validIdentifierMetadata(metadata);
 
-    const aid = await this.signifyClient
+    const aid = await this.props.signifyClient
       .identifiers()
       .get(metadata.signifyName);
 
-    const manager = this.signifyClient.manager;
+    const manager = this.props.signifyClient.manager;
     if (manager) {
       return (await manager.get(aid)).signers[0];
     } else {
@@ -206,7 +243,7 @@ class IdentifierService extends AgentService {
 
   @OnlineOnly
   async syncKeriaIdentifiers() {
-    const { aids: signifyIdentifiers } = await this.signifyClient
+    const { aids: signifyIdentifiers } = await this.props.signifyClient
       .identifiers()
       .list();
     const storageIdentifiers =
@@ -246,11 +283,11 @@ class IdentifierService extends AgentService {
 
   @OnlineOnly
   async rotateIdentifier(metadata: IdentifierMetadataRecord) {
-    const rotateResult = await this.signifyClient
+    const rotateResult = await this.props.signifyClient
       .identifiers()
       .rotate(metadata.signifyName);
     const operation = await waitAndGetDoneOp(
-      this.signifyClient,
+      this.props.signifyClient,
       await rotateResult.op()
     );
     if (!operation.done) {

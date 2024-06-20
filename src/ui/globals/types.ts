@@ -27,6 +27,9 @@ enum OperationType {
   MULTI_SIG_INITIATOR_INIT = "multiSigInitiatorInit",
   CREATE_IDENTIFIER_CONNECT_WALLET = "createIdentifierConnectWallet",
   SCAN_WALLET_CONNECTION = "scanWalletConnection",
+  SCAN_SSI_BOOT_URL = "scanSSIBootUrl",
+  SCAN_SSI_CONNECT_URL = "scanSSIConnectUrl",
+  OPEN_WALLET_CONNECTION_DETAIL = "openWalletConnection",
 }
 
 enum ToastMsgType {

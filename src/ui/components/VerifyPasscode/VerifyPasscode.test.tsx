@@ -48,6 +48,7 @@ const initialStateNoPassword = {
     bran: "bran",
   },
   credsCache: { creds: credsFixAcdc },
+  credsArchivedCache: { creds: credsFixAcdc },
   biometryCache: {
     enabled: false,
   },

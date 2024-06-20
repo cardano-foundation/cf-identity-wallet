@@ -5,7 +5,7 @@ import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 const displayConnection = walletConnectionsFix.map((connection, index) => ({
   id: connection.id,
   title: connection.name,
-  subtitle: index % 2 === 0 ? connection.owner : undefined,
+  subtitle: index % 2 === 0 ? connection.selectedAid : undefined,
   image: index % 2 === 0 ? "mock-image-link" : undefined,
   data: connection,
 }));
@@ -16,7 +16,7 @@ describe("Card list", () => {
 
     const { getByTestId, queryByTestId, getAllByText, getAllByTestId } = render(
       <CardList
-        data={[displayConnection[0]]}
+        data={[displayConnection[0]] as any}
         onCardClick={cardClickFn}
         onRenderCardAction={() => <button>Mock Action</button>}
         onRenderEndSlot={() => <span>End slot</span>}
@@ -44,7 +44,7 @@ describe("Card list", () => {
 
     const { queryByTestId, getByTestId } = render(
       <CardList
-        data={[displayConnection[1]]}
+        data={[displayConnection[1] as any]}
         onCardClick={cardClickFn}
       />
     );

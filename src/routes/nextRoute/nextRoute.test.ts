@@ -5,6 +5,7 @@ import {
   getNextRoute,
   updateStoreAfterSetPasscodeRoute,
   getNextVerifySeedPhraseRoute,
+  getNextCreateSSIAgentRoute,
 } from "./nextRoute";
 import { RootState } from "../../store";
 import { RoutePath } from "../index";
@@ -31,6 +32,7 @@ describe("NextRoute", () => {
           seedPhraseIsSet: false,
           passwordIsSet: false,
           passwordIsSkipped: true,
+          ssiAgentIsSet: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -52,6 +54,7 @@ describe("NextRoute", () => {
         },
       },
       credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
       connectionsCache: {
         connections: [],
       },
@@ -65,6 +68,10 @@ describe("NextRoute", () => {
       },
       biometryCache: {
         enabled: false,
+      },
+      ssiAgentCache: {
+        bootUrl: "",
+        connectUrl: "",
       },
     };
     data = {
@@ -132,6 +139,14 @@ describe("NextRoute", () => {
     const result = getNextVerifySeedPhraseRoute();
 
     expect(result).toEqual({
+      pathname: RoutePath.SSI_AGENT,
+    });
+  });
+
+  test("should return correct route for /ssiagent", () => {
+    const result = getNextCreateSSIAgentRoute();
+
+    expect(result).toEqual({
       pathname: RoutePath.TABS_MENU,
     });
   });
@@ -150,6 +165,7 @@ describe("getNextRoute", () => {
         seedPhraseIsSet: false,
         passwordIsSet: false,
         passwordIsSkipped: true,
+        ssiAgentIsSet: false,
       },
       currentOperation: OperationType.IDLE,
       queueIncomingRequest: {
@@ -171,6 +187,7 @@ describe("getNextRoute", () => {
       },
     },
     credsCache: { creds: [], favourites: [] },
+    credsArchivedCache: { creds: [] },
     connectionsCache: {
       connections: [],
     },
@@ -184,6 +201,10 @@ describe("getNextRoute", () => {
     },
     biometryCache: {
       enabled: false,
+    },
+    ssiAgentCache: {
+      bootUrl: "",
+      connectUrl: "",
     },
   };
   const state = {};
@@ -219,7 +240,7 @@ describe("getNextRoute", () => {
 
     const result = getNextSetPasscodeRoute(storeMock);
     expect(result).toEqual({
-      pathname: RoutePath.TABS_MENU,
+      pathname: RoutePath.SSI_AGENT,
     });
   });
 

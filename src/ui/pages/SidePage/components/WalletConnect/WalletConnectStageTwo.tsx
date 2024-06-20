@@ -5,33 +5,43 @@ import { IdentifierShortDetails } from "../../../../../core/agent/services/ident
 import { i18n } from "../../../../../i18n";
 import { useAppSelector } from "../../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
-import { setToastMsg } from "../../../../../store/reducers/stateCache";
+import {
+  setCurrentOperation,
+  setToastMsg,
+} from "../../../../../store/reducers/stateCache";
 import { CardItem, CardList } from "../../../../components/CardList";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
 import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
-import { ToastMsgType } from "../../../../globals/types";
+import { OperationType, ToastMsgType } from "../../../../globals/types";
 import { combineClassNames } from "../../../../utils/style";
 import "./WalletConnect.scss";
 import { WalletConnectStageTwoProps } from "./WalletConnect.types";
+import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
+import {
+  getWalletConnectionsCache,
+  setWalletConnectionsCache,
+} from "../../../../../store/reducers/walletConnectionsCache";
+import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 
 const WalletConnectStageTwo = ({
   isOpen,
+  pendingDAppMeerkat,
   className,
   onBackClick,
   onClose,
 }: WalletConnectStageTwoProps) => {
   const dispatch = useDispatch();
-  const indentifierCache = useAppSelector(getIdentifiersCache);
+  const identifierCache = useAppSelector(getIdentifiersCache);
+  const existingConnections = useAppSelector(getWalletConnectionsCache);
 
   const [selectedIdentifier, setSelectedIdentifier] =
     useState<IdentifierShortDetails | null>(null);
-
-  const displayIdentifiers = indentifierCache.map(
+  const displayIdentifiers = identifierCache.map(
     (identifier, index): CardItem<IdentifierShortDetails> => ({
       id: index,
       title: identifier.displayName,
-      image: "",
+      image: KeriLogo,
       data: identifier,
     })
   );
@@ -47,8 +57,29 @@ const WalletConnectStageTwo = ({
 
   const handleConnectWallet = async () => {
     try {
-      // TODO: implement connect wallet logic
-      dispatch(setToastMsg(ToastMsgType.CONNECT_WALLET_SUCCESS));
+      if (selectedIdentifier && pendingDAppMeerkat) {
+        await PeerConnection.peerConnection.start(selectedIdentifier.id);
+        await PeerConnection.peerConnection.connectWithDApp(pendingDAppMeerkat);
+        const existingConnection = existingConnections.find(
+          (connection) => connection.id === pendingDAppMeerkat
+        );
+        if (existingConnection) {
+          existingConnection.selectedAid = selectedIdentifier.id;
+          dispatch(setWalletConnectionsCache([...existingConnections]));
+        } else {
+          // Insert a new connection if needed
+          dispatch(
+            setWalletConnectionsCache([
+              { id: pendingDAppMeerkat, selectedAid: selectedIdentifier.id },
+              ...existingConnections,
+            ])
+          );
+        }
+
+        dispatch(
+          setCurrentOperation(OperationType.OPEN_WALLET_CONNECTION_DETAIL)
+        );
+      }
       onClose();
     } catch (e) {
       dispatch(setToastMsg(ToastMsgType.UNABLE_CONNECT_WALLET));

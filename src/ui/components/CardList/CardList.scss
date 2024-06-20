@@ -8,6 +8,7 @@
   ion-item.card-item {
     --inner-padding-top: 1rem;
     --inner-padding-bottom: 1rem;
+    --inner-padding-end: 0;
     --padding-start: 0;
     --background: var(--ion-color-light);
     --title-font-size: 1rem;
@@ -17,6 +18,10 @@
     --subtitle-font-size: 0.875rem;
     --card-width: auto;
     --card-height: 2.75rem;
+
+    &:last-child {
+      --inner-border-width: 0;
+    }
 
     .card-logo {
       border-radius: var(--logo-border-radius);
@@ -39,6 +44,7 @@
 
     .card-info {
       flex: 1;
+      overflow: hidden;
 
       .card-title {
         font-size: var(--title-font-size);
@@ -47,6 +53,9 @@
         font-weight: 500;
         color: var(--ion-color-primary);
         margin-top: 0;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
 
         &.no-margin {
           --title-margin-bottom: 0;
@@ -72,6 +81,12 @@
 
   ion-item-sliding {
     --inner-padding-end: 0;
+
+    &:last-child {
+      .card-item {
+        --inner-border-width: 0;
+      }
+    }
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
