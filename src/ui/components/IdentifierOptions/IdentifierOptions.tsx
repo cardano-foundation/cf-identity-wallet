@@ -133,6 +133,7 @@ const IdentifierOptions = ({
       icon: refreshOutline,
       label: i18n.t("identifiers.details.options.rotatekeys"),
       onClick: () => {
+        setOptionsIsOpen(false);
         handleRotateKey();
       },
       testId: "rotate-keys",

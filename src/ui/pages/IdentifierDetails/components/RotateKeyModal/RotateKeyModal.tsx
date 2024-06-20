@@ -92,8 +92,8 @@ const RotateKeyModal = ({
           disabled={loading}
           shape="round"
           expand="block"
-          className="primary-button confirm-edit-button"
-          data-testid="continue-button"
+          className="primary-button rotate-button"
+          data-testid="rotate-key-button"
           onClick={handleRotateKey}
         >
           <IonIcon

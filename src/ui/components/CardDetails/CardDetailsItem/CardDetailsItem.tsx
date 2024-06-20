@@ -87,7 +87,7 @@ const CardDetailsItem = ({
             slot="end"
             shape="round"
             className="action-button"
-            data-testid={`${testId}-action-button`}
+            data-testid={`${testId}-copy-button`}
             onClick={() => {
               if (copyButton) {
                 writeToClipboard(info);

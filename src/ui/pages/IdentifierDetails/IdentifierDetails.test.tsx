@@ -12,6 +12,8 @@ import { Agent } from "../../../core/agent/agent";
 import { ConfigurationService } from "../../../core/configuration";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
+import { setToastMsg } from "../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../globals/types";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
 
@@ -23,11 +25,29 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
+jest.mock("@aparajita/capacitor-secure-storage", () => ({
+  SecureStorage: {
+    get: (key: string) => {
+      return "111111";
+    },
+  },
+}));
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children, isOpen, ...props }: any) => (
+    <div data-testid={props["data-testid"]}>{isOpen ? children : null}</div>
+  ),
+}));
+
+const rotateIdentifierMock = jest.fn((id: string) => Promise.resolve());
+
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       identifiers: {
         getIdentifier: jest.fn().mockResolvedValue(identifierFix[0]),
+        rotateIdentifier: (id: string) => rotateIdentifierMock(id),
       },
       connections: {
         getOobi: jest.fn(),
@@ -93,9 +113,9 @@ describe("Cards Details page", () => {
       fireEvent.click(getByTestId("share-button"));
     });
 
-    expect(getByTestId("share-identifier-modal").getAttribute("is-open")).toBe(
-      "true"
-    );
+    await waitFor(() => {
+      expect(getByTestId("share-identifier-modal")).toBeVisible();
+    });
   });
 
   test("It opens the edit modal", async () => {
@@ -123,9 +143,7 @@ describe("Cards Details page", () => {
       fireEvent.click(getByTestId("identifier-options-button"));
     });
 
-    expect(
-      getByTestId("identifier-options-modal").getAttribute("is-open")
-    ).toBe("true");
+    expect(getByTestId("identifier-options-modal")).toBeVisible();
   });
 
   test("It shows the button to access the editor", async () => {
@@ -395,5 +413,110 @@ describe("Cards Details page", () => {
         null
       )
     );
+  });
+
+  test("Rotate key", async () => {
+    const initialStateKeri = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "bran",
+      },
+      identifiersCache: {
+        identifiers: filteredIdentifierFix,
+        favourites: [],
+      },
+    };
+
+    const storeMockedAidKeri = {
+      ...mockStore(initialStateKeri),
+      dispatch: dispatchMock,
+    };
+
+    const { queryByTestId, getByTestId, getByText } = render(
+      <Provider store={storeMockedAidKeri}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={IdentifierDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() =>
+      expect(queryByTestId("identifier-card-detail-spinner-container")).toBe(
+        null
+      )
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("signing-key-0-action-icon"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.identifiers.details.rotatekeys.description)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("rotate-key-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId("passcode-button-1"));
+
+    await waitFor(() => {
+      expect(getByTestId("circle-0")).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId("passcode-button-1"));
+
+    await waitFor(() => {
+      expect(getByTestId("circle-1")).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId("passcode-button-1"));
+
+    await waitFor(() => {
+      expect(getByTestId("circle-2")).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId("passcode-button-1"));
+
+    await waitFor(() => {
+      expect(getByTestId("circle-3")).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId("passcode-button-1"));
+
+    await waitFor(() => {
+      expect(getByTestId("circle-4")).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId("passcode-button-1"));
+
+    await waitFor(() => {
+      expect(getByTestId("circle-5")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(rotateIdentifierMock).toBeCalledWith(identifierFix[0].id);
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.ROTATE_KEY_SUCCESS)
+      );
+    });
   });
 });
