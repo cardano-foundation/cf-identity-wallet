@@ -282,7 +282,10 @@ class IdentifierService extends AgentService {
   }
 
   @OnlineOnly
-  async rotateIdentifier(metadata: IdentifierMetadataRecord) {
+  async rotateIdentifier(identifier: string) {
+    const metadata = await this.identifierStorage.getIdentifierMetadata(
+      identifier
+    );
     const rotateResult = await this.props.signifyClient
       .identifiers()
       .rotate(metadata.signifyName);

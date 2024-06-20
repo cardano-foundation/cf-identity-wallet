@@ -210,7 +210,7 @@ const IdentifierDetails = () => {
 
   const rotateKeys = async () => {
     try {
-      // TODO: rotate here
+      await Agent.agent.identifiers.rotateIdentifier(params.id);
     } catch (e) {
       // TODO: handle error
     }
