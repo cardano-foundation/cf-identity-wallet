@@ -400,6 +400,7 @@ const RecoverySeedPhraseModule = forwardRef<
           "verifyrecoveryseedphrase.alert.fail.button.confirm"
         )}`}
         actionConfirm={closeFailAlert}
+        backdropDismiss={false}
       />
       <AlertFail
         isOpen={clearAlertOpen}
