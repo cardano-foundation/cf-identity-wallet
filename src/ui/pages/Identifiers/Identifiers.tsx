@@ -149,24 +149,8 @@ const Identifiers = () => {
     if (timeB === null) return -1;
     return timeA - timeB;
   });
-  const handlePendingClick = async (identifier: IdentifierShortDetails) => {
-    // @TODO - sdisalvo: This is a temporary fix Patrick initially added to the CardStack
-    // and I moved it here since PendingIdentifiers are never going to show up in the stack.
-    /**The below code only return false if the identifier is a multisig and it is not ready */
-    const checkMultisigComplete =
-      await Agent.agent.multiSigs.checkMultisigComplete(identifier.id);
-    if (!checkMultisigComplete) {
-      return;
-    } else {
-      const updatedIdentifiers = identifiersData.map((item) => {
-        if (item.id === identifier.id && item.isPending) {
-          return { ...item, isPending: false };
-        }
-        return item;
-      });
-      dispatch(setIdentifiersCache(updatedIdentifiers));
-      setToggleClick(!toggleClick);
-    }
+  const handlePendingClick = async () => {
+    setToggleClick(!toggleClick);
   };
   const handleMultiSigClick = async (identifier: IdentifierShortDetails) => {
     setResumeMultiSig(identifier);
@@ -279,9 +263,7 @@ const Identifiers = () => {
                 <IdentifierCardList
                   cardsData={pendingIdentifiers}
                   cardTypes={CardType.IDENTIFIERS}
-                  onCardClick={async (identifier) =>
-                    handlePendingClick(identifier as IdentifierShortDetails)
-                  }
+                  onCardClick={() => handlePendingClick()}
                   testId="identifiers-list"
                 />
               </div>

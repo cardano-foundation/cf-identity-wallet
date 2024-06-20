@@ -19,7 +19,6 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       identifiers: {
         getIdentifier: jest.fn().mockResolvedValue({}),
-        checkMultisigComplete: jest.fn().mockResolvedValue(true),
       },
     },
   },
