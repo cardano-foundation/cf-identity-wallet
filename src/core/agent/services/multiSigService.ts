@@ -683,14 +683,6 @@ class MultiSigService extends AgentService {
     };
   }
 
-  async checkMultisigComplete(identifier: string): Promise<boolean> {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(
-      identifier
-    );
-    const markMultisigResult = await this.markMultisigCompleteIfReady(metadata);
-    return markMultisigResult.done;
-  }
-
   private async sendMultisigExn(
     name: string,
     aid: Aid,
