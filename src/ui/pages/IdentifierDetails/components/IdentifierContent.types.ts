@@ -2,6 +2,7 @@ import { IdentifierDetails } from "../../../../core/agent/services/identifier.ty
 
 interface IdentifierContentProps {
   cardData: IdentifierDetails;
+  rotateKeys: () => Promise<void>;
 }
 
 export type { IdentifierContentProps };

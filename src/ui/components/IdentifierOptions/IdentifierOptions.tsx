@@ -7,6 +7,7 @@ import {
   pencilOutline,
   shareOutline,
   trashOutline,
+  refreshOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
@@ -29,6 +30,7 @@ import { OptionItem, OptionModal } from "../OptionsModal";
 import "./IdentifierOptions.scss";
 import { IdentifierOptionsProps } from "./IdentifierOptions.types";
 import { IdentifierJsonModal } from "./components";
+import { RotateKeyModal } from "./components/RotateKeyModal/RotateKeyModal";
 
 const IdentifierOptions = ({
   optionsIsOpen,
@@ -36,6 +38,7 @@ const IdentifierOptions = ({
   cardData,
   setCardData,
   handleDeleteIdentifier,
+  handleRotateKey,
 }: IdentifierOptionsProps) => {
   const dispatch = useAppDispatch();
   const identifierData = useAppSelector(getIdentifiersCache);
@@ -44,6 +47,9 @@ const IdentifierOptions = ({
   const [newSelectedTheme, setNewSelectedTheme] = useState(cardData.theme);
   const [viewIsOpen, setViewIsOpen] = useState(false);
   const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
+
+  const [openRotateKeyModal, setOpenRotateKeyModal] = useState(false);
+
   const verifyDisplayName =
     newDisplayName.length > 0 &&
     newDisplayName.length <= DISPLAY_NAME_LENGTH &&
@@ -124,6 +130,14 @@ const IdentifierOptions = ({
         setEditorIsOpen(true);
       },
       testId: "edit-identifier-options",
+    },
+    {
+      icon: refreshOutline,
+      label: i18n.t("identifiers.details.options.rotatekeys"),
+      onClick: () => {
+        setOpenRotateKeyModal(true);
+      },
+      testId: "rotate-keys",
     },
     {
       icon: shareOutline,
@@ -221,6 +235,12 @@ const IdentifierOptions = ({
         cardData={cardData}
         isOpen={viewIsOpen}
         onDissmiss={() => setViewIsOpen(false)}
+      />
+      <RotateKeyModal
+        onRotateKeyClick={handleRotateKey}
+        isOpen={openRotateKeyModal}
+        onClose={() => setOpenRotateKeyModal(false)}
+        signingKey={cardData?.k[0] || ""}
       />
     </>
   );

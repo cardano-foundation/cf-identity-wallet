@@ -743,6 +743,7 @@
         "edit": "Edit identifier",
         "share": "Share identifier",
         "delete": "Delete identifier",
+        "rotatekeys": "Rotate keys",
         "inner": {
           "label": "Display name",
           "theme": "Edit theme",
@@ -755,6 +756,10 @@
         "title": "Identifier JSON",
         "copy": "Copy JSON",
         "save": "Save to Device"
+      },
+      "rotatekeys": {
+        "done": "Done",
+        "description": "Rotating your signing keys boosts security by reducing the risk of key compromise."
       }
     }
   },

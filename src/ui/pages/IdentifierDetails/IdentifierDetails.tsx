@@ -208,6 +208,14 @@ const IdentifierDetails = () => {
     }
   };
 
+  const rotateKeys = async () => {
+    try {
+      // TODO: rotate here
+    } catch (e) {
+      // TODO: handle error
+    }
+  };
+
   const AdditionalButtons = () => {
     return (
       <>
@@ -292,7 +300,10 @@ const IdentifierDetails = () => {
             isActive={false}
           />
           <div className="card-details-content">
-            <IdentifierContent cardData={cardData as IdentifierDetailsCore} />
+            <IdentifierContent
+              rotateKeys={rotateKeys}
+              cardData={cardData as IdentifierDetailsCore}
+            />
             <PageFooter
               pageId={pageId}
               deleteButtonText={`${i18n.t(
@@ -307,6 +318,7 @@ const IdentifierDetails = () => {
             signifyName={cardData.signifyName}
           />
           <IdentifierOptions
+            handleRotateKey={rotateKeys}
             optionsIsOpen={identifierOptionsIsOpen}
             setOptionsIsOpen={setIdentifierOptionsIsOpen}
             cardData={cardData}
