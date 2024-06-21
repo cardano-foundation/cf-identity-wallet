@@ -31,6 +31,7 @@ enum MiscRecordId {
   APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
   KERIA_CONNECT_URL = "keria-connect-url",
   KERIA_BOOT_URL = "keria-boot-url",
+  APP_IDENTIFIER_FAVOURITE_INDEX = "identifier-favourite-index",
 }
 
 interface ConnectionShortDetails {

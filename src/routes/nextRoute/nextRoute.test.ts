@@ -65,6 +65,7 @@ describe("NextRoute", () => {
       },
       identifierViewTypeCacheCache: {
         viewType: null,
+        favouriteIndex: 0,
       },
       biometryCache: {
         enabled: false,
@@ -198,6 +199,7 @@ describe("getNextRoute", () => {
     },
     identifierViewTypeCacheCache: {
       viewType: null,
+      favouriteIndex: 0,
     },
     biometryCache: {
       enabled: false,

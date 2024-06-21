@@ -17,20 +17,20 @@ import {
   setCurrentOperation,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
+import { CardSlider } from "../../components/CardSlider";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
-import { CardsStack } from "../../components/CardsStack";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
-import { TabLayout } from "../../components/layout/TabLayout";
-import { CardType, OperationType } from "../../globals/types";
-import { Connections } from "../Connections";
-import "./Identifiers.scss";
-import { StartAnimationSource } from "./Identifiers.type";
-import { useToggleConnections } from "../../hooks";
 import { ListHeader } from "../../components/ListHeader";
 import {
   CardList as IdentifierCardList,
   SwitchCardView,
 } from "../../components/SwitchCardView";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { CardType, OperationType } from "../../globals/types";
+import { useToggleConnections } from "../../hooks";
+import { Connections } from "../Connections";
+import "./Identifiers.scss";
+import { StartAnimationSource } from "./Identifiers.type";
 
 const CLEAR_STATE_DELAY = 1000;
 interface AdditionalButtonsProps {
@@ -235,16 +235,11 @@ const Identifiers = () => {
                 ref={favouriteContainerElement}
                 className="identifiers-tab-content-block identifier-favourite-cards"
               >
-                {!!allIdentifiers.length && (
-                  <ListHeader
-                    title={`${i18n.t("identifiers.tab.favourites")}`}
-                  />
-                )}
-                <CardsStack
+                <CardSlider
+                  title={`${i18n.t("identifiers.tab.favourites")}`}
                   name="favs"
-                  cardsType={CardType.IDENTIFIERS}
+                  cardType={CardType.IDENTIFIERS}
                   cardsData={sortedFavIdentifiers}
-                  onShowCardDetails={() => handleShowNavAnimation("favourite")}
                 />
               </div>
             )}
