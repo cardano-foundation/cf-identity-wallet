@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   IonButton,
   IonChip,
@@ -8,11 +8,8 @@ import {
   IonList,
   useIonViewWillEnter,
 } from "@ionic/react";
-import {
-  settingsOutline,
-  ellipsisHorizontal,
-  personCircleOutline,
-} from "ionicons/icons";
+import { settingsOutline, ellipsisHorizontal } from "ionicons/icons";
+import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
@@ -22,6 +19,7 @@ import { i18n } from "../../../i18n";
 import { NotificationsProps } from "./Notifications.types";
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
 import { timeDifference } from "../../utils/formatters";
+import { Agent } from "../../../core/agent/agent";
 
 const Notifications = () => {
   const pageId = "notifications-tab";
@@ -31,23 +29,15 @@ const Notifications = () => {
   const [notifications, setNotifications] =
     useState<NotificationsProps[]>(notificationsAll);
 
-  useEffect(() => {
-    setNotifications(
-      selectedFilter === "all"
-        ? notificationsAll
-        : notificationsAll.filter(
-          (notification) => notification.type === selectedFilter
-        )
-    );
-  }, [selectedFilter]);
-
   const notificationsNew = notifications.filter(
-    (notification) => timeDifference(notification.timestamp)[1] === ("m" || "h")
+    (notification) =>
+      timeDifference(notification.createdAt)[1] === "m" ||
+      timeDifference(notification.createdAt)[1] === "h"
   );
   const notificationsEarlier = notifications.filter(
     (notification) =>
-      timeDifference(notification.timestamp)[1] !== "h" &&
-      timeDifference(notification.timestamp)[1] !== "m"
+      timeDifference(notification.createdAt)[1] !== "h" &&
+      timeDifference(notification.createdAt)[1] !== "m"
   );
 
   useIonViewWillEnter(() => {
@@ -75,8 +65,13 @@ const Notifications = () => {
     );
   };
 
-  const handleNotificationClick = (index: number) => {
-    // TODO: Implement notification page
+  const handleNotificationClick = async (id: string) => {
+    // TODO: Implement signify readNotification
+    // await Agent.agent.signifyNotifications.readNotification(id);
+  };
+
+  const getNotifications = async () => {
+    await Agent.agent.signifyNotifications.getAllNotifications();
   };
 
   const filterOptions = [
@@ -140,34 +135,22 @@ const Notifications = () => {
                 return (
                   <IonItem
                     key={index}
-                    onClick={() => handleNotificationClick(index)}
+                    onClick={() => handleNotificationClick(item.id)}
                     className="notifications-tab-item"
                     data-testid={`notifications-tab-item-${index}`}
                   >
-                    {item.logo ? (
-                      <img
-                        src={item.logo}
-                        alt={item.label}
-                        className="notifications-tab-item-logo"
-                        data-testid="notifications-tab-item-logo"
-                      />
-                    ) : (
-                      <div
-                        data-testid="notifications-tab-item-fallback-logo"
-                        className="notifications-tab-item-logo notifications-tab-item-fallback-logo"
-                      >
-                        <IonIcon
-                          icon={personCircleOutline}
-                          color="light"
-                        />
-                      </div>
-                    )}
+                    <img
+                      src={KeriLogo}
+                      alt="notifications-tab-item-logo"
+                      className="notifications-tab-item-logo"
+                      data-testid="notifications-tab-item-logo"
+                    />
                     <IonLabel>
                       {item.label}
                       <br />
                       <span className="notifications-tab-item-time">
-                        {timeDifference(item.timestamp)[0]}
-                        {timeDifference(item.timestamp)[1]}
+                        {timeDifference(item.createdAt)[0]}
+                        {timeDifference(item.createdAt)[1]}
                       </span>
                     </IonLabel>
                     <IonIcon
@@ -195,34 +178,22 @@ const Notifications = () => {
                 return (
                   <IonItem
                     key={index}
-                    onClick={() => handleNotificationClick(index)}
+                    onClick={() => handleNotificationClick(item.id)}
                     className="notifications-tab-item"
                     data-testid={`notifications-tab-item-${index}`}
                   >
-                    {item.logo ? (
-                      <img
-                        src={item.logo}
-                        alt={item.label}
-                        className="notifications-tab-item-logo"
-                        data-testid="notifications-tab-item-logo"
-                      />
-                    ) : (
-                      <div
-                        data-testid="notifications-tab-item-fallback-logo"
-                        className="notifications-tab-item-logo notifications-tab-item-fallback-logo"
-                      >
-                        <IonIcon
-                          icon={personCircleOutline}
-                          color="light"
-                        />
-                      </div>
-                    )}
+                    <img
+                      src={KeriLogo}
+                      alt="notifications-tab-item-logo"
+                      className="notifications-tab-item-logo"
+                      data-testid="notifications-tab-item-logo"
+                    />
                     <IonLabel>
                       {item.label}
                       <br />
                       <span className="notifications-tab-item-time">
-                        {timeDifference(item.timestamp)[0]}
-                        {timeDifference(item.timestamp)[1]}
+                        {timeDifference(item.createdAt)[0]}
+                        {timeDifference(item.createdAt)[1]}
                       </span>
                     </IonLabel>
                     <IonIcon

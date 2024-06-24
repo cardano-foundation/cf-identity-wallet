@@ -1,8 +1,12 @@
+import { NotificationRoute } from "../../../core/agent/agent.types";
+
 interface NotificationsProps {
-  logo: string;
+  id: string;
+  createdAt: string;
   label: string;
-  type: string;
-  timestamp: string;
+  read: boolean;
+  route: NotificationRoute;
+  connectionId: string;
 }
 
 export type { NotificationsProps };
