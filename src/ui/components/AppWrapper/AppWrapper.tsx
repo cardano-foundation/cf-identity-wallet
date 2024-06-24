@@ -62,6 +62,10 @@ import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCach
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import { i18n } from "../../../i18n";
 import { Alert } from "../Alert";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences/preferencesStorage";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -346,10 +350,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     await Agent.agent.initDatabaseConnection();
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
-    const appAlreadyInit = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_ALREADY_INIT
-    );
-    if (!appAlreadyInit) {
+    try {
+      // @TODO - foconnor: This should use our normal DB - keeping Preferences temporarily to not break existing mobile builds.
+      // Will remove preferences again once we have better handling on APP_ALREADY_INIT with user input.
+      await PreferencesStorage.get(PreferencesKeys.APP_ALREADY_INIT);
+    } catch (e) {
       await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
       await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);

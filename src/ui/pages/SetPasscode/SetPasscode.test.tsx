@@ -24,8 +24,15 @@ import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { Agent } from "../../../core/agent/agent";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences/preferencesStorage";
 
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
+const setPreferenceStorageSpy = jest
+  .spyOn(PreferencesStorage, "set")
+  .mockResolvedValue();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -343,13 +350,11 @@ describe("SetPasscode Page", () => {
     });
 
     expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
-    expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
-      expect.objectContaining({
-        id: MiscRecordId.APP_ALREADY_INIT,
-        content: {
-          initialized: true,
-        },
-      })
+    expect(setPreferenceStorageSpy).toBeCalledWith(
+      PreferencesKeys.APP_ALREADY_INIT,
+      {
+        initialized: true,
+      }
     );
   });
 
@@ -461,13 +466,11 @@ describe("SetPasscode Page", () => {
     await waitFor(() =>
       expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111")
     );
-    expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
-      expect.objectContaining({
-        id: MiscRecordId.APP_ALREADY_INIT,
-        content: {
-          initialized: true,
-        },
-      })
+    expect(setPreferenceStorageSpy).toBeCalledWith(
+      PreferencesKeys.APP_ALREADY_INIT,
+      {
+        initialized: true,
+      }
     );
   });
 

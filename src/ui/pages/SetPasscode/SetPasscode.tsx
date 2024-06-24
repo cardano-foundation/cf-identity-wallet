@@ -3,11 +3,7 @@ import { i18n } from "../../../i18n";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
 import { PasscodeModule } from "../../components/PasscodeModule";
-import {
-  getStateCache,
-  setInitialized,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
+import { getStateCache, setToastMsg } from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
@@ -28,6 +24,10 @@ import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
 import { ToastMsgType } from "../../globals/types";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences/preferencesStorage";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
@@ -114,12 +114,9 @@ const SetPasscode = () => {
     ionRouter.push(nextPath.pathname, "forward", "push");
     handleClearState();
 
-    await Agent.agent.basicStorage.createOrUpdateBasicRecord(
-      new BasicRecord({
-        id: MiscRecordId.APP_ALREADY_INIT,
-        content: { initialized: true },
-      })
-    );
+    await PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
+      initialized: true,
+    });
   };
 
   const handleSetupAndroidBiometry = async () => {

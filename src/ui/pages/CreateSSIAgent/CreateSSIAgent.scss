@@ -10,6 +10,13 @@
   }
 
   &.scrollable-page-layout .scrollable-page-content {
+    .content-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: calc(100vh - (5.25rem + var(--ion-safe-area-top)));
+    }
+
     & > * {
       margin: 0.5rem 0 0;
     }
