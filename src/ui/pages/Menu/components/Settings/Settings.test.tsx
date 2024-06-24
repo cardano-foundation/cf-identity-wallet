@@ -20,7 +20,8 @@ jest.mock("@ionic/react", () => ({
   ),
 }));
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
+jest.mock("../../../../../core/storage", () => ({
+  ...jest.requireActual("../../../../../core/storage"),
   SecureStorage: {
     get: (key: string) => {
       return "111111";
