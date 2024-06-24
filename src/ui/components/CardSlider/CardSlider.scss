@@ -24,12 +24,18 @@
   }
 
   .page-indicator-active {
-    width: 30px !important;
+    width: 1.875rem !important;
     opacity: 1 !important;
     transition: width 1s;
   }
 
   .swiper-item {
     padding: 0.25rem;
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .page-indicator-active {
+      width: 1.5rem !important;
+    }
   }
 }
