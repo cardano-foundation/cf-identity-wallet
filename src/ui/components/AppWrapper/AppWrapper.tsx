@@ -14,7 +14,6 @@ import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
   updateIsPending,
-  updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   setCredsCache,
@@ -55,7 +54,10 @@ import {
   PeerDisconnectedEvent,
 } from "../../../core/cardano/walletConnect/peerConnection.types";
 import { MultiSigService } from "../../../core/agent/services/multiSigService";
-import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCache";
+import {
+  setFavouriteIndex,
+  setViewTypeCache,
+} from "../../../store/reducers/identifierViewTypeCache";
 import { CardListViewType } from "../SwitchCardView";
 import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
@@ -359,6 +361,16 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
     if (appUserNameRecord) {
       userName = appUserNameRecord.content as { userName: string };
+    }
+
+    const favouriteIndex = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
+    );
+
+    if (favouriteIndex) {
+      dispatch(
+        setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
+      );
     }
 
     dispatch(
