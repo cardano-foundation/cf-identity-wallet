@@ -1,93 +1,13 @@
 .verify-recovery-seed-phrase {
-  --background: var(--ion-color-light);
-
-  .seed-phrase-module:nth-of-type(1) {
-    background: var(--ion-color-light-grey);
-  }
-
   .page-header {
     ion-toolbar {
       --background: transparent;
     }
   }
 
-  .page-title {
-    font-size: 1.5rem;
-    line-height: 1.75rem;
-    margin-top: 0.5rem;
-    font-weight: 700;
-  }
-
-  .content-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: calc(100vh - (5.25rem + var(--ion-safe-area-top)));
-
-    .page-content {
-      display: flex;
-      flex-direction: column;
-
-      & > * {
-        flex: 0 1 auto;
-      }
-    }
-  }
-
-  .paragraph-top {
-    margin: 0.75rem 0 1rem;
-  }
-
-  .suggest-error {
-    font-size: 1rem;
-    line-height: 1.115rem;
-    color: var(--ion-color-primary);
-    text-align: center;
-    font-weight: 400;
-  }
-
-  .suggestion-title {
-    margin: 1.5rem 0 0.75rem;
-    font-size: 1rem;
-    font-weight: 600;
-    line-height: 1.5rem;
-  }
-
-  .seed-phrase-module:nth-of-type(2) {
-    border: none;
-  }
-
-  .clear-button {
-    display: flex;
-    width: fit-content;
-    margin: 1.5rem auto 1rem;
-  }
-
   @media screen and (min-width: 250px) and (max-width: 370px) {
     .responsive-page-layout {
       padding: 0 0.9rem;
-
-      .responsive-page-content {
-        & > * {
-          margin: 0;
-        }
-
-        & > .paragraph-top {
-          margin: 0.2rem 0;
-        }
-      }
-    }
-
-    .suggest-error {
-      font-size: 0.8rem;
-    }
-
-    .clear-button {
-      margin-top: 1rem;
-    }
-
-    .suggestion-title {
-      margin-top: 1rem;
     }
   }
 }

@@ -59,7 +59,7 @@ import {
   setViewTypeCache,
 } from "../../../store/reducers/identifierViewTypeCache";
 import { CardListViewType } from "../SwitchCardView";
-import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
+import { setEnableBiometricsCache } from "../../../store/reducers/biometricsCache";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import { i18n } from "../../../i18n";
@@ -355,11 +355,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
     if (viewType) {
       dispatch(setViewTypeCache(viewType.content.viewType as CardListViewType));
     }
-    const appBiometry = await Agent.agent.basicStorage.findById(
+    const appBiometrics = await Agent.agent.basicStorage.findById(
       MiscRecordId.APP_BIOMETRY
     );
-    if (appBiometry) {
-      dispatch(setEnableBiometryCache(appBiometry.content.enabled as boolean));
+    if (appBiometrics) {
+      dispatch(
+        setEnableBiometricsCache(appBiometrics.content.enabled as boolean)
+      );
     }
 
     const appUserNameRecord = await Agent.agent.basicStorage.findById(

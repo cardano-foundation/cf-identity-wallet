@@ -44,6 +44,9 @@
     },
     "startover": {
       "label": "Forgot your passcode?"
+    },
+    "cantremember": {
+      "label": "Can't remember?"
     }
   },
   "generateseedphrase": {
@@ -658,10 +661,10 @@
       "skip": "Skip"
     },
     "alert": {
-      "text": "You have chosen to skip creating a password. If you change your mind later, you will still be able to create a password.",
+      "text": "Are you sure you want to skip? By doing this, you will be required to use your passcode for any protected operations. You can, of course, set this up later if you prefer.",
       "button": {
-        "confirm": "Continue without a password",
-        "cancel": "Go back and create a password"
+        "confirm": "Yes, skip",
+        "cancel": "Cancel"
       }
     },
     "error": {
@@ -1118,6 +1121,26 @@
         "restart": "Start again",
         "cancel": "Cancel"
       }
+    }
+  },
+  "forgotauth": {
+    "cancel": "Cancel",
+    "passcode": {
+      "title": "Forgot passcode",
+      "description": "Please verify your seed phrase to reset your passcode. To start typing click on the first option."
+    },
+    "password": {
+      "title": "Forgot password",
+      "description": "Please verify your seed phrase to reset your password. To start typing click on the first option."
+    },
+    "newpasscode": {
+      "title": "New passcode",
+      "description": "Create a new passcode to re-secure your wallet and perform operations",
+      "reenterpasscode": "Re-enter passcode"
+    },
+    "newpassword": {
+      "title": "New password",
+      "description": "Create a new operations password so you can access additional wallet features."
     }
   },
   "shareidentifier": {

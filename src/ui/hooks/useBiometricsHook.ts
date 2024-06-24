@@ -17,7 +17,7 @@ const useBiometricAuth = () => {
   const { setPauseTimestamp } = useActivityTimer();
 
   useEffect(() => {
-    checkBiometry();
+    checkBiometrics();
   }, []);
 
   let appListener: PluginListenerHandle;
@@ -38,14 +38,14 @@ const useBiometricAuth = () => {
     };
   }, []);
 
-  const checkBiometry = async () => {
+  const checkBiometrics = async () => {
     const biometricResult = await BiometricAuth.checkBiometry();
     setBiometricInfo(biometricResult);
     return biometricResult;
   };
 
   const handleBiometricAuth = async (): Promise<boolean | BiometryError> => {
-    const biometricResult = await checkBiometry();
+    const biometricResult = await checkBiometrics();
     if (!biometricResult?.strongBiometryIsAvailable) {
       return new BiometryError(
         "Biometry too weak",

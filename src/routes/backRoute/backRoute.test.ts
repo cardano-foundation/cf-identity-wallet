@@ -69,7 +69,7 @@ describe("getBackRoute", () => {
         viewType: null,
         favouriteIndex: 0,
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };
@@ -198,7 +198,7 @@ describe("getPreviousRoute", () => {
         viewType: null,
         favouriteIndex: 0,
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };

@@ -68,7 +68,7 @@ describe("NextRoute", () => {
         viewType: null,
         favouriteIndex: 0,
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
       ssiAgentCache: {
@@ -305,7 +305,7 @@ describe("getNextRoute", () => {
       viewType: null,
       favouriteIndex: 0,
     },
-    biometryCache: {
+    biometricsCache: {
       enabled: false,
     },
     ssiAgentCache: {

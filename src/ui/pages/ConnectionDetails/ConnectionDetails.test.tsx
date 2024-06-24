@@ -61,7 +61,7 @@ const initialStateFull = {
   connectionsCache: {
     connections: connectionsFix,
   },
-  biometryCache: {
+  biometricsCache: {
     enabled: false,
   },
 };
