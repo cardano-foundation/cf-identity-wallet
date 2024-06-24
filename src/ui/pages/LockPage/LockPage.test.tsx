@@ -48,7 +48,7 @@ interface StoreMockedProps {
   cryptoAccountsCache: {
     cryptoAccounts: never[];
   };
-  biometryCache: {
+  biometricsCache: {
     enabled: boolean;
   };
 }
@@ -80,7 +80,7 @@ const initialState = {
   cryptoAccountsCache: {
     cryptoAccounts: [],
   },
-  biometryCache: {
+  biometricsCache: {
     enabled: true,
   },
 };

@@ -135,7 +135,7 @@ describe("Settings page", () => {
           passwordIsSet: false,
         },
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };
@@ -224,7 +224,7 @@ describe("Settings page", () => {
           passwordIsSet: false,
         },
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: true,
       },
     };
@@ -279,7 +279,7 @@ describe("Settings page", () => {
           passwordIsSet: false,
         },
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };

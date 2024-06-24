@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
-import { BiometricsCacheProps } from "./biometryCache.types";
+import { BiometricsCacheProps } from "./biometricsCache.types";
 
 const initialState: BiometricsCacheProps = {
   enabled: false,
 };
 
-const biometryCacheSlice = createSlice({
-  name: "biometryCache",
+const biometricsCacheSlice = createSlice({
+  name: "biometricsCache",
   initialState,
   reducers: {
     setEnableBiometricsCache: (state, action: PayloadAction<boolean>) => {
@@ -16,13 +16,13 @@ const biometryCacheSlice = createSlice({
   },
 });
 
-const { setEnableBiometricsCache } = biometryCacheSlice.actions;
+const { setEnableBiometricsCache } = biometricsCacheSlice.actions;
 
-const getBiometricsCacheCache = (state: RootState) => state.biometryCache;
+const getBiometricsCacheCache = (state: RootState) => state.biometricsCache;
 
 export {
   initialState,
   setEnableBiometricsCache,
   getBiometricsCacheCache,
-  biometryCacheSlice,
+  biometricsCacheSlice,
 };

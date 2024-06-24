@@ -76,7 +76,7 @@ const initialState = {
   identifiersCache: {
     identifiers: [...identifierFix],
   },
-  biometryCache: {
+  biometricsCache: {
     enabled: false,
   },
 };
@@ -104,7 +104,7 @@ describe("Wallet connect: empty history", () => {
       identifiersCache: {
         identifiers: [...identifierFix],
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };
@@ -142,7 +142,7 @@ describe("Wallet connect: empty history", () => {
       identifiersCache: {
         identifiers: [...identifierFix],
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };
@@ -194,7 +194,7 @@ describe("Wallet connect: empty history", () => {
       identifiersCache: {
         identifiers: [],
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };
@@ -449,7 +449,7 @@ describe("Wallet connect", () => {
       identifiersCache: {
         identifiers: [],
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };
@@ -555,7 +555,7 @@ describe("Wallet connect", () => {
           },
         ],
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };
@@ -622,7 +622,7 @@ describe("Wallet connect", () => {
           },
         ],
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };

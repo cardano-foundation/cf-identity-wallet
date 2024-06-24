@@ -8,7 +8,7 @@ import { BasicRecord } from "../../../core/agent/records";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { i18n } from "../../../i18n";
 import { useAppDispatch } from "../../../store/hooks";
-import { setEnableBiometricsCache } from "../../../store/reducers/biometryCache";
+import { setEnableBiometricsCache } from "../../../store/reducers/biometricsCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";

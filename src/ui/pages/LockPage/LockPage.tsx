@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch } from "../../../store/hooks";
-import { getBiometricsCacheCache } from "../../../store/reducers/biometryCache";
+import { getBiometricsCacheCache } from "../../../store/reducers/biometricsCache";
 import { login } from "../../../store/reducers/stateCache";
 import { Alert } from "../../components/Alert";
 import {
@@ -25,7 +25,7 @@ const LockPage = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
   const { handleBiometricAuth } = useBiometricAuth();
-  const biometryCacheCache = useSelector(getBiometricsCacheCache);
+  const biometricsCache = useSelector(getBiometricsCacheCache);
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
 
   const headerText = i18n.t("lockpage.alert.text.verify");
@@ -48,7 +48,7 @@ const LockPage = () => {
 
   useEffect(() => {
     const runBiometrics = async () => {
-      if (biometryCacheCache.enabled) {
+      if (biometricsCache.enabled) {
         await handleBiometrics();
       }
     };
