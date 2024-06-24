@@ -18,8 +18,8 @@ const CardDetailsItem = ({
   testId,
   infoTestId,
   className,
-  actionIcon,
-  actionIconClick,
+  actionButton: actionIcon,
+  actionButtonClick: actionIconClick,
   fullText = false,
   mask = true,
 }: CardDetailsItemProps) => {
@@ -37,6 +37,11 @@ const CardDetailsItem = ({
   const contentClass = combineClassNames("card-details-info-content", {
     "no-hide-overflow": !!fullText && !copyButton,
   });
+
+  const copy = () => {
+    writeToClipboard(info);
+    dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
+  };
 
   return (
     <IonItem
@@ -88,12 +93,7 @@ const CardDetailsItem = ({
             shape="round"
             className="action-button"
             data-testid={`${testId}-copy-button`}
-            onClick={() => {
-              if (copyButton) {
-                writeToClipboard(info);
-                dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
-              }
-            }}
+            onClick={copy}
           >
             <IonIcon icon={copyOutline} />
           </IonButton>

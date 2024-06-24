@@ -108,54 +108,75 @@ const IdentifierOptions = ({
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
   };
 
+  const rotateKey = () => {
+    setOptionsIsOpen(false);
+    handleRotateKey();
+  };
+
+  const updateIdentifier = () => {
+    dispatch(setCurrentOperation(OperationType.UPDATE_IDENTIFIER));
+    setNewDisplayName(cardData.displayName);
+    setOptionsIsOpen(false);
+    setEditorIsOpen(true);
+  };
+
+  const viewJson = () => {
+    setOptionsIsOpen(false);
+    setViewIsOpen(true);
+  };
+
+  const share = async () => {
+    await Share.share({
+      text: cardData.displayName + " " + cardData.id,
+    });
+  };
+
+  const deleteIdentifier = () => {
+    setOptionsIsOpen(false);
+    handleDelete();
+    dispatch(setCurrentOperation(OperationType.DELETE_IDENTIFIER));
+  };
+
+  const dismissModal = () => {
+    setEditorIsOpen(false);
+    setNewDisplayName(cardData.displayName);
+    setNewSelectedTheme(cardData.theme);
+  };
+
+  const closeModal = () => {
+    handleClose();
+    dispatch(setCurrentOperation(OperationType.IDLE));
+  };
+
   const options: OptionItem[] = [
     {
       icon: codeSlashOutline,
       label: i18n.t("identifiers.details.options.view"),
-      onClick: () => {
-        setOptionsIsOpen(false);
-        setViewIsOpen(true);
-      },
+      onClick: viewJson,
       testId: "view-json-identifier-options",
     },
     {
       icon: pencilOutline,
       label: i18n.t("identifiers.details.options.edit"),
-      onClick: () => {
-        dispatch(setCurrentOperation(OperationType.UPDATE_IDENTIFIER));
-        setNewDisplayName(cardData.displayName);
-        setOptionsIsOpen(false);
-        setEditorIsOpen(true);
-      },
+      onClick: updateIdentifier,
       testId: "edit-identifier-options",
     },
     {
       icon: refreshOutline,
       label: i18n.t("identifiers.details.options.rotatekeys"),
-      onClick: () => {
-        setOptionsIsOpen(false);
-        handleRotateKey();
-      },
+      onClick: rotateKey,
       testId: "rotate-keys",
     },
     {
       icon: shareOutline,
       label: i18n.t("identifiers.details.options.share"),
-      onClick: async () => {
-        await Share.share({
-          text: cardData.displayName + " " + cardData.id,
-        });
-      },
+      onClick: share,
       testId: "share-identifier-options",
     },
     {
       icon: trashOutline,
       label: i18n.t("identifiers.details.options.delete"),
-      onClick: () => {
-        setOptionsIsOpen(false);
-        handleDelete();
-        dispatch(setCurrentOperation(OperationType.DELETE_IDENTIFIER));
-      },
+      onClick: deleteIdentifier,
       testId: "delete-identifier-options",
     },
   ];
@@ -174,19 +195,12 @@ const IdentifierOptions = ({
       <OptionModal
         modalIsOpen={editorOptionsIsOpen}
         customClasses="edit-identifier"
-        onDismiss={() => {
-          setEditorIsOpen(false);
-          setNewDisplayName(cardData.displayName);
-          setNewSelectedTheme(cardData.theme);
-        }}
+        onDismiss={dismissModal}
         componentId="edit-identifier-modal"
         header={{
           closeButton: true,
           closeButtonLabel: `${i18n.t("identifiers.details.options.cancel")}`,
-          closeButtonAction: () => {
-            handleClose();
-            dispatch(setCurrentOperation(OperationType.IDLE));
-          },
+          closeButtonAction: closeModal,
           title: `${i18n.t("identifiers.details.options.edit")}`,
         }}
       >

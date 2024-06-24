@@ -36,7 +36,12 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children, isOpen, ...props }: any) => (
-    <div data-testid={props["data-testid"]}>{isOpen ? children : null}</div>
+    <div
+      style={{ display: isOpen ? undefined : "none" }}
+      data-testid={props["data-testid"]}
+    >
+      {isOpen ? children : null}
+    </div>
   ),
 }));
 
@@ -95,7 +100,7 @@ describe("Cards Details page", () => {
     await new ConfigurationService().start();
   });
   test("It opens the sharing modal", async () => {
-    const { getByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -109,6 +114,9 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(getByTestId("share-button")).toBeInTheDocument()
     );
+
+    expect(queryByTestId("share-identifier-modal")).toBe(null);
+
     act(() => {
       fireEvent.click(getByTestId("share-button"));
     });
@@ -139,6 +147,9 @@ describe("Cards Details page", () => {
         )
       ).toBeInTheDocument()
     );
+
+    expect(getByTestId("identifier-options-modal")).not.toBeVisible();
+
     act(() => {
       fireEvent.click(getByTestId("identifier-options-button"));
     });

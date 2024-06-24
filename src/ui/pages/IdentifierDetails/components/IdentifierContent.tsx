@@ -39,8 +39,8 @@ const IdentifierContent = ({
                 copyButton={true}
                 textIcon="identifiers.details.signingkeyslist.icon"
                 testId={`signing-key-${index}`}
-                actionIcon={refreshOutline}
-                actionIconClick={onOpenRotateKey}
+                actionButton={refreshOutline}
+                actionButtonClick={onOpenRotateKey}
               />
             );
           })}

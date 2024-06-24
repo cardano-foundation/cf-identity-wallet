@@ -9,6 +9,6 @@ export interface CardDetailsItemProps {
   className?: string;
   mask?: boolean;
   fullText?: boolean;
-  actionIcon?: string;
-  actionIconClick?: () => void;
+  actionButton?: string;
+  actionButtonClick?: () => void;
 }
