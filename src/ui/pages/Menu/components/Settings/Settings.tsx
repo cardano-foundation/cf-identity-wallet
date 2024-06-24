@@ -35,8 +35,8 @@ import { MiscRecordId } from "../../../../../core/agent/agent.types";
 import { BasicRecord } from "../../../../../core/agent/records";
 import { useAppDispatch } from "../../../../../store/hooks";
 import {
-  getBiometryCacheCache,
-  setEnableBiometryCache,
+  getBiometricsCacheCache,
+  setEnableBiometricsCache,
 } from "../../../../../store/reducers/biometryCache";
 import { Agent } from "../../../../../core/agent/agent";
 import { VerifyPassword } from "../../../../components/VerifyPassword";
@@ -49,7 +49,7 @@ const Settings = () => {
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
   const stateCache = useSelector(getStateCache);
-  const biometryCache = useSelector(getBiometryCacheCache);
+  const biometryCache = useSelector(getBiometricsCacheCache);
   const dispatch = useAppDispatch();
   const { biometricInfo, handleBiometricAuth } = useBiometricAuth();
   const inBiometricSetup = useRef(false);
@@ -103,7 +103,7 @@ const Settings = () => {
         content: { enabled: !biometryCache.enabled },
       })
     );
-    dispatch(setEnableBiometryCache(!biometryCache.enabled));
+    dispatch(setEnableBiometricsCache(!biometryCache.enabled));
   };
 
   const handleBiometricUpdate = () => {

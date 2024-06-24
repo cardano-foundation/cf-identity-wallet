@@ -1,29 +1,22 @@
-import { Redirect, Route } from "react-router-dom";
-import { createMemoryHistory } from "history";
+import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
+import { IonRouterOutlet } from "@ionic/react";
+import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
 import {
-  act,
+  RenderResult,
   fireEvent,
   render,
   waitFor,
-  RenderResult,
 } from "@testing-library/react";
+import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
+import { Redirect, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
-import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
-import { IonRouterOutlet } from "@ionic/react";
-import {
-  BiometryError,
-  BiometryType,
-} from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
-import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
-import { SetPasscode } from "./SetPasscode";
-import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
-import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
-import { MiscRecordId } from "../../../core/agent/agent.types";
-import { Agent } from "../../../core/agent/agent";
+import { store } from "../../../store";
+import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
+import { SetPasscode } from "./SetPasscode";
 
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 

@@ -5,7 +5,7 @@ import "./PasscodeModule.scss";
 import { PASSCODE_MAPPING } from "../../globals/types";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
 import { useSelector } from "react-redux";
-import { getBiometryCacheCache } from "../../../store/reducers/biometryCache";
+import { getBiometricsCacheCache } from "../../../store/reducers/biometryCache";
 import faceIdIcon from "../../assets/images/face-id.png";
 import { BiometryType } from "@aparajita/capacitor-biometric-auth";
 
@@ -16,7 +16,7 @@ const PasscodeModule = ({
   handleRemove,
   handleBiometricButtonClick,
 }: PasscodeModuleProps) => {
-  const biometryCache = useSelector(getBiometryCacheCache);
+  const biometryCache = useSelector(getBiometricsCacheCache);
   const { biometricInfo } = useBiometricAuth();
   const numbers = PASSCODE_MAPPING.numbers;
   const labels = PASSCODE_MAPPING.labels;

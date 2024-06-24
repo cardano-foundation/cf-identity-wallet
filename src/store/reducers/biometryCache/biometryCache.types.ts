@@ -1,4 +1,4 @@
-interface BiometryCacheProps {
+interface BiometricsCacheProps {
   enabled: boolean;
 }
-export type { BiometryCacheProps };
+export type { BiometricsCacheProps };

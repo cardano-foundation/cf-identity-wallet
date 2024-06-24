@@ -2,9 +2,9 @@ import i18n from "i18next";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getBiometryCacheCache } from "../../../store/reducers/biometryCache";
-import { getAuthentication, login } from "../../../store/reducers/stateCache";
+import { useAppDispatch } from "../../../store/hooks";
+import { getBiometricsCacheCache } from "../../../store/reducers/biometryCache";
+import { login } from "../../../store/reducers/stateCache";
 import { Alert } from "../../components/Alert";
 import {
   ErrorMessage,
@@ -21,13 +21,11 @@ import "./LockPage.scss";
 const LockPage = () => {
   const pageId = "lock-page";
   const dispatch = useAppDispatch();
-  const authentication = useAppSelector(getAuthentication);
   const [passcode, setPasscode] = useState("");
-  const seedPhrase = authentication.seedPhraseIsSet;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
   const { handleBiometricAuth } = useBiometricAuth();
-  const biometryCacheCache = useSelector(getBiometryCacheCache);
+  const biometryCacheCache = useSelector(getBiometricsCacheCache);
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
 
   const headerText = i18n.t("lockpage.alert.text.verify");

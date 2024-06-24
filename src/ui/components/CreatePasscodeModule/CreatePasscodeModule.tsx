@@ -8,7 +8,7 @@ import { BasicRecord } from "../../../core/agent/records";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { i18n } from "../../../i18n";
 import { useAppDispatch } from "../../../store/hooks";
-import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
+import { setEnableBiometricsCache } from "../../../store/reducers/biometryCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
@@ -28,25 +28,26 @@ const CreatePasscodeModule = forwardRef<
 >(({ testId, title, description, onCreateSuccess, onPasscodeChange }, ref) => {
   const dispatch = useAppDispatch();
   const [passcode, setPasscode] = useState("");
-  const [showSetupAndroidBiometryAlert, setShowSetupAndroidBiometryAlert] =
+  const [showSetupAndroidBiometricsAlert, setShowSetupAndroidBiometricsAlert] =
     useState(false);
-  const [showCancelBiometryAlert, setShowCancelBiometryAlert] = useState(false);
+  const [showCancelBiometricsAlert, setShowCancelBiometricsAlert] =
+    useState(false);
   const [originalPassCode, setOriginalPassCode] = useState("");
   const { handleBiometricAuth, biometricInfo } = useBiometricAuth();
   const isAndroidDevice = getPlatforms().includes("android");
 
-  const setupAndroidBiometryHeaderText = i18n.t(
+  const setupAndroidBiometricsHeaderText = i18n.t(
     "biometry.setupandroidbiometryheader"
   );
-  const setupAndroidBiometryConfirmtext = i18n.t(
+  const setupAndroidBiometricsConfirmtext = i18n.t(
     "biometry.setupandroidbiometryconfirm"
   );
-  const setupAndroidBiometryCanceltext = i18n.t(
+  const setupAndroidBiometricsCanceltext = i18n.t(
     "biometry.setupandroidbiometrycancel"
   );
 
-  const cancelBiometryHeaderText = i18n.t("biometry.cancelbiometryheader");
-  const cancelBiometryConfirmText = setupAndroidBiometryConfirmtext;
+  const cancelBiometricsHeaderText = i18n.t("biometry.cancelbiometryheader");
+  const cancelBiometricsConfirmText = setupAndroidBiometricsConfirmtext;
 
   const handlePinChange = async (digit: number) => {
     if (passcode.length < 6) {
@@ -55,7 +56,7 @@ const CreatePasscodeModule = forwardRef<
         if (originalPassCode === passcode + digit) {
           if (biometricInfo?.strongBiometryIsAvailable) {
             if (isAndroidDevice) {
-              setShowSetupAndroidBiometryAlert(true);
+              setShowSetupAndroidBiometricsAlert(true);
             } else {
               await processBiometrics();
             }
@@ -76,7 +77,7 @@ const CreatePasscodeModule = forwardRef<
           content: { enabled: true },
         })
       );
-      dispatch(setEnableBiometryCache(true));
+      dispatch(setEnableBiometricsCache(true));
       dispatch(
         setToastMsg(ToastMsgType.SETUP_BIOMETRIC_AUTHENTICATION_SUCCESS)
       );
@@ -88,7 +89,7 @@ const CreatePasscodeModule = forwardRef<
           isBiometricAuthenticated.code ===
             BiometryErrorType.biometryNotAvailable
         ) {
-          setShowCancelBiometryAlert(true);
+          setShowCancelBiometricsAlert(true);
         }
       }
     }
@@ -99,15 +100,15 @@ const CreatePasscodeModule = forwardRef<
     onCreateSuccess();
   };
 
-  const handleSetupAndroidBiometry = async () => {
+  const handleSetupAndroidBiometrics = async () => {
     await processBiometrics();
   };
 
-  const handleCancelSetupAndroidBiometry = async () => {
-    setShowCancelBiometryAlert(true);
+  const handleCancelSetupAndroidBiometrics = async () => {
+    setShowCancelBiometricsAlert(true);
   };
 
-  const handleCancelBiometry = async () => {
+  const handleCancelBiometrics = async () => {
     await handlePassAuth();
   };
 
@@ -120,8 +121,8 @@ const CreatePasscodeModule = forwardRef<
   const handleClearState = () => {
     setPasscode("");
     setOriginalPassCode("");
-    setShowCancelBiometryAlert(false);
-    setShowSetupAndroidBiometryAlert(false);
+    setShowCancelBiometricsAlert(false);
+    setShowSetupAndroidBiometricsAlert(false);
   };
 
   useImperativeHandle(ref, () => ({
@@ -185,23 +186,23 @@ const CreatePasscodeModule = forwardRef<
         />
       )}
       <Alert
-        isOpen={showSetupAndroidBiometryAlert}
-        setIsOpen={setShowSetupAndroidBiometryAlert}
+        isOpen={showSetupAndroidBiometricsAlert}
+        setIsOpen={setShowSetupAndroidBiometricsAlert}
         dataTestId="alert-setup-android-biometry"
-        headerText={setupAndroidBiometryHeaderText}
-        confirmButtonText={setupAndroidBiometryConfirmtext}
-        cancelButtonText={setupAndroidBiometryCanceltext}
-        actionConfirm={handleSetupAndroidBiometry}
-        actionCancel={handleCancelSetupAndroidBiometry}
+        headerText={setupAndroidBiometricsHeaderText}
+        confirmButtonText={setupAndroidBiometricsConfirmtext}
+        cancelButtonText={setupAndroidBiometricsCanceltext}
+        actionConfirm={handleSetupAndroidBiometrics}
+        actionCancel={handleCancelSetupAndroidBiometrics}
         backdropDismiss={false}
       />
       <Alert
-        isOpen={showCancelBiometryAlert}
-        setIsOpen={setShowCancelBiometryAlert}
+        isOpen={showCancelBiometricsAlert}
+        setIsOpen={setShowCancelBiometricsAlert}
         dataTestId="alert-cancel-biometry"
-        headerText={cancelBiometryHeaderText}
-        confirmButtonText={cancelBiometryConfirmText}
-        actionConfirm={handleCancelBiometry}
+        headerText={cancelBiometricsHeaderText}
+        confirmButtonText={cancelBiometricsConfirmText}
+        actionConfirm={handleCancelBiometrics}
         backdropDismiss={false}
       />
     </div>
