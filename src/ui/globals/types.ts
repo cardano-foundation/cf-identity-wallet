@@ -61,6 +61,8 @@ enum ToastMsgType {
   PEER_ID_SUCCESS = "peeridsuccess",
   PEER_ID_NOT_RECOGNISED = "peeridnotrecognised",
   SETUP_BIOMETRIC_AUTHENTICATION_SUCCESS = "setupbiometricsuccess",
+  ROTATE_KEY_SUCCESS = "rotatekeysuccess",
+  ROTATE_KEY_ERROR = "rotatekeyerror",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {

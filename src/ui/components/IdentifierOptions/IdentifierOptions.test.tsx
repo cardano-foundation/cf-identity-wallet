@@ -56,6 +56,7 @@ describe("Identifier Options modal", () => {
     const { getByTestId } = render(
       <Provider store={mockedStore}>
         <IdentifierOptions
+          handleRotateKey={jest.fn()}
           optionsIsOpen={true}
           setOptionsIsOpen={setIdentifierOptionsIsOpen}
           cardData={identifierFix[0]}
@@ -111,6 +112,7 @@ describe("Identifier Options function test", () => {
     const { getByTestId, getByText } = render(
       <Provider store={mockedStore}>
         <IdentifierOptions
+          handleRotateKey={jest.fn()}
           optionsIsOpen={true}
           setOptionsIsOpen={setIdentifierOptionsIsOpen}
           cardData={identifierFix[0]}
@@ -155,6 +157,7 @@ describe("Identifier Options function test", () => {
     const { getByTestId, getAllByText } = render(
       <Provider store={mockedStore}>
         <IdentifierOptions
+          handleRotateKey={jest.fn()}
           optionsIsOpen={true}
           setOptionsIsOpen={setIdentifierOptionsIsOpen}
           cardData={identifierFix[0]}
@@ -208,6 +211,7 @@ describe("Identifier Options function test", () => {
     const { getByTestId, getAllByText } = render(
       <Provider store={mockedStore}>
         <IdentifierOptions
+          handleRotateKey={jest.fn()}
           optionsIsOpen={true}
           setOptionsIsOpen={setIdentifierOptionsIsOpen}
           cardData={identifierFix[0]}

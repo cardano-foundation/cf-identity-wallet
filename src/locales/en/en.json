@@ -743,6 +743,7 @@
         "edit": "Edit identifier",
         "share": "Share identifier",
         "delete": "Delete identifier",
+        "rotatekeys": "Rotate keys",
         "inner": {
           "label": "Display name",
           "theme": "Edit theme",
@@ -755,6 +756,10 @@
         "title": "Identifier JSON",
         "copy": "Copy JSON",
         "save": "Save to Device"
+      },
+      "rotatekeys": {
+        "done": "Done",
+        "description": "Rotating your signing keys boosts security by reducing the risk of key compromise."
       }
     }
   },
@@ -1217,7 +1222,9 @@
     "unableconnectwallet": "Unable to connect",
     "peeridsuccess": "Peer ID successful",
     "peeridnotrecognised": "Peer ID not recognised",
-    "setupbiometricsuccess": "Biometrics setup successfully"
+    "setupbiometricsuccess": "Biometrics setup successfully",
+    "rotatekeysuccess": "Keys rotated successfully",
+    "rotatekeyerror": "Unable to rotate keys"
   },
   "request": {
     "sign": {
