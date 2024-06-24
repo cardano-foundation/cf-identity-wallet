@@ -27,8 +27,16 @@ const formatTimeToSec = (date: string) => {
 
 const timeDifference = (timestamp: string) => {
   const startDate = new Date(timestamp);
-  const endDate = Date.now();
-  const timeDifferenceMS = endDate - startDate.getTime();
+  const endDate = new Date(); // Current date and time in local time zone
+  const endDateUTC = Date.UTC(
+    endDate.getUTCFullYear(),
+    endDate.getUTCMonth(),
+    endDate.getUTCDate(),
+    endDate.getUTCHours(),
+    endDate.getUTCMinutes(),
+    endDate.getUTCSeconds()
+  ); // Convert current time to UTC in milliseconds
+  const timeDifferenceMS = endDateUTC - startDate.getTime();
   const timeDifferenceMins = Math.floor(timeDifferenceMS / 60000);
   const timeDifferenceHours = Math.floor(timeDifferenceMS / 3600000);
   const timeDifferenceDays = Math.floor(timeDifferenceMS / 86400000);
@@ -42,11 +50,9 @@ const timeDifference = (timestamp: string) => {
     return [timeDifferenceHours, "h"];
   } else if (timeDifferenceDays < 7) {
     return [timeDifferenceDays, "d"];
-  } else if (timeDifferenceDays < 30) {
-    return [timeDifferenceWeeks, "w"];
   } else if (timeDifferenceDays < 365) {
-    return [timeDifferenceYears, "y"];
-  }
+    return [timeDifferenceWeeks, "w"];
+  } else return [timeDifferenceYears, "y"];
 };
 
 const formatCurrencyUSD = (amount: number) => {

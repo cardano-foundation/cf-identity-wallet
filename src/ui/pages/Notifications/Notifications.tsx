@@ -42,10 +42,12 @@ const Notifications = () => {
   }, [selectedFilter]);
 
   const notificationsNew = notifications.filter(
-    (notification) => timeDifference(notification.timestamp)[1] === "h"
+    (notification) => timeDifference(notification.timestamp)[1] === ("m" || "h")
   );
   const notificationsEarlier = notifications.filter(
-    (notification) => timeDifference(notification.timestamp)[1] === "d"
+    (notification) =>
+      timeDifference(notification.timestamp)[1] !== "h" &&
+      timeDifference(notification.timestamp)[1] !== "m"
   );
 
   useIonViewWillEnter(() => {
@@ -53,7 +55,7 @@ const Notifications = () => {
   });
 
   const handleNotificationsSettings = () => {
-    // TODO: Implement settings page
+    // TODO: Implement settings
   };
 
   const AdditionalButtons = () => {
@@ -165,9 +167,7 @@ const Notifications = () => {
                       <br />
                       <span className="notifications-tab-item-time">
                         {timeDifference(item.timestamp)[0]}
-                        {timeDifference(item.timestamp)[1] === "d"
-                          ? i18n.t("notifications.tab.sections.days")
-                          : i18n.t("notifications.tab.sections.hours")}
+                        {timeDifference(item.timestamp)[1]}
                       </span>
                     </IonLabel>
                     <IonIcon
@@ -222,9 +222,7 @@ const Notifications = () => {
                       <br />
                       <span className="notifications-tab-item-time">
                         {timeDifference(item.timestamp)[0]}
-                        {timeDifference(item.timestamp)[1] === "d"
-                          ? i18n.t("notifications.tab.sections.days")
-                          : i18n.t("notifications.tab.sections.hours")}
+                        {timeDifference(item.timestamp)[1]}
                       </span>
                     </IonLabel>
                     <IonIcon
