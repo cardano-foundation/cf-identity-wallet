@@ -183,92 +183,99 @@ const CreateSSIAgent = () => {
           />
         }
       >
-        <h2 data-testid={`${pageId}-title`}>{i18n.t("ssiagent.title")}</h2>
-        <p
-          className="page-paragraph"
-          data-testid={`${pageId}-top-paragraph`}
-        >
-          {i18n.t("ssiagent.description")}
-        </p>
-        <div>
-          <IonButton
-            fill="outline"
-            className="copy-button secondary-button"
-            onClick={() => setOpenInfo(true)}
-          >
-            <IonIcon
-              slot="start"
-              icon={informationCircleOutline}
+        <div className="content-container ">
+          <div>
+            <h2 data-testid={`${pageId}-title`}>{i18n.t("ssiagent.title")}</h2>
+            <p
+              className="page-paragraph"
+              data-testid={`${pageId}-top-paragraph`}
+            >
+              {i18n.t("ssiagent.description")}
+            </p>
+            <div>
+              <IonButton
+                fill="outline"
+                className="copy-button secondary-button"
+                onClick={() => setOpenInfo(true)}
+              >
+                <IonIcon
+                  slot="start"
+                  icon={informationCircleOutline}
+                />
+                {i18n.t("ssiagent.button.info")}
+              </IonButton>
+            </div>
+            <CustomInput
+              dataTestId="boot-url-input"
+              title={`${i18n.t("ssiagent.input.boot.label")}`}
+              placeholder={`${i18n.t("ssiagent.input.boot.placeholder")}`}
+              actionIcon={scanOutline}
+              action={scanBootUrl}
+              onChangeInput={(bootUrl: string) => {
+                setIsInvalidBootUrl(false);
+                dispatch(setBootUrl(bootUrl));
+              }}
+              value={ssiAgent.bootUrl || ""}
+              onChangeFocus={(result) => {
+                setTouchedBootUrlInput();
+
+                if (!result && ssiAgent.bootUrl) {
+                  dispatch(
+                    setBootUrl(removeLastSlash(ssiAgent.bootUrl.trim()))
+                  );
+                }
+              }}
+              error={!!displayBootUrlError || isInvalidBootUrl}
             />
-            {i18n.t("ssiagent.button.info")}
-          </IonButton>
+            <InputError
+              showError={!!displayBootUrlError || isInvalidBootUrl}
+              errorMessage={
+                (displayBootUrlError || isInvalidBootUrl) &&
+                !displayConnectUrlError
+                  ? `${i18n.t("ssiagent.error.invalidbooturl")}`
+                  : `${i18n.t("ssiagent.error.invalidurl")}`
+              }
+            />
+            <CustomInput
+              dataTestId="connect-url-input"
+              title={`${i18n.t("ssiagent.input.connect.label")}`}
+              placeholder={`${i18n.t("ssiagent.input.connect.placeholder")}`}
+              actionIcon={scanOutline}
+              action={scanConnectUrl}
+              onChangeInput={(connectionUrl: string) => {
+                setHasMismatchError(false);
+                dispatch(setConnectUrl(connectionUrl));
+              }}
+              onChangeFocus={(result) => {
+                setTouchedConnectUrlInput();
+
+                if (!result && ssiAgent.connectUrl) {
+                  dispatch(
+                    setConnectUrl(removeLastSlash(ssiAgent.connectUrl.trim()))
+                  );
+                }
+              }}
+              value={ssiAgent.connectUrl || ""}
+              error={!!displayConnectUrlError || hasMismatchError}
+            />
+            <InputError
+              showError={!!displayConnectUrlError || hasMismatchError}
+              errorMessage={
+                hasMismatchError
+                  ? `${i18n.t("ssiagent.error.mismatchconnecturl")}`
+                  : displayBootUrlError
+                    ? `${i18n.t("ssiagent.error.invalidurl")}`
+                    : `${i18n.t("ssiagent.error.invalidconnecturl")}`
+              }
+            />
+          </div>
+          <PageFooter
+            pageId={pageId}
+            primaryButtonText={`${i18n.t("ssiagent.button.validate")}`}
+            primaryButtonAction={() => handleValidate()}
+            primaryButtonDisabled={!validated}
+          />
         </div>
-        <CustomInput
-          dataTestId="boot-url-input"
-          title={`${i18n.t("ssiagent.input.boot.label")}`}
-          placeholder={`${i18n.t("ssiagent.input.boot.placeholder")}`}
-          actionIcon={scanOutline}
-          action={scanBootUrl}
-          onChangeInput={(bootUrl: string) => {
-            setIsInvalidBootUrl(false);
-            dispatch(setBootUrl(bootUrl));
-          }}
-          value={ssiAgent.bootUrl || ""}
-          onChangeFocus={(result) => {
-            setTouchedBootUrlInput();
-
-            if (!result && ssiAgent.bootUrl) {
-              dispatch(setBootUrl(removeLastSlash(ssiAgent.bootUrl.trim())));
-            }
-          }}
-          error={!!displayBootUrlError || isInvalidBootUrl}
-        />
-        <InputError
-          showError={!!displayBootUrlError || isInvalidBootUrl}
-          errorMessage={
-            (displayBootUrlError || isInvalidBootUrl) && !displayConnectUrlError
-              ? `${i18n.t("ssiagent.error.invalidbooturl")}`
-              : `${i18n.t("ssiagent.error.invalidurl")}`
-          }
-        />
-        <CustomInput
-          dataTestId="connect-url-input"
-          title={`${i18n.t("ssiagent.input.connect.label")}`}
-          placeholder={`${i18n.t("ssiagent.input.connect.placeholder")}`}
-          actionIcon={scanOutline}
-          action={scanConnectUrl}
-          onChangeInput={(connectionUrl: string) => {
-            setHasMismatchError(false);
-            dispatch(setConnectUrl(connectionUrl));
-          }}
-          onChangeFocus={(result) => {
-            setTouchedConnectUrlInput();
-
-            if (!result && ssiAgent.connectUrl) {
-              dispatch(
-                setConnectUrl(removeLastSlash(ssiAgent.connectUrl.trim()))
-              );
-            }
-          }}
-          value={ssiAgent.connectUrl || ""}
-          error={!!displayConnectUrlError || hasMismatchError}
-        />
-        <InputError
-          showError={!!displayConnectUrlError || hasMismatchError}
-          errorMessage={
-            hasMismatchError
-              ? `${i18n.t("ssiagent.error.mismatchconnecturl")}`
-              : displayBootUrlError
-                ? `${i18n.t("ssiagent.error.invalidurl")}`
-                : `${i18n.t("ssiagent.error.invalidconnecturl")}`
-          }
-        />
-        <PageFooter
-          pageId={pageId}
-          primaryButtonText={`${i18n.t("ssiagent.button.validate")}`}
-          primaryButtonAction={() => handleValidate()}
-          primaryButtonDisabled={!validated}
-        />
       </ScrollablePageLayout>
       {loading && (
         <div
