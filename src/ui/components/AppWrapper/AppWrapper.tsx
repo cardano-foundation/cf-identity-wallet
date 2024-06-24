@@ -89,24 +89,7 @@ const keriaNotificationsChangeHandler = async (
   event: KeriaNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  if (event?.a?.r === NotificationRoute.ExnIpexGrant) {
-    dispatch(
-      setQueueIncomingRequest({
-        id: event?.id,
-        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
-        logo: "", // TODO: must define Keri logo
-        label: "Credential Issuance Server", // TODO: must define it
-      })
-    );
-  } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
-    processMultiSigIcpNotification(event, dispatch);
-  } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
-    //TODO: Use dispatch here, handle logic for the multisig rotation notification
-  } else if (event?.a?.r === NotificationRoute.ExnIpexApply) {
-    //TODO: Use dispatch here, handle logic for the exchange apply message
-  } else if (event?.a?.r === NotificationRoute.ExnIpexAgree) {
-    //TODO: Use dispatch here, handle logic for the exchange apply agree
-  }
+  // TODO: update notification counter and emit push notifications
 };
 
 const processMultiSigIcpNotification = async (
@@ -224,7 +207,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const authentication = useAppSelector(getAuthentication);
   const connectedWallet = useAppSelector(getConnectedWallet);
   const [isOnline, setIsOnline] = useState(false);
-  const [isMessagesHandled, setIsMessagesHandled] = useState(false);
   const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
   useActivityTimer();
 
@@ -234,40 +216,25 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     if (authentication.loggedIn) {
-      const handleMessages = async () => {
-        const oldMessages = (
-          await Promise.all([
-            Agent.agent.credentials.getUnhandledIpexGrantNotifications({
-              isDismissed: false,
-            }),
-            Agent.agent.multiSigs.getUnhandledMultisigIdentifiers({
-              isDismissed: false,
-            }),
-          ])
-        )
-          .flat()
-          .sort(function (messageA, messageB) {
-            return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
-          });
-        oldMessages.forEach(async (message) => {
-          await keriaNotificationsChangeHandler(message, dispatch);
-        });
-        // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-        // await Promise.all([
-        //   Agent.agent.identifiers.syncKeriaIdentifiers(),
-        //   Agent.agent.connections.syncKeriaContacts(),
-        //   Agent.agent.credentials.syncACDCs(),
-        // ]);
-      };
-      if (!isMessagesHandled && isOnline) {
-        handleMessages();
-        setIsMessagesHandled(true);
-      }
       dispatch(setPauseQueueIncomingRequest(!isOnline));
     } else {
       dispatch(setPauseQueueIncomingRequest(true));
     }
-  }, [isOnline, authentication.loggedIn, isMessagesHandled, dispatch]);
+  }, [isOnline, authentication.loggedIn, dispatch]);
+
+  useEffect(() => {
+    const syncWithKeria = async () => {
+      // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
+      await Promise.all([
+        Agent.agent.identifiers.syncKeriaIdentifiers(),
+        Agent.agent.connections.syncKeriaContacts(),
+        Agent.agent.credentials.syncACDCs(),
+      ]);
+    };
+    if (isOnline) {
+      syncWithKeria();
+    }
+  }, [isOnline, dispatch]);
 
   useEffect(() => {
     PeerConnection.peerConnection.onPeerDisconnectedStateChanged(

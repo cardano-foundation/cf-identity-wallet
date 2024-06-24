@@ -109,20 +109,6 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
     }, ANIMATION_DELAY);
   };
 
-  const handleIgnore = async () => {
-    if (!incomingRequest) {
-      return handleReset();
-    }
-    if (
-      incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
-    ) {
-      await Agent.agent.signifyNotifications.dismissNotification(
-        incomingRequest.id
-      );
-    }
-    handleReset();
-  };
-
   if (!requestData) {
     return null;
   }
@@ -136,7 +122,7 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
       initiateAnimation={initiateAnimation}
       handleAccept={handleAccept}
       handleCancel={handleCancel}
-      handleIgnore={handleIgnore}
+      handleIgnore={handleReset}
     />
   );
 };

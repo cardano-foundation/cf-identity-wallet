@@ -141,6 +141,8 @@ describe("Multi-Sig request", () => {
       id: "event-id",
       createdAt: new Date(),
       a: { d: "d" },
+      timeStamp: new Date().getTime(),
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
     },
     multisigIcpDetails: {
       ourIdentifier: filteredIdentifierFix[0],

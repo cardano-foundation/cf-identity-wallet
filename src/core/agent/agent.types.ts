@@ -101,6 +101,8 @@ interface KeriaNotification {
   createdAt: Date;
   a: Record<string, unknown>;
   multisigId?: string;
+  timeStamp: number;
+  connectionId: string;
 }
 
 enum KeriConnectionType {

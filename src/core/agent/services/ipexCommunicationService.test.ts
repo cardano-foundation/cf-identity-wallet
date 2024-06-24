@@ -299,6 +299,8 @@ describe("Ipex communication service of agent", () => {
       a: {
         d: "keri",
       },
+      timeStamp: date.getTime(),
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
     };
 
     getExchangeMock = jest.fn().mockReturnValue({
@@ -335,6 +337,8 @@ describe("Ipex communication service of agent", () => {
       a: {
         d: "keri",
       },
+      timeStamp: date.getTime(),
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
     };
     getExchangeMock = jest.fn().mockReturnValue({
       exn: {
@@ -368,6 +372,8 @@ describe("Ipex communication service of agent", () => {
       a: {
         d: "agreeD",
       },
+      timeStamp: date.getTime(),
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
     };
     getExchangeMock = jest.fn().mockImplementation((id) => {
       if (id === "agreeD") {
@@ -417,6 +423,8 @@ describe("Ipex communication service of agent", () => {
       a: {
         d: "agreeD",
       },
+      timeStamp: date.getTime(),
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
     };
     getExchangeMock = jest.fn().mockImplementation((id) => {
       if (id === "agreeD") {
@@ -461,6 +469,8 @@ describe("Ipex communication service of agent", () => {
       a: {
         d: "agreeD",
       },
+      timeStamp: date.getTime(),
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
     };
     getExchangeMock = jest.fn().mockImplementation((id) => {
       if (id === "agreeD") {
@@ -507,6 +517,8 @@ describe("Ipex communication service of agent", () => {
       a: {
         d: "saidForUuid",
       },
+      timeStamp: new Date().getTime(),
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
     };
     schemaGetMock.mockResolvedValue({
       title: "Qualified vLEI Issuer Credential",
@@ -557,6 +569,8 @@ describe("Ipex communication service of agent", () => {
       a: {
         d: "saidForUuid",
       },
+      timeStamp: new Date().getTime(),
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
     };
     schemaGetMock.mockResolvedValue(null);
     await expect(
@@ -574,6 +588,8 @@ describe("Ipex communication service of agent", () => {
       a: {
         d: "keri",
       },
+      timeStamp: new Date().getTime(),
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
     };
     await expect(
       ipexCommunicationService.offerAcdcFromApply(noti, {})

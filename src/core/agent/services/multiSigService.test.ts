@@ -826,6 +826,8 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         createdAt: new Date(),
         a: { d: "d" },
+        timeStamp: 1718247648152,
+        connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       })
     ).rejects.toThrowError(MultiSigService.EXN_MESSAGE_NOT_FOUND);
   });
@@ -869,6 +871,8 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         createdAt: new Date(),
         a: { d: "d" },
+        timeStamp: 1718247648152,
+        connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       })
     ).rejects.toThrowError(MultiSigService.AID_IS_NOT_MULTI_SIG);
   });
@@ -942,6 +946,8 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         createdAt: new Date(),
         a: { d: "d" },
+        timeStamp: 1718247648152,
+        connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       })
     ).toBe(multisigIdentifier);
   });
@@ -1232,54 +1238,6 @@ describe("Multisig sig service of agent", () => {
     );
   });
 
-  test("Can get unhandled Multisig Identifier notifications", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const notificationRecord = {
-      _tags: {
-        isDismiss: true,
-        route: NotificationRoute.MultiSigIcp,
-      },
-      id: "AIeGgKkS23FDK4mxpfodpbWhTydFz2tdM64DER6EdgG-",
-      createdAt: new Date(),
-      a: {
-        r: NotificationRoute.MultiSigIcp,
-        d: "EF6Nmxz8hs0oVc4loyh2J5Sq9H3Z7apQVqjO6e4chtsp",
-      },
-      multisigId: "multisig-id",
-    };
-    notificationStorage.findAllByQuery = jest
-      .fn()
-      .mockResolvedValue([notificationRecord]);
-    expect(
-      await multiSigService.getUnhandledMultisigIdentifiers()
-    ).toStrictEqual([
-      {
-        id: notificationRecord.id,
-        createdAt: notificationRecord.createdAt,
-        a: notificationRecord.a,
-        multisigId: "multisig-id",
-      },
-    ]);
-  });
-
-  test("Should pass the filter throught findAllByQuery when call getUnhandledMultisigIdentifiers", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
-    await multiSigService.getUnhandledMultisigIdentifiers({
-      isDismissed: false,
-    });
-    expect(notificationStorage.findAllByQuery).toBeCalledWith({
-      route: NotificationRoute.MultiSigIcp,
-      isDismissed: false,
-      $or: [
-        { route: NotificationRoute.MultiSigIcp },
-        {
-          route: NotificationRoute.MultiSigRot,
-        },
-      ],
-    });
-  });
-
   test("Should throw errors when create KERI multisigs with invalid identifier", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const creatorIdentifier = "creatorIdentifier";
@@ -1418,6 +1376,8 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         createdAt: new Date(),
         a: { d: "d" },
+        timeStamp: 1718247648152,
+        connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       })
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     await expect(
@@ -1428,10 +1388,6 @@ describe("Multisig sig service of agent", () => {
         theme: 0,
         displayName: "Multisig",
       })
-    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
-
-    await expect(
-      multiSigService.getUnhandledMultisigIdentifiers()
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 
