@@ -885,9 +885,15 @@
       },
       "sections": {
         "new": "New",
-        "earlier": "Earlier",
-        "hours": "h",
-        "days": "d"
+        "earlier": "Earlier"
+      },
+      "labels": {
+        "exnipexapply": "{{connection}} has requested a {{credential}} credential from you",
+        "multisigicp": "{{connection}} is requesting to create a multi-sig identifier with you",
+        "exnipexgrant": "{{connection}} wants to issue you a {{credential}}"
+      },
+      "credentialtypes": {
+        "driverslicence": "Driver’s Licence"
       }
     }
   },

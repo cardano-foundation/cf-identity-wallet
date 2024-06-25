@@ -9,6 +9,7 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import { settingsOutline, ellipsisHorizontal } from "ionicons/icons";
+import i18next from "i18next";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -23,14 +24,16 @@ import {
   NotificationRoute,
 } from "../../../core/agent/agent.types";
 import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
+import { ConnectionData } from "../Menu/components/ConnectWallet";
+import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 
 const Notifications = () => {
   const pageId = "notifications-tab";
   const dispatch = useAppDispatch();
-  const notificationsData = useAppSelector(getNotificationsCache);
+  const notifications = useAppSelector(getNotificationsCache);
+  const connectionsCache = useAppSelector(getConnectionsCache);
   const [selectedFilter, setSelectedFilter] = useState("all");
-  const [notifications, setNotifications] =
-    useState<NotificationResult[]>(notificationsData);
+  const [connectionDetails, setConnectionDetails] = useState<ConnectionData>();
 
   const notificationsNew = notifications.filter(
     (notification) =>
@@ -45,7 +48,6 @@ const Notifications = () => {
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.NOTIFICATIONS }));
-    getNotifications();
   });
 
   const handleNotificationsSettings = () => {
@@ -74,12 +76,6 @@ const Notifications = () => {
     // await Agent.agent.signifyNotifications.readNotification(id);
   };
 
-  const getNotifications = async () => {
-    const notifications =
-      await Agent.agent.signifyNotifications.getAllNotifications();
-    setNotifications(notifications);
-  };
-
   const filterOptions = [
     { filter: "all", label: i18n.t("notifications.tab.chips.all") },
     {
@@ -104,19 +100,28 @@ const Notifications = () => {
   );
 
   const notificationLabel = (item: NotificationResult) => {
+    const connection = connectionsCache.filter(
+      (connection) => connection.id === item.connectionId
+    )[0].label;
+    // TODO: Implement different credential types
+    const credential = i18n.t(
+      "notifications.tab.credentialtypes.driverslicence"
+    );
     switch (item.a.r) {
     case NotificationRoute.ExnIpexGrant:
-      return i18n.t("notifications.tab.chips.exn-ipex-grant");
+      return i18next.t("notifications.tab.labels.exnipexgrant", {
+        connection: connection,
+        credential: credential,
+      });
     case NotificationRoute.MultiSigIcp:
-      return i18n.t("notifications.tab.chips.multi-sig-icp");
-    case NotificationRoute.MultiSigRot:
-      // TODO: Implement multi-sig-rot
-      return "";
+      return i18next.t("notifications.tab.labels.multisigicp", {
+        connection: connection,
+      });
     case NotificationRoute.ExnIpexApply:
-      return i18n.t("notifications.tab.chips.exn-ipex-apply");
-    case NotificationRoute.ExnIpexAgree:
-      // TODO: Implement multi-sig-rot
-      return "";
+      return i18next.t("notifications.tab.labels.exnipexapply", {
+        connection: connection,
+        credential: credential,
+      });
     default:
       return "";
     }
