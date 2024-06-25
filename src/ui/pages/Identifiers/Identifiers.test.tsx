@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { Identifiers } from "./Identifiers";
-import { TabsRoutePath } from "../../../routes/paths";
+import { RoutePath, TabsRoutePath } from "../../../routes/paths";
 import { IdentifierDetails } from "../IdentifierDetails";
 import {
   CLEAR_STATE_DELAY,
@@ -20,6 +20,9 @@ jest.mock("../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifier: jest.fn().mockResolvedValue({}),
         checkMultisigComplete: jest.fn().mockResolvedValue(true),
+      },
+      basicStorage: {
+        deleteById: jest.fn(() => Promise.resolve()),
       },
     },
   },
@@ -110,7 +113,7 @@ describe("Identifiers Tab", () => {
     const dispatchMock = jest.fn();
     const initialState = {
       stateCache: {
-        routes: [TabsRoutePath.IDENTIFIERS],
+        routes: [TabsRoutePath.IDENTIFIER_DETAILS, TabsRoutePath.IDENTIFIERS],
         authentication: {
           loggedIn: true,
           time: Date.now(),

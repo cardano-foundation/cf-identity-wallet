@@ -8,6 +8,8 @@ import { setSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { ForgotAuthInfo } from "./ForgotAuthInfo";
 import { ForgotType } from "./ForgotAuthInfo.types";
 import { KeyStoreKeys } from "../../../core/storage";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
 
 const SEED_PHRASE_LENGTH = 18;
 
@@ -16,6 +18,7 @@ const secureStorageSetFunc = jest.fn();
 const secureStorageDeleteFunc = jest.fn();
 const verifySeedPhraseFnc = jest.fn();
 
+const createOrUpdateBasicStore = jest.fn((arg: any) => Promise.resolve());
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -24,7 +27,7 @@ jest.mock("../../../core/agent/agent", () => ({
         findById: jest.fn(),
         save: jest.fn(),
         update: jest.fn(),
-        createOrUpdateBasicRecord: jest.fn(),
+        createOrUpdateBasicRecord: (arg: any) => createOrUpdateBasicStore(arg),
       },
     },
   },
@@ -366,10 +369,7 @@ describe("Forgot Password Page", () => {
     });
 
     await waitFor(() => {
-      expect(secureStorageSetFunc).toBeCalledWith(
-        KeyStoreKeys.PASSWORD_SKIPPED,
-        String(true)
-      );
+      expect(createOrUpdateBasicStore).toBeCalled();
       expect(onCloseMock).toBeCalled();
     });
   });

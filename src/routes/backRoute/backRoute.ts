@@ -9,11 +9,23 @@ import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 import { DataProps, PayloadProps } from "../nextRoute/nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
 import { KeyStoreKeys, SecureStorage } from "../../core/storage";
+import { Agent } from "../../core/agent/agent";
+import { MiscRecordId } from "../../core/agent/agent.types";
 
-const clearStorageAfterBack = (nextPath: string, data: DataProps) => {
+const onboardingRouters = [
+  RoutePath.SSI_AGENT,
+  RoutePath.GENERATE_SEED_PHRASE,
+  RoutePath.VERIFY_RECOVERY_SEED_PHRASE,
+  RoutePath.CREATE_PASSWORD,
+  RoutePath.SET_PASSCODE,
+  RoutePath.ONBOARDING,
+];
+
+const clearStorageAfterBackOnboarding = (nextPath: string, data: DataProps) => {
   const authState = {
     ...data.store.stateCache.authentication,
   };
+
   const onboardingFlow = [
     {
       path: RoutePath.SSI_AGENT,
@@ -26,7 +38,11 @@ const clearStorageAfterBack = (nextPath: string, data: DataProps) => {
       path: RoutePath.GENERATE_SEED_PHRASE,
       clearFn: () => {
         SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
-        SecureStorage.delete(KeyStoreKeys.APP_PASSWORD_SKIPPED);
+        Agent.agent.basicStorage
+          .deleteById(MiscRecordId.APP_PASSWORD_SKIPPED)
+          .catch((error) => {
+            // TODO: handle error
+          });
         authState.passwordIsSet = false;
         authState.passwordIsSkipped = false;
       },
@@ -69,11 +85,18 @@ const getBackRoute = (
 } => {
   const { updateRedux } = backRoute[currentPath];
   const backPathUrl = backPath(data);
-  const clearReduxState = clearStorageAfterBack(backPathUrl.pathname, data);
+
+  if (onboardingRouters.includes(backPathUrl.pathname as RoutePath)) {
+    const clearReduxState = clearStorageAfterBackOnboarding(
+      backPathUrl.pathname,
+      data
+    );
+    updateRedux.push(clearReduxState);
+  }
 
   return {
     backPath: backPathUrl,
-    updateRedux: [...updateRedux, clearReduxState],
+    updateRedux: [...updateRedux],
   };
 };
 
@@ -121,14 +144,6 @@ const calcPreviousRoute = (
 
 const backPath = (data: DataProps) => getPreviousRoute(data);
 
-const clearPasswordState = (data: DataProps) => {
-  return setAuthentication({
-    ...data.store.stateCache.authentication,
-    passwordIsSkipped: false,
-    passwordIsSet: false,
-  });
-};
-
 const backRoute: Record<string, any> = {
   [RoutePath.ROOT]: {
     updateRedux: [],
@@ -141,18 +156,13 @@ const backRoute: Record<string, any> = {
       removeCurrentRoute,
       updateStoreSetCurrentRoute,
       clearSeedPhraseCache,
-      clearPasswordState,
     ],
   },
   [RoutePath.VERIFY_SEED_PHRASE]: {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
   [RoutePath.VERIFY_RECOVERY_SEED_PHRASE]: {
-    updateRedux: [
-      removeCurrentRoute,
-      updateStoreSetCurrentRoute,
-      clearPasswordState,
-    ],
+    updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
   [RoutePath.SSI_AGENT]: {
     updateRedux: [removeCurrentRoute],

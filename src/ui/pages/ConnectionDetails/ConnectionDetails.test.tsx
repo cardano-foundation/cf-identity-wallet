@@ -29,6 +29,9 @@ jest.mock("../../../core/agent/agent", () => ({
       credentials: {
         getCredentialDetailsById: jest.fn(),
       },
+      basicStorage: {
+        deleteById: jest.fn(() => Promise.resolve()),
+      },
     },
   },
 }));

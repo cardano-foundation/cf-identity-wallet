@@ -88,7 +88,7 @@ describe("getBackRoute", () => {
     const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
-    expect(result.updateRedux).toHaveLength(1);
+    expect(result.updateRedux).toHaveLength(0);
   });
 
   test("should return the correct back path when currentPath is /generateseedphrase", () => {
@@ -100,7 +100,7 @@ describe("getBackRoute", () => {
     const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
-    expect(result.updateRedux).toHaveLength(4);
+    expect(result.updateRedux).toHaveLength(3);
   });
 
   test("should return the correct back path when currentPath is /verifyseedphrase", () => {
@@ -112,7 +112,7 @@ describe("getBackRoute", () => {
     const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
-    expect(result.updateRedux).toHaveLength(3);
+    expect(result.updateRedux).toHaveLength(2);
   });
 
   test("should return the correct back path when currentPath is /setpasscode", () => {
@@ -124,7 +124,7 @@ describe("getBackRoute", () => {
     const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
-    expect(result.updateRedux).toHaveLength(3);
+    expect(result.updateRedux).toHaveLength(2);
   });
 });
 

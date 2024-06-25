@@ -317,9 +317,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     let userName: { userName: string } = { userName: "" };
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
-    const passwordIsSkipped = await checkKeyStore(
-      KeyStoreKeys.APP_PASSWORD_SKIPPED
-    );
+
     const recoveryWalletProgress = await checkKeyStore(
       KeyStoreKeys.RECOVERY_WALLET
     );
@@ -375,11 +373,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
       MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
     );
 
-    if (favouriteIndex) {
-      dispatch(
-        setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
-      );
-    }
+    const passwordSkipped = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_PASSWORD_SKIPPED
+    );
 
     dispatch(
       setAuthentication({
@@ -388,7 +384,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
-        passwordIsSkipped,
+        passwordIsSkipped: !!passwordSkipped?.content.value,
         ssiAgentIsSet:
           !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
         recoveryWalletProgress,
