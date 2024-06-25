@@ -262,9 +262,6 @@ const Identifiers = () => {
                 <IdentifierCardList
                   cardsData={pendingIdentifiers}
                   cardTypes={CardType.IDENTIFIERS}
-                  onCardClick={() => {
-                    return;
-                  }}
                   testId="identifiers-list"
                 />
               </div>
