@@ -19,7 +19,7 @@ const initialState: StateCacheProps = {
     passcodeIsSet: false,
     seedPhraseIsSet: false,
     passwordIsSet: false,
-    passwordIsSkipped: true,
+    passwordIsSkipped: false,
     ssiAgentIsSet: false,
   },
   currentOperation: OperationType.IDLE,

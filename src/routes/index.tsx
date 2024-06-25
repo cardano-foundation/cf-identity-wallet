@@ -32,7 +32,7 @@ const Routes = () => {
 
   useEffect(() => {
     if (!routes.length) dispatch(setCurrentRoute({ path: nextPath.pathname }));
-  });
+  }, [routes, nextPath.pathname]);
 
   return (
     <IonReactRouter>
@@ -110,10 +110,14 @@ const Routes = () => {
           component={CredentialDetails}
           exact
         />
-        <Redirect
-          exact
-          from="/"
-          to={nextPath}
+        <Route
+          render={() => (
+            <Redirect
+              exact
+              from="/"
+              to={nextPath}
+            />
+          )}
         />
       </IonRouterOutlet>
     </IonReactRouter>
