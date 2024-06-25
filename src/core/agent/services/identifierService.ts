@@ -79,7 +79,19 @@ class IdentifierService extends AgentService {
     }
     const aid = await this.props.signifyClient
       .identifiers()
-      .get(metadata.signifyName);
+      .get(metadata.signifyName)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        // If the error is failed to fetch with signify, we retry until the connection is secured
+        if (
+          /404 not found/gi.test(errorStack) &&
+          /SignifyClient/gi.test(errorStack)
+        ) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
 
     if (!aid) {
       return undefined;

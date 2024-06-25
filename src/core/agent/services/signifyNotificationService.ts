@@ -145,7 +145,19 @@ class SignifyNotificationService extends AgentService {
     if (notif.a.r === NotificationRoute.MultiSigIcp) {
       const multisigNotification = await this.props.signifyClient
         .groups()
-        .getRequest(notif.a.d);
+        .getRequest(notif.a.d)
+        .catch((error) => {
+          const errorStack = (error as Error).stack as string;
+          // If the error is failed to fetch with signify, we retry until the connection is secured
+          if (
+            /404 not found/gi.test(errorStack) &&
+            /SignifyClient/gi.test(errorStack)
+          ) {
+            return [];
+          } else {
+            throw error;
+          }
+        });
       if (!multisigNotification || !multisigNotification.length) {
         await this.markNotification(notif.i);
         return;
@@ -190,7 +202,19 @@ class SignifyNotificationService extends AgentService {
     if (event.a.r === NotificationRoute.MultiSigIcp) {
       const multisigNotification = await this.props.signifyClient
         .groups()
-        .getRequest(event.a.d);
+        .getRequest(event.a.d)
+        .catch((error) => {
+          const errorStack = (error as Error).stack as string;
+          // If the error is failed to fetch with signify, we retry until the connection is secured
+          if (
+            /404 not found/gi.test(errorStack) &&
+            /SignifyClient/gi.test(errorStack)
+          ) {
+            return [];
+          } else {
+            throw error;
+          }
+        });
       if (multisigNotification && multisigNotification.length) {
         metadata.multisigId = multisigNotification[0].exn?.a?.gid;
       }
