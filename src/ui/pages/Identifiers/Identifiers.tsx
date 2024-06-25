@@ -92,7 +92,6 @@ const Identifiers = () => {
   const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
-  const [toggleClick, setToggleClick] = useState(false);
   const [resumeMultiSig, setResumeMultiSig] =
     useState<IdentifierShortDetails | null>(null);
   const [navAnimation, setNavAnimation] =
@@ -116,27 +115,33 @@ const Identifiers = () => {
   }, [currentOperation, history.location.pathname]);
   useEffect(() => {
     setShowPlaceholder(identifiersData.length === 0);
-    setAllIdentifiers(
-      identifiersData
-        .filter((identifier) => !identifier.isPending)
-        .filter((identifier) => !identifier.groupMetadata?.groupId)
-        .filter(
-          (identifier) =>
-            !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-        )
-    );
-    setFavIdentifiers(
-      identifiersData.filter((identifier) =>
-        favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-      )
-    );
-    setPendingIdentifiers(
-      identifiersData.filter((identifier) => identifier.isPending)
-    );
-    setMultiSigIdentifiers(
-      identifiersData.filter((identifier) => identifier.groupMetadata?.groupId)
-    );
-  }, [favouritesIdentifiers, identifiersData, toggleClick]);
+    const tmpPendingIdentifiers = [];
+    const tmpMultisigIdentifiers = [];
+    const tmpFavIdentifiers = [];
+    const tmpAllIdentifiers = [];
+    for (const identifier of identifiersData) {
+      if (identifier.isPending) {
+        tmpPendingIdentifiers.push(identifier);
+      }
+      if (identifier.groupMetadata?.groupId) {
+        tmpMultisigIdentifiers.push(identifier);
+      }
+      if (favouritesIdentifiers?.some((fav) => fav.id === identifier.id)) {
+        tmpFavIdentifiers.push(identifier);
+      }
+      if (
+        !identifier.isPending &&
+        !identifier.groupMetadata?.groupId &&
+        !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
+      ) {
+        tmpAllIdentifiers.push(identifier);
+      }
+    }
+    setAllIdentifiers(tmpAllIdentifiers);
+    setFavIdentifiers(tmpFavIdentifiers);
+    setPendingIdentifiers(tmpPendingIdentifiers);
+    setMultiSigIdentifiers(tmpMultisigIdentifiers);
+  }, [favouritesIdentifiers, identifiersData]);
   const findTimeById = (id: string) => {
     const found = favouritesIdentifiers?.find((item) => item.id === id);
     return found ? found.time : null;
@@ -150,7 +155,7 @@ const Identifiers = () => {
     return timeA - timeB;
   });
   const handlePendingClick = async () => {
-    setToggleClick(!toggleClick);
+    //TODO: add logic here
   };
   const handleMultiSigClick = async (identifier: IdentifierShortDetails) => {
     setResumeMultiSig(identifier);
