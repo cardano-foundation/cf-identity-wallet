@@ -122,6 +122,7 @@ const Identifiers = () => {
     for (const identifier of identifiersData) {
       if (favouritesIdentifiers?.some((fav) => fav.id === identifier.id)) {
         tmpFavIdentifiers.push(identifier);
+        continue;
       }
       if (identifier.isPending) {
         tmpPendingIdentifiers.push(identifier);
@@ -131,13 +132,7 @@ const Identifiers = () => {
         tmpMultisigIdentifiers.push(identifier);
         continue;
       }
-      if (
-        !identifier.isPending &&
-        !identifier.groupMetadata?.groupId &&
-        !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-      ) {
-        tmpAllIdentifiers.push(identifier);
-      }
+      tmpAllIdentifiers.push(identifier);
     }
     setAllIdentifiers(tmpAllIdentifiers);
     setFavIdentifiers(tmpFavIdentifiers);
