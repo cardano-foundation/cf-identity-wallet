@@ -20,6 +20,7 @@ interface IdentifierShortDetails {
   theme: number;
   isPending: boolean;
   groupMetadata?: GroupMetadata;
+  multisigManageAid?: string;
 }
 
 interface IdentifierDetails extends IdentifierShortDetails {
