@@ -189,7 +189,6 @@ class SignifyNotificationService extends AgentService {
       a: event.a,
       read: false,
       route: event.a.r,
-      timeStamp: new Date().getTime(),
       connectionId: exchange.exn.i,
     };
     if (event.a.r === NotificationRoute.MultiSigIcp) {
@@ -206,7 +205,6 @@ class SignifyNotificationService extends AgentService {
       createdAt: result.createdAt,
       a: result.a,
       multisigId: result.multisigId,
-      timeStamp: result.timeStamp,
       connectionId: result.connectionId,
     };
   }

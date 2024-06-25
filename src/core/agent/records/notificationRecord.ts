@@ -10,7 +10,6 @@ interface NotificationRecordStorageProps {
   route: NotificationRoute;
   read: boolean;
   multisigId?: string;
-  timeStamp: number;
   connectionId: string;
 }
 
@@ -19,7 +18,6 @@ class NotificationRecord extends BaseRecord {
   route!: NotificationRoute;
   read!: boolean;
   multisigId?: string;
-  timeStamp!: number;
   connectionId!: string;
   static readonly type = "NotificationRecord";
   readonly type = NotificationRecord.type;
@@ -33,7 +31,6 @@ class NotificationRecord extends BaseRecord {
       this.route = props.route;
       this.read = props.read;
       this.multisigId = props.multisigId ?? undefined;
-      this.timeStamp = props.timeStamp;
       this.connectionId = props.connectionId;
       this._tags = props.tags ?? {};
     }
