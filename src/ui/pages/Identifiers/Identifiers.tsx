@@ -92,7 +92,6 @@ const Identifiers = () => {
   const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
-  const [toggleClick, setToggleClick] = useState(false);
   const [resumeMultiSig, setResumeMultiSig] =
     useState<IdentifierShortDetails | null>(null);
   const [navAnimation, setNavAnimation] =
@@ -116,27 +115,30 @@ const Identifiers = () => {
   }, [currentOperation, history.location.pathname]);
   useEffect(() => {
     setShowPlaceholder(identifiersData.length === 0);
-    setAllIdentifiers(
-      identifiersData
-        .filter((identifier) => !identifier.isPending)
-        .filter((identifier) => !identifier.groupMetadata?.groupId)
-        .filter(
-          (identifier) =>
-            !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-        )
-    );
-    setFavIdentifiers(
-      identifiersData.filter((identifier) =>
-        favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-      )
-    );
-    setPendingIdentifiers(
-      identifiersData.filter((identifier) => identifier.isPending)
-    );
-    setMultiSigIdentifiers(
-      identifiersData.filter((identifier) => identifier.groupMetadata?.groupId)
-    );
-  }, [favouritesIdentifiers, identifiersData, toggleClick]);
+    const tmpPendingIdentifiers = [];
+    const tmpMultisigIdentifiers = [];
+    const tmpFavIdentifiers = [];
+    const tmpAllIdentifiers = [];
+    for (const identifier of identifiersData) {
+      if (favouritesIdentifiers?.some((fav) => fav.id === identifier.id)) {
+        tmpFavIdentifiers.push(identifier);
+        continue;
+      }
+      if (identifier.isPending) {
+        tmpPendingIdentifiers.push(identifier);
+        continue;
+      }
+      if (identifier.groupMetadata?.groupId) {
+        tmpMultisigIdentifiers.push(identifier);
+        continue;
+      }
+      tmpAllIdentifiers.push(identifier);
+    }
+    setAllIdentifiers(tmpAllIdentifiers);
+    setFavIdentifiers(tmpFavIdentifiers);
+    setPendingIdentifiers(tmpPendingIdentifiers);
+    setMultiSigIdentifiers(tmpMultisigIdentifiers);
+  }, [favouritesIdentifiers, identifiersData]);
   const findTimeById = (id: string) => {
     const found = favouritesIdentifiers?.find((item) => item.id === id);
     return found ? found.time : null;
@@ -149,25 +151,6 @@ const Identifiers = () => {
     if (timeB === null) return -1;
     return timeA - timeB;
   });
-  const handlePendingClick = async (identifier: IdentifierShortDetails) => {
-    // @TODO - sdisalvo: This is a temporary fix Patrick initially added to the CardStack
-    // and I moved it here since PendingIdentifiers are never going to show up in the stack.
-    /**The below code only return false if the identifier is a multisig and it is not ready */
-    const checkMultisigComplete =
-      await Agent.agent.multiSigs.checkMultisigComplete(identifier.id);
-    if (!checkMultisigComplete) {
-      return;
-    } else {
-      const updatedIdentifiers = identifiersData.map((item) => {
-        if (item.id === identifier.id && item.isPending) {
-          return { ...item, isPending: false };
-        }
-        return item;
-      });
-      dispatch(setIdentifiersCache(updatedIdentifiers));
-      setToggleClick(!toggleClick);
-    }
-  };
   const handleMultiSigClick = async (identifier: IdentifierShortDetails) => {
     setResumeMultiSig(identifier);
     setCreateIdentifierModalIsOpen(true);
@@ -274,9 +257,6 @@ const Identifiers = () => {
                 <IdentifierCardList
                   cardsData={pendingIdentifiers}
                   cardTypes={CardType.IDENTIFIERS}
-                  onCardClick={async (identifier) =>
-                    handlePendingClick(identifier as IdentifierShortDetails)
-                  }
                   testId="identifiers-list"
                 />
               </div>
