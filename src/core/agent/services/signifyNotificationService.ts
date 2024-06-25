@@ -4,6 +4,7 @@ import {
   KeriaNotification,
   KeriaNotificationMarker,
   MiscRecordId,
+  NotificationResult,
   NotificationRoute,
 } from "../agent.types";
 import { Notification } from "./credentialService.types";
@@ -221,9 +222,17 @@ class SignifyNotificationService extends AgentService {
     await this.notificationStorage.update(notificationRecord);
   }
 
-  async getAllNotifications() {
+  async getAllNotifications(): Promise<NotificationResult[]> {
     const notifications = await this.notificationStorage.getAll();
-    return notifications;
+    return notifications.map((notification) => {
+      return {
+        id: notification.id,
+        createdAt: notification.createdAt.toISOString(),
+        a: notification.a,
+        multisigId: notification.multisigId,
+        connectionId: notification.connectionId,
+      };
+    });
   }
 
   private markNotification(notiSaid: string) {

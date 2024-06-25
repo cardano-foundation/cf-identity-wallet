@@ -105,6 +105,14 @@ interface KeriaNotification {
   connectionId: string;
 }
 
+interface NotificationResult {
+  id: string;
+  createdAt: string;
+  a: Record<string, unknown>;
+  multisigId: string | undefined;
+  connectionId: string;
+}
+
 enum KeriConnectionType {
   NORMAL = "NORMAL",
   MULTI_SIG_INITIATOR = "MULTI_SIG_INITIATOR",
@@ -187,4 +195,5 @@ export type {
   KeriaStatusChangedEvent,
   AgentUrls,
   BranAndMnemonic,
+  NotificationResult,
 };
