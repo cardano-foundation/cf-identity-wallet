@@ -66,6 +66,7 @@ import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences/preferencesStorage";
+import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -91,7 +92,7 @@ const keriaNotificationsChangeHandler = async (
 ) => {
   const notifications =
     await Agent.agent.signifyNotifications.getAllNotifications();
-  // TODO: update Redux
+  dispatch(setNotificationsCache(notifications));
 };
 
 const processMultiSigIcpNotification = async (
@@ -228,7 +229,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const syncWithKeria = async () => {
       // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
       //
-      // This got uncommented when we were redoing that by accident.
+      // TODO: This got uncommented when we were redoing that by accident.
       // Right now if you delete a connection, it will re-appear after 2 reloads
       // because we haven’t updated Signify in a bit.
       // The issue was fixed in Signify main repo but we’re on a fork…
@@ -277,12 +278,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
     const storedPeerConnections =
       await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
+    const notifications =
+      await Agent.agent.signifyNotifications.getAllNotifications();
 
     dispatch(setIdentifiersCache(storedIdentifiers));
     dispatch(setCredsCache(credsCache));
     dispatch(setCredsArchivedCache(credsArchivedCache));
     dispatch(setConnectionsCache(connectionsDetails));
     dispatch(setWalletConnectionsCache(storedPeerConnections));
+    dispatch(setNotificationsCache(notifications));
   };
 
   const loadCacheBasicStorage = async () => {

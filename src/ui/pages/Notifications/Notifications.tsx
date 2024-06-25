@@ -11,7 +11,7 @@ import {
 import { settingsOutline, ellipsisHorizontal } from "ionicons/icons";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { TabLayout } from "../../components/layout/TabLayout";
-import { useAppDispatch } from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import "./Notifications.scss";
@@ -22,12 +22,15 @@ import {
   NotificationResult,
   NotificationRoute,
 } from "../../../core/agent/agent.types";
+import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
 
 const Notifications = () => {
   const pageId = "notifications-tab";
   const dispatch = useAppDispatch();
+  const notificationsData = useAppSelector(getNotificationsCache);
   const [selectedFilter, setSelectedFilter] = useState("all");
-  const [notifications, setNotifications] = useState<NotificationResult[]>([]);
+  const [notifications, setNotifications] =
+    useState<NotificationResult[]>(notificationsData);
 
   const notificationsNew = notifications.filter(
     (notification) =>
@@ -107,11 +110,13 @@ const Notifications = () => {
     case NotificationRoute.MultiSigIcp:
       return i18n.t("notifications.tab.chips.multi-sig-icp");
     case NotificationRoute.MultiSigRot:
-      return i18n.t("notifications.tab.chips.multi-sig-rot");
+      // TODO: Implement multi-sig-rot
+      return "";
     case NotificationRoute.ExnIpexApply:
       return i18n.t("notifications.tab.chips.exn-ipex-apply");
     case NotificationRoute.ExnIpexAgree:
-      return i18n.t("notifications.tab.chips.exn-ipex-agree");
+      // TODO: Implement multi-sig-rot
+      return "";
     default:
       return "";
     }

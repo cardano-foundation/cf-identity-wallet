@@ -9,6 +9,7 @@ import { identifierViewTypeCacheSlice } from "./reducers/identifierViewTypeCache
 import { biometryCacheSlice } from "./reducers/biometryCache";
 import { credsArchivedCacheSlice } from "./reducers/credsArchivedCache";
 import { ssiAgentSlice } from "./reducers/ssiAgent";
+import { notificationsCacheSlice } from "./reducers/notificationsCache";
 
 const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ const store = configureStore({
     identifierViewTypeCacheCache: identifierViewTypeCacheSlice.reducer,
     biometryCache: biometryCacheSlice.reducer,
     ssiAgentCache: ssiAgentSlice.reducer,
+    notificationsCache: notificationsCacheSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
