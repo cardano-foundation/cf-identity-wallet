@@ -27,9 +27,6 @@ import {
 
 const SEED_PHRASE_LENGTH = 18;
 const SUGGEST_SEED_PHRASE_LENGTH = 4;
-const MAX_ATTEMPT_FAIL = 5;
-const LOCK_TIME = 60000;
-const RESET_ATTEMPT_TIME = 600000;
 const SELECT_WORD_LIST = wordlists.english;
 const INVALID_SEED_PHRASE = "Invalid seed phrase";
 
@@ -50,9 +47,6 @@ const RecoverySeedPhraseModule = forwardRef<
     },
   ]);
 
-  const [failAttempt, setFailAttempt] = useState(0);
-  const [lastLockTime, setLastLockTime] = useState<Date | null>(null);
-  const [lockFailAttempt, setLockFailAttempt] = useState(false);
   const [lastFocusIndex, setLastFocusIndex] = useState<number | null>(null);
   const [isTyping, setIsTyping] = useState<boolean>(false);
 
@@ -85,80 +79,6 @@ const RecoverySeedPhraseModule = forwardRef<
 
     return result;
   }, [] as number[]);
-
-  const removeLockAttempt = () => {
-    SecureStorage.delete(KeyStoreKeys.RECOVERY_WALLET_LAST_FAIL_ATTEMPT_TIME);
-    setFailAttempt(0);
-    setLockFailAttempt(false);
-  };
-
-  const getLockDuration = useCallback(() => {
-    return Date.now() - (!lastLockTime ? 0 : lastLockTime.getTime());
-  }, [lastLockTime]);
-
-  useEffect(() => {
-    async function getFailAttemptInfo() {
-      try {
-        const lastFailedTime = await SecureStorage.get(
-          KeyStoreKeys.RECOVERY_WALLET_LAST_FAIL_ATTEMPT_TIME
-        );
-        if (!lastFailedTime) return;
-
-        const lockDuration = Date.now() - Number(lastFailedTime);
-
-        if (lockDuration >= RESET_ATTEMPT_TIME) {
-          removeLockAttempt();
-          return;
-        }
-
-        setFailAttempt(MAX_ATTEMPT_FAIL);
-        setLastLockTime(new Date(Number(lastFailedTime)));
-      } catch (e) {
-        // TODO: handle error
-      }
-    }
-
-    getFailAttemptInfo();
-  }, []);
-
-  // Reset attempt numbers after 10 minutes from last lock period
-  useEffect(() => {
-    if (!lastLockTime) return;
-
-    const resetAttemptTime = RESET_ATTEMPT_TIME - getLockDuration();
-
-    if (resetAttemptTime <= 0) return;
-
-    const timerId = setTimeout(() => {
-      removeLockAttempt();
-    }, resetAttemptTime);
-
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, [lastLockTime]);
-
-  useEffect(() => {
-    if (!lastLockTime) return;
-
-    const lockTime = LOCK_TIME - getLockDuration();
-
-    if (lockTime <= 0) {
-      setLockFailAttempt(false);
-      return;
-    }
-
-    setLockFailAttempt(true);
-    setFailAttempt(MAX_ATTEMPT_FAIL);
-
-    const timerId = setTimeout(() => {
-      setLockFailAttempt(false);
-    }, lockTime);
-
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, [lastLockTime]);
 
   const handleClearState = () => {
     setSeedPhraseInfo([
@@ -254,25 +174,10 @@ const RecoverySeedPhraseModule = forwardRef<
           bran: "",
         })
       );
-      SecureStorage.delete(KeyStoreKeys.RECOVERY_WALLET_LAST_FAIL_ATTEMPT_TIME);
-      setFailAttempt(0);
 
       onVerifySuccess();
     } catch (e) {
-      setFailAttempt((value) => value + 1);
-
-      if (failAttempt + 1 >= MAX_ATTEMPT_FAIL) {
-        const now = new Date();
-        SecureStorage.set(
-          KeyStoreKeys.RECOVERY_WALLET_LAST_FAIL_ATTEMPT_TIME,
-          String(now.getTime())
-        );
-        setLastLockTime(now);
-        setAlertManyAttempOpen(true);
-        setLockFailAttempt(true);
-      } else {
-        setAlertIsOpen(true);
-      }
+      // TODO: handle failed attemp
     }
   };
 
@@ -302,9 +207,7 @@ const RecoverySeedPhraseModule = forwardRef<
   };
 
   const verifyButtonLabel = `${i18n.t(
-    lockFailAttempt
-      ? "verifyrecoveryseedphrase.button.lock"
-      : "verifyrecoveryseedphrase.button.continue"
+    "verifyrecoveryseedphrase.button.continue"
   )}`;
 
   const displaySuggestionError = errorInputIndex.length > 0;
@@ -385,7 +288,6 @@ const RecoverySeedPhraseModule = forwardRef<
           primaryButtonAction={() => handleContinue()}
           primaryButtonDisabled={
             filledSeedPhrase.length < SEED_PHRASE_LENGTH ||
-            lockFailAttempt ||
             displaySuggestionError ||
             !isMatchAllSuggestion
           }
