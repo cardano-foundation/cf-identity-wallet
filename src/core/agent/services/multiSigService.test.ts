@@ -826,7 +826,6 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         createdAt: new Date(),
         a: { d: "d" },
-        timeStamp: 1718247648152,
         connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       })
     ).rejects.toThrowError(MultiSigService.EXN_MESSAGE_NOT_FOUND);
@@ -871,7 +870,6 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         createdAt: new Date(),
         a: { d: "d" },
-        timeStamp: 1718247648152,
         connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       })
     ).rejects.toThrowError(MultiSigService.AID_IS_NOT_MULTI_SIG);
@@ -946,7 +944,6 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         createdAt: new Date(),
         a: { d: "d" },
-        timeStamp: 1718247648152,
         connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       })
     ).toBe(multisigIdentifier);
@@ -1376,7 +1373,6 @@ describe("Multisig sig service of agent", () => {
         id: "id",
         createdAt: new Date(),
         a: { d: "d" },
-        timeStamp: 1718247648152,
         connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       })
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);

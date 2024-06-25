@@ -1,24 +1,23 @@
 import { v4 as uuidv4 } from "uuid";
 import { BaseRecord, Tags } from "../../storage/storage.types";
+import { NotificationRoute } from "../agent.types";
 
 interface NotificationRecordStorageProps {
   id?: string;
   createdAt?: Date;
   tags?: Tags;
   a: Record<string, unknown>;
-  route: string;
+  route: NotificationRoute;
   read: boolean;
   multisigId?: string;
-  timeStamp: number;
   connectionId: string;
 }
 
 class NotificationRecord extends BaseRecord {
   a!: Record<string, unknown>;
-  route!: string;
+  route!: NotificationRoute;
   read!: boolean;
   multisigId?: string;
-  timeStamp!: number;
   connectionId!: string;
   static readonly type = "NotificationRecord";
   readonly type = NotificationRecord.type;
@@ -32,7 +31,6 @@ class NotificationRecord extends BaseRecord {
       this.route = props.route;
       this.read = props.read;
       this.multisigId = props.multisigId ?? undefined;
-      this.timeStamp = props.timeStamp;
       this.connectionId = props.connectionId;
       this._tags = props.tags ?? {};
     }
