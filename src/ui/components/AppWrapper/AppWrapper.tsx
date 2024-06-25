@@ -317,6 +317,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     let userName: { userName: string } = { userName: "" };
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
+    const passwordIsSkipped = await checkKeyStore(
+      KeyStoreKeys.APP_PASSWORD_SKIPPED
+    );
 
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
     const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
@@ -380,6 +383,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
+        passwordIsSkipped,
         ssiAgentIsSet:
           !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
       })

@@ -36,6 +36,7 @@ jest.mock("../../../core/agent/agent", () => ({
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
     get: jest.fn(),
+    remove: jest.fn(),
   },
 }));
 

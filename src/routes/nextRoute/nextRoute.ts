@@ -1,7 +1,6 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
 import {
-  removeSetPasscodeRoute,
   setAuthentication,
   setCurrentRoute,
 } from "../../store/reducers/stateCache";
@@ -13,43 +12,40 @@ import { DataProps, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
 import { ToastMsgType } from "../../ui/globals/types";
 
-const getNextRootRoute = (store: StoreState) => {
-  const authentication = store.stateCache.authentication;
+const getNextRootRoute = (data: DataProps) => {
+  const authentication = data.store.stateCache.authentication;
 
-  let path;
-  if (
-    authentication.passcodeIsSet &&
-    authentication.seedPhraseIsSet &&
-    authentication.ssiAgentIsSet
-  ) {
+  let path = RoutePath.ONBOARDING;
+
+  if (authentication.passcodeIsSet) {
+    path = RoutePath.CREATE_PASSWORD;
+  }
+
+  if (authentication.passwordIsSet || authentication.passwordIsSkipped) {
+    path = RoutePath.GENERATE_SEED_PHRASE;
+  }
+
+  if (authentication.seedPhraseIsSet) {
+    path = RoutePath.SSI_AGENT;
+  }
+
+  if (authentication.ssiAgentIsSet) {
     path = RoutePath.TABS_MENU;
-  } else {
-    path = RoutePath.ONBOARDING;
   }
 
   return { pathname: path };
 };
 
 const getNextOnboardingRoute = (data: DataProps) => {
-  let path = RoutePath.SET_PASSCODE;
+  const nextRoute = getNextRootRoute(data);
 
-  if (data.store.stateCache.authentication.passcodeIsSet) {
-    path = RoutePath.CREATE_PASSWORD;
+  if (nextRoute.pathname === RoutePath.ONBOARDING) {
+    return {
+      pathname: RoutePath.SET_PASSCODE,
+    };
   }
 
-  if (data.store.stateCache.authentication.passwordIsSet) {
-    path = RoutePath.GENERATE_SEED_PHRASE;
-  }
-
-  if (data.store.stateCache.authentication.seedPhraseIsSet) {
-    path = RoutePath.SSI_AGENT;
-  }
-
-  if (data.store.stateCache.authentication.ssiAgentIsSet) {
-    path = RoutePath.TABS_MENU;
-  }
-
-  return { pathname: path };
+  return nextRoute;
 };
 
 const getNextConnectionDetailsRoute = () => {
@@ -175,7 +171,7 @@ const getNextRoute = (
 
 const nextRoute: Record<string, any> = {
   [RoutePath.ROOT]: {
-    nextPath: (data: DataProps) => getNextRootRoute(data.store),
+    nextPath: (data: DataProps) => getNextRootRoute(data),
     updateRedux: [],
   },
   [RoutePath.ONBOARDING]: {
@@ -184,7 +180,7 @@ const nextRoute: Record<string, any> = {
   },
   [RoutePath.SET_PASSCODE]: {
     nextPath: (data: DataProps) => getNextSetPasscodeRoute(data.store),
-    updateRedux: [removeSetPasscodeRoute, updateStoreAfterSetPasscodeRoute],
+    updateRedux: [updateStoreAfterSetPasscodeRoute],
   },
   [RoutePath.GENERATE_SEED_PHRASE]: {
     nextPath: () => getNextGenerateSeedPhraseRoute(),
