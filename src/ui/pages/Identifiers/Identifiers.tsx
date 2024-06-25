@@ -120,14 +120,16 @@ const Identifiers = () => {
     const tmpFavIdentifiers = [];
     const tmpAllIdentifiers = [];
     for (const identifier of identifiersData) {
+      if (favouritesIdentifiers?.some((fav) => fav.id === identifier.id)) {
+        tmpFavIdentifiers.push(identifier);
+      }
       if (identifier.isPending) {
         tmpPendingIdentifiers.push(identifier);
+        continue;
       }
       if (identifier.groupMetadata?.groupId) {
         tmpMultisigIdentifiers.push(identifier);
-      }
-      if (favouritesIdentifiers?.some((fav) => fav.id === identifier.id)) {
-        tmpFavIdentifiers.push(identifier);
+        continue;
       }
       if (
         !identifier.isPending &&
@@ -154,9 +156,6 @@ const Identifiers = () => {
     if (timeB === null) return -1;
     return timeA - timeB;
   });
-  const handlePendingClick = async () => {
-    //TODO: add logic here
-  };
   const handleMultiSigClick = async (identifier: IdentifierShortDetails) => {
     setResumeMultiSig(identifier);
     setCreateIdentifierModalIsOpen(true);
@@ -268,7 +267,9 @@ const Identifiers = () => {
                 <IdentifierCardList
                   cardsData={pendingIdentifiers}
                   cardTypes={CardType.IDENTIFIERS}
-                  onCardClick={() => handlePendingClick()}
+                  onCardClick={() => {
+                    return;
+                  }}
                   testId="identifiers-list"
                 />
               </div>
