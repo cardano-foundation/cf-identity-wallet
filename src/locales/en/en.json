@@ -881,9 +881,7 @@
       "chips": {
         "all": "All",
         "identifiers": "Identifiers",
-        "credentials": "Credentials",
-        "connections": "Connections",
-        "cardanoconnect": "Cardano Connect"
+        "credentials": "Credentials"
       },
       "sections": {
         "new": "New",

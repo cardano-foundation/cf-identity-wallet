@@ -16,18 +16,18 @@ import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import "./Notifications.scss";
 import { i18n } from "../../../i18n";
-import { NotificationsProps } from "./Notifications.types";
-import { notificationsFix } from "../../__fixtures__/notificationsFix";
 import { timeDifference } from "../../utils/formatters";
 import { Agent } from "../../../core/agent/agent";
+import {
+  NotificationResult,
+  NotificationRoute,
+} from "../../../core/agent/agent.types";
 
 const Notifications = () => {
   const pageId = "notifications-tab";
   const dispatch = useAppDispatch();
   const [selectedFilter, setSelectedFilter] = useState("all");
-  const notificationsAll = notificationsFix;
-  const [notifications, setNotifications] =
-    useState<NotificationsProps[]>(notificationsAll);
+  const [notifications, setNotifications] = useState<NotificationResult[]>([]);
 
   const notificationsNew = notifications.filter(
     (notification) =>
@@ -42,6 +42,7 @@ const Notifications = () => {
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.NOTIFICATIONS }));
+    getNotifications();
   });
 
   const handleNotificationsSettings = () => {
@@ -71,7 +72,9 @@ const Notifications = () => {
   };
 
   const getNotifications = async () => {
-    await Agent.agent.signifyNotifications.getAllNotifications();
+    const notifications =
+      await Agent.agent.signifyNotifications.getAllNotifications();
+    setNotifications(notifications);
   };
 
   const filterOptions = [
@@ -83,14 +86,6 @@ const Notifications = () => {
     {
       filter: "credentials",
       label: i18n.t("notifications.tab.chips.credentials"),
-    },
-    {
-      filter: "connections",
-      label: i18n.t("notifications.tab.chips.connections"),
-    },
-    {
-      filter: "cardanoconnect",
-      label: i18n.t("notifications.tab.chips.cardanoconnect"),
     },
   ];
 
@@ -104,6 +99,23 @@ const Notifications = () => {
       </IonChip>
     </span>
   );
+
+  const notificationLabel = (item: NotificationResult) => {
+    switch (item.a.r) {
+    case NotificationRoute.ExnIpexGrant:
+      return i18n.t("notifications.tab.chips.exn-ipex-grant");
+    case NotificationRoute.MultiSigIcp:
+      return i18n.t("notifications.tab.chips.multi-sig-icp");
+    case NotificationRoute.MultiSigRot:
+      return i18n.t("notifications.tab.chips.multi-sig-rot");
+    case NotificationRoute.ExnIpexApply:
+      return i18n.t("notifications.tab.chips.exn-ipex-apply");
+    case NotificationRoute.ExnIpexAgree:
+      return i18n.t("notifications.tab.chips.exn-ipex-agree");
+    default:
+      return "";
+    }
+  };
 
   return (
     <TabLayout
@@ -146,7 +158,7 @@ const Notifications = () => {
                       data-testid="notifications-tab-item-logo"
                     />
                     <IonLabel>
-                      {item.label}
+                      {notificationLabel(item)}
                       <br />
                       <span className="notifications-tab-item-time">
                         {timeDifference(item.createdAt)[0]}
@@ -189,7 +201,7 @@ const Notifications = () => {
                       data-testid="notifications-tab-item-logo"
                     />
                     <IonLabel>
-                      {item.label}
+                      {notificationLabel(item)}
                       <br />
                       <span className="notifications-tab-item-time">
                         {timeDifference(item.createdAt)[0]}
