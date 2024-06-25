@@ -899,7 +899,7 @@
           "title": "Connections"
         },
         "connectwallet": {
-          "title": "Connect Wallet",
+          "title": "Cardano connect",
           "cip": "CIP-45",
           "tabheader": "Cardano Connect",
           "connectbtn": "Connect with Cardano",

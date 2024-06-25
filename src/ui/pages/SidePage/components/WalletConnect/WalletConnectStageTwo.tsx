@@ -37,14 +37,17 @@ const WalletConnectStageTwo = ({
 
   const [selectedIdentifier, setSelectedIdentifier] =
     useState<IdentifierShortDetails | null>(null);
-  const displayIdentifiers = identifierCache.map(
-    (identifier, index): CardItem<IdentifierShortDetails> => ({
-      id: index,
-      title: identifier.displayName,
-      image: KeriLogo,
-      data: identifier,
-    })
-  );
+
+  const displayIdentifiers = identifierCache
+    .filter((item) => !item.groupMetadata)
+    .map(
+      (identifier, index): CardItem<IdentifierShortDetails> => ({
+        id: index,
+        title: identifier.displayName,
+        image: KeriLogo,
+        data: identifier,
+      })
+    );
 
   const classes = combineClassNames("wallet-connect-stage-two", className, {
     show: !!isOpen,
