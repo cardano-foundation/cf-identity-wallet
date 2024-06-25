@@ -100,8 +100,15 @@ interface KeriaNotification {
   id: string;
   createdAt: Date;
   a: Record<string, unknown>;
-  multisigId?: string;
-  timeStamp: number;
+  multisigId?: string | undefined;
+  connectionId: string;
+}
+
+interface NotificationResult {
+  id: string;
+  createdAt: string;
+  a: Record<string, unknown>;
+  multisigId: string | undefined;
   connectionId: string;
 }
 
@@ -187,4 +194,5 @@ export type {
   KeriaStatusChangedEvent,
   AgentUrls,
   BranAndMnemonic,
+  NotificationResult,
 };
