@@ -113,9 +113,11 @@ const TabsMenu = ({ tab, path }: { tab: ComponentType; path: string }) => {
               }}
             >
               <div className="border-top" />
-              <span className="notifications-counter">
-                {notificationsCounter > 99 ? "99+" : notificationsCounter}
-              </span>
+              {!!notificationsCounter && (
+                <span className="notifications-counter">
+                  {notificationsCounter > 99 ? "99+" : notificationsCounter}
+                </span>
+              )}
               <IonIcon
                 icon={
                   tab.path === location.pathname ? tab.icon[0] : tab.icon[1]
