@@ -28,14 +28,17 @@ const clearStorageAfterBackOnboarding = (nextPath: string, data: DataProps) => {
 
   const onboardingFlow = [
     {
-      path: RoutePath.SSI_AGENT,
+      path: [RoutePath.SSI_AGENT],
       clearFn: () => {
         SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
         authState.seedPhraseIsSet = false;
       },
     },
     {
-      path: RoutePath.GENERATE_SEED_PHRASE,
+      path: [
+        RoutePath.GENERATE_SEED_PHRASE,
+        RoutePath.VERIFY_RECOVERY_SEED_PHRASE,
+      ],
       clearFn: () => {
         SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
         Agent.agent.basicStorage
@@ -48,26 +51,26 @@ const clearStorageAfterBackOnboarding = (nextPath: string, data: DataProps) => {
       },
     },
     {
-      path: RoutePath.CREATE_PASSWORD,
+      path: [RoutePath.CREATE_PASSWORD],
       clearFn: () => {
         SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
         authState.passcodeIsSet = false;
       },
     },
     {
-      path: RoutePath.SET_PASSCODE,
+      path: [RoutePath.SET_PASSCODE],
       clearFn: () => {
         SecureStorage.delete(KeyStoreKeys.RECOVERY_WALLET);
         authState.recoveryWalletProgress = false;
       },
     },
     {
-      path: RoutePath.ONBOARDING,
+      path: [RoutePath.ONBOARDING],
     },
   ];
 
   for (const item of onboardingFlow) {
-    if (nextPath === item.path) {
+    if (item.path.includes(nextPath as RoutePath)) {
       break;
     }
 

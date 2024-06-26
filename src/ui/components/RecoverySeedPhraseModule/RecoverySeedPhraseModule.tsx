@@ -177,6 +177,7 @@ const RecoverySeedPhraseModule = forwardRef<
 
       onVerifySuccess();
     } catch (e) {
+      setAlertIsOpen(true);
       // TODO: handle failed attemp
     }
   };
