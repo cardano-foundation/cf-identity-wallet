@@ -229,11 +229,8 @@ class MultiSigService extends AgentService {
       .get(metadata.signifyName)
       .catch((error) => {
         const errorStack = (error as Error).stack as string;
-        // If the error is failed to fetch with signify, we retry until the connection is secured
-        if (
-          /404 not found/gi.test(errorStack) &&
-          /SignifyClient/gi.test(errorStack)
-        ) {
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
           return undefined;
         } else {
           throw error;
@@ -284,11 +281,8 @@ class MultiSigService extends AgentService {
       .getRequest(msgSaid)
       .catch((error) => {
         const errorStack = (error as Error).stack as string;
-        // If the error is failed to fetch with signify, we retry until the connection is secured
-        if (
-          /404 not found/gi.test(errorStack) &&
-          /SignifyClient/gi.test(errorStack)
-        ) {
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
           return [];
         } else {
           throw error;
@@ -331,17 +325,14 @@ class MultiSigService extends AgentService {
       .getRequest(msgSaid)
       .catch((error) => {
         const errorStack = (error as Error).stack as string;
-        // If the error is failed to fetch with signify, we retry until the connection is secured
-        if (
-          /404 not found/gi.test(errorStack) &&
-          /SignifyClient/gi.test(errorStack)
-        ) {
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
           return [];
         } else {
           throw error;
         }
       });
-    if (!notifications) {
+    if (!notifications.length) {
       return false;
     }
     const exn = notifications[0].exn;
@@ -366,11 +357,8 @@ class MultiSigService extends AgentService {
       .getRequest(notificationSaid)
       .catch((error) => {
         const errorStack = (error as Error).stack as string;
-        // If the error is failed to fetch with signify, we retry until the connection is secured
-        if (
-          /404 not found/gi.test(errorStack) &&
-          /SignifyClient/gi.test(errorStack)
-        ) {
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
           return [];
         } else {
           throw error;
@@ -437,11 +425,8 @@ class MultiSigService extends AgentService {
       .getRequest(notificationSaid)
       .catch((error) => {
         const errorStack = (error as Error).stack as string;
-        // If the error is failed to fetch with signify, we retry until the connection is secured
-        if (
-          /404 not found/gi.test(errorStack) &&
-          /SignifyClient/gi.test(errorStack)
-        ) {
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
           return [];
         } else {
           throw error;
@@ -518,11 +503,8 @@ class MultiSigService extends AgentService {
       .get(metadata.signifyOpName)
       .catch((error) => {
         const errorStack = (error as Error).stack as string;
-        // If the error is failed to fetch with signify, we retry until the connection is secured
-        if (
-          /404 not found/gi.test(errorStack) &&
-          /SignifyClient/gi.test(errorStack)
-        ) {
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
           return undefined;
         } else {
           throw error;
