@@ -20,7 +20,7 @@ import { i18n } from "../../../i18n";
 import { timeDifference } from "../../utils/formatters";
 import { Agent } from "../../../core/agent/agent";
 import {
-  NotificationResult,
+  KeriaNotification,
   NotificationRoute,
 } from "../../../core/agent/agent.types";
 import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
@@ -99,7 +99,7 @@ const Notifications = () => {
     </span>
   );
 
-  const notificationLabel = (item: NotificationResult) => {
+  const notificationLabel = (item: KeriaNotification) => {
     const connection = connectionsCache.filter(
       (connection) => connection.id === item.connectionId
     )[0].label;

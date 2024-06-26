@@ -5,7 +5,7 @@ import {
   setNotificationsCache,
 } from "./notificationsCache";
 import { RootState } from "../../index";
-import { NotificationResult } from "../../../core/agent/agent.types";
+import { KeriaNotification } from "../../../core/agent/agent.types";
 import { OperationType } from "../../../ui/globals/types";
 
 describe("Notifications cache", () => {
@@ -19,7 +19,7 @@ describe("Notifications cache", () => {
   });
 
   it("should handle setNotificationsCache", () => {
-    const notifications: NotificationResult[] = [
+    const notifications: KeriaNotification[] = [
       {
         id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
         createdAt: "2024-06-25T12:38:36.988Z",
@@ -29,7 +29,7 @@ describe("Notifications cache", () => {
           m: "",
         },
         connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
-        multisigId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
+        read: true,
       },
     ];
     const newState = notificationsCacheSlice.reducer(
@@ -104,7 +104,7 @@ describe("Notifications cache", () => {
               m: "",
             },
             connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
-            multisigId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
+            read: true,
           },
         ],
       },

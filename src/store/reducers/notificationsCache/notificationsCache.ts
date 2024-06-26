@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
-import { NotificationResult } from "../../../core/agent/agent.types";
+import { KeriaNotification } from "../../../core/agent/agent.types";
 
 const initialState: {
-  notifications: NotificationResult[];
+  notifications: KeriaNotification[];
 } = {
   notifications: [],
 };
@@ -13,7 +13,7 @@ const notificationsCacheSlice = createSlice({
   reducers: {
     setNotificationsCache: (
       state,
-      action: PayloadAction<NotificationResult[]>
+      action: PayloadAction<KeriaNotification[]>
     ) => {
       state.notifications = action.payload;
     },
