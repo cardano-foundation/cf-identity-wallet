@@ -98,18 +98,11 @@ interface KeriaStatusChangedEvent extends BaseEventEmitter {
 
 interface KeriaNotification {
   id: string;
-  createdAt: Date;
+  createdAt: string;
   a: Record<string, unknown>;
   multisigId?: string | undefined;
   connectionId: string;
-}
-
-interface NotificationResult {
-  id: string;
-  createdAt: string;
-  a: Record<string, unknown>;
-  multisigId: string | undefined;
-  connectionId: string;
+  read: boolean;
 }
 
 enum KeriConnectionType {
@@ -194,5 +187,4 @@ export type {
   KeriaStatusChangedEvent,
   AgentUrls,
   BranAndMnemonic,
-  NotificationResult,
 };
