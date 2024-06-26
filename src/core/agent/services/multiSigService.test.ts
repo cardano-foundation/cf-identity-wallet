@@ -824,9 +824,10 @@ describe("Multisig sig service of agent", () => {
     expect(
       multiSigService.joinMultisigRotation({
         id: "id",
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
         a: { d: "d" },
         connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+        read: true,
       })
     ).rejects.toThrowError(MultiSigService.EXN_MESSAGE_NOT_FOUND);
   });
@@ -868,9 +869,10 @@ describe("Multisig sig service of agent", () => {
     expect(
       multiSigService.joinMultisigRotation({
         id: "id",
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
         a: { d: "d" },
         connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+        read: true,
       })
     ).rejects.toThrowError(MultiSigService.AID_IS_NOT_MULTI_SIG);
   });
@@ -911,7 +913,7 @@ describe("Multisig sig service of agent", () => {
         prefix: "prefix",
       },
     ]);
-    identifiersRotateMock.mockImplementation((name, _config) => {
+    identifiersRotateMock.mockImplementation((name, config) => {
       return {
         op: () => {
           return { name: `group.${multisigIdentifier}`, done: false };
@@ -942,9 +944,10 @@ describe("Multisig sig service of agent", () => {
     expect(
       await multiSigService.joinMultisigRotation({
         id: "id",
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
         a: { d: "d" },
         connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+        read: true,
       })
     ).toBe(multisigIdentifier);
   });
@@ -1371,9 +1374,10 @@ describe("Multisig sig service of agent", () => {
     await expect(
       multiSigService.joinMultisigRotation({
         id: "id",
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
         a: { d: "d" },
         connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+        read: true,
       })
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     await expect(
