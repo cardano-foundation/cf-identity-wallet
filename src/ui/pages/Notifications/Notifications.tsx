@@ -3,14 +3,10 @@ import {
   IonButton,
   IonChip,
   IonIcon,
-  IonItem,
-  IonLabel,
   IonList,
   useIonViewWillEnter,
 } from "@ionic/react";
-import { settingsOutline, ellipsisHorizontal } from "ionicons/icons";
-import i18next from "i18next";
-import KeriLogo from "../../assets/images/KeriGeneric.jpg";
+import { settingsOutline } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
@@ -18,23 +14,15 @@ import { TabsRoutePath } from "../../../routes/paths";
 import "./Notifications.scss";
 import { i18n } from "../../../i18n";
 import { timeDifference } from "../../utils/formatters";
-import { Agent } from "../../../core/agent/agent";
-import {
-  KeriaNotification,
-  NotificationRoute,
-} from "../../../core/agent/agent.types";
 import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
-import { ConnectionData } from "../Menu/components/ConnectWallet";
-import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
+import { NotificationItem } from "./NotificationItem";
+import { Agent } from "../../../core/agent/agent";
 
 const Notifications = () => {
   const pageId = "notifications-tab";
   const dispatch = useAppDispatch();
   const notifications = useAppSelector(getNotificationsCache);
-  const connectionsCache = useAppSelector(getConnectionsCache);
   const [selectedFilter, setSelectedFilter] = useState("all");
-  const [connectionDetails, setConnectionDetails] = useState<ConnectionData>();
-
   const notificationsNew = notifications.filter(
     (notification) =>
       timeDifference(notification.createdAt)[1] === "m" ||
@@ -72,7 +60,7 @@ const Notifications = () => {
   };
 
   const handleNotificationClick = async (id: string) => {
-    // TODO: Implement signify readNotification
+    // TODO: implement click on notification
     // await Agent.agent.signifyNotifications.readNotification(id);
   };
 
@@ -98,34 +86,6 @@ const Notifications = () => {
       </IonChip>
     </span>
   );
-
-  const notificationLabel = (item: KeriaNotification) => {
-    const connection = connectionsCache.filter(
-      (connection) => connection.id === item.connectionId
-    )[0].label;
-    // TODO: Implement different credential types
-    const credential = i18n.t(
-      "notifications.tab.credentialtypes.driverslicence"
-    );
-    switch (item.a.r) {
-    case NotificationRoute.ExnIpexGrant:
-      return i18next.t("notifications.tab.labels.exnipexgrant", {
-        connection: connection,
-        credential: credential,
-      });
-    case NotificationRoute.MultiSigIcp:
-      return i18next.t("notifications.tab.labels.multisigicp", {
-        connection: connection,
-      });
-    case NotificationRoute.ExnIpexApply:
-      return i18next.t("notifications.tab.labels.exnipexapply", {
-        connection: connection,
-        credential: credential,
-      });
-    default:
-      return "";
-    }
-  };
 
   return (
     <TabLayout
@@ -153,37 +113,14 @@ const Notifications = () => {
               lines="none"
               data-testid="notifications-items"
             >
-              {notificationsNew.map((item, index) => {
-                return (
-                  <IonItem
-                    key={index}
-                    onClick={() => handleNotificationClick(item.id)}
-                    className="notifications-tab-item"
-                    data-testid={`notifications-tab-item-${index}`}
-                  >
-                    <img
-                      src={KeriLogo}
-                      alt="notifications-tab-item-logo"
-                      className="notifications-tab-item-logo"
-                      data-testid="notifications-tab-item-logo"
-                    />
-                    <IonLabel>
-                      {notificationLabel(item)}
-                      <br />
-                      <span className="notifications-tab-item-time">
-                        {timeDifference(item.createdAt)[0]}
-                        {timeDifference(item.createdAt)[1]}
-                      </span>
-                    </IonLabel>
-                    <IonIcon
-                      aria-hidden="true"
-                      icon={ellipsisHorizontal}
-                      slot="end"
-                      className="notifications-tab-item-ellipsis"
-                    />
-                  </IonItem>
-                );
-              })}
+              {notificationsNew.map((item, index) => (
+                <NotificationItem
+                  key={index}
+                  item={item}
+                  index={index}
+                  handleNotificationClick={handleNotificationClick}
+                />
+              ))}
             </IonList>
           </div>
         )}
@@ -196,37 +133,14 @@ const Notifications = () => {
               lines="none"
               data-testid="notifications-items"
             >
-              {notificationsEarlier.map((item, index) => {
-                return (
-                  <IonItem
-                    key={index}
-                    onClick={() => handleNotificationClick(item.id)}
-                    className="notifications-tab-item"
-                    data-testid={`notifications-tab-item-${index}`}
-                  >
-                    <img
-                      src={KeriLogo}
-                      alt="notifications-tab-item-logo"
-                      className="notifications-tab-item-logo"
-                      data-testid="notifications-tab-item-logo"
-                    />
-                    <IonLabel>
-                      {notificationLabel(item)}
-                      <br />
-                      <span className="notifications-tab-item-time">
-                        {timeDifference(item.createdAt)[0]}
-                        {timeDifference(item.createdAt)[1]}
-                      </span>
-                    </IonLabel>
-                    <IonIcon
-                      aria-hidden="true"
-                      icon={ellipsisHorizontal}
-                      slot="end"
-                      className="notifications-tab-item-ellipsis"
-                    />
-                  </IonItem>
-                );
-              })}
+              {notificationsEarlier.map((item, index) => (
+                <NotificationItem
+                  key={index}
+                  item={item}
+                  index={index}
+                  handleNotificationClick={handleNotificationClick}
+                />
+              ))}
             </IonList>
           </div>
         )}

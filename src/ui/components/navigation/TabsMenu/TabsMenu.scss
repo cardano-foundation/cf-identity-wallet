@@ -11,8 +11,31 @@ ion-tab-bar {
     --ripple-color: transparent;
 
     &:not(.tab-selected) {
-      opacity: 70%;
       color: var(--ion-color-secondary);
+
+      > *:not(.notifications-counter) {
+        opacity: 70%;
+      }
+
+      .notifications-counter {
+        display: flex;
+        width: 1.25rem;
+        height: 1.25rem;
+        line-height: 1rem;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        color: white;
+        justify-content: center;
+        align-items: center;
+        border-radius: 0.625rem;
+        border: 2px solid var(--ion-color-danger);
+        background: var(--ion-color-danger);
+      }
+    }
+
+    &:not(.tab-button-notifications) .notifications-counter {
+      display: none;
     }
 
     .border-top {
@@ -29,8 +52,13 @@ ion-tab-bar {
 
     &.tab-selected {
       color: var(--ion-color-primary);
+
       .border-top {
         border-color: var(--ion-color-primary);
+      }
+
+      .notifications-counter {
+        display: none;
       }
     }
 

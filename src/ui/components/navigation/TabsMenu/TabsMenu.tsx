@@ -29,8 +29,9 @@ import { Creds } from "../../../pages/Credentials";
 import { Scan } from "../../../pages/Scan";
 import { Notifications } from "../../../pages/Notifications";
 import { Menu } from "../../../pages/Menu";
-import { useAppDispatch } from "../../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { setCurrentRoute } from "../../../../store/reducers/stateCache";
+import { getNotificationsCache } from "../../../../store/reducers/notificationsCache";
 
 const tabsRoutes = [
   {
@@ -67,6 +68,10 @@ const tabsRoutes = [
 const TabsMenu = ({ tab, path }: { tab: ComponentType; path: string }) => {
   const location = useLocation();
   const dispatch = useAppDispatch();
+  const notifications = useAppSelector(getNotificationsCache);
+  const notificationsCounter = notifications.filter(
+    (notification) => !notification.read
+  ).length;
 
   const handleTabClick = (tabPath: string) => {
     dispatch(setCurrentRoute({ path: tabPath }));
@@ -100,11 +105,17 @@ const TabsMenu = ({ tab, path }: { tab: ComponentType; path: string }) => {
               data-testid={
                 "tab-button-" + tab.label.toLowerCase().replace(/\s/g, "-")
               }
+              className={
+                "tab-button-" + tab.label.toLowerCase().replace(/\s/g, "-")
+              }
               onClick={() => {
                 handleTabClick(tab.path);
               }}
             >
               <div className="border-top" />
+              <span className="notifications-counter">
+                {notificationsCounter > 99 ? "99+" : notificationsCounter}
+              </span>
               <IonIcon
                 icon={
                   tab.path === location.pathname ? tab.icon[0] : tab.icon[1]
