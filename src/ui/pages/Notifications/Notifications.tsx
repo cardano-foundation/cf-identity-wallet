@@ -80,6 +80,7 @@ const Notifications = () => {
     <span>
       <IonChip
         className={selectedFilter === filter ? "selected" : ""}
+        // TODO: Implement filters
         onClick={() => setSelectedFilter(filter)}
       >
         {label}
@@ -105,7 +106,10 @@ const Notifications = () => {
       </div>
       <div className="notifications-tab-content">
         {!!notificationsNew.length && (
-          <div className="notifications-tab-section">
+          <div
+            className="notifications-tab-section"
+            data-testid="notifications-tab-section-new"
+          >
             <h3 className="notifications-tab-section-title">
               {i18n.t("notifications.tab.sections.new")}
             </h3>
@@ -125,7 +129,10 @@ const Notifications = () => {
           </div>
         )}
         {!!notificationsEarlier.length && (
-          <div className="notifications-tab-section">
+          <div
+            className="notifications-tab-section"
+            data-testid="notifications-tab-section-earlier"
+          >
             <h3 className="notifications-tab-section-title">
               {i18n.t("notifications.tab.sections.earlier")}
             </h3>

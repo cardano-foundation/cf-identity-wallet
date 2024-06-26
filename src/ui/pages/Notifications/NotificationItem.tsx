@@ -25,7 +25,7 @@ const NotificationItem = ({
   const notificationLabel = (item: KeriaNotification) => {
     const connection = connectionsCache.filter(
       (connection) => connection.id === item.connectionId
-    )[0].label;
+    )[0]?.label;
     // TODO: Implement different credential types
     const credential = i18n.t(
       "notifications.tab.credentialtypes.driverslicence"
