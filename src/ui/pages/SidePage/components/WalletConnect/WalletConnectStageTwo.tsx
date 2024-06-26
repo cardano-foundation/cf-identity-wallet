@@ -39,7 +39,7 @@ const WalletConnectStageTwo = ({
     useState<IdentifierShortDetails | null>(null);
 
   const displayIdentifiers = identifierCache
-    .filter((item) => !item.groupMetadata)
+    .filter((item) => !item.multisigManageAid)
     .map(
       (identifier, index): CardItem<IdentifierShortDetails> => ({
         id: index,
