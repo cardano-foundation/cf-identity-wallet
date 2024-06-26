@@ -49,10 +49,11 @@ describe("Multi-Sig request", () => {
     type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
     event: {
       id: "event-id",
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
       a: { d: "d" },
       timeStamp: new Date().getTime(),
       connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: false,
     },
     multisigIcpDetails: {
       ourIdentifier: filteredIdentifierFix[0],

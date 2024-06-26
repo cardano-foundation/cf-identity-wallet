@@ -1,8 +1,6 @@
 import {
-  KeriaNotification,
   AcdcStateChangedEvent,
   AcdcEventTypes,
-  NotificationRoute,
   AgentServicesProps,
 } from "../agent.types";
 import { AgentService } from "./agentService";
