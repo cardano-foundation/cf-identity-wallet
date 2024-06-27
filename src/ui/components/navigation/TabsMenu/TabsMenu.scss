@@ -23,14 +23,15 @@ ion-tab-bar {
         height: 1.25rem;
         line-height: 1rem;
         position: absolute;
-        top: 1rem;
-        right: 1rem;
+        margin: 0 0 1rem 1.5rem;
         color: white;
         justify-content: center;
         align-items: center;
         border-radius: 0.625rem;
-        border: 2px solid var(--ion-color-danger);
+        border: 1px solid var(--ion-color-danger);
         background: var(--ion-color-danger);
+        opacity: 1;
+        z-index: 10;
       }
     }
 
@@ -91,6 +92,13 @@ ion-tab-bar {
 
       ion-label {
         font-size: 0.65rem;
+      }
+
+      &:not(.tab-selected) .notifications-counter {
+        width: 1rem;
+        height: 1rem;
+        font-size: 0.6rem;
+        margin: 0 0 1.4rem 1rem;
       }
     }
   }
