@@ -28,6 +28,14 @@ const formatTimeToSec = (date: string) => {
 const timeDifference = (timestamp: string) => {
   const startDate = new Date(timestamp);
   const endDate = new Date(); // Current date and time in local time zone
+  const startDateUTC = Date.UTC(
+    startDate.getUTCFullYear(),
+    startDate.getUTCMonth(),
+    startDate.getUTCDate(),
+    startDate.getUTCHours(),
+    startDate.getUTCMinutes(),
+    startDate.getUTCSeconds()
+  ); // Convert start time to UTC in milliseconds
   const endDateUTC = Date.UTC(
     endDate.getUTCFullYear(),
     endDate.getUTCMonth(),
@@ -36,7 +44,7 @@ const timeDifference = (timestamp: string) => {
     endDate.getUTCMinutes(),
     endDate.getUTCSeconds()
   ); // Convert current time to UTC in milliseconds
-  const timeDifferenceMS = endDateUTC - startDate.getTime();
+  const timeDifferenceMS = endDateUTC - startDateUTC;
   const timeDifferenceMins = Math.floor(timeDifferenceMS / 60000);
   const timeDifferenceHours = Math.floor(timeDifferenceMS / 3600000);
   const timeDifferenceDays = Math.floor(timeDifferenceMS / 86400000);

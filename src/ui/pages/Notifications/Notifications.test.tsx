@@ -102,9 +102,9 @@ describe("Notifications Tab", () => {
     expect(
       getByTestId("notifications-tab-section-earlier")
     ).toBeInTheDocument();
-    expect(getByText("9m")).toBeInTheDocument();
-    expect(getByText("1h")).toBeInTheDocument();
-    expect(getByText("1d")).toBeInTheDocument();
+    expect(getByText("10m")).toBeInTheDocument();
+    expect(getByText("2h")).toBeInTheDocument();
+    expect(getByText("2d")).toBeInTheDocument();
     expect(getByText("2w")).toBeInTheDocument();
     expect(getByText("2y")).toBeInTheDocument();
   });
