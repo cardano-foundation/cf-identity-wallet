@@ -22,7 +22,9 @@ const getNextRootRoute = (data: DataProps) => {
   }
 
   if (authentication.passwordIsSet || authentication.passwordIsSkipped) {
-    path = RoutePath.GENERATE_SEED_PHRASE;
+    path = authentication.recoveryWalletProgress
+      ? RoutePath.VERIFY_RECOVERY_SEED_PHRASE
+      : RoutePath.GENERATE_SEED_PHRASE;
   }
 
   if (authentication.seedPhraseIsSet) {
@@ -100,6 +102,15 @@ const updateStoreAfterSetupSSI = (data: DataProps) => {
   return setAuthentication({
     ...data.store.stateCache.authentication,
     ssiAgentIsSet: true,
+    recoveryWalletProgress: false,
+    seedPhraseIsSet: true,
+  });
+};
+
+const updateStoreRecoveryWallet = (data: DataProps) => {
+  return setAuthentication({
+    ...data.store.stateCache.authentication,
+    recoveryWalletProgress: data.state?.recoveryWalletProgress,
   });
 };
 
@@ -127,7 +138,11 @@ const updateStoreCurrentRoute = (data: DataProps) => {
   return setCurrentRoute({ path: data.state?.nextRoute });
 };
 
-const getNextCreatePasswordRoute = () => {
+const getNextCreatePasswordRoute = (data: DataProps) => {
+  if (data.store.stateCache.authentication.recoveryWalletProgress) {
+    return { pathname: RoutePath.VERIFY_RECOVERY_SEED_PHRASE };
+  }
+
   return { pathname: RoutePath.GENERATE_SEED_PHRASE };
 };
 const updateStoreAfterCreatePassword = (data: DataProps) => {
@@ -176,7 +191,7 @@ const nextRoute: Record<string, any> = {
   },
   [RoutePath.ONBOARDING]: {
     nextPath: (data: DataProps) => getNextOnboardingRoute(data),
-    updateRedux: [],
+    updateRedux: [updateStoreRecoveryWallet],
   },
   [RoutePath.SET_PASSCODE]: {
     nextPath: (data: DataProps) => getNextSetPasscodeRoute(data.store),
@@ -190,12 +205,16 @@ const nextRoute: Record<string, any> = {
     nextPath: () => getNextVerifySeedPhraseRoute(),
     updateRedux: [updateStoreAfterVerifySeedPhraseRoute, clearSeedPhraseCache],
   },
+  [RoutePath.VERIFY_RECOVERY_SEED_PHRASE]: {
+    nextPath: () => getNextVerifySeedPhraseRoute(),
+    updateRedux: [],
+  },
   [RoutePath.SSI_AGENT]: {
     nextPath: () => getNextCreateSSIAgentRoute(),
     updateRedux: [updateStoreAfterSetupSSI],
   },
   [RoutePath.CREATE_PASSWORD]: {
-    nextPath: () => getNextCreatePasswordRoute(),
+    nextPath: (data: DataProps) => getNextCreatePasswordRoute(data),
     updateRedux: [updateStoreAfterCreatePassword],
   },
   [RoutePath.CONNECTION_DETAILS]: {

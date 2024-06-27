@@ -8,6 +8,7 @@ import {
   BiometryType,
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
+import { waitForIonicReact } from "@ionic/react-test-utils";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { RoutePath } from "../../../routes";
@@ -47,7 +48,7 @@ interface StoreMockedProps {
   cryptoAccountsCache: {
     cryptoAccounts: never[];
   };
-  biometryCache: {
+  biometricsCache: {
     enabled: boolean;
   };
 }
@@ -79,7 +80,7 @@ const initialState = {
   cryptoAccountsCache: {
     cryptoAccounts: [],
   },
-  biometryCache: {
+  biometricsCache: {
     enabled: true,
   },
 };
@@ -145,11 +146,12 @@ describe("Lock Page", () => {
     expect(await findByText(EN_TRANSLATIONS.lockpage.error)).toBeVisible();
     fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.forgotten.button));
     expect(
-      await findByText(EN_TRANSLATIONS.lockpage.alert.text.restart)
+      await findByText(EN_TRANSLATIONS.lockpage.alert.text.verify)
     ).toBeVisible();
-    fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.alert.button.restart));
+    fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.alert.button.verify));
+    await waitForIonicReact();
     expect(
-      await findByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
+      await findByText(EN_TRANSLATIONS.forgotauth.passcode.title)
     ).toBeVisible();
   });
 
