@@ -8,6 +8,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { arrowBackOutline, closeOutline } from "ionicons/icons";
+import { useCallback } from "react";
 import { PageHeaderProps } from "./PageHeader.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache } from "../../../store/reducers/stateCache";
@@ -67,19 +68,27 @@ const PageHeader = ({
     }
   };
 
-  const handleHardwareBackButtonClick = (processNextHandler: () => void) => {
-    if (hardwareBackButtonConfig?.handler) {
-      hardwareBackButtonConfig?.handler(processNextHandler);
-      return;
-    }
+  const handleHardwareBackButtonClick = useCallback(
+    (processNextHandler: () => void) => {
+      if (hardwareBackButtonConfig?.handler) {
+        hardwareBackButtonConfig?.handler(processNextHandler);
+        return;
+      }
 
-    if (closeButton && closeButtonAction) {
-      closeButtonAction();
-      return;
-    }
+      if (closeButton && closeButtonAction) {
+        closeButtonAction();
+        return;
+      }
 
-    handleOnBack();
-  };
+      handleOnBack();
+    },
+    [
+      hardwareBackButtonConfig?.handler,
+      closeButtonAction,
+      closeButton,
+      handleOnBack,
+    ]
+  );
 
   useIonHardwareBackButton(
     hardwareBackButtonConfig?.priority || BackEventPriorityType.Page,
