@@ -1,0 +1,35 @@
+.notification-details-header {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.25rem;
+  text-align: center;
+
+  & > * {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  p {
+    margin: 0.5rem 0 0;
+  }
+
+  .notification-details-logo img {
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: 2.75rem;
+    margin-bottom: 1rem;
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    & > *:not(:last-child) {
+      margin-bottom: 0.6rem;
+    }
+
+    .notification-details-logo img {
+      width: 4rem;
+      height: 4rem;
+      border-radius: 2.75rem;
+    }
+  }
+}

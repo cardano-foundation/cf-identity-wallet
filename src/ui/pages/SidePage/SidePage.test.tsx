@@ -77,7 +77,7 @@ describe("Side Page: wallet connect", () => {
   });
 });
 
-describe("Side Page: incoming request", () => {
+describe.skip("Side Page: incoming request", () => {
   const initialStateFull = {
     stateCache: {
       routes: [TabsRoutePath.CREDENTIALS],

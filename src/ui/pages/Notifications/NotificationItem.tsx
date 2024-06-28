@@ -18,7 +18,7 @@ const NotificationItem = ({
 }: {
   item: KeriaNotification;
   index: number;
-  handleNotificationClick: (value: string) => void;
+  handleNotificationClick: (item: KeriaNotification) => void;
 }) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
 
@@ -53,7 +53,7 @@ const NotificationItem = ({
   return (
     <IonItem
       key={index}
-      onClick={() => handleNotificationClick(item.id)}
+      onClick={() => handleNotificationClick(item)}
       className={`notifications-tab-item${item.read ? "" : " unread"}`}
       data-testid={`notifications-tab-item-${index}`}
     >

@@ -5,13 +5,13 @@ import {
   swapHorizontalOutline,
 } from "ionicons/icons";
 import i18next from "i18next";
-import { i18n } from "../../../../../../i18n";
 import KeriLogo from "../../../../../../ui/assets/images/KeriGeneric.jpg";
-import { PageFooter } from "../../../../../components/PageFooter";
-import { RequestProps } from "../IncomingRequest.types";
-import { ResponsivePageLayout } from "../../../../../components/layout/ResponsivePageLayout";
-import { RequestType } from "../../../../../globals/types";
-import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
+import { RequestProps } from "../../SidePage/components/IncomingRequest/IncomingRequest.types";
+import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
+import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageLayout";
+import { i18n } from "../../../../i18n";
+import { RequestType } from "../../../globals/types";
+import { PageFooter } from "../../../components/PageFooter";
 
 const CredentialRequest = ({
   pageId,

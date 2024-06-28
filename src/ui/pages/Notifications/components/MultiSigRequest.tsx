@@ -14,24 +14,24 @@ import { useState } from "react";
 import {
   Alert as AlertAccept,
   Alert as AlertDecline,
-} from "../../../../../components/Alert";
+} from "../../../components/Alert";
 import KeriLogo from "../../../../../assets/images/KeriGeneric.jpg";
-import { RequestProps } from "../IncomingRequest.types";
-import { useAppDispatch, useAppSelector } from "../../../../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
   getIdentifiersCache,
   setIdentifiersCache,
-} from "../../../../../../store/reducers/identifiersCache";
-import { Agent } from "../../../../../../core/agent/agent";
-import { IdentifierShortDetails } from "../../../../../../core/agent/services/identifier.types";
-import { ToastMsgType } from "../../../../../globals/types";
-import { ScrollablePageLayout } from "../../../../../components/layout/ScrollablePageLayout";
-import { PageHeader } from "../../../../../components/PageHeader";
-import { i18n } from "../../../../../../i18n";
-import { PageFooter } from "../../../../../components/PageFooter";
+} from "../../../../store/reducers/identifiersCache";
+import { Agent } from "../../../../core/agent/agent";
+import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
+import { ToastMsgType } from "../../../globals/types";
+import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
+import { PageHeader } from "../../../components/PageHeader";
+import { i18n } from "../../../../i18n";
+import { PageFooter } from "../../../components/PageFooter";
 import "./MultiSigRequest.scss";
-import { CreateIdentifierResult } from "../../../../../../core/agent/agent.types";
-import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
+import { CreateIdentifierResult } from "../../../../core/agent/agent.types";
+import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
+import { RequestProps } from "../../SidePage/components/IncomingRequest/IncomingRequest.types";
 
 const MultiSigRequest = ({
   blur,
