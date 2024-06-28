@@ -1,6 +1,8 @@
 import { AlertButton, IonAlert } from "@ionic/react";
 import { AlertProps } from "./Alert.types";
 import "./Alert.scss";
+import { useIonHardwareBackButton } from "../../hooks";
+import { BackEventPriorityType } from "../../globals/types";
 
 const Alert = ({
   isOpen,
@@ -53,6 +55,15 @@ const Alert = ({
     }
     setIsOpen(false);
   };
+
+  useIonHardwareBackButton(
+    BackEventPriorityType.Alert,
+    () => {
+      if (!backdropDismiss && !cancelButtonText) return;
+      handleDismiss();
+    },
+    !isOpen
+  );
 
   return (
     <div

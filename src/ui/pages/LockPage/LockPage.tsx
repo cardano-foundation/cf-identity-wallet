@@ -1,6 +1,8 @@
 import i18n from "i18next";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Capacitor } from "@capacitor/core";
+import { App } from "@capacitor/app";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch } from "../../../store/hooks";
 import { getBiometricsCacheCache } from "../../../store/reducers/biometricsCache";
@@ -17,6 +19,8 @@ import { PasscodeModule } from "../../components/PasscodeModule";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
 import "./LockPage.scss";
+import { useIonHardwareBackButton } from "../../hooks";
+import { BackEventPriorityType } from "../../globals/types";
 
 const LockPage = () => {
   const pageId = "lock-page";
@@ -54,6 +58,16 @@ const LockPage = () => {
     };
     runBiometrics();
   }, []);
+
+  useIonHardwareBackButton(
+    BackEventPriorityType.LockPage,
+    () => {
+      if (Capacitor.isNativePlatform()) {
+        App.exitApp();
+      }
+    },
+    alertIsOpen || openRecoveryAuth
+  );
 
   const handlePinChange = (digit: number) => {
     const updatedPasscode = `${passcode}${digit}`;

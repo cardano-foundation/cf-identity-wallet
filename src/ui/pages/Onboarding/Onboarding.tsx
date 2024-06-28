@@ -18,6 +18,10 @@ import { PageFooter } from "../../components/PageFooter";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useEffect, useState } from "react";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { useIonHardwareBackButton } from "../../hooks";
+import { BackEventPriorityType } from "../../globals/types";
+import { Capacitor } from "@capacitor/core";
+import { App } from "@capacitor/app";
 
 export type IntroImg0Type = typeof introImg0;
 
@@ -81,6 +85,16 @@ const Onboarding = () => {
       state: data.state,
     });
   };
+
+  useIonHardwareBackButton(
+    BackEventPriorityType.Page,
+    () => {
+      if (Capacitor.isNativePlatform()) {
+        App.exitApp();
+      }
+    },
+    hiddenPage
+  );
 
   if (hiddenPage) return null;
 

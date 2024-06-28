@@ -14,7 +14,8 @@ import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { getBackRoute } from "../../../routes/backRoute";
 import "./PageHeader.scss";
-import { useAppIonRouter } from "../../hooks";
+import { useAppIonRouter, useIonHardwareBackButton } from "../../hooks";
+import { BackEventPriorityType } from "../../globals/types";
 
 const PageHeader = ({
   backButton,
@@ -35,6 +36,7 @@ const PageHeader = ({
   progressBarBuffer,
   title,
   additionalButtons,
+  hardwareBackButtonConfig,
 }: PageHeaderProps) => {
   const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
@@ -64,6 +66,26 @@ const PageHeader = ({
       }
     }
   };
+
+  const handleHardwareBackButtonClick = (processNextHandler: () => void) => {
+    if (hardwareBackButtonConfig?.handler) {
+      hardwareBackButtonConfig?.handler(processNextHandler);
+      return;
+    }
+
+    if (closeButton && closeButtonAction) {
+      closeButtonAction();
+      return;
+    }
+
+    handleOnBack();
+  };
+
+  useIonHardwareBackButton(
+    hardwareBackButtonConfig?.priority || BackEventPriorityType.Page,
+    handleHardwareBackButtonClick,
+    hardwareBackButtonConfig?.prevent
+  );
 
   const hasAction = backButton || closeButton || actionButton;
 
