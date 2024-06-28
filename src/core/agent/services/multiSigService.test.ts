@@ -30,6 +30,9 @@ const oobiResolveMock = jest.fn();
 let groupGetRequestMock = jest.fn();
 let queryKeyStateMock = jest.fn();
 let queryKeyStateGetMock = jest.fn();
+const addEndRoleMock = jest.fn();
+const sendExchangesMock = jest.fn();
+const getExchangesMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -38,7 +41,7 @@ const signifyClient = jest.mocked({
     list: identifiersListMock,
     get: identifiersGetMock,
     create: identifiersCreateMock,
-    addEndRole: jest.fn(),
+    addEndRole: addEndRoleMock,
     interact: identifiersInteractMock,
     rotate: identifiersRotateMock,
     members: identifiersMemberMock,
@@ -80,8 +83,8 @@ const signifyClient = jest.mocked({
     list: jest.fn(),
   }),
   exchanges: () => ({
-    get: jest.fn(),
-    send: jest.fn(),
+    get: getExchangesMock,
+    send: sendExchangesMock,
   }),
   agent: {
     pre: "pre",
@@ -99,6 +102,7 @@ const identifierStorage = jest.mocked({
   getKeriIdentifiersMetadata: jest.fn(),
   updateIdentifierMetadata: jest.fn(),
   createIdentifierMetadataRecord: jest.fn(),
+  getMultisigMemebersMetadata: jest.fn(),
 });
 
 const operationPendingStorage = jest.mocked({
@@ -173,6 +177,49 @@ const aidReturnedBySignify = {
     b: "b",
     di: "di",
   },
+};
+
+const multisigMockMemberMetadatas = [
+  {
+    _tags: {
+      signifyName: "357cd92a-f349-4f5d-be3d-1ff0ff9969c5",
+      groupId: "08f22dee-8cb0-4d65-8600-a82bbc3f6fd7",
+      isArchived: false,
+      isDeleted: false,
+      isPending: false,
+      groupCreated: true,
+    },
+    type: "IdentifierMetadataRecord",
+    id: "aid-1",
+    displayName: "multi-sig",
+    signifyName: "357cd92a-f349-4f5d-be3d-1ff0ff9969c5",
+    isArchived: false,
+    isDeleted: false,
+    isPending: false,
+    signifyOpName: "done.aid-1",
+    createdAt: "2024-06-28T03:54:03.514Z",
+    theme: 0,
+    groupMetadata: {
+      groupId: "08f22dee-8cb0-4d65-8600-a82bbc3f6fd7",
+      groupInitiator: true,
+      groupCreated: true,
+    },
+    updatedAt: "2024-06-28T03:55:04.260Z",
+  },
+];
+
+const multisigMockMembers = {
+  signing: [
+    {
+      aid: "aid-1",
+      ends: { agent: {} },
+    },
+    {
+      aid: "aid-2",
+      ends: { agent: {} },
+    },
+  ],
+  rotation: [],
 };
 
 describe("Multisig sig service of agent", () => {
@@ -1467,5 +1514,121 @@ describe("Multisig sig service of agent", () => {
     await expect(multiSigService.hasMultisig(multisigId)).rejects.toThrowError(
       error
     );
+  });
+
+  test("Can get multi-sig participants", async () => {
+    identifiersMemberMock.mockResolvedValue(multisigMockMembers);
+    identifierStorage.getMultisigMemebersMetadata = jest
+      .fn()
+      .mockResolvedValue(multisigMockMemberMetadatas);
+    expect(await multiSigService.getMultisigParticipants("multi-sig")).toEqual({
+      ourIdentifier: multisigMockMemberMetadatas[0],
+      multisigMembers: multisigMockMembers["signing"],
+    });
+  });
+
+  test("Should throw error if we don't control any member of the multisig", async () => {
+    identifiersMemberMock.mockResolvedValue(multisigMockMembers);
+    identifierStorage.getMultisigMemebersMetadata = jest
+      .fn()
+      .mockResolvedValue([]);
+    await expect(
+      multiSigService.getMultisigParticipants("multi-sig")
+    ).rejects.toThrow(new Error(MultiSigService.MEMBER_AID_NOT_FOUND));
+
+    identifiersMemberMock.mockResolvedValue({
+      signing: [
+        {
+          aid: "aid-0",
+          ends: { agent: {} },
+        },
+        {
+          aid: "aid-2",
+          ends: { agent: {} },
+        },
+      ],
+      rotation: [],
+    });
+    identifierStorage.getMultisigMemebersMetadata = jest
+      .fn()
+      .mockResolvedValue(multisigMockMemberMetadatas);
+    await expect(
+      multiSigService.getMultisigParticipants("multi-sig")
+    ).rejects.toThrow(new Error(MultiSigService.MEMBER_AID_NOT_FOUND));
+  });
+
+  test("Can add end role authorization", async () => {
+    identifiersMemberMock.mockResolvedValue(multisigMockMembers);
+    identifierStorage.getMultisigMemebersMetadata = jest
+      .fn()
+      .mockResolvedValue(multisigMockMemberMetadatas);
+    identifiersGetMock.mockResolvedValueOnce({
+      name: "multi-sig",
+      prefix: "prefix",
+      state: {
+        ee: {
+          s: "0",
+          d: "prefix",
+        },
+      },
+    });
+    addEndRoleMock.mockResolvedValue({
+      op: jest.fn(),
+      serder: { size: 1 },
+      sigs: [],
+    });
+    await multiSigService.endRoleAuthorization("multi-sig");
+    expect(sendExchangesMock).toBeCalledTimes(
+      multisigMockMembers["signing"].length
+    );
+  });
+
+  test("Can join end role authorization", async () => {
+    identifiersMemberMock.mockResolvedValue(multisigMockMembers);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "multi-sig",
+    });
+    groupGetRequestMock.mockResolvedValue([
+      {
+        exn: {
+          e: {
+            rpy: {
+              dt: new Date(),
+              a: {
+                role: "agent",
+                eid: "eid",
+              },
+            },
+          },
+        },
+      },
+    ]);
+    getExchangesMock.mockResolvedValue({
+      exn: {
+        a: {
+          gid: "gid",
+        },
+      },
+    });
+    identifierStorage.getMultisigMemebersMetadata = jest
+      .fn()
+      .mockResolvedValue(multisigMockMemberMetadatas);
+    identifiersGetMock.mockResolvedValueOnce({
+      name: "multi-sig",
+      prefix: "prefix",
+      state: {
+        ee: {
+          s: "0",
+          d: "prefix",
+        },
+      },
+    });
+    addEndRoleMock.mockResolvedValue({
+      op: jest.fn(),
+      serder: { size: 1 },
+      sigs: [],
+    });
+    await multiSigService.joinAuthorization("notification-said");
+    expect(sendExchangesMock).toBeCalled();
   });
 });

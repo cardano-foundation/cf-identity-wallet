@@ -141,7 +141,6 @@ class SignifyNotificationService extends AgentService {
     notif: Notification,
     callback: (event: KeriaNotification) => void
   ) {
-    // We only process with the credential and the multisig at the moment
     if (notif.a.r === NotificationRoute.MultiSigIcp) {
       const multisigNotification = await this.props.signifyClient
         .groups()

@@ -22,6 +22,7 @@ import {
   MultiSigRoute,
   MultiSigExnMessage,
   CreateMultisigExnPayload,
+  AuthorizationExnPayload,
 } from "./multiSig.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
@@ -49,6 +50,8 @@ class MultiSigService extends AgentService {
   static readonly ONLY_ALLOW_GROUP_INITIATOR =
     "Only the group initiator can create the multisig";
   static readonly GROUP_ALREADY_EXISTs = "Group already exists";
+  static readonly MEMBER_AID_NOT_FOUND =
+    "We do not control any member AID of the multi-sig";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly notificationStorage!: NotificationStorage;
@@ -690,9 +693,12 @@ class MultiSigService extends AgentService {
     embeds: {
       icp?: (string | Serder)[];
       rot?: (string | Serder)[];
+      rpy?: (string | Serder)[];
+      ixn?: (string | Serder)[];
+      exn?: (string | Serder)[];
     },
     recp: any,
-    payload: CreateMultisigExnPayload
+    payload: CreateMultisigExnPayload | AuthorizationExnPayload
   ): Promise<any> {
     return this.props.signifyClient
       .exchanges()
@@ -715,6 +721,149 @@ class MultiSigService extends AgentService {
       return false;
     }
     return true;
+  }
+
+  async getMultisigParticipants(multisigSignifyName: string) {
+    const members = await this.props.signifyClient
+      .identifiers()
+      .members(multisigSignifyName);
+    const multisigMembers = members["signing"];
+    const allMultisigMemberIdentifiers =
+      await this.identifierStorage.getMultisigMemebersMetadata();
+    const owningMember = multisigMembers.find((member: any) =>
+      allMultisigMemberIdentifiers.some(
+        (identifier) => member.aid === identifier.id
+      )
+    );
+
+    if (!owningMember) {
+      throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
+    }
+    const ourIdentifier = allMultisigMemberIdentifiers.find(
+      (identifier) => identifier.id === owningMember.aid
+    );
+    if (!ourIdentifier) {
+      throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
+    }
+    return {
+      ourIdentifier,
+      multisigMembers,
+    };
+  }
+
+  async endRoleAuthorization(multisigSignifyName: string) {
+    const { ourIdentifier, multisigMembers } =
+      await this.getMultisigParticipants(multisigSignifyName);
+    const hab = await this.props.signifyClient
+      .identifiers()
+      .get(multisigSignifyName);
+    const aid = hab["prefix"];
+    const results = [];
+    for (const member of multisigMembers) {
+      const eid = Object.keys(member.ends.agent)[0]; //agent of member
+      const stamp = new Date().toISOString().replace("Z", "000+00:00");
+
+      const endRoleRes = await this.props.signifyClient
+        .identifiers()
+        .addEndRole(multisigSignifyName, "agent", eid, stamp);
+      const op = await endRoleRes.op();
+      const rpy = endRoleRes.serder;
+      const sigs = endRoleRes.sigs;
+      const mstate = hab["state"];
+      const seal = [
+        "SealEvent",
+        { i: hab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
+      ];
+      const sigers = sigs.map((sig) => new Siger({ qb64: sig }));
+      const roleims = d(
+        messagize(rpy, sigers, seal, undefined, undefined, false)
+      );
+      const atc = roleims.substring(rpy.size);
+      const roleEmbeds = {
+        rpy: [rpy, atc],
+      };
+
+      const recp = multisigMembers
+        .filter((signing: any) => signing.aid !== ourIdentifier.id)
+        .map((member: any) => member.aid);
+      const ourAid: Aid = await this.props.signifyClient
+        .identifiers()
+        .get(ourIdentifier.signifyName as string);
+      await this.sendMultisigExn(
+        ourIdentifier?.signifyName,
+        ourAid,
+        MultiSigRoute.RPY,
+        roleEmbeds,
+        recp,
+        { gid: aid }
+      );
+      results.push(op);
+    }
+    return results;
+  }
+
+  async joinAuthorization(notificationSaid: string) {
+    const exchangeMessage = await this.props.signifyClient
+      .exchanges()
+      .get(notificationSaid);
+    const multisigAid = exchangeMessage.exn.a.gid;
+    const multisigMetadataRecord =
+      await this.identifierStorage.getIdentifierMetadata(multisigAid);
+    const multisigSignifyName = multisigMetadataRecord.signifyName;
+    const { ourIdentifier, multisigMembers } =
+      await this.getMultisigParticipants(multisigSignifyName);
+    const icpMsg = await this.props.signifyClient
+      .groups()
+      .getRequest(notificationSaid);
+    if (!icpMsg.length) {
+      throw new Error(
+        `${MultiSigService.EXN_MESSAGE_NOT_FOUND} ${notificationSaid}`
+      );
+    }
+    const exn = icpMsg[0].exn;
+    // stamp, eid and role are provided in the exn message
+    const rpystamp = exn.e.rpy.dt;
+    const rpyrole = exn.e.rpy.a.role;
+    const rpyeid = exn.e.rpy.a.eid;
+    const endRoleRes = await this.props.signifyClient
+      .identifiers()
+      .addEndRole(multisigSignifyName, rpyrole, rpyeid, rpystamp);
+    const op = await endRoleRes.op();
+    const rpy = endRoleRes.serder;
+    const sigs = endRoleRes.sigs;
+
+    const hab = await this.props.signifyClient
+      .identifiers()
+      .get(multisigSignifyName);
+    const mstate = hab["state"];
+    const seal = [
+      "SealEvent",
+      { i: hab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
+    ];
+    const sigers = sigs.map((sig) => new Siger({ qb64: sig }));
+    const roleims = d(
+      messagize(rpy, sigers, seal, undefined, undefined, false)
+    );
+    const atc = roleims.substring(rpy.size);
+    const roleEmbeds = {
+      rpy: [rpy, atc],
+    };
+    const recp = multisigMembers
+      .filter((signing: any) => signing.aid !== ourIdentifier.id)
+      .map((member: any) => member.aid);
+    const ourAid: Aid = await this.props.signifyClient
+      .identifiers()
+      .get(ourIdentifier.signifyName as string);
+
+    await this.sendMultisigExn(
+      ourIdentifier.signifyName,
+      ourAid,
+      MultiSigRoute.RPY,
+      roleEmbeds,
+      recp,
+      { gid: hab["prefix"] }
+    );
+    return op;
   }
 }
 
