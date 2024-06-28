@@ -593,7 +593,7 @@
       "identifiers": "Identity",
       "creds": "Credentials",
       "scan": "Scan",
-      "notification": "Notification",
+      "notifications": "Notifications",
       "menu": "Menu"
     }
   },
@@ -875,9 +875,26 @@
     },
     "pastemeerkatid": "Paste Meerkat ID"
   },
-  "notification": {
+  "notifications": {
     "tab": {
-      "header": "Under development"
+      "header": "Notifications",
+      "chips": {
+        "all": "All",
+        "identifiers": "Identifiers",
+        "credentials": "Credentials"
+      },
+      "sections": {
+        "new": "New",
+        "earlier": "Earlier"
+      },
+      "labels": {
+        "exnipexapply": "{{connection}} has requested a {{credential}} credential from you",
+        "multisigicp": "{{connection}} is requesting to create a multi-sig identifier with you",
+        "exnipexgrant": "{{connection}} wants to issue you a {{credential}}"
+      },
+      "credentialtypes": {
+        "driverslicence": "Driver’s Licence"
+      }
     }
   },
   "menu": {
@@ -1268,7 +1285,7 @@
       "accept": "Accept",
       "decline": "Decline",
       "addidentifier": "Add identifier",
-      "sign": "Sign", 
+      "sign": "Sign",
       "dontallow": "Don't allow"
     },
     "alert": {

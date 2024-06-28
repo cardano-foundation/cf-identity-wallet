@@ -133,9 +133,20 @@ const credentialRequestData = {
   handshake_protocols: ["did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0"],
 };
 
+const connectionsForNotifications = [
+  {
+    id: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
+    label: "CF Credential Issuance",
+    connectionDate: "2024-06-25T12:38:06.342Z",
+    status: "confirmed",
+    oobi: "http://keria:3902/oobi/EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB/agent/EK05Hv5jz3yZJD1UG4FwSE0-xgG2wgWeG4RCasOlr9iI?name=CF%20Credential%20Issuance",
+  },
+];
+
 export {
   connectionsFix,
   connectionRequestData,
   connectionRequestPlaceholder,
   credentialRequestData,
+  connectionsForNotifications,
 };
