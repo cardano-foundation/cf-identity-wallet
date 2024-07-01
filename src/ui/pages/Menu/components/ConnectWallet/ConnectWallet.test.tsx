@@ -46,11 +46,14 @@ jest.mock("@ionic/react", () => ({
   ),
 }));
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
+jest.mock("../../../../../core/storage", () => ({
+  ...jest.requireActual("../../../../../core/storage"),
   SecureStorage: {
     get: (key: string) => {
       return "111111";
     },
+    remove: () => jest.fn(),
+    set: () => jest.fn(),
   },
 }));
 
@@ -73,7 +76,7 @@ const initialState = {
   identifiersCache: {
     identifiers: [...identifierFix],
   },
-  biometryCache: {
+  biometricsCache: {
     enabled: false,
   },
 };
@@ -101,7 +104,7 @@ describe("Wallet connect: empty history", () => {
       identifiersCache: {
         identifiers: [...identifierFix],
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };
@@ -139,7 +142,7 @@ describe("Wallet connect: empty history", () => {
       identifiersCache: {
         identifiers: [...identifierFix],
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };
@@ -191,7 +194,7 @@ describe("Wallet connect: empty history", () => {
       identifiersCache: {
         identifiers: [],
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };
@@ -446,7 +449,7 @@ describe("Wallet connect", () => {
       identifiersCache: {
         identifiers: [],
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };
@@ -552,7 +555,7 @@ describe("Wallet connect", () => {
           },
         ],
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };
@@ -619,7 +622,7 @@ describe("Wallet connect", () => {
           },
         ],
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };

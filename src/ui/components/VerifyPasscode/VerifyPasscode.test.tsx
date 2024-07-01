@@ -49,7 +49,7 @@ const initialStateNoPassword = {
   },
   credsCache: { creds: credsFixAcdc },
   credsArchivedCache: { creds: credsFixAcdc },
-  biometryCache: {
+  biometricsCache: {
     enabled: false,
   },
 };

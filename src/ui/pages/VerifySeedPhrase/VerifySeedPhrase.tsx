@@ -96,6 +96,7 @@ const VerifySeedPhrase = () => {
       RoutePath.VERIFY_SEED_PHRASE,
       data
     );
+
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     handleClearState();
 
