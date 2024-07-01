@@ -97,16 +97,19 @@ export class SignifyApi {
     registryId: string,
     schemaId: string,
     recipient: string,
-    attribute: { [key: string]: string }
+    name?: string
   ) {
     await this.resolveOobi(`${config.oobiEndpoint}/oobi/${schemaId}`);
 
     let vcdata = {};
-    if (
-      schemaId === "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu" ||
-      schemaId === "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao"
-    ) {
-      vcdata = attribute;
+    if (schemaId === "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu") {
+      vcdata = {
+        attendeeName: name,
+      };
+    } else if (schemaId === "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao") {
+      vcdata = {
+        LEI: "5493001KJTIIGC8Y1R17",
+      };
     } else {
       throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);
     }
@@ -138,14 +141,12 @@ export class SignifyApi {
   async requestDisclosure(
     senderName: string,
     schemaSaid: string,
-    recipient: string,
-    attributes: { [key: string]: string }
+    recipient: string
   ) {
     const [apply, sigs] = await this.signifyClient.ipex().apply({
       senderName,
       recipient,
       schema: schemaSaid,
-      attributes,
     });
     await this.signifyClient
       .ipex()
