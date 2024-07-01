@@ -89,7 +89,8 @@ const PASSCODE_MAPPING = {
 enum BackEventPriorityType {
   Alert = 1000,
   LockPage = 999,
-  Modal = 103,
+  Modal = 104,
+  Scanner = 103,
   Page = 102,
   Tab = 101,
 }

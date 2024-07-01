@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Capacitor } from "@capacitor/core";
 import { BackEventPriorityType } from "../globals/types";
 
 const useIonHardwareBackButton = (
@@ -7,7 +8,7 @@ const useIonHardwareBackButton = (
   prevent?: boolean
 ) => {
   useEffect(() => {
-    if (prevent) return;
+    if (prevent || !Capacitor.isNativePlatform()) return;
 
     function handleBack(event: any) {
       event.detail.register(priority, handler);
