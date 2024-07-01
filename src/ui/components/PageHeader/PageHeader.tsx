@@ -45,7 +45,7 @@ const PageHeader = ({
   const hasContent =
     !!backButton || !!closeButton || !!actionButton || !!progressBar || !!title;
 
-  const handleOnBack = () => {
+  const handleOnBack = useCallback(() => {
     if (onBack) {
       onBack();
     } else {
@@ -66,7 +66,7 @@ const PageHeader = ({
         ionRouter.push(backPath.pathname, "back", "pop");
       }
     }
-  };
+  }, [onBack, beforeBack, backButton, currentPath, stateCache, ionRouter.push]);
 
   const handleHardwareBackButtonClick = useCallback(
     (processNextHandler: () => void) => {

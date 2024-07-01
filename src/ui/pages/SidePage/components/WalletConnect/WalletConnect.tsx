@@ -39,7 +39,7 @@ const WalletConnect = ({ setOpenPage }: SidePageContentProps) => {
       <SideSlider open={requestStage === 1}>
         <WalletConnectStageTwo
           pendingDAppMeerkat={pendingConnection.id}
-          isOpen={!!pendingConnection}
+          isOpen={!!pendingConnection && requestStage === 1}
           onClose={handleCloseWalletConnect}
           onBackClick={backToStageOne}
         />
