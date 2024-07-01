@@ -6,10 +6,9 @@ import SeedPhraseVerifyScreen from "../screen-objects/seed-phrase/seed-phrase-ve
 
 export let seedPhraseWords: string[] = [];
 
-export async function generateSeedPhraseOf(phraseLength: number) {
-  await SeedPhraseGenerateScreen.phraseWordsButton(phraseLength).click();
+export async function generateSeedPhraseOf() {
   await SeedPhraseGenerateScreen.viewSeedPhraseButton.click();
-  seedPhraseWords = await seedPhrase().save(phraseLength);
+  seedPhraseWords = await seedPhrase().save();
   await SeedPhraseGenerateScreen.termsAndConditionsCheckbox.click();
   await SeedPhraseGenerateScreen.continueButton.scrollIntoView();
   await SeedPhraseGenerateScreen.continueButton.click();
@@ -18,15 +17,15 @@ export async function generateSeedPhraseOf(phraseLength: number) {
 }
 
 Given(/^user Seed Phrase Verify$/, async function () {
-  await generateSeedPhraseOf(15);
+  await generateSeedPhraseOf();
   await seedPhrase().select(seedPhraseWords);
   await SeedPhraseVerifyScreen.continueButton.click();
 });
 
 Given(
   /^user continue after choose and save (\d+) words seed phrase$/,
-  async function (phraseLength: number) {
-    await generateSeedPhraseOf(phraseLength);
+  async function () {
+    await generateSeedPhraseOf();
   }
 );
 

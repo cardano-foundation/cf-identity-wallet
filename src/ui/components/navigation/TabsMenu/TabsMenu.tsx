@@ -19,19 +19,25 @@ import {
   apps,
   appsOutline,
 } from "ionicons/icons";
-import { ComponentType } from "react";
+import { ComponentType, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { i18n } from "../../../../i18n";
 import "./TabsMenu.scss";
-import { TabsRoutePath } from "../../../../routes/paths";
+import { RoutePath, TabsRoutePath } from "../../../../routes/paths";
 import { Identifiers } from "../../../pages/Identifiers";
 import { Creds } from "../../../pages/Credentials";
 import { Scan } from "../../../pages/Scan";
 import { Notifications } from "../../../pages/Notifications";
 import { Menu } from "../../../pages/Menu";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
-import { setCurrentRoute } from "../../../../store/reducers/stateCache";
 import { getNotificationsCache } from "../../../../store/reducers/notificationsCache";
+import {
+  getStateCache,
+  removeCurrentRoute,
+  setCurrentRoute,
+} from "../../../../store/reducers/stateCache";
+import { getNextRootRoute } from "../../../../routes/nextRoute";
+import { useAppIonRouter } from "../../../hooks";
 
 const tabsRoutes = [
   {
@@ -66,6 +72,7 @@ const tabsRoutes = [
   },
 ];
 const TabsMenu = ({ tab, path }: { tab: ComponentType; path: string }) => {
+  const stateCache = useAppSelector(getStateCache);
   const location = useLocation();
   const dispatch = useAppDispatch();
   const notifications = useAppSelector(getNotificationsCache);
@@ -76,6 +83,12 @@ const TabsMenu = ({ tab, path }: { tab: ComponentType; path: string }) => {
   const handleTabClick = (tabPath: string) => {
     dispatch(setCurrentRoute({ path: tabPath }));
   };
+
+  const exactPath = getNextRootRoute({ store: { stateCache: stateCache } });
+
+  if (exactPath.pathname !== RoutePath.TABS_MENU) {
+    return <Redirect to={exactPath.pathname} />;
+  }
 
   return (
     <IonTabs>

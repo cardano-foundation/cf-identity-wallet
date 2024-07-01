@@ -10,8 +10,12 @@ import { RequestProps } from "../../SidePage/components/IncomingRequest/Incoming
 import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
 import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageLayout";
 import { i18n } from "../../../../i18n";
-import { RequestType } from "../../../globals/types";
 import { PageFooter } from "../../../components/PageFooter";
+import {
+  BackEventPriorityType,
+  RequestType,
+} from "../../../../../globals/types";
+import { useIonHardwareBackButton } from "../../../../../hooks";
 
 const CredentialRequest = ({
   pageId,
@@ -22,6 +26,12 @@ const CredentialRequest = ({
   handleCancel,
 }: RequestProps<IncomingRequestType.CREDENTIAL_OFFER_RECEIVED>) => {
   const fallbackLogo = KeriLogo;
+
+  useIonHardwareBackButton(
+    BackEventPriorityType.Page,
+    handleCancel,
+    !activeStatus
+  );
 
   return (
     <ResponsivePageLayout

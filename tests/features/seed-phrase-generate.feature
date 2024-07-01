@@ -22,22 +22,8 @@ Feature: SeedPhraseGenerate
     When user tap Done button on modal
     Then user can see Seed Phrase Generate screen
 
-  Scenario: SeedPhraseGenerate - user can review seed phrase again
-    Given user choose and save 15 words seed phrase
-    And tap agree to the Terms and Conditions checkbox on Seed Phrase Generate screen
-    When user tap Continue button Seed Phrase Generate screen
-    And tap Cancel button on alert modal for Seed Phrase Generate screen
-    Then user can see 15 words seed phrase list on Seed Phrase Generate screen
-
-  Scenario: SeedPhraseGenerate - user can use 15 words seed phrase to see Verify Seed Phrase screen
-    Given user choose and save 15 words seed phrase
-    And tap agree to the Terms and Conditions checkbox on Seed Phrase Generate screen
-    When user tap Continue button Seed Phrase Generate screen
-    And tap Confirm button on alert modal for Seed Phrase Generate screen
-    Then user can see Seed Phrase Verify screen
-
-  Scenario: SeedPhraseGenerate - user can use 24 words seed phrase to see Verify Seed Phrase screen
-    Given user choose and save 24 words seed phrase
+  Scenario: SeedPhraseGenerate - user can go to see Verify Seed Phrase screen
+    Given user tap View Seed Phrase button on Seed Phrase Generate screen
     And tap agree to the Terms and Conditions checkbox on Seed Phrase Generate screen
     When user tap Continue button Seed Phrase Generate screen
     And tap Confirm button on alert modal for Seed Phrase Generate screen

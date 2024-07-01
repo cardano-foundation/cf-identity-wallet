@@ -21,6 +21,7 @@ import { CredentialDetails } from "../ui/pages/CredentialDetails";
 import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
 import { CreateSSIAgent } from "../ui/pages/CreateSSIAgent";
 import { NotificationDetails } from "../ui/pages/NotificationDetails";
+import { VerifyRecoverySeedPhrase } from "../ui/pages/VerifyRecoverySeedPhrase";
 
 const Routes = () => {
   const stateCache = useAppSelector(getStateCache);
@@ -33,7 +34,7 @@ const Routes = () => {
 
   useEffect(() => {
     if (!routes.length) dispatch(setCurrentRoute({ path: nextPath.pathname }));
-  });
+  }, [routes, nextPath.pathname]);
 
   return (
     <IonReactRouter>
@@ -68,6 +69,12 @@ const Routes = () => {
           component={CreatePassword}
           exact
         />
+        <Route
+          path={RoutePath.VERIFY_RECOVERY_SEED_PHRASE}
+          component={VerifyRecoverySeedPhrase}
+          exact
+        />
+
         <Route
           path={RoutePath.SSI_AGENT}
           component={CreateSSIAgent}
@@ -109,10 +116,14 @@ const Routes = () => {
           component={CredentialDetails}
           exact
         />
-        <Redirect
-          exact
-          from="/"
-          to={nextPath}
+        <Route
+          render={() => (
+            <Redirect
+              exact
+              from="/"
+              to={nextPath}
+            />
+          )}
         />
       </IonRouterOutlet>
     </IonReactRouter>

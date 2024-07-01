@@ -14,7 +14,6 @@ import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
   updateIsPending,
-  updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   setCredsCache,
@@ -55,9 +54,12 @@ import {
   PeerDisconnectedEvent,
 } from "../../../core/cardano/walletConnect/peerConnection.types";
 import { MultiSigService } from "../../../core/agent/services/multiSigService";
-import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCache";
+import {
+  setFavouriteIndex,
+  setViewTypeCache,
+} from "../../../store/reducers/identifierViewTypeCache";
 import { CardListViewType } from "../SwitchCardView";
-import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
+import { setEnableBiometricsCache } from "../../../store/reducers/biometricsCache";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import { i18n } from "../../../i18n";
@@ -294,6 +296,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
 
+    const recoveryWalletProgress = await checkKeyStore(
+      KeyStoreKeys.RECOVERY_WALLET
+    );
+
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
     const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
       MiscRecordId.KERIA_CONNECT_URL
@@ -325,11 +331,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
     if (viewType) {
       dispatch(setViewTypeCache(viewType.content.viewType as CardListViewType));
     }
-    const appBiometry = await Agent.agent.basicStorage.findById(
+    const appBiometrics = await Agent.agent.basicStorage.findById(
       MiscRecordId.APP_BIOMETRY
     );
-    if (appBiometry) {
-      dispatch(setEnableBiometryCache(appBiometry.content.enabled as boolean));
+    if (appBiometrics) {
+      dispatch(
+        setEnableBiometricsCache(appBiometrics.content.enabled as boolean)
+      );
     }
 
     const appUserNameRecord = await Agent.agent.basicStorage.findById(
@@ -339,6 +347,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
       userName = appUserNameRecord.content as { userName: string };
     }
 
+    const favouriteIndex = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
+    );
+
+    const passwordSkipped = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_PASSWORD_SKIPPED
+    );
+
     dispatch(
       setAuthentication({
         ...authentication,
@@ -346,8 +362,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
+        passwordIsSkipped: !!passwordSkipped?.content.value,
         ssiAgentIsSet:
           !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
+        recoveryWalletProgress,
       })
     );
 

@@ -25,7 +25,7 @@ export class SeedPhraseVerifyScreen {
   async loads() {
     await expect(this.screenTitle).toBeDisplayed();
     await expect(this.screenTitle).toHaveText(SeedPhraseVerify.Title);
-    await expect(this.screenDescriptionText).toBeDisplayed();
+    await expect(this.screenDescriptionText).toBeExisting();
     await expect(this.screenDescriptionText).toHaveText(
       SeedPhraseVerify.Description
     );

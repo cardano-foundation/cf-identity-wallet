@@ -9,6 +9,7 @@ enum RoutePath {
   SSI_AGENT = "/ssiagent",
   CONNECTION_DETAILS = "/connectiondetails",
   NOTIFICATION_DETAILS = "/notificationdetails",
+  VERIFY_RECOVERY_SEED_PHRASE = "/verifyrecoveryseedphrase",
 }
 
 enum TabsRoutePath {

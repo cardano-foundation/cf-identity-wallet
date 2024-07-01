@@ -10,7 +10,7 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { personCircleOutline } from "ionicons/icons";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Alert as AlertAccept,
   Alert as AlertDecline,
@@ -92,6 +92,8 @@ const MultiSigRequest = ({
     handleCancel();
   };
 
+  const handleDeclineClick = useCallback(() => setAlertDeclineIsOpen(true), []);
+
   return (
     <>
       {blur && (
@@ -106,7 +108,12 @@ const MultiSigRequest = ({
         pageId={pageId}
         activeStatus={activeStatus}
         customClass={`setup-identifier ${blur ? "blur" : ""}`}
-        header={<PageHeader title={`${i18n.t("request.multisig.title")}`} />}
+        header={
+          <PageHeader
+            onBack={handleDeclineClick}
+            title={`${i18n.t("request.multisig.title")}`}
+          />
+        }
       >
         <p className="multisig-request-subtitle">
           {i18n.t("request.multisig.subtitle")}
@@ -211,7 +218,7 @@ const MultiSigRequest = ({
           primaryButtonText={`${i18n.t("request.button.accept")}`}
           primaryButtonAction={() => setAlertAcceptIsOpen(true)}
           secondaryButtonText={`${i18n.t("request.button.decline")}`}
-          secondaryButtonAction={() => setAlertDeclineIsOpen(true)}
+          secondaryButtonAction={handleDeclineClick}
         />
       </ScrollablePageLayout>
       <AlertAccept

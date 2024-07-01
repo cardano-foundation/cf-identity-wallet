@@ -8,6 +8,12 @@ import {
 import { SidePageContentProps } from "../../SidePage.types";
 import { SignRequest } from "./components/SignRequest"; // Import SignRequest component
 import { PeerConnectSigningEventRequest } from "../../../../../store/reducers/stateCache/stateCache.types";
+import { RequestComponent } from "./components/RequestComponent";
+import {
+  IncomingRequestProps,
+  IncomingRequestType,
+} from "../../../../../store/reducers/stateCache/stateCache.types";
+import { getConnectedWallet } from "../../../../../store/reducers/walletConnectionsCache";
 
 const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const pageId = "incoming-request";
