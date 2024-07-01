@@ -104,6 +104,9 @@ const WalletConnectStageTwo = ({
             "menu.tab.items.connectwallet.request.button.back"
           )}`}
           closeButtonAction={onBackClick}
+          hardwareBackButtonConfig={{
+            prevent: !isOpen,
+          }}
         />
       }
     >

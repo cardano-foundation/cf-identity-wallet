@@ -10,8 +10,12 @@ import KeriLogo from "../../../../../../ui/assets/images/KeriGeneric.jpg";
 import { PageFooter } from "../../../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
 import { ResponsivePageLayout } from "../../../../../components/layout/ResponsivePageLayout";
-import { RequestType } from "../../../../../globals/types";
+import {
+  BackEventPriorityType,
+  RequestType,
+} from "../../../../../globals/types";
 import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
+import { useIonHardwareBackButton } from "../../../../../hooks";
 
 const CredentialRequest = ({
   pageId,
@@ -22,6 +26,12 @@ const CredentialRequest = ({
   handleCancel,
 }: RequestProps<IncomingRequestType.CREDENTIAL_OFFER_RECEIVED>) => {
   const fallbackLogo = KeriLogo;
+
+  useIonHardwareBackButton(
+    BackEventPriorityType.Page,
+    handleCancel,
+    !activeStatus
+  );
 
   return (
     <ResponsivePageLayout

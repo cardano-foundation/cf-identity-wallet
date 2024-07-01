@@ -86,11 +86,21 @@ const PASSCODE_MAPPING = {
   ],
 };
 
+enum BackEventPriorityType {
+  Alert = 1000,
+  LockPage = 999,
+  Modal = 104,
+  Scanner = 103,
+  Page = 102,
+  Tab = 101,
+}
+
 export {
   CardType,
   OperationType,
   ToastMsgType,
   RequestType,
+  BackEventPriorityType,
   IDENTIFIER_BG_MAPPING,
   PASSCODE_MAPPING,
 };
