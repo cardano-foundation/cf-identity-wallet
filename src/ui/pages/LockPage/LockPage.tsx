@@ -1,8 +1,6 @@
 import i18n from "i18next";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Capacitor } from "@capacitor/core";
-import { App } from "@capacitor/app";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch } from "../../../store/hooks";
 import { getBiometricsCacheCache } from "../../../store/reducers/biometricsCache";
@@ -18,9 +16,8 @@ import { PageFooter } from "../../components/PageFooter";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
+import { useExitAppWithDoubleTap } from "../../hooks/useExitAppWithDoubleTap";
 import "./LockPage.scss";
-import { useIonHardwareBackButton } from "../../hooks";
-import { BackEventPriorityType } from "../../globals/types";
 
 const LockPage = () => {
   const pageId = "lock-page";
@@ -31,6 +28,8 @@ const LockPage = () => {
   const { handleBiometricAuth } = useBiometricAuth();
   const biometricsCache = useSelector(getBiometricsCacheCache);
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
+
+  useExitAppWithDoubleTap(alertIsOpen || openRecoveryAuth);
 
   const headerText = i18n.t("lockpage.alert.text.verify");
   const confirmButtonText = i18n.t("lockpage.alert.button.verify");
@@ -58,16 +57,6 @@ const LockPage = () => {
     };
     runBiometrics();
   }, []);
-
-  useIonHardwareBackButton(
-    BackEventPriorityType.LockPage,
-    () => {
-      if (Capacitor.isNativePlatform()) {
-        App.exitApp();
-      }
-    },
-    alertIsOpen || openRecoveryAuth
-  );
 
   const handlePinChange = (digit: number) => {
     const updatedPasscode = `${passcode}${digit}`;
