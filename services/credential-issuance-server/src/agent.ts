@@ -29,8 +29,8 @@ class Agent {
   }
 
   async start(): Promise<void> {
-    await this.signifyApi.start(Agent.HOLDER_AID_NAME);
-    await this.signifyApiIssuer.start(Agent.ISSUER_AID_NAME);
+    await this.signifyApi.start();
+    await this.signifyApiIssuer.start();
     await Agent.agent.initKeri();
   }
 
