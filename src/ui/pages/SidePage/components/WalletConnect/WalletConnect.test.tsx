@@ -5,18 +5,48 @@ import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
+import { TabsRoutePath } from "../../../../../routes/paths";
 import { store } from "../../../../../store";
+import { identifierFix } from "../../../../__fixtures__/identifierFix";
+import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
+import { WalletConnect } from "./WalletConnect";
 import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
-import { identifierFix } from "../../../../__fixtures__/identifierFix";
-import { TabsRoutePath } from "../../../../../routes/paths";
-import { setToastMsg } from "../../../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../../../globals/types";
-import { WalletConnect } from "./WalletConnect";
-import { setWalletConnectionsCache } from "../../../../../store/reducers/walletConnectionsCache";
-import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
 setupIonicReact();
 mockIonicReact();
+
+const identifierCache = [
+  {
+    displayName: "mutil sign",
+    id: "testid_00",
+    signifyName: "178a2adb-4ce0-4acd-984d-f1408c8a1087",
+    createdAtUTC: "2024-07-02T02:59:06.013Z",
+    theme: 0,
+    isPending: false,
+    multisigManageAid: "EHNPqg5RyNVWfpwUYDK135xuUMFGK1GXZoDVqGc0DPsy",
+  },
+  {
+    displayName: "mutil sign 1",
+    id: "testid_0",
+    signifyName: "178a2adb-4ce0-4acd-984d-f1408c8a1087",
+    createdAtUTC: "2024-07-02T02:59:06.013Z",
+    theme: 0,
+    isPending: false,
+    groupMetadata: {
+      groupId: "test",
+      groupInitiator: true,
+      groupCreated: true,
+    },
+  },
+  {
+    displayName: "mutil sign 2",
+    id: "testid_1",
+    signifyName: "178a2adb-4ce0-4acd-984d-f1408c8a1087",
+    createdAtUTC: "2024-07-02T02:59:06.013Z",
+    theme: 0,
+    isPending: false,
+  },
+];
 
 jest.mock("../../../../../core/cardano/walletConnect/peerConnection", () => ({
   PeerConnection: {
@@ -168,7 +198,7 @@ describe("Wallet Connect Stage Two", () => {
       walletConnections: [],
     },
     identifiersCache: {
-      identifiers: [...identifierFix],
+      identifiers: identifierCache,
     },
   };
 
@@ -205,6 +235,8 @@ describe("Wallet Connect Stage Two", () => {
       )
     ).toBeVisible();
 
+    expect(getByTestId(`card-item-${identifierCache[2].id}`)).toBeVisible();
+
     expect(getByTestId("primary-button")).toBeVisible();
 
     expect(getByTestId("primary-button")).toBeDisabled();
@@ -223,11 +255,13 @@ describe("Wallet Connect Stage Two", () => {
     );
 
     expect(
-      getByTestId("identifier-select-" + identifierFix[0].id)
+      getByTestId("identifier-select-" + identifierCache[2].id)
     ).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByTestId("identifier-select-" + identifierFix[0].id));
+      fireEvent.click(
+        getByTestId("identifier-select-" + identifierCache[2].id)
+      );
     });
 
     await waitFor(() => {
