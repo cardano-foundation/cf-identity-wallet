@@ -5,27 +5,40 @@ import {
   swapHorizontalOutline,
 } from "ionicons/icons";
 import i18next from "i18next";
-import KeriLogo from "../../../../../../ui/assets/images/KeriGeneric.jpg";
-import { RequestProps } from "../../SidePage/components/IncomingRequest/IncomingRequest.types";
-import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
+import { useState } from "react";
+import { useHistory } from "react-router-dom";
+import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageLayout";
 import { i18n } from "../../../../i18n";
 import { PageFooter } from "../../../components/PageFooter";
-import {
-  BackEventPriorityType,
-  RequestType,
-} from "../../../../../globals/types";
-import { useIonHardwareBackButton } from "../../../../../hooks";
+import { useAppIonRouter, useIonHardwareBackButton } from "../../../hooks";
+import { BackEventPriorityType, RequestType } from "../../../globals/types";
+import { KeriaNotification } from "../../../../core/agent/agent.types";
+import { DataProps } from "../../../../routes/nextRoute/nextRoute.types";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { getStateCache } from "../../../../store/reducers/stateCache";
+import { getBackRoute } from "../../../../routes/backRoute";
+import { RoutePath } from "../../../../routes";
+import { updateReduxState } from "../../../../store/utils";
 
 const CredentialRequest = ({
-  pageId,
-  activeStatus,
-  requestData,
-  initiateAnimation,
-  handleAccept,
+  notificationDetails,
   handleCancel,
-}: RequestProps<IncomingRequestType.CREDENTIAL_OFFER_RECEIVED>) => {
+}: {
+  notificationDetails: KeriaNotification;
+  handleCancel: () => void;
+}) => {
+  const pageId = "notification-details";
   const fallbackLogo = KeriLogo;
+  const [activeStatus, setActiveStatus] = useState(true);
+  const requestData = {
+    logo: fallbackLogo,
+    label: i18n.t("request.credential.label"),
+  };
+
+  const handleChoose = () => {
+    //
+  };
 
   useIonHardwareBackButton(
     BackEventPriorityType.Page,
@@ -37,7 +50,6 @@ const CredentialRequest = ({
     <ResponsivePageLayout
       pageId={pageId}
       activeStatus={activeStatus}
-      customClass={initiateAnimation ? "animation-on" : "animation-off"}
     >
       <h2>{i18n.t("request.credential.title")}</h2>
       <div className="request-animation-center">
@@ -88,7 +100,7 @@ const CredentialRequest = ({
       <PageFooter
         pageId={pageId}
         primaryButtonText={`${i18n.t("request.button.acceptoffer")}`}
-        primaryButtonAction={() => handleAccept()}
+        primaryButtonAction={handleChoose}
         secondaryButtonText={`${i18n.t("request.button.cancel")}`}
         secondaryButtonAction={() => handleCancel()}
       />

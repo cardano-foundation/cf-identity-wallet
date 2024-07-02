@@ -682,7 +682,7 @@
   "ssiagent": {
     "title": "Enter your SSI agent details",
     "description": "To continue, please enter the SSI agent boot and connect URLs (in your email or from your command line).",
-    "verifydescription":  "To continue, please enter the SSI agent connect URLs (in your email or from your command line).",
+    "verifydescription": "To continue, please enter the SSI agent connect URLs (in your email or from your command line).",
     "button": {
       "info": "Get more information",
       "validate": "Validate"
@@ -933,12 +933,9 @@
         "earlier": "Earlier"
       },
       "labels": {
-        "exnipexapply": "{{connection}} has requested a {{credential}} credential from you",
+        "exnipexgrant": "{{connection}} wants to issue you a credential",
         "multisigicp": "{{connection}} is requesting to create a multi-sig identifier with you",
-        "exnipexgrant": "{{connection}} wants to issue you a {{credential}}"
-      },
-      "credentialtypes": {
-        "driverslicence": "Driver’s Licence"
+        "exnipexapply": "{{connection}} has requested a credential from you"
       }
     }
   },

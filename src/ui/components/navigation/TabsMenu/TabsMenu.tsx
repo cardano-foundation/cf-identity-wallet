@@ -19,7 +19,7 @@ import {
   apps,
   appsOutline,
 } from "ionicons/icons";
-import { ComponentType, useEffect } from "react";
+import { ComponentType } from "react";
 import { useLocation } from "react-router-dom";
 import { i18n } from "../../../../i18n";
 import "./TabsMenu.scss";
@@ -33,11 +33,9 @@ import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { getNotificationsCache } from "../../../../store/reducers/notificationsCache";
 import {
   getStateCache,
-  removeCurrentRoute,
   setCurrentRoute,
 } from "../../../../store/reducers/stateCache";
 import { getNextRootRoute } from "../../../../routes/nextRoute";
-import { useAppIonRouter } from "../../../hooks";
 
 const tabsRoutes = [
   {

@@ -132,105 +132,107 @@ const signifyNotificationService = new SignifyNotificationService(
   operationPendingStorage as any
 );
 
-describe.skip("Incoming request", () => {
-  const requestDetails = {
-    id: "abc123456",
-    type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-    event: {
-      id: "event-id",
-      createdAt: new Date().toISOString(),
-      a: { d: "d" },
-      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
-      read: true,
-    },
-    multisigIcpDetails: {
-      ourIdentifier: filteredIdentifierFix[0],
-      sender: connectionsFix[3],
-      otherConnections: [connectionsFix[4], connectionsFix[5]],
-      threshold: 1,
-    },
-  };
+// TODO: Add new tests for IncomingRequest
 
-  afterEach(async () => {
-    await signifyNotificationService.deleteNotificationRecordById(
-      requestDetails.id
-    );
-  });
+// describe.skip("Incoming request", () => {
+//   const requestDetails = {
+//     id: "abc123456",
+//     type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
+//     event: {
+//       id: "event-id",
+//       createdAt: new Date().toISOString(),
+//       a: { d: "d" },
+//       connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+//       read: true,
+//     },
+//     multisigIcpDetails: {
+//       ourIdentifier: filteredIdentifierFix[0],
+//       sender: connectionsFix[3],
+//       otherConnections: [connectionsFix[4], connectionsFix[5]],
+//       threshold: 1,
+//     },
+//   };
 
-  test("It receives Incoming request and render content", async () => {
-    store.dispatch(
-      setQueueIncomingRequest(requestDetails as IncomingRequestProps)
-    );
+//   afterEach(async () => {
+//     await signifyNotificationService.deleteNotificationRecordById(
+//       requestDetails.id
+//     );
+//   });
 
-    const { getByText } = render(
-      <Provider store={store}>
-        <IncomingRequest
-          open={true}
-          setOpenPage={jest.fn()}
-        />
-      </Provider>
-    );
+//   test("It receives Incoming request and render content", async () => {
+//     store.dispatch(
+//       setQueueIncomingRequest(requestDetails as IncomingRequestProps)
+//     );
 
-    expect(
-      getByText(EN_TRANSLATIONS.request.multisig.title)
-    ).toBeInTheDocument();
-    expect(
-      getByText(requestDetails.multisigIcpDetails.sender.label)
-    ).toBeInTheDocument();
-    expect(
-      getByText(requestDetails.multisigIcpDetails.otherConnections[0].label)
-    ).toBeInTheDocument();
-    expect(
-      getByText(requestDetails.multisigIcpDetails.otherConnections[1].label)
-    ).toBeInTheDocument();
-    expect(
-      getByText(requestDetails.multisigIcpDetails.threshold.toString())
-    ).toBeInTheDocument();
-  });
+//     const { getByText } = render(
+//       <Provider store={store}>
+//         <IncomingRequest
+//           open={true}
+//           setOpenPage={jest.fn()}
+//         />
+//       </Provider>
+//     );
 
-  test("Selecting Cancel will open the Alert pop-up", async () => {
-    store.dispatch(
-      setQueueIncomingRequest(requestDetails as IncomingRequestProps)
-    );
-    const { getByText } = render(
-      <Provider store={store}>
-        <IncomingRequest
-          open={true}
-          setOpenPage={jest.fn()}
-        />
-      </Provider>
-    );
+//     expect(
+//       getByText(EN_TRANSLATIONS.request.multisig.title)
+//     ).toBeInTheDocument();
+//     expect(
+//       getByText(requestDetails.multisigIcpDetails.sender.label)
+//     ).toBeInTheDocument();
+//     expect(
+//       getByText(requestDetails.multisigIcpDetails.otherConnections[0].label)
+//     ).toBeInTheDocument();
+//     expect(
+//       getByText(requestDetails.multisigIcpDetails.otherConnections[1].label)
+//     ).toBeInTheDocument();
+//     expect(
+//       getByText(requestDetails.multisigIcpDetails.threshold.toString())
+//     ).toBeInTheDocument();
+//   });
 
-    const footerCancelButton = getByText(
-      EN_TRANSLATIONS.request.button.decline
-    );
-    act(() => {
-      fireEvent.click(footerCancelButton);
-    });
-    expect(
-      getByText(EN_TRANSLATIONS.request.multisig.alert.textdecline)
-    ).toBeInTheDocument();
-  });
+//   test("Selecting Cancel will open the Alert pop-up", async () => {
+//     store.dispatch(
+//       setQueueIncomingRequest(requestDetails as IncomingRequestProps)
+//     );
+//     const { getByText } = render(
+//       <Provider store={store}>
+//         <IncomingRequest
+//           open={true}
+//           setOpenPage={jest.fn()}
+//         />
+//       </Provider>
+//     );
 
-  test("Selecting Accept will open the Alert pop-up", async () => {
-    store.dispatch(
-      setQueueIncomingRequest(requestDetails as IncomingRequestProps)
-    );
-    const { getByText } = render(
-      <Provider store={store}>
-        <IncomingRequest
-          open={true}
-          setOpenPage={jest.fn()}
-        />
-      </Provider>
-    );
+//     const footerCancelButton = getByText(
+//       EN_TRANSLATIONS.request.button.decline
+//     );
+//     act(() => {
+//       fireEvent.click(footerCancelButton);
+//     });
+//     expect(
+//       getByText(EN_TRANSLATIONS.request.multisig.alert.textdecline)
+//     ).toBeInTheDocument();
+//   });
 
-    const continueButton = getByText(EN_TRANSLATIONS.request.button.accept);
-    act(() => {
-      fireEvent.click(continueButton);
-    });
-    expect(
-      getByText(EN_TRANSLATIONS.request.multisig.alert.textaccept)
-    ).toBeInTheDocument();
-  });
-});
+//   test("Selecting Accept will open the Alert pop-up", async () => {
+//     store.dispatch(
+//       setQueueIncomingRequest(requestDetails as IncomingRequestProps)
+//     );
+//     const { getByText } = render(
+//       <Provider store={store}>
+//         <IncomingRequest
+//           open={true}
+//           setOpenPage={jest.fn()}
+//         />
+//       </Provider>
+//     );
+
+//     const continueButton = getByText(EN_TRANSLATIONS.request.button.accept);
+//     act(() => {
+//       fireEvent.click(continueButton);
+//     });
+//     expect(
+//       getByText(EN_TRANSLATIONS.request.multisig.alert.textaccept)
+//     ).toBeInTheDocument();
+//   });
+// });

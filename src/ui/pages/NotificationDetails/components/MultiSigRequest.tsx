@@ -10,81 +10,98 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { personCircleOutline } from "ionicons/icons";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Alert as AlertAccept,
   Alert as AlertDecline,
 } from "../../../components/Alert";
-import KeriLogo from "../../../../../assets/images/KeriGeneric.jpg";
+import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
   getIdentifiersCache,
   setIdentifiersCache,
 } from "../../../../store/reducers/identifiersCache";
 import { Agent } from "../../../../core/agent/agent";
-import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
+import {
+  IdentifierShortDetails,
+  MultiSigIcpRequestDetails,
+} from "../../../../core/agent/services/identifier.types";
 import { ToastMsgType } from "../../../globals/types";
 import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../../components/PageHeader";
 import { i18n } from "../../../../i18n";
 import { PageFooter } from "../../../components/PageFooter";
 import "./MultiSigRequest.scss";
-import { CreateIdentifierResult } from "../../../../core/agent/agent.types";
-import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
-import { RequestProps } from "../../SidePage/components/IncomingRequest/IncomingRequest.types";
+import {
+  CreateIdentifierResult,
+  KeriaNotification,
+} from "../../../../core/agent/agent.types";
 
 const MultiSigRequest = ({
-  blur,
-  setBlur,
-  pageId,
-  activeStatus,
-  requestData,
-  handleAccept,
+  notificationDetails,
   handleCancel,
-}: RequestProps<IncomingRequestType.MULTI_SIG_REQUEST_INCOMING>) => {
+}: {
+  notificationDetails: KeriaNotification;
+  handleCancel: () => void;
+}) => {
+  const pageId = "notification-details";
   const dispatch = useAppDispatch();
+  const [activeStatus, setActiveStatus] = useState(true);
+  const blur = false;
   const identifiersData = useAppSelector(getIdentifiersCache);
   const [alertAcceptIsOpen, setAlertAcceptIsOpen] = useState(false);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
+  const [multisigIcpDetails, setMultisigIcpDetails] =
+    useState<MultiSigIcpRequestDetails | null>(null);
+
+  const getDetails = async () => {
+    const details = await Agent.agent.multiSigs.getMultisigIcpDetails(
+      notificationDetails.a.d as string
+    );
+    setMultisigIcpDetails(details);
+  };
+
+  useEffect(() => {
+    getDetails();
+  }, []);
+
   const actionAccept = async () => {
     setAlertAcceptIsOpen(false);
-    setBlur && setBlur(true);
-    if (!(requestData.event && requestData.multisigIcpDetails)) {
-      // Do some error thing here... maybe it's just a TODO
+    // setBlur && setBlur(true);
+    if (!(notificationDetails && multisigIcpDetails)) {
+      return;
     } else {
       const { identifier, signifyName, isPending } =
         (await Agent.agent.multiSigs.joinMultisig(
-          requestData.event.id,
-          requestData.event.a.d as string,
+          notificationDetails.id,
+          notificationDetails.a.d as string,
           {
-            theme: requestData.multisigIcpDetails.ourIdentifier.theme,
-            displayName:
-              requestData.multisigIcpDetails.ourIdentifier.displayName,
+            theme: multisigIcpDetails.ourIdentifier.theme,
+            displayName: multisigIcpDetails.ourIdentifier.displayName,
           }
         )) as CreateIdentifierResult;
 
       if (identifier) {
         const newIdentifier: IdentifierShortDetails = {
           id: identifier,
-          displayName: requestData.multisigIcpDetails.ourIdentifier.displayName,
-          createdAtUTC: `${requestData.event?.createdAt}`,
-          theme: requestData.multisigIcpDetails.ourIdentifier.theme,
+          displayName: multisigIcpDetails.ourIdentifier.displayName,
+          createdAtUTC: `${notificationDetails?.createdAt}`,
+          theme: multisigIcpDetails.ourIdentifier.theme,
           isPending: !!isPending,
           signifyName,
         };
         const filteredIdentifiersData = identifiersData.filter(
-          (item) =>
-            item.id !== requestData?.multisigIcpDetails?.ourIdentifier.id
+          (item) => item.id !== multisigIcpDetails?.ourIdentifier.id
         );
         dispatch(
           setIdentifiersCache([...filteredIdentifiersData, newIdentifier])
         );
-        requestData.multisigIcpDetails.threshold === 1
+        multisigIcpDetails.threshold === 1
           ? ToastMsgType.IDENTIFIER_CREATED
           : ToastMsgType.IDENTIFIER_REQUESTED;
       }
     }
-    handleAccept();
+    // handleAccept();
   };
 
   const actionDecline = () => {
@@ -110,7 +127,7 @@ const MultiSigRequest = ({
         customClass={`setup-identifier ${blur ? "blur" : ""}`}
         header={
           <PageHeader
-            onBack={handleDeclineClick}
+            onBack={handleCancel}
             title={`${i18n.t("request.multisig.title")}`}
           />
         }
@@ -129,10 +146,10 @@ const MultiSigRequest = ({
                       size="1.25"
                       className="multisig-connection-logo"
                     >
-                      {requestData.multisigIcpDetails?.sender.logo ? (
+                      {multisigIcpDetails?.sender.logo ? (
                         <img
                           data-testid="multisig-connection-logo"
-                          src={requestData.multisigIcpDetails?.sender.logo}
+                          src={multisigIcpDetails?.sender.logo}
                           alt="multisig-connection-logo"
                         />
                       ) : (
@@ -151,9 +168,7 @@ const MultiSigRequest = ({
                       size="10.35"
                       className="multisig-connection-info"
                     >
-                      <IonLabel>
-                        {requestData.multisigIcpDetails?.sender.label}
-                      </IonLabel>
+                      <IonLabel>{multisigIcpDetails?.sender.label}</IonLabel>
                     </IonCol>
                   </IonRow>
                 </IonGrid>
@@ -161,12 +176,12 @@ const MultiSigRequest = ({
             </IonList>
           </IonCard>
         </div>
-        {!!requestData.multisigIcpDetails?.otherConnections.length && (
+        {!!multisigIcpDetails?.otherConnections.length && (
           <div className="multisig-request-section">
             <h4>{i18n.t("request.multisig.othermembers")}</h4>
             <IonCard className="multisig-request-details">
               <IonList lines="none">
-                {requestData.multisigIcpDetails?.otherConnections.map(
+                {multisigIcpDetails?.otherConnections.map(
                   (connection, index) => {
                     return (
                       <IonItem
@@ -207,7 +222,7 @@ const MultiSigRequest = ({
           <IonCard className="multisig-request-details">
             <IonList lines="none">
               <IonItem className="multisig-request-item">
-                <IonLabel>{requestData.multisigIcpDetails?.threshold}</IonLabel>
+                <IonLabel>{multisigIcpDetails?.threshold}</IonLabel>
               </IonItem>
             </IonList>
           </IonCard>

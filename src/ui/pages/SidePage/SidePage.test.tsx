@@ -77,58 +77,61 @@ describe("Side Page: wallet connect", () => {
   });
 });
 
-describe.skip("Side Page: incoming request", () => {
-  const initialStateFull = {
-    stateCache: {
-      routes: [TabsRoutePath.CREDENTIALS],
-      authentication: {
-        loggedIn: true,
-        time: Date.now(),
-        passcodeIsSet: true,
-      },
-      queueIncomingRequest: {
-        isProcessing: true,
-        queues: [
-          {
-            id: "11111",
-            type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
-            label: "Cardano",
-            event: {
-              id: "id",
-              a: {
-                r: NotificationRoute.ExnIpexGrant,
-              },
-              createdAt: new Date(),
-            },
-          },
-        ],
-        isPaused: false,
-      },
-    },
-    identifiersCache: {
-      identifiers: [...identifierFix],
-    },
-    walletConnectionsCache: {},
-  };
+// TODO: Tests should be rewritten to use IncomingRequestType.PEER_CONNECT_SIGN
+// Ticket created in the backlog
 
-  const mockStore = configureStore();
-  const dispatchMock = jest.fn();
-  const mockedStore = {
-    ...mockStore(initialStateFull),
-    dispatch: dispatchMock,
-  };
+// describe("Side Page: incoming request", () => {
+//   const initialStateFull = {
+//     stateCache: {
+//       routes: [TabsRoutePath.CREDENTIALS],
+//       authentication: {
+//         loggedIn: true,
+//         time: Date.now(),
+//         passcodeIsSet: true,
+//       },
+//       queueIncomingRequest: {
+//         isProcessing: true,
+//         queues: [
+//           {
+//             id: "11111",
+//             type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
+//             label: "Cardano",
+//             event: {
+//               id: "id",
+//               a: {
+//                 r: NotificationRoute.ExnIpexGrant,
+//               },
+//               createdAt: new Date(),
+//             },
+//           },
+//         ],
+//         isPaused: false,
+//       },
+//     },
+//     identifiersCache: {
+//       identifiers: [...identifierFix],
+//     },
+//     walletConnectionsCache: {},
+//   };
 
-  test("Render incomming request", async () => {
-    const { getByText } = render(
-      <Provider store={mockedStore}>
-        <SidePage />
-      </Provider>
-    );
+//   const mockStore = configureStore();
+//   const dispatchMock = jest.fn();
+//   const mockedStore = {
+//     ...mockStore(initialStateFull),
+//     dispatch: dispatchMock,
+//   };
 
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.request.credential.title)
-      ).toBeInTheDocument();
-    });
-  });
-});
+//   test("Render incomming request", async () => {
+//     const { getByText } = render(
+//       <Provider store={mockedStore}>
+//         <SidePage />
+//       </Provider>
+//     );
+
+//     await waitFor(() => {
+//       expect(
+//         getByText(EN_TRANSLATIONS.request.credential.title)
+//       ).toBeInTheDocument();
+//     });
+//   });
+// });

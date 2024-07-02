@@ -26,15 +26,11 @@ const NotificationItem = ({
     const connection = connectionsCache.filter(
       (connection) => connection.id === item.connectionId
     )[0]?.label;
-    // TODO: Implement different credential types
-    const credential = i18n.t(
-      "notifications.tab.credentialtypes.driverslicence"
-    );
+
     switch (item.a.r) {
     case NotificationRoute.ExnIpexGrant:
       return i18next.t("notifications.tab.labels.exnipexgrant", {
         connection: connection,
-        credential: credential,
       });
     case NotificationRoute.MultiSigIcp:
       return i18next.t("notifications.tab.labels.multisigicp", {
@@ -43,7 +39,6 @@ const NotificationItem = ({
     case NotificationRoute.ExnIpexApply:
       return i18next.t("notifications.tab.labels.exnipexapply", {
         connection: connection,
-        credential: credential,
       });
     default:
       return "";

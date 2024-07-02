@@ -2,18 +2,12 @@ import { useEffect, useState, useMemo } from "react";
 import "./IncomingRequest.scss";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import {
-  dequeueCredentialRequest,
+  dequeueIncomingRequest,
   getQueueIncomingRequest,
 } from "../../../../../store/reducers/stateCache";
 import { SidePageContentProps } from "../../SidePage.types";
 import { SignRequest } from "./components/SignRequest"; // Import SignRequest component
 import { PeerConnectSigningEventRequest } from "../../../../../store/reducers/stateCache/stateCache.types";
-import { RequestComponent } from "./components/RequestComponent";
-import {
-  IncomingRequestProps,
-  IncomingRequestType,
-} from "../../../../../store/reducers/stateCache/stateCache.types";
-import { getConnectedWallet } from "../../../../../store/reducers/walletConnectionsCache";
 
 const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const pageId = "incoming-request";
@@ -57,7 +51,7 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
     setBlur(false);
 
     setTimeout(() => {
-      dispatch(dequeueCredentialRequest());
+      dispatch(dequeueIncomingRequest());
     }, 500);
   };
 
