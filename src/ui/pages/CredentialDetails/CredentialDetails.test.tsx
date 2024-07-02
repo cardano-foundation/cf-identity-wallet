@@ -315,7 +315,7 @@ describe("Cards Details page - current not archived credential", () => {
     const mockNow = 1466424490000;
     const dateSpy = jest.spyOn(Date, "now").mockReturnValue(mockNow);
 
-    const { getByTestId, findByTestId } = render(
+    const { queryByTestId, findByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -325,6 +325,10 @@ describe("Cards Details page - current not archived credential", () => {
         </MemoryRouter>
       </Provider>
     );
+
+    await waitFor(() => {
+      expect(queryByTestId("cred-detail-spinner-container")).toBe(null);
+    });
 
     const heartButton = await findByTestId("heart-button");
 
@@ -380,7 +384,7 @@ describe("Cards Details page - current not archived credential", () => {
       dispatch: dispatchMock,
     };
 
-    const { findByTestId } = render(
+    const { findByTestId, queryByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -390,6 +394,10 @@ describe("Cards Details page - current not archived credential", () => {
         </MemoryRouter>
       </Provider>
     );
+
+    await waitFor(() => {
+      expect(queryByTestId("cred-detail-spinner-container")).toBe(null);
+    });
 
     const heartButton = await findByTestId("heart-button");
 
@@ -439,7 +447,7 @@ describe("Cards Details page - current not archived credential", () => {
       dispatch: dispatchMock,
     };
 
-    const { findByTestId } = render(
+    const { findByTestId, queryByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -449,6 +457,10 @@ describe("Cards Details page - current not archived credential", () => {
         </MemoryRouter>
       </Provider>
     );
+
+    await waitFor(() => {
+      expect(queryByTestId("cred-detail-spinner-container")).toBe(null);
+    });
 
     const heartButton = await findByTestId("heart-button");
 

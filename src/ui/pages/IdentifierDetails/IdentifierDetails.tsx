@@ -210,6 +210,21 @@ const IdentifierDetails = () => {
     }
   };
 
+  const toggleFavourite = () => {
+    if (!cardData) return;
+    handleSetFavourite(params.id);
+  };
+
+  const openShareModal = () => {
+    if (!cardData) return;
+    setShareIsOpen(true);
+  };
+
+  const openOptionModal = () => {
+    if (!cardData) return;
+    setIdentifierOptionsIsOpen(true);
+  };
+
   const AdditionalButtons = () => {
     return (
       <>
@@ -219,11 +234,7 @@ const IdentifierDetails = () => {
             isFavourite ? "favourite" : "no-favourite"
           }`}
           data-testid="heart-button"
-          onClick={() => {
-            if (!cardData) return;
-
-            handleSetFavourite(params.id);
-          }}
+          onClick={toggleFavourite}
         >
           <IonIcon
             slot="icon-only"
@@ -240,10 +251,7 @@ const IdentifierDetails = () => {
           shape="round"
           className="share-button"
           data-testid="share-button"
-          onClick={() => {
-            if (!cardData) return;
-            setShareIsOpen(true);
-          }}
+          onClick={openShareModal}
         >
           <IonIcon
             slot="icon-only"
@@ -255,10 +263,7 @@ const IdentifierDetails = () => {
           shape="round"
           className="identifier-options-button"
           data-testid="identifier-options-button"
-          onClick={() => {
-            if (!cardData) return;
-            setIdentifierOptionsIsOpen(true);
-          }}
+          onClick={openOptionModal}
         >
           <IonIcon
             slot="icon-only"
