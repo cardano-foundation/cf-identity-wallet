@@ -4,6 +4,7 @@ import {
   Tier,
   randomPasscode,
   Operation,
+  Saider,
 } from "signify-ts";
 import { Agent } from "../../agent";
 import { waitAndGetDoneOp } from "./utils";
@@ -41,7 +42,6 @@ export class SignifyApi {
       await this.signifyClient.boot();
       await this.signifyClient.connect();
     }
-    await Agent.agent.initKeri();
   }
 
   async createIdentifier(signifyName: string): Promise<any> {
@@ -134,7 +134,120 @@ export class SignifyApi {
       .ipex()
       .submitGrant(issuerName, grant, gsigs, gend, [recipient]);
   }
-
+  
+  async issueQVICredential(
+    issuerName: string,
+    registryId: string,
+    schemaId: string,
+    recipientPrefix: string,
+  ) {
+    await this.resolveOobi(`${config.oobiEndpoint}/oobi/${schemaId}`);
+    
+    let vcdata = {};
+    if (schemaId === "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao") {
+      vcdata = {
+        LEI: "5493001KJTIIGC8Y1R17",
+        i: recipientPrefix,
+      };
+    } else {
+      throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);
+    }
+    const result = await this.signifyClient
+      .credentials()
+      .issue({ issuerName, registryId, schemaId, recipient: recipientPrefix, data: vcdata });
+    await waitAndGetDoneOp(
+      this.signifyClient,
+      result.op,
+      this.opTimeout,
+      this.opRetryInterval,
+    );
+    
+    const datetime = new Date().toISOString().replace("Z", "000+00:00");
+    const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
+      senderName: issuerName,
+      recipient: recipientPrefix,
+      acdc: result.acdc,
+      iss: result.iss,
+      anc: result.anc,
+      datetime,
+    });
+    const sm = await this.signifyClient
+      .ipex()
+      .submitGrant(issuerName, grant, gsigs, gend, [recipientPrefix]);
+    await waitAndGetDoneOp(this.signifyClient, sm, this.opTimeout, this.opRetryInterval);
+    return result.acdc.ked.d;
+  }
+  
+  
+  async admitCredential(holderAidName: string, d: string, issuerAidPrefix: string) {
+    const [admit, sigs, aend] = await this.signifyClient
+      .ipex()
+      .admit(
+        holderAidName,
+        "",
+        d,
+        new Date().toISOString().replace("Z", "000+00:00"),
+      );
+    const op = await this.signifyClient
+      .ipex()
+      .submitAdmit(holderAidName, admit, sigs, aend, [issuerAidPrefix]);
+    await waitAndGetDoneOp(this.signifyClient, op, this.opTimeout, this.opRetryInterval);
+  }
+  
+  async leChainedCredential(
+    qviCredentialId: string,
+    registryId: string,
+    holderAidName: string,
+    legalEntityAidPrefix: string,
+  ) {
+    
+    const LE_SCHEMA_SAID = "ENPXp1vQzRF6JwIuS-mp2U8Uf1MoADoP_GqQ62VsDZWY";
+    await this.resolveOobi(`${config.oobiEndpoint}/oobi/${LE_SCHEMA_SAID}`);
+    const qviCredential = await this.signifyClient
+      .credentials()
+      .get(qviCredentialId);
+    console.log("qviCredentialId");
+    console.log(qviCredentialId)
+    const result = await this.signifyClient
+      .credentials()
+      .issue({
+        issuerName: holderAidName,
+        data: {
+          i: legalEntityAidPrefix,
+          LEI: "5493001KJTIIGC8Y1R17",
+        },
+        registryId: registryId,
+        schemaId: LE_SCHEMA_SAID,
+        rules: Saider.saidify({
+          d: "",
+          usageDisclaimer: {
+            l: "Usage of a valid, unexpired, and non-revoked vLEI Credential, as defined in the associated Ecosystem Governance Framework, does not assert that the Legal Entity is trustworthy, honest, reputable in its business dealings, safe to do business with, or compliant with any laws or that an implied or expressly intended purpose will be fulfilled.",
+          },
+          issuanceDisclaimer: {
+            l: "All information in a valid, unexpired, and non-revoked vLEI Credential, as defined in the associated Ecosystem Governance Framework, is accurate as of the date the validation process was complete. The vLEI Credential has been issued to the legal entity or person named in the vLEI Credential as the subject; and the qualified vLEI Issuer exercised reasonable care to perform the validation process set forth in the vLEI Ecosystem Governance Framework.",
+          },
+        })[1],
+        recipient: legalEntityAidPrefix,
+        source: Saider.saidify({
+          d: "",
+          qvi: {
+            n: qviCredential.sad.d,
+            s: qviCredential.sad.s,
+          },
+        })[1],
+      });
+    
+    await waitAndGetDoneOp(
+      this.signifyClient,
+      result.op,
+      this.opTimeout,
+      this.opRetryInterval,
+    );
+    console.log(result.acdc.ked.d);
+    return result.acdc.ked.d;
+    
+  }
+  
   async requestDisclosure(
     senderName: string,
     schemaSaid: string,

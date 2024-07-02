@@ -22,6 +22,16 @@ async function issueAcdcCredential(req: Request, res: Response): Promise<void> {
   };
   httpResponse(res, response);
 }
+async function issueLeChainedCredential(req: Request, res: Response): Promise<void> {
+  const { legalEntityAidPrefix } = req.body;
+  await Agent.agent.issueLeChainedCredential(legalEntityAidPrefix);
+  const response: ResponseData<string> = {
+    statusCode: 200,
+    success: true,
+    data: "Credential offered",
+  };
+  httpResponse(res, response);
+}
 
 async function requestDisclosure(req: Request, res: Response): Promise<void> {
   const { schemaSaid, aid, attributes } = req.body;
@@ -34,4 +44,4 @@ async function requestDisclosure(req: Request, res: Response): Promise<void> {
   httpResponse(res, response);
 }
 
-export { issueAcdcCredential, requestDisclosure };
+export { issueAcdcCredential, requestDisclosure, issueLeChainedCredential };

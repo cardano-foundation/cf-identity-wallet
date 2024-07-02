@@ -1,6 +1,6 @@
 const port = process.env.PORT ? Number(process.env.PORT) : 3001;
 const endpoint = process.env.ENDPOINT ?? `http://127.0.0.1:${port}`;
-const oobiEndpoint = process.env.OOBI_ENDPOINT ?? endpoint; 
+const oobiEndpoint = process.env.OOBI_ENDPOINT ?? endpoint;
 const keriaUrl = process.env.KERIA_ENDPOINT ?? "http://127.0.0.1:3901";
 const keriaBootUrl = process.env.KERIA_BOOT_ENDPOINT ?? "http://127.0.0.1:3903";
 
@@ -19,6 +19,7 @@ const config = {
     createShorten: "/shorten",
     keriOobi: "/keriOobi",
     issueAcdcCredential : "/issueAcdcCredential",
+    issueLeCredential : "/issueLECredential",
     schemaOobi: "/oobi/:id",
     contacts: "/contacts",
     resolveOobi: "/resolveOobi",
