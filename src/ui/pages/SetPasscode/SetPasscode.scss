@@ -3,7 +3,7 @@
     justify-content: space-evenly;
 
     @media screen and (min-height: 581px) {
-      & > .passcode-module-circle-row {
+      & .passcode-module-circle-row {
         margin: 0;
       }
     }

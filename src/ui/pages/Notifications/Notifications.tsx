@@ -7,9 +7,13 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import { settingsOutline } from "ionicons/icons";
+import { useHistory } from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import "./Notifications.scss";
 import { i18n } from "../../../i18n";
@@ -17,10 +21,16 @@ import { timeDifference } from "../../utils/formatters";
 import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
 import { NotificationItem } from "./NotificationItem";
 import { Agent } from "../../../core/agent/agent";
+import { KeriaNotification } from "../../../core/agent/agent.types";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { updateReduxState } from "../../../store/utils";
 
 const Notifications = () => {
   const pageId = "notifications-tab";
   const dispatch = useAppDispatch();
+  const history = useHistory();
+  const stateCache = useAppSelector(getStateCache);
   const notifications = useAppSelector(getNotificationsCache);
   const [selectedFilter, setSelectedFilter] = useState("all");
   const notificationsNew = notifications.filter(
@@ -59,9 +69,21 @@ const Notifications = () => {
     );
   };
 
-  const handleNotificationClick = async (id: string) => {
+  const handleNotificationClick = async (item: KeriaNotification) => {
     // TODO: implement click on notification
     // await Agent.agent.signifyNotifications.readNotification(id);
+    const data: DataProps = {
+      store: { stateCache },
+    };
+    const { nextPath, updateRedux } = getNextRoute(
+      TabsRoutePath.NOTIFICATIONS,
+      data
+    );
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    history.push({
+      pathname: nextPath.pathname,
+      state: item,
+    });
   };
 
   const filterOptions = [

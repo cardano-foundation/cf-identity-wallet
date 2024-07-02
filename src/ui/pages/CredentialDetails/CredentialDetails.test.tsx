@@ -95,7 +95,7 @@ const initialStateNoPasswordCurrent = {
   },
   credsCache: { creds: credsFixAcdc, favourites: [] },
   credsArchivedCache: { creds: credsFixAcdc },
-  biometryCache: {
+  biometricsCache: {
     enabled: false,
   },
 };
@@ -118,7 +118,7 @@ const initialStateNoPasswordArchived = {
   },
   credsCache: { creds: [] },
   credsArchivedCache: { creds: [] },
-  biometryCache: {
+  biometricsCache: {
     enabled: false,
   },
 };

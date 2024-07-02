@@ -1,8 +1,8 @@
 interface BiometryInfo {
   isAvailable: boolean;
   strongBiometryIsAvailable: boolean;
-  biometryType: number;
-  biometryTypes: number[];
+  biometricsType: number;
+  biometricsTypes: number[];
   deviceIsSecure: boolean;
   reason: string;
   code: string;

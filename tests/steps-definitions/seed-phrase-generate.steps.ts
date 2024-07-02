@@ -6,11 +6,10 @@ import SeedPhraseGenerateScreen from "../screen-objects/seed-phrase/seed-phrase-
 export let seedPhraseWords: string[] = [];
 
 Given(
-  /^user choose and save (\d+) words seed phrase$/,
-  async function (phraseLength) {
-    await SeedPhraseGenerateScreen.phraseWordsButton(phraseLength).click();
+  /^user choose and save words seed phrase$/,
+  async function () {
     await SeedPhraseGenerateScreen.viewSeedPhraseButton.click();
-    seedPhraseWords = await seedPhrase().save(phraseLength);
+    seedPhraseWords = await seedPhrase().save();
   }
 );
 
@@ -32,6 +31,13 @@ Given(
   /^user tap Privacy Policy link on Seed Phrase Generate screen$/,
   async function () {
     await SeedPhraseGenerateScreen.privacyPolicyLink.click();
+  }
+);
+
+Given(
+  /^user tap View Seed Phrase button on Seed Phrase Generate screen$/,
+  async function () {
+    await SeedPhraseGenerateScreen.viewSeedPhraseButton.click();
   }
 );
 

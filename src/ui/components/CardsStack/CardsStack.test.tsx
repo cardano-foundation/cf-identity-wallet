@@ -26,7 +26,6 @@ jest.mock("../../../core/agent/agent", () => ({
             "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
           publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
         }),
-        checkMultisigComplete: jest.fn().mockResolvedValue(true),
       },
       credentials: {
         getCredentialDetailsById: jest.fn().mockResolvedValue({
@@ -52,6 +51,9 @@ jest.mock("../../../core/agent/agent", () => ({
             dt: "2024-01-22T16:05:44.643Z",
           },
         }),
+      },
+      basicStorage: {
+        deleteById: jest.fn(),
       },
     },
   },

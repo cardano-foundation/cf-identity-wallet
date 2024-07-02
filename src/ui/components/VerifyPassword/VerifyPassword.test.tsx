@@ -41,6 +41,7 @@ jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
   SecureStorage: {
     get: () => jest.fn(),
+    delete: () => jest.fn(),
   },
 }));
 

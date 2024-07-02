@@ -8,7 +8,7 @@ export function seedPhrase() {
     return $(`[data-testid="word-index-${wordNumber.toString()}"]`);
   };
 
-  const save = async (phraseLength: number) => {
+  const save = async (phraseLength= 18) => {
     for (let i = 1; i <= phraseLength; i++) {
       const wordValue = await (await seedPhraseWordText(i)).getText();
       log.info(`Word number ${i}: ${wordValue}`);

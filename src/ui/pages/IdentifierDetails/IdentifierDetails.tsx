@@ -50,6 +50,7 @@ import { IdentifierDetails as IdentifierDetailsCore } from "../../../core/agent/
 import { useAppIonRouter } from "../../hooks";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
+import { RotateKeyModal } from "./components/RotateKeyModal";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -71,24 +72,25 @@ const IdentifierDetails = () => {
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<IdentifierDetailsCore | undefined>();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
-
+  const [openRotateKeyModal, setOpenRotateKeyModal] = useState(false);
   const [navAnimation, setNavAnimation] = useState(false);
 
   const isFavourite = favouritesIdentifiersData?.some(
     (fav) => fav.id === params.id
   );
 
+  const fetchDetails = async () => {
+    const cardDetailsResult = await Agent.agent.identifiers.getIdentifier(
+      params.id
+    );
+    if (cardDetailsResult) {
+      setCardData(cardDetailsResult);
+    } else {
+      // @TODO - Error handling.
+    }
+  };
+
   useEffect(() => {
-    const fetchDetails = async () => {
-      const cardDetailsResult = await Agent.agent.identifiers.getIdentifier(
-        params.id
-      );
-      if (cardDetailsResult) {
-        setCardData(cardDetailsResult);
-      } else {
-        // @TODO - Error handling.
-      }
-    };
     fetchDetails();
   }, [params.id]);
 
@@ -292,7 +294,10 @@ const IdentifierDetails = () => {
             isActive={false}
           />
           <div className="card-details-content">
-            <IdentifierContent cardData={cardData as IdentifierDetailsCore} />
+            <IdentifierContent
+              onOpenRotateKey={() => setOpenRotateKeyModal(true)}
+              cardData={cardData as IdentifierDetailsCore}
+            />
             <PageFooter
               pageId={pageId}
               deleteButtonText={`${i18n.t(
@@ -307,6 +312,7 @@ const IdentifierDetails = () => {
             signifyName={cardData.signifyName}
           />
           <IdentifierOptions
+            handleRotateKey={() => setOpenRotateKeyModal(true)}
             optionsIsOpen={identifierOptionsIsOpen}
             setOptionsIsOpen={setIdentifierOptionsIsOpen}
             cardData={cardData}
@@ -339,6 +345,13 @@ const IdentifierDetails = () => {
         isOpen={verifyPasscodeIsOpen}
         setIsOpen={setVerifyPasscodeIsOpen}
         onVerify={handleDelete}
+      />
+      <RotateKeyModal
+        identifierId={params.id}
+        onReloadData={fetchDetails}
+        signingKey={cardData?.k[0] || ""}
+        isOpen={openRotateKeyModal}
+        onClose={() => setOpenRotateKeyModal(false)}
       />
     </ScrollablePageLayout>
   );

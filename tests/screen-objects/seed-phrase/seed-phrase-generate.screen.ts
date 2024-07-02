@@ -50,10 +50,6 @@ export class SeedPhraseGenerateScreen {
     return $("[data-testid=\"privacy-policy-modal-handler\"]");
   }
 
-  phraseWordsButton(phraseLength: number) {
-    return $(`[data-testid="${phraseLength.toString()}-words-segment-button"]`);
-  }
-
   async loads() {
     await expect(this.screenTitle).toBeExisting();
     await expect(this.screenTitle).toHaveText(SeedPhraseGenerate.Title);
@@ -61,8 +57,6 @@ export class SeedPhraseGenerateScreen {
     await expect(this.screenTopParagraph).toHaveText(
       SeedPhraseGenerate.DescriptionTop
     );
-    await expect(this.phraseWordsButton(15)).toBeDisplayed();
-    await expect(this.phraseWordsButton(24)).toBeDisplayed();
     await expect(this.viewSeedPhraseText).toBeExisting();
     await expect(this.viewSeedPhraseButton).toBeExisting();
     await expect(this.screenBottomParagraph).toBeDisplayed();

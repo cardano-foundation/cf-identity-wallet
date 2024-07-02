@@ -7,6 +7,7 @@ import {
   pencilOutline,
   shareOutline,
   trashOutline,
+  refreshOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
@@ -29,6 +30,7 @@ import { OptionItem, OptionModal } from "../OptionsModal";
 import "./IdentifierOptions.scss";
 import { IdentifierOptionsProps } from "./IdentifierOptions.types";
 import { IdentifierJsonModal } from "./components";
+import { RotateKeyModal } from "../../pages/IdentifierDetails/components/RotateKeyModal/RotateKeyModal";
 
 const IdentifierOptions = ({
   optionsIsOpen,
@@ -36,6 +38,7 @@ const IdentifierOptions = ({
   cardData,
   setCardData,
   handleDeleteIdentifier,
+  handleRotateKey,
 }: IdentifierOptionsProps) => {
   const dispatch = useAppDispatch();
   const identifierData = useAppSelector(getIdentifiersCache);
@@ -44,6 +47,7 @@ const IdentifierOptions = ({
   const [newSelectedTheme, setNewSelectedTheme] = useState(cardData.theme);
   const [viewIsOpen, setViewIsOpen] = useState(false);
   const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
+
   const verifyDisplayName =
     newDisplayName.length > 0 &&
     newDisplayName.length <= DISPLAY_NAME_LENGTH &&
@@ -104,45 +108,75 @@ const IdentifierOptions = ({
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
   };
 
+  const rotateKey = () => {
+    setOptionsIsOpen(false);
+    handleRotateKey();
+  };
+
+  const updateIdentifier = () => {
+    dispatch(setCurrentOperation(OperationType.UPDATE_IDENTIFIER));
+    setNewDisplayName(cardData.displayName);
+    setOptionsIsOpen(false);
+    setEditorIsOpen(true);
+  };
+
+  const viewJson = () => {
+    setOptionsIsOpen(false);
+    setViewIsOpen(true);
+  };
+
+  const share = async () => {
+    await Share.share({
+      text: cardData.displayName + " " + cardData.id,
+    });
+  };
+
+  const deleteIdentifier = () => {
+    setOptionsIsOpen(false);
+    handleDelete();
+    dispatch(setCurrentOperation(OperationType.DELETE_IDENTIFIER));
+  };
+
+  const dismissModal = () => {
+    setEditorIsOpen(false);
+    setNewDisplayName(cardData.displayName);
+    setNewSelectedTheme(cardData.theme);
+  };
+
+  const closeModal = () => {
+    handleClose();
+    dispatch(setCurrentOperation(OperationType.IDLE));
+  };
+
   const options: OptionItem[] = [
     {
       icon: codeSlashOutline,
       label: i18n.t("identifiers.details.options.view"),
-      onClick: () => {
-        setOptionsIsOpen(false);
-        setViewIsOpen(true);
-      },
+      onClick: viewJson,
       testId: "view-json-identifier-options",
     },
     {
       icon: pencilOutline,
       label: i18n.t("identifiers.details.options.edit"),
-      onClick: () => {
-        dispatch(setCurrentOperation(OperationType.UPDATE_IDENTIFIER));
-        setNewDisplayName(cardData.displayName);
-        setOptionsIsOpen(false);
-        setEditorIsOpen(true);
-      },
+      onClick: updateIdentifier,
       testId: "edit-identifier-options",
+    },
+    {
+      icon: refreshOutline,
+      label: i18n.t("identifiers.details.options.rotatekeys"),
+      onClick: rotateKey,
+      testId: "rotate-keys",
     },
     {
       icon: shareOutline,
       label: i18n.t("identifiers.details.options.share"),
-      onClick: async () => {
-        await Share.share({
-          text: cardData.displayName + " " + cardData.id,
-        });
-      },
+      onClick: share,
       testId: "share-identifier-options",
     },
     {
       icon: trashOutline,
       label: i18n.t("identifiers.details.options.delete"),
-      onClick: () => {
-        setOptionsIsOpen(false);
-        handleDelete();
-        dispatch(setCurrentOperation(OperationType.DELETE_IDENTIFIER));
-      },
+      onClick: deleteIdentifier,
       testId: "delete-identifier-options",
     },
   ];
@@ -161,19 +195,12 @@ const IdentifierOptions = ({
       <OptionModal
         modalIsOpen={editorOptionsIsOpen}
         customClasses="edit-identifier"
-        onDismiss={() => {
-          setEditorIsOpen(false);
-          setNewDisplayName(cardData.displayName);
-          setNewSelectedTheme(cardData.theme);
-        }}
+        onDismiss={dismissModal}
         componentId="edit-identifier-modal"
         header={{
           closeButton: true,
           closeButtonLabel: `${i18n.t("identifiers.details.options.cancel")}`,
-          closeButtonAction: () => {
-            handleClose();
-            dispatch(setCurrentOperation(OperationType.IDLE));
-          },
+          closeButtonAction: closeModal,
           title: `${i18n.t("identifiers.details.options.edit")}`,
         }}
       >

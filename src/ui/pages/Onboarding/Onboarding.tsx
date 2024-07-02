@@ -1,22 +1,24 @@
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { i18n } from "../../../i18n";
-import "./Onboarding.scss";
-import { Slides } from "../../components/Slides";
-import { SlideItem } from "../../components/Slides/Slides.types";
 import { RoutePath } from "../../../routes";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache } from "../../../store/reducers/stateCache";
-import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import introImg0 from "../../assets/lottie/wallet.json";
 import introImg1 from "../../assets/images/intro-1.png";
 import introImg2 from "../../assets/images/intro-2.png";
 import introImg3 from "../../assets/images/intro-3.png";
 import introImg4 from "../../assets/images/intro-4.png";
+import introImg0 from "../../assets/lottie/wallet.json";
 import { PageFooter } from "../../components/PageFooter";
+import { Slides } from "../../components/Slides";
+import { SlideItem } from "../../components/Slides/Slides.types";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
-import { useEffect, useState } from "react";
+import { useExitAppWithDoubleTap } from "../../hooks/useExitAppWithDoubleTap";
+import "./Onboarding.scss";
 
 export type IntroImg0Type = typeof introImg0;
 
@@ -26,6 +28,7 @@ const Onboarding = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const [hiddenPage, setHiddenPage] = useState(false);
+  useExitAppWithDoubleTap(hiddenPage);
 
   useEffect(() => {
     setHiddenPage(history?.location?.pathname !== RoutePath.ONBOARDING);
@@ -62,15 +65,19 @@ const Onboarding = () => {
 
   // @TODO - foconnor: This should be op: OperationType when available (non optional)
   const handleNavigation = (op?: string) => {
-    if (op) {
-      // @TODO - sdisalvo: Remove this condition and default to dispatch when the restore route is ready
-      return;
-    }
     const data: DataProps = {
       store: { stateCache },
+      state: {
+        recoveryWalletProgress: !!op,
+      },
     };
     const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+
+    if (op) {
+      SecureStorage.set(KeyStoreKeys.RECOVERY_WALLET, String(!!op));
+    }
+
     history.push({
       pathname: nextPath.pathname,
       state: data.state,

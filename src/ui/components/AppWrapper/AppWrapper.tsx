@@ -14,7 +14,6 @@ import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
   updateIsPending,
-  updateOrAddIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   setCredsCache,
@@ -33,7 +32,6 @@ import {
   ConnectionStateChangedEvent,
   ConnectionStatus,
   AcdcStateChangedEvent,
-  NotificationRoute,
   MiscRecordId,
 } from "../../../core/agent/agent.types";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
@@ -54,10 +52,12 @@ import {
   PeerConnectionBrokenEvent,
   PeerDisconnectedEvent,
 } from "../../../core/cardano/walletConnect/peerConnection.types";
-import { MultiSigService } from "../../../core/agent/services/multiSigService";
-import { setViewTypeCache } from "../../../store/reducers/identifierViewTypeCache";
+import {
+  setFavouriteIndex,
+  setViewTypeCache,
+} from "../../../store/reducers/identifierViewTypeCache";
 import { CardListViewType } from "../SwitchCardView";
-import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
+import { setEnableBiometricsCache } from "../../../store/reducers/biometricsCache";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import { i18n } from "../../../i18n";
@@ -93,34 +93,6 @@ const keriaNotificationsChangeHandler = async (
   const notifications =
     await Agent.agent.signifyNotifications.getAllNotifications();
   dispatch(setNotificationsCache(notifications));
-};
-
-const processMultiSigIcpNotification = async (
-  event: KeriaNotification,
-  dispatch: ReturnType<typeof useAppDispatch>,
-  retryInterval = 3000
-) => {
-  try {
-    const multisigIcpDetails =
-      await Agent.agent.multiSigs.getMultisigIcpDetails(event.a.d as string);
-    dispatch(
-      setQueueIncomingRequest({
-        id: event?.id,
-        event: event,
-        type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-        multisigIcpDetails: multisigIcpDetails,
-      })
-    );
-  } catch (error) {
-    if (
-      (error as Error).message == MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP
-    ) {
-      await new Promise((resolve) => setTimeout(resolve, retryInterval));
-      await processMultiSigIcpNotification(event, dispatch, retryInterval);
-    } else {
-      throw error;
-    }
-  }
 };
 
 const acdcChangeHandler = async (
@@ -294,6 +266,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
 
+    const recoveryWalletProgress = await checkKeyStore(
+      KeyStoreKeys.RECOVERY_WALLET
+    );
+
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
     const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
       MiscRecordId.KERIA_CONNECT_URL
@@ -325,11 +301,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
     if (viewType) {
       dispatch(setViewTypeCache(viewType.content.viewType as CardListViewType));
     }
-    const appBiometry = await Agent.agent.basicStorage.findById(
+    const appBiometrics = await Agent.agent.basicStorage.findById(
       MiscRecordId.APP_BIOMETRY
     );
-    if (appBiometry) {
-      dispatch(setEnableBiometryCache(appBiometry.content.enabled as boolean));
+    if (appBiometrics) {
+      dispatch(
+        setEnableBiometricsCache(appBiometrics.content.enabled as boolean)
+      );
     }
 
     const appUserNameRecord = await Agent.agent.basicStorage.findById(
@@ -339,6 +317,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
       userName = appUserNameRecord.content as { userName: string };
     }
 
+    const favouriteIndex = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
+    );
+
+    const passwordSkipped = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_PASSWORD_SKIPPED
+    );
+
     dispatch(
       setAuthentication({
         ...authentication,
@@ -346,8 +332,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
+        passwordIsSkipped: !!passwordSkipped?.content.value,
         ssiAgentIsSet:
           !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
+        recoveryWalletProgress,
       })
     );
 

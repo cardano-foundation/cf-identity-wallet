@@ -35,9 +35,9 @@ import { MiscRecordId } from "../../../../../core/agent/agent.types";
 import { BasicRecord } from "../../../../../core/agent/records";
 import { useAppDispatch } from "../../../../../store/hooks";
 import {
-  getBiometryCacheCache,
-  setEnableBiometryCache,
-} from "../../../../../store/reducers/biometryCache";
+  getBiometricsCacheCache,
+  setEnableBiometricsCache,
+} from "../../../../../store/reducers/biometricsCache";
 import { Agent } from "../../../../../core/agent/agent";
 import { VerifyPassword } from "../../../../components/VerifyPassword";
 import { VerifyPasscode } from "../../../../components/VerifyPasscode";
@@ -49,7 +49,7 @@ const Settings = () => {
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
   const stateCache = useSelector(getStateCache);
-  const biometryCache = useSelector(getBiometryCacheCache);
+  const biometricsCache = useSelector(getBiometricsCacheCache);
   const dispatch = useAppDispatch();
   const { biometricInfo, handleBiometricAuth } = useBiometricAuth();
   const inBiometricSetup = useRef(false);
@@ -69,11 +69,11 @@ const Settings = () => {
     },
   ];
 
-  if (biometryCache.enabled !== undefined) {
+  if (biometricsCache.enabled !== undefined) {
     securityItems.unshift({
       icon: fingerPrintOutline,
       label: i18n.t("settings.sections.security.biometry"),
-      actionIcon: <IonToggle checked={biometryCache.enabled} />,
+      actionIcon: <IonToggle checked={biometricsCache.enabled} />,
     });
   }
 
@@ -100,16 +100,16 @@ const Settings = () => {
     await Agent.agent.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({
         id: MiscRecordId.APP_BIOMETRY,
-        content: { enabled: !biometryCache.enabled },
+        content: { enabled: !biometricsCache.enabled },
       })
     );
-    dispatch(setEnableBiometryCache(!biometryCache.enabled));
+    dispatch(setEnableBiometricsCache(!biometricsCache.enabled));
   };
 
   const handleBiometricUpdate = () => {
     inBiometricSetup.current = false;
 
-    if (biometryCache.enabled) {
+    if (biometricsCache.enabled) {
       handleToggleBiometricAuth();
       return;
     }

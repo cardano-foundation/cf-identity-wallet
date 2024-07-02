@@ -84,7 +84,7 @@ describe("Notifications Tab", () => {
 
     expect(getByTestId("notifications-tab-section-new")).toBeInTheDocument();
     const notificationElements = getAllByText(
-      "CF Credential Issuance wants to issue you a Driver’s Licence"
+      "CF Credential Issuance wants to issue you a credential"
     );
     notificationElements.forEach((element) => {
       expect(element).toBeVisible();
@@ -95,9 +95,7 @@ describe("Notifications Tab", () => {
       )
     ).toBeInTheDocument();
     expect(
-      getByText(
-        "CF Credential Issuance has requested a Driver’s Licence credential from you"
-      )
+      getByText("CF Credential Issuance has requested a credential from you")
     ).toBeInTheDocument();
     expect(
       getByTestId("notifications-tab-section-earlier")

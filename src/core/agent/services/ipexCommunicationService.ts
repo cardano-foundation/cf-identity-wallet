@@ -202,17 +202,23 @@ class IpexCommunicationService extends AgentService {
     if (!schemaKeri) {
       throw new Error(IpexCommunicationService.SCHEMA_NOT_FOUND);
     }
+
+    const filter = {
+      "-s": { $eq: schemaSaid },
+      ...(Object.keys(attributes).length > 0
+        ? {
+          ...Object.fromEntries(
+            Object.entries(attributes).map(([key, value]) => [
+              "-a-" + key,
+              value,
+            ])
+          ),
+        }
+        : {}),
+    };
+
     const creds = await this.props.signifyClient.credentials().list({
-      filter: {
-        "-s": { $eq: schemaSaid },
-        ...(Object.keys(attributes).length > 0
-          ? {
-            "-a": {
-              ...attributes,
-            },
-          }
-          : {}),
-      },
+      filter,
     });
 
     const credentialMetadatas =

@@ -10,6 +10,8 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { OptionModal } from "../OptionsModal";
+import { ForgotAuthInfo } from "../ForgotAuthInfo";
+import { ForgotType } from "../ForgotAuthInfo/ForgotAuthInfo.types";
 
 const VerifyPassword = ({
   isOpen,
@@ -23,6 +25,7 @@ const VerifyPassword = ({
   const [showError, setShowError] = useState(false);
   const [storedPassword, setStoredPassword] = useState("");
   const [storedHint, setStoredHint] = useState("");
+  const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
 
   const setFocus = () => {
     setTimeout(() => {
@@ -113,7 +116,10 @@ const VerifyPassword = ({
 
   const handleReset = () => {
     resetModal();
-    // @TODO - sdisalvo: navigate the user to the Reset Operations Password Screen
+  };
+
+  const handleRecoveryPassword = () => {
+    setOpenRecoveryAuth(true);
   };
 
   const headerOptions = useMemo(
@@ -196,6 +202,7 @@ const VerifyPassword = ({
           setAlertChoiceIsOpen(false);
           setAlertHintIsOpen(true);
         }}
+        actionCancel={handleRecoveryPassword}
         actionDismiss={handleReset}
       />
       <Alert
@@ -208,8 +215,19 @@ const VerifyPassword = ({
         cancelButtonText={`${i18n.t(
           "verifypassword.alert.button.resetmypassword"
         )}`}
+        actionCancel={handleRecoveryPassword}
         actionConfirm={() => setAlertHintIsOpen(false)}
         actionDismiss={handleReset}
+      />
+      <ForgotAuthInfo
+        isOpen={openRecoveryAuth}
+        onClose={(shouldCloseParent) => {
+          setOpenRecoveryAuth(false);
+          if (shouldCloseParent) {
+            resetModal();
+          }
+        }}
+        type={ForgotType.Password}
       />
     </>
   );

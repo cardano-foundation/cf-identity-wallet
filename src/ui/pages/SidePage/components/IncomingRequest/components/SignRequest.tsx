@@ -51,7 +51,12 @@ const SignRequest = ({
         activeStatus={activeStatus}
         pageId={pageId}
         customClass="sign-request"
-        header={<PageHeader title={`${i18n.t("request.sign.title")}`} />}
+        header={
+          <PageHeader
+            onBack={handleCancel}
+            title={`${i18n.t("request.sign.title")}`}
+          />
+        }
         footer={
           <PageFooter
             customClass="sign-footer"

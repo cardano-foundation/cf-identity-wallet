@@ -129,6 +129,7 @@ const Connections = ({
     <>
       <SideSlider open={showConnections}>
         <TabLayout
+          preventBackButtonEvent={!showConnections}
           pageId={pageId}
           header={true}
           backButton={true}

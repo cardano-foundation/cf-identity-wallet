@@ -4,6 +4,7 @@ import { PageHeader } from "../PageHeader";
 import { OptionListProps, OptionModalProps } from "./OptionsModal.types";
 import { combineClassNames } from "../../utils/style";
 import "./OptionsModal.scss";
+import { BackEventPriorityType } from "../../globals/types";
 
 const OptionList = ({ className, data }: OptionListProps) => {
   const classNames = combineClassNames("option-list", className);
@@ -41,13 +42,23 @@ const OptionModal = ({
   ...props
 }: OptionModalProps) => {
   const modalClass = combineClassNames("options-modal", customClasses);
+  const { hardwareBackButtonConfig, ...headerProps } = header;
 
   return (
     <ResponsiveModal
       customClasses={modalClass}
       {...props}
     >
-      <PageHeader {...header} />
+      <PageHeader
+        {...headerProps}
+        hardwareBackButtonConfig={
+          hardwareBackButtonConfig || {
+            prevent: false,
+            priority: BackEventPriorityType.Modal,
+          }
+        }
+        onBack={header.onBack || props.onDismiss}
+      />
       {items && items.length > 0 && <OptionList data={items} />}
       {children}
     </ResponsiveModal>

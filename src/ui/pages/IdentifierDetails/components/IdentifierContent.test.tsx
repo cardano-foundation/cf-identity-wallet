@@ -122,7 +122,7 @@ describe("Cards Details page", () => {
 
     await waitFor(() => expect(getByTestId("delegator")).toBeInTheDocument());
 
-    fireEvent.click(getByTestId("delegator"));
+    fireEvent.click(getByTestId("delegator-copy-button"));
 
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
@@ -130,14 +130,14 @@ describe("Cards Details page", () => {
       });
     });
 
-    fireEvent.click(getByTestId("signing-key-0"));
+    fireEvent.click(getByTestId("signing-key-0-copy-button"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
         string: identifierFix[0].k[0],
       });
     });
 
-    fireEvent.click(getByTestId("next-key-0"));
+    fireEvent.click(getByTestId("next-key-0-copy-button"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
         string: identifierFix[0].n[0],

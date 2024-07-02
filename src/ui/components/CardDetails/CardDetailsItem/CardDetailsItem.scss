@@ -9,7 +9,7 @@
     height: 1.5rem;
   }
 
-  ion-button.copy-button {
+  ion-button.action-button {
     margin: 0;
     --background: transparent;
     --box-shadow: none;
@@ -24,6 +24,10 @@
 
     &::part(native) {
       padding: 0;
+    }
+
+    &:not(:last-child) {
+      margin-right: 0.75rem;
     }
   }
 
@@ -101,7 +105,7 @@
       font-size: 0.8rem;
     }
 
-    ion-button.copy-button {
+    ion-button.action-button {
       min-height: 1.25rem;
       ion-icon {
         width: 1rem;

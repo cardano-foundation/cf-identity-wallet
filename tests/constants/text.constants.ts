@@ -84,7 +84,7 @@ export enum SeedPhraseGenerate {
 }
 
 export enum SeedPhraseVerify {
-  Description = "Please select every word from your seed phrase in the correct order. If you select a word in the wrong order, select it again to move it back down to the list of available words.",
+  Description = "Please select each word in the order it was presented to you.",
   Title = "Verify your Seed Phrase",
 }
 

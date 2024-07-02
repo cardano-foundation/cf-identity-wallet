@@ -53,6 +53,7 @@ describe("Notifications cache", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
           ssiAgentIsSet: false,
+          recoveryWalletProgress: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -85,8 +86,9 @@ describe("Notifications cache", () => {
       },
       identifierViewTypeCacheCache: {
         viewType: null,
+        favouriteIndex: 0,
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
       ssiAgentCache: {

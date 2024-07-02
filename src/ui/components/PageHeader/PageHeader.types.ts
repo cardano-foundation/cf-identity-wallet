@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { BackEventPriorityType } from "../../globals/types";
 
 interface PageHeaderProps {
   backButton?: boolean;
@@ -20,6 +21,11 @@ interface PageHeaderProps {
   progressBarBuffer?: number;
   title?: string;
   additionalButtons?: ReactNode;
+  hardwareBackButtonConfig?: {
+    prevent: boolean;
+    priority?: BackEventPriorityType;
+    handler?: (processNextHandler: () => void) => void;
+  };
 }
 
 export type { PageHeaderProps };

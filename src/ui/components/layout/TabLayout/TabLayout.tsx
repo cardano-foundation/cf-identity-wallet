@@ -12,8 +12,10 @@ import {
 } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import "./TabLayout.scss";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { TabLayoutProps } from "./TabLayout.types";
+import { useIonHardwareBackButton } from "../../../hooks";
+import { BackEventPriorityType } from "../../../globals/types";
 
 const TabLayout = ({
   pageId,
@@ -31,8 +33,10 @@ const TabLayout = ({
   actionButtonLabel,
   children,
   placeholder,
+  preventBackButtonEvent,
 }: TabLayoutProps) => {
   const [isActive, setIsActive] = useState(false);
+
   useIonViewDidEnter(() => {
     setIsActive(true);
   });
@@ -40,6 +44,24 @@ const TabLayout = ({
   useIonViewDidLeave(() => {
     setIsActive(false);
   });
+
+  const handleHardwareBackButtonClick = useCallback(() => {
+    if (backButton && backButtonAction) {
+      backButtonAction?.();
+      return;
+    }
+
+    if (doneLabel && doneAction) {
+      doneAction?.();
+      return;
+    }
+  }, [backButton, backButtonAction, doneLabel, doneAction]);
+
+  useIonHardwareBackButton(
+    BackEventPriorityType.Tab,
+    handleHardwareBackButtonClick,
+    preventBackButtonEvent
+  );
 
   return (
     <IonPage

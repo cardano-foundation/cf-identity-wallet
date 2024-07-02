@@ -21,7 +21,7 @@ interface CardListProps {
   cardsData: IdentifierShortDetails[] | CredentialShortDetails[];
   cardTypes: CardType;
   testId?: string;
-  onCardClick: (card: IdentifierShortDetails | CredentialShortDetails) => void;
+  onCardClick?: (card: IdentifierShortDetails | CredentialShortDetails) => void;
 }
 
 export type { SwitchCardViewProps, CardListProps };
