@@ -210,7 +210,13 @@ describe("Verify Seed Phrase Page", () => {
       expect(continueButton).toHaveAttribute("disabled", "false")
     );
 
-    fireEvent.click(continueButton);
+    act(() => {
+      fireEvent.click(continueButton);
+    });
+
+    await waitFor(() => {
+      expect(secureStorageMock).toBeCalled();
+    });
   });
 
   test("The user can Verify the Seed Phrase when generating a new seed phrase", async () => {
