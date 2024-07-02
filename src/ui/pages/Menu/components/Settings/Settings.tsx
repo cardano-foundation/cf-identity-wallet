@@ -73,7 +73,12 @@ const Settings = () => {
     securityItems.unshift({
       icon: fingerPrintOutline,
       label: i18n.t("settings.sections.security.biometry"),
-      actionIcon: <IonToggle checked={biometricsCache.enabled} />,
+      actionIcon: (
+        <IonToggle
+          className="biometric-toggle"
+          checked={biometricsCache.enabled}
+        />
+      ),
     });
   }
 
