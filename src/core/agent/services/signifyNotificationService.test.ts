@@ -9,6 +9,8 @@ const identifiersMemberMock = jest.fn();
 const identifiersInteractMock = jest.fn();
 const identifiersRotateMock = jest.fn();
 
+const groupGetRequestMock = jest.fn();
+
 const oobiResolveMock = jest.fn();
 const queryKeyStateMock = jest.fn();
 
@@ -72,14 +74,7 @@ const signifyClient = jest.mocked({
     get: jest.fn(),
   }),
   groups: () => ({
-    getRequest: jest.fn().mockImplementation((said: string) => {
-      if (said == "not-found-said") {
-        return [];
-      } else if (said == "no-gid-said") {
-        return [{ exn: { a: {} } }];
-      }
-      return [{ exn: { a: { gid: "id" } } }];
-    }),
+    getRequest: groupGetRequestMock,
   }),
 });
 
@@ -162,6 +157,7 @@ describe("Signify notification service of agent", () => {
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+    groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
     jest.useFakeTimers();
     for (const notif of notes) {
       await signifyNotificationService.processNotification(notif, callback);
@@ -200,6 +196,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should skip if there is no valid multi-sig notification", async () => {
     const callback = jest.fn();
+    groupGetRequestMock.mockResolvedValue([]);
     const notes = [
       {
         i: "string",
@@ -222,6 +219,7 @@ describe("Signify notification service of agent", () => {
     const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([{}]);
+    groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
     const notes = [
       {
         i: "string",
@@ -244,6 +242,7 @@ describe("Signify notification service of agent", () => {
     const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
     const notes = [
       {
         i: "string",
@@ -266,6 +265,7 @@ describe("Signify notification service of agent", () => {
     const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
     const notes = [
       {
         i: "string",
@@ -288,6 +288,7 @@ describe("Signify notification service of agent", () => {
     const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    groupGetRequestMock.mockResolvedValue([{ exn: { a: {} } }]);
     const notes = [
       {
         i: "string",
