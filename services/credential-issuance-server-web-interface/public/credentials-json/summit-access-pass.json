@@ -1,0 +1,17 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/credentials/schemas/summit/v1"
+  ],
+  "type": ["VerifiableCredential", "AccessPassCredential"],
+  "credentialSubject": {
+    "id": "did:key:z6Mkvdhigk2EwyFy1ZYNvVrwRZYGujePLha9zLkB9JNGshRg",
+    "type": "AccessPass",
+    "eventName": "Cardano Summit 2023",
+    "passId": "4c44c251-eaa3-4c77-be07-d378b7b98497",
+    "name": "John Smith",
+    "startDate": "November 2, 2023",
+    "endDate": "November 2, 2023",
+    "location": "Dubai, UAE"
+  }
+}

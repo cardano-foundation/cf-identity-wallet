@@ -49,6 +49,18 @@ services:
     volumes:
       - issuer-server-data:/usr/local/var/keri
 
+  cred-issuance-ui:
+    container_name: cred-issuance-ui
+    build:
+      context: ./services/credential-issuance-server-web-interface
+      dockerfile: ./Dockerfile
+      args:
+        - REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL=http://localhost:3001
+        - REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT=3001
+    restart: unless-stopped
+    ports:
+      - 3000:80
+
 volumes:
   keria-data:
   issuer-server-data:
