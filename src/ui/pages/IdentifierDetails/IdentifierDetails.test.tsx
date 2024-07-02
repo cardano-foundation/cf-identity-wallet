@@ -111,11 +111,14 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() =>
-      expect(getByTestId("share-button")).toBeInTheDocument()
-    );
+    await waitFor(() => {
+      expect(getByTestId("share-button")).toBeInTheDocument();
+      expect(queryByTestId("identifier-card-detail-spinner-container")).toBe(
+        null
+      );
+    });
 
-    expect(queryByTestId("share-identifier-modal")).toBe(null);
+    expect(queryByTestId("share-identifier-modal")).not.toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("share-button"));
