@@ -11,6 +11,7 @@ import {
   AgentServicesProps,
   OobiScan,
   KeriConnectionType,
+  IpexMessageDetails,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { Agent } from "../agent";
@@ -22,23 +23,26 @@ import {
 } from "../records";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
-import { ConfigurationService } from "../../configuration";
+import { IpexMessageStorage } from "../records/ipexMessageStorage";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
   protected readonly connectionNoteStorage!: ConnectionNoteStorage;
   protected readonly credentialStorage: CredentialStorage;
+  protected readonly ipexMessageStorage: IpexMessageStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     connectionStorage: ConnectionStorage,
     connectionNoteStorage: ConnectionNoteStorage,
-    credentialStorage: CredentialStorage
+    credentialStorage: CredentialStorage,
+    ipexMessageStorage: IpexMessageStorage
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
     this.connectionNoteStorage = connectionNoteStorage;
     this.credentialStorage = credentialStorage;
+    this.ipexMessageStorage = ipexMessageStorage;
   }
 
   static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
@@ -161,6 +165,9 @@ class ConnectionService extends AgentService {
       ).createdAt.toISOString(),
       serviceEndpoints: [connection.oobi],
       notes: await this.getConnectNotesByConnectionId(connection.id),
+      linkedIpexMessages: await this.getLinkedIPEXMessageByConnectionId(
+        connection.id
+      ),
     };
   }
 
@@ -320,6 +327,16 @@ class ConnectionService extends AgentService {
         message: note.message,
       };
     });
+  }
+
+  private async getLinkedIPEXMessageByConnectionId(
+    connectionId: string
+  ): Promise<IpexMessageDetails[]> {
+    const messages =
+      await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(
+        connectionId
+      );
+    return messages;
   }
 }
 

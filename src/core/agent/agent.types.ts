@@ -51,11 +51,37 @@ type ConnectionNoteDetails = {
   message: string;
 };
 
+type IpexMessages = {
+  exn: {
+    v: string;
+    t: string;
+    d: string;
+    i: string;
+    p: string;
+    dt: string;
+    r: string;
+    q: any;
+    a: any;
+    e: any;
+  };
+  pathed: {
+    acdc: string;
+    iss: string;
+    anc: string;
+  };
+};
+
+type IpexMessageDetails = {
+  id: string;
+  content: IpexMessages;
+};
+
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 
 interface ConnectionDetails extends ConnectionShortDetails {
   serviceEndpoints?: string[];
   notes?: ConnectionNoteDetails[];
+  linkedIpexMessages?: IpexMessageDetails[];
 }
 
 enum ConnectionEventTypes {
@@ -187,4 +213,6 @@ export type {
   KeriaStatusChangedEvent,
   AgentUrls,
   BranAndMnemonic,
+  IpexMessages,
+  IpexMessageDetails,
 };

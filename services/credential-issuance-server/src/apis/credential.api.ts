@@ -34,4 +34,5 @@ async function requestDisclosure(req: Request, res: Response): Promise<void> {
   httpResponse(res, response);
 }
 
+
 export { issueAcdcCredential, requestDisclosure };

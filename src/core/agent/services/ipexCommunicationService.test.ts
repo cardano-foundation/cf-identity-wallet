@@ -45,6 +45,12 @@ const credentialStorage = jest.mocked({
   getCredentialMetadatasById: jest.fn(),
 });
 
+const ipexMessageRecordStorage = jest.mocked({
+  getIpexMessageMetadata: jest.fn(),
+  getIpexMessageMetadataByConnectionId: jest.fn(),
+  createIpexMessageRecord: jest.fn(),
+});
+
 let credentialListMock = jest.fn();
 let credentialGetMock = jest.fn();
 const identifierListMock = jest.fn();
@@ -177,7 +183,8 @@ const ipexCommunicationService = new IpexCommunicationService(
   agentServicesProps,
   identifierStorage as any,
   credentialStorage as any,
-  notificationStorage as any
+  notificationStorage as any,
+  ipexMessageRecordStorage as any
 );
 
 describe("Ipex communication service of agent", () => {
@@ -206,6 +213,7 @@ describe("Ipex communication service of agent", () => {
         connectionId: "i",
       })
     );
+    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledTimes(1);
     expect(credentialStorage.updateCredentialMetadata).toBeCalledWith("id", {
       id: "id",
       status: CredentialStatus.CONFIRMED,

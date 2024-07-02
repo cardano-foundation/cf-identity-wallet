@@ -45,6 +45,7 @@ import { IonicSession } from "../storage/ionicStorage/ionicSession";
 import { IonicStorage } from "../storage/ionicStorage";
 import { SqliteStorage } from "../storage/sqliteStorage";
 import { BaseRecord } from "../storage/storage.types";
+import { IpexMessageStorage } from "./records/ipexMessageStorage";
 import { OperationPendingStorage } from "./records/operationPendingStorage";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
 
@@ -74,6 +75,7 @@ class Agent {
   private connectionNoteStorage!: ConnectionNoteStorage;
   private notificationStorage!: NotificationStorage;
   private peerConnectionStorage!: PeerConnectionStorage;
+  private ipexMessageStorage!: IpexMessageStorage;
   private operationPendingStorage!: OperationPendingStorage;
 
   private signifyClient!: SignifyClient;
@@ -117,7 +119,8 @@ class Agent {
         this.agentServicesProps,
         this.identifierStorage,
         this.credentialStorage,
-        this.notificationStorage
+        this.notificationStorage,
+        this.ipexMessageStorage
       );
     }
     return this.ipexCommunicationService;
@@ -129,7 +132,8 @@ class Agent {
         this.agentServicesProps,
         this.connectionStorage,
         this.connectionNoteStorage,
-        this.credentialStorage
+        this.credentialStorage,
+        this.ipexMessageStorage
       );
     }
     return this.connectionService;
