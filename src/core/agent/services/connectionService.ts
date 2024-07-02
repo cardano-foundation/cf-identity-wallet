@@ -22,7 +22,6 @@ import {
 } from "../records";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
-import { ConfigurationService } from "../../configuration";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
@@ -218,10 +217,23 @@ class ConnectionService extends AgentService {
     alias?: string,
     groupId?: string
   ): Promise<string> {
-    const result = await this.props.signifyClient
-      .oobis()
-      .get(signifyName, ConnectionService.DEFAULT_ROLE);
+    const result = await this.props.signifyClient.oobis().get(signifyName);
+    if (!result.oobis[0]) {
+      return "";
+    }
     const oobi = new URL(result.oobis[0]);
+    const identifier = await this.props.signifyClient
+      .identifiers()
+      .get(signifyName);
+    //This condition is used for multi-sig oobi
+    if (identifier && identifier.group) {
+      const pathName = oobi.pathname;
+      const agentIndex = pathName.indexOf("/agent/");
+      if (agentIndex !== -1) {
+        oobi.pathname = pathName.substring(0, agentIndex);
+        return oobi.toString();
+      }
+    }
     if (alias !== undefined) oobi.searchParams.set("name", alias);
     if (groupId !== undefined) oobi.searchParams.set("groupId", groupId);
     return oobi.toString();
