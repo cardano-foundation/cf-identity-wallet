@@ -220,6 +220,8 @@ const IdentifierDetails = () => {
           }`}
           data-testid="heart-button"
           onClick={() => {
+            if (!cardData) return;
+
             handleSetFavourite(params.id);
           }}
         >
@@ -238,7 +240,10 @@ const IdentifierDetails = () => {
           shape="round"
           className="share-button"
           data-testid="share-button"
-          onClick={() => setShareIsOpen(true)}
+          onClick={() => {
+            if (!cardData) return;
+            setShareIsOpen(true);
+          }}
         >
           <IonIcon
             slot="icon-only"
@@ -250,7 +255,10 @@ const IdentifierDetails = () => {
           shape="round"
           className="identifier-options-button"
           data-testid="identifier-options-button"
-          onClick={() => setIdentifierOptionsIsOpen(true)}
+          onClick={() => {
+            if (!cardData) return;
+            setIdentifierOptionsIsOpen(true);
+          }}
         >
           <IonIcon
             slot="icon-only"
