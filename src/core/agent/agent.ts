@@ -218,8 +218,15 @@ class Agent {
         agentUrls.bootUrl
       );
       try {
-        const bootResponse = await this.signifyClient.boot();
-        const bootResponseBody = await bootResponse.json();
+        let bootResponse = await this.signifyClient.boot();
+        let bootResponseBody = await bootResponse.json();
+
+        if (bootResponse.status !== 202) {
+          await new Promise((r) => setTimeout(r, 1000));
+          bootResponse = await this.signifyClient.boot();
+          bootResponseBody = await bootResponse.json();
+        }
+
         if (
           bootResponse.status !== 202 &&
           bootResponseBody?.title !== "agent already exists"
