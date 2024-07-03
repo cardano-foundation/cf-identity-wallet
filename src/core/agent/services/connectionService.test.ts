@@ -492,15 +492,16 @@ describe("Connection service of agent", () => {
     ]);
   });
 
-  test("Should return empty string if the oobi is empty", async () => {
+  test("Should throw error if the oobi is empty", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     getOobiMock.mockResolvedValue({
       oobis: [],
       done: true,
     });
     const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getOobi(signifyName);
-    expect(KeriOobi).toEqual("");
+    await expect(connectionService.getOobi(signifyName)).rejects.toThrow(
+      new Error(ConnectionService.CANNOT_GET_OOBI)
+    );
   });
 
   test("Can get multi-sig oobi", async () => {
