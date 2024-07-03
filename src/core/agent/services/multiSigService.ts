@@ -52,6 +52,7 @@ class MultiSigService extends AgentService {
   static readonly GROUP_ALREADY_EXISTs = "Group already exists";
   static readonly MEMBER_AID_NOT_FOUND =
     "We do not control any member AID of the multi-sig";
+  static readonly REQUEST_NOT_FOUND = "There's no request for the given SAID";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly notificationStorage!: NotificationStorage;
@@ -782,20 +783,15 @@ class MultiSigService extends AgentService {
       .identifiers()
       .members(multisigSignifyName);
     const multisigMembers = members["signing"];
-    const allMultisigMemberIdentifiers =
-      await this.identifierStorage.getMultisigMemebersMetadata();
-    const owningMember = multisigMembers.find((member: any) =>
-      allMultisigMemberIdentifiers.some(
-        (identifier) => member.aid === identifier.id
-      )
-    );
-
-    if (!owningMember) {
-      throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
+    let ourIdentifier;
+    for (const member of multisigMembers) {
+      const identifiers =
+        await this.identifierStorage.getMultisigMembersMetadata(member.aid);
+      if (identifiers.length) {
+        ourIdentifier = identifiers[0];
+        break;
+      }
     }
-    const ourIdentifier = allMultisigMemberIdentifiers.find(
-      (identifier) => identifier.id === owningMember.aid
-    );
     if (!ourIdentifier) {
       throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
     }
@@ -860,21 +856,26 @@ class MultiSigService extends AgentService {
     const exchangeMessage = await this.props.signifyClient
       .exchanges()
       .get(notificationSaid);
+    if (!exchangeMessage) {
+      throw new Error(
+        `${MultiSigService.EXN_MESSAGE_NOT_FOUND} ${notificationSaid}`
+      );
+    }
     const multisigAid = exchangeMessage.exn.a.gid;
     const multisigMetadataRecord =
       await this.identifierStorage.getIdentifierMetadata(multisigAid);
     const multisigSignifyName = multisigMetadataRecord.signifyName;
     const { ourIdentifier, multisigMembers } =
       await this.getMultisigParticipants(multisigSignifyName);
-    const icpMsg = await this.props.signifyClient
+    const request = await this.props.signifyClient
       .groups()
       .getRequest(notificationSaid);
-    if (!icpMsg.length) {
+    if (!request.length) {
       throw new Error(
-        `${MultiSigService.EXN_MESSAGE_NOT_FOUND} ${notificationSaid}`
+        `${MultiSigService.REQUEST_NOT_FOUND} ${notificationSaid}`
       );
     }
-    const exn = icpMsg[0].exn;
+    const exn = request[0].exn;
     // stamp, eid and role are provided in the exn message
     const rpystamp = exn.e.rpy.dt;
     const rpyrole = exn.e.rpy.a.role;

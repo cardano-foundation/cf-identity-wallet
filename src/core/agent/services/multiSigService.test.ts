@@ -102,7 +102,7 @@ const identifierStorage = jest.mocked({
   getKeriIdentifiersMetadata: jest.fn(),
   updateIdentifierMetadata: jest.fn(),
   createIdentifierMetadataRecord: jest.fn(),
-  getMultisigMemebersMetadata: jest.fn(),
+  getMultisigMembersMetadata: jest.fn(),
 });
 
 const operationPendingStorage = jest.mocked({
@@ -1520,7 +1520,7 @@ describe("Multisig sig service of agent", () => {
 
   test("Can get multi-sig participants", async () => {
     identifiersMemberMock.mockResolvedValue(multisigMockMembers);
-    identifierStorage.getMultisigMemebersMetadata = jest
+    identifierStorage.getMultisigMembersMetadata = jest
       .fn()
       .mockResolvedValue(multisigMockMemberMetadatas);
     expect(await multiSigService.getMultisigParticipants("multi-sig")).toEqual({
@@ -1531,29 +1531,9 @@ describe("Multisig sig service of agent", () => {
 
   test("Should throw error if we don't control any member of the multisig", async () => {
     identifiersMemberMock.mockResolvedValue(multisigMockMembers);
-    identifierStorage.getMultisigMemebersMetadata = jest
+    identifierStorage.getMultisigMembersMetadata = jest
       .fn()
       .mockResolvedValue([]);
-    await expect(
-      multiSigService.getMultisigParticipants("multi-sig")
-    ).rejects.toThrow(new Error(MultiSigService.MEMBER_AID_NOT_FOUND));
-
-    identifiersMemberMock.mockResolvedValue({
-      signing: [
-        {
-          aid: "aid-0",
-          ends: { agent: {} },
-        },
-        {
-          aid: "aid-2",
-          ends: { agent: {} },
-        },
-      ],
-      rotation: [],
-    });
-    identifierStorage.getMultisigMemebersMetadata = jest
-      .fn()
-      .mockResolvedValue(multisigMockMemberMetadatas);
     await expect(
       multiSigService.getMultisigParticipants("multi-sig")
     ).rejects.toThrow(new Error(MultiSigService.MEMBER_AID_NOT_FOUND));
@@ -1561,7 +1541,7 @@ describe("Multisig sig service of agent", () => {
 
   test("Can add end role authorization", async () => {
     identifiersMemberMock.mockResolvedValue(multisigMockMembers);
-    identifierStorage.getMultisigMemebersMetadata = jest
+    identifierStorage.getMultisigMembersMetadata = jest
       .fn()
       .mockResolvedValue(multisigMockMemberMetadatas);
     identifiersGetMock.mockResolvedValueOnce({
@@ -1612,7 +1592,7 @@ describe("Multisig sig service of agent", () => {
         },
       },
     });
-    identifierStorage.getMultisigMemebersMetadata = jest
+    identifierStorage.getMultisigMembersMetadata = jest
       .fn()
       .mockResolvedValue(multisigMockMemberMetadatas);
     identifiersGetMock.mockResolvedValueOnce({
