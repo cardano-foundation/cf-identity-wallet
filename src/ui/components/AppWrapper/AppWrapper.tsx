@@ -59,7 +59,7 @@ import {
   setViewTypeCache,
 } from "../../../store/reducers/identifierViewTypeCache";
 import { CardListViewType } from "../SwitchCardView";
-import { setEnableBiometryCache } from "../../../store/reducers/biometryCache";
+import { setEnableBiometricsCache } from "../../../store/reducers/biometricsCache";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import { i18n } from "../../../i18n";
@@ -318,6 +318,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
 
+    const recoveryWalletProgress = await checkKeyStore(
+      KeyStoreKeys.RECOVERY_WALLET
+    );
+
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
     const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
       MiscRecordId.KERIA_CONNECT_URL
@@ -349,11 +353,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
     if (viewType) {
       dispatch(setViewTypeCache(viewType.content.viewType as CardListViewType));
     }
-    const appBiometry = await Agent.agent.basicStorage.findById(
+    const appBiometrics = await Agent.agent.basicStorage.findById(
       MiscRecordId.APP_BIOMETRY
     );
-    if (appBiometry) {
-      dispatch(setEnableBiometryCache(appBiometry.content.enabled as boolean));
+    if (appBiometrics) {
+      dispatch(
+        setEnableBiometricsCache(appBiometrics.content.enabled as boolean)
+      );
     }
 
     const appUserNameRecord = await Agent.agent.basicStorage.findById(
@@ -367,11 +373,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
       MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
     );
 
-    if (favouriteIndex) {
-      dispatch(
-        setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
-      );
-    }
+    const passwordSkipped = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_PASSWORD_SKIPPED
+    );
 
     dispatch(
       setAuthentication({
@@ -380,8 +384,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
+        passwordIsSkipped: !!passwordSkipped?.content.value,
         ssiAgentIsSet:
           !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
+        recoveryWalletProgress,
       })
     );
 
@@ -414,7 +420,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
       } catch (e) {
         const errorStack = (e as Error).stack as string;
         // If the error is failed to fetch with signify, we retry until the connection is secured
-        if (/SignifyClient/gi.test(errorStack)) {
+        if (
+          /Failed to fetch/gi.test(errorStack) &&
+          /SignifyClient/gi.test(errorStack)
+        ) {
           Agent.agent.connect().then(() => {
             setIsOnline(Agent.agent.getKeriaOnlineStatus());
           });

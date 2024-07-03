@@ -8,13 +8,15 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { arrowBackOutline, closeOutline } from "ionicons/icons";
+import { useCallback } from "react";
 import { PageHeaderProps } from "./PageHeader.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { getBackRoute } from "../../../routes/backRoute";
 import "./PageHeader.scss";
-import { useAppIonRouter } from "../../hooks";
+import { useAppIonRouter, useIonHardwareBackButton } from "../../hooks";
+import { BackEventPriorityType } from "../../globals/types";
 
 const PageHeader = ({
   backButton,
@@ -35,6 +37,7 @@ const PageHeader = ({
   progressBarBuffer,
   title,
   additionalButtons,
+  hardwareBackButtonConfig,
 }: PageHeaderProps) => {
   const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
@@ -42,7 +45,7 @@ const PageHeader = ({
   const hasContent =
     !!backButton || !!closeButton || !!actionButton || !!progressBar || !!title;
 
-  const handleOnBack = () => {
+  const handleOnBack = useCallback(() => {
     if (onBack) {
       onBack();
     } else {
@@ -63,7 +66,35 @@ const PageHeader = ({
         ionRouter.push(backPath.pathname, "back", "pop");
       }
     }
-  };
+  }, [onBack, beforeBack, backButton, currentPath, stateCache, ionRouter.push]);
+
+  const handleHardwareBackButtonClick = useCallback(
+    (processNextHandler: () => void) => {
+      if (hardwareBackButtonConfig?.handler) {
+        hardwareBackButtonConfig?.handler(processNextHandler);
+        return;
+      }
+
+      if (closeButton && closeButtonAction) {
+        closeButtonAction();
+        return;
+      }
+
+      handleOnBack();
+    },
+    [
+      hardwareBackButtonConfig?.handler,
+      closeButtonAction,
+      closeButton,
+      handleOnBack,
+    ]
+  );
+
+  useIonHardwareBackButton(
+    hardwareBackButtonConfig?.priority || BackEventPriorityType.Page,
+    handleHardwareBackButtonClick,
+    hardwareBackButtonConfig?.prevent
+  );
 
   const hasAction = backButton || closeButton || actionButton;
 

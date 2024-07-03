@@ -504,7 +504,9 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("cannot join multisig by notification if exn messages are missing", async () => {
-    groupGetRequestMock = jest.fn().mockResolvedValue([]);
+    groupGetRequestMock = jest
+      .fn()
+      .mockRejectedValue(new Error("request - 404 - SignifyClient message"));
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     await expect(
       multiSigService.joinMultisig("id", "d", {

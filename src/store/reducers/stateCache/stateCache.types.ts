@@ -21,6 +21,7 @@ interface AuthenticationCacheProps {
   passwordIsSet: boolean;
   passwordIsSkipped: boolean;
   ssiAgentIsSet: boolean;
+  recoveryWalletProgress: boolean;
 }
 enum IncomingRequestType {
   CREDENTIAL_OFFER_RECEIVED = "credential-offer-received",

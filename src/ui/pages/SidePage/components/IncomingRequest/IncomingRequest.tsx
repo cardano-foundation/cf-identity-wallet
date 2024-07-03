@@ -13,7 +13,6 @@ import {
   IncomingRequestType,
 } from "../../../../../store/reducers/stateCache/stateCache.types";
 import { getConnectedWallet } from "../../../../../store/reducers/walletConnectionsCache";
-import { ANIMATION_DURATION } from "../../../../components/SideSlider/SideSlider.types";
 
 const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const pageId = "incoming-request";

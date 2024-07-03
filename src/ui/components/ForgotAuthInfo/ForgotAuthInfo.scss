@@ -1,0 +1,23 @@
+.forgot-auth-info-modal {
+  .verify-recovery-seed-phrase-module {
+    .paragraph-top {
+      text-align: center;
+    }
+  }
+
+  .password-module {
+    .page-paragraph {
+      text-align: center;
+    }
+  }
+
+  .create-passcode-module {
+    min-height: calc(100vh - (5rem + var(--ion-safe-area-top)));
+  }
+
+  .page-header {
+    ion-toolbar {
+      --background: transparent;
+    }
+  }
+}

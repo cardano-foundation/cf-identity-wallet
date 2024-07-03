@@ -215,6 +215,9 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
+    identifiersGetMock.mockRejectedValue(
+      new Error("request - 404 - SignifyClient message")
+    );
     expect(await identifierService.getIdentifier(keriMetadataRecord.id)).toBe(
       undefined
     );
