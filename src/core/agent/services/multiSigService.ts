@@ -865,6 +865,57 @@ class MultiSigService extends AgentService {
     );
     return op;
   }
+
+  async multisigAdmit(multisigSignifyName: string, notificationSaid: string) {
+    const exchangeMessage = await this.props.signifyClient
+      .exchanges()
+      .get(notificationSaid);
+    const grantSaid = exchangeMessage.exn.d;
+    const issuerPrefix = exchangeMessage.exn.i;
+    const { ourIdentifier, multisigMembers } =
+      await this.getMultisigParticipants(multisigSignifyName);
+    const gHab = await this.props.signifyClient
+      .identifiers()
+      .get(multisigSignifyName);
+    const mHab = await this.props.signifyClient
+      .identifiers()
+      .get(ourIdentifier.signifyName);
+    const time = new Date().toISOString().replace("Z", "000+00:00");
+    const [admit, sigs, end] = await this.props.signifyClient
+      .ipex()
+      .admit(multisigSignifyName, "", grantSaid, time);
+
+    const op = await this.props.signifyClient
+      .ipex()
+      .submitAdmit(multisigSignifyName, admit, sigs, end, [issuerPrefix]);
+
+    const mstate = gHab["state"];
+    const seal = [
+      "SealEvent",
+      { i: gHab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
+    ];
+    const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
+    const ims = d(messagize(admit, sigers, seal));
+    let atc = ims.substring(admit.size);
+    atc += end;
+    const gembeds = {
+      exn: [admit, atc],
+    };
+    const recp = multisigMembers
+      .filter((signing: any) => signing.aid !== ourIdentifier.id)
+      .map((member: any) => member.aid);
+
+    await this.sendMultisigExn(
+      ourIdentifier.signifyName,
+      mHab,
+      MultiSigRoute.EXN,
+      gembeds,
+      recp,
+      { gid: gHab["prefix"] }
+    );
+
+    return op;
+  }
 }
 
 export { MultiSigService };

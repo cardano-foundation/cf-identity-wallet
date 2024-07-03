@@ -1631,4 +1631,50 @@ describe("Multisig sig service of agent", () => {
     await multiSigService.joinAuthorization("notification-said");
     expect(sendExchangesMock).toBeCalled();
   });
+
+  test("Can admit credential", async () => {
+    identifiersMemberMock.mockResolvedValue(multisigMockMembers);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "multi-sig",
+    });
+    groupGetRequestMock.mockResolvedValue([
+      {
+        exn: {
+          e: {
+            rpy: {
+              dt: new Date(),
+              a: {
+                role: "agent",
+                eid: "eid",
+              },
+            },
+          },
+        },
+      },
+    ]);
+    getExchangesMock.mockResolvedValue({
+      exn: {
+        d: "said",
+        i: "prefix",
+      },
+    });
+    identifierStorage.getMultisigMemebersMetadata = jest
+      .fn()
+      .mockResolvedValue(multisigMockMemberMetadatas);
+    identifiersGetMock.mockResolvedValueOnce({
+      name: "multi-sig",
+      prefix: "prefix",
+      state: {
+        ee: {
+          s: "0",
+          d: "prefix",
+        },
+      },
+    });
+    addEndRoleMock.mockResolvedValue({
+      op: jest.fn(),
+      serder: { size: 1 },
+      sigs: [],
+    });
+  });
 });
