@@ -11,10 +11,7 @@ import {
 } from "@ionic/react";
 import { personCircleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useState } from "react";
-import {
-  Alert as AlertAccept,
-  Alert as AlertDecline,
-} from "../../../components/Alert";
+import { Alert as AlertDecline } from "../../../components/Alert";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
@@ -39,17 +36,16 @@ import {
 
 const MultiSigRequest = ({
   notificationDetails,
-  handleCancel,
+  handleBack,
 }: {
   notificationDetails: KeriaNotification;
-  handleCancel: () => void;
+  handleBack: () => void;
 }) => {
   const pageId = "notification-details";
   const dispatch = useAppDispatch();
   const [activeStatus, setActiveStatus] = useState(true);
   const blur = false;
   const identifiersData = useAppSelector(getIdentifiersCache);
-  const [alertAcceptIsOpen, setAlertAcceptIsOpen] = useState(false);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [multisigIcpDetails, setMultisigIcpDetails] =
     useState<MultiSigIcpRequestDetails | null>(null);
@@ -66,7 +62,6 @@ const MultiSigRequest = ({
   }, []);
 
   const actionAccept = async () => {
-    setAlertAcceptIsOpen(false);
     // setBlur && setBlur(true);
     if (!(notificationDetails && multisigIcpDetails)) {
       return;
@@ -101,12 +96,12 @@ const MultiSigRequest = ({
           : ToastMsgType.IDENTIFIER_REQUESTED;
       }
     }
-    // handleAccept();
+    handleBack();
   };
 
   const actionDecline = () => {
     setAlertDeclineIsOpen(false);
-    handleCancel();
+    handleBack();
   };
 
   const handleDeclineClick = useCallback(() => setAlertDeclineIsOpen(true), []);
@@ -122,21 +117,27 @@ const MultiSigRequest = ({
         </div>
       )}
       <ScrollablePageLayout
-        pageId={pageId}
+        pageId={`${pageId}-multi-sig-request`}
+        customClass={`${pageId}-multi-sig-request setup-identifier ${
+          blur ? "blur" : ""
+        }`}
         activeStatus={activeStatus}
-        customClass={`setup-identifier ${blur ? "blur" : ""}`}
         header={
           <PageHeader
-            onBack={handleCancel}
-            title={`${i18n.t("request.multisig.title")}`}
+            closeButton={true}
+            closeButtonAction={handleBack}
+            closeButtonLabel={`${i18n.t(
+              "notifications.details.buttons.close"
+            )}`}
+            title={`${i18n.t("notifications.details.identifier.title")}`}
           />
         }
       >
         <p className="multisig-request-subtitle">
-          {i18n.t("request.multisig.subtitle")}
+          {i18n.t("notifications.details.identifier.subtitle")}
         </p>
         <div className="multisig-request-section">
-          <h4>{i18n.t("request.multisig.requestfrom")}</h4>
+          <h4>{i18n.t("notifications.details.identifier.requestfrom")}</h4>
           <IonCard className="multisig-request-details">
             <IonList lines="none">
               <IonItem className="multisig-request-item">
@@ -155,7 +156,7 @@ const MultiSigRequest = ({
                       ) : (
                         <div
                           data-testid="multisig-connection-fallback-logo"
-                          className="request-user-logo"
+                          className="multisig-request-user-logo"
                         >
                           <IonIcon
                             icon={personCircleOutline}
@@ -178,7 +179,7 @@ const MultiSigRequest = ({
         </div>
         {!!multisigIcpDetails?.otherConnections.length && (
           <div className="multisig-request-section">
-            <h4>{i18n.t("request.multisig.othermembers")}</h4>
+            <h4>{i18n.t("notifications.details.identifier.othermembers")}</h4>
             <IonCard className="multisig-request-details">
               <IonList lines="none">
                 {multisigIcpDetails?.otherConnections.map(
@@ -218,7 +219,7 @@ const MultiSigRequest = ({
           </div>
         )}
         <div className="multisig-request-section">
-          <h4>{i18n.t("request.multisig.threshold")}</h4>
+          <h4>{i18n.t("notifications.details.identifier.threshold")}</h4>
           <IonCard className="multisig-request-details">
             <IonList lines="none">
               <IonItem className="multisig-request-item">
@@ -230,30 +231,25 @@ const MultiSigRequest = ({
         <PageFooter
           pageId={pageId}
           customClass="multisig-request-footer"
-          primaryButtonText={`${i18n.t("request.button.accept")}`}
-          primaryButtonAction={() => setAlertAcceptIsOpen(true)}
-          secondaryButtonText={`${i18n.t("request.button.decline")}`}
+          primaryButtonText={`${i18n.t(
+            "notifications.details.buttons.accept"
+          )}`}
+          primaryButtonAction={() => actionAccept()}
+          secondaryButtonText={`${i18n.t(
+            "notifications.details.buttons.decline"
+          )}`}
           secondaryButtonAction={handleDeclineClick}
         />
       </ScrollablePageLayout>
-      <AlertAccept
-        isOpen={alertAcceptIsOpen}
-        setIsOpen={setAlertAcceptIsOpen}
-        dataTestId="multisig-request-alert-accept"
-        headerText={i18n.t("request.multisig.alert.textaccept")}
-        confirmButtonText={`${i18n.t("request.multisig.alert.accept")}`}
-        cancelButtonText={`${i18n.t("request.multisig.alert.cancel")}`}
-        actionConfirm={() => actionAccept()}
-        actionCancel={() => setAlertAcceptIsOpen(false)}
-        actionDismiss={() => setAlertAcceptIsOpen(false)}
-      />
       <AlertDecline
         isOpen={alertDeclineIsOpen}
         setIsOpen={setAlertDeclineIsOpen}
         dataTestId="multisig-request-alert-decline"
-        headerText={i18n.t("request.multisig.alert.textdecline")}
-        confirmButtonText={`${i18n.t("request.multisig.alert.decline")}`}
-        cancelButtonText={`${i18n.t("request.multisig.alert.cancel")}`}
+        headerText={i18n.t(
+          "notifications.details.identifier.alert.textdecline"
+        )}
+        confirmButtonText={`${i18n.t("notifications.details.buttons.decline")}`}
+        cancelButtonText={`${i18n.t("notifications.details.buttons.cancel")}`}
         actionConfirm={() => actionDecline()}
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}

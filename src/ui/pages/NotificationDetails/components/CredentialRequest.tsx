@@ -23,10 +23,10 @@ import { updateReduxState } from "../../../../store/utils";
 
 const CredentialRequest = ({
   notificationDetails,
-  handleCancel,
+  handleBack,
 }: {
   notificationDetails: KeriaNotification;
-  handleCancel: () => void;
+  handleBack: () => void;
 }) => {
   const pageId = "notification-details";
   const fallbackLogo = KeriLogo;
@@ -42,13 +42,13 @@ const CredentialRequest = ({
 
   useIonHardwareBackButton(
     BackEventPriorityType.Page,
-    handleCancel,
+    handleBack,
     !activeStatus
   );
 
   return (
     <ResponsivePageLayout
-      pageId={pageId}
+      pageId={`${pageId}-credential-request`}
       activeStatus={activeStatus}
     >
       <h2>{i18n.t("request.credential.title")}</h2>
@@ -102,7 +102,7 @@ const CredentialRequest = ({
         primaryButtonText={`${i18n.t("request.button.acceptoffer")}`}
         primaryButtonAction={handleChoose}
         secondaryButtonText={`${i18n.t("request.button.cancel")}`}
-        secondaryButtonAction={() => handleCancel()}
+        secondaryButtonAction={() => handleBack()}
       />
     </ResponsivePageLayout>
   );

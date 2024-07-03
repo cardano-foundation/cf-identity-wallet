@@ -17,6 +17,7 @@ import {
 } from "../../../core/agent/agent.types";
 import { CredentialRequest } from "./components/CredentialRequest";
 import { MultiSigRequest } from "./components/MultiSigRequest";
+import { ReceiveCredential } from "./components/ReceiveCredential";
 
 const NotificationDetails = () => {
   const pageId = "notification-details";
@@ -28,7 +29,7 @@ const NotificationDetails = () => {
   const [notificationDetails, setNotificationDetails] =
     useState<KeriaNotification>(history?.location?.state as KeriaNotification);
 
-  const handleCancel = () => {
+  const handleBack = () => {
     const data: DataProps = {
       store: { stateCache },
     };
@@ -54,16 +55,22 @@ const NotificationDetails = () => {
 
   return (
     <>
-      {notificationDetails.a.r === NotificationRoute.ExnIpexGrant && (
+      {notificationDetails.a.r === NotificationRoute.ExnIpexApply && (
         <CredentialRequest
           notificationDetails={notificationDetails}
-          handleCancel={handleCancel}
+          handleBack={handleBack}
         />
       )}
       {notificationDetails.a.r === NotificationRoute.MultiSigIcp && (
         <MultiSigRequest
           notificationDetails={notificationDetails}
-          handleCancel={handleCancel}
+          handleBack={handleBack}
+        />
+      )}
+      {notificationDetails.a.r === NotificationRoute.ExnIpexGrant && (
+        <ReceiveCredential
+          notificationDetails={notificationDetails}
+          handleBack={handleBack}
         />
       )}
     </>

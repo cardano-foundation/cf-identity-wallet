@@ -937,6 +937,45 @@
         "multisigicp": "{{connection}} is requesting to create a multi-sig identifier with you",
         "exnipexapply": "{{connection}} has requested a credential from you"
       }
+    },
+    "details": {
+      "buttons": {
+        "close": "Close",
+        "accept": "Accept",
+        "decline": "Decline",
+        "cancel": "Cancel",
+        "choosecredential": "Choose credential"
+      },
+      "credential": {
+        "request": {
+          "title": "Credential request",
+          "requestfrom": "Request from",
+          "requestedcredential": "Requested credential",
+          "informationrequired": "Information required",
+          "alert": {
+            "textdecline": "Are you sure you want to decline this credential request? You won't be able to change your decision later."
+          }
+        },
+        "receive": {
+          "title": "Receive credential",
+          "receivefrom": "Receive a credential from",
+          "alert": {
+            "textdecline": "Are you sure you want to decline this credential issuance? You won't be able to change your decision later."
+          }
+        }
+      },
+      "identifier": {
+        "title": "Identifier request",
+        "subtitle": "Review this multi-sig identifier request",
+        "requestfrom": "Request from",
+        "othermembers": "Other members",
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "threshold": "Threshold",
+        "alert": {
+          "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later."
+        }
+      }
     }
   },
   "menu": {
@@ -1308,47 +1347,12 @@
         "data": "Data"
       }
     },
-    "connection": {
-      "title": "Connect",
-      "requestconnection": " request from",
-      "alert": {
-        "titleconfirm": "Are you sure about proceeding with your connection to {{initiator}}?",
-        "confirm": "Yes, connect"
-      }
-    },
-    "credential": {
-      "title": "Credential offer",
-      "offercredential": " offer from",
-      "alert": {
-        "titleconfirm": "Are you sure you want to continue with {{initiator}}?",
-        "confirm": "Yes, accept credential"
-      }
-    },
-    "multisig": {
-      "title": "Identifier request",
-      "subtitle": "Review this multi-sig identifier request",
-      "requestfrom": "Request from",
-      "othermembers": "Other members",
-      "pending": "Pending",
-      "accepted": "Accepted",
-      "threshold": "Threshold",
-      "alert": {
-        "textaccept": "Are you sure you want to approve this request? You won't be able to change your decision later.",
-        "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
-        "accept": "Accept",
-        "decline": "Decline",
-        "cancel": "Cancel"
-      }
-    },
     "button": {
-      "connect": "Connect",
       "acceptoffer": "Accept credential",
       "cancel": "Cancel",
-      "ignore": "Ignore",
       "back": "Back",
       "accept": "Accept",
       "decline": "Decline",
-      "addidentifier": "Add identifier",
       "sign": "Sign",
       "dontallow": "Don't allow"
     },

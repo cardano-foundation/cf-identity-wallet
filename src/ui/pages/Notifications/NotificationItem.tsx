@@ -8,7 +8,6 @@ import {
   KeriaNotification,
   NotificationRoute,
 } from "../../../core/agent/agent.types";
-import { i18n } from "../../../i18n";
 import { timeDifference } from "../../utils/formatters";
 
 const NotificationItem = ({
@@ -21,7 +20,6 @@ const NotificationItem = ({
   handleNotificationClick: (item: KeriaNotification) => void;
 }) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
-
   const notificationLabel = (item: KeriaNotification) => {
     const connection = connectionsCache.filter(
       (connection) => connection.id === item.connectionId
