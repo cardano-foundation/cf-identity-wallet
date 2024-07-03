@@ -9,11 +9,12 @@ import { identifierFix } from "../../__fixtures__/identifierFix";
 import { setPauseQueueIncomingRequest } from "../../../store/reducers/stateCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { NotificationRoute } from "../../../core/agent/agent.types";
+import { signTransactionFix } from "../../__fixtures__/signTransactionFix";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, ...props }: { children: any }) => (
-    <div {...props}>{children}</div>
+  IonModal: ({ children, ...props }: any) => (
+    <div data-testid={props["data-testid"]}>{children}</div>
   ),
 }));
 
@@ -77,61 +78,51 @@ describe("Side Page: wallet connect", () => {
   });
 });
 
-// TODO: Tests should be rewritten to use IncomingRequestType.PEER_CONNECT_SIGN
-// Ticket created in the backlog
+describe("Side Page: incoming request", () => {
+  const initialStateFull = {
+    stateCache: {
+      routes: [TabsRoutePath.CREDENTIALS],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+      },
+      queueIncomingRequest: {
+        isProcessing: true,
+        queues: [
+          {
+            id: "abc123456",
+            label: "Cardano",
+            type: IncomingRequestType.PEER_CONNECT_SIGN,
+            signTransaction: signTransactionFix,
+            peerConnection: { id: "id", name: "DApp", iconB64: "mock-icon" },
+          },
+        ],
+        isPaused: false,
+      },
+    },
+    identifiersCache: {
+      identifiers: [...identifierFix],
+    },
+    walletConnectionsCache: {},
+  };
 
-// describe("Side Page: incoming request", () => {
-//   const initialStateFull = {
-//     stateCache: {
-//       routes: [TabsRoutePath.CREDENTIALS],
-//       authentication: {
-//         loggedIn: true,
-//         time: Date.now(),
-//         passcodeIsSet: true,
-//       },
-//       queueIncomingRequest: {
-//         isProcessing: true,
-//         queues: [
-//           {
-//             id: "11111",
-//             type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
-//             label: "Cardano",
-//             event: {
-//               id: "id",
-//               a: {
-//                 r: NotificationRoute.ExnIpexGrant,
-//               },
-//               createdAt: new Date(),
-//             },
-//           },
-//         ],
-//         isPaused: false,
-//       },
-//     },
-//     identifiersCache: {
-//       identifiers: [...identifierFix],
-//     },
-//     walletConnectionsCache: {},
-//   };
+  const mockStore = configureStore();
+  const dispatchMock = jest.fn();
+  const mockedStore = {
+    ...mockStore(initialStateFull),
+    dispatch: dispatchMock,
+  };
 
-//   const mockStore = configureStore();
-//   const dispatchMock = jest.fn();
-//   const mockedStore = {
-//     ...mockStore(initialStateFull),
-//     dispatch: dispatchMock,
-//   };
+  test("Render incomming request", async () => {
+    const { getByText } = render(
+      <Provider store={mockedStore}>
+        <SidePage />
+      </Provider>
+    );
 
-//   test("Render incomming request", async () => {
-//     const { getByText } = render(
-//       <Provider store={mockedStore}>
-//         <SidePage />
-//       </Provider>
-//     );
-
-//     await waitFor(() => {
-//       expect(
-//         getByText(EN_TRANSLATIONS.request.credential.title)
-//       ).toBeInTheDocument();
-//     });
-//   });
-// });
+    await waitFor(() => {
+      expect(getByText("DApp")).toBeVisible();
+    });
+  });
+});

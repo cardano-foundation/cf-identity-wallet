@@ -321,6 +321,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
       MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
     );
 
+    if (favouriteIndex) {
+      dispatch(
+        setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
+      );
+    }
+
     const passwordSkipped = await Agent.agent.basicStorage.findById(
       MiscRecordId.APP_PASSWORD_SKIPPED
     );
@@ -368,7 +374,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
       } catch (e) {
         const errorStack = (e as Error).stack as string;
         // If the error is failed to fetch with signify, we retry until the connection is secured
-        if (/SignifyClient/gi.test(errorStack)) {
+        if (
+          /Failed to fetch/gi.test(errorStack) &&
+          /SignifyClient/gi.test(errorStack)
+        ) {
           Agent.agent.connect().then(() => {
             setIsOnline(Agent.agent.getKeriaOnlineStatus());
           });
