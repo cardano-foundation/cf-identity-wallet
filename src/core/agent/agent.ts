@@ -218,21 +218,7 @@ class Agent {
         agentUrls.bootUrl
       );
       try {
-        let bootResponse = await this.signifyClient.boot();
-        let bootResponseBody = await bootResponse.json();
-
-        if (bootResponse.status !== 202) {
-          await new Promise((r) => setTimeout(r, 1000));
-          bootResponse = await this.signifyClient.boot();
-          bootResponseBody = await bootResponse.json();
-        }
-
-        if (
-          bootResponse.status !== 202 &&
-          bootResponseBody?.title !== "agent already exists"
-        ) {
-          throw new Error(Agent.KERIA_BOOT_FAILED);
-        }
+        await this.signifyClient.boot();
       } catch (e) {
         /* eslint-disable no-console */
         console.error(e);
