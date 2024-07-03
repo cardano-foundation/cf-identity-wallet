@@ -191,7 +191,7 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async getMatchingCredsForApply(
+  async getIpexApplyDetails(
     notification: KeriaNotification
   ): Promise<CredentialsMatchingApply> {
     const msgSaid = notification.a.d as string;
@@ -233,6 +233,7 @@ class IpexCommunicationService extends AgentService {
           acdc: credKeri.sad,
         };
       }),
+      attributes: attributes,
     };
   }
 
