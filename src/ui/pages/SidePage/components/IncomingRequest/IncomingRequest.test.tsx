@@ -1,238 +1,219 @@
-import { mockIonicReact } from "@ionic/react-test-utils";
-mockIonicReact();
-import { act, fireEvent, render } from "@testing-library/react";
+import { mockIonicReact, waitForIonicReact } from "@ionic/react-test-utils";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { store } from "../../../../../store";
-import { IncomingRequest } from "./IncomingRequest";
-import {
-  IncomingRequestProps,
-  IncomingRequestType,
-} from "../../../../../store/reducers/stateCache/stateCache.types";
-import { connectionsFix } from "../../../../__fixtures__/connectionsFix";
+import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
-import { setQueueIncomingRequest } from "../../../../../store/reducers/stateCache";
-import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
-import { EventService } from "../../../../../core/agent/services/eventService";
-import { SignifyNotificationService } from "../../../../../core/agent/services/signifyNotificationService";
+import { TabsRoutePath } from "../../../../../routes/paths";
+import { dequeueIncomingRequest } from "../../../../../store/reducers/stateCache";
+import { IncomingRequestType } from "../../../../../store/reducers/stateCache/stateCache.types";
+import {
+  signObjectFix,
+  signTransactionFix,
+} from "../../../../__fixtures__/signTransactionFix";
+import { IncomingRequest } from "./IncomingRequest";
+mockIonicReact();
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
-  SecureStorage: {
-    get: jest.fn(),
+const mockApprovalCallback = jest.fn((status: boolean) => status);
+
+const requestData = {
+  id: "abc123456",
+  label: "Cardano",
+  type: IncomingRequestType.PEER_CONNECT_SIGN,
+  signTransaction: {
+    ...signTransactionFix,
+    payload: {
+      ...signTransactionFix.payload,
+      approvalCallback: (status: boolean) => mockApprovalCallback(status),
+    },
   },
-}));
-
-const notificationStorage = jest.mocked({
-  open: jest.fn(),
-  save: jest.fn(),
-  delete: jest.fn(),
-  deleteById: jest.fn(),
-  update: jest.fn(),
-  findById: jest.fn(),
-  findAllByQuery: jest.fn(),
-  getAll: jest.fn(),
-});
-
-const identifierStorage = jest.mocked({
-  open: jest.fn(),
-  save: jest.fn(),
-  delete: jest.fn(),
-  deleteById: jest.fn(),
-  update: jest.fn(),
-  findById: jest.fn(),
-  findAllByQuery: jest.fn(),
-  getAll: jest.fn(),
-});
-
-const operationPendingStorage = jest.mocked({});
-
-const identifiersListMock = jest.fn();
-const identifiersGetMock = jest.fn();
-const identifiersCreateMock = jest.fn();
-const identifiersMemberMock = jest.fn();
-const identifiersInteractMock = jest.fn();
-const identifiersRotateMock = jest.fn();
-
-const oobiResolveMock = jest.fn();
-const groupGetRequestMock = jest.fn();
-const queryKeyStateMock = jest.fn();
-const credentialListMock = jest.fn();
-
-const signifyClient = jest.mocked({
-  connect: jest.fn(),
-  boot: jest.fn(),
-  identifiers: () => ({
-    list: identifiersListMock,
-    get: identifiersGetMock,
-    create: identifiersCreateMock,
-    addEndRole: jest.fn(),
-    interact: identifiersInteractMock,
-    rotate: identifiersRotateMock,
-    members: identifiersMemberMock,
-  }),
-  operations: () => ({
-    get: jest.fn().mockImplementation((id: string) => {
-      return {
-        done: true,
-        response: {
-          i: id,
-        },
-      };
-    }),
-  }),
-  oobis: () => ({
-    get: jest.fn(),
-    resolve: oobiResolveMock,
-  }),
-  contacts: () => ({
-    list: jest.fn(),
-    get: jest.fn().mockImplementation((id: string) => {
-      return {
-        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
-        oobi: "oobi",
-        id,
-      };
-    }),
-    delete: jest.fn(),
-  }),
-  notifications: () => ({
-    list: jest.fn(),
-    mark: jest.fn(),
-  }),
-  ipex: () => ({
-    admit: jest.fn(),
-    submitAdmit: jest.fn(),
-  }),
-  credentials: () => ({
-    list: credentialListMock,
-  }),
-  exchanges: () => ({
-    get: jest.fn(),
-    send: jest.fn(),
-  }),
-  agent: {
-    pre: "pre",
-  },
-  keyStates: () => ({
-    query: queryKeyStateMock,
-    get: jest.fn(),
-  }),
-
-  groups: () => ({ getRequest: groupGetRequestMock }),
-});
-
-const agentServicesProps = {
-  signifyClient: signifyClient as any,
-  eventService: new EventService(),
+  peerConnection: { id: "id", name: "DApp", iconB64: "mock-icon" },
 };
 
-const signifyNotificationService = new SignifyNotificationService(
-  agentServicesProps,
-  notificationStorage as any,
-  identifierStorage as any,
-  operationPendingStorage as any
-);
+const initialState = {
+  stateCache: {
+    routes: [TabsRoutePath.IDENTIFIERS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+      passwordIsSet: false,
+    },
+    queueIncomingRequest: {
+      isProcessing: true,
+      queues: [requestData],
+      isPaused: false,
+    },
+  },
+  biometricsCache: {
+    enabled: false,
+  },
+};
 
-// TODO: Add new tests for IncomingRequest
+describe("Sign request", () => {
+  const mockStore = configureStore();
+  const dispatchMock = jest.fn();
+  const storeMocked = {
+    ...mockStore(initialState),
+    dispatch: dispatchMock,
+  };
 
-// describe.skip("Incoming request", () => {
-//   const requestDetails = {
-//     id: "abc123456",
-//     type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-//     event: {
-//       id: "event-id",
-//       createdAt: new Date().toISOString(),
-//       a: { d: "d" },
-//       connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
-//       read: true,
-//     },
-//     multisigIcpDetails: {
-//       ourIdentifier: filteredIdentifierFix[0],
-//       sender: connectionsFix[3],
-//       otherConnections: [connectionsFix[4], connectionsFix[5]],
-//       threshold: 1,
-//     },
-//   };
+  test("It renders content for BALLOT_TRANSACTION_REQUEST ", async () => {
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <IncomingRequest
+          open={true}
+          setOpenPage={jest.fn()}
+        />
+      </Provider>
+    );
 
-//   afterEach(async () => {
-//     await signifyNotificationService.deleteNotificationRecordById(
-//       requestDetails.id
-//     );
-//   });
+    await waitForIonicReact();
 
-//   test("It receives Incoming request and render content", async () => {
-//     store.dispatch(
-//       setQueueIncomingRequest(requestDetails as IncomingRequestProps)
-//     );
+    expect(getByText(requestData.peerConnection?.name)).toBeVisible();
+    expect(
+      getByText(requestData.signTransaction.payload.payload)
+    ).toBeVisible();
+    expect(
+      getByText(requestData.signTransaction.payload.identifier)
+    ).toBeVisible();
+  });
 
-//     const { getByText } = render(
-//       <Provider store={store}>
-//         <IncomingRequest
-//           open={true}
-//           setOpenPage={jest.fn()}
-//         />
-//       </Provider>
-//     );
+  test("Display fallback image when provider logo is empty: BALLOT_TRANSACTION_REQUEST", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        queueIncomingRequest: {
+          isProcessing: true,
+          queues: [
+            {
+              ...requestData,
+              peerConnection: { id: "id", name: "DApp", iconB64: "" },
+            },
+          ],
+          isPaused: false,
+        },
+      },
+      biometricsCache: {
+        enabled: false,
+      },
+    };
 
-//     expect(
-//       getByText(EN_TRANSLATIONS.request.multisig.title)
-//     ).toBeInTheDocument();
-//     expect(
-//       getByText(requestDetails.multisigIcpDetails.sender.label)
-//     ).toBeInTheDocument();
-//     expect(
-//       getByText(requestDetails.multisigIcpDetails.otherConnections[0].label)
-//     ).toBeInTheDocument();
-//     expect(
-//       getByText(requestDetails.multisigIcpDetails.otherConnections[1].label)
-//     ).toBeInTheDocument();
-//     expect(
-//       getByText(requestDetails.multisigIcpDetails.threshold.toString())
-//     ).toBeInTheDocument();
-//   });
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
 
-//   test("Selecting Cancel will open the Alert pop-up", async () => {
-//     store.dispatch(
-//       setQueueIncomingRequest(requestDetails as IncomingRequestProps)
-//     );
-//     const { getByText } = render(
-//       <Provider store={store}>
-//         <IncomingRequest
-//           open={true}
-//           setOpenPage={jest.fn()}
-//         />
-//       </Provider>
-//     );
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <IncomingRequest
+          open={true}
+          setOpenPage={jest.fn()}
+        />
+      </Provider>
+    );
 
-//     const footerCancelButton = getByText(
-//       EN_TRANSLATIONS.request.button.decline
-//     );
-//     act(() => {
-//       fireEvent.click(footerCancelButton);
-//     });
-//     expect(
-//       getByText(EN_TRANSLATIONS.request.multisig.alert.textdecline)
-//     ).toBeInTheDocument();
-//   });
+    expect(getByTestId("sign-logo")).toBeInTheDocument();
 
-//   test("Selecting Accept will open the Alert pop-up", async () => {
-//     store.dispatch(
-//       setQueueIncomingRequest(requestDetails as IncomingRequestProps)
-//     );
-//     const { getByText } = render(
-//       <Provider store={store}>
-//         <IncomingRequest
-//           open={true}
-//           setOpenPage={jest.fn()}
-//         />
-//       </Provider>
-//     );
+    expect(getByTestId("sign-logo").getAttribute("src")).not.toBe(undefined);
+  });
 
-//     const continueButton = getByText(EN_TRANSLATIONS.request.button.accept);
-//     act(() => {
-//       fireEvent.click(continueButton);
-//     });
-//     expect(
-//       getByText(EN_TRANSLATIONS.request.multisig.alert.textaccept)
-//     ).toBeInTheDocument();
-//   });
-// });
+  test("Cancel request", async () => {
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <IncomingRequest
+          open={true}
+          setOpenPage={jest.fn()}
+        />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.request.button.dontallow)
+    ).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(getByText(EN_TRANSLATIONS.request.button.dontallow));
+    });
+
+    await waitFor(() => {
+      expect(mockApprovalCallback).toBeCalledWith(false);
+    });
+  });
+
+  test("Accept request", async () => {
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <IncomingRequest
+          open={true}
+          setOpenPage={jest.fn()}
+        />
+      </Provider>
+    );
+
+    expect(getByTestId("primary-button")).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button"));
+    });
+
+    await waitFor(() => {
+      expect(mockApprovalCallback).toBeCalledWith(true);
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(dequeueIncomingRequest());
+    });
+  });
+
+  test("Render JSON object", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        queueIncomingRequest: {
+          isProcessing: true,
+          queues: [
+            {
+              ...requestData,
+              signTransaction: signObjectFix,
+            },
+          ],
+          isPaused: false,
+        },
+      },
+      biometricsCache: {
+        enabled: false,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <IncomingRequest
+          open={true}
+          setOpenPage={jest.fn()}
+        />
+      </Provider>
+    );
+
+    expect(getByText(requestData.peerConnection?.name)).toBeVisible();
+    expect(
+      getByText(JSON.parse(signObjectFix.payload.payload).data.id)
+    ).toBeVisible();
+  });
+});

@@ -321,6 +321,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
       MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
     );
 
+    if (favouriteIndex) {
+      dispatch(
+        setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
+      );
+    }
+
     const passwordSkipped = await Agent.agent.basicStorage.findById(
       MiscRecordId.APP_PASSWORD_SKIPPED
     );
