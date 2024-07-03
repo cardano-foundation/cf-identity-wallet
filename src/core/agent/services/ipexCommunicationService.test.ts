@@ -526,13 +526,12 @@ describe("Ipex communication service of agent", () => {
         },
       },
     ]);
-    expect(
-      await ipexCommunicationService.getMatchingCredsForApply(noti)
-    ).toEqual({
+    expect(await ipexCommunicationService.getIpexApplyDetails(noti)).toEqual({
       credentials: [{ acdc: { d: "d" }, connectionId: "connectionId" }],
       schema: {
         description: "Qualified vLEI Issuer Credential",
         name: "Qualified vLEI Issuer Credential",
+        attributes: {},
       },
     });
   });
@@ -560,7 +559,7 @@ describe("Ipex communication service of agent", () => {
     };
     schemaGetMock.mockResolvedValue(null);
     await expect(
-      ipexCommunicationService.getMatchingCredsForApply(noti)
+      ipexCommunicationService.getIpexApplyDetails(noti)
     ).rejects.toThrowError(IpexCommunicationService.SCHEMA_NOT_FOUND);
   });
 
@@ -582,7 +581,7 @@ describe("Ipex communication service of agent", () => {
       ipexCommunicationService.grantAcdcFromAgree(noti)
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     await expect(
-      ipexCommunicationService.getMatchingCredsForApply(noti)
+      ipexCommunicationService.getIpexApplyDetails(noti)
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 });

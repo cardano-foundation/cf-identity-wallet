@@ -192,7 +192,7 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async getMatchingCredsForApply(
+  async getIpexApplyDetails(
     notification: KeriaNotification
   ): Promise<CredentialsMatchingApply> {
     const msgSaid = notification.a.d as string;
@@ -241,6 +241,7 @@ class IpexCommunicationService extends AgentService {
       schema: {
         name: schemaKeri.title,
         description: schemaKeri.description,
+        attributes: attributes,
       },
       credentials: credentialMetadatas.map((cr) => {
         const credKeri = creds.find(
