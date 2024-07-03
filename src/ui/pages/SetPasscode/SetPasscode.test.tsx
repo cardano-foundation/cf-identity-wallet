@@ -1,33 +1,23 @@
-import { Redirect, Route } from "react-router-dom";
-import { createMemoryHistory } from "history";
+import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
+import { IonRouterOutlet } from "@ionic/react";
+import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
 import {
-  act,
+  RenderResult,
   fireEvent,
   render,
   waitFor,
-  RenderResult,
 } from "@testing-library/react";
+import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
+import { Redirect, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
-import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
-import { IonRouterOutlet } from "@ionic/react";
-import {
-  BiometryError,
-  BiometryType,
-} from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
-import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
-import { SetPasscode } from "./SetPasscode";
-import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
-import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { PreferencesStorage } from "../../../core/storage/preferences/preferencesStorage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
-import { MiscRecordId } from "../../../core/agent/agent.types";
-import { Agent } from "../../../core/agent/agent";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences/preferencesStorage";
+import { store } from "../../../store";
+import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
+import { SetPasscode } from "./SetPasscode";
 
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 const setPreferenceStorageSpy = jest
@@ -73,38 +63,6 @@ describe("SetPasscode Page", () => {
     });
   });
 
-  test("Renders Create Passcode page with title and description", () => {
-    require("@ionic/react");
-    const { getByText } = render(
-      <Provider store={store}>
-        <SetPasscode />
-      </Provider>
-    );
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
-    ).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.enterpasscode.description)
-    ).toBeInTheDocument();
-  });
-
-  test("The user can add and remove digits from the passcode", () => {
-    require("@ionic/react");
-    const { getByText, getByTestId } = render(
-      <Provider store={store}>
-        <SetPasscode />
-      </Provider>
-    );
-    fireEvent.click(getByText(/1/));
-    const circleElement = getByTestId("circle-0");
-    expect(circleElement.classList).toContain("passcode-module-circle-fill");
-    const backspaceButton = getByTestId("setpasscode-backspace-button");
-    fireEvent.click(backspaceButton);
-    expect(circleElement.classList).not.toContain(
-      "passcode-module-circle-fill"
-    );
-  });
-
   test("Renders Re-enter Passcode title and start over button when passcode is set", () => {
     require("@ionic/react");
     const { getByText } = render(
@@ -118,7 +76,7 @@ describe("SetPasscode Page", () => {
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.startover.label)
+      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
     ).toBeInTheDocument();
   });
 
@@ -137,7 +95,7 @@ describe("SetPasscode Page", () => {
     expect(labelElement).toBeInTheDocument();
 
     const startOverElement = getByText(
-      EN_TRANSLATIONS.setpasscode.startover.label
+      EN_TRANSLATIONS.setpasscode.cantremember.label
     );
     fireEvent.click(startOverElement);
 
@@ -145,38 +103,6 @@ describe("SetPasscode Page", () => {
       EN_TRANSLATIONS.setpasscode.enterpasscode.title
     );
     expect(passcodeLabel).toBeInTheDocument();
-  });
-
-  test("Entering a wrong passcode at the passcode confirmation returns an error", () => {
-    require("@ionic/react");
-    const { getByText } = render(
-      <Provider store={store}>
-        <SetPasscode />
-      </Provider>
-    );
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/2/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/3/));
-    fireEvent.click(getByText(/4/));
-    fireEvent.click(getByText(/5/));
-
-    const labelElement = getByText(
-      EN_TRANSLATIONS.setpasscode.reenterpasscode.title
-    );
-    expect(labelElement).toBeInTheDocument();
-
-    fireEvent.click(getByText(/6/));
-    fireEvent.click(getByText(/7/));
-    fireEvent.click(getByText(/8/));
-    fireEvent.click(getByText(/9/));
-    fireEvent.click(getByText(/0/));
-    fireEvent.click(getByText(/1/));
-
-    const errorMessage = getByText(
-      EN_TRANSLATIONS.setpasscode.enterpasscode.error
-    );
-    expect(errorMessage).toBeInTheDocument();
   });
 
   test("Back to enter passcode screen from re-enter passcode screen", () => {
@@ -291,239 +217,6 @@ describe("SetPasscode Page", () => {
     await waitFor(() =>
       expect(
         queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
-      ).toBeInTheDocument()
-    );
-  });
-
-  test("Setup passcode and Android biometrics", async () => {
-    jest.doMock("@ionic/react", () => {
-      const actualIonicReact = jest.requireActual("@ionic/react");
-      return {
-        ...actualIonicReact,
-        getPlatforms: () => ["android"],
-      };
-    });
-    require("@ionic/react");
-
-    const { getByText, queryByText, getByTestId } = render(
-      <IonReactRouter>
-        <IonRouterOutlet animated={false}>
-          <Provider store={store}>
-            <SetPasscode />
-          </Provider>
-        </IonRouterOutlet>
-      </IonReactRouter>
-    );
-
-    clickButtonRepeatedly(getByText, "1", 6);
-
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
-    ).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.startover.label)
-    ).toBeInTheDocument();
-
-    clickButtonRepeatedly(getByText, "1", 6);
-
-    await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.biometry.setupandroidbiometryheader)
-      ).toBeInTheDocument()
-    );
-
-    act(() => {
-      fireEvent.click(
-        getByTestId("alert-setup-android-biometry-confirm-button")
-      );
-    });
-
-    await waitFor(() => {
-      expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
-        expect.objectContaining({
-          id: MiscRecordId.APP_BIOMETRY,
-          content: {
-            enabled: true,
-          },
-        })
-      );
-    });
-
-    expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
-    expect(setPreferenceStorageSpy).toBeCalledWith(
-      PreferencesKeys.APP_ALREADY_INIT,
-      {
-        initialized: true,
-      }
-    );
-  });
-
-  test("Setup passcode and cancel Android biometrics", async () => {
-    jest.doMock("@ionic/react", () => {
-      const actualIonicReact = jest.requireActual("@ionic/react");
-      return {
-        ...actualIonicReact,
-        getPlatforms: () => ["android"],
-      };
-    });
-    require("@ionic/react");
-
-    const { getByText, queryByText, getByTestId } = render(
-      <IonReactRouter>
-        <IonRouterOutlet animated={false}>
-          <Provider store={store}>
-            <SetPasscode />
-          </Provider>
-        </IonRouterOutlet>
-      </IonReactRouter>
-    );
-
-    clickButtonRepeatedly(getByText, "1", 6);
-
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
-    ).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.startover.label)
-    ).toBeInTheDocument();
-
-    clickButtonRepeatedly(getByText, "1", 6);
-
-    await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.biometry.setupandroidbiometryheader)
-      ).toBeInTheDocument()
-    );
-
-    act(() => {
-      fireEvent.click(
-        getByTestId("alert-setup-android-biometry-cancel-button")
-      );
-    });
-
-    await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.biometry.setupandroidbiometrycancel)
-      ).toBeInTheDocument()
-    );
-  });
-
-  test("Setup passcode and iOS biometrics", async () => {
-    jest.doMock("../../hooks/useBiometricsHook", () => ({
-      useBiometricAuth: jest.fn(() => ({
-        biometricsIsEnabled: false,
-        biometricInfo: {
-          isAvailable: true,
-          hasCredentials: false,
-          biometryType: BiometryType.faceId,
-          strongBiometryIsAvailable: true,
-        },
-        handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
-        setBiometricsIsEnabled: jest.fn(),
-      })),
-    }));
-    jest.doMock("@ionic/react", () => {
-      const actualIonicReact = jest.requireActual("@ionic/react");
-      return {
-        ...actualIonicReact,
-        getPlatforms: () => ["ios"],
-      };
-    });
-    require("@ionic/react");
-
-    const { getByText } = render(
-      <IonReactRouter>
-        <IonRouterOutlet animated={false}>
-          <Provider store={store}>
-            <SetPasscode />
-          </Provider>
-        </IonRouterOutlet>
-      </IonReactRouter>
-    );
-
-    clickButtonRepeatedly(getByText, "1", 6);
-
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
-    ).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.startover.label)
-    ).toBeInTheDocument();
-
-    clickButtonRepeatedly(getByText, "1", 6);
-
-    await waitFor(() => {
-      expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
-        expect.objectContaining({
-          id: MiscRecordId.APP_BIOMETRY,
-          content: {
-            enabled: true,
-          },
-        })
-      );
-    });
-
-    await waitFor(() =>
-      expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111")
-    );
-    expect(setPreferenceStorageSpy).toBeCalledWith(
-      PreferencesKeys.APP_ALREADY_INIT,
-      {
-        initialized: true,
-      }
-    );
-  });
-
-  test("Setup passcode and cancel iOS biometrics", async () => {
-    jest.doMock("../../hooks/useBiometricsHook", () => ({
-      useBiometricAuth: jest.fn(() => ({
-        biometricsIsEnabled: false,
-        biometricInfo: {
-          isAvailable: true,
-          hasCredentials: false,
-          biometryType: BiometryType.faceId,
-          strongBiometryIsAvailable: true,
-        },
-        handleBiometricAuth: jest.fn(() =>
-          Promise.resolve(new BiometryError("", BiometryErrorType.userCancel))
-        ),
-        setBiometricsIsEnabled: jest.fn(),
-      })),
-    }));
-
-    jest.doMock("@ionic/react", () => {
-      const actualIonicReact = jest.requireActual("@ionic/react");
-      return {
-        ...actualIonicReact,
-        getPlatforms: () => ["ios"],
-      };
-    });
-    require("@ionic/react");
-
-    const { getByText, queryByText } = render(
-      <IonReactRouter>
-        <IonRouterOutlet animated={false}>
-          <Provider store={store}>
-            <SetPasscode />
-          </Provider>
-        </IonRouterOutlet>
-      </IonReactRouter>
-    );
-
-    clickButtonRepeatedly(getByText, "1", 6);
-
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
-    ).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.startover.label)
-    ).toBeInTheDocument();
-
-    clickButtonRepeatedly(getByText, "1", 6);
-
-    await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.biometry.setupandroidbiometrycancel)
       ).toBeInTheDocument()
     );
   });

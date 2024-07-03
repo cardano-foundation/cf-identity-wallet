@@ -145,6 +145,7 @@ class IpexCommunicationService extends AgentService {
     const msgOffer = await this.props.signifyClient
       .exchanges()
       .get(msgAgree.exn.p);
+    //TODO: this might throw 500 internal server error, might not run to the next line at the moment
     const pickedCred = await this.props.signifyClient
       .credentials()
       .get(msgOffer.exn.e.acdc.d);
@@ -198,7 +199,18 @@ class IpexCommunicationService extends AgentService {
     const msg = await this.props.signifyClient.exchanges().get(msgSaid);
     const schemaSaid = msg.exn.a.s;
     const attributes = msg.exn.a.a;
-    const schemaKeri = await this.props.signifyClient.schemas().get(schemaSaid);
+    const schemaKeri = await this.props.signifyClient
+      .schemas()
+      .get(schemaSaid)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
     if (!schemaKeri) {
       throw new Error(IpexCommunicationService.SCHEMA_NOT_FOUND);
     }

@@ -21,6 +21,7 @@ const initialState: StateCacheProps = {
     passwordIsSet: false,
     passwordIsSkipped: false,
     ssiAgentIsSet: false,
+    recoveryWalletProgress: false,
   },
   currentOperation: OperationType.IDLE,
   queueIncomingRequest: {

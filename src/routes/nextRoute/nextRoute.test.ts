@@ -33,6 +33,7 @@ describe("NextRoute", () => {
           passwordIsSet: false,
           passwordIsSkipped: false,
           ssiAgentIsSet: false,
+          recoveryWalletProgress: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -67,7 +68,7 @@ describe("NextRoute", () => {
         viewType: null,
         favouriteIndex: 0,
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
       ssiAgentCache: {
@@ -269,6 +270,7 @@ describe("getNextRoute", () => {
         passwordIsSet: false,
         passwordIsSkipped: false,
         ssiAgentIsSet: false,
+        recoveryWalletProgress: false,
       },
       currentOperation: OperationType.IDLE,
       queueIncomingRequest: {
@@ -303,7 +305,7 @@ describe("getNextRoute", () => {
       viewType: null,
       favouriteIndex: 0,
     },
-    biometryCache: {
+    biometricsCache: {
       enabled: false,
     },
     ssiAgentCache: {

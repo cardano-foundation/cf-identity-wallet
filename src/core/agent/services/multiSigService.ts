@@ -229,7 +229,16 @@ class MultiSigService extends AgentService {
 
     const multiSig = await this.props.signifyClient
       .identifiers()
-      .get(metadata.signifyName);
+      .get(metadata.signifyName)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
     if (!multiSig) {
       throw new Error(MultiSigService.MULTI_SIG_NOT_FOUND);
     }
@@ -272,7 +281,16 @@ class MultiSigService extends AgentService {
     const msgSaid = notification.a.d as string;
     const notifications: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
-      .getRequest(msgSaid);
+      .getRequest(msgSaid)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return [];
+        } else {
+          throw error;
+        }
+      });
     if (!notifications.length) {
       throw new Error(MultiSigService.EXN_MESSAGE_NOT_FOUND);
     }
@@ -307,7 +325,16 @@ class MultiSigService extends AgentService {
   private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
     const notifications: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
-      .getRequest(msgSaid);
+      .getRequest(msgSaid)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return [];
+        } else {
+          throw error;
+        }
+      });
     if (!notifications.length) {
       return false;
     }
@@ -330,7 +357,16 @@ class MultiSigService extends AgentService {
   ): Promise<MultiSigIcpRequestDetails> {
     const icpMsg: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
-      .getRequest(notificationSaid);
+      .getRequest(notificationSaid)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return [];
+        } else {
+          throw error;
+        }
+      });
 
     if (!icpMsg.length) {
       throw new Error(
@@ -389,7 +425,16 @@ class MultiSigService extends AgentService {
     }
     const icpMsg: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
-      .getRequest(notificationSaid);
+      .getRequest(notificationSaid)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return [];
+        } else {
+          throw error;
+        }
+      });
 
     if (!icpMsg.length) {
       throw new Error(
@@ -458,7 +503,16 @@ class MultiSigService extends AgentService {
     }
     const pendingOperation = await this.props.signifyClient
       .operations()
-      .get(metadata.signifyOpName);
+      .get(metadata.signifyOpName)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
     if (pendingOperation && pendingOperation.done) {
       await this.identifierStorage.updateIdentifierMetadata(metadata.id, {
         isPending: false,
