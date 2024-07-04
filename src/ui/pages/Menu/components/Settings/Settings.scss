@@ -58,11 +58,14 @@
         font-weight: 500;
       }
 
-      .biometric-toggle.toggle-checked {
-        --track-background-checked: var(--ion-color-primary-gradient);
+      .biometric-toggle {
+        width: fit-content;
+        &.toggle-checked {
+          --track-background-checked: var(--ion-color-primary-gradient);
 
-        &.md {
-          --handle-background-checked: #fff;
+          &.md {
+            --handle-background-checked: #fff;
+          }
         }
       }
     }
