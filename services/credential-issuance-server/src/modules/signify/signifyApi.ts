@@ -5,8 +5,8 @@ import {
   randomPasscode,
   Operation,
   Saider,
+  Serder,
 } from "signify-ts";
-import { Agent } from "../../agent";
 import { waitAndGetDoneOp } from "./utils";
 import { config } from "../../config";
 import { v4 as uuidv4 } from "uuid";
@@ -161,20 +161,23 @@ export class SignifyApi {
       this.opTimeout,
       this.opRetryInterval,
     );
-    
+    const issuerCredential = await this.signifyClient
+      .credentials()
+      .get(result.acdc.ked.d);
     const datetime = new Date().toISOString().replace("Z", "000+00:00");
     const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
       senderName: issuerName,
       recipient: recipientPrefix,
-      acdc: result.acdc,
-      iss: result.iss,
-      anc: result.anc,
+      acdc: new Serder(issuerCredential.sad),
+      anc: new Serder(issuerCredential.anc),
+      iss: new Serder(issuerCredential.iss),
+      ancAttachment: issuerCredential.ancAttachment,
       datetime,
     });
-    const sm = await this.signifyClient
+    const smg = await this.signifyClient
       .ipex()
       .submitGrant(issuerName, grant, gsigs, gend, [recipientPrefix]);
-    await waitAndGetDoneOp(this.signifyClient, sm, this.opTimeout, this.opRetryInterval);
+    await waitAndGetDoneOp(this.signifyClient, smg, this.opTimeout, this.opRetryInterval);
     return result.acdc.ked.d;
   }
   
@@ -203,11 +206,10 @@ export class SignifyApi {
     
     const LE_SCHEMA_SAID = "ENPXp1vQzRF6JwIuS-mp2U8Uf1MoADoP_GqQ62VsDZWY";
     await this.resolveOobi(`${config.oobiEndpoint}/oobi/${LE_SCHEMA_SAID}`);
+    await this.resolveOobi(`${config.oobiEndpoint}/oobi/EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao`);
     const qviCredential = await this.signifyClient
       .credentials()
       .get(qviCredentialId);
-    console.log("qviCredentialId");
-    console.log(qviCredentialId)
     const result = await this.signifyClient
       .credentials()
       .issue({
@@ -243,7 +245,21 @@ export class SignifyApi {
       this.opTimeout,
       this.opRetryInterval,
     );
-    console.log(result.acdc.ked.d);
+    
+    const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
+      senderName: holderAidName,
+      acdc: new Serder(qviCredential.sad),
+      anc: new Serder(qviCredential.anc),
+      iss: new Serder(qviCredential.iss),
+      ancAttachment: qviCredential.ancAttachment,
+      recipient: legalEntityAidPrefix,
+      datetime: new Date().toISOString().replace("Z", "000+00:00"),
+    });
+    await this.signifyClient
+      .ipex()
+      .submitGrant(holderAidName, grant, gsigs, gend, [
+        legalEntityAidPrefix,
+      ]);
     return result.acdc.ked.d;
     
   }
