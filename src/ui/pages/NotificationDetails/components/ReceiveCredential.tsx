@@ -25,22 +25,20 @@ import { updateReduxState } from "../../../../store/utils";
 import { PageHeader } from "../../../components/PageHeader";
 import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
 import { Agent } from "../../../../core/agent/agent";
+import { NotificationDetailsProps } from "../NotificationDetails.types";
 
 const ReceiveCredential = ({
+  pageId,
+  activeStatus,
   notificationDetails,
   handleBack,
-}: {
-  notificationDetails: KeriaNotification;
-  handleBack: () => void;
-}) => {
-  const pageId = "notification-details";
+  handleNotificationDelete,
+}: NotificationDetailsProps) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
   const fallbackLogo = KeriLogo;
-  const [activeStatus, setActiveStatus] = useState(true);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const ANIMATION_DELAY = 4000;
-  const [blur, setBlur] = useState(false);
   const connection = connectionsCache.filter(
     (connection) => connection.id === notificationDetails.connectionId
   )[0]?.label;
@@ -53,11 +51,16 @@ const ReceiveCredential = ({
 
   const handleAccept = async () => {
     setInitiateAnimation(true);
-
-    Agent.agent.ipexCommunications.acceptAcdc(notificationDetails.id);
+    await Agent.agent.ipexCommunications.acceptAcdc(notificationDetails.id);
+    handleNotificationDelete(notificationDetails.id);
     setTimeout(() => {
       handleBack();
     }, ANIMATION_DELAY);
+  };
+
+  const handleDecline = async () => {
+    handleNotificationDelete(notificationDetails.id);
+    handleBack();
   };
 
   return (
@@ -125,7 +128,7 @@ const ReceiveCredential = ({
           secondaryButtonText={`${i18n.t(
             "notifications.details.buttons.decline"
           )}`}
-          secondaryButtonAction={handleBack}
+          secondaryButtonAction={() => setAlertDeclineIsOpen(true)}
         />
       </ResponsivePageLayout>
       <AlertDecline
@@ -137,7 +140,7 @@ const ReceiveCredential = ({
         )}
         confirmButtonText={`${i18n.t("notifications.details.buttons.decline")}`}
         cancelButtonText={`${i18n.t("notifications.details.buttons.cancel")}`}
-        actionConfirm={() => handleAccept()}
+        actionConfirm={() => handleDecline()}
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}
       />

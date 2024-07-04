@@ -29,22 +29,18 @@ import { PageHeader } from "../../../components/PageHeader";
 import { i18n } from "../../../../i18n";
 import { PageFooter } from "../../../components/PageFooter";
 import "./MultiSigRequest.scss";
-import {
-  CreateIdentifierResult,
-  KeriaNotification,
-} from "../../../../core/agent/agent.types";
+import { CreateIdentifierResult } from "../../../../core/agent/agent.types";
+import { NotificationDetailsProps } from "../NotificationDetails.types";
 
 const MultiSigRequest = ({
+  pageId,
+  activeStatus,
   notificationDetails,
   handleBack,
-}: {
-  notificationDetails: KeriaNotification;
-  handleBack: () => void;
-}) => {
-  const pageId = "notification-details";
+  handleNotificationDelete,
+}: NotificationDetailsProps) => {
   const dispatch = useAppDispatch();
-  const [activeStatus, setActiveStatus] = useState(true);
-  const blur = false;
+  const [blur, setBlur] = useState(false);
   const identifiersData = useAppSelector(getIdentifiersCache);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [multisigIcpDetails, setMultisigIcpDetails] =
@@ -61,8 +57,16 @@ const MultiSigRequest = ({
     getDetails();
   }, []);
 
+  useEffect(() => {
+    if (blur) {
+      document?.querySelector("ion-router-outlet")?.classList.add("blur");
+    } else {
+      document?.querySelector("ion-router-outlet")?.classList.remove("blur");
+    }
+  }, [blur]);
+
   const actionAccept = async () => {
-    // setBlur && setBlur(true);
+    setBlur && setBlur(true);
     if (!(notificationDetails && multisigIcpDetails)) {
       return;
     } else {
@@ -96,11 +100,14 @@ const MultiSigRequest = ({
           : ToastMsgType.IDENTIFIER_REQUESTED;
       }
     }
+    handleNotificationDelete(notificationDetails.id);
     handleBack();
+    setBlur && setBlur(false);
   };
 
   const actionDecline = () => {
     setAlertDeclineIsOpen(false);
+    handleNotificationDelete(notificationDetails.id);
     handleBack();
   };
 

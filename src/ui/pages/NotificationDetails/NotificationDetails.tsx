@@ -15,9 +15,9 @@ import {
   KeriaNotification,
   NotificationRoute,
 } from "../../../core/agent/agent.types";
-import { CredentialRequest } from "./components/CredentialRequest";
 import { MultiSigRequest } from "./components/MultiSigRequest";
 import { ReceiveCredential } from "./components/ReceiveCredential";
+import { Agent } from "../../../core/agent/agent";
 
 const NotificationDetails = () => {
   const pageId = "notification-details";
@@ -25,9 +25,9 @@ const NotificationDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const notificationsData = useAppSelector(getNotificationsCache);
-  const [notificationDetails, setNotificationDetails] =
-    useState<KeriaNotification>(history?.location?.state as KeriaNotification);
+  const notificationsCache = useAppSelector(getNotificationsCache);
+  const [notifications, setNotifications] = useState(notificationsCache);
+  const notificationDetails = history?.location?.state as KeriaNotification;
 
   const handleBack = () => {
     const data: DataProps = {
@@ -42,35 +42,35 @@ const NotificationDetails = () => {
     ionicRouter.goBack();
   };
 
-  // if (loading.details || loading.history) {
-  //   return (
-  //     <div
-  //       className="notification-detail-spinner-container"
-  //       data-testid="notification-detail-spinner-container"
-  //     >
-  //       <IonSpinner name="circular" />
-  //     </div>
-  //   );
-  // }
+  const handleNotificationDelete = async (id: string) => {
+    await Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
+    const updatedNotifications = notifications.filter(
+      (notification) => notification.id !== id
+    );
+    setNotifications(updatedNotifications);
+    dispatch(setNotificationsCache(updatedNotifications));
+  };
 
   return (
     <>
-      {notificationDetails.a.r === NotificationRoute.ExnIpexApply && (
-        <CredentialRequest
-          notificationDetails={notificationDetails}
-          handleBack={handleBack}
-        />
-      )}
-      {notificationDetails.a.r === NotificationRoute.MultiSigIcp && (
+      {!!notificationDetails &&
+        notificationDetails.a.r === NotificationRoute.MultiSigIcp && (
         <MultiSigRequest
+          pageId={pageId}
+          activeStatus={!!notificationDetails}
           notificationDetails={notificationDetails}
           handleBack={handleBack}
+          handleNotificationDelete={handleNotificationDelete}
         />
       )}
-      {notificationDetails.a.r === NotificationRoute.ExnIpexGrant && (
+      {!!notificationDetails &&
+        notificationDetails.a.r === NotificationRoute.ExnIpexGrant && (
         <ReceiveCredential
+          pageId={pageId}
+          activeStatus={!!notificationDetails}
           notificationDetails={notificationDetails}
           handleBack={handleBack}
+          handleNotificationDelete={handleNotificationDelete}
         />
       )}
     </>

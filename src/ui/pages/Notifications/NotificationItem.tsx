@@ -14,10 +14,12 @@ const NotificationItem = ({
   item,
   index,
   handleNotificationClick,
+  handleNotificationDelete,
 }: {
   item: KeriaNotification;
   index: number;
   handleNotificationClick: (item: KeriaNotification) => void;
+  handleNotificationDelete: (id: string) => void;
 }) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
   const notificationLabel = (item: KeriaNotification) => {
