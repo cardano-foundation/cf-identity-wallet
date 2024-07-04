@@ -4,7 +4,7 @@ services:
     container_name: idw-keria
     restart: unless-stopped
     build:
-      context: github.com/cardano-foundation/keria.git#03a1b13047f91f7f287e0a03d227084835db6616
+      context: https://github.com/cardano-foundation/keria.git#03a1b13047f91f7f287e0a03d227084835db6616
       dockerfile: ./images/keria.dockerfile
     environment:
       - KERI_AGENT_CORS=true
@@ -37,7 +37,7 @@ services:
   cred-issuance:
     container_name: cred-issuance
     build:
-      context: ./services/credential-issuance-server
+      context: ./services/credential-server
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
@@ -48,6 +48,18 @@ services:
       - 3001:3001
     volumes:
       - issuer-server-data:/usr/local/var/keri
+
+  cred-issuance-ui:
+    container_name: cred-issuance-ui
+    build:
+      context: ./services/credential-server-ui
+      dockerfile: ./Dockerfile
+      args:
+        - REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL=http://localhost:3001
+        - REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT=3001
+    restart: unless-stopped
+    ports:
+      - 3000:80
 
 volumes:
   keria-data:
