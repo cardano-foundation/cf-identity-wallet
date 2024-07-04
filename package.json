@@ -6,7 +6,7 @@
     "dev": "webpack serve --config webpack/webpack.dev.cjs --host 0.0.0.0 --port 3003",
     "build": "cross-env ENVIRONMENT=remote-dev-comm webpack --config webpack/webpack.prod.cjs",
     "build:cap": "npm run build && npx cap sync",
-    "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}' 'credential-issuance-server/src/**/*.{ts,tsx,scss}'",
+    "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}' 'services/credential-server/src/**/*.{ts,tsx,scss}'",
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
     "wdio:android:s23ultra": "npx wdio tests/config/wdio.emu.android.galaxyS23Ultra.config.ts --watch",

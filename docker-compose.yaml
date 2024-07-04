@@ -37,7 +37,7 @@ services:
   cred-issuance:
     container_name: cred-issuance
     build:
-      context: ./services/credential-issuance-server
+      context: ./services/credential-server
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
@@ -52,7 +52,7 @@ services:
   cred-issuance-ui:
     container_name: cred-issuance-ui
     build:
-      context: ./services/credential-issuance-server-web-interface
+      context: ./services/credential-server-ui
       dockerfile: ./Dockerfile
       args:
         - REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL=http://localhost:3001

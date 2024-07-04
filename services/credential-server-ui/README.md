@@ -1,6 +1,6 @@
 # Credential Issuance Server Web Interface
 
-This folder contains a Web Interface to interact with the [Credential Issuance Server](../credential-issuance-server)
+This folder contains a Web Interface to interact with the [Credential Issuance Server](../credential-server)
 
 ## Features
     - Connect to a credential issuance server
@@ -13,7 +13,7 @@ This folder contains a Web Interface to interact with the [Credential Issuance S
 
 ## Preparing the App
 
-This web interface needs to be connected to a Credential Issuance Server to request and receive credentials. More instructions on how to run this service can be found [here](../credential-issuance-server).
+This web interface needs to be connected to a Credential Issuance Server to request and receive credentials. More instructions on how to run this service can be found [here](../credential-server).
 
 By default, the app tries to connect to an instance of the Credential Issuance Server running locally on port `3001`. To connect this interface to an instance that is not running locally, you need to update the provided [`.env`](.env) file to include the URL and port of the instance.
 
