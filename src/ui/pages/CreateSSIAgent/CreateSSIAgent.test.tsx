@@ -13,10 +13,11 @@ import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { OperationType } from "../../globals/types";
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import { RoutePath } from "../../../routes";
-import { KeyStoreKeys } from "../../../core/storage";
+import { MiscRecordId } from "../../../core/agent/agent.types";
 
 const bootAndConnectMock = jest.fn((...args: any) => Promise.resolve());
 const recoverKeriaAgentMock = jest.fn();
+const basicStorageDeleteMock = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -24,6 +25,9 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       bootAndConnect: (...args: any) => bootAndConnectMock(...args),
       recoverKeriaAgent: (...args: any) => recoverKeriaAgentMock(...args),
+      basicStorage: {
+        deleteById: (...args: any) => basicStorageDeleteMock(...args),
+      },
     },
   },
 }));
@@ -462,8 +466,8 @@ describe("SSI agent page: recovery mode", () => {
     });
 
     await waitFor(() => {
-      expect(secureStorageDeleteFunc).toBeCalledWith(
-        KeyStoreKeys.RECOVERY_WALLET
+      expect(basicStorageDeleteMock).toBeCalledWith(
+        MiscRecordId.APP_RECOVERY_WALLET
       );
     });
   });
