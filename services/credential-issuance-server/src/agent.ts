@@ -6,7 +6,12 @@ class Agent {
   static readonly HOLDER_AID_NAME = "holder";
   static readonly VLEI_HOST =
     "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
-  static readonly SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
+  static readonly QVI_SCHEMA_SAID =
+    "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
+  static readonly IIW_DEMO_SCHEMA_SAID =
+    "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu";
+  static readonly LE_SCHEMA_SAID =
+    "ENPXp1vQzRF6JwIuS-mp2U8Uf1MoADoP_GqQ62VsDZWY";
 
   private static instance: Agent;
 
@@ -45,6 +50,10 @@ class Agent {
   }
 
   async issueAcdcCredentialByAid(schemaSaid, aid, attribute) {
+    if (schemaSaid === Agent.LE_SCHEMA_SAID) {
+      return this.issueLeChainedCredential(aid);
+    }
+
     return this.signifyApi.issueCredential(
       Agent.HOLDER_AID_NAME,
       this.keriRegistryRegk,
@@ -53,10 +62,13 @@ class Agent {
       attribute
     );
   }
+
   async issueLeChainedCredential(legalEntityAidPrefix: string) {
     const AIDIssuerName = Agent.ISSUER_AID_NAME;
     const AIDHolderName = Agent.HOLDER_AID_NAME;
-    const issuerAid = await this.signifyApiIssuer.getIdentifierByName(AIDIssuerName);
+    const issuerAid = await this.signifyApiIssuer.getIdentifierByName(
+      AIDIssuerName
+    );
     const holderAid = await this.signifyApi.getIdentifierByName(AIDHolderName);
     const issuerAidOobi = await this.signifyApiIssuer.getOobi(issuerAid.name);
     const holderAidOobi = await this.signifyApi.getOobi(holderAid.name);
@@ -66,21 +78,31 @@ class Agent {
     const qviCredentialId = await this.signifyApiIssuer.issueQVICredential(
       issuerAid.name,
       this.keriIssuerRegistryRegk,
-      "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      Agent.QVI_SCHEMA_SAID,
       holderAid.prefix
     );
-    await new Promise((rs) => {
-      setTimeout(() => {
-        rs(true);
-      }, 5000);
-    });
-    // TODO: remove await 5000, loop get notification type grant, Fergal comment
-    const holderNotifications = await this.signifyApi.getNotifications();
-    const grantNotification = holderNotifications.notes[0];
+
+    const getHolderNotifications = async () => {
+      let holderNotifications = await this.signifyApi.getNotifications();
+
+      while (!holderNotifications.total) {
+        holderNotifications = await this.signifyApi.getNotifications();
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
+
+      return holderNotifications;
+    };
+
+    const grantNotification = (await getHolderNotifications()).notes[0];
+
     // holder IPEX admit
-    await this.signifyApi.admitCredential(holderAid.name, grantNotification.a.d!, issuerAid.prefix);
+    await this.signifyApi.admitCredential(
+      holderAid.name,
+      grantNotification.a.d!,
+      issuerAid.prefix
+    );
     await this.signifyApi.deleteNotification(grantNotification.i);
-    
+
     return this.signifyApi.leChainedCredential(
       qviCredentialId,
       this.keriRegistryRegk,
@@ -139,25 +161,35 @@ class Agent {
       await this.signifyApi.deleteNotification(notif.i);
     }
   }
-  async initKeri(issuerName?: string) {
-    // TDDO: check Fergal comment refactor
+  async initKeri() {
     this.onNotificationKeriStateChanged();
-    const AIDIssuerName = issuerName ? issuerName : Agent.ISSUER_AID_NAME;
-    const AIDHolderName = Agent.HOLDER_AID_NAME;
+    /* eslint-disable no-console */
+
     // Issuer
     const existedIdentifier = await this.signifyApiIssuer
-      .getIdentifierByName(AIDIssuerName)
+      .getIdentifierByName(Agent.ISSUER_AID_NAME)
       .catch(() => null);
     if (existedIdentifier) return existedIdentifier;
-    await this.signifyApiIssuer.createIdentifier(AIDIssuerName);
-    this.keriIssuerRegistryRegk = await this.signifyApiIssuer.createRegistry(AIDIssuerName);
+
+    await this.signifyApiIssuer
+      .createIdentifier(Agent.ISSUER_AID_NAME)
+      .catch((e) => console.error(e));
+    this.keriIssuerRegistryRegk = await this.signifyApiIssuer
+      .createRegistry(Agent.ISSUER_AID_NAME)
+      .catch((e) => console.error(e));
+
     // holder
     const existedIdentifierHolder = await this.signifyApi
-      .getIdentifierByName(AIDHolderName)
+      .getIdentifierByName(Agent.HOLDER_AID_NAME)
       .catch(() => null);
     if (existedIdentifierHolder) return existedIdentifierHolder;
-    await this.signifyApi.createIdentifier(AIDHolderName);
-    this.keriRegistryRegk = await this.signifyApi.createRegistry(AIDHolderName);
+
+    await this.signifyApi
+      .createIdentifier(Agent.HOLDER_AID_NAME)
+      .catch((e) => console.error(e));
+    this.keriRegistryRegk = await this.signifyApi
+      .createRegistry(Agent.HOLDER_AID_NAME)
+      .catch((e) => console.error(e));
   }
 }
 

@@ -18,9 +18,7 @@ const config = {
     shorten: "/shorten/:id",
     createShorten: "/shorten",
     keriOobi: "/keriOobi",
-    issueAcdcCredential : "/issueAcdcCredential",
-    // TODO: merge to 1 api, Fergal comment
-    issueLeCredential : "/issueLECredential",
+    issueAcdcCredential: "/issueAcdcCredential",
     schemaOobi: "/oobi/:id",
     contacts: "/contacts",
     resolveOobi: "/resolveOobi",
