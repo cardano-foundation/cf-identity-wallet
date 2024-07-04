@@ -15,6 +15,7 @@ import "./Scan.scss";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
+import { OperationType, ToastMsgType } from "../../globals/types";
 
 const Scan = () => {
   const pageId = "scan-tab";
@@ -38,11 +39,22 @@ const Scan = () => {
           toastMsg: currentToastMsg,
         },
       };
+
       const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.SCAN, data);
       updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+
+      const connectionScan =
+        currentOperation === OperationType.RECEIVE_CONNECTION &&
+        [TabsRoutePath.IDENTIFIERS, TabsRoutePath.CREDENTIALS].includes(
+          nextPath.pathname as TabsRoutePath
+        );
+
       history.push({
         pathname: nextPath.pathname,
-        state: data.state,
+        state: {
+          ...data.state,
+          openConnections: connectionScan,
+        },
       });
       setIsValueCaptured(false);
     }

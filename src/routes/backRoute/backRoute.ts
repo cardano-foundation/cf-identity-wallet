@@ -131,7 +131,9 @@ const getPreviousRoute = (data: DataProps): { pathname: string } => {
   } else if (prevPath) {
     path = prevPath.path;
   } else {
-    path = RoutePath.ONBOARDING;
+    path = data.store.stateCache.authentication.ssiAgentIsSet
+      ? TabsRoutePath.IDENTIFIERS
+      : RoutePath.ONBOARDING;
   }
 
   if (path === RoutePath.VERIFY_SEED_PHRASE) {

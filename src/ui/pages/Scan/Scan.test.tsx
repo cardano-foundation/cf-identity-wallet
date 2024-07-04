@@ -119,6 +119,7 @@ describe("Scan Tab", () => {
         pathname: undefined,
         state: {
           currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
+          openConnections: false,
         },
       });
     });
