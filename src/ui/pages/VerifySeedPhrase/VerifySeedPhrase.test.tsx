@@ -13,11 +13,28 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { VerifySeedPhrase } from "../VerifySeedPhrase";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { KeyStoreKeys } from "../../../core/storage";
+
+jest.mock("../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      basicStorage: {
+        deleteById: jest.fn(() => Promise.resolve()),
+      },
+    },
+  },
+}));
+
+const secureStorageMock = jest.fn((...arg: any) => Promise.resolve());
+jest.mock("../../../core/storage", () => ({
+  ...jest.requireActual("../../../core/storage"),
+  SecureStorage: {
+    set: (...arg: any) => secureStorageMock(...arg),
+    delete: jest.fn(),
+  },
+}));
 
 const MNEMONIC_WORDS = 18;
-
-jest.mock("../../../core/storage");
 
 describe("Verify Seed Phrase Page", () => {
   const mockStore = configureStore();
@@ -193,7 +210,13 @@ describe("Verify Seed Phrase Page", () => {
       expect(continueButton).toHaveAttribute("disabled", "false")
     );
 
-    fireEvent.click(continueButton);
+    act(() => {
+      fireEvent.click(continueButton);
+    });
+
+    await waitFor(() => {
+      expect(secureStorageMock).toBeCalled();
+    });
   });
 
   test("The user can Verify the Seed Phrase when generating a new seed phrase", async () => {
@@ -235,7 +258,7 @@ describe("Verify Seed Phrase Page", () => {
     fireEvent.click(continueButton);
 
     await waitFor(() =>
-      expect(SecureStorage.set).toBeCalledWith(
+      expect(secureStorageMock).toBeCalledWith(
         KeyStoreKeys.SIGNIFY_BRAN,
         initialState.seedPhraseCache.bran
       )

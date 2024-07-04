@@ -29,6 +29,9 @@ jest.mock("../../../core/agent/agent", () => ({
       credentials: {
         getCredentialDetailsById: jest.fn(),
       },
+      basicStorage: {
+        deleteById: jest.fn(() => Promise.resolve()),
+      },
     },
   },
 }));
@@ -61,7 +64,7 @@ const initialStateFull = {
   connectionsCache: {
     connections: connectionsFix,
   },
-  biometryCache: {
+  biometricsCache: {
     enabled: false,
   },
 };

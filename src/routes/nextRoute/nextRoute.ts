@@ -10,7 +10,7 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { ToastMsgType } from "../../ui/globals/types";
+import { OperationType } from "../../ui/globals/types";
 
 const getNextRootRoute = (data: DataProps) => {
   const authentication = data.store.stateCache.authentication;
@@ -22,7 +22,9 @@ const getNextRootRoute = (data: DataProps) => {
   }
 
   if (authentication.passwordIsSet || authentication.passwordIsSkipped) {
-    path = RoutePath.GENERATE_SEED_PHRASE;
+    path = authentication.recoveryWalletProgress
+      ? RoutePath.VERIFY_RECOVERY_SEED_PHRASE
+      : RoutePath.GENERATE_SEED_PHRASE;
   }
 
   if (authentication.seedPhraseIsSet) {
@@ -100,6 +102,15 @@ const updateStoreAfterSetupSSI = (data: DataProps) => {
   return setAuthentication({
     ...data.store.stateCache.authentication,
     ssiAgentIsSet: true,
+    recoveryWalletProgress: false,
+    seedPhraseIsSet: true,
+  });
+};
+
+const updateStoreRecoveryWallet = (data: DataProps) => {
+  return setAuthentication({
+    ...data.store.stateCache.authentication,
+    recoveryWalletProgress: data.state?.recoveryWalletProgress,
   });
 };
 
@@ -127,7 +138,11 @@ const updateStoreCurrentRoute = (data: DataProps) => {
   return setCurrentRoute({ path: data.state?.nextRoute });
 };
 
-const getNextCreatePasswordRoute = () => {
+const getNextCreatePasswordRoute = (data: DataProps) => {
+  if (data.store.stateCache.authentication.recoveryWalletProgress) {
+    return { pathname: RoutePath.VERIFY_RECOVERY_SEED_PHRASE };
+  }
+
   return { pathname: RoutePath.GENERATE_SEED_PHRASE };
 };
 const updateStoreAfterCreatePassword = (data: DataProps) => {
@@ -140,15 +155,27 @@ const updateStoreAfterCreatePassword = (data: DataProps) => {
 };
 
 const getNextScanRoute = (data: DataProps) => {
-  const currentToastMsg = data?.state?.toastMsg;
+  const currentOperation = data?.state?.currentOperation;
   let path;
-  if (
-    currentToastMsg === ToastMsgType.CONNECTION_REQUEST_PENDING ||
-    currentToastMsg === ToastMsgType.CREDENTIAL_REQUEST_PENDING
-  ) {
+  if (currentOperation === OperationType.ADD_CREDENTIAL) {
     path = TabsRoutePath.CREDENTIALS;
-    // @TODO - foconnor: We need to open the connection list if it is CONNECTION_REQUEST_PENDING.
   }
+
+  if (currentOperation === OperationType.RECEIVE_CONNECTION) {
+    let previousPath = data.store.stateCache.routes[1]?.path;
+
+    if (
+      !previousPath ||
+      ![TabsRoutePath.CREDENTIALS, TabsRoutePath.IDENTIFIERS].includes(
+        previousPath as TabsRoutePath
+      )
+    ) {
+      previousPath = TabsRoutePath.IDENTIFIERS;
+    }
+
+    path = previousPath;
+  }
+
   return { pathname: path };
 };
 
@@ -176,7 +203,7 @@ const nextRoute: Record<string, any> = {
   },
   [RoutePath.ONBOARDING]: {
     nextPath: (data: DataProps) => getNextOnboardingRoute(data),
-    updateRedux: [],
+    updateRedux: [updateStoreRecoveryWallet],
   },
   [RoutePath.SET_PASSCODE]: {
     nextPath: (data: DataProps) => getNextSetPasscodeRoute(data.store),
@@ -190,12 +217,16 @@ const nextRoute: Record<string, any> = {
     nextPath: () => getNextVerifySeedPhraseRoute(),
     updateRedux: [updateStoreAfterVerifySeedPhraseRoute, clearSeedPhraseCache],
   },
+  [RoutePath.VERIFY_RECOVERY_SEED_PHRASE]: {
+    nextPath: () => getNextVerifySeedPhraseRoute(),
+    updateRedux: [],
+  },
   [RoutePath.SSI_AGENT]: {
     nextPath: () => getNextCreateSSIAgentRoute(),
     updateRedux: [updateStoreAfterSetupSSI],
   },
   [RoutePath.CREATE_PASSWORD]: {
-    nextPath: () => getNextCreatePasswordRoute(),
+    nextPath: (data: DataProps) => getNextCreatePasswordRoute(data),
     updateRedux: [updateStoreAfterCreatePassword],
   },
   [RoutePath.CONNECTION_DETAILS]: {

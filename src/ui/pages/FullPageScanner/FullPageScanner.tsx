@@ -7,7 +7,7 @@ import {
   FullPageScannerProps,
   ScannerRefComponent,
 } from "./FullPageScanner.types";
-import { OperationType } from "../../globals/types";
+import { BackEventPriorityType, OperationType } from "../../globals/types";
 import "./FullPageScanner.scss";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { PageHeader } from "../../components/PageHeader";
@@ -45,6 +45,10 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
           closeButton={true}
           closeButtonAction={handleCloseButton}
           closeButtonIcon={arrowBackOutline}
+          hardwareBackButtonConfig={{
+            prevent: !showScan,
+            priority: BackEventPriorityType.Scanner,
+          }}
         />
       }
     >

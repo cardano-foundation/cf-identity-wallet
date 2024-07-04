@@ -9,45 +9,68 @@ import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 import { DataProps, PayloadProps } from "../nextRoute/nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
 import { KeyStoreKeys, SecureStorage } from "../../core/storage";
+import { Agent } from "../../core/agent/agent";
+import { MiscRecordId } from "../../core/agent/agent.types";
 
-const clearStorageAfterBack = (nextPath: string, data: DataProps) => {
+const onboardingRouters = [
+  RoutePath.SSI_AGENT,
+  RoutePath.GENERATE_SEED_PHRASE,
+  RoutePath.VERIFY_RECOVERY_SEED_PHRASE,
+  RoutePath.CREATE_PASSWORD,
+  RoutePath.SET_PASSCODE,
+  RoutePath.ONBOARDING,
+];
+
+const clearStorageAfterBackOnboarding = (nextPath: string, data: DataProps) => {
   const authState = {
     ...data.store.stateCache.authentication,
   };
+
   const onboardingFlow = [
     {
-      path: RoutePath.SSI_AGENT,
+      path: [RoutePath.SSI_AGENT],
       clearFn: () => {
         SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
         authState.seedPhraseIsSet = false;
       },
     },
     {
-      path: RoutePath.GENERATE_SEED_PHRASE,
+      path: [
+        RoutePath.GENERATE_SEED_PHRASE,
+        RoutePath.VERIFY_RECOVERY_SEED_PHRASE,
+      ],
       clearFn: () => {
         SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
-        SecureStorage.delete(KeyStoreKeys.APP_PASSWORD_SKIPPED);
+        Agent.agent.basicStorage
+          .deleteById(MiscRecordId.APP_PASSWORD_SKIPPED)
+          .catch((error) => {
+            // TODO: handle error
+          });
         authState.passwordIsSet = false;
         authState.passwordIsSkipped = false;
       },
     },
     {
-      path: RoutePath.CREATE_PASSWORD,
+      path: [RoutePath.CREATE_PASSWORD],
       clearFn: () => {
         SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
         authState.passcodeIsSet = false;
       },
     },
     {
-      path: RoutePath.SET_PASSCODE,
+      path: [RoutePath.SET_PASSCODE],
+      clearFn: () => {
+        SecureStorage.delete(KeyStoreKeys.RECOVERY_WALLET);
+        authState.recoveryWalletProgress = false;
+      },
     },
     {
-      path: RoutePath.ONBOARDING,
+      path: [RoutePath.ONBOARDING],
     },
   ];
 
   for (const item of onboardingFlow) {
-    if (nextPath === item.path) {
+    if (item.path.includes(nextPath as RoutePath)) {
       break;
     }
 
@@ -69,11 +92,18 @@ const getBackRoute = (
 } => {
   const { updateRedux } = backRoute[currentPath];
   const backPathUrl = backPath(data);
-  const clearReduxState = clearStorageAfterBack(backPathUrl.pathname, data);
+
+  if (onboardingRouters.includes(backPathUrl.pathname as RoutePath)) {
+    const clearReduxState = clearStorageAfterBackOnboarding(
+      backPathUrl.pathname,
+      data
+    );
+    updateRedux.push(clearReduxState);
+  }
 
   return {
     backPath: backPathUrl,
-    updateRedux: [...updateRedux, clearReduxState],
+    updateRedux: [...updateRedux],
   };
 };
 
@@ -89,9 +119,9 @@ const updateStoreSetCurrentRoute = (data: DataProps) => {
 
   return setCurrentRoute({ path });
 };
+
 const getPreviousRoute = (data: DataProps): { pathname: string } => {
   const routes = data.store.stateCache.routes;
-
   const prevPath = calcPreviousRoute(routes);
 
   let path;
@@ -101,7 +131,9 @@ const getPreviousRoute = (data: DataProps): { pathname: string } => {
   } else if (prevPath) {
     path = prevPath.path;
   } else {
-    path = RoutePath.ONBOARDING;
+    path = data.store.stateCache.authentication.ssiAgentIsSet
+      ? TabsRoutePath.IDENTIFIERS
+      : RoutePath.ONBOARDING;
   }
 
   if (path === RoutePath.VERIFY_SEED_PHRASE) {
@@ -135,6 +167,9 @@ const backRoute: Record<string, any> = {
     ],
   },
   [RoutePath.VERIFY_SEED_PHRASE]: {
+    updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
+  },
+  [RoutePath.VERIFY_RECOVERY_SEED_PHRASE]: {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
   [RoutePath.SSI_AGENT]: {

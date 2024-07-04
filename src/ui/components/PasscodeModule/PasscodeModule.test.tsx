@@ -24,7 +24,7 @@ const initialState = {
   cryptoAccountsCache: {
     cryptoAccounts: [],
   },
-  biometryCache: {
+  biometricsCache: {
     enabled: false,
   },
 };

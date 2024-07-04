@@ -4,6 +4,7 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
+import { MemoryRouter } from "react-router-dom";
 import { Connections } from "./Connections";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
@@ -63,12 +64,14 @@ describe("Connections page", () => {
 
   test("It renders connections page successfully", async () => {
     const { getByTestId, getByText, getAllByText } = render(
-      <Provider store={mockedStore}>
-        <Connections
-          setShowConnections={mockSetShowConnections}
-          showConnections={true}
-        />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={mockedStore}>
+          <Connections
+            setShowConnections={mockSetShowConnections}
+            showConnections={true}
+          />
+        </Provider>
+      </MemoryRouter>
     );
     const addConnectionBtn = getByTestId("add-connection-button");
     expect(addConnectionBtn).toBeInTheDocument();
