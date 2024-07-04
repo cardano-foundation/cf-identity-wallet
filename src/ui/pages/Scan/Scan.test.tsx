@@ -1,12 +1,12 @@
 import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { Scan } from "./Scan";
-import { store } from "../../../store";
-import { TabsRoutePath } from "../../../routes/paths";
-import { OperationType } from "../../globals/types";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
+import { TabsRoutePath } from "../../../routes/paths";
+import { store } from "../../../store";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { OperationType } from "../../globals/types";
+import { Scan } from "./Scan";
 
 const startScan = jest.fn(
   (args: any) =>
@@ -120,6 +120,76 @@ describe("Scan Tab", () => {
         state: {
           currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
           openConnections: false,
+        },
+      });
+    });
+  });
+
+  test("Nav back to previous page after scan", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN, TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_CONNECTION,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      return {
+        type: KeriConnectionType.NORMAL,
+      };
+    });
+
+    getMultisigLinkedContactsMock.mockReturnValue([connectionsFix[0]]);
+
+    const { rerender } = render(
+      <Provider store={storeMocked}>
+        <Scan />
+      </Provider>
+    );
+
+    const updateState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN, TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.RECEIVE_CONNECTION,
+      },
+    };
+
+    const updateStore = {
+      ...mockStore(updateState),
+      dispatch: dispatchMock,
+    };
+
+    rerender(
+      <Provider store={updateStore}>
+        <Scan />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(historyPushMock).toBeCalledWith({
+        pathname: TabsRoutePath.IDENTIFIERS,
+        state: {
+          currentOperation: OperationType.RECEIVE_CONNECTION,
+          toastMsg: undefined,
+          nextRoute: "/tabs/identifiers",
+          openConnections: true,
         },
       });
     });
