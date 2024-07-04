@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { Agent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -75,7 +77,14 @@ const Onboarding = () => {
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
 
     if (op) {
-      SecureStorage.set(KeyStoreKeys.RECOVERY_WALLET, String(!!op));
+      Agent.agent.basicStorage.createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.APP_RECOVERY_WALLET,
+          content: {
+            value: String(!!op),
+          },
+        })
+      );
     }
 
     history.push({

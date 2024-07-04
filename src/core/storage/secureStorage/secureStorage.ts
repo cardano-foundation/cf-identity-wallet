@@ -8,7 +8,6 @@ enum KeyStoreKeys {
   APP_OP_PASSWORD = "app-operations-password",
   SIGNIFY_BRAN = "signify-bran",
   MEERKAT_SEED = "app-meerkat-seed",
-  RECOVERY_WALLET = "recovery-wallet",
 }
 
 class SecureStorage {

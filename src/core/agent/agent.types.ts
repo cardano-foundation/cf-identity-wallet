@@ -33,6 +33,7 @@ enum MiscRecordId {
   KERIA_BOOT_URL = "keria-boot-url",
   APP_IDENTIFIER_FAVOURITE_INDEX = "identifier-favourite-index",
   APP_PASSWORD_SKIPPED = "app-password-skipped",
+  APP_RECOVERY_WALLET = "recovery-wallet",
 }
 
 interface ConnectionShortDetails {
