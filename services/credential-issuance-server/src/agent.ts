@@ -74,6 +74,7 @@ class Agent {
         rs(true);
       }, 5000);
     });
+    // TODO: remove await 5000, loop get notification type grant, Fergal comment
     const holderNotifications = await this.signifyApi.getNotifications();
     const grantNotification = holderNotifications.notes[0];
     // holder IPEX admit
@@ -139,6 +140,7 @@ class Agent {
     }
   }
   async initKeri(issuerName?: string) {
+    // TDDO: check Fergal comment refactor
     this.onNotificationKeriStateChanged();
     const AIDIssuerName = issuerName ? issuerName : Agent.ISSUER_AID_NAME;
     const AIDHolderName = Agent.HOLDER_AID_NAME;
