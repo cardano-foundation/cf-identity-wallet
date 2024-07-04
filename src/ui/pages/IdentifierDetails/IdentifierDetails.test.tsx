@@ -25,11 +25,11 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
+const getMock = jest.fn((key: string) => "111111");
+
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
-    get: (key: string) => {
-      return "111111";
-    },
+    get: (key: string) => getMock(key),
   },
 }));
 
@@ -111,11 +111,14 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() =>
-      expect(getByTestId("share-button")).toBeInTheDocument()
-    );
+    await waitFor(() => {
+      expect(getByTestId("share-button")).toBeInTheDocument();
+      expect(queryByTestId("identifier-card-detail-spinner-container")).toBe(
+        null
+      );
+    });
 
-    expect(queryByTestId("share-identifier-modal")).toBe(null);
+    expect(queryByTestId("share-identifier-modal")).not.toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("share-button"));
@@ -389,7 +392,7 @@ describe("Cards Details page", () => {
   test("Show loading when indetifier data is null", async () => {
     Agent.agent.identifiers.getIdentifiers = jest.fn().mockResolvedValue(null);
 
-    const { getByTestId } = render(
+    const { getByTestId, unmount } = render(
       <Provider store={storeMockedAidKeri}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -405,6 +408,8 @@ describe("Cards Details page", () => {
         getByTestId("identifier-card-detail-spinner-container")
       ).toBeVisible()
     );
+
+    await act(async () => getMock.mockImplementation(() => "111111"));
   });
 
   test("Hide loading after retrieved indetifier data", async () => {

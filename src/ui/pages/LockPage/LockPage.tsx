@@ -16,6 +16,7 @@ import { PageFooter } from "../../components/PageFooter";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
+import { useExitAppWithDoubleTap } from "../../hooks/useExitAppWithDoubleTap";
 import "./LockPage.scss";
 
 const LockPage = () => {
@@ -27,6 +28,8 @@ const LockPage = () => {
   const { handleBiometricAuth } = useBiometricAuth();
   const biometricsCache = useSelector(getBiometricsCacheCache);
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
+
+  useExitAppWithDoubleTap(alertIsOpen || openRecoveryAuth);
 
   const headerText = i18n.t("lockpage.alert.text.verify");
   const confirmButtonText = i18n.t("lockpage.alert.button.verify");

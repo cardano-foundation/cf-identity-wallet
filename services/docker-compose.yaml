@@ -57,7 +57,7 @@ services:
   cred-issuance:
     container_name: cred-issuance
     build:
-      context: ../cf-identity-wallet/credential-issuance-server
+      context: ../cf-identity-wallet/credential-server
       dockerfile: ./Dockerfile
     restart: unless-stopped
     environment:

@@ -56,6 +56,15 @@ const Connections = ({
   );
 
   useEffect(() => {
+    const openConnections = (history.location.state as Record<string, any>)
+      ?.openConnections;
+
+    if (openConnections) {
+      setShowConnections(true);
+    }
+  }, [history.location.state]);
+
+  useEffect(() => {
     setShowPlaceholder(connectionsCache.length === 0);
   }, [connectionsCache]);
 
@@ -129,6 +138,7 @@ const Connections = ({
     <>
       <SideSlider open={showConnections}>
         <TabLayout
+          preventBackButtonEvent={!showConnections}
           pageId={pageId}
           header={true}
           backButton={true}

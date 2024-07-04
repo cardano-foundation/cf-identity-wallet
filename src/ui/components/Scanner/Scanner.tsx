@@ -117,6 +117,46 @@ const Scanner = forwardRef(
       dispatch(setMultiSigGroupCache(newMultiSigGroup));
     };
 
+    const handleSSIScan = (content: string) => {
+      if (OperationType.SCAN_SSI_BOOT_URL === currentOperation) {
+        dispatch(setBootUrl(content));
+      }
+
+      if (OperationType.SCAN_SSI_CONNECT_URL === currentOperation) {
+        dispatch(setConnectUrl(content));
+      }
+
+      handleReset && handleReset();
+    };
+
+    const handleResolveOobi = async (content: string) => {
+      try {
+        const invitation = await Agent.agent.connections.connectByOobiUrl(
+          content
+        );
+
+        if (invitation.type === KeriConnectionType.NORMAL) {
+          handleReset && handleReset();
+          setIsValueCaptured && setIsValueCaptured(true);
+          if (
+            currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
+            currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
+          ) {
+            const groupId = new URL(content).searchParams.get("groupId");
+            groupId && updateConnections(groupId);
+          }
+        }
+
+        if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
+          setGroupId(invitation.groupId);
+          setCreateIdentifierModalIsOpen(true);
+        }
+      } catch (e) {
+        dispatch(setToastMsg(ToastMsgType.SCANNER_ERROR));
+        initScan();
+      }
+    };
+
     const processValue = async (content: string) => {
       stopScan();
       // @TODO - foconnor: instead of setting the optype to idle we should
@@ -135,37 +175,12 @@ const Scanner = forwardRef(
           OperationType.SCAN_SSI_CONNECT_URL,
         ].includes(currentOperation)
       ) {
-        if (OperationType.SCAN_SSI_BOOT_URL === currentOperation) {
-          dispatch(setBootUrl(content));
-        }
-
-        if (OperationType.SCAN_SSI_CONNECT_URL === currentOperation) {
-          dispatch(setConnectUrl(content));
-        }
-
-        handleReset && handleReset();
+        handleSSIScan(content);
         return;
       }
 
       // @TODO - foconnor: when above loading screen in place, handle invalid QR code
-      const invitation = await Agent.agent.connections.connectByOobiUrl(
-        content
-      );
-
-      if (invitation.type === KeriConnectionType.NORMAL) {
-        handleReset && handleReset();
-        setIsValueCaptured && setIsValueCaptured(true);
-        if (
-          currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
-          currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
-        ) {
-          const groupId = new URL(content).searchParams.get("groupId");
-          groupId && updateConnections(groupId);
-        }
-      } else if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
-        setGroupId(invitation.groupId);
-        setCreateIdentifierModalIsOpen(true);
-      }
+      handleResolveOobi(content);
     };
 
     const initScan = async () => {
