@@ -8,7 +8,7 @@
     "build:local": "cross-env ENVIRONMENT=local-direct webpack --config webpack/webpack.prod.cjs",
     "build:cap": "npm run build && npx cap sync",
     "build:e2e": "npm run build:local && npx cap sync",
-    "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}' 'credential-issuance-server/src/**/*.{ts,tsx,scss}'",
+    "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}' 'services/credential-server/src/**/*.{ts,tsx,scss}'",
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
     "wdio:android:s23ultra": "npx wdio tests/config/wdio.emu.android.galaxyS23Ultra.config.ts --watch",
