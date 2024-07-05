@@ -117,14 +117,10 @@ const Routes = () => {
           component={CredentialDetails}
           exact
         />
-        <Route
-          render={() => (
-            <Redirect
-              exact
-              from="/"
-              to={nextPath}
-            />
-          )}
+        <Redirect
+          exact
+          from="/"
+          to={nextPath}
         />
       </IonRouterOutlet>
     </IonReactRouter>
