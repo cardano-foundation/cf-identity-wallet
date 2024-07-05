@@ -258,6 +258,10 @@ export class SignifyApi {
       })[1],
     });
 
+    const leCredential = await this.signifyClient
+      .credentials()
+      .get(result.acdc.ked.d);
+
     await waitAndGetDoneOp(
       this.signifyClient,
       result.op,
@@ -267,10 +271,10 @@ export class SignifyApi {
 
     const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
       senderName: holderAidName,
-      acdc: new Serder(qviCredential.sad),
-      anc: new Serder(qviCredential.anc),
-      iss: new Serder(qviCredential.iss),
-      ancAttachment: qviCredential.ancAttachment,
+      acdc: new Serder(leCredential.sad),
+      anc: new Serder(leCredential.anc),
+      iss: new Serder(leCredential.iss),
+      ancAttachment: leCredential.ancAttachment,
       recipient: legalEntityAidPrefix,
       datetime: new Date().toISOString().replace("Z", "000+00:00"),
     });
