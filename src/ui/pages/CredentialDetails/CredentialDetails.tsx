@@ -1,4 +1,3 @@
-import { useHistory, useParams } from "react-router-dom";
 import {
   IonButton,
   IonIcon,
@@ -6,28 +5,16 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
-import { TabLayout } from "../../components/layout/TabLayout";
-import { TabsRoutePath } from "../../../routes/paths";
-import { i18n } from "../../../i18n";
-import { updateReduxState } from "../../../store/utils";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getStateCache,
-  setCurrentOperation,
-  setCurrentRoute,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
-import { VerifyPassword } from "../../components/VerifyPassword";
-import {
-  Alert as AlertDeleteArchive,
-  Alert as AlertRestore,
-} from "../../components/Alert";
-import { CredentialOptions } from "../../components/CredentialOptions";
-import { MAX_FAVOURITES } from "../../globals/constants";
-import { OperationType, ToastMsgType } from "../../globals/types";
-import { VerifyPasscode } from "../../components/VerifyPasscode";
+import { useEffect, useMemo, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
+import { ACDCDetails } from "../../../core/agent/services/credentialService.types";
+import { i18n } from "../../../i18n";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { TabsRoutePath } from "../../../routes/paths";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   addFavouritesCredsCache,
   getCredsCache,
@@ -35,18 +22,30 @@ import {
   removeFavouritesCredsCache,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
-import { getNextRoute } from "../../../routes/nextRoute";
-import { CredentialCardTemplate } from "../../components/CredentialCardTemplate";
-import { ACDCDetails } from "../../../core/agent/services/credentialService.types";
+import {
+  getStateCache,
+  setCurrentOperation,
+  setCurrentRoute,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
+import { updateReduxState } from "../../../store/utils";
+import {
+  Alert as AlertDeleteArchive,
+  Alert as AlertRestore,
+} from "../../components/Alert";
 import "../../components/CardDetails/CardDetails.scss";
-import "./CredentialDetails.scss";
+import { CredentialCardTemplate } from "../../components/CredentialCardTemplate";
+import { CredentialOptions } from "../../components/CredentialOptions";
 import { PageFooter } from "../../components/PageFooter";
-import { CredentialContent } from "./components/CredentialContent";
-import { combineClassNames } from "../../utils/style";
+import { VerifyPasscode } from "../../components/VerifyPasscode";
+import { VerifyPassword } from "../../components/VerifyPassword";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { MAX_FAVOURITES } from "../../globals/constants";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { useAppIonRouter } from "../../hooks";
-import { MiscRecordId } from "../../../core/agent/agent.types";
-import { BasicRecord } from "../../../core/agent/records";
-import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
+import { combineClassNames } from "../../utils/style";
+import "./CredentialDetails.scss";
+import { CredentialContent } from "./components/CredentialContent";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -65,16 +64,29 @@ const CredentialDetails = () => {
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
-  const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<ACDCDetails>();
 
   const [navAnimation, setNavAnimation] = useState(false);
+
+  const routerParams: { id: string } = useParams();
+
+  const params = useMemo(() => {
+    if (routerParams.id) return routerParams;
+
+    return {
+      id: history.location.pathname
+        .replace(`${TabsRoutePath.CREDENTIALS}`, "")
+        .replace("/", ""),
+    };
+  }, [history.location.pathname, routerParams.id]);
 
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === params.id);
 
   useEffect(() => {
+    if (!params.id) return;
+
     getCredDetails();
   }, [params.id]);
 

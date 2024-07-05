@@ -1,4 +1,3 @@
-import { useHistory, useParams } from "react-router-dom";
 import {
   IonButton,
   IonIcon,
@@ -6,26 +5,21 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import {
-  shareOutline,
   ellipsisVertical,
-  heartOutline,
   heart,
+  heartOutline,
+  shareOutline,
 } from "ionicons/icons";
-import { useEffect, useState } from "react";
-import { TabsRoutePath } from "../../../routes/paths";
+import { useEffect, useMemo, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import { Agent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
+import { IdentifierDetails as IdentifierDetailsCore } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { getBackRoute } from "../../../routes/backRoute";
-import { updateReduxState } from "../../../store/utils";
+import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getStateCache,
-  setCurrentOperation,
-  setCurrentRoute,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
-import { ShareIdentifier } from "../../components/ShareIdentifier";
-import { VerifyPassword } from "../../components/VerifyPassword";
-import { Alert } from "../../components/Alert";
 import {
   addFavouriteIdentifierCache,
   getFavouritesIdentifiersCache,
@@ -33,23 +27,29 @@ import {
   removeFavouriteIdentifierCache,
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
-import { Agent } from "../../../core/agent/agent";
+import {
+  getStateCache,
+  setCurrentOperation,
+  setCurrentRoute,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
+import { updateReduxState } from "../../../store/utils";
+import { Alert } from "../../components/Alert";
+import "../../components/CardDetails/CardDetails.scss";
+import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
+import { IdentifierOptions } from "../../components/IdentifierOptions";
+import { PageFooter } from "../../components/PageFooter";
+import { PageHeader } from "../../components/PageHeader";
+import { ShareIdentifier } from "../../components/ShareIdentifier";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
-import { IdentifierContent } from "./components/IdentifierContent";
+import { VerifyPassword } from "../../components/VerifyPassword";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
-import { IdentifierOptions } from "../../components/IdentifierOptions";
-import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
-import { PageFooter } from "../../components/PageFooter";
-import "../../components/CardDetails/CardDetails.scss";
-import "./IdentifierDetails.scss";
-import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import { PageHeader } from "../../components/PageHeader";
-import { combineClassNames } from "../../utils/style";
-import { IdentifierDetails as IdentifierDetailsCore } from "../../../core/agent/services/identifier.types";
 import { useAppIonRouter } from "../../hooks";
-import { MiscRecordId } from "../../../core/agent/agent.types";
-import { BasicRecord } from "../../../core/agent/records";
+import { combineClassNames } from "../../utils/style";
+import "./IdentifierDetails.scss";
+import { IdentifierContent } from "./components/IdentifierContent";
 import { RotateKeyModal } from "./components/RotateKeyModal";
 
 const NAVIGATION_DELAY = 250;
@@ -69,11 +69,22 @@ const IdentifierDetails = () => {
   const [identifierOptionsIsOpen, setIdentifierOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<IdentifierDetailsCore | undefined>();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [openRotateKeyModal, setOpenRotateKeyModal] = useState(false);
   const [navAnimation, setNavAnimation] = useState(false);
+
+  const routerParams: { id: string } = useParams();
+
+  const params = useMemo(() => {
+    if (routerParams.id) return routerParams;
+
+    return {
+      id: history.location.pathname
+        .replace(`${TabsRoutePath.IDENTIFIERS}`, "")
+        .replace("/", ""),
+    };
+  }, [history.location.pathname, routerParams.id]);
 
   const isFavourite = favouritesIdentifiersData?.some(
     (fav) => fav.id === params.id
@@ -91,6 +102,8 @@ const IdentifierDetails = () => {
   };
 
   useEffect(() => {
+    if (!params.id) return;
+
     fetchDetails();
   }, [params.id]);
 
