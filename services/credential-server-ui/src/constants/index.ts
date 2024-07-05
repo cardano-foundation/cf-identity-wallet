@@ -22,7 +22,12 @@ export const Attributes = {
       label: "LEI",
     },
   ],
-  [CredentialType.LE]: [],
+  [CredentialType.LE]: [
+    {
+      key: "LEI",
+      label: "LEI",
+    },
+  ],
 };
 
 export const credentialTypes = [

@@ -219,7 +219,8 @@ export class SignifyApi {
     qviCredentialId: string,
     registryId: string,
     holderAidName: string,
-    legalEntityAidPrefix: string
+    legalEntityAidPrefix: string,
+    attribute: { [key: string]: string }
   ) {
     await this.resolveOobi(
       `${config.oobiEndpoint}/oobi/${Agent.LE_SCHEMA_SAID}`
@@ -234,7 +235,7 @@ export class SignifyApi {
       issuerName: holderAidName,
       data: {
         i: legalEntityAidPrefix,
-        LEI: "5493001KJTIIGC8Y1R17",
+        ...attribute,
       },
       registryId: registryId,
       schemaId: Agent.LE_SCHEMA_SAID,
