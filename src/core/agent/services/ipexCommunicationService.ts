@@ -43,13 +43,6 @@ class IpexCommunicationService extends AgentService {
     "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
   static readonly SCHEMA_SAID_IIW_DEMO =
     "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu";
-  static readonly SCHEMA_SAID_LE =
-    "ENPXp1vQzRF6JwIuS-mp2U8Uf1MoADoP_GqQ62VsDZWY";
-  static readonly SCHEMA_SAIDs = [
-    this.SCHEMA_SAID_VLEI,
-    this.SCHEMA_SAID_IIW_DEMO,
-    this.SCHEMA_SAID_LE,
-  ];
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;
@@ -102,7 +95,8 @@ class IpexCommunicationService extends AgentService {
     await this.admitIpex(
       notifRecord.a.d as string,
       holder.signifyName,
-      exn.exn.i
+      exn.exn.i,
+      [exn.exn.e.acdc.s, exn.exn.e.acdc?.e?.qvi?.s]
     );
 
     // @TODO - foconnor: This should be event driven, need to fix the notification in KERIA/Signify.
@@ -320,13 +314,16 @@ class IpexCommunicationService extends AgentService {
   private async admitIpex(
     notificationD: string,
     holderAidName: string,
-    issuerAid: string
+    issuerAid: string,
+    schemaSaids: string[]
   ): Promise<void> {
     // @TODO - foconnor: For now this will only work with our test server, we need to find a better way to handle this in production.
-    for (const schemaSaid of IpexCommunicationService.SCHEMA_SAIDs) {
-      await Agent.agent.connections.resolveOobi(
-        `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
-      );
+    for (const schemaSaid of schemaSaids) {
+      if (schemaSaid) {
+        await Agent.agent.connections.resolveOobi(
+          `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
+        );
+      }
     }
 
     const dt = new Date().toISOString().replace("Z", "000+00:00");
