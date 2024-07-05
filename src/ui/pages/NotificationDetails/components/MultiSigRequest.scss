@@ -165,6 +165,11 @@
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
+    .multisig-request-section {
+      ion-card {
+        padding: 0.35rem 0.9rem;
+      }
+    }
     .multisig-request-user-logo {
       border-radius: 4rem;
       background-color: var(--ion-color-primary);
@@ -173,6 +178,31 @@
         width: 3.9rem;
         height: 3.9rem;
       }
+    }
+
+    .multisig-connection-info ion-label {
+      padding-left: 0.5rem;
+    }
+  }
+}
+
+.multisig-request-spinner-container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+ion-toolbar.multisig-request-footer {
+  &.page-footer {
+    z-index: 1000;
+    bottom: calc(-100vh + 8.5rem);
+    padding-inline: 0.9rem;
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    &.page-footer {
+      bottom: calc(-100vh + 6.5rem);
     }
   }
 }

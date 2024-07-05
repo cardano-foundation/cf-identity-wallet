@@ -5,7 +5,6 @@ interface NotificationDetailsProps {
   activeStatus: boolean;
   notificationDetails: KeriaNotification;
   handleBack: () => void;
-  handleNotificationDelete: (id: string) => void;
 }
 
 export type { NotificationDetailsProps };

@@ -18,12 +18,8 @@ import { TabsRoutePath } from "../../../routes/paths";
 import "./Notifications.scss";
 import { i18n } from "../../../i18n";
 import { timeDifference } from "../../utils/formatters";
-import {
-  getNotificationsCache,
-  setNotificationsCache,
-} from "../../../store/reducers/notificationsCache";
+import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
 import { NotificationItem } from "./NotificationItem";
-import { Agent } from "../../../core/agent/agent";
 import { KeriaNotification } from "../../../core/agent/agent.types";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -34,8 +30,7 @@ const Notifications = () => {
   const dispatch = useAppDispatch();
   const history = useHistory();
   const stateCache = useAppSelector(getStateCache);
-  const notificationsCache = useAppSelector(getNotificationsCache);
-  const [notifications, setNotifications] = useState(notificationsCache);
+  const notifications = useAppSelector(getNotificationsCache);
   const [selectedFilter, setSelectedFilter] = useState("all");
   const notificationsNew = notifications.filter(
     (notification) =>
@@ -52,17 +47,12 @@ const Notifications = () => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.NOTIFICATIONS }));
   });
 
-  const handleNotificationsSettings = () => {
-    // TODO: Implement settings
-  };
-
   const AdditionalButtons = () => {
     return (
       <IonButton
         shape="round"
         className="notifications-settings-button"
         data-testid="notifications-settings-button"
-        onClick={handleNotificationsSettings}
       >
         <IonIcon
           slot="icon-only"
@@ -74,8 +64,8 @@ const Notifications = () => {
   };
 
   const handleNotificationClick = async (item: KeriaNotification) => {
-    // TODO: implement click on notification
-    // await Agent.agent.signifyNotifications.readNotification(id);
+    // TODO: implement state change on notification click
+    // await Agent.agent.signifyNotifications.readNotification(item.id);
     const data: DataProps = {
       store: { stateCache },
     };
@@ -88,15 +78,6 @@ const Notifications = () => {
       pathname: nextPath.pathname,
       state: item,
     });
-  };
-
-  const handleNotificationDelete = async (id: string) => {
-    await Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
-    const updatedNotifications = notifications.filter(
-      (notification) => notification.id !== id
-    );
-    setNotifications(updatedNotifications);
-    dispatch(setNotificationsCache(updatedNotifications));
   };
 
   const filterOptions = [
@@ -152,13 +133,12 @@ const Notifications = () => {
               lines="none"
               data-testid="notifications-items"
             >
-              {notificationsNew.map((item, index) => (
+              {notificationsNew.map((item: KeriaNotification, index) => (
                 <NotificationItem
                   key={index}
                   item={item}
                   index={index}
-                  handleNotificationClick={handleNotificationClick}
-                  handleNotificationDelete={handleNotificationDelete}
+                  handleNotificationClick={() => handleNotificationClick(item)}
                 />
               ))}
             </IonList>
@@ -176,13 +156,12 @@ const Notifications = () => {
               lines="none"
               data-testid="notifications-items"
             >
-              {notificationsEarlier.map((item, index) => (
+              {notificationsEarlier.map((item: KeriaNotification, index) => (
                 <NotificationItem
                   key={index}
                   item={item}
                   index={index}
-                  handleNotificationClick={handleNotificationClick}
-                  handleNotificationDelete={handleNotificationDelete}
+                  handleNotificationClick={() => handleNotificationClick(item)}
                 />
               ))}
             </IonList>

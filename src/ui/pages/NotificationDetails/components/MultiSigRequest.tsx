@@ -31,16 +31,21 @@ import { PageFooter } from "../../../components/PageFooter";
 import "./MultiSigRequest.scss";
 import { CreateIdentifierResult } from "../../../../core/agent/agent.types";
 import { NotificationDetailsProps } from "../NotificationDetails.types";
+import {
+  getNotificationsCache,
+  setNotificationsCache,
+} from "../../../../store/reducers/notificationsCache";
 
 const MultiSigRequest = ({
   pageId,
   activeStatus,
   notificationDetails,
   handleBack,
-  handleNotificationDelete,
 }: NotificationDetailsProps) => {
   const dispatch = useAppDispatch();
-  const [blur, setBlur] = useState(false);
+  const notificationsCache = useAppSelector(getNotificationsCache);
+  const [notifications, setNotifications] = useState(notificationsCache);
+  const [spinner, setSpinner] = useState(false);
   const identifiersData = useAppSelector(getIdentifiersCache);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [multisigIcpDetails, setMultisigIcpDetails] =
@@ -55,18 +60,19 @@ const MultiSigRequest = ({
 
   useEffect(() => {
     getDetails();
-  }, []);
+  });
 
-  useEffect(() => {
-    if (blur) {
-      document?.querySelector("ion-router-outlet")?.classList.add("blur");
-    } else {
-      document?.querySelector("ion-router-outlet")?.classList.remove("blur");
-    }
-  }, [blur]);
+  const handleNotificationUpdate = async () => {
+    const updatedNotifications = notifications.filter(
+      (notification) => notification.id !== notificationDetails.id
+    );
+    setNotifications(updatedNotifications);
+    dispatch(setNotificationsCache(updatedNotifications));
+  };
 
   const actionAccept = async () => {
-    setBlur && setBlur(true);
+    document?.querySelector("ion-router-outlet")?.classList.add("blur");
+    setSpinner(true);
     if (!(notificationDetails && multisigIcpDetails)) {
       return;
     } else {
@@ -100,14 +106,18 @@ const MultiSigRequest = ({
           : ToastMsgType.IDENTIFIER_REQUESTED;
       }
     }
-    handleNotificationDelete(notificationDetails.id);
+    handleNotificationUpdate();
+    document?.querySelector("ion-router-outlet")?.classList.remove("blur");
+    setSpinner(false);
     handleBack();
-    setBlur && setBlur(false);
   };
 
-  const actionDecline = () => {
+  const actionDecline = async () => {
     setAlertDeclineIsOpen(false);
-    handleNotificationDelete(notificationDetails.id);
+    await Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      notificationDetails.id
+    );
+    handleNotificationUpdate();
     handleBack();
   };
 
@@ -115,7 +125,7 @@ const MultiSigRequest = ({
 
   return (
     <>
-      {blur && (
+      {spinner && (
         <div
           className="multisig-spinner-container"
           data-testid="multisig-spinner-container"
@@ -123,144 +133,163 @@ const MultiSigRequest = ({
           <IonSpinner name="circular" />
         </div>
       )}
-      <ScrollablePageLayout
-        pageId={`${pageId}-multi-sig-request`}
-        customClass={`${pageId}-multi-sig-request setup-identifier ${
-          blur ? "blur" : ""
-        }`}
-        activeStatus={activeStatus}
-        header={
-          <PageHeader
-            closeButton={true}
-            closeButtonAction={handleBack}
-            closeButtonLabel={`${i18n.t(
-              "notifications.details.buttons.close"
-            )}`}
-            title={`${i18n.t("notifications.details.identifier.title")}`}
-          />
-        }
-      >
-        <p className="multisig-request-subtitle">
-          {i18n.t("notifications.details.identifier.subtitle")}
-        </p>
-        <div className="multisig-request-section">
-          <h4>{i18n.t("notifications.details.identifier.requestfrom")}</h4>
-          <IonCard className="multisig-request-details">
-            <IonList lines="none">
-              <IonItem className="multisig-request-item">
-                <IonGrid>
-                  <IonRow>
-                    <IonCol
-                      size="1.25"
-                      className="multisig-connection-logo"
-                    >
-                      {multisigIcpDetails?.sender.logo ? (
-                        <img
-                          data-testid="multisig-connection-logo"
-                          src={multisigIcpDetails?.sender.logo}
-                          alt="multisig-connection-logo"
-                        />
-                      ) : (
-                        <div
-                          data-testid="multisig-connection-fallback-logo"
-                          className="multisig-request-user-logo"
+      {multisigIcpDetails ? (
+        <>
+          <ScrollablePageLayout
+            pageId={`${pageId}-multi-sig-request`}
+            customClass={`${pageId}-multi-sig-request setup-identifier ${
+              spinner ? "blur" : ""
+            }`}
+            activeStatus={activeStatus}
+            header={
+              <PageHeader
+                closeButton={true}
+                closeButtonAction={handleBack}
+                closeButtonLabel={`${i18n.t(
+                  "notifications.details.buttons.close"
+                )}`}
+                title={`${i18n.t("notifications.details.identifier.title")}`}
+              />
+            }
+          >
+            <p className="multisig-request-subtitle">
+              {i18n.t("notifications.details.identifier.subtitle")}
+            </p>
+            <div className="multisig-request-section">
+              <h4>{i18n.t("notifications.details.identifier.requestfrom")}</h4>
+              <IonCard className="multisig-request-details">
+                <IonList lines="none">
+                  <IonItem className="multisig-request-item">
+                    <IonGrid>
+                      <IonRow>
+                        <IonCol
+                          size="1.25"
+                          className="multisig-connection-logo"
                         >
-                          <IonIcon
-                            icon={personCircleOutline}
-                            color="light"
-                          />
-                        </div>
-                      )}
-                    </IonCol>
-                    <IonCol
-                      size="10.35"
-                      className="multisig-connection-info"
-                    >
-                      <IonLabel>{multisigIcpDetails?.sender.label}</IonLabel>
-                    </IonCol>
-                  </IonRow>
-                </IonGrid>
-              </IonItem>
-            </IonList>
-          </IonCard>
-        </div>
-        {!!multisigIcpDetails?.otherConnections.length && (
-          <div className="multisig-request-section">
-            <h4>{i18n.t("notifications.details.identifier.othermembers")}</h4>
-            <IonCard className="multisig-request-details">
-              <IonList lines="none">
-                {multisigIcpDetails?.otherConnections.map(
-                  (connection, index) => {
-                    return (
-                      <IonItem
-                        key={index}
-                        className="multisig-request-item"
-                        data-testid={`multisig-connection-${index}`}
-                      >
-                        <IonGrid>
-                          <IonRow>
-                            <IonCol
-                              size="1.25"
-                              className="multisig-connection-logo"
+                          {multisigIcpDetails?.sender.logo ? (
+                            <img
+                              data-testid="multisig-connection-logo"
+                              src={multisigIcpDetails?.sender.logo}
+                              alt="multisig-connection-logo"
+                            />
+                          ) : (
+                            <div
+                              data-testid="multisig-connection-fallback-logo"
+                              className="multisig-request-user-logo"
                             >
-                              <img
-                                data-testid={`other-multisig-connection-logo-${index}`}
-                                src={connection.logo || KeriLogo}
-                                alt="multisig-connection-logo"
+                              <IonIcon
+                                icon={personCircleOutline}
+                                color="light"
                               />
-                            </IonCol>
-                            <IonCol
-                              size="10.35"
-                              className="multisig-connection-info"
-                            >
-                              <IonLabel>{connection.label}</IonLabel>
-                            </IonCol>
-                          </IonRow>
-                        </IonGrid>
-                      </IonItem>
-                    );
-                  }
-                )}
-              </IonList>
-            </IonCard>
-          </div>
-        )}
-        <div className="multisig-request-section">
-          <h4>{i18n.t("notifications.details.identifier.threshold")}</h4>
-          <IonCard className="multisig-request-details">
-            <IonList lines="none">
-              <IonItem className="multisig-request-item">
-                <IonLabel>{multisigIcpDetails?.threshold}</IonLabel>
-              </IonItem>
-            </IonList>
-          </IonCard>
+                            </div>
+                          )}
+                        </IonCol>
+                        <IonCol
+                          size="10.35"
+                          className="multisig-connection-info"
+                        >
+                          <IonLabel>
+                            {multisigIcpDetails?.sender.label}
+                          </IonLabel>
+                        </IonCol>
+                      </IonRow>
+                    </IonGrid>
+                  </IonItem>
+                </IonList>
+              </IonCard>
+            </div>
+            {!!multisigIcpDetails?.otherConnections.length && (
+              <div className="multisig-request-section">
+                <h4>
+                  {i18n.t("notifications.details.identifier.othermembers")}
+                </h4>
+                <IonCard className="multisig-request-details">
+                  <IonList lines="none">
+                    {multisigIcpDetails?.otherConnections.map(
+                      (connection, index) => {
+                        return (
+                          <IonItem
+                            key={index}
+                            className="multisig-request-item"
+                            data-testid={`multisig-connection-${index}`}
+                          >
+                            <IonGrid>
+                              <IonRow>
+                                <IonCol
+                                  size="1.25"
+                                  className="multisig-connection-logo"
+                                >
+                                  <img
+                                    data-testid={`other-multisig-connection-logo-${index}`}
+                                    src={connection.logo || KeriLogo}
+                                    alt="multisig-connection-logo"
+                                  />
+                                </IonCol>
+                                <IonCol
+                                  size="10.35"
+                                  className="multisig-connection-info"
+                                >
+                                  <IonLabel>{connection.label}</IonLabel>
+                                </IonCol>
+                              </IonRow>
+                            </IonGrid>
+                          </IonItem>
+                        );
+                      }
+                    )}
+                  </IonList>
+                </IonCard>
+              </div>
+            )}
+            <div className="multisig-request-section">
+              <h4>{i18n.t("notifications.details.identifier.threshold")}</h4>
+              <IonCard className="multisig-request-details">
+                <IonList lines="none">
+                  <IonItem className="multisig-request-item">
+                    <IonLabel>{multisigIcpDetails?.threshold}</IonLabel>
+                  </IonItem>
+                </IonList>
+              </IonCard>
+            </div>
+          </ScrollablePageLayout>
+          <PageFooter
+            pageId={pageId}
+            customClass="multisig-request-footer"
+            primaryButtonText={`${i18n.t(
+              "notifications.details.buttons.accept"
+            )}`}
+            primaryButtonAction={() => actionAccept()}
+            secondaryButtonText={`${i18n.t(
+              "notifications.details.buttons.decline"
+            )}`}
+            secondaryButtonAction={handleDeclineClick}
+          />
+          <AlertDecline
+            isOpen={alertDeclineIsOpen}
+            setIsOpen={setAlertDeclineIsOpen}
+            dataTestId="multisig-request-alert-decline"
+            headerText={i18n.t(
+              "notifications.details.identifier.alert.textdecline"
+            )}
+            confirmButtonText={`${i18n.t(
+              "notifications.details.buttons.decline"
+            )}`}
+            cancelButtonText={`${i18n.t(
+              "notifications.details.buttons.cancel"
+            )}`}
+            actionConfirm={() => actionDecline()}
+            actionCancel={() => setAlertDeclineIsOpen(false)}
+            actionDismiss={() => setAlertDeclineIsOpen(false)}
+          />
+        </>
+      ) : (
+        <div
+          className="multisig-request-spinner-container"
+          data-testid="multisig-request-spinner-container"
+        >
+          <IonSpinner name="circular" />
         </div>
-        <PageFooter
-          pageId={pageId}
-          customClass="multisig-request-footer"
-          primaryButtonText={`${i18n.t(
-            "notifications.details.buttons.accept"
-          )}`}
-          primaryButtonAction={() => actionAccept()}
-          secondaryButtonText={`${i18n.t(
-            "notifications.details.buttons.decline"
-          )}`}
-          secondaryButtonAction={handleDeclineClick}
-        />
-      </ScrollablePageLayout>
-      <AlertDecline
-        isOpen={alertDeclineIsOpen}
-        setIsOpen={setAlertDeclineIsOpen}
-        dataTestId="multisig-request-alert-decline"
-        headerText={i18n.t(
-          "notifications.details.identifier.alert.textdecline"
-        )}
-        confirmButtonText={`${i18n.t("notifications.details.buttons.decline")}`}
-        cancelButtonText={`${i18n.t("notifications.details.buttons.cancel")}`}
-        actionConfirm={() => actionDecline()}
-        actionCancel={() => setAlertDeclineIsOpen(false)}
-        actionDismiss={() => setAlertDeclineIsOpen(false)}
-      />
+      )}
     </>
   );
 };

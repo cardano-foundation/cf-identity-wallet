@@ -1,6 +1,7 @@
 import { IonItem, IonLabel, IonIcon } from "@ionic/react";
 import { ellipsisHorizontal } from "ionicons/icons";
 import i18next from "i18next";
+import { useState } from "react";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 import { useAppSelector } from "../../../store/hooks";
@@ -9,32 +10,42 @@ import {
   NotificationRoute,
 } from "../../../core/agent/agent.types";
 import { timeDifference } from "../../utils/formatters";
+import { Agent } from "../../../core/agent/agent";
+import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifier.types";
 
 const NotificationItem = ({
   item,
   index,
   handleNotificationClick,
-  handleNotificationDelete,
 }: {
   item: KeriaNotification;
   index: number;
   handleNotificationClick: (item: KeriaNotification) => void;
-  handleNotificationDelete: (id: string) => void;
 }) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
-  const notificationLabel = (item: KeriaNotification) => {
-    const connection = connectionsCache.filter(
-      (connection) => connection.id === item.connectionId
-    )[0]?.label;
+  const connection = connectionsCache.filter(
+    (connection) => connection.id === item.connectionId
+  )[0]?.label;
+  const [multisigIcpDetails, setMultisigIcpDetails] =
+    useState<MultiSigIcpRequestDetails | null>(null);
 
+  const getMultisigIcpDetails = async () => {
+    const details = await Agent.agent.multiSigs.getMultisigIcpDetails(
+      item.a.d as string
+    );
+    setMultisigIcpDetails(details);
+  };
+
+  const notificationLabel = (item: KeriaNotification) => {
     switch (item.a.r) {
     case NotificationRoute.ExnIpexGrant:
       return i18next.t("notifications.tab.labels.exnipexgrant", {
         connection: connection,
       });
     case NotificationRoute.MultiSigIcp:
+      getMultisigIcpDetails();
       return i18next.t("notifications.tab.labels.multisigicp", {
-        connection: connection,
+        connection: multisigIcpDetails?.sender.label,
       });
     case NotificationRoute.ExnIpexApply:
       return i18next.t("notifications.tab.labels.exnipexapply", {

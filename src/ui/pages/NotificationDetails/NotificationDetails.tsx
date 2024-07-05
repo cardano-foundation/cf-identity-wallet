@@ -1,14 +1,9 @@
-import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
-import {
-  getNotificationsCache,
-  setNotificationsCache,
-} from "../../../store/reducers/notificationsCache";
 import { useAppIonRouter } from "../../hooks";
 import { getBackRoute } from "../../../routes/backRoute";
 import {
@@ -17,7 +12,6 @@ import {
 } from "../../../core/agent/agent.types";
 import { MultiSigRequest } from "./components/MultiSigRequest";
 import { ReceiveCredential } from "./components/ReceiveCredential";
-import { Agent } from "../../../core/agent/agent";
 
 const NotificationDetails = () => {
   const pageId = "notification-details";
@@ -25,8 +19,6 @@ const NotificationDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const notificationsCache = useAppSelector(getNotificationsCache);
-  const [notifications, setNotifications] = useState(notificationsCache);
   const notificationDetails = history?.location?.state as KeriaNotification;
 
   const handleBack = () => {
@@ -42,15 +34,6 @@ const NotificationDetails = () => {
     ionicRouter.goBack();
   };
 
-  const handleNotificationDelete = async (id: string) => {
-    await Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
-    const updatedNotifications = notifications.filter(
-      (notification) => notification.id !== id
-    );
-    setNotifications(updatedNotifications);
-    dispatch(setNotificationsCache(updatedNotifications));
-  };
-
   return (
     <>
       {!!notificationDetails &&
@@ -60,7 +43,6 @@ const NotificationDetails = () => {
           activeStatus={!!notificationDetails}
           notificationDetails={notificationDetails}
           handleBack={handleBack}
-          handleNotificationDelete={handleNotificationDelete}
         />
       )}
       {!!notificationDetails &&
@@ -70,7 +52,6 @@ const NotificationDetails = () => {
           activeStatus={!!notificationDetails}
           notificationDetails={notificationDetails}
           handleBack={handleBack}
-          handleNotificationDelete={handleNotificationDelete}
         />
       )}
     </>

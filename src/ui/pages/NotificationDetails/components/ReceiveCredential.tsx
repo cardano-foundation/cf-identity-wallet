@@ -4,36 +4,34 @@ import {
   personCircleOutline,
   swapHorizontalOutline,
 } from "ionicons/icons";
-import i18next from "i18next";
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
 import "./ReceiveCredential.scss";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageLayout";
 import { i18n } from "../../../../i18n";
 import { Alert as AlertDecline } from "../../../components/Alert";
 import { PageFooter } from "../../../components/PageFooter";
-import { useAppIonRouter, useIonHardwareBackButton } from "../../../hooks";
-import { BackEventPriorityType, RequestType } from "../../../globals/types";
-import { KeriaNotification } from "../../../../core/agent/agent.types";
-import { DataProps } from "../../../../routes/nextRoute/nextRoute.types";
+import { useIonHardwareBackButton } from "../../../hooks";
+import { BackEventPriorityType } from "../../../globals/types";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
-import { getStateCache } from "../../../../store/reducers/stateCache";
-import { getBackRoute } from "../../../../routes/backRoute";
-import { RoutePath } from "../../../../routes";
-import { updateReduxState } from "../../../../store/utils";
 import { PageHeader } from "../../../components/PageHeader";
 import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
 import { Agent } from "../../../../core/agent/agent";
 import { NotificationDetailsProps } from "../NotificationDetails.types";
+import {
+  getNotificationsCache,
+  setNotificationsCache,
+} from "../../../../store/reducers/notificationsCache";
 
 const ReceiveCredential = ({
   pageId,
   activeStatus,
   notificationDetails,
   handleBack,
-  handleNotificationDelete,
 }: NotificationDetailsProps) => {
+  const dispatch = useAppDispatch();
+  const notificationsCache = useAppSelector(getNotificationsCache);
+  const [notifications, setNotifications] = useState(notificationsCache);
   const connectionsCache = useAppSelector(getConnectionsCache);
   const fallbackLogo = KeriLogo;
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
@@ -49,17 +47,28 @@ const ReceiveCredential = ({
     !activeStatus
   );
 
+  const handleNotificationUpdate = async () => {
+    const updatedNotifications = notifications.filter(
+      (notification) => notification.id !== notificationDetails.id
+    );
+    setNotifications(updatedNotifications);
+    dispatch(setNotificationsCache(updatedNotifications));
+  };
+
   const handleAccept = async () => {
     setInitiateAnimation(true);
     await Agent.agent.ipexCommunications.acceptAcdc(notificationDetails.id);
-    handleNotificationDelete(notificationDetails.id);
+    handleNotificationUpdate();
     setTimeout(() => {
       handleBack();
     }, ANIMATION_DELAY);
   };
 
   const handleDecline = async () => {
-    handleNotificationDelete(notificationDetails.id);
+    await Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      notificationDetails.id
+    );
+    handleNotificationUpdate();
     handleBack();
   };
 
