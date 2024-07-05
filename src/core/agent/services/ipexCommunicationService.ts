@@ -95,7 +95,8 @@ class IpexCommunicationService extends AgentService {
     await this.admitIpex(
       notifRecord.a.d as string,
       holder.signifyName,
-      exn.exn.i
+      exn.exn.i,
+      exn.exn.e.acdc.s
     );
 
     // @TODO - foconnor: This should be event driven, need to fix the notification in KERIA/Signify.
@@ -313,14 +314,12 @@ class IpexCommunicationService extends AgentService {
   private async admitIpex(
     notificationD: string,
     holderAidName: string,
-    issuerAid: string
+    issuerAid: string,
+    schemaSaid: string
   ): Promise<void> {
     // @TODO - foconnor: For now this will only work with our test server, we need to find a better way to handle this in production.
     await Agent.agent.connections.resolveOobi(
-      `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${IpexCommunicationService.SCHEMA_SAID_VLEI}`
-    );
-    await Agent.agent.connections.resolveOobi(
-      `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${IpexCommunicationService.SCHEMA_SAID_IIW_DEMO}`
+      `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
     );
     const dt = new Date().toISOString().replace("Z", "000+00:00");
     const [admit, sigs, aend] = await this.props.signifyClient
