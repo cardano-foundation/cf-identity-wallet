@@ -228,6 +228,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const [isOnline, setIsOnline] = useState(false);
   const [isMessagesHandled, setIsMessagesHandled] = useState(false);
   const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
+  const [isInitAppSuccess, setIsInitAppSuccess] = useState(false);
   useActivityTimer();
 
   useEffect(() => {
@@ -270,6 +271,19 @@ const AppWrapper = (props: { children: ReactNode }) => {
       dispatch(setPauseQueueIncomingRequest(true));
     }
   }, [isOnline, authentication.loggedIn, isMessagesHandled, dispatch]);
+
+  useEffect(() => {
+    if (isInitAppSuccess) {
+      if (!authentication.loggedIn) {
+        Agent.agent.signifyNotifications.stopNotification();
+      } else {
+        Agent.agent.signifyNotifications.startNotification();
+        Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
+          return keriaNotificationsChangeHandler(event, dispatch);
+        });
+      }
+    }
+  }, [authentication.loggedIn, isInitAppSuccess]);
 
   useEffect(() => {
     PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
@@ -439,9 +453,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.connections.onConnectionStateChanged((event) => {
       return connectionStateChangedHandler(event, dispatch);
     });
-    Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
-      return keriaNotificationsChangeHandler(event, dispatch);
-    });
     Agent.agent.credentials.onAcdcStateChanged((event) => {
       return acdcChangeHandler(event, dispatch);
     });
@@ -463,6 +474,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       return signifyOperationStateChangeHandler(event, dispatch);
     });
     dispatch(setInitialized(true));
+    setIsInitAppSuccess(true);
   };
 
   return (

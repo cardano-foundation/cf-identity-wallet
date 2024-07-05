@@ -26,6 +26,7 @@ class SignifyNotificationService extends AgentService {
   protected readonly operationPendingStorage: OperationPendingStorage;
 
   protected pendingOperations: OperationPendingRecord[] = [];
+  private loggedIn = true;
 
   constructor(
     agentServiceProps: AgentServicesProps,
@@ -58,7 +59,7 @@ class SignifyNotificationService extends AgentService {
       notificationQuery =
         notificationQueryRecord.content as unknown as KeriaNotificationMarker;
     // eslint-disable-next-line no-constant-condition
-    while (true) {
+    while (this.loggedIn) {
       if (!Agent.agent.getKeriaOnlineStatus()) {
         await new Promise((rs) =>
           setTimeout(rs, SignifyNotificationService.POLL_KERIA_INTERVAL)
@@ -131,6 +132,14 @@ class SignifyNotificationService extends AgentService {
         );
       }
     }
+  }
+
+  startNotification() {
+    this.loggedIn = true;
+  }
+
+  stopNotification() {
+    this.loggedIn = false;
   }
 
   async deleteNotificationRecordById(id: string): Promise<void> {
