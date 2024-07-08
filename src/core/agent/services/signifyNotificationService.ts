@@ -59,7 +59,14 @@ class SignifyNotificationService extends AgentService {
       notificationQuery =
         notificationQueryRecord.content as unknown as KeriaNotificationMarker;
     // eslint-disable-next-line no-constant-condition
-    while (this.loggedIn) {
+    while (true) {
+      if (!this.loggedIn) {
+        await new Promise((rs) =>
+          setTimeout(rs, SignifyNotificationService.POLL_KERIA_INTERVAL)
+        );
+        continue;
+      }
+
       if (!Agent.agent.getKeriaOnlineStatus()) {
         await new Promise((rs) =>
           setTimeout(rs, SignifyNotificationService.POLL_KERIA_INTERVAL)

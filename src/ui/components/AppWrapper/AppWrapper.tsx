@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  getIsInitialized,
   setAuthentication,
   setCurrentOperation,
   setInitialized,
@@ -225,10 +226,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const connectedWallet = useAppSelector(getConnectedWallet);
+  const initAppSuccess = useAppSelector(getIsInitialized);
   const [isOnline, setIsOnline] = useState(false);
   const [isMessagesHandled, setIsMessagesHandled] = useState(false);
   const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
-  const [isInitAppSuccess, setIsInitAppSuccess] = useState(false);
   useActivityTimer();
 
   useEffect(() => {
@@ -273,17 +274,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }, [isOnline, authentication.loggedIn, isMessagesHandled, dispatch]);
 
   useEffect(() => {
-    if (isInitAppSuccess) {
+    if (initAppSuccess) {
       if (!authentication.loggedIn) {
         Agent.agent.signifyNotifications.stopNotification();
       } else {
         Agent.agent.signifyNotifications.startNotification();
-        Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
-          return keriaNotificationsChangeHandler(event, dispatch);
-        });
       }
     }
-  }, [authentication.loggedIn, isInitAppSuccess]);
+  }, [authentication.loggedIn, initAppSuccess]);
 
   useEffect(() => {
     PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
@@ -453,6 +451,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.connections.onConnectionStateChanged((event) => {
       return connectionStateChangedHandler(event, dispatch);
     });
+    Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
+      return keriaNotificationsChangeHandler(event, dispatch);
+    });
     Agent.agent.credentials.onAcdcStateChanged((event) => {
       return acdcChangeHandler(event, dispatch);
     });
@@ -474,7 +475,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
       return signifyOperationStateChangeHandler(event, dispatch);
     });
     dispatch(setInitialized(true));
-    setIsInitAppSuccess(true);
   };
 
   return (
