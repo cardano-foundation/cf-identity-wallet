@@ -36,6 +36,7 @@ enum ToastMsgType {
   COPIED_TO_CLIPBOARD = "copiedToClipboard",
   IDENTIFIER_REQUESTED = "identifierRequested",
   IDENTIFIER_CREATED = "identifierCreated",
+  MULTI_SIGN_IDENTIFIER_CREATED = "multiSignIdentifierCreated",
   IDENTIFIER_UPDATED = "identifierUpdated",
   IDENTIFIER_DELETED = "identifierDeleted",
   CREDENTIAL_DELETED = "credentialDeleted",

@@ -141,7 +141,13 @@ const IdentifierStage0 = ({
       } else {
         resetModal && resetModal();
       }
-      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
+      dispatch(
+        setToastMsg(
+          state.selectedAidType === 1
+            ? ToastMsgType.MULTI_SIGN_IDENTIFIER_CREATED
+            : ToastMsgType.IDENTIFIER_CREATED
+        )
+      );
     }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
   };
 
