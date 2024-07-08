@@ -54,7 +54,7 @@ class IdentifierService extends AgentService {
 
     for (let i = 0; i < listMetadata.length; i++) {
       const metadata = listMetadata[i];
-      identifiers.push({
+      const identifier: IdentifierShortDetails = {
         displayName: metadata.displayName,
         id: metadata.id,
         signifyName: metadata.signifyName,
@@ -62,7 +62,11 @@ class IdentifierService extends AgentService {
         theme: metadata.theme,
         isPending: metadata.isPending ?? false,
         groupMetadata: metadata.groupMetadata,
-      });
+      };
+      if (metadata.multisigManageAid) {
+        identifier.multisigManageAid = metadata.multisigManageAid;
+      }
+      identifiers.push(identifier);
     }
     return identifiers;
   }
@@ -79,7 +83,16 @@ class IdentifierService extends AgentService {
     }
     const aid = await this.props.signifyClient
       .identifiers()
-      .get(metadata.signifyName);
+      .get(metadata.signifyName)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
 
     if (!aid) {
       return undefined;
@@ -282,7 +295,10 @@ class IdentifierService extends AgentService {
   }
 
   @OnlineOnly
-  async rotateIdentifier(metadata: IdentifierMetadataRecord) {
+  async rotateIdentifier(identifier: string) {
+    const metadata = await this.identifierStorage.getIdentifierMetadata(
+      identifier
+    );
     const rotateResult = await this.props.signifyClient
       .identifiers()
       .rotate(metadata.signifyName);

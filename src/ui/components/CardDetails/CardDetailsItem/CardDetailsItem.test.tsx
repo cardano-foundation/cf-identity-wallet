@@ -41,9 +41,7 @@ describe("Card detail item", () => {
     expect(getByTestId("card-test-id-text-value")).toBeVisible();
     expect(getByText("T")).toBeVisible();
     expect(getByText("Key:")).toBeVisible();
-    expect(getByTestId("card-test-id").querySelector(".copy-button")).not.toBe(
-      null
-    );
+    expect(getByTestId("card-test-id-copy-button")).not.toBe(null);
   });
   test("Card details render icon", async () => {
     const { getByTestId } = render(

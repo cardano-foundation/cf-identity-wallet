@@ -31,8 +31,9 @@ describe("NextRoute", () => {
           passcodeIsSet: false,
           seedPhraseIsSet: false,
           passwordIsSet: false,
-          passwordIsSkipped: true,
+          passwordIsSkipped: false,
           ssiAgentIsSet: false,
+          recoveryWalletProgress: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -65,8 +66,9 @@ describe("NextRoute", () => {
       },
       identifierViewTypeCacheCache: {
         viewType: null,
+        favouriteIndex: 0,
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
       ssiAgentCache: {
@@ -104,6 +106,108 @@ describe("NextRoute", () => {
 
     expect(result).toEqual({
       pathname: RoutePath.SET_PASSCODE,
+    });
+  });
+
+  test("should return correct route for /onboarding when passwordIsSet is true", () => {
+    data = {
+      store: {
+        ...storeMock,
+        stateCache: {
+          initialized: true,
+          routes: [],
+          authentication: {
+            loggedIn: false,
+            userName: "",
+            time: 0,
+            passcodeIsSet: true,
+            seedPhraseIsSet: false,
+            passwordIsSet: true,
+            passwordIsSkipped: false,
+            ssiAgentIsSet: false,
+          },
+          currentOperation: OperationType.IDLE,
+          queueIncomingRequest: {
+            isProcessing: false,
+            queues: [],
+            isPaused: false,
+          },
+        },
+      },
+    };
+
+    const result = getNextOnboardingRoute(data as DataProps);
+
+    expect(result).toEqual({
+      pathname: RoutePath.GENERATE_SEED_PHRASE,
+    });
+  });
+
+  test("should return correct route for /onboarding when ssiAgentIsSet is true", () => {
+    data = {
+      store: {
+        ...storeMock,
+        stateCache: {
+          initialized: true,
+          routes: [],
+          authentication: {
+            loggedIn: false,
+            userName: "",
+            time: 0,
+            passcodeIsSet: true,
+            seedPhraseIsSet: false,
+            passwordIsSet: true,
+            passwordIsSkipped: false,
+            ssiAgentIsSet: true,
+          },
+          currentOperation: OperationType.IDLE,
+          queueIncomingRequest: {
+            isProcessing: false,
+            queues: [],
+            isPaused: false,
+          },
+        },
+      },
+    };
+
+    const result = getNextOnboardingRoute(data as DataProps);
+
+    expect(result).toEqual({
+      pathname: RoutePath.TABS_MENU,
+    });
+  });
+
+  test("should return correct route for /onboarding seedPhraseIsSet is true", () => {
+    data = {
+      store: {
+        ...storeMock,
+        stateCache: {
+          initialized: true,
+          routes: [],
+          authentication: {
+            loggedIn: false,
+            userName: "",
+            time: 0,
+            passcodeIsSet: true,
+            seedPhraseIsSet: true,
+            passwordIsSet: true,
+            passwordIsSkipped: false,
+            ssiAgentIsSet: false,
+          },
+          currentOperation: OperationType.IDLE,
+          queueIncomingRequest: {
+            isProcessing: false,
+            queues: [],
+            isPaused: false,
+          },
+        },
+      },
+    };
+
+    const result = getNextOnboardingRoute(data as DataProps);
+
+    expect(result).toEqual({
+      pathname: RoutePath.SSI_AGENT,
     });
   });
 
@@ -167,8 +271,9 @@ describe("getNextRoute", () => {
         passcodeIsSet: true,
         seedPhraseIsSet: false,
         passwordIsSet: false,
-        passwordIsSkipped: true,
+        passwordIsSkipped: false,
         ssiAgentIsSet: false,
+        recoveryWalletProgress: false,
       },
       currentOperation: OperationType.IDLE,
       queueIncomingRequest: {
@@ -201,8 +306,9 @@ describe("getNextRoute", () => {
     },
     identifierViewTypeCacheCache: {
       viewType: null,
+      favouriteIndex: 0,
     },
-    biometryCache: {
+    biometricsCache: {
       enabled: false,
     },
     ssiAgentCache: {

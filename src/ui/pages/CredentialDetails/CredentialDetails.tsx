@@ -195,6 +195,16 @@ const CredentialDetails = () => {
     }
   };
 
+  const toggleFavouriteCred = () => {
+    if (!cardData) return;
+    handleSetFavourite(params.id);
+  };
+
+  const openOptionModal = () => {
+    if (!cardData) return;
+    setOptionsIsOpen(true);
+  };
+
   const AdditionalButtons = () => {
     return (
       <>
@@ -204,9 +214,7 @@ const CredentialDetails = () => {
             isFavourite ? "favourite" : "no-favourite"
           }`}
           data-testid="heart-button"
-          onClick={() => {
-            handleSetFavourite(params.id);
-          }}
+          onClick={toggleFavouriteCred}
         >
           <IonIcon
             slot="icon-only"
@@ -223,9 +231,7 @@ const CredentialDetails = () => {
           shape="round"
           className="options-button"
           data-testid="options-button"
-          onClick={() => {
-            setOptionsIsOpen(true);
-          }}
+          onClick={openOptionModal}
         >
           <IonIcon
             slot="icon-only"

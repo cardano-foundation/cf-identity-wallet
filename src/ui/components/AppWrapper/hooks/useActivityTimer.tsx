@@ -44,8 +44,8 @@ const useActivityTimer = () => {
       });
 
       return () => {
-        pauseListener.remove();
-        resumeListener.remove();
+        pauseListener.then((listener) => listener.remove());
+        resumeListener.then((listener) => listener.remove());
         clearTimer();
       };
     }
