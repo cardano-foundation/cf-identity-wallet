@@ -450,12 +450,14 @@ describe("Identifier Stage 1", () => {
         </Provider>
       );
 
-      expect(
-        getByText(EN_TRANSLATIONS.createidentifier.receive.notes.top)
-      ).toBeInTheDocument();
-      expect(
-        getByText(EN_TRANSLATIONS.createidentifier.receive.notes.middle)
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          getByText(EN_TRANSLATIONS.createidentifier.receive.notes.top)
+        ).toBeInTheDocument();
+        expect(
+          getByText(EN_TRANSLATIONS.createidentifier.receive.notes.middle)
+        ).toBeInTheDocument();
+      });
     });
   });
 });

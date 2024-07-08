@@ -266,13 +266,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
 
-    const recoveryWalletProgress = await checkKeyStore(
-      KeyStoreKeys.RECOVERY_WALLET
-    );
-
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
     const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
       MiscRecordId.KERIA_CONNECT_URL
+    );
+
+    const recoveryWalletProgress = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_RECOVERY_WALLET
     );
 
     const identifiersFavourites = await Agent.agent.basicStorage.findById(
@@ -341,7 +341,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         passwordIsSkipped: !!passwordSkipped?.content.value,
         ssiAgentIsSet:
           !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
-        recoveryWalletProgress,
+        recoveryWalletProgress: !!recoveryWalletProgress?.content.value,
       })
     );
 
@@ -374,7 +374,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
       } catch (e) {
         const errorStack = (e as Error).stack as string;
         // If the error is failed to fetch with signify, we retry until the connection is secured
-        if (/SignifyClient/gi.test(errorStack)) {
+        if (
+          /Failed to fetch/gi.test(errorStack) &&
+          /SignifyClient/gi.test(errorStack)
+        ) {
           Agent.agent.connect().then(() => {
             setIsOnline(Agent.agent.getKeriaOnlineStatus());
           });

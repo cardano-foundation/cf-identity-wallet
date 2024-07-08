@@ -10,7 +10,7 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { ToastMsgType } from "../../ui/globals/types";
+import { OperationType } from "../../ui/globals/types";
 
 const getNextRootRoute = (data: DataProps) => {
   const authentication = data.store.stateCache.authentication;
@@ -165,15 +165,27 @@ const updateStoreAfterCreatePassword = (data: DataProps) => {
 };
 
 const getNextScanRoute = (data: DataProps) => {
-  const currentToastMsg = data?.state?.toastMsg;
+  const currentOperation = data?.state?.currentOperation;
   let path;
-  if (
-    currentToastMsg === ToastMsgType.CONNECTION_REQUEST_PENDING ||
-    currentToastMsg === ToastMsgType.CREDENTIAL_REQUEST_PENDING
-  ) {
+  if (currentOperation === OperationType.ADD_CREDENTIAL) {
     path = TabsRoutePath.CREDENTIALS;
-    // @TODO - foconnor: We need to open the connection list if it is CONNECTION_REQUEST_PENDING.
   }
+
+  if (currentOperation === OperationType.RECEIVE_CONNECTION) {
+    let previousPath = data.store.stateCache.routes[1]?.path;
+
+    if (
+      !previousPath ||
+      ![TabsRoutePath.CREDENTIALS, TabsRoutePath.IDENTIFIERS].includes(
+        previousPath as TabsRoutePath
+      )
+    ) {
+      previousPath = TabsRoutePath.IDENTIFIERS;
+    }
+
+    path = previousPath;
+  }
+
   return { pathname: path };
 };
 

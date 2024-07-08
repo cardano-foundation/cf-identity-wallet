@@ -60,7 +60,11 @@ const clearStorageAfterBackOnboarding = (nextPath: string, data: DataProps) => {
     {
       path: [RoutePath.SET_PASSCODE],
       clearFn: () => {
-        SecureStorage.delete(KeyStoreKeys.RECOVERY_WALLET);
+        Agent.agent.basicStorage
+          .deleteById(MiscRecordId.APP_RECOVERY_WALLET)
+          .catch((error) => {
+            // TODO: handle error
+          });
         authState.recoveryWalletProgress = false;
       },
     },
@@ -131,7 +135,9 @@ const getPreviousRoute = (data: DataProps): { pathname: string } => {
   } else if (prevPath) {
     path = prevPath.path;
   } else {
-    path = RoutePath.ONBOARDING;
+    path = data.store.stateCache.authentication.ssiAgentIsSet
+      ? TabsRoutePath.IDENTIFIERS
+      : RoutePath.ONBOARDING;
   }
 
   if (path === RoutePath.VERIFY_SEED_PHRASE) {
