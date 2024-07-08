@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  getIsInitialized,
   setAuthentication,
   setCurrentOperation,
   setInitialized,
@@ -225,6 +226,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const connectedWallet = useAppSelector(getConnectedWallet);
+  const initAppSuccess = useAppSelector(getIsInitialized);
   const [isOnline, setIsOnline] = useState(false);
   const [isMessagesHandled, setIsMessagesHandled] = useState(false);
   const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
@@ -270,6 +272,16 @@ const AppWrapper = (props: { children: ReactNode }) => {
       dispatch(setPauseQueueIncomingRequest(true));
     }
   }, [isOnline, authentication.loggedIn, isMessagesHandled, dispatch]);
+
+  useEffect(() => {
+    if (initAppSuccess) {
+      if (authentication.loggedIn) {
+        Agent.agent.signifyNotifications.startNotification();
+      } else {
+        Agent.agent.signifyNotifications.stopNotification();
+      }
+    }
+  }, [authentication.loggedIn, initAppSuccess]);
 
   useEffect(() => {
     PeerConnection.peerConnection.onPeerDisconnectedStateChanged(

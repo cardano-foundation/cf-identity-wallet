@@ -19,13 +19,15 @@ import { OperationPendingRecord } from "../records/operationPendingRecord";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
-  static readonly POLL_KERIA_INTERVAL = 5000;
+  static readonly POLL_KERIA_INTERVAL = 2000;
+  static readonly LOGIN_INTERVAL = 25;
 
   protected readonly notificationStorage!: NotificationStorage;
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
 
   protected pendingOperations: OperationPendingRecord[] = [];
+  private loggedIn = true;
 
   constructor(
     agentServiceProps: AgentServicesProps,
@@ -59,6 +61,13 @@ class SignifyNotificationService extends AgentService {
         notificationQueryRecord.content as unknown as KeriaNotificationMarker;
     // eslint-disable-next-line no-constant-condition
     while (true) {
+      if (!this.loggedIn) {
+        await new Promise((rs) =>
+          setTimeout(rs, SignifyNotificationService.LOGIN_INTERVAL)
+        );
+        continue;
+      }
+
       if (!Agent.agent.getKeriaOnlineStatus()) {
         await new Promise((rs) =>
           setTimeout(rs, SignifyNotificationService.POLL_KERIA_INTERVAL)
@@ -131,6 +140,14 @@ class SignifyNotificationService extends AgentService {
         );
       }
     }
+  }
+
+  startNotification() {
+    this.loggedIn = true;
+  }
+
+  stopNotification() {
+    this.loggedIn = false;
   }
 
   async deleteNotificationRecordById(id: string): Promise<void> {
