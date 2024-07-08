@@ -12,8 +12,9 @@ async function startServer() {
   app.use(bodyParser.json());
   app.use(router);
   await Agent.agent.start();
-  app.listen(config.port, () => {
+  app.listen(config.port, async() => {
     log(`Listening on port ${config.port}`);
+    await Agent.agent.initKeri();
   });
 }
 

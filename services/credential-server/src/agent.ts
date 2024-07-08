@@ -46,7 +46,6 @@ class Agent {
   async start(): Promise<void> {
     await this.signifyApi.start();
     await this.signifyApiIssuer.start();
-    await Agent.agent.initKeri();
   }
 
   async createKeriOobi() {
