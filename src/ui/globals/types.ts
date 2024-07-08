@@ -37,6 +37,7 @@ enum ToastMsgType {
   IDENTIFIER_REQUESTED = "identifierRequested",
   IDENTIFIER_CREATED = "identifierCreated",
   MULTI_SIGN_IDENTIFIER_CREATED = "multiSignIdentifierCreated",
+  DELEGATED_IDENTIFIER_CREATED = "delegatedidentifiercreated",
   IDENTIFIER_UPDATED = "identifierUpdated",
   IDENTIFIER_DELETED = "identifierDeleted",
   CREDENTIAL_DELETED = "credentialDeleted",
