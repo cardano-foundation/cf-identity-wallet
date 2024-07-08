@@ -36,7 +36,7 @@ const ReceiveCredential = ({
   const fallbackLogo = KeriLogo;
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
-  const ANIMATION_DELAY = 4000;
+  const ANIMATION_DELAY = 2000;
   const connection = connectionsCache.filter(
     (connection) => connection.id === notificationDetails.connectionId
   )[0]?.label;
@@ -125,6 +125,15 @@ const ReceiveCredential = ({
                 {i18n.t("notifications.details.credential.receive.receivefrom")}
               </span>
               <strong>{connection}</strong>
+            </IonCol>
+          </div>
+          <div className="request-status">
+            <IonCol size="12">
+              <strong>
+                {i18n.t(
+                  "notifications.details.credential.receive.credentialpending"
+                )}
+              </strong>
             </IonCol>
           </div>
         </div>

@@ -39,15 +39,15 @@ const NotificationItem = ({
     setMultisigIcpDetails(details);
   };
 
-  useEffect(() => {
-    const fetchNotificationLabel = async () => {
-      const label = await notificationLabel(item);
-      setNotificationLabelText(label);
-      setLoading(false);
-    };
+  const fetchNotificationLabel = async () => {
+    const label = await notificationLabel(item);
+    setNotificationLabelText(label);
+    setLoading(false);
+  };
 
+  useEffect(() => {
     fetchNotificationLabel();
-  }, [item]);
+  }, [item, multisigIcpDetails]);
 
   const notificationLabel = async (item: KeriaNotification) => {
     switch (item.a.r) {
@@ -70,33 +70,37 @@ const NotificationItem = ({
   };
 
   return (
-    <IonItem
-      key={index}
-      onClick={() => handleNotificationClick(item)}
-      className={`notifications-tab-item${item.read ? "" : " unread"}`}
-      data-testid={`notifications-tab-item-${index}`}
-    >
-      <img
-        src={KeriLogo}
-        alt="notifications-tab-item-logo"
-        className="notifications-tab-item-logo"
-        data-testid="notifications-tab-item-logo"
-      />
-      <IonLabel>
-        {loading ? "Loading..." : notificationLabelText}
-        <br />
-        <span className="notifications-tab-item-time">
-          {timeDifference(item.createdAt)[0]}
-          {timeDifference(item.createdAt)[1]}
-        </span>
-      </IonLabel>
-      <IonIcon
-        aria-hidden="true"
-        icon={ellipsisHorizontal}
-        slot="end"
-        className="notifications-tab-item-ellipsis"
-      />
-    </IonItem>
+    <>
+      {!loading && (
+        <IonItem
+          key={index}
+          onClick={() => handleNotificationClick(item)}
+          className={`notifications-tab-item${item.read ? "" : " unread"}`}
+          data-testid={`notifications-tab-item-${index}`}
+        >
+          <img
+            src={KeriLogo}
+            alt="notifications-tab-item-logo"
+            className="notifications-tab-item-logo"
+            data-testid="notifications-tab-item-logo"
+          />
+          <IonLabel>
+            {notificationLabelText}
+            <br />
+            <span className="notifications-tab-item-time">
+              {timeDifference(item.createdAt)[0]}
+              {timeDifference(item.createdAt)[1]}
+            </span>
+          </IonLabel>
+          <IonIcon
+            aria-hidden="true"
+            icon={ellipsisHorizontal}
+            slot="end"
+            className="notifications-tab-item-ellipsis"
+          />
+        </IonItem>
+      )}
+    </>
   );
 };
 

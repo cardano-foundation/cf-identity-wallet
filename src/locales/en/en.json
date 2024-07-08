@@ -959,6 +959,7 @@
         "receive": {
           "title": "Receive credential",
           "receivefrom": "Receive a credential from",
+          "credentialpending": "Credential pending",
           "alert": {
             "textdecline": "Are you sure you want to decline this credential issuance? You won't be able to change your decision later."
           }
