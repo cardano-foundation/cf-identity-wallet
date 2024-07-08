@@ -150,6 +150,7 @@ const Scanner = forwardRef(
         if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
           setGroupId(invitation.groupId);
           setCreateIdentifierModalIsOpen(true);
+          dispatch(setToastMsg(ToastMsgType.NEW_MULTI_SIGN_MEMBER));
         }
       } catch (e) {
         dispatch(setToastMsg(ToastMsgType.SCANNER_ERROR));

@@ -75,6 +75,8 @@ const connectionStateChangedHandler = async (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === ConnectionStatus.PENDING) {
+    if (event.payload.isMultiSigInvite) return;
+
     dispatch(setCurrentOperation(OperationType.RECEIVE_CONNECTION));
     dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else {
