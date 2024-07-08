@@ -19,7 +19,8 @@ import { OperationPendingRecord } from "../records/operationPendingRecord";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
-  static readonly POLL_KERIA_INTERVAL = 5000;
+  static readonly POLL_KERIA_INTERVAL = 2000;
+  static readonly LOGIN_INTERVAL = 25;
 
   protected readonly notificationStorage!: NotificationStorage;
   protected readonly identifierStorage: IdentifierStorage;
@@ -62,7 +63,7 @@ class SignifyNotificationService extends AgentService {
     while (true) {
       if (!this.loggedIn) {
         await new Promise((rs) =>
-          setTimeout(rs, SignifyNotificationService.POLL_KERIA_INTERVAL)
+          setTimeout(rs, SignifyNotificationService.LOGIN_INTERVAL)
         );
         continue;
       }
