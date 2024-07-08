@@ -1284,7 +1284,8 @@
     "peeridnotrecognised": "Peer ID not recognised",
     "setupbiometricsuccess": "Biometrics setup successfully",
     "rotatekeysuccess": "Keys rotated successfully",
-    "rotatekeyerror": "Unable to rotate keys"
+    "rotatekeyerror": "Unable to rotate keys",
+    "newmultisignmember": "New member added to multi-sig"
   },
   "request": {
     "sign": {

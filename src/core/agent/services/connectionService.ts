@@ -71,6 +71,7 @@ class ConnectionService extends AgentService {
     this.props.eventService.emit<ConnectionStateChangedEvent>({
       type: ConnectionEventTypes.ConnectionStateChanged,
       payload: {
+        isMultiSigInvite: multiSigInvite,
         connectionId: undefined,
         status: ConnectionStatus.PENDING,
       },
