@@ -147,7 +147,7 @@ class Agent {
       .createRegistry(Agent.HOLDER_AID_NAME)
       .catch((e) => console.error(e));
 
-    this.createQVICredential().catch((e) => console.error(e));
+    await this.createQVICredential().catch((e) => console.error(e));
   }
 
   async createQVICredential() {
