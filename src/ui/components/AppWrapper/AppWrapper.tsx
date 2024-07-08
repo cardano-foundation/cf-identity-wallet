@@ -275,10 +275,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     if (initAppSuccess) {
-      if (!authentication.loggedIn) {
-        Agent.agent.signifyNotifications.stopNotification();
-      } else {
+      if (authentication.loggedIn) {
         Agent.agent.signifyNotifications.startNotification();
+      } else {
+        Agent.agent.signifyNotifications.stopNotification();
       }
     }
   }, [authentication.loggedIn, initAppSuccess]);
