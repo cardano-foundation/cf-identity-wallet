@@ -22,7 +22,28 @@ import {
 import { RootState } from "../../index";
 import { RoutePath } from "../../../routes";
 import { OperationType } from "../../../ui/globals/types";
-import { IncomingRequestProps, IncomingRequestType } from "./stateCache.types";
+import { IncomingRequestProps, IncomingRequestType, PeerConnectSigningEventRequest } from "./stateCache.types";
+import { PeerConnectionEventTypes } from "../../../core/cardano/walletConnect/peerConnection.types";
+
+const signingRequest: PeerConnectSigningEventRequest = {
+  type: IncomingRequestType.PEER_CONNECT_SIGN,
+  signTransaction: {
+    type: PeerConnectionEventTypes.PeerConnectSign,
+    payload: {
+      identifier: "a",
+      payload: "tosign",
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      approvalCallback: () => {},
+    }
+  },
+  peerConnection: { id: "connection" }
+};
+
+const signingRequestB = { ...signingRequest };
+signingRequestB.signTransaction.payload.identifier = "b";
+
+const signingRequestC = { ...signingRequest };
+signingRequestB.signTransaction.payload.identifier = "c";
 
 describe("State Cache", () => {
   test("should return the initial state on first run", () => {
@@ -95,5 +116,66 @@ describe("State Cache", () => {
     const rootState = { stateCache: nextState } as RootState;
     expect(getCurrentOperation(rootState)).toEqual(nextState.currentOperation);
     expect(getStateCache(rootState)).toEqual(nextState);
+  });
+
+  test("should queue incoming request", () => {
+    const action = setQueueIncomingRequest(signingRequest);
+    const nextState = stateCacheSlice.reducer(initialState, action);
+    expect(nextState.queueIncomingRequest.queues[0]).toEqual(
+      signingRequest
+    );
+  });
+
+  test("can batch incoming requests", () => {
+    const initialStateMock: StateCacheProps = JSON.parse(
+      JSON.stringify(initialState)
+    );
+    initialStateMock.queueIncomingRequest.queues = [signingRequest];
+    const batchIncomingRequestProps: IncomingRequestProps[] = [signingRequestB, signingRequestC];
+    const action = enqueueIncomingRequest(batchIncomingRequestProps);
+    const nextState = stateCacheSlice.reducer(initialStateMock, action);
+    expect(nextState.queueIncomingRequest.queues).toEqual([
+      ...initialStateMock.queueIncomingRequest.queues,
+      ...batchIncomingRequestProps,
+    ]);
+  });
+
+  test("can dequeue incoming request", () => {
+    const initialStateMock: StateCacheProps = JSON.parse(
+      JSON.stringify(initialState)
+    );
+    initialStateMock.queueIncomingRequest.queues = [signingRequest, signingRequestB];
+    const action = dequeueIncomingRequest();
+    const nextState = stateCacheSlice.reducer(initialStateMock, action);
+    expect(nextState.queueIncomingRequest.queues.length).toEqual(1);
+    expect(nextState.queueIncomingRequest.isProcessing).toEqual(true);
+  });
+
+  test("can pause incoming request queue", () => {
+    const action = setPauseQueueIncomingRequest(true);
+    const nextState = stateCacheSlice.reducer(initialState, action);
+    expect(nextState.queueIncomingRequest.isPaused).toEqual(true);
+  });
+
+  test("isProcessing should be false when isPause equal true", () => {
+    const action1 = setPauseQueueIncomingRequest(true);
+    const nextState1 = stateCacheSlice.reducer(initialState, action1);
+    const action2 = setQueueIncomingRequest(signingRequest);
+    const nextState2 = stateCacheSlice.reducer(nextState1, action2);
+    expect(nextState2.queueIncomingRequest.isProcessing).toEqual(false);
+    expect(nextState2.queueIncomingRequest.queues[0]).toEqual(
+      signingRequest
+    );
+  });
+
+  test("isProcessing should be true after dequeueCredentialRequest and queue still has elements", () => {
+    const initialStateMock: StateCacheProps = JSON.parse(
+      JSON.stringify(initialState)
+    );
+    initialStateMock.queueIncomingRequest.queues = [signingRequest, signingRequestB];
+    const action = dequeueIncomingRequest();
+    const nextState = stateCacheSlice.reducer(initialStateMock, action);
+    expect(nextState.queueIncomingRequest.queues.length).toEqual(1);
+    expect(nextState.queueIncomingRequest.isProcessing).toEqual(true);
   });
 });
