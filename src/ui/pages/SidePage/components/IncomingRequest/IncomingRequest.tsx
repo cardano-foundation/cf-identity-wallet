@@ -7,12 +7,17 @@ import {
 } from "../../../../../store/reducers/stateCache";
 import { SidePageContentProps } from "../../SidePage.types";
 import { SignRequest } from "./components/SignRequest"; // Import SignRequest component
-import { PeerConnectSigningEventRequest } from "../../../../../store/reducers/stateCache/stateCache.types";
+import {
+  IncomingRequestType,
+  PeerConnectSigningEventRequest,
+} from "../../../../../store/reducers/stateCache/stateCache.types";
+import { getConnectedWallet } from "../../../../../store/reducers/walletConnectionsCache";
 
 const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const pageId = "incoming-request";
   const dispatch = useAppDispatch();
   const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
+  const connectedWallet = useAppSelector(getConnectedWallet);
   const incomingRequest = useMemo(() => {
     if (
       !queueIncomingRequest.isProcessing ||
@@ -32,6 +37,13 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   useEffect(() => {
     if (!incomingRequest) {
       return;
+    }
+    if (
+      incomingRequest.type === IncomingRequestType.PEER_CONNECT_SIGN &&
+      (!connectedWallet ||
+        connectedWallet.id !== incomingRequest.peerConnection?.id)
+    ) {
+      handleReset();
     }
     setRequestData(incomingRequest);
     setOpenPage(true);

@@ -34,28 +34,28 @@ const NotificationDetails = () => {
     ionicRouter.goBack();
   };
 
-  return (
-    <>
-      {!!notificationDetails &&
-        notificationDetails.a.r === NotificationRoute.MultiSigIcp && (
-        <MultiSigRequest
-          pageId={pageId}
-          activeStatus={!!notificationDetails}
-          notificationDetails={notificationDetails}
-          handleBack={handleBack}
-        />
-      )}
-      {!!notificationDetails &&
-        notificationDetails.a.r === NotificationRoute.ExnIpexGrant && (
-        <ReceiveCredential
-          pageId={pageId}
-          activeStatus={!!notificationDetails}
-          notificationDetails={notificationDetails}
-          handleBack={handleBack}
-        />
-      )}
-    </>
-  );
+  switch (notificationDetails?.a?.r) {
+  case NotificationRoute.MultiSigIcp:
+    return (
+      <MultiSigRequest
+        pageId={pageId}
+        activeStatus={!!notificationDetails}
+        notificationDetails={notificationDetails}
+        handleBack={handleBack}
+      />
+    );
+  case NotificationRoute.ExnIpexGrant:
+    return (
+      <ReceiveCredential
+        pageId={pageId}
+        activeStatus={!!notificationDetails}
+        notificationDetails={notificationDetails}
+        handleBack={handleBack}
+      />
+    );
+  default:
+    return null;
+  }
 };
 
 export { NotificationDetails };

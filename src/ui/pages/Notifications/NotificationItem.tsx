@@ -46,7 +46,14 @@ const NotificationItem = ({
   };
 
   useEffect(() => {
-    fetchNotificationLabel();
+    const fetchData = async () => {
+      if (item.a.r === NotificationRoute.MultiSigIcp) {
+        await getMultisigIcpDetails();
+      }
+      fetchNotificationLabel();
+    };
+
+    fetchData();
   }, [item, multisigIcpDetails]);
 
   const notificationLabel = async (item: KeriaNotification) => {

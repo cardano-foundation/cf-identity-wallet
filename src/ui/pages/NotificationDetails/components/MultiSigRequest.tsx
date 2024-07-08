@@ -23,7 +23,7 @@ import {
   IdentifierShortDetails,
   MultiSigIcpRequestDetails,
 } from "../../../../core/agent/services/identifier.types";
-import { ToastMsgType } from "../../../globals/types";
+import { BackEventPriorityType, ToastMsgType } from "../../../globals/types";
 import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../../components/PageHeader";
 import { i18n } from "../../../../i18n";
@@ -35,6 +35,7 @@ import {
   getNotificationsCache,
   setNotificationsCache,
 } from "../../../../store/reducers/notificationsCache";
+import { useIonHardwareBackButton } from "../../../hooks";
 
 const MultiSigRequest = ({
   pageId,
@@ -50,6 +51,12 @@ const MultiSigRequest = ({
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [multisigIcpDetails, setMultisigIcpDetails] =
     useState<MultiSigIcpRequestDetails | null>(null);
+
+  useIonHardwareBackButton(
+    BackEventPriorityType.Page,
+    handleBack,
+    !activeStatus
+  );
 
   const getDetails = async () => {
     const details = await Agent.agent.multiSigs.getMultisigIcpDetails(
@@ -74,7 +81,7 @@ const MultiSigRequest = ({
     document?.querySelector("ion-router-outlet")?.classList.add("blur");
     setSpinner(true);
     if (!(notificationDetails && multisigIcpDetails)) {
-      return;
+      throw new Error("!(notificationDetails && multisigIcpDetails)");
     } else {
       const { identifier, signifyName, isPending } =
         (await Agent.agent.multiSigs.joinMultisig(
