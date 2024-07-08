@@ -1,7 +1,7 @@
 import { IonItem, IonLabel, IonIcon } from "@ionic/react";
 import { ellipsisHorizontal } from "ionicons/icons";
 import i18next from "i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 import { useAppSelector } from "../../../store/hooks";
@@ -23,6 +23,9 @@ const NotificationItem = ({
   handleNotificationClick: (item: KeriaNotification) => void;
 }) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
+  const [notificationLabelText, setNotificationLabelText] =
+    useState<string>("");
+  const [loading, setLoading] = useState(true);
   const connection = connectionsCache.filter(
     (connection) => connection.id === item.connectionId
   )[0]?.label;
@@ -36,14 +39,24 @@ const NotificationItem = ({
     setMultisigIcpDetails(details);
   };
 
-  const notificationLabel = (item: KeriaNotification) => {
+  useEffect(() => {
+    const fetchNotificationLabel = async () => {
+      const label = await notificationLabel(item);
+      setNotificationLabelText(label);
+      setLoading(false);
+    };
+
+    fetchNotificationLabel();
+  }, [item]);
+
+  const notificationLabel = async (item: KeriaNotification) => {
     switch (item.a.r) {
     case NotificationRoute.ExnIpexGrant:
       return i18next.t("notifications.tab.labels.exnipexgrant", {
         connection: connection,
       });
     case NotificationRoute.MultiSigIcp:
-      getMultisigIcpDetails();
+      await getMultisigIcpDetails();
       return i18next.t("notifications.tab.labels.multisigicp", {
         connection: multisigIcpDetails?.sender.label,
       });
@@ -70,7 +83,7 @@ const NotificationItem = ({
         data-testid="notifications-tab-item-logo"
       />
       <IonLabel>
-        {notificationLabel(item)}
+        {loading ? "Loading..." : notificationLabelText}
         <br />
         <span className="notifications-tab-item-time">
           {timeDifference(item.createdAt)[0]}
