@@ -92,11 +92,15 @@ class IpexCommunicationService extends AgentService {
       throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     }
 
+    const chainedSchemaSaids = Object.keys(exn.exn.e.acdc?.e || {}).map(
+      (key) => exn.exn.e.acdc.e?.[key]?.s
+    );
+
     await this.admitIpex(
       notifRecord.a.d as string,
       holder.signifyName,
       exn.exn.i,
-      [exn.exn.e.acdc.s, exn.exn.e.acdc?.e?.qvi?.s]
+      [exn.exn.e.acdc.s, ...chainedSchemaSaids]
     );
 
     // @TODO - foconnor: This should be event driven, need to fix the notification in KERIA/Signify.
