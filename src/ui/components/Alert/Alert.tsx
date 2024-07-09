@@ -3,6 +3,7 @@ import { AlertProps } from "./Alert.types";
 import "./Alert.scss";
 import { useIonHardwareBackButton } from "../../hooks";
 import { BackEventPriorityType } from "../../globals/types";
+import { combineClassNames } from "../../utils/style";
 
 const Alert = ({
   isOpen,
@@ -13,6 +14,7 @@ const Alert = ({
   subheaderText,
   confirmButtonText,
   cancelButtonText,
+  className,
   actionConfirm,
   actionCancel,
   actionDismiss,
@@ -65,6 +67,8 @@ const Alert = ({
     !isOpen
   );
 
+  const alerClasses = combineClassNames(className, "custom-alert");
+
   return (
     <div
       data-testid={dataTestId + "-container"}
@@ -76,7 +80,7 @@ const Alert = ({
         data-testid={dataTestId}
         isOpen={isOpen}
         backdropDismiss={backdropDismiss}
-        cssClass="custom-alert"
+        cssClass={alerClasses}
         header={headerText}
         subHeader={subheaderText}
         buttons={buttons}

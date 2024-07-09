@@ -1,5 +1,6 @@
 .lock-page {
   display: flex !important;
+  z-index: 2147483647; // max value
 
   &.hide {
     .responsive-page-content,
@@ -28,4 +29,8 @@
   .lock-page-title {
     margin-top: 4rem;
   }
+}
+
+.alert-forgotten {
+  z-index: 2147483647 !important; // max value
 }
