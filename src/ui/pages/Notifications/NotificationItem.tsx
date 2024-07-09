@@ -49,8 +49,12 @@ const NotificationItem = ({
     const fetchData = async () => {
       if (item.a.r === NotificationRoute.MultiSigIcp) {
         await getMultisigIcpDetails();
+        if (multisigIcpDetails) {
+          fetchNotificationLabel();
+        }
+      } else {
+        fetchNotificationLabel();
       }
-      fetchNotificationLabel();
     };
 
     fetchData();
