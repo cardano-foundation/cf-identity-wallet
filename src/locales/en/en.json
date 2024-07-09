@@ -973,6 +973,7 @@
         "pending": "Pending",
         "accepted": "Accepted",
         "threshold": "Threshold",
+        "error": "Cannot accept a multi-sig inception event before details are loaded from core",
         "alert": {
           "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later."
         }

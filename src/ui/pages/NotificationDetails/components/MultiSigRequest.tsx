@@ -80,8 +80,8 @@ const MultiSigRequest = ({
   const actionAccept = async () => {
     document?.querySelector("ion-router-outlet")?.classList.add("blur");
     setSpinner(true);
-    if (!(notificationDetails && multisigIcpDetails)) {
-      throw new Error("!(notificationDetails && multisigIcpDetails)");
+    if (!multisigIcpDetails) {
+      throw new Error(`${i18n.t("notifications.details.identifier.error")}`);
     } else {
       const { identifier, signifyName, isPending } =
         (await Agent.agent.multiSigs.joinMultisig(

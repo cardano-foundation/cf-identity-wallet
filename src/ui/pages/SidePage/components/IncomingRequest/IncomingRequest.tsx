@@ -34,6 +34,13 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const ANIMATION_DELAY = 4000;
   const [blur, setBlur] = useState(false);
 
+  // After the current refactoring we are defaulting all incoming requests to be
+  // of type IncomingRequestType.PEER_CONNECT_SIGN because of the lack of other use cases.
+  // Before the refactoring we had 3 use cases, so the JSX was rendering a component
+  // that has now been removed and this used to contain a switch statement in order to render
+  // the correct component. Please consider this if in the future we need to add more use cases.
+  // The old code can be found in PR #550.
+
   useEffect(() => {
     if (!incomingRequest) {
       return;
