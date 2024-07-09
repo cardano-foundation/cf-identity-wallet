@@ -29,18 +29,11 @@ const NotificationItem = ({
   const connection = connectionsCache.filter(
     (connection) => connection.id === item.connectionId
   )[0]?.label;
-  const [multisigIcpDetails, setMultisigIcpDetails] =
-    useState<MultiSigIcpRequestDetails | null>(null);
 
-  const getMultisigIcpDetails = async () => {
-    const details = await Agent.agent.multiSigs.getMultisigIcpDetails(
-      item.a.d as string
-    );
-    setMultisigIcpDetails(details);
-  };
-
-  const fetchNotificationLabel = async () => {
-    const label = await notificationLabel(item);
+  const fetchNotificationLabel = async (
+    multiSigIcpDetails?: MultiSigIcpRequestDetails
+  ) => {
+    const label = await notificationLabel(item, multiSigIcpDetails);
     setNotificationLabelText(label);
     setLoading(false);
   };
@@ -48,28 +41,30 @@ const NotificationItem = ({
   useEffect(() => {
     const fetchData = async () => {
       if (item.a.r === NotificationRoute.MultiSigIcp) {
-        await getMultisigIcpDetails();
-        if (multisigIcpDetails) {
-          fetchNotificationLabel();
-        }
+        const details = await Agent.agent.multiSigs.getMultisigIcpDetails(
+          item.a.d as string
+        );
+        fetchNotificationLabel(details);
       } else {
         fetchNotificationLabel();
       }
     };
 
     fetchData();
-  }, [item, multisigIcpDetails]);
+  }, [item]);
 
-  const notificationLabel = async (item: KeriaNotification) => {
+  const notificationLabel = async (
+    item: KeriaNotification,
+    multisigIcpDetails?: MultiSigIcpRequestDetails
+  ) => {
     switch (item.a.r) {
     case NotificationRoute.ExnIpexGrant:
       return i18next.t("notifications.tab.labels.exnipexgrant", {
         connection: connection,
       });
     case NotificationRoute.MultiSigIcp:
-      await getMultisigIcpDetails();
       return i18next.t("notifications.tab.labels.multisigicp", {
-        connection: multisigIcpDetails?.sender.label,
+        connection: multisigIcpDetails?.sender?.label,
       });
     case NotificationRoute.ExnIpexApply:
       return i18next.t("notifications.tab.labels.exnipexapply", {
