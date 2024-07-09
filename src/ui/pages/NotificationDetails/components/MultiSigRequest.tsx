@@ -81,7 +81,9 @@ const MultiSigRequest = ({
     document?.querySelector("ion-router-outlet")?.classList.add("blur");
     setSpinner(true);
     if (!multisigIcpDetails) {
-      throw new Error(`${i18n.t("notifications.details.identifier.error")}`);
+      throw new Error(
+        "Cannot accept a multi-sig inception event before details are loaded from core"
+      );
     } else {
       const { identifier, signifyName, isPending } =
         (await Agent.agent.multiSigs.joinMultisig(
