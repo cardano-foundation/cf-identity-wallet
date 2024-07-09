@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  getIsInitialized,
   setAuthentication,
   setCurrentOperation,
   setInitialized,
@@ -73,6 +74,8 @@ const connectionStateChangedHandler = async (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === ConnectionStatus.PENDING) {
+    if (event.payload.isMultiSigInvite) return;
+
     dispatch(setCurrentOperation(OperationType.RECEIVE_CONNECTION));
     dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else {
@@ -181,6 +184,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const connectedWallet = useAppSelector(getConnectedWallet);
+  const initAppSuccess = useAppSelector(getIsInitialized);
   const [isOnline, setIsOnline] = useState(false);
   const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
   useActivityTimer();
@@ -215,6 +219,16 @@ const AppWrapper = (props: { children: ReactNode }) => {
       syncWithKeria();
     }
   }, [isOnline, dispatch]);
+
+  useEffect(() => {
+    if (initAppSuccess) {
+      if (authentication.loggedIn) {
+        Agent.agent.signifyNotifications.startNotification();
+      } else {
+        Agent.agent.signifyNotifications.stopNotification();
+      }
+    }
+  }, [authentication.loggedIn, initAppSuccess]);
 
   useEffect(() => {
     PeerConnection.peerConnection.onPeerDisconnectedStateChanged(

@@ -18,6 +18,7 @@ import { Contact } from "../types.types";
 import {
   Attributes,
   CredentialType,
+  SCHEMA_SAID,
   UUID_REGEX,
   credentialTypes,
 } from "../constants";
@@ -58,8 +59,7 @@ const CredentialPage: React.FC = () => {
   const handleGetContacts = async () => {
     try {
       setContacts(
-        (await axios.get(`${config.endpoint}${config.path.contacts}`)).data
-          .data,
+        (await axios.get(`${config.endpoint}${config.path.contacts}`)).data.data
       );
     } catch (e) {
       console.log(e);
@@ -67,10 +67,7 @@ const CredentialPage: React.FC = () => {
   };
 
   const handleRequestCredential = async (values: any) => {
-    const schemaSaid =
-      values.credential_type === CredentialType.IIW
-        ? "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu"
-        : "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
+    const schemaSaid = SCHEMA_SAID[values.credential_type as CredentialType];
     let objAttributes = {};
     let attribute: IAttributes = {};
 

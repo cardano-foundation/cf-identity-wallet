@@ -74,6 +74,7 @@ enum KeriaStatusEventTypes {
 interface ConnectionStateChangedEvent extends BaseEventEmitter {
   type: typeof ConnectionEventTypes.ConnectionStateChanged;
   payload: {
+    isMultiSigInvite?: boolean;
     connectionId?: string;
     status: ConnectionStatus;
   };
