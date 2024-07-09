@@ -20,6 +20,7 @@ import { IdentifierDetails } from "../ui/pages/IdentifierDetails";
 import { CredentialDetails } from "../ui/pages/CredentialDetails";
 import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
 import { CreateSSIAgent } from "../ui/pages/CreateSSIAgent";
+import { NotificationDetails } from "../ui/pages/NotificationDetails";
 import { VerifyRecoverySeedPhrase } from "../ui/pages/VerifyRecoverySeedPhrase";
 
 const Routes = () => {
@@ -43,37 +44,31 @@ const Routes = () => {
           component={SetPasscode}
           exact
         />
-
         <Route
           path={RoutePath.ONBOARDING}
           component={Onboarding}
           exact
         />
-
         <Route
           path={RoutePath.GENERATE_SEED_PHRASE}
           component={GenerateSeedPhrase}
           exact
         />
-
         <Route
           path={RoutePath.VERIFY_SEED_PHRASE}
           component={VerifySeedPhrase}
           exact
         />
-
         <Route
           path={RoutePath.TABS_MENU}
           component={TabsMenu}
           exact
         />
-
         <Route
           path={RoutePath.CREATE_PASSWORD}
           component={CreatePassword}
           exact
         />
-
         <Route
           path={RoutePath.VERIFY_RECOVERY_SEED_PHRASE}
           component={VerifyRecoverySeedPhrase}
@@ -85,10 +80,14 @@ const Routes = () => {
           component={CreateSSIAgent}
           exact
         />
-
         <Route
           path={RoutePath.CONNECTION_DETAILS}
           component={ConnectionDetails}
+          exact
+        />
+        <Route
+          path={RoutePath.NOTIFICATION_DETAILS}
+          component={NotificationDetails}
           exact
         />
 

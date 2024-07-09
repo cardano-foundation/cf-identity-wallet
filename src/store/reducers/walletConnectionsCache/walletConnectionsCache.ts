@@ -47,7 +47,7 @@ const getWalletConnectionsCache = (state: RootState) =>
   state.walletConnectionsCache.walletConnections;
 
 const getConnectedWallet = (state: RootState) =>
-  state.walletConnectionsCache.connectedWallet;
+  state.walletConnectionsCache?.connectedWallet;
 
 const getPendingConnection = (state: RootState) =>
   state.walletConnectionsCache.pendingConnection;
