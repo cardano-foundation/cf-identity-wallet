@@ -32,7 +32,6 @@ import {
   ConnectionStateChangedEvent,
   ConnectionStatus,
   AcdcStateChangedEvent,
-  NotificationRoute,
   MiscRecordId,
 } from "../../../core/agent/agent.types";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
@@ -53,7 +52,6 @@ import {
   PeerConnectionBrokenEvent,
   PeerDisconnectedEvent,
 } from "../../../core/cardano/walletConnect/peerConnection.types";
-import { MultiSigService } from "../../../core/agent/services/multiSigService";
 import {
   setFavouriteIndex,
   setViewTypeCache,
@@ -95,34 +93,6 @@ const keriaNotificationsChangeHandler = async (
   const notifications =
     await Agent.agent.signifyNotifications.getAllNotifications();
   dispatch(setNotificationsCache(notifications));
-};
-
-const processMultiSigIcpNotification = async (
-  event: KeriaNotification,
-  dispatch: ReturnType<typeof useAppDispatch>,
-  retryInterval = 3000
-) => {
-  try {
-    const multisigIcpDetails =
-      await Agent.agent.multiSigs.getMultisigIcpDetails(event.a.d as string);
-    dispatch(
-      setQueueIncomingRequest({
-        id: event?.id,
-        event: event,
-        type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-        multisigIcpDetails: multisigIcpDetails,
-      })
-    );
-  } catch (error) {
-    if (
-      (error as Error).message == MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP
-    ) {
-      await new Promise((resolve) => setTimeout(resolve, retryInterval));
-      await processMultiSigIcpNotification(event, dispatch, retryInterval);
-    } else {
-      throw error;
-    }
-  }
 };
 
 const acdcChangeHandler = async (
@@ -350,6 +320,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const favouriteIndex = await Agent.agent.basicStorage.findById(
       MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
     );
+
+    if (favouriteIndex) {
+      dispatch(
+        setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
+      );
+    }
 
     const passwordSkipped = await Agent.agent.basicStorage.findById(
       MiscRecordId.APP_PASSWORD_SKIPPED

@@ -98,7 +98,7 @@ const stateCacheSlice = createSlice({
       }
       state.queueIncomingRequest.queues.push(action.payload);
     },
-    dequeueCredentialRequest: (state) => {
+    dequeueIncomingRequest: (state) => {
       if (state.queueIncomingRequest.queues.length > 0) {
         state.queueIncomingRequest.queues.shift();
         const isPaused = state.queueIncomingRequest.isPaused;
@@ -136,7 +136,7 @@ const {
   setAuthentication,
   setCurrentOperation,
   setToastMsg,
-  dequeueCredentialRequest,
+  dequeueIncomingRequest,
   setQueueIncomingRequest,
   setPauseQueueIncomingRequest,
   enqueueIncomingRequest,
@@ -183,6 +183,6 @@ export {
   getQueueIncomingRequest,
   setPauseQueueIncomingRequest,
   setQueueIncomingRequest,
-  dequeueCredentialRequest,
+  dequeueIncomingRequest,
   enqueueIncomingRequest,
 };
