@@ -15,7 +15,7 @@ const notificationStorage = jest.mocked({
     if (id === "uuid") {
       return {
         id,
-        createdAt: "2024-04-29T11:01:04.903Z",
+        createdAt: new Date("2024-04-29T11:01:04.903Z"),
         a: {
           d: "saidForUuid",
         },
@@ -228,7 +228,7 @@ describe("Ipex communication service of agent", () => {
     const id = "uuid";
     notificationStorage.findById = jest.fn().mockResolvedValue({
       id,
-      createdAt: "2024-04-29T11:01:04.903Z",
+      createdAt: new Date("2024-04-29T11:01:04.903Z"),
       a: {
         d: "saidForUuid",
       },
@@ -295,10 +295,12 @@ describe("Ipex communication service of agent", () => {
     const date = new Date();
     const noti = {
       id,
-      createdAt: date,
+      createdAt: date.toISOString(),
       a: {
         d: "keri",
       },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
     };
 
     getExchangeMock = jest.fn().mockReturnValue({
@@ -328,13 +330,15 @@ describe("Ipex communication service of agent", () => {
   test("can not offer Keri Acdc if aid is not existed", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
-    const date = new Date();
+    const date = new Date().toISOString();
     const noti = {
       id,
       createdAt: date,
       a: {
         d: "keri",
       },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
     };
     getExchangeMock = jest.fn().mockReturnValue({
       exn: {
@@ -361,13 +365,15 @@ describe("Ipex communication service of agent", () => {
   test("can grant Keri Acdc when received the ipex agree", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
-    const date = new Date();
+    const date = new Date().toISOString();
     const noti = {
       id,
       createdAt: date,
       a: {
         d: "agreeD",
       },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
     };
     getExchangeMock = jest.fn().mockImplementation((id) => {
       if (id === "agreeD") {
@@ -410,13 +416,15 @@ describe("Ipex communication service of agent", () => {
   test("can not grant Keri Acdc if aid is not existed", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
-    const date = new Date();
+    const date = new Date().toISOString();
     const noti = {
       id,
       createdAt: date,
       a: {
         d: "agreeD",
       },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
     };
     getExchangeMock = jest.fn().mockImplementation((id) => {
       if (id === "agreeD") {
@@ -454,13 +462,15 @@ describe("Ipex communication service of agent", () => {
   test("can not grant Keri Acdc if acdc is not existed", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
-    const date = new Date();
+    const date = new Date().toISOString();
     const noti = {
       id,
       createdAt: date,
       a: {
         d: "agreeD",
       },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
     };
     getExchangeMock = jest.fn().mockImplementation((id) => {
       if (id === "agreeD") {
@@ -494,7 +504,10 @@ describe("Ipex communication service of agent", () => {
       exn: {
         a: {
           i: "uuid",
-          a: {},
+          a: {
+            fullName: "Mr. John Lucas Smith",
+            licenseNumber: "SMITH01192OP",
+          },
           s: "schemaSaid",
         },
         i: "i",
@@ -503,10 +516,12 @@ describe("Ipex communication service of agent", () => {
     });
     const noti = {
       id: notiId,
-      createdAt: new Date("2024-04-29T11:01:04.903Z"),
+      createdAt: new Date("2024-04-29T11:01:04.903Z").toISOString(),
       a: {
         d: "saidForUuid",
       },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
     };
     schemaGetMock.mockResolvedValue({
       title: "Qualified vLEI Issuer Credential",
@@ -526,13 +541,15 @@ describe("Ipex communication service of agent", () => {
         },
       },
     ]);
-    expect(
-      await ipexCommunicationService.getMatchingCredsForApply(noti)
-    ).toEqual({
+    expect(await ipexCommunicationService.getIpexApplyDetails(noti)).toEqual({
       credentials: [{ acdc: { d: "d" }, connectionId: "connectionId" }],
       schema: {
         description: "Qualified vLEI Issuer Credential",
         name: "Qualified vLEI Issuer Credential",
+      },
+      attributes: {
+        fullName: "Mr. John Lucas Smith",
+        licenseNumber: "SMITH01192OP",
       },
     });
   });
@@ -553,14 +570,16 @@ describe("Ipex communication service of agent", () => {
     });
     const noti = {
       id: notiId,
-      createdAt: new Date("2024-04-29T11:01:04.903Z"),
+      createdAt: new Date("2024-04-29T11:01:04.903Z").toISOString(),
       a: {
         d: "saidForUuid",
       },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
     };
     schemaGetMock.mockResolvedValue(null);
     await expect(
-      ipexCommunicationService.getMatchingCredsForApply(noti)
+      ipexCommunicationService.getIpexApplyDetails(noti)
     ).rejects.toThrowError(IpexCommunicationService.SCHEMA_NOT_FOUND);
   });
 
@@ -570,10 +589,12 @@ describe("Ipex communication service of agent", () => {
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     const noti = {
       id: "id",
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
       a: {
         d: "keri",
       },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
     };
     await expect(
       ipexCommunicationService.offerAcdcFromApply(noti, {})
@@ -582,7 +603,7 @@ describe("Ipex communication service of agent", () => {
       ipexCommunicationService.grantAcdcFromAgree(noti)
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     await expect(
-      ipexCommunicationService.getMatchingCredsForApply(noti)
+      ipexCommunicationService.getIpexApplyDetails(noti)
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 });

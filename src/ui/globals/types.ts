@@ -36,6 +36,8 @@ enum ToastMsgType {
   COPIED_TO_CLIPBOARD = "copiedToClipboard",
   IDENTIFIER_REQUESTED = "identifierRequested",
   IDENTIFIER_CREATED = "identifierCreated",
+  MULTI_SIGN_IDENTIFIER_CREATED = "multiSignIdentifierCreated",
+  DELEGATED_IDENTIFIER_CREATED = "delegatedidentifiercreated",
   IDENTIFIER_UPDATED = "identifierUpdated",
   IDENTIFIER_DELETED = "identifierDeleted",
   CREDENTIAL_DELETED = "credentialDeleted",
@@ -64,6 +66,7 @@ enum ToastMsgType {
   ROTATE_KEY_SUCCESS = "rotatekeysuccess",
   ROTATE_KEY_ERROR = "rotatekeyerror",
   SCANNER_ERROR = "qrerror",
+  NEW_MULTI_SIGN_MEMBER = "newmultisignmember",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {

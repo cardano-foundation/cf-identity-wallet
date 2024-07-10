@@ -1,0 +1,208 @@
+.notification-details-multi-sig-request {
+  &.setup-identifier.blur {
+    filter: blur(0.1rem);
+    --background: rgba(3, 3, 33, 0);
+  }
+
+  ion-header ion-toolbar {
+    margin-top: 0.625rem;
+    --background: var(--ion-color-light);
+
+    ion-title.md {
+      margin-left: -3rem;
+    }
+  }
+
+  h2 {
+    text-align: center;
+  }
+
+  p.multisig-request-subtitle {
+    text-align: center;
+    margin: 0.8rem auto 1.75rem;
+  }
+
+  .multisig-request-section {
+    h4 {
+      margin: 0.938rem;
+      font-weight: 500;
+    }
+
+    ion-card {
+      margin: 0;
+      display: flex;
+      background: white;
+      border-radius: 1rem;
+      flex-direction: column;
+      justify-content: space-evenly;
+      padding: 0.5rem 1.25rem;
+      box-shadow: none;
+      --inner-border-width: 0;
+      margin-bottom: 1.5rem;
+
+      ion-list {
+        ion-grid {
+          padding: 0;
+
+          ion-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0;
+
+            ion-col {
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              padding: 0;
+            }
+          }
+        }
+
+        ion-item {
+          --inner-padding-end: 0;
+          font-weight: 500;
+
+          &::part(native) {
+            padding: 0;
+          }
+
+          &:not(:last-child) {
+            margin-bottom: 0.5rem;
+          }
+        }
+
+        ion-col {
+          &.multisig-connection-logo {
+            position: relative;
+
+            img {
+              width: 2rem;
+              border-radius: 2rem;
+            }
+          }
+
+          &.multisig-connection-info {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            ion-label {
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.setup-identifier {
+    margin-bottom: 0;
+
+    .multisig-request-section {
+      margin-bottom: 0;
+
+      h4 {
+        margin-left: 0;
+      }
+
+      .identifier-theme-selector {
+        padding: 0;
+      }
+
+      div.identifier-name {
+        margin-bottom: 0;
+
+        ion-label {
+          display: none;
+        }
+
+        &.identifier-name-error ion-item.custom-input .input-line {
+          border-color: var(--ion-color-danger);
+        }
+
+        ion-item.custom-input {
+          margin-bottom: 0;
+
+          .input-line ion-input,
+          .input-line ion-input input::placeholder {
+            font-size: 1rem;
+            font-weight: 400;
+          }
+
+          .input-line ion-input input::placeholder {
+            color: rgba(var(--ion-color-secondary-rgb), 0.75);
+          }
+        }
+
+        .error-message-container {
+          height: 1rem;
+
+          p {
+            font-size: 0.875rem;
+            margin: 0 auto;
+            text-align: left;
+          }
+        }
+      }
+    }
+  }
+
+  .multisig-request-user-logo {
+    border-radius: 50%;
+    background-color: var(--ion-color-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2rem;
+    height: 2rem;
+
+    ion-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .multisig-request-section {
+      ion-card {
+        padding: 0.35rem 0.9rem;
+      }
+    }
+    .multisig-request-user-logo {
+      border-radius: 4rem;
+      background-color: var(--ion-color-primary);
+
+      ion-icon {
+        width: 3.9rem;
+        height: 3.9rem;
+      }
+    }
+
+    .multisig-connection-info ion-label {
+      padding-left: 0.5rem;
+    }
+  }
+}
+
+.multisig-request-spinner-container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+ion-toolbar.multisig-request-footer {
+  &.page-footer {
+    z-index: 1000;
+    bottom: calc(-100vh + 8.5rem);
+    padding-inline: 0.9rem;
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    &.page-footer {
+      bottom: calc(-100vh + 6.5rem);
+    }
+  }
+}

@@ -1,8 +1,6 @@
 import {
-  KeriaNotification,
   AcdcStateChangedEvent,
   AcdcEventTypes,
-  NotificationRoute,
   AgentServicesProps,
 } from "../agent.types";
 import { AgentService } from "./agentService";
@@ -153,25 +151,6 @@ class CredentialService extends AgentService {
       throw new Error(CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG);
     }
     return metadata;
-  }
-
-  @OnlineOnly
-  async getUnhandledIpexGrantNotifications(
-    filters: {
-      isDismissed?: boolean;
-    } = {}
-  ): Promise<KeriaNotification[]> {
-    const results = await this.notificationStorage.findAllByQuery({
-      route: NotificationRoute.ExnIpexGrant,
-      ...filters,
-    });
-    return results.map((result) => {
-      return {
-        id: result.id,
-        createdAt: result.createdAt,
-        a: result.a,
-      };
-    });
   }
 
   private async saveAcdcMetadataRecord(

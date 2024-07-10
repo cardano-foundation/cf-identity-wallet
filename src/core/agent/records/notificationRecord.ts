@@ -1,21 +1,24 @@
 import { v4 as uuidv4 } from "uuid";
 import { BaseRecord, Tags } from "../../storage/storage.types";
+import { NotificationRoute } from "../agent.types";
 
 interface NotificationRecordStorageProps {
   id?: string;
   createdAt?: Date;
   tags?: Tags;
   a: Record<string, unknown>;
-  route: string;
-  isDismissed: boolean;
+  route: NotificationRoute;
+  read: boolean;
   multisigId?: string;
+  connectionId: string;
 }
 
 class NotificationRecord extends BaseRecord {
   a!: Record<string, unknown>;
-  route!: string;
-  isDismissed!: boolean;
+  route!: NotificationRoute;
+  read!: boolean;
   multisigId?: string;
+  connectionId!: string;
   static readonly type = "NotificationRecord";
   readonly type = NotificationRecord.type;
 
@@ -26,8 +29,9 @@ class NotificationRecord extends BaseRecord {
       this.createdAt = props.createdAt ?? new Date();
       this.a = props.a;
       this.route = props.route;
-      this.isDismissed = props.isDismissed;
+      this.read = props.read;
       this.multisigId = props.multisigId ?? undefined;
+      this.connectionId = props.connectionId;
       this._tags = props.tags ?? {};
     }
   }
@@ -35,7 +39,7 @@ class NotificationRecord extends BaseRecord {
   getTags() {
     return {
       route: this.route,
-      isDismissed: this.isDismissed,
+      read: this.read,
       multisigId: this.multisigId,
       ...this._tags,
     };

@@ -72,6 +72,9 @@ describe("getBackRoute", () => {
       biometricsCache: {
         enabled: false,
       },
+      notificationsCache: {
+        notifications: [],
+      },
     };
   });
 
@@ -200,6 +203,9 @@ describe("getPreviousRoute", () => {
       },
       biometricsCache: {
         enabled: false,
+      },
+      notificationsCache: {
+        notifications: [],
       },
     };
   });

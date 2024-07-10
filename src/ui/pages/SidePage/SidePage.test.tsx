@@ -9,11 +9,12 @@ import { identifierFix } from "../../__fixtures__/identifierFix";
 import { setPauseQueueIncomingRequest } from "../../../store/reducers/stateCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { NotificationRoute } from "../../../core/agent/agent.types";
+import { signTransactionFix } from "../../__fixtures__/signTransactionFix";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, ...props }: { children: any }) => (
-    <div {...props}>{children}</div>
+  IonModal: ({ children, ...props }: any) => (
+    <div data-testid={props["data-testid"]}>{children}</div>
   ),
 }));
 
@@ -90,16 +91,11 @@ describe("Side Page: incoming request", () => {
         isProcessing: true,
         queues: [
           {
-            id: "11111",
-            type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
+            id: "abc123456",
             label: "Cardano",
-            event: {
-              id: "id",
-              a: {
-                r: NotificationRoute.ExnIpexGrant,
-              },
-              createdAt: new Date(),
-            },
+            type: IncomingRequestType.PEER_CONNECT_SIGN,
+            signTransaction: signTransactionFix,
+            peerConnection: { id: "id", name: "DApp", iconB64: "mock-icon" },
           },
         ],
         isPaused: false,
@@ -126,9 +122,7 @@ describe("Side Page: incoming request", () => {
     );
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.request.credential.title)
-      ).toBeInTheDocument();
+      expect(getByText("DApp")).toBeVisible();
     });
   });
 });

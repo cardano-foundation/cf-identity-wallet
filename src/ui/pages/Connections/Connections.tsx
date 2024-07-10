@@ -61,6 +61,7 @@ const Connections = ({
 
     if (openConnections) {
       setShowConnections(true);
+      history.replace(history.location.pathname, {});
     }
   }, [history.location.state]);
 

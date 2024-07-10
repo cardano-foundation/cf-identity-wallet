@@ -63,7 +63,7 @@ const signifyClient = jest.mocked({
     list: jest.fn(),
   }),
   exchanges: () => ({
-    get: jest.fn(),
+    get: jest.fn().mockResolvedValue({ exn: { i: "connection-id" } }),
     send: jest.fn(),
   }),
   agent: {
@@ -166,25 +166,26 @@ describe("Signify notification service of agent", () => {
     expect(callback).toBeCalledTimes(2);
   });
 
-  test("Should call update when dismiss a notification", async () => {
+  test("Should call update when read a notification", async () => {
     const notification = {
       id: "id",
       _tags: {
-        isDismissed: false,
+        read: false,
       } as any,
       setTag: function (name: string, value: any) {
         this._tags[name] = value;
       },
     };
+
     notificationStorage.findById = jest.fn().mockResolvedValue(notification);
-    await signifyNotificationService.dismissNotification(notification.id);
+    await signifyNotificationService.readNotification(notification.id);
     expect(notificationStorage.update).toBeCalledTimes(1);
   });
 
-  test("Should throw error when dismiss an invalid notification", async () => {
+  test("Should throw error when read an invalid notification", async () => {
     notificationStorage.findById = jest.fn().mockResolvedValue(null);
     await expect(
-      signifyNotificationService.dismissNotification("not-exist-noti-id")
+      signifyNotificationService.readNotification("not-exist-noti-id")
     ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
   });
 
@@ -205,52 +206,6 @@ describe("Signify notification service of agent", () => {
         a: {
           r: "/multisig/icp",
           d: "not-found-said",
-          m: "",
-        },
-      },
-    ];
-    for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
-    }
-    expect(callback).toBeCalledTimes(0);
-  });
-
-  test("Should skip if there is a existed multi-sig notification", async () => {
-    const callback = jest.fn();
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([{}]);
-    groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
-    const notes = [
-      {
-        i: "string",
-        dt: "string",
-        r: false,
-        a: {
-          r: "/multisig/icp",
-          d: "d",
-          m: "",
-        },
-      },
-    ];
-    for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
-    }
-    expect(callback).toBeCalledTimes(0);
-  });
-
-  test("Should skip if there is a existed multi-sig", async () => {
-    const callback = jest.fn();
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
-    groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
-    const notes = [
-      {
-        i: "string",
-        dt: "string",
-        r: false,
-        a: {
-          r: "/multisig/icp",
-          d: "d",
           m: "",
         },
       },
