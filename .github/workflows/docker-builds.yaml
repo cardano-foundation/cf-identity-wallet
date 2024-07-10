@@ -30,6 +30,7 @@ jobs:
       - name: Set extra environment and metadata
         id: metadata
         run: |
+          GIT_BRANCH_SHORT_COMMIT=$( git rev-parse --short ${{ github.event.pull_request.head.sha }})
           GIT_SHORT_COMMIT=$(git rev-parse --short "$GITHUB_SHA")
           CURRENT_VERSION=$(jq -r .version package.json)
 
@@ -41,24 +42,24 @@ jobs:
 
             # set earthly docker image targets based on changed paths
             DOCKER_IMAGE_TARGETS="$( \
-              ( git log --pretty=format:'%h' -n 1 Earthfile | grep -q ${GIT_SHORT_COMMIT} ) && \
+              ( git log --pretty=format:'%h' -n 1 Earthfile | grep -q ${GIT_BRANCH_SHORT_COMMIT} ) && \
               ( git log --patch -n1 Earthfile | grep -q "ARG.*global.*KERIA_GIT" ) && \
               echo idw-keria
             )"
             DOCKER_IMAGE_TARGETS="$DOCKER_IMAGE_TARGETS $( \
-                ( git log --pretty=format:'%h' -n 1 Earthfile | grep -q ${GIT_SHORT_COMMIT} ) && \
+                ( git log --pretty=format:'%h' -n 1 Earthfile | grep -q ${GIT_BRANCH_SHORT_COMMIT} ) && \
                 ( git log --patch -n1 Earthfile | grep -q "ARG.*global.*KERI_DOCKER" ) && \
                 echo idw-witness
             )"
             DOCKER_IMAGE_TARGETS="$DOCKER_IMAGE_TARGETS $( \
-                ( git log --pretty=format:'%h' -n 1 services/credential-server | grep -q ${GIT_SHORT_COMMIT} ) && \
+                ( git log --pretty=format:'%h' -n 1 services/credential-server | grep -q ${GIT_BRANCH_SHORT_COMMIT} ) && \
                 echo credential-server
             )"
             DOCKER_IMAGE_TARGETS="$DOCKER_IMAGE_TARGETS $( \
-                ( git log --pretty=format:'%h' -n 1 services/credential-server-ui | grep -q ${GIT_SHORT_COMMIT} ) && \
+                ( git log --pretty=format:'%h' -n 1 services/credential-server-ui | grep -q ${GIT_BRANCH_SHORT_COMMIT} ) && \
                 echo credential-server-ui
             )"
-            echo "EARTHLY_DOCKER_IMAGE_TARGETS_ARG=--DOCKER_IMAGES_EXTRA_TAGS=${DOCKER_IMAGE_TARGETS}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+            echo "EARTHLY_DOCKER_IMAGE_TARGETS_ARG=--DOCKER_IMAGES_EXTRA_TAGS=\"${DOCKER_IMAGE_TARGETS}\"" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
 
           else
             BRANCH=${GITHUB_REF##*/}
