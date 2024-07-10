@@ -252,6 +252,7 @@ class SignifyNotificationService extends AgentService {
       throw new Error(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
     }
     notificationRecord.setTag("read", true);
+    notificationRecord.read = true;
     await this.notificationStorage.update(notificationRecord);
   }
 
@@ -262,7 +263,7 @@ class SignifyNotificationService extends AgentService {
     if (!notificationRecord) {
       throw new Error(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
     }
-    notificationRecord.setTag("read", false);
+    notificationRecord.read = false;
     await this.notificationStorage.update(notificationRecord);
   }
 
