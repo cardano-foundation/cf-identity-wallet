@@ -103,6 +103,7 @@ jobs:
         run: |
           # For PR builds, we skip any earthly build if there are no changes on any known target-related file, for branch builds, we just build everything
           if [ ${{github.event_name}} == "pull_request" ]
+          then
             if [ ! -z "${EARTHLY_DOCKER_IMAGE_TARGETS_ARG}" ]
             then
               earthly +docker-publish \
