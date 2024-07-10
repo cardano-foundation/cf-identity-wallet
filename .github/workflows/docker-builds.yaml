@@ -61,7 +61,11 @@ jobs:
                 echo credential-server-ui
             )"
             set -e
-            echo "EARTHLY_DOCKER_IMAGE_TARGETS_ARG=--DOCKER_IMAGES_EXTRA_TAGS=\"${DOCKER_IMAGE_TARGETS}\"" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+            if [ ! -z "$DOCKER_IMAGE_TARGETS" ]; then
+              echo "EARTHLY_DOCKER_IMAGE_TARGETS_ARG=--DOCKER_IMAGES_EXTRA_TAGS=\"${DOCKER_IMAGE_TARGETS}\"" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+            else
+              echo "EARTHLY_DOCKER_IMAGE_TARGETS_ARG="" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+            fi
 
           else
             BRANCH=${GITHUB_REF##*/}
