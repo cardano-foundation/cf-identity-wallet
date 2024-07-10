@@ -92,11 +92,10 @@ jobs:
       - uses: earthly/actions-setup@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          version: "0.8.6"
+          version: "0.8.14"
 
       - name: 🌍 earthly (docker build and push)
         run: |
-          earthly +docker-publish \
-            --DOCKER_REGISTRIES=${{ secrets.DOCKER_REGISTRIES }} \
+          earthly +docker-publish --DOCKER_REGISTRIES=${{ secrets.DOCKER_REGISTRIES }} \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}" \
             ${EARTHLY_DOCKER_IMAGE_TARGETS_ARG}
