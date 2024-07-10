@@ -61,10 +61,10 @@ jobs:
                 echo credential-server-ui
             )"
             set -e
-            if [ ! -z "$DOCKER_IMAGE_TARGETS" ]; then
-              echo "EARTHLY_DOCKER_IMAGE_TARGETS_ARG=--DOCKER_IMAGES_TARGETS=\"${DOCKER_IMAGE_TARGETS}\"" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
-            else
+            if [ "$(echo $DOCKER_IMAGE_TARGETS | tr -s ' ')" = " " ]; then
               echo "EARTHLY_DOCKER_IMAGE_TARGETS_ARG=--DOCKER_IMAGES_TARGETS=\"\"" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+            else
+              echo "EARTHLY_DOCKER_IMAGE_TARGETS_ARG=--DOCKER_IMAGES_TARGETS=\"${DOCKER_IMAGE_TARGETS}\"" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
             fi
 
           else
