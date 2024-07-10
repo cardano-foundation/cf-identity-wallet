@@ -30,6 +30,7 @@ jobs:
       - name: Set extra environment and metadata
         id: metadata
         run: |
+          set -x
           GIT_BRANCH_SHORT_COMMIT=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
           GIT_SHORT_COMMIT=$(git rev-parse --short "$GITHUB_SHA")
           CURRENT_VERSION=$(jq -r .version package.json)
