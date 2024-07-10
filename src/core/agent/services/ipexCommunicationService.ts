@@ -112,6 +112,13 @@ class IpexCommunicationService extends AgentService {
       credentialId,
       cred
     );
+
+    await this.props.signifyClient
+      .notifications()
+      .delete(id)
+      .catch((e) => {
+        throw e;
+      });
     await this.notificationStorage.deleteById(id);
     this.props.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
@@ -140,6 +147,12 @@ class IpexCommunicationService extends AgentService {
     await this.props.signifyClient
       .ipex()
       .submitOffer(holderSignifyName, offer, sigs, end, [msg.exn.i]);
+    await this.props.signifyClient
+      .notifications()
+      .delete(notification.id)
+      .catch((e) => {
+        throw e;
+      });
     await this.notificationStorage.deleteById(notification.id);
   }
 
@@ -174,6 +187,13 @@ class IpexCommunicationService extends AgentService {
     await this.props.signifyClient
       .ipex()
       .submitGrant(holderSignifyName, grant, sigs, end, [msgAgree.exn.i]);
+
+    await this.props.signifyClient
+      .notifications()
+      .delete(notification.id)
+      .catch((e) => {
+        throw e;
+      });
     await this.notificationStorage.deleteById(notification.id);
   }
 

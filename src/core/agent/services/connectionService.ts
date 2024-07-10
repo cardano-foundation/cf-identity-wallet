@@ -48,6 +48,7 @@ class ConnectionService extends AgentService {
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
+  static readonly FAILED_TO_DELETE_CONNECTION = "Failed to delete connection";
 
   static resolvedOobi: { [key: string]: any } = {};
 
@@ -167,8 +168,14 @@ class ConnectionService extends AgentService {
 
   @OnlineOnly
   async deleteConnectionById(id: string): Promise<void> {
+    await this.props.signifyClient
+      .contacts()
+      .delete(id)
+      .catch((e) => {
+        throw e;
+      });
+
     await this.connectionStorage.deleteById(id);
-    // await this.signifyApi.deleteContactById(id); @TODO - foconnor: Uncomment when KERIA endpoint fixed
     const notes = await this.getConnectNotesByConnectionId(id);
     for (const note of notes) {
       this.connectionNoteStorage.deleteById(note.id);

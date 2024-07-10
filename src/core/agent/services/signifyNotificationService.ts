@@ -19,6 +19,8 @@ import { OperationPendingRecord } from "../records/operationPendingRecord";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
+  static readonly FAILED_TO_DELETE_NOTIFICATION =
+    "Failed to delete notification";
   static readonly POLL_KERIA_INTERVAL = 2000;
   static readonly LOGIN_INTERVAL = 25;
 
@@ -151,6 +153,13 @@ class SignifyNotificationService extends AgentService {
   }
 
   async deleteNotificationRecordById(id: string): Promise<void> {
+    await this.props.signifyClient
+      .notifications()
+      .delete(id)
+      .catch((e) => {
+        throw e;
+      });
+
     await this.notificationStorage.deleteById(id);
   }
 

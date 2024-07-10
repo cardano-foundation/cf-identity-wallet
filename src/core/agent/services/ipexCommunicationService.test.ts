@@ -4,6 +4,7 @@ import { CredentialStatus } from "./credentialService.types";
 import { Agent } from "../agent";
 import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
+import { SignifyNotificationService } from "./signifyNotificationService";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -74,6 +75,7 @@ let getExchangeMock = jest.fn().mockImplementation((id: string) => {
 const ipexOfferMock = jest.fn();
 const ipexGrantMock = jest.fn();
 const schemaGetMock = jest.fn();
+const deleteNotificationMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -121,6 +123,7 @@ const signifyClient = jest.mocked({
   notifications: () => ({
     list: jest.fn(),
     mark: jest.fn(),
+    delete: deleteNotificationMock,
   }),
   ipex: () => ({
     admit: jest.fn().mockResolvedValue(["admit", "sigs", "aend"]),
@@ -184,6 +187,32 @@ describe("Ipex communication service of agent", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
+
+  test("can accept ACDC if deleting KERIA fails", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
+      id: "id",
+    });
+
+    deleteNotificationMock.mockRejectedValueOnce(
+      new Error(SignifyNotificationService.FAILED_TO_DELETE_NOTIFICATION)
+    );
+    await expect(ipexCommunicationService.acceptAcdc(id)).rejects.toThrowError(
+      SignifyNotificationService.FAILED_TO_DELETE_NOTIFICATION
+    );
+  });
+
   test("can accept ACDC", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
@@ -200,6 +229,7 @@ describe("Ipex communication service of agent", () => {
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
       id: "id",
     });
+    deleteNotificationMock.mockResolvedValue(null);
     await ipexCommunicationService.acceptAcdc(id);
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
       expect.objectContaining({
@@ -210,6 +240,7 @@ describe("Ipex communication service of agent", () => {
       id: "id",
       status: CredentialStatus.CONFIRMED,
     });
+    expect(deleteNotificationMock).toBeCalledWith(id);
     expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 
@@ -317,6 +348,8 @@ describe("Ipex communication service of agent", () => {
       signifyName: "abc123",
     });
     ipexOfferMock.mockResolvedValue(["offer", "sigs", "gend"]);
+    deleteNotificationMock.mockResolvedValue(null);
+
     await ipexCommunicationService.offerAcdcFromApply(noti, {});
     expect(ipexOfferMock).toBeCalledWith({
       senderName: "abc123",
@@ -324,6 +357,7 @@ describe("Ipex communication service of agent", () => {
       acdc: expect.anything(),
       apply: "d",
     });
+    expect(deleteNotificationMock).toBeCalledWith(id);
     expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 
@@ -399,6 +433,8 @@ describe("Ipex communication service of agent", () => {
       signifyName: "abc123",
     });
     ipexGrantMock.mockResolvedValue(["offer", "sigs", "gend"]);
+    deleteNotificationMock.mockResolvedValue(null);
+
     await ipexCommunicationService.grantAcdcFromAgree(noti);
     expect(ipexGrantMock).toBeCalledWith({
       acdc: {},
@@ -410,6 +446,7 @@ describe("Ipex communication service of agent", () => {
       recipient: "i",
       senderName: "abc123",
     });
+    expect(deleteNotificationMock).toBeCalledWith(id);
     expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 

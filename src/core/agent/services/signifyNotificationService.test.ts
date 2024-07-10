@@ -14,6 +14,8 @@ const groupGetRequestMock = jest.fn();
 const oobiResolveMock = jest.fn();
 const queryKeyStateMock = jest.fn();
 
+const deleteNotificationMock = jest.fn();
+
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -54,6 +56,7 @@ const signifyClient = jest.mocked({
   notifications: () => ({
     list: jest.fn(),
     mark: jest.fn(),
+    delete: deleteNotificationMock,
   }),
   ipex: () => ({
     admit: jest.fn(),
@@ -189,10 +192,27 @@ describe("Signify notification service of agent", () => {
     ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
   });
 
+  test("can delete keri notification by ID if KERIA fails", async () => {
+    const id = "uuid";
+
+    deleteNotificationMock.mockRejectedValueOnce(
+      new Error(SignifyNotificationService.FAILED_TO_DELETE_NOTIFICATION)
+    );
+
+    await expect(
+      signifyNotificationService.deleteNotificationRecordById(id)
+    ).rejects.toThrowError(
+      SignifyNotificationService.FAILED_TO_DELETE_NOTIFICATION
+    );
+  });
+
   test("can delete keri notification by ID", async () => {
     const id = "uuid";
+
+    deleteNotificationMock.mockResolvedValue(null);
     await signifyNotificationService.deleteNotificationRecordById(id);
     expect(notificationStorage.deleteById).toBeCalled();
+    expect(deleteNotificationMock).toBeCalled();
   });
 
   test("Should skip if there is no valid multi-sig notification", async () => {
