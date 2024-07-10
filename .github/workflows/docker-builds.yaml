@@ -30,8 +30,7 @@ jobs:
       - name: Set extra environment and metadata
         id: metadata
         run: |
-          set -x
-          GIT_BRANCH_SHORT_COMMIT=$(echo ${{ github.event.pull_request.head.sha }} | head -c7)
+          GIT_BRANCH_SHORT_COMMIT=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
           GIT_SHORT_COMMIT=$(git rev-parse --short "$GITHUB_SHA")
           CURRENT_VERSION=$(jq -r .version package.json)
 
@@ -42,6 +41,7 @@ jobs:
             echo "ARTIFACT_VERSION=${ARTIFACT_VERSION}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
 
             # set earthly docker image targets based on changed paths
+            set -e
             DOCKER_IMAGE_TARGETS="$( \
               ( git log --pretty=format:'%h' -n 1 Earthfile | grep -q ${GIT_BRANCH_SHORT_COMMIT} ) && \
               ( git log --patch -n1 Earthfile | grep -q "ARG.*global.*KERIA_GIT" ) && \
@@ -60,6 +60,7 @@ jobs:
                 ( git log --pretty=format:'%h' -n 1 services/credential-server-ui | grep -q ${GIT_BRANCH_SHORT_COMMIT} ) && \
                 echo credential-server-ui
             )"
+            set +e
             echo "EARTHLY_DOCKER_IMAGE_TARGETS_ARG=--DOCKER_IMAGES_EXTRA_TAGS=\"${DOCKER_IMAGE_TARGETS}\"" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
 
           else
