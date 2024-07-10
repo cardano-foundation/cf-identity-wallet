@@ -319,8 +319,8 @@ class MultiSigService extends AgentService {
     await this.props.signifyClient
       .notifications()
       .delete(notification.id)
-      .catch((e) => {
-        throw e;
+      .catch((message) => {
+        throw message;
       });
     await this.notificationStorage.deleteById(notification.id);
     return res.op.name.split(".")[1];
@@ -427,8 +427,8 @@ class MultiSigService extends AgentService {
       await this.props.signifyClient
         .notifications()
         .delete(notificationId)
-        .catch((e) => {
-          throw e;
+        .catch((message) => {
+          throw message;
         });
       await this.notificationStorage.deleteById(notificationId);
       return;
@@ -475,8 +475,8 @@ class MultiSigService extends AgentService {
     await this.props.signifyClient
       .notifications()
       .delete(notificationId)
-      .catch((e) => {
-        throw e;
+      .catch((message) => {
+        throw message;
       });
     await this.notificationStorage.deleteById(notificationId);
     const op = res.op;

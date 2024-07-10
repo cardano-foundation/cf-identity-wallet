@@ -171,8 +171,8 @@ class ConnectionService extends AgentService {
     await this.props.signifyClient
       .contacts()
       .delete(id)
-      .catch((e) => {
-        throw e;
+      .catch((message) => {
+        throw message;
       });
 
     await this.connectionStorage.deleteById(id);

@@ -156,8 +156,8 @@ class SignifyNotificationService extends AgentService {
     await this.props.signifyClient
       .notifications()
       .delete(id)
-      .catch((e) => {
-        throw e;
+      .catch((message) => {
+        throw message;
       });
 
     await this.notificationStorage.deleteById(id);
