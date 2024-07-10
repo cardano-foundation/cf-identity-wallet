@@ -94,17 +94,12 @@ class AuthService extends AgentService {
       MiscRecordId.LOGIN_ATTEMPT
     );
 
-    if (!attemptInfo) {
-      throw new Error(AuthService.LOGIN_ATTEMPT_RECORD_NOT_FOUND);
-    }
+    if (!attemptInfo) return;
 
     attemptInfo.content.attempts = 0;
     attemptInfo.content.lockedUntil = Date.now();
 
     await Agent.agent.basicStorage.update(attemptInfo);
-
-    const loginAttempts = await this.getLoginAttempts();
-    return loginAttempts;
   }
 }
 

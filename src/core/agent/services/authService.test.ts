@@ -160,24 +160,83 @@ describe("Auth service of agent", () => {
     );
   });
 
-  test("Should increment attempts and lock for appropriate duration", async () => {
-    Agent.agent.basicStorage.findById = jest
-      .fn()
-      .mockResolvedValue(existingRecord);
-    Agent.agent.basicStorage.update = jest.fn();
+  const incrementCases = [
+    { attempts: 4, expectedAttempts: 5, lockDuration: AuthService.TIME_UNIT },
+    {
+      attempts: 5,
+      expectedAttempts: 6,
+      lockDuration: 5 * AuthService.TIME_UNIT,
+    },
+    {
+      attempts: 6,
+      expectedAttempts: 7,
+      lockDuration: 10 * AuthService.TIME_UNIT,
+    },
+    {
+      attempts: 7,
+      expectedAttempts: 8,
+      lockDuration: 15 * AuthService.TIME_UNIT,
+    },
+    {
+      attempts: 8,
+      expectedAttempts: 9,
+      lockDuration: 60 * AuthService.TIME_UNIT,
+    },
+    {
+      attempts: 9,
+      expectedAttempts: 10,
+      lockDuration: 4 * 60 * AuthService.TIME_UNIT,
+    },
+    {
+      attempts: 10,
+      expectedAttempts: 11,
+      lockDuration: 8 * 60 * AuthService.TIME_UNIT,
+    },
+    {
+      attempts: 11,
+      expectedAttempts: 12,
+      lockDuration: 8 * 60 * AuthService.TIME_UNIT,
+    },
+  ];
 
-    const result = await authService.incrementLoginAttempts();
+  incrementCases.forEach(({ attempts, expectedAttempts, lockDuration }) => {
+    test(`Should increment attempts from ${attempts} to ${expectedAttempts} and lock for ${lockDuration} ms`, async () => {
+      const lockedUntil = Date.now();
+      const existingRecord = new BasicRecord({
+        id: MiscRecordId.LOGIN_ATTEMPT,
+        content: {
+          attempts,
+          lockedUntil,
+        },
+        createdAt: new Date(),
+      });
 
-    expect(result.attempts).toBe(5);
-    expect(result.lockedUntil).toBeGreaterThan(Date.now());
-  });
+      Agent.agent.basicStorage.findById = jest
+        .fn()
+        .mockResolvedValue(existingRecord);
+      Agent.agent.basicStorage.update = jest.fn();
 
-  test("Should throw an error if login attempt record is not found in resetLoginAttempts", async () => {
-    basicStorage.findById = jest.fn().mockResolvedValue(null);
+      const result = await authService.incrementLoginAttempts();
 
-    await expect(authService.resetLoginAttempts()).rejects.toThrow(
-      AuthService.LOGIN_ATTEMPT_RECORD_NOT_FOUND
-    );
+      expect(result.attempts).toBe(expectedAttempts);
+      if (attempts >= 4) {
+        expect(result.lockedUntil).toBeGreaterThan(Date.now());
+        expect(result.lockedUntil).toBeLessThanOrEqual(
+          Date.now() + lockDuration
+        );
+      } else {
+        expect(result.lockedUntil).toBe(lockedUntil);
+      }
+
+      expect(Agent.agent.basicStorage.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          content: expect.objectContaining({
+            attempts: expectedAttempts,
+            lockedUntil: result.lockedUntil,
+          }),
+        })
+      );
+    });
   });
 
   test("Should reset attempts and lockedUntil", async () => {
@@ -188,7 +247,6 @@ describe("Auth service of agent", () => {
 
     const result = await authService.resetLoginAttempts();
 
-    expect(result.attempts).toBe(0);
-    expect(result.lockedUntil).toBeLessThanOrEqual(Date.now());
+    expect(Agent.agent.basicStorage.update).toBeCalled();
   });
 });
