@@ -1,7 +1,8 @@
 name: Build and publish docker artifacts
 
 on:
-  branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
   pull_request:
     types: [ opened, synchronize ]
     paths:
