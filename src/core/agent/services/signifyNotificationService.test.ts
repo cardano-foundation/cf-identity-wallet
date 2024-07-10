@@ -172,6 +172,7 @@ describe("Signify notification service of agent", () => {
       _tags: {
         read: false,
       } as any,
+      read: false,
       setTag: function (name: string, value: any) {
         this._tags[name] = value;
       },
@@ -260,5 +261,23 @@ describe("Signify notification service of agent", () => {
       await signifyNotificationService.processNotification(notif, callback);
     }
     expect(callback).toBeCalledTimes(0);
+  });
+
+  test("Should call update when unread a notification", async () => {
+    const notification = {
+      id: "id",
+      read: true,
+    };
+
+    notificationStorage.findById = jest.fn().mockResolvedValue(notification);
+    await signifyNotificationService.unreadNotification(notification.id);
+    expect(notificationStorage.update).toBeCalledTimes(1);
+  });
+
+  test("Should throw error when unread an invalid notification", async () => {
+    notificationStorage.findById = jest.fn().mockResolvedValue(null);
+    await expect(
+      signifyNotificationService.unreadNotification("not-exist-noti-id")
+    ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
   });
 });
