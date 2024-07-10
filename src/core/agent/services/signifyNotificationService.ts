@@ -255,6 +255,17 @@ class SignifyNotificationService extends AgentService {
     await this.notificationStorage.update(notificationRecord);
   }
 
+  async unreadNotification(notificationId: string) {
+    const notificationRecord = await this.notificationStorage.findById(
+      notificationId
+    );
+    if (!notificationRecord) {
+      throw new Error(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
+    }
+    notificationRecord.setTag("read", false);
+    await this.notificationStorage.update(notificationRecord);
+  }
+
   async getAllNotifications(): Promise<KeriaNotification[]> {
     const notifications = await this.notificationStorage.getAll();
     return notifications.map((notification) => {

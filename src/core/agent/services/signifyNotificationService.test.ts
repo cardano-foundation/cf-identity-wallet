@@ -261,4 +261,27 @@ describe("Signify notification service of agent", () => {
     }
     expect(callback).toBeCalledTimes(0);
   });
+
+  test("Should call update when unread a notification", async () => {
+    const notification = {
+      id: "id",
+      _tags: {
+        read: true,
+      } as any,
+      setTag: function (name: string, value: any) {
+        this._tags[name] = value;
+      },
+    };
+
+    notificationStorage.findById = jest.fn().mockResolvedValue(notification);
+    await signifyNotificationService.unreadNotification(notification.id);
+    expect(notificationStorage.update).toBeCalledTimes(1);
+  });
+
+  test("Should throw error when unread an invalid notification", async () => {
+    notificationStorage.findById = jest.fn().mockResolvedValue(null);
+    await expect(
+      signifyNotificationService.unreadNotification("not-exist-noti-id")
+    ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
+  });
 });
