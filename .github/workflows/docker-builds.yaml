@@ -96,6 +96,15 @@ jobs:
 
       - name: 🌍 earthly (docker build and push)
         run: |
-          earthly +docker-publish --DOCKER_REGISTRIES=${{ secrets.DOCKER_REGISTRIES }} \
+          set -x
+          DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}"
+
+          earthly +docker-publish \
+            --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
+            --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}" \
+            ${EARTHLY_DOCKER_IMAGE_TARGETS_ARG}
+
+          earthly +docker-publish \
+            --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}" \
             ${EARTHLY_DOCKER_IMAGE_TARGETS_ARG}
