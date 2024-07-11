@@ -141,6 +141,38 @@ class SignifyNotificationService extends AgentService {
     notif: Notification,
     callback: (event: KeriaNotification) => void
   ) {
+    if (notif.a.r === NotificationRoute.MultiSigRpy) {
+      const multisigNotification = await this.props.signifyClient
+        .groups()
+        .getRequest(notif.a.d)
+        .catch((error) => {
+          const errorStack = (error as Error).stack as string;
+          const status = errorStack.split("-")[1];
+          if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+            return [];
+          } else {
+            throw error;
+          }
+        });
+      if (!multisigNotification || !multisigNotification.length) {
+        await this.markNotification(notif.i);
+        return;
+      }
+      const multisigId = multisigNotification[0]?.exn?.a?.gid;
+      if (!multisigId) {
+        await this.markNotification(notif.i);
+        return;
+      }
+      const multisigIdentifier = await Agent.agent.identifiers.getIdentifier(
+        multisigId
+      );
+      if (!multisigIdentifier) {
+        await this.markNotification(notif.i);
+        return;
+      }
+      await this.markNotification(notif.i);
+      return await Agent.agent.multiSigs.joinAuthorization(notif.a.d);
+    }
     if (notif.a.r === NotificationRoute.MultiSigIcp) {
       const multisigNotification = await this.props.signifyClient
         .groups()
@@ -300,6 +332,19 @@ class SignifyNotificationService extends AgentService {
                   isPending: false,
                 }
               );
+              // Trigger add end role authorization for multi-sigs
+              if (
+                pendingOperation.recordType ==
+                  OperationPendingRecordType.Group
+              ) {
+                const multisigIdentifier =
+                    await this.identifierStorage.getIdentifierMetadata(
+                      recordId
+                    );
+                await Agent.agent.multiSigs.endRoleAuthorization(
+                  multisigIdentifier.signifyName
+                );
+              }
               callback({
                 opType: pendingOperation.recordType,
                 oid: recordId,

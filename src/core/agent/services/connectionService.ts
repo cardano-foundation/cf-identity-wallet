@@ -47,7 +47,7 @@ class ConnectionService extends AgentService {
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
-  static readonly CANNOT_GET_OOBI = "Cannot get the oobi";
+  static readonly CANNOT_GET_OOBI = "No OOBI available from KERIA";
 
   static resolvedOobi: { [key: string]: any } = {};
 
