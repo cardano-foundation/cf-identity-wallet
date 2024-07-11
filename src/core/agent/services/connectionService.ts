@@ -48,7 +48,6 @@ class ConnectionService extends AgentService {
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
-  static readonly FAILED_TO_DELETE_CONNECTION = "Failed to delete connection";
 
   static resolvedOobi: { [key: string]: any } = {};
 

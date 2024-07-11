@@ -6,6 +6,7 @@ import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 
 const contactListMock = jest.fn();
+const deleteContactMock = jest.fn();
 
 const uuidToThrow = "throwMe";
 const signifyClient = jest.mocked({
@@ -69,12 +70,11 @@ const signifyClient = jest.mocked({
         id,
       };
     }),
-    delete: jest.fn(),
+    delete: deleteContactMock,
   }),
   notifications: () => ({
     list: jest.fn(),
     mark: jest.fn(),
-    delete: jest.fn(),
   }),
   ipex: () => ({
     admit: jest.fn(),
@@ -283,9 +283,9 @@ describe("Connection service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([]);
     const connectionId = "connectionId";
-
     await connectionService.deleteConnectionById(connectionId);
     expect(connectionStorage.deleteById).toBeCalledWith(connectionId);
+    // expect(deleteContactMock).toBeCalledWith(connectionId); // it should be uncommented later when deleting on KERIA is re-enabled
   });
 
   test("Should delete connection's notes when deleting that connection", async () => {

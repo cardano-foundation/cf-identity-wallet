@@ -7,7 +7,6 @@ import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { MultiSigService } from "./multiSigService";
 import { IdentifierStorage } from "../records";
-import { SignifyNotificationService } from "./signifyNotificationService";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -31,9 +30,6 @@ const oobiResolveMock = jest.fn();
 let groupGetRequestMock = jest.fn();
 let queryKeyStateMock = jest.fn();
 let queryKeyStateGetMock = jest.fn();
-
-const deleteNotificationMock = jest.fn();
-const markNotificationMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -74,8 +70,7 @@ const signifyClient = jest.mocked({
   }),
   notifications: () => ({
     list: jest.fn(),
-    mark: markNotificationMock,
-    delete: deleteNotificationMock,
+    mark: jest.fn(),
   }),
   ipex: () => ({
     admit: jest.fn(),
@@ -416,24 +411,6 @@ describe("Multisig sig service of agent", () => {
     });
   });
 
-  test("Cannot join the multisig if marking KERIA fails", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest.fn().mockResolvedValue([]);
-
-    markNotificationMock.mockRejectedValue(
-      new Error(SignifyNotificationService.FAILED_TO_MARK_NOTIFICATION)
-    );
-    multiSigService.hasJoinedMultisig = jest.fn().mockResolvedValue(true);
-    await expect(
-      multiSigService.joinMultisig("id", "d", {
-        theme: 0,
-        displayName: "Multisig",
-      })
-    ).rejects.toThrowError(
-      SignifyNotificationService.FAILED_TO_MARK_NOTIFICATION
-    );
-  });
-
   test("can join the multisig inception", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const multisigIdentifier = "newMultisigIdentifierAid";
@@ -512,8 +489,6 @@ describe("Multisig sig service of agent", () => {
         ],
       };
     });
-
-    deleteNotificationMock.mockResolvedValue(null);
     expect(
       await multiSigService.joinMultisig("id", "d", {
         theme: 0,
@@ -968,8 +943,6 @@ describe("Multisig sig service of agent", () => {
         i: metadata.id,
       },
     });
-
-    deleteNotificationMock.mockResolvedValue(null);
     expect(
       await multiSigService.joinMultisigRotation({
         id: "id",

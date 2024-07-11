@@ -315,18 +315,11 @@ class MultiSigService extends AgentService {
       aid,
       multiSig.signifyName
     );
-
-    await this.props.signifyClient
-      .notifications()
-      .delete(notification.id)
-      .catch((message) => {
-        throw message;
-      });
     await this.notificationStorage.deleteById(notification.id);
     return res.op.name.split(".")[1];
   }
 
-  async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
+  private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
     const notifications: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
       .getRequest(msgSaid)
@@ -424,12 +417,6 @@ class MultiSigService extends AgentService {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {
-      await this.props.signifyClient
-        .notifications()
-        .mark(notificationId)
-        .catch((message) => {
-          throw message;
-        });
       await this.notificationStorage.deleteById(notificationId);
       return;
     }
@@ -471,13 +458,6 @@ class MultiSigService extends AgentService {
       .get(identifier?.signifyName);
     const signifyName = uuidv4();
     const res = await this.joinMultisigKeri(exn, aid, signifyName);
-
-    await this.props.signifyClient
-      .notifications()
-      .delete(notificationId)
-      .catch((message) => {
-        throw message;
-      });
     await this.notificationStorage.deleteById(notificationId);
     const op = res.op;
     const multisigId = op.name.split(".")[1];
