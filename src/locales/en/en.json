@@ -632,7 +632,7 @@
       "identifiers": "Identity",
       "creds": "Credentials",
       "scan": "Scan",
-      "notification": "Notification",
+      "notifications": "Notifications",
       "menu": "Menu"
     }
   },
@@ -682,7 +682,7 @@
   "ssiagent": {
     "title": "Enter your SSI agent details",
     "description": "To continue, please enter the SSI agent boot and connect URLs (in your email or from your command line).",
-    "verifydescription":  "To continue, please enter the SSI agent connect URLs (in your email or from your command line).",
+    "verifydescription": "To continue, please enter the SSI agent connect URLs (in your email or from your command line).",
     "button": {
       "info": "Get more information",
       "validate": "Validate"
@@ -920,9 +920,63 @@
     },
     "pastemeerkatid": "Paste Meerkat ID"
   },
-  "notification": {
+  "notifications": {
     "tab": {
-      "header": "Under development"
+      "header": "Notifications",
+      "chips": {
+        "all": "All",
+        "identifiers": "Identifiers",
+        "credentials": "Credentials"
+      },
+      "sections": {
+        "new": "New",
+        "earlier": "Earlier"
+      },
+      "labels": {
+        "exnipexgrant": "{{connection}} wants to issue you a credential",
+        "multisigicp": "{{connection}} is requesting to create a multi-sig identifier with you",
+        "exnipexapply": "{{connection}} has requested a credential from you"
+      }
+    },
+    "details": {
+      "buttons": {
+        "close": "Close",
+        "accept": "Accept",
+        "decline": "Decline",
+        "cancel": "Cancel",
+        "choosecredential": "Choose credential"
+      },
+      "credential": {
+        "request": {
+          "title": "Credential request",
+          "requestfrom": "Request from",
+          "requestedcredential": "Requested credential",
+          "informationrequired": "Information required",
+          "alert": {
+            "textdecline": "Are you sure you want to decline this credential request? You won't be able to change your decision later."
+          }
+        },
+        "receive": {
+          "title": "Receive credential",
+          "receivefrom": "Receive a credential from",
+          "credentialpending": "Credential pending",
+          "alert": {
+            "textdecline": "Are you sure you want to decline this credential issuance? You won't be able to change your decision later."
+          }
+        }
+      },
+      "identifier": {
+        "title": "Identifier request",
+        "subtitle": "Review this multi-sig identifier request",
+        "requestfrom": "Request from",
+        "othermembers": "Other members",
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "threshold": "Threshold",
+        "alert": {
+          "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later."
+        }
+      }
     }
   },
   "menu": {
@@ -1284,7 +1338,10 @@
     "peeridnotrecognised": "Peer ID not recognised",
     "setupbiometricsuccess": "Biometrics setup successfully",
     "rotatekeysuccess": "Keys rotated successfully",
-    "rotatekeyerror": "Unable to rotate keys"
+    "rotatekeyerror": "Unable to rotate keys",
+    "newmultisignmember": "New member added to multi-sig",
+    "multisignidentifiercreated": "Identifier added to \"For multiple signers\"",
+    "delegatedidentifiercreated": "Identifier added to \"For delegates\"" 
   },
   "request": {
     "sign": {
@@ -1294,48 +1351,13 @@
         "data": "Data"
       }
     },
-    "connection": {
-      "title": "Connect",
-      "requestconnection": " request from",
-      "alert": {
-        "titleconfirm": "Are you sure about proceeding with your connection to {{initiator}}?",
-        "confirm": "Yes, connect"
-      }
-    },
-    "credential": {
-      "title": "Credential offer",
-      "offercredential": " offer from",
-      "alert": {
-        "titleconfirm": "Are you sure you want to continue with {{initiator}}?",
-        "confirm": "Yes, accept credential"
-      }
-    },
-    "multisig": {
-      "title": "Identifier request",
-      "subtitle": "Review this multi-sig identifier request",
-      "requestfrom": "Request from",
-      "othermembers": "Other members",
-      "pending": "Pending",
-      "accepted": "Accepted",
-      "threshold": "Threshold",
-      "alert": {
-        "textaccept": "Are you sure you want to approve this request? You won't be able to change your decision later.",
-        "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
-        "accept": "Accept",
-        "decline": "Decline",
-        "cancel": "Cancel"
-      }
-    },
     "button": {
-      "connect": "Connect",
       "acceptoffer": "Accept credential",
       "cancel": "Cancel",
-      "ignore": "Ignore",
       "back": "Back",
       "accept": "Accept",
       "decline": "Decline",
-      "addidentifier": "Add identifier",
-      "sign": "Sign", 
+      "sign": "Sign",
       "dontallow": "Don't allow"
     },
     "alert": {

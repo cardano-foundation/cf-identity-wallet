@@ -17,9 +17,6 @@ jest.mock("../core/agent/agent", () => ({
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
       },
-      multiSigs: {
-        getUnhandledMultisigIdentifiers: jest.fn(),
-      },
       connections: {
         getConnections: jest.fn().mockResolvedValue([]),
         onConnectionStateChanged: jest.fn(),
@@ -41,7 +38,6 @@ jest.mock("../core/agent/agent", () => ({
         createMetadata: jest.fn(),
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
-        getUnhandledIpexGrantNotifications: jest.fn(),
         onAcdcStateChanged: jest.fn(),
         syncACDCs: jest.fn(),
       },
@@ -52,6 +48,7 @@ jest.mock("../core/agent/agent", () => ({
       signifyNotifications: {
         onNotificationStateChanged: jest.fn(),
         onSignifyOperationStateChanged: jest.fn(),
+        getAllNotifications: jest.fn(),
         stopNotification: jest.fn(),
         startNotification: jest.fn(),
       },

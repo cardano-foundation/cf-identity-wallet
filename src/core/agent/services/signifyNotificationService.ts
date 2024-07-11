@@ -207,11 +207,14 @@ class SignifyNotificationService extends AgentService {
   private async createNotificationRecord(
     event: Notification
   ): Promise<KeriaNotification> {
+    const exchange = await this.props.signifyClient.exchanges().get(event.a.d);
+
     const metadata: any = {
       id: event.i,
       a: event.a,
-      isDismissed: false,
+      read: false,
       route: event.a.r,
+      connectionId: exchange.exn.i,
     };
     if (event.a.r === NotificationRoute.MultiSigIcp) {
       const multisigNotification = await this.props.signifyClient
@@ -233,29 +236,49 @@ class SignifyNotificationService extends AgentService {
     const result = await this.notificationStorage.save(metadata);
     return {
       id: result.id,
-      createdAt: result.createdAt,
+      createdAt: result.createdAt.toISOString(),
       a: result.a,
       multisigId: result.multisigId,
+      connectionId: result.connectionId,
+      read: result.read,
     };
   }
 
-  async dismissNotification(notificationId: string) {
+  async readNotification(notificationId: string) {
     const notificationRecord = await this.notificationStorage.findById(
       notificationId
     );
     if (!notificationRecord) {
       throw new Error(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
     }
-    notificationRecord.setTag("isDismissed", true);
+    notificationRecord.setTag("read", true);
+    notificationRecord.read = true;
     await this.notificationStorage.update(notificationRecord);
   }
 
-  // This allow us to get all dismissed notifications
-  async getDismissedNotifications() {
-    const notifications = await this.notificationStorage.findAllByQuery({
-      isDismissed: true,
+  async unreadNotification(notificationId: string) {
+    const notificationRecord = await this.notificationStorage.findById(
+      notificationId
+    );
+    if (!notificationRecord) {
+      throw new Error(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
+    }
+    notificationRecord.read = false;
+    await this.notificationStorage.update(notificationRecord);
+  }
+
+  async getAllNotifications(): Promise<KeriaNotification[]> {
+    const notifications = await this.notificationStorage.getAll();
+    return notifications.map((notification) => {
+      return {
+        id: notification.id,
+        createdAt: notification.createdAt.toISOString(),
+        a: notification.a,
+        multisigId: notification.multisigId,
+        connectionId: notification.connectionId,
+        read: notification.read,
+      };
     });
-    return notifications;
   }
 
   private markNotification(notiSaid: string) {

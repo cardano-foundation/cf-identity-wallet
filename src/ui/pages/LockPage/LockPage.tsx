@@ -152,11 +152,13 @@ const LockPage = () => {
         confirmButtonText={confirmButtonText}
         cancelButtonText={cancelButtonText}
         actionConfirm={resetPasscode}
+        className="alert-forgotten"
       />
       <ForgotAuthInfo
         isOpen={openRecoveryAuth}
         onClose={() => setOpenRecoveryAuth(false)}
         type={ForgotType.Passcode}
+        overrideAlertZIndex
       />
     </ResponsivePageLayout>
   );

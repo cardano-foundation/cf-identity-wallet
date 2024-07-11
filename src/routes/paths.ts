@@ -8,6 +8,7 @@ enum RoutePath {
   CREATE_PASSWORD = "/createpassword",
   SSI_AGENT = "/ssiagent",
   CONNECTION_DETAILS = "/connectiondetails",
+  NOTIFICATION_DETAILS = "/notificationdetails",
   VERIFY_RECOVERY_SEED_PHRASE = "/verifyrecoveryseedphrase",
 }
 
@@ -16,7 +17,7 @@ enum TabsRoutePath {
   IDENTIFIERS = "/tabs/identifiers",
   CREDENTIALS = "/tabs/credentials",
   SCAN = "/tabs/scan",
-  NOTIFICATION = "/tabs/notification",
+  NOTIFICATIONS = "/tabs/notifications",
   MENU = "/tabs/menu",
   IDENTIFIER_DETAILS = "/tabs/identifiers/:id",
   CREDENTIAL_DETAILS = "/tabs/credentials/:id",

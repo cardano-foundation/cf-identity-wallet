@@ -7,7 +7,7 @@ const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 require("dotenv").config({ path: "./.env" });
 const config = {
   entry: {
-    main: path.join(__dirname, "..", "src", "index.tsx"),
+    main: path.join(__dirname, "src", "index.tsx"),
   },
   module: {
     rules: [
@@ -56,7 +56,7 @@ const config = {
       cleanStaleWebpackAssets: true,
     }),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, "..", "src", "index.html"),
+      template: path.join(__dirname, "src", "index.html"),
     }),
     new CopyPlugin({
       patterns: [{ from: "public" }],
@@ -64,8 +64,8 @@ const config = {
     new CopyPlugin({
       patterns: [
         {
-          from: path.join(__dirname, "..", "public", "manifest.json"),
-          to: path.join(__dirname, "..", "build"),
+          from: path.join(__dirname, "public", "manifest.json"),
+          to: path.join(__dirname, "build"),
           force: true,
           transform: function (content, path) {
             // generates the manifest file using the package.json information
@@ -81,7 +81,7 @@ const config = {
       ],
     }),
     new webpack.DefinePlugin({
-      VERSION: JSON.stringify(require("../package.json").version),
+      VERSION: JSON.stringify(require("./package.json").version),
       "process.env": JSON.stringify(process.env)
     }),
     new webpack.ProvidePlugin({

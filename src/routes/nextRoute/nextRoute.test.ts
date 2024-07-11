@@ -75,6 +75,9 @@ describe("NextRoute", () => {
         bootUrl: "",
         connectUrl: "",
       },
+      notificationsCache: {
+        notifications: [],
+      },
     };
     data = {
       store: storeMock,
@@ -311,6 +314,9 @@ describe("getNextRoute", () => {
     ssiAgentCache: {
       bootUrl: "",
       connectUrl: "",
+    },
+    notificationsCache: {
+      notifications: [],
     },
   };
   const state = {};

@@ -1,4 +1,4 @@
-import { IonModal } from "@ionic/react";
+import { IonModal, isPlatform } from "@ionic/react";
 import { useState } from "react";
 import { SetUserNameProps } from "./SetUserName.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -54,6 +54,7 @@ const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
       id={componentId}
       data-testid={`${componentId}-modal`}
       backdropDismiss={!isOpen}
+      animated={!isPlatform("ios")}
     >
       <div className={`${componentId}-wrapper`}>
         <h3>{i18n.t("setusername.title")}</h3>

@@ -87,15 +87,6 @@ const IdentifierStage1 = ({
       handleInitiateMultiSig();
   }, [groupMetadata, currentOperation, groupId, multiSigGroupCache]);
 
-  useEffect(() => {
-    if (
-      incomingRequest?.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
-    ) {
-      incomingRequest.multisigIcpDetails.ourIdentifier.groupMetadata
-        ?.groupId === groupId && handleDone();
-    }
-  }, [groupMetadata, incomingRequest]);
-
   const handleDone = () => {
     resetModal && resetModal();
     if (multiSigGroup?.groupId) {

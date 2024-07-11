@@ -63,7 +63,7 @@ const signifyClient = jest.mocked({
     list: jest.fn(),
   }),
   exchanges: () => ({
-    get: jest.fn(),
+    get: jest.fn().mockResolvedValue({ exn: { i: "connection-id" } }),
     send: jest.fn(),
   }),
   agent: {
@@ -166,25 +166,27 @@ describe("Signify notification service of agent", () => {
     expect(callback).toBeCalledTimes(2);
   });
 
-  test("Should call update when dismiss a notification", async () => {
+  test("Should call update when read a notification", async () => {
     const notification = {
       id: "id",
       _tags: {
-        isDismissed: false,
+        read: false,
       } as any,
+      read: false,
       setTag: function (name: string, value: any) {
         this._tags[name] = value;
       },
     };
+
     notificationStorage.findById = jest.fn().mockResolvedValue(notification);
-    await signifyNotificationService.dismissNotification(notification.id);
+    await signifyNotificationService.readNotification(notification.id);
     expect(notificationStorage.update).toBeCalledTimes(1);
   });
 
-  test("Should throw error when dismiss an invalid notification", async () => {
+  test("Should throw error when read an invalid notification", async () => {
     notificationStorage.findById = jest.fn().mockResolvedValue(null);
     await expect(
-      signifyNotificationService.dismissNotification("not-exist-noti-id")
+      signifyNotificationService.readNotification("not-exist-noti-id")
     ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
   });
 
@@ -259,5 +261,23 @@ describe("Signify notification service of agent", () => {
       await signifyNotificationService.processNotification(notif, callback);
     }
     expect(callback).toBeCalledTimes(0);
+  });
+
+  test("Should call update when unread a notification", async () => {
+    const notification = {
+      id: "id",
+      read: true,
+    };
+
+    notificationStorage.findById = jest.fn().mockResolvedValue(notification);
+    await signifyNotificationService.unreadNotification(notification.id);
+    expect(notificationStorage.update).toBeCalledTimes(1);
+  });
+
+  test("Should throw error when unread an invalid notification", async () => {
+    notificationStorage.findById = jest.fn().mockResolvedValue(null);
+    await expect(
+      signifyNotificationService.unreadNotification("not-exist-noti-id")
+    ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
   });
 });
