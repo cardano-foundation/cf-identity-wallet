@@ -794,6 +794,12 @@ class MultiSigService extends AgentService {
       .get(multisigSignifyName);
     const aid = hab["prefix"];
     const results = [];
+    const recp = multisigMembers
+      .filter((signing: any) => signing.aid !== ourIdentifier.id)
+      .map((member: any) => member.aid);
+    const ourAid: Aid = await this.props.signifyClient
+      .identifiers()
+      .get(ourIdentifier.signifyName as string);
     for (const member of multisigMembers) {
       const eid = Object.keys(member.ends.agent)[0]; //agent of member
       const stamp = new Date().toISOString().replace("Z", "000+00:00");
@@ -818,12 +824,6 @@ class MultiSigService extends AgentService {
         rpy: [rpy, atc],
       };
 
-      const recp = multisigMembers
-        .filter((signing: any) => signing.aid !== ourIdentifier.id)
-        .map((member: any) => member.aid);
-      const ourAid: Aid = await this.props.signifyClient
-        .identifiers()
-        .get(ourIdentifier.signifyName as string);
       await this.sendMultisigExn(
         ourIdentifier?.signifyName,
         ourAid,
