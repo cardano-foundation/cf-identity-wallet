@@ -75,7 +75,7 @@ describe("Notification Options modal", () => {
       <Provider store={mockedStore}>
         <NotificationOptionsModal
           optionsIsOpen
-          setOptionsIsOpen={jest.fn}
+          setCloseModal={jest.fn}
           onShowDetail={jest.fn}
           notification={notification}
         />
@@ -100,7 +100,7 @@ describe("Notification Options modal", () => {
       <Provider store={mockedStore}>
         <NotificationOptionsModal
           optionsIsOpen
-          setOptionsIsOpen={jest.fn}
+          setCloseModal={jest.fn}
           onShowDetail={jest.fn}
           notification={notification}
         />
@@ -138,7 +138,7 @@ describe("Notification Options modal", () => {
       <Provider store={mockedStore}>
         <NotificationOptionsModal
           optionsIsOpen
-          setOptionsIsOpen={jest.fn}
+          setCloseModal={jest.fn}
           onShowDetail={jest.fn}
           notification={notification}
         />
@@ -169,7 +169,7 @@ describe("Notification Options modal", () => {
       <Provider store={mockedStore}>
         <NotificationOptionsModal
           optionsIsOpen
-          setOptionsIsOpen={jest.fn}
+          setCloseModal={jest.fn}
           onShowDetail={jest.fn}
           notification={{
             ...notification,
@@ -204,7 +204,7 @@ describe("Notification Options modal", () => {
       <Provider store={mockedStore}>
         <NotificationOptionsModal
           optionsIsOpen
-          setOptionsIsOpen={jest.fn}
+          setCloseModal={jest.fn}
           onShowDetail={showNotiMock}
           notification={notification}
         />

@@ -1,27 +1,26 @@
-import { IonItem, IonLabel, IonIcon } from "@ionic/react";
-import { ellipsisHorizontal } from "ionicons/icons";
-import i18next from "i18next";
-import { useEffect, useState } from "react";
-import KeriLogo from "../../assets/images/KeriGeneric.jpg";
-import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
-import { useAppSelector } from "../../../store/hooks";
+import { IonIcon, IonItem, IonLabel } from "@ionic/react";
+import { t } from "i18next";
+import { ellipsisHorizontal, fingerPrintOutline } from "ionicons/icons";
+import { MouseEvent, useCallback, useEffect, useState } from "react";
+import { Trans } from "react-i18next";
+import { Agent } from "../../../core/agent/agent";
 import {
   KeriaNotification,
   NotificationRoute,
 } from "../../../core/agent/agent.types";
-import { timeDifference } from "../../utils/formatters";
-import { Agent } from "../../../core/agent/agent";
 import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifier.types";
+import { useAppSelector } from "../../../store/hooks";
+import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
+import KeriLogo from "../../assets/images/KeriGeneric.jpg";
+import MultisignReferIcon from "../../assets/images/multisign-icon.jpg";
+import { timeDifference } from "../../utils/formatters";
+import { NotificationItemProps } from "./Notification.types";
 
 const NotificationItem = ({
   item,
-  index,
-  handleNotificationClick,
-}: {
-  item: KeriaNotification;
-  index: number;
-  handleNotificationClick: (item: KeriaNotification) => void;
-}) => {
+  onClick,
+  onOptionButtonClick,
+}: NotificationItemProps) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
   const [notificationLabelText, setNotificationLabelText] =
     useState<string>("");
@@ -30,13 +29,39 @@ const NotificationItem = ({
     (connection) => connection.id === item.connectionId
   )[0]?.label;
 
-  const fetchNotificationLabel = async (
-    multiSigIcpDetails?: MultiSigIcpRequestDetails
-  ) => {
-    const label = await notificationLabel(item, multiSigIcpDetails);
-    setNotificationLabelText(label);
-    setLoading(false);
-  };
+  const notificationLabel = useCallback(
+    (
+      item: KeriaNotification,
+      multisigIcpDetails?: MultiSigIcpRequestDetails
+    ) => {
+      switch (item.a.r) {
+      case NotificationRoute.ExnIpexGrant:
+        return t("notifications.tab.labels.exnipexgrant", {
+          connection: connection,
+        });
+      case NotificationRoute.MultiSigIcp:
+        return t("notifications.tab.labels.multisigicp", {
+          connection: multisigIcpDetails?.sender?.label,
+        });
+      case NotificationRoute.ExnIpexApply:
+        return t("notifications.tab.labels.exnipexapply", {
+          connection: connection,
+        });
+      default:
+        return "";
+      }
+    },
+    [connection]
+  );
+
+  const fetchNotificationLabel = useCallback(
+    (multiSigIcpDetails?: MultiSigIcpRequestDetails) => {
+      const label = notificationLabel(item, multiSigIcpDetails);
+      setNotificationLabelText(label);
+      setLoading(false);
+    },
+    [item, notificationLabel]
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,47 +76,49 @@ const NotificationItem = ({
     };
 
     fetchData();
-  }, [item]);
+  }, [fetchNotificationLabel, item]);
 
-  const notificationLabel = async (
-    item: KeriaNotification,
-    multisigIcpDetails?: MultiSigIcpRequestDetails
-  ) => {
+  const referIcon = (item: KeriaNotification) => {
     switch (item.a.r) {
     case NotificationRoute.ExnIpexGrant:
-      return i18next.t("notifications.tab.labels.exnipexgrant", {
-        connection: connection,
-      });
-    case NotificationRoute.MultiSigIcp:
-      return i18next.t("notifications.tab.labels.multisigicp", {
-        connection: multisigIcpDetails?.sender?.label,
-      });
     case NotificationRoute.ExnIpexApply:
-      return i18next.t("notifications.tab.labels.exnipexapply", {
-        connection: connection,
-      });
+      return fingerPrintOutline;
+    case NotificationRoute.MultiSigIcp:
+      return MultisignReferIcon;
     default:
-      return "";
+      return MultisignReferIcon;
     }
+  };
+
+  const openOptionModal = (e: MouseEvent) => {
+    e.stopPropagation();
+
+    onOptionButtonClick(item);
   };
 
   return (
     <>
       {!loading && (
         <IonItem
-          key={index}
-          onClick={() => handleNotificationClick(item)}
+          onClick={() => onClick(item)}
           className={`notifications-tab-item${item.read ? "" : " unread"}`}
-          data-testid={`notifications-tab-item-${index}`}
+          data-testid={`notifications-tab-item-${item.id}`}
         >
-          <img
-            src={KeriLogo}
-            alt="notifications-tab-item-logo"
-            className="notifications-tab-item-logo"
-            data-testid="notifications-tab-item-logo"
-          />
+          <div className="notification-logo">
+            <img
+              src={KeriLogo}
+              alt="notifications-tab-item-logo"
+              className="notifications-tab-item-logo"
+              data-testid="notifications-tab-item-logo"
+            />
+            <img
+              src={referIcon(item)}
+              alt="refer-icon"
+              className="notification-ref-icon"
+            />
+          </div>
           <IonLabel>
-            {notificationLabelText}
+            <Trans>{notificationLabelText}</Trans>
             <br />
             <span className="notifications-tab-item-time">
               {timeDifference(item.createdAt)[0]}
@@ -103,6 +130,8 @@ const NotificationItem = ({
             icon={ellipsisHorizontal}
             slot="end"
             className="notifications-tab-item-ellipsis"
+            data-testid={`${item.id}-option-btn`}
+            onClick={openOptionModal}
           />
         </IonItem>
       )}

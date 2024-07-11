@@ -56,6 +56,7 @@ describe("Earlier notifications", () => {
           pageId="notification-page"
           onNotificationClick={jest.fn()}
           data={notificationsFix}
+          onOpenOptionModal={jest.fn()}
         />
       </Provider>
     );

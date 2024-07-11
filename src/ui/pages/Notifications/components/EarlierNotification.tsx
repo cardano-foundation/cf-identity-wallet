@@ -21,7 +21,7 @@ const LOAD_EARLIER_NOTIFICATION = 5;
 const EarlierNotification = forwardRef<
   EarlierNotificationRef,
   EarlierNotificationProps
->(({ data, onNotificationClick }, ref) => {
+>(({ data, onNotificationClick, onOpenOptionModal, pageId }, ref) => {
   const [displayLength, setDisplayLength] = useState(
     SHOWN_EARLIER_NOTIFICATION
   );
@@ -63,19 +63,19 @@ const EarlierNotification = forwardRef<
           data.length >= displayLength &&
           !shouldDisplayExpandNotificationsEarlierButton
         }
-        scrollableTarget="notifications-tab"
+        scrollableTarget={pageId}
       >
         <IonList
           lines="none"
           data-testid="notifications-items"
           id="notification-target"
         >
-          {displayNotificationsEarlier.map((item: KeriaNotification, index) => (
+          {displayNotificationsEarlier.map((item: KeriaNotification) => (
             <NotificationItem
-              key={index}
+              key={item.id}
               item={item}
-              index={index}
-              handleNotificationClick={() => onNotificationClick(item)}
+              onClick={onNotificationClick}
+              onOptionButtonClick={onOpenOptionModal}
             />
           ))}
         </IonList>

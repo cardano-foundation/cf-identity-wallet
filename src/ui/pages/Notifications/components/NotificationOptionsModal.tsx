@@ -18,7 +18,7 @@ import { NotificationOptionModalProps } from "./NotificationOptionsModal.types";
 
 const NotificationOptionsModal = ({
   optionsIsOpen,
-  setOptionsIsOpen,
+  setCloseModal,
   notification,
   onShowDetail,
 }: NotificationOptionModalProps) => {
@@ -26,7 +26,7 @@ const NotificationOptionsModal = ({
   const [openAlert, setOpenAlert] = useState(false);
 
   const closeModal = () => {
-    setOptionsIsOpen(false);
+    setCloseModal();
   };
 
   const toggleReadNotification = async () => {
