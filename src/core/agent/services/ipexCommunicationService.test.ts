@@ -76,6 +76,7 @@ const ipexOfferMock = jest.fn();
 const ipexGrantMock = jest.fn();
 const schemaGetMock = jest.fn();
 const deleteNotificationMock = jest.fn();
+const markNotificationMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -122,7 +123,7 @@ const signifyClient = jest.mocked({
   }),
   notifications: () => ({
     list: jest.fn(),
-    mark: jest.fn(),
+    mark: markNotificationMock,
     delete: deleteNotificationMock,
   }),
   ipex: () => ({
@@ -433,7 +434,7 @@ describe("Ipex communication service of agent", () => {
       signifyName: "abc123",
     });
     ipexGrantMock.mockResolvedValue(["offer", "sigs", "gend"]);
-    deleteNotificationMock.mockResolvedValue(null);
+    markNotificationMock.mockResolvedValue(null);
 
     await ipexCommunicationService.grantAcdcFromAgree(noti);
     expect(ipexGrantMock).toBeCalledWith({
@@ -446,7 +447,7 @@ describe("Ipex communication service of agent", () => {
       recipient: "i",
       senderName: "abc123",
     });
-    expect(deleteNotificationMock).toBeCalledWith(id);
+    expect(markNotificationMock).toBeCalledWith(id);
     expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 

@@ -33,6 +33,7 @@ let queryKeyStateMock = jest.fn();
 let queryKeyStateGetMock = jest.fn();
 
 const deleteNotificationMock = jest.fn();
+const markNotificationMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -73,7 +74,7 @@ const signifyClient = jest.mocked({
   }),
   notifications: () => ({
     list: jest.fn(),
-    mark: jest.fn(),
+    mark: markNotificationMock,
     delete: deleteNotificationMock,
   }),
   ipex: () => ({
@@ -415,12 +416,12 @@ describe("Multisig sig service of agent", () => {
     });
   });
 
-  test("Cannot join the multisig if deleting KERIA fails", async () => {
+  test("Cannot join the multisig if marking KERIA fails", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     groupGetRequestMock = jest.fn().mockResolvedValue([]);
 
-    deleteNotificationMock.mockRejectedValue(
-      new Error(SignifyNotificationService.FAILED_TO_DELETE_NOTIFICATION)
+    markNotificationMock.mockRejectedValue(
+      new Error(SignifyNotificationService.FAILED_TO_MARK_NOTIFICATION)
     );
     multiSigService.hasJoinedMultisig = jest.fn().mockResolvedValue(true);
     await expect(
@@ -429,7 +430,7 @@ describe("Multisig sig service of agent", () => {
         displayName: "Multisig",
       })
     ).rejects.toThrowError(
-      SignifyNotificationService.FAILED_TO_DELETE_NOTIFICATION
+      SignifyNotificationService.FAILED_TO_MARK_NOTIFICATION
     );
   });
 

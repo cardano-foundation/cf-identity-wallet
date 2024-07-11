@@ -426,7 +426,7 @@ class MultiSigService extends AgentService {
     if (hasJoined) {
       await this.props.signifyClient
         .notifications()
-        .delete(notificationId)
+        .mark(notificationId)
         .catch((message) => {
           throw message;
         });

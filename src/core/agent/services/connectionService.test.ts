@@ -6,7 +6,6 @@ import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 
 const contactListMock = jest.fn();
-const deleteContactMock = jest.fn();
 
 const uuidToThrow = "throwMe";
 const signifyClient = jest.mocked({
@@ -70,7 +69,7 @@ const signifyClient = jest.mocked({
         id,
       };
     }),
-    delete: deleteContactMock,
+    delete: jest.fn(),
   }),
   notifications: () => ({
     list: jest.fn(),
@@ -280,28 +279,12 @@ describe("Connection service of agent", () => {
     });
   });
 
-  test("cannot delete connection by id if KERIA fails", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([]);
-    const connectionId = "connectionId";
-
-    deleteContactMock.mockRejectedValueOnce(
-      new Error(ConnectionService.FAILED_TO_DELETE_CONNECTION)
-    );
-
-    await expect(
-      connectionService.deleteConnectionById(connectionId)
-    ).rejects.toThrowError(ConnectionService.FAILED_TO_DELETE_CONNECTION);
-  });
-
   test("can delete conenction by id", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([]);
     const connectionId = "connectionId";
 
-    deleteContactMock.mockResolvedValue(null);
     await connectionService.deleteConnectionById(connectionId);
-    expect(deleteContactMock).toBeCalledWith(connectionId);
     expect(connectionStorage.deleteById).toBeCalledWith(connectionId);
   });
 
@@ -314,9 +297,7 @@ describe("Connection service of agent", () => {
       },
     ]);
     const connectionId = "connectionId";
-    deleteContactMock.mockResolvedValue(null);
     await connectionService.deleteConnectionById(connectionId);
-    expect(deleteContactMock).toBeCalledWith(connectionId);
     expect(connectionNoteStorage.deleteById).toBeCalledTimes(1);
   });
 

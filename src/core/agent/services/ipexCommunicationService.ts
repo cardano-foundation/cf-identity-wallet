@@ -190,7 +190,7 @@ class IpexCommunicationService extends AgentService {
 
     await this.props.signifyClient
       .notifications()
-      .delete(notification.id)
+      .mark(notification.id)
       .catch((message) => {
         throw message;
       });
