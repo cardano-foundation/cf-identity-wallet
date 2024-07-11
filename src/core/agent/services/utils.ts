@@ -47,7 +47,11 @@ export const OnlineOnly = (
       const errorStack = (error as Error).stack;
       /** If the error is failed to fetch with signify,
        * we retry until the connection is secured*/
-      if (errorStack && /SignifyClient/gi.test(errorStack)) {
+      if (
+        errorStack &&
+        /Failed to fetch/gi.test(errorStack) &&
+        /SignifyClient/gi.test(errorStack)
+      ) {
         Agent.agent.connect(1000);
         throw new Error(Agent.KERIA_CONNECTION_BROKEN);
       } else {

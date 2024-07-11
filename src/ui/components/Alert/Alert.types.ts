@@ -7,6 +7,7 @@ interface AlertProps {
   subheaderText?: string;
   confirmButtonText?: string;
   cancelButtonText?: string;
+  className?: string;
   actionConfirm?: () => void;
   actionCancel?: () => void;
   actionDismiss?: () => void;

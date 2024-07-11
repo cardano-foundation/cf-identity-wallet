@@ -6,9 +6,10 @@ import { credsCacheSlice } from "./reducers/credsCache";
 import { connectionsCacheSlice } from "./reducers/connectionsCache";
 import { walletConnectionsCacheSlice } from "./reducers/walletConnectionsCache";
 import { identifierViewTypeCacheSlice } from "./reducers/identifierViewTypeCache";
-import { biometryCacheSlice } from "./reducers/biometryCache";
+import { biometricsCacheSlice } from "./reducers/biometricsCache";
 import { credsArchivedCacheSlice } from "./reducers/credsArchivedCache";
 import { ssiAgentSlice } from "./reducers/ssiAgent";
+import { notificationsCacheSlice } from "./reducers/notificationsCache";
 
 const store = configureStore({
   reducer: {
@@ -20,8 +21,9 @@ const store = configureStore({
     connectionsCache: connectionsCacheSlice.reducer,
     walletConnectionsCache: walletConnectionsCacheSlice.reducer,
     identifierViewTypeCacheCache: identifierViewTypeCacheSlice.reducer,
-    biometryCache: biometryCacheSlice.reducer,
+    biometricsCache: biometricsCacheSlice.reducer,
     ssiAgentCache: ssiAgentSlice.reducer,
+    notificationsCache: notificationsCacheSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

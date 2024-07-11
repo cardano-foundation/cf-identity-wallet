@@ -16,7 +16,7 @@ env:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   deploy-branch:
-    runs-on: ubuntu-latest
+    runs-on: [arc-runner-set]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -34,11 +34,10 @@ jobs:
 
     # Checks-out your repository under $GITHUB_WORKSPACE
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: recursive  # Fetch private content
         fetch-depth: 1         # Fetch all history for .GitInfo and .Lastmod
-        lfs: true
 
     # Initiate GH deployment status
     - name: Start Deployment

@@ -2,6 +2,7 @@ import { IdentifierDetails } from "../../../../core/agent/services/identifier.ty
 
 interface IdentifierContentProps {
   cardData: IdentifierDetails;
+  onOpenRotateKey: () => void;
 }
 
 export type { IdentifierContentProps };

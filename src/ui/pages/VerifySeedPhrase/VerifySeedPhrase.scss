@@ -16,7 +16,7 @@
   }
 
   .page-footer {
-    margin-top: auto;
+    margin-top: auto !important;
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
@@ -30,6 +30,10 @@
 
         & > .paragraph-top {
           margin: 0.2rem 0;
+        }
+
+        .page-footer {
+          margin-bottom: 0.5rem;
         }
       }
     }

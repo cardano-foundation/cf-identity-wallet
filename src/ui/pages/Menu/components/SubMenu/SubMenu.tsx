@@ -1,5 +1,6 @@
 import { arrowBackOutline } from "ionicons/icons";
 import "./SubMenu.scss";
+import { useCallback } from "react";
 import { SubMenuProps } from "./SubMenu.types";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../../../components/PageHeader";
@@ -15,6 +16,11 @@ const SubMenu = ({
   pageId: customPageId,
 }: SubMenuProps) => {
   const pageId = `sub-menu ${customPageId}`;
+
+  const handleClose = useCallback(() => {
+    setShowSubMenu(false);
+  }, [setShowSubMenu]);
+
   return (
     <SideSlider open={showSubMenu}>
       <ScrollablePageLayout
@@ -23,7 +29,7 @@ const SubMenu = ({
         header={
           <PageHeader
             closeButton={true}
-            closeButtonAction={() => setShowSubMenu(false)}
+            closeButtonAction={handleClose}
             closeButtonIcon={arrowBackOutline}
             title={title}
             additionalButtons={additionalButtons}

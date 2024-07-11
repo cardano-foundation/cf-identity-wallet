@@ -63,8 +63,8 @@
   }
   .play-indicator {
     color: var(--ion-color-dark-grey);
-    width: 33px;
-    height: 33px;
+    width: 2.0625rem;
+    height: 2.0625rem;
     transition: transform 0.3s ease-out;
   }
   .play-indicator.clicked {
@@ -72,7 +72,7 @@
   }
 
   .page-indicator-active {
-    width: 30px !important;
+    width: 1.875rem !important;
     opacity: 1 !important;
     transition: width 1s;
   }

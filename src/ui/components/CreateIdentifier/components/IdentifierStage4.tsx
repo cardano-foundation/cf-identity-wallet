@@ -61,6 +61,7 @@ const IdentifierStage4 = ({
           theme: state.selectedTheme,
           isPending: !!isPending,
           signifyName,
+          multisigManageAid: ourIdentifier,
         };
         const filteredIdentifiersData = identifiersData.filter(
           (item) => item.id !== ourIdentifier

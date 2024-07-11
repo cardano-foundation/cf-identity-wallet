@@ -30,3 +30,7 @@
     margin-top: 4rem;
   }
 }
+
+.alert-forgotten {
+  z-index: 2147483647 !important; // max value
+}

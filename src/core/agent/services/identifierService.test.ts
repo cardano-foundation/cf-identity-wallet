@@ -215,6 +215,9 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
+    identifiersGetMock.mockRejectedValue(
+      new Error("request - 404 - SignifyClient message")
+    );
     expect(await identifierService.getIdentifier(keriMetadataRecord.id)).toBe(
       undefined
     );
@@ -461,12 +464,13 @@ describe("Single sig service of agent", () => {
       signifyName: "john_doe",
       theme: 0,
     } as IdentifierMetadataRecord;
+    identifierStorage.getIdentifierMetadata.mockResolvedValue(metadata);
     identifiersRotateMock.mockResolvedValue({
       op: jest.fn().mockResolvedValue({
         done: true,
       }),
     });
-    await identifierService.rotateIdentifier(metadata);
+    await identifierService.rotateIdentifier(metadata.id);
     expect(identifiersRotateMock).toHaveBeenCalledWith(metadata.signifyName);
   });
 
@@ -522,6 +526,15 @@ describe("Single sig service of agent", () => {
 
   test("getIdentifier should throw an error when KERIA is offline", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      isPending: false,
+      signifyOpName: "op123",
+      signifyName: "john_doe",
+      theme: 0,
+    } as IdentifierMetadataRecord;
+    identifierStorage.getIdentifierMetadata.mockResolvedValue(metadata);
     await expect(identifierService.getIdentifier("id")).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
     );
@@ -537,15 +550,8 @@ describe("Single sig service of agent", () => {
         theme: 0,
       })
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
-    await expect(
-      identifierService.rotateIdentifier({
-        id: "123456",
-        displayName: "John Doe",
-        isPending: false,
-        signifyOpName: "op123",
-        signifyName: "john_doe",
-        theme: 0,
-      } as IdentifierMetadataRecord)
-    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(identifierService.rotateIdentifier("id")).rejects.toThrowError(
+      Agent.KERIA_CONNECTION_BROKEN
+    );
   });
 });

@@ -1,0 +1,13 @@
+.verify-recovery-seed-phrase {
+  .page-header {
+    ion-toolbar {
+      --background: transparent;
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .responsive-page-layout {
+      padding: 0 0.9rem;
+    }
+  }
+}
