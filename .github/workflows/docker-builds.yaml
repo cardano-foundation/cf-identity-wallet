@@ -82,14 +82,14 @@ jobs:
           echo "EARTHLY_DOCKER_IMAGES_EXTRA_TAGS=${ARTIFACT_VERSION}-${GIT_SHORT_COMMIT} ${ARTIFACT_VERSION}-${GIT_SHORT_COMMIT}-${GITHUB_RUN_ID}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
 
       - name: Docker Login (private registry)
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
           username: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
           password: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
 
       - name: Docker Login (hub.docker.com)
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.HUB_DOCKER_COM_USER }}
           password: ${{ secrets.HUB_DOCKER_COM_PASS }}
