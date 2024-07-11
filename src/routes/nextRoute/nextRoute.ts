@@ -10,7 +10,7 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { ToastMsgType } from "../../ui/globals/types";
+import { OperationType } from "../../ui/globals/types";
 
 const getNextRootRoute = (data: DataProps) => {
   const authentication = data.store.stateCache.authentication;
@@ -63,6 +63,16 @@ const getNextCredentialsRoute = () => {
 const getNextCredentialDetailsRoute = () => {
   // @TODO - foconnor: if we close an archived credential, it should return to the archived view.
   const path = TabsRoutePath.CREDENTIALS;
+  return { pathname: path };
+};
+
+const getNextNotificationsRoute = () => {
+  const path = RoutePath.NOTIFICATION_DETAILS;
+  return { pathname: path };
+};
+
+const getNextNotificationDetailsRoute = () => {
+  const path = TabsRoutePath.NOTIFICATIONS;
   return { pathname: path };
 };
 
@@ -155,15 +165,27 @@ const updateStoreAfterCreatePassword = (data: DataProps) => {
 };
 
 const getNextScanRoute = (data: DataProps) => {
-  const currentToastMsg = data?.state?.toastMsg;
+  const currentOperation = data?.state?.currentOperation;
   let path;
-  if (
-    currentToastMsg === ToastMsgType.CONNECTION_REQUEST_PENDING ||
-    currentToastMsg === ToastMsgType.CREDENTIAL_REQUEST_PENDING
-  ) {
+  if (currentOperation === OperationType.ADD_CREDENTIAL) {
     path = TabsRoutePath.CREDENTIALS;
-    // @TODO - foconnor: We need to open the connection list if it is CONNECTION_REQUEST_PENDING.
   }
+
+  if (currentOperation === OperationType.RECEIVE_CONNECTION) {
+    let previousPath = data.store.stateCache.routes[1]?.path;
+
+    if (
+      !previousPath ||
+      ![TabsRoutePath.CREDENTIALS, TabsRoutePath.IDENTIFIERS].includes(
+        previousPath as TabsRoutePath
+      )
+    ) {
+      previousPath = TabsRoutePath.IDENTIFIERS;
+    }
+
+    path = previousPath;
+  }
+
   return { pathname: path };
 };
 
@@ -225,12 +247,20 @@ const nextRoute: Record<string, any> = {
     nextPath: () => getNextCredentialsRoute(),
     updateRedux: [],
   },
-  [TabsRoutePath.SCAN]: {
-    nextPath: (data: DataProps) => getNextScanRoute(data),
-    updateRedux: [],
-  },
   [TabsRoutePath.CREDENTIAL_DETAILS]: {
     nextPath: () => getNextCredentialDetailsRoute(),
+    updateRedux: [],
+  },
+  [TabsRoutePath.NOTIFICATIONS]: {
+    nextPath: () => getNextNotificationsRoute(),
+    updateRedux: [],
+  },
+  [RoutePath.NOTIFICATION_DETAILS]: {
+    nextPath: () => getNextNotificationDetailsRoute(),
+    updateRedux: [],
+  },
+  [TabsRoutePath.SCAN]: {
+    nextPath: (data: DataProps) => getNextScanRoute(data),
     updateRedux: [],
   },
 };

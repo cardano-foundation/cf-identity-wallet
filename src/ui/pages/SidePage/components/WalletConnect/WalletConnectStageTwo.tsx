@@ -39,10 +39,10 @@ const WalletConnectStageTwo = ({
     useState<IdentifierShortDetails | null>(null);
 
   const displayIdentifiers = identifierCache
-    .filter((item) => !item.groupMetadata)
+    .filter((item) => !item.multisigManageAid && !item.groupMetadata)
     .map(
-      (identifier, index): CardItem<IdentifierShortDetails> => ({
-        id: index,
+      (identifier): CardItem<IdentifierShortDetails> => ({
+        id: identifier.id,
         title: identifier.displayName,
         image: KeriLogo,
         data: identifier,
@@ -104,6 +104,9 @@ const WalletConnectStageTwo = ({
             "menu.tab.items.connectwallet.request.button.back"
           )}`}
           closeButtonAction={onBackClick}
+          hardwareBackButtonConfig={{
+            prevent: !isOpen,
+          }}
         />
       }
     >

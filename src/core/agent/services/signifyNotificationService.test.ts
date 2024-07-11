@@ -9,6 +9,8 @@ const identifiersMemberMock = jest.fn();
 const identifiersInteractMock = jest.fn();
 const identifiersRotateMock = jest.fn();
 
+const groupGetRequestMock = jest.fn();
+
 const oobiResolveMock = jest.fn();
 const queryKeyStateMock = jest.fn();
 
@@ -61,7 +63,7 @@ const signifyClient = jest.mocked({
     list: jest.fn(),
   }),
   exchanges: () => ({
-    get: jest.fn(),
+    get: jest.fn().mockResolvedValue({ exn: { i: "connection-id" } }),
     send: jest.fn(),
   }),
   agent: {
@@ -72,14 +74,7 @@ const signifyClient = jest.mocked({
     get: jest.fn(),
   }),
   groups: () => ({
-    getRequest: jest.fn().mockImplementation((said: string) => {
-      if (said == "not-found-said") {
-        return [];
-      } else if (said == "no-gid-said") {
-        return [{ exn: { a: {} } }];
-      }
-      return [{ exn: { a: { gid: "id" } } }];
-    }),
+    getRequest: groupGetRequestMock,
   }),
 });
 
@@ -162,6 +157,7 @@ describe("Signify notification service of agent", () => {
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+    groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
     jest.useFakeTimers();
     for (const notif of notes) {
       await signifyNotificationService.processNotification(notif, callback);
@@ -170,25 +166,27 @@ describe("Signify notification service of agent", () => {
     expect(callback).toBeCalledTimes(2);
   });
 
-  test("Should call update when dismiss a notification", async () => {
+  test("Should call update when read a notification", async () => {
     const notification = {
       id: "id",
       _tags: {
-        isDismissed: false,
+        read: false,
       } as any,
+      read: false,
       setTag: function (name: string, value: any) {
         this._tags[name] = value;
       },
     };
+
     notificationStorage.findById = jest.fn().mockResolvedValue(notification);
-    await signifyNotificationService.dismissNotification(notification.id);
+    await signifyNotificationService.readNotification(notification.id);
     expect(notificationStorage.update).toBeCalledTimes(1);
   });
 
-  test("Should throw error when dismiss an invalid notification", async () => {
+  test("Should throw error when read an invalid notification", async () => {
     notificationStorage.findById = jest.fn().mockResolvedValue(null);
     await expect(
-      signifyNotificationService.dismissNotification("not-exist-noti-id")
+      signifyNotificationService.readNotification("not-exist-noti-id")
     ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
   });
 
@@ -200,6 +198,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should skip if there is no valid multi-sig notification", async () => {
     const callback = jest.fn();
+    groupGetRequestMock.mockResolvedValue([]);
     const notes = [
       {
         i: "string",
@@ -218,54 +217,11 @@ describe("Signify notification service of agent", () => {
     expect(callback).toBeCalledTimes(0);
   });
 
-  test("Should skip if there is a existed multi-sig notification", async () => {
-    const callback = jest.fn();
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([{}]);
-    const notes = [
-      {
-        i: "string",
-        dt: "string",
-        r: false,
-        a: {
-          r: "/multisig/icp",
-          d: "d",
-          m: "",
-        },
-      },
-    ];
-    for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
-    }
-    expect(callback).toBeCalledTimes(0);
-  });
-
   test("Should skip if there is a existed multi-sig", async () => {
     const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
-    const notes = [
-      {
-        i: "string",
-        dt: "string",
-        r: false,
-        a: {
-          r: "/multisig/icp",
-          d: "d",
-          m: "",
-        },
-      },
-    ];
-    for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
-    }
-    expect(callback).toBeCalledTimes(0);
-  });
-
-  test("Should skip if there is a existed multi-sig", async () => {
-    const callback = jest.fn();
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
     const notes = [
       {
         i: "string",
@@ -288,6 +244,7 @@ describe("Signify notification service of agent", () => {
     const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    groupGetRequestMock.mockResolvedValue([{ exn: { a: {} } }]);
     const notes = [
       {
         i: "string",
@@ -304,5 +261,23 @@ describe("Signify notification service of agent", () => {
       await signifyNotificationService.processNotification(notif, callback);
     }
     expect(callback).toBeCalledTimes(0);
+  });
+
+  test("Should call update when unread a notification", async () => {
+    const notification = {
+      id: "id",
+      read: true,
+    };
+
+    notificationStorage.findById = jest.fn().mockResolvedValue(notification);
+    await signifyNotificationService.unreadNotification(notification.id);
+    expect(notificationStorage.update).toBeCalledTimes(1);
+  });
+
+  test("Should throw error when unread an invalid notification", async () => {
+    notificationStorage.findById = jest.fn().mockResolvedValue(null);
+    await expect(
+      signifyNotificationService.unreadNotification("not-exist-noti-id")
+    ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
   });
 });

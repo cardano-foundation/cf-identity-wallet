@@ -14,7 +14,7 @@ on:
 jobs:
   # This workflow contains a single job called "deploy-preview"
   deploy-preview:
-    runs-on: ubuntu-latest
+    runs-on: [arc-runner-set]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -31,11 +31,10 @@ jobs:
 
     # Checks-out your repository under $GITHUB_WORKSPACE
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
           submodules: recursive  # Fetch private content
           fetch-depth: 1         # Fetch all history for .GitInfo and .Lastmod
-          lfs: true
 
     - name: Setup Node
       uses: actions/setup-node@v2

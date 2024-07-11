@@ -19,7 +19,7 @@ import {
   apps,
   appsOutline,
 } from "ionicons/icons";
-import { ComponentType, useEffect } from "react";
+import { ComponentType } from "react";
 import { useLocation } from "react-router-dom";
 import { i18n } from "../../../../i18n";
 import "./TabsMenu.scss";
@@ -27,16 +27,15 @@ import { RoutePath, TabsRoutePath } from "../../../../routes/paths";
 import { Identifiers } from "../../../pages/Identifiers";
 import { Creds } from "../../../pages/Credentials";
 import { Scan } from "../../../pages/Scan";
-import { Chat } from "../../../pages/Chat";
+import { Notifications } from "../../../pages/Notifications";
 import { Menu } from "../../../pages/Menu";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { getNotificationsCache } from "../../../../store/reducers/notificationsCache";
 import {
   getStateCache,
-  removeCurrentRoute,
   setCurrentRoute,
 } from "../../../../store/reducers/stateCache";
 import { getNextRootRoute } from "../../../../routes/nextRoute";
-import { useAppIonRouter } from "../../../hooks";
 
 const tabsRoutes = [
   {
@@ -58,9 +57,9 @@ const tabsRoutes = [
     icon: [scan, scanOutline],
   },
   {
-    label: i18n.t("tabsmenu.label.notification"),
-    path: TabsRoutePath.NOTIFICATION,
-    component: Chat,
+    label: i18n.t("tabsmenu.label.notifications"),
+    path: TabsRoutePath.NOTIFICATIONS,
+    component: Notifications,
     icon: [notifications, notificationsOutline],
   },
   {
@@ -74,6 +73,10 @@ const TabsMenu = ({ tab, path }: { tab: ComponentType; path: string }) => {
   const stateCache = useAppSelector(getStateCache);
   const location = useLocation();
   const dispatch = useAppDispatch();
+  const notifications = useAppSelector(getNotificationsCache);
+  const notificationsCounter = notifications.filter(
+    (notification) => !notification.read
+  ).length;
 
   const handleTabClick = (tabPath: string) => {
     dispatch(setCurrentRoute({ path: tabPath }));
@@ -113,11 +116,19 @@ const TabsMenu = ({ tab, path }: { tab: ComponentType; path: string }) => {
               data-testid={
                 "tab-button-" + tab.label.toLowerCase().replace(/\s/g, "-")
               }
+              className={
+                "tab-button-" + tab.label.toLowerCase().replace(/\s/g, "-")
+              }
               onClick={() => {
                 handleTabClick(tab.path);
               }}
             >
               <div className="border-top" />
+              {!!notificationsCounter && (
+                <span className="notifications-counter">
+                  {notificationsCounter > 99 ? "99+" : notificationsCounter}
+                </span>
+              )}
               <IonIcon
                 icon={
                   tab.path === location.pathname ? tab.icon[0] : tab.icon[1]

@@ -47,6 +47,7 @@ class ConnectionService extends AgentService {
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
+  static readonly CANNOT_GET_OOBI = "No OOBI available from KERIA";
 
   static resolvedOobi: { [key: string]: any } = {};
 
@@ -70,6 +71,7 @@ class ConnectionService extends AgentService {
     this.props.eventService.emit<ConnectionStateChangedEvent>({
       type: ConnectionEventTypes.ConnectionStateChanged,
       payload: {
+        isMultiSigInvite: multiSigInvite,
         connectionId: undefined,
         status: ConnectionStatus.PENDING,
       },
@@ -219,7 +221,7 @@ class ConnectionService extends AgentService {
   ): Promise<string> {
     const result = await this.props.signifyClient.oobis().get(signifyName);
     if (!result.oobis[0]) {
-      return "";
+      throw new Error(ConnectionService.CANNOT_GET_OOBI);
     }
     const oobi = new URL(result.oobis[0]);
     const identifier = await this.props.signifyClient
@@ -231,7 +233,6 @@ class ConnectionService extends AgentService {
       const agentIndex = pathName.indexOf("/agent/");
       if (agentIndex !== -1) {
         oobi.pathname = pathName.substring(0, agentIndex);
-        return oobi.toString();
       }
     }
     if (alias !== undefined) oobi.searchParams.set("name", alias);

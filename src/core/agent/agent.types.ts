@@ -33,6 +33,7 @@ enum MiscRecordId {
   KERIA_BOOT_URL = "keria-boot-url",
   APP_IDENTIFIER_FAVOURITE_INDEX = "identifier-favourite-index",
   APP_PASSWORD_SKIPPED = "app-password-skipped",
+  APP_RECOVERY_WALLET = "recovery-wallet",
 }
 
 interface ConnectionShortDetails {
@@ -73,6 +74,7 @@ enum KeriaStatusEventTypes {
 interface ConnectionStateChangedEvent extends BaseEventEmitter {
   type: typeof ConnectionEventTypes.ConnectionStateChanged;
   payload: {
+    isMultiSigInvite?: boolean;
     connectionId?: string;
     status: ConnectionStatus;
   };
@@ -100,9 +102,11 @@ interface KeriaStatusChangedEvent extends BaseEventEmitter {
 
 interface KeriaNotification {
   id: string;
-  createdAt: Date;
+  createdAt: string;
   a: Record<string, unknown>;
-  multisigId?: string;
+  multisigId?: string | undefined;
+  connectionId: string;
+  read: boolean;
 }
 
 enum KeriConnectionType {

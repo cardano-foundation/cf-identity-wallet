@@ -52,6 +52,8 @@ class MultiSigService extends AgentService {
   static readonly GROUP_ALREADY_EXISTs = "Group already exists";
   static readonly MEMBER_AID_NOT_FOUND =
     "We do not control any member AID of the multi-sig";
+  static readonly GROUP_REQUEST_NOT_FOUND =
+    "Group request with given SAID not found";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly notificationStorage!: NotificationStorage;
@@ -229,7 +231,16 @@ class MultiSigService extends AgentService {
 
     const multiSig = await this.props.signifyClient
       .identifiers()
-      .get(metadata.signifyName);
+      .get(metadata.signifyName)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
     if (!multiSig) {
       throw new Error(MultiSigService.MULTI_SIG_NOT_FOUND);
     }
@@ -272,7 +283,16 @@ class MultiSigService extends AgentService {
     const msgSaid = notification.a.d as string;
     const notifications: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
-      .getRequest(msgSaid);
+      .getRequest(msgSaid)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return [];
+        } else {
+          throw error;
+        }
+      });
     if (!notifications.length) {
       throw new Error(MultiSigService.EXN_MESSAGE_NOT_FOUND);
     }
@@ -307,7 +327,16 @@ class MultiSigService extends AgentService {
   private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
     const notifications: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
-      .getRequest(msgSaid);
+      .getRequest(msgSaid)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return [];
+        } else {
+          throw error;
+        }
+      });
     if (!notifications.length) {
       return false;
     }
@@ -330,7 +359,16 @@ class MultiSigService extends AgentService {
   ): Promise<MultiSigIcpRequestDetails> {
     const icpMsg: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
-      .getRequest(notificationSaid);
+      .getRequest(notificationSaid)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return [];
+        } else {
+          throw error;
+        }
+      });
 
     if (!icpMsg.length) {
       throw new Error(
@@ -389,7 +427,16 @@ class MultiSigService extends AgentService {
     }
     const icpMsg: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
-      .getRequest(notificationSaid);
+      .getRequest(notificationSaid)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return [];
+        } else {
+          throw error;
+        }
+      });
 
     if (!icpMsg.length) {
       throw new Error(
@@ -458,7 +505,16 @@ class MultiSigService extends AgentService {
     }
     const pendingOperation = await this.props.signifyClient
       .operations()
-      .get(metadata.signifyOpName);
+      .get(metadata.signifyOpName)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
     if (pendingOperation && pendingOperation.done) {
       await this.identifierStorage.updateIdentifierMetadata(metadata.id, {
         isPending: false,
@@ -466,32 +522,6 @@ class MultiSigService extends AgentService {
       return { done: true };
     }
     return { done: false };
-  }
-
-  @OnlineOnly
-  async getUnhandledMultisigIdentifiers(
-    filters: {
-      isDismissed?: boolean;
-    } = {}
-  ): Promise<KeriaNotification[]> {
-    const results = await this.notificationStorage.findAllByQuery({
-      route: NotificationRoute.MultiSigIcp,
-      ...filters,
-      $or: [
-        { route: NotificationRoute.MultiSigIcp },
-        {
-          route: NotificationRoute.MultiSigRot,
-        },
-      ],
-    });
-    return results.map((result) => {
-      return {
-        id: result.id,
-        createdAt: result.createdAt,
-        a: result.a,
-        multisigId: result.multisigId,
-      };
-    });
   }
 
   private async rotateMultisigAid(
@@ -728,20 +758,25 @@ class MultiSigService extends AgentService {
       .identifiers()
       .members(multisigSignifyName);
     const multisigMembers = members["signing"];
-    const allMultisigMemberIdentifiers =
-      await this.identifierStorage.getMultisigMemebersMetadata();
-    const owningMember = multisigMembers.find((member: any) =>
-      allMultisigMemberIdentifiers.some(
-        (identifier) => member.aid === identifier.id
-      )
-    );
-
-    if (!owningMember) {
-      throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
+    let ourIdentifier;
+    for (const member of multisigMembers) {
+      const identifier = await this.identifierStorage
+        .getIdentifierMetadata(member.aid)
+        .catch((error) => {
+          if (
+            error.message ===
+            IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
+      if (identifier && identifier.groupMetadata?.groupCreated) {
+        ourIdentifier = identifier;
+        break;
+      }
     }
-    const ourIdentifier = allMultisigMemberIdentifiers.find(
-      (identifier) => identifier.id === owningMember.aid
-    );
     if (!ourIdentifier) {
       throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
     }
@@ -759,6 +794,12 @@ class MultiSigService extends AgentService {
       .get(multisigSignifyName);
     const aid = hab["prefix"];
     const results = [];
+    const recp = multisigMembers
+      .filter((signing: any) => signing.aid !== ourIdentifier.id)
+      .map((member: any) => member.aid);
+    const ourAid: Aid = await this.props.signifyClient
+      .identifiers()
+      .get(ourIdentifier.signifyName as string);
     for (const member of multisigMembers) {
       const eid = Object.keys(member.ends.agent)[0]; //agent of member
       const stamp = new Date().toISOString().replace("Z", "000+00:00");
@@ -783,12 +824,6 @@ class MultiSigService extends AgentService {
         rpy: [rpy, atc],
       };
 
-      const recp = multisigMembers
-        .filter((signing: any) => signing.aid !== ourIdentifier.id)
-        .map((member: any) => member.aid);
-      const ourAid: Aid = await this.props.signifyClient
-        .identifiers()
-        .get(ourIdentifier.signifyName as string);
       await this.sendMultisigExn(
         ourIdentifier?.signifyName,
         ourAid,
@@ -806,21 +841,33 @@ class MultiSigService extends AgentService {
     const exchangeMessage = await this.props.signifyClient
       .exchanges()
       .get(notificationSaid);
-    const multisigAid = exchangeMessage.exn.a.gid;
-    const multisigMetadataRecord =
-      await this.identifierStorage.getIdentifierMetadata(multisigAid);
-    const multisigSignifyName = multisigMetadataRecord.signifyName;
-    const { ourIdentifier, multisigMembers } =
-      await this.getMultisigParticipants(multisigSignifyName);
-    const icpMsg = await this.props.signifyClient
-      .groups()
-      .getRequest(notificationSaid);
-    if (!icpMsg.length) {
+    if (!exchangeMessage) {
       throw new Error(
         `${MultiSigService.EXN_MESSAGE_NOT_FOUND} ${notificationSaid}`
       );
     }
-    const exn = icpMsg[0].exn;
+    const multisigAid = exchangeMessage.exn.a.gid;
+    const multisigMetadataRecord =
+      await this.identifierStorage.getIdentifierMetadata(multisigAid);
+    const multisigSignifyName = multisigMetadataRecord.signifyName;
+    const request = await this.props.signifyClient
+      .groups()
+      .getRequest(notificationSaid)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return [];
+        } else {
+          throw error;
+        }
+      });
+    if (!request.length) {
+      throw new Error(
+        `${MultiSigService.GROUP_REQUEST_NOT_FOUND} ${notificationSaid}`
+      );
+    }
+    const exn = request[0].exn;
     // stamp, eid and role are provided in the exn message
     const rpystamp = exn.e.rpy.dt;
     const rpyrole = exn.e.rpy.a.role;
@@ -848,6 +895,8 @@ class MultiSigService extends AgentService {
     const roleEmbeds = {
       rpy: [rpy, atc],
     };
+    const { ourIdentifier, multisigMembers } =
+      await this.getMultisigParticipants(multisigSignifyName);
     const recp = multisigMembers
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);

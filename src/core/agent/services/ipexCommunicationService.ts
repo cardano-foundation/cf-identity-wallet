@@ -91,12 +91,23 @@ class IpexCommunicationService extends AgentService {
     if (!holder) {
       throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     }
-
-    await this.admitIpex(
-      notifRecord.a.d as string,
-      holder.signifyName,
-      exn.exn.i
+    const chainedSchemaSaids = Object.keys(exn.exn.e.acdc?.e || {}).map(
+      (key) => exn.exn.e.acdc.e?.[key]?.s
     );
+
+    if (holder.multisigManageAid) {
+      await Agent.agent.multiSigs.multisigAdmit(
+        holder.signifyName,
+        notifRecord.a.d as string
+      );
+    } else {
+      await this.admitIpex(
+        notifRecord.a.d as string,
+        holder.signifyName,
+        exn.exn.i,
+        [exn.exn.e.acdc.s, ...chainedSchemaSaids]
+      );
+    }
 
     // @TODO - foconnor: This should be event driven, need to fix the notification in KERIA/Signify.
     const cred = await this.waitForAcdcToAppear(
@@ -145,6 +156,7 @@ class IpexCommunicationService extends AgentService {
     const msgOffer = await this.props.signifyClient
       .exchanges()
       .get(msgAgree.exn.p);
+    //TODO: this might throw 500 internal server error, might not run to the next line at the moment
     const pickedCred = await this.props.signifyClient
       .credentials()
       .get(msgOffer.exn.e.acdc.d);
@@ -191,14 +203,25 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async getMatchingCredsForApply(
+  async getIpexApplyDetails(
     notification: KeriaNotification
   ): Promise<CredentialsMatchingApply> {
     const msgSaid = notification.a.d as string;
     const msg = await this.props.signifyClient.exchanges().get(msgSaid);
     const schemaSaid = msg.exn.a.s;
     const attributes = msg.exn.a.a;
-    const schemaKeri = await this.props.signifyClient.schemas().get(schemaSaid);
+    const schemaKeri = await this.props.signifyClient
+      .schemas()
+      .get(schemaSaid)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
     if (!schemaKeri) {
       throw new Error(IpexCommunicationService.SCHEMA_NOT_FOUND);
     }
@@ -239,6 +262,7 @@ class IpexCommunicationService extends AgentService {
           acdc: credKeri.sad,
         };
       }),
+      attributes: attributes,
     };
   }
 
@@ -253,8 +277,10 @@ class IpexCommunicationService extends AgentService {
     }
     return {
       id: result.id,
-      createdAt: result.createdAt,
+      createdAt: result.createdAt.toISOString(),
       a: result.a,
+      connectionId: result.connectionId,
+      read: result.read,
     };
   }
 
@@ -301,15 +327,18 @@ class IpexCommunicationService extends AgentService {
   private async admitIpex(
     notificationD: string,
     holderAidName: string,
-    issuerAid: string
+    issuerAid: string,
+    schemaSaids: string[]
   ): Promise<void> {
     // @TODO - foconnor: For now this will only work with our test server, we need to find a better way to handle this in production.
-    await Agent.agent.connections.resolveOobi(
-      `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${IpexCommunicationService.SCHEMA_SAID_VLEI}`
-    );
-    await Agent.agent.connections.resolveOobi(
-      `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${IpexCommunicationService.SCHEMA_SAID_IIW_DEMO}`
-    );
+    for (const schemaSaid of schemaSaids) {
+      if (schemaSaid) {
+        await Agent.agent.connections.resolveOobi(
+          `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
+        );
+      }
+    }
+
     const dt = new Date().toISOString().replace("Z", "000+00:00");
     const [admit, sigs, aend] = await this.props.signifyClient
       .ipex()
