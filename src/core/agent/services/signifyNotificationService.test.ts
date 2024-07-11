@@ -169,13 +169,7 @@ describe("Signify notification service of agent", () => {
   test("Should call update when read a notification", async () => {
     const notification = {
       id: "id",
-      _tags: {
-        read: false,
-      } as any,
       read: false,
-      setTag: function (name: string, value: any) {
-        this._tags[name] = value;
-      },
     };
 
     notificationStorage.findById = jest.fn().mockResolvedValue(notification);
