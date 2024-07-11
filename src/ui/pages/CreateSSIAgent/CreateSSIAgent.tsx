@@ -1,15 +1,25 @@
 import { IonButton, IonIcon, IonSpinner } from "@ionic/react";
 import { informationCircleOutline, scanOutline } from "ionicons/icons";
 import {
-  useState,
   MouseEvent as ReactMouseEvent,
-  useMemo,
   useEffect,
+  useMemo,
+  useState,
 } from "react";
+import { Agent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { ConfigurationService } from "../../../core/configuration";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
+import {
+  clearSSIAgent,
+  getSSIAgent,
+  setBootUrl,
+  setConnectUrl,
+} from "../../../store/reducers/ssiAgent";
 import {
   getStateCache,
   setCurrentOperation,
@@ -19,22 +29,12 @@ import { CustomInput } from "../../components/CustomInput";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
+import { TermsModal } from "../../components/TermsModal";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { OperationType } from "../../globals/types";
 import { useAppIonRouter } from "../../hooks";
-import "./CreateSSIAgent.scss";
-import {
-  clearSSIAgent,
-  getSSIAgent,
-  setBootUrl,
-  setConnectUrl,
-} from "../../../store/reducers/ssiAgent";
 import { isValidHttpUrl } from "../../utils/urlChecker";
-import { TermsModal } from "../../components/TermsModal";
-import { Agent } from "../../../core/agent/agent";
-import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import { ConfigurationService } from "../../../core/configuration";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
+import "./CreateSSIAgent.scss";
 
 const SSI_URLS_EMPTY = "SSI url is empty";
 const SEED_PHRASE_EMPTY = "Invalid seed phrase";
@@ -146,7 +146,7 @@ const CreateSSIAgent = () => {
         updateRedux
       );
 
-      SecureStorage.delete(KeyStoreKeys.RECOVERY_WALLET);
+      Agent.agent.basicStorage.deleteById(MiscRecordId.APP_RECOVERY_WALLET);
 
       ionRouter.push(nextPath.pathname, "forward", "push");
       handleClearState();
@@ -318,7 +318,7 @@ const CreateSSIAgent = () => {
                   showError={!!displayBootUrlError || isInvalidBootUrl}
                   errorMessage={
                     (displayBootUrlError || isInvalidBootUrl) &&
-                      !displayConnectUrlError
+                    !displayConnectUrlError
                       ? `${i18n.t("ssiagent.error.invalidbooturl")}`
                       : `${i18n.t("ssiagent.error.invalidurl")}`
                   }
@@ -343,12 +343,16 @@ const CreateSSIAgent = () => {
               }}
               value={ssiAgent.connectUrl || ""}
               error={
-                !!displayConnectUrlError || hasMismatchError || isInvalidConnectUrl
+                !!displayConnectUrlError ||
+                hasMismatchError ||
+                isInvalidConnectUrl
               }
             />
             <InputError
               showError={
-                !!displayConnectUrlError || hasMismatchError || isInvalidConnectUrl
+                !!displayConnectUrlError ||
+                hasMismatchError ||
+                isInvalidConnectUrl
               }
               errorMessage={
                 hasMismatchError

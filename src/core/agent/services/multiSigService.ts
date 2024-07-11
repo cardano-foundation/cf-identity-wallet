@@ -524,32 +524,6 @@ class MultiSigService extends AgentService {
     return { done: false };
   }
 
-  @OnlineOnly
-  async getUnhandledMultisigIdentifiers(
-    filters: {
-      isDismissed?: boolean;
-    } = {}
-  ): Promise<KeriaNotification[]> {
-    const results = await this.notificationStorage.findAllByQuery({
-      route: NotificationRoute.MultiSigIcp,
-      ...filters,
-      $or: [
-        { route: NotificationRoute.MultiSigIcp },
-        {
-          route: NotificationRoute.MultiSigRot,
-        },
-      ],
-    });
-    return results.map((result) => {
-      return {
-        id: result.id,
-        createdAt: result.createdAt,
-        a: result.a,
-        multisigId: result.multisigId,
-      };
-    });
-  }
-
   private async rotateMultisigAid(
     aid: Aid,
     multisigAidMembers: Pick<Aid, "state">[],

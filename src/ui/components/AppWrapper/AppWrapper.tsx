@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  getIsInitialized,
   setAuthentication,
   setCurrentOperation,
   setInitialized,
@@ -32,7 +33,6 @@ import {
   ConnectionStateChangedEvent,
   ConnectionStatus,
   AcdcStateChangedEvent,
-  NotificationRoute,
   MiscRecordId,
 } from "../../../core/agent/agent.types";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
@@ -53,7 +53,6 @@ import {
   PeerConnectionBrokenEvent,
   PeerDisconnectedEvent,
 } from "../../../core/cardano/walletConnect/peerConnection.types";
-import { MultiSigService } from "../../../core/agent/services/multiSigService";
 import {
   setFavouriteIndex,
   setViewTypeCache,
@@ -68,12 +67,15 @@ import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences/preferencesStorage";
+import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === ConnectionStatus.PENDING) {
+    if (event.payload.isMultiSigInvite) return;
+
     dispatch(setCurrentOperation(OperationType.RECEIVE_CONNECTION));
     dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else {
@@ -91,52 +93,9 @@ const keriaNotificationsChangeHandler = async (
   event: KeriaNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  if (event?.a?.r === NotificationRoute.ExnIpexGrant) {
-    dispatch(
-      setQueueIncomingRequest({
-        id: event?.id,
-        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
-        logo: "", // TODO: must define Keri logo
-        label: "Credential Issuance Server", // TODO: must define it
-      })
-    );
-  } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
-    processMultiSigIcpNotification(event, dispatch);
-  } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
-    //TODO: Use dispatch here, handle logic for the multisig rotation notification
-  } else if (event?.a?.r === NotificationRoute.ExnIpexApply) {
-    //TODO: Use dispatch here, handle logic for the exchange apply message
-  } else if (event?.a?.r === NotificationRoute.ExnIpexAgree) {
-    //TODO: Use dispatch here, handle logic for the exchange apply agree
-  }
-};
-
-const processMultiSigIcpNotification = async (
-  event: KeriaNotification,
-  dispatch: ReturnType<typeof useAppDispatch>,
-  retryInterval = 3000
-) => {
-  try {
-    const multisigIcpDetails =
-      await Agent.agent.multiSigs.getMultisigIcpDetails(event.a.d as string);
-    dispatch(
-      setQueueIncomingRequest({
-        id: event?.id,
-        event: event,
-        type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-        multisigIcpDetails: multisigIcpDetails,
-      })
-    );
-  } catch (error) {
-    if (
-      (error as Error).message == MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP
-    ) {
-      await new Promise((resolve) => setTimeout(resolve, retryInterval));
-      await processMultiSigIcpNotification(event, dispatch, retryInterval);
-    } else {
-      throw error;
-    }
-  }
+  const notifications =
+    await Agent.agent.signifyNotifications.getAllNotifications();
+  dispatch(setNotificationsCache(notifications));
 };
 
 const acdcChangeHandler = async (
@@ -225,8 +184,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const connectedWallet = useAppSelector(getConnectedWallet);
+  const initAppSuccess = useAppSelector(getIsInitialized);
   const [isOnline, setIsOnline] = useState(false);
-  const [isMessagesHandled, setIsMessagesHandled] = useState(false);
   const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
   useActivityTimer();
 
@@ -236,40 +195,40 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     if (authentication.loggedIn) {
-      const handleMessages = async () => {
-        const oldMessages = (
-          await Promise.all([
-            Agent.agent.credentials.getUnhandledIpexGrantNotifications({
-              isDismissed: false,
-            }),
-            Agent.agent.multiSigs.getUnhandledMultisigIdentifiers({
-              isDismissed: false,
-            }),
-          ])
-        )
-          .flat()
-          .sort(function (messageA, messageB) {
-            return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
-          });
-        oldMessages.forEach(async (message) => {
-          await keriaNotificationsChangeHandler(message, dispatch);
-        });
-        // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-        // await Promise.all([
-        //   Agent.agent.identifiers.syncKeriaIdentifiers(),
-        //   Agent.agent.connections.syncKeriaContacts(),
-        //   Agent.agent.credentials.syncACDCs(),
-        // ]);
-      };
-      if (!isMessagesHandled && isOnline) {
-        handleMessages();
-        setIsMessagesHandled(true);
-      }
       dispatch(setPauseQueueIncomingRequest(!isOnline));
     } else {
       dispatch(setPauseQueueIncomingRequest(true));
     }
-  }, [isOnline, authentication.loggedIn, isMessagesHandled, dispatch]);
+  }, [isOnline, authentication.loggedIn, dispatch]);
+
+  useEffect(() => {
+    const syncWithKeria = async () => {
+      // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
+      //
+      // TODO: This got uncommented when we were redoing that by accident.
+      // Right now if you delete a connection, it will re-appear after 2 reloads
+      // because we haven’t updated Signify in a bit.
+      // The issue was fixed in Signify main repo but we’re on a fork…
+      // await Promise.all([
+      // Agent.agent.identifiers.syncKeriaIdentifiers(),
+      // Agent.agent.connections.syncKeriaContacts(),
+      // Agent.agent.credentials.syncACDCs(),
+      // ]);
+    };
+    if (isOnline) {
+      syncWithKeria();
+    }
+  }, [isOnline, dispatch]);
+
+  useEffect(() => {
+    if (initAppSuccess) {
+      if (authentication.loggedIn) {
+        Agent.agent.signifyNotifications.startNotification();
+      } else {
+        Agent.agent.signifyNotifications.stopNotification();
+      }
+    }
+  }, [authentication.loggedIn, initAppSuccess]);
 
   useEffect(() => {
     PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
@@ -305,12 +264,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
     const storedPeerConnections =
       await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
+    const notifications =
+      await Agent.agent.signifyNotifications.getAllNotifications();
 
     dispatch(setIdentifiersCache(storedIdentifiers));
     dispatch(setCredsCache(credsCache));
     dispatch(setCredsArchivedCache(credsArchivedCache));
     dispatch(setConnectionsCache(connectionsDetails));
     dispatch(setWalletConnectionsCache(storedPeerConnections));
+    dispatch(setNotificationsCache(notifications));
   };
 
   const loadCacheBasicStorage = async () => {
@@ -318,13 +280,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
 
-    const recoveryWalletProgress = await checkKeyStore(
-      KeyStoreKeys.RECOVERY_WALLET
-    );
-
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
     const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
       MiscRecordId.KERIA_CONNECT_URL
+    );
+
+    const recoveryWalletProgress = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_RECOVERY_WALLET
     );
 
     const identifiersFavourites = await Agent.agent.basicStorage.findById(
@@ -373,6 +335,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
       MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
     );
 
+    if (favouriteIndex) {
+      dispatch(
+        setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
+      );
+    }
+
     const passwordSkipped = await Agent.agent.basicStorage.findById(
       MiscRecordId.APP_PASSWORD_SKIPPED
     );
@@ -387,7 +355,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         passwordIsSkipped: !!passwordSkipped?.content.value,
         ssiAgentIsSet:
           !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
-        recoveryWalletProgress,
+        recoveryWalletProgress: !!recoveryWalletProgress?.content.value,
       })
     );
 

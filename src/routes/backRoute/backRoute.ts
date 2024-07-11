@@ -60,7 +60,11 @@ const clearStorageAfterBackOnboarding = (nextPath: string, data: DataProps) => {
     {
       path: [RoutePath.SET_PASSCODE],
       clearFn: () => {
-        SecureStorage.delete(KeyStoreKeys.RECOVERY_WALLET);
+        Agent.agent.basicStorage
+          .deleteById(MiscRecordId.APP_RECOVERY_WALLET)
+          .catch((error) => {
+            // TODO: handle error
+          });
         authState.recoveryWalletProgress = false;
       },
     },
@@ -182,6 +186,9 @@ const backRoute: Record<string, any> = {
     updateRedux: [removeCurrentRoute],
   },
   [RoutePath.CONNECTION_DETAILS]: {
+    updateRedux: [removeCurrentRoute],
+  },
+  [RoutePath.NOTIFICATION_DETAILS]: {
     updateRedux: [removeCurrentRoute],
   },
   [TabsRoutePath.IDENTIFIER_DETAILS]: {

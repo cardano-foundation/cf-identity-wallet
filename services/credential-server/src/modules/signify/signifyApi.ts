@@ -4,11 +4,13 @@ import {
   Tier,
   randomPasscode,
   Operation,
+  Saider,
+  Serder,
 } from "signify-ts";
-import { Agent } from "../../agent";
 import { waitAndGetDoneOp } from "./utils";
 import { config } from "../../config";
 import { v4 as uuidv4 } from "uuid";
+import { Agent } from "../../agent";
 
 export class SignifyApi {
   static readonly DEFAULT_ROLE = "agent";
@@ -41,7 +43,6 @@ export class SignifyApi {
       await this.signifyClient.boot();
       await this.signifyClient.connect();
     }
-    await Agent.agent.initKeri();
   }
 
   async createIdentifier(signifyName: string): Promise<any> {
@@ -103,8 +104,8 @@ export class SignifyApi {
 
     let vcdata = {};
     if (
-      schemaId === "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu" ||
-      schemaId === "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao"
+      schemaId === Agent.IIW_DEMO_SCHEMA_SAID ||
+      schemaId === Agent.QVI_SCHEMA_SAID
     ) {
       vcdata = attribute;
     } else {
@@ -133,6 +134,154 @@ export class SignifyApi {
     await this.signifyClient
       .ipex()
       .submitGrant(issuerName, grant, gsigs, gend, [recipient]);
+  }
+
+  async issueQVICredential(
+    issuerName: string,
+    registryId: string,
+    schemaId: string,
+    recipientPrefix: string
+  ) {
+    await this.resolveOobi(`${config.oobiEndpoint}/oobi/${schemaId}`);
+
+    let vcdata = {};
+    if (schemaId === Agent.QVI_SCHEMA_SAID) {
+      vcdata = {
+        LEI: "5493001KJTIIGC8Y1R17",
+        i: recipientPrefix,
+      };
+    } else {
+      throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);
+    }
+    const result = await this.signifyClient.credentials().issue({
+      issuerName,
+      registryId,
+      schemaId,
+      recipient: recipientPrefix,
+      data: vcdata,
+    });
+    await waitAndGetDoneOp(
+      this.signifyClient,
+      result.op,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+    const issuerCredential = await this.signifyClient
+      .credentials()
+      .get(result.acdc.ked.d);
+    const datetime = new Date().toISOString().replace("Z", "000+00:00");
+    const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
+      senderName: issuerName,
+      recipient: recipientPrefix,
+      acdc: new Serder(issuerCredential.sad),
+      anc: new Serder(issuerCredential.anc),
+      iss: new Serder(issuerCredential.iss),
+      ancAttachment: issuerCredential.ancAttachment,
+      datetime,
+    });
+    const smg = await this.signifyClient
+      .ipex()
+      .submitGrant(issuerName, grant, gsigs, gend, [recipientPrefix]);
+    await waitAndGetDoneOp(
+      this.signifyClient,
+      smg,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+    return result.acdc.ked.d;
+  }
+
+  async admitCredential(
+    holderAidName: string,
+    d: string,
+    issuerAidPrefix: string
+  ) {
+    const [admit, sigs, aend] = await this.signifyClient
+      .ipex()
+      .admit(
+        holderAidName,
+        "",
+        d,
+        new Date().toISOString().replace("Z", "000+00:00")
+      );
+    const op = await this.signifyClient
+      .ipex()
+      .submitAdmit(holderAidName, admit, sigs, aend, [issuerAidPrefix]);
+    await waitAndGetDoneOp(
+      this.signifyClient,
+      op,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+  }
+
+  async leChainedCredential(
+    qviCredentialId: string,
+    registryId: string,
+    holderAidName: string,
+    legalEntityAidPrefix: string,
+    attribute: { [key: string]: string }
+  ) {
+    await this.resolveOobi(
+      `${config.oobiEndpoint}/oobi/${Agent.LE_SCHEMA_SAID}`
+    );
+    await this.resolveOobi(
+      `${config.oobiEndpoint}/oobi/${Agent.QVI_SCHEMA_SAID}`
+    );
+    const qviCredential = await this.signifyClient
+      .credentials()
+      .get(qviCredentialId);
+    const result = await this.signifyClient.credentials().issue({
+      issuerName: holderAidName,
+      data: {
+        i: legalEntityAidPrefix,
+        ...attribute,
+      },
+      registryId: registryId,
+      schemaId: Agent.LE_SCHEMA_SAID,
+      rules: Saider.saidify({
+        d: "",
+        usageDisclaimer: {
+          l: "Usage of a valid, unexpired, and non-revoked vLEI Credential, as defined in the associated Ecosystem Governance Framework, does not assert that the Legal Entity is trustworthy, honest, reputable in its business dealings, safe to do business with, or compliant with any laws or that an implied or expressly intended purpose will be fulfilled.",
+        },
+        issuanceDisclaimer: {
+          l: "All information in a valid, unexpired, and non-revoked vLEI Credential, as defined in the associated Ecosystem Governance Framework, is accurate as of the date the validation process was complete. The vLEI Credential has been issued to the legal entity or person named in the vLEI Credential as the subject; and the qualified vLEI Issuer exercised reasonable care to perform the validation process set forth in the vLEI Ecosystem Governance Framework.",
+        },
+      })[1],
+      recipient: legalEntityAidPrefix,
+      source: Saider.saidify({
+        d: "",
+        qvi: {
+          n: qviCredential.sad.d,
+          s: qviCredential.sad.s,
+        },
+      })[1],
+    });
+
+    const leCredential = await this.signifyClient
+      .credentials()
+      .get(result.acdc.ked.d);
+
+    await waitAndGetDoneOp(
+      this.signifyClient,
+      result.op,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+
+    const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
+      senderName: holderAidName,
+      acdc: new Serder(leCredential.sad),
+      anc: new Serder(leCredential.anc),
+      iss: new Serder(leCredential.iss),
+      ancAttachment: leCredential.ancAttachment,
+      recipient: legalEntityAidPrefix,
+      datetime: new Date().toISOString().replace("Z", "000+00:00"),
+    });
+    await this.signifyClient
+      .ipex()
+      .submitGrant(holderAidName, grant, gsigs, gend, [legalEntityAidPrefix]);
+    return result.acdc.ked.d;
   }
 
   async requestDisclosure(

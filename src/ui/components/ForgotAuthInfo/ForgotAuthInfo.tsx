@@ -1,5 +1,5 @@
 import { IonModal } from "@ionic/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -16,8 +16,14 @@ import {
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import "./ForgotAuthInfo.scss";
 import { ForgotAuthInfoProps, ForgotType } from "./ForgotAuthInfo.types";
+import { combineClassNames } from "../../utils/style";
 
-const ForgotAuthInfo = ({ isOpen, type, onClose }: ForgotAuthInfoProps) => {
+const ForgotAuthInfo = ({
+  isOpen,
+  type,
+  overrideAlertZIndex,
+  onClose,
+}: ForgotAuthInfoProps) => {
   const dispatch = useAppDispatch();
   const auth = useAppSelector(getStateCache).authentication;
   const pageId = "forgot-auth-info-modal";
@@ -76,7 +82,9 @@ const ForgotAuthInfo = ({ isOpen, type, onClose }: ForgotAuthInfoProps) => {
   return (
     <IonModal
       isOpen={isOpen}
-      className={pageId}
+      className={combineClassNames(pageId, {
+        "max-zindex": !!overrideAlertZIndex,
+      })}
       data-testid={pageId}
       onDidDismiss={() => handleClose()}
     >
@@ -98,6 +106,7 @@ const ForgotAuthInfo = ({ isOpen, type, onClose }: ForgotAuthInfoProps) => {
             ref={ref}
             testId={recoverySeedId}
             onVerifySuccess={handleAfterVerifySeedPhrase}
+            overrideAlertZIndex={overrideAlertZIndex}
           />
         ) : type === ForgotType.Passcode ? (
           <CreatePasscodeModule
@@ -107,6 +116,7 @@ const ForgotAuthInfo = ({ isOpen, type, onClose }: ForgotAuthInfoProps) => {
               setReEnterPasscodeStep(!!originalPassCode);
             }}
             onCreateSuccess={handleClose}
+            overrideAlertZIndex={overrideAlertZIndex}
           />
         ) : (
           <PasswordModule

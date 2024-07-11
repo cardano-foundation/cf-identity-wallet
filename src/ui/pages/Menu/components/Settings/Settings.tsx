@@ -75,6 +75,7 @@ const Settings = () => {
       label: i18n.t("settings.sections.security.biometry"),
       actionIcon: (
         <IonToggle
+          aria-label="Biometric Toggle"
           className="biometric-toggle"
           checked={biometricsCache.enabled}
         />

@@ -66,6 +66,16 @@ const getNextCredentialDetailsRoute = () => {
   return { pathname: path };
 };
 
+const getNextNotificationsRoute = () => {
+  const path = RoutePath.NOTIFICATION_DETAILS;
+  return { pathname: path };
+};
+
+const getNextNotificationDetailsRoute = () => {
+  const path = TabsRoutePath.NOTIFICATIONS;
+  return { pathname: path };
+};
+
 const getNextSetPasscodeRoute = (store: StoreState) => {
   const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase;
   const ssiAgentIsSet = store.stateCache.authentication.ssiAgentIsSet;
@@ -237,12 +247,20 @@ const nextRoute: Record<string, any> = {
     nextPath: () => getNextCredentialsRoute(),
     updateRedux: [],
   },
-  [TabsRoutePath.SCAN]: {
-    nextPath: (data: DataProps) => getNextScanRoute(data),
-    updateRedux: [],
-  },
   [TabsRoutePath.CREDENTIAL_DETAILS]: {
     nextPath: () => getNextCredentialDetailsRoute(),
+    updateRedux: [],
+  },
+  [TabsRoutePath.NOTIFICATIONS]: {
+    nextPath: () => getNextNotificationsRoute(),
+    updateRedux: [],
+  },
+  [RoutePath.NOTIFICATION_DETAILS]: {
+    nextPath: () => getNextNotificationDetailsRoute(),
+    updateRedux: [],
+  },
+  [TabsRoutePath.SCAN]: {
+    nextPath: (data: DataProps) => getNextScanRoute(data),
     updateRedux: [],
   },
 };
