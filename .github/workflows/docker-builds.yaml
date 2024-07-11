@@ -22,7 +22,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    runs-on: [arc-runner-set, self-hosted]
+    runs-on: [self-hosted]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
