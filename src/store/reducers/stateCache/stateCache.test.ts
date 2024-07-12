@@ -22,7 +22,11 @@ import {
 import { RootState } from "../../index";
 import { RoutePath } from "../../../routes";
 import { OperationType } from "../../../ui/globals/types";
-import { IncomingRequestProps, IncomingRequestType, PeerConnectSigningEventRequest } from "./stateCache.types";
+import {
+  IncomingRequestProps,
+  IncomingRequestType,
+  PeerConnectSigningEventRequest,
+} from "./stateCache.types";
 import { PeerConnectionEventTypes } from "../../../core/cardano/walletConnect/peerConnection.types";
 
 const signingRequest: PeerConnectSigningEventRequest = {
@@ -34,9 +38,9 @@ const signingRequest: PeerConnectSigningEventRequest = {
       payload: "tosign",
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       approvalCallback: () => {},
-    }
+    },
   },
-  peerConnection: { id: "connection" }
+  peerConnection: { id: "connection" },
 };
 
 const signingRequestB = { ...signingRequest };
@@ -121,9 +125,7 @@ describe("State Cache", () => {
   test("should queue incoming request", () => {
     const action = setQueueIncomingRequest(signingRequest);
     const nextState = stateCacheSlice.reducer(initialState, action);
-    expect(nextState.queueIncomingRequest.queues[0]).toEqual(
-      signingRequest
-    );
+    expect(nextState.queueIncomingRequest.queues[0]).toEqual(signingRequest);
   });
 
   test("can batch incoming requests", () => {
@@ -131,7 +133,10 @@ describe("State Cache", () => {
       JSON.stringify(initialState)
     );
     initialStateMock.queueIncomingRequest.queues = [signingRequest];
-    const batchIncomingRequestProps: IncomingRequestProps[] = [signingRequestB, signingRequestC];
+    const batchIncomingRequestProps: IncomingRequestProps[] = [
+      signingRequestB,
+      signingRequestC,
+    ];
     const action = enqueueIncomingRequest(batchIncomingRequestProps);
     const nextState = stateCacheSlice.reducer(initialStateMock, action);
     expect(nextState.queueIncomingRequest.queues).toEqual([
@@ -144,7 +149,10 @@ describe("State Cache", () => {
     const initialStateMock: StateCacheProps = JSON.parse(
       JSON.stringify(initialState)
     );
-    initialStateMock.queueIncomingRequest.queues = [signingRequest, signingRequestB];
+    initialStateMock.queueIncomingRequest.queues = [
+      signingRequest,
+      signingRequestB,
+    ];
     const action = dequeueIncomingRequest();
     const nextState = stateCacheSlice.reducer(initialStateMock, action);
     expect(nextState.queueIncomingRequest.queues.length).toEqual(1);
@@ -163,16 +171,17 @@ describe("State Cache", () => {
     const action2 = setQueueIncomingRequest(signingRequest);
     const nextState2 = stateCacheSlice.reducer(nextState1, action2);
     expect(nextState2.queueIncomingRequest.isProcessing).toEqual(false);
-    expect(nextState2.queueIncomingRequest.queues[0]).toEqual(
-      signingRequest
-    );
+    expect(nextState2.queueIncomingRequest.queues[0]).toEqual(signingRequest);
   });
 
   test("isProcessing should be true after dequeueCredentialRequest and queue still has elements", () => {
     const initialStateMock: StateCacheProps = JSON.parse(
       JSON.stringify(initialState)
     );
-    initialStateMock.queueIncomingRequest.queues = [signingRequest, signingRequestB];
+    initialStateMock.queueIncomingRequest.queues = [
+      signingRequest,
+      signingRequestB,
+    ];
     const action = dequeueIncomingRequest();
     const nextState = stateCacheSlice.reducer(initialStateMock, action);
     expect(nextState.queueIncomingRequest.queues.length).toEqual(1);
