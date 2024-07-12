@@ -41,6 +41,10 @@
       margin-bottom: 1.5rem;
 
       ion-list {
+        &.md {
+          padding: 0;
+        }
+
         ion-grid {
           padding: 0;
 
@@ -61,10 +65,6 @@
         ion-item {
           --inner-padding-end: 0;
           font-weight: 500;
-
-          &.md {
-            --min-height: fit-content;
-          }
 
           &::part(native) {
             padding: 0;
