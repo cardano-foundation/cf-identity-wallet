@@ -187,8 +187,13 @@ class SignifyNotificationService extends AgentService {
         await this.markNotification(notif.i);
         return;
       }
-      await this.markNotification(notif.i);
-      return await Agent.agent.multiSigs.joinAuthorization(notif.a.d);
+      if (multisigNotification[0].exn.e.rpy.r == "/end/role/add") {
+        await this.markNotification(notif.i);
+        await Agent.agent.multiSigs.joinAuthorization(
+          multisigNotification[0].exn
+        );
+        return;
+      }
     }
     if (notif.a.r === NotificationRoute.MultiSigIcp) {
       const multisigNotification = await this.props.signifyClient
@@ -247,7 +252,10 @@ class SignifyNotificationService extends AgentService {
       route: event.a.r,
       connectionId: exchange.exn.i,
     };
-    if (event.a.r === NotificationRoute.MultiSigIcp) {
+    if (
+      event.a.r === NotificationRoute.MultiSigIcp ||
+      event.a.r === NotificationRoute.MultiSigRpy
+    ) {
       const multisigNotification = await this.props.signifyClient
         .groups()
         .getRequest(event.a.d)
@@ -364,8 +372,7 @@ class SignifyNotificationService extends AgentService {
               ""
             );
             switch (pendingOperation.recordType) {
-            case OperationPendingRecordType.Group:
-            case OperationPendingRecordType.Witness: {
+            case OperationPendingRecordType.Group: {
               await this.identifierStorage.updateIdentifierMetadata(
                 recordId,
                 {
@@ -373,14 +380,13 @@ class SignifyNotificationService extends AgentService {
                 }
               );
               // Trigger add end role authorization for multi-sigs
-              if (
-                pendingOperation.recordType ==
-                  OperationPendingRecordType.Group
-              ) {
-                const multisigIdentifier =
-                    await this.identifierStorage.getIdentifierMetadata(
-                      recordId
-                    );
+              const multisigIdentifier =
+                  await this.identifierStorage.getIdentifierMetadata(recordId);
+              const { ourIdentifier } =
+                  await Agent.agent.multiSigs.getMultisigParticipants(
+                    multisigIdentifier.signifyName
+                  );
+              if (ourIdentifier.groupMetadata?.groupInitiator) {
                 await Agent.agent.multiSigs.endRoleAuthorization(
                   multisigIdentifier.signifyName
                 );
@@ -389,7 +395,19 @@ class SignifyNotificationService extends AgentService {
                 opType: pendingOperation.recordType,
                 oid: recordId,
               });
-
+              break;
+            }
+            case OperationPendingRecordType.Witness: {
+              await this.identifierStorage.updateIdentifierMetadata(
+                recordId,
+                {
+                  isPending: false,
+                }
+              );
+              callback({
+                opType: pendingOperation.recordType,
+                oid: recordId,
+              });
               break;
             }
 
