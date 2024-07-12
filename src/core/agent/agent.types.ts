@@ -34,7 +34,7 @@ enum MiscRecordId {
   APP_IDENTIFIER_FAVOURITE_INDEX = "identifier-favourite-index",
   APP_PASSWORD_SKIPPED = "app-password-skipped",
   APP_RECOVERY_WALLET = "recovery-wallet",
-  LOGIN_ATTEMPT = "login-attempt",
+  LOGIN_METADATA = "login-metadata",
 }
 
 interface ConnectionShortDetails {

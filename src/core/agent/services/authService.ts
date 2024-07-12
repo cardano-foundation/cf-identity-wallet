@@ -5,7 +5,7 @@ import { LoginAttempts } from "./auth.types";
 import { BasicRecord } from "../records";
 
 class AuthService extends AgentService {
-  static readonly TIME_UNIT = 60 * 1000;
+  static readonly MIN_LOCK_TIME = 60 * 1000;
 
   constructor(agentServiceProps: AgentServicesProps) {
     super(agentServiceProps);
@@ -16,32 +16,32 @@ class AuthService extends AgentService {
 
   async getLoginAttempts() {
     const attemptInfo = await Agent.agent.basicStorage.findById(
-      MiscRecordId.LOGIN_ATTEMPT
+      MiscRecordId.LOGIN_METADATA
     );
 
     if (attemptInfo) {
       return attemptInfo.content as unknown as LoginAttempts;
-    } else {
-      await Agent.agent.basicStorage.createOrUpdateBasicRecord(
-        new BasicRecord({
-          id: MiscRecordId.LOGIN_ATTEMPT,
-          content: {
-            attempts: 0,
-            lockedUntil: Date.now(),
-          },
-        })
-      );
-
-      return {
-        attempts: 0,
-        lockedUntil: Date.now(),
-      };
     }
+
+    await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.LOGIN_METADATA,
+        content: {
+          attempts: 0,
+          lockedUntil: Date.now(),
+        },
+      })
+    );
+
+    return {
+      attempts: 0,
+      lockedUntil: Date.now(),
+    };
   }
 
   async incrementLoginAttempts() {
     const attemptInfo = await Agent.agent.basicStorage.findById(
-      MiscRecordId.LOGIN_ATTEMPT
+      MiscRecordId.LOGIN_METADATA
     );
 
     if (!attemptInfo) {
@@ -55,26 +55,25 @@ class AuthService extends AgentService {
 
     switch (attempts) {
     case 5:
-      lockDuration = AuthService.TIME_UNIT;
+      lockDuration = AuthService.MIN_LOCK_TIME;
       break;
     case 6:
-      lockDuration = 5 * AuthService.TIME_UNIT;
+      lockDuration = 5 * AuthService.MIN_LOCK_TIME;
       break;
     case 7:
-      lockDuration = 10 * AuthService.TIME_UNIT;
+      lockDuration = 10 * AuthService.MIN_LOCK_TIME;
       break;
     case 8:
-      lockDuration = 15 * AuthService.TIME_UNIT;
+      lockDuration = 15 * AuthService.MIN_LOCK_TIME;
       break;
     case 9:
-      lockDuration = 60 * AuthService.TIME_UNIT;
+      lockDuration = 60 * AuthService.MIN_LOCK_TIME;
       break;
     case 10:
-      lockDuration = 4 * 60 * AuthService.TIME_UNIT;
+      lockDuration = 4 * 60 * AuthService.MIN_LOCK_TIME;
       break;
-    case 11:
     default:
-      lockDuration = 8 * 60 * AuthService.TIME_UNIT;
+      lockDuration = 8 * 60 * AuthService.MIN_LOCK_TIME;
       break;
     }
 
@@ -91,10 +90,12 @@ class AuthService extends AgentService {
 
   async resetLoginAttempts() {
     const attemptInfo = await Agent.agent.basicStorage.findById(
-      MiscRecordId.LOGIN_ATTEMPT
+      MiscRecordId.LOGIN_METADATA
     );
 
-    if (!attemptInfo) return;
+    if (!attemptInfo) {
+      throw new Error(AuthService.LOGIN_ATTEMPT_RECORD_NOT_FOUND);
+    }
 
     attemptInfo.content.attempts = 0;
     attemptInfo.content.lockedUntil = Date.now();

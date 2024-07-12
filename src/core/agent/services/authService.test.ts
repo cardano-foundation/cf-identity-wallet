@@ -88,7 +88,7 @@ const agentServicesProps = {
 
 const startTime = new Date();
 const existingRecord = new BasicRecord({
-  id: MiscRecordId.LOGIN_ATTEMPT,
+  id: MiscRecordId.LOGIN_METADATA,
   content: {
     attempts: 4,
     lockedUntil: Date.now(),
@@ -139,6 +139,7 @@ describe("Auth service of agent", () => {
 
     const result = await authService.getLoginAttempts();
 
+    expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalled();
     expect(result.attempts).toBe(0);
     expect(result.lockedUntil).toBeLessThanOrEqual(Date.now());
   });
@@ -161,41 +162,45 @@ describe("Auth service of agent", () => {
   });
 
   const incrementCases = [
-    { attempts: 4, expectedAttempts: 5, lockDuration: AuthService.TIME_UNIT },
+    {
+      attempts: 4,
+      expectedAttempts: 5,
+      lockDuration: AuthService.MIN_LOCK_TIME,
+    },
     {
       attempts: 5,
       expectedAttempts: 6,
-      lockDuration: 5 * AuthService.TIME_UNIT,
+      lockDuration: 5 * AuthService.MIN_LOCK_TIME,
     },
     {
       attempts: 6,
       expectedAttempts: 7,
-      lockDuration: 10 * AuthService.TIME_UNIT,
+      lockDuration: 10 * AuthService.MIN_LOCK_TIME,
     },
     {
       attempts: 7,
       expectedAttempts: 8,
-      lockDuration: 15 * AuthService.TIME_UNIT,
+      lockDuration: 15 * AuthService.MIN_LOCK_TIME,
     },
     {
       attempts: 8,
       expectedAttempts: 9,
-      lockDuration: 60 * AuthService.TIME_UNIT,
+      lockDuration: 60 * AuthService.MIN_LOCK_TIME,
     },
     {
       attempts: 9,
       expectedAttempts: 10,
-      lockDuration: 4 * 60 * AuthService.TIME_UNIT,
+      lockDuration: 4 * 60 * AuthService.MIN_LOCK_TIME,
     },
     {
       attempts: 10,
       expectedAttempts: 11,
-      lockDuration: 8 * 60 * AuthService.TIME_UNIT,
+      lockDuration: 8 * 60 * AuthService.MIN_LOCK_TIME,
     },
     {
       attempts: 11,
       expectedAttempts: 12,
-      lockDuration: 8 * 60 * AuthService.TIME_UNIT,
+      lockDuration: 8 * 60 * AuthService.MIN_LOCK_TIME,
     },
   ];
 
@@ -203,7 +208,7 @@ describe("Auth service of agent", () => {
     test(`Should increment attempts from ${attempts} to ${expectedAttempts} and lock for ${lockDuration} ms`, async () => {
       const lockedUntil = Date.now();
       const existingRecord = new BasicRecord({
-        id: MiscRecordId.LOGIN_ATTEMPT,
+        id: MiscRecordId.LOGIN_METADATA,
         content: {
           attempts,
           lockedUntil,
@@ -245,8 +250,16 @@ describe("Auth service of agent", () => {
       .mockResolvedValue(existingRecord);
     Agent.agent.basicStorage.update = jest.fn();
 
-    const result = await authService.resetLoginAttempts();
+    await authService.resetLoginAttempts();
 
     expect(Agent.agent.basicStorage.update).toBeCalled();
+  });
+
+  test("Should throw an error if login attempt record is not found in resetLoginAttempts", async () => {
+    basicStorage.findById = jest.fn().mockResolvedValue(null);
+
+    await expect(authService.resetLoginAttempts()).rejects.toThrow(
+      AuthService.LOGIN_ATTEMPT_RECORD_NOT_FOUND
+    );
   });
 });
