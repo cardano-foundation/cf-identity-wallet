@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   IonButton,
   IonChip,
@@ -171,6 +171,11 @@ const Notifications = () => {
   const onOpenOptionModal = (item: KeriaNotification | null) => {
     setSelectedItem(item);
   };
+
+  useEffect(() => {
+    if (history.location.pathname !== TabsRoutePath.NOTIFICATIONS)
+      earlierNotificationRef.current?.reset();
+  }, [history.location.pathname]);
 
   return (
     <TabLayout
