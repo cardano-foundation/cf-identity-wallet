@@ -1,40 +1,33 @@
+import { IonChip, IonList, useIonViewWillEnter } from "@ionic/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  IonButton,
-  IonChip,
-  IonIcon,
-  IonList,
-  useIonViewWillEnter,
-} from "@ionic/react";
-import { settingsOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
-import { TabLayout } from "../../components/layout/TabLayout";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getStateCache,
-  setCurrentRoute,
-} from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../../../routes/paths";
-import "./Notifications.scss";
-import { i18n } from "../../../i18n";
-import { timeDifference } from "../../utils/formatters";
-import {
-  getNotificationsCache,
-  setReadedNotification,
-} from "../../../store/reducers/notificationsCache";
-import { NotificationItem } from "./NotificationItem";
+import { Agent } from "../../../core/agent/agent";
 import {
   KeriaNotification,
   NotificationRoute,
 } from "../../../core/agent/agent.types";
-import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { i18n } from "../../../i18n";
 import { getNextRoute } from "../../../routes/nextRoute";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { TabsRoutePath } from "../../../routes/paths";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getNotificationsCache,
+  setReadedNotification,
+} from "../../../store/reducers/notificationsCache";
+import {
+  getStateCache,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { timeDifference } from "../../utils/formatters";
 import { FilterChipProps, NotificationFilter } from "./Notification.types";
+import { NotificationItem } from "./NotificationItem";
+import "./Notifications.scss";
 import { EarlierNotification } from "./components";
 import { EarlierNotificationRef } from "./components/EarlierNotification.types";
 import { NotificationOptionsModal } from "./components/NotificationOptionsModal";
-import { Agent } from "../../../core/agent/agent";
 
 const Chip = ({ filter, label, isActive, onClick }: FilterChipProps) => (
   <span>
@@ -97,22 +90,6 @@ const Notifications = () => {
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.NOTIFICATIONS }));
   });
-
-  const AdditionalButtons = () => {
-    return (
-      <IonButton
-        shape="round"
-        className="notifications-settings-button"
-        data-testid="notifications-settings-button"
-      >
-        <IonIcon
-          slot="icon-only"
-          icon={settingsOutline}
-          color="primary"
-        />
-      </IonButton>
-    );
-  };
 
   const maskAsReaded = async (notification: KeriaNotification) => {
     if (notification.read) return;
@@ -182,7 +159,6 @@ const Notifications = () => {
       pageId={pageId}
       header={true}
       title={`${i18n.t("notifications.tab.header")}`}
-      additionalButtons={<AdditionalButtons />}
     >
       <div className="notifications-tab-chips">
         {filterOptions.map((option) => (
