@@ -1,6 +1,10 @@
 import { IonIcon, IonItem, IonLabel } from "@ionic/react";
 import { t } from "i18next";
-import { ellipsisHorizontal, fingerPrintOutline } from "ionicons/icons";
+import {
+  ellipsisHorizontal,
+  fingerPrintOutline,
+  idCardOutline,
+} from "ionicons/icons";
 import { MouseEvent, useCallback, useEffect, useState } from "react";
 import { Trans } from "react-i18next";
 import { Agent } from "../../../core/agent/agent";
@@ -12,7 +16,6 @@ import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifi
 import { useAppSelector } from "../../../store/hooks";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
-import MultisignReferIcon from "../../assets/images/multisign-icon.jpg";
 import { timeDifference } from "../../utils/formatters";
 import { NotificationItemProps } from "./Notification.types";
 
@@ -82,11 +85,11 @@ const NotificationItem = ({
     switch (item.a.r) {
     case NotificationRoute.ExnIpexGrant:
     case NotificationRoute.ExnIpexApply:
-      return fingerPrintOutline;
+      return idCardOutline;
     case NotificationRoute.MultiSigIcp:
-      return MultisignReferIcon;
+      return fingerPrintOutline;
     default:
-      return MultisignReferIcon;
+      return idCardOutline;
     }
   };
 
@@ -111,9 +114,9 @@ const NotificationItem = ({
               className="notifications-tab-item-logo"
               data-testid="notifications-tab-item-logo"
             />
-            <img
+            <IonIcon
               src={referIcon(item)}
-              alt="refer-icon"
+              size="small"
               className="notification-ref-icon"
             />
           </div>
