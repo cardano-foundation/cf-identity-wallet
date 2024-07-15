@@ -187,6 +187,7 @@ class MultiSigService extends AgentService {
     };
 
     const smids = states.map((state) => state["i"]);
+    const rmids = smids;
     const recp = otherAids
       .map((aid) => aid["state"])
       .map((state) => state["i"]);
@@ -199,7 +200,7 @@ class MultiSigService extends AgentService {
       {
         gid: serder.pre,
         smids: smids,
-        rmids: smids,
+        rmids: rmids,
         rstates: states,
         name,
       }
@@ -544,6 +545,7 @@ class MultiSigService extends AgentService {
     };
 
     const smids = states.map((state) => state["i"]);
+    const rmids = smids;
     const recp = multisigAidMembers
       .map((aid) => aid["state"])
       .map((state) => state["i"]);
@@ -557,7 +559,7 @@ class MultiSigService extends AgentService {
       {
         gid: serder.pre,
         smids: smids,
-        rmids: smids,
+        rmids: rmids,
         rstates: states,
         name,
       }
@@ -593,6 +595,7 @@ class MultiSigService extends AgentService {
     };
 
     const smids = exn.a.smids;
+    const rmids = exn.a.rmids;
     const recp = rstates
       .filter((r) => r.i !== aid.state.i)
       .map((state) => state["i"]);
@@ -605,7 +608,7 @@ class MultiSigService extends AgentService {
       {
         gid: serder.pre,
         smids: smids,
-        rmids: smids,
+        rmids: rmids,
         rstates,
         name,
       }
@@ -687,6 +690,7 @@ class MultiSigService extends AgentService {
     };
 
     const smids = exn.a.smids;
+    const rmids = exn.a.rmids;
     const recp = states
       .filter((r) => r.i !== aid.state.i)
       .map((state) => state["i"]);
@@ -699,7 +703,7 @@ class MultiSigService extends AgentService {
       {
         gid: serder.pre,
         smids: smids,
-        rmids: smids,
+        rmids: rmids,
         rstates,
         name,
       }
