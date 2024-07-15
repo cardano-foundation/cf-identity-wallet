@@ -100,6 +100,24 @@ interface KeriaStatusChangedEvent extends BaseEventEmitter {
   };
 }
 
+interface NotificationRpy {
+  a: {
+    cid: string;
+    eid: string;
+    role: string;
+  };
+  d: string;
+  dt: string;
+  r: string;
+  t: string;
+  v: string;
+}
+
+interface AuthorizationRequestExn {
+  a: { gid: string };
+  e: { rpy: NotificationRpy; d: string };
+}
+
 interface KeriaNotification {
   id: string;
   createdAt: string;
@@ -193,4 +211,6 @@ export type {
   KeriaStatusChangedEvent,
   AgentUrls,
   BranAndMnemonic,
+  NotificationRpy,
+  AuthorizationRequestExn,
 };

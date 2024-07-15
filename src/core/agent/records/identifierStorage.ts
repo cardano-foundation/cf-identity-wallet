@@ -94,19 +94,6 @@ class IdentifierStorage {
     }
     return null;
   }
-
-  async getMultisigMembersMetadata(
-    id: string
-  ): Promise<IdentifierMetadataRecord[]> {
-    const records = await this.storageService.findAllByQuery(
-      {
-        id,
-        groupCreated: true,
-      },
-      IdentifierMetadataRecord
-    );
-    return records;
-  }
 }
 
 export { IdentifierStorage };

@@ -1025,7 +1025,7 @@ describe("Multisig sig service of agent", () => {
         theme: 0,
         displayName: "Multisig",
       })
-    ).rejects.toThrowError(MultiSigService.CANNOT_JOIN_MULTISIG_ICP);
+    ).rejects.toThrowError(MultiSigService.MEMBER_AID_NOT_FOUND);
   });
 
   test("Can get multisig icp details of 2 persons multi-sig", async () => {
@@ -1239,7 +1239,7 @@ describe("Multisig sig service of agent", () => {
       multiSigService.getMultisigIcpDetails(
         "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW"
       )
-    ).rejects.toThrowError(MultiSigService.CANNOT_JOIN_MULTISIG_ICP);
+    ).rejects.toThrowError(MultiSigService.MEMBER_AID_NOT_FOUND);
   });
 
   test("cannot get multi-sig details from an unknown sender (missing metadata)", async () => {
@@ -1563,7 +1563,26 @@ describe("Multisig sig service of agent", () => {
       serder: { size: 1 },
       sigs: [],
     });
-    await multiSigService.joinAuthorization("notification-said");
+    await multiSigService.joinAuthorization({
+      a: {
+        gid: "EFPEKHhywRg2Naa-Gx0jiAAXYnQ5y92vDniHAk8beEA_",
+      },
+      e: {
+        rpy: {
+          v: "KERI10JSON000111_",
+          t: "rpy",
+          d: "EE8Ze_pwiMHMMDz_giL0ezN7y_4PJSUPKTe3q2Km_WpY",
+          dt: "2024-07-12T09:37:48.801000+00:00",
+          r: "/end/role/add",
+          a: {
+            cid: "EFPEKHhywRg2Naa-Gx0jiAAXYnQ5y92vDniHAk8beEA_",
+            role: "agent",
+            eid: "EDr4kddR_keAzTUs_PNW-qSsUdLDrKD0YbZxiU-y4B3K",
+          },
+        },
+        d: "EFme1_S0eHc-C6HpcaWpFZnKJGX4f91IBCDmiM6vBQOR",
+      },
+    });
     expect(sendExchangesMock).toBeCalled();
   });
 
@@ -1608,36 +1627,5 @@ describe("Multisig sig service of agent", () => {
       serder: { size: 1 },
       sigs: [],
     });
-  });
-  test("Should throw error if there is no joining authorization message", async () => {
-    const notificationSaid = "notification-said";
-    getExchangesMock.mockResolvedValueOnce(undefined);
-    await expect(
-      multiSigService.joinAuthorization(notificationSaid)
-    ).rejects.toThrowError(
-      new Error(`${MultiSigService.EXN_MESSAGE_NOT_FOUND} ${notificationSaid}`)
-    );
-
-    getExchangesMock.mockResolvedValueOnce({
-      exn: {
-        a: {
-          gid: "gid",
-        },
-      },
-    });
-    groupGetRequestMock.mockRejectedValue(
-      new Error("request - 404 - SignifyClient message")
-    );
-    identifiersMemberMock.mockResolvedValue(multisigMockMembers);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(multisigMockMemberMetadata);
-    await expect(
-      multiSigService.joinAuthorization(notificationSaid)
-    ).rejects.toThrowError(
-      new Error(
-        `${MultiSigService.GROUP_REQUEST_NOT_FOUND} ${notificationSaid}`
-      )
-    );
   });
 });

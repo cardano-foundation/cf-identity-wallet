@@ -7,7 +7,11 @@ import {
   CreateIdentifierResult,
   AgentServicesProps,
 } from "../agent.types";
-import type { KeriaNotification, ConnectionShortDetails } from "../agent.types";
+import type {
+  KeriaNotification,
+  ConnectionShortDetails,
+  AuthorizationRequestExn,
+} from "../agent.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -39,8 +43,6 @@ class MultiSigService extends AgentService {
     "This AID is not a multi sig identifier";
   static readonly NOT_FOUND_ALL_MEMBER_OF_MULTISIG =
     "Cannot find all members of multisig or one of the members does not rotate its AID";
-  static readonly CANNOT_JOIN_MULTISIG_ICP =
-    "Cannot join multi-sig inception as we do not control any member AID of the multi-sig";
   static readonly UNKNOWN_AIDS_IN_MULTISIG_ICP =
     "Multi-sig join request contains unknown AIDs (not connected)";
   static readonly MISSING_GROUP_METADATA =
@@ -52,8 +54,6 @@ class MultiSigService extends AgentService {
   static readonly GROUP_ALREADY_EXISTs = "Group already exists";
   static readonly MEMBER_AID_NOT_FOUND =
     "We do not control any member AID of the multi-sig";
-  static readonly GROUP_REQUEST_NOT_FOUND =
-    "Group request with given SAID not found";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly notificationStorage!: NotificationStorage;
@@ -391,7 +391,7 @@ class MultiSigService extends AgentService {
       smids.includes(identifier.id)
     );
     if (!ourIdentifier || !ourIdentifier.groupMetadata?.groupId) {
-      throw new Error(MultiSigService.CANNOT_JOIN_MULTISIG_ICP);
+      throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
     }
 
     const otherConnections = (
@@ -451,7 +451,7 @@ class MultiSigService extends AgentService {
     });
 
     if (!identifier) {
-      throw new Error(MultiSigService.CANNOT_JOIN_MULTISIG_ICP);
+      throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
     }
 
     if (!identifier.groupMetadata) {
@@ -786,14 +786,13 @@ class MultiSigService extends AgentService {
     };
   }
 
-  async endRoleAuthorization(multisigSignifyName: string) {
+  async endRoleAuthorization(multisigSignifyName: string): Promise<void> {
     const { ourIdentifier, multisigMembers } =
       await this.getMultisigParticipants(multisigSignifyName);
     const hab = await this.props.signifyClient
       .identifiers()
       .get(multisigSignifyName);
     const aid = hab["prefix"];
-    const results = [];
     const recp = multisigMembers
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
@@ -832,50 +831,22 @@ class MultiSigService extends AgentService {
         recp,
         { gid: aid }
       );
-      results.push(op);
     }
-    return results;
   }
 
-  async joinAuthorization(notificationSaid: string) {
-    const exchangeMessage = await this.props.signifyClient
-      .exchanges()
-      .get(notificationSaid);
-    if (!exchangeMessage) {
-      throw new Error(
-        `${MultiSigService.EXN_MESSAGE_NOT_FOUND} ${notificationSaid}`
-      );
-    }
-    const multisigAid = exchangeMessage.exn.a.gid;
+  async joinAuthorization(requestExn: AuthorizationRequestExn): Promise<void> {
+    const multisigAid = requestExn.a.gid;
     const multisigMetadataRecord =
       await this.identifierStorage.getIdentifierMetadata(multisigAid);
     const multisigSignifyName = multisigMetadataRecord.signifyName;
-    const request = await this.props.signifyClient
-      .groups()
-      .getRequest(notificationSaid)
-      .catch((error) => {
-        const errorStack = (error as Error).stack as string;
-        const status = errorStack.split("-")[1];
-        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
-          return [];
-        } else {
-          throw error;
-        }
-      });
-    if (!request.length) {
-      throw new Error(
-        `${MultiSigService.GROUP_REQUEST_NOT_FOUND} ${notificationSaid}`
-      );
-    }
-    const exn = request[0].exn;
     // stamp, eid and role are provided in the exn message
-    const rpystamp = exn.e.rpy.dt;
-    const rpyrole = exn.e.rpy.a.role;
-    const rpyeid = exn.e.rpy.a.eid;
+    const rpystamp = requestExn.e.rpy.dt;
+    const rpyrole = requestExn.e.rpy.a.role;
+    const rpyeid = requestExn.e.rpy.a.eid;
     const endRoleRes = await this.props.signifyClient
       .identifiers()
       .addEndRole(multisigSignifyName, rpyrole, rpyeid, rpystamp);
-    const op = await endRoleRes.op();
+    await endRoleRes.op();
     const rpy = endRoleRes.serder;
     const sigs = endRoleRes.sigs;
 
@@ -912,7 +883,6 @@ class MultiSigService extends AgentService {
       recp,
       { gid: hab["prefix"] }
     );
-    return op;
   }
 
   async multisigAdmit(multisigSignifyName: string, notificationSaid: string) {
