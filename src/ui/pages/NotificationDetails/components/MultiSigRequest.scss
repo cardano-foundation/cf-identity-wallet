@@ -41,6 +41,10 @@
       margin-bottom: 1.5rem;
 
       ion-list {
+        &.md {
+          padding: 0;
+        }
+
         ion-grid {
           padding: 0;
 
