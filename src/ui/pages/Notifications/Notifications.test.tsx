@@ -5,6 +5,7 @@ import { createMemoryHistory } from "history";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { MemoryRouter } from "react-router-dom";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsForNotifications } from "../../__fixtures__/connectionsFix";
@@ -96,7 +97,9 @@ describe("Notifications Tab", () => {
     };
     const { getByTestId, getByText, queryByTestId } = render(
       <Provider store={storeMocked}>
-        <Notifications />
+        <MemoryRouter initialEntries={[TabsRoutePath.NOTIFICATIONS]}>
+          <Notifications />
+        </MemoryRouter>
       </Provider>
     );
 
@@ -124,7 +127,9 @@ describe("Notifications Tab", () => {
     };
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMocked}>
-        <Notifications />
+        <MemoryRouter initialEntries={[TabsRoutePath.NOTIFICATIONS]}>
+          <Notifications />
+        </MemoryRouter>
       </Provider>
     );
 
@@ -210,7 +215,9 @@ describe("Notifications Tab", () => {
     };
     const { getByTestId, getByText, getAllByText } = render(
       <Provider store={storeMocked}>
-        <Notifications />
+        <MemoryRouter initialEntries={[TabsRoutePath.NOTIFICATIONS]}>
+          <Notifications />
+        </MemoryRouter>
       </Provider>
     );
 
