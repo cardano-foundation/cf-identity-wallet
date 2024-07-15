@@ -40,13 +40,12 @@ const IdentifierOptions = ({
   handleRotateKey,
 }: IdentifierOptionsProps) => {
   const dispatch = useAppDispatch();
-  const identifierData = useAppSelector(getIdentifiersCache);
+  const identifiersData = useAppSelector(getIdentifiersCache);
   const [editorOptionsIsOpen, setEditorIsOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
   const [newSelectedTheme, setNewSelectedTheme] = useState(cardData.theme);
   const [viewIsOpen, setViewIsOpen] = useState(false);
   const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
-  const identifiersData = useAppSelector(getIdentifiersCache);
   const [isMultiSig, setIsMultiSig] = useState(false);
 
   useEffect(() => {
@@ -94,7 +93,7 @@ const IdentifierOptions = ({
   const handleSubmit = async () => {
     setEditorIsOpen(false);
     setOptionsIsOpen(false);
-    const updatedIdentifiers = [...identifierData];
+    const updatedIdentifiers = [...identifiersData];
     const index = updatedIdentifiers.findIndex(
       (identifier) => identifier.id === cardData.id
     );
