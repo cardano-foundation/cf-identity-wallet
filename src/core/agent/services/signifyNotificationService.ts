@@ -251,7 +251,6 @@ class SignifyNotificationService extends AgentService {
     if (!notificationRecord) {
       throw new Error(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
     }
-    notificationRecord.setTag("read", true);
     notificationRecord.read = true;
     await this.notificationStorage.update(notificationRecord);
   }
