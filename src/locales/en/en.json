@@ -930,12 +930,31 @@
       },
       "sections": {
         "new": "New",
-        "earlier": "Earlier"
+        "earlier": {
+          "title": "Earlier",
+          "end": "End of notifications",
+          "buttons": {
+            "showealier": "View previous notifications"
+          }
+        }
+      },
+      "optionmodal": {
+        "title": "Notification options",
+        "done": "Done",
+        "showdetail": "Show details",
+        "markasread": "Mark as read",
+        "markasunread": "Mark as unread",
+        "delete": "Delete notification",
+        "deletealert": {
+          "text": "Deleting this notification cannot be undone. Once deleted you will no longer be able to require any actions required from this notification.",
+          "accept": "Delete",
+          "cancel": "Cancel"
+        }
       },
       "labels": {
-        "exnipexgrant": "{{connection}} wants to issue you a credential",
-        "multisigicp": "{{connection}} is requesting to create a multi-sig identifier with you",
-        "exnipexapply": "{{connection}} has requested a credential from you"
+        "exnipexgrant": "<strong>{{connection}}</strong> wants to issue you a credential",
+        "multisigicp": "<strong>{{connection}}</strong> is requesting to create a multi-sig identifier with you",
+        "exnipexapply": "<strong>{{connection}}</strong> has requested a credential from you"
       }
     },
     "details": {
