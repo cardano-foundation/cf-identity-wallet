@@ -191,7 +191,7 @@ describe("Cards Details page (not multi-sig)", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("edit-identifier-options")).toBeInTheDocument();
+      expect(getByTestId("edit-identifier-option")).toBeInTheDocument();
     });
   });
 
@@ -261,7 +261,7 @@ describe("Cards Details page (not multi-sig)", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("delete-identifier-options")).toBeInTheDocument();
+      expect(getByTestId("delete-identifier-option")).toBeInTheDocument();
     });
 
     act(() => {
