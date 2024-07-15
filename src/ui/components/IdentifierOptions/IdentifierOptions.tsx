@@ -45,7 +45,6 @@ const IdentifierOptions = ({
   const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
   const [newSelectedTheme, setNewSelectedTheme] = useState(cardData.theme);
   const [viewIsOpen, setViewIsOpen] = useState(false);
-  const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
   const [isMultiSig, setIsMultiSig] = useState(false);
 
   useEffect(() => {
@@ -64,17 +63,6 @@ const IdentifierOptions = ({
   useEffect(() => {
     setNewDisplayName(cardData.displayName);
   }, [cardData.displayName]);
-
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      Keyboard.addListener("keyboardWillShow", () => {
-        setkeyboardIsOpen(true);
-      });
-      Keyboard.addListener("keyboardWillHide", () => {
-        setkeyboardIsOpen(false);
-      });
-    }
-  }, []);
 
   useEffect(() => {
     setNewSelectedTheme(cardData.theme);
