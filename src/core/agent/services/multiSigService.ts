@@ -130,15 +130,6 @@ class MultiSigService extends AgentService {
     const multisigId = op.name.split(".")[1];
     const isPending = !op.done;
 
-    if (isPending) {
-      const pendingOperation = await this.operationPendingStorage.save({
-        id: op.name,
-        recordType: OperationPendingRecordType.Group,
-      });
-      Agent.agent.signifyNotifications.addPendingOperationToQueue(
-        pendingOperation
-      );
-    }
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: ourMetadata.displayName,
@@ -147,12 +138,25 @@ class MultiSigService extends AgentService {
       signifyOpName: result.op.name, //we save the signifyOpName here to sync the multisig's status later
       isPending,
       multisigManageAid: ourIdentifier,
+      authorizedEids: [],
     });
     ourMetadata.groupMetadata.groupCreated = true;
     await this.identifierStorage.updateIdentifierMetadata(
       ourMetadata.id,
       ourMetadata
     );
+    if (isPending) {
+      const pendingOperation = await this.operationPendingStorage.save({
+        id: op.name,
+        recordType: OperationPendingRecordType.Group,
+      });
+      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+        pendingOperation
+      );
+    } else {
+      // Trigger the end role authorization if the operation is done
+      await Agent.agent.multiSigs.endRoleAuthorization(signifyName);
+    }
     return { identifier: multisigId, signifyName, isPending };
   }
 
@@ -468,16 +472,6 @@ class MultiSigService extends AgentService {
     const multisigId = op.name.split(".")[1];
     const isPending = !op.done;
 
-    if (isPending) {
-      const pendingOperation = await this.operationPendingStorage.save({
-        id: op.name,
-        recordType: OperationPendingRecordType.Group,
-      });
-      Agent.agent.signifyNotifications.addPendingOperationToQueue(
-        pendingOperation
-      );
-    }
-
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
@@ -492,6 +486,19 @@ class MultiSigService extends AgentService {
       identifier.id,
       identifier
     );
+
+    if (isPending) {
+      const pendingOperation = await this.operationPendingStorage.save({
+        id: op.name,
+        recordType: OperationPendingRecordType.Group,
+      });
+      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+        pendingOperation
+      );
+    } else {
+      // Trigger the end role authorization if the operation is done
+      await Agent.agent.multiSigs.endRoleAuthorization(signifyName);
+    }
 
     return { identifier: multisigId, signifyName, isPending };
   }
@@ -799,6 +806,7 @@ class MultiSigService extends AgentService {
     const ourAid: Aid = await this.props.signifyClient
       .identifiers()
       .get(ourIdentifier.signifyName as string);
+    const authorizedEids = [];
     for (const member of multisigMembers) {
       const eid = Object.keys(member.ends.agent)[0]; //agent of member
       const stamp = new Date().toISOString().replace("Z", "000+00:00");
@@ -806,7 +814,7 @@ class MultiSigService extends AgentService {
       const endRoleRes = await this.props.signifyClient
         .identifiers()
         .addEndRole(multisigSignifyName, "agent", eid, stamp);
-      const op = await endRoleRes.op();
+      await endRoleRes.op();
       const rpy = endRoleRes.serder;
       const sigs = endRoleRes.sigs;
       const mstate = hab["state"];
@@ -831,7 +839,11 @@ class MultiSigService extends AgentService {
         recp,
         { gid: aid }
       );
+      authorizedEids.push(eid);
     }
+    await this.identifierStorage.updateIdentifierMetadata(hab["prefix"], {
+      authorizedEids,
+    });
   }
 
   async joinAuthorization(requestExn: AuthorizationRequestExn): Promise<void> {
@@ -883,6 +895,10 @@ class MultiSigService extends AgentService {
       recp,
       { gid: hab["prefix"] }
     );
+    multisigMetadataRecord.authorizedEids?.push(rpyeid);
+    await this.identifierStorage.updateIdentifierMetadata(hab["prefix"], {
+      authorizedEids: multisigMetadataRecord.authorizedEids,
+    });
   }
 }
 

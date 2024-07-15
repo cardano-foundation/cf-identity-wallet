@@ -54,6 +54,7 @@ class IdentifierStorage {
         | "isPending"
         | "isDeleted"
         | "groupMetadata"
+        | "authorizedEids"
       >
     >
   ): Promise<void> {
@@ -70,6 +71,8 @@ class IdentifierStorage {
       identifierMetadataRecord.isDeleted = metadata.isDeleted;
     if (metadata.groupMetadata !== undefined)
       identifierMetadataRecord.groupMetadata = metadata.groupMetadata;
+    if (metadata.authorizedEids !== undefined)
+      identifierMetadataRecord.authorizedEids = metadata.authorizedEids;
     await this.storageService.update(identifierMetadataRecord);
   }
 
