@@ -43,14 +43,17 @@ import { VerifyPassword } from "../../../../components/VerifyPassword";
 import { VerifyPasscode } from "../../../../components/VerifyPasscode";
 import { getStateCache } from "../../../../../store/reducers/stateCache";
 import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
+import { UpdatePasscode } from "../UpdatePasscode";
 
 const Settings = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const [updatePasscodeIsOpen, setUpdatePasscodeIsOpen] = useState(false);
 
   const stateCache = useSelector(getStateCache);
   const biometricsCache = useSelector(getBiometricsCacheCache);
   const dispatch = useAppDispatch();
+  const [option, setOption] = useState("");
   const { biometricInfo, handleBiometricAuth } = useBiometricAuth();
   const inBiometricSetup = useRef(false);
 
@@ -155,15 +158,47 @@ const Settings = () => {
     }
   }, [biometricInfo]);
 
+  const handleChangePin = () => {
+    if (
+      !stateCache?.authentication.passwordIsSkipped &&
+      stateCache?.authentication.passwordIsSet
+    ) {
+      setVerifyPasswordIsOpen(true);
+    } else {
+      setVerifyPasscodeIsOpen(true);
+    }
+  };
+
   const handleOptionClick = async (item: OptionProps) => {
+    setOption(item.label);
     switch (item.label) {
-    case i18n.t("settings.sections.security.biometry"): {
-      handleBiometricUpdate();
-      break;
+      case i18n.t("settings.sections.security.biometry"): {
+        handleBiometricUpdate();
+        break;
+      }
+      case i18n.t("settings.sections.security.changepin"): {
+        handleChangePin();
+        break;
+      }
+      default:
+        return;
     }
-    default:
-      return;
+  };
+
+  const onVerify = () => {
+    switch (option) {
+      case i18n.t("settings.sections.security.biometry"): {
+        biometricAuth();
+        break;
+      }
+      case i18n.t("settings.sections.security.changepin"): {
+        setUpdatePasscodeIsOpen(true);
+        break;
+      }
+      default:
+        return;
     }
+    setOption("");
   };
 
   return (
@@ -248,12 +283,16 @@ const Settings = () => {
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
         setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={biometricAuth}
+        onVerify={onVerify}
       />
       <VerifyPasscode
         isOpen={verifyPasscodeIsOpen}
         setIsOpen={setVerifyPasscodeIsOpen}
-        onVerify={biometricAuth}
+        onVerify={onVerify}
+      />
+      <UpdatePasscode
+        isOpen={updatePasscodeIsOpen}
+        setIsOpen={setUpdatePasscodeIsOpen}
       />
     </>
   );

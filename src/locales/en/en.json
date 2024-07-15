@@ -1097,6 +1097,20 @@
         "terms": "Terms and Privacy Policy",
         "version": "App Version"
       }
+    },
+    "updatepasscode": {
+      "createpasscode": {
+        "title": "Create new passcode"
+      },
+      "reenterpasscode": {
+        "title": "Re-enter new passcode"
+      },
+      "cancel": "Cancel",
+      "back": "Back",
+      "description": "Create a new passcode to secure your wallet",
+      "cantremember": {
+        "label": "Can't remember?"
+      }
     }
   },
   "connections": {
@@ -1360,7 +1374,7 @@
     "rotatekeyerror": "Unable to rotate keys",
     "newmultisignmember": "New member added to multi-sig",
     "multisignidentifiercreated": "Identifier added to \"For multiple signers\"",
-    "delegatedidentifiercreated": "Identifier added to \"For delegates\"" 
+    "delegatedidentifiercreated": "Identifier added to \"For delegates\""
   },
   "request": {
     "sign": {
