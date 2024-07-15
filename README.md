@@ -144,6 +144,7 @@ Ensure that your system meets these requirements to successfully use and develop
 ```bash
 git clone https://github.com/cardano-foundation/cf-identity-wallet.git
 cd cf-identity-wallet
+make init # This will configure the git hooks
 ```
 
 ## Preparing the App
