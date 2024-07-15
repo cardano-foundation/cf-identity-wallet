@@ -55,7 +55,6 @@ class IdentifierMetadataRecord extends BaseRecord {
   getTags() {
     return {
       ...this._tags,
-      id: this.id,
       signifyName: this.signifyName,
       groupId: this.groupMetadata?.groupId,
       isArchived: this.isArchived,
