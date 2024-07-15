@@ -64,7 +64,7 @@ describe("Card slider", () => {
       <Provider store={mockedStore}>
         <CardSlider
           cardType={CardType.IDENTIFIERS}
-          cardsData={identifierFix}
+          cardsData={[identifierFix[0]]}
           title="title"
           name="allidentifiers"
         />
