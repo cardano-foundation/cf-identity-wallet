@@ -53,6 +53,7 @@ const fullState = {
   },
   connectionsCache: {
     connections: connectionsForNotifications,
+    multisigConnectionsCache: connectionsForNotifications,
   },
   notificationsCache: {
     notifications: notificationsFix,

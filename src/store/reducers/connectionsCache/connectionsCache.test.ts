@@ -1,12 +1,10 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
-  addMultisigConnectionCache,
   connectionsCacheSlice,
   getConnectionsCache,
   getMultisigConnectionsCache,
   setConnectionsCache,
   setMultisigConnectionsCache,
-  updateMultisigConnectionCache,
   updateOrAddConnectionCache,
 } from "./connectionsCache";
 import { RootState } from "../../index";
@@ -99,53 +97,18 @@ describe("multisigConnectionsCacheSlice", () => {
       setMultisigConnectionsCache(multisigConnections)
     );
     expect(newState.multisigConnections).toEqual({
-      "group-id": [multisigConnection],
+      "did:example:ebfeb1ebc6f1c276ef71212ec21": multisigConnection,
     });
   });
 
-  it("should handle updateMultisigConnectionCache", () => {
-    const initialState = {
-      multisigConnections: {
-        "group-id": [multisigConnection],
-      },
-      connections: {},
-    };
+  it("should handle updateOrAddConnectionCache", () => {
     const newState = connectionsCacheSlice.reducer(
       initialState,
-      updateMultisigConnectionCache(multisigConnection)
+      updateOrAddConnectionCache(connection)
     );
-
-    expect(newState.multisigConnections["group-id"][0]).toMatchObject(
-      multisigConnection
-    );
-  });
-
-  it("should handle addMultisigConnectionCache", () => {
-    const newState = connectionsCacheSlice.reducer(
-      initialState,
-      addMultisigConnectionCache(multisigConnection)
-    );
-
-    expect(newState.multisigConnections).toEqual({
-      "group-id": [multisigConnection],
-    });
-  });
-
-  it("should handle updateMultisigConnectionCache", () => {
-    const initialState = {
-      multisigConnections: {
-        "group-id": [multisigConnection],
-      },
-      connections: {},
-    };
-    const newState = connectionsCacheSlice.reducer(
-      initialState,
-      updateMultisigConnectionCache(multisigConnection)
-    );
-
-    expect(newState.multisigConnections["group-id"][0]).toMatchObject(
-      multisigConnection
-    );
+    expect(
+      newState.connections["did:example:ebfeb1ebc6f1c276ef71212ec21"]
+    ).toMatchObject(connection);
   });
 });
 
@@ -154,7 +117,7 @@ describe("getMultisigConnectionsCache", () => {
     const state = {
       connectionsCache: {
         multisigConnections: {
-          "group-id": [multisigConnection],
+          "did:example:ebfeb1ebc6f1c276ef71212ec21": multisigConnection,
         },
       },
     } as unknown as RootState;

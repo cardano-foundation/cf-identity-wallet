@@ -138,14 +138,13 @@ const ConnectionDetails = () => {
 
   const verifyAction = () => {
     async function deleteConnection() {
-      if (!connectionDetails) return;
       await Agent.agent.connections.deleteConnectionById(
         connectionShortDetails.id
       );
 
       const newConnectionsData = Object.fromEntries(
         Object.entries(connectionsData).filter(
-          ([key]) => key !== connectionDetails?.id
+          ([key]) => key !== connectionShortDetails?.id
         )
       );
 

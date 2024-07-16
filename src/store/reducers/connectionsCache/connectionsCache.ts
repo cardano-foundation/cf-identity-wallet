@@ -3,7 +3,7 @@ import { RootState } from "../../index";
 import { ConnectionShortDetails } from "../../../core/agent/agent.types";
 const initialState: {
   connections: { [key: string]: ConnectionShortDetails };
-  multisigConnections: { [key: string]: ConnectionShortDetails[] };
+  multisigConnections: { [key: string]: ConnectionShortDetails };
 } = {
   connections: {},
   multisigConnections: {},
@@ -16,8 +16,6 @@ const connectionsCacheSlice = createSlice({
       state,
       action: PayloadAction<ConnectionShortDetails[]>
     ) => {
-      if (!Array.isArray(action.payload) || !action.payload.length) return;
-
       const newConnections = action.payload.reduce(
         (acc: { [key: string]: ConnectionShortDetails }, connection) => {
           acc[connection.id] = connection;
@@ -26,7 +24,7 @@ const connectionsCacheSlice = createSlice({
         {}
       );
 
-      state.connections = { ...newConnections };
+      state.connections = newConnections;
     },
 
     updateOrAddConnectionCache: (
@@ -43,52 +41,24 @@ const connectionsCacheSlice = createSlice({
       state,
       action: PayloadAction<ConnectionShortDetails[]>
     ) => {
-      if (!Array.isArray(action.payload) || !action.payload.length) return;
-
       const multisigConnection = action.payload.reduce(
-        (acc: { [key: string]: ConnectionShortDetails[] }, connection) => {
-          if (!connection.groupId) return acc;
-
-          if (!acc[connection.groupId]) {
-            acc[connection.groupId] = [];
-          }
-          acc[connection.groupId].push(connection);
+        (acc: { [key: string]: ConnectionShortDetails }, connection) => {
+          acc[connection.id] = connection;
           return acc;
         },
         {}
       );
+
       state.multisigConnections = multisigConnection;
     },
 
-    addMultisigConnectionCache: (
+    updateOrAddMultisigConnectionCache: (
       state,
       action: PayloadAction<ConnectionShortDetails>
     ) => {
-      const { groupId } = action.payload;
-      if (!groupId) return;
-
-      if (!state.multisigConnections[groupId]) {
-        state.multisigConnections[groupId] = [];
-      }
-
       state.multisigConnections = {
         ...state.multisigConnections,
-        [groupId]: [...state.multisigConnections[groupId], action.payload],
-      };
-    },
-
-    updateMultisigConnectionCache: (
-      state,
-      action: PayloadAction<ConnectionShortDetails>
-    ) => {
-      const { groupId } = action.payload;
-      if (!groupId) return;
-
-      state.multisigConnections = {
-        ...state.multisigConnections,
-        [groupId]: state.multisigConnections[groupId]?.map((connection) =>
-          connection.id === action.payload?.id ? action.payload : connection
-        ),
+        [action.payload.id]: action.payload,
       };
     },
   },
@@ -100,8 +70,6 @@ export const {
   setConnectionsCache,
   setMultisigConnectionsCache,
   updateOrAddConnectionCache,
-  updateMultisigConnectionCache,
-  addMultisigConnectionCache,
 } = connectionsCacheSlice.actions;
 
 const getConnectionsCache = (state: RootState) =>

@@ -3,15 +3,16 @@ import { ellipsisHorizontal } from "ionicons/icons";
 import i18next from "i18next";
 import { useEffect, useState } from "react";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
-import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
+import {
+  getConnectionsCache,
+  getMultisigConnectionsCache,
+} from "../../../store/reducers/connectionsCache";
 import { useAppSelector } from "../../../store/hooks";
 import {
   KeriaNotification,
   NotificationRoute,
 } from "../../../core/agent/agent.types";
 import { timeDifference } from "../../utils/formatters";
-import { Agent } from "../../../core/agent/agent";
-import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifier.types";
 
 const NotificationItem = ({
   item,
@@ -23,50 +24,34 @@ const NotificationItem = ({
   handleNotificationClick: (item: KeriaNotification) => void;
 }) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
+  const multisigConnectionsCache = useAppSelector(getMultisigConnectionsCache);
   const [notificationLabelText, setNotificationLabelText] =
     useState<string>("");
   const [loading, setLoading] = useState(true);
-  const connection = connectionsCache?.[item.connectionId]?.label;
 
-  const fetchNotificationLabel = async (
-    multiSigIcpDetails?: MultiSigIcpRequestDetails
-  ) => {
-    const label = await notificationLabel(item, multiSigIcpDetails);
+  const fetchNotificationLabel = async () => {
+    const label = await notificationLabel(item);
     setNotificationLabelText(label);
     setLoading(false);
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (item.a.r === NotificationRoute.MultiSigIcp) {
-        const details = await Agent.agent.multiSigs.getMultisigIcpDetails(
-          item.a.d as string
-        );
-        fetchNotificationLabel(details);
-      } else {
-        fetchNotificationLabel();
-      }
-    };
-
-    fetchData();
+    fetchNotificationLabel();
   }, [item]);
 
-  const notificationLabel = async (
-    item: KeriaNotification,
-    multisigIcpDetails?: MultiSigIcpRequestDetails
-  ) => {
+  const notificationLabel = async (item: KeriaNotification) => {
     switch (item.a.r) {
     case NotificationRoute.ExnIpexGrant:
       return i18next.t("notifications.tab.labels.exnipexgrant", {
-        connection: connection,
+        connection: connectionsCache?.[item.connectionId]?.label,
       });
     case NotificationRoute.MultiSigIcp:
       return i18next.t("notifications.tab.labels.multisigicp", {
-        connection: multisigIcpDetails?.sender?.label,
+        connection: multisigConnectionsCache?.[item.connectionId]?.label,
       });
     case NotificationRoute.ExnIpexApply:
       return i18next.t("notifications.tab.labels.exnipexapply", {
-        connection: connection,
+        connection: connectionsCache?.[item.connectionId]?.label,
       });
     default:
       return "";
