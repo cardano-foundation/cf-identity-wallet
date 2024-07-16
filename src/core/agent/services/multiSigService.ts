@@ -760,7 +760,7 @@ class MultiSigService extends AgentService {
     return true;
   }
 
-  async getMultisigParticipants(multisigSignifyName: string) {
+  private async getMultisigParticipants(multisigSignifyName: string) {
     const members = await this.props.signifyClient
       .identifiers()
       .members(multisigSignifyName);

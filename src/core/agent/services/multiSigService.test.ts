@@ -2,7 +2,7 @@ import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
-import { ConnectionStatus, NotificationRoute } from "../agent.types";
+import { ConnectionStatus } from "../agent.types";
 import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { MultiSigService } from "./multiSigService";
@@ -206,6 +206,7 @@ const multisigMockMemberMetadata = {
     groupInitiator: true,
     groupCreated: true,
   },
+  authorizedEids: [],
   updatedAt: "2024-06-28T03:55:04.260Z",
 };
 
@@ -213,11 +214,11 @@ const multisigMockMembers = {
   signing: [
     {
       aid: "aid-1",
-      ends: { agent: {} },
+      ends: { agent: { eid1: "" } },
     },
     {
       aid: "aid-2",
-      ends: { agent: {} },
+      ends: { agent: { eid2: "" } },
     },
   ],
   rotation: [],
@@ -423,7 +424,7 @@ describe("Multisig sig service of agent", () => {
       otherIdentifiers,
       otherIdentifiers.length + 1
     );
-    expect(addEndRoleMock).toBeCalled();
+    expect(addEndRoleMock).toBeCalledTimes(1);
     (keriMetadataRecord.groupMetadata as any).groupCreated = false;
   });
 
@@ -637,7 +638,7 @@ describe("Multisig sig service of agent", () => {
       theme: 0,
       displayName: "Multisig",
     });
-    expect(addEndRoleMock).toBeCalled();
+    expect(addEndRoleMock).toBeCalledTimes(1);
   });
 
   test("cannot join multisig by notification if exn messages are missing", async () => {
@@ -1564,24 +1565,28 @@ describe("Multisig sig service of agent", () => {
     );
   });
 
-  test("Can get multi-sig participants", async () => {
-    identifiersMemberMock.mockResolvedValue(multisigMockMembers);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(multisigMockMemberMetadata);
-    expect(await multiSigService.getMultisigParticipants("multi-sig")).toEqual({
-      ourIdentifier: multisigMockMemberMetadata,
-      multisigMembers: multisigMockMembers["signing"],
-    });
-  });
-
   test("Should throw error if we don't control any member of the multisig", async () => {
     identifiersMemberMock.mockResolvedValue(multisigMockMembers);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(undefined);
+    identifiersGetMock.mockResolvedValueOnce({
+      name: "multi-sig",
+      prefix: "prefix",
+      state: {
+        ee: {
+          s: "0",
+          d: "prefix",
+        },
+      },
+    });
+    addEndRoleMock.mockResolvedValue({
+      op: jest.fn(),
+      serder: { size: 1 },
+      sigs: [],
+    });
     await expect(
-      multiSigService.getMultisigParticipants("multi-sig")
+      multiSigService.endRoleAuthorization("multi-sig")
     ).rejects.toThrow(new Error(MultiSigService.MEMBER_AID_NOT_FOUND));
   });
 
@@ -1609,14 +1614,18 @@ describe("Multisig sig service of agent", () => {
     expect(sendExchangesMock).toBeCalledTimes(
       multisigMockMembers["signing"].length
     );
-    expect(identifierStorage.updateIdentifierMetadata).toBeCalled();
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      "prefix",
+      {
+        authorizedEids: multisigMockMembers.signing.map(
+          (item) => Object.keys(item.ends.agent)[0]
+        ),
+      }
+    );
   });
 
   test("Can join end role authorization", async () => {
     identifiersMemberMock.mockResolvedValue(multisigMockMembers);
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "multi-sig",
-    });
     groupGetRequestMock.mockResolvedValue([
       {
         exn: {
@@ -1677,7 +1686,12 @@ describe("Multisig sig service of agent", () => {
         d: "EFme1_S0eHc-C6HpcaWpFZnKJGX4f91IBCDmiM6vBQOR",
       },
     });
-    expect(sendExchangesMock).toBeCalled();
-    expect(identifierStorage.updateIdentifierMetadata).toBeCalled();
+    expect(sendExchangesMock).toBeCalledTimes(1);
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      "prefix",
+      {
+        authorizedEids: ["EDr4kddR_keAzTUs_PNW-qSsUdLDrKD0YbZxiU-y4B3K"],
+      }
+    );
   });
 });
