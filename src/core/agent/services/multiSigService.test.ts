@@ -1516,6 +1516,7 @@ describe("Multisig sig service of agent", () => {
     expect(sendExchangesMock).toBeCalledTimes(
       multisigMockMembers["signing"].length
     );
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalled();
   });
 
   test("Can join end role authorization", async () => {
@@ -1584,6 +1585,7 @@ describe("Multisig sig service of agent", () => {
       },
     });
     expect(sendExchangesMock).toBeCalled();
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalled();
   });
 
   test("Can admit credential", async () => {

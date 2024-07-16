@@ -180,14 +180,22 @@ class SignifyNotificationService extends AgentService {
         await this.markNotification(notif.i);
         return;
       }
-      const multisigIdentifier = await Agent.agent.identifiers.getIdentifier(
-        multisigId
-      );
+      const multisigIdentifier =
+        await this.identifierStorage.getIdentifierMetadata(multisigId);
       if (!multisigIdentifier) {
         await this.markNotification(notif.i);
         return;
       }
-      if (multisigNotification[0].exn.e.rpy.r == "/end/role/add") {
+      const rpyRoute = multisigNotification[0].exn.e.rpy.r;
+      if (
+        rpyRoute === "/end/role/add" &&
+        multisigIdentifier.authorizedEids?.includes(
+          multisigNotification[0].exn.e.rpy.a.eid
+        )
+      ) {
+        await this.markNotification(notif.i);
+        return;
+      } else if (rpyRoute === "/end/role/add") {
         await this.markNotification(notif.i);
         await Agent.agent.multiSigs.joinAuthorization(
           multisigNotification[0].exn
@@ -381,15 +389,9 @@ class SignifyNotificationService extends AgentService {
               // Trigger add end role authorization for multi-sigs
               const multisigIdentifier =
                   await this.identifierStorage.getIdentifierMetadata(recordId);
-              const { ourIdentifier } =
-                  await Agent.agent.multiSigs.getMultisigParticipants(
-                    multisigIdentifier.signifyName
-                  );
-              if (ourIdentifier.groupMetadata?.groupInitiator) {
-                await Agent.agent.multiSigs.endRoleAuthorization(
-                  multisigIdentifier.signifyName
-                );
-              }
+              await Agent.agent.multiSigs.endRoleAuthorization(
+                multisigIdentifier.signifyName
+              );
               callback({
                 opType: pendingOperation.recordType,
                 oid: recordId,
