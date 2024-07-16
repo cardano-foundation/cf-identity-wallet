@@ -37,7 +37,8 @@ const ReceiveCredential = ({
   const fallbackLogo = KeriLogo;
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
-  const [connection, setConnection] = useState<ConnectionDetails>();
+  const connection =
+    connectionsCache?.[notificationDetails.connectionId]?.label;
   const ANIMATION_DELAY = 2000;
 
   useIonHardwareBackButton(
@@ -45,11 +46,6 @@ const ReceiveCredential = ({
     handleBack,
     !activeStatus
   );
-
-  useEffect(() => {
-    if (!notificationDetails.connectionId || !connectionsCache) return;
-    setConnection(connectionsCache[notificationDetails.connectionId]);
-  }, [connectionsCache, notificationDetails]);
 
   const handleNotificationUpdate = async () => {
     const updatedNotifications = notifications.filter(
@@ -128,7 +124,7 @@ const ReceiveCredential = ({
               <span>
                 {i18n.t("notifications.details.credential.receive.receivefrom")}
               </span>
-              <strong>{connection?.label}</strong>
+              <strong>{connection}</strong>
             </IonCol>
           </div>
           <div className="request-status">

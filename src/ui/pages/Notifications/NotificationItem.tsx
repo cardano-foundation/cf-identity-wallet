@@ -26,14 +26,7 @@ const NotificationItem = ({
   const [notificationLabelText, setNotificationLabelText] =
     useState<string>("");
   const [loading, setLoading] = useState(true);
-  const [connection, setConnection] = useState<string>();
-
-  useEffect(() => {
-    if (!item?.connectionId || !connectionsCache) return;
-
-    const label = connectionsCache?.[item.connectionId]?.label;
-    setConnection(label);
-  }, [connectionsCache, item]);
+  const connection = connectionsCache?.[item.connectionId]?.label;
 
   const fetchNotificationLabel = async (
     multiSigIcpDetails?: MultiSigIcpRequestDetails
