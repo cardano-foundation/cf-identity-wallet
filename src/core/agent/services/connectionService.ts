@@ -120,6 +120,18 @@ class ConnectionService extends AgentService {
     );
   }
 
+  async getMultisigConnections(): Promise<ConnectionShortDetails[]> {
+    const multisigConnections = await this.connectionStorage.findAllByQuery({
+      $not: {
+        groupId: undefined,
+      },
+    });
+
+    return multisigConnections.map((connection) =>
+      this.getConnectionShortDetails(connection)
+    );
+  }
+
   async getMultisigLinkedContacts(
     groupId: string
   ): Promise<ConnectionShortDetails[]> {

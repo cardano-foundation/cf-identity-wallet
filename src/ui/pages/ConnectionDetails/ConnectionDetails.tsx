@@ -138,12 +138,19 @@ const ConnectionDetails = () => {
 
   const verifyAction = () => {
     async function deleteConnection() {
+      if (!connectionDetails) return;
       await Agent.agent.connections.deleteConnectionById(
         connectionShortDetails.id
       );
-      const updatedConnections = connectionsData.filter(
-        (item) => item.id !== connectionDetails?.id
+
+      const newConnectionsData = Object.fromEntries(
+        Object.entries(connectionsData).filter(
+          ([key]) => key !== connectionDetails?.id
+        )
       );
+
+      const updatedConnections = Object.values(newConnectionsData);
+
       dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
       dispatch(setConnectionsCache(updatedConnections));
       handleDone();

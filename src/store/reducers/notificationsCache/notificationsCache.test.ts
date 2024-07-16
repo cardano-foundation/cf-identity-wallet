@@ -77,7 +77,8 @@ describe("Notifications cache", () => {
       credsCache: { creds: [], favourites: [] },
       credsArchivedCache: { creds: [] },
       connectionsCache: {
-        connections: [],
+        connections: {},
+        multisigConnections: {},
       },
       walletConnectionsCache: {
         walletConnections: [],

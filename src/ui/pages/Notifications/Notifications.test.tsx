@@ -35,7 +35,7 @@ const initialState = {
     },
   },
   connectionsCache: {
-    connections: [],
+    connections: {},
   },
   notificationsCache: {
     notifications: [],

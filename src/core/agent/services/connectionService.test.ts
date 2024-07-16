@@ -225,6 +225,29 @@ describe("Connection service of agent", () => {
     ]);
   });
 
+  test("can get all multisig connections", async () => {
+    const groupId = "group-id";
+    const metadata = {
+      id: "id",
+      alias: "alias",
+      oobi: `localhost/oobi=2442?groupId=${groupId}`,
+      groupId,
+      createdAt: new Date(),
+      getTag: jest.fn().mockReturnValue(groupId),
+    };
+    connectionStorage.findAllByQuery = jest.fn().mockResolvedValue([metadata]);
+    expect(await connectionService.getMultisigConnections()).toEqual([
+      {
+        id: metadata.id,
+        label: metadata.alias,
+        connectionDate: metadata.createdAt.toISOString(),
+        status: ConnectionStatus.CONFIRMED,
+        oobi: metadata.oobi,
+        groupId: metadata.groupId,
+      },
+    ]);
+  });
+
   test("can save connection note with generic records", async () => {
     const connectionId = "connectionId";
     const note = {

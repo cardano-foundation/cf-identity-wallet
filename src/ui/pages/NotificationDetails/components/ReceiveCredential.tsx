@@ -4,7 +4,7 @@ import {
   personCircleOutline,
   swapHorizontalOutline,
 } from "ionicons/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./ReceiveCredential.scss";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageLayout";
@@ -22,6 +22,7 @@ import {
   getNotificationsCache,
   setNotificationsCache,
 } from "../../../../store/reducers/notificationsCache";
+import { ConnectionDetails } from "../../Connections/Connections.types";
 
 const ReceiveCredential = ({
   pageId,
@@ -36,16 +37,19 @@ const ReceiveCredential = ({
   const fallbackLogo = KeriLogo;
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
+  const [connection, setConnection] = useState<ConnectionDetails>();
   const ANIMATION_DELAY = 2000;
-  const connection = connectionsCache.filter(
-    (connection) => connection.id === notificationDetails.connectionId
-  )[0]?.label;
 
   useIonHardwareBackButton(
     BackEventPriorityType.Page,
     handleBack,
     !activeStatus
   );
+
+  useEffect(() => {
+    if (!notificationDetails.connectionId || !connectionsCache) return;
+    setConnection(connectionsCache[notificationDetails.connectionId]);
+  }, [connectionsCache, notificationDetails]);
 
   const handleNotificationUpdate = async () => {
     const updatedNotifications = notifications.filter(
@@ -124,7 +128,7 @@ const ReceiveCredential = ({
               <span>
                 {i18n.t("notifications.details.credential.receive.receivefrom")}
               </span>
-              <strong>{connection}</strong>
+              <strong>{connection?.label}</strong>
             </IonCol>
           </div>
           <div className="request-status">
