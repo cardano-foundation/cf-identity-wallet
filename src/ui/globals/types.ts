@@ -67,6 +67,7 @@ enum ToastMsgType {
   ROTATE_KEY_ERROR = "rotatekeyerror",
   SCANNER_ERROR = "qrerror",
   NEW_MULTI_SIGN_MEMBER = "newmultisignmember",
+  PASSCODE_UPDATED = "passcodeupdated",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {

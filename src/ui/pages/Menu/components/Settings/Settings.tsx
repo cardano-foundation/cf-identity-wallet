@@ -43,12 +43,12 @@ import { VerifyPassword } from "../../../../components/VerifyPassword";
 import { VerifyPasscode } from "../../../../components/VerifyPasscode";
 import { getStateCache } from "../../../../../store/reducers/stateCache";
 import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
-import { UpdatePasscode } from "../UpdatePasscode";
+import { ChangePin } from "./components/ChangePin";
 
 const Settings = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
-  const [updatePasscodeIsOpen, setUpdatePasscodeIsOpen] = useState(false);
+  const [changePinIsOpen, setChangePinIsOpen] = useState(false);
 
   const stateCache = useSelector(getStateCache);
   const biometricsCache = useSelector(getBiometricsCacheCache);
@@ -60,7 +60,7 @@ const Settings = () => {
   const securityItems: OptionProps[] = [
     {
       icon: lockClosedOutline,
-      label: i18n.t("settings.sections.security.changepin"),
+      label: i18n.t("settings.sections.security.changepin.title"),
     },
     {
       icon: informationCircleOutline,
@@ -172,31 +172,31 @@ const Settings = () => {
   const handleOptionClick = async (item: OptionProps) => {
     setOption(item.label);
     switch (item.label) {
-      case i18n.t("settings.sections.security.biometry"): {
-        handleBiometricUpdate();
-        break;
-      }
-      case i18n.t("settings.sections.security.changepin"): {
-        handleChangePin();
-        break;
-      }
-      default:
-        return;
+    case i18n.t("settings.sections.security.biometry"): {
+      handleBiometricUpdate();
+      break;
+    }
+    case i18n.t("settings.sections.security.changepin.title"): {
+      handleChangePin();
+      break;
+    }
+    default:
+      return;
     }
   };
 
   const onVerify = () => {
     switch (option) {
-      case i18n.t("settings.sections.security.biometry"): {
-        biometricAuth();
-        break;
-      }
-      case i18n.t("settings.sections.security.changepin"): {
-        setUpdatePasscodeIsOpen(true);
-        break;
-      }
-      default:
-        return;
+    case i18n.t("settings.sections.security.biometry"): {
+      biometricAuth();
+      break;
+    }
+    case i18n.t("settings.sections.security.changepin.title"): {
+      setChangePinIsOpen(true);
+      break;
+    }
+    default:
+      return;
     }
     setOption("");
   };
@@ -290,9 +290,9 @@ const Settings = () => {
         setIsOpen={setVerifyPasscodeIsOpen}
         onVerify={onVerify}
       />
-      <UpdatePasscode
-        isOpen={updatePasscodeIsOpen}
-        setIsOpen={setUpdatePasscodeIsOpen}
+      <ChangePin
+        isOpen={changePinIsOpen}
+        setIsOpen={setChangePinIsOpen}
       />
     </>
   );
