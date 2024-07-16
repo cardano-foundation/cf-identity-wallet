@@ -177,7 +177,7 @@ const CreatePasscodeModule = forwardRef<
                 originalPassCode !== "" &&
                 passcode.length === 6 &&
                 originalPassCode !== passcode
-                  ? `${i18n.t("setpasscode.enterpasscode.error")}`
+                  ? `${i18n.t("createpasscodemodule.error")}`
                   : undefined
               }
               timeout={true}
@@ -190,7 +190,9 @@ const CreatePasscodeModule = forwardRef<
         {originalPassCode !== "" ? (
           <PageFooter
             pageId={testId}
-            secondaryButtonText={`${i18n.t("setpasscode.cantremember.label")}`}
+            secondaryButtonText={`${i18n.t(
+              "createpasscodemodule.cantremember"
+            )}`}
             secondaryButtonAction={() => handleClearState()}
           />
         ) : (

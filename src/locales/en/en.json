@@ -33,21 +33,14 @@
       }
     }
   },
+  "createpasscodemodule": {
+    "error": "Passcode does not match",
+    "cantremember": "Can't remember?"
+  },
   "setpasscode": {
-    "enterpasscode": {
-      "title": "Create your Passcode",
-      "description": "Create a passcode to secure access to your wallet and to continue the onboarding process",
-      "error": "Passcode does not match"
-    },
-    "reenterpasscode": {
-      "title": "Re-enter your Passcode"
-    },
-    "startover": {
-      "label": "Forgot your passcode?"
-    },
-    "cantremember": {
-      "label": "Can't remember?"
-    }
+    "enterpasscode": "Create your Passcode",
+    "description": "Create a passcode to secure access to your wallet and to continue the onboarding process",
+    "reenterpasscode": "Re-enter your Passcode"
   },
   "generateseedphrase": {
     "onboarding": {
@@ -1087,12 +1080,8 @@
         "biometry": "Biometric authentication",
         "changepin": {
           "title": "Change PIN",
-          "createpasscode": {
-            "title": "Create new passcode"
-          },
-          "reenterpasscode": {
-            "title": "Re-enter new passcode"
-          },
+          "createpasscode": "Create new passcode",
+          "reenterpasscode": "Re-enter new passcode",
           "cancel": "Cancel",
           "back": "Back",
           "description": "Create a new passcode to secure your wallet",

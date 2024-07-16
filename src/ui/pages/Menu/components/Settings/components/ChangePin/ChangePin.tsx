@@ -32,8 +32,8 @@ const ChangePin = ({ isOpen, setIsOpen }: ChangePinModalProps) => {
 
   const title =
     passCodeValue.originalPasscode.length === 0
-      ? i18n.t("settings.sections.security.changepin.createpasscode.title")
-      : i18n.t("settings.sections.security.changepin.reenterpasscode.title");
+      ? i18n.t("settings.sections.security.changepin.createpasscode")
+      : i18n.t("settings.sections.security.changepin.reenterpasscode");
 
   return (
     <IonModal

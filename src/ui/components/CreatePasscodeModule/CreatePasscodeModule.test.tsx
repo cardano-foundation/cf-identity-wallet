@@ -66,18 +66,19 @@ describe("SetPasscode Page", () => {
     const { getByText } = render(
       <Provider store={store}>
         <CreatePasscodeModule
-          title={EN_TRANSLATIONS.setpasscode.enterpasscode.title}
-          description={EN_TRANSLATIONS.setpasscode.enterpasscode.description}
+          title={EN_TRANSLATIONS.setpasscode.enterpasscode}
+          description={EN_TRANSLATIONS.setpasscode.description}
           testId="set-passcode"
           onCreateSuccess={jest.fn()}
+          allowBiometrics={true}
         />
       </Provider>
     );
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
+      getByText(EN_TRANSLATIONS.setpasscode.enterpasscode)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.enterpasscode.description)
+      getByText(EN_TRANSLATIONS.setpasscode.description)
     ).toBeInTheDocument();
   });
 
@@ -86,10 +87,11 @@ describe("SetPasscode Page", () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
         <CreatePasscodeModule
-          title={EN_TRANSLATIONS.setpasscode.enterpasscode.title}
-          description={EN_TRANSLATIONS.setpasscode.enterpasscode.description}
+          title={EN_TRANSLATIONS.setpasscode.enterpasscode}
+          description={EN_TRANSLATIONS.setpasscode.description}
           testId="set-passcode"
           onCreateSuccess={jest.fn()}
+          allowBiometrics={true}
         />
       </Provider>
     );
@@ -108,10 +110,11 @@ describe("SetPasscode Page", () => {
     const { getByText } = render(
       <Provider store={store}>
         <CreatePasscodeModule
-          title={EN_TRANSLATIONS.setpasscode.reenterpasscode.title}
-          description={EN_TRANSLATIONS.setpasscode.enterpasscode.description}
+          title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+          description={EN_TRANSLATIONS.setpasscode.description}
           testId="set-passcode"
           onCreateSuccess={jest.fn()}
+          allowBiometrics={true}
         />
       </Provider>
     );
@@ -122,9 +125,7 @@ describe("SetPasscode Page", () => {
     fireEvent.click(getByText(/4/));
     fireEvent.click(getByText(/5/));
 
-    const labelElement = getByText(
-      EN_TRANSLATIONS.setpasscode.reenterpasscode.title
-    );
+    const labelElement = getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
     expect(labelElement).toBeInTheDocument();
 
     fireEvent.click(getByText(/6/));
@@ -134,9 +135,7 @@ describe("SetPasscode Page", () => {
     fireEvent.click(getByText(/0/));
     fireEvent.click(getByText(/1/));
 
-    const errorMessage = getByText(
-      EN_TRANSLATIONS.setpasscode.enterpasscode.error
-    );
+    const errorMessage = getByText(EN_TRANSLATIONS.createpasscodemodule.error);
     expect(errorMessage).toBeInTheDocument();
   });
 
@@ -155,12 +154,11 @@ describe("SetPasscode Page", () => {
         <IonRouterOutlet animated={false}>
           <Provider store={store}>
             <CreatePasscodeModule
-              title={EN_TRANSLATIONS.setpasscode.reenterpasscode.title}
-              description={
-                EN_TRANSLATIONS.setpasscode.enterpasscode.description
-              }
+              title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+              description={EN_TRANSLATIONS.setpasscode.description}
               testId="set-passcode"
               onCreateSuccess={jest.fn()}
+              allowBiometrics={true}
             />
           </Provider>
         </IonRouterOutlet>
@@ -170,10 +168,10 @@ describe("SetPasscode Page", () => {
     clickButtonRepeatedly(getByText, "1", 6);
 
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
+      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
+      getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
     ).toBeInTheDocument();
 
     clickButtonRepeatedly(getByText, "1", 6);
@@ -219,12 +217,11 @@ describe("SetPasscode Page", () => {
         <IonRouterOutlet animated={false}>
           <Provider store={store}>
             <CreatePasscodeModule
-              title={EN_TRANSLATIONS.setpasscode.reenterpasscode.title}
-              description={
-                EN_TRANSLATIONS.setpasscode.enterpasscode.description
-              }
+              title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+              description={EN_TRANSLATIONS.setpasscode.description}
               testId="set-passcode"
               onCreateSuccess={jest.fn()}
+              allowBiometrics={true}
             />
           </Provider>
         </IonRouterOutlet>
@@ -234,10 +231,10 @@ describe("SetPasscode Page", () => {
     clickButtonRepeatedly(getByText, "1", 6);
 
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
+      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
+      getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
     ).toBeInTheDocument();
 
     clickButtonRepeatedly(getByText, "1", 6);
@@ -289,12 +286,11 @@ describe("SetPasscode Page", () => {
         <IonRouterOutlet animated={false}>
           <Provider store={store}>
             <CreatePasscodeModule
-              title={EN_TRANSLATIONS.setpasscode.reenterpasscode.title}
-              description={
-                EN_TRANSLATIONS.setpasscode.enterpasscode.description
-              }
+              title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+              description={EN_TRANSLATIONS.setpasscode.description}
               testId="set-passcode"
               onCreateSuccess={jest.fn()}
+              allowBiometrics={true}
             />
           </Provider>
         </IonRouterOutlet>
@@ -304,10 +300,10 @@ describe("SetPasscode Page", () => {
     clickButtonRepeatedly(getByText, "1", 6);
 
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
+      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
+      getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
     ).toBeInTheDocument();
 
     clickButtonRepeatedly(getByText, "1", 6);
@@ -359,12 +355,11 @@ describe("SetPasscode Page", () => {
         <IonRouterOutlet animated={false}>
           <Provider store={store}>
             <CreatePasscodeModule
-              title={EN_TRANSLATIONS.setpasscode.reenterpasscode.title}
-              description={
-                EN_TRANSLATIONS.setpasscode.enterpasscode.description
-              }
+              title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+              description={EN_TRANSLATIONS.setpasscode.description}
               testId="set-passcode"
               onCreateSuccess={jest.fn()}
+              allowBiometrics={true}
             />
           </Provider>
         </IonRouterOutlet>
@@ -374,10 +369,10 @@ describe("SetPasscode Page", () => {
     clickButtonRepeatedly(getByText, "1", 6);
 
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
+      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
+      getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
     ).toBeInTheDocument();
 
     clickButtonRepeatedly(getByText, "1", 6);
