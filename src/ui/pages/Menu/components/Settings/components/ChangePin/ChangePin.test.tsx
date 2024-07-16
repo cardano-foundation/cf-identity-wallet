@@ -62,7 +62,7 @@ describe("ChangePin Modal", () => {
     });
   });
 
-  test("Renders ChangePin Modal and all UI components", async () => {
+  test("Renders ChangePin Modal and initial UI components", async () => {
     require("@ionic/react");
     const { getByText, getByTestId } = render(
       <Provider store={store}>

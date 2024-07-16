@@ -70,7 +70,6 @@ describe("SetPasscode Page", () => {
           description={EN_TRANSLATIONS.setpasscode.description}
           testId="set-passcode"
           onCreateSuccess={jest.fn()}
-          allowBiometrics={true}
         />
       </Provider>
     );
@@ -91,7 +90,6 @@ describe("SetPasscode Page", () => {
           description={EN_TRANSLATIONS.setpasscode.description}
           testId="set-passcode"
           onCreateSuccess={jest.fn()}
-          allowBiometrics={true}
         />
       </Provider>
     );
@@ -114,7 +112,6 @@ describe("SetPasscode Page", () => {
           description={EN_TRANSLATIONS.setpasscode.description}
           testId="set-passcode"
           onCreateSuccess={jest.fn()}
-          allowBiometrics={true}
         />
       </Provider>
     );
@@ -158,7 +155,6 @@ describe("SetPasscode Page", () => {
               description={EN_TRANSLATIONS.setpasscode.description}
               testId="set-passcode"
               onCreateSuccess={jest.fn()}
-              allowBiometrics={true}
             />
           </Provider>
         </IonRouterOutlet>
@@ -221,7 +217,6 @@ describe("SetPasscode Page", () => {
               description={EN_TRANSLATIONS.setpasscode.description}
               testId="set-passcode"
               onCreateSuccess={jest.fn()}
-              allowBiometrics={true}
             />
           </Provider>
         </IonRouterOutlet>
@@ -290,7 +285,6 @@ describe("SetPasscode Page", () => {
               description={EN_TRANSLATIONS.setpasscode.description}
               testId="set-passcode"
               onCreateSuccess={jest.fn()}
-              allowBiometrics={true}
             />
           </Provider>
         </IonRouterOutlet>
@@ -359,7 +353,6 @@ describe("SetPasscode Page", () => {
               description={EN_TRANSLATIONS.setpasscode.description}
               testId="set-passcode"
               onCreateSuccess={jest.fn()}
-              allowBiometrics={true}
             />
           </Provider>
         </IonRouterOutlet>

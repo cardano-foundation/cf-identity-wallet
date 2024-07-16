@@ -42,36 +42,38 @@ const ChangePin = ({ isOpen, setIsOpen }: ChangePinModalProps) => {
       data-testid={pageId + "-modal"}
       onDidDismiss={() => setIsOpen(false)}
     >
-      <ResponsivePageLayout
-        pageId={pageId}
-        header={
-          <PageHeader
-            closeButton={true}
-            closeButtonLabel={`${
-              passCodeValue.originalPasscode.length === 6
-                ? i18n.t("settings.sections.security.changepin.back")
-                : i18n.t("settings.sections.security.changepin.cancel")
-            }`}
-            closeButtonAction={handleCancel}
+      {isOpen && (
+        <ResponsivePageLayout
+          pageId={pageId}
+          header={
+            <PageHeader
+              closeButton={true}
+              closeButtonLabel={`${
+                passCodeValue.originalPasscode.length === 6
+                  ? i18n.t("settings.sections.security.changepin.back")
+                  : i18n.t("settings.sections.security.changepin.cancel")
+              }`}
+              closeButtonAction={handleCancel}
+            />
+          }
+        >
+          <CreatePasscodeModule
+            title={title}
+            description={`${i18n.t(
+              "settings.sections.security.changepin.description"
+            )}`}
+            ref={ref}
+            testId={pageId}
+            onCreateSuccess={handlePassAuth}
+            onPasscodeChange={(passcode, originalPasscode) => {
+              setPassCodeValue({
+                passcode,
+                originalPasscode,
+              });
+            }}
           />
-        }
-      >
-        <CreatePasscodeModule
-          title={title}
-          description={`${i18n.t(
-            "settings.sections.security.changepin.description"
-          )}`}
-          ref={ref}
-          testId={pageId}
-          onCreateSuccess={handlePassAuth}
-          onPasscodeChange={(passcode, originalPasscode) => {
-            setPassCodeValue({
-              passcode,
-              originalPasscode,
-            });
-          }}
-        />
-      </ResponsivePageLayout>
+        </ResponsivePageLayout>
+      )}
     </IonModal>
   );
 };
