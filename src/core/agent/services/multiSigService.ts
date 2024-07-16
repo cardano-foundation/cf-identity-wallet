@@ -7,7 +7,11 @@ import {
   CreateIdentifierResult,
   AgentServicesProps,
 } from "../agent.types";
-import type { KeriaNotification, ConnectionShortDetails } from "../agent.types";
+import type {
+  KeriaNotification,
+  ConnectionShortDetails,
+  AuthorizationRequestExn,
+} from "../agent.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -22,6 +26,7 @@ import {
   MultiSigRoute,
   MultiSigExnMessage,
   CreateMultisigExnPayload,
+  AuthorizationExnPayload,
 } from "./multiSig.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
@@ -38,8 +43,6 @@ class MultiSigService extends AgentService {
     "This AID is not a multi sig identifier";
   static readonly NOT_FOUND_ALL_MEMBER_OF_MULTISIG =
     "Cannot find all members of multisig or one of the members does not rotate its AID";
-  static readonly CANNOT_JOIN_MULTISIG_ICP =
-    "Cannot join multi-sig inception as we do not control any member AID of the multi-sig";
   static readonly UNKNOWN_AIDS_IN_MULTISIG_ICP =
     "Multi-sig join request contains unknown AIDs (not connected)";
   static readonly MISSING_GROUP_METADATA =
@@ -49,6 +52,8 @@ class MultiSigService extends AgentService {
   static readonly ONLY_ALLOW_GROUP_INITIATOR =
     "Only the group initiator can create the multisig";
   static readonly GROUP_ALREADY_EXISTs = "Group already exists";
+  static readonly MEMBER_AID_NOT_FOUND =
+    "We do not control any member AID of the multi-sig";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly notificationStorage!: NotificationStorage;
@@ -125,15 +130,6 @@ class MultiSigService extends AgentService {
     const multisigId = op.name.split(".")[1];
     const isPending = !op.done;
 
-    if (isPending) {
-      const pendingOperation = await this.operationPendingStorage.save({
-        id: op.name,
-        recordType: OperationPendingRecordType.Group,
-      });
-      Agent.agent.signifyNotifications.addPendingOperationToQueue(
-        pendingOperation
-      );
-    }
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: ourMetadata.displayName,
@@ -142,12 +138,25 @@ class MultiSigService extends AgentService {
       signifyOpName: result.op.name, //we save the signifyOpName here to sync the multisig's status later
       isPending,
       multisigManageAid: ourIdentifier,
+      authorizedEids: [],
     });
     ourMetadata.groupMetadata.groupCreated = true;
     await this.identifierStorage.updateIdentifierMetadata(
       ourMetadata.id,
       ourMetadata
     );
+    if (isPending) {
+      const pendingOperation = await this.operationPendingStorage.save({
+        id: op.name,
+        recordType: OperationPendingRecordType.Group,
+      });
+      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+        pendingOperation
+      );
+    } else {
+      // Trigger the end role authorization if the operation is done
+      await this.endRoleAuthorization(signifyName);
+    }
     return { identifier: multisigId, signifyName, isPending };
   }
 
@@ -386,7 +395,7 @@ class MultiSigService extends AgentService {
       smids.includes(identifier.id)
     );
     if (!ourIdentifier || !ourIdentifier.groupMetadata?.groupId) {
-      throw new Error(MultiSigService.CANNOT_JOIN_MULTISIG_ICP);
+      throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
     }
 
     const otherConnections = (
@@ -446,7 +455,7 @@ class MultiSigService extends AgentService {
     });
 
     if (!identifier) {
-      throw new Error(MultiSigService.CANNOT_JOIN_MULTISIG_ICP);
+      throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
     }
 
     if (!identifier.groupMetadata) {
@@ -463,16 +472,6 @@ class MultiSigService extends AgentService {
     const multisigId = op.name.split(".")[1];
     const isPending = !op.done;
 
-    if (isPending) {
-      const pendingOperation = await this.operationPendingStorage.save({
-        id: op.name,
-        recordType: OperationPendingRecordType.Group,
-      });
-      Agent.agent.signifyNotifications.addPendingOperationToQueue(
-        pendingOperation
-      );
-    }
-
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
@@ -487,6 +486,19 @@ class MultiSigService extends AgentService {
       identifier.id,
       identifier
     );
+
+    if (isPending) {
+      const pendingOperation = await this.operationPendingStorage.save({
+        id: op.name,
+        recordType: OperationPendingRecordType.Group,
+      });
+      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+        pendingOperation
+      );
+    } else {
+      // Trigger the end role authorization if the operation is done
+      await this.endRoleAuthorization(signifyName);
+    }
 
     return { identifier: multisigId, signifyName, isPending };
   }
@@ -718,9 +730,12 @@ class MultiSigService extends AgentService {
     embeds: {
       icp?: (string | Serder)[];
       rot?: (string | Serder)[];
+      rpy?: (string | Serder)[];
+      ixn?: (string | Serder)[];
+      exn?: (string | Serder)[];
     },
     recp: any,
-    payload: CreateMultisigExnPayload
+    payload: CreateMultisigExnPayload | AuthorizationExnPayload
   ): Promise<any> {
     return this.props.signifyClient
       .exchanges()
@@ -743,6 +758,147 @@ class MultiSigService extends AgentService {
       return false;
     }
     return true;
+  }
+
+  private async getMultisigParticipants(multisigSignifyName: string) {
+    const members = await this.props.signifyClient
+      .identifiers()
+      .members(multisigSignifyName);
+    const multisigMembers = members["signing"];
+    let ourIdentifier;
+    for (const member of multisigMembers) {
+      const identifier = await this.identifierStorage
+        .getIdentifierMetadata(member.aid)
+        .catch((error) => {
+          if (
+            error.message ===
+            IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
+      if (identifier && identifier.groupMetadata?.groupCreated) {
+        ourIdentifier = identifier;
+        break;
+      }
+    }
+    if (!ourIdentifier) {
+      throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
+    }
+    return {
+      ourIdentifier,
+      multisigMembers,
+    };
+  }
+
+  async endRoleAuthorization(multisigSignifyName: string): Promise<void> {
+    const { ourIdentifier, multisigMembers } =
+      await this.getMultisigParticipants(multisigSignifyName);
+    const hab = await this.props.signifyClient
+      .identifiers()
+      .get(multisigSignifyName);
+    const aid = hab["prefix"];
+    const recp = multisigMembers
+      .filter((signing: any) => signing.aid !== ourIdentifier.id)
+      .map((member: any) => member.aid);
+    const ourAid: Aid = await this.props.signifyClient
+      .identifiers()
+      .get(ourIdentifier.signifyName as string);
+    const authorizedEids = [];
+    for (const member of multisigMembers) {
+      const eid = Object.keys(member.ends.agent)[0]; //agent of member
+      const stamp = new Date().toISOString().replace("Z", "000+00:00");
+
+      const endRoleRes = await this.props.signifyClient
+        .identifiers()
+        .addEndRole(multisigSignifyName, "agent", eid, stamp);
+      await endRoleRes.op();
+      const rpy = endRoleRes.serder;
+      const sigs = endRoleRes.sigs;
+      const mstate = hab["state"];
+      const seal = [
+        "SealEvent",
+        { i: hab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
+      ];
+      const sigers = sigs.map((sig) => new Siger({ qb64: sig }));
+      const roleims = d(
+        messagize(rpy, sigers, seal, undefined, undefined, false)
+      );
+      const atc = roleims.substring(rpy.size);
+      const roleEmbeds = {
+        rpy: [rpy, atc],
+      };
+
+      await this.sendMultisigExn(
+        ourIdentifier?.signifyName,
+        ourAid,
+        MultiSigRoute.RPY,
+        roleEmbeds,
+        recp,
+        { gid: aid }
+      );
+      authorizedEids.push(eid);
+    }
+    await this.identifierStorage.updateIdentifierMetadata(hab["prefix"], {
+      authorizedEids,
+    });
+  }
+
+  async joinAuthorization(requestExn: AuthorizationRequestExn): Promise<void> {
+    const multisigAid = requestExn.a.gid;
+    const multisigMetadataRecord =
+      await this.identifierStorage.getIdentifierMetadata(multisigAid);
+    const multisigSignifyName = multisigMetadataRecord.signifyName;
+    // stamp, eid and role are provided in the exn message
+    const rpystamp = requestExn.e.rpy.dt;
+    const rpyrole = requestExn.e.rpy.a.role;
+    const rpyeid = requestExn.e.rpy.a.eid;
+    const endRoleRes = await this.props.signifyClient
+      .identifiers()
+      .addEndRole(multisigSignifyName, rpyrole, rpyeid, rpystamp);
+    await endRoleRes.op();
+    const rpy = endRoleRes.serder;
+    const sigs = endRoleRes.sigs;
+
+    const hab = await this.props.signifyClient
+      .identifiers()
+      .get(multisigSignifyName);
+    const mstate = hab["state"];
+    const seal = [
+      "SealEvent",
+      { i: hab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
+    ];
+    const sigers = sigs.map((sig) => new Siger({ qb64: sig }));
+    const roleims = d(
+      messagize(rpy, sigers, seal, undefined, undefined, false)
+    );
+    const atc = roleims.substring(rpy.size);
+    const roleEmbeds = {
+      rpy: [rpy, atc],
+    };
+    const { ourIdentifier, multisigMembers } =
+      await this.getMultisigParticipants(multisigSignifyName);
+    const recp = multisigMembers
+      .filter((signing: any) => signing.aid !== ourIdentifier.id)
+      .map((member: any) => member.aid);
+    const ourAid: Aid = await this.props.signifyClient
+      .identifiers()
+      .get(ourIdentifier.signifyName as string);
+
+    await this.sendMultisigExn(
+      ourIdentifier.signifyName,
+      ourAid,
+      MultiSigRoute.RPY,
+      roleEmbeds,
+      recp,
+      { gid: hab["prefix"] }
+    );
+    multisigMetadataRecord.authorizedEids?.push(rpyeid);
+    await this.identifierStorage.updateIdentifierMetadata(hab["prefix"], {
+      authorizedEids: multisigMetadataRecord.authorizedEids,
+    });
   }
 }
 

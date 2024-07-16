@@ -7,6 +7,8 @@ import { Agent } from "../agent";
 
 const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();
+const getOobiMock = jest.fn();
+const getIdentifier = jest.fn();
 
 const uuidToThrow = "throwMe";
 const signifyClient = jest.mocked({
@@ -14,7 +16,7 @@ const signifyClient = jest.mocked({
   boot: jest.fn(),
   identifiers: () => ({
     list: jest.fn(),
-    get: jest.fn(),
+    get: getIdentifier,
     create: jest.fn(),
     addEndRole: jest.fn(),
     interact: jest.fn(),
@@ -39,12 +41,7 @@ const signifyClient = jest.mocked({
     }),
   }),
   oobis: () => ({
-    get: jest.fn().mockImplementation((name: string) => {
-      return {
-        oobis: [`${oobiPrefix}${name}`],
-        done: true,
-      };
-    }),
+    get: getOobiMock,
     resolve: jest.fn().mockImplementation((name: string) => {
       if (name === `${oobiPrefix}${uuidToThrow}`) {
         return {
@@ -313,6 +310,12 @@ describe("Connection service of agent", () => {
 
   test("can get a KERI OOBI with an alias (URL encoded)", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    getOobiMock.mockImplementation((name: string) => {
+      return {
+        oobis: [`${oobiPrefix}${name}`],
+        done: true,
+      };
+    });
     signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
       return `${oobiPrefix}${name}`;
     });
@@ -328,8 +331,11 @@ describe("Connection service of agent", () => {
 
   test("can get KERI OOBI with alias and groupId", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
-      return `${oobiPrefix}${name}?groupId=123`;
+    getOobiMock.mockImplementation((name: string) => {
+      return {
+        oobis: [`${oobiPrefix}${name}`],
+        done: true,
+      };
     });
     const signifyName = "keriuuid";
     const KeriOobi = await connectionService.getOobi(
@@ -362,8 +368,11 @@ describe("Connection service of agent", () => {
 
   test("can get KERI OOBI", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
-      return `${oobiPrefix}${name}`;
+    getOobiMock.mockImplementation((name: string) => {
+      return {
+        oobis: [`${oobiPrefix}${name}`],
+        done: true,
+      };
     });
     const signifyName = "keriuuid";
     const KeriOobi = await connectionService.getOobi(signifyName);
@@ -481,5 +490,37 @@ describe("Connection service of agent", () => {
         getTag: jest.fn().mockReturnValue("group-id"),
       },
     ]);
+  });
+
+  test("Should throw error if the oobi is empty", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    getOobiMock.mockResolvedValue({
+      oobis: [],
+      done: true,
+    });
+    const signifyName = "keriuuid";
+    await expect(connectionService.getOobi(signifyName)).rejects.toThrow(
+      new Error(ConnectionService.CANNOT_GET_OOBI)
+    );
+  });
+
+  test("Can get multi-sig oobi", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    getOobiMock.mockResolvedValue({
+      oobis: [
+        `${oobiPrefix}oobi/EEGLKCqm1pENLuh9BW9EsbBxGnP0Pk8NMJ7_48Y_C3-6/agent/EJaQVSDkDEbPVxSe55vd9v5__Hb9inN8CwSbeB5qU5L_?name=t1`,
+      ],
+      done: true,
+    });
+    getIdentifier.mockResolvedValue({
+      prefix: "EEGLKCqm1pENLuh9BW9EsbBxGnP0Pk8NMJ7_48Y_C3",
+      states: {},
+      group: {},
+    });
+    const signifyName = "keriuuid";
+    const KeriOobi = await connectionService.getOobi(signifyName);
+    expect(KeriOobi).toEqual(
+      `${oobiPrefix}oobi/EEGLKCqm1pENLuh9BW9EsbBxGnP0Pk8NMJ7_48Y_C3-6?name=t1`
+    );
   });
 });

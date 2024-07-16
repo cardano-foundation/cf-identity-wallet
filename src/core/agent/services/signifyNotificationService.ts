@@ -158,7 +158,51 @@ class SignifyNotificationService extends AgentService {
     notif: Notification,
     callback: (event: KeriaNotification) => void
   ) {
-    // We only process with the credential and the multisig at the moment
+    if (notif.a.r === NotificationRoute.MultiSigRpy) {
+      const multisigNotification = await this.props.signifyClient
+        .groups()
+        .getRequest(notif.a.d)
+        .catch((error) => {
+          const errorStack = (error as Error).stack as string;
+          const status = errorStack.split("-")[1];
+          if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+            return [];
+          } else {
+            throw error;
+          }
+        });
+      if (!multisigNotification || !multisigNotification.length) {
+        await this.markNotification(notif.i);
+        return;
+      }
+      const multisigId = multisigNotification[0]?.exn?.a?.gid;
+      if (!multisigId) {
+        await this.markNotification(notif.i);
+        return;
+      }
+      const multisigIdentifier =
+        await this.identifierStorage.getIdentifierMetadata(multisigId);
+      if (!multisigIdentifier) {
+        await this.markNotification(notif.i);
+        return;
+      }
+      const rpyRoute = multisigNotification[0].exn.e.rpy.r;
+      if (
+        rpyRoute === "/end/role/add" &&
+        multisigIdentifier.authorizedEids?.includes(
+          multisigNotification[0].exn.e.rpy.a.eid
+        )
+      ) {
+        await this.markNotification(notif.i);
+        return;
+      } else if (rpyRoute === "/end/role/add") {
+        await this.markNotification(notif.i);
+        await Agent.agent.multiSigs.joinAuthorization(
+          multisigNotification[0].exn
+        );
+        return;
+      }
+    }
     if (notif.a.r === NotificationRoute.MultiSigIcp) {
       const multisigNotification = await this.props.signifyClient
         .groups()
@@ -216,7 +260,10 @@ class SignifyNotificationService extends AgentService {
       route: event.a.r,
       connectionId: exchange.exn.i,
     };
-    if (event.a.r === NotificationRoute.MultiSigIcp) {
+    if (
+      event.a.r === NotificationRoute.MultiSigIcp ||
+      event.a.r === NotificationRoute.MultiSigRpy
+    ) {
       const multisigNotification = await this.props.signifyClient
         .groups()
         .getRequest(event.a.d)
@@ -332,7 +379,25 @@ class SignifyNotificationService extends AgentService {
               ""
             );
             switch (pendingOperation.recordType) {
-            case OperationPendingRecordType.Group:
+            case OperationPendingRecordType.Group: {
+              await this.identifierStorage.updateIdentifierMetadata(
+                recordId,
+                {
+                  isPending: false,
+                }
+              );
+              // Trigger add end role authorization for multi-sigs
+              const multisigIdentifier =
+                  await this.identifierStorage.getIdentifierMetadata(recordId);
+              await Agent.agent.multiSigs.endRoleAuthorization(
+                multisigIdentifier.signifyName
+              );
+              callback({
+                opType: pendingOperation.recordType,
+                oid: recordId,
+              });
+              break;
+            }
             case OperationPendingRecordType.Witness: {
               await this.identifierStorage.updateIdentifierMetadata(
                 recordId,
@@ -344,7 +409,6 @@ class SignifyNotificationService extends AgentService {
                 opType: pendingOperation.recordType,
                 oid: recordId,
               });
-
               break;
             }
 
