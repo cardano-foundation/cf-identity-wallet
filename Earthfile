@@ -66,6 +66,7 @@ idw-keria:
   IF [ "${REGISTRY_IMAGE_EXISTS}" = "false" ]
     WAIT
       FROM DOCKERFILE -f +keria-src/keria/images/keria.dockerfile +keria-src/keria/*
+      RUN apk add --no-cache jq envsubst
       ENTRYPOINT keria start --config-file backer-oobis --config-dir ./scripts
     END
     WAIT
