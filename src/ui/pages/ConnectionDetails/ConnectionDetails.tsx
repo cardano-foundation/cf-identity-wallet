@@ -142,13 +142,10 @@ const ConnectionDetails = () => {
         connectionShortDetails.id
       );
 
-      const newConnectionsData = Object.fromEntries(
-        Object.entries(connectionsData).filter(
-          ([key]) => key !== connectionShortDetails?.id
-        )
-      );
+      const clonedConnections = { ...connectionsData };
+      delete clonedConnections[connectionShortDetails.id];
 
-      const updatedConnections = Object.values(newConnectionsData);
+      const updatedConnections = Object.values(clonedConnections);
 
       dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
       dispatch(setConnectionsCache(updatedConnections));
