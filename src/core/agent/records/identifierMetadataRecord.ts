@@ -31,7 +31,7 @@ class IdentifierMetadataRecord extends BaseRecord {
   theme!: number;
   multisigManageAid?: string | undefined;
   groupMetadata?: groupMetadata;
-  authorizedEids?: string[] | undefined;
+  authorizedEids?: string[] | null;
 
   static readonly type = "IdentifierMetadataRecord";
   readonly type = IdentifierMetadataRecord.type;
