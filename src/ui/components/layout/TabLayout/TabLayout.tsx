@@ -12,7 +12,7 @@ import {
 } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import "./TabLayout.scss";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { TabLayoutProps } from "./TabLayout.types";
 import { useIonHardwareBackButton } from "../../../hooks";
 import { BackEventPriorityType } from "../../../globals/types";
@@ -125,6 +125,7 @@ const TabLayout = ({
       )}
       {placeholder || (
         <IonContent
+          id={pageId}
           className="tab-content"
           color="transparent"
         >

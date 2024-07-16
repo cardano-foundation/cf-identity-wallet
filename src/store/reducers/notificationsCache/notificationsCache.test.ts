@@ -1,12 +1,26 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
+  deleteNotification,
   getNotificationsCache,
   notificationsCacheSlice,
   setNotificationsCache,
+  setReadedNotification,
 } from "./notificationsCache";
 import { RootState } from "../../index";
 import { KeriaNotification } from "../../../core/agent/agent.types";
 import { OperationType } from "../../../ui/globals/types";
+
+const notification = {
+  id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
+  createdAt: "2024-06-25T12:38:36.988Z",
+  a: {
+    r: "/exn/ipex/grant",
+    d: "EMT02ZHUhpnr4gFFk104B-pLwb2bJC8aip2VYmbPztnk",
+    m: "",
+  },
+  connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
+  read: true,
+};
 
 describe("Notifications cache", () => {
   const initialState = {
@@ -16,6 +30,47 @@ describe("Notifications cache", () => {
     expect(
       notificationsCacheSlice.reducer(undefined, {} as PayloadAction)
     ).toEqual(initialState);
+  });
+
+  it("should handle setReadedNotification", () => {
+    const initialState = {
+      notifications: [notification],
+    };
+
+    const newState = notificationsCacheSlice.reducer(
+      initialState,
+      setReadedNotification({
+        id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
+        read: false,
+      })
+    );
+
+    expect(newState.notifications).toEqual([
+      {
+        id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
+        createdAt: "2024-06-25T12:38:36.988Z",
+        a: {
+          r: "/exn/ipex/grant",
+          d: "EMT02ZHUhpnr4gFFk104B-pLwb2bJC8aip2VYmbPztnk",
+          m: "",
+        },
+        connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
+        read: false,
+      },
+    ]);
+  });
+
+  it("should handle deleteNotification", () => {
+    const initialState = {
+      notifications: [notification],
+    };
+
+    const newState = notificationsCacheSlice.reducer(
+      initialState,
+      deleteNotification(notification)
+    );
+
+    expect(newState.notifications).toEqual([]);
   });
 
   it("should handle setNotificationsCache", () => {
