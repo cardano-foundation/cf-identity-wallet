@@ -30,7 +30,7 @@ import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert as AlertDeleteConnection } from "../../components/Alert";
 import {
   getConnectionsCache,
-  setConnectionsCache,
+  removeConnectionCache,
 } from "../../../store/reducers/connectionsCache";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
@@ -141,14 +141,8 @@ const ConnectionDetails = () => {
       await Agent.agent.connections.deleteConnectionById(
         connectionShortDetails.id
       );
-
-      const clonedConnections = { ...connectionsData };
-      delete clonedConnections[connectionShortDetails.id];
-
-      const updatedConnections = Object.values(clonedConnections);
-
       dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
-      dispatch(setConnectionsCache(updatedConnections));
+      dispatch(removeConnectionCache(connectionShortDetails.id));
       handleDone();
       setVerifyPasswordIsOpen(false);
       setVerifyPasscodeIsOpen(false);

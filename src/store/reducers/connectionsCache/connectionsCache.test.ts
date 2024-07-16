@@ -3,6 +3,7 @@ import {
   connectionsCacheSlice,
   getConnectionsCache,
   getMultisigConnectionsCache,
+  removeConnectionCache,
   setConnectionsCache,
   setMultisigConnectionsCache,
   updateOrAddConnectionCache,
@@ -59,6 +60,15 @@ describe("connectionsCacheSlice", () => {
     expect(
       newState.connections["did:example:ebfeb1ebc6f1c276ef71212ec21"]
     ).toMatchObject(connection);
+  });
+
+  it("should handle removeConnectionCache", () => {
+    const newState = connectionsCacheSlice.reducer(
+      initialState,
+      removeConnectionCache(connection.id)
+    );
+
+    expect(newState.connections).toEqual({});
   });
 });
 

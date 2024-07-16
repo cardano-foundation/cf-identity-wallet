@@ -37,6 +37,10 @@ const connectionsCacheSlice = createSlice({
       };
     },
 
+    removeConnectionCache: (state, action: PayloadAction<string>) => {
+      delete state.connections[action.payload];
+    },
+
     setMultisigConnectionsCache: (
       state,
       action: PayloadAction<ConnectionShortDetails[]>
@@ -70,6 +74,7 @@ export const {
   setConnectionsCache,
   setMultisigConnectionsCache,
   updateOrAddConnectionCache,
+  removeConnectionCache,
 } = connectionsCacheSlice.actions;
 
 const getConnectionsCache = (state: RootState) =>
