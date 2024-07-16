@@ -103,6 +103,7 @@ idw-witness:
       FROM ${KERI_DOCKER_IMAGE_REPO}:${KERI_DOCKER_IMAGE_TAG}
       ENV PYTHONUNBUFFERED=1
       ENV PYTHONIOENCODING=UTF-8
+      RUN apk add --no-cache jq envsubst
       ENTRYPOINT kli witness demo
     END
     WAIT
