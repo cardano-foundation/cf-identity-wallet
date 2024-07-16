@@ -37,6 +37,27 @@
   }
 
   .notifications-tab-content {
+    .show-ealier-btn {
+      --background: rgba(187, 187, 187, 0.5);
+      --border-radius: 0.5rem;
+      color: var(--ion-color-primary);
+      width: calc(100vw - 2.5rem);
+      margin: 0.75rem auto 2.25rem;
+      display: block;
+
+      &::part(native) {
+        border: none;
+      }
+    }
+
+    .end-message {
+      text-align: center;
+      color: rgba(54, 60, 74, 0.5);
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      margin: 1rem 0;
+    }
+
     .notifications-tab-section {
       margin-top: 1.5rem;
 
@@ -70,6 +91,21 @@
           min-width: 100%;
           background: transparent;
           --inner-padding-end: 0;
+        }
+
+        .notification-logo {
+          position: relative;
+
+          .notification-ref-icon {
+            position: absolute;
+            bottom: 0.115rem;
+            right: 0.7rem;
+            width: 0.85rem;
+            height: 0.85rem;
+            border-radius: 0.625rem;
+            padding: 0.25rem;
+            background-color: var(--ion-color-light-grey);
+          }
         }
 
         .notifications-tab-item-logo {
