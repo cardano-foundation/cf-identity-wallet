@@ -1,14 +1,14 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
-import configureStore from "redux-mock-store";
-import { Provider } from "react-redux";
-import { MemoryRouter, Route } from "react-router-dom";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { MemoryRouter, Route } from "react-router-dom";
+import configureStore from "redux-mock-store";
+import { Agent } from "../../../core/agent/agent";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
+import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { CredentialDetails } from "../../pages/CredentialDetails";
-import { Agent } from "../../../core/agent/agent";
 import { VerifyPasscode } from "./VerifyPasscode";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
@@ -51,6 +51,9 @@ const initialStateNoPassword = {
   credsArchivedCache: { creds: credsFixAcdc },
   biometricsCache: {
     enabled: false,
+  },
+  notificationsCache: {
+    notificationDetailCache: null,
   },
 };
 
@@ -118,7 +121,7 @@ describe("Verify Passcode on Cards Details page", () => {
 
     const closeFn = jest.fn();
 
-    const { getByTestId, getAllByTestId } = render(
+    const { getByTestId } = render(
       <Provider store={storeMocked}>
         <VerifyPasscode
           isOpen={true}

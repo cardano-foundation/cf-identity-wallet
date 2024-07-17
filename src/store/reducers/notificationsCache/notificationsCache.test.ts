@@ -1,14 +1,17 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
   deleteNotification,
+  getNotificationDetailCache,
   getNotificationsCache,
   notificationsCacheSlice,
+  setNotificationDetailCache,
   setNotificationsCache,
   setReadedNotification,
 } from "./notificationsCache";
 import { RootState } from "../../index";
 import { KeriaNotification } from "../../../core/agent/agent.types";
 import { OperationType } from "../../../ui/globals/types";
+import { NotificationDetailCacheState } from "./notificationCache.types";
 
 const notification = {
   id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
@@ -25,6 +28,7 @@ const notification = {
 describe("Notifications cache", () => {
   const initialState = {
     notifications: [],
+    notificationDetailCache: null,
   };
   it("should return the initial state", () => {
     expect(
@@ -92,6 +96,19 @@ describe("Notifications cache", () => {
       setNotificationsCache(notifications)
     );
     expect(newState.notifications).toEqual(notifications);
+  });
+
+  it("should handle setNotificationDetailCache", () => {
+    const notificationDetailCache: NotificationDetailCacheState = {
+      notificationId: "test-id",
+      viewCred: "test-cred",
+      step: 0,
+    };
+    const newState = notificationsCacheSlice.reducer(
+      initialState,
+      setNotificationDetailCache(notificationDetailCache)
+    );
+    expect(newState.notificationDetailCache).toEqual(notificationDetailCache);
   });
 
   it("should return the notifications cache from RootState", () => {
@@ -168,5 +185,76 @@ describe("Notifications cache", () => {
     };
     const notificationsCache = getNotificationsCache(state);
     expect(notificationsCache).toEqual(state.notificationsCache.notifications);
+  });
+
+  it("should return the notification detail cache from RootState", () => {
+    const state: RootState = {
+      stateCache: {
+        initialized: true,
+        routes: [],
+        authentication: {
+          loggedIn: false,
+          userName: "",
+          time: 0,
+          passcodeIsSet: false,
+          seedPhraseIsSet: false,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+          ssiAgentIsSet: false,
+          recoveryWalletProgress: false,
+        },
+        currentOperation: OperationType.IDLE,
+        queueIncomingRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "",
+      },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+        multiSigGroup: {
+          groupId: "",
+          connections: [],
+        },
+      },
+      credsCache: { creds: [], favourites: [] },
+      credsArchivedCache: { creds: [] },
+      connectionsCache: {
+        connections: [],
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: null,
+        pendingConnection: null,
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+        favouriteIndex: 0,
+      },
+      biometricsCache: {
+        enabled: false,
+      },
+      ssiAgentCache: {
+        bootUrl: "",
+        connectUrl: "",
+      },
+      notificationsCache: {
+        notifications: [],
+        notificationDetailCache: {
+          notificationId: "test-id",
+          viewCred: "test-cred",
+          step: 0,
+        },
+      },
+    };
+    const notificationsCache = getNotificationDetailCache(state);
+    expect(notificationsCache).toEqual(
+      state.notificationsCache.notificationDetailCache
+    );
   });
 });
