@@ -1,7 +1,8 @@
 // @ts-ignore
-const port = window._env_.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT;
+const port = window._env_?.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT || process.env.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT || "3001";
+
 // @ts-ignore
-const url = window._env_.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL;
+const url = window._env_?.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL || process.env.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL || "http://localhost";
 const endpoint = `${url}:${port}`;
 
 const config = {
