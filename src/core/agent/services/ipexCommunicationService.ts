@@ -174,6 +174,14 @@ class IpexCommunicationService extends AgentService {
     await this.props.signifyClient
       .ipex()
       .submitGrant(holderSignifyName, grant, sigs, end, [msgAgree.exn.i]);
+
+    await this.props.signifyClient
+      .notifications()
+      .mark(notification.id)
+      .catch((error) => {
+        throw error;
+      });
+
     await this.notificationStorage.deleteById(notification.id);
   }
 

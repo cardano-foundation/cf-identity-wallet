@@ -328,7 +328,7 @@ class MultiSigService extends AgentService {
     return res.op.name.split(".")[1];
   }
 
-  private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
+  async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
     const notifications: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
       .getRequest(msgSaid)
@@ -426,6 +426,13 @@ class MultiSigService extends AgentService {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {
+      await this.props.signifyClient
+        .notifications()
+        .mark(notificationId)
+        .catch((error) => {
+          throw error;
+        });
+
       await this.notificationStorage.deleteById(notificationId);
       return;
     }

@@ -7,6 +7,7 @@ import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { MultiSigService } from "./multiSigService";
 import { IdentifierStorage } from "../records";
+import { SignifyNotificationService } from "./signifyNotificationService";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -33,6 +34,7 @@ let queryKeyStateGetMock = jest.fn();
 const addEndRoleMock = jest.fn();
 const sendExchangesMock = jest.fn();
 const getExchangesMock = jest.fn();
+const markNotificationMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -73,7 +75,7 @@ const signifyClient = jest.mocked({
   }),
   notifications: () => ({
     list: jest.fn(),
-    mark: jest.fn(),
+    mark: markNotificationMock,
   }),
   ipex: () => ({
     admit: jest.fn(),
@@ -1692,6 +1694,24 @@ describe("Multisig sig service of agent", () => {
       {
         authorizedEids: ["EDr4kddR_keAzTUs_PNW-qSsUdLDrKD0YbZxiU-y4B3K"],
       }
+    );
+  });
+
+  test("Cannot join the multisig if marking KERIA fails", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    groupGetRequestMock = jest.fn().mockResolvedValue([]);
+
+    markNotificationMock.mockRejectedValue(
+      new Error(SignifyNotificationService.FAILED_TO_MARK_NOTIFICATION)
+    );
+    multiSigService.hasJoinedMultisig = jest.fn().mockResolvedValue(true);
+    await expect(
+      multiSigService.joinMultisig("id", "d", {
+        theme: 0,
+        displayName: "Multisig",
+      })
+    ).rejects.toThrowError(
+      SignifyNotificationService.FAILED_TO_MARK_NOTIFICATION
     );
   });
 });

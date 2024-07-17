@@ -13,6 +13,7 @@ const groupGetRequestMock = jest.fn();
 
 const oobiResolveMock = jest.fn();
 const queryKeyStateMock = jest.fn();
+const markNotificationMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -53,7 +54,7 @@ const signifyClient = jest.mocked({
   }),
   notifications: () => ({
     list: jest.fn(),
-    mark: jest.fn(),
+    mark: markNotificationMock,
   }),
   ipex: () => ({
     admit: jest.fn(),
@@ -188,6 +189,7 @@ describe("Signify notification service of agent", () => {
     const id = "uuid";
     await signifyNotificationService.deleteNotificationRecordById(id);
     expect(notificationStorage.deleteById).toBeCalled();
+    expect(markNotificationMock).toBeCalled();
   });
 
   test("Should skip if there is no valid multi-sig notification", async () => {
