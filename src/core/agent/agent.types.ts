@@ -134,8 +134,12 @@ enum KeriConnectionType {
 }
 
 type OobiScan =
-  | { type: KeriConnectionType.NORMAL }
-  | { type: KeriConnectionType.MULTI_SIG_INITIATOR; groupId: string };
+  | { type: KeriConnectionType.NORMAL; connection: ConnectionShortDetails }
+  | {
+      type: KeriConnectionType.MULTI_SIG_INITIATOR;
+      groupId: string;
+      connection: ConnectionShortDetails;
+    };
 
 interface BaseEventEmitter {
   type: string;

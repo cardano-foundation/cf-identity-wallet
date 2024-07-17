@@ -47,12 +47,19 @@ const signifyClient = jest.mocked({
         return {
           done: false,
           name,
+          metadata: {
+            oobi: `${oobiPrefix}${uuidToThrow}`,
+          },
         };
       }
       return {
         done: true,
         response: {
           i: name,
+          dt: now,
+        },
+        metadata: {
+          oobi: `${oobiPrefix}${uuidToThrow}`,
         },
         name,
       };
@@ -136,6 +143,12 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
+jest.mock("uuid", () => {
+  return {
+    v4: () => "uuid",
+  };
+});
+
 const now = new Date();
 const nowISO = now.toISOString();
 const keriContacts = [
@@ -167,10 +180,19 @@ describe("Connection service of agent", () => {
     Agent.agent.identifiers.getKeriIdentifierByGroupId = jest
       .fn()
       .mockResolvedValue(null);
+
     const result = await connectionService.connectByOobiUrl(oobi);
     expect(result).toStrictEqual({
       type: KeriConnectionType.MULTI_SIG_INITIATOR,
       groupId,
+      connection: {
+        groupId,
+        id: oobi,
+        label: "uuid",
+        oobi: `${oobiPrefix}${uuidToThrow}`,
+        status: ConnectionStatus.CONFIRMED,
+        connectionDate: now,
+      },
     });
     expect(connectionStorage.save).toBeCalled();
   });
@@ -455,10 +477,13 @@ describe("Connection service of agent", () => {
     const url = `${oobiPrefix}keriuuid`;
     const op = await connectionService.resolveOobi(url);
     expect(op).toEqual({
-      response: { i: url },
+      response: { i: url, dt: now },
       name: url,
       alias: expect.any(String),
       done: true,
+      metadata: {
+        oobi: `${oobiPrefix}${uuidToThrow}`,
+      },
     });
   });
 
@@ -467,8 +492,11 @@ describe("Connection service of agent", () => {
     const url = `${oobiPrefix}keriuuid?name=alias%20with%20spaces`;
     const op = await connectionService.resolveOobi(url);
     expect(op).toEqual({
-      response: { i: url },
+      response: { i: url, dt: now },
       name: url,
+      metadata: {
+        oobi: `${oobiPrefix}${uuidToThrow}`,
+      },
       alias: "alias with spaces",
       done: true,
     });

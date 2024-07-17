@@ -13,7 +13,10 @@ import {
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
-import { KeriConnectionType } from "../../../core/agent/agent.types";
+import {
+  ConnectionShortDetails,
+  KeriConnectionType,
+} from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -102,27 +105,20 @@ const Scanner = forwardRef(
       );
     };
 
-    const updateConnections = async (groupId: string) => {
+    const updateConnections = async (
+      connection: ConnectionShortDetails,
+      groupId: string
+    ) => {
       // TODO: We should avoid calling getMultisigLinkedContacts every time we scan a QR code,
       // ideally once the OOBI is resolved we can insert the connection details into Redux -
       // should change when we do scanner error handling
 
-      const connections =
-        await Agent.agent.connections.getMultisigLinkedContacts(groupId);
       const newMultiSigGroup: MultiSigGroup = {
         groupId,
-        connections,
+        connections: [connection],
       };
+
       dispatch(setMultiSigGroupCache(newMultiSigGroup));
-    };
-
-    const handleMultisigConnections = async (groupId: string) => {
-      const connections =
-        await Agent.agent.connections.getMultisigLinkedContacts(groupId);
-
-      connections.forEach((connection) => {
-        dispatch(updateOrAddMultisigConnectionCache(connection));
-      });
     };
 
     const handleSSIScan = (content: string) => {
@@ -151,13 +147,14 @@ const Scanner = forwardRef(
             currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
           ) {
             const groupId = new URL(content).searchParams.get("groupId");
-            groupId && updateConnections(groupId);
+            groupId && updateConnections(invitation.connection, groupId);
+            dispatch(updateOrAddMultisigConnectionCache(invitation.connection));
           }
         }
 
         if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
           setGroupId(invitation.groupId);
-          handleMultisigConnections(invitation.groupId);
+          dispatch(updateOrAddMultisigConnectionCache(invitation.connection));
           setCreateIdentifierModalIsOpen(true);
           dispatch(setToastMsg(ToastMsgType.NEW_MULTI_SIGN_MEMBER));
         }
