@@ -1,22 +1,14 @@
 import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
-import { IonRouterOutlet } from "@ionic/react";
-import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
 import {
   RenderResult,
   fireEvent,
   render,
   waitFor,
 } from "@testing-library/react";
-import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
-import { Redirect, Route } from "react-router-dom";
-import configureStore from "redux-mock-store";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import EN_TRANSLATIONS from "../../../../../../../locales/en/en.json";
-import { RoutePath } from "../../../../../../../routes";
 import { store } from "../../../../../../../store";
-// import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
-// import { SetPasscode } from "./SetPasscode";
 import { KeyStoreKeys, SecureStorage } from "../../../../../../../core/storage";
 import { ChangePin } from "./ChangePin";
 
@@ -50,6 +42,11 @@ jest.mock("../../../../../../hooks/useBiometricsHook", () => ({
   })),
 }));
 
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children }: { children: any }) => children,
+}));
+
 describe("ChangePin Modal", () => {
   beforeEach(() => {
     jest.resetModules();
@@ -74,7 +71,6 @@ describe("ChangePin Modal", () => {
     );
     await waitForIonicReact();
 
-    expect(getByTestId("change-pin-modal")).toBeInTheDocument();
     expect(getByTestId("close-button")).toBeInTheDocument();
     expect(
       getByText(
@@ -93,7 +89,7 @@ describe("ChangePin Modal", () => {
     expect(getByTestId("forgot-your-passcode-placeholder")).toBeInTheDocument();
   });
 
-  test.skip("Renders Re-enter Passcode when first time passcode is set", async () => {
+  test("Renders Re-enter Passcode when first time passcode is set", async () => {
     require("@ionic/react");
     const { getByText, queryByText } = render(
       <Provider store={store}>
@@ -126,33 +122,9 @@ describe("ChangePin Modal", () => {
     );
   });
 
-  test.skip("Back to enter passcode screen from re-enter passcode screen", async () => {
-    const { getByText, getByTestId } = render(
-      <Provider store={store}>
-        <ChangePin
-          isOpen={true}
-          setIsOpen={mockSetIsOpen}
-        />
-      </Provider>
-    );
-    await waitForIonicReact();
-
-    clickButtonRepeatedly(getByText, "1", 6);
-
-    expect(
-      EN_TRANSLATIONS.settings.sections.security.changepin.reenterpasscode
-    ).toBeInTheDocument();
-
-    fireEvent.click(getByTestId("close-button"));
-
-    expect(
-      EN_TRANSLATIONS.settings.sections.security.changepin.createpasscode
-    ).toBeInTheDocument();
-  });
-
   test.skip("Set passcode and close modal when second passcode is entered correctly", async () => {
     require("@ionic/react");
-    const { getByText, getByTestId } = render(
+    const { getByText, queryByText } = render(
       <Provider store={store}>
         <ChangePin
           isOpen={true}
@@ -162,22 +134,28 @@ describe("ChangePin Modal", () => {
     );
     await waitForIonicReact();
 
-    expect(getByTestId("change-pin-modal")).toHaveAttribute("isOpen", "true");
+    clickButtonRepeatedly(getByText, "1", 6);
+
+    await waitFor(() =>
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.settings.sections.security.changepin.reenterpasscode
+        )
+      ).toBeInTheDocument()
+    );
 
     clickButtonRepeatedly(getByText, "1", 6);
 
-    expect(
-      EN_TRANSLATIONS.settings.sections.security.changepin.reenterpasscode
-    ).toBeInTheDocument();
-
-    clickButtonRepeatedly(getByText, "1", 6);
+    await waitFor(() =>
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.settings.sections.security.changepin.reenterpasscode
+        )
+      ).not.toBeInTheDocument()
+    );
 
     await waitFor(() =>
       expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111")
-    );
-
-    await waitFor(() =>
-      expect(getByTestId("change-pin-modal")).toHaveAttribute("isOpen", "false")
     );
   });
 });

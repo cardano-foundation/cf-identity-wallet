@@ -34,7 +34,8 @@
     }
   },
   "createpasscodemodule": {
-    "error": "Passcode does not match",
+    "errornomatch": "Passcode does not match",
+    "errormatch": "Passcode already in use",
     "cantremember": "Can't remember?"
   },
   "setpasscode": {
@@ -1079,7 +1080,7 @@
         "title": "Security",
         "biometry": "Biometric authentication",
         "changepin": {
-          "title": "Change PIN",
+          "title": "Change passcode",
           "createpasscode": "Create new passcode",
           "reenterpasscode": "Re-enter new passcode",
           "cancel": "Cancel",
