@@ -192,6 +192,7 @@ class SignifyNotificationService extends AgentService {
 
     if (notif.a.r === NotificationRoute.ExnIpexAgree) {
       await Agent.agent.ipexCommunications.grantAcdcFromAgree(notif.a.d);
+      await this.markNotification(notif.i);
       return;
     }
     if (
