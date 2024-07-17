@@ -182,6 +182,8 @@ describe("Scanner", () => {
       },
     };
 
+    getMultisigLinkedContactsMock.mockReturnValue(connectionsFix);
+
     const storeMocked = {
       ...mockStore(initialState),
       dispatch: dispatchMock,
@@ -190,7 +192,6 @@ describe("Scanner", () => {
     connectByOobiUrlMock.mockImplementation(() => {
       return {
         type: KeriConnectionType.MULTI_SIG_INITIATOR,
-        connection: connectionsFix[0],
       };
     });
 
@@ -249,7 +250,6 @@ describe("Scanner", () => {
     connectByOobiUrlMock.mockImplementation(() => {
       return {
         type: KeriConnectionType.NORMAL,
-        connection: connectionsFix[0],
       };
     });
 
@@ -262,6 +262,8 @@ describe("Scanner", () => {
       </Provider>
     );
 
+    getMultisigLinkedContactsMock.mockReturnValue([connectionsFix[0]]);
+
     await waitFor(() => {
       expect(
         getByText(EN_Translation.createidentifier.scan.pasteoobi)
@@ -270,6 +272,7 @@ describe("Scanner", () => {
 
     await waitFor(() => {
       expect(handleReset).toBeCalled();
+      expect(getMultisigLinkedContactsMock).toBeCalledWith("72e2f089cef6");
       expect(dispatchMock).toBeCalledWith(
         setMultiSigGroupCache({
           groupId: "72e2f089cef6",
