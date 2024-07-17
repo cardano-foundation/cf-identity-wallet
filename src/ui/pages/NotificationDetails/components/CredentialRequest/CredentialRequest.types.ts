@@ -44,4 +44,5 @@ export type {
   CredentialRequestProps,
   ChooseCredentialProps,
   RequestCredential,
+  ACDC,
 };

@@ -25,6 +25,7 @@ import {
   RequestCredential,
 } from "./CredentialRequest.types";
 import { Agent } from "../../../../../core/agent/agent";
+import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
 
 const CRED_EMPTY = "Credential is empty";
 
@@ -37,6 +38,7 @@ const ChooseCredential = ({
   onClose,
 }: ChooseCredentialProps) => {
   const history = useHistory<NotificationDetailState>();
+  const connections = useAppSelector(getConnectionsCache);
   const notifications = useAppSelector(getNotificationsCache);
   const notificationDetailCache = useAppSelector(getNotificationDetailCache);
   const dispatch = useDispatch();
@@ -46,15 +48,21 @@ const ChooseCredential = ({
   const [loading, setLoading] = useState(false);
 
   const displayIdentifiers = credentialRequest.credentials.map(
-    (cred): CardItem<RequestCredential> => ({
-      id: cred.acdc.d,
-      title: cred.acdc.a.attendeeName,
-      subtitle: `${formatShortDate(cred.acdc.a.dt)} - ${formatTimeToSec(
-        cred.acdc.a.dt
-      )}`,
-      image: KeriLogo,
-      data: cred,
-    })
+    (cred): CardItem<RequestCredential> => {
+      const connection =
+        connections.find((connection) => connection.id === cred.connectionId)
+          ?.label || "";
+
+      return {
+        id: cred.acdc.d,
+        title: connection,
+        subtitle: `${formatShortDate(cred.acdc.a.dt)} - ${formatTimeToSec(
+          cred.acdc.a.dt
+        )}`,
+        image: KeriLogo,
+        data: cred,
+      };
+    }
   );
 
   const handleSelectCred = useCallback((data: RequestCredential) => {
@@ -71,17 +79,16 @@ const ChooseCredential = ({
       return;
     }
 
-    const shouldUpdateSelected =
-      selectedCred?.acdc.d !== notificationDetailCache.viewCred ||
-      !notificationDetailCache.checked;
-    if (shouldUpdateSelected) {
+    if (notificationDetailCache.checked) {
       const updatedCred = credentialRequest.credentials.find(
         (cred) => cred.acdc.d === notificationDetailCache.viewCred
       );
 
       if (updatedCred) {
-        handleSelectCred(updatedCred as RequestCredential);
+        setSelectedCred(updatedCred as RequestCredential);
       }
+    } else if (selectedCred?.acdc.d === notificationDetailCache.viewCred) {
+      setSelectedCred(null);
     }
 
     dispatch(setNotificationDetailCache(null));
@@ -91,7 +98,7 @@ const ChooseCredential = ({
     handleSelectCred,
     history.location.pathname,
     notificationDetailCache,
-    selectedCred?.acdc.d,
+    selectedCred,
   ]);
 
   const handleNotificationUpdate = async () => {
@@ -162,6 +169,7 @@ const ChooseCredential = ({
         }
         footer={
           <PageFooter
+            pageId={pageId}
             customClass="credential-request-footer"
             primaryButtonText={`${i18n.t(
               "notifications.details.buttons.providecredential"
@@ -189,6 +197,7 @@ const ChooseCredential = ({
               <IonIcon
                 className="info-icon"
                 icon={informationCircleOutline}
+                data-testid={`cred-detail-${data.acdc.d}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   showCredDetail(data);
