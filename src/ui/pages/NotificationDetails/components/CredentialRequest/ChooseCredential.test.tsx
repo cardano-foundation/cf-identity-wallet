@@ -14,51 +14,7 @@ import { formatShortDate, formatTimeToSec } from "../../../../utils/formatters";
 import { setNotificationDetailCache } from "../../../../../store/reducers/notificationsCache";
 import { KeriaNotification } from "../../../../../core/agent/agent.types";
 import { ACDC } from "./CredentialRequest.types";
-
-const credRequest = {
-  schema: {
-    name: "IIW 2024 Demo Day Attendee",
-    description:
-      "This Trust Over IP (ToIP) Authentic Chained Data Container (ACDC) Credential provides an end-verifiable attestation that the holder attended the Internet Identity Workshop (IIW) on April 16 - 18, 2024, and participated in the Cardano Foundation's Mobile Key Event Receipt Infrastructure (KERI) Wallet demonstration.",
-  },
-  credentials: [
-    {
-      connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
-      acdc: {
-        v: "ACDC10JSON000191_",
-        d: "ENj6MvfV1AdbBtkI-0BTLcTMPYtl1PDu1AXVHN4hMzVa",
-        i: "EKtDv2h7MNqyhI5iODKtjEQAYWG-tjV5mDzEMf6MW6V0",
-        ri: "EANnrMjnnwmII_zt11VA3Y2O4hLqdXRxS1PI18zopFVT",
-        s: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
-        a: {
-          d: "EBZ0TjCqQtxgkcxi_vKE0ppkULOOo_r9KYxTew0RVqLe",
-          i: "EG8kbz8r7wI5-zZEF6cq459KNEIIWZR4EyMofehCaUqF",
-          dt: "2024-07-16T03:32:59.312000+00:00",
-          attendeeName: "hmlax",
-        },
-      },
-    },
-    {
-      connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
-      acdc: {
-        v: "ACDC10JSON000191_",
-        d: "EOT8OgwrwwNnBc-FzHPUBzsFQHOGXfifKqzfT5HwOVyb",
-        i: "EKtDv2h7MNqyhI5iODKtjEQAYWG-tjV5mDzEMf6MW6V0",
-        ri: "EANnrMjnnwmII_zt11VA3Y2O4hLqdXRxS1PI18zopFVT",
-        s: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
-        a: {
-          d: "ELzvJfDiAyqR8lf466l25AwY7uq_VUN1aBriBIKN7aFM",
-          i: "EC_FburiEJzhcSid-XljVAVt1yuWOtALQtmnauaBNFiP",
-          dt: "2024-07-16T03:32:51.604000+00:00",
-          attendeeName: "hmlax",
-        },
-      },
-    },
-  ],
-  attributes: {
-    attendeeName: "hmlax",
-  },
-};
+import { credRequestFix } from "../../../../__fixtures__/credRequestFix";
 
 mockIonicReact();
 
@@ -124,7 +80,7 @@ describe("Credential request - choose request", () => {
             onBack={jest.fn()}
             onClose={jest.fn()}
             notificationDetails={notificationsFix[4]}
-            credentialRequest={credRequest}
+            credentialRequest={credRequestFix}
           />
         </IonReactMemoryRouter>
       </Provider>
@@ -140,10 +96,10 @@ describe("Credential request - choose request", () => {
     });
 
     expect(
-      getByTestId("card-item-" + credRequest.credentials[0].acdc.d)
+      getByTestId("card-item-" + credRequestFix.credentials[0].acdc.d)
     ).toBeVisible();
     expect(
-      getByTestId("card-item-" + credRequest.credentials[1].acdc.d)
+      getByTestId("card-item-" + credRequestFix.credentials[1].acdc.d)
     ).toBeVisible();
 
     expect(getAllByText(connectionsForNotifications[0].label).length).toBe(2);
@@ -151,15 +107,15 @@ describe("Credential request - choose request", () => {
     expect(
       getByText(
         `${formatShortDate(
-          credRequest.credentials[0].acdc.a.dt
-        )} - ${formatTimeToSec(credRequest.credentials[0].acdc.a.dt)}`
+          credRequestFix.credentials[0].acdc.a.dt
+        )} - ${formatTimeToSec(credRequestFix.credentials[0].acdc.a.dt)}`
       )
     ).toBeVisible();
     expect(
       getByText(
         `${formatShortDate(
-          credRequest.credentials[1].acdc.a.dt
-        )} - ${formatTimeToSec(credRequest.credentials[1].acdc.a.dt)}`
+          credRequestFix.credentials[1].acdc.a.dt
+        )} - ${formatTimeToSec(credRequestFix.credentials[1].acdc.a.dt)}`
       )
     ).toBeVisible();
   });
@@ -181,7 +137,7 @@ describe("Credential request - choose request", () => {
             onBack={jest.fn()}
             onClose={jest.fn()}
             notificationDetails={notificationsFix[4]}
-            credentialRequest={credRequest}
+            credentialRequest={credRequestFix}
           />
         </IonReactMemoryRouter>
       </Provider>
@@ -198,7 +154,7 @@ describe("Credential request - choose request", () => {
 
     act(() => {
       fireEvent.click(
-        getByTestId(`cred-detail-${credRequest.credentials[0].acdc.d}`)
+        getByTestId(`cred-detail-${credRequestFix.credentials[0].acdc.d}`)
       );
     });
 
@@ -206,7 +162,7 @@ describe("Credential request - choose request", () => {
       expect(dispatchMock).toBeCalledWith(
         setNotificationDetailCache({
           notificationId: notificationsFix[4].id,
-          viewCred: credRequest.credentials[0].acdc.d,
+          viewCred: credRequestFix.credentials[0].acdc.d,
           step: 1,
           checked: false,
         })
@@ -231,7 +187,7 @@ describe("Credential request - choose request", () => {
         notifications: notificationsFix,
         notificationDetailCache: {
           notificationId: notificationsFix[4].id,
-          viewCred: credRequest.credentials[0].acdc.d,
+          viewCred: credRequestFix.credentials[0].acdc.d,
           step: 1,
           checked: true,
         },
@@ -259,7 +215,7 @@ describe("Credential request - choose request", () => {
             onBack={jest.fn()}
             onClose={jest.fn()}
             notificationDetails={notificationsFix[4]}
-            credentialRequest={credRequest}
+            credentialRequest={credRequestFix}
           />
         </IonReactMemoryRouter>
       </Provider>
@@ -277,7 +233,7 @@ describe("Credential request - choose request", () => {
     await waitFor(() => {
       expect(
         getByTestId(
-          `cred-select-${credRequest.credentials[0].acdc.d}`
+          `cred-select-${credRequestFix.credentials[0].acdc.d}`
         ).classList.contains("checkbox-checked")
       ).toBe(true);
       expect(dispatchMock).toBeCalledWith(setNotificationDetailCache(null));
@@ -324,7 +280,7 @@ describe("Credential request - choose request", () => {
             onBack={jest.fn()}
             onClose={jest.fn()}
             notificationDetails={notificationsFix[4]}
-            credentialRequest={credRequest}
+            credentialRequest={credRequestFix}
           />
         </IonReactMemoryRouter>
       </Provider>
@@ -341,14 +297,14 @@ describe("Credential request - choose request", () => {
 
     act(() => {
       fireEvent.click(
-        getByTestId(`cred-select-${credRequest.credentials[0].acdc.d}`)
+        getByTestId(`cred-select-${credRequestFix.credentials[0].acdc.d}`)
       );
     });
 
     await waitFor(() => {
       expect(
         getByTestId(
-          `cred-select-${credRequest.credentials[0].acdc.d}`
+          `cred-select-${credRequestFix.credentials[0].acdc.d}`
         ).classList.contains("checkbox-checked")
       ).toBe(true);
     });
@@ -369,7 +325,7 @@ describe("Credential request - choose request", () => {
         notifications: notificationsFix,
         notificationDetailCache: {
           notificationId: notificationsFix[4].id,
-          viewCred: credRequest.credentials[0].acdc.d,
+          viewCred: credRequestFix.credentials[0].acdc.d,
           step: 1,
           checked: false,
         },
@@ -393,7 +349,7 @@ describe("Credential request - choose request", () => {
             onBack={jest.fn()}
             onClose={jest.fn()}
             notificationDetails={notificationsFix[4]}
-            credentialRequest={credRequest}
+            credentialRequest={credRequestFix}
           />
         </IonReactMemoryRouter>
       </Provider>
@@ -402,7 +358,7 @@ describe("Credential request - choose request", () => {
     await waitFor(() => {
       expect(
         getByTestId(
-          `cred-select-${credRequest.credentials[0].acdc.d}`
+          `cred-select-${credRequestFix.credentials[0].acdc.d}`
         ).classList.contains("checkbox-checked")
       ).toBe(false);
       expect(dispatchMock).toBeCalledWith(setNotificationDetailCache(null));
@@ -449,7 +405,7 @@ describe("Credential request - choose request", () => {
             onBack={jest.fn()}
             onClose={jest.fn()}
             notificationDetails={notificationsFix[4]}
-            credentialRequest={credRequest}
+            credentialRequest={credRequestFix}
           />
         </IonReactMemoryRouter>
       </Provider>
@@ -466,14 +422,14 @@ describe("Credential request - choose request", () => {
 
     act(() => {
       fireEvent.click(
-        getByTestId(`cred-select-${credRequest.credentials[0].acdc.d}`)
+        getByTestId(`cred-select-${credRequestFix.credentials[0].acdc.d}`)
       );
     });
 
     await waitFor(() => {
       expect(
         getByTestId(
-          `cred-select-${credRequest.credentials[0].acdc.d}`
+          `cred-select-${credRequestFix.credentials[0].acdc.d}`
         ).classList.contains("checkbox-checked")
       ).toBe(true);
     });
@@ -488,7 +444,7 @@ describe("Credential request - choose request", () => {
 
     expect(offerAcdcFromApplyMock).toBeCalledWith(
       notificationsFix[4],
-      credRequest.credentials[0].acdc
+      credRequestFix.credentials[0].acdc
     );
   });
 });
