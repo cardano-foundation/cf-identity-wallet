@@ -75,6 +75,7 @@ export const {
   setMultisigConnectionsCache,
   updateOrAddConnectionCache,
   removeConnectionCache,
+  updateOrAddMultisigConnectionCache,
 } = connectionsCacheSlice.actions;
 
 const getConnectionsCache = (state: RootState) =>

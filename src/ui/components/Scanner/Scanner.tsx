@@ -37,6 +37,7 @@ import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
 import { ScannerProps } from "./Scanner.types";
+import { updateOrAddMultisigConnectionCache } from "../../../store/reducers/connectionsCache";
 
 const Scanner = forwardRef(
   ({ routePath, setIsValueCaptured, handleReset }: ScannerProps, ref) => {
@@ -115,6 +116,15 @@ const Scanner = forwardRef(
       dispatch(setMultiSigGroupCache(newMultiSigGroup));
     };
 
+    const handleMultisigConnections = async (groupId: string) => {
+      const connections =
+        await Agent.agent.connections.getMultisigLinkedContacts(groupId);
+
+      connections.forEach((connection) => {
+        dispatch(updateOrAddMultisigConnectionCache(connection));
+      });
+    };
+
     const handleSSIScan = (content: string) => {
       if (OperationType.SCAN_SSI_BOOT_URL === currentOperation) {
         dispatch(setBootUrl(content));
@@ -147,6 +157,7 @@ const Scanner = forwardRef(
 
         if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
           setGroupId(invitation.groupId);
+          handleMultisigConnections(invitation.groupId);
           setCreateIdentifierModalIsOpen(true);
           dispatch(setToastMsg(ToastMsgType.NEW_MULTI_SIGN_MEMBER));
         }
