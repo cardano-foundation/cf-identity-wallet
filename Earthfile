@@ -59,13 +59,20 @@ keria-src:
 idw-keria:
   ARG EARTHLY_TARGET_NAME
   ARG DOCKER_IMAGES_EXTRA_TAGS
+  ARG FORCE_BUILD=false
   LET DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}
 
   LOCALLY
-  ARG REGISTRY_IMAGE_EXISTS=$( ( docker manifest inspect ${HUB_DOCKER_COM_USER}/${EARTHLY_TARGET_NAME}:keria-${KERIA_GIT_REF} 2>/dev/null ) || echo false)
+  IF [ "${FORCE_BUILD}" = "false" ]
+    ARG REGISTRY_IMAGE_EXISTS=$( ( docker manifest inspect ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:keria-${KERIA_GIT_REF} 2>/dev/null | grep -q layers ) || echo false)
+  ELSE
+    ARG REGISTRY_IMAGE_EXISTS=false
+  END
+
   IF [ "${REGISTRY_IMAGE_EXISTS}" = "false" ]
     WAIT
       FROM DOCKERFILE -f +keria-src/keria/images/keria.dockerfile +keria-src/keria/*
+      RUN apk add --no-cache jq envsubst
       ENTRYPOINT keria start --config-file backer-oobis --config-dir ./scripts
     END
     WAIT
@@ -81,16 +88,22 @@ idw-keria:
 idw-witness:
   ARG EARTHLY_TARGET_NAME
   ARG DOCKER_IMAGES_EXTRA_TAGS
+  ARG FORCE_BUILD=false
   LET DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}
 
   LOCALLY
-  ARG REGISTRY_IMAGE_EXISTS=$( (docker manifest inspect ${EARTHLY_TARGET_NAME}:keri-${KERI_DOCKER_IMAGE_TAG} 2> /dev/null | grep -q layers) || echo false)
+  IF [ "${FORCE_BUILD}" = "false" ]
+    ARG REGISTRY_IMAGE_EXISTS=$( (docker manifest inspect ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:keri-${KERI_DOCKER_IMAGE_TAG} 2> /dev/null | grep -q layers) || echo false)
+  ELSE
+    ARG REGISTRY_IMAGE_EXISTS=false
+  END
 
   IF [ "${REGISTRY_IMAGE_EXISTS}" = "false" ]
     WAIT
       FROM ${KERI_DOCKER_IMAGE_REPO}:${KERI_DOCKER_IMAGE_TAG}
       ENV PYTHONUNBUFFERED=1
       ENV PYTHONIOENCODING=UTF-8
+      RUN apk add --no-cache jq envsubst
       ENTRYPOINT kli witness demo
     END
     WAIT

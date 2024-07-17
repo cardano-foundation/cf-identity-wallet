@@ -155,7 +155,7 @@ class MultiSigService extends AgentService {
       );
     } else {
       // Trigger the end role authorization if the operation is done
-      await Agent.agent.multiSigs.endRoleAuthorization(signifyName);
+      await this.endRoleAuthorization(signifyName);
     }
     return { identifier: multisigId, signifyName, isPending };
   }
@@ -497,7 +497,7 @@ class MultiSigService extends AgentService {
       );
     } else {
       // Trigger the end role authorization if the operation is done
-      await Agent.agent.multiSigs.endRoleAuthorization(signifyName);
+      await this.endRoleAuthorization(signifyName);
     }
 
     return { identifier: multisigId, signifyName, isPending };
@@ -760,7 +760,7 @@ class MultiSigService extends AgentService {
     return true;
   }
 
-  async getMultisigParticipants(multisigSignifyName: string) {
+  private async getMultisigParticipants(multisigSignifyName: string) {
     const members = await this.props.signifyClient
       .identifiers()
       .members(multisigSignifyName);
