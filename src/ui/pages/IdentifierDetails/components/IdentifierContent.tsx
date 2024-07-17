@@ -3,6 +3,7 @@ import {
   personCircleOutline,
   refreshOutline,
 } from "ionicons/icons";
+import { useEffect, useState } from "react";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import { IdentifierContentProps } from "./IdentifierContent.types";
 import { i18n } from "../../../../i18n";
@@ -10,11 +11,23 @@ import { ConfigurationService } from "../../../../core/configuration";
 import { CardDetailsBlock } from "../../../components/CardDetails/CardDetailsBlock";
 import { CardDetailsItem } from "../../../components/CardDetails/CardDetailsItem";
 import { BackingMode } from "../../../../core/configuration/configurationService.types";
+import { useAppSelector } from "../../../../store/hooks";
+import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
 
 const IdentifierContent = ({
   cardData,
   onOpenRotateKey,
 }: IdentifierContentProps) => {
+  const identifiersData = useAppSelector(getIdentifiersCache);
+  const [isMultiSig, setIsMultiSig] = useState(false);
+
+  useEffect(() => {
+    const identifier = identifiersData.find((data) => data.id === cardData.id);
+    if (identifier && identifier.multisigManageAid) {
+      setIsMultiSig(true);
+    }
+  }, [identifiersData, cardData.id]);
+
   return (
     <>
       {cardData.di !== "" && (
@@ -39,8 +52,8 @@ const IdentifierContent = ({
                 copyButton={true}
                 textIcon="identifiers.details.signingkeyslist.icon"
                 testId={`signing-key-${index}`}
-                actionButton={refreshOutline}
-                actionButtonClick={onOpenRotateKey}
+                actionButton={isMultiSig ? undefined : refreshOutline}
+                actionButtonClick={isMultiSig ? undefined : onOpenRotateKey}
               />
             );
           })}

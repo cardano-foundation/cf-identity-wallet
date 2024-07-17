@@ -34,6 +34,7 @@ enum MiscRecordId {
   APP_IDENTIFIER_FAVOURITE_INDEX = "identifier-favourite-index",
   APP_PASSWORD_SKIPPED = "app-password-skipped",
   APP_RECOVERY_WALLET = "recovery-wallet",
+  LOGIN_METADATA = "login-metadata",
 }
 
 interface ConnectionShortDetails {
@@ -100,6 +101,24 @@ interface KeriaStatusChangedEvent extends BaseEventEmitter {
   };
 }
 
+interface NotificationRpy {
+  a: {
+    cid: string;
+    eid: string;
+    role: string;
+  };
+  d: string;
+  dt: string;
+  r: string;
+  t: string;
+  v: string;
+}
+
+interface AuthorizationRequestExn {
+  a: { gid: string };
+  e: { rpy: NotificationRpy; d: string };
+}
+
 interface KeriaNotification {
   id: string;
   createdAt: string;
@@ -152,8 +171,10 @@ interface AgentUrls {
 
 enum NotificationRoute {
   ExnIpexGrant = "/exn/ipex/grant",
+  MultiSigExn = "/multisig/exn",
   MultiSigIcp = "/multisig/icp",
   MultiSigRot = "/multisig/rot",
+  MultiSigRpy = "/multisig/rpy",
   ExnIpexApply = "/exn/ipex/apply",
   ExnIpexAgree = "/exn/ipex/agree",
 }
@@ -191,4 +212,6 @@ export type {
   KeriaStatusChangedEvent,
   AgentUrls,
   BranAndMnemonic,
+  NotificationRpy,
+  AuthorizationRequestExn,
 };

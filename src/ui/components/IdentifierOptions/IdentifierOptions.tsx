@@ -30,7 +30,6 @@ import { OptionItem, OptionModal } from "../OptionsModal";
 import "./IdentifierOptions.scss";
 import { IdentifierOptionsProps } from "./IdentifierOptions.types";
 import { IdentifierJsonModal } from "./components";
-import { RotateKeyModal } from "../../pages/IdentifierDetails/components/RotateKeyModal/RotateKeyModal";
 
 const IdentifierOptions = ({
   optionsIsOpen,
@@ -41,12 +40,19 @@ const IdentifierOptions = ({
   handleRotateKey,
 }: IdentifierOptionsProps) => {
   const dispatch = useAppDispatch();
-  const identifierData = useAppSelector(getIdentifiersCache);
+  const identifiersData = useAppSelector(getIdentifiersCache);
   const [editorOptionsIsOpen, setEditorIsOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
   const [newSelectedTheme, setNewSelectedTheme] = useState(cardData.theme);
   const [viewIsOpen, setViewIsOpen] = useState(false);
-  const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
+  const [isMultiSig, setIsMultiSig] = useState(false);
+
+  useEffect(() => {
+    const identifier = identifiersData.find((data) => data.id === cardData.id);
+    if (identifier && identifier.multisigManageAid) {
+      setIsMultiSig(true);
+    }
+  }, [identifiersData, cardData.id]);
 
   const verifyDisplayName =
     newDisplayName.length > 0 &&
@@ -57,17 +63,6 @@ const IdentifierOptions = ({
   useEffect(() => {
     setNewDisplayName(cardData.displayName);
   }, [cardData.displayName]);
-
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      Keyboard.addListener("keyboardWillShow", () => {
-        setkeyboardIsOpen(true);
-      });
-      Keyboard.addListener("keyboardWillHide", () => {
-        setkeyboardIsOpen(false);
-      });
-    }
-  }, []);
 
   useEffect(() => {
     setNewSelectedTheme(cardData.theme);
@@ -86,7 +81,7 @@ const IdentifierOptions = ({
   const handleSubmit = async () => {
     setEditorIsOpen(false);
     setOptionsIsOpen(false);
-    const updatedIdentifiers = [...identifierData];
+    const updatedIdentifiers = [...identifiersData];
     const index = updatedIdentifiers.findIndex(
       (identifier) => identifier.id === cardData.id
     );
@@ -148,38 +143,42 @@ const IdentifierOptions = ({
     dispatch(setCurrentOperation(OperationType.IDLE));
   };
 
-  const options: OptionItem[] = [
+  const optionsRotate: OptionItem[] = [
     {
       icon: codeSlashOutline,
       label: i18n.t("identifiers.details.options.view"),
       onClick: viewJson,
-      testId: "view-json-identifier-options",
+      testId: "view-json-identifier-option",
     },
     {
       icon: pencilOutline,
       label: i18n.t("identifiers.details.options.edit"),
       onClick: updateIdentifier,
-      testId: "edit-identifier-options",
+      testId: "edit-identifier-option",
     },
     {
       icon: refreshOutline,
       label: i18n.t("identifiers.details.options.rotatekeys"),
       onClick: rotateKey,
-      testId: "rotate-keys",
+      testId: "rotate-keys-option",
     },
     {
       icon: shareOutline,
       label: i18n.t("identifiers.details.options.share"),
       onClick: share,
-      testId: "share-identifier-options",
+      testId: "share-identifier-option",
     },
     {
       icon: trashOutline,
       label: i18n.t("identifiers.details.options.delete"),
       onClick: deleteIdentifier,
-      testId: "delete-identifier-options",
+      testId: "delete-identifier-option",
     },
   ];
+
+  const optionsNoRotate = optionsRotate.filter(
+    (option) => option.testId !== "rotate-keys-option"
+  );
 
   return (
     <>
@@ -190,7 +189,7 @@ const IdentifierOptions = ({
         header={{
           title: `${i18n.t("identifiers.details.options.title")}`,
         }}
-        items={options}
+        items={isMultiSig ? optionsNoRotate : optionsRotate}
       />
       <OptionModal
         modalIsOpen={editorOptionsIsOpen}

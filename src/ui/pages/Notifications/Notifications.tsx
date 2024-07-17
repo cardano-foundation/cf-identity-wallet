@@ -1,29 +1,45 @@
-import { useState } from "react";
-import {
-  IonButton,
-  IonChip,
-  IonIcon,
-  IonList,
-  useIonViewWillEnter,
-} from "@ionic/react";
-import { settingsOutline } from "ionicons/icons";
+import { IonChip, IonList, useIonViewWillEnter } from "@ionic/react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { TabLayout } from "../../components/layout/TabLayout";
+import { Agent } from "../../../core/agent/agent";
+import {
+  KeriaNotification,
+  NotificationRoute,
+} from "../../../core/agent/agent.types";
+import { i18n } from "../../../i18n";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getNotificationsCache,
+  setReadedNotification,
+} from "../../../store/reducers/notificationsCache";
 import {
   getStateCache,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../../../routes/paths";
-import "./Notifications.scss";
-import { i18n } from "../../../i18n";
-import { timeDifference } from "../../utils/formatters";
-import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
-import { NotificationItem } from "./NotificationItem";
-import { KeriaNotification } from "../../../core/agent/agent.types";
-import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { timeDifference } from "../../utils/formatters";
+import { FilterChipProps, NotificationFilter } from "./Notification.types";
+import { NotificationItem } from "./NotificationItem";
+import "./Notifications.scss";
+import { EarlierNotification } from "./components";
+import { EarlierNotificationRef } from "./components/EarlierNotification.types";
+import { NotificationOptionsModal } from "./components/NotificationOptionsModal";
+
+const Chip = ({ filter, label, isActive, onClick }: FilterChipProps) => (
+  <span>
+    <IonChip
+      className={isActive ? "selected" : ""}
+      onClick={() => onClick(filter)}
+      data-testid={`${filter}-filter-btn`}
+    >
+      {label}
+    </IonChip>
+  </span>
+);
 
 const Notifications = () => {
   const pageId = "notifications-tab";
@@ -31,41 +47,70 @@ const Notifications = () => {
   const history = useHistory();
   const stateCache = useAppSelector(getStateCache);
   const notifications = useAppSelector(getNotificationsCache);
-  const [selectedFilter, setSelectedFilter] = useState("all");
-  const notificationsNew = notifications.filter(
+  const [selectedFilter, setSelectedFilter] = useState(NotificationFilter.All);
+  const earlierNotificationRef = useRef<EarlierNotificationRef>(null);
+  const [selectedItem, setSelectedItem] = useState<KeriaNotification | null>(
+    null
+  );
+
+  const filteredNotification = useMemo(() => {
+    if (selectedFilter === NotificationFilter.All) {
+      return notifications;
+    }
+
+    if (selectedFilter === NotificationFilter.Identifier) {
+      return notifications.filter(
+        (notification) => notification.a.r === NotificationRoute.MultiSigIcp
+      );
+    }
+
+    return notifications.filter((notification) =>
+      [NotificationRoute.ExnIpexGrant, NotificationRoute.ExnIpexApply].includes(
+        notification.a.r as NotificationRoute
+      )
+    );
+  }, [notifications, selectedFilter]);
+
+  const notificationsNew = filteredNotification.filter(
     (notification) =>
       timeDifference(notification.createdAt)[1] === "m" ||
       timeDifference(notification.createdAt)[1] === "h"
   );
-  const notificationsEarlier = notifications.filter(
-    (notification) =>
-      timeDifference(notification.createdAt)[1] !== "h" &&
-      timeDifference(notification.createdAt)[1] !== "m"
+
+  const notificationsEarlier = useMemo(
+    () =>
+      filteredNotification.filter(
+        (notification) =>
+          timeDifference(notification.createdAt)[1] !== "h" &&
+          timeDifference(notification.createdAt)[1] !== "m"
+      ),
+    [filteredNotification]
   );
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.NOTIFICATIONS }));
   });
 
-  const AdditionalButtons = () => {
-    return (
-      <IonButton
-        shape="round"
-        className="notifications-settings-button"
-        data-testid="notifications-settings-button"
-      >
-        <IonIcon
-          slot="icon-only"
-          icon={settingsOutline}
-          color="primary"
-        />
-      </IonButton>
-    );
+  const maskAsReaded = async (notification: KeriaNotification) => {
+    if (notification.read) return;
+
+    try {
+      await Agent.agent.signifyNotifications.readNotification(notification.id);
+
+      dispatch(
+        setReadedNotification({
+          id: notification.id,
+          read: !notification.read,
+        })
+      );
+    } catch (e) {
+      // TODO: Handle error
+    }
   };
 
   const handleNotificationClick = async (item: KeriaNotification) => {
-    // TODO: implement state change on notification click
-    // await Agent.agent.signifyNotifications.readNotification(item.id);
+    await maskAsReaded(item);
+
     const data: DataProps = {
       store: { stateCache },
     };
@@ -81,35 +126,39 @@ const Notifications = () => {
   };
 
   const filterOptions = [
-    { filter: "all", label: i18n.t("notifications.tab.chips.all") },
     {
-      filter: "identifiers",
+      filter: NotificationFilter.All,
+      label: i18n.t("notifications.tab.chips.all"),
+    },
+    {
+      filter: NotificationFilter.Identifier,
       label: i18n.t("notifications.tab.chips.identifiers"),
     },
     {
-      filter: "credentials",
+      filter: NotificationFilter.Credential,
       label: i18n.t("notifications.tab.chips.credentials"),
     },
   ];
 
-  const Chip = ({ filter, label }: { filter: string; label: string }) => (
-    <span>
-      <IonChip
-        className={selectedFilter === filter ? "selected" : ""}
-        // TODO: Implement filters
-        onClick={() => setSelectedFilter(filter)}
-      >
-        {label}
-      </IonChip>
-    </span>
-  );
+  const handleSelectFilter = (filter: NotificationFilter) => {
+    setSelectedFilter(filter);
+    earlierNotificationRef.current?.reset();
+  };
+
+  const onOpenOptionModal = (item: KeriaNotification | null) => {
+    setSelectedItem(item);
+  };
+
+  useEffect(() => {
+    if (history.location.pathname !== TabsRoutePath.NOTIFICATIONS)
+      earlierNotificationRef.current?.reset();
+  }, [history.location.pathname]);
 
   return (
     <TabLayout
       pageId={pageId}
       header={true}
       title={`${i18n.t("notifications.tab.header")}`}
-      additionalButtons={<AdditionalButtons />}
     >
       <div className="notifications-tab-chips">
         {filterOptions.map((option) => (
@@ -117,6 +166,8 @@ const Notifications = () => {
             key={option.filter}
             filter={option.filter}
             label={option.label}
+            isActive={option.filter === selectedFilter}
+            onClick={handleSelectFilter}
           />
         ))}
       </div>
@@ -133,41 +184,33 @@ const Notifications = () => {
               lines="none"
               data-testid="notifications-items"
             >
-              {notificationsNew.map((item: KeriaNotification, index) => (
+              {notificationsNew.map((item: KeriaNotification) => (
                 <NotificationItem
-                  key={index}
+                  key={item.id}
                   item={item}
-                  index={index}
-                  handleNotificationClick={() => handleNotificationClick(item)}
+                  onClick={handleNotificationClick}
+                  onOptionButtonClick={onOpenOptionModal}
                 />
               ))}
             </IonList>
           </div>
         )}
-        {!!notificationsEarlier.length && (
-          <div
-            className="notifications-tab-section"
-            data-testid="notifications-tab-section-earlier"
-          >
-            <h3 className="notifications-tab-section-title">
-              {i18n.t("notifications.tab.sections.earlier")}
-            </h3>
-            <IonList
-              lines="none"
-              data-testid="notifications-items"
-            >
-              {notificationsEarlier.map((item: KeriaNotification, index) => (
-                <NotificationItem
-                  key={index}
-                  item={item}
-                  index={index}
-                  handleNotificationClick={() => handleNotificationClick(item)}
-                />
-              ))}
-            </IonList>
-          </div>
-        )}
+        <EarlierNotification
+          pageId={pageId}
+          ref={earlierNotificationRef}
+          data={notificationsEarlier}
+          onNotificationClick={handleNotificationClick}
+          onOpenOptionModal={onOpenOptionModal}
+        />
       </div>
+      {selectedItem && (
+        <NotificationOptionsModal
+          notification={selectedItem}
+          onShowDetail={handleNotificationClick}
+          optionsIsOpen={!!selectedItem}
+          setCloseModal={() => onOpenOptionModal(null)}
+        />
+      )}
     </TabLayout>
   );
 };

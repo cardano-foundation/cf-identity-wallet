@@ -7,6 +7,7 @@ import {
 } from "signify-ts";
 import { entropyToMnemonic, mnemonicToEntropy } from "bip39";
 import {
+  AuthService,
   ConnectionService,
   CredentialService,
   IdentifierService,
@@ -86,6 +87,7 @@ class Agent {
   private connectionService!: ConnectionService;
   private credentialService!: CredentialService;
   private signifyNotificationService!: SignifyNotificationService;
+  private authService!: AuthService;
   static isOnline = false;
 
   get identifiers() {
@@ -164,6 +166,13 @@ class Agent {
       );
     }
     return this.signifyNotificationService;
+  }
+
+  get auth() {
+    if (!this.authService) {
+      this.authService = new AuthService(this.agentServicesProps);
+    }
+    return this.authService;
   }
 
   private constructor() {

@@ -24,6 +24,7 @@ const filteredIdentifierFix: IdentifierShortDetails[] = [
     theme: 0,
     isPending: true,
     signifyName: "Test",
+    multisigManageAid: "123",
   },
 ];
 
