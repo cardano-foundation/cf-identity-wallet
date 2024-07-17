@@ -10,7 +10,7 @@ import {
   IonRow,
   IonSearchbar,
 } from "@ionic/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { addOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -135,11 +135,18 @@ const Connections = ({
     }
   }, [connectionsCache]);
 
+  const backHardwareConfig = useMemo(
+    () => ({
+      prevent: !showConnections,
+    }),
+    [showConnections]
+  );
+
   return (
     <>
       <SideSlider open={showConnections}>
         <TabLayout
-          preventBackButtonEvent={!showConnections}
+          hardwareBackButtonConfig={backHardwareConfig}
           pageId={pageId}
           header={true}
           backButton={true}

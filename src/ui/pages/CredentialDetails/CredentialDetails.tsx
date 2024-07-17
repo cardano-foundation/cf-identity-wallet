@@ -6,7 +6,7 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
@@ -46,7 +46,11 @@ import { PageFooter } from "../../components/PageFooter";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { MAX_FAVOURITES } from "../../globals/constants";
-import { OperationType, ToastMsgType } from "../../globals/types";
+import {
+  BackEventPriorityType,
+  OperationType,
+  ToastMsgType,
+} from "../../globals/types";
 import { useAppIonRouter } from "../../hooks";
 import { combineClassNames } from "../../utils/style";
 import { CredentialContent } from "./components/CredentialContent";
@@ -79,6 +83,8 @@ const CredentialDetails = () => {
   const [notiSelected, setNotiSelected] = useState(
     !!notificationDetailCache?.checked
   );
+
+  const isLightMode = !!notificationDetailCache;
 
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
@@ -124,7 +130,7 @@ const CredentialDetails = () => {
   const handleDone = () => {
     setNavAnimation(true);
 
-    if (notificationDetailCache) {
+    if (isLightMode) {
       handleBackNotification(notificationDetailCache);
       return;
     }
@@ -243,7 +249,7 @@ const CredentialDetails = () => {
   };
 
   const AdditionalButtons = () => {
-    if (notificationDetailCache) {
+    if (isLightMode) {
       return (
         <IonCheckbox
           checked={notiSelected}
@@ -325,6 +331,16 @@ const CredentialDetails = () => {
     }
   };
 
+  const hardwareBackButtonConfig = useMemo(
+    () => ({
+      prevent: false,
+      priority: isLightMode
+        ? BackEventPriorityType.Page
+        : BackEventPriorityType.Tab,
+    }),
+    [isLightMode]
+  );
+
   return (
     <TabLayout
       pageId={pageId}
@@ -336,6 +352,7 @@ const CredentialDetails = () => {
       actionButton={isArchived}
       actionButtonAction={() => setAlertRestoreIsOpen(true)}
       actionButtonLabel={`${i18n.t("credentials.details.restore")}`}
+      hardwareBackButtonConfig={hardwareBackButtonConfig}
     >
       {!cardData ? (
         <div
