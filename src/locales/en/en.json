@@ -959,8 +959,7 @@
         "cancel": "Cancel",
         "back": "Back",
         "choosecredential": "Choose credential",
-        "providecredential": "Provide credential",
-        "continuesetup": "Continue setup"
+        "providecredential": "Provide credential"
       },
       "credential": {
         "request": {
@@ -1010,7 +1009,8 @@
           "help": {
             "title": "Need help?",
             "detailtext": "If you need assistance, please refer to our Help Center or contact support."
-          }
+          },
+          "continuesetup": "Continue setup"
         }
       }
     }

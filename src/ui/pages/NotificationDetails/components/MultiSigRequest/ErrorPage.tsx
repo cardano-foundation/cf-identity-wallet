@@ -71,7 +71,7 @@ const ErrorPage = ({
             pageId={pageId}
             customClass="multisig-feedback-footer"
             primaryButtonText={`${i18n.t(
-              "notifications.details.buttons.continuesetup"
+              "notifications.details.identifier.errorpage.continuesetup"
             )}`}
             primaryButtonAction={() => actionAccept()}
           />
