@@ -36,7 +36,7 @@ const notificationsFix: KeriaNotification[] = [
     read: false,
   },
   {
-    id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
+    id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmv",
     createdAt: new Date(
       now.getTime() + 15 * 24 * 60 * 60 * -1000
     ).toISOString(),

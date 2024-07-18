@@ -399,7 +399,7 @@ describe("Ipex communication service of agent", () => {
       signifyName: "abc123",
     });
     ipexGrantMock.mockResolvedValue(["offer", "sigs", "gend"]);
-    await ipexCommunicationService.grantAcdcFromAgree(noti);
+    await ipexCommunicationService.grantAcdcFromAgree(noti.a.d);
     expect(ipexGrantMock).toBeCalledWith({
       acdc: {},
       acdcAttachment: undefined,
@@ -410,7 +410,6 @@ describe("Ipex communication service of agent", () => {
       recipient: "i",
       senderName: "abc123",
     });
-    expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 
   test("can not grant Keri Acdc if aid is not existed", async () => {
@@ -453,7 +452,7 @@ describe("Ipex communication service of agent", () => {
           new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
         );
     await expect(
-      ipexCommunicationService.grantAcdcFromAgree(noti)
+      ipexCommunicationService.grantAcdcFromAgree(noti.a.d)
     ).rejects.toThrowError(
       IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
     );
@@ -493,7 +492,7 @@ describe("Ipex communication service of agent", () => {
     });
     credentialGetMock = jest.fn().mockReturnValue(null);
     await expect(
-      ipexCommunicationService.grantAcdcFromAgree(noti)
+      ipexCommunicationService.grantAcdcFromAgree(noti.a.d)
     ).rejects.toThrowError(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
   });
 
@@ -600,7 +599,7 @@ describe("Ipex communication service of agent", () => {
       ipexCommunicationService.offerAcdcFromApply(noti, {})
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     await expect(
-      ipexCommunicationService.grantAcdcFromAgree(noti)
+      ipexCommunicationService.grantAcdcFromAgree(noti.a.d)
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     await expect(
       ipexCommunicationService.getIpexApplyDetails(noti)
