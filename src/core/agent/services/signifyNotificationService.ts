@@ -240,8 +240,7 @@ class SignifyNotificationService extends AgentService {
       if (
         Object.values(NotificationRoute).includes(
           notif.a.r as NotificationRoute
-        ) &&
-        !notif.r
+        )
       ) {
         const keriaNotif = await this.createNotificationRecord(notif);
         callback(keriaNotif);
