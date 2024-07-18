@@ -71,7 +71,7 @@ interface MultiSigExnMessage {
 interface CreateMultisigExnPayload {
   gid: string;
   smids: any[];
-  rmids: any;
+  rmids: any[];
   rstates: any;
   name: string;
 }
