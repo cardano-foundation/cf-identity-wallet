@@ -14,9 +14,6 @@ import { PageHeader } from "../../../../components/PageHeader";
 import "./ErrorPage.scss";
 import { ErrorPageProps } from "./ErrorPage.types";
 
-const CANNOT_FIND_CONNECTION = "Cannot find multisign connection";
-const CANNOT_FIND_IDENTIFIER = "Cannot find multisign connection";
-
 const ErrorPage = ({
   pageId,
   activeStatus,
@@ -33,25 +30,16 @@ const ErrorPage = ({
     useState(false);
 
   const actionAccept = () => {
-    try {
-      const multiSignGroupId =
-        connectionsCache[notificationDetails.connectionId].groupId;
-      if (!multiSignGroupId) {
-        throw new Error(CANNOT_FIND_CONNECTION);
-      }
+    const multiSignGroupId =
+      connectionsCache[notificationDetails.connectionId].groupId;
 
-      const identifier = identifierCache.find(
-        (item) => item.groupMetadata?.groupId === multiSignGroupId
-      );
+    const identifier = identifierCache.find(
+      (item) => item.groupMetadata?.groupId === multiSignGroupId
+    );
 
-      if (!identifier) {
-        throw new Error(CANNOT_FIND_IDENTIFIER);
-      }
-
+    if (identifier) {
       setResumeMultiSig(identifier);
       setCreateIdentifierModalIsOpen(true);
-    } catch (e) {
-      // TODO: Handle error
     }
   };
 

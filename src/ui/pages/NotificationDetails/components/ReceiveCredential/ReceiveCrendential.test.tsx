@@ -3,12 +3,12 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import EN_TRANSLATIONS from "../../../../locales/en/en.json";
-import { TabsRoutePath } from "../../../../routes/paths";
-import { setNotificationsCache } from "../../../../store/reducers/notificationsCache";
-import { connectionsForNotifications } from "../../../__fixtures__/connectionsFix";
-import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
-import { notificationsFix } from "../../../__fixtures__/notificationsFix";
+import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
+import { TabsRoutePath } from "../../../../../routes/paths";
+import { setNotificationsCache } from "../../../../../store/reducers/notificationsCache";
+import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
+import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
+import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { ReceiveCredential } from "./ReceiveCredential";
 
 mockIonicReact();

@@ -1,6 +1,5 @@
 import { ConnectionStatus } from "../../core/agent/agent.types";
 import CardanoLogo from "../assets/images/CardanoLogo.jpg";
-import UserPicture from "../assets/images/UserPicture.jpg";
 import { ConnectionShortDetails } from "../pages/Connections/Connections.types";
 
 const connectionsFix: ConnectionShortDetails[] = [
@@ -29,7 +28,7 @@ const connectionsFix: ConnectionShortDetails[] = [
     id: "ebfeb1ebc6f1c276ef71212ec23",
     label: "John Smith",
     connectionDate: "2024-02-13T11:39:20Z",
-    logo: UserPicture,
+    logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
   },
   {
