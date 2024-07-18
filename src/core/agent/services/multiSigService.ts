@@ -138,7 +138,6 @@ class MultiSigService extends AgentService {
       signifyOpName: result.op.name, //we save the signifyOpName here to sync the multisig's status later
       isPending,
       multisigManageAid: ourIdentifier,
-      authorizedEids: [],
     });
     ourMetadata.groupMetadata.groupCreated = true;
     await this.identifierStorage.updateIdentifierMetadata(
@@ -806,7 +805,6 @@ class MultiSigService extends AgentService {
     const ourAid: Aid = await this.props.signifyClient
       .identifiers()
       .get(ourIdentifier.signifyName as string);
-    const authorizedEids = [];
     for (const member of multisigMembers) {
       const eid = Object.keys(member.ends.agent)[0]; //agent of member
       const stamp = new Date().toISOString().replace("Z", "000+00:00");
@@ -839,11 +837,7 @@ class MultiSigService extends AgentService {
         recp,
         { gid: aid }
       );
-      authorizedEids.push(eid);
     }
-    await this.identifierStorage.updateIdentifierMetadata(hab["prefix"], {
-      authorizedEids,
-    });
   }
 
   async joinAuthorization(requestExn: AuthorizationRequestExn): Promise<void> {
@@ -895,10 +889,6 @@ class MultiSigService extends AgentService {
       recp,
       { gid: hab["prefix"] }
     );
-    multisigMetadataRecord.authorizedEids?.push(rpyeid);
-    await this.identifierStorage.updateIdentifierMetadata(hab["prefix"], {
-      authorizedEids: multisigMetadataRecord.authorizedEids,
-    });
   }
 }
 
