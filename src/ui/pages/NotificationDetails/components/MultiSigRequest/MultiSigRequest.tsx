@@ -67,6 +67,7 @@ const MultiSigRequest = ({
         notificationDetails.a.d as string
       );
       setMultisigIcpDetails(details);
+      setShowErrorPage(false);
     } catch (e) {
       if (
         (e as Error).message === MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP
@@ -149,6 +150,8 @@ const MultiSigRequest = ({
         pageId={pageId}
         handleBack={handleBack}
         activeStatus={activeStatus}
+        notificationDetails={notificationDetails}
+        onFinishSetup={getDetails}
       />
     );
   }

@@ -5,14 +5,37 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
-import { setCurrentOperation } from "../../../../../store/reducers/stateCache";
-import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
-import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
+import {
+  connectionsFix,
+  connectionsForNotifications,
+} from "../../../../__fixtures__/connectionsFix";
+import { multisignIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
-import { OperationType } from "../../../../globals/types";
 import { ErrorPage } from "./ErrorPage";
 
 mockIonicReact();
+
+const mockGetMultisigConnection = jest.fn(() =>
+  Promise.resolve([connectionsFix[3]])
+);
+
+jest.mock("../../../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      identifiers: {
+        getIdentifiersCache: jest.fn(),
+        createIdentifier: jest.fn(() => ({
+          identifier: "mock-id",
+          isPending: true,
+          signifyName: "mock name",
+        })),
+      },
+      connections: {
+        getMultisigLinkedContacts: () => mockGetMultisigConnection(),
+      },
+    },
+  },
+}));
 
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
@@ -25,16 +48,20 @@ const initialState = {
       time: Date.now(),
       passcodeIsSet: true,
     },
+    queueIncomingRequest: {
+      isProcessing: false,
+      queues: [],
+      isPaused: false,
+    },
   },
   connectionsCache: {
-    connections: connectionsForNotifications,
+    multisigConnections: connectionsForNotifications,
   },
   notificationsCache: {
     notifications: notificationsFix,
   },
-
   identifiersCache: {
-    identifiers: filteredIdentifierFix,
+    identifiers: multisignIdentifierFix,
   },
 };
 
@@ -50,6 +77,8 @@ describe("Multisign error feedback", () => {
           pageId="feedback"
           activeStatus
           handleBack={jest.fn()}
+          notificationDetails={notificationsFix[4]}
+          onFinishSetup={jest.fn}
         />
       </Provider>
     );
@@ -106,9 +135,7 @@ describe("Multisign error feedback", () => {
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentOperation(OperationType.MULTI_SIG_RECEIVER_SCAN)
-      );
+      expect(getByText(EN_TRANSLATIONS.createidentifier.share.title));
     });
   });
 });

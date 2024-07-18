@@ -140,6 +140,7 @@ const connectionsForNotifications = {
     connectionDate: "2024-06-25T12:38:06.342Z",
     status: "confirmed",
     oobi: "http://keria:3902/oobi/EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB/agent/EK05Hv5jz3yZJD1UG4FwSE0-xgG2wgWeG4RCasOlr9iI?name=CF%20Credential%20Issuance",
+    groupId: "549eb79f-856c-4bb7-8dd5-d5eed865906a",
   },
 };
 
