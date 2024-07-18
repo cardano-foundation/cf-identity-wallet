@@ -49,9 +49,7 @@ const ChooseCredential = ({
 
   const displayIdentifiers = credentialRequest.credentials.map(
     (cred): CardItem<RequestCredential> => {
-      const connection =
-        connections.find((connection) => connection.id === cred.connectionId)
-          ?.label || "";
+      const connection = connections?.[cred.connectionId]?.label || "";
 
       return {
         id: cred.acdc.d,
