@@ -61,7 +61,7 @@
   }
 
   .multisig-feedback-footer {
-    padding: 1rem 0;
+    padding: 1.25rem 0;
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
@@ -79,6 +79,10 @@
 
     .detail-text {
       font-size: 0.85rem;
+    }
+
+    .multisig-feedback-footer {
+      padding: 1rem 0;
     }
 
     .instructions {
