@@ -531,6 +531,17 @@ class MultiSigService extends AgentService {
     return { done: false };
   }
 
+  @OnlineOnly
+  async rotateLocalMember(ourIdentifier: string) {
+    const metadata = await this.identifierStorage.getIdentifierMetadata(
+      ourIdentifier
+    );
+    if (!metadata.multisigManageAid) {
+      throw new Error(MultiSigService.AID_IS_NOT_MULTI_SIG);
+    }
+    await Agent.agent.identifiers.rotateIdentifier(metadata.multisigManageAid);
+  }
+
   private async rotateMultisigAid(
     aid: Aid,
     multisigAidMembers: Pick<Aid, "state">[],
