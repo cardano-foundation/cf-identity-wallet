@@ -113,13 +113,7 @@ class IpexCommunicationService extends AgentService {
       cred
     );
 
-    await this.props.signifyClient
-      .notifications()
-      .mark(id)
-      .catch((error) => {
-        throw error;
-      });
-
+    Agent.agent.signifyNotifications.markNotification(id);
     await this.notificationStorage.deleteById(id);
     this.props.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
@@ -148,6 +142,7 @@ class IpexCommunicationService extends AgentService {
     await this.props.signifyClient
       .ipex()
       .submitOffer(holderSignifyName, offer, sigs, end, [msg.exn.i]);
+    Agent.agent.signifyNotifications.markNotification(notification.id);
     await this.notificationStorage.deleteById(notification.id);
   }
 

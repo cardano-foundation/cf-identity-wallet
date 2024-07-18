@@ -329,7 +329,7 @@ class SignifyNotificationService extends AgentService {
     });
   }
 
-  private markNotification(notiSaid: string) {
+  markNotification(notiSaid: string) {
     return this.props.signifyClient.notifications().mark(notiSaid);
   }
 

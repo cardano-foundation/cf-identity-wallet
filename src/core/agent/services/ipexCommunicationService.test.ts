@@ -170,6 +170,9 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         resolveOobi: jest.fn(),
       },
+      signifyNotifications: {
+        markNotification: (id: string) => markNotificationMock(id),
+      },
     },
   },
 }));
@@ -246,6 +249,7 @@ describe("Ipex communication service of agent", () => {
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalled();
     expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
     expect(notificationStorage.deleteById).not.toBeCalled();
+    expect(markNotificationMock).not.toBeCalledWith(id);
   });
 
   // This test should go when this has been made event driven.
@@ -316,6 +320,7 @@ describe("Ipex communication service of agent", () => {
         d: "d",
       },
     });
+    markNotificationMock.mockResolvedValue(null);
     credentialListMock = jest.fn().mockReturnValue({});
     identifierStorage.getIdentifierMetadata = jest.fn().mockReturnValue({
       signifyName: "abc123",
@@ -328,6 +333,7 @@ describe("Ipex communication service of agent", () => {
       acdc: expect.anything(),
       apply: "d",
     });
+    expect(markNotificationMock).toBeCalledWith(id);
     expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 
