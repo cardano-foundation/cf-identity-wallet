@@ -960,7 +960,7 @@
         "back": "Back",
         "choosecredential": "Choose credential",
         "providecredential": "Provide credential",
-        "scannow": "Continue setup"
+        "continuesetup": "Continue setup"
       },
       "credential": {
         "request": {
