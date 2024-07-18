@@ -151,7 +151,11 @@ const MultiSigRequest = ({
         handleBack={handleBack}
         activeStatus={activeStatus}
         notificationDetails={notificationDetails}
-        onFinishSetup={getDetails}
+        onFinishSetup={() => {
+          setShowErrorPage(false);
+          setMultisigIcpDetails(null);
+          getDetails();
+        }}
       />
     );
   }
