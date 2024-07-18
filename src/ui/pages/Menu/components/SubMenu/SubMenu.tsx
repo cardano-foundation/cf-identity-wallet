@@ -4,7 +4,6 @@ import { useCallback } from "react";
 import { SubMenuProps } from "./SubMenu.types";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../../../components/PageHeader";
-import { combineClassNames } from "../../../../utils/style";
 import { SideSlider } from "../../../../components/SideSlider";
 
 const SubMenu = ({
@@ -22,7 +21,7 @@ const SubMenu = ({
   }, [setShowSubMenu]);
 
   return (
-    <SideSlider open={showSubMenu}>
+    <SideSlider isOpen={showSubMenu}>
       <ScrollablePageLayout
         pageId={pageId}
         activeStatus={showSubMenu}

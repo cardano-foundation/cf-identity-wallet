@@ -1098,7 +1098,13 @@
             "label": "Can't remember?"
           }
         },
-        "manageoperationspassword": "Manage Operations Password",
+        "managepassword": {
+          "title": "Manage operations password",
+          "page": {
+            "title": "Manage password",
+            "enable": "Enable operations password"
+          }
+        },
         "seedphrase": "Seed Phrase"
       },
       "support": {

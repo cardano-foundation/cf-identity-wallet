@@ -21,8 +21,7 @@
       padding: 0;
     }
 
-    ion-item.security-item,
-    ion-item.support-item {
+    ion-item.settings-item {
       --min-height: 3rem;
       --inner-padding-end: 0px;
 
@@ -79,14 +78,12 @@
     }
 
     .settings-section-title,
-    ion-item.security-item ion-label,
-    ion-item.support-item ion-label,
+    ion-item.settings-item ion-label,
     ion-note {
       font-size: 0.8rem !important;
     }
 
-    ion-item.security-item,
-    ion-item.support-item {
+    ion-item.settings-item {
       --min-height: 2.4rem;
 
       ion-icon {

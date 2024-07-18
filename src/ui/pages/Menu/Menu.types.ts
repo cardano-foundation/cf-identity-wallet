@@ -29,6 +29,7 @@ enum SubMenuKey {
   Crypto,
   Connections,
   ConnectWallet,
+  ManagePassword,
 }
 
 export type { SubMenuProps, MenuItemProps, SubMenuData };

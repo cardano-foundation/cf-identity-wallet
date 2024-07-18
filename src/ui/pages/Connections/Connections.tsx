@@ -145,7 +145,7 @@ const Connections = ({
 
   return (
     <>
-      <SideSlider open={showConnections}>
+      <SideSlider isOpen={showConnections}>
         <TabLayout
           hardwareBackButtonConfig={backHardwareConfig}
           pageId={pageId}

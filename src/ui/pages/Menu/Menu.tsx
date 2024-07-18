@@ -30,6 +30,7 @@ import {
   ConnectWallet,
   ConnectWalletOptionRef,
 } from "./components/ConnectWallet";
+import { ManagePassword } from "./components/Settings/components/ManagePassword";
 
 const emptySubMenu = {
   Component: () => <></>,
