@@ -16,7 +16,7 @@ mockIonicReact();
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const acceptAcdcMock = jest.fn((id: string) => Promise.resolve(id));
 
-jest.mock("../../../../core/agent/agent", () => ({
+jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       signifyNotifications: {
