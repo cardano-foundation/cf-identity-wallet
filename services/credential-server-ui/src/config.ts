@@ -1,11 +1,10 @@
-// eslint-disable-next-line no-undef
-const port = process.env.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT
-  ? Number(process.env.PORT)
-  : 3001;
-// eslint-disable-next-line no-undef
-const endpoint =
-  process.env.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL ??
-  `http://127.0.0.1:${port}`;
+// @ts-ignore
+const port = window._env_?.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT || process.env.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT || "3001";
+
+// @ts-ignore
+const url = window._env_?.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL || process.env.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL || "http://localhost";
+const endpoint = `${url}:${port}`;
+
 const config = {
   endpoint: endpoint,
   endpoints: [endpoint],

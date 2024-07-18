@@ -1,37 +1,26 @@
-import { useHistory } from "react-router-dom";
-import { RoutePath } from "../../../routes";
-import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getStateCache } from "../../../store/reducers/stateCache";
-import { updateReduxState } from "../../../store/utils";
+import { useMemo } from "react";
+import { useParams } from "react-router-dom";
+import { NotificationRoute } from "../../../core/agent/agent.types";
+import { useAppSelector } from "../../../store/hooks";
+import { getNotificationsCache } from "../../../store/reducers/notificationsCache";
 import { useAppIonRouter } from "../../hooks";
-import { getBackRoute } from "../../../routes/backRoute";
-import {
-  KeriaNotification,
-  NotificationRoute,
-} from "../../../core/agent/agent.types";
+import { CredentialRequest } from "./components/CredentialRequest";
 import { MultiSigRequest } from "./components/MultiSigRequest";
 import { ReceiveCredential } from "./components/ReceiveCredential";
+import { TabsRoutePath } from "../../../routes/paths";
 
 const NotificationDetails = () => {
   const pageId = "notification-details";
   const ionicRouter = useAppIonRouter();
-  const history = useHistory();
-  const dispatch = useAppDispatch();
-  const stateCache = useAppSelector(getStateCache);
-  const notificationDetails = history?.location?.state as KeriaNotification;
+  const notificationCache = useAppSelector(getNotificationsCache);
+  const { id } = useParams<{ id: string }>();
+
+  const notificationDetails = useMemo(() => {
+    return notificationCache.find((notification) => notification.id === id);
+  }, [id, notificationCache]);
 
   const handleBack = () => {
-    const data: DataProps = {
-      store: { stateCache },
-    };
-    const { backPath, updateRedux } = getBackRoute(
-      RoutePath.NOTIFICATION_DETAILS,
-      data
-    );
-
-    updateReduxState(backPath.pathname, data, dispatch, updateRedux);
-    ionicRouter.goBack();
+    ionicRouter.push(TabsRoutePath.NOTIFICATIONS, "back", "pop");
   };
 
   switch (notificationDetails?.a?.r) {
@@ -47,6 +36,15 @@ const NotificationDetails = () => {
   case NotificationRoute.ExnIpexGrant:
     return (
       <ReceiveCredential
+        pageId={pageId}
+        activeStatus={!!notificationDetails}
+        notificationDetails={notificationDetails}
+        handleBack={handleBack}
+      />
+    );
+  case NotificationRoute.ExnIpexApply:
+    return (
+      <CredentialRequest
         pageId={pageId}
         activeStatus={!!notificationDetails}
         notificationDetails={notificationDetails}

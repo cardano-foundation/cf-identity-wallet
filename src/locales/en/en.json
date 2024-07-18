@@ -963,16 +963,24 @@
         "accept": "Accept",
         "decline": "Decline",
         "cancel": "Cancel",
-        "choosecredential": "Choose credential"
+        "back": "Back",
+        "choosecredential": "Choose credential",
+        "providecredential": "Provide credential"
       },
       "credential": {
         "request": {
-          "title": "Credential request",
-          "requestfrom": "Request from",
-          "requestedcredential": "Requested credential",
-          "informationrequired": "Information required",
-          "alert": {
-            "textdecline": "Are you sure you want to decline this credential request? You won't be able to change your decision later."
+          "information": {
+            "title": "Credential request",
+            "requestfrom": "Request from",
+            "requestedcredential": "Requested credential",
+            "informationrequired": "Information required",
+            "alert": {
+              "textdecline": "Are you sure you want to decline this credential request? You won't be able to change your decision later."
+            }
+          },
+          "choosecredential": {
+            "description": "Select the most appropriate {{requestCred}} to provide the required information",
+            "title": "Choose credential"
           }
         },
         "receive": {
