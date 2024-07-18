@@ -3,9 +3,10 @@ import { mockIonicReact } from "@ionic/react-test-utils";
 import { render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
+import { Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { RoutePath, TabsRoutePath } from "../../../routes/paths";
+import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
@@ -63,12 +64,19 @@ describe("Notification Detail", () => {
     };
 
     const history = createMemoryHistory();
-    history.push(RoutePath.CONNECTION_DETAILS, notificationsFix[0]);
+    const path = `${TabsRoutePath.NOTIFICATIONS}/${notificationsFix[0].id}`;
+    history.push(path, notificationsFix[0]);
 
     const { getByText } = render(
-      <IonReactMemoryRouter history={history}>
+      <IonReactMemoryRouter
+        initialEntries={[path]}
+        history={history}
+      >
         <Provider store={storeMocked}>
-          <NotificationDetails />
+          <Route
+            path={TabsRoutePath.NOTIFICATION_DETAILS}
+            component={NotificationDetails}
+          />
         </Provider>
       </IonReactMemoryRouter>
     );
@@ -87,12 +95,19 @@ describe("Notification Detail", () => {
     };
 
     const history = createMemoryHistory();
-    history.push(RoutePath.CONNECTION_DETAILS, notificationsFix[3]);
+    const path = `${TabsRoutePath.NOTIFICATIONS}/${notificationsFix[3].id}`;
+    history.push(path, notificationsFix[3]);
 
     const { getByText } = render(
-      <IonReactMemoryRouter history={history}>
+      <IonReactMemoryRouter
+        initialEntries={[path]}
+        history={history}
+      >
         <Provider store={storeMocked}>
-          <NotificationDetails />
+          <Route
+            path={TabsRoutePath.NOTIFICATION_DETAILS}
+            component={NotificationDetails}
+          />
         </Provider>
       </IonReactMemoryRouter>
     );

@@ -1,8 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import { ConnectionShortDetails } from "../../../core/agent/agent.types";
-const initialState: { connections: ConnectionShortDetails[] } = {
-  connections: [],
+const initialState: {
+  connections: { [key: string]: ConnectionShortDetails };
+  multisigConnections: { [key: string]: ConnectionShortDetails };
+} = {
+  connections: {},
+  multisigConnections: {},
 };
 const connectionsCacheSlice = createSlice({
   name: "connectionsCache",
@@ -12,26 +16,72 @@ const connectionsCacheSlice = createSlice({
       state,
       action: PayloadAction<ConnectionShortDetails[]>
     ) => {
-      state.connections = action.payload;
+      const newConnections = action.payload.reduce(
+        (acc: { [key: string]: ConnectionShortDetails }, connection) => {
+          acc[connection.id] = connection;
+          return acc;
+        },
+        {}
+      );
+
+      state.connections = newConnections;
     },
+
     updateOrAddConnectionCache: (
       state,
       action: PayloadAction<ConnectionShortDetails>
     ) => {
-      const connections = state.connections.filter(
-        (connection) => connection.id !== action.payload.id
+      state.connections = {
+        ...state.connections,
+        [action.payload.id]: action.payload,
+      };
+    },
+
+    removeConnectionCache: (state, action: PayloadAction<string>) => {
+      delete state.connections[action.payload];
+    },
+
+    setMultisigConnectionsCache: (
+      state,
+      action: PayloadAction<ConnectionShortDetails[]>
+    ) => {
+      const multisigConnection = action.payload.reduce(
+        (acc: { [key: string]: ConnectionShortDetails }, connection) => {
+          acc[connection.id] = connection;
+          return acc;
+        },
+        {}
       );
-      state.connections = [...connections, action.payload];
+
+      state.multisigConnections = multisigConnection;
+    },
+
+    updateOrAddMultisigConnectionCache: (
+      state,
+      action: PayloadAction<ConnectionShortDetails>
+    ) => {
+      state.multisigConnections = {
+        ...state.multisigConnections,
+        [action.payload.id]: action.payload,
+      };
     },
   },
 });
 
 export { initialState, connectionsCacheSlice };
 
-export const { setConnectionsCache, updateOrAddConnectionCache } =
-  connectionsCacheSlice.actions;
+export const {
+  setConnectionsCache,
+  setMultisigConnectionsCache,
+  updateOrAddConnectionCache,
+  removeConnectionCache,
+  updateOrAddMultisigConnectionCache,
+} = connectionsCacheSlice.actions;
 
 const getConnectionsCache = (state: RootState) =>
   state.connectionsCache.connections;
 
-export { getConnectionsCache };
+const getMultisigConnectionsCache = (state: RootState) =>
+  state.connectionsCache.multisigConnections;
+
+export { getConnectionsCache, getMultisigConnectionsCache };

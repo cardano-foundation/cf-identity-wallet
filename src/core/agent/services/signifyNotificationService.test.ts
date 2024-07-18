@@ -109,6 +109,9 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       getKeriaOnlineStatus: jest.fn(),
       multiSigs: { hasMultisig: jest.fn() },
+      ipexCommunications: {
+        grantAcdcFromAgree: jest.fn(),
+      },
     },
   },
 }));

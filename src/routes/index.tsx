@@ -34,7 +34,7 @@ const Routes = () => {
 
   useEffect(() => {
     if (!routes.length) dispatch(setCurrentRoute({ path: nextPath.pathname }));
-  }, [routes, nextPath.pathname]);
+  }, [routes, nextPath.pathname, dispatch]);
 
   return (
     <IonReactRouter>
@@ -85,12 +85,6 @@ const Routes = () => {
           component={ConnectionDetails}
           exact
         />
-        <Route
-          path={RoutePath.NOTIFICATION_DETAILS}
-          component={NotificationDetails}
-          exact
-        />
-
         {tabsRoutes.map((tab, index: number) => {
           return (
             <Route
@@ -114,6 +108,11 @@ const Routes = () => {
         <Route
           path={TabsRoutePath.CREDENTIAL_DETAILS}
           component={CredentialDetails}
+          exact
+        />
+        <Route
+          path={TabsRoutePath.NOTIFICATION_DETAILS}
+          component={NotificationDetails}
           exact
         />
         <Redirect

@@ -89,7 +89,7 @@ describe("Settings page", () => {
       getByText(EN_TRANSLATIONS.settings.sections.security.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.changepin)
+      getByText(EN_TRANSLATIONS.settings.sections.security.changepin.title)
     ).toBeInTheDocument();
     expect(
       getByText(EN_TRANSLATIONS.settings.sections.security.biometry)

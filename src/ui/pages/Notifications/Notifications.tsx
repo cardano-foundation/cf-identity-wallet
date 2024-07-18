@@ -7,19 +7,13 @@ import {
   NotificationRoute,
 } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
-import { getNextRoute } from "../../../routes/nextRoute";
-import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getNotificationsCache,
   setReadedNotification,
 } from "../../../store/reducers/notificationsCache";
-import {
-  getStateCache,
-  setCurrentRoute,
-} from "../../../store/reducers/stateCache";
-import { updateReduxState } from "../../../store/utils";
+import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { timeDifference } from "../../utils/formatters";
 import { FilterChipProps, NotificationFilter } from "./Notification.types";
@@ -45,7 +39,6 @@ const Notifications = () => {
   const pageId = "notifications-tab";
   const dispatch = useAppDispatch();
   const history = useHistory();
-  const stateCache = useAppSelector(getStateCache);
   const notifications = useAppSelector(getNotificationsCache);
   const [selectedFilter, setSelectedFilter] = useState(NotificationFilter.All);
   const earlierNotificationRef = useRef<EarlierNotificationRef>(null);
@@ -111,18 +104,9 @@ const Notifications = () => {
   const handleNotificationClick = async (item: KeriaNotification) => {
     await maskAsReaded(item);
 
-    const data: DataProps = {
-      store: { stateCache },
-    };
-    const { nextPath, updateRedux } = getNextRoute(
-      TabsRoutePath.NOTIFICATIONS,
-      data
-    );
-    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    history.push({
-      pathname: nextPath.pathname,
-      state: item,
-    });
+    const path = `${TabsRoutePath.NOTIFICATIONS}/${item.id}`;
+
+    history.push(path);
   };
 
   const filterOptions = [
