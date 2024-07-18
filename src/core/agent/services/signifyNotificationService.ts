@@ -198,10 +198,10 @@ class SignifyNotificationService extends AgentService {
       }
       const rpyRoute = multisigNotification[0].exn.e.rpy.r;
       if (rpyRoute === "/end/role/add") {
-        await this.markNotification(notif.i);
         await Agent.agent.multiSigs.joinAuthorization(
           multisigNotification[0].exn
         );
+        await this.markNotification(notif.i);
         return;
       }
     }
