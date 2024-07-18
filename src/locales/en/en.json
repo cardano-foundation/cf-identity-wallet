@@ -33,21 +33,15 @@
       }
     }
   },
+  "createpasscodemodule": {
+    "errornomatch": "Passcode does not match",
+    "errormatch": "Passcode already in use",
+    "cantremember": "Can't remember?"
+  },
   "setpasscode": {
-    "enterpasscode": {
-      "title": "Create your Passcode",
-      "description": "Create a passcode to secure access to your wallet and to continue the onboarding process",
-      "error": "Passcode does not match"
-    },
-    "reenterpasscode": {
-      "title": "Re-enter your Passcode"
-    },
-    "startover": {
-      "label": "Forgot your passcode?"
-    },
-    "cantremember": {
-      "label": "Can't remember?"
-    }
+    "enterpasscode": "Create your Passcode",
+    "description": "Create a passcode to secure access to your wallet and to continue the onboarding process",
+    "reenterpasscode": "Re-enter your Passcode"
   },
   "generateseedphrase": {
     "onboarding": {
@@ -963,16 +957,24 @@
         "accept": "Accept",
         "decline": "Decline",
         "cancel": "Cancel",
-        "choosecredential": "Choose credential"
+        "back": "Back",
+        "choosecredential": "Choose credential",
+        "providecredential": "Provide credential"
       },
       "credential": {
         "request": {
-          "title": "Credential request",
-          "requestfrom": "Request from",
-          "requestedcredential": "Requested credential",
-          "informationrequired": "Information required",
-          "alert": {
-            "textdecline": "Are you sure you want to decline this credential request? You won't be able to change your decision later."
+          "information": {
+            "title": "Credential request",
+            "requestfrom": "Request from",
+            "requestedcredential": "Requested credential",
+            "informationrequired": "Information required",
+            "alert": {
+              "textdecline": "Are you sure you want to decline this credential request? You won't be able to change your decision later."
+            }
+          },
+          "choosecredential": {
+            "description": "Select the most appropriate {{requestCred}} to provide the required information",
+            "title": "Choose credential"
           }
         },
         "receive": {
@@ -1085,7 +1087,17 @@
       "security": {
         "title": "Security",
         "biometry": "Biometric authentication",
-        "changepin": "Change PIN",
+        "changepin": {
+          "title": "Change passcode",
+          "createpasscode": "Create new passcode",
+          "reenterpasscode": "Re-enter new passcode",
+          "cancel": "Cancel",
+          "back": "Back",
+          "description": "Create a new passcode to secure your wallet",
+          "cantremember": {
+            "label": "Can't remember?"
+          }
+        },
         "manageoperationspassword": "Manage Operations Password",
         "seedphrase": "Seed Phrase"
       },
@@ -1360,7 +1372,8 @@
     "rotatekeyerror": "Unable to rotate keys",
     "newmultisignmember": "New member added to multi-sig",
     "multisignidentifiercreated": "Identifier added to \"For multiple signers\"",
-    "delegatedidentifiercreated": "Identifier added to \"For delegates\"" 
+    "delegatedidentifiercreated": "Identifier added to \"For delegates\"",
+    "passcodeupdated": "Passcode updated successfully"
   },
   "request": {
     "sign": {

@@ -13,7 +13,10 @@ import {
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
-import { KeriConnectionType } from "../../../core/agent/agent.types";
+import {
+  ConnectionShortDetails,
+  KeriConnectionType,
+} from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -37,6 +40,7 @@ import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
 import { ScannerProps } from "./Scanner.types";
+import { updateOrAddMultisigConnectionCache } from "../../../store/reducers/connectionsCache";
 
 const Scanner = forwardRef(
   ({ routePath, setIsValueCaptured, handleReset }: ScannerProps, ref) => {
@@ -142,11 +146,13 @@ const Scanner = forwardRef(
           ) {
             const groupId = new URL(content).searchParams.get("groupId");
             groupId && updateConnections(groupId);
+            dispatch(updateOrAddMultisigConnectionCache(invitation.connection));
           }
         }
 
         if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
           setGroupId(invitation.groupId);
+          dispatch(updateOrAddMultisigConnectionCache(invitation.connection));
           setCreateIdentifierModalIsOpen(true);
           dispatch(setToastMsg(ToastMsgType.NEW_MULTI_SIGN_MEMBER));
         }

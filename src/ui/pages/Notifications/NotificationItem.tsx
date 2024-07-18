@@ -7,14 +7,15 @@ import {
 } from "ionicons/icons";
 import { MouseEvent, useCallback, useEffect, useState } from "react";
 import { Trans } from "react-i18next";
-import { Agent } from "../../../core/agent/agent";
 import {
   KeriaNotification,
   NotificationRoute,
 } from "../../../core/agent/agent.types";
-import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifier.types";
 import { useAppSelector } from "../../../store/hooks";
-import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
+import {
+  getConnectionsCache,
+  getMultisigConnectionsCache,
+} from "../../../store/reducers/connectionsCache";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { timeDifference } from "../../utils/formatters";
 import { NotificationItemProps } from "./Notification.types";
@@ -25,60 +26,42 @@ const NotificationItem = ({
   onOptionButtonClick,
 }: NotificationItemProps) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
+  const multisigConnectionsCache = useAppSelector(getMultisigConnectionsCache);
   const [notificationLabelText, setNotificationLabelText] =
     useState<string>("");
   const [loading, setLoading] = useState(true);
-  const connection = connectionsCache.filter(
-    (connection) => connection.id === item.connectionId
-  )[0]?.label;
 
   const notificationLabel = useCallback(
-    (
-      item: KeriaNotification,
-      multisigIcpDetails?: MultiSigIcpRequestDetails
-    ) => {
+    (item: KeriaNotification) => {
       switch (item.a.r) {
       case NotificationRoute.ExnIpexGrant:
         return t("notifications.tab.labels.exnipexgrant", {
-          connection: connection,
+          connection: connectionsCache?.[item.connectionId]?.label,
         });
       case NotificationRoute.MultiSigIcp:
         return t("notifications.tab.labels.multisigicp", {
-          connection: multisigIcpDetails?.sender?.label,
+          connection: multisigConnectionsCache?.[item.connectionId]?.label,
         });
       case NotificationRoute.ExnIpexApply:
         return t("notifications.tab.labels.exnipexapply", {
-          connection: connection,
+          connection: connectionsCache?.[item.connectionId]?.label,
         });
       default:
         return "";
       }
     },
-    [connection]
+    [connectionsCache, multisigConnectionsCache]
   );
 
-  const fetchNotificationLabel = useCallback(
-    (multiSigIcpDetails?: MultiSigIcpRequestDetails) => {
-      const label = notificationLabel(item, multiSigIcpDetails);
-      setNotificationLabelText(label);
-      setLoading(false);
-    },
-    [item, notificationLabel]
-  );
+  const fetchNotificationLabel = useCallback(() => {
+    const label = notificationLabel(item);
+
+    setNotificationLabelText(label);
+    setLoading(false);
+  }, [item, notificationLabel]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (item.a.r === NotificationRoute.MultiSigIcp) {
-        const details = await Agent.agent.multiSigs.getMultisigIcpDetails(
-          item.a.d as string
-        );
-        fetchNotificationLabel(details);
-      } else {
-        fetchNotificationLabel();
-      }
-    };
-
-    fetchData();
+    fetchNotificationLabel();
   }, [fetchNotificationLabel, item]);
 
   const referIcon = (item: KeriaNotification) => {

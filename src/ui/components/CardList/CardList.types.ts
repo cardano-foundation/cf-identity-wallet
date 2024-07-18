@@ -13,6 +13,7 @@ interface CardItemProps<T> {
   onRenderCardAction?: (data: T) => ReactNode;
   onCardClick?: (data: T, e: ReactMouseEvent<HTMLElement, MouseEvent>) => void;
   onRenderEndSlot?: (data: T) => ReactNode;
+  onRenderStartSlot?: (data: T) => ReactNode;
 }
 
 interface CardListProps<T extends object = object>

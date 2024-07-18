@@ -33,7 +33,7 @@ const TabLayout = ({
   actionButtonLabel,
   children,
   placeholder,
-  preventBackButtonEvent,
+  hardwareBackButtonConfig,
 }: TabLayoutProps) => {
   const [isActive, setIsActive] = useState(false);
 
@@ -45,22 +45,36 @@ const TabLayout = ({
     setIsActive(false);
   });
 
-  const handleHardwareBackButtonClick = useCallback(() => {
-    if (backButton && backButtonAction) {
-      backButtonAction?.();
-      return;
-    }
+  const handleHardwareBackButtonClick = useCallback(
+    (processNext: () => void) => {
+      if (hardwareBackButtonConfig?.handler) {
+        hardwareBackButtonConfig.handler(processNext);
+        return;
+      }
 
-    if (doneLabel && doneAction) {
-      doneAction?.();
-      return;
-    }
-  }, [backButton, backButtonAction, doneLabel, doneAction]);
+      if (backButton && backButtonAction) {
+        backButtonAction?.();
+        return;
+      }
+
+      if (doneLabel && doneAction) {
+        doneAction?.();
+        return;
+      }
+    },
+    [
+      hardwareBackButtonConfig,
+      backButton,
+      backButtonAction,
+      doneLabel,
+      doneAction,
+    ]
+  );
 
   useIonHardwareBackButton(
-    BackEventPriorityType.Tab,
+    hardwareBackButtonConfig?.priority || BackEventPriorityType.Tab,
     handleHardwareBackButtonClick,
-    preventBackButtonEvent
+    hardwareBackButtonConfig?.prevent
   );
 
   return (
