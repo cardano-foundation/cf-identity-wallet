@@ -95,19 +95,12 @@ class IpexCommunicationService extends AgentService {
       (key) => exn.exn.e.acdc.e?.[key]?.s
     );
 
-    if (holder.multisigManageAid) {
-      await Agent.agent.multiSigs.multisigAdmit(
-        holder.signifyName,
-        notifRecord.a.d as string
-      );
-    } else {
-      await this.admitIpex(
-        notifRecord.a.d as string,
-        holder.signifyName,
-        exn.exn.i,
-        [exn.exn.e.acdc.s, ...chainedSchemaSaids]
-      );
-    }
+    await this.admitIpex(
+      notifRecord.a.d as string,
+      holder.signifyName,
+      exn.exn.i,
+      [exn.exn.e.acdc.s, ...chainedSchemaSaids]
+    );
 
     // @TODO - foconnor: This should be event driven, need to fix the notification in KERIA/Signify.
     const cred = await this.waitForAcdcToAppear(
