@@ -201,6 +201,8 @@ describe("Ipex communication service of agent", () => {
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
       id: "id",
     });
+    markNotificationMock.mockResolvedValue(null);
+
     await ipexCommunicationService.acceptAcdc(id);
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
       expect.objectContaining({
@@ -211,6 +213,7 @@ describe("Ipex communication service of agent", () => {
       id: "id",
       status: CredentialStatus.CONFIRMED,
     });
+    expect(markNotificationMock).toBeCalledWith(id);
     expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 

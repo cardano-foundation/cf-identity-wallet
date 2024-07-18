@@ -112,6 +112,14 @@ class IpexCommunicationService extends AgentService {
       credentialId,
       cred
     );
+
+    await this.props.signifyClient
+      .notifications()
+      .mark(id)
+      .catch((error) => {
+        throw error;
+      });
+
     await this.notificationStorage.deleteById(id);
     this.props.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
