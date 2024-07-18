@@ -959,7 +959,8 @@
         "cancel": "Cancel",
         "back": "Back",
         "choosecredential": "Choose credential",
-        "providecredential": "Provide credential"
+        "providecredential": "Provide credential",
+        "scannow": "Scan now"
       },
       "credential": {
         "request": {
@@ -996,6 +997,21 @@
         "threshold": "Threshold",
         "alert": {
           "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later."
+        },
+        "errorpage": {
+          "title": "Please review",
+          "alerttext": "You are missing one or more connections required for this multi-sig request. Please scan all necessary QR codes to proceed.",
+          "instructions": {
+            "title": "Instructions",
+            "detailtext": "In order to continue and complete the multi-sig setup, please follow the instructions below.",
+            "stepone": "Ensure you have scanned all participant's QR codes.",
+            "steptwo": "After scanning, try to open this notification again."
+          },
+          "help": {
+            "title": "Need help?",
+            "detailtext": "If you need assistance, please refer to our Help Center or contact support."
+          },
+          "scanbtn": "Scan now"
         }
       }
     }
