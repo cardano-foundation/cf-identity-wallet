@@ -19,25 +19,30 @@ import {
   ConnectionRecord,
   CredentialStorage,
   ConnectionStorage,
+  OperationPendingStorage,
 } from "../records";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
   protected readonly connectionNoteStorage!: ConnectionNoteStorage;
   protected readonly credentialStorage: CredentialStorage;
+  protected readonly operationPendingStorage: OperationPendingStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     connectionStorage: ConnectionStorage,
     connectionNoteStorage: ConnectionNoteStorage,
-    credentialStorage: CredentialStorage
+    credentialStorage: CredentialStorage,
+    operationPendingStorage: OperationPendingStorage
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
     this.connectionNoteStorage = connectionNoteStorage;
     this.credentialStorage = credentialStorage;
+    this.operationPendingStorage = operationPendingStorage;
   }
 
   static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
@@ -77,11 +82,15 @@ class ConnectionService extends AgentService {
       },
     });
 
-    const operation = await this.resolveOobi(url);
-    const connectionId = operation.response.i;
+    const operation = await this.resolveOobi(url, multiSigInvite);
+    const connectionId =
+      operation.done && operation.response
+        ? operation.response.i
+        : new URL(url).pathname.split("/")[2];
     const connectionMetadata: any = {
       alias: operation.alias,
       oobi: url,
+      pending: multiSigInvite ? false : !operation.done,
     };
 
     if (multiSigInvite) {
@@ -103,7 +112,7 @@ class ConnectionService extends AgentService {
       this.props.eventService.emit<ConnectionStateChangedEvent>({
         type: ConnectionEventTypes.ConnectionStateChanged,
         payload: {
-          connectionId: operation.response.i,
+          connectionId,
           status: ConnectionStatus.CONFIRMED,
         },
       });
@@ -249,6 +258,7 @@ class ConnectionService extends AgentService {
       alias: metadata.alias as string,
       oobi: metadata.oobi as string,
       groupId: metadata.groupId as string,
+      pending: !!metadata.pending,
     });
   }
 
@@ -303,7 +313,7 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async resolveOobi(url: string): Promise<any> {
+  async resolveOobi(url: string, isMultisigRelated?: boolean): Promise<any> {
     if (ConnectionService.resolvedOobi[url]) {
       return ConnectionService.resolvedOobi[url];
     }
@@ -312,8 +322,20 @@ class ConnectionService extends AgentService {
       this.props.signifyClient,
       await this.props.signifyClient.oobis().resolve(url, alias)
     );
-    if (!operation.done) {
-      throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
+    if (!operation.done && !isMultisigRelated) {
+      if (/\/oobi\//.test(url)) {
+        const connectionId = new URL(url).pathname.split("/")[2];
+        const pendingOperation = await this.operationPendingStorage.save({
+          id: operation.name,
+          metadata: { connectionId },
+          recordType: OperationPendingRecordType.Oobi,
+        });
+        Agent.agent.signifyNotifications.addPendingOperationToQueue(
+          pendingOperation
+        );
+      } else {
+        throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
+      }
     }
     const oobi = { ...operation, alias };
     ConnectionService.resolvedOobi[url] = oobi;
