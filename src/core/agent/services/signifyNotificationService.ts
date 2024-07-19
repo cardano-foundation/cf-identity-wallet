@@ -422,11 +422,11 @@ class SignifyNotificationService extends AgentService {
               break;
             }
             case OperationPendingRecordType.Oobi: {
-              if (!pendingOperation.metadata?.connectionId) {
+              if (!operation.response || !(operation.response as any).i) {
                 break;
               }
               const connectionRecord = await this.connectionStorage.findById(
-                pendingOperation.metadata?.connectionId
+                (operation.response as any).i
               );
               if (connectionRecord) {
                 connectionRecord.pending = false;

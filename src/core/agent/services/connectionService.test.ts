@@ -11,7 +11,7 @@ const deleteContactMock = jest.fn();
 const getOobiMock = jest.fn();
 const getIdentifier = jest.fn();
 
-const uuidToThrow = "throwMe";
+const failUuid = "fail-uuid";
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -26,10 +26,7 @@ const signifyClient = jest.mocked({
   }),
   operations: () => ({
     get: jest.fn().mockImplementation((id: string) => {
-      if (
-        id === `${oobiPrefix}${uuidToThrow}` ||
-        id === `${oobiPrefix}oobi/${uuidToThrow}`
-      ) {
+      if (id === `${oobiPrefix}${failUuid}`) {
         return {
           done: false,
           name: id,
@@ -47,10 +44,7 @@ const signifyClient = jest.mocked({
   oobis: () => ({
     get: getOobiMock,
     resolve: jest.fn().mockImplementation((name: string) => {
-      if (
-        name === `${oobiPrefix}${uuidToThrow}` ||
-        name === `${oobiPrefix}oobi/${uuidToThrow}`
-      ) {
+      if (name === `${oobiPrefix}${failUuid}`) {
         return {
           done: false,
           name,
@@ -168,7 +162,7 @@ const keriContacts = [
     wellKnowns: [],
   },
 ];
-const oobiPrefix = "http://oobi.com/";
+const oobiPrefix = "http://oobi.com/oobi/";
 
 describe("Connection service of agent", () => {
   beforeAll(async () => {
@@ -478,8 +472,12 @@ describe("Connection service of agent", () => {
       .mockResolvedValue({ done: false });
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
+    const waitForCompletion = true;
     await expect(
-      connectionService.resolveOobi(`${oobiPrefix}${uuidToThrow}`)
+      connectionService.resolveOobi(
+        `${oobiPrefix}${failUuid}`,
+        waitForCompletion
+      )
     ).rejects.toThrowError(ConnectionService.FAILED_TO_RESOLVE_OOBI);
   });
 
@@ -553,10 +551,9 @@ describe("Connection service of agent", () => {
     });
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
-    await connectionService.resolveOobi(`${oobiPrefix}oobi/${uuidToThrow}`);
+    await connectionService.resolveOobi(`${oobiPrefix}${failUuid}`);
     expect(operationPendingStorage.save).toBeCalledWith({
-      id: `${oobiPrefix}oobi/${uuidToThrow}`,
-      metadata: { connectionId: uuidToThrow },
+      id: `${oobiPrefix}${failUuid}`,
       recordType: OperationPendingRecordType.Oobi,
     });
     expect(
