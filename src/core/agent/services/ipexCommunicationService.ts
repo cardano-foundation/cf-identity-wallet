@@ -91,7 +91,6 @@ class IpexCommunicationService extends AgentService {
     if (!holder) {
       throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     }
-
     const chainedSchemaSaids = Object.keys(exn.exn.e.acdc?.e || {}).map(
       (key) => exn.exn.e.acdc.e?.[key]?.s
     );

@@ -67,7 +67,7 @@ const MultiSigRequest = ({
 
   useEffect(() => {
     getDetails();
-  });
+  }, []);
 
   const handleNotificationUpdate = async () => {
     const updatedNotifications = notifications.filter(

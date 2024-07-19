@@ -34,9 +34,7 @@ const CredentialRequestInformation = ({
   const [notifications, setNotifications] = useState(notificationsCache);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
 
-  const connection = connectionsCache.find(
-    (connection) => connection.id === notificationDetails.connectionId
-  );
+  const connection = connectionsCache?.[notificationDetails.connectionId];
 
   const handleNotificationUpdate = async () => {
     const updatedNotifications = notifications.filter(

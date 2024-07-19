@@ -364,7 +364,7 @@ describe("ConnectionDetails Page", () => {
 
     await waitFor(() => {
       expect(getByTestId("alert-confirm-delete-connection")).toHaveClass(
-        "alert-visible"
+        "custom-alert"
       );
     });
   });

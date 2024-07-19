@@ -182,6 +182,8 @@ describe("Scanner", () => {
       },
     };
 
+    getMultisigLinkedContactsMock.mockReturnValue(connectionsFix);
+
     const storeMocked = {
       ...mockStore(initialState),
       dispatch: dispatchMock,

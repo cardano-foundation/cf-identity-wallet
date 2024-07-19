@@ -4,7 +4,7 @@ import {
   personCircleOutline,
   swapHorizontalOutline,
 } from "ionicons/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./ReceiveCredential.scss";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageLayout";
@@ -22,6 +22,7 @@ import {
   getNotificationsCache,
   setNotificationsCache,
 } from "../../../../store/reducers/notificationsCache";
+import { ConnectionDetails } from "../../Connections/Connections.types";
 
 const ReceiveCredential = ({
   pageId,
@@ -36,10 +37,9 @@ const ReceiveCredential = ({
   const fallbackLogo = KeriLogo;
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
+  const connection =
+    connectionsCache?.[notificationDetails.connectionId]?.label;
   const ANIMATION_DELAY = 2000;
-  const connection = connectionsCache.filter(
-    (connection) => connection.id === notificationDetails.connectionId
-  )[0]?.label;
 
   useIonHardwareBackButton(
     BackEventPriorityType.Page,
