@@ -324,12 +324,13 @@ class MultiSigService extends AgentService {
       aid,
       multiSig.signifyName
     );
-    Agent.agent.signifyNotifications.markNotification(notification.id);
-    await this.notificationStorage.deleteById(notification.id);
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      notification.id
+    );
     return res.op.name.split(".")[1];
   }
 
-  async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
+  private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
     const notifications: MultiSigExnMessage[] = await this.props.signifyClient
       .groups()
       .getRequest(msgSaid)
@@ -427,8 +428,9 @@ class MultiSigService extends AgentService {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {
-      Agent.agent.signifyNotifications.markNotification(notificationId);
-      await this.notificationStorage.deleteById(notificationId);
+      Agent.agent.signifyNotifications.deleteNotificationRecordById(
+        notificationId
+      );
       return;
     }
     const icpMsg: MultiSigExnMessage[] = await this.props.signifyClient

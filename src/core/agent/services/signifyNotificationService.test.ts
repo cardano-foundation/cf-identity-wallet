@@ -84,6 +84,15 @@ const agentServicesProps = {
   eventService: new EventService(),
 };
 
+const identifierMetadataRecordProps = {
+  id: "aidHere",
+  displayName: "Identifier 2",
+  signifyName: "uuid-here",
+  createdAt: new Date(),
+  theme: 0,
+  authorizedEids: ["uuid-here"],
+};
+
 const notificationStorage = jest.mocked({
   open: jest.fn(),
   save: jest.fn(),
@@ -95,7 +104,9 @@ const notificationStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
-const identifierStorage = jest.mocked({});
+const identifierStorage = jest.mocked({
+  getIdentifierMetadata: jest.fn(),
+});
 const operationPendingStorage = jest.mocked({});
 
 const signifyNotificationService = new SignifyNotificationService(
@@ -109,7 +120,7 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       getKeriaOnlineStatus: jest.fn(),
-      multiSigs: { hasMultisig: jest.fn() },
+      multiSigs: { hasMultisig: jest.fn(), joinAuthorization: jest.fn() },
       ipexCommunications: {
         grantAcdcFromAgree: jest.fn(),
       },
@@ -209,6 +220,16 @@ describe("Signify notification service of agent", () => {
           m: "",
         },
       },
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/rpy",
+          d: "not-found-said",
+          m: "",
+        },
+      },
     ];
     for (const notif of notes) {
       await signifyNotificationService.processNotification(notif, callback);
@@ -229,6 +250,16 @@ describe("Signify notification service of agent", () => {
         a: {
           r: "/multisig/icp",
           d: "d",
+          m: "",
+        },
+      },
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/rpy",
+          d: "not-found-said",
           m: "",
         },
       },
@@ -255,6 +286,16 @@ describe("Signify notification service of agent", () => {
           m: "",
         },
       },
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/rpy",
+          d: "not-found-said",
+          m: "",
+        },
+      },
     ];
     for (const notif of notes) {
       await signifyNotificationService.processNotification(notif, callback);
@@ -278,5 +319,155 @@ describe("Signify notification service of agent", () => {
     await expect(
       signifyNotificationService.unreadNotification("not-exist-noti-id")
     ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
+  });
+
+  test("Should skip if there is a missing multi-sig identifier", async () => {
+    const callback = jest.fn();
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    groupGetRequestMock.mockResolvedValue([{ exn: { a: {} } }]);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/rpy",
+          d: "not-found-said",
+          m: "",
+        },
+      },
+    ];
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(callback).toBeCalledTimes(0);
+  });
+
+  test("Should skip if notification route is rpy and identifier authorizedEids includes eid", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(identifierMetadataRecordProps);
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/rpy",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    const multisigNotificationExn = {
+      exn: {
+        a: {
+          gid: "uuid",
+        },
+        e: {
+          rpy: {
+            v: "KERI10JSON000111_",
+            t: "rpy",
+            d: "uuid",
+            dt: "2024-07-12T09:37:48.801000+00:00",
+            r: "/end/role/add",
+            a: {
+              cid: "uuid",
+              role: "agent",
+              eid: "uuid-here",
+            },
+          },
+          d: "uuid",
+        },
+      },
+    };
+    groupGetRequestMock.mockResolvedValue([multisigNotificationExn]);
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(callback).toBeCalledTimes(0);
+    expect(markNotificationMock).toBeCalledWith(notes[0].i);
+  });
+
+  test("Should skip if notification route is rpy and identifier authorizedEids not includes eid", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(identifierMetadataRecordProps);
+
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/rpy",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    const multisigNotificationExn = {
+      exn: {
+        a: {
+          gid: "uuid",
+        },
+        e: {
+          rpy: {
+            v: "KERI10JSON000111_",
+            t: "rpy",
+            d: "uuid",
+            dt: "2024-07-12T09:37:48.801000+00:00",
+            r: "/end/role/add",
+            a: {
+              cid: "uuid",
+              role: "agent",
+              eid: "new-uuid",
+            },
+          },
+          d: "uuid",
+        },
+      },
+    };
+    groupGetRequestMock.mockResolvedValue([multisigNotificationExn]);
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(markNotificationMock).toBeCalledWith(notes[0].i);
+    expect(Agent.agent.multiSigs.joinAuthorization).toBeCalledTimes(1);
+  });
+
+  test("Should call grantAcdcFromAgree if notification route is /exn/ipex/agree", async () => {
+    const callback = jest.fn();
+    const notification = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/exn/ipex/agree",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+    await signifyNotificationService.processNotification(
+      notification[0],
+      callback
+    );
+
+    expect(callback).toBeCalledTimes(0);
+    expect(Agent.agent.ipexCommunications.grantAcdcFromAgree).toBeCalledWith(
+      notification[0].a.d
+    );
+    expect(markNotificationMock).toBeCalledWith(notification[0].i);
   });
 });

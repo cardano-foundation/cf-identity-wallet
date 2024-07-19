@@ -74,7 +74,7 @@ let getExchangeMock = jest.fn().mockImplementation((id: string) => {
 const ipexOfferMock = jest.fn();
 const ipexGrantMock = jest.fn();
 const schemaGetMock = jest.fn();
-const markNotificationMock = jest.fn();
+const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -121,7 +121,7 @@ const signifyClient = jest.mocked({
   }),
   notifications: () => ({
     list: jest.fn(),
-    mark: markNotificationMock,
+    mark: jest.fn(),
   }),
   ipex: () => ({
     admit: jest.fn().mockResolvedValue(["admit", "sigs", "aend"]),
@@ -171,7 +171,8 @@ jest.mock("../../../core/agent/agent", () => ({
         resolveOobi: jest.fn(),
       },
       signifyNotifications: {
-        markNotification: (id: string) => markNotificationMock(id),
+        deleteNotificationRecordById: (id: string) =>
+          deleteNotificationMock(id),
       },
     },
   },
@@ -204,7 +205,6 @@ describe("Ipex communication service of agent", () => {
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
       id: "id",
     });
-    markNotificationMock.mockResolvedValue(null);
 
     await ipexCommunicationService.acceptAcdc(id);
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
@@ -216,8 +216,7 @@ describe("Ipex communication service of agent", () => {
       id: "id",
       status: CredentialStatus.CONFIRMED,
     });
-    expect(markNotificationMock).toBeCalledWith(id);
-    expect(notificationStorage.deleteById).toBeCalledWith(id);
+    expect(deleteNotificationMock).toBeCalledWith(id);
   });
 
   test("cannot accept ACDC if the notification is missing in the DB", async () => {
@@ -248,8 +247,7 @@ describe("Ipex communication service of agent", () => {
     );
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalled();
     expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
-    expect(notificationStorage.deleteById).not.toBeCalled();
-    expect(markNotificationMock).not.toBeCalledWith(id);
+    expect(deleteNotificationMock).not.toBeCalledWith(id);
   });
 
   // This test should go when this has been made event driven.
@@ -320,7 +318,6 @@ describe("Ipex communication service of agent", () => {
         d: "d",
       },
     });
-    markNotificationMock.mockResolvedValue(null);
     credentialListMock = jest.fn().mockReturnValue({});
     identifierStorage.getIdentifierMetadata = jest.fn().mockReturnValue({
       signifyName: "abc123",
@@ -333,8 +330,7 @@ describe("Ipex communication service of agent", () => {
       acdc: expect.anything(),
       apply: "d",
     });
-    expect(markNotificationMock).toBeCalledWith(id);
-    expect(notificationStorage.deleteById).toBeCalledWith(id);
+    expect(deleteNotificationMock).toBeCalledWith(id);
   });
 
   test("can not offer Keri Acdc if aid is not existed", async () => {

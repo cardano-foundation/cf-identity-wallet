@@ -19,7 +19,6 @@ import { OperationPendingRecord } from "../records/operationPendingRecord";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
-  static readonly FAILED_TO_MARK_NOTIFICATION = "Failed to mark notification";
   static readonly POLL_KERIA_INTERVAL = 2000;
   static readonly LOGIN_INTERVAL = 25;
 
@@ -160,7 +159,11 @@ class SignifyNotificationService extends AgentService {
     notif: Notification,
     callback: (event: KeriaNotification) => void
   ) {
-    if (notif.a.r === NotificationRoute.MultiSigRpy && !notif.r) {
+    if (notif.r) {
+      return;
+    }
+
+    if (notif.a.r === NotificationRoute.MultiSigRpy) {
       const multisigNotification = await this.props.signifyClient
         .groups()
         .getRequest(notif.a.d)
@@ -205,7 +208,7 @@ class SignifyNotificationService extends AgentService {
         return;
       }
     }
-    if (notif.a.r === NotificationRoute.MultiSigIcp && !notif.r) {
+    if (notif.a.r === NotificationRoute.MultiSigIcp) {
       const multisigNotification = await this.props.signifyClient
         .groups()
         .getRequest(notif.a.d)
@@ -236,15 +239,17 @@ class SignifyNotificationService extends AgentService {
       }
     }
 
-    if (!notif.r) {
-      if (
-        Object.values(NotificationRoute).includes(
-          notif.a.r as NotificationRoute
-        )
-      ) {
-        const keriaNotif = await this.createNotificationRecord(notif);
-        callback(keriaNotif);
-      }
+    if (notif.a.r === NotificationRoute.ExnIpexAgree) {
+      await Agent.agent.ipexCommunications.grantAcdcFromAgree(notif.a.d);
+      await this.markNotification(notif.i);
+      return;
+    }
+
+    if (
+      Object.values(NotificationRoute).includes(notif.a.r as NotificationRoute)
+    ) {
+      const keriaNotif = await this.createNotificationRecord(notif);
+      callback(keriaNotif);
     }
 
     return;
@@ -329,7 +334,7 @@ class SignifyNotificationService extends AgentService {
     });
   }
 
-  markNotification(notiSaid: string) {
+  private markNotification(notiSaid: string) {
     return this.props.signifyClient.notifications().mark(notiSaid);
   }
 
