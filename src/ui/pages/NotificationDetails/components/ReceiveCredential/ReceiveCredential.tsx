@@ -5,23 +5,23 @@ import {
   swapHorizontalOutline,
 } from "ionicons/icons";
 import { useState } from "react";
-import "./ReceiveCredential.scss";
-import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
-import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageLayout";
-import { i18n } from "../../../../i18n";
-import { Alert as AlertDecline } from "../../../components/Alert";
-import { PageFooter } from "../../../components/PageFooter";
-import { useIonHardwareBackButton } from "../../../hooks";
-import { BackEventPriorityType } from "../../../globals/types";
-import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
-import { PageHeader } from "../../../components/PageHeader";
-import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
-import { Agent } from "../../../../core/agent/agent";
-import { NotificationDetailsProps } from "../NotificationDetails.types";
+import { Agent } from "../../../../../core/agent/agent";
+import { i18n } from "../../../../../i18n";
+import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
+import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
 import {
   getNotificationsCache,
   setNotificationsCache,
-} from "../../../../store/reducers/notificationsCache";
+} from "../../../../../store/reducers/notificationsCache";
+import { Alert as AlertDecline } from "../../../../components/Alert";
+import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
+import { PageFooter } from "../../../../components/PageFooter";
+import { PageHeader } from "../../../../components/PageHeader";
+import { BackEventPriorityType } from "../../../../globals/types";
+import { useIonHardwareBackButton } from "../../../../hooks";
+import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
+import { NotificationDetailsProps } from "../../NotificationDetails.types";
+import "./ReceiveCredential.scss";
 
 const ReceiveCredential = ({
   pageId,
@@ -36,10 +36,9 @@ const ReceiveCredential = ({
   const fallbackLogo = KeriLogo;
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
+  const connection =
+    connectionsCache?.[notificationDetails.connectionId]?.label;
   const ANIMATION_DELAY = 2000;
-  const connection = connectionsCache.filter(
-    (connection) => connection.id === notificationDetails.connectionId
-  )[0]?.label;
 
   useIonHardwareBackButton(
     BackEventPriorityType.Page,

@@ -83,9 +83,17 @@ class ConnectionService extends AgentService {
       alias: operation.alias,
       oobi: url,
     };
+    const groupId = new URL(url).searchParams.get("groupId") ?? "";
+    const connection = {
+      id: connectionId,
+      connectionDate: operation.response.dt,
+      oobi: operation.metadata.oobi,
+      status: ConnectionStatus.CONFIRMED,
+      label: operation.alias,
+      groupId,
+    };
 
     if (multiSigInvite) {
-      const groupId = new URL(url).searchParams.get("groupId") ?? "";
       connectionMetadata.groupId = groupId;
       const identifierWithGroupId =
         await Agent.agent.identifiers.getKeriIdentifierByGroupId(groupId);
@@ -94,7 +102,11 @@ class ConnectionService extends AgentService {
       // We let the UI handle it as it requires some metadata from the user like display name.
       if (!identifierWithGroupId) {
         await this.createConnectionMetadata(connectionId, connectionMetadata);
-        return { type: KeriConnectionType.MULTI_SIG_INITIATOR, groupId };
+        return {
+          type: KeriConnectionType.MULTI_SIG_INITIATOR,
+          groupId,
+          connection,
+        };
       }
     }
     await this.createConnectionMetadata(connectionId, connectionMetadata);
@@ -108,7 +120,7 @@ class ConnectionService extends AgentService {
         },
       });
     }
-    return { type: KeriConnectionType.NORMAL };
+    return { type: KeriConnectionType.NORMAL, connection };
   }
 
   async getConnections(): Promise<ConnectionShortDetails[]> {
@@ -116,6 +128,18 @@ class ConnectionService extends AgentService {
       groupId: undefined,
     });
     return connections.map((connection) =>
+      this.getConnectionShortDetails(connection)
+    );
+  }
+
+  async getMultisigConnections(): Promise<ConnectionShortDetails[]> {
+    const multisigConnections = await this.connectionStorage.findAllByQuery({
+      $not: {
+        groupId: undefined,
+      },
+    });
+
+    return multisigConnections.map((connection) =>
       this.getConnectionShortDetails(connection)
     );
   }

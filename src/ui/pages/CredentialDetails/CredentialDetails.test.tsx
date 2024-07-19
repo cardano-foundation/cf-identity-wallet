@@ -11,6 +11,7 @@ import {
   removeFavouritesCredsCache,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
+import { setNotificationDetailCache } from "../../../store/reducers/notificationsCache";
 import {
   setCurrentRoute,
   setToastMsg,
@@ -78,6 +79,9 @@ const initialStateNoPasswordCurrent = {
   biometricsCache: {
     enabled: false,
   },
+  notificationsCache: {
+    notificationDetailCache: null,
+  },
 };
 
 const initialStateNoPasswordArchived = {
@@ -100,6 +104,9 @@ const initialStateNoPasswordArchived = {
   credsArchivedCache: { creds: [] },
   biometricsCache: {
     enabled: false,
+  },
+  notificationsCache: {
+    notificationDetailCache: null,
   },
 };
 
@@ -164,6 +171,9 @@ describe("Cards Details page - current not archived credential", () => {
       credsArchivedCache: { creds: credsFixAcdc },
       connectionsCache: {
         connections: [],
+      },
+      notificationsCache: {
+        notificationDetailCache: null,
       },
     };
 
@@ -377,6 +387,9 @@ describe("Cards Details page - current not archived credential", () => {
           },
         ],
       },
+      notificationsCache: {
+        notificationDetailCache: null,
+      },
     };
 
     const storeMocked = {
@@ -439,6 +452,10 @@ describe("Cards Details page - current not archived credential", () => {
           id: index,
           time: mockNow,
         })),
+      },
+
+      notificationsCache: {
+        notificationDetailCache: null,
       },
     };
 
@@ -585,6 +602,86 @@ describe("Cards Details page - archived credential", () => {
       credDispatchMock.mockImplementation((action) => {
         expect(action).toEqual(setCredsCache(credsFixAcdc));
       });
+    });
+  });
+});
+
+describe("Cred detail - notification light mode", () => {
+  let storeMocked: Store<unknown, AnyAction>;
+  const credDispatchMock = jest.fn();
+
+  const state = {
+    stateCache: {
+      routes: [TabsRoutePath.CREDENTIALS],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+        passwordIsSet: false,
+        passwordIsSkipped: true,
+      },
+    },
+    seedPhraseCache: {
+      seedPhrase:
+        "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+      bran: "bran",
+    },
+    credsCache: { creds: credsFixAcdc },
+    credsArchivedCache: { creds: [] },
+    biometricsCache: {
+      enabled: false,
+    },
+    notificationsCache: {
+      notificationDetailCache: {
+        notificationId: "test-id",
+        viewCred: "test-cred",
+        step: 0,
+      },
+    },
+  };
+
+  beforeAll(() => {
+    jest
+      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFixAcdc[0]);
+  });
+  beforeEach(() => {
+    const mockStore = configureStore();
+    storeMocked = {
+      ...mockStore(state),
+      dispatch: credDispatchMock,
+    };
+  });
+
+  test("It show notification cred mode", async () => {
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredentialDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("notification-selected")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("tab-done-button"));
+    });
+
+    await waitFor(() => {
+      expect(credDispatchMock).toBeCalledWith(
+        setNotificationDetailCache({
+          notificationId: "test-id",
+          viewCred: "test-cred",
+          step: 1,
+          checked: false,
+        })
+      );
     });
   });
 });

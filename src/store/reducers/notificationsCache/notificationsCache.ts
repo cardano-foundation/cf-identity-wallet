@@ -1,12 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import { KeriaNotification } from "../../../core/agent/agent.types";
+import {
+  NotificationCacheState,
+  NotificationDetailCacheState,
+} from "./notificationCache.types";
 
-const initialState: {
-  notifications: KeriaNotification[];
-} = {
+const initialState: NotificationCacheState = {
   notifications: [],
+  notificationDetailCache: null,
 };
+
 const notificationsCacheSlice = createSlice({
   name: "notificationsCache",
   initialState,
@@ -38,6 +42,12 @@ const notificationsCacheSlice = createSlice({
     ) => {
       state.notifications = action.payload;
     },
+    setNotificationDetailCache: (
+      state,
+      action: PayloadAction<NotificationDetailCacheState | null>
+    ) => {
+      state.notificationDetailCache = action.payload;
+    },
   },
 });
 
@@ -47,9 +57,13 @@ export const {
   setNotificationsCache,
   setReadedNotification,
   deleteNotification,
+  setNotificationDetailCache,
 } = notificationsCacheSlice.actions;
 
 const getNotificationsCache = (state: RootState) =>
   state.notificationsCache.notifications;
 
-export { getNotificationsCache };
+const getNotificationDetailCache = (state: RootState) =>
+  state.notificationsCache.notificationDetailCache;
+
+export { getNotificationsCache, getNotificationDetailCache };

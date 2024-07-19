@@ -14,6 +14,7 @@ const CardInfo = <T extends object = object>({
   card,
   onCardClick,
   onRenderEndSlot,
+  onRenderStartSlot: renderStartSlot,
 }: CardItemProps<T>) => {
   const titleClass = combineClassNames("card-title", {
     "no-margin": !card.subtitle,
@@ -44,6 +45,7 @@ const CardInfo = <T extends object = object>({
       data-testid={`card-item-${card.id}`}
       className="card-item"
     >
+      {renderStartSlot?.(card.data)}
       {cardImg}
       <div className="card-info">
         <p
@@ -71,6 +73,7 @@ const CardItem = <T extends object = object>({
   onCardClick,
   onRenderCardAction,
   onRenderEndSlot,
+  onRenderStartSlot: renderStartSlot,
 }: CardItemProps<T>) => {
   if (!onRenderCardAction) {
     return (
@@ -78,6 +81,7 @@ const CardItem = <T extends object = object>({
         card={card}
         onCardClick={onCardClick}
         onRenderEndSlot={onRenderEndSlot}
+        onRenderStartSlot={renderStartSlot}
       />
     );
   }
@@ -88,6 +92,7 @@ const CardItem = <T extends object = object>({
         card={card}
         onCardClick={onCardClick}
         onRenderEndSlot={onRenderEndSlot}
+        onRenderStartSlot={renderStartSlot}
       />
       <IonItemOptions data-testid="card-actions">
         {onRenderCardAction(card.data)}
@@ -105,6 +110,7 @@ const CardList = <T extends object = object>({
   onRenderCardAction,
   onCardClick,
   onRenderEndSlot,
+  onRenderStartSlot: renderStartSlot,
 }: CardListProps<T>) => {
   const classes = combineClassNames("card-list", className, {
     "rounde-img": rounded,
@@ -123,6 +129,7 @@ const CardList = <T extends object = object>({
           onCardClick={onCardClick}
           onRenderCardAction={onRenderCardAction}
           onRenderEndSlot={onRenderEndSlot}
+          onRenderStartSlot={renderStartSlot}
         />
       ))}
     </IonList>

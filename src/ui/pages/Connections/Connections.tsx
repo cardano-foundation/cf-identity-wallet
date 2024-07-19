@@ -10,7 +10,7 @@ import {
   IonRow,
   IonSearchbar,
 } from "@ionic/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { addOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -52,7 +52,7 @@ const Connections = ({
   const [connectModalIsOpen, setConnectModalIsOpen] = useState(false);
   const [invitationLink, setInvitationLink] = useState<string>();
   const [showPlaceholder, setShowPlaceholder] = useState(
-    connectionsCache.length === 0
+    Object.keys(connectionsCache)?.length === 0
   );
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const Connections = ({
   }, [history.location.state]);
 
   useEffect(() => {
-    setShowPlaceholder(connectionsCache.length === 0);
+    setShowPlaceholder(Object.keys(connectionsCache).length === 0);
   }, [connectionsCache]);
 
   async function handleProvideQr() {
@@ -112,8 +112,9 @@ const Connections = ({
   };
 
   useEffect(() => {
-    if (connectionsCache.length) {
-      const sortedConnections = [...connectionsCache].sort(function (a, b) {
+    const connections = Object.values(connectionsCache);
+    if (connections.length) {
+      const sortedConnections = [...connections].sort(function (a, b) {
         const textA = a.label.toUpperCase();
         const textB = b.label.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;
@@ -135,11 +136,18 @@ const Connections = ({
     }
   }, [connectionsCache]);
 
+  const backHardwareConfig = useMemo(
+    () => ({
+      prevent: !showConnections,
+    }),
+    [showConnections]
+  );
+
   return (
     <>
       <SideSlider open={showConnections}>
         <TabLayout
-          preventBackButtonEvent={!showConnections}
+          hardwareBackButtonConfig={backHardwareConfig}
           pageId={pageId}
           header={true}
           backButton={true}

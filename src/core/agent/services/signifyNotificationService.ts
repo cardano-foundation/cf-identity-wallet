@@ -235,6 +235,12 @@ class SignifyNotificationService extends AgentService {
         return;
       }
     }
+
+    if (notif.a.r === NotificationRoute.ExnIpexAgree) {
+      await Agent.agent.ipexCommunications.grantAcdcFromAgree(notif.a.d);
+      await this.markNotification(notif.i);
+      return;
+    }
     if (
       Object.values(NotificationRoute).includes(
         notif.a.r as NotificationRoute

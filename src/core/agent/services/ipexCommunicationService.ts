@@ -150,8 +150,7 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async grantAcdcFromAgree(notification: KeriaNotification) {
-    const msgSaid = notification.a.d as string;
+  async grantAcdcFromAgree(msgSaid: string) {
     const msgAgree = await this.props.signifyClient.exchanges().get(msgSaid);
     const msgOffer = await this.props.signifyClient
       .exchanges()
@@ -180,7 +179,6 @@ class IpexCommunicationService extends AgentService {
     await this.props.signifyClient
       .ipex()
       .submitGrant(holderSignifyName, grant, sigs, end, [msgAgree.exn.i]);
-    await this.notificationStorage.deleteById(notification.id);
   }
 
   private async waitForAcdcToAppear(

@@ -48,7 +48,7 @@ const initialState = {
     },
   },
   connectionsCache: {
-    connections: [],
+    connections: {},
   },
   notificationsCache: {
     notifications: [],
@@ -66,6 +66,7 @@ const fullState = {
   },
   connectionsCache: {
     connections: connectionsForNotifications,
+    multisigConnectionsCache: connectionsForNotifications,
   },
   notificationsCache: {
     notifications: notificationsFix,

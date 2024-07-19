@@ -67,7 +67,7 @@ const getNextCredentialDetailsRoute = () => {
 };
 
 const getNextNotificationsRoute = () => {
-  const path = RoutePath.NOTIFICATION_DETAILS;
+  const path = TabsRoutePath.NOTIFICATION_DETAILS;
   return { pathname: path };
 };
 
@@ -255,7 +255,7 @@ const nextRoute: Record<string, any> = {
     nextPath: () => getNextNotificationsRoute(),
     updateRedux: [],
   },
-  [RoutePath.NOTIFICATION_DETAILS]: {
+  [TabsRoutePath.NOTIFICATION_DETAILS]: {
     nextPath: () => getNextNotificationDetailsRoute(),
     updateRedux: [],
   },

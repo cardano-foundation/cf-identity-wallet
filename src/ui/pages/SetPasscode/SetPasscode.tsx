@@ -52,8 +52,8 @@ const SetPasscode = () => {
 
   const title =
     passCodeValue.originalPasscode !== ""
-      ? i18n.t("setpasscode.reenterpasscode.title")
-      : i18n.t("setpasscode.enterpasscode.title");
+      ? i18n.t("setpasscode.reenterpasscode")
+      : i18n.t("setpasscode.enterpasscode");
 
   return (
     <ResponsivePageLayout
@@ -72,7 +72,7 @@ const SetPasscode = () => {
     >
       <CreatePasscodeModule
         title={title}
-        description={`${i18n.t("setpasscode.enterpasscode.description")}`}
+        description={`${i18n.t("setpasscode.description")}`}
         ref={ref}
         testId={pageId}
         onCreateSuccess={handlePassAuth}

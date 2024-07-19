@@ -45,6 +45,7 @@ const LockPage = () => {
     if (passcodeIncorrect) {
       setTimeout(() => {
         setPasscodeIncorrect(false);
+        setPasscode("");
       }, MESSAGE_MILLISECONDS);
     }
   }, [passcodeIncorrect]);
