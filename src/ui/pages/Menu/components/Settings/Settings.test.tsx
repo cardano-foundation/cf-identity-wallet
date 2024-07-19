@@ -154,7 +154,7 @@ describe("Settings page", () => {
     ).toBeInTheDocument();
 
     act(() => {
-      fireEvent.click(getByTestId("security-item-0"));
+      fireEvent.click(getByTestId("settings-item-0"));
     });
 
     await waitFor(() => {
@@ -243,7 +243,7 @@ describe("Settings page", () => {
     ).toBeInTheDocument();
 
     act(() => {
-      fireEvent.click(getByTestId("security-item-0"));
+      fireEvent.click(getByTestId("settings-item-0"));
     });
 
     await waitFor(() => {
@@ -315,7 +315,7 @@ describe("Settings page", () => {
     ).toBeInTheDocument();
 
     act(() => {
-      fireEvent.click(getByTestId("security-item-0"));
+      fireEvent.click(getByTestId("settings-item-0"));
     });
 
     await waitFor(() => {

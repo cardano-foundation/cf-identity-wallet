@@ -5,20 +5,26 @@ import { SubMenuProps } from "./SubMenu.types";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../../../components/PageHeader";
 import { SideSlider } from "../../../../components/SideSlider";
+import { SubMenuKey } from "../../Menu.types";
 
 const SubMenu = ({
   showSubMenu,
   setShowSubMenu,
+  switchView,
+  nestedMenu,
   title,
   additionalButtons,
   children,
   pageId: customPageId,
 }: SubMenuProps) => {
   const pageId = `sub-menu ${customPageId}`;
-
   const handleClose = useCallback(() => {
-    setShowSubMenu(false);
-  }, [setShowSubMenu]);
+    if (nestedMenu) {
+      switchView(SubMenuKey.Settings);
+    } else {
+      setShowSubMenu(false);
+    }
+  }, [nestedMenu, setShowSubMenu, switchView]);
 
   return (
     <SideSlider isOpen={showSubMenu}>

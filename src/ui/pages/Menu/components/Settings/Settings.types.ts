@@ -1,4 +1,9 @@
 import { ReactNode } from "react";
+import { SubMenuKey } from "../../Menu.types";
+
+interface SettingsProps {
+  switchView?: (key: SubMenuKey) => void;
+}
 
 interface OptionProps {
   index: number;
@@ -13,4 +18,4 @@ interface SettingsItemProps {
   handleOptionClick: (item: OptionProps) => void;
 }
 
-export type { OptionProps, SettingsItemProps };
+export type { SettingsProps, OptionProps, SettingsItemProps };

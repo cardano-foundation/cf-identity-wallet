@@ -5,6 +5,10 @@ interface SubMenuData {
   title: string;
   additionalButtons: ReactNode;
   pageId: string;
+  props?: {
+    switchView: (key: SubMenuKey) => void;
+  };
+  nestedMenu: boolean;
 }
 
 interface SubMenuProps {

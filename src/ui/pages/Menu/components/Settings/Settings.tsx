@@ -21,7 +21,7 @@ import {
 import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
 import { i18n } from "../../../../../i18n";
 import pJson from "../../../../../../package.json";
-import { OptionProps } from "./Settings.types";
+import { OptionProps, SettingsProps } from "./Settings.types";
 import { MiscRecordId } from "../../../../../core/agent/agent.types";
 import { BasicRecord } from "../../../../../core/agent/records";
 import { useAppDispatch } from "../../../../../store/hooks";
@@ -36,8 +36,9 @@ import { getStateCache } from "../../../../../store/reducers/stateCache";
 import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
 import { ChangePin } from "./components/ChangePin";
 import { SettingsItem } from "./components/SettingsItem";
+import { SubMenuKey } from "../../Menu.types";
 
-const Settings = () => {
+const Settings = ({ switchView }: SettingsProps) => {
   const dispatch = useAppDispatch();
   const stateCache = useSelector(getStateCache);
   const biometricsCache = useSelector(getBiometricsCacheCache);
@@ -47,7 +48,6 @@ const Settings = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [changePinIsOpen, setChangePinIsOpen] = useState(false);
-  const [showManagePassword, setShowManagePassword] = useState(false);
 
   const securityItems: OptionProps[] = [
     {
@@ -187,7 +187,7 @@ const Settings = () => {
       break;
     }
     case 2: {
-      setShowManagePassword(true);
+      switchView && switchView(SubMenuKey.ManagePassword);
       break;
     }
     default:

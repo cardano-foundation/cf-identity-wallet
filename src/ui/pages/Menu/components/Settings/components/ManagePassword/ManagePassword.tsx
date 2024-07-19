@@ -13,7 +13,6 @@ import { useAppDispatch } from "../../../../../../../store/hooks";
 import { VerifyPassword } from "../../../../../../components/VerifyPassword";
 import { VerifyPasscode } from "../../../../../../components/VerifyPasscode";
 import { getStateCache } from "../../../../../../../store/reducers/stateCache";
-import { SubMenuKey } from "../../../../Menu.types";
 
 const ManagePassword = () => {
   const pageId = "manage-password";
