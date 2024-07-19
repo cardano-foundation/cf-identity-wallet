@@ -1,5 +1,6 @@
 import {
   IonCard,
+  IonIcon,
   IonItem,
   IonLabel,
   IonList,
@@ -8,6 +9,7 @@ import {
 } from "@ionic/react";
 import { useSelector } from "react-redux";
 import { useState } from "react";
+import { chevronForward } from "ionicons/icons";
 import { i18n } from "../../../../../../../i18n";
 import { VerifyPassword } from "../../../../../../components/VerifyPassword";
 import { VerifyPasscode } from "../../../../../../components/VerifyPasscode";
@@ -44,6 +46,10 @@ const ManagePassword = () => {
     }
   };
 
+  const handleChange = () => {
+    // TODO: change password
+  };
+
   return (
     <>
       <div className="settings-section-title-placeholder" />
@@ -55,7 +61,7 @@ const ManagePassword = () => {
           <IonItem
             onClick={() => handleToggle()}
             className="settings-item"
-            data-testid={"settings-item-manage-password"}
+            data-testid={"settings-item-toggle-password"}
           >
             <IonLabel>
               {i18n.t("settings.sections.security.managepassword.page.enable")}
@@ -70,6 +76,30 @@ const ManagePassword = () => {
           </IonItem>
         </IonList>
       </IonCard>
+      {passwordIsSet && (
+        <IonCard>
+          <IonList
+            lines="none"
+            data-testid="settings-security-items"
+          >
+            <IonItem
+              onClick={() => handleChange()}
+              className="settings-item"
+              data-testid={"settings-item-change-password"}
+            >
+              <IonLabel>{`${i18n.t(
+                "settings.sections.security.managepassword.page.change"
+              )}`}</IonLabel>
+
+              <IonIcon
+                aria-hidden="true"
+                icon={chevronForward}
+                slot="end"
+              />
+            </IonItem>
+          </IonList>
+        </IonCard>
+      )}
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}

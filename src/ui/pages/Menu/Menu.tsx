@@ -85,7 +85,7 @@ const Menu = () => {
     [
       SubMenuKey.Settings,
       {
-        Component: (props?: any) => (
+        Component: (props?: { switchView: (key: SubMenuKey) => void }) => (
           <Settings
             {...props}
             switchView={showSelectedOption}

@@ -1104,6 +1104,7 @@
           "page": {
             "title": "Manage password",
             "enable": "Enable operations password",
+            "change": "Change operations password",
             "alert": {
               "message": "By turning on an operations password you will be required to use this to verify any future operations instead of your passcode.",
               "confirm": "Continue",
