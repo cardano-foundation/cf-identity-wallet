@@ -530,7 +530,6 @@ class MultiSigService extends AgentService {
     return { done: false };
   }
 
-  @OnlineOnly
   async rotateLocalMember(multisigId: string) {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       multisigId

@@ -973,7 +973,6 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("should can not rotate local member with AID is not multisig and throw error", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const metadata = {
       id: "123456",
       displayName: "John Doe",
