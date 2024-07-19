@@ -12,7 +12,6 @@ import { Provider } from "react-redux";
 import { Redirect, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { PreferencesStorage } from "../../../core/storage/preferences/preferencesStorage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { store } from "../../../store";
@@ -20,9 +19,6 @@ import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { SetPasscode } from "./SetPasscode";
 
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
-const setPreferenceStorageSpy = jest
-  .spyOn(PreferencesStorage, "set")
-  .mockResolvedValue();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -63,50 +59,56 @@ describe("SetPasscode Page", () => {
     });
   });
 
-  test("Renders Re-enter Passcode title and start over button when passcode is set", () => {
+  test("Renders Re-enter Passcode title and start over button when passcode is set", async () => {
     require("@ionic/react");
-    const { getByText } = render(
+    const { getByText, queryByText } = render(
       <Provider store={store}>
         <SetPasscode />
       </Provider>
     );
     clickButtonRepeatedly(getByText, "1", 6);
 
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
+      ).toBeInTheDocument()
+    );
+
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
-    ).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
+      getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
     ).toBeInTheDocument();
   });
 
-  test("renders enter passcode restarting the process when start over button is clicked", () => {
+  test("renders enter passcode restarting the process when start over button is clicked", async () => {
     require("@ionic/react");
-    const { getByText } = render(
+    const { getByText, queryByText } = render(
       <Provider store={store}>
         <SetPasscode />
       </Provider>
     );
     clickButtonRepeatedly(getByText, "1", 6);
 
-    const labelElement = getByText(
-      EN_TRANSLATIONS.setpasscode.reenterpasscode.title
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
+      ).toBeInTheDocument()
     );
-    expect(labelElement).toBeInTheDocument();
 
     const startOverElement = getByText(
-      EN_TRANSLATIONS.setpasscode.cantremember.label
+      EN_TRANSLATIONS.createpasscodemodule.cantremember
     );
+
     fireEvent.click(startOverElement);
 
-    const passcodeLabel = getByText(
-      EN_TRANSLATIONS.setpasscode.enterpasscode.title
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode)
+      ).toBeInTheDocument()
     );
-    expect(passcodeLabel).toBeInTheDocument();
   });
 
-  test("Back to enter passcode screen from re-enter passcode screen", () => {
-    const { getByText, getByTestId } = render(
+  test("Back to enter passcode screen from re-enter passcode screen", async () => {
+    const { getByText, getByTestId, queryByText } = render(
       <Provider store={store}>
         <SetPasscode />
       </Provider>
@@ -118,17 +120,19 @@ describe("SetPasscode Page", () => {
     fireEvent.click(getByText(/4/));
     fireEvent.click(getByText(/5/));
 
-    const reEnterPasscodeLabel = getByText(
-      EN_TRANSLATIONS.setpasscode.reenterpasscode.title
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
+      ).toBeInTheDocument()
     );
-    expect(reEnterPasscodeLabel).toBeInTheDocument();
 
     fireEvent.click(getByTestId("back-button"));
 
-    const enterPasscodeLabel = getByText(
-      EN_TRANSLATIONS.setpasscode.enterpasscode.title
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode)
+      ).toBeInTheDocument()
     );
-    expect(enterPasscodeLabel).toBeInTheDocument();
   });
 
   test("Redirects to next page when passcode is entered correctly", async () => {
@@ -158,10 +162,11 @@ describe("SetPasscode Page", () => {
 
     clickButtonRepeatedly(getByText, "1", 6);
 
-    const labelElement = getByText(
-      EN_TRANSLATIONS.setpasscode.reenterpasscode.title
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
+      ).toBeInTheDocument()
     );
-    expect(labelElement).toBeInTheDocument();
 
     clickButtonRepeatedly(getByText, "1", 6);
 
@@ -216,7 +221,7 @@ describe("SetPasscode Page", () => {
     fireEvent.click(backButton);
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
+        queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode)
       ).toBeInTheDocument()
     );
   });

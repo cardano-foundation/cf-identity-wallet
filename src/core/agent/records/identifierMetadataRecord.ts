@@ -18,7 +18,6 @@ interface IdentifierMetadataRecordProps {
   signifyOpName?: string;
   multisigManageAid?: string;
   groupMetadata?: groupMetadata;
-  authorizedEids?: string[];
 }
 
 class IdentifierMetadataRecord extends BaseRecord {
@@ -31,7 +30,6 @@ class IdentifierMetadataRecord extends BaseRecord {
   theme!: number;
   multisigManageAid?: string;
   groupMetadata?: groupMetadata;
-  authorizedEids?: string[];
 
   static readonly type = "IdentifierMetadataRecord";
   readonly type = IdentifierMetadataRecord.type;
@@ -51,7 +49,6 @@ class IdentifierMetadataRecord extends BaseRecord {
       this.createdAt = props.createdAt ?? new Date();
       this.theme = props.theme;
       this.groupMetadata = props.groupMetadata;
-      this.authorizedEids = props.authorizedEids;
     }
   }
 

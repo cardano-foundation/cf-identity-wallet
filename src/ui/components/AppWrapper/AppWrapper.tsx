@@ -24,6 +24,7 @@ import {
 import { Agent } from "../../../core/agent/agent";
 import {
   setConnectionsCache,
+  setMultisigConnectionsCache,
   updateOrAddConnectionCache,
 } from "../../../store/reducers/connectionsCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
@@ -256,6 +257,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   const loadDatabase = async () => {
     const connectionsDetails = await Agent.agent.connections.getConnections();
+    const multisigConnectionsDetails =
+      await Agent.agent.connections.getMultisigConnections();
 
     const credsCache = await Agent.agent.credentials.getCredentials();
     const credsArchivedCache = await Agent.agent.credentials.getCredentials(
@@ -271,6 +274,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setCredsCache(credsCache));
     dispatch(setCredsArchivedCache(credsArchivedCache));
     dispatch(setConnectionsCache(connectionsDetails));
+    dispatch(setMultisigConnectionsCache(multisigConnectionsDetails));
     dispatch(setWalletConnectionsCache(storedPeerConnections));
     dispatch(setNotificationsCache(notifications));
   };

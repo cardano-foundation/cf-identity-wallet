@@ -67,7 +67,7 @@ describe("Onboarding Page", () => {
 
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
+        queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode)
       ).toBeVisible()
     );
   });

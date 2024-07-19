@@ -208,7 +208,6 @@ const multisigMockMemberMetadata = {
     groupInitiator: true,
     groupCreated: true,
   },
-  authorizedEids: [],
   updatedAt: "2024-06-28T03:55:04.260Z",
 };
 
@@ -1616,14 +1615,6 @@ describe("Multisig sig service of agent", () => {
     expect(sendExchangesMock).toBeCalledTimes(
       multisigMockMembers["signing"].length
     );
-    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
-      "prefix",
-      {
-        authorizedEids: multisigMockMembers.signing.map(
-          (item) => Object.keys(item.ends.agent)[0]
-        ),
-      }
-    );
   });
 
   test("Can join end role authorization", async () => {
@@ -1689,11 +1680,5 @@ describe("Multisig sig service of agent", () => {
       },
     });
     expect(sendExchangesMock).toBeCalledTimes(1);
-    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
-      "prefix",
-      {
-        authorizedEids: ["EDr4kddR_keAzTUs_PNW-qSsUdLDrKD0YbZxiU-y4B3K"],
-      }
-    );
   });
 });

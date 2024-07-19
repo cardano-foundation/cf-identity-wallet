@@ -58,7 +58,8 @@ describe("getBackRoute", () => {
       credsCache: { creds: [], favourites: [] },
       credsArchivedCache: { creds: [] },
       connectionsCache: {
-        connections: [],
+        connections: {},
+        multisigConnections: {},
       },
       walletConnectionsCache: {
         walletConnections: [],
@@ -190,7 +191,8 @@ describe("getPreviousRoute", () => {
       credsCache: { creds: [], favourites: [] },
       credsArchivedCache: { creds: [] },
       connectionsCache: {
-        connections: [],
+        connections: {},
+        multisigConnections: {},
       },
       walletConnectionsCache: {
         walletConnections: [],

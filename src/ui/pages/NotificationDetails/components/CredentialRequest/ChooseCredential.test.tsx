@@ -102,7 +102,9 @@ describe("Credential request - choose request", () => {
       getByTestId("card-item-" + credRequestFix.credentials[1].acdc.d)
     ).toBeVisible();
 
-    expect(getAllByText(connectionsForNotifications[0].label).length).toBe(2);
+    expect(
+      getAllByText(Object.values(connectionsForNotifications)[0].label).length
+    ).toBe(2);
 
     expect(
       getByText(
