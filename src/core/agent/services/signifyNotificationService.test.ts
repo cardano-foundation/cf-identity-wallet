@@ -90,7 +90,6 @@ const identifierMetadataRecordProps = {
   signifyName: "uuid-here",
   createdAt: new Date(),
   theme: 0,
-  authorizedEids: ["uuid-here"],
 };
 
 const notificationStorage = jest.mocked({
@@ -334,57 +333,7 @@ describe("Signify notification service of agent", () => {
     expect(callback).toBeCalledTimes(0);
   });
 
-  test("Should skip if notification route is rpy and identifier authorizedEids includes eid", async () => {
-    const callback = jest.fn();
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(identifierMetadataRecordProps);
-    const notes = [
-      {
-        i: "string",
-        dt: "string",
-        r: false,
-        a: {
-          r: "/multisig/rpy",
-          d: "string",
-          m: "",
-        },
-      },
-    ];
-
-    const multisigNotificationExn = {
-      exn: {
-        a: {
-          gid: "uuid",
-        },
-        e: {
-          rpy: {
-            v: "KERI10JSON000111_",
-            t: "rpy",
-            d: "uuid",
-            dt: "2024-07-12T09:37:48.801000+00:00",
-            r: "/end/role/add",
-            a: {
-              cid: "uuid",
-              role: "agent",
-              eid: "uuid-here",
-            },
-          },
-          d: "uuid",
-        },
-      },
-    };
-    groupGetRequestMock.mockResolvedValue([multisigNotificationExn]);
-    for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
-    }
-    expect(callback).toBeCalledTimes(0);
-    expect(markNotificationMock).toBeCalledWith(notes[0].i);
-  });
-
-  test("Should skip if notification route is rpy and identifier authorizedEids not includes eid", async () => {
+  test("Should skip if notification route is /multisig/rpy", async () => {
     const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
