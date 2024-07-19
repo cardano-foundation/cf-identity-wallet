@@ -2,7 +2,6 @@ import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
 import { addOutline, peopleOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Agent } from "../../../core/agent/agent";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -10,7 +9,6 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getFavouritesIdentifiersCache,
   getIdentifiersCache,
-  setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
