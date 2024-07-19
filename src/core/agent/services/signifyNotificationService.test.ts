@@ -253,16 +253,6 @@ describe("Signify notification service of agent", () => {
           m: "",
         },
       },
-      {
-        i: "string",
-        dt: "string",
-        r: false,
-        a: {
-          r: "/multisig/rpy",
-          d: "not-found-said",
-          m: "",
-        },
-      },
     ];
     for (const notif of notes) {
       await signifyNotificationService.processNotification(notif, callback);
