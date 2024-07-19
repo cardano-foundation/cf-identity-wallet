@@ -6,4 +6,10 @@ interface PasswordRegexProps {
   password: string;
 }
 
-export type { PasswordRegexProps, RegexItemProps };
+interface CreatePasswordProps {
+  isModal: boolean;
+  setCreatePasswordModalIsOpen: (value: boolean) => void;
+  setPasswordIsSet: (value: boolean) => void;
+}
+
+export type { PasswordRegexProps, RegexItemProps, CreatePasswordProps };

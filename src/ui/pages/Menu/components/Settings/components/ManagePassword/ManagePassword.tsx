@@ -1,61 +1,92 @@
 import {
   IonCard,
-  IonGrid,
   IonItem,
   IonLabel,
   IonList,
-  IonRow,
+  IonModal,
+  IonToggle,
 } from "@ionic/react";
 import { useSelector } from "react-redux";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { i18n } from "../../../../../../../i18n";
-import { useAppDispatch } from "../../../../../../../store/hooks";
 import { VerifyPassword } from "../../../../../../components/VerifyPassword";
 import { VerifyPasscode } from "../../../../../../components/VerifyPasscode";
 import { getStateCache } from "../../../../../../../store/reducers/stateCache";
+import { Alert } from "../../../../../../components/Alert";
+import { CreatePassword } from "../../../../../CreatePassword";
+import { KeyStoreKeys, SecureStorage } from "../../../../../../../core/storage";
 
 const ManagePassword = () => {
-  const pageId = "manage-password";
-  const dispatch = useAppDispatch();
   const stateCache = useSelector(getStateCache);
+  const [passwordIsSet, setPasswordIsSet] = useState(
+    stateCache?.authentication.passwordIsSet
+  );
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const [createPasswordModalIsOpen, setCreatePasswordModalIsOpen] =
+    useState(false);
 
   const handleToggle = () => {
-    if (
-      !stateCache?.authentication.passwordIsSkipped &&
-      stateCache?.authentication.passwordIsSet
-    ) {
+    if (passwordIsSet) {
       setVerifyPasswordIsOpen(true);
     } else {
-      setVerifyPasscodeIsOpen(true);
+      setAlertIsOpen(true);
     }
   };
 
-  const onVerify = () => {
-    // TODO: switch on/off password
+  const onVerify = async () => {
+    if (passwordIsSet) {
+      await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, "");
+      setPasswordIsSet(false);
+    } else {
+      setCreatePasswordModalIsOpen(true);
+    }
   };
 
   return (
     <>
-      <IonGrid>
-        <IonRow>
-          <IonCard>
-            <IonList
-              lines="none"
-              data-testid="settings-manage-password-page"
-            >
-              <IonItem className="security-item">
-                <IonLabel>
-                  {i18n.t(
-                    "settings.sections.security.managepassword.page.enable"
-                  )}
-                </IonLabel>
-              </IonItem>
-            </IonList>
-          </IonCard>
-        </IonRow>
-      </IonGrid>
+      <div className="settings-section-title-placeholder" />
+      <IonCard>
+        <IonList
+          lines="none"
+          data-testid="settings-security-items"
+        >
+          <IonItem
+            onClick={() => handleToggle()}
+            className="settings-item"
+            data-testid={"settings-item-manage-password"}
+          >
+            <IonLabel>
+              {i18n.t("settings.sections.security.managepassword.page.enable")}
+            </IonLabel>
+            <IonToggle
+              aria-label={`${i18n.t(
+                "settings.sections.security.managepassword.page.enable"
+              )}`}
+              className="toggle-button"
+              checked={passwordIsSet}
+            />
+          </IonItem>
+        </IonList>
+      </IonCard>
+      <Alert
+        isOpen={alertIsOpen}
+        setIsOpen={setAlertIsOpen}
+        dataTestId="alert-cancel"
+        headerText={`${i18n.t(
+          "settings.sections.security.managepassword.page.alert.message"
+        )}`}
+        confirmButtonText={`${i18n.t(
+          "settings.sections.security.managepassword.page.alert.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "settings.sections.security.managepassword.page.alert.cancel"
+        )}`}
+        actionConfirm={() => setVerifyPasscodeIsOpen(true)}
+        actionCancel={() => setAlertIsOpen(false)}
+        actionDismiss={() => setAlertIsOpen(false)}
+      />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
         setIsOpen={setVerifyPasswordIsOpen}
@@ -66,6 +97,18 @@ const ManagePassword = () => {
         setIsOpen={setVerifyPasscodeIsOpen}
         onVerify={onVerify}
       />
+      <IonModal
+        isOpen={createPasswordModalIsOpen}
+        className="create-password-modal"
+        data-testid="create-password-modal"
+        onDidDismiss={() => setCreatePasswordModalIsOpen(false)}
+      >
+        <CreatePassword
+          isModal={true}
+          setCreatePasswordModalIsOpen={setCreatePasswordModalIsOpen}
+          setPasswordIsSet={setPasswordIsSet}
+        />
+      </IonModal>
     </>
   );
 };

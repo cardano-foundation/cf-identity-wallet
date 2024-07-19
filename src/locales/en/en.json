@@ -634,8 +634,9 @@
     "optional": "(optional)"
   },
   "createpassword": {
-    "title": "Create your Password",
-    "description": "You can choose to set an optional password for your Identity Wallet. This password will be required to complete protected operations within the wallet. If you choose to skip and not set a password, you will be asked to provide your passcode to complete protected operations.",
+    "title": "Create Password",
+    "cancel": "Cancel",
+    "description": "Set your operations password so you can access additional wallet features.",
     "input": {
       "first": {
         "title": "Create password",
@@ -1102,7 +1103,12 @@
           "title": "Manage operations password",
           "page": {
             "title": "Manage password",
-            "enable": "Enable operations password"
+            "enable": "Enable operations password",
+            "alert": {
+              "message": "By turning on an operations password you will be required to use this to verify any future operations instead of your passcode.",
+              "confirm": "Continue",
+              "cancel": "Cancel"
+            }
           }
         },
         "seedphrase": "Seed Phrase"

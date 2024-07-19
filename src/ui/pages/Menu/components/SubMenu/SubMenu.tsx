@@ -42,7 +42,10 @@ const SubMenu = ({
         }
       >
         <div
-          className={`${title?.toLowerCase().replace(" ", "-")}-content`}
+          className={
+            `${title?.toLowerCase().replace(" ", "-")}-content` +
+            `${nestedMenu ? " nested-content" : ""}`
+          }
           data-testid={`${title?.toLowerCase().replace(" ", "-")}-content`}
         >
           {children}

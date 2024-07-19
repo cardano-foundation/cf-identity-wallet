@@ -1,8 +1,13 @@
-.settings-content {
+.settings-content,
+.nested-content {
   margin-top: 2rem;
 
   .settings-section-title {
     margin: 0.625rem 1.25rem;
+  }
+
+  .settings-section-title-placeholder {
+    margin-top: 2.25rem;
   }
 
   ion-card {
@@ -57,13 +62,13 @@
         font-weight: 500;
       }
 
-      .biometric-toggle {
+      .toggle-button {
         width: fit-content;
         &.toggle-checked {
           --track-background-checked: var(--ion-color-primary-gradient);
 
           &.md {
-            --handle-background-checked: #fff;
+            --handle-background-checked: white;
           }
         }
       }

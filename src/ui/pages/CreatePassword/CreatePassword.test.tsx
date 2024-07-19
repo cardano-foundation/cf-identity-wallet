@@ -13,9 +13,15 @@ describe("Create Password Page", () => {
     dispatch: dispatchMock,
   };
   test("Renders Create Password page", () => {
+    const setCreatePasswordModalIsOpen = jest.fn();
+    const setPasswordIsSet = jest.fn();
     const { getByTestId } = render(
       <Provider store={storeMocked}>
-        <CreatePassword />
+        <CreatePassword
+          isModal={false}
+          setCreatePasswordModalIsOpen={setCreatePasswordModalIsOpen}
+          setPasswordIsSet={setPasswordIsSet}
+        />
       </Provider>
     );
     const createPasswordValue = getByTestId("createPasswordValue");

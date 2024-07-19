@@ -15,32 +15,48 @@ import { OperationType } from "../../globals/types";
 import { useAppIonRouter } from "../../hooks";
 import "./CreatePassword.scss";
 import { PasswordModuleRef } from "../../components/PasswordModule/PasswordModule.types";
+import { CreatePasswordProps } from "./CreatePassword.types";
 
-const CreatePassword = () => {
+const CreatePassword = ({
+  isModal,
+  setCreatePasswordModalIsOpen,
+  setPasswordIsSet,
+}: CreatePasswordProps) => {
   const pageId = "create-password";
   const stateCache = useAppSelector(getStateCache);
   const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
-
   const passwordModuleRef = useRef<PasswordModuleRef>(null);
 
   const handleContinue = async (skipped: boolean) => {
-    const { nextPath, updateRedux } = getNextRoute(RoutePath.CREATE_PASSWORD, {
-      store: { stateCache },
-      state: { skipped },
-    });
+    if (isModal) {
+      setPasswordIsSet(true);
+      setCreatePasswordModalIsOpen(false);
+    } else {
+      const { nextPath, updateRedux } = getNextRoute(
+        RoutePath.CREATE_PASSWORD,
+        {
+          store: { stateCache },
+          state: { skipped },
+        }
+      );
 
-    updateReduxState(
-      nextPath.pathname,
-      {
-        store: { stateCache },
-        state: { skipped },
-      },
-      dispatch,
-      updateRedux
-    );
-    dispatch(setCurrentOperation(OperationType.IDLE));
-    ionRouter.push(nextPath.pathname, "forward", "push");
+      updateReduxState(
+        nextPath.pathname,
+        {
+          store: { stateCache },
+          state: { skipped },
+        },
+        dispatch,
+        updateRedux
+      );
+      dispatch(setCurrentOperation(OperationType.IDLE));
+      ionRouter.push(nextPath.pathname, "forward", "push");
+    }
+  };
+  const handleCancel = () => {
+    passwordModuleRef.current?.clearState;
+    setCreatePasswordModalIsOpen(false);
   };
 
   return (
@@ -48,19 +64,22 @@ const CreatePassword = () => {
       pageId={pageId}
       header={
         <PageHeader
-          backButton={true}
-          beforeBack={passwordModuleRef.current?.clearState}
-          currentPath={RoutePath.CREATE_PASSWORD}
-          progressBar={true}
+          currentPath={isModal ? undefined : RoutePath.CREATE_PASSWORD}
+          progressBar={!isModal}
           progressBarValue={0.5}
           progressBarBuffer={1}
+          closeButton={isModal}
+          closeButtonAction={handleCancel}
+          closeButtonLabel={`${i18n.t("createpassword.cancel")}`}
+          title={isModal ? `${i18n.t("createpassword.title")}` : undefined}
         />
       }
     >
       <PasswordModule
         ref={passwordModuleRef}
         testId={pageId}
-        title={`${i18n.t("createpassword.title")}`}
+        isModal={isModal}
+        title={isModal ? undefined : `${i18n.t("createpassword.title")}`}
         description={`${i18n.t("createpassword.description")}`}
         onCreateSuccess={handleContinue}
       />

@@ -75,7 +75,7 @@ const Settings = ({ switchView }: SettingsProps) => {
       actionIcon: (
         <IonToggle
           aria-label="Biometric Toggle"
-          className="biometric-toggle"
+          className="toggle-button"
           checked={biometricsCache.enabled}
         />
       ),

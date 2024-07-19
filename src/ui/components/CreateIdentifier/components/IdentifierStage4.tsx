@@ -28,8 +28,6 @@ const IdentifierStage4 = ({
 }: IdentifierStageProps) => {
   const dispatch = useAppDispatch();
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  // @TODO - sdisalvo: This is a temporary fix to get the identifier created.
-  // We'll need to work out a proper way to get 'ourIdentifier'.
   const identifiersData = useAppSelector(getIdentifiersCache);
   const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
   const ourIdentifier = state.ourIdentifier;

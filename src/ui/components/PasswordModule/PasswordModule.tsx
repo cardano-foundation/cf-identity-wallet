@@ -14,7 +14,7 @@ import "./PasswordModule.scss";
 import { PasswordModuleProps, PasswordModuleRef } from "./PasswordModule.types";
 
 const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
-  ({ title, description, testId, onCreateSuccess }, ref) => {
+  ({ title, isModal, description, testId, onCreateSuccess }, ref) => {
     const [createPasswordValue, setCreatePasswordValue] = useState("");
     const [confirmPasswordValue, setConfirmPasswordValue] = useState("");
     const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
@@ -159,7 +159,9 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
             primaryButtonText={`${i18n.t("createpassword.button.continue")}`}
             primaryButtonAction={() => handleContinue(false)}
             primaryButtonDisabled={!validated}
-            tertiaryButtonText={`${i18n.t("createpassword.button.skip")}`}
+            tertiaryButtonText={
+              isModal ? undefined : `${i18n.t("createpassword.button.skip")}`
+            }
             tertiaryButtonAction={() => setAlertIsOpen(true)}
           />
         </div>

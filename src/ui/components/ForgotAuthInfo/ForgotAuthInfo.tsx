@@ -123,6 +123,7 @@ const ForgotAuthInfo = ({
             testId={pageId}
             description={`${i18n.t("forgotauth.newpassword.description")}`}
             onCreateSuccess={handleCreatePasswordSuccess}
+            isModal={false}
           />
         )}
       </ScrollablePageLayout>
