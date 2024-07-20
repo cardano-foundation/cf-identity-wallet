@@ -83,7 +83,10 @@ class ConnectionService extends AgentService {
     });
 
     const operation = await this.resolveOobi(url, multiSigInvite);
-    const connectionId = new URL(url).pathname.split("/")[2];
+    const connectionId =
+      operation.done && operation.response
+        ? operation.response.i
+        : new URL(url).pathname.split("/oobi/").pop();
     const connectionMetadata: any = {
       alias: operation.alias,
       oobi: url,
@@ -310,18 +313,26 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async resolveOobi(url: string, waitForCompletion?: boolean): Promise<any> {
+  async resolveOobi(url: string, waitForCompletion = false): Promise<any> {
     const startTime = Date.now();
     if (ConnectionService.resolvedOobi[url]) {
       return ConnectionService.resolvedOobi[url];
     }
     const alias = new URL(url).searchParams.get("name") ?? uuidv4();
-    const operation = await waitAndGetDoneOp(
-      this.props.signifyClient,
-      await this.props.signifyClient.oobis().resolve(url, alias),
-      2000 - (Date.now() - startTime)
-    );
-    if (!operation.done && !waitForCompletion && /\/oobi\//.test(url)) {
+    let operation;
+    if (waitForCompletion) {
+      operation = await waitAndGetDoneOp(
+        this.props.signifyClient,
+        await this.props.signifyClient.oobis().resolve(url, alias)
+      );
+    } else {
+      operation = await waitAndGetDoneOp(
+        this.props.signifyClient,
+        await this.props.signifyClient.oobis().resolve(url, alias),
+        2000 - (Date.now() - startTime)
+      );
+    }
+    if (!operation.done && !waitForCompletion) {
       const pendingOperation = await this.operationPendingStorage.save({
         id: operation.name,
         recordType: OperationPendingRecordType.Oobi,
@@ -330,7 +341,6 @@ class ConnectionService extends AgentService {
         pendingOperation
       );
     } else if (!operation.done) {
-      //Handle for the url doesn't contain "/oobi"
       throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
     }
     const oobi = { ...operation, alias };

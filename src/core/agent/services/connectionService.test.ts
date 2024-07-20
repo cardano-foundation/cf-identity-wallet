@@ -466,7 +466,7 @@ describe("Connection service of agent", () => {
     });
   });
 
-  test("should timeout if oobi resolving is not completing", async () => {
+  test("should throw if oobi is not resolving and we explicitly wait for completion", async () => {
     signifyClient.operations().get = jest
       .fn()
       .mockResolvedValue({ done: false });
