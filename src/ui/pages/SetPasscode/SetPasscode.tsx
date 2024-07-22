@@ -81,6 +81,10 @@ const SetPasscode = () => {
     ionRouter.push(backPath.pathname, "back", "pop");
   };
 
+  const description = stateCache.authentication.recoveryWalletProgress
+    ? i18n.t("setpasscode.recoverydescription")
+    : i18n.t("setpasscode.description");
+
   return (
     <ResponsivePageLayout
       pageId={pageId}
@@ -98,7 +102,7 @@ const SetPasscode = () => {
     >
       <CreatePasscodeModule
         title={title}
-        description={`${i18n.t("setpasscode.description")}`}
+        description={description}
         ref={ref}
         testId={pageId}
         onCreateSuccess={handlePassAuth}
