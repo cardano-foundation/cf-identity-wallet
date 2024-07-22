@@ -1,9 +1,9 @@
 import { IonModal } from "@ionic/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { i18n } from "../../../i18n";
 import { Alert } from "../Alert";
-import { ErrorMessage } from "../ErrorMessage";
+import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
 import { ForgotAuthInfo } from "../ForgotAuthInfo";
 import { ForgotType } from "../ForgotAuthInfo/ForgotAuthInfo.types";
 import { PageFooter } from "../PageFooter";
@@ -58,6 +58,15 @@ const VerifyPasscode = ({
       setPasscode(passcode.substring(0, passcode.length - 1));
     }
   };
+
+  useEffect(() => {
+    if (passcodeIncorrect) {
+      setTimeout(() => {
+        setPasscodeIncorrect(false);
+        setPasscode("");
+      }, MESSAGE_MILLISECONDS);
+    }
+  }, [passcodeIncorrect]);
 
   const verifyPasscode = async (pass: string) => {
     try {

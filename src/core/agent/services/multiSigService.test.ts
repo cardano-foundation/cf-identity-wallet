@@ -133,6 +133,7 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       identifiers: {
         getIdentifiers: () => mockGetIdentifiers(),
+        rotateIdentifier: () => jest.fn(),
         updateIdentifier: jest.fn(),
       },
       signifyNotifications: {
@@ -206,7 +207,6 @@ const multisigMockMemberMetadata = {
     groupInitiator: true,
     groupCreated: true,
   },
-  authorizedEids: [],
   updatedAt: "2024-06-28T03:55:04.260Z",
 };
 
@@ -855,6 +855,38 @@ describe("Multisig sig service of agent", () => {
           },
         },
       ],
+      rotation: [
+        {
+          aid: "ENYqRaAQBWtpS7fgCGirVy-zJNRcWu2ZUsRNBjzvrfR_",
+          ends: {
+            agent: {
+              EGQnU0iNKuvURoeRenW7pZ5wA1Iyijo2EgscSYsK0hum: {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+        {
+          aid: "EOpnB724NQqQa58Zqw-ZFEQplQ2hQXpbj6o2gKrzlix3",
+          ends: {
+            agent: {
+              "EAOfcPsG_mHtrzw1TyOxlCiQQlLZn-KTUu4lUy7zB_Na": {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+        {
+          aid: "EJUPirpdqcZpblLDyQ4P8XkD12wmQUqJb_6M7tUVZT4n",
+          ends: {
+            agent: {
+              "EN6WVdOExj1n6ES-Wzk9yjskoXv_2aEqNEN2iDzttPJb": {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+      ],
     });
     expect(multiSigService.rotateMultisig(metadata.id)).rejects.toThrowError(
       MultiSigService.NOT_FOUND_ALL_MEMBER_OF_MULTISIG
@@ -952,6 +984,38 @@ describe("Multisig sig service of agent", () => {
           },
         },
       ],
+      rotation: [
+        {
+          aid: "ENYqRaAQBWtpS7fgCGirVy-zJNRcWu2ZUsRNBjzvrfR_",
+          ends: {
+            agent: {
+              EGQnU0iNKuvURoeRenW7pZ5wA1Iyijo2EgscSYsK0hum: {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+        {
+          aid: "EOpnB724NQqQa58Zqw-ZFEQplQ2hQXpbj6o2gKrzlix3",
+          ends: {
+            agent: {
+              "EAOfcPsG_mHtrzw1TyOxlCiQQlLZn-KTUu4lUy7zB_Na": {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+        {
+          aid: "EJUPirpdqcZpblLDyQ4P8XkD12wmQUqJb_6M7tUVZT4n",
+          ends: {
+            agent: {
+              "EN6WVdOExj1n6ES-Wzk9yjskoXv_2aEqNEN2iDzttPJb": {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+      ],
     });
     expect(await multiSigService.rotateMultisig(metadata.id)).toBe(
       multisigIdentifier
@@ -970,6 +1034,47 @@ describe("Multisig sig service of agent", () => {
         read: true,
       })
     ).rejects.toThrowError(MultiSigService.EXN_MESSAGE_NOT_FOUND);
+  });
+
+  test("should can not rotate local member with AID is not multisig and throw error", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "name",
+      theme: 0,
+    } as IdentifierMetadataRecord;
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(metadata);
+
+    expect(multiSigService.rotateLocalMember("123456")).rejects.toThrowError(
+      MultiSigService.AID_IS_NOT_MULTI_SIG
+    );
+  });
+
+  test("should can rotate local member of multisig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "name",
+      theme: 0,
+      multisigManageAid: "123",
+    } as IdentifierMetadataRecord;
+
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(metadata);
+    Agent.agent.identifiers.rotateIdentifier = identifiersRotateMock;
+    await multiSigService.rotateLocalMember("123456");
+
+    expect(identifiersRotateMock).toHaveBeenCalledWith(
+      metadata.multisigManageAid
+    );
   });
 
   test("should can join the multisig rotation with AID is not multisig and throw error", async () => {
@@ -1614,14 +1719,6 @@ describe("Multisig sig service of agent", () => {
     expect(sendExchangesMock).toBeCalledTimes(
       multisigMockMembers["signing"].length
     );
-    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
-      "prefix",
-      {
-        authorizedEids: multisigMockMembers.signing.map(
-          (item) => Object.keys(item.ends.agent)[0]
-        ),
-      }
-    );
   });
 
   test("Can join end role authorization", async () => {
@@ -1687,11 +1784,5 @@ describe("Multisig sig service of agent", () => {
       },
     });
     expect(sendExchangesMock).toBeCalledTimes(1);
-    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
-      "prefix",
-      {
-        authorizedEids: ["EDr4kddR_keAzTUs_PNW-qSsUdLDrKD0YbZxiU-y4B3K"],
-      }
-    );
   });
 });

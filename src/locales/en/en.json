@@ -33,21 +33,15 @@
       }
     }
   },
+  "createpasscodemodule": {
+    "errornomatch": "Passcode does not match",
+    "errormatch": "Passcode already in use",
+    "cantremember": "Can't remember?"
+  },
   "setpasscode": {
-    "enterpasscode": {
-      "title": "Create your Passcode",
-      "description": "Create a passcode to secure access to your wallet and to continue the onboarding process",
-      "error": "Passcode does not match"
-    },
-    "reenterpasscode": {
-      "title": "Re-enter your Passcode"
-    },
-    "startover": {
-      "label": "Forgot your passcode?"
-    },
-    "cantremember": {
-      "label": "Can't remember?"
-    }
+    "enterpasscode": "Create your Passcode",
+    "description": "Create a passcode to secure access to your wallet and to continue the onboarding process",
+    "reenterpasscode": "Re-enter your Passcode"
   },
   "generateseedphrase": {
     "onboarding": {
@@ -1002,6 +996,21 @@
         "threshold": "Threshold",
         "alert": {
           "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later."
+        },
+        "errorpage": {
+          "title": "Please review",
+          "alerttext": "You are missing one or more connections required for this multi-sig request. Please scan all necessary QR codes to proceed.",
+          "instructions": {
+            "title": "Instructions",
+            "detailtext": "In order to continue and complete the multi-sig setup, please follow the instructions below.",
+            "stepone": "Ensure you have scanned all participant's QR codes.",
+            "steptwo": "After scanning, try to open this notification again."
+          },
+          "help": {
+            "title": "Need help?",
+            "detailtext": "If you need assistance, please refer to our Help Center or contact support."
+          },
+          "continuesetup": "Continue setup"
         }
       }
     }
@@ -1093,7 +1102,17 @@
       "security": {
         "title": "Security",
         "biometry": "Biometric authentication",
-        "changepin": "Change PIN",
+        "changepin": {
+          "title": "Change passcode",
+          "createpasscode": "Create new passcode",
+          "reenterpasscode": "Re-enter new passcode",
+          "cancel": "Cancel",
+          "back": "Back",
+          "description": "Create a new passcode to secure your wallet",
+          "cantremember": {
+            "label": "Can't remember?"
+          }
+        },
         "manageoperationspassword": "Manage Operations Password",
         "seedphrase": "Seed Phrase"
       },
@@ -1368,7 +1387,8 @@
     "rotatekeyerror": "Unable to rotate keys",
     "newmultisignmember": "New member added to multi-sig",
     "multisignidentifiercreated": "Identifier added to \"For multiple signers\"",
-    "delegatedidentifiercreated": "Identifier added to \"For delegates\"" 
+    "delegatedidentifiercreated": "Identifier added to \"For delegates\"",
+    "passcodeupdated": "Passcode updated successfully"
   },
   "request": {
     "sign": {

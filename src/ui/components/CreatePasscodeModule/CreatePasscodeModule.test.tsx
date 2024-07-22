@@ -13,6 +13,8 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
+import { waitForIonicReact } from "@ionic/react-test-utils";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
@@ -49,6 +51,36 @@ jest.mock("../../hooks/useBiometricsHook", () => ({
   })),
 }));
 
+jest.mock("@aparajita/capacitor-secure-storage", () => ({
+  SecureStorage: {
+    get: (key: string) => {
+      return "121345";
+    },
+  },
+}));
+
+const mockStore = configureStore();
+const dispatchMock = jest.fn();
+const initialState = {
+  stateCache: {
+    routes: ["/"],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+    },
+  },
+  seedPhraseCache: {
+    seedPhrase: "",
+    bran: "",
+  },
+};
+
+const storeMocked = {
+  ...mockStore(initialState),
+  dispatch: dispatchMock,
+};
+
 describe("SetPasscode Page", () => {
   beforeEach(() => {
     jest.resetModules();
@@ -66,18 +98,18 @@ describe("SetPasscode Page", () => {
     const { getByText } = render(
       <Provider store={store}>
         <CreatePasscodeModule
-          title={EN_TRANSLATIONS.setpasscode.enterpasscode.title}
-          description={EN_TRANSLATIONS.setpasscode.enterpasscode.description}
+          title={EN_TRANSLATIONS.setpasscode.enterpasscode}
+          description={EN_TRANSLATIONS.setpasscode.description}
           testId="set-passcode"
           onCreateSuccess={jest.fn()}
         />
       </Provider>
     );
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
+      getByText(EN_TRANSLATIONS.setpasscode.enterpasscode)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.enterpasscode.description)
+      getByText(EN_TRANSLATIONS.setpasscode.description)
     ).toBeInTheDocument();
   });
 
@@ -86,8 +118,8 @@ describe("SetPasscode Page", () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
         <CreatePasscodeModule
-          title={EN_TRANSLATIONS.setpasscode.enterpasscode.title}
-          description={EN_TRANSLATIONS.setpasscode.enterpasscode.description}
+          title={EN_TRANSLATIONS.setpasscode.enterpasscode}
+          description={EN_TRANSLATIONS.setpasscode.description}
           testId="set-passcode"
           onCreateSuccess={jest.fn()}
         />
@@ -103,18 +135,20 @@ describe("SetPasscode Page", () => {
     );
   });
 
-  test("Entering a wrong passcode at the passcode confirmation returns an error", () => {
+  test("Entering a wrong passcode at the passcode confirmation returns an error", async () => {
     require("@ionic/react");
-    const { getByText } = render(
+    const { getByText, queryByText } = render(
       <Provider store={store}>
         <CreatePasscodeModule
-          title={EN_TRANSLATIONS.setpasscode.reenterpasscode.title}
-          description={EN_TRANSLATIONS.setpasscode.enterpasscode.description}
+          title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+          description={EN_TRANSLATIONS.setpasscode.description}
           testId="set-passcode"
           onCreateSuccess={jest.fn()}
         />
       </Provider>
     );
+    await waitForIonicReact();
+
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/2/));
     fireEvent.click(getByText(/1/));
@@ -122,9 +156,7 @@ describe("SetPasscode Page", () => {
     fireEvent.click(getByText(/4/));
     fireEvent.click(getByText(/5/));
 
-    const labelElement = getByText(
-      EN_TRANSLATIONS.setpasscode.reenterpasscode.title
-    );
+    const labelElement = getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
     expect(labelElement).toBeInTheDocument();
 
     fireEvent.click(getByText(/6/));
@@ -134,10 +166,39 @@ describe("SetPasscode Page", () => {
     fireEvent.click(getByText(/0/));
     fireEvent.click(getByText(/1/));
 
-    const errorMessage = getByText(
-      EN_TRANSLATIONS.setpasscode.enterpasscode.error
+    await waitFor(
+      () =>
+        expect(queryByText(EN_TRANSLATIONS.createpasscodemodule.errornomatch))
+          .toBeVisible
     );
-    expect(errorMessage).toBeInTheDocument();
+  });
+
+  test("Entering an existing passcode returns an error", async () => {
+    require("@ionic/react");
+    const { getByText, queryByText } = render(
+      <Provider store={storeMocked}>
+        <CreatePasscodeModule
+          title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+          description={EN_TRANSLATIONS.setpasscode.description}
+          testId="set-passcode"
+          onCreateSuccess={jest.fn()}
+        />
+      </Provider>
+    );
+    await waitForIonicReact();
+
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/2/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/3/));
+    fireEvent.click(getByText(/4/));
+    fireEvent.click(getByText(/5/));
+
+    await waitFor(
+      () =>
+        expect(queryByText(EN_TRANSLATIONS.createpasscodemodule.errornomatch))
+          .toBeVisible
+    );
   });
 
   test("Setup passcode and Android biometrics", async () => {
@@ -155,10 +216,8 @@ describe("SetPasscode Page", () => {
         <IonRouterOutlet animated={false}>
           <Provider store={store}>
             <CreatePasscodeModule
-              title={EN_TRANSLATIONS.setpasscode.reenterpasscode.title}
-              description={
-                EN_TRANSLATIONS.setpasscode.enterpasscode.description
-              }
+              title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+              description={EN_TRANSLATIONS.setpasscode.description}
               testId="set-passcode"
               onCreateSuccess={jest.fn()}
             />
@@ -170,11 +229,14 @@ describe("SetPasscode Page", () => {
     clickButtonRepeatedly(getByText, "1", 6);
 
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
+      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
     ).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
-    ).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(
+        getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
+      ).toBeInTheDocument()
+    );
 
     clickButtonRepeatedly(getByText, "1", 6);
 
@@ -219,10 +281,8 @@ describe("SetPasscode Page", () => {
         <IonRouterOutlet animated={false}>
           <Provider store={store}>
             <CreatePasscodeModule
-              title={EN_TRANSLATIONS.setpasscode.reenterpasscode.title}
-              description={
-                EN_TRANSLATIONS.setpasscode.enterpasscode.description
-              }
+              title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+              description={EN_TRANSLATIONS.setpasscode.description}
               testId="set-passcode"
               onCreateSuccess={jest.fn()}
             />
@@ -234,11 +294,14 @@ describe("SetPasscode Page", () => {
     clickButtonRepeatedly(getByText, "1", 6);
 
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
+      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
     ).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
-    ).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(
+        getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
+      ).toBeInTheDocument()
+    );
 
     clickButtonRepeatedly(getByText, "1", 6);
 
@@ -289,10 +352,8 @@ describe("SetPasscode Page", () => {
         <IonRouterOutlet animated={false}>
           <Provider store={store}>
             <CreatePasscodeModule
-              title={EN_TRANSLATIONS.setpasscode.reenterpasscode.title}
-              description={
-                EN_TRANSLATIONS.setpasscode.enterpasscode.description
-              }
+              title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+              description={EN_TRANSLATIONS.setpasscode.description}
               testId="set-passcode"
               onCreateSuccess={jest.fn()}
             />
@@ -304,11 +365,14 @@ describe("SetPasscode Page", () => {
     clickButtonRepeatedly(getByText, "1", 6);
 
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
+      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
     ).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
-    ).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(
+        getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
+      ).toBeInTheDocument()
+    );
 
     clickButtonRepeatedly(getByText, "1", 6);
 
@@ -359,10 +423,8 @@ describe("SetPasscode Page", () => {
         <IonRouterOutlet animated={false}>
           <Provider store={store}>
             <CreatePasscodeModule
-              title={EN_TRANSLATIONS.setpasscode.reenterpasscode.title}
-              description={
-                EN_TRANSLATIONS.setpasscode.enterpasscode.description
-              }
+              title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
+              description={EN_TRANSLATIONS.setpasscode.description}
               testId="set-passcode"
               onCreateSuccess={jest.fn()}
             />
@@ -374,11 +436,14 @@ describe("SetPasscode Page", () => {
     clickButtonRepeatedly(getByText, "1", 6);
 
     expect(
-      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
+      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
     ).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.setpasscode.cantremember.label)
-    ).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(
+        getByText(EN_TRANSLATIONS.createpasscodemodule.cantremember)
+      ).toBeInTheDocument()
+    );
 
     clickButtonRepeatedly(getByText, "1", 6);
 

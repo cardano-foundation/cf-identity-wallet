@@ -1,19 +1,19 @@
 import { IonModal, IonSpinner } from "@ionic/react";
 import { useEffect, useState } from "react";
+import { Agent } from "../../../core/agent/agent";
+import { useAppDispatch } from "../../../store/hooks";
+import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
+import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
+import "./CreateIdentifier.scss";
 import {
   CreateIdentifierProps,
   IdentifierStageStateProps,
 } from "./CreateIdentifier.types";
-import "./CreateIdentifier.scss";
 import { IdentifierStage0 } from "./components/IdentifierStage0";
 import { IdentifierStage1 } from "./components/IdentifierStage1";
 import { IdentifierStage2 } from "./components/IdentifierStage2";
 import { IdentifierStage3 } from "./components/IdentifierStage3";
 import { IdentifierStage4 } from "./components/IdentifierStage4";
-import { Agent } from "../../../core/agent/agent";
-import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
-import { useAppDispatch } from "../../../store/hooks";
-import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
 
 const stages = [
   IdentifierStage0,
@@ -29,6 +29,7 @@ const CreateIdentifier = ({
   resumeMultiSig,
   setResumeMultiSig,
   groupId: groupIdProp,
+  preventRedirect,
 }: CreateIdentifierProps) => {
   const componentId = "create-identifier-modal";
   const dispatch = useAppDispatch();
@@ -120,6 +121,7 @@ const CreateIdentifier = ({
           resumeMultiSig={resumeMultiSig}
           multiSigGroup={multiSigGroup}
           setMultiSigGroup={setMultiSigGroup}
+          preventRedirect={preventRedirect}
         />
       )}
     </IonModal>

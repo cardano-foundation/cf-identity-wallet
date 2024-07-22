@@ -13,7 +13,7 @@ import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
 import { Alert } from "../Alert";
-import { ErrorMessage } from "../ErrorMessage";
+import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
 import { PageFooter } from "../PageFooter";
 import { PasscodeModule } from "../PasscodeModule";
 import "./CreatePasscodeModule.scss";
@@ -39,6 +39,7 @@ const CreatePasscodeModule = forwardRef<
   ) => {
     const dispatch = useAppDispatch();
     const [passcode, setPasscode] = useState("");
+    const [passcodeMatch, setPasscodeMatch] = useState(false);
     const [
       showSetupAndroidBiometricsAlert,
       setShowSetupAndroidBiometricsAlert,
@@ -62,6 +63,26 @@ const CreatePasscodeModule = forwardRef<
     const alertClasses = overrideAlertZIndex ? "max-zindex" : undefined;
     const cancelBiometricsHeaderText = i18n.t("biometry.cancelbiometryheader");
     const cancelBiometricsConfirmText = setupAndroidBiometricsConfirmtext;
+
+    const verifyPasscode = async (pass: string) => {
+      try {
+        const storedPass = (await SecureStorage.get(
+          KeyStoreKeys.APP_PASSCODE
+        )) as string;
+        if (!storedPass) return false;
+        return storedPass === pass;
+      } catch (e) {
+        return false;
+      }
+    };
+
+    useEffect(() => {
+      if (passcodeMatch) {
+        setTimeout(() => {
+          setPasscodeMatch(false);
+        }, MESSAGE_MILLISECONDS);
+      }
+    }, [passcodeMatch]);
 
     const handlePinChange = async (digit: number) => {
       if (passcode.length < 6) {
@@ -147,10 +168,35 @@ const CreatePasscodeModule = forwardRef<
       onPasscodeChange?.(passcode, originalPassCode);
 
       if (passcode.length === 6 && originalPassCode === "") {
-        setOriginalPassCode(passcode);
-        setPasscode("");
+        verifyPasscode(passcode).then((match) => {
+          if (match) {
+            setPasscodeMatch(true);
+            setTimeout(() => {
+              setPasscode("");
+            }, MESSAGE_MILLISECONDS);
+          } else {
+            setOriginalPassCode(passcode);
+            setPasscode("");
+          }
+        });
       }
     }, [originalPassCode, passcode]);
+
+    const errorMessage = () => {
+      if (passcodeMatch) {
+        return i18n.t("createpasscodemodule.errormatch");
+      } else if (
+        originalPassCode !== "" &&
+        passcode.length === 6 &&
+        originalPassCode !== passcode
+      ) {
+        setTimeout(() => {
+          setPasscode("");
+        }, MESSAGE_MILLISECONDS);
+        return i18n.t("createpasscodemodule.errornomatch");
+      }
+      return undefined;
+    };
 
     return (
       <div className="create-passcode-module">
@@ -173,13 +219,7 @@ const CreatePasscodeModule = forwardRef<
         <PasscodeModule
           error={
             <ErrorMessage
-              message={
-                originalPassCode !== "" &&
-                passcode.length === 6 &&
-                originalPassCode !== passcode
-                  ? `${i18n.t("setpasscode.enterpasscode.error")}`
-                  : undefined
-              }
+              message={errorMessage()}
               timeout={true}
             />
           }
@@ -190,7 +230,9 @@ const CreatePasscodeModule = forwardRef<
         {originalPassCode !== "" ? (
           <PageFooter
             pageId={testId}
-            secondaryButtonText={`${i18n.t("setpasscode.cantremember.label")}`}
+            secondaryButtonText={`${i18n.t(
+              "createpasscodemodule.cantremember"
+            )}`}
             secondaryButtonAction={() => handleClearState()}
           />
         ) : (
