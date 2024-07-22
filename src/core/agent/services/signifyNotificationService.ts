@@ -180,26 +180,28 @@ class SignifyNotificationService extends AgentService {
         await this.markNotification(notif.i);
         return;
       }
-      const multisigIdentifier =
-        await this.identifierStorage.getIdentifierMetadata(multisigId);
+      const multisigIdentifier = await this.identifierStorage
+        .getIdentifierMetadata(multisigId)
+        .catch((error) => {
+          if (
+            error.message ===
+            IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
       if (!multisigIdentifier) {
         await this.markNotification(notif.i);
         return;
       }
       const rpyRoute = multisigNotification[0].exn.e.rpy.r;
-      if (
-        rpyRoute === "/end/role/add" &&
-        multisigIdentifier.authorizedEids?.includes(
-          multisigNotification[0].exn.e.rpy.a.eid
-        )
-      ) {
-        await this.markNotification(notif.i);
-        return;
-      } else if (rpyRoute === "/end/role/add") {
-        await this.markNotification(notif.i);
+      if (rpyRoute === "/end/role/add") {
         await Agent.agent.multiSigs.joinAuthorization(
           multisigNotification[0].exn
         );
+        await this.markNotification(notif.i);
         return;
       }
     }

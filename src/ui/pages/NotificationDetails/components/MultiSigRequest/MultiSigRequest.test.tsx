@@ -3,16 +3,17 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { mockIonicReact } from "@ionic/react-test-utils";
 import { act } from "react-dom/test-utils";
-import { TabsRoutePath } from "../../../../routes/paths";
-import { notificationsFix } from "../../../__fixtures__/notificationsFix";
+import { TabsRoutePath } from "../../../../../routes/paths";
+import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import {
   connectionsFix,
   connectionsForNotifications,
-} from "../../../__fixtures__/connectionsFix";
-import EN_TRANSLATIONS from "../../../../locales/en/en.json";
+} from "../../../../__fixtures__/connectionsFix";
+import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { MultiSigRequest } from "./MultiSigRequest";
-import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
-import { setNotificationsCache } from "../../../../store/reducers/notificationsCache";
+import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
+import { setNotificationsCache } from "../../../../../store/reducers/notificationsCache";
+import { MultiSigService } from "../../../../../core/agent/services/multiSigService";
 
 mockIonicReact();
 
@@ -36,7 +37,7 @@ const joinMultisignMock = jest.fn((...params: unknown[]) =>
   })
 );
 
-jest.mock("../../../../core/agent/agent", () => ({
+jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       signifyNotifications: {
@@ -166,5 +167,35 @@ describe("Multisign request", () => {
 
     expect(backMock).toBeCalled();
     expect(dispatchMock).lastCalledWith(setNotificationsCache(newNotification));
+  });
+
+  test("Show error page", async () => {
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const backMock = jest.fn();
+    getMultiSignMock.mockRejectedValue(
+      new Error(MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP)
+    );
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <MultiSigRequest
+          pageId="multi-sign"
+          activeStatus
+          handleBack={backMock}
+          notificationDetails={notificationsFix[3]}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.notifications.details.identifier.errorpage.title
+        )
+      ).toBeVisible();
+    });
   });
 });
