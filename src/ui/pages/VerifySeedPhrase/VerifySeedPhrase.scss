@@ -5,7 +5,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: calc(100vh - (3.25rem + var(--ion-safe-area-top)));
+    min-height: calc(100vh - (4rem + var(--ion-safe-area-top)));
   }
 
   .seed-phrase-module:nth-of-type(1) {
@@ -29,7 +29,7 @@
   .clear-button {
     display: flex;
     width: fit-content;
-    margin: 1.5rem auto 0;
+    margin: 1.25rem auto 0;
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
