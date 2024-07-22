@@ -180,6 +180,7 @@ const aidReturnedBySignify = {
     n: "n",
     bt: "bt",
     b: "b",
+    i: "i",
     di: "di",
     ee: {
       s: "s",
@@ -1404,6 +1405,164 @@ describe("Multisig sig service of agent", () => {
       "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
     );
     expect(result.threshold).toBe(3);
+  });
+
+  test("Should can be ready to rotate multisig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const multisigIdentifier = "newMultisigIdentifierAid";
+    const signifyName = "newUuidHere";
+    identifiersGetMock = jest.fn().mockResolvedValue(aidReturnedBySignify);
+    identifiersCreateMock = jest.fn().mockResolvedValue({
+      identifier: multisigIdentifier,
+      signifyName,
+    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    mockResolveOobi = jest.fn().mockResolvedValue({
+      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+      metadata: {
+        oobi: "testOobi",
+      },
+      done: true,
+      error: null,
+      response: {},
+      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+    });
+
+    identifiersMemberMock = jest.fn().mockResolvedValue({
+      signing: [
+        {
+          aid: "ENYqRaAQBWtpS7fgCGirVy-zJNRcWu2ZUsRNBjzvrfR_",
+          ends: {
+            agent: {
+              EGQnU0iNKuvURoeRenW7pZ5wA1Iyijo2EgscSYsK0hum: {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+      ],
+      rotation: [
+        {
+          aid: "EOpnB724NQqQa58Zqw-ZFEQplQ2hQXpbj6o2gKrzlix3",
+          ends: {
+            agent: {
+              "EAOfcPsG_mHtrzw1TyOxlCiQQlLZn-KTUu4lUy7zB_Na": {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+      ],
+    });
+    queryKeyStateMock = jest.fn().mockResolvedValue({
+      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+      metadata: {
+        oobi: "testOobi",
+      },
+      done: true,
+      error: null,
+      response: {
+        i: "123",
+      },
+      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+    });
+
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      isPending: false,
+      signifyOpName: "op123",
+      signifyName: "john_doe",
+      theme: 0,
+      multisigManageAid: "123",
+    } as IdentifierMetadataRecord;
+
+    expect(
+      await multiSigService.readyMultisigRotation(metadata.id)
+    ).toMatchObject([
+      {
+        i: "123",
+      },
+    ]);
+  });
+
+  test("Should throw error when not ready to rotate multisig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const multisigIdentifier = "newMultisigIdentifierAid";
+    const signifyName = "newUuidHere";
+    identifiersGetMock = jest.fn().mockResolvedValue(aidReturnedBySignify);
+    identifiersCreateMock = jest.fn().mockResolvedValue({
+      identifier: multisigIdentifier,
+      signifyName,
+    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    mockResolveOobi = jest.fn().mockResolvedValue({
+      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+      metadata: {
+        oobi: "testOobi",
+      },
+      done: true,
+      error: null,
+      response: {},
+      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+    });
+
+    identifiersMemberMock = jest.fn().mockResolvedValue({
+      signing: [
+        {
+          aid: "ENYqRaAQBWtpS7fgCGirVy-zJNRcWu2ZUsRNBjzvrfR_",
+          ends: {
+            agent: {
+              EGQnU0iNKuvURoeRenW7pZ5wA1Iyijo2EgscSYsK0hum: {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+      ],
+      rotation: [
+        {
+          aid: "EOpnB724NQqQa58Zqw-ZFEQplQ2hQXpbj6o2gKrzlix3",
+          ends: {
+            agent: {
+              "EAOfcPsG_mHtrzw1TyOxlCiQQlLZn-KTUu4lUy7zB_Na": {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+      ],
+    });
+    queryKeyStateMock = jest.fn().mockResolvedValue({
+      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+      metadata: {
+        oobi: "testOobi",
+      },
+      done: true,
+      error: null,
+      response: {
+        i: "i",
+      },
+      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+    });
+
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      isPending: false,
+      signifyOpName: "op123",
+      signifyName: "john_doe",
+      theme: 0,
+      multisigManageAid: "123",
+    } as IdentifierMetadataRecord;
+
+    expect(
+      multiSigService.readyMultisigRotation(metadata.id)
+    ).rejects.toThrowError(MultiSigService.MULTI_SIG_ROTATION_NOT_READY);
   });
 
   test("Throw error if we do not control any member AID of the multi-sig", async () => {

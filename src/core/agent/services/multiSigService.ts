@@ -54,6 +54,8 @@ class MultiSigService extends AgentService {
   static readonly GROUP_ALREADY_EXISTs = "Group already exists";
   static readonly MEMBER_AID_NOT_FOUND =
     "We do not control any member AID of the multi-sig";
+  static readonly MULTI_SIG_ROTATION_NOT_READY =
+    "The rotation of the multi-sig is not ready yet";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly notificationStorage!: NotificationStorage;
@@ -613,6 +615,46 @@ class MultiSigService extends AgentService {
       op: op,
       icpResult: icp,
     };
+  }
+
+  async readyMultisigRotation(identifierId: string) {
+    const metadata = await this.identifierStorage.getIdentifierMetadata(
+      identifierId
+    );
+
+    const multiSig = await this.props.signifyClient
+      .identifiers()
+      .get(metadata.signifyName);
+
+    const members = await this.props.signifyClient
+      .identifiers()
+      .members(metadata?.signifyName);
+
+    const nextSequence = (Number(multiSig.state.s) + 1).toString();
+
+    const rmids = members?.rotation;
+
+    const rstates: any[] = [];
+    await Promise.allSettled(
+      rmids.map(async (rotation: any) => {
+        const aid = await this.props.signifyClient
+          .keyStates()
+          .query(rotation.aid, nextSequence);
+        if (aid.done) {
+          rstates.push(aid.response);
+        }
+      })
+    );
+
+    const isNotDiffState = rstates.every(
+      (rstate) => rstate.i === multiSig.state.i
+    );
+
+    if (isNotDiffState) {
+      throw new Error(MultiSigService.MULTI_SIG_ROTATION_NOT_READY);
+    }
+
+    return rstates;
   }
 
   private async joinMultisigRotationKeri(
