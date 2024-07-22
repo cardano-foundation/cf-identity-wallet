@@ -72,7 +72,9 @@
     }
 
     .progress-bar-container {
-      margin-left: 1.25rem;
+      &.has-left {
+        margin-left: 1.25rem;
+      }
 
       ion-progress-bar,
       ion-progress-bar::part(progress) {
@@ -103,7 +105,9 @@
       }
 
       .progress-bar-container {
-        margin-left: 0.75rem;
+        &.has-left {
+          margin-left: 0.75rem;
+        }
 
         ion-progress-bar,
         ion-progress-bar::part(progress) {

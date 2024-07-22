@@ -16,6 +16,7 @@ import { PageHeader } from "../../components/PageHeader";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useAppIonRouter } from "../../hooks";
 import "./SetPasscode.scss";
+import { getBackRoute } from "../../../routes/backRoute";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
@@ -55,14 +56,39 @@ const SetPasscode = () => {
       ? i18n.t("setpasscode.reenterpasscode")
       : i18n.t("setpasscode.enterpasscode");
 
+  const closeButtonLabel = !isOnReenterPasscodeStep
+    ? i18n.t("setpasscode.cancelbtn")
+    : i18n.t("setpasscode.backbtn");
+
+  const handleClose = () => {
+    ref.current?.clearState();
+
+    if (isOnReenterPasscodeStep) {
+      return;
+    }
+
+    const { backPath, updateRedux } = getBackRoute(RoutePath.SET_PASSCODE, {
+      store: { stateCache },
+    });
+
+    updateReduxState(
+      backPath.pathname,
+      { store: { stateCache } },
+      dispatch,
+      updateRedux
+    );
+
+    ionRouter.push(backPath.pathname, "back", "pop");
+  };
+
   return (
     <ResponsivePageLayout
       pageId={pageId}
       header={
         <PageHeader
-          backButton={true}
-          onBack={isOnReenterPasscodeStep ? ref.current?.clearState : undefined}
-          beforeBack={ref.current?.clearState}
+          closeButton
+          closeButtonAction={handleClose}
+          closeButtonLabel={closeButtonLabel}
           currentPath={RoutePath.SET_PASSCODE}
           progressBar={true}
           progressBarValue={0.25}

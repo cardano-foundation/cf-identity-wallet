@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 interface PageFooterProps {
   pageId?: string;
   customClass?: string;
@@ -19,6 +21,7 @@ interface PageFooterProps {
   deleteButtonText?: string;
   deleteButtonAction?: () => void;
   deleteButtonDisabled?: boolean;
+  children?: ReactNode;
 }
 
 export type { PageFooterProps };

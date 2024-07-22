@@ -1,6 +1,13 @@
 .verify-seed-phrase {
   --background: var(--ion-color-light);
 
+  .content-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: calc(100vh - (3.25rem + var(--ion-safe-area-top)));
+  }
+
   .seed-phrase-module:nth-of-type(1) {
     background: var(--ion-color-light-grey);
   }
@@ -19,13 +26,23 @@
     margin-top: auto !important;
   }
 
+  .clear-button {
+    display: flex;
+    width: fit-content;
+    margin: 1.5rem auto 0;
+  }
+
   @media screen and (min-width: 250px) and (max-width: 370px) {
-    &.responsive-page-layout {
+    &.scrollable-page-layout {
       padding: 0 0.9rem;
 
-      .responsive-page-content {
+      .scrollable-page-content {
         & > * {
           margin: 0;
+        }
+
+        .clear-button {
+          margin: 0.75rem auto;
         }
 
         & > .paragraph-top {

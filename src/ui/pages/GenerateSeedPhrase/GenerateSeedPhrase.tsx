@@ -20,6 +20,8 @@ import { TermsModal } from "../../components/TermsModal";
 import { useAppIonRouter } from "../../hooks";
 import { Agent } from "../../../core/agent/agent";
 import { BranAndMnemonic } from "../../../core/agent/agent.types";
+import { SwitchOnboardingMode } from "../../components/SwitchOnboardingMode";
+import { OnboardingMode } from "../../components/SwitchOnboardingMode/SwitchOnboardingMode.types";
 
 const GenerateSeedPhrase = () => {
   const pageId = "generate-seed-phrase";
@@ -110,8 +112,6 @@ const GenerateSeedPhrase = () => {
       pageId={pageId}
       header={
         <PageHeader
-          backButton={true}
-          beforeBack={handleClearState}
           currentPath={RoutePath.GENERATE_SEED_PHRASE}
           progressBar={true}
           progressBarValue={0.75}
@@ -134,6 +134,7 @@ const GenerateSeedPhrase = () => {
       <p data-testid={`${pageId}-paragraph-bottom`}>
         {i18n.t("generateseedphrase.onboarding.paragraph.bottom")}
       </p>
+      <SwitchOnboardingMode mode={OnboardingMode.Recovery} />
       <div className="terms-and-conditions">
         <IonCheckbox
           labelPlacement="end"
