@@ -33,6 +33,8 @@ let queryKeyStateGetMock = jest.fn();
 const addEndRoleMock = jest.fn();
 const sendExchangesMock = jest.fn();
 const getExchangesMock = jest.fn();
+const markNotificationMock = jest.fn();
+const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -73,7 +75,7 @@ const signifyClient = jest.mocked({
   }),
   notifications: () => ({
     list: jest.fn(),
-    mark: jest.fn(),
+    mark: markNotificationMock,
   }),
   ipex: () => ({
     admit: jest.fn(),
@@ -138,6 +140,9 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       signifyNotifications: {
         addPendingOperationToQueue: jest.fn(),
+        markNotification: (id: string) => markNotificationMock(id),
+        deleteNotificationRecordById: (id: string) =>
+          deleteNotificationMock(id),
       },
       getKeriaOnlineStatus: jest.fn(),
     },

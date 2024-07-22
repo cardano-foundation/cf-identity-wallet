@@ -111,7 +111,8 @@ class IpexCommunicationService extends AgentService {
       credentialId,
       cred
     );
-    await this.notificationStorage.deleteById(id);
+
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
     this.props.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
       payload: {
@@ -139,7 +140,9 @@ class IpexCommunicationService extends AgentService {
     await this.props.signifyClient
       .ipex()
       .submitOffer(holderSignifyName, offer, sigs, end, [msg.exn.i]);
-    await this.notificationStorage.deleteById(notification.id);
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      notification.id
+    );
   }
 
   @OnlineOnly
