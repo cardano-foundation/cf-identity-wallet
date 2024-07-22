@@ -86,7 +86,7 @@ class ConnectionService extends AgentService {
     const connectionId =
       operation.done && operation.response
         ? operation.response.i
-        : new URL(url).pathname.split("/oobi/").pop();
+        : new URL(url).pathname.split("/oobi/").pop()?.split("/")[0];
     const connectionMetadata: any = {
       alias: operation.alias,
       oobi: url,
