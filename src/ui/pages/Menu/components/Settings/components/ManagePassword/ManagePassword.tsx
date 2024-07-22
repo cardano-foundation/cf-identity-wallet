@@ -8,22 +8,27 @@ import {
   IonToggle,
 } from "@ionic/react";
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { chevronForward } from "ionicons/icons";
 import { i18n } from "../../../../../../../i18n";
 import { VerifyPassword } from "../../../../../../components/VerifyPassword";
 import { VerifyPasscode } from "../../../../../../components/VerifyPasscode";
 import { getStateCache } from "../../../../../../../store/reducers/stateCache";
-import { Alert } from "../../../../../../components/Alert";
+import {
+  Alert as AlertEnable,
+  Alert as AlertDisable,
+} from "../../../../../../components/Alert";
 import { CreatePassword } from "../../../../../CreatePassword";
 import { KeyStoreKeys, SecureStorage } from "../../../../../../../core/storage";
 
 const ManagePassword = () => {
   const stateCache = useSelector(getStateCache);
+  const userAction = useRef("");
   const [passwordIsSet, setPasswordIsSet] = useState(
     stateCache?.authentication.passwordIsSet
   );
-  const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [alertEnableIsOpen, setAlertEnableIsOpen] = useState(false);
+  const [alertDisableIsOpen, setAlertDisableIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [createPasswordModalIsOpen, setCreatePasswordModalIsOpen] =
@@ -31,23 +36,33 @@ const ManagePassword = () => {
 
   const handleToggle = () => {
     if (passwordIsSet) {
-      setVerifyPasswordIsOpen(true);
+      userAction.current = "disable";
+      setAlertDisableIsOpen(true);
     } else {
-      setAlertIsOpen(true);
+      userAction.current = "enable";
+      setAlertEnableIsOpen(true);
     }
   };
 
+  const handleClear = () => {
+    setAlertEnableIsOpen(false);
+    setAlertDisableIsOpen(false);
+    userAction.current = "";
+  };
+
   const onVerify = async () => {
-    if (passwordIsSet) {
+    if (passwordIsSet && userAction.current === "disable") {
       await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, "");
       setPasswordIsSet(false);
+      userAction.current = "";
     } else {
       setCreatePasswordModalIsOpen(true);
     }
   };
 
   const handleChange = () => {
-    // TODO: change password
+    userAction.current = "change";
+    setVerifyPasswordIsOpen(true);
   };
 
   return (
@@ -100,12 +115,12 @@ const ManagePassword = () => {
           </IonList>
         </IonCard>
       )}
-      <Alert
-        isOpen={alertIsOpen}
-        setIsOpen={setAlertIsOpen}
+      <AlertEnable
+        isOpen={alertEnableIsOpen}
+        setIsOpen={setAlertEnableIsOpen}
         dataTestId="alert-cancel"
         headerText={`${i18n.t(
-          "settings.sections.security.managepassword.page.alert.message"
+          "settings.sections.security.managepassword.page.alert.enablemessage"
         )}`}
         confirmButtonText={`${i18n.t(
           "settings.sections.security.managepassword.page.alert.confirm"
@@ -114,8 +129,25 @@ const ManagePassword = () => {
           "settings.sections.security.managepassword.page.alert.cancel"
         )}`}
         actionConfirm={() => setVerifyPasscodeIsOpen(true)}
-        actionCancel={() => setAlertIsOpen(false)}
-        actionDismiss={() => setAlertIsOpen(false)}
+        actionCancel={() => handleClear()}
+        actionDismiss={() => handleClear()}
+      />
+      <AlertDisable
+        isOpen={alertDisableIsOpen}
+        setIsOpen={setAlertDisableIsOpen}
+        dataTestId="alert-cancel"
+        headerText={`${i18n.t(
+          "settings.sections.security.managepassword.page.alert.disablemessage"
+        )}`}
+        confirmButtonText={`${i18n.t(
+          "settings.sections.security.managepassword.page.alert.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "settings.sections.security.managepassword.page.alert.cancel"
+        )}`}
+        actionConfirm={() => setVerifyPasswordIsOpen(true)}
+        actionCancel={() => handleClear()}
+        actionDismiss={() => handleClear()}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
@@ -131,12 +163,13 @@ const ManagePassword = () => {
         isOpen={createPasswordModalIsOpen}
         className="create-password-modal"
         data-testid="create-password-modal"
-        onDidDismiss={() => setCreatePasswordModalIsOpen(false)}
+        onDidDismiss={() => handleClear()}
       >
         <CreatePassword
           isModal={true}
-          setCreatePasswordModalIsOpen={setCreatePasswordModalIsOpen}
+          handleClear={handleClear}
           setPasswordIsSet={setPasswordIsSet}
+          userAction={userAction}
         />
       </IonModal>
     </>

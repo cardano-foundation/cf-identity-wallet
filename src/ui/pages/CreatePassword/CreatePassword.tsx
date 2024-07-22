@@ -19,8 +19,9 @@ import { CreatePasswordProps } from "./CreatePassword.types";
 
 const CreatePassword = ({
   isModal,
-  setCreatePasswordModalIsOpen,
+  handleClear,
   setPasswordIsSet,
+  userAction,
 }: CreatePasswordProps) => {
   const pageId = "create-password";
   const stateCache = useAppSelector(getStateCache);
@@ -31,7 +32,7 @@ const CreatePassword = ({
   const handleContinue = async (skipped: boolean) => {
     if (isModal) {
       setPasswordIsSet(true);
-      setCreatePasswordModalIsOpen(false);
+      handleClear();
     } else {
       const { nextPath, updateRedux } = getNextRoute(
         RoutePath.CREATE_PASSWORD,
@@ -56,7 +57,7 @@ const CreatePassword = ({
   };
   const handleCancel = () => {
     passwordModuleRef.current?.clearState;
-    setCreatePasswordModalIsOpen(false);
+    handleClear();
   };
 
   return (
@@ -71,7 +72,15 @@ const CreatePassword = ({
           closeButton={isModal}
           closeButtonAction={handleCancel}
           closeButtonLabel={`${i18n.t("createpassword.cancel")}`}
-          title={isModal ? `${i18n.t("createpassword.title")}` : undefined}
+          title={
+            isModal
+              ? `${i18n.t(
+                userAction?.current === "change"
+                  ? "createpassword.change"
+                  : "createpassword.title"
+              )}`
+              : undefined
+          }
         />
       }
     >

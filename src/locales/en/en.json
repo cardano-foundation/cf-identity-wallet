@@ -634,7 +634,8 @@
     "optional": "(optional)"
   },
   "createpassword": {
-    "title": "Create Password",
+    "title": "Create password",
+    "change": "New password",
     "cancel": "Cancel",
     "description": "Set your operations password so you can access additional wallet features.",
     "input": {
@@ -1106,7 +1107,8 @@
             "enable": "Enable operations password",
             "change": "Change operations password",
             "alert": {
-              "message": "By turning on an operations password you will be required to use this to verify any future operations instead of your passcode.",
+              "enablemessage": "By turning on an operations password you will be required to use this to verify any future operations instead of your passcode.",
+              "disablemessage": "By turning off your operations password you will be required to use your passcode to verify any future operations.",
               "confirm": "Continue",
               "cancel": "Cancel"
             }

@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
@@ -12,9 +12,13 @@ import { PageFooter } from "../PageFooter";
 import { PasswordValidation } from "../PasswordValidation";
 import "./PasswordModule.scss";
 import { PasswordModuleProps, PasswordModuleRef } from "./PasswordModule.types";
+import { useSelector } from "react-redux";
+import { getStateCache } from "../../../store/reducers/stateCache";
 
 const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
   ({ title, isModal, description, testId, onCreateSuccess }, ref) => {
+    const stateCache = useSelector(getStateCache);
+    const authentication = stateCache.authentication;
     const [createPasswordValue, setCreatePasswordValue] = useState("");
     const [confirmPasswordValue, setConfirmPasswordValue] = useState("");
     const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
@@ -50,17 +54,27 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
 
     const handleContinue = async (skipped: boolean) => {
       if (!skipped) {
-        await SecureStorage.set(
-          KeyStoreKeys.APP_OP_PASSWORD,
-          createPasswordValue
+        const currentPassword = await SecureStorage.get(
+          KeyStoreKeys.APP_OP_PASSWORD
         );
-        if (hintValue) {
-          await Agent.agent.basicStorage.createOrUpdateBasicRecord(
-            new BasicRecord({
-              id: MiscRecordId.OP_PASS_HINT,
-              content: { value: hintValue },
-            })
+        if (
+          authentication.passcodeIsSet &&
+          currentPassword === createPasswordValue
+        ) {
+          //TODO: show alert and clear data
+        } else {
+          await SecureStorage.set(
+            KeyStoreKeys.APP_OP_PASSWORD,
+            createPasswordValue
           );
+          if (hintValue) {
+            await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+              new BasicRecord({
+                id: MiscRecordId.OP_PASS_HINT,
+                content: { value: hintValue },
+              })
+            );
+          }
         }
       } else {
         await Agent.agent.basicStorage.createOrUpdateBasicRecord(

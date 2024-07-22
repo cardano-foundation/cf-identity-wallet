@@ -1,3 +1,5 @@
+import { MutableRefObject } from "react";
+
 interface RegexItemProps {
   condition: boolean;
   label: string;
@@ -8,8 +10,9 @@ interface PasswordRegexProps {
 
 interface CreatePasswordProps {
   isModal: boolean;
-  setCreatePasswordModalIsOpen: (value: boolean) => void;
+  handleClear: () => void;
   setPasswordIsSet: (value: boolean) => void;
+  userAction?: MutableRefObject<string>;
 }
 
 export type { PasswordRegexProps, RegexItemProps, CreatePasswordProps };
