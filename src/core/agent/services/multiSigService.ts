@@ -646,15 +646,15 @@ class MultiSigService extends AgentService {
       })
     );
 
-    const isNotDiffState = rstates.every(
-      (rstate) => rstate.i === multiSig.state.i
-    );
+    const result: any = [];
 
-    if (isNotDiffState) {
-      throw new Error(MultiSigService.MULTI_SIG_ROTATION_NOT_READY);
-    }
+    rstates.forEach((rstate) => {
+      if (rstate.i !== multiSig.state.i) {
+        result.push(rstate);
+      }
+    });
 
-    return rstates;
+    return result;
   }
 
   private async joinMultisigRotationKeri(
