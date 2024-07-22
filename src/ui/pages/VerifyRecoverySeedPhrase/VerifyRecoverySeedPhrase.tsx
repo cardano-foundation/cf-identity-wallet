@@ -48,7 +48,7 @@ const VerifyRecoverySeedPhrase = () => {
       header={
         <PageHeader
           progressBar={true}
-          progressBarValue={0.75}
+          progressBarValue={0.8}
           progressBarBuffer={1}
         />
       }

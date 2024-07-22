@@ -91,7 +91,7 @@ const SetPasscode = () => {
           closeButtonLabel={closeButtonLabel}
           currentPath={RoutePath.SET_PASSCODE}
           progressBar={true}
-          progressBarValue={0.25}
+          progressBarValue={0.2}
           progressBarBuffer={1}
         />
       }

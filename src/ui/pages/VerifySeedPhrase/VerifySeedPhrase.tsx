@@ -158,7 +158,7 @@ const VerifySeedPhrase = () => {
           }}
           currentPath={RoutePath.VERIFY_SEED_PHRASE}
           progressBar={true}
-          progressBarValue={1}
+          progressBarValue={0.8}
           progressBarBuffer={1}
         />
       }

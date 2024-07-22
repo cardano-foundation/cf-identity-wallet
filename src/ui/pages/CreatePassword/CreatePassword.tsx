@@ -50,7 +50,7 @@ const CreatePassword = () => {
         <PageHeader
           currentPath={RoutePath.CREATE_PASSWORD}
           progressBar={true}
-          progressBarValue={0.5}
+          progressBarValue={0.4}
           progressBarBuffer={1}
         />
       }

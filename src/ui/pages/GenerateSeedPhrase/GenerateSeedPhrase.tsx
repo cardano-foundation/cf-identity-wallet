@@ -114,7 +114,7 @@ const GenerateSeedPhrase = () => {
         <PageHeader
           currentPath={RoutePath.GENERATE_SEED_PHRASE}
           progressBar={true}
-          progressBarValue={0.75}
+          progressBarValue={0.6}
           progressBarBuffer={1}
         />
       }
