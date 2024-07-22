@@ -103,6 +103,17 @@ const notificationStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
+const connectionStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
 const identifierStorage = jest.mocked({
   getIdentifierMetadata: jest.fn(),
 });
@@ -112,7 +123,8 @@ const signifyNotificationService = new SignifyNotificationService(
   agentServicesProps,
   notificationStorage as any,
   identifierStorage as any,
-  operationPendingStorage as any
+  operationPendingStorage as any,
+  connectionStorage as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
