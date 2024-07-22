@@ -1,0 +1,66 @@
+.color-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  & > .color {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    position: relative;
+
+    &.selected {
+      border: 1px solid var(--ion-color-secondary);
+    }
+
+    .selected-theme-checkmark {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 1.5rem;
+      position: absolute;
+      bottom: -0.125rem;
+      right: -0.25rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .selected-theme-checkmark-inner {
+        width: 1.125rem;
+        height: 1.125rem;
+        margin: auto;
+        border-radius: 1.125rem;
+      }
+    }
+
+    .selected-theme-checkmark {
+      background: var(--ion-color-primary-gradient);
+    }
+
+    &.green {
+      background: linear-gradient(
+        90.04deg,
+        #667745 28.46%,
+        #879e54 78.5%,
+        #a8c55f 123.53%,
+        #b9cf7c 165.71%
+      );
+    }
+
+    &.dark {
+      background: linear-gradient(91.22deg, #222222 -5.14%, #697949 165.6%);
+    }
+
+    &.brown {
+      background: linear-gradient(90.04deg, #986c32 28.46%, #4c371a 165.71%);
+    }
+
+    &.primary {
+      background: linear-gradient(91.86deg, #92ffc0 28.76%, #00a5e6 119.14%);
+    }
+
+    &.secondary {
+      background: linear-gradient(91.86deg, #363c4a 28.76%, #030321 119.14%);
+    }
+  }
+}

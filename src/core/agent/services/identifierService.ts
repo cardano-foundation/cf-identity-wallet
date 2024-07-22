@@ -20,7 +20,9 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import { Agent } from "../agent";
 import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 
-const identifierTypeThemes = [0, 1];
+const identifierTypeThemes = [
+  0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23, 30, 31, 32, 33, 40, 41, 42, 43,
+];
 
 class IdentifierService extends AgentService {
   static readonly IDENTIFIER_METADATA_RECORD_MISSING =
