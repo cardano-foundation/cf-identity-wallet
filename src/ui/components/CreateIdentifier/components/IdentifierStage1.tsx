@@ -26,6 +26,7 @@ const IdentifierStage1 = ({
   resetModal,
   resumeMultiSig,
   multiSigGroup,
+  preventRedirect,
 }: IdentifierStageProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -89,7 +90,7 @@ const IdentifierStage1 = ({
 
   const handleDone = () => {
     resetModal && resetModal();
-    if (multiSigGroup?.groupId) {
+    if (multiSigGroup?.groupId && !preventRedirect) {
       history.push({
         pathname: TabsRoutePath.IDENTIFIERS,
       });

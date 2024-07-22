@@ -8,6 +8,7 @@ interface CreateIdentifierProps {
   resumeMultiSig?: IdentifierShortDetails | null;
   setResumeMultiSig?: (value: IdentifierShortDetails | null) => void;
   groupId?: string;
+  preventRedirect?: boolean;
 }
 
 interface TypeItemProps {
@@ -48,6 +49,7 @@ interface IdentifierStageProps {
   resumeMultiSig?: IdentifierShortDetails | null;
   multiSigGroup?: MultiSigGroup;
   setMultiSigGroup?: (value: MultiSigGroup) => void;
+  preventRedirect?: boolean;
 }
 
 interface IdentifierStage1BodyProps {
