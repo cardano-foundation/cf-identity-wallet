@@ -133,6 +133,7 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       identifiers: {
         getIdentifiers: () => mockGetIdentifiers(),
+        rotateIdentifier: () => jest.fn(),
         updateIdentifier: jest.fn(),
       },
       signifyNotifications: {
@@ -1033,6 +1034,47 @@ describe("Multisig sig service of agent", () => {
         read: true,
       })
     ).rejects.toThrowError(MultiSigService.EXN_MESSAGE_NOT_FOUND);
+  });
+
+  test("should can not rotate local member with AID is not multisig and throw error", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "name",
+      theme: 0,
+    } as IdentifierMetadataRecord;
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(metadata);
+
+    expect(multiSigService.rotateLocalMember("123456")).rejects.toThrowError(
+      MultiSigService.AID_IS_NOT_MULTI_SIG
+    );
+  });
+
+  test("should can rotate local member of multisig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "name",
+      theme: 0,
+      multisigManageAid: "123",
+    } as IdentifierMetadataRecord;
+
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(metadata);
+    Agent.agent.identifiers.rotateIdentifier = identifiersRotateMock;
+    await multiSigService.rotateLocalMember("123456");
+
+    expect(identifiersRotateMock).toHaveBeenCalledWith(
+      metadata.multisigManageAid
+    );
   });
 
   test("should can join the multisig rotation with AID is not multisig and throw error", async () => {
