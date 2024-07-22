@@ -151,6 +151,7 @@ class SignifyNotificationService extends AgentService {
   }
 
   async deleteNotificationRecordById(id: string): Promise<void> {
+    await this.markNotification(id);
     await this.notificationStorage.deleteById(id);
   }
 
@@ -158,6 +159,10 @@ class SignifyNotificationService extends AgentService {
     notif: Notification,
     callback: (event: KeriaNotification) => void
   ) {
+    if (notif.r) {
+      return;
+    }
+
     if (notif.a.r === NotificationRoute.MultiSigRpy) {
       const multisigNotification = await this.props.signifyClient
         .groups()
@@ -241,18 +246,14 @@ class SignifyNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return;
     }
+
     if (
-      Object.values(NotificationRoute).includes(
-        notif.a.r as NotificationRoute
-      ) &&
-      !notif.r
+      Object.values(NotificationRoute).includes(notif.a.r as NotificationRoute)
     ) {
       const keriaNotif = await this.createNotificationRecord(notif);
       callback(keriaNotif);
-      await this.markNotification(notif.i);
-    } else if (!notif.r) {
-      this.markNotification(notif.i);
     }
+
     return;
   }
 
