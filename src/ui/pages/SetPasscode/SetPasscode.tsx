@@ -61,9 +61,8 @@ const SetPasscode = () => {
     : i18n.t("setpasscode.backbtn");
 
   const handleClose = () => {
-    ref.current?.clearState();
-
     if (isOnReenterPasscodeStep) {
+      ref.current?.clearState();
       return;
     }
 
