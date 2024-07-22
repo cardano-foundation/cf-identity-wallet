@@ -854,6 +854,38 @@ describe("Multisig sig service of agent", () => {
           },
         },
       ],
+      rotation: [
+        {
+          aid: "ENYqRaAQBWtpS7fgCGirVy-zJNRcWu2ZUsRNBjzvrfR_",
+          ends: {
+            agent: {
+              EGQnU0iNKuvURoeRenW7pZ5wA1Iyijo2EgscSYsK0hum: {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+        {
+          aid: "EOpnB724NQqQa58Zqw-ZFEQplQ2hQXpbj6o2gKrzlix3",
+          ends: {
+            agent: {
+              "EAOfcPsG_mHtrzw1TyOxlCiQQlLZn-KTUu4lUy7zB_Na": {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+        {
+          aid: "EJUPirpdqcZpblLDyQ4P8XkD12wmQUqJb_6M7tUVZT4n",
+          ends: {
+            agent: {
+              "EN6WVdOExj1n6ES-Wzk9yjskoXv_2aEqNEN2iDzttPJb": {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+      ],
     });
     expect(multiSigService.rotateMultisig(metadata.id)).rejects.toThrowError(
       MultiSigService.NOT_FOUND_ALL_MEMBER_OF_MULTISIG
@@ -920,6 +952,38 @@ describe("Multisig sig service of agent", () => {
       .mockResolvedValue(metadata);
     identifiersMemberMock = jest.fn().mockResolvedValue({
       signing: [
+        {
+          aid: "ENYqRaAQBWtpS7fgCGirVy-zJNRcWu2ZUsRNBjzvrfR_",
+          ends: {
+            agent: {
+              EGQnU0iNKuvURoeRenW7pZ5wA1Iyijo2EgscSYsK0hum: {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+        {
+          aid: "EOpnB724NQqQa58Zqw-ZFEQplQ2hQXpbj6o2gKrzlix3",
+          ends: {
+            agent: {
+              "EAOfcPsG_mHtrzw1TyOxlCiQQlLZn-KTUu4lUy7zB_Na": {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+        {
+          aid: "EJUPirpdqcZpblLDyQ4P8XkD12wmQUqJb_6M7tUVZT4n",
+          ends: {
+            agent: {
+              "EN6WVdOExj1n6ES-Wzk9yjskoXv_2aEqNEN2iDzttPJb": {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+      ],
+      rotation: [
         {
           aid: "ENYqRaAQBWtpS7fgCGirVy-zJNRcWu2ZUsRNBjzvrfR_",
           ends: {
