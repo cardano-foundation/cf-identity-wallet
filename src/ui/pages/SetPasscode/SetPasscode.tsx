@@ -40,7 +40,6 @@ const SetPasscode = () => {
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     ionRouter.push(nextPath.pathname, "forward", "push");
-    ref.current?.clearState();
 
     await PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
       initialized: true,
@@ -49,7 +48,7 @@ const SetPasscode = () => {
 
   const isOnReenterPasscodeStep =
     passCodeValue.originalPasscode.length > 0 &&
-    passCodeValue.passcode.length < 6;
+    passCodeValue.passcode.length <= 6;
 
   const title =
     passCodeValue.originalPasscode !== ""

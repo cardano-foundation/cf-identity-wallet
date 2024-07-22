@@ -28,6 +28,10 @@
     }
 
     ion-buttons ion-button {
+      &.md {
+        --ripple-color: transparent;
+      }
+
       color: var(--ion-color-secondary);
 
       &.back-button,
