@@ -1,15 +1,15 @@
 .switch-button.secondary-button {
   display: flex;
-  margin: 1.5rem 0;
-
-  @media screen and (min-width: 250px) and (max-width: 370px) {
-    margin: 0.8rem 0 !important;
-  }
+  margin: 1.5rem 0.125rem;
 
   &.ion-activated {
     --ion-toolbar-color: var(--ion-color-light);
     --ion-toolbar-background: var(--ion-color-primary);
     --color-activated: var(--ion-color-primary);
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    margin: 0.8rem 0.125rem !important;
   }
 }
 
@@ -61,6 +61,10 @@
 
   .page-footer {
     padding: 0.75rem 0;
+
+    .page-footer-content {
+      padding-bottom: 0.25rem;
+    }
   }
 
   .confirm {
