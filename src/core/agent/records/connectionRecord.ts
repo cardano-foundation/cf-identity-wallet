@@ -8,12 +8,14 @@ interface ConnectionRecordStorageProps {
   alias: string;
   oobi: string;
   groupId?: string;
+  pending: boolean;
 }
 
 class ConnectionRecord extends BaseRecord {
   alias!: string;
   oobi!: string;
   groupId?: string;
+  pending!: boolean;
   static readonly type = "ConnectionRecord";
   readonly type = ConnectionRecord.type;
 
@@ -25,6 +27,7 @@ class ConnectionRecord extends BaseRecord {
       this.alias = props.alias;
       this.oobi = props.oobi;
       this.groupId = props.groupId;
+      this.pending = props.pending;
       this._tags = props.tags ?? {};
     }
   }

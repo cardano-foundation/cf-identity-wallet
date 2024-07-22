@@ -74,6 +74,7 @@ let getExchangeMock = jest.fn().mockImplementation((id: string) => {
 const ipexOfferMock = jest.fn();
 const ipexGrantMock = jest.fn();
 const schemaGetMock = jest.fn();
+const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -169,6 +170,10 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         resolveOobi: jest.fn(),
       },
+      signifyNotifications: {
+        deleteNotificationRecordById: (id: string) =>
+          deleteNotificationMock(id),
+      },
     },
   },
 }));
@@ -200,6 +205,7 @@ describe("Ipex communication service of agent", () => {
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
       id: "id",
     });
+
     await ipexCommunicationService.acceptAcdc(id);
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
       expect.objectContaining({
@@ -210,7 +216,7 @@ describe("Ipex communication service of agent", () => {
       id: "id",
       status: CredentialStatus.CONFIRMED,
     });
-    expect(notificationStorage.deleteById).toBeCalledWith(id);
+    expect(deleteNotificationMock).toBeCalledWith(id);
   });
 
   test("cannot accept ACDC if the notification is missing in the DB", async () => {
@@ -241,7 +247,7 @@ describe("Ipex communication service of agent", () => {
     );
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalled();
     expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
-    expect(notificationStorage.deleteById).not.toBeCalled();
+    expect(deleteNotificationMock).not.toBeCalledWith(id);
   });
 
   // This test should go when this has been made event driven.
@@ -324,7 +330,7 @@ describe("Ipex communication service of agent", () => {
       acdc: expect.anything(),
       apply: "d",
     });
-    expect(notificationStorage.deleteById).toBeCalledWith(id);
+    expect(deleteNotificationMock).toBeCalledWith(id);
   });
 
   test("can not offer Keri Acdc if aid is not existed", async () => {

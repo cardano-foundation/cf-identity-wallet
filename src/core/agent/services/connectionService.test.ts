@@ -4,13 +4,14 @@ import { EventService } from "./eventService";
 import { CredentialStorage, IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 
 const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();
 const getOobiMock = jest.fn();
 const getIdentifier = jest.fn();
 
-const uuidToThrow = "throwMe";
+const failUuid = "fail-uuid";
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -25,7 +26,7 @@ const signifyClient = jest.mocked({
   }),
   operations: () => ({
     get: jest.fn().mockImplementation((id: string) => {
-      if (id === `${oobiPrefix}${uuidToThrow}`) {
+      if (id === `${oobiPrefix}${failUuid}`) {
         return {
           done: false,
           name: id,
@@ -43,12 +44,12 @@ const signifyClient = jest.mocked({
   oobis: () => ({
     get: getOobiMock,
     resolve: jest.fn().mockImplementation((name: string) => {
-      if (name === `${oobiPrefix}${uuidToThrow}`) {
+      if (name === `${oobiPrefix}${failUuid}`) {
         return {
           done: false,
           name,
           metadata: {
-            oobi: `${oobiPrefix}${uuidToThrow}`,
+            oobi: `${oobiPrefix}${failUuid}`,
           },
         };
       }
@@ -59,7 +60,7 @@ const signifyClient = jest.mocked({
           dt: now,
         },
         metadata: {
-          oobi: `${oobiPrefix}${uuidToThrow}`,
+          oobi: `${oobiPrefix}${failUuid}`,
         },
         name,
       };
@@ -127,11 +128,22 @@ const connectionNoteStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
+const operationPendingStorage = jest.mocked({
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
 const connectionService = new ConnectionService(
   agentServicesProps,
   connectionStorage as any,
   connectionNoteStorage as any,
-  new CredentialStorage(session as any)
+  new CredentialStorage(session as any),
+  operationPendingStorage as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -139,6 +151,9 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       getKeriaOnlineStatus: jest.fn(),
       identifiers: { getKeriIdentifierByGroupId: jest.fn() },
+      signifyNotifications: {
+        addPendingOperationToQueue: jest.fn(),
+      },
     },
   },
 }));
@@ -160,7 +175,7 @@ const keriContacts = [
     wellKnowns: [],
   },
 ];
-const oobiPrefix = "http://oobi.com/";
+const oobiPrefix = "http://oobi.com/oobi/";
 
 describe("Connection service of agent", () => {
   beforeAll(async () => {
@@ -189,7 +204,7 @@ describe("Connection service of agent", () => {
         groupId,
         id: oobi,
         label: "uuid",
-        oobi: `${oobiPrefix}${uuidToThrow}`,
+        oobi: `${oobiPrefix}${failUuid}`,
         status: ConnectionStatus.CONFIRMED,
         connectionDate: now,
       },
@@ -482,7 +497,7 @@ describe("Connection service of agent", () => {
       alias: expect.any(String),
       done: true,
       metadata: {
-        oobi: `${oobiPrefix}${uuidToThrow}`,
+        oobi: `${oobiPrefix}${failUuid}`,
       },
     });
   });
@@ -495,22 +510,27 @@ describe("Connection service of agent", () => {
       response: { i: url, dt: now },
       name: url,
       metadata: {
-        oobi: `${oobiPrefix}${uuidToThrow}`,
+        oobi: `${oobiPrefix}${failUuid}`,
       },
       alias: "alias with spaces",
       done: true,
     });
   });
 
-  test("should timeout if oobi resolving is not completing", async () => {
+  test("should throw if oobi is not resolving and we explicitly wait for completion", async () => {
     signifyClient.operations().get = jest
       .fn()
       .mockResolvedValue({ done: false });
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
+    const waitForCompletion = true;
     await expect(
-      connectionService.resolveOobi(`${oobiPrefix}${uuidToThrow}`)
+      connectionService.resolveOobi(
+        `${oobiPrefix}${failUuid}`,
+        waitForCompletion
+      )
     ).rejects.toThrowError(ConnectionService.FAILED_TO_RESOLVE_OOBI);
-  }, 15251);
+  });
 
   test("Should throw error when KERIA is offline", async () => {
     await expect(
@@ -573,5 +593,22 @@ describe("Connection service of agent", () => {
     expect(KeriOobi).toEqual(
       `${oobiPrefix}oobi/EEGLKCqm1pENLuh9BW9EsbBxGnP0Pk8NMJ7_48Y_C3-6?name=t1`
     );
+  });
+
+  test("should save pending operation if the oobi resolving is not completing", async () => {
+    getOobiMock.mockResolvedValue({
+      oobis: [],
+      done: false,
+    });
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
+    await connectionService.resolveOobi(`${oobiPrefix}${failUuid}`);
+    expect(operationPendingStorage.save).toBeCalledWith({
+      id: `${oobiPrefix}${failUuid}`,
+      recordType: OperationPendingRecordType.Oobi,
+    });
+    expect(
+      Agent.agent.signifyNotifications.addPendingOperationToQueue
+    ).toBeCalledTimes(1);
   });
 });

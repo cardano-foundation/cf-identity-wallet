@@ -9,6 +9,7 @@ import {
 import { Notification } from "./credentialService.types";
 import {
   BasicRecord,
+  ConnectionStorage,
   IdentifierStorage,
   NotificationStorage,
   OperationPendingStorage,
@@ -25,6 +26,7 @@ class SignifyNotificationService extends AgentService {
   protected readonly notificationStorage!: NotificationStorage;
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
+  protected readonly connectionStorage: ConnectionStorage;
 
   protected pendingOperations: OperationPendingRecord[] = [];
   private loggedIn = true;
@@ -33,12 +35,14 @@ class SignifyNotificationService extends AgentService {
     agentServiceProps: AgentServicesProps,
     notificationStorage: NotificationStorage,
     identifierStorage: IdentifierStorage,
-    operationPendingStorage: OperationPendingStorage
+    operationPendingStorage: OperationPendingStorage,
+    connectionStorage: ConnectionStorage
   ) {
     super(agentServiceProps);
     this.notificationStorage = notificationStorage;
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
+    this.connectionStorage = connectionStorage;
   }
 
   async onNotificationStateChanged(
@@ -151,6 +155,7 @@ class SignifyNotificationService extends AgentService {
   }
 
   async deleteNotificationRecordById(id: string): Promise<void> {
+    await this.markNotification(id);
     await this.notificationStorage.deleteById(id);
   }
 
@@ -158,6 +163,10 @@ class SignifyNotificationService extends AgentService {
     notif: Notification,
     callback: (event: KeriaNotification) => void
   ) {
+    if (notif.r) {
+      return;
+    }
+
     if (notif.a.r === NotificationRoute.MultiSigRpy) {
       const multisigNotification = await this.props.signifyClient
         .groups()
@@ -241,18 +250,14 @@ class SignifyNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return;
     }
+
     if (
-      Object.values(NotificationRoute).includes(
-        notif.a.r as NotificationRoute
-      ) &&
-      !notif.r
+      Object.values(NotificationRoute).includes(notif.a.r as NotificationRoute)
     ) {
       const keriaNotif = await this.createNotificationRecord(notif);
       callback(keriaNotif);
-      await this.markNotification(notif.i);
-    } else if (!notif.r) {
-      this.markNotification(notif.i);
     }
+
     return;
   }
 
@@ -419,7 +424,20 @@ class SignifyNotificationService extends AgentService {
               });
               break;
             }
-
+            case OperationPendingRecordType.Oobi: {
+              const connectionRecord = await this.connectionStorage.findById(
+                (operation.response as any).i
+              );
+              if (connectionRecord) {
+                connectionRecord.pending = false;
+                await this.connectionStorage.update(connectionRecord);
+              }
+              callback({
+                opType: pendingOperation.recordType,
+                oid: recordId,
+              });
+              break;
+            }
             default:
               break;
             }
