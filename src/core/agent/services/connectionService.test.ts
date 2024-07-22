@@ -49,7 +49,7 @@ const signifyClient = jest.mocked({
           done: false,
           name,
           metadata: {
-            oobi: `${oobiPrefix}${uuidToThrow}`,
+            oobi: `${oobiPrefix}${failUuid}`,
           },
         };
       }
@@ -60,7 +60,7 @@ const signifyClient = jest.mocked({
           dt: now,
         },
         metadata: {
-          oobi: `${oobiPrefix}${uuidToThrow}`,
+          oobi: `${oobiPrefix}${failUuid}`,
         },
         name,
       };
@@ -204,7 +204,7 @@ describe("Connection service of agent", () => {
         groupId,
         id: oobi,
         label: "uuid",
-        oobi: `${oobiPrefix}${uuidToThrow}`,
+        oobi: `${oobiPrefix}${failUuid}`,
         status: ConnectionStatus.CONFIRMED,
         connectionDate: now,
       },
@@ -497,7 +497,7 @@ describe("Connection service of agent", () => {
       alias: expect.any(String),
       done: true,
       metadata: {
-        oobi: `${oobiPrefix}${uuidToThrow}`,
+        oobi: `${oobiPrefix}${failUuid}`,
       },
     });
   });
@@ -510,7 +510,7 @@ describe("Connection service of agent", () => {
       response: { i: url, dt: now },
       name: url,
       metadata: {
-        oobi: `${oobiPrefix}${uuidToThrow}`,
+        oobi: `${oobiPrefix}${failUuid}`,
       },
       alias: "alias with spaces",
       done: true,
