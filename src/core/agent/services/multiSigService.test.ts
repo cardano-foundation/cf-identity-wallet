@@ -1466,8 +1466,28 @@ describe("Multisig sig service of agent", () => {
           done: true,
           error: null,
           response: {
-            i: "id",
-            k: ["k1"],
+            vn: [1, 0],
+            i: "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL",
+            s: "0",
+            p: "",
+            d: "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL",
+            f: "0",
+            dt: "2024-07-23T08:58:23.530757+00:00",
+            et: "icp",
+            kt: "1",
+            k: ["DI3bh31vfuGyV14LvtBxHHljnDnSqbKQ7DZ9iiB_51Oh"],
+            nt: "1",
+            n: ["EEhLvnvKE4eTV17ts4ngXOmri7gJA9Gs0593MCAMQjTu"],
+            bt: "0",
+            b: [],
+            c: [],
+            ee: {
+              s: "0",
+              d: "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL",
+              br: [],
+              ba: [],
+            },
+            di: "",
           },
         };
       }
@@ -1479,7 +1499,28 @@ describe("Multisig sig service of agent", () => {
         done: false,
         error: null,
         response: {
-          i: "id2",
+          vn: [1, 0],
+          i: "EGvWn-Zv7DXa8-Te6nTBb2vWUOsDQHPdaKshNUMjJssB",
+          s: "0",
+          p: "",
+          d: "EGvWn-Zv7DXa8-Te6nTBb2vWUOsDQHPdaKshNUMjJssB",
+          f: "0",
+          dt: "2024-07-23T08:59:16.747281+00:00",
+          et: "icp",
+          kt: "1",
+          k: ["DIH7-xjcUC-xPS9I32b0ftZAT6gHJvfHiBR4UwxtWuEO"],
+          nt: "1",
+          n: ["EKIctKY0IGPbd7njANV6P-ANncFr1kRUZgKGGzCfzNnG"],
+          bt: "0",
+          b: [],
+          c: [],
+          ee: {
+            s: "0",
+            d: "EGvWn-Zv7DXa8-Te6nTBb2vWUOsDQHPdaKshNUMjJssB",
+            br: [],
+            ba: [],
+          },
+          di: "",
         },
       };
     });
@@ -1496,7 +1537,7 @@ describe("Multisig sig service of agent", () => {
 
     expect(
       await multiSigService.membersReadyToRotate(metadata.id)
-    ).toMatchObject(["id"]);
+    ).toMatchObject(["EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL"]);
   });
 
   test("Throw error if we do not control any member AID of the multi-sig", async () => {
