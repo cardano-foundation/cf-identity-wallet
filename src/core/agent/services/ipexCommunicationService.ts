@@ -247,15 +247,17 @@ class IpexCommunicationService extends AgentService {
         name: schemaKeri.title,
         description: schemaKeri.description,
       },
-      credentials: credentialMetadatas.map((cr) => {
-        const credKeri = creds.find(
-          (cred: any) => `metadata:${cred.sad.d}` === cr.id
-        );
-        return {
-          connectionId: cr.connectionId,
-          acdc: credKeri.sad,
-        };
-      }),
+      credentials: credentialMetadatas
+        .filter((cr) => !cr.isDeleted && !cr.isArchived)
+        .map((cr) => {
+          const credKeri = creds.find(
+            (cred: any) => `metadata:${cred.sad.d}` === cr.id
+          );
+          return {
+            connectionId: cr.connectionId,
+            acdc: credKeri.sad,
+          };
+        }),
       attributes: attributes,
     };
   }
