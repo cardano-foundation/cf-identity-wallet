@@ -54,8 +54,6 @@ class MultiSigService extends AgentService {
   static readonly GROUP_ALREADY_EXISTs = "Group already exists";
   static readonly MEMBER_AID_NOT_FOUND =
     "We do not control any member AID of the multi-sig";
-  static readonly MULTI_SIG_ROTATION_NOT_READY =
-    "The rotation of the multi-sig is not ready yet";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly notificationStorage!: NotificationStorage;
@@ -632,25 +630,26 @@ class MultiSigService extends AgentService {
 
     const nextSequence = (Number(multiSig.state.s) + 1).toString();
 
-    const rmids = members?.rotation;
+    const smids = members?.signing;
 
-    const rstates: any[] = [];
+    const states: any[] = [];
     await Promise.allSettled(
-      rmids.map(async (rotation: any) => {
+      smids.map(async (signing: any) => {
         const op = await this.props.signifyClient
           .keyStates()
-          .query(rotation.aid, nextSequence);
+          .query(signing.aid, nextSequence);
         await waitAndGetDoneOp(this.props.signifyClient, op);
+
         if (op.done) {
-          rstates.push(op.response);
+          states.push(op.response);
         }
       })
     );
 
     const rotated: string[] = [];
-    for (const rstate of rstates) {
-      if (rstate.k.join(",") !== multiSig.state.k.join(",")) {
-        rotated.push(rstate.i);
+    for (const state of states) {
+      if (!multiSig.state.k.includes(state.k[0])) {
+        rotated.push(state.i);
       }
     }
 

@@ -172,7 +172,7 @@ const keriMetadataRecord = new IdentifierMetadataRecord(
 const aidReturnedBySignify = {
   prefix: keriMetadataRecord.id,
   state: {
-    s: "s",
+    s: "0",
     dt: "dt",
     kt: "kt",
     k: ["k"],
@@ -1407,7 +1407,7 @@ describe("Multisig sig service of agent", () => {
     expect(result.threshold).toBe(3);
   });
 
-  test("Should can be ready to rotate multisig", async () => {
+  test("Should return member identifiers that have rotated ahead of multisig", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const multisigIdentifier = "newMultisigIdentifierAid";
     const signifyName = "newUuidHere";
@@ -1442,8 +1442,6 @@ describe("Multisig sig service of agent", () => {
             },
           },
         },
-      ],
-      rotation: [
         {
           aid: "EOpnB724NQqQa58Zqw-ZFEQplQ2hQXpbj6o2gKrzlix3",
           ends: {
@@ -1455,19 +1453,35 @@ describe("Multisig sig service of agent", () => {
           },
         },
       ],
+      rotation: [],
     });
-    queryKeyStateMock = jest.fn().mockResolvedValue({
-      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
-      metadata: {
-        oobi: "testOobi",
-      },
-      done: true,
-      error: null,
-      response: {
-        i: "123",
-        k: ["key1", "key2"],
-      },
-      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+
+    queryKeyStateMock.mockImplementation((id: string) => {
+      if (id === "ENYqRaAQBWtpS7fgCGirVy-zJNRcWu2ZUsRNBjzvrfR_") {
+        return {
+          name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+          metadata: {
+            oobi: "testOobi",
+          },
+          done: true,
+          error: null,
+          response: {
+            i: "id",
+            k: ["k1"],
+          },
+        };
+      }
+      return {
+        name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+        metadata: {
+          oobi: "testOobi",
+        },
+        done: false,
+        error: null,
+        response: {
+          i: "id2",
+        },
+      };
     });
 
     const metadata = {
@@ -1482,7 +1496,7 @@ describe("Multisig sig service of agent", () => {
 
     expect(
       await multiSigService.membersReadyToRotate(metadata.id)
-    ).toMatchObject(["123"]);
+    ).toMatchObject(["id"]);
   });
 
   test("Throw error if we do not control any member AID of the multi-sig", async () => {
