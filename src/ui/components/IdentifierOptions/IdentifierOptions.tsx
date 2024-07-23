@@ -29,6 +29,7 @@ import { OptionItem, OptionModal } from "../OptionsModal";
 import "./IdentifierOptions.scss";
 import { IdentifierOptionsProps } from "./IdentifierOptions.types";
 import { IdentifierJsonModal } from "./components";
+import { getTheme } from "../../utils/theme";
 
 const IdentifierOptions = ({
   optionsIsOpen,
@@ -65,19 +66,10 @@ const IdentifierOptions = ({
   }, [cardData.displayName]);
 
   useEffect(() => {
-    const themeStr = cardData.theme.toString();
+    const theme = getTheme(cardData.theme);
 
-    if (themeStr.length <= 1) {
-      setNewSelectedTheme(cardData.theme);
-      setNewSelectedColor(0);
-      return;
-    }
-
-    const color = themeStr[0];
-    const theme = themeStr[1];
-
-    setNewSelectedColor(Number(color));
-    setNewSelectedTheme(Number(theme));
+    setNewSelectedColor(Number(theme.color));
+    setNewSelectedTheme(Number(theme.layout));
   }, [cardData.theme, editorOptionsIsOpen]);
 
   const handleClose = () => {

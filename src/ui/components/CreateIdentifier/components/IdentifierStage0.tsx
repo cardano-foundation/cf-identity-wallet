@@ -33,6 +33,7 @@ import {
 import { IdentifierColorSelector } from "./IdentifierColorSelector";
 import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
 import { TypeItem } from "./TypeItem";
+import { createThemeValue } from "../../../utils/theme";
 
 const IdentifierStage0 = ({
   state,
@@ -79,7 +80,7 @@ const IdentifierStage0 = ({
   }, [selectedTheme, setState]);
 
   const handleCreateIdentifier = async () => {
-    const selectedTheme = Number(`${state.color}${state.selectedTheme}`);
+    const selectedTheme = createThemeValue(state.color, state.selectedTheme);
 
     const metadata: CreateIdentifierInputs = {
       displayName: state.displayNameValue,
