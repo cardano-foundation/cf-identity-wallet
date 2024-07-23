@@ -617,7 +617,7 @@ class MultiSigService extends AgentService {
     };
   }
 
-  async readyMultisigRotation(identifierId: string) {
+  async membersReadyToRotate(identifierId: string): Promise<string[]> {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifierId
     );
@@ -637,24 +637,24 @@ class MultiSigService extends AgentService {
     const rstates: any[] = [];
     await Promise.allSettled(
       rmids.map(async (rotation: any) => {
-        const aid = await this.props.signifyClient
+        const op = await this.props.signifyClient
           .keyStates()
           .query(rotation.aid, nextSequence);
-        if (aid.done) {
-          rstates.push(aid.response);
+        await waitAndGetDoneOp(this.props.signifyClient, op);
+        if (op.done) {
+          rstates.push(op.response);
         }
       })
     );
 
-    const result: any = [];
-
-    rstates.forEach((rstate) => {
-      if (rstate.i !== multiSig.state.i) {
-        result.push(rstate);
+    const rotated: string[] = [];
+    for (const rstate of rstates) {
+      if (rstate.k.join(",") !== multiSig.state.k.join(",")) {
+        rotated.push(rstate.i);
       }
-    });
+    }
 
-    return result;
+    return rotated;
   }
 
   private async joinMultisigRotationKeri(

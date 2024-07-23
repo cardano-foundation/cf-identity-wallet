@@ -175,7 +175,7 @@ const aidReturnedBySignify = {
     s: "s",
     dt: "dt",
     kt: "kt",
-    k: "k",
+    k: ["k"],
     nt: "nt",
     n: "n",
     bt: "bt",
@@ -1465,6 +1465,7 @@ describe("Multisig sig service of agent", () => {
       error: null,
       response: {
         i: "123",
+        k: ["key1", "key2"],
       },
       alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
     });
@@ -1480,12 +1481,8 @@ describe("Multisig sig service of agent", () => {
     } as IdentifierMetadataRecord;
 
     expect(
-      await multiSigService.readyMultisigRotation(metadata.id)
-    ).toMatchObject([
-      {
-        i: "123",
-      },
-    ]);
+      await multiSigService.membersReadyToRotate(metadata.id)
+    ).toMatchObject(["123"]);
   });
 
   test("Throw error if we do not control any member AID of the multi-sig", async () => {
