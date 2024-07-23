@@ -269,7 +269,12 @@ const CreateSSIAgent = () => {
       >
         <div className="content-container ">
           <div>
-            <h2 data-testid={`${pageId}-title`}>{i18n.t("ssiagent.title")}</h2>
+            <h2
+              className="title"
+              data-testid={`${pageId}-title`}
+            >
+              {i18n.t("ssiagent.title")}
+            </h2>
             <p
               className="page-paragraph"
               data-testid={`${pageId}-top-paragraph`}

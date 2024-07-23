@@ -1,6 +1,10 @@
 .verify-seed-phrase {
   --background: var(--ion-color-light);
 
+  .title {
+    margin-top: 1rem;
+  }
+
   .content-container {
     display: flex;
     flex-direction: column;

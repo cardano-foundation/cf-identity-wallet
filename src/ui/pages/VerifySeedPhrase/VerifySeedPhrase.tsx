@@ -165,7 +165,10 @@ const VerifySeedPhrase = () => {
     >
       <div className="content-container">
         <div>
-          <h2 data-testid={`${pageId}-title`}>
+          <h2
+            className="title"
+            data-testid={`${pageId}-title`}
+          >
             {i18n.t("verifyseedphrase.onboarding.title")}
           </h2>
           <p
