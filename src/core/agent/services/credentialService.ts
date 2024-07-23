@@ -81,7 +81,7 @@ class CredentialService extends AgentService {
 
     const results = await this.props.signifyClient.credentials().list({
       filter: {
-        "-d": { $eq: metadata.id.replace("metadata:", "") },
+        "-d": { $eq: metadata.id },
       },
     });
     if (results.length > 0) {
@@ -159,7 +159,7 @@ class CredentialService extends AgentService {
     connectionId: string
   ): Promise<void> {
     const credentialDetails: CredentialMetadataRecordProps = {
-      id: `metadata:${credentialId}`,
+      id: credentialId,
       isArchived: false,
       credentialType: "",
       issuanceDate: new Date(dateTime).toISOString(),
@@ -178,9 +178,7 @@ class CredentialService extends AgentService {
       await this.credentialStorage.getAllCredentialMetadata();
     const unSyncedData = signifyCredentials.filter(
       (credential: any) =>
-        !storedCredentials.find(
-          (item) => credential.sad.d === item.id.replace("metadata:", "")
-        )
+        !storedCredentials.find((item) => credential.sad.d === item.id)
     );
     if (unSyncedData.length) {
       //sync the storage with the signify data

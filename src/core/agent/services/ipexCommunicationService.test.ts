@@ -534,7 +534,7 @@ describe("Ipex communication service of agent", () => {
     });
     credentialStorage.getCredentialMetadatasById.mockResolvedValue([
       {
-        id: "metadata:d",
+        id: "d",
         status: "confirmed",
         connectionId: "connectionId",
       },

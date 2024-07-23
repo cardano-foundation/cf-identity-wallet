@@ -240,7 +240,7 @@ class IpexCommunicationService extends AgentService {
 
     const credentialMetadatas =
       await this.credentialStorage.getCredentialMetadatasById(
-        creds.map((cred: any) => `metadata:${cred.sad.d}`)
+        creds.map((cred: any) => cred.sad.d)
       );
     return {
       schema: {
@@ -248,9 +248,7 @@ class IpexCommunicationService extends AgentService {
         description: schemaKeri.description,
       },
       credentials: credentialMetadatas.map((cr) => {
-        const credKeri = creds.find(
-          (cred: any) => `metadata:${cred.sad.d}` === cr.id
-        );
+        const credKeri = creds.find((cred: any) => cred.sad.d === cr.id);
         return {
           connectionId: cr.connectionId,
           acdc: credKeri.sad,
@@ -282,9 +280,7 @@ class IpexCommunicationService extends AgentService {
     id: string,
     cred: any
   ): Promise<CredentialShortDetails> {
-    const metadata = await this.credentialStorage.getCredentialMetadata(
-      `metadata:${id}`
-    );
+    const metadata = await this.credentialStorage.getCredentialMetadata(id);
     if (!metadata) {
       throw new Error(
         IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
@@ -306,7 +302,7 @@ class IpexCommunicationService extends AgentService {
     connectionId: string
   ): Promise<void> {
     const credentialDetails: CredentialMetadataRecordProps = {
-      id: `metadata:${credentialId}`,
+      id: credentialId,
       isArchived: false,
       credentialType: "",
       issuanceDate: new Date(dateTime).toISOString(),
