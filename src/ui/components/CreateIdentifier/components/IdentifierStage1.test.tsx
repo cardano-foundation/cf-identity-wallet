@@ -154,10 +154,12 @@ describe("Identifier Stage 1", () => {
     });
 
     expect(innerSetState).toBeCalledWith({
+      color: IdentifierColor.Green,
       scannedConections: [connectionsFix[3]],
       displayNameValue: stage1State.displayNameValue,
       ourIdentifier: stage1State.ourIdentifier,
       identifierCreationStage: 2,
+      selectedTheme: 0,
     });
   });
 
