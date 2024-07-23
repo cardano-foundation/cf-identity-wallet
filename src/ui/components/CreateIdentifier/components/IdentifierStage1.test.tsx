@@ -17,6 +17,7 @@ import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierF
 import { OperationType, ToastMsgType } from "../../../globals/types";
 import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { IdentifierStage1 } from "./IdentifierStage1";
+import { IdentifierColor } from "./IdentifierColorSelector";
 
 setupIonicReact();
 mockIonicReact();
@@ -99,6 +100,7 @@ describe("Identifier Stage 1", () => {
         groupCreated: true,
       },
     },
+    color: IdentifierColor.Green,
   };
 
   const dispatchMock = jest.fn();
@@ -184,6 +186,7 @@ describe("Identifier Stage 1", () => {
           groupCreated: true,
         },
       },
+      color: IdentifierColor.Green,
     };
 
     const dispatchMock = jest.fn();
@@ -365,6 +368,7 @@ describe("Identifier Stage 1", () => {
           groupCreated: true,
         },
       },
+      color: IdentifierColor.Green,
     };
 
     const dispatchMock = jest.fn();
