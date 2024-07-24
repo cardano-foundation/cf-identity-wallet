@@ -26,6 +26,8 @@ import {
 } from "./CredentialRequest.types";
 import { Agent } from "../../../../../core/agent/agent";
 import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
+import { setToastMsg } from "../../../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../../../globals/types";
 
 const CRED_EMPTY = "Credential is empty";
 
@@ -108,21 +110,22 @@ const ChooseCredential = ({
   };
 
   const handleRequestCredential = async () => {
-    if (!selectedCred) {
-      throw Error(CRED_EMPTY);
-    }
-
     try {
+      if (!selectedCred) {
+        throw Error(CRED_EMPTY);
+      }
+
       setLoading(true);
       await Agent.agent.ipexCommunications.offerAcdcFromApply(
         notificationDetails,
         selectedCred.acdc
       );
       handleNotificationUpdate();
+      dispatch(setToastMsg(ToastMsgType.SHARE_CRED_SUCCESS));
       dispatch(setNotificationDetailCache(null));
       onClose();
     } catch (e) {
-      // TODO: handle error
+      dispatch(setToastMsg(ToastMsgType.SHARE_CRED_FAIL));
     } finally {
       setLoading(false);
     }
