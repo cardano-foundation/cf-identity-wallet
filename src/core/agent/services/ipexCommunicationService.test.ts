@@ -4,6 +4,7 @@ import { CredentialStatus } from "./credentialService.types";
 import { Agent } from "../agent";
 import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -45,6 +46,16 @@ const credentialStorage = jest.mocked({
   getCredentialMetadatasById: jest.fn(),
 });
 
+const operationPendingStorage = jest.mocked({
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
 let credentialListMock = jest.fn();
 let credentialGetMock = jest.fn();
 const identifierListMock = jest.fn();
@@ -75,6 +86,10 @@ const ipexOfferMock = jest.fn();
 const ipexGrantMock = jest.fn();
 const schemaGetMock = jest.fn();
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
+const submitAdmitMock = jest.fn().mockResolvedValue({
+  name: "opName",
+  done: true,
+});
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -125,7 +140,7 @@ const signifyClient = jest.mocked({
   }),
   ipex: () => ({
     admit: jest.fn().mockResolvedValue(["admit", "sigs", "aend"]),
-    submitAdmit: jest.fn(),
+    submitAdmit: submitAdmitMock,
     offer: ipexOfferMock,
     submitOffer: jest.fn(),
     grant: ipexGrantMock,
@@ -173,6 +188,7 @@ jest.mock("../../../core/agent/agent", () => ({
       signifyNotifications: {
         deleteNotificationRecordById: (id: string) =>
           deleteNotificationMock(id),
+        addPendingOperationToQueue: jest.fn(),
       },
     },
   },
@@ -182,7 +198,8 @@ const ipexCommunicationService = new IpexCommunicationService(
   agentServicesProps,
   identifierStorage as any,
   credentialStorage as any,
-  notificationStorage as any
+  notificationStorage as any,
+  operationPendingStorage as any
 );
 
 describe("Ipex communication service of agent", () => {
@@ -190,7 +207,7 @@ describe("Ipex communication service of agent", () => {
     await new ConfigurationService().start();
   });
   test("can accept ACDC", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "uuid";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "holder",
@@ -216,6 +233,43 @@ describe("Ipex communication service of agent", () => {
       id: "id",
       status: CredentialStatus.CONFIRMED,
     });
+    expect(deleteNotificationMock).toBeCalledWith(id);
+  });
+
+  test("Should save pending operation", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const id = "uuid";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
+      id: "id",
+    });
+    submitAdmitMock.mockResolvedValueOnce({
+      name: "opName",
+      done: false,
+    });
+    await ipexCommunicationService.acceptAcdc(id);
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
+      expect.objectContaining({
+        connectionId: "i",
+      })
+    );
+    expect(operationPendingStorage.save).toBeCalledWith({
+      id: "opName",
+      metadata: { credentialId: "id" },
+      recordType: OperationPendingRecordType.SubmitAdmitCredential,
+    });
+    expect(
+      Agent.agent.signifyNotifications.addPendingOperationToQueue
+    ).toBeCalledTimes(1);
     expect(deleteNotificationMock).toBeCalledWith(id);
   });
 
@@ -262,9 +316,9 @@ describe("Ipex communication service of agent", () => {
     });
     // Could use fake timers instead.
     await expect(
-      ipexCommunicationService.acceptAcdc(id, {
-        maxAttempts: 2,
+      ipexCommunicationService.waitAndUpdateCredential(id, {
         interval: 10,
+        maxAttempts: 2,
       })
     ).rejects.toThrowError(IpexCommunicationService.ACDC_NOT_APPEARING);
   });
@@ -283,7 +337,9 @@ describe("Ipex communication service of agent", () => {
       },
     ]);
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
-    await expect(ipexCommunicationService.acceptAcdc(id)).rejects.toThrowError(
+    await expect(
+      ipexCommunicationService.waitAndUpdateCredential(id)
+    ).rejects.toThrowError(
       IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
     );
     expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();

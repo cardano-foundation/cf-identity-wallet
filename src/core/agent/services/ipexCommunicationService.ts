@@ -1,4 +1,4 @@
-import { Serder } from "signify-ts";
+import { Operation, Serder } from "signify-ts";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import {
@@ -11,6 +11,7 @@ import {
   CredentialStorage,
   IdentifierStorage,
   NotificationStorage,
+  OperationPendingStorage,
 } from "../records";
 import {
   CredentialMetadataRecordProps,
@@ -23,6 +24,7 @@ import {
 } from "./credentialService.types";
 import { OnlineOnly, getCredentialShortDetails } from "./utils";
 import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -47,24 +49,24 @@ class IpexCommunicationService extends AgentService {
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;
   protected readonly notificationStorage: NotificationStorage;
+  protected readonly operationPendingStorage: OperationPendingStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
     credentialStorage: CredentialStorage,
-    notificationStorage: NotificationStorage
+    notificationStorage: NotificationStorage,
+    operationPendingStorage: OperationPendingStorage
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
     this.credentialStorage = credentialStorage;
     this.notificationStorage = notificationStorage;
+    this.operationPendingStorage = operationPendingStorage;
   }
 
   @OnlineOnly
-  async acceptAcdc(
-    id: string,
-    waitForAcdcConfig = { maxAttempts: 120, interval: 500 }
-  ): Promise<void> {
+  async acceptAcdc(id: string): Promise<void> {
     const notifRecord = await this.getNotificationRecordById(id);
     const exn = await this.props.signifyClient
       .exchanges()
@@ -95,31 +97,25 @@ class IpexCommunicationService extends AgentService {
       (key) => exn.exn.e.acdc.e?.[key]?.s
     );
 
-    await this.admitIpex(
+    const op = await this.admitIpex(
       notifRecord.a.d as string,
       holder.signifyName,
       exn.exn.i,
       [exn.exn.e.acdc.s, ...chainedSchemaSaids]
     );
-
-    // @TODO - foconnor: This should be event driven, need to fix the notification in KERIA/Signify.
-    const cred = await this.waitForAcdcToAppear(
-      credentialId,
-      waitForAcdcConfig
-    );
-    const credentialShortDetails = await this.updateAcdcMetadataRecordCompleted(
-      credentialId,
-      cred
-    );
-
+    if (!op.done) {
+      const pendingOperation = await this.operationPendingStorage.save({
+        id: op.name,
+        recordType: OperationPendingRecordType.SubmitAdmitCredential,
+        metadata: { credentialId },
+      });
+      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+        pendingOperation
+      );
+    } else {
+      await this.waitAndUpdateCredential(credentialId);
+    }
     Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
-    this.props.eventService.emit<AcdcStateChangedEvent>({
-      type: AcdcEventTypes.AcdcStateChanged,
-      payload: {
-        status: CredentialStatus.CONFIRMED,
-        credential: credentialShortDetails,
-      },
-    });
   }
 
   @OnlineOnly
@@ -323,7 +319,7 @@ class IpexCommunicationService extends AgentService {
     holderAidName: string,
     issuerAid: string,
     schemaSaids: string[]
-  ): Promise<void> {
+  ): Promise<Operation> {
     // @TODO - foconnor: For now this will only work with our test server, we need to find a better way to handle this in production.
     for (const schemaSaid of schemaSaids) {
       if (schemaSaid) {
@@ -337,9 +333,10 @@ class IpexCommunicationService extends AgentService {
     const [admit, sigs, aend] = await this.props.signifyClient
       .ipex()
       .admit(holderAidName, "", notificationD, dt);
-    await this.props.signifyClient
+    const op = await this.props.signifyClient
       .ipex()
       .submitAdmit(holderAidName, admit, sigs, aend, [issuerAid]);
+    return op;
   }
 
   private async getCredentialBySaid(
@@ -359,6 +356,28 @@ class IpexCommunicationService extends AgentService {
         error,
       };
     }
+  }
+
+  @OnlineOnly
+  async waitAndUpdateCredential(
+    credentialId: string,
+    waitForAcdcConfig = { maxAttempts: 120, interval: 500 }
+  ) {
+    const cred = await this.waitForAcdcToAppear(
+      credentialId,
+      waitForAcdcConfig
+    );
+    const credentialShortDetails = await this.updateAcdcMetadataRecordCompleted(
+      credentialId,
+      cred
+    );
+    this.props.eventService.emit<AcdcStateChangedEvent>({
+      type: AcdcEventTypes.AcdcStateChanged,
+      payload: {
+        status: CredentialStatus.CONFIRMED,
+        credential: credentialShortDetails,
+      },
+    });
   }
 }
 

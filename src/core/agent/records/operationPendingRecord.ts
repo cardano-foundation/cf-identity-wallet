@@ -2,15 +2,20 @@ import { v4 as uuidv4 } from "uuid";
 import { BaseRecord, Tags } from "../../storage/storage.types";
 import { OperationPendingRecordType } from "./operationPendingRecord.type";
 
+interface OperationPendingMetadata {
+  credentialId?: string;
+}
 interface OperationPendingRecordStorageProps {
   id?: string;
   createdAt?: Date;
   tags?: Tags;
   recordType: OperationPendingRecordType;
+  metadata?: OperationPendingMetadata;
 }
 
 class OperationPendingRecord extends BaseRecord {
   recordType!: OperationPendingRecordType;
+  metadata?: OperationPendingMetadata;
   static readonly type = "OperationPendingRecord";
   readonly type = OperationPendingRecord.type;
 
@@ -20,6 +25,7 @@ class OperationPendingRecord extends BaseRecord {
       this.id = props.id ?? uuidv4();
       this.createdAt = props.createdAt ?? new Date();
       this.recordType = props.recordType;
+      this.metadata = props.metadata;
       this._tags = props.tags ?? {};
     }
   }
@@ -32,5 +38,5 @@ class OperationPendingRecord extends BaseRecord {
   }
 }
 
-export type { OperationPendingRecordStorageProps };
+export type { OperationPendingRecordStorageProps, OperationPendingMetadata };
 export { OperationPendingRecord };

@@ -438,6 +438,19 @@ class SignifyNotificationService extends AgentService {
               });
               break;
             }
+            case OperationPendingRecordType.SubmitAdmitCredential: {
+              const credentialId = pendingOperation?.metadata?.credentialId;
+              if (credentialId) {
+                await Agent.agent.ipexCommunications.waitAndUpdateCredential(
+                  credentialId
+                );
+              }
+              callback({
+                opType: pendingOperation.recordType,
+                oid: recordId,
+              });
+              break;
+            }
             default:
               break;
             }
