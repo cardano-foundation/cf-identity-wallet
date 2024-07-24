@@ -67,14 +67,23 @@ const WalletConnectStageTwo = ({
           (connection) => connection.id === pendingDAppMeerkat
         );
         if (existingConnection) {
-          existingConnection.selectedAid = selectedIdentifier.id;
-          dispatch(setWalletConnectionsCache([...existingConnections]));
+          const updatedConnections = [];
+          for (const connection of existingConnections) {
+            if (connection.id === existingConnection.id) {
+              updatedConnections.push({
+                ...existingConnection,
+                selectedAid: selectedIdentifier.id,
+              });
+            } else {
+              updatedConnections.push(connection);
+            }
+          }
+          dispatch(setWalletConnectionsCache(updatedConnections));
         } else {
-          // Insert a new connection if needed
           dispatch(
             setWalletConnectionsCache([
-              { id: pendingDAppMeerkat, selectedAid: selectedIdentifier.id },
               ...existingConnections,
+              { id: pendingDAppMeerkat, selectedAid: selectedIdentifier.id },
             ])
           );
         }
@@ -85,6 +94,8 @@ const WalletConnectStageTwo = ({
       }
       onClose();
     } catch (e) {
+      /* eslint-disable no-console */
+      console.error(e);
       dispatch(setToastMsg(ToastMsgType.UNABLE_CONNECT_WALLET));
     }
   };
