@@ -188,6 +188,39 @@ const aidReturnedBySignify = {
     },
   },
 };
+const aidMultisigBySignify = {
+  prefix: "ELWFo-DV4GujnvcwwIbzTzjc-nIf0ijv6W1ecajvQYBY",
+  state: {
+    vn: [1, 0],
+    i: "ELWFo-DV4GujnvcwwIbzTzjc-nIf0ijv6W1ecajvQYBY",
+    s: "0",
+    p: "",
+    d: "ELWFo-DV4GujnvcwwIbzTzjc-nIf0ijv6W1ecajvQYBY",
+    f: "0",
+    dt: "2024-07-24T02:22:14.257271+00:00",
+    et: "icp",
+    kt: "1",
+    k: [
+      "DIH7-xjcUC-xPS9I32b0ftZAT6gHJvfHiBR4UwxtWuEO",
+      "DEbgy9MjAL-_cbSSKnf4-ex7QSrd-RoMZ12NzYFp6nX6",
+    ],
+    nt: "1",
+    n: [
+      "EGd8MBVVtKu-wjwsgw2fyKyhNZDnwH7zuI7ezUlm6ZwD",
+      "EMrI55rI2XYkU5XakW_Okt012RjaC6zLZblvjcUm851t",
+    ],
+    bt: "0",
+    b: [],
+    c: [],
+    ee: {
+      s: "0",
+      d: "ELWFo-DV4GujnvcwwIbzTzjc-nIf0ijv6W1ecajvQYBY",
+      br: [],
+      ba: [],
+    },
+    di: "",
+  },
+};
 
 const multisigMockMemberMetadata = {
   _tags: {
@@ -1411,7 +1444,7 @@ describe("Multisig sig service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const multisigIdentifier = "newMultisigIdentifierAid";
     const signifyName = "newUuidHere";
-    identifiersGetMock = jest.fn().mockResolvedValue(aidReturnedBySignify);
+    identifiersGetMock = jest.fn().mockResolvedValue(aidMultisigBySignify);
     identifiersCreateMock = jest.fn().mockResolvedValue({
       identifier: multisigIdentifier,
       signifyName,
@@ -1456,6 +1489,7 @@ describe("Multisig sig service of agent", () => {
       rotation: [],
     });
 
+    const rotatedMemberAid = "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL";
     queryKeyStateMock.mockImplementation((id: string) => {
       if (id === "ENYqRaAQBWtpS7fgCGirVy-zJNRcWu2ZUsRNBjzvrfR_") {
         return {
@@ -1467,7 +1501,7 @@ describe("Multisig sig service of agent", () => {
           error: null,
           response: {
             vn: [1, 0],
-            i: "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL",
+            i: rotatedMemberAid,
             s: "0",
             p: "",
             d: "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL",
@@ -1537,7 +1571,7 @@ describe("Multisig sig service of agent", () => {
 
     expect(
       await multiSigService.membersReadyToRotate(metadata.id)
-    ).toMatchObject(["EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL"]);
+    ).toMatchObject([rotatedMemberAid]);
   });
 
   test("Throw error if we do not control any member AID of the multi-sig", async () => {
