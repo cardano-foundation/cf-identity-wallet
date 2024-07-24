@@ -1109,8 +1109,10 @@
             "alert": {
               "enablemessage": "By turning on an operations password you will be required to use this to verify any future operations instead of your passcode.",
               "disablemessage": "By turning off your operations password you will be required to use your passcode to verify any future operations.",
+              "existingpassword": "Your new operations password must be different to your existing one.",
               "confirm": "Continue",
-              "cancel": "Cancel"
+              "cancel": "Cancel",
+              "ok": "Ok"
             }
           }
         },
@@ -1388,7 +1390,10 @@
     "newmultisignmember": "New member added to multi-sig",
     "multisignidentifiercreated": "Identifier added to \"For multiple signers\"",
     "delegatedidentifiercreated": "Identifier added to \"For delegates\"",
-    "passcodeupdated": "Passcode updated successfully"
+    "passcodeupdated": "Passcode updated successfully",
+    "passwordupdated": "Password updated successfully",
+    "passworddisabled": "Password turned off",
+    "passwordcreated": "Password created successfully"
   },
   "request": {
     "sign": {

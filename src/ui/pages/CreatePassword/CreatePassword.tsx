@@ -6,12 +6,13 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getStateCache,
   setCurrentOperation,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { PageHeader } from "../../components/PageHeader";
 import { PasswordModule } from "../../components/PasswordModule";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import { OperationType } from "../../globals/types";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { useAppIonRouter } from "../../hooks";
 import "./CreatePassword.scss";
 import { PasswordModuleRef } from "../../components/PasswordModule/PasswordModule.types";
@@ -24,14 +25,18 @@ const CreatePassword = ({
   userAction,
 }: CreatePasswordProps) => {
   const pageId = "create-password";
+  const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const ionRouter = useAppIonRouter();
-  const dispatch = useAppDispatch();
   const passwordModuleRef = useRef<PasswordModuleRef>(null);
 
   const handleContinue = async (skipped: boolean) => {
     if (isModal) {
       setPasswordIsSet(true);
+      userAction?.current === "change" &&
+        dispatch(setToastMsg(ToastMsgType.PASSWORD_UPDATED));
+      userAction?.current === "enable" &&
+        dispatch(setToastMsg(ToastMsgType.PASSWORD_CREATED));
       handleClear();
     } else {
       const { nextPath, updateRedux } = getNextRoute(

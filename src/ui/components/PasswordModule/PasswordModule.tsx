@@ -1,18 +1,18 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
+import { useSelector } from "react-redux";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { i18n } from "../../../i18n";
 import { passwordStrengthChecker } from "../../utils/passwordStrengthChecker";
-import { Alert } from "../Alert";
+import { Alert as AlertCancel, Alert as AlertExisting } from "../Alert";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import { PageFooter } from "../PageFooter";
 import { PasswordValidation } from "../PasswordValidation";
 import "./PasswordModule.scss";
 import { PasswordModuleProps, PasswordModuleRef } from "./PasswordModule.types";
-import { useSelector } from "react-redux";
 import { getStateCache } from "../../../store/reducers/stateCache";
 
 const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
@@ -24,7 +24,8 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
     const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
     const [createPasswordFocus, setCreatePasswordFocus] = useState(false);
     const [hintValue, setHintValue] = useState("");
-    const [alertIsOpen, setAlertIsOpen] = useState(false);
+    const [alertCancelIsOpen, setAlertCancelIsOpen] = useState(false);
+    const [alertExistingIsOpen, setAlertExistingIsOpen] = useState(false);
     const createPasswordValueMatching =
       createPasswordValue.length > 0 &&
       confirmPasswordValue.length > 0 &&
@@ -48,6 +49,11 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
       setHintValue("");
     };
 
+    const handleClearExisting = () => {
+      setAlertExistingIsOpen(false);
+      handleClearState();
+    };
+
     useImperativeHandle(ref, () => ({
       clearState: handleClearState,
     }));
@@ -58,10 +64,12 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
           KeyStoreKeys.APP_OP_PASSWORD
         );
         if (
+          isModal &&
           authentication.passcodeIsSet &&
           currentPassword === createPasswordValue
         ) {
-          //TODO: show alert and clear data
+          setAlertExistingIsOpen(true);
+          return;
         } else {
           await SecureStorage.set(
             KeyStoreKeys.APP_OP_PASSWORD,
@@ -176,17 +184,29 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
             tertiaryButtonText={
               isModal ? undefined : `${i18n.t("createpassword.button.skip")}`
             }
-            tertiaryButtonAction={() => setAlertIsOpen(true)}
+            tertiaryButtonAction={() => setAlertCancelIsOpen(true)}
           />
         </div>
-        <Alert
-          isOpen={alertIsOpen}
-          setIsOpen={setAlertIsOpen}
+        <AlertCancel
+          isOpen={alertCancelIsOpen}
+          setIsOpen={setAlertCancelIsOpen}
           dataTestId="create-password-alert-skip"
           headerText={`${i18n.t("createpassword.alert.text")}`}
           confirmButtonText={`${i18n.t("createpassword.alert.button.confirm")}`}
           cancelButtonText={`${i18n.t("createpassword.alert.button.cancel")}`}
           actionConfirm={() => handleContinue(true)}
+        />
+        <AlertExisting
+          isOpen={alertExistingIsOpen}
+          setIsOpen={setAlertExistingIsOpen}
+          dataTestId="manage-password-alert-existing"
+          headerText={`${i18n.t(
+            "settings.sections.security.managepassword.page.alert.existingpassword"
+          )}`}
+          confirmButtonText={`${i18n.t(
+            "settings.sections.security.managepassword.page.alert.ok"
+          )}`}
+          actionConfirm={() => handleClearExisting()}
         />
       </>
     );

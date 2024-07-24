@@ -13,15 +13,21 @@ import { chevronForward } from "ionicons/icons";
 import { i18n } from "../../../../../../../i18n";
 import { VerifyPassword } from "../../../../../../components/VerifyPassword";
 import { VerifyPasscode } from "../../../../../../components/VerifyPasscode";
-import { getStateCache } from "../../../../../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setToastMsg,
+} from "../../../../../../../store/reducers/stateCache";
 import {
   Alert as AlertEnable,
   Alert as AlertDisable,
 } from "../../../../../../components/Alert";
 import { CreatePassword } from "../../../../../CreatePassword";
 import { KeyStoreKeys, SecureStorage } from "../../../../../../../core/storage";
+import { useAppDispatch } from "../../../../../../../store/hooks";
+import { ToastMsgType } from "../../../../../../globals/types";
 
 const ManagePassword = () => {
+  const dispatch = useAppDispatch();
   const stateCache = useSelector(getStateCache);
   const userAction = useRef("");
   const [passwordIsSet, setPasswordIsSet] = useState(
@@ -48,6 +54,7 @@ const ManagePassword = () => {
     setAlertEnableIsOpen(false);
     setAlertDisableIsOpen(false);
     userAction.current = "";
+    setCreatePasswordModalIsOpen(false);
   };
 
   const onVerify = async () => {
@@ -55,6 +62,7 @@ const ManagePassword = () => {
       await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, "");
       setPasswordIsSet(false);
       userAction.current = "";
+      dispatch(setToastMsg(ToastMsgType.PASSWORD_DISABLED));
     } else {
       setCreatePasswordModalIsOpen(true);
     }
