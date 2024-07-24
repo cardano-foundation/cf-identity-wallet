@@ -111,7 +111,7 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
               </p>
             )}
             <CustomInput
-              dataTestId="createPasswordValue"
+              dataTestId="create-password-input"
               title={`${i18n.t("createpassword.input.first.title")}`}
               placeholder={`${i18n.t(
                 "createpassword.input.first.placeholder"
@@ -137,7 +137,7 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
               <PasswordValidation password={createPasswordValue} />
             )}
             <CustomInput
-              dataTestId="confirm-password-value"
+              dataTestId="confirm-password-input"
               title={`${i18n.t("createpassword.input.second.title")}`}
               placeholder={`${i18n.t(
                 "createpassword.input.second.placeholder"
@@ -160,7 +160,7 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
               />
             )}
             <CustomInput
-              dataTestId="hintValue"
+              dataTestId="create-hint-input"
               title={`${i18n.t("createpassword.input.third.title")}`}
               placeholder={`${i18n.t(
                 "createpassword.input.third.placeholder"
