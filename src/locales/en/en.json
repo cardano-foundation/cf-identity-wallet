@@ -1430,7 +1430,9 @@
     "newmultisignmember": "New member added to multi-sig",
     "multisignidentifiercreated": "Identifier added to \"For multiple signers\"",
     "delegatedidentifiercreated": "Identifier added to \"For delegates\"",
-    "passcodeupdated": "Passcode updated successfully"
+    "passcodeupdated": "Passcode updated successfully",
+    "sharecredsuccess": "Credential shared successfully",
+    "sharecrederror": "Unable to share credential"
   },
   "request": {
     "sign": {
