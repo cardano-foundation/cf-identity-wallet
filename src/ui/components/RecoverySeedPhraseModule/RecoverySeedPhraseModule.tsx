@@ -16,6 +16,8 @@ import {
   RecoverySeedPhraseModuleRef,
   SeedPhraseInfo,
 } from "./RecoverySeedPhraseModule.types";
+import { SwitchOnboardingMode } from "../SwitchOnboardingMode";
+import { OnboardingMode } from "../SwitchOnboardingMode/SwitchOnboardingMode.types";
 
 const SEED_PHRASE_LENGTH = 18;
 const SUGGEST_SEED_PHRASE_LENGTH = 4;
@@ -27,7 +29,14 @@ const RecoverySeedPhraseModule = forwardRef<
   RecoverySeedPhraseModuleProps
 >(
   (
-    { title, description, testId, overrideAlertZIndex, onVerifySuccess },
+    {
+      title,
+      description,
+      testId,
+      overrideAlertZIndex,
+      displaySwitchModeButton,
+      onVerifySuccess,
+    },
     ref
   ) => {
     const dispatch = useAppDispatch();
@@ -201,7 +210,7 @@ const RecoverySeedPhraseModule = forwardRef<
       );
     };
 
-    const onBlurInput = (index: number) => {
+    const onBlurInput = () => {
       setIsTyping(false);
     };
 
@@ -279,6 +288,9 @@ const RecoverySeedPhraseModule = forwardRef<
                 />
                 {i18n.t("verifyrecoveryseedphrase.button.clear")}
               </IonButton>
+            )}
+            {displaySwitchModeButton && (
+              <SwitchOnboardingMode mode={OnboardingMode.Create} />
             )}
           </div>
           <PageFooter

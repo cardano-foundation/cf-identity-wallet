@@ -48,11 +48,9 @@ const CreatePassword = () => {
       pageId={pageId}
       header={
         <PageHeader
-          backButton={true}
-          beforeBack={passwordModuleRef.current?.clearState}
           currentPath={RoutePath.CREATE_PASSWORD}
           progressBar={true}
-          progressBarValue={0.5}
+          progressBarValue={0.4}
           progressBarBuffer={1}
         />
       }

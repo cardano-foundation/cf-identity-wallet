@@ -25,11 +25,11 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
-const secureStorageMock = jest.fn((...arg: any) => Promise.resolve());
+const secureStorageMock = jest.fn((...arg: unknown[]) => Promise.resolve(arg));
 jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
   SecureStorage: {
-    set: (...arg: any) => secureStorageMock(...arg),
+    set: (...arg: unknown[]) => secureStorageMock(...arg),
     delete: jest.fn(),
   },
 }));
@@ -316,12 +316,12 @@ describe("Verify Seed Phrase Page", () => {
 
     expect(continueButton.disabled).toBe(false);
 
-    const backButton = getByTestId("back-button");
+    const backButton = getByTestId("close-button");
     act(() => {
       fireEvent.click(backButton);
     });
 
-    expect(dispatchMock).toBeCalledTimes(3);
+    expect(dispatchMock).toBeCalledTimes(2);
   });
 
   test("The user can remove words from the Seed Phrase", async () => {
@@ -451,7 +451,7 @@ describe("Verify Seed Phrase Page", () => {
   test("Hidden seed phrase number on original section", async () => {
     const history = createMemoryHistory();
     history.push(RoutePath.VERIFY_SEED_PHRASE);
-    const { getByTestId, getByText } = render(
+    const { getByTestId } = render(
       <Provider store={storeMocked}>
         <IonReactRouter history={history}>
           <VerifySeedPhrase />

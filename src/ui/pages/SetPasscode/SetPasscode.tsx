@@ -16,6 +16,7 @@ import { PageHeader } from "../../components/PageHeader";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useAppIonRouter } from "../../hooks";
 import "./SetPasscode.scss";
+import { getBackRoute } from "../../../routes/backRoute";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
@@ -39,7 +40,6 @@ const SetPasscode = () => {
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     ionRouter.push(nextPath.pathname, "forward", "push");
-    ref.current?.clearState();
 
     await PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
       initialized: true,
@@ -48,31 +48,59 @@ const SetPasscode = () => {
 
   const isOnReenterPasscodeStep =
     passCodeValue.originalPasscode.length > 0 &&
-    passCodeValue.passcode.length < 6;
+    passCodeValue.passcode.length <= 6;
 
   const title =
     passCodeValue.originalPasscode !== ""
       ? i18n.t("setpasscode.reenterpasscode")
       : i18n.t("setpasscode.enterpasscode");
 
+  const closeButtonLabel = !isOnReenterPasscodeStep
+    ? i18n.t("setpasscode.cancelbtn")
+    : i18n.t("setpasscode.backbtn");
+
+  const handleClose = () => {
+    if (isOnReenterPasscodeStep) {
+      ref.current?.clearState();
+      return;
+    }
+
+    const { backPath, updateRedux } = getBackRoute(RoutePath.SET_PASSCODE, {
+      store: { stateCache },
+    });
+
+    updateReduxState(
+      backPath.pathname,
+      { store: { stateCache } },
+      dispatch,
+      updateRedux
+    );
+
+    ionRouter.push(backPath.pathname, "back", "pop");
+  };
+
+  const description = stateCache.authentication.recoveryWalletProgress
+    ? i18n.t("setpasscode.recoverydescription")
+    : i18n.t("setpasscode.description");
+
   return (
     <ResponsivePageLayout
       pageId={pageId}
       header={
         <PageHeader
-          backButton={true}
-          onBack={isOnReenterPasscodeStep ? ref.current?.clearState : undefined}
-          beforeBack={ref.current?.clearState}
+          closeButton
+          closeButtonAction={handleClose}
+          closeButtonLabel={closeButtonLabel}
           currentPath={RoutePath.SET_PASSCODE}
           progressBar={true}
-          progressBarValue={0.25}
+          progressBarValue={0.2}
           progressBarBuffer={1}
         />
       }
     >
       <CreatePasscodeModule
         title={title}
-        description={`${i18n.t("setpasscode.description")}`}
+        description={description}
         ref={ref}
         testId={pageId}
         onCreateSuccess={handlePassAuth}

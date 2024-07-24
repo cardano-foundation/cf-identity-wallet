@@ -17,6 +17,7 @@ import { getBackRoute } from "../../../routes/backRoute";
 import "./PageHeader.scss";
 import { useAppIonRouter, useIonHardwareBackButton } from "../../hooks";
 import { BackEventPriorityType } from "../../globals/types";
+import { combineClassNames } from "../../utils/style";
 
 const PageHeader = ({
   backButton,
@@ -42,8 +43,9 @@ const PageHeader = ({
   const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+  const hasLeftButton = !!(backButton || closeButton);
   const hasContent =
-    !!backButton || !!closeButton || !!actionButton || !!progressBar || !!title;
+    hasLeftButton || !!actionButton || !!progressBar || !!title;
 
   const handleOnBack = useCallback(() => {
     if (onBack) {
@@ -167,7 +169,11 @@ const PageHeader = ({
         )}
 
         {progressBar && (
-          <div className="progress-bar-container">
+          <div
+            className={combineClassNames("progress-bar-container", {
+              "has-left": hasLeftButton,
+            })}
+          >
             <IonProgressBar
               value={progressBarValue}
               buffer={progressBarBuffer}
