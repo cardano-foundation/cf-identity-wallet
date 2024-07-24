@@ -181,6 +181,9 @@ enum NotificationRoute {
   MultiSigRpy = "/multisig/rpy",
   ExnIpexApply = "/exn/ipex/apply",
   ExnIpexAgree = "/exn/ipex/agree",
+}
+
+enum ExchangeRoute {
   IpexAdmit = "/ipex/admit",
 }
 
@@ -195,6 +198,7 @@ export {
   ConnectionEventTypes,
   AcdcEventTypes,
   NotificationRoute,
+  ExchangeRoute,
   KeriConnectionType,
   KeriaStatusEventTypes,
 };

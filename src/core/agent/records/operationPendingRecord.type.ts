@@ -2,5 +2,5 @@ export enum OperationPendingRecordType {
   Witness = "witness",
   Group = "group",
   Oobi = "oobi",
-  Exchange = "exchange",
+  ExchangeReceiveCredential = "exchange.receivecredential",
 }

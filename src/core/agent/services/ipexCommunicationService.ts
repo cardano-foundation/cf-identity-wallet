@@ -73,6 +73,12 @@ class IpexCommunicationService extends AgentService {
       .get(notifRecord.a.d as string);
     const credentialId = exn.exn.e.acdc.d;
     const connectionId = exn.exn.i;
+    const holder = await this.identifierStorage.getIdentifierMetadata(
+      exn.exn.a.i
+    );
+    if (!holder) {
+      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+    }
     await this.saveAcdcMetadataRecord(
       exn.exn.e.acdc.d,
       exn.exn.e.acdc.a.dt,
@@ -87,12 +93,6 @@ class IpexCommunicationService extends AgentService {
       },
     });
 
-    const holder = await this.identifierStorage.getIdentifierMetadata(
-      exn.exn.a.i
-    );
-    if (!holder) {
-      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
-    }
     const chainedSchemaSaids = Object.keys(exn.exn.e.acdc?.e || {}).map(
       (key) => exn.exn.e.acdc.e?.[key]?.s
     );
@@ -103,17 +103,13 @@ class IpexCommunicationService extends AgentService {
       exn.exn.i,
       [exn.exn.e.acdc.s, ...chainedSchemaSaids]
     );
-    if (!op.done) {
-      const pendingOperation = await this.operationPendingStorage.save({
-        id: op.name,
-        recordType: OperationPendingRecordType.Exchange,
-      });
-      Agent.agent.signifyNotifications.addPendingOperationToQueue(
-        pendingOperation
-      );
-    } else {
-      await this.waitAndUpdateCredential(credentialId);
-    }
+    const pendingOperation = await this.operationPendingStorage.save({
+      id: op.name,
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+    Agent.agent.signifyNotifications.addPendingOperationToQueue(
+      pendingOperation
+    );
     Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
   }
 
@@ -170,25 +166,6 @@ class IpexCommunicationService extends AgentService {
     await this.props.signifyClient
       .ipex()
       .submitGrant(holderSignifyName, grant, sigs, end, [msgAgree.exn.i]);
-  }
-
-  private async waitForAcdcToAppear(
-    credentialId: string,
-    waitForAcdcConfig: { maxAttempts: number; interval: number }
-  ): Promise<any> {
-    let acdc;
-    let retryTimes = 0;
-    while (!acdc) {
-      if (retryTimes >= waitForAcdcConfig.maxAttempts) {
-        throw new Error(IpexCommunicationService.ACDC_NOT_APPEARING);
-      }
-      await new Promise((resolve) =>
-        setTimeout(resolve, waitForAcdcConfig.interval)
-      );
-      acdc = (await this.getCredentialBySaid(credentialId)).acdc;
-      retryTimes++;
-    }
-    return acdc;
   }
 
   @OnlineOnly
@@ -358,14 +335,8 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async waitAndUpdateCredential(
-    credentialId: string,
-    waitForAcdcConfig = { maxAttempts: 120, interval: 500 }
-  ) {
-    const cred = await this.waitForAcdcToAppear(
-      credentialId,
-      waitForAcdcConfig
-    );
+  async markAcdcComplete(credentialId: string) {
+    const cred = await this.getCredentialBySaid(credentialId);
     const credentialShortDetails = await this.updateAcdcMetadataRecordCompleted(
       credentialId,
       cred

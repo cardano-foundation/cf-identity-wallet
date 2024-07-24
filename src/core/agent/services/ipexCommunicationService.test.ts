@@ -229,42 +229,9 @@ describe("Ipex communication service of agent", () => {
         connectionId: "i",
       })
     );
-    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith("id", {
-      id: "id",
-      status: CredentialStatus.CONFIRMED,
-    });
-    expect(deleteNotificationMock).toBeCalledWith(id);
-  });
-
-  test("Should save pending operation", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    const id = "uuid";
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
-    });
-    credentialListMock.mockResolvedValue([
-      {
-        sad: {
-          d: "id",
-        },
-      },
-    ]);
-    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
-      id: "id",
-    });
-    submitAdmitMock.mockResolvedValueOnce({
-      name: "opName",
-      done: false,
-    });
-    await ipexCommunicationService.acceptAcdc(id);
-    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
-      expect.objectContaining({
-        connectionId: "i",
-      })
-    );
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
-      recordType: OperationPendingRecordType.Exchange,
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
     expect(
       Agent.agent.signifyNotifications.addPendingOperationToQueue
@@ -298,28 +265,7 @@ describe("Ipex communication service of agent", () => {
     await expect(ipexCommunicationService.acceptAcdc(id)).rejects.toThrowError(
       IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY
     );
-    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalled();
-    expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
     expect(deleteNotificationMock).not.toBeCalledWith(id);
-  });
-
-  // This test should go when this has been made event driven.
-  test("throws if a credential does not appear in KERIA after admitting", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const id = "uuid";
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
-    });
-    credentialListMock.mockImplementation(() => {
-      throw new Error("404 on KERIA");
-    });
-    // Could use fake timers instead.
-    await expect(
-      ipexCommunicationService.waitAndUpdateCredential(id, {
-        interval: 10,
-        maxAttempts: 2,
-      })
-    ).rejects.toThrowError(IpexCommunicationService.ACDC_NOT_APPEARING);
   });
 
   test("cannot mark credential as confirmed if metadata is missing", async () => {
@@ -337,7 +283,7 @@ describe("Ipex communication service of agent", () => {
     ]);
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
     await expect(
-      ipexCommunicationService.waitAndUpdateCredential(id)
+      ipexCommunicationService.markAcdcComplete(id)
     ).rejects.toThrowError(
       IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
     );
