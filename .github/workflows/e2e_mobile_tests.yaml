@@ -30,7 +30,7 @@ jobs:
         run: xcrun simctl list
 
       - name: 📱 Start iOS simulator
-        run: open -a Simulator.app &
+        run: open -a Simulator.app & | xcrun simctl boot "iPhone 15 Pro Max" &
 
       - name: 🏃🏼 Run tests for iOS simulator
-        run: npm run wdio:ios:15promax:ci -- --spec ./tests/features/onboarding.feature
+        run: npm run wdio:ios:15promax -- --spec ./tests/features/onboarding.feature
