@@ -797,7 +797,7 @@ describe("Multisig sig service of agent", () => {
     );
   });
 
-  test("should can rorate multisig with KERI multisig do not have manageAid and throw error", async () => {
+  test("should can rotate multisig with KERI multisig do not have manageAid and throw error", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const metadata = {
       id: "123456",
@@ -815,7 +815,7 @@ describe("Multisig sig service of agent", () => {
     );
   });
 
-  test("should can rorate multisig with KERI multisig have members do not rotate it AID first and throw error", async () => {
+  test("should can rotate multisig with KERI multisig have members do not rotate it AID first and throw error", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const multisigIdentifier = "newMultisigIdentifierAid";
     const signifyName = "newUuidHere";
@@ -1442,26 +1442,10 @@ describe("Multisig sig service of agent", () => {
 
   test("Should return member identifiers that have rotated ahead of multisig", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const multisigIdentifier = "newMultisigIdentifierAid";
-    const signifyName = "newUuidHere";
     identifiersGetMock = jest.fn().mockResolvedValue(aidMultisigBySignify);
-    identifiersCreateMock = jest.fn().mockResolvedValue({
-      identifier: multisigIdentifier,
-      signifyName,
-    });
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    mockResolveOobi = jest.fn().mockResolvedValue({
-      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
-      metadata: {
-        oobi: "testOobi",
-      },
-      done: true,
-      error: null,
-      response: {},
-      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
-    });
 
     identifiersMemberMock = jest.fn().mockResolvedValue({
       signing: [
@@ -1493,15 +1477,15 @@ describe("Multisig sig service of agent", () => {
     queryKeyStateMock.mockImplementation((id: string) => {
       if (id === "ENYqRaAQBWtpS7fgCGirVy-zJNRcWu2ZUsRNBjzvrfR_") {
         return {
-          name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+          name: "query.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
           metadata: {
-            oobi: "testOobi",
+            sn: "1",
           },
           done: true,
           error: null,
           response: {
             vn: [1, 0],
-            i: rotatedMemberAid,
+            i: "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL",
             s: "0",
             p: "",
             d: "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL",
@@ -1526,21 +1510,21 @@ describe("Multisig sig service of agent", () => {
         };
       }
       return {
-        name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+        name: "query.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
         metadata: {
-          oobi: "testOobi",
+          sn: "1",
         },
-        done: false,
+        done: true,
         error: null,
         response: {
           vn: [1, 0],
-          i: "EGvWn-Zv7DXa8-Te6nTBb2vWUOsDQHPdaKshNUMjJssB",
-          s: "0",
-          p: "",
-          d: "EGvWn-Zv7DXa8-Te6nTBb2vWUOsDQHPdaKshNUMjJssB",
+          i: rotatedMemberAid,
+          s: "1",
+          p: rotatedMemberAid,
+          d: "ELxPbNybLoBLM0EPmI9oHb6Yp40UcT-lN1JAST3sD3b9",
           f: "0",
           dt: "2024-07-23T08:59:16.747281+00:00",
-          et: "icp",
+          et: "rot",
           kt: "1",
           k: ["DIH7-xjcUC-xPS9I32b0ftZAT6gHJvfHiBR4UwxtWuEO"],
           nt: "1",
@@ -1559,18 +1543,8 @@ describe("Multisig sig service of agent", () => {
       };
     });
 
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-      isPending: false,
-      signifyOpName: "op123",
-      signifyName: "john_doe",
-      theme: 0,
-      multisigManageAid: "123",
-    } as IdentifierMetadataRecord;
-
     expect(
-      await multiSigService.membersReadyToRotate(metadata.id)
+      await multiSigService.membersReadyToRotate("multiSigId")
     ).toMatchObject([rotatedMemberAid]);
   });
 

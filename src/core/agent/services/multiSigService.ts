@@ -629,8 +629,7 @@ class MultiSigService extends AgentService {
       .members(metadata?.signifyName);
 
     const nextSequence = (Number(multiSig.state.s) + 1).toString();
-
-    const smids = members?.signing;
+    const smids = members.signing;
 
     const states: any[] = [];
     await Promise.allSettled(
