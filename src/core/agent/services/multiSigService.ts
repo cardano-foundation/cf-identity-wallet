@@ -35,6 +35,8 @@ class MultiSigService extends AgentService {
   static readonly INVALID_THRESHOLD = "Invalid threshold";
   static readonly CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER =
     "Unable to retrieve key states for given multi-sig member";
+  static readonly CANNOT_GET_KEYSTATE_OF_IDENTIFIER =
+    "Unable to query key state of identifier";
   static readonly EXN_MESSAGE_NOT_FOUND =
     "There's no exchange message for the given SAID";
   static readonly MULTI_SIG_NOT_FOUND =
@@ -632,7 +634,7 @@ class MultiSigService extends AgentService {
     const smids = members.signing;
 
     const states: any[] = [];
-    await Promise.allSettled(
+    await Promise.all(
       smids.map(async (signing: any) => {
         const op = await this.props.signifyClient
           .keyStates()
@@ -641,6 +643,8 @@ class MultiSigService extends AgentService {
 
         if (op.done) {
           states.push(op.response);
+        } else {
+          throw new Error(MultiSigService.CANNOT_GET_KEYSTATE_OF_IDENTIFIER);
         }
       })
     );
