@@ -240,7 +240,10 @@ class IpexCommunicationService extends AgentService {
 
     const credentialMetadatas =
       await this.credentialStorage.getCredentialMetadatasById(
-        creds.map((cred: any) => `metadata:${cred.sad.d}`)
+        creds.map((cred: any) => `metadata:${cred.sad.d}`),
+        {
+          $and: [{ isDeleted: false }, { isArchived: false }],
+        }
       );
     return {
       schema: {
