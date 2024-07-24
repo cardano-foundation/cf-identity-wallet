@@ -438,7 +438,7 @@ class SignifyNotificationService extends AgentService {
               });
               break;
             }
-            case OperationPendingRecordType.SubmitAdmitCredential: {
+            case OperationPendingRecordType.Exchange: {
               const admitExchange = await this.props.signifyClient
                 .exchanges()
                 .get(operation.metadata?.said);

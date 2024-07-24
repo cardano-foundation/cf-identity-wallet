@@ -264,7 +264,7 @@ describe("Ipex communication service of agent", () => {
     );
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
-      recordType: OperationPendingRecordType.SubmitAdmitCredential,
+      recordType: OperationPendingRecordType.Exchange,
     });
     expect(
       Agent.agent.signifyNotifications.addPendingOperationToQueue

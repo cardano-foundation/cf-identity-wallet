@@ -106,7 +106,7 @@ class IpexCommunicationService extends AgentService {
     if (!op.done) {
       const pendingOperation = await this.operationPendingStorage.save({
         id: op.name,
-        recordType: OperationPendingRecordType.SubmitAdmitCredential,
+        recordType: OperationPendingRecordType.Exchange,
       });
       Agent.agent.signifyNotifications.addPendingOperationToQueue(
         pendingOperation
