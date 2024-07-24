@@ -1422,6 +1422,10 @@
       "maxlength": "Must be less than 32 characters long"
     }
   },
+  "offline": {
+    "title": "You’re offline",
+    "description": "You’ve lost connection to the cloud agent. Once the connection has been re-established your wallet will return to normal usage."
+  },
   "shareqr": {
     "divider": "or",
     "more": "More share options"

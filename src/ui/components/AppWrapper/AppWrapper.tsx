@@ -1,52 +1,14 @@
-import { ReactNode, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getAuthentication,
-  getIsInitialized,
-  setAuthentication,
-  setCurrentOperation,
-  setInitialized,
-  setPauseQueueIncomingRequest,
-  setQueueIncomingRequest,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import {
-  setFavouritesIdentifiersCache,
-  setIdentifiersCache,
-  updateIsPending,
-} from "../../../store/reducers/identifiersCache";
-import {
-  setCredsCache,
-  setFavouritesCredsCache,
-  updateOrAddCredsCache,
-} from "../../../store/reducers/credsCache";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
-  setConnectionsCache,
-  setMultisigConnectionsCache,
-  updateOrAddConnectionCache,
-} from "../../../store/reducers/connectionsCache";
-import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
-import { OperationType, ToastMsgType } from "../../globals/types";
-import {
-  KeriaNotification,
+  AcdcStateChangedEvent,
   ConnectionStateChangedEvent,
   ConnectionStatus,
-  AcdcStateChangedEvent,
+  KeriaNotification,
   MiscRecordId,
 } from "../../../core/agent/agent.types";
+import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
-import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
-import "./AppWrapper.scss";
-import { ConfigurationService } from "../../../core/configuration";
-import { useActivityTimer } from "./hooks/useActivityTimer";
-import {
-  getConnectedWallet,
-  setConnectedWallet,
-  setPendingConnection,
-  setWalletConnectionsCache,
-} from "../../../store/reducers/walletConnectionsCache";
 import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
 import {
   PeerConnectSigningEvent,
@@ -54,21 +16,61 @@ import {
   PeerConnectionBrokenEvent,
   PeerDisconnectedEvent,
 } from "../../../core/cardano/walletConnect/peerConnection.types";
-import {
-  setFavouriteIndex,
-  setViewTypeCache,
-} from "../../../store/reducers/identifierViewTypeCache";
-import { CardListViewType } from "../SwitchCardView";
-import { setEnableBiometricsCache } from "../../../store/reducers/biometricsCache";
-import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
-import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
-import { i18n } from "../../../i18n";
-import { Alert } from "../Alert";
+import { ConfigurationService } from "../../../core/configuration";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences/preferencesStorage";
+import { i18n } from "../../../i18n";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { setEnableBiometricsCache } from "../../../store/reducers/biometricsCache";
+import {
+  setConnectionsCache,
+  setMultisigConnectionsCache,
+  updateOrAddConnectionCache,
+} from "../../../store/reducers/connectionsCache";
+import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
+import {
+  setCredsCache,
+  setFavouritesCredsCache,
+  updateOrAddCredsCache,
+} from "../../../store/reducers/credsCache";
+import {
+  setFavouritesIdentifiersCache,
+  setIdentifiersCache,
+  updateIsPending,
+} from "../../../store/reducers/identifiersCache";
+import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
+import {
+  setFavouriteIndex,
+  setViewTypeCache,
+} from "../../../store/reducers/identifierViewTypeCache";
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
+import {
+  getAuthentication,
+  getIsInitialized,
+  getIsOnline,
+  setAuthentication,
+  setCurrentOperation,
+  setInitialized,
+  setIsOnline as setOnlineStatus,
+  setPauseQueueIncomingRequest,
+  setQueueIncomingRequest,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
+import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
+import {
+  getConnectedWallet,
+  setConnectedWallet,
+  setPendingConnection,
+  setWalletConnectionsCache,
+} from "../../../store/reducers/walletConnectionsCache";
+import { OperationType, ToastMsgType } from "../../globals/types";
+import { Alert } from "../Alert";
+import { CardListViewType } from "../SwitchCardView";
+import "./AppWrapper.scss";
+import { useActivityTimer } from "./hooks/useActivityTimer";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -182,13 +184,20 @@ const signifyOperationStateChangeHandler = async (
 };
 
 const AppWrapper = (props: { children: ReactNode }) => {
+  const isOnline = useAppSelector(getIsOnline);
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const connectedWallet = useAppSelector(getConnectedWallet);
   const initAppSuccess = useAppSelector(getIsInitialized);
-  const [isOnline, setIsOnline] = useState(false);
   const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
   useActivityTimer();
+
+  const setIsOnline = useCallback(
+    (value: boolean) => {
+      dispatch(setOnlineStatus(value));
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     initApp();
@@ -459,12 +468,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
 export {
   AppWrapper,
-  connectionStateChangedHandler,
   acdcChangeHandler,
+  connectionStateChangedHandler,
   keriaNotificationsChangeHandler,
-  peerConnectedChangeHandler,
-  peerDisconnectedChangeHandler,
   peerConnectRequestSignChangeHandler,
+  peerConnectedChangeHandler,
   peerConnectionBrokenChangeHandler,
+  peerDisconnectedChangeHandler,
   signifyOperationStateChangeHandler,
 };
