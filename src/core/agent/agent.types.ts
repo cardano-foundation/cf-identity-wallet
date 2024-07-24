@@ -181,6 +181,7 @@ enum NotificationRoute {
   MultiSigRpy = "/multisig/rpy",
   ExnIpexApply = "/exn/ipex/apply",
   ExnIpexAgree = "/exn/ipex/agree",
+  IpexAdmit = "/ipex/admit",
 }
 
 interface BranAndMnemonic {

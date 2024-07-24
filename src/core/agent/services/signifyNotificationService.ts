@@ -439,11 +439,19 @@ class SignifyNotificationService extends AgentService {
               break;
             }
             case OperationPendingRecordType.SubmitAdmitCredential: {
-              const credentialId = pendingOperation?.metadata?.credentialId;
-              if (credentialId) {
-                await Agent.agent.ipexCommunications.waitAndUpdateCredential(
-                  credentialId
-                );
+              const admitExchange = await this.props.signifyClient
+                .exchanges()
+                .get(operation.metadata?.said);
+              if (admitExchange.exn.r === NotificationRoute.IpexAdmit) {
+                const grantExchange = await this.props.signifyClient
+                  .exchanges()
+                  .get(admitExchange.exn.p);
+                const credentialId = grantExchange.exn.e.acdc.d;
+                if (credentialId) {
+                  await Agent.agent.ipexCommunications.waitAndUpdateCredential(
+                    credentialId
+                  );
+                }
               }
               callback({
                 opType: pendingOperation.recordType,

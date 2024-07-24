@@ -264,7 +264,6 @@ describe("Ipex communication service of agent", () => {
     );
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
-      metadata: { credentialId: "id" },
       recordType: OperationPendingRecordType.SubmitAdmitCredential,
     });
     expect(
