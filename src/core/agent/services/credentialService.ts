@@ -156,12 +156,13 @@ class CredentialService extends AgentService {
   private async saveAcdcMetadataRecord(
     credentialId: string,
     dateTime: string,
+    schemaTitle: string,
     connectionId: string
   ): Promise<void> {
     const credentialDetails: CredentialMetadataRecordProps = {
       id: credentialId,
       isArchived: false,
-      credentialType: "",
+      credentialType: schemaTitle,
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
       connectionId,
@@ -186,6 +187,7 @@ class CredentialService extends AgentService {
         await this.saveAcdcMetadataRecord(
           credential.sad.d,
           credential.sad.a.dt,
+          credential.schema.title,
           credential.sad.i
         );
       }

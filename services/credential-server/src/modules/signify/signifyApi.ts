@@ -104,7 +104,7 @@ export class SignifyApi {
 
     let vcdata = {};
     if (
-      schemaId === Agent.IIW_DEMO_SCHEMA_SAID ||
+      schemaId === Agent.RARE_EVO_DEMO_SCHEMA_SAID ||
       schemaId === Agent.QVI_SCHEMA_SAID
     ) {
       vcdata = attribute;

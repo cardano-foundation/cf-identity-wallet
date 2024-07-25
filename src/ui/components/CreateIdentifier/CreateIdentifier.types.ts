@@ -1,6 +1,7 @@
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { ConnectionShortDetails } from "../../pages/Connections/Connections.types";
+import { IdentifierColor } from "./components/IdentifierColorSelector";
 
 interface CreateIdentifierProps {
   modalIsOpen: boolean;
@@ -20,12 +21,14 @@ interface TypeItemProps {
 }
 
 interface IdentifierThemeSelectorProps {
+  color: IdentifierColor;
   selectedTheme: number;
   setSelectedTheme: (value: number) => void;
 }
 
 interface ThemeItemProps {
   index: number;
+  color: number;
 }
 
 interface IdentifierStageStateProps {
@@ -38,6 +41,7 @@ interface IdentifierStageStateProps {
   selectedConnections: ConnectionShortDetails[];
   newIdentifier: IdentifierShortDetails;
   ourIdentifier: string;
+  color: IdentifierColor;
 }
 
 interface IdentifierStageProps {

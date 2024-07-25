@@ -6,7 +6,7 @@ import { CredentialCardTemplateProps } from "./CredentialCardTemplate.types";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
 import { i18n } from "../../../i18n";
 import ACDCLogo from "../../../ui/assets/images/keri-acdc.svg";
-import KeriBackground from "../../../ui/assets/images/keri-0.png";
+import KeriBackground from "../../../ui/assets/images/keri-00.svg";
 import "./CredentialCardTemplate.scss";
 import { formatShortDate } from "../../utils/formatters";
 
