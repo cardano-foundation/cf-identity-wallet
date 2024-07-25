@@ -14,8 +14,8 @@ class Agent {
     "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
   static readonly QVI_SCHEMA_SAID =
     "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
-  static readonly IIW_DEMO_SCHEMA_SAID =
-    "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu";
+  static readonly RARE_EVO_DEMO_SCHEMA_SAID =
+    "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb";
   static readonly LE_SCHEMA_SAID =
     "ENPXp1vQzRF6JwIuS-mp2U8Uf1MoADoP_GqQ62VsDZWY";
 

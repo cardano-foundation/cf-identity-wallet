@@ -41,8 +41,8 @@ class IpexCommunicationService extends AgentService {
     "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
   static readonly SCHEMA_SAID_VLEI =
     "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
-  static readonly SCHEMA_SAID_IIW_DEMO =
-    "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu";
+  static readonly SCHEMA_SAID_RARE_EVO_DEMO =
+    "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;

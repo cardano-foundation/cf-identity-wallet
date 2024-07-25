@@ -1,16 +1,16 @@
 export enum CredentialType {
-  IIW = "IIW Attendee",
+  RARE_EVO = "Rare EVO Attendee",
   GLEIF = "Qualified vLEI Issuer",
   LE = "Legal Entity",
 }
 export const SCHEMA_SAID = {
-  [CredentialType.IIW]: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+  [CredentialType.RARE_EVO]: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
   [CredentialType.GLEIF]: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
   [CredentialType.LE]: "ENPXp1vQzRF6JwIuS-mp2U8Uf1MoADoP_GqQ62VsDZWY",
 };
 
 export const Attributes = {
-  [CredentialType.IIW]: [
+  [CredentialType.RARE_EVO]: [
     {
       key: "attendeeName",
       label: "Name",
@@ -31,7 +31,7 @@ export const Attributes = {
 };
 
 export const credentialTypes = [
-  CredentialType.IIW,
+  CredentialType.RARE_EVO,
   CredentialType.GLEIF,
   CredentialType.LE,
 ];
