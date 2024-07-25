@@ -212,6 +212,7 @@ describe("Ipex communication service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "holder",
     });
+    schemaGetMock.mockResolvedValue({ title: "title" });
     credentialListMock.mockResolvedValue([
       {
         sad: {

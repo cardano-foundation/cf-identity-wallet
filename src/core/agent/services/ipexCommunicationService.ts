@@ -18,10 +18,7 @@ import {
   CredentialMetadataRecordStatus,
 } from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
-import {
-  CredentialShortDetails,
-  CredentialStatus,
-} from "./credentialService.types";
+import { CredentialStatus } from "./credentialService.types";
 import { OnlineOnly, getCredentialShortDetails } from "./utils";
 import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
@@ -79,9 +76,26 @@ class IpexCommunicationService extends AgentService {
     if (!holder) {
       throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     }
+    const schemaSaid = exn.exn.e.acdc.s;
+    const allSchemaSaids = Object.keys(exn.exn.e.acdc?.e || {}).map(
+      // Chained schemas
+      (key) => exn.exn.e.acdc.e?.[key]?.s
+    );
+    allSchemaSaids.push(schemaSaid);
+    await Promise.all(
+      allSchemaSaids.map(
+        async (schemaSaid) =>
+          await Agent.agent.connections.resolveOobi(
+            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`,
+            true
+          )
+      )
+    );
+    const schema = await this.props.signifyClient.schemas().get(schemaSaid);
     await this.saveAcdcMetadataRecord(
       exn.exn.e.acdc.d,
       exn.exn.e.acdc.a.dt,
+      schema.title,
       connectionId
     );
 
@@ -250,37 +264,16 @@ class IpexCommunicationService extends AgentService {
     };
   }
 
-  private async updateAcdcMetadataRecordCompleted(
-    id: string,
-    cred: any
-  ): Promise<CredentialShortDetails> {
-    const metadata = await this.credentialStorage.getCredentialMetadata(
-      `metadata:${id}`
-    );
-    if (!metadata) {
-      throw new Error(
-        IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
-      );
-    }
-
-    metadata.status = CredentialMetadataRecordStatus.CONFIRMED;
-    metadata.credentialType = cred.schema?.title;
-    await this.credentialStorage.updateCredentialMetadata(
-      metadata.id,
-      metadata
-    );
-    return getCredentialShortDetails(metadata);
-  }
-
   private async saveAcdcMetadataRecord(
     credentialId: string,
     dateTime: string,
+    schemaTitle: string,
     connectionId: string
   ): Promise<void> {
     const credentialDetails: CredentialMetadataRecordProps = {
       id: `metadata:${credentialId}`,
       isArchived: false,
-      credentialType: "",
+      credentialType: schemaTitle,
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
       connectionId,
@@ -315,18 +308,26 @@ class IpexCommunicationService extends AgentService {
     return op;
   }
 
-  @OnlineOnly
   async markAcdcComplete(credentialId: string) {
-    const acdc = await this.props.signifyClient.credentials().get(credentialId);
-    const credentialShortDetails = await this.updateAcdcMetadataRecordCompleted(
-      credentialId,
-      acdc
+    const metadata = await this.credentialStorage.getCredentialMetadata(
+      `metadata:${credentialId}`
+    );
+    if (!metadata) {
+      throw new Error(
+        IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+      );
+    }
+
+    metadata.status = CredentialMetadataRecordStatus.CONFIRMED;
+    await this.credentialStorage.updateCredentialMetadata(
+      metadata.id,
+      metadata
     );
     this.props.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
       payload: {
         status: CredentialStatus.CONFIRMED,
-        credential: credentialShortDetails,
+        credential: getCredentialShortDetails(metadata),
       },
     });
   }
