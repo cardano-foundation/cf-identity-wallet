@@ -1,7 +1,7 @@
 import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "cf.identity.wallet",
+  appId: "org.cardanofoundation.idw",
   appName: "ID Wallet",
   webDir: "build",
   bundledWebRuntime: false,

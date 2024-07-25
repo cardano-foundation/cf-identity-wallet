@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "cf.identity.wallet",
+  "applicationId": "org.cardanofoundation.idw",
   "variantName": "release",
   "elements": [
     {
