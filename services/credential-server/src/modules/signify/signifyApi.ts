@@ -332,6 +332,34 @@ export class SignifyApi {
     return this.signifyClient.exchanges().get(said);
   }
 
+  async revokeCredential(issuerName: string, holder: string, credentialId: string) {
+    const result = await this.signifyClient.credentials().revoke(issuerName, credentialId);
+    await waitAndGetDoneOp(
+      this.signifyClient,
+      result.op,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+    const credential = await this.signifyClient.credentials().get(credentialId);
+    const datetime = new Date().toISOString().replace("Z", "000+00:00");
+    const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
+      senderName: issuerName,
+      recipient: holder,
+      acdc: new Serder(credential.sad),
+      anc: new Serder(credential.anc),
+      iss: new Serder(credential.iss),
+      datetime,
+    });
+    const submitGrantOp = await this.signifyClient
+      .ipex()
+      .submitGrant(issuerName, grant, gsigs, gend, [holder]);
+    await waitAndGetDoneOp(
+      this.signifyClient,
+      submitGrantOp,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+  }
   /**
    * Note - op must be of type any here until Signify cleans up its typing.
    */

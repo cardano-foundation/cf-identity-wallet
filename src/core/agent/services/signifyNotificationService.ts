@@ -166,7 +166,44 @@ class SignifyNotificationService extends AgentService {
     if (notif.r) {
       return;
     }
-
+    if (notif.a.r === NotificationRoute.ExnIpexGrant) {
+      const exchange = await this.props.signifyClient
+        .exchanges()
+        .get(notif.a.d);
+      const existingCredential = await this.props.signifyClient
+        .credentials()
+        .get(exchange.exn.e.acdc.d)
+        .catch(() => undefined);
+      const ourIdentifier = await this.identifierStorage
+        .getIdentifierMetadata(exchange.exn.a.i)
+        .catch((error) => {
+          if (
+            (error as Error).message ===
+            IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
+      if (!ourIdentifier) {
+        await this.markNotification(notif.i);
+        return;
+      }
+      if (existingCredential) {
+        const dt = new Date().toISOString().replace("Z", "000+00:00");
+        const [admit, sigs, aend] = await this.props.signifyClient
+          .ipex()
+          .admit(ourIdentifier.signifyName, "", notif.a.d, dt);
+        await this.props.signifyClient
+          .ipex()
+          .submitAdmit(ourIdentifier.signifyName, admit, sigs, aend, [
+            exchange.exn.i,
+          ]);
+        await this.markNotification(notif.i);
+        return;
+      }
+    }
     if (notif.a.r === NotificationRoute.MultiSigRpy) {
       const multisigNotification = await this.props.signifyClient
         .groups()

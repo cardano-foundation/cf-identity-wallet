@@ -90,6 +90,10 @@ class Agent {
   async contacts() {
     return this.signifyApi.contacts();
   }
+
+  async revokeCredential(credentialId: string, holder: string) {
+    return this.signifyApi.revokeCredential(Agent.HOLDER_AID_NAME, holder, credentialId);
+  }
   async onNotificationKeriStateChanged() {
     // eslint-disable-next-line no-constant-condition
     while (true) {
