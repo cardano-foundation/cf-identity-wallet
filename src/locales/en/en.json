@@ -826,7 +826,8 @@
           "label": "Display name",
           "theme": "Edit theme",
           "confirm": "Confirm changes",
-          "error": "Must be less than 32 characters long"
+          "error": "Must be less than 32 characters long",
+          "color": "Choose card colour"
         }
       },
       "view": {
@@ -1385,6 +1386,9 @@
       "didkey": "did:key",
       "keri": "KERI AID"
     },
+    "color": {
+      "title": "Choose card colour"
+    },
     "aidtype": {
       "title": "AID type",
       "default": {
@@ -1450,7 +1454,9 @@
     "passcodeupdated": "Passcode updated successfully",
     "passwordupdated": "Password updated successfully",
     "passworddisabled": "Password turned off",
-    "passwordcreated": "Password created successfully"
+    "passwordcreated": "Password created successfully",
+    "sharecredsuccess": "Credential shared successfully",
+    "sharecrederror": "Unable to share credential"
   },
   "request": {
     "sign": {

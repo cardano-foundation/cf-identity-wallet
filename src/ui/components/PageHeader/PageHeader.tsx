@@ -8,7 +8,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { arrowBackOutline, closeOutline } from "ionicons/icons";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { PageHeaderProps } from "./PageHeader.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache } from "../../../store/reducers/stateCache";
@@ -18,6 +18,7 @@ import "./PageHeader.scss";
 import { useAppIonRouter, useIonHardwareBackButton } from "../../hooks";
 import { BackEventPriorityType } from "../../globals/types";
 import { combineClassNames } from "../../utils/style";
+import { useSwipeBack } from "../../hooks/swipeBackHook";
 
 const PageHeader = ({
   backButton,
@@ -47,6 +48,8 @@ const PageHeader = ({
   const hasContent =
     hasLeftButton || !!actionButton || !!progressBar || !!title;
 
+  const headerRef = useRef<never | null>(null);
+
   const handleOnBack = useCallback(() => {
     if (onBack) {
       onBack();
@@ -68,10 +71,18 @@ const PageHeader = ({
         ionRouter.push(backPath.pathname, "back", "pop");
       }
     }
-  }, [onBack, beforeBack, backButton, currentPath, stateCache, ionRouter.push]);
+  }, [
+    onBack,
+    beforeBack,
+    backButton,
+    currentPath,
+    stateCache,
+    ionRouter,
+    dispatch,
+  ]);
 
   const handleHardwareBackButtonClick = useCallback(
-    (processNextHandler: () => void) => {
+    (processNextHandler?: () => void) => {
       if (hardwareBackButtonConfig?.handler) {
         hardwareBackButtonConfig?.handler(processNextHandler);
         return;
@@ -84,12 +95,7 @@ const PageHeader = ({
 
       handleOnBack();
     },
-    [
-      hardwareBackButtonConfig?.handler,
-      closeButtonAction,
-      closeButton,
-      handleOnBack,
-    ]
+    [hardwareBackButtonConfig, closeButtonAction, closeButton, handleOnBack]
   );
 
   useIonHardwareBackButton(
@@ -98,6 +104,29 @@ const PageHeader = ({
     hardwareBackButtonConfig?.prevent
   );
 
+  const canStart = useCallback(() => {
+    return !hardwareBackButtonConfig || !hardwareBackButtonConfig.prevent;
+  }, [hardwareBackButtonConfig]);
+
+  const getSwiperEl = useCallback(() => {
+    if (!headerRef.current) return null;
+
+    return (headerRef.current as HTMLElement).closest(
+      ".ion-page"
+    ) as HTMLElement;
+  }, []);
+
+  const onSwipeEnd = useCallback(
+    (shouldComplete: boolean) => {
+      if (shouldComplete) {
+        handleHardwareBackButtonClick();
+      }
+    },
+    [handleHardwareBackButtonClick]
+  );
+
+  useSwipeBack(getSwiperEl, canStart, onSwipeEnd);
+
   const hasAction = backButton || closeButton || actionButton;
 
   return (
@@ -105,6 +134,7 @@ const PageHeader = ({
       className={`ion-no-border page-header ${
         hasContent ? "show-header" : "hide-header"
       }`}
+      ref={headerRef}
     >
       <IonToolbar>
         <IonButtons

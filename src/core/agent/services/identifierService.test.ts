@@ -327,7 +327,7 @@ describe("Single sig service of agent", () => {
     await expect(
       identifierService.createIdentifier({
         displayName,
-        theme: 3,
+        theme: 44,
       })
     ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
   });

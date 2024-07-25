@@ -35,6 +35,8 @@ class MultiSigService extends AgentService {
   static readonly INVALID_THRESHOLD = "Invalid threshold";
   static readonly CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER =
     "Unable to retrieve key states for given multi-sig member";
+  static readonly CANNOT_GET_KEYSTATE_OF_IDENTIFIER =
+    "Unable to query key state of identifier";
   static readonly EXN_MESSAGE_NOT_FOUND =
     "There's no exchange message for the given SAID";
   static readonly MULTI_SIG_NOT_FOUND =
@@ -613,6 +615,48 @@ class MultiSigService extends AgentService {
       op: op,
       icpResult: icp,
     };
+  }
+
+  async membersReadyToRotate(identifierId: string): Promise<string[]> {
+    const metadata = await this.identifierStorage.getIdentifierMetadata(
+      identifierId
+    );
+
+    const multiSig = await this.props.signifyClient
+      .identifiers()
+      .get(metadata.signifyName);
+
+    const members = await this.props.signifyClient
+      .identifiers()
+      .members(metadata?.signifyName);
+
+    const nextSequence = (Number(multiSig.state.s) + 1).toString();
+    const smids = members.signing;
+
+    const states: any[] = [];
+    await Promise.all(
+      smids.map(async (signing: any) => {
+        const op = await this.props.signifyClient
+          .keyStates()
+          .query(signing.aid, nextSequence);
+        await waitAndGetDoneOp(this.props.signifyClient, op);
+
+        if (op.done) {
+          states.push(op.response);
+        } else {
+          throw new Error(MultiSigService.CANNOT_GET_KEYSTATE_OF_IDENTIFIER);
+        }
+      })
+    );
+
+    const rotated: string[] = [];
+    for (const state of states) {
+      if (!multiSig.state.k.includes(state.k[0])) {
+        rotated.push(state.i);
+      }
+    }
+
+    return rotated;
   }
 
   private async joinMultisigRotationKeri(

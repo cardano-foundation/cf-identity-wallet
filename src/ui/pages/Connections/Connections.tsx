@@ -10,7 +10,7 @@ import {
   IonRow,
   IonSearchbar,
 } from "@ionic/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { addOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -36,6 +36,7 @@ import { MoreOptions } from "../../components/ShareQR/MoreOptions";
 import { AlphabeticList } from "./components/AlphabeticList";
 import { AlphabetSelector } from "./components/AlphabetSelector";
 import { SideSlider } from "../../components/SideSlider";
+import { useSwipeBack } from "../../hooks/swipeBackHook";
 
 const Connections = ({
   showConnections,
@@ -56,14 +57,14 @@ const Connections = ({
   );
 
   useEffect(() => {
-    const openConnections = (history.location.state as Record<string, any>)
+    const openConnections = (history.location.state as Record<string, unknown>)
       ?.openConnections;
 
     if (openConnections) {
       setShowConnections(true);
       history.replace(history.location.pathname, {});
     }
-  }, [history.location.state]);
+  }, [history, history.location.state, setShowConnections]);
 
   useEffect(() => {
     setShowPlaceholder(Object.keys(connectionsCache).length === 0);
@@ -142,6 +143,16 @@ const Connections = ({
     }),
     [showConnections]
   );
+
+  const getConnectionsTab = useCallback(() => {
+    return document.getElementById(pageId);
+  }, []);
+
+  const canStart = useCallback(() => {
+    return showConnections;
+  }, [showConnections]);
+
+  useSwipeBack(getConnectionsTab, canStart, () => setShowConnections(false));
 
   return (
     <>

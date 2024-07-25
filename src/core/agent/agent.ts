@@ -119,7 +119,8 @@ class Agent {
         this.agentServicesProps,
         this.identifierStorage,
         this.credentialStorage,
-        this.notificationStorage
+        this.notificationStorage,
+        this.operationPendingStorage
       );
     }
     return this.ipexCommunicationService;

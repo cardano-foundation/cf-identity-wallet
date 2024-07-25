@@ -1,5 +1,23 @@
-import BackgroundKERI0 from "../assets/images/keri-0.png";
-import BackgroundKERI1 from "../assets/images/keri-1.png";
+import BackgroundKERI0 from "../assets/images/keri-00.svg";
+import BackgroundKERI01 from "../assets/images/keri-01.svg";
+import BackgroundKERI02 from "../assets/images/keri-02.svg";
+import BackgroundKERI03 from "../assets/images/keri-03.svg";
+import BackgroundKERI10 from "../assets/images/keri-10.svg";
+import BackgroundKERI11 from "../assets/images/keri-11.svg";
+import BackgroundKERI12 from "../assets/images/keri-12.svg";
+import BackgroundKERI13 from "../assets/images/keri-13.svg";
+import BackgroundKERI20 from "../assets/images/keri-20.svg";
+import BackgroundKERI21 from "../assets/images/keri-21.svg";
+import BackgroundKERI22 from "../assets/images/keri-22.svg";
+import BackgroundKERI23 from "../assets/images/keri-23.svg";
+import BackgroundKERI30 from "../assets/images/keri-30.svg";
+import BackgroundKERI31 from "../assets/images/keri-31.svg";
+import BackgroundKERI32 from "../assets/images/keri-32.svg";
+import BackgroundKERI33 from "../assets/images/keri-33.svg";
+import BackgroundKERI40 from "../assets/images/keri-40.svg";
+import BackgroundKERI41 from "../assets/images/keri-41.svg";
+import BackgroundKERI42 from "../assets/images/keri-42.svg";
+import BackgroundKERI43 from "../assets/images/keri-43.svg";
 
 enum CardType {
   CREDENTIALS = "credentials",
@@ -71,11 +89,31 @@ enum ToastMsgType {
   PASSWORD_UPDATED = "passwordupdated",
   PASSWORD_DISABLED = "passworddisabled",
   PASSWORD_CREATED = "passwordcreated",
+  SHARE_CRED_SUCCESS = "sharecredsuccess",
+  SHARE_CRED_FAIL = "sharecrederror",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {
   0: BackgroundKERI0,
-  1: BackgroundKERI1,
+  1: BackgroundKERI01,
+  2: BackgroundKERI02,
+  3: BackgroundKERI03,
+  10: BackgroundKERI10,
+  11: BackgroundKERI11,
+  12: BackgroundKERI12,
+  13: BackgroundKERI13,
+  20: BackgroundKERI20,
+  21: BackgroundKERI21,
+  22: BackgroundKERI22,
+  23: BackgroundKERI23,
+  30: BackgroundKERI30,
+  31: BackgroundKERI31,
+  32: BackgroundKERI32,
+  33: BackgroundKERI33,
+  40: BackgroundKERI40,
+  41: BackgroundKERI41,
+  42: BackgroundKERI42,
+  43: BackgroundKERI43,
 };
 
 const PASSCODE_MAPPING = {

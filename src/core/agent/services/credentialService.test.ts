@@ -393,6 +393,9 @@ describe("Credential service of agent", () => {
             LEI: "5493001KJTIIGC8Y1R17",
           },
         },
+        schema: {
+          tile: "title1",
+        },
       },
       {
         sad: {
@@ -407,6 +410,9 @@ describe("Credential service of agent", () => {
             dt: "2023-11-29T02:12:35.716000+00:00",
             LEI: "5493001KJTIIGC8Y1R17",
           },
+        },
+        schema: {
+          tile: "title2",
         },
       },
     ]);

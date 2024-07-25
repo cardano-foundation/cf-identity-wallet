@@ -17,7 +17,7 @@ import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { OperationType } from "../../../globals/types";
 import { getMultiSigGroupCache } from "../../../../store/reducers/identifiersCache";
 import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
-import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
+import { getTheme } from "../../../utils/theme";
 
 const IdentifierStage1 = ({
   state,
@@ -113,6 +113,8 @@ const IdentifierStage1 = ({
   };
 
   const handleInitiateMultiSig = () => {
+    const theme = getTheme(resumeMultiSig?.theme || 0);
+
     dispatch(setCurrentOperation(OperationType.IDLE));
     setState((prevState: IdentifierStageProps) => ({
       ...prevState,
@@ -120,6 +122,8 @@ const IdentifierStage1 = ({
       displayNameValue: state.displayNameValue || resumeMultiSig?.displayName,
       ourIdentifier: state.ourIdentifier || resumeMultiSig?.id,
       identifierCreationStage: 2,
+      color: theme.color,
+      selectedTheme: theme.layout,
     }));
   };
 
