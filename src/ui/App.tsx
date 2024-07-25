@@ -31,9 +31,7 @@ import { LockPage } from "./pages/LockPage/LockPage";
 import { LoadingPage } from "./pages/LoadingPage/LoadingPage";
 import { SidePage } from "./pages/SidePage";
 
-setupIonicReact({
-  swipeBackEnabled: false,
-});
+setupIonicReact();
 
 const App = () => {
   const stateCache = useAppSelector(getStateCache);
@@ -54,7 +52,6 @@ const App = () => {
     if (isPreviewMode) {
       setupIonicReact({
         rippleEffect: false,
-        swipeBackEnabled: false,
         mode: "ios",
       });
       document?.querySelector("html")?.classList.add("smartphone-layout");
