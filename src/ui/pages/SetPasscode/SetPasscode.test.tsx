@@ -126,7 +126,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    fireEvent.click(getByTestId("back-button"));
+    fireEvent.click(getByTestId("close-button"));
 
     await waitFor(() =>
       expect(
@@ -217,7 +217,7 @@ describe("SetPasscode Page", () => {
         </Provider>
       </IonReactMemoryRouter>
     );
-    const backButton = getByTestId("back-button");
+    const backButton = getByTestId("close-button");
     fireEvent.click(backButton);
     await waitFor(() =>
       expect(

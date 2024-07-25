@@ -155,6 +155,7 @@ const getNextCreatePasswordRoute = (data: DataProps) => {
 
   return { pathname: RoutePath.GENERATE_SEED_PHRASE };
 };
+
 const updateStoreAfterCreatePassword = (data: DataProps) => {
   const skipped = data.state?.skipped;
   return setAuthentication({

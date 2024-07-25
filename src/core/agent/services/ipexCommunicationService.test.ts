@@ -537,6 +537,8 @@ describe("Ipex communication service of agent", () => {
         id: "d",
         status: "confirmed",
         connectionId: "connectionId",
+        isArchived: false,
+        isDeleted: false,
       },
     ]);
     credentialListMock.mockResolvedValue([

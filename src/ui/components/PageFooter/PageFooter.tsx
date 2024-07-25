@@ -24,11 +24,13 @@ const PageFooter = ({
   deleteButtonText,
   deleteButtonAction,
   deleteButtonDisabled,
+  children,
 }: PageFooterProps) => {
   return (
     <IonToolbar
       className={`page-footer${customClass ? " " + customClass : ""}`}
     >
+      {children}
       <div className="page-footer-content">
         {primaryButtonText && primaryButtonAction && (
           <IonButton

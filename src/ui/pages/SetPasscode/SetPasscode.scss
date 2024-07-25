@@ -7,5 +7,9 @@
     ion-toolbar {
       --background: transparent;
     }
+
+    .close-button-label {
+      min-width: 3.5rem;
+    }
   }
 }

@@ -17,6 +17,7 @@ import {
 import { Agent } from "../agent";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
+import { IonicStorage } from "../../storage/ionicStorage";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -254,8 +255,19 @@ class SignifyNotificationService extends AgentService {
     if (
       Object.values(NotificationRoute).includes(notif.a.r as NotificationRoute)
     ) {
-      const keriaNotif = await this.createNotificationRecord(notif);
-      callback(keriaNotif);
+      try {
+        const keriaNotif = await this.createNotificationRecord(notif);
+        callback(keriaNotif);
+      } catch (error) {
+        if (
+          (error as Error).message ===
+          `${IonicStorage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${notif.i}`
+        ) {
+          return;
+        } else {
+          throw error;
+        }
+      }
     }
 
     return;
@@ -340,7 +352,7 @@ class SignifyNotificationService extends AgentService {
     });
   }
 
-  private markNotification(notiSaid: string) {
+  private async markNotification(notiSaid: string) {
     return this.props.signifyClient.notifications().mark(notiSaid);
   }
 
