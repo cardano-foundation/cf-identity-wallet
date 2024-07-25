@@ -1,6 +1,7 @@
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
+  ExchangeRoute,
   KeriaNotification,
   KeriaNotificationMarker,
   MiscRecordId,
@@ -448,6 +449,23 @@ class SignifyNotificationService extends AgentService {
                 opType: pendingOperation.recordType,
                 oid: recordId,
               });
+              break;
+            }
+            case OperationPendingRecordType.ExchangeReceiveCredential: {
+              const admitExchange = await this.props.signifyClient
+                .exchanges()
+                .get(operation.metadata?.said);
+              if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
+                const grantExchange = await this.props.signifyClient
+                  .exchanges()
+                  .get(admitExchange.exn.p);
+                const credentialId = grantExchange.exn.e.acdc.d;
+                if (credentialId) {
+                  await Agent.agent.ipexCommunications.markAcdcComplete(
+                    credentialId
+                  );
+                }
+              }
               break;
             }
             default:

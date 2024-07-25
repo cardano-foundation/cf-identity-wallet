@@ -183,6 +183,10 @@ enum NotificationRoute {
   ExnIpexAgree = "/exn/ipex/agree",
 }
 
+enum ExchangeRoute {
+  IpexAdmit = "/ipex/admit",
+}
+
 interface BranAndMnemonic {
   bran: string;
   mnemonic: string;
@@ -194,6 +198,7 @@ export {
   ConnectionEventTypes,
   AcdcEventTypes,
   NotificationRoute,
+  ExchangeRoute,
   KeriConnectionType,
   KeriaStatusEventTypes,
 };
