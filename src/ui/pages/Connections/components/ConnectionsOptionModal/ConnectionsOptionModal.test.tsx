@@ -3,17 +3,17 @@ mockIonicReact();
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { store } from "../../../store";
-import { i18n } from "../../../i18n";
-import { ConnectModal } from "./ConnectModal";
-import { RequestType, OperationType } from "../../globals/types";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { store } from "../../../../../store";
+import { i18n } from "../../../../../i18n";
+import { ConnectionsOptionModal } from "./ConnectionsOptionModal";
+import { RequestType, OperationType } from "../../../../globals/types";
+import { setCurrentOperation } from "../../../../../store/reducers/stateCache";
 
 describe("Connection modal", () => {
   test("It renders connection modal", async () => {
     const { getByText } = render(
       <Provider store={store}>
-        <ConnectModal
+        <ConnectionsOptionModal
           type={RequestType.CONNECTION}
           connectModalIsOpen={true}
           setConnectModalIsOpen={jest.fn()}
@@ -36,7 +36,7 @@ describe("Connection modal", () => {
     };
     const { getByTestId } = render(
       <Provider store={storeMocked}>
-        <ConnectModal
+        <ConnectionsOptionModal
           type={RequestType.CONNECTION}
           connectModalIsOpen={true}
           setConnectModalIsOpen={jest.fn()}
@@ -57,7 +57,7 @@ describe("Connection modal", () => {
     const handleProvideQr = jest.fn();
     const { getByTestId } = render(
       <Provider store={store}>
-        <ConnectModal
+        <ConnectionsOptionModal
           type={RequestType.CONNECTION}
           connectModalIsOpen={true}
           setConnectModalIsOpen={jest.fn()}

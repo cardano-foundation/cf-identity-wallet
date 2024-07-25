@@ -22,7 +22,7 @@ import {
   MappedConnections,
 } from "./Connections.types";
 import "./Connections.scss";
-import { ConnectModal } from "../../components/ConnectModal";
+import { ConnectionsOptionModal } from "./components/ConnectionsOptionModal";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { RequestType } from "../../globals/types";
 import { getStateCache } from "../../../store/reducers/stateCache";
@@ -37,6 +37,8 @@ import { AlphabeticList } from "./components/AlphabeticList";
 import { AlphabetSelector } from "./components/AlphabetSelector";
 import { SideSlider } from "../../components/SideSlider";
 import { useSwipeBack } from "../../hooks/swipeBackHook";
+import { IdentifierSelectorModal } from "./components/IdentifierSelectorModal/IdentifierSelectorModal";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 
 const Connections = ({
   showConnections,
@@ -51,6 +53,9 @@ const Connections = ({
     MappedConnections[]
   >([]);
   const [connectModalIsOpen, setConnectModalIsOpen] = useState(false);
+  const [openIdentifierSelector, setOpenIdentifierSelector] = useState(false);
+  const [selectedIdentifier, setSelectedIdentifier] =
+    useState<IdentifierShortDetails | null>(null);
   const [invitationLink, setInvitationLink] = useState<string>();
   const [showPlaceholder, setShowPlaceholder] = useState(
     Object.keys(connectionsCache)?.length === 0
@@ -70,10 +75,8 @@ const Connections = ({
     setShowPlaceholder(Object.keys(connectionsCache).length === 0);
   }, [connectionsCache]);
 
-  async function handleProvideQr() {
-    // TODO: bao-sotatek: define how to provide the QR
-    // setInvitationLink(shortUrl);
-    setConnectModalIsOpen(false);
+  function handleProvideQr() {
+    setOpenIdentifierSelector(true);
   }
 
   const handleConnectModal = () => {
@@ -214,11 +217,16 @@ const Connections = ({
           )}
         </TabLayout>
       </SideSlider>
-      <ConnectModal
+      <ConnectionsOptionModal
         type={RequestType.CONNECTION}
         connectModalIsOpen={connectModalIsOpen}
         setConnectModalIsOpen={setConnectModalIsOpen}
         handleProvideQr={handleProvideQr}
+      />
+      <IdentifierSelectorModal
+        open={openIdentifierSelector}
+        setOpen={setOpenIdentifierSelector}
+        onSubmit={setSelectedIdentifier}
       />
       {invitationLink && (
         <ShareQR
