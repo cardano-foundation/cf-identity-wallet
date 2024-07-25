@@ -1,91 +1,12 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
+import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 import {
   removeCurrentRoute,
-  setAuthentication,
   setCurrentRoute,
 } from "../../store/reducers/stateCache";
-import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 import { DataProps, PayloadProps } from "../nextRoute/nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { KeyStoreKeys, SecureStorage } from "../../core/storage";
-import { Agent } from "../../core/agent/agent";
-import { MiscRecordId } from "../../core/agent/agent.types";
-
-const onboardingRouters = [
-  RoutePath.SSI_AGENT,
-  RoutePath.GENERATE_SEED_PHRASE,
-  RoutePath.VERIFY_RECOVERY_SEED_PHRASE,
-  RoutePath.CREATE_PASSWORD,
-  RoutePath.SET_PASSCODE,
-  RoutePath.ONBOARDING,
-];
-
-const clearStorageAfterBackOnboarding = (nextPath: string, data: DataProps) => {
-  const authState = {
-    ...data.store.stateCache.authentication,
-  };
-
-  const onboardingFlow = [
-    {
-      path: [RoutePath.SSI_AGENT],
-      clearFn: () => {
-        SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
-        authState.seedPhraseIsSet = false;
-      },
-    },
-    {
-      path: [
-        RoutePath.GENERATE_SEED_PHRASE,
-        RoutePath.VERIFY_RECOVERY_SEED_PHRASE,
-      ],
-      clearFn: () => {
-        SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
-        Agent.agent.basicStorage
-          .deleteById(MiscRecordId.APP_PASSWORD_SKIPPED)
-          .catch((error) => {
-            // TODO: handle error
-          });
-        authState.passwordIsSet = false;
-        authState.passwordIsSkipped = false;
-      },
-    },
-    {
-      path: [RoutePath.CREATE_PASSWORD],
-      clearFn: () => {
-        SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
-        authState.passcodeIsSet = false;
-      },
-    },
-    {
-      path: [RoutePath.SET_PASSCODE],
-      clearFn: () => {
-        Agent.agent.basicStorage
-          .deleteById(MiscRecordId.APP_RECOVERY_WALLET)
-          .catch((error) => {
-            // TODO: handle error
-          });
-        authState.recoveryWalletProgress = false;
-      },
-    },
-    {
-      path: [RoutePath.ONBOARDING],
-    },
-  ];
-
-  for (const item of onboardingFlow) {
-    if (item.path.includes(nextPath as RoutePath)) {
-      break;
-    }
-
-    item.clearFn?.();
-  }
-
-  return () =>
-    setAuthentication({
-      ...authState,
-    });
-};
 
 const getBackRoute = (
   currentPath: string,
@@ -96,14 +17,6 @@ const getBackRoute = (
 } => {
   const { updateRedux } = backRoute[currentPath];
   const backPathUrl = backPath(data);
-
-  if (onboardingRouters.includes(backPathUrl.pathname as RoutePath)) {
-    const clearReduxState = clearStorageAfterBackOnboarding(
-      backPathUrl.pathname,
-      data
-    );
-    updateRedux.push(clearReduxState);
-  }
 
   return {
     backPath: backPathUrl,
@@ -124,6 +37,21 @@ const updateStoreSetCurrentRoute = (data: DataProps) => {
   return setCurrentRoute({ path });
 };
 
+const getDefaultPath = (data: DataProps) => {
+  if (data.store.stateCache.authentication.ssiAgentIsSet) {
+    return TabsRoutePath.IDENTIFIERS;
+  }
+
+  if (
+    data.store.stateCache.authentication.passwordIsSet ||
+    data.store.stateCache.authentication.passwordIsSkipped
+  ) {
+    return RoutePath.GENERATE_SEED_PHRASE;
+  }
+
+  return RoutePath.ONBOARDING;
+};
+
 const getPreviousRoute = (data: DataProps): { pathname: string } => {
   const routes = data.store.stateCache.routes;
   const prevPath = calcPreviousRoute(routes);
@@ -135,9 +63,7 @@ const getPreviousRoute = (data: DataProps): { pathname: string } => {
   } else if (prevPath) {
     path = prevPath.path;
   } else {
-    path = data.store.stateCache.authentication.ssiAgentIsSet
-      ? TabsRoutePath.IDENTIFIERS
-      : RoutePath.ONBOARDING;
+    path = getDefaultPath(data);
   }
 
   if (path === RoutePath.VERIFY_SEED_PHRASE) {
@@ -200,9 +126,9 @@ const backRoute: Record<string, any> = {
 };
 
 export {
-  getBackRoute,
+  backPath,
   calcPreviousRoute,
+  getBackRoute,
   getPreviousRoute,
   updateStoreSetCurrentRoute,
-  backPath,
 };

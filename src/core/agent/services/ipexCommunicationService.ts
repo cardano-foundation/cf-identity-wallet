@@ -91,7 +91,6 @@ class IpexCommunicationService extends AgentService {
     if (!holder) {
       throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     }
-
     const chainedSchemaSaids = Object.keys(exn.exn.e.acdc?.e || {}).map(
       (key) => exn.exn.e.acdc.e?.[key]?.s
     );
@@ -112,7 +111,8 @@ class IpexCommunicationService extends AgentService {
       credentialId,
       cred
     );
-    await this.notificationStorage.deleteById(id);
+
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
     this.props.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
       payload: {
@@ -140,7 +140,9 @@ class IpexCommunicationService extends AgentService {
     await this.props.signifyClient
       .ipex()
       .submitOffer(holderSignifyName, offer, sigs, end, [msg.exn.i]);
-    await this.notificationStorage.deleteById(notification.id);
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      notification.id
+    );
   }
 
   @OnlineOnly
@@ -238,7 +240,10 @@ class IpexCommunicationService extends AgentService {
 
     const credentialMetadatas =
       await this.credentialStorage.getCredentialMetadatasById(
-        creds.map((cred: any) => `metadata:${cred.sad.d}`)
+        creds.map((cred: any) => `metadata:${cred.sad.d}`),
+        {
+          $and: [{ isDeleted: false }, { isArchived: false }],
+        }
       );
     return {
       schema: {

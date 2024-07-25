@@ -9,6 +9,7 @@ import {
 import { Notification } from "./credentialService.types";
 import {
   BasicRecord,
+  ConnectionStorage,
   IdentifierStorage,
   NotificationStorage,
   OperationPendingStorage,
@@ -16,6 +17,7 @@ import {
 import { Agent } from "../agent";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
+import { IonicStorage } from "../../storage/ionicStorage";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -25,6 +27,7 @@ class SignifyNotificationService extends AgentService {
   protected readonly notificationStorage!: NotificationStorage;
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
+  protected readonly connectionStorage: ConnectionStorage;
 
   protected pendingOperations: OperationPendingRecord[] = [];
   private loggedIn = true;
@@ -33,12 +36,14 @@ class SignifyNotificationService extends AgentService {
     agentServiceProps: AgentServicesProps,
     notificationStorage: NotificationStorage,
     identifierStorage: IdentifierStorage,
-    operationPendingStorage: OperationPendingStorage
+    operationPendingStorage: OperationPendingStorage,
+    connectionStorage: ConnectionStorage
   ) {
     super(agentServiceProps);
     this.notificationStorage = notificationStorage;
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
+    this.connectionStorage = connectionStorage;
   }
 
   async onNotificationStateChanged(
@@ -151,6 +156,7 @@ class SignifyNotificationService extends AgentService {
   }
 
   async deleteNotificationRecordById(id: string): Promise<void> {
+    await this.markNotification(id);
     await this.notificationStorage.deleteById(id);
   }
 
@@ -158,6 +164,10 @@ class SignifyNotificationService extends AgentService {
     notif: Notification,
     callback: (event: KeriaNotification) => void
   ) {
+    if (notif.r) {
+      return;
+    }
+
     if (notif.a.r === NotificationRoute.MultiSigRpy) {
       const multisigNotification = await this.props.signifyClient
         .groups()
@@ -180,26 +190,28 @@ class SignifyNotificationService extends AgentService {
         await this.markNotification(notif.i);
         return;
       }
-      const multisigIdentifier =
-        await this.identifierStorage.getIdentifierMetadata(multisigId);
+      const multisigIdentifier = await this.identifierStorage
+        .getIdentifierMetadata(multisigId)
+        .catch((error) => {
+          if (
+            error.message ===
+            IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
       if (!multisigIdentifier) {
         await this.markNotification(notif.i);
         return;
       }
       const rpyRoute = multisigNotification[0].exn.e.rpy.r;
-      if (
-        rpyRoute === "/end/role/add" &&
-        multisigIdentifier.authorizedEids?.includes(
-          multisigNotification[0].exn.e.rpy.a.eid
-        )
-      ) {
-        await this.markNotification(notif.i);
-        return;
-      } else if (rpyRoute === "/end/role/add") {
-        await this.markNotification(notif.i);
+      if (rpyRoute === "/end/role/add") {
         await Agent.agent.multiSigs.joinAuthorization(
           multisigNotification[0].exn
         );
+        await this.markNotification(notif.i);
         return;
       }
     }
@@ -239,18 +251,25 @@ class SignifyNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return;
     }
+
     if (
-      Object.values(NotificationRoute).includes(
-        notif.a.r as NotificationRoute
-      ) &&
-      !notif.r
+      Object.values(NotificationRoute).includes(notif.a.r as NotificationRoute)
     ) {
-      const keriaNotif = await this.createNotificationRecord(notif);
-      callback(keriaNotif);
-      await this.markNotification(notif.i);
-    } else if (!notif.r) {
-      this.markNotification(notif.i);
+      try {
+        const keriaNotif = await this.createNotificationRecord(notif);
+        callback(keriaNotif);
+      } catch (error) {
+        if (
+          (error as Error).message ===
+          `${IonicStorage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${notif.i}`
+        ) {
+          return;
+        } else {
+          throw error;
+        }
+      }
     }
+
     return;
   }
 
@@ -333,7 +352,7 @@ class SignifyNotificationService extends AgentService {
     });
   }
 
-  private markNotification(notiSaid: string) {
+  private async markNotification(notiSaid: string) {
     return this.props.signifyClient.notifications().mark(notiSaid);
   }
 
@@ -417,7 +436,20 @@ class SignifyNotificationService extends AgentService {
               });
               break;
             }
-
+            case OperationPendingRecordType.Oobi: {
+              const connectionRecord = await this.connectionStorage.findById(
+                (operation.response as any).i
+              );
+              if (connectionRecord) {
+                connectionRecord.pending = false;
+                await this.connectionStorage.update(connectionRecord);
+              }
+              callback({
+                opType: pendingOperation.recordType,
+                oid: recordId,
+              });
+              break;
+            }
             default:
               break;
             }

@@ -72,7 +72,7 @@ const CreatePassword = ({
         <PageHeader
           currentPath={isModal ? undefined : RoutePath.CREATE_PASSWORD}
           progressBar={!isModal}
-          progressBarValue={0.5}
+          progressBarValue={0.4}
           progressBarBuffer={1}
           closeButton={isModal}
           closeButtonAction={handleCancel}
