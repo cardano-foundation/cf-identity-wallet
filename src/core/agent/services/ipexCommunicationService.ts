@@ -315,31 +315,12 @@ class IpexCommunicationService extends AgentService {
     return op;
   }
 
-  private async getCredentialBySaid(
-    sad: string
-  ): Promise<{ acdc?: any; error?: unknown }> {
-    try {
-      const results = await this.props.signifyClient.credentials().list({
-        filter: {
-          "-d": { $eq: sad },
-        },
-      });
-      return {
-        acdc: results[0],
-      };
-    } catch (error) {
-      return {
-        error,
-      };
-    }
-  }
-
   @OnlineOnly
   async markAcdcComplete(credentialId: string) {
-    const cred = await this.getCredentialBySaid(credentialId);
+    const acdc = await this.props.signifyClient.credentials().get(credentialId);
     const credentialShortDetails = await this.updateAcdcMetadataRecordCompleted(
       credentialId,
-      cred
+      acdc
     );
     this.props.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
