@@ -17,6 +17,7 @@ import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierF
 import { OperationType, ToastMsgType } from "../../../globals/types";
 import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { IdentifierStage1 } from "./IdentifierStage1";
+import { IdentifierColor } from "./IdentifierColorSelector";
 
 setupIonicReact();
 mockIonicReact();
@@ -99,6 +100,7 @@ describe("Identifier Stage 1", () => {
         groupCreated: true,
       },
     },
+    color: IdentifierColor.Green,
   };
 
   const dispatchMock = jest.fn();
@@ -152,10 +154,12 @@ describe("Identifier Stage 1", () => {
     });
 
     expect(innerSetState).toBeCalledWith({
+      color: IdentifierColor.Green,
       scannedConections: [connectionsFix[3]],
       displayNameValue: stage1State.displayNameValue,
       ourIdentifier: stage1State.ourIdentifier,
       identifierCreationStage: 2,
+      selectedTheme: 0,
     });
   });
 
@@ -184,6 +188,7 @@ describe("Identifier Stage 1", () => {
           groupCreated: true,
         },
       },
+      color: IdentifierColor.Green,
     };
 
     const dispatchMock = jest.fn();
@@ -365,6 +370,7 @@ describe("Identifier Stage 1", () => {
           groupCreated: true,
         },
       },
+      color: IdentifierColor.Green,
     };
 
     const dispatchMock = jest.fn();

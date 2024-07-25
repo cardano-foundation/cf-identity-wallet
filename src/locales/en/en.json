@@ -824,7 +824,8 @@
           "label": "Display name",
           "theme": "Edit theme",
           "confirm": "Confirm changes",
-          "error": "Must be less than 32 characters long"
+          "error": "Must be less than 32 characters long",
+          "color": "Choose card colour"
         }
       },
       "view": {
@@ -1367,6 +1368,9 @@
       "title": "Identifier type",
       "didkey": "did:key",
       "keri": "KERI AID"
+    },
+    "color": {
+      "title": "Choose card colour"
     },
     "aidtype": {
       "title": "AID type",
