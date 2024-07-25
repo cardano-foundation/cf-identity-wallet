@@ -14,6 +14,7 @@ const groupGetRequestMock = jest.fn();
 const oobiResolveMock = jest.fn();
 const queryKeyStateMock = jest.fn();
 const markNotificationMock = jest.fn();
+let getCredentialMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -61,10 +62,23 @@ const signifyClient = jest.mocked({
     submitAdmit: jest.fn(),
   }),
   credentials: () => ({
+    get: getCredentialMock,
     list: jest.fn(),
   }),
   exchanges: () => ({
-    get: jest.fn().mockResolvedValue({ exn: { i: "connection-id" } }),
+    get: jest.fn().mockResolvedValue({
+      exn: {
+        i: "connection-id",
+        a: {
+          i: "i",
+        },
+        e: {
+          acdc: {
+            d: "d",
+          },
+        },
+      },
+    }),
     send: jest.fn(),
   }),
   agent: {
@@ -180,6 +194,8 @@ describe("Signify notification service of agent", () => {
         },
       },
     ];
+    getCredentialMock = jest.fn().mockRejectedValue(new Error());
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
