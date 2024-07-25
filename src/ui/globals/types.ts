@@ -18,6 +18,26 @@ import BackgroundKERI40 from "../assets/images/keri-40.svg";
 import BackgroundKERI41 from "../assets/images/keri-41.svg";
 import BackgroundKERI42 from "../assets/images/keri-42.svg";
 import BackgroundKERI43 from "../assets/images/keri-43.svg";
+import ThemeCardKERI0 from "../assets/images/keri-mini-00.svg";
+import ThemeCardKERI01 from "../assets/images/keri-mini-01.svg";
+import ThemeCardKERI02 from "../assets/images/keri-mini-02.svg";
+import ThemeCardKERI03 from "../assets/images/keri-mini-03.svg";
+import ThemeCardKERI10 from "../assets/images/keri-mini-10.svg";
+import ThemeCardKERI11 from "../assets/images/keri-mini-11.svg";
+import ThemeCardKERI12 from "../assets/images/keri-mini-12.svg";
+import ThemeCardKERI13 from "../assets/images/keri-mini-13.svg";
+import ThemeCardKERI20 from "../assets/images/keri-mini-20.svg";
+import ThemeCardKERI21 from "../assets/images/keri-mini-21.svg";
+import ThemeCardKERI22 from "../assets/images/keri-mini-22.svg";
+import ThemeCardKERI23 from "../assets/images/keri-mini-23.svg";
+import ThemeCardKERI30 from "../assets/images/keri-mini-30.svg";
+import ThemeCardKERI31 from "../assets/images/keri-mini-31.svg";
+import ThemeCardKERI32 from "../assets/images/keri-mini-32.svg";
+import ThemeCardKERI33 from "../assets/images/keri-mini-33.svg";
+import ThemeCardKERI40 from "../assets/images/keri-mini-40.svg";
+import ThemeCardKERI41 from "../assets/images/keri-mini-41.svg";
+import ThemeCardKERI42 from "../assets/images/keri-mini-42.svg";
+import ThemeCardKERI43 from "../assets/images/keri-mini-43.svg";
 
 enum CardType {
   CREDENTIALS = "credentials",
@@ -88,6 +108,29 @@ enum ToastMsgType {
   PASSCODE_UPDATED = "passcodeupdated",
 }
 
+const IDENTIFIER_THEME_CARD_MAPPING: Record<number, unknown> = {
+  0: ThemeCardKERI0,
+  1: ThemeCardKERI01,
+  2: ThemeCardKERI02,
+  3: ThemeCardKERI03,
+  10: ThemeCardKERI10,
+  11: ThemeCardKERI11,
+  12: ThemeCardKERI12,
+  13: ThemeCardKERI13,
+  20: ThemeCardKERI20,
+  21: ThemeCardKERI21,
+  22: ThemeCardKERI22,
+  23: ThemeCardKERI23,
+  30: ThemeCardKERI30,
+  31: ThemeCardKERI31,
+  32: ThemeCardKERI32,
+  33: ThemeCardKERI33,
+  40: ThemeCardKERI40,
+  41: ThemeCardKERI41,
+  42: ThemeCardKERI42,
+  43: ThemeCardKERI43,
+};
+
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {
   0: BackgroundKERI0,
   1: BackgroundKERI01,
@@ -143,5 +186,6 @@ export {
   RequestType,
   BackEventPriorityType,
   IDENTIFIER_BG_MAPPING,
+  IDENTIFIER_THEME_CARD_MAPPING,
   PASSCODE_MAPPING,
 };

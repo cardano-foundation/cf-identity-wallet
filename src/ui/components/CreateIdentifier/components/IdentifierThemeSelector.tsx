@@ -5,7 +5,7 @@ import {
   ThemeItemProps,
 } from "../CreateIdentifier.types";
 import "./IdentifierThemeSelector.scss";
-import { IDENTIFIER_BG_MAPPING } from "../../../globals/types";
+import { IDENTIFIER_THEME_CARD_MAPPING } from "../../../globals/types";
 
 const IdentifierThemeSelector = ({
   color,
@@ -46,7 +46,7 @@ const IdentifierThemeSelector = ({
           className="theme-input"
           style={{
             backgroundImage: `url(${
-              IDENTIFIER_BG_MAPPING[Number(`${color}${index}`)]
+              IDENTIFIER_THEME_CARD_MAPPING[Number(`${color}${index}`)]
             })`,
             backgroundSize: "cover",
           }}
