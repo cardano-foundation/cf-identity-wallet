@@ -85,6 +85,7 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
           }
         }
       } else {
+        await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, "");
         await Agent.agent.basicStorage.createOrUpdateBasicRecord(
           new BasicRecord({
             id: MiscRecordId.APP_PASSWORD_SKIPPED,
