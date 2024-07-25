@@ -1,10 +1,4 @@
-import {
-  act,
-  fireEvent,
-  getByTestId,
-  render,
-  waitFor,
-} from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter } from "react-router-dom";
@@ -207,6 +201,73 @@ describe("Wallet connect: empty history", () => {
       },
       identifiersCache: {
         identifiers: [],
+      },
+      biometricsCache: {
+        enabled: false,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText } = render(
+      <MemoryRouter>
+        <Provider store={storeMocked}>
+          <ConnectWallet />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+            .missingidentifieralert.message
+        )
+      ).toBeVisible();
+    });
+  });
+
+  test("Connect wallet modal: alert identifier missing when create new connect if we only have multi-sig identifiers", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+      },
+      identifiersCache: {
+        identifiers: [
+          {
+            displayName: "ms",
+            id: "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ6L",
+            signifyName: "52e200ea-5cbc-4632-a8bb-59cb586caad7",
+            createdAtUTC: "2024-07-25T13:33:20.323Z",
+            theme: 0,
+            isPending: false,
+            multisigManageAid: "EBze49sDYvxxtq5eFbX2TKbK7g4SPS7DJVdoTRIyybxN",
+          },
+        ],
       },
       biometricsCache: {
         enabled: false,

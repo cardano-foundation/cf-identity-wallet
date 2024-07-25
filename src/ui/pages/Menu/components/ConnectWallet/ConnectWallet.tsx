@@ -4,7 +4,6 @@ import {
   useEffect,
   useImperativeHandle,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { useHistory } from "react-router-dom";
@@ -53,7 +52,9 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
 
     const toastMsg = useAppSelector(getToastMsg);
     const pendingConnection = useAppSelector(getPendingConnection);
-    const identifierCache = useAppSelector(getIdentifiersCache);
+    const identifierCache = useAppSelector(getIdentifiersCache).filter(
+      (identifier) => !identifier.multisigManageAid
+    );
     const connections = useAppSelector(getWalletConnectionsCache);
     const connectedWallet = useAppSelector(getConnectedWallet);
     const currentOperation = useAppSelector(getCurrentOperation);
