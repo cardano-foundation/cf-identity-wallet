@@ -27,7 +27,10 @@ const ConnectionsOptionModal = ({
     {
       icon: qrCodeOutline,
       label: i18n.t("connectmodal.provide"),
-      onClick: handleProvideQr,
+      onClick: () => {
+        setConnectModalIsOpen(false);
+        handleProvideQr();
+      },
       testId: "add-connection-modal-provide-qr-code",
     },
   ];

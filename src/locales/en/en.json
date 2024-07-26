@@ -1294,6 +1294,14 @@
       "description": "Create a new operations password so you can access additional wallet features."
     }
   },
+  "shareconnection": {
+    "title": "Share connection",
+    "subtitle": "Show this QR code to the person you want to connect with, or click the 'More share options' link",
+    "done": "Done",
+    "divider": "or",
+    "copykey": "Copy connection",
+    "more": "More share options"
+  },
   "shareidentifier": {
     "title": "Share connection",
     "subtitle": "To share, either scan the QR code or select from the provided options below",

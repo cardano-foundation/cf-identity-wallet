@@ -10,35 +10,34 @@ import {
   IonRow,
   IonSearchbar,
 } from "@ionic/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { addOutline } from "ionicons/icons";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { TabLayout } from "../../components/layout/TabLayout";
-import { CardsPlaceholder } from "../../components/CardsPlaceholder";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
+import { getStateCache } from "../../../store/reducers/stateCache";
+import { updateReduxState } from "../../../store/utils";
+import { CardsPlaceholder } from "../../components/CardsPlaceholder";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { SideSlider } from "../../components/SideSlider";
+import { RequestType } from "../../globals/types";
+import { useSwipeBack } from "../../hooks/swipeBackHook";
+import { AlphabeticList } from "./components/AlphabeticList";
+import { AlphabetSelector } from "./components/AlphabetSelector";
+import { ConnectionsOptionModal } from "./components/ConnectionsOptionModal";
+import { IdentifierSelectorModal } from "./components/IdentifierSelectorModal/IdentifierSelectorModal";
+import { ShareConnection } from "./components/ShareConnection";
+import "./Connections.scss";
 import {
   ConnectionsComponentProps,
   ConnectionShortDetails,
   MappedConnections,
 } from "./Connections.types";
-import "./Connections.scss";
-import { ConnectionsOptionModal } from "./components/ConnectionsOptionModal";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { RequestType } from "../../globals/types";
-import { getStateCache } from "../../../store/reducers/stateCache";
-import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { getNextRoute } from "../../../routes/nextRoute";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
-import { updateReduxState } from "../../../store/utils";
-import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
-import { ShareQR } from "../../components/ShareQR/ShareQR";
-import { MoreOptions } from "../../components/ShareQR/MoreOptions";
-import { AlphabeticList } from "./components/AlphabeticList";
-import { AlphabetSelector } from "./components/AlphabetSelector";
-import { SideSlider } from "../../components/SideSlider";
-import { useSwipeBack } from "../../hooks/swipeBackHook";
-import { IdentifierSelectorModal } from "./components/IdentifierSelectorModal/IdentifierSelectorModal";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 
 const Connections = ({
   showConnections,
@@ -56,7 +55,6 @@ const Connections = ({
   const [openIdentifierSelector, setOpenIdentifierSelector] = useState(false);
   const [selectedIdentifier, setSelectedIdentifier] =
     useState<IdentifierShortDetails | null>(null);
-  const [invitationLink, setInvitationLink] = useState<string>();
   const [showPlaceholder, setShowPlaceholder] = useState(
     Object.keys(connectionsCache)?.length === 0
   );
@@ -228,30 +226,11 @@ const Connections = ({
         setOpen={setOpenIdentifierSelector}
         onSubmit={setSelectedIdentifier}
       />
-      {invitationLink && (
-        <ShareQR
-          isOpen={!!invitationLink}
-          setIsOpen={() => setInvitationLink(undefined)}
-          header={{
-            title: i18n.t("connectmodal.connect"),
-            titlePosition: "center",
-          }}
-          content={{
-            QRData: invitationLink,
-            copyBlock: [{ content: invitationLink }],
-          }}
-          moreComponent={
-            <MoreOptions
-              onClick={() => setInvitationLink(undefined)}
-              text={invitationLink}
-            />
-          }
-          modalOptions={{
-            initialBreakpoint: 0.75,
-            breakpoints: [0, 0.75],
-          }}
-        />
-      )}
+      <ShareConnection
+        isOpen={!!selectedIdentifier}
+        onClose={() => setSelectedIdentifier(null)}
+        signifyName={selectedIdentifier?.signifyName}
+      />
     </>
   );
 };
