@@ -138,6 +138,10 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       setActionInfo({
         type: ActionType.None,
       });
+      if (connectedWallet) {
+        PeerConnection.peerConnection.disconnectDApp(connectedWallet?.id);
+        dispatch(setConnectedWallet(null));
+      }
       await Agent.agent.peerConnectionMetadataStorage.deletePeerConnectionMetadataRecord(
         data.id
       );
