@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { BackEventPriorityType } from "../../../globals/types";
 
 interface TabLayoutProps {
   pageId?: string;
@@ -16,6 +17,11 @@ interface TabLayoutProps {
   actionButtonLabel?: string;
   children?: ReactNode;
   placeholder?: ReactNode;
+  hardwareBackButtonConfig?: {
+    prevent: boolean;
+    priority?: BackEventPriorityType;
+    handler?: (processNextHandler: () => void) => void;
+  };
 }
 
 export type { TabLayoutProps };

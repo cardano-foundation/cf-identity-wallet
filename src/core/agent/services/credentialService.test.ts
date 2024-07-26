@@ -372,9 +372,6 @@ describe("Credential service of agent", () => {
     await expect(
       credentialService.getCredentialDetailsById("not-found-id")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
-    await expect(
-      credentialService.getUnhandledIpexGrantNotifications()
-    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     await expect(credentialService.syncACDCs()).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
     );
@@ -396,6 +393,9 @@ describe("Credential service of agent", () => {
             LEI: "5493001KJTIIGC8Y1R17",
           },
         },
+        schema: {
+          tile: "title1",
+        },
       },
       {
         sad: {
@@ -410,6 +410,9 @@ describe("Credential service of agent", () => {
             dt: "2023-11-29T02:12:35.716000+00:00",
             LEI: "5493001KJTIIGC8Y1R17",
           },
+        },
+        schema: {
+          tile: "title2",
         },
       },
     ]);
@@ -428,45 +431,5 @@ describe("Credential service of agent", () => {
     await expect(
       credentialService.getCredentialDetailsById(id)
     ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_FOUND);
-  });
-
-  test("Should be able to getExnIpexGrantpexGrantNotifications", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const notificationRecord = {
-      _tags: {
-        isDismiss: true,
-        route: NotificationRoute.ExnIpexGrant,
-      },
-      id: "AIeGgKkS23FDK4mxpfodpbWhTydFz2tdM64DER6EdgG-",
-      createdAt: new Date(),
-      a: {
-        r: NotificationRoute.ExnIpexGrant,
-        d: "EF6Nmxz8hs0oVc4loyh2J5Sq9H3Z7apQVqjO6e4chtsp",
-      },
-    };
-    notificationStorage.findAllByQuery = jest
-      .fn()
-      .mockResolvedValue([notificationRecord]);
-    expect(
-      await credentialService.getUnhandledIpexGrantNotifications()
-    ).toStrictEqual([
-      {
-        id: notificationRecord.id,
-        createdAt: notificationRecord.createdAt,
-        a: notificationRecord.a,
-      },
-    ]);
-  });
-
-  test("Should pass the filter throught findAllByQuery when call getUnhandledIpexGrantNotifications", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
-    await credentialService.getUnhandledIpexGrantNotifications({
-      isDismissed: false,
-    });
-    expect(notificationStorage.findAllByQuery).toBeCalledWith({
-      route: NotificationRoute.ExnIpexGrant,
-      isDismissed: false,
-    });
   });
 });

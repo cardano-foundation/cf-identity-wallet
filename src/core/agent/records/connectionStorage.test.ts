@@ -28,6 +28,7 @@ const connectionRecordProps: ConnectionRecordStorageProps = {
   alias: "alias",
   oobi: "oobi",
   tags: {},
+  pending: false,
 };
 
 const connectionRecordA = new ConnectionRecord(connectionRecordProps);

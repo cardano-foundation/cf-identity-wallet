@@ -37,14 +37,17 @@ const WalletConnectStageTwo = ({
 
   const [selectedIdentifier, setSelectedIdentifier] =
     useState<IdentifierShortDetails | null>(null);
-  const displayIdentifiers = identifierCache.map(
-    (identifier, index): CardItem<IdentifierShortDetails> => ({
-      id: index,
-      title: identifier.displayName,
-      image: KeriLogo,
-      data: identifier,
-    })
-  );
+
+  const displayIdentifiers = identifierCache
+    .filter((item) => !item.multisigManageAid && !item.groupMetadata)
+    .map(
+      (identifier): CardItem<IdentifierShortDetails> => ({
+        id: identifier.id,
+        title: identifier.displayName,
+        image: KeriLogo,
+        data: identifier,
+      })
+    );
 
   const classes = combineClassNames("wallet-connect-stage-two", className, {
     show: !!isOpen,
@@ -64,14 +67,23 @@ const WalletConnectStageTwo = ({
           (connection) => connection.id === pendingDAppMeerkat
         );
         if (existingConnection) {
-          existingConnection.selectedAid = selectedIdentifier.id;
-          dispatch(setWalletConnectionsCache([...existingConnections]));
+          const updatedConnections = [];
+          for (const connection of existingConnections) {
+            if (connection.id === existingConnection.id) {
+              updatedConnections.push({
+                ...existingConnection,
+                selectedAid: selectedIdentifier.id,
+              });
+            } else {
+              updatedConnections.push(connection);
+            }
+          }
+          dispatch(setWalletConnectionsCache(updatedConnections));
         } else {
-          // Insert a new connection if needed
           dispatch(
             setWalletConnectionsCache([
-              { id: pendingDAppMeerkat, selectedAid: selectedIdentifier.id },
               ...existingConnections,
+              { id: pendingDAppMeerkat, selectedAid: selectedIdentifier.id },
             ])
           );
         }
@@ -82,6 +94,8 @@ const WalletConnectStageTwo = ({
       }
       onClose();
     } catch (e) {
+      /* eslint-disable no-console */
+      console.error(e);
       dispatch(setToastMsg(ToastMsgType.UNABLE_CONNECT_WALLET));
     }
   };
@@ -101,6 +115,9 @@ const WalletConnectStageTwo = ({
             "menu.tab.items.connectwallet.request.button.back"
           )}`}
           closeButtonAction={onBackClick}
+          hardwareBackButtonConfig={{
+            prevent: !isOpen,
+          }}
         />
       }
     >

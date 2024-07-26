@@ -13,15 +13,21 @@ import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { OperationType } from "../../globals/types";
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import { RoutePath } from "../../../routes";
-import { Agent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/agent.types";
 
 const bootAndConnectMock = jest.fn((...args: any) => Promise.resolve());
+const recoverKeriaAgentMock = jest.fn();
+const basicStorageDeleteMock = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     ...jest.requireActual("../../../core/agent/agent"),
     agent: {
       bootAndConnect: (...args: any) => bootAndConnectMock(...args),
+      recoverKeriaAgent: (...args: any) => recoverKeriaAgentMock(...args),
+      basicStorage: {
+        deleteById: (...args: any) => basicStorageDeleteMock(...args),
+      },
     },
   },
 }));
@@ -67,6 +73,15 @@ jest.mock("../../components/CustomInput", () => ({
   },
 }));
 
+const secureStorageDeleteFunc = jest.fn();
+
+jest.mock("../../../core/storage", () => ({
+  ...jest.requireActual("../../../core/storage"),
+  SecureStorage: {
+    delete: (...args: any) => secureStorageDeleteFunc(...args),
+  },
+}));
+
 describe("SSI agent page", () => {
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
@@ -74,6 +89,14 @@ describe("SSI agent page", () => {
     ssiAgentCache: {
       bootUrl: undefined,
       connectUrl: undefined,
+    },
+    stateCache: {
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+        recoveryWalletProgress: false,
+      },
     },
   };
 
@@ -156,6 +179,14 @@ describe("SSI agent page", () => {
         bootUrl: "11111",
         connectUrl: undefined,
       },
+      stateCache: {
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          recoveryWalletProgress: false,
+        },
+      },
     };
 
     const storeMocked = {
@@ -184,6 +215,14 @@ describe("SSI agent page", () => {
       ssiAgentCache: {
         bootUrl: undefined,
         connectUrl: "11111",
+      },
+      stateCache: {
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          recoveryWalletProgress: false,
+        },
       },
     };
 
@@ -216,6 +255,14 @@ describe("SSI agent page", () => {
         bootUrl: undefined,
         connectUrl: "https://connectUrl.com/",
       },
+      stateCache: {
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          recoveryWalletProgress: false,
+        },
+      },
     };
 
     const storeMocked = {
@@ -246,6 +293,14 @@ describe("SSI agent page", () => {
       ssiAgentCache: {
         bootUrl: "11111",
         connectUrl: "11111",
+      },
+      stateCache: {
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          recoveryWalletProgress: false,
+        },
       },
     };
 
@@ -317,6 +372,103 @@ describe("SSI agent page", () => {
       bootUrl:
         "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org",
       url: "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org",
+    });
+  });
+});
+
+describe("SSI agent page: recovery mode", () => {
+  const mockStore = configureStore();
+  const dispatchMock = jest.fn();
+  const initialState = {
+    ssiAgentCache: {
+      bootUrl: undefined,
+      connectUrl: undefined,
+    },
+    stateCache: {
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+        recoveryWalletProgress: true,
+      },
+    },
+  };
+
+  const storeMocked = {
+    ...mockStore(initialState),
+    dispatch: dispatchMock,
+  };
+
+  test("Renders ssi agent page", () => {
+    const { getByText, getByTestId, queryByTestId } = render(
+      <Provider store={storeMocked}>
+        <CreateSSIAgent />
+      </Provider>
+    );
+
+    expect(getByText(ENG_Trans.ssiagent.title)).toBeVisible();
+    expect(getByText(ENG_Trans.ssiagent.verifydescription)).toBeVisible();
+    expect(getByText(ENG_Trans.ssiagent.button.info)).toBeVisible();
+    expect(getByText(ENG_Trans.ssiagent.button.validate)).toBeVisible();
+    expect(
+      getByText(ENG_Trans.ssiagent.button.validate).getAttribute("disabled")
+    ).toBe("true");
+
+    expect(queryByTestId("boot-url-input")).toBe(null);
+    expect(getByTestId("connect-url-input")).toBeVisible();
+  });
+
+  test("Connect and boot success", async () => {
+    const mockStore = configureStore();
+    const initialState = {
+      stateCache: {
+        authentication: {
+          passcodeIsSet: true,
+          seedPhraseIsSet: true,
+          passwordIsSet: true,
+          passwordIsSkipped: true,
+          loggedIn: false,
+          userName: "",
+          time: 0,
+          ssiAgentIsSet: false,
+          recoveryWalletProgress: true,
+        },
+      },
+      ssiAgentCache: {
+        bootUrl:
+          "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org",
+        connectUrl:
+          "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org",
+      },
+      seedPhraseCache: {
+        seedPhrase: "mock-seed",
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const history = createMemoryHistory();
+    history.push(RoutePath.SSI_AGENT);
+
+    const { getByTestId } = render(
+      <IonReactMemoryRouter history={history}>
+        <Provider store={storeMocked}>
+          <CreateSSIAgent />
+        </Provider>
+      </IonReactMemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-create-ssi-agent"));
+    });
+
+    await waitFor(() => {
+      expect(basicStorageDeleteMock).toBeCalledWith(
+        MiscRecordId.APP_RECOVERY_WALLET
+      );
     });
   });
 });

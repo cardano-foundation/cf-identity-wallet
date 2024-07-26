@@ -1,14 +1,14 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
-import configureStore from "redux-mock-store";
-import { Provider } from "react-redux";
-import { MemoryRouter, Route } from "react-router-dom";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { MemoryRouter, Route } from "react-router-dom";
+import configureStore from "redux-mock-store";
+import { Agent } from "../../../core/agent/agent";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
+import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { CredentialDetails } from "../../pages/CredentialDetails";
-import { Agent } from "../../../core/agent/agent";
 import { VerifyPasscode } from "./VerifyPasscode";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
@@ -49,8 +49,11 @@ const initialStateNoPassword = {
   },
   credsCache: { creds: credsFixAcdc },
   credsArchivedCache: { creds: credsFixAcdc },
-  biometryCache: {
+  biometricsCache: {
     enabled: false,
+  },
+  notificationsCache: {
+    notificationDetailCache: null,
   },
 };
 
@@ -63,59 +66,6 @@ describe("Verify Passcode on Cards Details page", () => {
       ...mockStore(initialStateNoPassword),
       dispatch: dispatchMock,
     };
-  });
-
-  test("It renders verify passcode when clicking on the big button", async () => {
-    jest
-      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
-      .mockResolvedValue(credsFixAcdc[0]);
-    const { findByTestId, getAllByText, getAllByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredentialDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    const archiveButton = await findByTestId(
-      "archive-button-credential-card-details"
-    );
-    act(() => {
-      fireEvent.click(archiveButton);
-    });
-
-    await waitFor(() => {
-      expect(
-        getAllByText(EN_TRANSLATIONS.credentials.details.alert.archive.title)[0]
-      ).toBeVisible();
-    });
-
-    await waitFor(() => {
-      expect(getAllByTestId("verify-passcode")[0]).toHaveAttribute(
-        "is-open",
-        "false"
-      );
-    });
-
-    act(() => {
-      fireEvent.click(
-        getAllByText(
-          EN_TRANSLATIONS.credentials.details.alert.archive.confirm
-        )[0]
-      );
-    });
-
-    await waitForIonicReact();
-
-    await waitFor(() => {
-      expect(getAllByTestId("verify-passcode")[0]).toHaveAttribute(
-        "is-open",
-        "true"
-      );
-    });
   });
 
   test.skip("It asks to verify the passcode when users try to delete the cred using the button in the modal", async () => {
@@ -171,7 +121,7 @@ describe("Verify Passcode on Cards Details page", () => {
 
     const closeFn = jest.fn();
 
-    const { getByTestId, getAllByTestId } = render(
+    const { getByTestId } = render(
       <Provider store={storeMocked}>
         <VerifyPasscode
           isOpen={true}
@@ -183,6 +133,59 @@ describe("Verify Passcode on Cards Details page", () => {
 
     await waitFor(() => {
       expect(getByTestId("close-button-label")).toBeInTheDocument();
+    });
+  });
+
+  test("It renders verify passcode when clicking on the big button", async () => {
+    jest
+      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFixAcdc[0]);
+    const { findByTestId, getAllByText, getAllByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredentialDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    const archiveButton = await findByTestId(
+      "archive-button-credential-card-details"
+    );
+    act(() => {
+      fireEvent.click(archiveButton);
+    });
+
+    await waitFor(() => {
+      expect(
+        getAllByText(EN_TRANSLATIONS.credentials.details.alert.archive.title)[0]
+      ).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(getAllByTestId("verify-passcode")[0]).toHaveAttribute(
+        "is-open",
+        "false"
+      );
+    });
+
+    act(() => {
+      fireEvent.click(
+        getAllByText(
+          EN_TRANSLATIONS.credentials.details.alert.archive.confirm
+        )[0]
+      );
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(getAllByTestId("verify-passcode")[0]).toHaveAttribute(
+        "is-open",
+        "true"
+      );
     });
   });
 });

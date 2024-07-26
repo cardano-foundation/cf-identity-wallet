@@ -1,7 +1,9 @@
+import { useIonViewWillEnter } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { useIonViewWillEnter } from "@ionic/react";
-import { TabLayout } from "../../components/layout/TabLayout";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCurrentOperation,
@@ -9,12 +11,11 @@ import {
   getToastMsg,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../../../routes/paths";
-import { Scanner } from "../../components/Scanner";
-import "./Scan.scss";
-import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { Scanner } from "../../components/Scanner";
+import { OperationType } from "../../globals/types";
+import "./Scan.scss";
 
 const Scan = () => {
   const pageId = "scan-tab";
@@ -38,11 +39,22 @@ const Scan = () => {
           toastMsg: currentToastMsg,
         },
       };
+
       const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.SCAN, data);
       updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+
+      const connectionScan =
+        currentOperation === OperationType.RECEIVE_CONNECTION &&
+        [TabsRoutePath.IDENTIFIERS, TabsRoutePath.CREDENTIALS].includes(
+          nextPath.pathname as TabsRoutePath
+        );
+
       history.push({
         pathname: nextPath.pathname,
-        state: data.state,
+        state: {
+          ...data.state,
+          openConnections: connectionScan,
+        },
       });
       setIsValueCaptured(false);
     }
@@ -53,7 +65,10 @@ const Scan = () => {
       pageId={pageId}
       header={false}
     >
-      <Scanner setIsValueCaptured={setIsValueCaptured} />
+      <Scanner
+        routePath={history.location.pathname}
+        setIsValueCaptured={setIsValueCaptured}
+      />
     </TabLayout>
   );
 };

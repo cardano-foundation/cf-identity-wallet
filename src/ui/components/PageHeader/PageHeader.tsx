@@ -8,13 +8,17 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { arrowBackOutline, closeOutline } from "ionicons/icons";
+import { useCallback, useRef } from "react";
 import { PageHeaderProps } from "./PageHeader.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { getBackRoute } from "../../../routes/backRoute";
 import "./PageHeader.scss";
-import { useAppIonRouter } from "../../hooks";
+import { useAppIonRouter, useIonHardwareBackButton } from "../../hooks";
+import { BackEventPriorityType } from "../../globals/types";
+import { combineClassNames } from "../../utils/style";
+import { useSwipeBack } from "../../hooks/swipeBackHook";
 
 const PageHeader = ({
   backButton,
@@ -35,14 +39,18 @@ const PageHeader = ({
   progressBarBuffer,
   title,
   additionalButtons,
+  hardwareBackButtonConfig,
 }: PageHeaderProps) => {
   const ionRouter = useAppIonRouter();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+  const hasLeftButton = !!(backButton || closeButton);
   const hasContent =
-    !!backButton || !!closeButton || !!actionButton || !!progressBar || !!title;
+    hasLeftButton || !!actionButton || !!progressBar || !!title;
 
-  const handleOnBack = () => {
+  const headerRef = useRef<never | null>(null);
+
+  const handleOnBack = useCallback(() => {
     if (onBack) {
       onBack();
     } else {
@@ -63,7 +71,61 @@ const PageHeader = ({
         ionRouter.push(backPath.pathname, "back", "pop");
       }
     }
-  };
+  }, [
+    onBack,
+    beforeBack,
+    backButton,
+    currentPath,
+    stateCache,
+    ionRouter,
+    dispatch,
+  ]);
+
+  const handleHardwareBackButtonClick = useCallback(
+    (processNextHandler?: () => void) => {
+      if (hardwareBackButtonConfig?.handler) {
+        hardwareBackButtonConfig?.handler(processNextHandler);
+        return;
+      }
+
+      if (closeButton && closeButtonAction) {
+        closeButtonAction();
+        return;
+      }
+
+      handleOnBack();
+    },
+    [hardwareBackButtonConfig, closeButtonAction, closeButton, handleOnBack]
+  );
+
+  useIonHardwareBackButton(
+    hardwareBackButtonConfig?.priority || BackEventPriorityType.Page,
+    handleHardwareBackButtonClick,
+    hardwareBackButtonConfig?.prevent
+  );
+
+  const canStart = useCallback(() => {
+    return !hardwareBackButtonConfig || !hardwareBackButtonConfig.prevent;
+  }, [hardwareBackButtonConfig]);
+
+  const getSwiperEl = useCallback(() => {
+    if (!headerRef.current) return null;
+
+    return (headerRef.current as HTMLElement).closest(
+      ".ion-page"
+    ) as HTMLElement;
+  }, []);
+
+  const onSwipeEnd = useCallback(
+    (shouldComplete: boolean) => {
+      if (shouldComplete) {
+        handleHardwareBackButtonClick();
+      }
+    },
+    [handleHardwareBackButtonClick]
+  );
+
+  useSwipeBack(getSwiperEl, canStart, onSwipeEnd);
 
   const hasAction = backButton || closeButton || actionButton;
 
@@ -72,6 +134,7 @@ const PageHeader = ({
       className={`ion-no-border page-header ${
         hasContent ? "show-header" : "hide-header"
       }`}
+      ref={headerRef}
     >
       <IonToolbar>
         <IonButtons
@@ -136,7 +199,11 @@ const PageHeader = ({
         )}
 
         {progressBar && (
-          <div className="progress-bar-container">
+          <div
+            className={combineClassNames("progress-bar-container", {
+              "has-left": hasLeftButton,
+            })}
+          >
             <IonProgressBar
               value={progressBarValue}
               buffer={progressBarBuffer}

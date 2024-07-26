@@ -182,6 +182,8 @@ describe("Scanner", () => {
       },
     };
 
+    getMultisigLinkedContactsMock.mockReturnValue(connectionsFix);
+
     const storeMocked = {
       ...mockStore(initialState),
       dispatch: dispatchMock,
@@ -214,6 +216,13 @@ describe("Scanner", () => {
         setCurrentOperation(OperationType.MULTI_SIG_INITIATOR_INIT)
       );
       expect(getByTestId("create-identifier-modal")).toBeVisible();
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.NEW_MULTI_SIGN_MEMBER)
+      );
+
+      expect(dispatchMock).not.toBeCalledWith(
+        setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
+      );
     });
   });
 

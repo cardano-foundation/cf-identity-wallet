@@ -31,6 +31,10 @@ enum MiscRecordId {
   APP_IDENTIFIER_VIEW_TYPE = "app-identifier-view-type",
   KERIA_CONNECT_URL = "keria-connect-url",
   KERIA_BOOT_URL = "keria-boot-url",
+  APP_IDENTIFIER_FAVOURITE_INDEX = "identifier-favourite-index",
+  APP_PASSWORD_SKIPPED = "app-password-skipped",
+  APP_RECOVERY_WALLET = "recovery-wallet",
+  LOGIN_METADATA = "login-metadata",
 }
 
 interface ConnectionShortDetails {
@@ -97,6 +101,7 @@ enum KeriaStatusEventTypes {
 interface ConnectionStateChangedEvent extends BaseEventEmitter {
   type: typeof ConnectionEventTypes.ConnectionStateChanged;
   payload: {
+    isMultiSigInvite?: boolean;
     connectionId?: string;
     status: ConnectionStatus;
   };
@@ -122,11 +127,31 @@ interface KeriaStatusChangedEvent extends BaseEventEmitter {
   };
 }
 
+interface NotificationRpy {
+  a: {
+    cid: string;
+    eid: string;
+    role: string;
+  };
+  d: string;
+  dt: string;
+  r: string;
+  t: string;
+  v: string;
+}
+
+interface AuthorizationRequestExn {
+  a: { gid: string };
+  e: { rpy: NotificationRpy; d: string };
+}
+
 interface KeriaNotification {
   id: string;
-  createdAt: Date;
+  createdAt: string;
   a: Record<string, unknown>;
-  multisigId?: string;
+  multisigId?: string | undefined;
+  connectionId: string;
+  read: boolean;
 }
 
 enum KeriConnectionType {
@@ -135,8 +160,12 @@ enum KeriConnectionType {
 }
 
 type OobiScan =
-  | { type: KeriConnectionType.NORMAL }
-  | { type: KeriConnectionType.MULTI_SIG_INITIATOR; groupId: string };
+  | { type: KeriConnectionType.NORMAL; connection: ConnectionShortDetails }
+  | {
+      type: KeriConnectionType.MULTI_SIG_INITIATOR;
+      groupId: string;
+      connection: ConnectionShortDetails;
+    };
 
 interface BaseEventEmitter {
   type: string;
@@ -172,10 +201,16 @@ interface AgentUrls {
 
 enum NotificationRoute {
   ExnIpexGrant = "/exn/ipex/grant",
+  MultiSigExn = "/multisig/exn",
   MultiSigIcp = "/multisig/icp",
   MultiSigRot = "/multisig/rot",
+  MultiSigRpy = "/multisig/rpy",
   ExnIpexApply = "/exn/ipex/apply",
   ExnIpexAgree = "/exn/ipex/agree",
+}
+
+enum ExchangeRoute {
+  IpexAdmit = "/ipex/admit",
 }
 
 interface BranAndMnemonic {
@@ -189,6 +224,7 @@ export {
   ConnectionEventTypes,
   AcdcEventTypes,
   NotificationRoute,
+  ExchangeRoute,
   KeriConnectionType,
   KeriaStatusEventTypes,
 };
@@ -213,4 +249,6 @@ export type {
   BranAndMnemonic,
   IpexMessages,
   IpexMessageDetails,
+  NotificationRpy,
+  AuthorizationRequestExn,
 };

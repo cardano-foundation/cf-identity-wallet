@@ -1,11 +1,10 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
+import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 import {
   removeCurrentRoute,
-  setAuthentication,
   setCurrentRoute,
 } from "../../store/reducers/stateCache";
-import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 import { DataProps, PayloadProps } from "../nextRoute/nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
 
@@ -17,10 +16,11 @@ const getBackRoute = (
   updateRedux: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
   const { updateRedux } = backRoute[currentPath];
+  const backPathUrl = backPath(data);
 
   return {
-    backPath: backPath(data),
-    updateRedux,
+    backPath: backPathUrl,
+    updateRedux: [...updateRedux],
   };
 };
 
@@ -31,15 +31,31 @@ const updateStoreSetCurrentRoute = (data: DataProps) => {
   if (prevPath) {
     path = prevPath.path;
   } else {
-    path = data.store.stateCache.routes[0].path;
+    path = RoutePath.ONBOARDING;
   }
 
   return setCurrentRoute({ path });
 };
+
+const getDefaultPath = (data: DataProps) => {
+  if (data.store.stateCache.authentication.ssiAgentIsSet) {
+    return TabsRoutePath.IDENTIFIERS;
+  }
+
+  if (
+    data.store.stateCache.authentication.passwordIsSet ||
+    data.store.stateCache.authentication.passwordIsSkipped
+  ) {
+    return RoutePath.GENERATE_SEED_PHRASE;
+  }
+
+  return RoutePath.ONBOARDING;
+};
+
 const getPreviousRoute = (data: DataProps): { pathname: string } => {
   const routes = data.store.stateCache.routes;
-
   const prevPath = calcPreviousRoute(routes);
+
   let path;
 
   if (routes.length === 0) {
@@ -47,7 +63,11 @@ const getPreviousRoute = (data: DataProps): { pathname: string } => {
   } else if (prevPath) {
     path = prevPath.path;
   } else {
-    path = routes[0].path;
+    path = getDefaultPath(data);
+  }
+
+  if (path === RoutePath.VERIFY_SEED_PHRASE) {
+    path = RoutePath.GENERATE_SEED_PHRASE;
   }
 
   return { pathname: path };
@@ -79,16 +99,22 @@ const backRoute: Record<string, any> = {
   [RoutePath.VERIFY_SEED_PHRASE]: {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
+  [RoutePath.VERIFY_RECOVERY_SEED_PHRASE]: {
+    updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
+  },
   [RoutePath.SSI_AGENT]: {
-    updateRedux: [],
+    updateRedux: [removeCurrentRoute],
   },
   [RoutePath.SET_PASSCODE]: {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
   [RoutePath.CREATE_PASSWORD]: {
-    updateRedux: [],
+    updateRedux: [removeCurrentRoute],
   },
   [RoutePath.CONNECTION_DETAILS]: {
+    updateRedux: [removeCurrentRoute],
+  },
+  [TabsRoutePath.NOTIFICATION_DETAILS]: {
     updateRedux: [removeCurrentRoute],
   },
   [TabsRoutePath.IDENTIFIER_DETAILS]: {
@@ -100,9 +126,9 @@ const backRoute: Record<string, any> = {
 };
 
 export {
-  getBackRoute,
+  backPath,
   calcPreviousRoute,
+  getBackRoute,
   getPreviousRoute,
   updateStoreSetCurrentRoute,
-  backPath,
 };

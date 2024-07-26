@@ -3,7 +3,15 @@
 @import "@ionic/react/css/ionic-swiper.css";
 
 .onboarding {
-  .responsive-page-content {
-    justify-content: space-evenly;
+  &.responsive-page-layout {
+    .responsive-page-content {
+      justify-content: space-evenly;
+
+      @media screen and (min-width: 250px) and (max-width: 370px) {
+        & > .slides-container {
+          margin-top: 0.75rem;
+        }
+      }
+    }
   }
 }

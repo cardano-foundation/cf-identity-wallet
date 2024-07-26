@@ -1,13 +1,13 @@
 import { IonButton, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
 import { backspaceSharp, fingerPrintSharp } from "ionicons/icons";
+import { useSelector } from "react-redux";
+import { BiometryType } from "@aparajita/capacitor-biometric-auth";
 import { PasscodeModuleProps } from "./PasscodeModule.types";
 import "./PasscodeModule.scss";
 import { PASSCODE_MAPPING } from "../../globals/types";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
-import { useSelector } from "react-redux";
-import { getBiometryCacheCache } from "../../../store/reducers/biometryCache";
+import { getBiometricsCacheCache } from "../../../store/reducers/biometricsCache";
 import faceIdIcon from "../../assets/images/face-id.png";
-import { BiometryType } from "@aparajita/capacitor-biometric-auth";
 
 const PasscodeModule = ({
   error,
@@ -16,7 +16,7 @@ const PasscodeModule = ({
   handleRemove,
   handleBiometricButtonClick,
 }: PasscodeModuleProps) => {
-  const biometryCache = useSelector(getBiometryCacheCache);
+  const biometricsCache = useSelector(getBiometricsCacheCache);
   const { biometricInfo } = useBiometricAuth();
   const numbers = PASSCODE_MAPPING.numbers;
   const labels = PASSCODE_MAPPING.labels;
@@ -75,7 +75,10 @@ const PasscodeModule = ({
         ))}
       </div>
       {error}
-      <IonGrid className="passcode-module-container">
+      <IonGrid
+        className="passcode-module-container"
+        data-testid="passcode-module-container"
+      >
         {rows.map(
           (row, rowIndex) =>
             rowIndex !== 0 && (
@@ -86,7 +89,7 @@ const PasscodeModule = ({
                 {rowIndex === rows.length - 1 && (
                   <IonCol>
                     {handleBiometricButtonClick &&
-                    biometryCache.enabled &&
+                    biometricsCache.enabled &&
                     biometricInfo?.strongBiometryIsAvailable &&
                     biometricInfo?.isAvailable ? (
                         <IonButton

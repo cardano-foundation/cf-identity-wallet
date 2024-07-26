@@ -29,6 +29,9 @@ jest.mock("../../../core/agent/agent", () => ({
       credentials: {
         getCredentialDetailsById: jest.fn(),
       },
+      basicStorage: {
+        deleteById: jest.fn(() => Promise.resolve()),
+      },
     },
   },
 }));
@@ -36,6 +39,7 @@ jest.mock("../../../core/agent/agent", () => ({
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
     get: jest.fn(),
+    remove: jest.fn(),
   },
 }));
 
@@ -60,7 +64,7 @@ const initialStateFull = {
   connectionsCache: {
     connections: connectionsFix,
   },
-  biometryCache: {
+  biometricsCache: {
     enabled: false,
   },
 };
@@ -360,7 +364,7 @@ describe("ConnectionDetails Page", () => {
 
     await waitFor(() => {
       expect(getByTestId("alert-confirm-delete-connection")).toHaveClass(
-        "alert-visible"
+        "custom-alert"
       );
     });
   });

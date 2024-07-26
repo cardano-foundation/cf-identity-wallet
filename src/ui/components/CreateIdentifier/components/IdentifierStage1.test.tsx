@@ -17,6 +17,7 @@ import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierF
 import { OperationType, ToastMsgType } from "../../../globals/types";
 import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { IdentifierStage1 } from "./IdentifierStage1";
+import { IdentifierColor } from "./IdentifierColorSelector";
 
 setupIonicReact();
 mockIonicReact();
@@ -99,6 +100,7 @@ describe("Identifier Stage 1", () => {
         groupCreated: true,
       },
     },
+    color: IdentifierColor.Green,
   };
 
   const dispatchMock = jest.fn();
@@ -152,104 +154,13 @@ describe("Identifier Stage 1", () => {
     });
 
     expect(innerSetState).toBeCalledWith({
+      color: IdentifierColor.Green,
       scannedConections: [connectionsFix[3]],
       displayNameValue: stage1State.displayNameValue,
       ourIdentifier: stage1State.ourIdentifier,
       identifierCreationStage: 2,
+      selectedTheme: 0,
     });
-  });
-
-  test("Has multisign incoming request", async () => {
-    const mockStore = configureStore();
-
-    const initialState = {
-      stateCache: {
-        routes: [TabsRoutePath.IDENTIFIERS],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-          passwordIsSet: false,
-          userName: "Duke",
-        },
-        queueIncomingRequest: {
-          isProcessing: true,
-          queues: [
-            {
-              id: "abc123456",
-              type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-              multisigIcpDetails: {
-                ourIdentifier: {
-                  ...filteredIdentifierFix[0],
-                  groupMetadata: {
-                    groupId: "a2c1ac9e-fbaf-4cfd-83fb-7008d9661898",
-                    groupInitiator: true,
-                    groupCreated: true,
-                  },
-                },
-                sender: connectionsFix[3],
-                otherConnections: [connectionsFix[4], connectionsFix[5]],
-                threshold: 1,
-              },
-            },
-          ],
-          isPaused: false,
-        },
-      },
-      identifiersCache: {
-        identifiers: [],
-        favourites: [],
-        multiSigGroup: {
-          groupId: "b75838e5-98cb-46cf-9233-8bf3beca4cd3",
-          connections: [connectionsFix[3], connectionsFix[4]],
-        },
-      },
-    };
-
-    const storeMocked = {
-      ...mockStore(initialState),
-      dispatch: dispatchMock,
-    };
-
-    const { getByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
-        <Provider store={storeMocked}>
-          <IdentifierStage1
-            state={stage1State}
-            setState={setState}
-            componentId={"create-identifier"}
-            setBlur={setBlur}
-            resetModal={resetModal}
-            resumeMultiSig={{
-              ...stage1State.newIdentifier,
-              groupMetadata: {
-                ...stage1State.newIdentifier.groupMetadata,
-                groupInitiator: false,
-              },
-            }}
-            multiSigGroup={{
-              groupId: "b75838e5-98cb-46cf-9233-8bf3beca4cd3",
-              connections: [connectionsFix[3]],
-            }}
-          />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(resetModal).toBeCalledTimes(1);
-      expect(historyPushMock).toBeCalledWith({
-        pathname: TabsRoutePath.IDENTIFIERS,
-      });
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("share-resume-identifier-scan-button"));
-    });
-
-    expect(dispatchMock).toBeCalledWith(
-      setCurrentOperation(OperationType.MULTI_SIG_RECEIVER_SCAN)
-    );
   });
 
   describe("Initial Identifier", () => {
@@ -277,6 +188,7 @@ describe("Identifier Stage 1", () => {
           groupCreated: true,
         },
       },
+      color: IdentifierColor.Green,
     };
 
     const dispatchMock = jest.fn();
@@ -458,6 +370,7 @@ describe("Identifier Stage 1", () => {
           groupCreated: true,
         },
       },
+      color: IdentifierColor.Green,
     };
 
     const dispatchMock = jest.fn();
@@ -543,12 +456,14 @@ describe("Identifier Stage 1", () => {
         </Provider>
       );
 
-      expect(
-        getByText(EN_TRANSLATIONS.createidentifier.receive.notes.top)
-      ).toBeInTheDocument();
-      expect(
-        getByText(EN_TRANSLATIONS.createidentifier.receive.notes.middle)
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          getByText(EN_TRANSLATIONS.createidentifier.receive.notes.top)
+        ).toBeInTheDocument();
+        expect(
+          getByText(EN_TRANSLATIONS.createidentifier.receive.notes.middle)
+        ).toBeInTheDocument();
+      });
     });
   });
 });

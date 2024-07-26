@@ -1,24 +1,17 @@
-import { useState } from "react";
 import { IonModal } from "@ionic/react";
-import { useHistory } from "react-router-dom";
-import { i18n } from "../../../i18n";
-import { ErrorMessage } from "../ErrorMessage";
-import { PasscodeModule } from "../PasscodeModule";
-import { Alert } from "../Alert";
+import { useEffect, useState } from "react";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getAuthentication,
-  setAuthentication,
-  setCurrentRoute,
-} from "../../../store/reducers/stateCache";
-import { RoutePath } from "../../../routes";
-import { VerifyPasscodeProps } from "./VerifyPasscode.types";
-import "./VerifyPasscode.scss";
-import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
+import { i18n } from "../../../i18n";
+import { Alert } from "../Alert";
+import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
+import { ForgotAuthInfo } from "../ForgotAuthInfo";
+import { ForgotType } from "../ForgotAuthInfo/ForgotAuthInfo.types";
 import { PageFooter } from "../PageFooter";
 import { PageHeader } from "../PageHeader";
-import { useAppIonRouter } from "../../hooks";
+import { PasscodeModule } from "../PasscodeModule";
+import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
+import "./VerifyPasscode.scss";
+import { VerifyPasscodeProps } from "./VerifyPasscode.types";
 
 const VerifyPasscode = ({
   isOpen,
@@ -26,22 +19,13 @@ const VerifyPasscode = ({
   onVerify,
 }: VerifyPasscodeProps) => {
   const componentId = "verify-passcode";
-  const ionRouter = useAppIonRouter();
-  const history = useHistory();
-  const dispatch = useAppDispatch();
-  const authentication = useAppSelector(getAuthentication);
   const [passcode, setPasscode] = useState("");
-  const seedPhrase = localStorage.getItem("seedPhrase");
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
-  const headerText =
-    seedPhrase !== null
-      ? i18n.t("verifypasscode.alert.text.verify")
-      : i18n.t("verifypasscode.alert.text.restart");
-  const confirmButtonText =
-    seedPhrase !== null
-      ? i18n.t("verifypasscode.alert.button.verify")
-      : i18n.t("verifypasscode.alert.button.restart");
+  const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
+
+  const headerText = i18n.t("verifypasscode.alert.text.verify");
+  const confirmButtonText = i18n.t("verifypasscode.alert.button.verify");
   const cancelButtonText = i18n.t("verifypasscode.alert.button.cancel");
 
   const handleClearState = () => {
@@ -75,6 +59,15 @@ const VerifyPasscode = ({
     }
   };
 
+  useEffect(() => {
+    if (passcodeIncorrect) {
+      setTimeout(() => {
+        setPasscodeIncorrect(false);
+        setPasscode("");
+      }, MESSAGE_MILLISECONDS);
+    }
+  }, [passcodeIncorrect]);
+
   const verifyPasscode = async (pass: string) => {
     try {
       const storedPass = (await SecureStorage.get(
@@ -88,21 +81,7 @@ const VerifyPasscode = ({
   };
 
   const resetPasscode = () => {
-    SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {
-      dispatch(
-        setAuthentication({
-          ...authentication,
-          passcodeIsSet: false,
-        })
-      );
-      dispatch(
-        setCurrentRoute({
-          path: RoutePath.SET_PASSCODE,
-        })
-      );
-      ionRouter.push(RoutePath.SET_PASSCODE);
-      handleClearState();
-    });
+    setOpenRecoveryAuth(true);
   };
 
   return (
@@ -162,6 +141,11 @@ const VerifyPasscode = ({
           confirmButtonText={confirmButtonText}
           cancelButtonText={cancelButtonText}
           actionConfirm={resetPasscode}
+        />
+        <ForgotAuthInfo
+          isOpen={openRecoveryAuth}
+          onClose={() => setOpenRecoveryAuth(false)}
+          type={ForgotType.Passcode}
         />
       </ResponsivePageLayout>
     </IonModal>

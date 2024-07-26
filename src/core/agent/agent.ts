@@ -7,6 +7,7 @@ import {
 } from "signify-ts";
 import { entropyToMnemonic, mnemonicToEntropy } from "bip39";
 import {
+  AuthService,
   ConnectionService,
   CredentialService,
   IdentifierService,
@@ -88,6 +89,7 @@ class Agent {
   private connectionService!: ConnectionService;
   private credentialService!: CredentialService;
   private signifyNotificationService!: SignifyNotificationService;
+  private authService!: AuthService;
   static isOnline = false;
 
   get identifiers() {
@@ -120,7 +122,8 @@ class Agent {
         this.identifierStorage,
         this.credentialStorage,
         this.notificationStorage,
-        this.ipexMessageStorage
+        this.ipexMessageStorage,
+        this.operationPendingStorage
       );
     }
     return this.ipexCommunicationService;
@@ -133,7 +136,8 @@ class Agent {
         this.connectionStorage,
         this.connectionNoteStorage,
         this.credentialStorage,
-        this.ipexMessageStorage
+        this.ipexMessageStorage,
+        this.operationPendingStorage
       );
     }
     return this.connectionService;
@@ -164,10 +168,18 @@ class Agent {
         this.agentServicesProps,
         this.notificationStorage,
         this.identifierStorage,
-        this.operationPendingStorage
+        this.operationPendingStorage,
+        this.connectionStorage
       );
     }
     return this.signifyNotificationService;
+  }
+
+  get auth() {
+    if (!this.authService) {
+      this.authService = new AuthService(this.agentServicesProps);
+    }
+    return this.authService;
   }
 
   private constructor() {
@@ -222,14 +234,7 @@ class Agent {
         agentUrls.bootUrl
       );
       try {
-        const bootResponse = await this.signifyClient.boot();
-        const bootResponseBody = await bootResponse.json();
-        if (
-          bootResponse.status !== 202 &&
-          bootResponseBody?.title !== "agent already exists"
-        ) {
-          throw new Error(Agent.KERIA_BOOT_FAILED);
-        }
+        await this.signifyClient.boot();
       } catch (e) {
         /* eslint-disable no-console */
         console.error(e);

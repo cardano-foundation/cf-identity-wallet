@@ -1,4 +1,7 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import {
+  BarcodeScanner,
+  SupportedFormat,
+} from "@capacitor-community/barcode-scanner";
 import {
   IonCol,
   IonGrid,
@@ -7,46 +10,45 @@ import {
   IonSpinner,
   isPlatform,
 } from "@ionic/react";
-import {
-  BarcodeScanner,
-  SupportedFormat,
-} from "@capacitor-community/barcode-scanner";
 import { scanOutline } from "ionicons/icons";
-import "./Scanner.scss";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { Agent } from "../../../core/agent/agent";
+import {
+  ConnectionShortDetails,
+  KeriConnectionType,
+} from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getCurrentOperation,
-  getCurrentRoute,
-  getToastMsg,
-  setCurrentOperation,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../navigation/TabsMenu";
-import { OperationType, ToastMsgType } from "../../globals/types";
-import { Agent } from "../../../core/agent/agent";
-import { ScannerProps } from "./Scanner.types";
-import { KeriConnectionType } from "../../../core/agent/agent.types";
 import {
   getMultiSigGroupCache,
   setMultiSigGroupCache,
 } from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
-import { PageFooter } from "../PageFooter";
-import { CustomInput } from "../CustomInput";
-import { OptionModal } from "../OptionsModal";
-import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
-import { CreateIdentifier } from "../CreateIdentifier";
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
+import {
+  getCurrentOperation,
+  getToastMsg,
+  setCurrentOperation,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
+import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
+import { OperationType, ToastMsgType } from "../../globals/types";
+import { CreateIdentifier } from "../CreateIdentifier";
+import { CustomInput } from "../CustomInput";
+import { TabsRoutePath } from "../navigation/TabsMenu";
+import { OptionModal } from "../OptionsModal";
+import { PageFooter } from "../PageFooter";
+import "./Scanner.scss";
+import { ScannerProps } from "./Scanner.types";
+import { updateOrAddMultisigConnectionCache } from "../../../store/reducers/connectionsCache";
 
 const Scanner = forwardRef(
-  ({ setIsValueCaptured, handleReset }: ScannerProps, ref) => {
+  ({ routePath, setIsValueCaptured, handleReset }: ScannerProps, ref) => {
     const componentId = "scanner";
     const dispatch = useAppDispatch();
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
     const currentOperation = useAppSelector(getCurrentOperation);
     const currentToastMsg = useAppSelector(getToastMsg);
-    const currentRoute = useAppSelector(getCurrentRoute);
     const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
       useState(false);
     const [pasteModalIsOpen, setPasteModalIsOpen] = useState(false);
@@ -117,6 +119,49 @@ const Scanner = forwardRef(
       dispatch(setMultiSigGroupCache(newMultiSigGroup));
     };
 
+    const handleSSIScan = (content: string) => {
+      if (OperationType.SCAN_SSI_BOOT_URL === currentOperation) {
+        dispatch(setBootUrl(content));
+      }
+
+      if (OperationType.SCAN_SSI_CONNECT_URL === currentOperation) {
+        dispatch(setConnectUrl(content));
+      }
+
+      handleReset && handleReset();
+    };
+
+    const handleResolveOobi = async (content: string) => {
+      try {
+        const invitation = await Agent.agent.connections.connectByOobiUrl(
+          content
+        );
+
+        if (invitation.type === KeriConnectionType.NORMAL) {
+          handleReset && handleReset();
+          setIsValueCaptured && setIsValueCaptured(true);
+          if (
+            currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
+            currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
+          ) {
+            const groupId = new URL(content).searchParams.get("groupId");
+            groupId && updateConnections(groupId);
+            dispatch(updateOrAddMultisigConnectionCache(invitation.connection));
+          }
+        }
+
+        if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
+          setGroupId(invitation.groupId);
+          dispatch(updateOrAddMultisigConnectionCache(invitation.connection));
+          setCreateIdentifierModalIsOpen(true);
+          dispatch(setToastMsg(ToastMsgType.NEW_MULTI_SIGN_MEMBER));
+        }
+      } catch (e) {
+        dispatch(setToastMsg(ToastMsgType.SCANNER_ERROR));
+        initScan();
+      }
+    };
+
     const processValue = async (content: string) => {
       stopScan();
       // @TODO - foconnor: instead of setting the optype to idle we should
@@ -135,37 +180,12 @@ const Scanner = forwardRef(
           OperationType.SCAN_SSI_CONNECT_URL,
         ].includes(currentOperation)
       ) {
-        if (OperationType.SCAN_SSI_BOOT_URL === currentOperation) {
-          dispatch(setBootUrl(content));
-        }
-
-        if (OperationType.SCAN_SSI_CONNECT_URL === currentOperation) {
-          dispatch(setConnectUrl(content));
-        }
-
-        handleReset && handleReset();
+        handleSSIScan(content);
         return;
       }
 
       // @TODO - foconnor: when above loading screen in place, handle invalid QR code
-      const invitation = await Agent.agent.connections.connectByOobiUrl(
-        content
-      );
-
-      if (invitation.type === KeriConnectionType.NORMAL) {
-        handleReset && handleReset();
-        setIsValueCaptured && setIsValueCaptured(true);
-        if (
-          currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
-          currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
-        ) {
-          const groupId = new URL(content).searchParams.get("groupId");
-          groupId && updateConnections(groupId);
-        }
-      } else if (invitation.type === KeriConnectionType.MULTI_SIG_INITIATOR) {
-        setGroupId(invitation.groupId);
-        setCreateIdentifierModalIsOpen(true);
-      }
+      handleResolveOobi(content);
     };
 
     const initScan = async () => {
@@ -186,7 +206,7 @@ const Scanner = forwardRef(
 
     useEffect(() => {
       if (
-        ((currentRoute?.path === TabsRoutePath.SCAN ||
+        ((routePath === TabsRoutePath.SCAN ||
           [
             OperationType.SCAN_CONNECTION,
             OperationType.SCAN_WALLET_CONNECTION,
@@ -202,7 +222,7 @@ const Scanner = forwardRef(
       } else {
         stopScan();
       }
-    }, [currentOperation, currentRoute]);
+    }, [currentOperation, currentToastMsg, routePath]);
 
     const handlePrimaryButtonAction = () => {
       stopScan();

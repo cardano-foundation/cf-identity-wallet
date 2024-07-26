@@ -20,7 +20,8 @@ jest.mock("@ionic/react", () => ({
   ),
 }));
 
-jest.mock("@aparajita/capacitor-secure-storage", () => ({
+jest.mock("../../../../../core/storage", () => ({
+  ...jest.requireActual("../../../../../core/storage"),
   SecureStorage: {
     get: (key: string) => {
       return "111111";
@@ -88,7 +89,7 @@ describe("Settings page", () => {
       getByText(EN_TRANSLATIONS.settings.sections.security.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.changepin)
+      getByText(EN_TRANSLATIONS.settings.sections.security.changepin.title)
     ).toBeInTheDocument();
     expect(
       getByText(EN_TRANSLATIONS.settings.sections.security.biometry)
@@ -134,7 +135,7 @@ describe("Settings page", () => {
           passwordIsSet: false,
         },
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };
@@ -223,7 +224,7 @@ describe("Settings page", () => {
           passwordIsSet: false,
         },
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: true,
       },
     };
@@ -278,7 +279,7 @@ describe("Settings page", () => {
           passwordIsSet: false,
         },
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
       },
     };

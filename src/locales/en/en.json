@@ -33,28 +33,29 @@
       }
     }
   },
+  "createpasscodemodule": {
+    "errornomatch": "Passcode didn’t match",
+    "errormatch": "Passcode already in use",
+    "cantremember": "Can't remember?"
+  },
   "setpasscode": {
-    "enterpasscode": {
-      "title": "Create your Passcode",
-      "description": "Create a passcode to secure access to your wallet and to continue the onboarding process",
-      "error": "Passcode does not match"
-    },
-    "reenterpasscode": {
-      "title": "Re-enter your Passcode"
-    },
-    "startover": {
-      "label": "Forgot your passcode?"
-    }
+    "enterpasscode": "Create your Passcode",
+    "description": "Create a passcode to secure your wallet and to continue the onboarding process",
+    "recoverydescription": "Create a passcode to secure your wallet and to continue the recovery process",
+    "reenterpasscode": "Re-enter your Passcode",
+    "cancelbtn": "Cancel",
+    "backbtn": "Back"
   },
   "generateseedphrase": {
     "onboarding": {
-      "title": "Generate seed phrase",
+      "title": "Generate recovery phrase",
       "paragraph": {
         "top": "Think of your secret recovery phrase as a safety net for your identity. If you ever lose your phone or switch to a new wallet, this phrase will help you recover your identity.",
         "bottom": "It's important to keep these words safe and sound! Store them in a secure location, like a password manager, and remember to never share them with anyone."
       },
       "button": {
-        "continue": "Generate"
+        "continue": "Generate",
+        "switch": "Switch to recover a wallet"
       }
     },
     "segment": "{{length}} words",
@@ -564,9 +565,11 @@
   },
   "verifyseedphrase": {
     "onboarding": {
-      "title": "Verify your Seed Phrase",
+      "title": "Verify your recovery phrase",
       "button": {
-        "continue": "Verify"
+        "continue": "Verify",
+        "back": "Back",
+        "clear": "Clear all"
       }
     },
     "paragraph": {
@@ -585,6 +588,50 @@
           "confirm": "Confirm",
           "cancel": "Cancel"
         }
+      },
+      "clear": {
+        "text": "Are you sure you want to clear all the words you have entered so far?",
+        "button": {
+          "confirm": "Clear all",
+          "cancel": "Cancel"
+        }
+      }
+    }
+  },
+  "verifyrecoveryseedphrase": {
+    "title": "Recover wallet",
+    "button": {
+      "continue": "Confirm",
+      "lock": "Try again in 1 minute",
+      "clear": "Clear all",
+      "switch": "Switch to create new wallet"
+    },
+    "paragraph": {
+      "top": "Please verify your recovery phrase to recover your wallet. To start typing click on the first option."
+    },
+    "suggestions": {
+      "title": "Suggestions",
+      "error": "All words must be compatible with the suggestions"
+    },
+    "alert": {
+      "fail": {
+        "text": "Sorry, the recovery phrase you have entered is incorrect!",
+        "button": {
+          "confirm": "Try again"
+        }
+      },
+      "clear": {
+        "text": "Are you sure you want to clear all the words you have entered so far?",
+        "button": {
+          "confirm": "Clear all",
+          "cancel": "Cancel"
+        }
+      },
+      "toomanyattempts": {
+        "text": "Too many failed attempts. Please try again later.",
+        "button": {
+          "confirm": "Ok"
+        }
       }
     }
   },
@@ -593,16 +640,44 @@
       "identifiers": "Identity",
       "creds": "Credentials",
       "scan": "Scan",
-      "notification": "Notification",
+      "notifications": "Notifications",
       "menu": "Menu"
     }
   },
   "custominput": {
     "optional": "(optional)"
   },
+  "switchmodemodal": {
+    "title": "Before you switch",
+    "button": {
+      "back": "Back",
+      "continue": "Continue"
+    },
+    "recovery": {
+      "title": "Switch to recover an existing wallet",
+      "paragraphtop": "You're about to switch to the wallet recovery process. Here's what will happen:",
+      "warning": {
+        "one": "<strong>Passcode & Operations Password:</strong> You'll keep your existing passcode and operations password. If you chose to skip setting an operations password, that preference will remain.",
+        "two": "<strong>Recovery Phrase:</strong> If you've gone beyond the generation of a new recovery phrase, this will be wiped. You'll need to verify the recovery phrase associated with your previous wallet.",
+        "three": "<strong>Connect URL:</strong> You will only need the Connect URL for the SSI agent screen."
+      },
+      "paragraphbot": "When you switch, you'll be able to enter your recovery details to access your existing wallet."
+    },
+    "create": {
+      "title": "Switch to create a new wallet",
+      "paragraphtop": "You're about to switch to the new wallet creation process. Here's what will happen:",
+      "warning": {
+        "one": "<strong>Passcode & Operations Password:</strong> You'll keep your existing passcode and operations password. If you chose to skip setting an operations password, that preference will remain.",
+        "two": "<strong>Recovery Phrase:</strong> You'll need to generate a recovery phrase and copy these words down somewhere safe",
+        "three": "<strong>Boot URL and Connect URL:</strong> You will need both your Boot URL and Connect URL for the SSI agent screen."
+      },
+      "paragraphbot": "When you switch, you'll start the process to create a brand new wallet."
+    },
+    "checkbox": "I have read and understand."
+  },
   "createpassword": {
-    "title": "Create your Password",
-    "description": "You can choose to set an optional password for your Identity Wallet. This password will be required to complete protected operations within the wallet. If you choose to skip and not set a password, you will be asked to provide your passcode to complete protected operations.",
+    "title": "Create password",
+    "description": "Set your operations password so you can access additional wallet features.",
     "input": {
       "first": {
         "title": "Create password",
@@ -622,10 +697,10 @@
       "skip": "Skip"
     },
     "alert": {
-      "text": "You have chosen to skip creating a password. If you change your mind later, you will still be able to create a password.",
+      "text": "Are you sure you want to skip? By doing this, you will be required to use your passcode for any protected operations. You can, of course, set this up later if you prefer.",
       "button": {
-        "confirm": "Continue without a password",
-        "cancel": "Go back and create a password"
+        "confirm": "Yes, skip",
+        "cancel": "Cancel"
       }
     },
     "error": {
@@ -643,6 +718,7 @@
   "ssiagent": {
     "title": "Enter your SSI agent details",
     "description": "To continue, please enter the SSI agent boot and connect URLs (in your email or from your command line).",
+    "verifydescription": "To continue, please enter the SSI agent connect URL (in your email or from your command line).",
     "button": {
       "info": "Get more information",
       "validate": "Validate"
@@ -670,7 +746,7 @@
       "uppercase": "Contains an uppercase letter",
       "lowercase": "Contains a lowercase letter",
       "number": "Contains a number",
-      "symbol": "Contains a symbol !@#$%^&*()"
+      "symbol": "Contains a symbol"
     }
   },
   "identifiers": {
@@ -743,11 +819,13 @@
         "edit": "Edit identifier",
         "share": "Share identifier",
         "delete": "Delete identifier",
+        "rotatekeys": "Rotate keys",
         "inner": {
           "label": "Display name",
           "theme": "Edit theme",
           "confirm": "Confirm changes",
-          "error": "Must be less than 32 characters long"
+          "error": "Must be less than 32 characters long",
+          "color": "Choose card colour"
         }
       },
       "view": {
@@ -755,6 +833,10 @@
         "title": "Identifier JSON",
         "copy": "Copy JSON",
         "save": "Save to Device"
+      },
+      "rotatekeys": {
+        "done": "Done",
+        "description": "Rotating your signing keys boosts security by reducing the risk of key compromise."
       }
     }
   },
@@ -875,9 +957,105 @@
     },
     "pastemeerkatid": "Paste Meerkat ID"
   },
-  "notification": {
+  "notifications": {
     "tab": {
-      "header": "Under development"
+      "header": "Notifications",
+      "chips": {
+        "all": "All",
+        "identifiers": "Identifiers",
+        "credentials": "Credentials"
+      },
+      "sections": {
+        "new": "New",
+        "earlier": {
+          "title": "Earlier",
+          "end": "End of notifications",
+          "buttons": {
+            "showealier": "View previous notifications"
+          }
+        }
+      },
+      "optionmodal": {
+        "title": "Notification options",
+        "done": "Done",
+        "showdetail": "Show details",
+        "markasread": "Mark as read",
+        "markasunread": "Mark as unread",
+        "delete": "Delete notification",
+        "deletealert": {
+          "text": "Deleting this notification cannot be undone. Once deleted you will no longer be able to require any actions required from this notification.",
+          "accept": "Delete",
+          "cancel": "Cancel"
+        }
+      },
+      "labels": {
+        "exnipexgrant": "<strong>{{connection}}</strong> wants to issue you a credential",
+        "multisigicp": "<strong>{{connection}}</strong> is requesting to create a multi-sig identifier with you",
+        "exnipexapply": "<strong>{{connection}}</strong> has requested a credential from you"
+      }
+    },
+    "details": {
+      "buttons": {
+        "close": "Close",
+        "accept": "Accept",
+        "decline": "Decline",
+        "cancel": "Cancel",
+        "back": "Back",
+        "choosecredential": "Choose credential",
+        "providecredential": "Provide credential"
+      },
+      "credential": {
+        "request": {
+          "information": {
+            "title": "Credential request",
+            "requestfrom": "Request from",
+            "requestedcredential": "Requested credential",
+            "informationrequired": "Information required",
+            "alert": {
+              "textdecline": "Are you sure you want to decline this credential request? You won't be able to change your decision later."
+            }
+          },
+          "choosecredential": {
+            "description": "Select the most appropriate {{requestCred}} to provide the required information",
+            "title": "Choose credential"
+          }
+        },
+        "receive": {
+          "title": "Receive credential",
+          "receivefrom": "Receive a credential from",
+          "credentialpending": "Credential pending",
+          "alert": {
+            "textdecline": "Are you sure you want to decline this credential issuance? You won't be able to change your decision later."
+          }
+        }
+      },
+      "identifier": {
+        "title": "Identifier request",
+        "subtitle": "Review this multi-sig identifier request",
+        "requestfrom": "Request from",
+        "othermembers": "Other members",
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "threshold": "Threshold",
+        "alert": {
+          "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later."
+        },
+        "errorpage": {
+          "title": "Please review",
+          "alerttext": "You are missing one or more connections required for this multi-sig request. Please scan all necessary QR codes to proceed.",
+          "instructions": {
+            "title": "Instructions",
+            "detailtext": "In order to continue and complete the multi-sig setup, please follow the instructions below.",
+            "stepone": "Ensure you have scanned all participant's QR codes.",
+            "steptwo": "After scanning, try to open this notification again."
+          },
+          "help": {
+            "title": "Need help?",
+            "detailtext": "If you need assistance, please refer to our Help Center or contact support."
+          },
+          "continuesetup": "Continue setup"
+        }
+      }
     }
   },
   "menu": {
@@ -894,7 +1072,7 @@
           "title": "Connections"
         },
         "connectwallet": {
-          "title": "Connect Wallet",
+          "title": "Cardano connect",
           "cip": "CIP-45",
           "tabheader": "Cardano Connect",
           "connectbtn": "Connect with Cardano",
@@ -967,7 +1145,17 @@
       "security": {
         "title": "Security",
         "biometry": "Biometric authentication",
-        "changepin": "Change PIN",
+        "changepin": {
+          "title": "Change passcode",
+          "createpasscode": "Create new passcode",
+          "reenterpasscode": "Re-enter new passcode",
+          "cancel": "Cancel",
+          "back": "Back",
+          "description": "Create a new passcode to secure your wallet",
+          "cantremember": {
+            "label": "Can't remember?"
+          }
+        },
         "manageoperationspassword": "Manage Operations Password",
         "seedphrase": "Seed Phrase"
       },
@@ -1078,6 +1266,26 @@
       }
     }
   },
+  "forgotauth": {
+    "cancel": "Cancel",
+    "passcode": {
+      "title": "Forgot passcode",
+      "description": "Please verify your seed phrase to reset your passcode. To start typing click on the first option."
+    },
+    "password": {
+      "title": "Forgot password",
+      "description": "Please verify your seed phrase to reset your password. To start typing click on the first option."
+    },
+    "newpasscode": {
+      "title": "New passcode",
+      "description": "Create a new passcode to re-secure your wallet and perform operations",
+      "reenterpasscode": "Re-enter passcode"
+    },
+    "newpassword": {
+      "title": "New password",
+      "description": "Create a new operations password so you can access additional wallet features."
+    }
+  },
   "shareidentifier": {
     "title": "Share connection",
     "subtitle": "To share, either scan the QR code or select from the provided options below",
@@ -1161,6 +1369,9 @@
       "didkey": "did:key",
       "keri": "KERI AID"
     },
+    "color": {
+      "title": "Choose card colour"
+    },
     "aidtype": {
       "title": "AID type",
       "default": {
@@ -1217,7 +1428,15 @@
     "unableconnectwallet": "Unable to connect",
     "peeridsuccess": "Peer ID successful",
     "peeridnotrecognised": "Peer ID not recognised",
-    "setupbiometricsuccess": "Biometrics setup successfully"
+    "setupbiometricsuccess": "Biometrics setup successfully",
+    "rotatekeysuccess": "Keys rotated successfully",
+    "rotatekeyerror": "Unable to rotate keys",
+    "newmultisignmember": "New member added to multi-sig",
+    "multisignidentifiercreated": "Identifier added to \"For multiple signers\"",
+    "delegatedidentifiercreated": "Identifier added to \"For delegates\"",
+    "passcodeupdated": "Passcode updated successfully",
+    "sharecredsuccess": "Credential shared successfully",
+    "sharecrederror": "Unable to share credential"
   },
   "request": {
     "sign": {
@@ -1227,48 +1446,13 @@
         "data": "Data"
       }
     },
-    "connection": {
-      "title": "Connect",
-      "requestconnection": " request from",
-      "alert": {
-        "titleconfirm": "Are you sure about proceeding with your connection to {{initiator}}?",
-        "confirm": "Yes, connect"
-      }
-    },
-    "credential": {
-      "title": "Credential offer",
-      "offercredential": " offer from",
-      "alert": {
-        "titleconfirm": "Are you sure you want to continue with {{initiator}}?",
-        "confirm": "Yes, accept credential"
-      }
-    },
-    "multisig": {
-      "title": "Identifier request",
-      "subtitle": "Review this multi-sig identifier request",
-      "requestfrom": "Request from",
-      "othermembers": "Other members",
-      "pending": "Pending",
-      "accepted": "Accepted",
-      "threshold": "Threshold",
-      "alert": {
-        "textaccept": "Are you sure you want to approve this request? You won't be able to change your decision later.",
-        "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
-        "accept": "Accept",
-        "decline": "Decline",
-        "cancel": "Cancel"
-      }
-    },
     "button": {
-      "connect": "Connect",
       "acceptoffer": "Accept credential",
       "cancel": "Cancel",
-      "ignore": "Ignore",
       "back": "Back",
       "accept": "Accept",
       "decline": "Decline",
-      "addidentifier": "Add identifier",
-      "sign": "Sign", 
+      "sign": "Sign",
       "dontallow": "Don't allow"
     },
     "alert": {

@@ -20,29 +20,34 @@ import {
   ConnectionRecord,
   CredentialStorage,
   ConnectionStorage,
+  OperationPendingStorage,
 } from "../records";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
 import { IpexMessageStorage } from "../records/ipexMessageStorage";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
   protected readonly connectionNoteStorage!: ConnectionNoteStorage;
   protected readonly credentialStorage: CredentialStorage;
   protected readonly ipexMessageStorage: IpexMessageStorage;
+  protected readonly operationPendingStorage: OperationPendingStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     connectionStorage: ConnectionStorage,
     connectionNoteStorage: ConnectionNoteStorage,
     credentialStorage: CredentialStorage,
-    ipexMessageStorage: IpexMessageStorage
+    ipexMessageStorage: IpexMessageStorage,
+    operationPendingStorage: OperationPendingStorage
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
     this.connectionNoteStorage = connectionNoteStorage;
     this.credentialStorage = credentialStorage;
     this.ipexMessageStorage = ipexMessageStorage;
+    this.operationPendingStorage = operationPendingStorage;
   }
 
   static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
@@ -52,6 +57,7 @@ class ConnectionService extends AgentService {
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
+  static readonly CANNOT_GET_OOBI = "No OOBI available from KERIA";
 
   static resolvedOobi: { [key: string]: any } = {};
 
@@ -75,20 +81,33 @@ class ConnectionService extends AgentService {
     this.props.eventService.emit<ConnectionStateChangedEvent>({
       type: ConnectionEventTypes.ConnectionStateChanged,
       payload: {
+        isMultiSigInvite: multiSigInvite,
         connectionId: undefined,
         status: ConnectionStatus.PENDING,
       },
     });
 
-    const operation = await this.resolveOobi(url);
-    const connectionId = operation.response.i;
+    const operation = await this.resolveOobi(url, multiSigInvite);
+    const connectionId =
+      operation.done && operation.response
+        ? operation.response.i
+        : new URL(url).pathname.split("/oobi/").pop()?.split("/")[0];
     const connectionMetadata: any = {
       alias: operation.alias,
       oobi: url,
+      pending: !operation.done,
+    };
+    const groupId = new URL(url).searchParams.get("groupId") ?? "";
+    const connection = {
+      id: connectionId,
+      connectionDate: operation.response.dt,
+      oobi: operation.metadata.oobi,
+      status: ConnectionStatus.CONFIRMED,
+      label: operation.alias,
+      groupId,
     };
 
     if (multiSigInvite) {
-      const groupId = new URL(url).searchParams.get("groupId") ?? "";
       connectionMetadata.groupId = groupId;
       const identifierWithGroupId =
         await Agent.agent.identifiers.getKeriIdentifierByGroupId(groupId);
@@ -97,7 +116,11 @@ class ConnectionService extends AgentService {
       // We let the UI handle it as it requires some metadata from the user like display name.
       if (!identifierWithGroupId) {
         await this.createConnectionMetadata(connectionId, connectionMetadata);
-        return { type: KeriConnectionType.MULTI_SIG_INITIATOR, groupId };
+        return {
+          type: KeriConnectionType.MULTI_SIG_INITIATOR,
+          groupId,
+          connection,
+        };
       }
     }
     await this.createConnectionMetadata(connectionId, connectionMetadata);
@@ -106,12 +129,12 @@ class ConnectionService extends AgentService {
       this.props.eventService.emit<ConnectionStateChangedEvent>({
         type: ConnectionEventTypes.ConnectionStateChanged,
         payload: {
-          connectionId: operation.response.i,
+          connectionId,
           status: ConnectionStatus.CONFIRMED,
         },
       });
     }
-    return { type: KeriConnectionType.NORMAL };
+    return { type: KeriConnectionType.NORMAL, connection };
   }
 
   async getConnections(): Promise<ConnectionShortDetails[]> {
@@ -119,6 +142,18 @@ class ConnectionService extends AgentService {
       groupId: undefined,
     });
     return connections.map((connection) =>
+      this.getConnectionShortDetails(connection)
+    );
+  }
+
+  async getMultisigConnections(): Promise<ConnectionShortDetails[]> {
+    const multisigConnections = await this.connectionStorage.findAllByQuery({
+      $not: {
+        groupId: undefined,
+      },
+    });
+
+    return multisigConnections.map((connection) =>
       this.getConnectionShortDetails(connection)
     );
   }
@@ -173,8 +208,8 @@ class ConnectionService extends AgentService {
 
   @OnlineOnly
   async deleteConnectionById(id: string): Promise<void> {
-    await this.connectionStorage.deleteById(id);
     // await this.signifyApi.deleteContactById(id); @TODO - foconnor: Uncomment when KERIA endpoint fixed
+    await this.connectionStorage.deleteById(id);
     const notes = await this.getConnectNotesByConnectionId(id);
     for (const note of notes) {
       this.connectionNoteStorage.deleteById(note.id);
@@ -225,10 +260,22 @@ class ConnectionService extends AgentService {
     alias?: string,
     groupId?: string
   ): Promise<string> {
-    const result = await this.props.signifyClient
-      .oobis()
-      .get(signifyName, ConnectionService.DEFAULT_ROLE);
+    const result = await this.props.signifyClient.oobis().get(signifyName);
+    if (!result.oobis[0]) {
+      throw new Error(ConnectionService.CANNOT_GET_OOBI);
+    }
     const oobi = new URL(result.oobis[0]);
+    const identifier = await this.props.signifyClient
+      .identifiers()
+      .get(signifyName);
+    //This condition is used for multi-sig oobi
+    if (identifier && identifier.group) {
+      const pathName = oobi.pathname;
+      const agentIndex = pathName.indexOf("/agent/");
+      if (agentIndex !== -1) {
+        oobi.pathname = pathName.substring(0, agentIndex);
+      }
+    }
     if (alias !== undefined) oobi.searchParams.set("name", alias);
     if (groupId !== undefined) oobi.searchParams.set("groupId", groupId);
     return oobi.toString();
@@ -243,6 +290,7 @@ class ConnectionService extends AgentService {
       alias: metadata.alias as string,
       oobi: metadata.oobi as string,
       groupId: metadata.groupId as string,
+      pending: !!metadata.pending,
     });
   }
 
@@ -297,16 +345,34 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async resolveOobi(url: string): Promise<any> {
+  async resolveOobi(url: string, waitForCompletion = false): Promise<any> {
+    const startTime = Date.now();
     if (ConnectionService.resolvedOobi[url]) {
       return ConnectionService.resolvedOobi[url];
     }
     const alias = new URL(url).searchParams.get("name") ?? uuidv4();
-    const operation = await waitAndGetDoneOp(
-      this.props.signifyClient,
-      await this.props.signifyClient.oobis().resolve(url, alias)
-    );
-    if (!operation.done) {
+    let operation;
+    if (waitForCompletion) {
+      operation = await waitAndGetDoneOp(
+        this.props.signifyClient,
+        await this.props.signifyClient.oobis().resolve(url, alias)
+      );
+    } else {
+      operation = await waitAndGetDoneOp(
+        this.props.signifyClient,
+        await this.props.signifyClient.oobis().resolve(url, alias),
+        2000 - (Date.now() - startTime)
+      );
+    }
+    if (!operation.done && !waitForCompletion) {
+      const pendingOperation = await this.operationPendingStorage.save({
+        id: operation.name,
+        recordType: OperationPendingRecordType.Oobi,
+      });
+      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+        pendingOperation
+      );
+    } else if (!operation.done) {
       throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
     }
     const oobi = { ...operation, alias };

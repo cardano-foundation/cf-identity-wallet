@@ -1,0 +1,153 @@
+.notifications-tab {
+  &.tab-layout {
+    padding: 0;
+  }
+
+  .tab-header,
+  .notifications-tab-section-title,
+  .notifications-tab-item {
+    padding-inline: 1.25rem;
+
+    @media screen and (min-width: 250px) and (max-width: 370px) {
+      padding-inline: 0.9rem;
+    }
+  }
+
+  .notifications-tab-chips {
+    margin-top: 0.5rem;
+    display: flex;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    padding-inline: 1.25rem;
+    font-size: 1rem;
+    font-weight: 400;
+
+    .selected {
+      background: var(--ion-color-primary-gradient);
+    }
+
+    @media screen and (min-width: 250px) and (max-width: 370px) {
+      padding-inline: 0.9rem;
+      font-size: 0.8rem;
+    }
+
+    span {
+      min-width: fit-content;
+    }
+  }
+
+  .notifications-tab-content {
+    .show-ealier-btn {
+      --background: rgba(187, 187, 187, 0.5);
+      --border-radius: 0.5rem;
+      color: var(--ion-color-primary);
+      width: calc(100vw - 2.5rem);
+      margin: 0.75rem auto 2.25rem;
+      display: block;
+
+      &::part(native) {
+        border: none;
+      }
+    }
+
+    .end-message {
+      text-align: center;
+      color: rgba(54, 60, 74, 0.5);
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      margin: 1rem 0;
+    }
+
+    .notifications-tab-section {
+      margin-top: 1.5rem;
+
+      .notifications-tab-section-title {
+        margin-bottom: 0.5rem;
+      }
+
+      ion-list {
+        background: transparent;
+      }
+
+      .notifications-tab-item {
+        height: 4.5rem;
+        display: flex;
+        justify-content: space-between;
+        background: var(--ion-color-light);
+
+        &.unread {
+          background: var(
+            --primaryGradientLight,
+            linear-gradient(
+              92deg,
+              rgba(146, 255, 192, 0.15) 28.76%,
+              rgba(0, 165, 230, 0.15) 119.14%
+            )
+          );
+        }
+
+        &::part(native) {
+          padding: 0;
+          min-width: 100%;
+          background: transparent;
+          --inner-padding-end: 0;
+        }
+
+        .notification-logo {
+          position: relative;
+
+          .notification-ref-icon {
+            position: absolute;
+            bottom: 0.115rem;
+            right: 0.7rem;
+            width: 0.85rem;
+            height: 0.85rem;
+            border-radius: 0.625rem;
+            padding: 0.25rem;
+            background-color: var(--ion-color-light-grey);
+          }
+        }
+
+        .notifications-tab-item-logo {
+          border-radius: 3rem;
+          width: 3rem;
+          height: 3rem;
+          margin-right: 1rem;
+        }
+
+        .notifications-tab-item-fallback-logo {
+          background-color: var(--ion-color-primary);
+          display: var(--display-fallback);
+          justify-content: center;
+          align-items: center;
+
+          ion-icon {
+            width: 100%;
+            height: 100%;
+          }
+        }
+
+        ion-label {
+          overflow: hidden;
+          color: var(--ion-color-secondary);
+          text-overflow: ellipsis;
+          font-size: 0.875rem;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 1rem;
+
+          .notifications-tab-item-time {
+            color: rgba(var(--ion-color-secondary-rgb), 0.5);
+            font-size: 0.625rem;
+            font-weight: 500;
+            line-height: 0.75rem;
+          }
+        }
+
+        .notifications-tab-item-ellipsis {
+          align-self: baseline;
+        }
+      }
+    }
+  }
+}

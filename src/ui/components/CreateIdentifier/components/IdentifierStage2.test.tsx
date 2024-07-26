@@ -8,6 +8,7 @@ import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 import { store } from "../../../../store";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { IdentifierStage2 } from "./IdentifierStage2";
+import { IdentifierColor } from "./IdentifierColorSelector";
 
 setupIonicReact();
 mockIonicReact();
@@ -33,6 +34,7 @@ describe("Identifier Stage 2", () => {
       signifyName: "",
       groupMetadata: undefined,
     },
+    color: IdentifierColor.Green,
   };
 
   const dispatchMock = jest.fn();

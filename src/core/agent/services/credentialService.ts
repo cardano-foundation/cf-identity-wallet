@@ -1,8 +1,6 @@
 import {
-  KeriaNotification,
   AcdcStateChangedEvent,
   AcdcEventTypes,
-  NotificationRoute,
   AgentServicesProps,
 } from "../agent.types";
 import { AgentService } from "./agentService";
@@ -155,34 +153,16 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  @OnlineOnly
-  async getUnhandledIpexGrantNotifications(
-    filters: {
-      isDismissed?: boolean;
-    } = {}
-  ): Promise<KeriaNotification[]> {
-    const results = await this.notificationStorage.findAllByQuery({
-      route: NotificationRoute.ExnIpexGrant,
-      ...filters,
-    });
-    return results.map((result) => {
-      return {
-        id: result.id,
-        createdAt: result.createdAt,
-        a: result.a,
-      };
-    });
-  }
-
   private async saveAcdcMetadataRecord(
     credentialId: string,
     dateTime: string,
+    schemaTitle: string,
     connectionId: string
   ): Promise<void> {
     const credentialDetails: CredentialMetadataRecordProps = {
       id: `metadata:${credentialId}`,
       isArchived: false,
-      credentialType: "",
+      credentialType: schemaTitle,
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
       connectionId,
@@ -209,6 +189,7 @@ class CredentialService extends AgentService {
         await this.saveAcdcMetadataRecord(
           credential.sad.d,
           credential.sad.a.dt,
+          credential.schema.title,
           credential.sad.i
         );
       }

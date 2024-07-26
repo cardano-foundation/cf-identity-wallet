@@ -38,6 +38,7 @@ describe("getBackRoute", () => {
           userName: "",
           time: 0,
           ssiAgentIsSet: false,
+          recoveryWalletProgress: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -57,7 +58,8 @@ describe("getBackRoute", () => {
       credsCache: { creds: [], favourites: [] },
       credsArchivedCache: { creds: [] },
       connectionsCache: {
-        connections: [],
+        connections: {},
+        multisigConnections: {},
       },
       walletConnectionsCache: {
         walletConnections: [],
@@ -66,9 +68,13 @@ describe("getBackRoute", () => {
       },
       identifierViewTypeCacheCache: {
         viewType: null,
+        favouriteIndex: 0,
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
+      },
+      notificationsCache: {
+        notifications: [],
       },
     };
   });
@@ -86,7 +92,7 @@ describe("getBackRoute", () => {
     const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
-    expect(result.updateRedux).toEqual([]);
+    expect(result.updateRedux).toHaveLength(0);
   });
 
   test("should return the correct back path when currentPath is /generateseedphrase", () => {
@@ -165,6 +171,7 @@ describe("getPreviousRoute", () => {
           userName: "",
           time: 0,
           ssiAgentIsSet: false,
+          recoveryWalletProgress: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -184,7 +191,8 @@ describe("getPreviousRoute", () => {
       credsCache: { creds: [], favourites: [] },
       credsArchivedCache: { creds: [] },
       connectionsCache: {
-        connections: [],
+        connections: {},
+        multisigConnections: {},
       },
       walletConnectionsCache: {
         walletConnections: [],
@@ -193,9 +201,13 @@ describe("getPreviousRoute", () => {
       },
       identifierViewTypeCacheCache: {
         viewType: null,
+        favouriteIndex: 0,
       },
-      biometryCache: {
+      biometricsCache: {
         enabled: false,
+      },
+      notificationsCache: {
+        notifications: [],
       },
     };
   });

@@ -2,7 +2,6 @@ import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
 import { addOutline, peopleOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Agent } from "../../../core/agent/agent";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -10,27 +9,26 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getFavouritesIdentifiersCache,
   getIdentifiersCache,
-  setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
   setCurrentOperation,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
+import { CardSlider } from "../../components/CardSlider";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
-import { CardsStack } from "../../components/CardsStack";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
-import { TabLayout } from "../../components/layout/TabLayout";
-import { CardType, OperationType } from "../../globals/types";
-import { Connections } from "../Connections";
-import "./Identifiers.scss";
-import { StartAnimationSource } from "./Identifiers.type";
-import { useToggleConnections } from "../../hooks";
 import { ListHeader } from "../../components/ListHeader";
 import {
   CardList as IdentifierCardList,
   SwitchCardView,
 } from "../../components/SwitchCardView";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { CardType, OperationType } from "../../globals/types";
+import { useToggleConnections } from "../../hooks";
+import { Connections } from "../Connections";
+import "./Identifiers.scss";
+import { StartAnimationSource } from "./Identifiers.type";
 
 const CLEAR_STATE_DELAY = 1000;
 interface AdditionalButtonsProps {
@@ -92,7 +90,6 @@ const Identifiers = () => {
   const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
-  const [toggleClick, setToggleClick] = useState(false);
   const [resumeMultiSig, setResumeMultiSig] =
     useState<IdentifierShortDetails | null>(null);
   const [navAnimation, setNavAnimation] =
@@ -116,27 +113,30 @@ const Identifiers = () => {
   }, [currentOperation, history.location.pathname]);
   useEffect(() => {
     setShowPlaceholder(identifiersData.length === 0);
-    setAllIdentifiers(
-      identifiersData
-        .filter((identifier) => !identifier.isPending)
-        .filter((identifier) => !identifier.groupMetadata?.groupId)
-        .filter(
-          (identifier) =>
-            !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-        )
-    );
-    setFavIdentifiers(
-      identifiersData.filter((identifier) =>
-        favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-      )
-    );
-    setPendingIdentifiers(
-      identifiersData.filter((identifier) => identifier.isPending)
-    );
-    setMultiSigIdentifiers(
-      identifiersData.filter((identifier) => identifier.groupMetadata?.groupId)
-    );
-  }, [favouritesIdentifiers, identifiersData, toggleClick]);
+    const tmpPendingIdentifiers = [];
+    const tmpMultisigIdentifiers = [];
+    const tmpFavIdentifiers = [];
+    const tmpAllIdentifiers = [];
+    for (const identifier of identifiersData) {
+      if (favouritesIdentifiers?.some((fav) => fav.id === identifier.id)) {
+        tmpFavIdentifiers.push(identifier);
+        continue;
+      }
+      if (identifier.isPending) {
+        tmpPendingIdentifiers.push(identifier);
+        continue;
+      }
+      if (identifier.groupMetadata?.groupId) {
+        tmpMultisigIdentifiers.push(identifier);
+        continue;
+      }
+      tmpAllIdentifiers.push(identifier);
+    }
+    setAllIdentifiers(tmpAllIdentifiers);
+    setFavIdentifiers(tmpFavIdentifiers);
+    setPendingIdentifiers(tmpPendingIdentifiers);
+    setMultiSigIdentifiers(tmpMultisigIdentifiers);
+  }, [favouritesIdentifiers, identifiersData]);
   const findTimeById = (id: string) => {
     const found = favouritesIdentifiers?.find((item) => item.id === id);
     return found ? found.time : null;
@@ -149,25 +149,6 @@ const Identifiers = () => {
     if (timeB === null) return -1;
     return timeA - timeB;
   });
-  const handlePendingClick = async (identifier: IdentifierShortDetails) => {
-    // @TODO - sdisalvo: This is a temporary fix Patrick initially added to the CardStack
-    // and I moved it here since PendingIdentifiers are never going to show up in the stack.
-    /**The below code only return false if the identifier is a multisig and it is not ready */
-    const checkMultisigComplete =
-      await Agent.agent.multiSigs.checkMultisigComplete(identifier.id);
-    if (!checkMultisigComplete) {
-      return;
-    } else {
-      const updatedIdentifiers = identifiersData.map((item) => {
-        if (item.id === identifier.id && item.isPending) {
-          return { ...item, isPending: false };
-        }
-        return item;
-      });
-      dispatch(setIdentifiersCache(updatedIdentifiers));
-      setToggleClick(!toggleClick);
-    }
-  };
   const handleMultiSigClick = async (identifier: IdentifierShortDetails) => {
     setResumeMultiSig(identifier);
     setCreateIdentifierModalIsOpen(true);
@@ -235,16 +216,11 @@ const Identifiers = () => {
                 ref={favouriteContainerElement}
                 className="identifiers-tab-content-block identifier-favourite-cards"
               >
-                {!!allIdentifiers.length && (
-                  <ListHeader
-                    title={`${i18n.t("identifiers.tab.favourites")}`}
-                  />
-                )}
-                <CardsStack
+                <CardSlider
+                  title={`${i18n.t("identifiers.tab.favourites")}`}
                   name="favs"
-                  cardsType={CardType.IDENTIFIERS}
+                  cardType={CardType.IDENTIFIERS}
                   cardsData={sortedFavIdentifiers}
-                  onShowCardDetails={() => handleShowNavAnimation("favourite")}
                 />
               </div>
             )}
@@ -279,9 +255,6 @@ const Identifiers = () => {
                 <IdentifierCardList
                   cardsData={pendingIdentifiers}
                   cardTypes={CardType.IDENTIFIERS}
-                  onCardClick={async (identifier) =>
-                    handlePendingClick(identifier as IdentifierShortDetails)
-                  }
                   testId="identifiers-list"
                 />
               </div>

@@ -67,7 +67,7 @@ describe("Onboarding Page", () => {
 
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
+        queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode)
       ).toBeVisible()
     );
   });
@@ -90,7 +90,7 @@ describe("Onboarding Page", () => {
     };
     const storeMocked = mockStore(initialState);
 
-    const { getByText, queryByText } = render(
+    const { getByText, queryAllByText } = render(
       <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
         <Provider store={storeMocked}>
           <Route
@@ -112,7 +112,9 @@ describe("Onboarding Page", () => {
     fireEvent.click(buttonContinue);
 
     await waitFor(() => {
-      expect(queryByText(EN_TRANSLATIONS.createpassword.title)).toBeVisible();
+      expect(
+        queryAllByText(EN_TRANSLATIONS.createpassword.title)[0]
+      ).toBeVisible();
     });
   });
 });

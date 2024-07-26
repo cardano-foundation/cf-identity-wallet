@@ -37,7 +37,7 @@ export default {
   },
   testEnvironment: "jsdom",
   testMatch: ["**/src/**/?(*.)+(test).[tj]s?(x)"],
-  testPathIgnorePatterns: ["/node_modules/"],
+  testPathIgnorePatterns: ["/node_modules/", "/credential-server-ui/"],
   transformIgnorePatterns: [
     "node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons|swiper|ssr-window|@aparajita/capacitor-biometric-auth)/)",
   ],

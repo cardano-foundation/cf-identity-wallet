@@ -21,19 +21,11 @@ interface AuthenticationCacheProps {
   passwordIsSet: boolean;
   passwordIsSkipped: boolean;
   ssiAgentIsSet: boolean;
+  recoveryWalletProgress: boolean;
 }
 enum IncomingRequestType {
-  CREDENTIAL_OFFER_RECEIVED = "credential-offer-received",
-  MULTI_SIG_REQUEST_INCOMING = "multi-sig-request-incoming",
   PEER_CONNECT_SIGN = "peer-connect-sign",
 }
-
-type MultiSigRequest = {
-  id: string;
-  event: KeriaNotification;
-  type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING;
-  multisigIcpDetails: MultiSigIcpRequestDetails;
-};
 
 type PeerConnectSigningEventRequest = {
   type: IncomingRequestType.PEER_CONNECT_SIGN;
@@ -41,17 +33,7 @@ type PeerConnectSigningEventRequest = {
   peerConnection: ConnectionData;
 };
 
-type KeriaNotificationRequest = {
-  id: string;
-  type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED;
-  logo: string;
-  label: string;
-};
-
-type IncomingRequestProps =
-  | KeriaNotificationRequest
-  | MultiSigRequest
-  | PeerConnectSigningEventRequest;
+type IncomingRequestProps = PeerConnectSigningEventRequest;
 
 interface QueueProps<T> {
   isPaused: boolean;

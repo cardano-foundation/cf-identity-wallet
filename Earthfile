@@ -1,103 +1,147 @@
 VERSION 0.8
 
-ARG --global DOCKER_IMAGES_TARGETS="keria vlei credential-issuance-server"
+ARG --global DOCKER_IMAGES_TARGETS="idw-keria idw-witness cred-issuance cred-issuance-ui"
 
-ARG --global KERIA_GIT_REPO_URL="https://github.com/WebOfTrust/keria.git"
-ARG --global KERIA_GIT_REF=fb6009a7ceaf39f36bf63651f14fc5a53dc743d4
+ARG --global KERIA_GIT_REPO_URL="https://github.com/cardano-foundation/keria.git"
+ARG --global KERIA_GIT_REF=03a1b13047f91f7f287e0a03d227084835db6616
 
-ARG --global VLEI_GIT_REPO_URL="https://github.com/WebOfTrust/vLEI.git"
-ARG --global VLEI_GIT_REF="ed982313dab86bfada3825857601a10d71ce9631"
+ARG --global KERI_DOCKER_IMAGE_REPO=weboftrust/keri
+ARG --global KERI_DOCKER_IMAGE_TAG=1.1.6
 
-ARG --global ARIES_MEDIATOR_GIT_REPO_URL="https://github.com/hyperledger/aries-mediator-service.git"
-ARG --global ARIES_MEDIATOR_GIT_REF="765914d969ea73854eae401795dbe85c64f8a115"
-
+ARG --global DOCKER_IMAGE_PREFIX="cf"
 ARG --global DOCKER_IMAGES_EXTRA_TAGS=""
-ARG --global DOCKER_REGISTRIES=""
+ARG --global DOCKER_REGISTRIES="hub.docker.com"
 ARG --global HUB_DOCKER_COM_USER=cardanofoundation
+ARG --global PUSH=false
 
 all:
   LOCALLY
   FOR image_target IN $DOCKER_IMAGES_TARGETS
-    BUILD +$image_target
+    BUILD +$image_target --PUSH=$PUSH
   END
 
 docker-publish:
+  BUILD +all --PUSH=$PUSH
+
+TEMPLATED_DOCKER_TAG_N_PUSH:
+  FUNCTION
   ARG EARTHLY_GIT_SHORT_HASH
-  WAIT
-    BUILD +all
-  END
+  ARG PUSH # we use this as --push is not supported in LOCALLY blocks
+  ARG DOCKER_IMAGE_NAME
+  ARG DOCKER_IMAGES_EXTRA_TAGS
   LOCALLY
   FOR registry IN $DOCKER_REGISTRIES
-    FOR image_target IN $DOCKER_IMAGES_TARGETS
-      IF [ ! -z "$DOCKER_IMAGES_EXTRA_TAGS" ]
-        FOR image_tag IN $DOCKER_IMAGES_EXTRA_TAGS
-          IF [ "$registry" = "hub.docker.com" ]
-            RUN docker tag ${image_target}:latest ${HUB_DOCKER_COM_USER}/${image_target}:${image_tag}
-            RUN docker push ${HUB_DOCKER_COM_USER}/${image_target}:${image_tag}
-          ELSE
-            RUN docker tag ${image_target}:latest ${registry}/${image_target}:${image_tag}
-            RUN docker push ${registry}/${image_target}:${image_tag}
-          END
-        END
-      END
+    FOR image_tag IN $DOCKER_IMAGES_EXTRA_TAGS
       IF [ "$registry" = "hub.docker.com" ]
-        RUN docker tag ${image_target}:latest ${HUB_DOCKER_COM_USER}/${image_target}:${EARTHLY_GIT_SHORT_HASH}
-        RUN docker push ${HUB_DOCKER_COM_USER}/${image_target}:${EARTHLY_GIT_SHORT_HASH}
+        RUN docker tag ${DOCKER_IMAGE_NAME}:latest ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:${image_tag}
+        RUN if [ "$PUSH" = "true" ]; then docker push ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:${image_tag}; fi
       ELSE
-        RUN docker tag ${image_target}:latest ${registry}/${image_target}:${EARTHLY_GIT_SHORT_HASH}
-        RUN docker push ${registry}/${image_target}:${EARTHLY_GIT_SHORT_HASH}
+        RUN docker tag ${DOCKER_IMAGE_NAME}:latest ${registry}/${DOCKER_IMAGE_NAME}:${image_tag}
+        RUN if [ "$PUSH" = "true" ]; then docker push ${registry}/${DOCKER_IMAGE_NAME}:${image_tag}; fi
       END
+    END
+    IF [ "$registry" = "hub.docker.com" ]
+      RUN docker tag ${DOCKER_IMAGE_NAME}:latest ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:${EARTHLY_GIT_SHORT_HASH}
+      RUN if [ "$PUSH" = "true" ]; then docker push ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:${EARTHLY_GIT_SHORT_HASH}; fi
+    ELSE
+      RUN docker tag ${DOCKER_IMAGE_NAME}:latest ${registry}/${DOCKER_IMAGE_NAME}:${EARTHLY_GIT_SHORT_HASH}
+      RUN if [ "$PUSH" = "true" ]; then docker push ${registry}/${DOCKER_IMAGE_NAME}:${EARTHLY_GIT_SHORT_HASH}; fi
     END
   END
 
 keria-src:
-  ARG KERIA_KERIPY_DEPEND_VERSION_OVERRIDE="keri @ git+https://git@github.com/weboftrust/keripy.git@efde86d303a9b6e26e6892e3350ea7a724ea8502"
-  FROM alpine
-  GIT CLONE --branch $KERIA_GIT_REF $KERIA_GIT_REPO_URL /keria
-  RUN sed -i "s|'keri>=.*,$|'$KERIA_KERIPY_DEPEND_VERSION_OVERRIDE',|" /keria/setup.py
+  FROM alpine/git
+  RUN git clone $KERIA_GIT_REPO_URL /keria && \
+      cd /keria && \
+      git checkout $KERIA_GIT_REF
   SAVE ARTIFACT /keria
 
-keria:
+idw-keria:
   ARG EARTHLY_TARGET_NAME
-  FROM DOCKERFILE -f +keria-src/keria/images/keria.dockerfile +keria-src/keria/*
-  ENTRYPOINT keria start --config-file backer-oobis --config-dir ./scripts
-  SAVE IMAGE $EARTHLY_TARGET_NAME:$KERIA_GIT_REF
-  SAVE IMAGE $EARTHLY_TARGET_NAME:latest
+  ARG DOCKER_IMAGES_EXTRA_TAGS
+  ARG FORCE_BUILD=false
+  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}
 
-vlei-src:
-  FROM scratch
-  GIT CLONE --branch $VLEI_GIT_REF $VLEI_GIT_REPO_URL /vlei
-  SAVE ARTIFACT /vlei
+  LOCALLY
+  IF [ "${FORCE_BUILD}" = "false" ]
+    ARG REGISTRY_IMAGE_EXISTS=$( ( docker manifest inspect ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:keria-${KERIA_GIT_REF} 2>/dev/null | grep -q layers ) || echo false)
+  ELSE
+    ARG REGISTRY_IMAGE_EXISTS=false
+  END
 
-vlei:
+  IF [ "${REGISTRY_IMAGE_EXISTS}" = "false" ]
+    WAIT
+      FROM DOCKERFILE -f +keria-src/keria/images/keria.dockerfile +keria-src/keria/*
+      RUN apk add --no-cache jq envsubst
+      ENTRYPOINT keria start --config-file backer-oobis --config-dir ./scripts
+    END
+    WAIT
+      SAVE IMAGE ${DOCKER_IMAGE_NAME}:$KERIA_GIT_REF
+      SAVE IMAGE ${DOCKER_IMAGE_NAME}:latest
+    END
+    DO +TEMPLATED_DOCKER_TAG_N_PUSH \
+       --PUSH=$PUSH \
+       --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+       --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS} keria-${KERIA_GIT_REF}"
+  END
+
+idw-witness:
   ARG EARTHLY_TARGET_NAME
-  FROM DOCKERFILE -f +vlei-src/vlei/container/Dockerfile +vlei-src/vlei/*
-  ENTRYPOINT vLEI-server -s ./schema/acdc -c ./samples/acdc/ -o ./samples/oobis/
-  SAVE IMAGE $EARTHLY_TARGET_NAME:$VLEI_GIT_REF
-  SAVE IMAGE $EARTHLY_TARGET_NAME:latest
+  ARG DOCKER_IMAGES_EXTRA_TAGS
+  ARG FORCE_BUILD=false
+  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}
 
-mediator-src:
-  FROM alpine
-  GIT CLONE --branch $ARIES_MEDIATOR_GIT_REF $ARIES_MEDIATOR_GIT_REPO_URL /aries-mediator-service
-  COPY ./docker-assets/mediator/Dockerfile /aries-mediator-service/afj/
-  COPY ./docker-assets/mediator/yarn.lock /aries-mediator-service/afj/
-  COPY ./docker-assets/mediator/tsconfig.json /aries-mediator-service/afj/
-  RUN sed -i 's|"start":.*|"start": "node ./dist/src/mediator.js",|' /aries-mediator-service/afj/package.json
-  SAVE ARTIFACT /aries-mediator-service
+  LOCALLY
+  IF [ "${FORCE_BUILD}" = "false" ]
+    ARG REGISTRY_IMAGE_EXISTS=$( (docker manifest inspect ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:keri-${KERI_DOCKER_IMAGE_TAG} 2> /dev/null | grep -q layers) || echo false)
+  ELSE
+    ARG REGISTRY_IMAGE_EXISTS=false
+  END
 
-mediator-caddy:
+  IF [ "${REGISTRY_IMAGE_EXISTS}" = "false" ]
+    WAIT
+      FROM ${KERI_DOCKER_IMAGE_REPO}:${KERI_DOCKER_IMAGE_TAG}
+      ENV PYTHONUNBUFFERED=1
+      ENV PYTHONIOENCODING=UTF-8
+      RUN apk add --no-cache jq envsubst
+      ENTRYPOINT kli witness demo
+    END
+    WAIT
+      SAVE IMAGE ${DOCKER_IMAGE_NAME}:keri-${KERI_DOCKER_IMAGE_TAG}
+      SAVE IMAGE ${DOCKER_IMAGE_NAME}:latest
+    END
+    DO +TEMPLATED_DOCKER_TAG_N_PUSH \
+       --PUSH=$PUSH \
+       --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+       --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS} keri-${KERI_DOCKER_IMAGE_TAG}"
+  END
+
+cred-issuance:
   ARG EARTHLY_TARGET_NAME
-  ARG CADDY_DOCKER_IMAGE_TAG=2.7.6
-  FROM caddy:$CADDY_DOCKER_IMAGE_TAG
-  COPY ./docker-assets/mediator/Caddyfile /etc/caddy/Caddyfile
-  SAVE IMAGE $EARTHLY_TARGET_NAME
+  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}
 
-mediator:
-  ARG EARTHLY_TARGET_NAME
-  FROM DOCKERFILE -f +mediator-src/aries-mediator-service/afj/Dockerfile +mediator-src/aries-mediator-service/afj/*
-  SAVE IMAGE $EARTHLY_TARGET_NAME:$ARIES_MEDIATOR_GIT_REF
+  WAIT
+    FROM DOCKERFILE ./services/credential-server
+  END
+  WAIT
+    SAVE IMAGE ${DOCKER_IMAGE_NAME}
+  END
+  DO +TEMPLATED_DOCKER_TAG_N_PUSH \
+     --PUSH=$PUSH \
+     --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+     --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
 
-credential-issuance-server:
+cred-issuance-ui:
   ARG EARTHLY_TARGET_NAME
-  FROM DOCKERFILE ./services/credential-issuance-server
-  SAVE IMAGE $EARTHLY_TARGET_NAME
+  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}
+
+  WAIT
+    FROM DOCKERFILE ./services/credential-server-ui
+  END
+  WAIT
+    SAVE IMAGE ${DOCKER_IMAGE_NAME}
+  END
+  DO +TEMPLATED_DOCKER_TAG_N_PUSH \
+     --PUSH=$PUSH \
+     --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+     --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"

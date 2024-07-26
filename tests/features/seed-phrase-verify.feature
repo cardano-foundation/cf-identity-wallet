@@ -7,12 +7,12 @@ Feature: SeedPhraseVerify
 
 
   Scenario: SeedPhraseVerify - user can go back to Seed Phrase Generate screen
-    Given user continue after choose and save 15 words seed phrase
+    Given user continue after choose and save 18 words seed phrase
     When user tap Back arrow icon on Seed Phrase Verify screen
     Then user can see Seed Phrase Generate screen
 
-  Scenario: SeedPhraseVerify - user can verify 15 words seed phrase
-    Given user continue after choose and save 15 words seed phrase
+  Scenario: SeedPhraseVerify - user can verify 18 words seed phrase
+    Given user continue after choose and save 18 words seed phrase
     When user select words from his seed phrase on Seed Phrase Verify screen
     And user tap Continue button on Seed Phrase Verify screen
     And user add name on Welcome modal

@@ -12,8 +12,11 @@ import { Agent } from "../../../core/agent/agent";
 import { ConfigurationService } from "../../../core/configuration";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
+import { setToastMsg } from "../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../globals/types";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
+const combineMock = jest.fn(() => identifierFix[0]);
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -23,11 +26,34 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
+const getMock = jest.fn((key: string) => "111111");
+
+jest.mock("@aparajita/capacitor-secure-storage", () => ({
+  SecureStorage: {
+    get: (key: string) => getMock(key),
+  },
+}));
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children, isOpen, ...props }: any) => (
+    <div
+      style={{ display: isOpen ? undefined : "none" }}
+      data-testid={props["data-testid"]}
+    >
+      {isOpen ? children : null}
+    </div>
+  ),
+}));
+
+const rotateIdentifierMock = jest.fn((id: string) => Promise.resolve());
+
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       identifiers: {
-        getIdentifier: jest.fn().mockResolvedValue(identifierFix[0]),
+        getIdentifier: () => combineMock(),
+        rotateIdentifier: (id: string) => rotateIdentifierMock(id),
       },
       connections: {
         getOobi: jest.fn(),
@@ -70,12 +96,16 @@ const storeMockedAidKeri = {
   dispatch: dispatchMock,
 };
 
-describe("Cards Details page", () => {
+describe("Cards Details page (not multi-sig)", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
+  beforeEach(() => {
+    combineMock.mockReturnValue(identifierFix[0]);
+  });
+
   test("It opens the sharing modal", async () => {
-    const { getByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <Provider store={storeMockedAidKeri}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -86,16 +116,22 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() =>
-      expect(getByTestId("share-button")).toBeInTheDocument()
-    );
+    await waitFor(() => {
+      expect(getByTestId("share-button")).toBeInTheDocument();
+      expect(queryByTestId("identifier-card-detail-spinner-container")).toBe(
+        null
+      );
+    });
+
+    expect(queryByTestId("share-identifier-modal")).not.toBeVisible();
+
     act(() => {
       fireEvent.click(getByTestId("share-button"));
     });
 
-    expect(getByTestId("share-identifier-modal").getAttribute("is-open")).toBe(
-      "true"
-    );
+    await waitFor(() => {
+      expect(getByTestId("share-identifier-modal")).toBeVisible();
+    });
   });
 
   test("It opens the edit modal", async () => {
@@ -119,13 +155,14 @@ describe("Cards Details page", () => {
         )
       ).toBeInTheDocument()
     );
+
+    expect(getByTestId("identifier-options-modal")).not.toBeVisible();
+
     act(() => {
       fireEvent.click(getByTestId("identifier-options-button"));
     });
 
-    expect(
-      getByTestId("identifier-options-modal").getAttribute("is-open")
-    ).toBe("true");
+    expect(getByTestId("identifier-options-modal")).toBeVisible();
   });
 
   test("It shows the button to access the editor", async () => {
@@ -154,7 +191,7 @@ describe("Cards Details page", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("edit-identifier-options")).toBeInTheDocument();
+      expect(getByTestId("edit-identifier-option")).toBeInTheDocument();
     });
   });
 
@@ -224,7 +261,7 @@ describe("Cards Details page", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("delete-identifier-options")).toBeInTheDocument();
+      expect(getByTestId("delete-identifier-option")).toBeInTheDocument();
     });
 
     act(() => {
@@ -360,7 +397,7 @@ describe("Cards Details page", () => {
   test("Show loading when indetifier data is null", async () => {
     Agent.agent.identifiers.getIdentifiers = jest.fn().mockResolvedValue(null);
 
-    const { getByTestId } = render(
+    const { getByTestId, unmount } = render(
       <Provider store={storeMockedAidKeri}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -376,6 +413,8 @@ describe("Cards Details page", () => {
         getByTestId("identifier-card-detail-spinner-container")
       ).toBeVisible()
     );
+
+    await act(async () => getMock.mockImplementation(() => "111111"));
   });
 
   test("Hide loading after retrieved indetifier data", async () => {
@@ -394,6 +433,168 @@ describe("Cards Details page", () => {
       expect(queryByTestId("identifier-card-detail-spinner-container")).toBe(
         null
       )
+    );
+  });
+
+  test("Rotate key", async () => {
+    const initialStateKeri = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "bran",
+      },
+      identifiersCache: {
+        identifiers: filteredIdentifierFix,
+        favourites: [],
+      },
+    };
+
+    const storeMockedAidKeri = {
+      ...mockStore(initialStateKeri),
+      dispatch: dispatchMock,
+    };
+
+    const { queryByTestId, getByTestId, getByText } = render(
+      <Provider store={storeMockedAidKeri}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={IdentifierDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() =>
+      expect(queryByTestId("identifier-card-detail-spinner-container")).toBe(
+        null
+      )
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("signing-key-0-action-icon"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.identifiers.details.rotatekeys.description)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("rotate-key-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId("passcode-button-1"));
+
+    await waitFor(() => {
+      expect(getByTestId("circle-0")).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId("passcode-button-1"));
+
+    await waitFor(() => {
+      expect(getByTestId("circle-1")).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId("passcode-button-1"));
+
+    await waitFor(() => {
+      expect(getByTestId("circle-2")).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId("passcode-button-1"));
+
+    await waitFor(() => {
+      expect(getByTestId("circle-3")).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId("passcode-button-1"));
+
+    await waitFor(() => {
+      expect(getByTestId("circle-4")).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId("passcode-button-1"));
+
+    await waitFor(() => {
+      expect(getByTestId("circle-5")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(rotateIdentifierMock).toBeCalledWith(identifierFix[0].id);
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.ROTATE_KEY_SUCCESS)
+      );
+    });
+  });
+});
+
+describe("Cards Details page (multi-sig)", () => {
+  beforeAll(async () => {
+    await new ConfigurationService().start();
+  });
+  beforeEach(() => {
+    combineMock.mockReturnValue(identifierFix[2]);
+  });
+
+  test("Cannot rotate key", async () => {
+    const initialStateKeri = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "bran",
+      },
+      identifiersCache: {
+        identifiers: [filteredIdentifierFix[2]],
+        favourites: [],
+      },
+    };
+
+    const storeMockedAidKeri = {
+      ...mockStore(initialStateKeri),
+      dispatch: dispatchMock,
+    };
+
+    const { queryByTestId } = render(
+      <Provider store={storeMockedAidKeri}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={IdentifierDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() =>
+      expect(queryByTestId("identifier-card-detail-spinner-container")).toBe(
+        null
+      )
+    );
+
+    await waitFor(() =>
+      expect(queryByTestId("signing-key-0-action-icon")).toBe(null)
     );
   });
 });

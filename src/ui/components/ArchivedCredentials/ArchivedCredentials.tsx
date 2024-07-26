@@ -201,6 +201,15 @@ const ArchivedCredentialsContainer = forwardRef<
     resetList();
   };
 
+  const handleHardwareBackButton = () => {
+    if (activeList) {
+      handleActionButtonClick();
+      return;
+    }
+
+    setArchivedCredentialsIsOpen(false);
+  };
+
   return (
     <>
       <ScrollablePageLayout
@@ -215,6 +224,10 @@ const ArchivedCredentialsContainer = forwardRef<
             actionButtonAction={handleActionButtonClick}
             actionButtonLabel={actionButtonLabel}
             title={`${i18n.t("credentials.archived.title")}`}
+            hardwareBackButtonConfig={{
+              prevent: false,
+              handler: handleHardwareBackButton,
+            }}
           />
         }
       >
