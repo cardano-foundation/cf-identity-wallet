@@ -1,3 +1,4 @@
+import { Serder } from "signify-ts";
 import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { SignifyNotificationService } from "./signifyNotificationService";
@@ -14,6 +15,9 @@ const groupGetRequestMock = jest.fn();
 const oobiResolveMock = jest.fn();
 const queryKeyStateMock = jest.fn();
 const markNotificationMock = jest.fn();
+const getCredentialMock = jest.fn();
+const admitMock = jest.fn();
+const submitAdmitMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -57,14 +61,27 @@ const signifyClient = jest.mocked({
     mark: markNotificationMock,
   }),
   ipex: () => ({
-    admit: jest.fn(),
-    submitAdmit: jest.fn(),
+    admit: admitMock,
+    submitAdmit: submitAdmitMock,
   }),
   credentials: () => ({
+    get: getCredentialMock,
     list: jest.fn(),
   }),
   exchanges: () => ({
-    get: jest.fn().mockResolvedValue({ exn: { i: "connection-id" } }),
+    get: jest.fn().mockResolvedValue({
+      exn: {
+        i: "connection-id",
+        a: {
+          i: "i",
+        },
+        e: {
+          acdc: {
+            d: "d",
+          },
+        },
+      },
+    }),
     send: jest.fn(),
   }),
   agent: {
@@ -180,6 +197,8 @@ describe("Signify notification service of agent", () => {
         },
       },
     ];
+    getCredentialMock.mockRejectedValue(new Error());
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -190,6 +209,59 @@ describe("Signify notification service of agent", () => {
     }
     expect(notificationStorage.save).toBeCalledTimes(2);
     expect(callback).toBeCalledTimes(2);
+  });
+
+  test("Should admit if there is an existing credential", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/exn/ipex/grant",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+    const acdc = {
+      sad: {
+        a: { LEI: "5493001KJTIIGC8Y1R17" },
+        d: "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli",
+        i: "EIpeOFh268oRJTM4vNNoQvMWw-NBUPDv1NqYbx6Lc1Mk",
+        ri: "EOIj7V-rqu_Q9aGSmPfviBceEtRk1UZBN5H2P_L-Hhx5",
+        s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        v: "ACDC10JSON000197_",
+      },
+      schema: {
+        title: "Qualified vLEI Issuer Credential",
+        description: "vLEI Issuer Description",
+        version: "1.0.0",
+        credentialType: "QualifiedvLEIIssuervLEICredential",
+      },
+      status: {
+        s: "0",
+        dt: new Date().toISOString(),
+      },
+    };
+    getCredentialMock.mockResolvedValue(acdc);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "signifyName",
+    });
+    notificationStorage.save = jest
+      .fn()
+      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+    groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
+    jest.useFakeTimers();
+    admitMock.mockResolvedValue([{}, ["sigs"], "end"]);
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(admitMock).toBeCalledTimes(1);
+    expect(submitAdmitMock).toBeCalledTimes(1);
   });
 
   test("Should call update when read a notification", async () => {
