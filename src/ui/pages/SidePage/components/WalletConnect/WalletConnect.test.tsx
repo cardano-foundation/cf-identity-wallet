@@ -75,7 +75,7 @@ jest.mock("@ionic/react", () => ({
 
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
-    get: (key: string) => {
+    get: () => {
       return "111111";
     },
   },

@@ -17,7 +17,7 @@ const props: ShareConnectionProps = {
   signifyName: identifierFix[0].signifyName,
 };
 
-jest.mock("../../../core/agent/agent", () => ({
+jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
