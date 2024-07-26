@@ -77,16 +77,9 @@ class CredentialService extends AgentService {
   @OnlineOnly
   async getCredentialDetailsById(id: string): Promise<ACDCDetails> {
     const metadata = await this.getMetadataById(id);
-    let acdc;
-
-    const results = await this.props.signifyClient.credentials().list({
-      filter: {
-        "-d": { $eq: metadata.id.replace("metadata:", "") },
-      },
-    });
-    if (results.length > 0) {
-      acdc = results[0];
-    }
+    const acdc = await this.props.signifyClient
+      .credentials()
+      .get(metadata.id.replace("metadata:", ""));
     if (!acdc) {
       throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
     }
@@ -175,6 +168,7 @@ class CredentialService extends AgentService {
     const signifyCredentials = await this.props.signifyClient
       .credentials()
       .list();
+
     const storedCredentials =
       await this.credentialStorage.getAllCredentialMetadata();
     const unSyncedData = signifyCredentials.filter(

@@ -2,7 +2,7 @@ import express from "express";
 import { config } from "./config";
 import { ping } from "./apis/ping.api";
 import { keriOobiApi } from "./apis/invitation.api";
-import { requestDisclosure, issueAcdcCredential } from "./apis/credential.api";
+import { requestDisclosure, issueAcdcCredential, revokeCredential } from "./apis/credential.api";
 import { createShortenUrl, getFullUrl } from "./apis/shorten.api";
 import { schemaApi } from "./apis/schema.api";
 import { contactList } from "./apis/contact.api";
@@ -18,5 +18,6 @@ router.get(config.path.schemaOobi, schemaApi);
 router.post(config.path.resolveOobi, resolveOobi);
 router.get(config.path.contacts, contactList);
 router.post(config.path.requestDisclosure, requestDisclosure);
+router.post(config.path.revokeCredential, revokeCredential);
 
 export default router;
