@@ -242,7 +242,7 @@ describe("Wallet connect: empty history", () => {
     });
   });
 
-  test("Connect wallet modal: alert identifier missing when create new connect if we only have multi-sig identifiers", async () => {
+  test("Connect wallet modal: alert identifier missing when create new connect if we only have multi-sig or group identifiers", async () => {
     const initialState = {
       stateCache: {
         routes: [TabsRoutePath.IDENTIFIERS],
@@ -266,6 +266,15 @@ describe("Wallet connect: empty history", () => {
             theme: 0,
             isPending: false,
             multisigManageAid: "EBze49sDYvxxtq5eFbX2TKbK7g4SPS7DJVdoTRIyybxN",
+          },
+          {
+            displayName: "ms",
+            id: "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ6L",
+            signifyName: "52e200ea-5cbc-4632-a8bb-59cb586caad7",
+            createdAtUTC: "2024-07-25T13:33:20.323Z",
+            theme: 0,
+            isPending: false,
+            groupMetadata: {},
           },
         ],
       },
