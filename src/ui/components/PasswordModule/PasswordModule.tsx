@@ -101,6 +101,7 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
           setAuthentication({
             ...authentication,
             passwordIsSet: true,
+            passwordIsSkipped: false,
           })
         );
         if (hintValue) {

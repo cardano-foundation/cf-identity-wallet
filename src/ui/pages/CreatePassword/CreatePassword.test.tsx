@@ -2,8 +2,10 @@ import { Provider } from "react-redux";
 import { render } from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
+import { MemoryRouter, Route } from "react-router-dom";
 import { CreatePassword } from "./CreatePassword";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { RoutePath } from "../../../routes";
 
 describe("Create Password Page", () => {
   let storeMocked: Store<unknown, AnyAction>;
@@ -18,43 +20,33 @@ describe("Create Password Page", () => {
 
   const initialStateNoPassword = {
     stateCache: {
+      routes: [{ path: RoutePath.CREATE_PASSWORD }],
       authentication: {
         loggedIn: true,
         time: Date.now(),
         passcodeIsSet: true,
         passwordIsSet: false,
-        passwordIsSkipped: true,
-      },
-    },
-  };
-
-  const initialStateWithPassword = {
-    stateCache: {
-      authentication: {
-        loggedIn: true,
-        time: Date.now(),
-        passcodeIsSet: true,
-        passwordIsSet: true,
         passwordIsSkipped: false,
       },
     },
   };
 
   test("Renders Create Password page when Onboarding", () => {
+    const path = RoutePath.CREATE_PASSWORD;
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     storeMocked = {
-      ...mockStore(initialStateWithPassword),
+      ...mockStore(initialStateNoPassword),
       dispatch: dispatchMock,
     };
-    const handleClear = jest.fn();
-    const setPasswordIsSet = jest.fn();
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMocked}>
-        <CreatePassword
-          handleClear={handleClear}
-          setPasswordIsSet={setPasswordIsSet}
-        />
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CreatePassword}
+          />
+        </MemoryRouter>
       </Provider>
     );
 
