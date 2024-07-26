@@ -4,7 +4,6 @@ import {
   useEffect,
   useImperativeHandle,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { useHistory } from "react-router-dom";
@@ -53,7 +52,9 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
 
     const toastMsg = useAppSelector(getToastMsg);
     const pendingConnection = useAppSelector(getPendingConnection);
-    const identifierCache = useAppSelector(getIdentifiersCache);
+    const defaultIdentifierCache = useAppSelector(getIdentifiersCache).filter(
+      (identifier) => !identifier.multisigManageAid && !identifier.groupMetadata
+    );
     const connections = useAppSelector(getWalletConnectionsCache);
     const connectedWallet = useAppSelector(getConnectedWallet);
     const currentOperation = useAppSelector(getCurrentOperation);
@@ -166,7 +167,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     };
 
     const toggleConnected = () => {
-      if (identifierCache.length === 0) {
+      if (defaultIdentifierCache.length === 0) {
         setOpenIdentifierMissingAlert(true);
         return;
       }
@@ -196,7 +197,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     };
 
     const handleScanQR = () => {
-      if (identifierCache.length === 0) {
+      if (defaultIdentifierCache.length === 0) {
         setOpenIdentifierMissingAlert(true);
         return;
       }
