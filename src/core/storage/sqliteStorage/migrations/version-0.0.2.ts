@@ -17,7 +17,9 @@ const DATA_V002 = {
           replace(json_extract(value, '$._tags.id'), 'metadata:', '')
       )
       WHERE json_extract(value, '$._tags.id') LIKE 'metadata:%';
-     `,
+    UPDATE items_tags SET item_id = REPLACE(item_id, 'metadata:', '');
+    UPDATE items_tags SET value = REPLACE(value, 'metadata:', '');
+    `,
   ],
 };
 export { DATA_V002 };
