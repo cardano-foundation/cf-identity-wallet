@@ -95,9 +95,7 @@ describe("Settings page", () => {
       getByText(EN_TRANSLATIONS.settings.sections.security.biometry)
     ).toBeInTheDocument();
     expect(
-      getByText(
-        EN_TRANSLATIONS.settings.sections.security.manageoperationspassword
-      )
+      getByText(EN_TRANSLATIONS.settings.sections.security.managepassword.title)
     ).toBeInTheDocument();
     expect(
       getByText(EN_TRANSLATIONS.settings.sections.security.seedphrase)
@@ -156,7 +154,7 @@ describe("Settings page", () => {
     ).toBeInTheDocument();
 
     act(() => {
-      fireEvent.click(getByTestId("security-item-0"));
+      fireEvent.click(getByTestId("settings-item-0"));
     });
 
     await waitFor(() => {
@@ -245,7 +243,7 @@ describe("Settings page", () => {
     ).toBeInTheDocument();
 
     act(() => {
-      fireEvent.click(getByTestId("security-item-0"));
+      fireEvent.click(getByTestId("settings-item-0"));
     });
 
     await waitFor(() => {
@@ -317,7 +315,7 @@ describe("Settings page", () => {
     ).toBeInTheDocument();
 
     act(() => {
-      fireEvent.click(getByTestId("security-item-0"));
+      fireEvent.click(getByTestId("settings-item-0"));
     });
 
     await waitFor(() => {

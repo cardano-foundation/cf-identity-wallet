@@ -70,7 +70,7 @@ const SidePage = () => {
     <SideSlider
       renderAsModal
       onCloseAnimationEnd={unpauseIncomingRequest}
-      open={openSidePage}
+      isOpen={openSidePage}
     >
       {getContent()}
     </SideSlider>
