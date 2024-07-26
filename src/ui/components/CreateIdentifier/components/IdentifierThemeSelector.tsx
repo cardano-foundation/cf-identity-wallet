@@ -8,6 +8,7 @@ import "./IdentifierThemeSelector.scss";
 import { IDENTIFIER_BG_MAPPING } from "../../../globals/types";
 
 const IdentifierThemeSelector = ({
+  color,
   selectedTheme,
   setSelectedTheme,
 }: IdentifierThemeSelectorProps) => {
@@ -36,7 +37,7 @@ const IdentifierThemeSelector = ({
     );
   };
 
-  const ThemeItem = ({ index }: ThemeItemProps) => {
+  const ThemeItem = ({ index, color }: ThemeItemProps) => {
     return (
       <IonCol className={`${selectedTheme === index ? "selected-theme" : ""}`}>
         <IonCard
@@ -44,7 +45,9 @@ const IdentifierThemeSelector = ({
           data-testid={`identifier-theme-selector-item-${index}`}
           className="theme-input"
           style={{
-            backgroundImage: `url(${IDENTIFIER_BG_MAPPING[index]})`,
+            backgroundImage: `url(${
+              IDENTIFIER_BG_MAPPING[Number(`${color}${index}`)]
+            })`,
             backgroundSize: "cover",
           }}
         >
@@ -53,14 +56,31 @@ const IdentifierThemeSelector = ({
       </IonCol>
     );
   };
+
   return (
     <IonGrid
       className="identifier-theme-selector"
       data-testid="identifier-theme-selector"
     >
       <IonRow className="identifier-theme-input">
-        <ThemeItem index={0} />
-        <ThemeItem index={1} />
+        <ThemeItem
+          color={color}
+          index={0}
+        />
+        <ThemeItem
+          color={color}
+          index={1}
+        />
+      </IonRow>
+      <IonRow className="identifier-theme-input">
+        <ThemeItem
+          color={color}
+          index={2}
+        />
+        <ThemeItem
+          color={color}
+          index={3}
+        />
       </IonRow>
     </IonGrid>
   );

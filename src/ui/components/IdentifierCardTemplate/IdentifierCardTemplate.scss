@@ -1,5 +1,5 @@
 .identifier-card-template {
-  height: 13.375rem;
+  height: calc((100vw - 2.5rem) * (200 / 350));
   width: 100%;
   padding: 1.25rem 1.56rem;
   border-radius: 1rem;
@@ -121,7 +121,7 @@
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
-    height: 10.7rem;
+    height: calc((100vw - 1.8rem) * (200 / 350));
     padding: 1.06rem 1.326rem;
     border-radius: 0.85rem;
     font-size: 0.75rem;

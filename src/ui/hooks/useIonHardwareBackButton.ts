@@ -19,7 +19,7 @@ const useIonHardwareBackButton = (
     return () => {
       document.removeEventListener("ionBackButton", handleBack);
     };
-  }, [prevent, handler]);
+  }, [prevent, handler, priority]);
 };
 
 export { useIonHardwareBackButton };

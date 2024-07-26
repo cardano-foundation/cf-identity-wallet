@@ -14,6 +14,7 @@ import { IdentifierStage1 } from "./components/IdentifierStage1";
 import { IdentifierStage2 } from "./components/IdentifierStage2";
 import { IdentifierStage3 } from "./components/IdentifierStage3";
 import { IdentifierStage4 } from "./components/IdentifierStage4";
+import { IdentifierColor } from "./components/IdentifierColorSelector";
 
 const stages = [
   IdentifierStage0,
@@ -50,6 +51,7 @@ const CreateIdentifier = ({
       isPending: false,
       signifyName: "",
     },
+    color: IdentifierColor.Green,
   };
   const [state, setState] = useState<IdentifierStageStateProps>(initialState);
   const [blur, setBlur] = useState(false);

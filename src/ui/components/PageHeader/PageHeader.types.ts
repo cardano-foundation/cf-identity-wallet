@@ -24,7 +24,7 @@ interface PageHeaderProps {
   hardwareBackButtonConfig?: {
     prevent: boolean;
     priority?: BackEventPriorityType;
-    handler?: (processNextHandler: () => void) => void;
+    handler?: (processNextHandler?: () => void) => void;
   };
 }
 
