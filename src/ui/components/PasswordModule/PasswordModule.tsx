@@ -75,8 +75,20 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
         if (authentication.passwordIsSet) {
           const currentPassword = await SecureStorage.get(
             KeyStoreKeys.APP_OP_PASSWORD
-          );
-          if (currentPassword === createPasswordValue) {
+          ).catch((e) => {
+            if (
+              e instanceof Error &&
+              e.message ===
+                `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_OP_PASSWORD}`
+            ) {
+              return undefined;
+            }
+            throw e;
+          });
+          if (
+            currentPassword !== undefined &&
+            currentPassword === createPasswordValue
+          ) {
             setAlertExistingIsOpen(true);
             return;
           }

@@ -182,7 +182,6 @@ const ManagePassword = () => {
         onDidDismiss={() => handleClear()}
       >
         <CreatePassword
-          isOnboarding={false}
           handleClear={handleClear}
           setPasswordIsSet={setPasswordIsSet}
           userAction={userAction}

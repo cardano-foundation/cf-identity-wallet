@@ -19,7 +19,6 @@ import { PasswordModuleRef } from "../../components/PasswordModule/PasswordModul
 import { CreatePasswordProps } from "./CreatePassword.types";
 
 const CreatePassword = ({
-  isOnboarding,
   handleClear,
   setPasswordIsSet,
   userAction,
@@ -29,6 +28,7 @@ const CreatePassword = ({
   const stateCache = useAppSelector(getStateCache);
   const ionRouter = useAppIonRouter();
   const passwordModuleRef = useRef<PasswordModuleRef>(null);
+  const isOnboarding = stateCache.routes[0].path === RoutePath.CREATE_PASSWORD;
 
   const handleContinue = async (skipped: boolean) => {
     if (!isOnboarding) {
