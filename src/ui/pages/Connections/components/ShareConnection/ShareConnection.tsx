@@ -1,6 +1,6 @@
 import { Share } from "@capacitor/share";
 import { IonButton, IonIcon } from "@ionic/react";
-import { copyOutline, openOutline } from "ionicons/icons";
+import { copyOutline, openOutline, qrCodeOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
 import { Agent } from "../../../../../core/agent/agent";
@@ -60,21 +60,33 @@ const ShareConnection = ({
       </p>
       <div className="share-connection-body">
         <div
-          className="share-connection-body-component"
+          className={`share-connection-body-component ${
+            oobi.length ? "reveal" : "blur"
+          }`}
           data-testid="share-connection-qr-code"
         >
-          <QRCode
-            value={oobi}
-            size={250}
-            fgColor={"black"}
-            bgColor={"white"}
-            qrStyle={"squares"}
-            logoImage={""} // Optional - leaving as a reminder for possible future customisation
-            logoWidth={60}
-            logoHeight={60}
-            logoOpacity={1}
-            quietZone={10}
-          />
+          <div className="qr-container">
+            <QRCode
+              value={oobi}
+              size={250}
+              fgColor={"black"}
+              bgColor={"white"}
+              qrStyle={"squares"}
+              logoImage={""} // Optional - leaving as a reminder for possible future customisation
+              logoWidth={60}
+              logoHeight={60}
+              logoOpacity={1}
+              quietZone={10}
+            />
+          </div>
+          <span className="connection-share-qr-code-blur-overlay-container">
+            <span className="connection-share-qr-code-blur-overlay-inner">
+              <IonIcon
+                slot="icon-only"
+                icon={qrCodeOutline}
+              />
+            </span>
+          </span>
         </div>
         <div className="share-connection-divider">
           <span className="share-connection-divider-line" />
@@ -83,7 +95,7 @@ const ShareConnection = ({
           </span>
           <span className="share-connection-divider-line" />
         </div>
-        <div className="share-connection-body-component">
+        <div className="share-connection-body-component-content">
           <span
             className="share-connection-option"
             onClick={() => {
