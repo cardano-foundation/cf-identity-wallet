@@ -15,6 +15,7 @@ import { VerifyPassword } from "../../../../../../components/VerifyPassword";
 import { VerifyPasscode } from "../../../../../../components/VerifyPasscode";
 import {
   getStateCache,
+  setAuthentication,
   setToastMsg,
 } from "../../../../../../../store/reducers/stateCache";
 import {
@@ -29,6 +30,7 @@ import { ToastMsgType } from "../../../../../../globals/types";
 const ManagePassword = () => {
   const dispatch = useAppDispatch();
   const stateCache = useSelector(getStateCache);
+  const authentication = stateCache.authentication;
   const userAction = useRef("");
   const [passwordIsSet, setPasswordIsSet] = useState(
     stateCache?.authentication.passwordIsSet
@@ -59,9 +61,15 @@ const ManagePassword = () => {
 
   const onVerify = async () => {
     if (passwordIsSet && userAction.current === "disable") {
-      await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, "");
+      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
       setPasswordIsSet(false);
       userAction.current = "";
+      dispatch(
+        setAuthentication({
+          ...authentication,
+          passwordIsSet: false,
+        })
+      );
       dispatch(setToastMsg(ToastMsgType.PASSWORD_DISABLED));
     } else {
       setCreatePasswordModalIsOpen(true);
@@ -174,7 +182,7 @@ const ManagePassword = () => {
         onDidDismiss={() => handleClear()}
       >
         <CreatePassword
-          isModal={true}
+          isOnboarding={false}
           handleClear={handleClear}
           setPasswordIsSet={setPasswordIsSet}
           userAction={userAction}

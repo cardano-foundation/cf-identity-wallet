@@ -52,7 +52,7 @@ describe("Create Password Page", () => {
     const { getByTestId, queryByTestId } = render(
       <Provider store={storeMocked}>
         <CreatePassword
-          isModal={false}
+          isOnboarding={true}
           handleClear={handleClear}
           setPasswordIsSet={setPasswordIsSet}
         />

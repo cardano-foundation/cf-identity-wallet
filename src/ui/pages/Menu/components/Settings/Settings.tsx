@@ -21,7 +21,7 @@ import {
 import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
 import { i18n } from "../../../../../i18n";
 import pJson from "../../../../../../package.json";
-import { OptionProps, SettingsProps } from "./Settings.types";
+import { OptionIndex, OptionProps, SettingsProps } from "./Settings.types";
 import { MiscRecordId } from "../../../../../core/agent/agent.types";
 import { BasicRecord } from "../../../../../core/agent/records";
 import { useAppDispatch } from "../../../../../store/hooks";
@@ -178,15 +178,15 @@ const Settings = ({ switchView }: SettingsProps) => {
   const handleOptionClick = async (item: OptionProps) => {
     setOption(item.index);
     switch (item.index) {
-    case 0: {
+    case OptionIndex.BiometricUpdate: {
       handleBiometricUpdate();
       break;
     }
-    case 1: {
+    case OptionIndex.ChangePin: {
       handleChangePin();
       break;
     }
-    case 2: {
+    case OptionIndex.ManagePassword: {
       switchView && switchView(SubMenuKey.ManagePassword);
       break;
     }

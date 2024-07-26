@@ -13,10 +13,15 @@ import { PageFooter } from "../PageFooter";
 import { PasswordValidation } from "../PasswordValidation";
 import "./PasswordModule.scss";
 import { PasswordModuleProps, PasswordModuleRef } from "./PasswordModule.types";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setAuthentication,
+} from "../../../store/reducers/stateCache";
+import { useAppDispatch } from "../../../store/hooks";
 
 const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
-  ({ title, isModal, description, testId, onCreateSuccess }, ref) => {
+  ({ title, isOnboarding, description, testId, onCreateSuccess }, ref) => {
+    const dispatch = useAppDispatch();
     const stateCache = useSelector(getStateCache);
     const authentication = stateCache.authentication;
     const [createPasswordValue, setCreatePasswordValue] = useState("");
@@ -59,39 +64,41 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
     }));
 
     const handleContinue = async (skipped: boolean) => {
-      if (!skipped) {
-        const currentPassword = await SecureStorage.get(
-          KeyStoreKeys.APP_OP_PASSWORD
-        );
-        if (
-          isModal &&
-          authentication.passcodeIsSet &&
-          currentPassword === createPasswordValue
-        ) {
-          setAlertExistingIsOpen(true);
-          return;
-        } else {
-          await SecureStorage.set(
-            KeyStoreKeys.APP_OP_PASSWORD,
-            createPasswordValue
-          );
-          if (hintValue) {
-            await Agent.agent.basicStorage.createOrUpdateBasicRecord(
-              new BasicRecord({
-                id: MiscRecordId.OP_PASS_HINT,
-                content: { value: hintValue },
-              })
-            );
-          }
-        }
-      } else {
-        await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, "");
+      if (skipped) {
         await Agent.agent.basicStorage.createOrUpdateBasicRecord(
           new BasicRecord({
             id: MiscRecordId.APP_PASSWORD_SKIPPED,
             content: { value: skipped },
           })
         );
+      } else {
+        if (authentication.passwordIsSet) {
+          const currentPassword = await SecureStorage.get(
+            KeyStoreKeys.APP_OP_PASSWORD
+          );
+          if (currentPassword === createPasswordValue) {
+            setAlertExistingIsOpen(true);
+            return;
+          }
+        }
+        await SecureStorage.set(
+          KeyStoreKeys.APP_OP_PASSWORD,
+          createPasswordValue
+        );
+        dispatch(
+          setAuthentication({
+            ...authentication,
+            passwordIsSet: true,
+          })
+        );
+        if (hintValue) {
+          await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+            new BasicRecord({
+              id: MiscRecordId.OP_PASS_HINT,
+              content: { value: hintValue },
+            })
+          );
+        }
       }
 
       onCreateSuccess(skipped);
@@ -183,7 +190,9 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
             primaryButtonAction={() => handleContinue(false)}
             primaryButtonDisabled={!validated}
             tertiaryButtonText={
-              isModal ? undefined : `${i18n.t("createpassword.button.skip")}`
+              isOnboarding
+                ? `${i18n.t("createpassword.button.skip")}`
+                : undefined
             }
             tertiaryButtonAction={() => setAlertCancelIsOpen(true)}
           />

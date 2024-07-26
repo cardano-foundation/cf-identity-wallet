@@ -9,7 +9,7 @@ interface PasswordRegexProps {
 }
 
 interface CreatePasswordProps {
-  isModal: boolean;
+  isOnboarding: boolean;
   handleClear: () => void;
   setPasswordIsSet: (value: boolean) => void;
   userAction?: MutableRefObject<string>;

@@ -13,9 +13,16 @@ interface OptionProps {
   note?: string;
 }
 
+enum OptionIndex {
+  BiometricUpdate,
+  ChangePin,
+  ManagePassword,
+}
+
 interface SettingsItemProps {
   item: OptionProps;
   handleOptionClick: (item: OptionProps) => void;
 }
 
 export type { SettingsProps, OptionProps, SettingsItemProps };
+export { OptionIndex };

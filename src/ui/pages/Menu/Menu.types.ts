@@ -1,13 +1,12 @@
 import { ReactElement, ReactNode } from "react";
 
 interface SubMenuData {
-  Component: () => ReactElement;
+  Component: (props?: {
+    switchView: (key: SubMenuKey) => void;
+  }) => ReactElement;
   title: string;
   additionalButtons: ReactNode;
   pageId: string;
-  props?: {
-    switchView: (key: SubMenuKey) => void;
-  };
   nestedMenu: boolean;
 }
 

@@ -19,7 +19,7 @@ import { PasswordModuleRef } from "../../components/PasswordModule/PasswordModul
 import { CreatePasswordProps } from "./CreatePassword.types";
 
 const CreatePassword = ({
-  isModal,
+  isOnboarding,
   handleClear,
   setPasswordIsSet,
   userAction,
@@ -31,7 +31,7 @@ const CreatePassword = ({
   const passwordModuleRef = useRef<PasswordModuleRef>(null);
 
   const handleContinue = async (skipped: boolean) => {
-    if (isModal) {
+    if (!isOnboarding) {
       setPasswordIsSet(true);
       userAction?.current === "change" &&
         dispatch(setToastMsg(ToastMsgType.PASSWORD_UPDATED));
@@ -60,25 +60,21 @@ const CreatePassword = ({
       ionRouter.push(nextPath.pathname, "forward", "push");
     }
   };
-  const handleCancel = () => {
-    passwordModuleRef.current?.clearState;
-    handleClear();
-  };
 
   return (
     <ScrollablePageLayout
       pageId={pageId}
       header={
         <PageHeader
-          currentPath={isModal ? undefined : RoutePath.CREATE_PASSWORD}
-          progressBar={!isModal}
+          currentPath={isOnboarding ? RoutePath.CREATE_PASSWORD : undefined}
+          progressBar={isOnboarding}
           progressBarValue={0.4}
           progressBarBuffer={1}
-          closeButton={isModal}
-          closeButtonAction={handleCancel}
+          closeButton={!isOnboarding}
+          closeButtonAction={handleClear}
           closeButtonLabel={`${i18n.t("createpassword.cancel")}`}
           title={
-            isModal
+            !isOnboarding
               ? `${i18n.t(
                 userAction?.current === "change"
                   ? "createpassword.change"
@@ -92,8 +88,8 @@ const CreatePassword = ({
       <PasswordModule
         ref={passwordModuleRef}
         testId={pageId}
-        isModal={isModal}
-        title={isModal ? undefined : `${i18n.t("createpassword.title")}`}
+        isOnboarding={isOnboarding}
+        title={isOnboarding ? `${i18n.t("createpassword.title")}` : undefined}
         description={`${i18n.t("createpassword.description")}`}
         onCreateSuccess={handleContinue}
       />
