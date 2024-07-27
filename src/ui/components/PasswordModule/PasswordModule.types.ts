@@ -10,6 +10,7 @@ interface PasswordRegexProps {
 interface PasswordModuleProps {
   testId: string;
   title?: string;
+  isOnboarding: boolean;
   description?: string;
   onCreateSuccess: (skipped: boolean) => void;
 }

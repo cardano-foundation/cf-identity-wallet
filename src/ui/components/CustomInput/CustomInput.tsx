@@ -30,7 +30,7 @@ const CustomInput = ({
     <IonItem className={`custom-input ${error ? "error" : ""}`}>
       <IonLabel
         position="stacked"
-        data-testid={`${title?.toLowerCase().replace(" ", "-")}-title`}
+        data-testid={`${title?.toLowerCase().replace(/\s/g, "-")}-input-title`}
       >
         {title}
         {optional && (
