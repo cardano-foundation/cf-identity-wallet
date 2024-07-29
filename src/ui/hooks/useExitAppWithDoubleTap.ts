@@ -5,11 +5,14 @@ import { BackEventPriorityType } from "../globals/types";
 import { useIonHardwareBackButton } from "./useIonHardwareBackButton";
 import { DOUBLE_TAP_DELAY } from "../globals/constants";
 
-const useExitAppWithDoubleTap = (prevent?: boolean) => {
+const useExitAppWithDoubleTap = (
+  prevent?: boolean,
+  priority = BackEventPriorityType.Page
+) => {
   const lastBackButtonClick = useRef(0);
 
   useIonHardwareBackButton(
-    BackEventPriorityType.Page,
+    priority,
     () => {
       const currentTime = Date.now();
       const isDoubleTap =
