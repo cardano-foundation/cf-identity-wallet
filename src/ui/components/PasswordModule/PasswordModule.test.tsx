@@ -15,7 +15,7 @@ import { KeyStoreKeys } from "../../../core/storage";
 
 const initialState = {
   stateCache: {
-    routes: [RoutePath.GENERATE_SEED_PHRASE],
+    routes: [RoutePath.TABS_MENU],
     authentication: {
       loggedIn: false,
       time: Date.now(),
@@ -531,7 +531,7 @@ describe("Passcode Module", () => {
   test("Submit password on manage password page", async () => {
     const initialState = {
       stateCache: {
-        routes: [RoutePath.GENERATE_SEED_PHRASE],
+        routes: [RoutePath.TABS_MENU],
         authentication: {
           loggedIn: true,
           time: Date.now(),
@@ -618,6 +618,18 @@ describe("Passcode Module", () => {
             .existingpassword
         )
       ).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.click(
+        getByTestId("manage-password-alert-existing-confirm-button")
+      );
+    });
+
+    await waitFor(() => {
+      expect((input as HTMLInputElement).value).toBe("");
+      expect((confirmInput as HTMLInputElement).value).toBe("");
+      expect((hintInput as HTMLInputElement).value).toBe("");
     });
   });
 });
