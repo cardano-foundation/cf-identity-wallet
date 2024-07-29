@@ -1,4 +1,6 @@
 .offline-page {
+  z-index: 2147483640 !important; // less than lock page value but can greater than other page.
+
   .responsive-page-content {
     justify-content: center;
   }
