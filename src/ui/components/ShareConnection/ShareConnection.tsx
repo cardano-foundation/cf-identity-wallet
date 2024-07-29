@@ -11,15 +11,15 @@ import { ToastMsgType } from "../../globals/types";
 import { writeToClipboard } from "../../utils/clipboard";
 import { PageHeader } from "../PageHeader";
 import { ResponsiveModal } from "../layout/ResponsiveModal";
-import "./ShareIdentifier.scss";
-import { ShareIdentifierProps, ShareType } from "./ShareIdentifier.types";
+import "./ShareConnection.scss";
+import { ShareConnectionProps, ShareType } from "./ShareConnection.types";
 
-const ShareIdentifier = ({
+const ShareConnection = ({
   isOpen,
   setIsOpen,
   signifyName,
   shareType: shareLocation = ShareType.Identifier,
-}: ShareIdentifierProps) => {
+}: ShareConnectionProps) => {
   const componentId = "share-identifier-modal";
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -158,4 +158,4 @@ const ShareIdentifier = ({
   );
 };
 
-export { ShareIdentifier };
+export { ShareConnection };

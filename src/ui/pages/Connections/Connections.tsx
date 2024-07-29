@@ -37,8 +37,8 @@ import {
   ConnectionShortDetails,
   MappedConnections,
 } from "./Connections.types";
-import { ShareIdentifier } from "../../components/ShareIdentifier";
-import { ShareType } from "../../components/ShareIdentifier/ShareIdentifier.types";
+import { ShareConnection } from "../../components/ShareConnection";
+import { ShareType } from "../../components/ShareConnection/ShareConnection.types";
 
 const Connections = ({
   showConnections,
@@ -227,7 +227,7 @@ const Connections = ({
         setOpen={setOpenIdentifierSelector}
         onSubmit={setSelectedIdentifier}
       />
-      <ShareIdentifier
+      <ShareConnection
         isOpen={!!selectedIdentifier}
         setIsOpen={() => setSelectedIdentifier(null)}
         signifyName={selectedIdentifier?.signifyName}

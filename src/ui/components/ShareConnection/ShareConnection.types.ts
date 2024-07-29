@@ -3,7 +3,7 @@ enum ShareType {
   Connection,
 }
 
-interface ShareIdentifierProps {
+interface ShareConnectionProps {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
   signifyName?: string;
@@ -11,4 +11,4 @@ interface ShareIdentifierProps {
 }
 
 export { ShareType };
-export type { ShareIdentifierProps };
+export type { ShareConnectionProps };

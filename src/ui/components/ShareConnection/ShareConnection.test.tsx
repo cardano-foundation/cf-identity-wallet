@@ -7,12 +7,12 @@ import { store } from "../../../store";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { ToastMsgType } from "../../globals/types";
-import { ShareIdentifier } from "./ShareIdentifier";
-import { ShareIdentifierProps, ShareType } from "./ShareIdentifier.types";
+import { ShareConnection } from "./ShareConnection";
+import { ShareConnectionProps, ShareType } from "./ShareConnection.types";
 mockIonicReact();
 
 const setIsOpen = jest.fn();
-const props: ShareIdentifierProps = {
+const props: ShareConnectionProps = {
   isOpen: true,
   setIsOpen,
   signifyName: identifierFix[0].signifyName,
@@ -46,7 +46,7 @@ describe("Share Indentifier", () => {
   test("Show toast when copy identifier", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <ShareIdentifier
+        <ShareConnection
           isOpen={props.isOpen}
           setIsOpen={props.setIsOpen}
           signifyName={props.signifyName}
@@ -76,7 +76,7 @@ describe("Share Indentifier", () => {
   test("Render on identifier page", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <ShareIdentifier
+        <ShareConnection
           isOpen={props.isOpen}
           setIsOpen={props.setIsOpen}
           signifyName={props.signifyName}
@@ -96,7 +96,7 @@ describe("Share Indentifier", () => {
   test("Render on connection page", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <ShareIdentifier
+        <ShareConnection
           isOpen={props.isOpen}
           setIsOpen={props.setIsOpen}
           shareType={ShareType.Connection}
