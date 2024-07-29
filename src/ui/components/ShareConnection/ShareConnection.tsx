@@ -1,13 +1,14 @@
 import { Share } from "@capacitor/share";
 import { IonButton, IonIcon } from "@ionic/react";
 import { copyOutline, openOutline, qrCodeOutline } from "ionicons/icons";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
 import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache, setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
+import { useOnlineStatusEffect } from "../../hooks";
 import { writeToClipboard } from "../../utils/clipboard";
 import { PageHeader } from "../PageHeader";
 import { ResponsiveModal } from "../layout/ResponsiveModal";
@@ -26,18 +27,15 @@ const ShareConnection = ({
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
 
-  useEffect(() => {
-    if (signifyName) {
-      const fetchOobi = async () => {
-        const oobiValue = await Agent.agent.connections.getOobi(
-          `${signifyName}`,
-          userName
-        );
-        if (oobiValue) {
-          setOobi(oobiValue);
-        }
-      };
-      fetchOobi();
+  const fetchOobi = useCallback(async () => {
+    if (!signifyName) return;
+
+    const oobiValue = await Agent.agent.connections.getOobi(
+      `${signifyName}`,
+      userName
+    );
+    if (oobiValue) {
+      setOobi(oobiValue);
     }
   }, [signifyName, userName]);
 
@@ -49,6 +47,8 @@ const ShareConnection = ({
       return i18n.t("shareidentifier.subtitle.identifier");
     }
   }, [shareLocation]);
+
+  useOnlineStatusEffect(fetchOobi);
 
   return (
     <ResponsiveModal

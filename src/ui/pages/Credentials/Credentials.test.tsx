@@ -7,9 +7,9 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { formatShortDate } from "../../utils/formatters";
 import { Creds } from "./Credentials";
-import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -28,6 +28,7 @@ const initialStateEmpty = {
       time: Date.now(),
       passcodeIsSet: true,
     },
+    isOnline: true,
   },
   seedPhraseCache: {},
   credsCache: {

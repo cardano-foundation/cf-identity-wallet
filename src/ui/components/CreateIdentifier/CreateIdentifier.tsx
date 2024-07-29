@@ -1,5 +1,5 @@
 import { IonModal, IonSpinner } from "@ionic/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { useAppDispatch } from "../../../store/hooks";
 import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
@@ -15,6 +15,7 @@ import { IdentifierStage2 } from "./components/IdentifierStage2";
 import { IdentifierStage3 } from "./components/IdentifierStage3";
 import { IdentifierStage4 } from "./components/IdentifierStage4";
 import { IdentifierColor } from "./components/IdentifierColorSelector";
+import { useOnlineStatusEffect } from "../../hooks";
 
 const stages = [
   IdentifierStage0,
@@ -68,22 +69,21 @@ const CreateIdentifier = ({
     }
   }, [blur]);
 
-  useEffect(() => {
-    if (groupId) {
-      const updateMultiSigGroup = async (groupId: string) => {
-        const connections =
-          await Agent.agent.connections.getMultisigLinkedContacts(groupId);
-        const multiSigGroup: MultiSigGroup = {
-          groupId,
-          connections,
-        };
-        setMultiSigGroup(multiSigGroup);
-        dispatch(setMultiSigGroupCache(multiSigGroup));
-      };
+  const updateMultiSigGroup = useCallback(async () => {
+    if (!groupId) return;
 
-      updateMultiSigGroup(groupId);
-    }
-  }, [groupId]);
+    const connections = await Agent.agent.connections.getMultisigLinkedContacts(
+      groupId
+    );
+    const multiSigGroup: MultiSigGroup = {
+      groupId,
+      connections,
+    };
+    setMultiSigGroup(multiSigGroup);
+    dispatch(setMultiSigGroupCache(multiSigGroup));
+  }, [dispatch, groupId]);
+
+  useOnlineStatusEffect(updateMultiSigGroup);
 
   const resetModal = () => {
     setBlur(false);

@@ -1,5 +1,5 @@
 import { ellipsisVertical } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
   IonLabel,
@@ -28,10 +28,7 @@ import { updateReduxState } from "../../../store/utils";
 import { ConnectionOptions } from "../../components/ConnectionOptions";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert as AlertDeleteConnection } from "../../components/Alert";
-import {
-  getConnectionsCache,
-  removeConnectionCache,
-} from "../../../store/reducers/connectionsCache";
+import { removeConnectionCache } from "../../../store/reducers/connectionsCache";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { Agent } from "../../../core/agent/agent";
@@ -48,7 +45,7 @@ import Minicred from "../../assets/images/minicred.jpg";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { CardDetailsBlock } from "../../components/CardDetails";
 import { ConnectionNotes } from "./components/ConnectionNotes";
-import { useAppIonRouter } from "../../hooks";
+import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
 import { getBackRoute } from "../../../routes/backRoute";
 
 const ConnectionDetails = () => {
@@ -57,7 +54,6 @@ const ConnectionDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const connectionsData = useAppSelector(getConnectionsCache);
   const connectionShortDetails = history?.location
     ?.state as ConnectionShortDetails;
   const [connectionDetails, setConnectionDetails] = useState<ConnectionData>();
@@ -77,7 +73,7 @@ const ConnectionDetails = () => {
     history: false,
   });
 
-  const getDetails = async () => {
+  const getDetails = useCallback(async () => {
     try {
       const connectionDetails = await Agent.agent.connections.getConnectionById(
         connectionShortDetails.id
@@ -91,9 +87,9 @@ const ConnectionDetails = () => {
     } finally {
       setLoading((value) => ({ ...value, details: false }));
     }
-  };
+  }, [connectionShortDetails.id]);
 
-  const getHistory = async () => {
+  const getHistory = useCallback(async () => {
     try {
       const connectionHistory =
         await Agent.agent.connections.getConnectionHistoryById(
@@ -105,18 +101,21 @@ const ConnectionDetails = () => {
     } finally {
       setLoading((value) => ({ ...value, history: false }));
     }
-  };
+  }, [connectionShortDetails.id]);
 
-  useEffect(() => {
-    if (connectionShortDetails?.id) {
-      setLoading({
-        history: true,
-        details: true,
-      });
-      getDetails();
-      getHistory();
-    }
-  }, [connectionShortDetails?.id]);
+  const getData = useCallback(() => {
+    if (!connectionShortDetails?.id) return;
+
+    setLoading({
+      history: true,
+      details: true,
+    });
+
+    getDetails();
+    getHistory();
+  }, [connectionShortDetails?.id, getDetails, getHistory]);
+
+  useOnlineStatusEffect(getData);
 
   const handleDone = () => {
     const data: DataProps = {
