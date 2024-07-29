@@ -54,6 +54,7 @@ const initialStateFull = {
       time: Date.now(),
       passcodeIsSet: true,
     },
+    isOnline: true,
   },
   seedPhraseCache: {},
   credsCache: {

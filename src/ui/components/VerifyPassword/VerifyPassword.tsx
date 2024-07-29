@@ -1,5 +1,5 @@
 import { IonButton } from "@ionic/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { i18n } from "../../../i18n";
 import { VerifyPasswordProps } from "./VerifyPassword.types";
 import { CustomInput } from "../CustomInput";
@@ -12,6 +12,7 @@ import { MiscRecordId } from "../../../core/agent/agent.types";
 import { OptionModal } from "../OptionsModal";
 import { ForgotAuthInfo } from "../ForgotAuthInfo";
 import { ForgotType } from "../ForgotAuthInfo/ForgotAuthInfo.types";
+import { useOnlineStatusEffect } from "../../hooks";
 
 const VerifyPassword = ({
   isOpen,
@@ -46,7 +47,7 @@ const VerifyPassword = ({
     hasNoMatch: i18n.t("verifypassword.error.hasNoMatch"),
   };
 
-  const handleFetchStoredValues = async () => {
+  const handleFetchStoredValues = useCallback(async () => {
     try {
       const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
       if (password) {
@@ -78,7 +79,7 @@ const VerifyPassword = ({
     if (hint) {
       setStoredHint(`${hint}`);
     }
-  };
+  }, [isOpen]);
 
   const resetModal = () => {
     setIsOpen(false);
@@ -87,7 +88,7 @@ const VerifyPassword = ({
 
   useEffect(() => {
     handleFetchStoredValues();
-  }, [isOpen]);
+  }, [handleFetchStoredValues]);
 
   useEffect(() => {
     // @TODO - sdisalvo: display the available attempts remaining.

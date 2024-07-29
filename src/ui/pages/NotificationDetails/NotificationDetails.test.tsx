@@ -44,6 +44,7 @@ const initialState = {
       time: Date.now(),
       passcodeIsSet: true,
     },
+    isOnline: true,
   },
   connectionsCache: {
     connections: [],
