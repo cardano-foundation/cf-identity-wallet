@@ -23,7 +23,7 @@ import {
   setCurrentRoute,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { ShareIdentifier } from "../../components/ShareIdentifier";
+import { ShareConnection } from "../../components/ShareConnection";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
 import {
@@ -319,7 +319,7 @@ const IdentifierDetails = () => {
               deleteButtonAction={() => deleteButtonAction()}
             />
           </div>
-          <ShareIdentifier
+          <ShareConnection
             isOpen={shareIsOpen}
             setIsOpen={setShareIsOpen}
             signifyName={cardData.signifyName}
