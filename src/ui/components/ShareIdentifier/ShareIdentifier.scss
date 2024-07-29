@@ -54,7 +54,7 @@
         border-radius: 1rem;
       }
 
-      .multisig-share-qr-code-blur-overlay-container {
+      .share-qr-code-blur-overlay-container {
         width: 70vw !important;
         height: 70vw !important;
         padding: 1.5rem;
@@ -64,7 +64,7 @@
         left: calc(50% - 35vw);
         box-shadow: 0px 2px 4px rgba(54, 60, 74, 0.2);
 
-        .multisig-share-qr-code-blur-overlay-inner {
+        .share-qr-code-blur-overlay-inner {
           display: none;
         }
 
@@ -83,8 +83,8 @@
           opacity: 0.3;
         }
 
-        .multisig-share-qr-code-blur-overlay-container {
-          .multisig-share-qr-code-blur-overlay-inner {
+        .share-qr-code-blur-overlay-container {
+          .share-qr-code-blur-overlay-inner {
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -134,8 +134,11 @@
     }
 
     @media screen and (min-width: 250px) and (max-width: 370px) {
-      #react-qrcode-logo {
-        padding: 1.2rem;
+      .share-qr {
+        #react-qrcode-logo,
+        .share-qr-code-blur-overlay-container {
+          padding: 1.2rem;
+        }
       }
 
       .share-identifier-body-component,
@@ -145,17 +148,6 @@
 
       .share-identifier-option {
         height: 2.3rem;
-      }
-
-      .multisig-share-qr-code-blur-overlay-container {
-        width: 65vw !important;
-        height: 65vw !important;
-        padding: 0.9rem;
-        margin: 0 auto 0.5rem;
-      }
-
-      .multisig-share-qr-code-blur-overlay-container {
-        left: calc(50% - 32.5vw);
       }
     }
   }

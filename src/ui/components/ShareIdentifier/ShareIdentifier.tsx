@@ -83,8 +83,8 @@ const ShareIdentifier = ({
             logoOpacity={1}
             quietZone={10}
           />
-          <span className="multisig-share-qr-code-blur-overlay-container">
-            <span className="multisig-share-qr-code-blur-overlay-inner">
+          <span className="share-qr-code-blur-overlay-container">
+            <span className="share-qr-code-blur-overlay-inner">
               <IonIcon
                 slot="icon-only"
                 icon={qrCodeOutline}
