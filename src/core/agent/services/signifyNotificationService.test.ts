@@ -1,4 +1,3 @@
-import { Serder } from "signify-ts";
 import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { SignifyNotificationService } from "./signifyNotificationService";
@@ -93,6 +92,11 @@ const signifyClient = jest.mocked({
   }),
   groups: () => ({
     getRequest: groupGetRequestMock,
+  }),
+  schemas: () => ({
+    get: jest.fn().mockResolvedValue({
+      title: "IIW 2024 Demo Day Attendee",
+    }),
   }),
 });
 

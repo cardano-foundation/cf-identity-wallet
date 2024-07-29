@@ -304,18 +304,6 @@ class ConnectionService extends AgentService {
   async getConnectionHistoryById(
     connectionId: string
   ): Promise<ConnectionHistoryItem[]> {
-    const credentialRecords =
-      await this.credentialStorage.getCredentialMetadataByConnectionId(
-        connectionId
-      );
-    const credentialTypes: { [key: string]: string } = {};
-    credentialRecords.forEach((record) => {
-      if (!credentialTypes[record.id.replace("metadata:", "")]) {
-        credentialTypes[record.id.replace("metadata:", "")] =
-          record.credentialType;
-      }
-    });
-
     const linkedIpexMessages =
       await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(
         connectionId
@@ -324,21 +312,10 @@ class ConnectionService extends AgentService {
     const requestMessages = linkedIpexMessages
       .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
       .map((messageRecord) => {
-        const credentialType =
-          credentialTypes[messageRecord.content.exn.e.acdc.d];
-        let historyType: ConnectionHistoryType;
-        const route = messageRecord.content.exn.r;
-        if (route === ExchangeRoute.IpexGrant && !messageRecord.isUpdate) {
-          historyType = ConnectionHistoryType.CREDENTIAL_ISSUANCE;
-        } else if (route === ExchangeRoute.IpexApply) {
-          historyType = ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT;
-        } else {
-          historyType = ConnectionHistoryType.CREDENTIAL_UPDATE;
-        }
-
+        const { historyType, createdAt, credentialType } = messageRecord;
         return {
           type: historyType,
-          timestamp: messageRecord.createdAt.toISOString(),
+          timestamp: createdAt.toISOString(),
           credentialType,
         };
       });

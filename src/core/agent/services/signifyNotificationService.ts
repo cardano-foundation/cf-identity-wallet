@@ -19,6 +19,7 @@ import { Agent } from "../agent";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { IonicStorage } from "../../storage/ionicStorage";
+import { ConnectionHistoryType } from "./connection.types";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -176,9 +177,14 @@ class SignifyNotificationService extends AgentService {
         const exchange = await this.props.signifyClient
           .exchanges()
           .get(notif.a.d);
+        const schema = await this.props.signifyClient
+          .schemas()
+          .get(exchange.exn.e.acdc.s);
         await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
+          schema.title,
           exchange.exn.i,
-          exchange
+          exchange,
+          ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
         );
       }
     }
@@ -217,16 +223,22 @@ class SignifyNotificationService extends AgentService {
             exchange.exn.i,
           ]);
         await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
+          existingCredential.schema.title,
           exchange.exn.i,
-          exchange
+          exchange,
+          ConnectionHistoryType.CREDENTIAL_UPDATE
         );
         await this.markNotification(notif.i);
         return;
       } else {
+        const schema = await this.props.signifyClient
+          .schemas()
+          .get(exchange.exn.e.acdc.s);
         await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
+          schema.title,
           exchange.exn.i,
           exchange,
-          true
+          ConnectionHistoryType.CREDENTIAL_ISSUANCE
         );
       }
     }

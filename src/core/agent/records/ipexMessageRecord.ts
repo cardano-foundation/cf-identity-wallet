@@ -1,18 +1,21 @@
 import { BaseRecord } from "../../storage/storage.types";
 import { IpexMessage } from "../agent.types";
+import { ConnectionHistoryType } from "../services/connection.types";
 
 interface IpexMessageProps {
   id: string;
+  credentialType: string;
   content: IpexMessage;
-  isUpdate?: boolean;
+  historyType: ConnectionHistoryType;
   createdAt?: Date;
   connectionId: string;
 }
 
 class IpexMessageRecord extends BaseRecord {
+  credentialType!: string;
   content!: IpexMessage;
   connectionId!: string;
-  isUpdate?: boolean;
+  historyType!: ConnectionHistoryType;
 
   static readonly type = "IpexMessageRecord";
   readonly type = IpexMessageRecord.type;
@@ -22,9 +25,10 @@ class IpexMessageRecord extends BaseRecord {
 
     if (props) {
       this.id = props.id;
+      this.credentialType = props.credentialType;
       this.content = props.content;
       this.connectionId = props.connectionId;
-      this.isUpdate = props.isUpdate ?? false;
+      this.historyType = props.historyType;
       this.createdAt = props.createdAt ?? new Date();
     }
   }

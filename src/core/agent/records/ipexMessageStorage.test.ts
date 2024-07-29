@@ -1,4 +1,5 @@
 import { StorageService } from "../../storage/storage.types";
+import { ConnectionHistoryType } from "../services/connection.types";
 import { IpexMessageRecord, IpexMessageProps } from "./ipexMessageRecord";
 import { IpexMessageStorage } from "./ipexMessageStorage";
 
@@ -39,9 +40,11 @@ const ipexMessage = {
 };
 const ipexMessageRecordProps: IpexMessageProps = {
   id: id1,
+  credentialType: "IIW 2024 Demo Day Attendee",
   createdAt: now,
   connectionId: "connectionId",
   content: ipexMessage,
+  historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
 };
 
 const ipexMessageRecordA = new IpexMessageRecord(ipexMessageRecordProps);
@@ -49,6 +52,7 @@ const ipexMessageRecordA = new IpexMessageRecord(ipexMessageRecordProps);
 const ipexMessageRecordB = new IpexMessageRecord({
   ...ipexMessageRecordProps,
   id: id2,
+  historyType: ConnectionHistoryType.CREDENTIAL_UPDATE,
 });
 
 describe("ipexMessage Storage", () => {

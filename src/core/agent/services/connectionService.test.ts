@@ -136,14 +136,12 @@ const operationPendingStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
-const getCredentialMetadataByConnectionIdMock = jest.fn();
 const getIpexMessageMetadataByConnectionIdMock = jest.fn();
 
 const credentialStorage = jest.mocked({
   getAllCredentialMetadata: jest.fn(),
   deleteCredentialMetadata: jest.fn(),
   getCredentialMetadata: jest.fn(),
-  getCredentialMetadataByConnectionId: getCredentialMetadataByConnectionIdMock,
   saveCredentialMetadataRecord: jest.fn(),
   updateCredentialMetadata: jest.fn(),
   getCredentialMetadatasById: jest.fn(),
@@ -634,13 +632,6 @@ describe("Connection service of agent", () => {
     const date1 = new Date("Sat Jul 27 2024 15:02:30 GMT+0700");
     const date2 = new Date("Sat Jul 27 2024 15:12:04 GMT+0700");
     const date3 = new Date("Sat Jul 27 2024 15:30:34 GMT+0700");
-    getCredentialMetadataByConnectionIdMock.mockResolvedValue([
-      {
-        id: "EN_tsGwSUI63SYoSiiN8qsysUT8bnka9gZEka8PG_oVQ",
-        credentialType: "IIW 2024 Demo Day Attendee",
-        connectionId,
-      },
-    ]);
     getIpexMessageMetadataByConnectionIdMock.mockResolvedValue([
       {
         id: "id-1",
@@ -654,7 +645,9 @@ describe("Connection service of agent", () => {
             },
           },
         },
+        credentialType: "IIW 2024 Demo Day Attendee",
         connectionId,
+        historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
         createdAt: date1,
       },
       {
@@ -669,7 +662,9 @@ describe("Connection service of agent", () => {
             },
           },
         },
+        credentialType: "IIW 2024 Demo Day Attendee",
         connectionId,
+        historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT,
         createdAt: date2,
       },
       {
@@ -684,8 +679,9 @@ describe("Connection service of agent", () => {
             },
           },
         },
+        credentialType: "IIW 2024 Demo Day Attendee",
         connectionId,
-        isUpdate: true,
+        historyType: ConnectionHistoryType.CREDENTIAL_UPDATE,
         createdAt: date3,
       },
     ]);

@@ -25,6 +25,7 @@ import { CredentialStatus } from "./credentialService.types";
 import { OnlineOnly, getCredentialShortDetails } from "./utils";
 import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { ConnectionHistoryType } from "./connection.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -343,15 +344,17 @@ class IpexCommunicationService extends AgentService {
   }
 
   async createLinkedIpexMessageRecord(
+    credentialType: string,
     connectionId: string,
     message: IpexMessage,
-    isUpdate = false
+    historyType: ConnectionHistoryType
   ): Promise<void> {
     await this.ipexMessageStorage.createIpexMessageRecord({
       id: uuidv4(),
+      credentialType,
       content: message,
       connectionId,
-      isUpdate,
+      historyType,
     });
   }
 }
