@@ -18,6 +18,7 @@ const ValidationItem = ({
     <IonItem data-testid={testId}>
       <IonIcon
         slot="start"
+        data-testid={`${testId}-icon`}
         icon={condition ? checkmarkOutline : closeOutline}
         className={`password-criteria-icon${condition ? " pass" : " fails"}`}
       />
