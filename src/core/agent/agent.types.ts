@@ -16,7 +16,6 @@ interface ConnectionHistoryItem {
   type: ConnectionHistoryType;
   credentialType?: string;
   timestamp: string;
-  linkedIpexMessages?: IpexMessageDetails[];
 }
 
 enum MiscRecordId {

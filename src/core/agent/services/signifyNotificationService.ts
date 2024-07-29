@@ -168,6 +168,20 @@ class SignifyNotificationService extends AgentService {
     if (notif.r) {
       return;
     }
+    if (notif.a.r === NotificationRoute.ExnIpexApply) {
+      const existingNotficationRecord = await this.notificationStorage.findById(
+        notif.i
+      );
+      if (!existingNotficationRecord) {
+        const exchange = await this.props.signifyClient
+          .exchanges()
+          .get(notif.a.d);
+        await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
+          exchange.exn.i,
+          exchange
+        );
+      }
+    }
     if (notif.a.r === NotificationRoute.ExnIpexGrant) {
       const exchange = await this.props.signifyClient
         .exchanges()
@@ -208,6 +222,12 @@ class SignifyNotificationService extends AgentService {
         );
         await this.markNotification(notif.i);
         return;
+      } else {
+        await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
+          exchange.exn.i,
+          exchange,
+          true
+        );
       }
     }
     if (notif.a.r === NotificationRoute.MultiSigRpy) {

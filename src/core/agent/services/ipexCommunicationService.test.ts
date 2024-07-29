@@ -236,7 +236,6 @@ describe("Ipex communication service of agent", () => {
         connectionId: "i",
       })
     );
-    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledTimes(1);
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,

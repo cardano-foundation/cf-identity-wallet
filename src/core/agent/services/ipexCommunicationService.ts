@@ -105,7 +105,6 @@ class IpexCommunicationService extends AgentService {
       schema.title,
       connectionId
     );
-    await this.createLinkedIpexMessageRecord(exn.exn.i, exn);
 
     this.props.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
@@ -345,12 +344,14 @@ class IpexCommunicationService extends AgentService {
 
   async createLinkedIpexMessageRecord(
     connectionId: string,
-    message: IpexMessage
+    message: IpexMessage,
+    isUpdate = false
   ): Promise<void> {
     await this.ipexMessageStorage.createIpexMessageRecord({
       id: uuidv4(),
       content: message,
       connectionId,
+      isUpdate,
     });
   }
 }

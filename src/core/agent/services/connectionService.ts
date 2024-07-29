@@ -11,8 +11,6 @@ import {
   AgentServicesProps,
   OobiScan,
   KeriConnectionType,
-  IpexMessageDetails,
-  NotificationRoute,
   ExchangeRoute,
 } from "../agent.types";
 import { AgentService } from "./agentService";
@@ -310,45 +308,38 @@ class ConnectionService extends AgentService {
       await this.credentialStorage.getCredentialMetadataByConnectionId(
         connectionId
       );
-    const credentialStatistics: {
-      [key: string]: { name: string; count: number };
-    } = {};
+    const credentialTypes: { [key: string]: string } = {};
     credentialRecords.forEach((record) => {
-      if (!credentialStatistics[record.id.replace("metadata:", "")]) {
-        credentialStatistics[record.id.replace("metadata:", "")] = {
-          name: record.credentialType,
-          count: 0,
-        };
+      if (!credentialTypes[record.id.replace("metadata:", "")]) {
+        credentialTypes[record.id.replace("metadata:", "")] =
+          record.credentialType;
       }
     });
 
-    const linkedIpexMessages = await this.getLinkedIPEXMessageByConnectionId(
-      connectionId
-    );
+    const linkedIpexMessages =
+      await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(
+        connectionId
+      );
 
     const requestMessages = linkedIpexMessages
       .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
       .map((messageRecord) => {
-        const credentialStatistic =
-          credentialStatistics[messageRecord.content.exn.e.acdc.d];
+        const credentialType =
+          credentialTypes[messageRecord.content.exn.e.acdc.d];
         let historyType: ConnectionHistoryType;
         const route = messageRecord.content.exn.r;
-        if (
-          route === ExchangeRoute.IpexGrant &&
-          credentialStatistic.count === 0
-        ) {
+        if (route === ExchangeRoute.IpexGrant && !messageRecord.isUpdate) {
           historyType = ConnectionHistoryType.CREDENTIAL_ISSUANCE;
         } else if (route === ExchangeRoute.IpexApply) {
-          historyType = ConnectionHistoryType.CREDENTIAL_PRESENT;
+          historyType = ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT;
         } else {
           historyType = ConnectionHistoryType.CREDENTIAL_UPDATE;
         }
-        credentialStatistic.count++;
 
         return {
           type: historyType,
           timestamp: messageRecord.createdAt.toISOString(),
-          credentialType: credentialStatistic.name,
+          credentialType,
         };
       });
     return requestMessages.reverse();
@@ -423,16 +414,6 @@ class ConnectionService extends AgentService {
         message: note.message,
       };
     });
-  }
-
-  private async getLinkedIPEXMessageByConnectionId(
-    connectionId: string
-  ): Promise<IpexMessageDetails[]> {
-    const messages =
-      await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(
-        connectionId
-      );
-    return messages;
   }
 }
 
