@@ -11,7 +11,7 @@ const AppOffline = () => {
   const loggedIn = useAppSelector(getAuthentication).loggedIn;
 
   // NOTE: Prevent all registered hardware back button of other pages instead of lock page.
-  useExitAppWithDoubleTap(loggedIn, BackEventPriorityType.LockPage);
+  useExitAppWithDoubleTap(!loggedIn, BackEventPriorityType.LockPage);
 
   return (
     <ResponsivePageLayout
