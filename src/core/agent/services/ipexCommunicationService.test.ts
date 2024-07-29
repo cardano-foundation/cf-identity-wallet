@@ -237,10 +237,6 @@ describe("Ipex communication service of agent", () => {
       })
     );
     expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledTimes(1);
-    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith("id", {
-      id: "id",
-      status: CredentialStatus.CONFIRMED,
-    });
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,

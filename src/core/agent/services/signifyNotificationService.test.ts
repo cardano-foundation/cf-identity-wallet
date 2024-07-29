@@ -151,6 +151,7 @@ jest.mock("../../../core/agent/agent", () => ({
       multiSigs: { hasMultisig: jest.fn(), joinAuthorization: jest.fn() },
       ipexCommunications: {
         grantAcdcFromAgree: jest.fn(),
+        createLinkedIpexMessageRecord: jest.fn(),
       },
     },
   },
