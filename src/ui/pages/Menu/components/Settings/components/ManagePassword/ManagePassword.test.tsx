@@ -151,6 +151,51 @@ describe("Manage password", () => {
     expect(getByTestId("create-password-modal")).toBeVisible();
   });
 
+  test("Cancel alert", async () => {
+    const { queryByTestId, getByTestId, getByText, queryByText } = render(
+      <Provider store={storeMocked}>
+        <ManagePassword />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("settings-item-toggle-password")).toBeVisible();
+      expect(queryByTestId("settings-item-change-password")).toBe(null);
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("settings-item-toggle-password"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          ENG_trans.settings.sections.security.managepassword.page.alert
+            .enablemessage
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("alert-cancel-enable-password-cancel-button")
+      );
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(
+        queryByText(
+          ENG_trans.settings.sections.security.managepassword.page.alert
+            .enablemessage
+        )
+      ).not.toBeVisible();
+
+      expect(queryByTestId("create-password-modal")).toBe(null);
+    });
+  });
+
   test("Disable password option", async () => {
     const initialState = {
       stateCache: {
