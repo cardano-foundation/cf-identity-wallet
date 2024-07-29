@@ -1,14 +1,15 @@
 import { mockIonicReact } from "@ionic/react-test-utils";
-mockIonicReact();
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
-import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
+import ENG_trans from "../../../locales/en/en.json";
 import { store } from "../../../store";
-import { ShareIdentifierProps } from "./ShareIdentifier.types";
-import { ShareIdentifier } from "./ShareIdentifier";
 import { setToastMsg } from "../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../globals/types";
 import { identifierFix } from "../../__fixtures__/identifierFix";
+import { ToastMsgType } from "../../globals/types";
+import { ShareIdentifier } from "./ShareIdentifier";
+import { ShareIdentifierProps, ShareType } from "./ShareIdentifier.types";
+mockIonicReact();
 
 const setIsOpen = jest.fn();
 const props: ShareIdentifierProps = {
@@ -16,6 +17,13 @@ const props: ShareIdentifierProps = {
   setIsOpen,
   signifyName: identifierFix[0].signifyName,
 };
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children }: never) => (
+    <div data-testid="share-identifier-modal">{children}</div>
+  ),
+}));
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -27,16 +35,16 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
-describe("Share Indentifier (OOBI)", () => {
-  test("Show toast when copy identifier", async () => {
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
-    const storeMocked = {
-      ...mockStore(store.getState()),
-      dispatch: dispatchMock,
-    };
+describe("Share Indentifier", () => {
+  const mockStore = configureStore();
+  const dispatchMock = jest.fn();
+  const storeMocked = {
+    ...mockStore(store.getState()),
+    dispatch: dispatchMock,
+  };
 
-    const { getByTestId } = render(
+  test("Show toast when copy identifier", async () => {
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <ShareIdentifier
           isOpen={props.isOpen}
@@ -47,6 +55,9 @@ describe("Share Indentifier (OOBI)", () => {
     );
 
     await waitFor(() => {
+      expect(
+        getByText(ENG_trans.shareidentifier.subtitle.identifier)
+      ).toBeVisible();
       expect(getByTestId("share-identifier-modal")).toBeInTheDocument();
       expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
     });
@@ -60,5 +71,46 @@ describe("Share Indentifier (OOBI)", () => {
         setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD)
       )
     );
+  });
+
+  test("Render on identifier page", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <ShareIdentifier
+          isOpen={props.isOpen}
+          setIsOpen={props.setIsOpen}
+          signifyName={props.signifyName}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(ENG_trans.shareidentifier.subtitle.identifier)
+      ).toBeVisible();
+      expect(getByTestId("share-identifier-modal")).toBeInTheDocument();
+      expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
+    });
+  });
+
+  test("Render on connection page", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <ShareIdentifier
+          isOpen={props.isOpen}
+          setIsOpen={props.setIsOpen}
+          shareType={ShareType.Connection}
+          signifyName={props.signifyName}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(ENG_trans.shareidentifier.subtitle.connection)
+      ).toBeVisible();
+      expect(getByTestId("share-identifier-modal")).toBeInTheDocument();
+      expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
+    });
   });
 });

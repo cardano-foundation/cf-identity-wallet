@@ -31,13 +31,14 @@ import { AlphabeticList } from "./components/AlphabeticList";
 import { AlphabetSelector } from "./components/AlphabetSelector";
 import { ConnectionsOptionModal } from "./components/ConnectionsOptionModal";
 import { IdentifierSelectorModal } from "./components/IdentifierSelectorModal/IdentifierSelectorModal";
-import { ShareConnection } from "./components/ShareConnection";
 import "./Connections.scss";
 import {
   ConnectionsComponentProps,
   ConnectionShortDetails,
   MappedConnections,
 } from "./Connections.types";
+import { ShareIdentifier } from "../../components/ShareIdentifier";
+import { ShareType } from "../../components/ShareIdentifier/ShareIdentifier.types";
 
 const Connections = ({
   showConnections,
@@ -226,10 +227,11 @@ const Connections = ({
         setOpen={setOpenIdentifierSelector}
         onSubmit={setSelectedIdentifier}
       />
-      <ShareConnection
+      <ShareIdentifier
         isOpen={!!selectedIdentifier}
-        onClose={() => setSelectedIdentifier(null)}
+        setIsOpen={() => setSelectedIdentifier(null)}
         signifyName={selectedIdentifier?.signifyName}
+        shareType={ShareType.Connection}
       />
     </>
   );
