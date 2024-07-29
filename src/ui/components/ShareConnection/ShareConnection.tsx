@@ -14,7 +14,6 @@ import { PageHeader } from "../PageHeader";
 import { ResponsiveModal } from "../layout/ResponsiveModal";
 import "./ShareConnection.scss";
 import { ShareConnectionProps, ShareType } from "./ShareConnection.types";
-import "./ShareIdentifier.scss";
 
 const ShareConnection = ({
   isOpen,
