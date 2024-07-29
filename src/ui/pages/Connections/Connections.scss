@@ -26,10 +26,6 @@
     overflow: initial;
   }
 
-  ion-searchbar {
-    padding: 0 1.25rem;
-  }
-
   .connections-tab-center {
     display: flex;
     flex-direction: row;
@@ -159,10 +155,6 @@
     ion-header,
     .cards-placeholder-container {
       padding-inline: 1rem;
-    }
-
-    ion-searchbar {
-      padding: 0 1rem;
     }
 
     .connections-container {
