@@ -202,6 +202,10 @@ class SignifyNotificationService extends AgentService {
           .submitAdmit(ourIdentifier.signifyName, admit, sigs, aend, [
             exchange.exn.i,
           ]);
+        await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
+          exchange.exn.i,
+          exchange
+        );
         await this.markNotification(notif.i);
         return;
       }

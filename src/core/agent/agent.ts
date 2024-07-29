@@ -37,6 +37,8 @@ import {
   PeerConnectionStorage,
   NotificationRecord,
   NotificationStorage,
+  IpexMessageStorage,
+  IpexMessageRecord,
 } from "./records";
 import { KeyStoreKeys, SecureStorage } from "../storage";
 import { MultiSigService } from "./services/multiSigService";
@@ -46,7 +48,6 @@ import { IonicSession } from "../storage/ionicStorage/ionicSession";
 import { IonicStorage } from "../storage/ionicStorage";
 import { SqliteStorage } from "../storage/sqliteStorage";
 import { BaseRecord } from "../storage/storage.types";
-import { IpexMessageStorage } from "./records/ipexMessageStorage";
 import { OperationPendingStorage } from "./records/operationPendingStorage";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
 
@@ -342,6 +343,9 @@ class Agent {
     );
     this.operationPendingStorage = new OperationPendingStorage(
       this.getStorageService<OperationPendingRecord>(this.storageSession)
+    );
+    this.ipexMessageStorage = new IpexMessageStorage(
+      this.getStorageService<IpexMessageRecord>(this.storageSession)
     );
     this.agentServicesProps = {
       signifyClient: this.signifyClient,

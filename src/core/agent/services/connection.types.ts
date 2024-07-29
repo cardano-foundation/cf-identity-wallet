@@ -7,7 +7,9 @@ interface KeriaContact {
 }
 
 enum ConnectionHistoryType {
-  CREDENTIAL_ACCEPTED,
+  CREDENTIAL_ISSUANCE,
+  CREDENTIAL_PRESENT,
+  CREDENTIAL_UPDATE,
 }
 
 export { ConnectionHistoryType };

@@ -1,11 +1,10 @@
 import { ConnectionStatus, KeriConnectionType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { EventService } from "./eventService";
-import { CredentialStorage, IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
-import { IpexMessageStorage } from "../records/ipexMessageStorage";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { ConnectionHistoryType } from "./connection.types";
 
 const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();
@@ -102,8 +101,6 @@ const signifyClient = jest.mocked({
   }),
 });
 
-const session = {};
-
 const agentServicesProps = {
   signifyClient: signifyClient as any,
   eventService: new EventService(),
@@ -139,12 +136,30 @@ const operationPendingStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
+const getCredentialMetadataByConnectionIdMock = jest.fn();
+const getIpexMessageMetadataByConnectionIdMock = jest.fn();
+
+const credentialStorage = jest.mocked({
+  getAllCredentialMetadata: jest.fn(),
+  deleteCredentialMetadata: jest.fn(),
+  getCredentialMetadata: jest.fn(),
+  getCredentialMetadataByConnectionId: getCredentialMetadataByConnectionIdMock,
+  saveCredentialMetadataRecord: jest.fn(),
+  updateCredentialMetadata: jest.fn(),
+  getCredentialMetadatasById: jest.fn(),
+});
+const ipexMessageStorage = jest.mocked({
+  createIpexMessageRecord: jest.fn(),
+  getIpexMessageMetadataByConnectionId:
+    getIpexMessageMetadataByConnectionIdMock,
+});
+
 const connectionService = new ConnectionService(
   agentServicesProps,
   connectionStorage as any,
   connectionNoteStorage as any,
-  new CredentialStorage(session as any),
-  new IpexMessageStorage(session as any),
+  credentialStorage as any,
+  ipexMessageStorage as any,
   operationPendingStorage as any
 );
 
@@ -612,5 +627,86 @@ describe("Connection service of agent", () => {
     expect(
       Agent.agent.signifyNotifications.addPendingOperationToQueue
     ).toBeCalledTimes(1);
+  });
+
+  test("Can get connection History by id", async () => {
+    const connectionId = "connectionId";
+    const date1 = new Date("Sat Jul 27 2024 15:02:30 GMT+0700");
+    const date2 = new Date("Sat Jul 27 2024 15:12:04 GMT+0700");
+    const date3 = new Date("Sat Jul 27 2024 15:30:34 GMT+0700");
+    getCredentialMetadataByConnectionIdMock.mockResolvedValue([
+      {
+        id: "EN_tsGwSUI63SYoSiiN8qsysUT8bnka9gZEka8PG_oVQ",
+        credentialType: "IIW 2024 Demo Day Attendee",
+        connectionId,
+      },
+    ]);
+    getIpexMessageMetadataByConnectionIdMock.mockResolvedValue([
+      {
+        id: "id-1",
+        content: {
+          exn: {
+            r: "/ipex/grant",
+            e: {
+              acdc: {
+                d: "EN_tsGwSUI63SYoSiiN8qsysUT8bnka9gZEka8PG_oVQ",
+              },
+            },
+          },
+        },
+        connectionId,
+        createdAt: date1,
+      },
+      {
+        id: "id-2",
+        content: {
+          exn: {
+            r: "/ipex/apply",
+            e: {
+              acdc: {
+                d: "EN_tsGwSUI63SYoSiiN8qsysUT8bnka9gZEka8PG_oVQ",
+              },
+            },
+          },
+        },
+        connectionId,
+        createdAt: date2,
+      },
+      {
+        id: "id-3",
+        content: {
+          exn: {
+            r: "/ipex/grant",
+            e: {
+              acdc: {
+                d: "EN_tsGwSUI63SYoSiiN8qsysUT8bnka9gZEka8PG_oVQ",
+              },
+            },
+          },
+        },
+        connectionId,
+        createdAt: date3,
+      },
+    ]);
+    const histories = await connectionService.getConnectionHistoryById(
+      connectionId
+    );
+    expect(histories).toEqual([
+      {
+        type: ConnectionHistoryType.CREDENTIAL_UPDATE,
+        timestamp: date3.toISOString(),
+        credentialType: "IIW 2024 Demo Day Attendee",
+      },
+      {
+        type: ConnectionHistoryType.CREDENTIAL_PRESENT,
+        timestamp: date2.toISOString(),
+        credentialType: "IIW 2024 Demo Day Attendee",
+      },
+      {
+        type: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+        timestamp: date1.toISOString(),
+        credentialType: "IIW 2024 Demo Day Attendee",
+      },
+    ]);
   });
 });

@@ -4,7 +4,7 @@ import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import {
   AcdcEventTypes,
-  IpexMessages,
+  IpexMessage,
   type AcdcStateChangedEvent,
   type AgentServicesProps,
   type KeriaNotification,
@@ -14,6 +14,7 @@ import {
   IdentifierStorage,
   NotificationStorage,
   OperationPendingStorage,
+  IpexMessageStorage,
 } from "../records";
 import {
   CredentialMetadataRecordProps,
@@ -23,7 +24,6 @@ import { AgentService } from "./agentService";
 import { CredentialStatus } from "./credentialService.types";
 import { OnlineOnly, getCredentialShortDetails } from "./utils";
 import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
-import { IpexMessageStorage } from "../records/ipexMessageStorage";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 
 class IpexCommunicationService extends AgentService {
@@ -343,9 +343,9 @@ class IpexCommunicationService extends AgentService {
     });
   }
 
-  private async createLinkedIpexMessageRecord(
+  async createLinkedIpexMessageRecord(
     connectionId: string,
-    message: IpexMessages
+    message: IpexMessage
   ): Promise<void> {
     await this.ipexMessageStorage.createIpexMessageRecord({
       id: uuidv4(),

@@ -12,6 +12,8 @@ import {
   OobiScan,
   KeriConnectionType,
   IpexMessageDetails,
+  NotificationRoute,
+  ExchangeRoute,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { Agent } from "../agent";
@@ -21,10 +23,10 @@ import {
   CredentialStorage,
   ConnectionStorage,
   OperationPendingStorage,
+  IpexMessageStorage,
 } from "../records";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
-import { IpexMessageStorage } from "../records/ipexMessageStorage";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 
 class ConnectionService extends AgentService {
@@ -200,9 +202,6 @@ class ConnectionService extends AgentService {
       ).createdAt.toISOString(),
       serviceEndpoints: [connection.oobi],
       notes: await this.getConnectNotesByConnectionId(connection.id),
-      linkedIpexMessages: await this.getLinkedIPEXMessageByConnectionId(
-        connection.id
-      ),
     };
   }
 
@@ -307,21 +306,52 @@ class ConnectionService extends AgentService {
   async getConnectionHistoryById(
     connectionId: string
   ): Promise<ConnectionHistoryItem[]> {
-    let histories: ConnectionHistoryItem[] = [];
     const credentialRecords =
       await this.credentialStorage.getCredentialMetadataByConnectionId(
         connectionId
       );
-    histories = histories.concat(
-      credentialRecords.map((record) => {
-        return {
-          type: ConnectionHistoryType.CREDENTIAL_ACCEPTED,
-          timestamp: record.createdAt.toISOString(),
-          credentialType: record.credentialType,
+    const credentialStatistics: {
+      [key: string]: { name: string; count: number };
+    } = {};
+    credentialRecords.forEach((record) => {
+      if (!credentialStatistics[record.id.replace("metadata:", "")]) {
+        credentialStatistics[record.id.replace("metadata:", "")] = {
+          name: record.credentialType,
+          count: 0,
         };
-      })
+      }
+    });
+
+    const linkedIpexMessages = await this.getLinkedIPEXMessageByConnectionId(
+      connectionId
     );
-    return histories;
+
+    const requestMessages = linkedIpexMessages
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+      .map((messageRecord) => {
+        const credentialStatistic =
+          credentialStatistics[messageRecord.content.exn.e.acdc.d];
+        let historyType: ConnectionHistoryType;
+        const route = messageRecord.content.exn.r;
+        if (
+          route === ExchangeRoute.IpexGrant &&
+          credentialStatistic.count === 0
+        ) {
+          historyType = ConnectionHistoryType.CREDENTIAL_ISSUANCE;
+        } else if (route === ExchangeRoute.IpexApply) {
+          historyType = ConnectionHistoryType.CREDENTIAL_PRESENT;
+        } else {
+          historyType = ConnectionHistoryType.CREDENTIAL_UPDATE;
+        }
+        credentialStatistic.count++;
+
+        return {
+          type: historyType,
+          timestamp: messageRecord.createdAt.toISOString(),
+          credentialType: credentialStatistic.name,
+        };
+      });
+    return requestMessages.reverse();
   }
 
   // @TODO - foconnor: Contacts that are smid/rmids for multisigs will be synced too.

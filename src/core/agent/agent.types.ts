@@ -16,6 +16,7 @@ interface ConnectionHistoryItem {
   type: ConnectionHistoryType;
   credentialType?: string;
   timestamp: string;
+  linkedIpexMessages?: IpexMessageDetails[];
 }
 
 enum MiscRecordId {
@@ -53,7 +54,16 @@ type ConnectionNoteDetails = {
   message: string;
 };
 
-type IpexMessages = {
+interface JSONObject {
+  [x: string]: JSONValue;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface JSONArray extends Array<JSONValue> {}
+
+type JSONValue = string | number | boolean | JSONObject | JSONArray;
+
+type IpexMessage = {
   exn: {
     v: string;
     t: string;
@@ -62,7 +72,7 @@ type IpexMessages = {
     p: string;
     dt: string;
     r: string;
-    q: any;
+    q: JSONValue;
     a: any;
     e: any;
   };
@@ -75,7 +85,8 @@ type IpexMessages = {
 
 type IpexMessageDetails = {
   id: string;
-  content: IpexMessages;
+  content: IpexMessage;
+  createdAt: Date;
 };
 
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
@@ -83,7 +94,6 @@ type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 interface ConnectionDetails extends ConnectionShortDetails {
   serviceEndpoints?: string[];
   notes?: ConnectionNoteDetails[];
-  linkedIpexMessages?: IpexMessageDetails[];
 }
 
 enum ConnectionEventTypes {
@@ -211,6 +221,8 @@ enum NotificationRoute {
 
 enum ExchangeRoute {
   IpexAdmit = "/ipex/admit",
+  IpexGrant = "/ipex/grant",
+  IpexApply = "/ipex/apply",
 }
 
 interface BranAndMnemonic {
@@ -247,7 +259,7 @@ export type {
   KeriaStatusChangedEvent,
   AgentUrls,
   BranAndMnemonic,
-  IpexMessages,
+  IpexMessage,
   IpexMessageDetails,
   NotificationRpy,
   AuthorizationRequestExn,

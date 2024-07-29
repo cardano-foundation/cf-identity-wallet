@@ -1,30 +1,28 @@
 import { BaseRecord } from "../../storage/storage.types";
-import { IpexMessages } from "../agent.types";
+import { IpexMessage } from "../agent.types";
 
 interface IpexMessageProps {
   id: string;
-  content: IpexMessages;
+  content: IpexMessage;
+  createdAt?: Date;
   connectionId: string;
 }
 
 class IpexMessageRecord extends BaseRecord {
-  content!: IpexMessages;
+  content!: IpexMessage;
   connectionId!: string;
 
   static readonly type = "IpexMessagMetadataRecord";
   readonly type = IpexMessageRecord.type;
 
-  constructor(props: {
-    id: string;
-    content: IpexMessages;
-    connectionId: string;
-  }) {
+  constructor(props: IpexMessageProps) {
     super();
 
     if (props) {
       this.id = props.id;
       this.content = props.content;
       this.connectionId = props.connectionId;
+      this.createdAt = props.createdAt ?? new Date();
     }
   }
 
