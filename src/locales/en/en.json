@@ -1464,6 +1464,7 @@
     "disconnectwallet": "Disconnected successfully",
     "unableconnectwallet": "Unable to connect",
     "peeridsuccess": "Peer ID successful",
+    "peeriderror": "Peer ID not recognised",
     "peeridnotrecognised": "Peer ID not recognised",
     "setupbiometricsuccess": "Biometrics setup successfully",
     "rotatekeysuccess": "Keys rotated successfully",

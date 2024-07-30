@@ -79,6 +79,7 @@ enum ToastMsgType {
   DISCONNECT_WALLET_SUCCESS = "disconnectwallet",
   UNABLE_CONNECT_WALLET = "unableconnectwallet",
   PEER_ID_SUCCESS = "peeridsuccess",
+  PEER_ID_ERROR = "peeriderror",
   PEER_ID_NOT_RECOGNISED = "peeridnotrecognised",
   SETUP_BIOMETRIC_AUTHENTICATION_SUCCESS = "setupbiometricsuccess",
   ROTATE_KEY_SUCCESS = "rotatekeysuccess",
