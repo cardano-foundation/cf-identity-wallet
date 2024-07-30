@@ -125,7 +125,7 @@ describe("Settings page", () => {
       getByText(EN_TRANSLATIONS.settings.sections.support.learnmore)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.terms)
+      getByText(EN_TRANSLATIONS.settings.sections.support.terms.title)
     ).toBeInTheDocument();
     expect(
       getByText(EN_TRANSLATIONS.settings.sections.support.version)
