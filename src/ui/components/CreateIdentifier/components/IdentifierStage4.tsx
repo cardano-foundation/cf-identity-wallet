@@ -18,6 +18,7 @@ import {
 } from "../../../../store/reducers/identifiersCache";
 import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
+import { createThemeValue } from "../../../utils/theme";
 
 const IdentifierStage4 = ({
   state,
@@ -28,8 +29,6 @@ const IdentifierStage4 = ({
 }: IdentifierStageProps) => {
   const dispatch = useAppDispatch();
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  // @TODO - sdisalvo: This is a temporary fix to get the identifier created.
-  // We'll need to work out a proper way to get 'ourIdentifier'.
   const identifiersData = useAppSelector(getIdentifiersCache);
   const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
   const ourIdentifier = state.ourIdentifier;
@@ -47,6 +46,7 @@ const IdentifierStage4 = ({
       );
       return;
     } else {
+      const selectedTheme = createThemeValue(state.color, state.selectedTheme);
       const { identifier, signifyName, isPending } =
         await Agent.agent.multiSigs.createMultisig(
           ourIdentifier,
@@ -58,7 +58,7 @@ const IdentifierStage4 = ({
           id: identifier,
           displayName: state.displayNameValue,
           createdAtUTC: new Date().toISOString(),
-          theme: state.selectedTheme,
+          theme: selectedTheme,
           isPending: !!isPending,
           signifyName,
           multisigManageAid: ourIdentifier,

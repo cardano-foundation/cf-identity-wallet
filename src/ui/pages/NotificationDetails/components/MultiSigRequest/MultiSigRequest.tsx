@@ -10,7 +10,7 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { personCircleOutline } from "ionicons/icons";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Alert as AlertDecline } from "../../../../components/Alert";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
@@ -35,7 +35,10 @@ import {
   getNotificationsCache,
   setNotificationsCache,
 } from "../../../../../store/reducers/notificationsCache";
-import { useIonHardwareBackButton } from "../../../../hooks";
+import {
+  useIonHardwareBackButton,
+  useOnlineStatusEffect,
+} from "../../../../hooks";
 import { MultiSigService } from "../../../../../core/agent/services/multiSigService";
 import { ErrorPage } from "./ErrorPage";
 
@@ -61,7 +64,7 @@ const MultiSigRequest = ({
     !activeStatus
   );
 
-  const getDetails = async () => {
+  const getDetails = useCallback(async () => {
     try {
       const details = await Agent.agent.multiSigs.getMultisigIcpDetails(
         notificationDetails.a.d as string
@@ -75,11 +78,9 @@ const MultiSigRequest = ({
         setShowErrorPage(true);
       }
     }
-  };
+  }, [notificationDetails.a.d]);
 
-  useEffect(() => {
-    getDetails();
-  }, []);
+  useOnlineStatusEffect(getDetails);
 
   const handleNotificationUpdate = async () => {
     const updatedNotifications = notifications.filter(

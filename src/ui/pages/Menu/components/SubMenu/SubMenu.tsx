@@ -4,25 +4,30 @@ import { useCallback } from "react";
 import { SubMenuProps } from "./SubMenu.types";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../../../components/PageHeader";
-import { combineClassNames } from "../../../../utils/style";
 import { SideSlider } from "../../../../components/SideSlider";
+import { SubMenuKey } from "../../Menu.types";
 
 const SubMenu = ({
   showSubMenu,
   setShowSubMenu,
+  switchView,
+  nestedMenu,
   title,
   additionalButtons,
   children,
   pageId: customPageId,
 }: SubMenuProps) => {
   const pageId = `sub-menu ${customPageId}`;
-
   const handleClose = useCallback(() => {
-    setShowSubMenu(false);
-  }, [setShowSubMenu]);
+    if (nestedMenu) {
+      switchView(SubMenuKey.Settings);
+    } else {
+      setShowSubMenu(false);
+    }
+  }, [nestedMenu, setShowSubMenu, switchView]);
 
   return (
-    <SideSlider open={showSubMenu}>
+    <SideSlider isOpen={showSubMenu}>
       <ScrollablePageLayout
         pageId={pageId}
         activeStatus={showSubMenu}
@@ -37,7 +42,10 @@ const SubMenu = ({
         }
       >
         <div
-          className={`${title?.toLowerCase().replace(" ", "-")}-content`}
+          className={
+            `${title?.toLowerCase().replace(" ", "-")}-content` +
+            `${nestedMenu ? " nested-content" : ""}`
+          }
           data-testid={`${title?.toLowerCase().replace(" ", "-")}-content`}
         >
           {children}

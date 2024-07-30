@@ -68,6 +68,7 @@ const initialStateNoPasswordCurrent = {
       passwordIsSet: false,
       passwordIsSkipped: true,
     },
+    isOnline: true,
   },
   seedPhraseCache: {
     seedPhrase:
@@ -94,6 +95,7 @@ const initialStateNoPasswordArchived = {
       passwordIsSet: false,
       passwordIsSkipped: true,
     },
+    isOnline: true,
   },
   seedPhraseCache: {
     seedPhrase:
@@ -161,6 +163,7 @@ describe("Cards Details page - current not archived credential", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
         },
+        isOnline: true,
       },
       seedPhraseCache: {
         seedPhrase:
@@ -372,6 +375,7 @@ describe("Cards Details page - current not archived credential", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
         },
+        isOnline: true,
       },
       seedPhraseCache: {
         seedPhrase:
@@ -440,6 +444,7 @@ describe("Cards Details page - current not archived credential", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
         },
+        isOnline: true,
       },
       seedPhraseCache: {
         seedPhrase:
@@ -620,6 +625,7 @@ describe("Cred detail - notification light mode", () => {
         passwordIsSet: false,
         passwordIsSkipped: true,
       },
+      isOnline: true,
     },
     seedPhraseCache: {
       seedPhrase:

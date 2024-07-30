@@ -1,6 +1,7 @@
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
+  ExchangeRoute,
   KeriaNotification,
   KeriaNotificationMarker,
   MiscRecordId,
@@ -9,6 +10,7 @@ import {
 import { Notification } from "./credentialService.types";
 import {
   BasicRecord,
+  ConnectionStorage,
   IdentifierStorage,
   NotificationStorage,
   OperationPendingStorage,
@@ -16,6 +18,7 @@ import {
 import { Agent } from "../agent";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
+import { IonicStorage } from "../../storage/ionicStorage";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -25,6 +28,7 @@ class SignifyNotificationService extends AgentService {
   protected readonly notificationStorage!: NotificationStorage;
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
+  protected readonly connectionStorage: ConnectionStorage;
 
   protected pendingOperations: OperationPendingRecord[] = [];
   private loggedIn = true;
@@ -33,12 +37,14 @@ class SignifyNotificationService extends AgentService {
     agentServiceProps: AgentServicesProps,
     notificationStorage: NotificationStorage,
     identifierStorage: IdentifierStorage,
-    operationPendingStorage: OperationPendingStorage
+    operationPendingStorage: OperationPendingStorage,
+    connectionStorage: ConnectionStorage
   ) {
     super(agentServiceProps);
     this.notificationStorage = notificationStorage;
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
+    this.connectionStorage = connectionStorage;
   }
 
   async onNotificationStateChanged(
@@ -151,6 +157,7 @@ class SignifyNotificationService extends AgentService {
   }
 
   async deleteNotificationRecordById(id: string): Promise<void> {
+    await this.markNotification(id);
     await this.notificationStorage.deleteById(id);
   }
 
@@ -158,6 +165,47 @@ class SignifyNotificationService extends AgentService {
     notif: Notification,
     callback: (event: KeriaNotification) => void
   ) {
+    if (notif.r) {
+      return;
+    }
+    if (notif.a.r === NotificationRoute.ExnIpexGrant) {
+      const exchange = await this.props.signifyClient
+        .exchanges()
+        .get(notif.a.d);
+      const existingCredential = await this.props.signifyClient
+        .credentials()
+        .get(exchange.exn.e.acdc.d)
+        .catch(() => undefined);
+      const ourIdentifier = await this.identifierStorage
+        .getIdentifierMetadata(exchange.exn.a.i)
+        .catch((error) => {
+          if (
+            (error as Error).message ===
+            IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
+      if (!ourIdentifier) {
+        await this.markNotification(notif.i);
+        return;
+      }
+      if (existingCredential) {
+        const dt = new Date().toISOString().replace("Z", "000+00:00");
+        const [admit, sigs, aend] = await this.props.signifyClient
+          .ipex()
+          .admit(ourIdentifier.signifyName, "", notif.a.d, dt);
+        await this.props.signifyClient
+          .ipex()
+          .submitAdmit(ourIdentifier.signifyName, admit, sigs, aend, [
+            exchange.exn.i,
+          ]);
+        await this.markNotification(notif.i);
+        return;
+      }
+    }
     if (notif.a.r === NotificationRoute.MultiSigRpy) {
       const multisigNotification = await this.props.signifyClient
         .groups()
@@ -241,18 +289,25 @@ class SignifyNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return;
     }
+
     if (
-      Object.values(NotificationRoute).includes(
-        notif.a.r as NotificationRoute
-      ) &&
-      !notif.r
+      Object.values(NotificationRoute).includes(notif.a.r as NotificationRoute)
     ) {
-      const keriaNotif = await this.createNotificationRecord(notif);
-      callback(keriaNotif);
-      await this.markNotification(notif.i);
-    } else if (!notif.r) {
-      this.markNotification(notif.i);
+      try {
+        const keriaNotif = await this.createNotificationRecord(notif);
+        callback(keriaNotif);
+      } catch (error) {
+        if (
+          (error as Error).message ===
+          `${IonicStorage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${notif.i}`
+        ) {
+          return;
+        } else {
+          throw error;
+        }
+      }
     }
+
     return;
   }
 
@@ -335,7 +390,7 @@ class SignifyNotificationService extends AgentService {
     });
   }
 
-  private markNotification(notiSaid: string) {
+  private async markNotification(notiSaid: string) {
     return this.props.signifyClient.notifications().mark(notiSaid);
   }
 
@@ -419,7 +474,37 @@ class SignifyNotificationService extends AgentService {
               });
               break;
             }
-
+            case OperationPendingRecordType.Oobi: {
+              const connectionRecord = await this.connectionStorage.findById(
+                (operation.response as any).i
+              );
+              if (connectionRecord) {
+                connectionRecord.pending = false;
+                await this.connectionStorage.update(connectionRecord);
+              }
+              callback({
+                opType: pendingOperation.recordType,
+                oid: recordId,
+              });
+              break;
+            }
+            case OperationPendingRecordType.ExchangeReceiveCredential: {
+              const admitExchange = await this.props.signifyClient
+                .exchanges()
+                .get(operation.metadata?.said);
+              if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
+                const grantExchange = await this.props.signifyClient
+                  .exchanges()
+                  .get(admitExchange.exn.p);
+                const credentialId = grantExchange.exn.e.acdc.d;
+                if (credentialId) {
+                  await Agent.agent.ipexCommunications.markAcdcComplete(
+                    credentialId
+                  );
+                }
+              }
+              break;
+            }
             default:
               break;
             }

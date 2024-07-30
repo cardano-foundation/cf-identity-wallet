@@ -18,6 +18,7 @@ import { ConnectionDetails } from "./ConnectionDetails";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { Agent } from "../../../core/agent/agent";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -53,6 +54,7 @@ const initialStateFull = {
       time: Date.now(),
       passcodeIsSet: true,
     },
+    isOnline: true,
   },
   seedPhraseCache: {},
   credsCache: {
@@ -66,6 +68,9 @@ const initialStateFull = {
   },
   biometricsCache: {
     enabled: false,
+  },
+  identifiersCache: {
+    identifiers: filteredIdentifierFix,
   },
 };
 

@@ -1,3 +1,4 @@
+import { Serder } from "signify-ts";
 import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { SignifyNotificationService } from "./signifyNotificationService";
@@ -13,6 +14,10 @@ const groupGetRequestMock = jest.fn();
 
 const oobiResolveMock = jest.fn();
 const queryKeyStateMock = jest.fn();
+const markNotificationMock = jest.fn();
+const getCredentialMock = jest.fn();
+const admitMock = jest.fn();
+const submitAdmitMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -53,17 +58,30 @@ const signifyClient = jest.mocked({
   }),
   notifications: () => ({
     list: jest.fn(),
-    mark: jest.fn(),
+    mark: markNotificationMock,
   }),
   ipex: () => ({
-    admit: jest.fn(),
-    submitAdmit: jest.fn(),
+    admit: admitMock,
+    submitAdmit: submitAdmitMock,
   }),
   credentials: () => ({
+    get: getCredentialMock,
     list: jest.fn(),
   }),
   exchanges: () => ({
-    get: jest.fn().mockResolvedValue({ exn: { i: "connection-id" } }),
+    get: jest.fn().mockResolvedValue({
+      exn: {
+        i: "connection-id",
+        a: {
+          i: "i",
+        },
+        e: {
+          acdc: {
+            d: "d",
+          },
+        },
+      },
+    }),
     send: jest.fn(),
   }),
   agent: {
@@ -83,6 +101,14 @@ const agentServicesProps = {
   eventService: new EventService(),
 };
 
+const identifierMetadataRecordProps = {
+  id: "aidHere",
+  displayName: "Identifier 2",
+  signifyName: "uuid-here",
+  createdAt: new Date(),
+  theme: 0,
+};
+
 const notificationStorage = jest.mocked({
   open: jest.fn(),
   save: jest.fn(),
@@ -94,21 +120,35 @@ const notificationStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
-const identifierStorage = jest.mocked({});
+const connectionStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
+const identifierStorage = jest.mocked({
+  getIdentifierMetadata: jest.fn(),
+});
 const operationPendingStorage = jest.mocked({});
 
 const signifyNotificationService = new SignifyNotificationService(
   agentServicesProps,
   notificationStorage as any,
   identifierStorage as any,
-  operationPendingStorage as any
+  operationPendingStorage as any,
+  connectionStorage as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       getKeriaOnlineStatus: jest.fn(),
-      multiSigs: { hasMultisig: jest.fn() },
+      multiSigs: { hasMultisig: jest.fn(), joinAuthorization: jest.fn() },
       ipexCommunications: {
         grantAcdcFromAgree: jest.fn(),
       },
@@ -157,6 +197,8 @@ describe("Signify notification service of agent", () => {
         },
       },
     ];
+    getCredentialMock.mockRejectedValue(new Error());
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -167,6 +209,59 @@ describe("Signify notification service of agent", () => {
     }
     expect(notificationStorage.save).toBeCalledTimes(2);
     expect(callback).toBeCalledTimes(2);
+  });
+
+  test("Should admit if there is an existing credential", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/exn/ipex/grant",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+    const acdc = {
+      sad: {
+        a: { LEI: "5493001KJTIIGC8Y1R17" },
+        d: "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli",
+        i: "EIpeOFh268oRJTM4vNNoQvMWw-NBUPDv1NqYbx6Lc1Mk",
+        ri: "EOIj7V-rqu_Q9aGSmPfviBceEtRk1UZBN5H2P_L-Hhx5",
+        s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        v: "ACDC10JSON000197_",
+      },
+      schema: {
+        title: "Qualified vLEI Issuer Credential",
+        description: "vLEI Issuer Description",
+        version: "1.0.0",
+        credentialType: "QualifiedvLEIIssuervLEICredential",
+      },
+      status: {
+        s: "0",
+        dt: new Date().toISOString(),
+      },
+    };
+    getCredentialMock.mockResolvedValue(acdc);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "signifyName",
+    });
+    notificationStorage.save = jest
+      .fn()
+      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+    groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
+    jest.useFakeTimers();
+    admitMock.mockResolvedValue([{}, ["sigs"], "end"]);
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(admitMock).toBeCalledTimes(1);
+    expect(submitAdmitMock).toBeCalledTimes(1);
   });
 
   test("Should call update when read a notification", async () => {
@@ -191,6 +286,7 @@ describe("Signify notification service of agent", () => {
     const id = "uuid";
     await signifyNotificationService.deleteNotificationRecordById(id);
     expect(notificationStorage.deleteById).toBeCalled();
+    expect(markNotificationMock).toBeCalled();
   });
 
   test("Should skip if there is no valid multi-sig notification", async () => {
@@ -203,6 +299,16 @@ describe("Signify notification service of agent", () => {
         r: false,
         a: {
           r: "/multisig/icp",
+          d: "not-found-said",
+          m: "",
+        },
+      },
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/rpy",
           d: "not-found-said",
           m: "",
         },
@@ -253,6 +359,16 @@ describe("Signify notification service of agent", () => {
           m: "",
         },
       },
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/rpy",
+          d: "not-found-said",
+          m: "",
+        },
+      },
     ];
     for (const notif of notes) {
       await signifyNotificationService.processNotification(notif, callback);
@@ -276,5 +392,105 @@ describe("Signify notification service of agent", () => {
     await expect(
       signifyNotificationService.unreadNotification("not-exist-noti-id")
     ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
+  });
+
+  test("Should skip if there is a missing multi-sig identifier", async () => {
+    const callback = jest.fn();
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    groupGetRequestMock.mockResolvedValue([{ exn: { a: {} } }]);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/rpy",
+          d: "not-found-said",
+          m: "",
+        },
+      },
+    ];
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(callback).toBeCalledTimes(0);
+  });
+
+  test("Should skip if notification route is /multisig/rpy", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(identifierMetadataRecordProps);
+
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/rpy",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    const multisigNotificationExn = {
+      exn: {
+        a: {
+          gid: "uuid",
+        },
+        e: {
+          rpy: {
+            v: "KERI10JSON000111_",
+            t: "rpy",
+            d: "uuid",
+            dt: "2024-07-12T09:37:48.801000+00:00",
+            r: "/end/role/add",
+            a: {
+              cid: "uuid",
+              role: "agent",
+              eid: "new-uuid",
+            },
+          },
+          d: "uuid",
+        },
+      },
+    };
+    groupGetRequestMock.mockResolvedValue([multisigNotificationExn]);
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(markNotificationMock).toBeCalledWith(notes[0].i);
+    expect(Agent.agent.multiSigs.joinAuthorization).toBeCalledTimes(1);
+  });
+
+  test("Should call grantAcdcFromAgree if notification route is /exn/ipex/agree", async () => {
+    const callback = jest.fn();
+    const notification = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/exn/ipex/agree",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+    await signifyNotificationService.processNotification(
+      notification[0],
+      callback
+    );
+
+    expect(callback).toBeCalledTimes(0);
+    expect(Agent.agent.ipexCommunications.grantAcdcFromAgree).toBeCalledWith(
+      notification[0].a.d
+    );
+    expect(markNotificationMock).toBeCalledWith(notification[0].i);
   });
 });

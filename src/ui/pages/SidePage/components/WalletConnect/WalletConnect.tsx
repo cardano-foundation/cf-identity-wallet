@@ -36,7 +36,7 @@ const WalletConnect = ({ setOpenPage }: SidePageContentProps) => {
           onAccept={changeToStageTwo}
         />
       )}
-      <SideSlider open={requestStage === 1}>
+      <SideSlider isOpen={requestStage === 1}>
         <WalletConnectStageTwo
           pendingDAppMeerkat={pendingConnection.id}
           isOpen={!!pendingConnection && requestStage === 1}

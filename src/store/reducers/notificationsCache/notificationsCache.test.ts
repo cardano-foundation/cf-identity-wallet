@@ -114,6 +114,7 @@ describe("Notifications cache", () => {
   it("should return the notifications cache from RootState", () => {
     const state: RootState = {
       stateCache: {
+        isOnline: true,
         initialized: true,
         routes: [],
         authentication: {
@@ -192,6 +193,7 @@ describe("Notifications cache", () => {
     const state: RootState = {
       stateCache: {
         initialized: true,
+        isOnline: true,
         routes: [],
         authentication: {
           loggedIn: false,

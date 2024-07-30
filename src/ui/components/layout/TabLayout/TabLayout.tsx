@@ -83,6 +83,7 @@ const TabLayout = ({
         customClass ? " " + customClass : ""
       }`}
       data-testid={pageId}
+      id={pageId}
     >
       {header && (
         <IonHeader className="ion-no-border tab-header">

@@ -1,15 +1,15 @@
+import { AnyAction, Store } from "@reduxjs/toolkit";
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
-import { AnyAction, Store } from "@reduxjs/toolkit";
 import { MemoryRouter } from "react-router-dom";
-import { createMemoryHistory } from "history";
-import { Creds } from "./Credentials";
-import { TabsRoutePath } from "../../../routes/paths";
-import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { formatShortDate } from "../../utils/formatters";
+import { Creds } from "./Credentials";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -28,6 +28,7 @@ const initialStateEmpty = {
       time: Date.now(),
       passcodeIsSet: true,
     },
+    isOnline: true,
   },
   seedPhraseCache: {},
   credsCache: {
@@ -38,6 +39,9 @@ const initialStateEmpty = {
   },
   connectionsCache: {
     connections: [],
+  },
+  identifiersCache: {
+    identifiers: filteredIdentifierFix,
   },
 };
 
@@ -65,6 +69,9 @@ const initialStateFull = {
   },
   connectionsCache: {
     connections: connectionsFix,
+  },
+  identifiersCache: {
+    identifiers: filteredIdentifierFix,
   },
 };
 

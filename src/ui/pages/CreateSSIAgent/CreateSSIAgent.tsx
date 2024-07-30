@@ -35,6 +35,8 @@ import { OperationType } from "../../globals/types";
 import { useAppIonRouter } from "../../hooks";
 import { isValidHttpUrl } from "../../utils/urlChecker";
 import "./CreateSSIAgent.scss";
+import { SwitchOnboardingMode } from "../../components/SwitchOnboardingMode";
+import { OnboardingMode } from "../../components/SwitchOnboardingMode/SwitchOnboardingMode.types";
 
 const SSI_URLS_EMPTY = "SSI url is empty";
 const SEED_PHRASE_EMPTY = "Invalid seed phrase";
@@ -80,7 +82,7 @@ const CreateSSIAgent = () => {
         setBootUrl(ConfigurationService.env?.keri?.keria?.bootUrl || undefined)
       );
     }
-  }, []);
+  }, [dispatch, ssiAgent.bootUrl, ssiAgent.connectUrl]);
 
   const setTouchedConnectUrlInput = () => {
     setConnectUrlTouched(true);
@@ -94,7 +96,7 @@ const CreateSSIAgent = () => {
     return (
       isRecoveryMode || (ssiAgent.bootUrl && isValidHttpUrl(ssiAgent.bootUrl))
     );
-  }, [ssiAgent]);
+  }, [isRecoveryMode, ssiAgent.bootUrl]);
 
   const validConnectUrl = useMemo(() => {
     return ssiAgent.connectUrl && isValidHttpUrl(ssiAgent.connectUrl);
@@ -258,8 +260,6 @@ const CreateSSIAgent = () => {
         pageId={pageId}
         header={
           <PageHeader
-            backButton={true}
-            beforeBack={handleClearState}
             currentPath={RoutePath.SSI_AGENT}
             progressBar={true}
             progressBarValue={1}
@@ -269,7 +269,12 @@ const CreateSSIAgent = () => {
       >
         <div className="content-container ">
           <div>
-            <h2 data-testid={`${pageId}-title`}>{i18n.t("ssiagent.title")}</h2>
+            <h2
+              className="title"
+              data-testid={`${pageId}-title`}
+            >
+              {i18n.t("ssiagent.title")}
+            </h2>
             <p
               className="page-paragraph"
               data-testid={`${pageId}-top-paragraph`}
@@ -360,6 +365,11 @@ const CreateSSIAgent = () => {
                   : displayBootUrlError && !isInvalidConnectUrl
                     ? `${i18n.t("ssiagent.error.invalidurl")}`
                     : `${i18n.t("ssiagent.error.invalidconnecturl")}`
+              }
+            />
+            <SwitchOnboardingMode
+              mode={
+                isRecoveryMode ? OnboardingMode.Create : OnboardingMode.Recovery
               }
             />
           </div>

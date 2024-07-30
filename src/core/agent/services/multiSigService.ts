@@ -35,6 +35,8 @@ class MultiSigService extends AgentService {
   static readonly INVALID_THRESHOLD = "Invalid threshold";
   static readonly CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER =
     "Unable to retrieve key states for given multi-sig member";
+  static readonly CANNOT_GET_KEYSTATE_OF_IDENTIFIER =
+    "Unable to query key state of identifier";
   static readonly EXN_MESSAGE_NOT_FOUND =
     "There's no exchange message for the given SAID";
   static readonly MULTI_SIG_NOT_FOUND =
@@ -252,20 +254,35 @@ class MultiSigService extends AgentService {
     const members = await this.props.signifyClient
       .identifiers()
       .members(metadata.signifyName);
-    const multisigMembers = members?.signing;
+    const smids = members?.signing;
+    const rmids = members?.rotation;
 
-    const multisigMumberAids: Aid[] = [];
+    const states: any[] = [];
+    const rstates: any[] = [];
+
     await Promise.allSettled(
-      multisigMembers.map(async (signing: any) => {
+      smids.map(async (signing: any) => {
         const aid = await this.props.signifyClient
           .keyStates()
           .query(signing.aid, nextSequence);
         if (aid.done) {
-          multisigMumberAids.push({ state: aid.response } as Aid);
+          states.push(aid.response);
         }
       })
     );
-    if (multisigMembers.length !== multisigMumberAids.length) {
+
+    await Promise.allSettled(
+      rmids.map(async (rotation: any) => {
+        const aid = await this.props.signifyClient
+          .keyStates()
+          .query(rotation.aid, nextSequence);
+        if (aid.done) {
+          rstates.push(aid.response);
+        }
+      })
+    );
+
+    if (smids.length !== states.length) {
       throw new Error(MultiSigService.NOT_FOUND_ALL_MEMBER_OF_MULTISIG);
     }
     const aid = await this.props.signifyClient
@@ -274,7 +291,10 @@ class MultiSigService extends AgentService {
 
     const result = await this.rotateMultisigAid(
       aid,
-      multisigMumberAids,
+      smids,
+      rmids,
+      states,
+      rstates,
       metadata.signifyName
     );
     const multisigId = result.op.name.split(".")[1];
@@ -323,7 +343,9 @@ class MultiSigService extends AgentService {
       aid,
       multiSig.signifyName
     );
-    await this.notificationStorage.deleteById(notification.id);
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      notification.id
+    );
     return res.op.name.split(".")[1];
   }
 
@@ -425,7 +447,9 @@ class MultiSigService extends AgentService {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {
-      await this.notificationStorage.deleteById(notificationId);
+      Agent.agent.signifyNotifications.deleteNotificationRecordById(
+        notificationId
+      );
       return;
     }
     const icpMsg: MultiSigExnMessage[] = await this.props.signifyClient
@@ -530,18 +554,31 @@ class MultiSigService extends AgentService {
     return { done: false };
   }
 
+  async rotateLocalMember(multisigId: string) {
+    const metadata = await this.identifierStorage.getIdentifierMetadata(
+      multisigId
+    );
+    if (!metadata.multisigManageAid) {
+      throw new Error(MultiSigService.AID_IS_NOT_MULTI_SIG);
+    }
+    await Agent.agent.identifiers.rotateIdentifier(metadata.multisigManageAid);
+  }
+
   private async rotateMultisigAid(
     aid: Aid,
-    multisigAidMembers: Pick<Aid, "state">[],
+    smids: any[],
+    rmids: any[],
+    states: any[],
+    rstates: any[],
     name: string
   ): Promise<{
     op: any;
     icpResult: EventResult;
   }> {
-    const states = [...multisigAidMembers.map((aid) => aid["state"])];
     const icp = await this.props.signifyClient
       .identifiers()
-      .rotate(name, { states: states, rstates: states });
+      .rotate(name, { states, rstates });
+
     const op = await icp.op();
     const serder = icp.serder;
 
@@ -554,10 +591,12 @@ class MultiSigService extends AgentService {
       rot: [serder, atc],
     };
 
-    const smids = states.map((state) => state["i"]);
-    const recp = multisigAidMembers
-      .map((aid) => aid["state"])
-      .map((state) => state["i"]);
+    const recp = [
+      ...new Set([
+        ...smids.map((item) => item.aid),
+        ...rmids.map((item) => item.aid),
+      ]),
+    ];
 
     await this.sendMultisigExn(
       aid["name"],
@@ -568,8 +607,7 @@ class MultiSigService extends AgentService {
       {
         gid: serder.pre,
         smids: smids,
-        rmids: smids,
-        rstates: states,
+        rmids: rmids,
         name,
       }
     );
@@ -577,6 +615,48 @@ class MultiSigService extends AgentService {
       op: op,
       icpResult: icp,
     };
+  }
+
+  async membersReadyToRotate(identifierId: string): Promise<string[]> {
+    const metadata = await this.identifierStorage.getIdentifierMetadata(
+      identifierId
+    );
+
+    const multiSig = await this.props.signifyClient
+      .identifiers()
+      .get(metadata.signifyName);
+
+    const members = await this.props.signifyClient
+      .identifiers()
+      .members(metadata?.signifyName);
+
+    const nextSequence = (Number(multiSig.state.s) + 1).toString();
+    const smids = members.signing;
+
+    const states: any[] = [];
+    await Promise.all(
+      smids.map(async (signing: any) => {
+        const op = await this.props.signifyClient
+          .keyStates()
+          .query(signing.aid, nextSequence);
+        await waitAndGetDoneOp(this.props.signifyClient, op);
+
+        if (op.done) {
+          states.push(op.response);
+        } else {
+          throw new Error(MultiSigService.CANNOT_GET_KEYSTATE_OF_IDENTIFIER);
+        }
+      })
+    );
+
+    const rotated: string[] = [];
+    for (const state of states) {
+      if (!multiSig.state.k.includes(state.k[0])) {
+        rotated.push(state.i);
+      }
+    }
+
+    return rotated;
   }
 
   private async joinMultisigRotationKeri(
@@ -604,6 +684,7 @@ class MultiSigService extends AgentService {
     };
 
     const smids = exn.a.smids;
+    const rmids = exn.a.rmids;
     const recp = rstates
       .filter((r) => r.i !== aid.state.i)
       .map((state) => state["i"]);
@@ -616,7 +697,7 @@ class MultiSigService extends AgentService {
       {
         gid: serder.pre,
         smids: smids,
-        rmids: smids,
+        rmids: rmids,
         rstates,
         name,
       }

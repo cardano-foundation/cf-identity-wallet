@@ -15,10 +15,14 @@
       flex-direction: column;
       justify-content: space-between;
       min-height: calc(100vh - (5.25rem + var(--ion-safe-area-top)));
+
+      & .title {
+        margin-top: 1rem;
+      }
     }
 
     & > * {
-      margin: 0.5rem 0 0;
+      margin: 0;
     }
 
     & > ion-item {

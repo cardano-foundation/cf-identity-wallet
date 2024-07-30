@@ -30,6 +30,7 @@ const oobiResolveMock = jest.fn();
 const groupGetRequestMock = jest.fn();
 const queryKeyStateMock = jest.fn();
 let credentialListMock = jest.fn();
+let getCredentialMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -77,6 +78,7 @@ const signifyClient = jest.mocked({
     submitAdmit: jest.fn(),
   }),
   credentials: () => ({
+    get: getCredentialMock,
     list: credentialListMock,
   }),
   exchanges: () => ({
@@ -314,7 +316,7 @@ describe("Credential service of agent", () => {
         dt: nowISO,
       },
     };
-    credentialListMock = jest.fn().mockResolvedValue([acdc]);
+    getCredentialMock = jest.fn().mockResolvedValue(acdc);
 
     await expect(
       credentialService.getCredentialDetailsById(credentialMetadataRecordA.id)
@@ -393,6 +395,9 @@ describe("Credential service of agent", () => {
             LEI: "5493001KJTIIGC8Y1R17",
           },
         },
+        schema: {
+          tile: "title1",
+        },
       },
       {
         sad: {
@@ -407,6 +412,9 @@ describe("Credential service of agent", () => {
             dt: "2023-11-29T02:12:35.716000+00:00",
             LEI: "5493001KJTIIGC8Y1R17",
           },
+        },
+        schema: {
+          tile: "title2",
         },
       },
     ]);

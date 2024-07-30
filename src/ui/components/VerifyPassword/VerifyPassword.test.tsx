@@ -75,6 +75,7 @@ const initialStateWithPassword = {
       passwordIsSet: true,
       passwordIsSkipped: false,
     },
+    isOnline: true,
   },
   seedPhraseCache: {
     seedPhrase:

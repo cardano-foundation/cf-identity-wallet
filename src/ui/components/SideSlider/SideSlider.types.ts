@@ -1,7 +1,7 @@
-import { ReactNode, TransitionEvent } from "react";
+import { ReactNode } from "react";
 
 interface SideSliderProps {
-  open: boolean;
+  isOpen: boolean;
   children: ReactNode;
   duration?: number;
   zIndex?: number;

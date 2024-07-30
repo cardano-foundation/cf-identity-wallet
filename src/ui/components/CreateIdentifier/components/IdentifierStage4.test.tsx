@@ -10,6 +10,7 @@ import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { ToastMsgType } from "../../../globals/types";
 import { IdentifierStage4 } from "./IdentifierStage4";
+import { IdentifierColor } from "./IdentifierColorSelector";
 
 setupIonicReact();
 mockIonicReact();
@@ -51,6 +52,7 @@ describe("Identifier Stage 4", () => {
       signifyName: "",
       groupMetadata: undefined,
     },
+    color: IdentifierColor.Green,
   };
 
   const dispatchMock = jest.fn();
@@ -150,6 +152,7 @@ describe("Identifier Stage 4", () => {
         signifyName: "",
         groupMetadata: undefined,
       },
+      color: IdentifierColor.Green,
     };
 
     const { getByText } = render(
