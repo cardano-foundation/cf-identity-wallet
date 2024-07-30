@@ -724,7 +724,13 @@ describe("Checking the Connection Details Page when notes are available", () => 
     );
 
     await waitFor(() =>
-      expect(getByText("13/02/2024 - 10:16:08")).toBeVisible()
+      expect(
+        getByText(
+          `${formatShortDate(historyEvents[0].timestamp)} - ${formatTimeToSec(
+            historyEvents[0].timestamp
+          )}`
+        )
+      ).toBeVisible()
     );
 
     await waitFor(() =>
@@ -732,7 +738,13 @@ describe("Checking the Connection Details Page when notes are available", () => 
     );
 
     await waitFor(() =>
-      expect(getByText("14/02/2024 - 10:16:26")).toBeVisible()
+      expect(
+        getByText(
+          `${formatShortDate(historyEvents[1].timestamp)} - ${formatTimeToSec(
+            historyEvents[1].timestamp
+          )}`
+        )
+      ).toBeVisible()
     );
 
     await waitFor(() =>
@@ -740,7 +752,13 @@ describe("Checking the Connection Details Page when notes are available", () => 
     );
 
     await waitFor(() =>
-      expect(getByText("15/02/2024 - 10:16:08")).toBeVisible()
+      expect(
+        getByText(
+          `${formatShortDate(historyEvents[2].timestamp)} - ${formatTimeToSec(
+            historyEvents[2].timestamp
+          )}`
+        )
+      ).toBeVisible()
     );
 
     await waitFor(() =>
@@ -750,7 +768,13 @@ describe("Checking the Connection Details Page when notes are available", () => 
     );
 
     await waitFor(() =>
-      expect(getByText("16/02/2024 - 11:39:22")).toBeVisible()
+      expect(
+        getByText(
+          `${formatShortDate(historyEvents[3].timestamp)} - ${formatTimeToSec(
+            historyEvents[3].timestamp
+          )}`
+        )
+      ).toBeVisible()
     );
 
     await waitFor(() =>
