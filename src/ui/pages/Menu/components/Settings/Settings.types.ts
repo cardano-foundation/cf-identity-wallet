@@ -17,6 +17,11 @@ enum OptionIndex {
   BiometricUpdate,
   ChangePin,
   ManagePassword,
+  RecoverySeedPhrase,
+  Documentation,
+  Term,
+  Contact,
+  Version,
 }
 
 interface SettingsItemProps {
