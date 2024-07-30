@@ -148,7 +148,10 @@ describe("Scanner", () => {
     });
 
     act(() => {
-      ionFireEvent.ionInput(getByTestId("scanner-input"), "11111");
+      ionFireEvent.ionInput(
+        getByTestId("scanner-input"),
+        "bd54hj38aK2sGhE5K9mPqR79Jkd4b23hJf5sL36nHk"
+      );
     });
 
     await waitFor(() => {
@@ -164,6 +167,47 @@ describe("Scanner", () => {
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
         setToastMsg(ToastMsgType.PEER_ID_SUCCESS)
+      );
+    });
+  });
+
+  test("Renders error when entered a wrong input wallet connection pid", async () => {
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <Scanner setIsValueCaptured={setIsValueCaptured} />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("qr-code-scanner")).toBeVisible();
+      expect(getByTestId("secondary-button")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("secondary-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("scanner-input")).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("scanner-input"), "ABC123");
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("action-button").getAttribute("disabled")).toBe(
+        "false"
+      );
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("action-button"));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.PEER_ID_ERROR)
       );
     });
   });
