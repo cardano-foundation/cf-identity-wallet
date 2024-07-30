@@ -170,7 +170,8 @@ class Agent {
         this.notificationStorage,
         this.identifierStorage,
         this.operationPendingStorage,
-        this.connectionStorage
+        this.connectionStorage,
+        this.ipexMessageStorage
       );
     }
     return this.signifyNotificationService;
