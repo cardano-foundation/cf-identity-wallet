@@ -152,7 +152,7 @@ describe("Manage password", () => {
   });
 
   test("Cancel alert", async () => {
-    const { queryByTestId, getByTestId, getByText, queryByText } = render(
+    const { queryByTestId, getByTestId } = render(
       <Provider store={storeMocked}>
         <ManagePassword />
       </Provider>
@@ -163,17 +163,21 @@ describe("Manage password", () => {
       expect(queryByTestId("settings-item-change-password")).toBe(null);
     });
 
+    expect(
+      getByTestId("alert-cancel-enable-password").getAttribute("is-open")
+    ).toBe("false");
+
     act(() => {
       fireEvent.click(getByTestId("settings-item-toggle-password"));
     });
 
     await waitFor(() => {
       expect(
-        getByText(
-          ENG_trans.settings.sections.security.managepassword.page.alert
-            .enablemessage
-        )
-      ).toBeVisible();
+        getByTestId("alert-cancel-enable-password").getAttribute("is-open")
+      ).toBe("true");
+      expect(
+        getByTestId("alert-cancel-enable-password-cancel-button")
+      ).toBeInTheDocument();
     });
 
     act(() => {
@@ -186,11 +190,8 @@ describe("Manage password", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(
-          ENG_trans.settings.sections.security.managepassword.page.alert
-            .enablemessage
-        )
-      ).not.toBeVisible();
+        getByTestId("alert-cancel-enable-password").getAttribute("is-open")
+      ).toBe("false");
 
       expect(queryByTestId("create-password-modal")).toBe(null);
     });

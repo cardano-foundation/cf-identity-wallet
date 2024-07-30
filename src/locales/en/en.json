@@ -1180,7 +1180,14 @@
         "title": "Support & Legal",
         "contact": "Connect via Discord",
         "learnmore": "Learn More About Cardano IDW",
-        "terms": "Terms and Privacy Policy",
+        "terms": {
+          "title": "Terms and Privacy Policy",
+          "submenu": {
+            "title": "Terms & privacy",
+            "termandcondition": "Terms & conditions",
+            "privacy": "Privacy policy"
+          }
+        },
         "version": "App Version"
       }
     }

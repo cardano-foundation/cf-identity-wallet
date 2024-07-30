@@ -95,7 +95,7 @@ const Settings = ({ switchView }: SettingsProps) => {
     {
       index: OptionIndex.Term,
       icon: checkboxOutline,
-      label: i18n.t("settings.sections.support.terms"),
+      label: i18n.t("settings.sections.support.terms.title"),
     },
     {
       index: OptionIndex.Contact,
@@ -195,6 +195,10 @@ const Settings = ({ switchView }: SettingsProps) => {
     }
     case OptionIndex.Documentation: {
       Browser.open({ url: DOCUMENTATION_LINK });
+      break;
+    }
+    case OptionIndex.Term: {
+      switchView && switchView(SubMenuKey.TermAndPrivacy);
       break;
     }
     default:
