@@ -12,6 +12,7 @@ import {
   BasicRecord,
   ConnectionStorage,
   IdentifierStorage,
+  IpexMessageStorage,
   NotificationStorage,
   OperationPendingStorage,
 } from "../records";
@@ -30,6 +31,7 @@ class SignifyNotificationService extends AgentService {
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly connectionStorage: ConnectionStorage;
+  protected readonly ipexMessageStorage: IpexMessageStorage;
 
   protected pendingOperations: OperationPendingRecord[] = [];
   private loggedIn = true;
@@ -39,13 +41,15 @@ class SignifyNotificationService extends AgentService {
     notificationStorage: NotificationStorage,
     identifierStorage: IdentifierStorage,
     operationPendingStorage: OperationPendingStorage,
-    connectionStorage: ConnectionStorage
+    connectionStorage: ConnectionStorage,
+    ipexMessageStorage: IpexMessageStorage
   ) {
     super(agentServiceProps);
     this.notificationStorage = notificationStorage;
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.connectionStorage = connectionStorage;
+    this.ipexMessageStorage = ipexMessageStorage;
   }
 
   async onNotificationStateChanged(
@@ -170,19 +174,23 @@ class SignifyNotificationService extends AgentService {
       return;
     }
     if (notif.a.r === NotificationRoute.ExnIpexApply) {
-      const existingNotficationRecord = await this.notificationStorage.findById(
-        notif.i
-      );
-      if (!existingNotficationRecord) {
+      const existingLinkedIpexRecord = await this.ipexMessageStorage
+        .getIpexMessageMetadata(notif.a.d)
+        .catch((error) => {
+          if (
+            error.message ===
+            IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
+      if (!existingLinkedIpexRecord) {
         const exchange = await this.props.signifyClient
           .exchanges()
           .get(notif.a.d);
-        const schema = await this.props.signifyClient
-          .schemas()
-          .get(exchange.exn.e.acdc.s);
         await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
-          schema.title,
-          exchange.exn.i,
           exchange,
           ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
         );
@@ -223,22 +231,15 @@ class SignifyNotificationService extends AgentService {
             exchange.exn.i,
           ]);
         await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
-          existingCredential.schema.title,
-          exchange.exn.i,
           exchange,
-          ConnectionHistoryType.CREDENTIAL_UPDATE
+          ConnectionHistoryType.CREDENTIAL_ISSUANCE
         );
         await this.markNotification(notif.i);
         return;
       } else {
-        const schema = await this.props.signifyClient
-          .schemas()
-          .get(exchange.exn.e.acdc.s);
         await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
-          schema.title,
-          exchange.exn.i,
           exchange,
-          ConnectionHistoryType.CREDENTIAL_ISSUANCE
+          ConnectionHistoryType.CREDENTIAL_UPDATE
         );
       }
     }

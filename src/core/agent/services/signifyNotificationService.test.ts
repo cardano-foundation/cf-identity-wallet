@@ -1,4 +1,6 @@
 import { Agent } from "../agent";
+import { IpexMessageStorage } from "../records";
+import { ConnectionHistoryType } from "./connection.types";
 import { EventService } from "./eventService";
 import { SignifyNotificationService } from "./signifyNotificationService";
 
@@ -68,19 +70,7 @@ const signifyClient = jest.mocked({
     list: jest.fn(),
   }),
   exchanges: () => ({
-    get: jest.fn().mockResolvedValue({
-      exn: {
-        i: "connection-id",
-        a: {
-          i: "i",
-        },
-        e: {
-          acdc: {
-            d: "d",
-          },
-        },
-      },
-    }),
+    get: jest.fn().mockResolvedValue(ipexMessageMock),
     send: jest.fn(),
   }),
   agent: {
@@ -138,6 +128,14 @@ const connectionStorage = jest.mocked({
 const identifierStorage = jest.mocked({
   getIdentifierMetadata: jest.fn(),
 });
+
+const getIpexMessageMetadataMock = jest.fn();
+const ipexMessageStorage = jest.mocked({
+  createIpexMessageRecord: jest.fn(),
+  getIpexMessageMetadata: getIpexMessageMetadataMock,
+  getIpexMessageMetadataByConnectionId: jest.fn(),
+});
+
 const operationPendingStorage = jest.mocked({});
 
 const signifyNotificationService = new SignifyNotificationService(
@@ -145,7 +143,8 @@ const signifyNotificationService = new SignifyNotificationService(
   notificationStorage as any,
   identifierStorage as any,
   operationPendingStorage as any,
-  connectionStorage as any
+  connectionStorage as any,
+  ipexMessageStorage as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -160,6 +159,70 @@ jest.mock("../../../core/agent/agent", () => ({
     },
   },
 }));
+
+const ipexMessageMock = {
+  exn: {
+    v: "KERI10JSON000516_",
+    t: "exn",
+    d: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
+    i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+    p: "",
+    dt: "2024-07-30T04:19:55.801000+00:00",
+    r: "/ipex/grant",
+    q: {},
+    a: {
+      m: "",
+      i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+    },
+    e: {
+      acdc: {
+        d: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
+        i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+        s: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+        a: {
+          d: "ELHCh_X2aw7C-aYesOM4La23a5lsoNuJDuCsJuxwO2nq",
+          i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+          dt: "2024-07-30T04:19:55.348000+00:00",
+          attendeeName: "ccc",
+        },
+      },
+      iss: {
+        t: "iss",
+        d: "EHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
+        i: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
+        s: "0",
+        dt: "2024-07-30T04:19:55.348000+00:00",
+      },
+      d: "EKBPPnWxYw2I5CtQSyhyn5VUdSTJ61qF_-h-NwmFRkIF",
+    },
+  },
+  pathed: {
+    acdc: "-IABEEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn0AAAAAAAAAAAAAAAAAAAAAAAEHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
+    iss: "-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAEEO0xKzC8FOAXV-JgFZGgb0aIT2A3cPXPt9_0l_qcGM9",
+    anc: "-AABAACBlQqbI_qNpKYkzIog6tauSgt0XufBvGtrumfbnhSInFjSwnaIqZi353QT-c1W_gE9KIz3rgX5QNNWLcqA7bcM",
+  },
+};
+
+const acdcMock = {
+  sad: {
+    a: { LEI: "5493001KJTIIGC8Y1R17" },
+    d: "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli",
+    i: "EIpeOFh268oRJTM4vNNoQvMWw-NBUPDv1NqYbx6Lc1Mk",
+    ri: "EOIj7V-rqu_Q9aGSmPfviBceEtRk1UZBN5H2P_L-Hhx5",
+    s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    v: "ACDC10JSON000197_",
+  },
+  schema: {
+    title: "Qualified vLEI Issuer Credential",
+    description: "vLEI Issuer Description",
+    version: "1.0.0",
+    credentialType: "QualifiedvLEIIssuervLEICredential",
+  },
+  status: {
+    s: "0",
+    dt: new Date().toISOString(),
+  },
+};
 
 describe("Signify notification service of agent", () => {
   beforeEach(() => {
@@ -232,27 +295,7 @@ describe("Signify notification service of agent", () => {
         },
       },
     ];
-    const acdc = {
-      sad: {
-        a: { LEI: "5493001KJTIIGC8Y1R17" },
-        d: "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli",
-        i: "EIpeOFh268oRJTM4vNNoQvMWw-NBUPDv1NqYbx6Lc1Mk",
-        ri: "EOIj7V-rqu_Q9aGSmPfviBceEtRk1UZBN5H2P_L-Hhx5",
-        s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-        v: "ACDC10JSON000197_",
-      },
-      schema: {
-        title: "Qualified vLEI Issuer Credential",
-        description: "vLEI Issuer Description",
-        version: "1.0.0",
-        credentialType: "QualifiedvLEIIssuervLEICredential",
-      },
-      status: {
-        s: "0",
-        dt: new Date().toISOString(),
-      },
-    };
-    getCredentialMock.mockResolvedValue(acdc);
+    getCredentialMock.mockResolvedValue(acdcMock);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "signifyName",
     });
@@ -497,5 +540,101 @@ describe("Signify notification service of agent", () => {
       notification[0].a.d
     );
     expect(markNotificationMock).toBeCalledWith(notification[0].i);
+  });
+
+  test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT", async () => {
+    const callback = jest.fn();
+    notificationStorage.save = jest
+      .fn()
+      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+    const notification = {
+      i: "string",
+      dt: "string",
+      r: false,
+      a: {
+        r: "/exn/ipex/apply",
+        d: "string",
+        m: "",
+      },
+    };
+    getIpexMessageMetadataMock.mockRejectedValueOnce(
+      new Error(IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING)
+    );
+
+    await signifyNotificationService.processNotification(
+      notification,
+      callback
+    );
+    expect(
+      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
+    ).toHaveBeenCalledWith(
+      ipexMessageMock,
+      ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
+    );
+  });
+
+  test("Should call createLinkedIpexMessageRecord with CREDENTIAL_ISSUANCE", async () => {
+    const callback = jest.fn();
+    notificationStorage.save = jest
+      .fn()
+      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+    const notification = {
+      i: "string",
+      dt: "string",
+      r: false,
+      a: {
+        r: "/exn/ipex/grant",
+        d: "string",
+        m: "",
+      },
+    };
+    admitMock.mockResolvedValue([{}, ["sigs"], "end"]);
+    getCredentialMock.mockResolvedValue(acdcMock);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "signifyName",
+    });
+
+    await signifyNotificationService.processNotification(
+      notification,
+      callback
+    );
+    expect(
+      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
+    ).toHaveBeenCalledWith(
+      ipexMessageMock,
+      ConnectionHistoryType.CREDENTIAL_ISSUANCE
+    );
+  });
+
+  test("Should call createLinkedIpexMessageRecord with CREDENTIAL_UPDATE", async () => {
+    const callback = jest.fn();
+    notificationStorage.save = jest
+      .fn()
+      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+    const notification = {
+      i: "string2",
+      dt: "string",
+      r: false,
+      a: {
+        r: "/exn/ipex/grant",
+        d: "string",
+        m: "",
+      },
+    };
+    getCredentialMock.mockRejectedValueOnce(new Error());
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "signifyName",
+    });
+
+    await signifyNotificationService.processNotification(
+      notification,
+      callback
+    );
+    expect(
+      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
+    ).toHaveBeenCalledWith(
+      ipexMessageMock,
+      ConnectionHistoryType.CREDENTIAL_UPDATE
+    );
   });
 });

@@ -15,6 +15,14 @@ class IpexMessageStorage {
     await this.storageService.save(record);
   }
 
+  async getIpexMessageMetadata(id: string): Promise<IpexMessageRecord> {
+    const metadata = await this.storageService.findById(id, IpexMessageRecord);
+    if (!metadata) {
+      throw new Error(IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING);
+    }
+    return metadata;
+  }
+
   async getIpexMessageMetadataByConnectionId(
     connectionId: string
   ): Promise<IpexMessageRecord[]> {

@@ -308,9 +308,8 @@ class ConnectionService extends AgentService {
       await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(
         connectionId
       );
-
     const requestMessages = linkedIpexMessages
-      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .map((messageRecord) => {
         const { historyType, createdAt, credentialType } = messageRecord;
         return {
@@ -319,7 +318,7 @@ class ConnectionService extends AgentService {
           credentialType,
         };
       });
-    return requestMessages.reverse();
+    return requestMessages;
   }
 
   // @TODO - foconnor: Contacts that are smid/rmids for multisigs will be synced too.

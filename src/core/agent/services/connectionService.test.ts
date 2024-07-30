@@ -628,9 +628,10 @@ describe("Connection service of agent", () => {
   });
 
   test("Can get connection History by id", async () => {
+    jest.restoreAllMocks();
     const connectionId = "connectionId";
     const date1 = new Date("Sat Jul 27 2024 15:02:30 GMT+0700");
-    const date2 = new Date("Sat Jul 27 2024 15:12:04 GMT+0700");
+    const date2 = new Date("Sat Jul 27 2024 15:45:04 GMT+0700");
     const date3 = new Date("Sat Jul 27 2024 15:30:34 GMT+0700");
     getIpexMessageMetadataByConnectionIdMock.mockResolvedValue([
       {
@@ -640,7 +641,7 @@ describe("Connection service of agent", () => {
             r: "/ipex/grant",
             e: {
               acdc: {
-                d: "EN_tsGwSUI63SYoSiiN8qsysUT8bnka9gZEka8PG_oVQ",
+                d: "EN_tsGwSUI63SYoSiiN8qsysUT8bnka9gZEka8PG_oVK",
               },
             },
           },
@@ -690,13 +691,13 @@ describe("Connection service of agent", () => {
     );
     expect(histories).toEqual([
       {
-        type: ConnectionHistoryType.CREDENTIAL_UPDATE,
-        timestamp: date3.toISOString(),
+        type: ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT,
+        timestamp: date2.toISOString(),
         credentialType: "IIW 2024 Demo Day Attendee",
       },
       {
-        type: ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT,
-        timestamp: date2.toISOString(),
+        type: ConnectionHistoryType.CREDENTIAL_UPDATE,
+        timestamp: date3.toISOString(),
         credentialType: "IIW 2024 Demo Day Attendee",
       },
       {

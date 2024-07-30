@@ -66,6 +66,23 @@ describe("ipexMessage Storage", () => {
     expect(storageService.save).toBeCalledWith(ipexMessageRecordA);
   });
 
+  test("Should find ipexMessage record by id", async () => {
+    storageService.findById.mockResolvedValue(ipexMessageRecordB);
+    const result = await ipexMessageStorage.getIpexMessageMetadata(
+      ipexMessageRecordB.connectionId
+    );
+    expect(result).toEqual(ipexMessageRecordB);
+  });
+
+  test("Should throw error if there is no matching record", async () => {
+    storageService.findById.mockResolvedValue(null);
+    await expect(
+      ipexMessageStorage.getIpexMessageMetadata("not-found-id")
+    ).rejects.toThrowError(
+      IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING
+    );
+  });
+
   test("Should find ipexMessage record by connectionId", async () => {
     storageService.findAllByQuery.mockResolvedValue([
       ipexMessageRecordA,
