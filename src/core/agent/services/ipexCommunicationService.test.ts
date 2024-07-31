@@ -190,6 +190,9 @@ jest.mock("../../../core/agent/agent", () => ({
           deleteNotificationMock(id),
         addPendingOperationToQueue: jest.fn(),
       },
+      multiSigs: {
+        multisigAdmit: jest.fn().mockResolvedValue({ name: "opName" }),
+      },
     },
   },
 }));
@@ -614,5 +617,205 @@ describe("Ipex communication service of agent", () => {
     await expect(
       ipexCommunicationService.getIpexApplyDetails(noti)
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+  });
+
+  test("can accept ACDC from multisig exn", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const id = "uuid";
+
+    signifyClient.exchanges = jest.fn().mockReturnValue({
+      get: jest
+        .fn()
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            exn: {
+              d: "ECWyfhUctyCCoxZG-PU7MFPWkw5H2--TMC9v_tbZjjBv",
+              i: "ECa8C3YyqT9khmn0MnLUJKQTCNmiB6tr74uNUX_Y-r2y",
+              p: "",
+              dt: "2024-07-31T02:45:28.535000+00:00",
+              r: "/multisig/exn",
+              a: {
+                gid: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+              },
+              e: {
+                exn: {
+                  d: "EPcCdp9JRd5wgCVs7hmzB0JsbuqHhYU3ggShqR2QDpbH",
+                  i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+                  p: "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw",
+                  dt: "2024-07-31T02:45:25.998000+00:00",
+                  r: "/ipex/admit",
+                  a: {
+                    m: "",
+                  },
+                  e: {},
+                },
+                d: "EFHb7hpsDWdBdZyMVhQR6kJN6j9DddAAS-_pQQhq-yZ6",
+              },
+            },
+          })
+        )
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            exn: {
+              v: "KERI10JSON000514_",
+              t: "exn",
+              d: "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw",
+              i: "EKhebhdg6jOqK7ZgY-cFpx6rozpUave8llE2B15ioNHi",
+              p: "",
+              dt: "2024-07-31T02:45:17.288000+00:00",
+              r: "/ipex/grant",
+              q: {},
+              a: {
+                m: "",
+                i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+              },
+              e: {
+                acdc: {
+                  v: "ACDC10JSON00018d_",
+                  d: "EJvvnAZruVSfvPZjzGwyTR3RQApoK7228du0c8flDcaF",
+                  i: "EKhebhdg6jOqK7ZgY-cFpx6rozpUave8llE2B15ioNHi",
+                  ri: "EDXcY9Jsg32LgZ8S5QuHNi3ZF5U01_kU3FakVUMCbGG3",
+                  s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+                  a: {
+                    d: "EKoEogKtVuRAkoFs43CLPTwSAUuo3TQsmnKI86ef2Usb",
+                    i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+                    dt: "2024-07-31T02:45:16.860000+00:00",
+                    LEI: "New 310724",
+                  },
+                },
+                d: "EK3-ZPPv8JYVAIK8pq1SfQxvHlsKmwdpqxqO1kcP_ajv",
+              },
+            },
+          })
+        ),
+    });
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+
+    schemaGetMock.mockResolvedValue({ title: "title" });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
+      id: "id",
+    });
+
+    await ipexCommunicationService.acceptAcdcFromMultisigExn(id);
+    expect(Agent.agent.multiSigs.multisigAdmit).toBeCalledTimes(1);
+    expect(operationPendingStorage.save).toBeCalledWith({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+    expect(
+      Agent.agent.signifyNotifications.addPendingOperationToQueue
+    ).toBeCalledTimes(1);
+    expect(deleteNotificationMock).toBeCalledWith(id);
+  });
+
+  test("cannot accept ACDC from multisig exn if the notification is missing in the DB", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "not-found-id";
+    notificationStorage.findById.mockResolvedValueOnce(null);
+
+    await expect(
+      ipexCommunicationService.acceptAcdcFromMultisigExn(id)
+    ).rejects.toThrowError(
+      `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+    );
+  });
+
+  test("cannot accept ACDC from multisig exn if identifier is not locally stored", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+
+    notificationStorage.findById = jest.fn().mockResolvedValue({
+      id,
+      createdAt: new Date("2024-04-29T11:01:04.903Z"),
+      a: {
+        d: "saidForUuid",
+      },
+    });
+
+    signifyClient.exchanges = jest.fn().mockReturnValue({
+      get: jest
+        .fn()
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            exn: {
+              d: "ECWyfhUctyCCoxZG-PU7MFPWkw5H2--TMC9v_tbZjjBv",
+              i: "ECa8C3YyqT9khmn0MnLUJKQTCNmiB6tr74uNUX_Y-r2y",
+              p: "",
+              dt: "2024-07-31T02:45:28.535000+00:00",
+              r: "/multisig/exn",
+              a: {
+                gid: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+              },
+              e: {
+                exn: {
+                  d: "EPcCdp9JRd5wgCVs7hmzB0JsbuqHhYU3ggShqR2QDpbH",
+                  i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+                  p: "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw",
+                  dt: "2024-07-31T02:45:25.998000+00:00",
+                  r: "/ipex/admit",
+                  a: {
+                    m: "",
+                  },
+                  e: {},
+                },
+                d: "EFHb7hpsDWdBdZyMVhQR6kJN6j9DddAAS-_pQQhq-yZ6",
+              },
+            },
+          })
+        )
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            exn: {
+              v: "KERI10JSON000514_",
+              t: "exn",
+              d: "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw",
+              i: "EKhebhdg6jOqK7ZgY-cFpx6rozpUave8llE2B15ioNHi",
+              p: "",
+              dt: "2024-07-31T02:45:17.288000+00:00",
+              r: "/ipex/grant",
+              q: {},
+              a: {
+                m: "",
+                i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+              },
+              e: {
+                acdc: {
+                  v: "ACDC10JSON00018d_",
+                  d: "EJvvnAZruVSfvPZjzGwyTR3RQApoK7228du0c8flDcaF",
+                  i: "EKhebhdg6jOqK7ZgY-cFpx6rozpUave8llE2B15ioNHi",
+                  ri: "EDXcY9Jsg32LgZ8S5QuHNi3ZF5U01_kU3FakVUMCbGG3",
+                  s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+                  a: {
+                    d: "EKoEogKtVuRAkoFs43CLPTwSAUuo3TQsmnKI86ef2Usb",
+                    i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+                    dt: "2024-07-31T02:45:16.860000+00:00",
+                    LEI: "New 310724",
+                  },
+                },
+                d: "EK3-ZPPv8JYVAIK8pq1SfQxvHlsKmwdpqxqO1kcP_ajv",
+              },
+            },
+          })
+        ),
+    });
+
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(undefined);
+
+    await expect(
+      ipexCommunicationService.acceptAcdcFromMultisigExn(id)
+    ).rejects.toThrowError(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+    expect(deleteNotificationMock).not.toBeCalledWith(id);
   });
 });

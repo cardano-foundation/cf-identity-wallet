@@ -972,12 +972,15 @@ class MultiSigService extends AgentService {
     );
   }
 
-  async multisigAdmit(multisigSignifyName: string, notificationSaid: string) {
+  async multisigAdmit(
+    multisigSignifyName: string,
+    notificationSaid: string,
+    timeAdmit?: string
+  ) {
     const exchangeMessage = await this.props.signifyClient
       .exchanges()
       .get(notificationSaid);
     const grantSaid = exchangeMessage.exn.d;
-    const issuerPrefix = exchangeMessage.exn.i;
     const { ourIdentifier, multisigMembers } =
       await this.getMultisigParticipants(multisigSignifyName);
     const gHab = await this.props.signifyClient
@@ -986,14 +989,14 @@ class MultiSigService extends AgentService {
     const mHab = await this.props.signifyClient
       .identifiers()
       .get(ourIdentifier.signifyName);
-    const time = new Date().toISOString().replace("Z", "000+00:00");
+
+    const time = timeAdmit
+      ? timeAdmit
+      : new Date().toISOString().replace("Z", "000+00:00");
+
     const [admit, sigs, end] = await this.props.signifyClient
       .ipex()
       .admit(multisigSignifyName, "", grantSaid, time);
-
-    const op = await this.props.signifyClient
-      .ipex()
-      .submitAdmit(multisigSignifyName, admit, sigs, end, [issuerPrefix]);
 
     const mstate = gHab["state"];
     const seal = [
@@ -1011,14 +1014,18 @@ class MultiSigService extends AgentService {
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
 
-    await this.sendMultisigExn(
-      ourIdentifier.signifyName,
-      mHab,
-      MultiSigRoute.EXN,
-      gembeds,
-      recp,
-      { gid: gHab["prefix"] }
-    );
+    const [exn, sigsMes, dtime] = await this.props.signifyClient
+      .exchanges()
+      .createExchangeMessage(
+        mHab,
+        "/multisig/exn",
+        { gid: gHab["prefix"] },
+        gembeds
+      );
+
+    const op = await this.props.signifyClient
+      .ipex()
+      .submitAdmit(multisigSignifyName, exn, sigsMes, dtime, recp);
 
     return op;
   }

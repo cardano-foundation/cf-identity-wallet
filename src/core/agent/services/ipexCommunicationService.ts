@@ -343,6 +343,75 @@ class IpexCommunicationService extends AgentService {
       },
     });
   }
+
+  @OnlineOnly
+  async acceptAcdcFromMultisigExn(id: string): Promise<void> {
+    const notifRecord = await this.getNotificationRecordById(id);
+    const exn = await this.props.signifyClient
+      .exchanges()
+      .get(notifRecord.a.d as string);
+
+    const timeAdmit = exn?.exn?.e?.exn?.dt;
+    const previousExnGrantMsg = await this.props.signifyClient
+      .exchanges()
+      .get(exn?.exn.e.exn.p);
+
+    const holder = await this.identifierStorage.getIdentifierMetadata(
+      exn.exn.e.exn.i
+    );
+
+    if (!holder) {
+      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+    }
+
+    const credentialId = previousExnGrantMsg.exn.e.acdc.d;
+    const connectionId = previousExnGrantMsg.exn.i;
+
+    const schemaSaid = previousExnGrantMsg.exn.e.acdc.s;
+    const allSchemaSaids = Object.keys(
+      previousExnGrantMsg.exn.e.acdc?.e || {}
+    ).map((key) => previousExnGrantMsg.exn.e.acdc.e?.[key]?.s);
+    allSchemaSaids.push(schemaSaid);
+    await Promise.all(
+      allSchemaSaids.map(
+        async (schemaSaid) =>
+          await Agent.agent.connections.resolveOobi(
+            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`,
+            true
+          )
+      )
+    );
+    const schema = await this.props.signifyClient.schemas().get(schemaSaid);
+    await this.saveAcdcMetadataRecord(
+      previousExnGrantMsg.exn.e.acdc.d,
+      previousExnGrantMsg.exn.e.acdc.a.dt,
+      schema.title,
+      connectionId
+    );
+
+    this.props.eventService.emit<AcdcStateChangedEvent>({
+      type: AcdcEventTypes.AcdcStateChanged,
+      payload: {
+        credentialId,
+        status: CredentialStatus.PENDING,
+      },
+    });
+
+    const op = await Agent.agent.multiSigs.multisigAdmit(
+      holder.signifyName,
+      previousExnGrantMsg.exn.d as string,
+      timeAdmit
+    );
+
+    const pendingOperation = await this.operationPendingStorage.save({
+      id: op.name,
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+    Agent.agent.signifyNotifications.addPendingOperationToQueue(
+      pendingOperation
+    );
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
+  }
 }
 
 export { IpexCommunicationService };

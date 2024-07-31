@@ -51,6 +51,16 @@ const NotificationDetails = () => {
         handleBack={handleBack}
       />
     );
+  case NotificationRoute.MultiSigExn:
+    return (
+      <ReceiveCredential
+        pageId={pageId}
+        activeStatus={!!notificationDetails}
+        notificationDetails={notificationDetails}
+        handleBack={handleBack}
+        multisigExn
+      />
+    );
   default:
     return null;
   }

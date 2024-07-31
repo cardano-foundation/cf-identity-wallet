@@ -28,7 +28,8 @@ const ReceiveCredential = ({
   activeStatus,
   notificationDetails,
   handleBack,
-}: NotificationDetailsProps) => {
+  multisigExn,
+}: NotificationDetailsProps & { multisigExn?: boolean }) => {
   const dispatch = useAppDispatch();
   const notificationsCache = useAppSelector(getNotificationsCache);
   const [notifications, setNotifications] = useState(notificationsCache);
@@ -56,7 +57,13 @@ const ReceiveCredential = ({
 
   const handleAccept = async () => {
     setInitiateAnimation(true);
-    await Agent.agent.ipexCommunications.acceptAcdc(notificationDetails.id);
+    if (multisigExn) {
+      await Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn(
+        notificationDetails.id
+      );
+    } else {
+      await Agent.agent.ipexCommunications.acceptAcdc(notificationDetails.id);
+    }
     handleNotificationUpdate();
     setTimeout(() => {
       handleBack();
