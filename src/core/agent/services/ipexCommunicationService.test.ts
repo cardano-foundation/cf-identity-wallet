@@ -629,6 +629,28 @@ describe("Ipex communication service of agent", () => {
       historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
     });
 
+    schemaGetMock.mockResolvedValueOnce(schemaMock);
+    getExchangeMock.mockResolvedValueOnce({
+      exn: {
+        e: {
+          acdc: {
+            s: "s",
+          },
+        },
+      },
+    });
+    await ipexCommunicationService.createLinkedIpexMessageRecord(
+      grantIpexMessageMock,
+      ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
+    );
+    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
+      id: grantIpexMessageMock.exn.d,
+      credentialType: schemaMock.title,
+      content: grantIpexMessageMock,
+      connectionId: grantIpexMessageMock.exn.i,
+      historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE,
+    });
+
     schemaGetMock.mockRejectedValueOnce(
       new Error("request - 404 - SignifyClient message")
     );
@@ -661,7 +683,7 @@ describe("Ipex communication service of agent", () => {
       connectionId: grantIpexMessageMock.exn.i,
       historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
     });
-    expect(schemaGetMock).toBeCalledTimes(4);
+    expect(schemaGetMock).toBeCalledTimes(5);
     expect(resolveOobiMock).toBeCalledTimes(2);
   });
 

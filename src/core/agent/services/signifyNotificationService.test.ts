@@ -530,6 +530,7 @@ describe("Signify notification service of agent", () => {
         },
       },
     ];
+    getIpexMessageMetadataMock.mockResolvedValueOnce({});
     await signifyNotificationService.processNotification(
       notification[0],
       callback
@@ -635,6 +636,37 @@ describe("Signify notification service of agent", () => {
     ).toHaveBeenCalledWith(
       ipexMessageMock,
       ConnectionHistoryType.CREDENTIAL_UPDATE
+    );
+  });
+
+  test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT_AGREE", async () => {
+    const callback = jest.fn();
+    notificationStorage.save = jest
+      .fn()
+      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+    const notification = {
+      i: "string",
+      dt: "string",
+      r: false,
+      a: {
+        r: "/exn/ipex/agree",
+        d: "string",
+        m: "",
+      },
+    };
+    getIpexMessageMetadataMock.mockRejectedValueOnce(
+      new Error(IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING)
+    );
+
+    await signifyNotificationService.processNotification(
+      notification,
+      callback
+    );
+    expect(
+      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
+    ).toHaveBeenCalledWith(
+      ipexMessageMock,
+      ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
     );
   });
 });

@@ -322,6 +322,27 @@ class SignifyNotificationService extends AgentService {
     }
 
     if (notif.a.r === NotificationRoute.ExnIpexAgree) {
+      const existingLinkedIpexRecord = await this.ipexMessageStorage
+        .getIpexMessageMetadata(notif.a.d)
+        .catch((error) => {
+          if (
+            error.message ===
+            IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
+      if (!existingLinkedIpexRecord) {
+        const exchange = await this.props.signifyClient
+          .exchanges()
+          .get(notif.a.d);
+        await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
+          exchange,
+          ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
+        );
+      }
       await Agent.agent.ipexCommunications.grantAcdcFromAgree(notif.a.d);
       await this.markNotification(notif.i);
       return;

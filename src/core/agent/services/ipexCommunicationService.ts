@@ -4,6 +4,7 @@ import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import {
   AcdcEventTypes,
+  ExchangeRoute,
   IpexMessage,
   type AcdcStateChangedEvent,
   type AgentServicesProps,
@@ -343,7 +344,7 @@ class IpexCommunicationService extends AgentService {
     });
   }
 
-  private async getSchema(schemaSaid: string) {
+  private async getSchema(schemaSaid: string, retry = true) {
     try {
       const schema = await this.props.signifyClient.schemas().get(schemaSaid);
       return schema;
@@ -351,11 +352,13 @@ class IpexCommunicationService extends AgentService {
       const errorStack = (error as Error).stack as string;
       const status = errorStack.split("-")[1];
       if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
-        const oobi = await Agent.agent.connections.resolveOobi(
-          `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
-        );
-        if (oobi.done) {
-          await this.getSchema(schemaSaid);
+        const oobi = await Agent.agent.connections
+          .resolveOobi(
+            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
+          )
+          .catch(() => undefined);
+        if (oobi?.done && retry) {
+          await this.getSchema(schemaSaid, false);
         }
         return undefined;
       } else {
@@ -368,9 +371,18 @@ class IpexCommunicationService extends AgentService {
     message: IpexMessage,
     historyType: ConnectionHistoryType
   ): Promise<void> {
-    const schemaSaid = message.exn.e.acdc.s;
+    let schemaSaid;
+    if (message.exn.r === ExchangeRoute.IpexGrant) {
+      schemaSaid = message.exn.e.acdc.s;
+    } else if (message.exn.r === ExchangeRoute.IpexApply) {
+      schemaSaid = message.exn.a.s;
+    } else if (message.exn.r === ExchangeRoute.IpexAgree) {
+      const previousExchange = await this.props.signifyClient
+        .exchanges()
+        .get(message.exn.p);
+      schemaSaid = previousExchange.exn.e.acdc.s;
+    }
     const schema = await this.getSchema(schemaSaid);
-
     await this.ipexMessageStorage.createIpexMessageRecord({
       id: message.exn.d,
       credentialType: schema?.title,
