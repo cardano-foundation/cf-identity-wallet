@@ -1174,7 +1174,34 @@
             }
           }
         },
-        "seedphrase": "Seed Phrase"
+        "seedphrase": {
+          "title": "Recovery phrase",
+          "page": {
+            "title": "Recovery phrase",
+            "tips": {
+              "label": "Useful tips:",
+              "one": "Write down or make a copy of your recovery phrase and store it in a safe location.",
+              "two": "Double-check that your words are copied in the correct order (1 to 18).",
+              "three": "Ensure there are no spelling errors."
+            },
+            "hiddentext": "Press the ‘view recovery phrase’ button when you’re ready to see your recovery phrase. Remember to make sure nobody is looking!",
+            "button": {
+              "view": "View recovery phrase",
+              "hide": "Hide recovery phrase"
+            },
+            "confirmmodal": {
+              "title": "Stay safe",
+              "subtitle": "Confirm and acknowledge the following:",
+              "firstcondition": "Nobody else can see my screen",
+              "secondcondition": "Sharing my recovery phrase with others puts my identity at risk",
+              "thirdcondition": "Losing my recovery phrase means I will lose access to my wallet",
+              "button": {
+                "confirm": "View recovery phrase",
+                "cancel": "Cancel"
+              }
+            }
+          }
+        }
       },
       "support": {
         "title": "Support & Legal",

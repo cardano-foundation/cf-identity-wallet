@@ -16,6 +16,7 @@ const SubMenu = ({
   additionalButtons,
   children,
   pageId: customPageId,
+  renderAsModal = true,
 }: SubMenuProps) => {
   const pageId = `sub-menu ${customPageId}`;
   const handleClose = useCallback(() => {
@@ -27,7 +28,10 @@ const SubMenu = ({
   }, [nestedMenu, setShowSubMenu, switchView]);
 
   return (
-    <SideSlider isOpen={showSubMenu}>
+    <SideSlider
+      renderAsModal={renderAsModal}
+      isOpen={showSubMenu}
+    >
       <ScrollablePageLayout
         pageId={pageId}
         activeStatus={showSubMenu}

@@ -113,7 +113,7 @@ describe("Settings page", () => {
       getByText(EN_TRANSLATIONS.settings.sections.security.managepassword.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.seedphrase)
+      getByText(EN_TRANSLATIONS.settings.sections.security.seedphrase.title)
     ).toBeInTheDocument();
     expect(
       getByText(EN_TRANSLATIONS.settings.sections.support.title)
