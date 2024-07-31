@@ -96,13 +96,18 @@ const Scanner = forwardRef(
     }));
 
     const handleConnectWallet = (id: string) => {
-      handleReset && handleReset();
-      dispatch(setToastMsg(ToastMsgType.PEER_ID_SUCCESS));
-      dispatch(
-        setPendingConnection({
-          id,
-        })
-      );
+      if (/^b[1-9A-HJ-NP-Za-km-z]{33}/.test(id)) {
+        dispatch(setToastMsg(ToastMsgType.PEER_ID_SUCCESS));
+        dispatch(
+          setPendingConnection({
+            id,
+          })
+        );
+        handleReset && handleReset();
+      } else {
+        dispatch(setToastMsg(ToastMsgType.PEER_ID_ERROR));
+        handleReset && handleReset();
+      }
     };
 
     const updateConnections = async (groupId: string) => {
