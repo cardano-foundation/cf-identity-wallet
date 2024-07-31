@@ -91,6 +91,7 @@
           --checkbox-background-checked: var(--ion-color-primary-gradient);
           --checkmark-color: var(--ion-color-primary);
           --border-width: 0.115rem;
+          margin-inline-start: 0;
 
           &.checkbox-checked {
             --border-width: 0;
