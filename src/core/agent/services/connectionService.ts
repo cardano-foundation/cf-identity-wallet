@@ -338,7 +338,7 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async resolveOobi(url: string, waitForCompletion = false): Promise<any> {
+  async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
     const startTime = Date.now();
     if (ConnectionService.resolvedOobi[url]) {
       return ConnectionService.resolvedOobi[url];
