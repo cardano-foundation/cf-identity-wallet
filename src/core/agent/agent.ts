@@ -392,11 +392,7 @@ class Agent {
     // The passcode is assumed as UTF-8 in our recovery. In actuality, it is the qb64 CESR salt without the code.
     // We believe it's easier to encode it as UTF-8 in case there is a change in Signify TS in how the passcode is handled.
     const bran = randomPasscode().substring(0, 21);
-    const passcodeBytes = Buffer.concat([
-      Buffer.from(bran, "utf-8"),
-      Buffer.alloc(3),
-    ]);
-    return { bran, mnemonic: entropyToMnemonic(passcodeBytes) };
+    return { bran, mnemonic: this.convertToMnemonic(bran) };
   }
 
   async getMnemonic(): Promise<string> {
