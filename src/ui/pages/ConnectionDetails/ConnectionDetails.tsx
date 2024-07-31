@@ -74,6 +74,8 @@ const ConnectionDetails = () => {
   });
 
   const getDetails = useCallback(async () => {
+    if (!connectionShortDetails?.id) return;
+
     try {
       const connectionDetails = await Agent.agent.connections.getConnectionById(
         connectionShortDetails.id
@@ -87,9 +89,11 @@ const ConnectionDetails = () => {
     } finally {
       setLoading((value) => ({ ...value, details: false }));
     }
-  }, [connectionShortDetails.id]);
+  }, [connectionShortDetails?.id]);
 
   const getHistory = useCallback(async () => {
+    if (!connectionShortDetails?.id) return;
+
     try {
       const connectionHistory =
         await Agent.agent.connections.getConnectionHistoryById(
@@ -101,7 +105,7 @@ const ConnectionDetails = () => {
     } finally {
       setLoading((value) => ({ ...value, history: false }));
     }
-  }, [connectionShortDetails.id]);
+  }, [connectionShortDetails?.id]);
 
   const getData = useCallback(() => {
     if (!connectionShortDetails?.id) return;
