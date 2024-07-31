@@ -11,6 +11,7 @@ import {
   AgentServicesProps,
   OobiScan,
   KeriConnectionType,
+  ExchangeRoute,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { Agent } from "../agent";
@@ -20,6 +21,7 @@ import {
   CredentialStorage,
   ConnectionStorage,
   OperationPendingStorage,
+  IpexMessageStorage,
 } from "../records";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
@@ -29,6 +31,7 @@ class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
   protected readonly connectionNoteStorage!: ConnectionNoteStorage;
   protected readonly credentialStorage: CredentialStorage;
+  protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
 
   constructor(
@@ -36,12 +39,14 @@ class ConnectionService extends AgentService {
     connectionStorage: ConnectionStorage,
     connectionNoteStorage: ConnectionNoteStorage,
     credentialStorage: CredentialStorage,
+    ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
     this.connectionNoteStorage = connectionNoteStorage;
     this.credentialStorage = credentialStorage;
+    this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
   }
 
@@ -300,21 +305,21 @@ class ConnectionService extends AgentService {
   async getConnectionHistoryById(
     connectionId: string
   ): Promise<ConnectionHistoryItem[]> {
-    let histories: ConnectionHistoryItem[] = [];
-    const credentialRecords =
-      await this.credentialStorage.getCredentialMetadataByConnectionId(
+    const linkedIpexMessages =
+      await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(
         connectionId
       );
-    histories = histories.concat(
-      credentialRecords.map((record) => {
+    const requestMessages = linkedIpexMessages
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .map((messageRecord) => {
+        const { historyType, createdAt, credentialType } = messageRecord;
         return {
-          type: ConnectionHistoryType.CREDENTIAL_ACCEPTED,
-          timestamp: record.createdAt.toISOString(),
-          credentialType: record.credentialType,
+          type: historyType,
+          timestamp: createdAt.toISOString(),
+          credentialType,
         };
-      })
-    );
-    return histories;
+      });
+    return requestMessages;
   }
 
   // @TODO - foconnor: Contacts that are smid/rmids for multisigs will be synced too.

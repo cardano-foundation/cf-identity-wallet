@@ -37,6 +37,8 @@ import {
   PeerConnectionStorage,
   NotificationRecord,
   NotificationStorage,
+  IpexMessageStorage,
+  IpexMessageRecord,
 } from "./records";
 import { KeyStoreKeys, SecureStorage } from "../storage";
 import { MultiSigService } from "./services/multiSigService";
@@ -75,6 +77,7 @@ class Agent {
   private connectionNoteStorage!: ConnectionNoteStorage;
   private notificationStorage!: NotificationStorage;
   private peerConnectionStorage!: PeerConnectionStorage;
+  private ipexMessageStorage!: IpexMessageStorage;
   private operationPendingStorage!: OperationPendingStorage;
 
   private signifyClient!: SignifyClient;
@@ -120,6 +123,7 @@ class Agent {
         this.identifierStorage,
         this.credentialStorage,
         this.notificationStorage,
+        this.ipexMessageStorage,
         this.operationPendingStorage
       );
     }
@@ -133,6 +137,7 @@ class Agent {
         this.connectionStorage,
         this.connectionNoteStorage,
         this.credentialStorage,
+        this.ipexMessageStorage,
         this.operationPendingStorage
       );
     }
@@ -165,7 +170,8 @@ class Agent {
         this.notificationStorage,
         this.identifierStorage,
         this.operationPendingStorage,
-        this.connectionStorage
+        this.connectionStorage,
+        this.ipexMessageStorage
       );
     }
     return this.signifyNotificationService;
@@ -338,6 +344,9 @@ class Agent {
     );
     this.operationPendingStorage = new OperationPendingStorage(
       this.getStorageService<OperationPendingRecord>(this.storageSession)
+    );
+    this.ipexMessageStorage = new IpexMessageStorage(
+      this.getStorageService<IpexMessageRecord>(this.storageSession)
     );
     this.agentServicesProps = {
       signifyClient: this.signifyClient,

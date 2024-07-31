@@ -53,6 +53,41 @@ type ConnectionNoteDetails = {
   message: string;
 };
 
+interface JSONObject {
+  [x: string]: JSONValue;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface JSONArray extends Array<JSONValue> {}
+
+type JSONValue = string | number | boolean | JSONObject | JSONArray;
+
+type IpexMessage = {
+  exn: {
+    v: string;
+    t: string;
+    d: string;
+    i: string;
+    p: string;
+    dt: string;
+    r: string;
+    q: JSONValue;
+    a: any;
+    e: any;
+  };
+  pathed: {
+    acdc: string;
+    iss: string;
+    anc: string;
+  };
+};
+
+type IpexMessageDetails = {
+  id: string;
+  content: IpexMessage;
+  createdAt: Date;
+};
+
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 
 interface ConnectionDetails extends ConnectionShortDetails {
@@ -185,6 +220,9 @@ enum NotificationRoute {
 
 enum ExchangeRoute {
   IpexAdmit = "/ipex/admit",
+  IpexGrant = "/ipex/grant",
+  IpexApply = "/ipex/apply",
+  IpexAgree = "/ipex/agree",
 }
 
 interface BranAndMnemonic {
@@ -221,6 +259,8 @@ export type {
   KeriaStatusChangedEvent,
   AgentUrls,
   BranAndMnemonic,
+  IpexMessage,
+  IpexMessageDetails,
   NotificationRpy,
   AuthorizationRequestExn,
 };
