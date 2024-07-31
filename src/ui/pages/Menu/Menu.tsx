@@ -32,6 +32,7 @@ import {
 } from "./components/ConnectWallet";
 import { ManagePassword } from "./components/Settings/components/ManagePassword";
 import { TermAndPrivacy } from "./components/Settings/components/TermAndPrivacy";
+import { RecoverySeedPhrase } from "./components/Settings/components/RecoverySeedPhrase";
 
 const emptySubMenu = {
   Component: () => <></>,
@@ -39,6 +40,7 @@ const emptySubMenu = {
   additionalButtons: <></>,
   pageId: "empty",
   nestedMenu: false,
+  renderAsModal: false,
 };
 
 const MenuItem = ({
@@ -129,6 +131,7 @@ const Menu = () => {
             />
           </IonButton>
         ),
+        renderAsModal: false,
       },
     ],
     [
@@ -137,6 +140,16 @@ const Menu = () => {
         Component: TermAndPrivacy,
         title: "settings.sections.support.terms.submenu.title",
         pageId: "term-and-privacy",
+        nestedMenu: true,
+        additionalButtons: <></>,
+      },
+    ],
+    [
+      SubMenuKey.RecoverySeedPhrase,
+      {
+        Component: RecoverySeedPhrase,
+        title: "settings.sections.security.seedphrase.page.title",
+        pageId: "recovery-seed-phrase",
         nestedMenu: true,
         additionalButtons: <></>,
       },
@@ -232,6 +245,7 @@ const Menu = () => {
         additionalButtons={selectSubmenu.additionalButtons}
         pageId={selectSubmenu.pageId}
         switchView={showSelectedOption}
+        renderAsModal={selectSubmenu.renderAsModal}
       >
         <selectSubmenu.Component />
       </SubMenu>

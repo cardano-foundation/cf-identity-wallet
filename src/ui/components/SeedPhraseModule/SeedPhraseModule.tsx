@@ -1,13 +1,13 @@
 import { IonButton, IonChip, IonIcon, IonInput } from "@ionic/react";
 import { eyeOffOutline } from "ionicons/icons";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 import { i18n } from "../../../i18n";
+import { combineClassNames } from "../../utils/style";
 import "./SeedPhraseModule.scss";
 import {
   SeedPhraseModuleProps,
   SeedPhraseModuleRef,
 } from "./SeedPhraseModule.types";
-import { forwardRef, useImperativeHandle, useRef } from "react";
-import { combineClassNames } from "../../utils/style";
 
 const SeedPhraseModule = forwardRef<SeedPhraseModuleRef, SeedPhraseModuleProps>(
   (
@@ -20,11 +20,13 @@ const SeedPhraseModule = forwardRef<SeedPhraseModuleRef, SeedPhraseModuleProps>(
       removeSeedPhraseSelected,
       emptyWord,
       hideSeedNumber,
+      showSeedPhraseButton = true,
       inputMode,
       errorInputIndexs,
       onInputChange,
       onInputBlur,
       onInputFocus,
+      overlayText,
     },
     ref
   ) => {
@@ -63,16 +65,18 @@ const SeedPhraseModule = forwardRef<SeedPhraseModuleRef, SeedPhraseModuleProps>(
         >
           <IonIcon icon={eyeOffOutline} />
           <p data-testid="seed-phrase-privacy-overlay-text">
-            {i18n.t("generateseedphrase.privacy.overlay.text")}
+            {overlayText || i18n.t("generateseedphrase.privacy.overlay.text")}
           </p>
-          <IonButton
-            shape="round"
-            fill="outline"
-            data-testid="reveal-seed-phrase-button"
-            onClick={() => setHideSeedPhrase && setHideSeedPhrase(false)}
-          >
-            {i18n.t("generateseedphrase.privacy.overlay.button")}
-          </IonButton>
+          {showSeedPhraseButton && (
+            <IonButton
+              shape="round"
+              fill="outline"
+              data-testid="reveal-seed-phrase-button"
+              onClick={() => setHideSeedPhrase && setHideSeedPhrase(false)}
+            >
+              {i18n.t("generateseedphrase.privacy.overlay.button")}
+            </IonButton>
+          )}
         </div>
         <div
           data-testid={testId}
