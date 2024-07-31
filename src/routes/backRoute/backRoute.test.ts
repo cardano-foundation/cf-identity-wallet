@@ -15,7 +15,7 @@ jest.mock("../../store/reducers/seedPhraseCache", () => ({
 
 describe("getBackRoute", () => {
   let storeMock: RootState;
-  const state = {};
+
   beforeEach(() => {
     storeMock = {
       seedPhraseCache: {
@@ -27,6 +27,7 @@ describe("getBackRoute", () => {
         connectUrl: "",
       },
       stateCache: {
+        isOnline: true,
         initialized: true,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
@@ -160,6 +161,7 @@ describe("getPreviousRoute", () => {
         connectUrl: "",
       },
       stateCache: {
+        isOnline: true,
         initialized: true,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {

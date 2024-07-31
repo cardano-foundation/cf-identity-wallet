@@ -1178,10 +1178,16 @@
       },
       "support": {
         "title": "Support & Legal",
-        "contact": "Contact",
-        "troubleshooting": "Troubleshooting",
+        "contact": "Connect via Discord",
         "learnmore": "Learn More About Cardano IDW",
-        "terms": "Terms and Privacy Policy",
+        "terms": {
+          "title": "Terms and Privacy Policy",
+          "submenu": {
+            "title": "Terms & privacy",
+            "termandcondition": "Terms & conditions",
+            "privacy": "Privacy policy"
+          }
+        },
         "version": "App Version"
       }
     }
@@ -1190,7 +1196,14 @@
     "tab": {
       "title": "Connections",
       "create": "Add a connection",
-      "searchconnections": "Search connections"
+      "indentifierselector": {
+        "title": "Choose identifier",
+        "message": "Which KERI AID identifier would you like to make the connection with?",
+        "button": {
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        }
+      }
     },
     "details": {
       "done": "Done",
@@ -1305,10 +1318,13 @@
   },
   "shareidentifier": {
     "title": "Share connection",
-    "subtitle": "To share, either scan the QR code or select from the provided options below",
+    "subtitle": {
+      "identifier": "To share, either scan the QR code or select from the provided options below",
+      "connection": "Show this QR code to the person you want to connect with, or click the 'More share options' link"
+    },
     "done": "Done",
     "divider": "or",
-    "copykey": "Copy Out-of-Band Invitation (OOBI)",
+    "copykey": "Copy connection URL",
     "more": "More share options"
   },
   "createidentifier": {
@@ -1410,6 +1426,10 @@
     "error": {
       "maxlength": "Must be less than 32 characters long"
     }
+  },
+  "offline": {
+    "title": "You’re offline",
+    "description": "You’ve lost connection to the cloud agent. Once the connection has been re-established your wallet will return to normal usage."
   },
   "shareqr": {
     "divider": "or",

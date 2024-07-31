@@ -157,6 +157,8 @@ const Scanner = forwardRef(
           dispatch(setToastMsg(ToastMsgType.NEW_MULTI_SIGN_MEMBER));
         }
       } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error("Scanner Error:", e);
         dispatch(setToastMsg(ToastMsgType.SCANNER_ERROR));
         initScan();
       }

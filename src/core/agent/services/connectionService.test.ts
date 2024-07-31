@@ -538,12 +538,8 @@ describe("Connection service of agent", () => {
       .mockResolvedValue({ done: false });
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
-    const waitForCompletion = true;
     await expect(
-      connectionService.resolveOobi(
-        `${oobiPrefix}${failUuid}`,
-        waitForCompletion
-      )
+      connectionService.resolveOobi(`${oobiPrefix}${failUuid}`)
     ).rejects.toThrowError(ConnectionService.FAILED_TO_RESOLVE_OOBI);
   });
 
@@ -617,7 +613,7 @@ describe("Connection service of agent", () => {
     });
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
-    await connectionService.resolveOobi(`${oobiPrefix}${failUuid}`);
+    await connectionService.resolveOobi(`${oobiPrefix}${failUuid}`, false);
     expect(operationPendingStorage.save).toBeCalledWith({
       id: `${oobiPrefix}${failUuid}`,
       recordType: OperationPendingRecordType.Oobi,

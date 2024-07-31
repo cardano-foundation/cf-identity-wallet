@@ -1,10 +1,10 @@
-import { RequestType } from "../../globals/types";
+import { RequestType } from "../../../../globals/types";
 
-interface ConnectModalProps {
+interface ConnectionsOptionModalProps {
   type: RequestType;
   connectModalIsOpen: boolean;
   setConnectModalIsOpen: (value: boolean) => void;
   handleProvideQr: () => Promise<void> | void;
 }
 
-export type { ConnectModalProps };
+export type { ConnectionsOptionModalProps };

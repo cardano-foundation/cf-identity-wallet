@@ -31,6 +31,7 @@ import {
   ConnectWalletOptionRef,
 } from "./components/ConnectWallet";
 import { ManagePassword } from "./components/Settings/components/ManagePassword";
+import { TermAndPrivacy } from "./components/Settings/components/TermAndPrivacy";
 
 const emptySubMenu = {
   Component: () => <></>,
@@ -130,6 +131,16 @@ const Menu = () => {
         ),
       },
     ],
+    [
+      SubMenuKey.TermAndPrivacy,
+      {
+        Component: TermAndPrivacy,
+        title: "settings.sections.support.terms.submenu.title",
+        pageId: "term-and-privacy",
+        nestedMenu: true,
+        additionalButtons: <></>,
+      },
+    ],
   ];
 
   const submenuMap = useMemo(() => new Map(submenuMapData), []);
@@ -188,7 +199,7 @@ const Menu = () => {
     return selectedOption !== undefined
       ? submenuMap.get(selectedOption) || emptySubMenu
       : emptySubMenu;
-  }, [selectedOption]);
+  }, [selectedOption, submenuMap]);
 
   return (
     <>

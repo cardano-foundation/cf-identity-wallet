@@ -1,22 +1,17 @@
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { waitForIonicReact } from "@ionic/react-test-utils";
+import { AnyAction, Store } from "@reduxjs/toolkit";
+import { fireEvent, render } from "@testing-library/react";
+import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { Store, AnyAction } from "@reduxjs/toolkit";
-import { act } from "react-dom/test-utils";
-import { ionFireEvent, waitForIonicReact } from "@ionic/react-test-utils";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { OperationType } from "../../globals/types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { credsFixAcdc } from "../../__fixtures__/credsFix";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import {
-  setCurrentOperation,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
-import { OperationType, ToastMsgType } from "../../globals/types";
 import { ConnectionOptions } from "./ConnectionOptions";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children }: { children: any }) => children,
+  IonModal: ({ children }: { children: never }) => children,
 }));
 
 const dispatchMock = jest.fn();

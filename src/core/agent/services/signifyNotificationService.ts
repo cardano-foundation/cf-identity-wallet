@@ -517,6 +517,7 @@ class SignifyNotificationService extends AgentService {
               );
               if (connectionRecord) {
                 connectionRecord.pending = false;
+                connectionRecord.createdAt = (operation.response as any).dt;
                 await this.connectionStorage.update(connectionRecord);
               }
               callback({

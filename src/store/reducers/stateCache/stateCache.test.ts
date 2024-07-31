@@ -18,6 +18,7 @@ import {
   StateCacheProps,
   stateCacheSlice,
   login,
+  setIsOnline,
 } from "./stateCache";
 import { RootState } from "../../index";
 import { RoutePath } from "../../../routes";
@@ -70,6 +71,13 @@ describe("State Cache", () => {
     const rootState = { stateCache: nextState } as RootState;
     expect(getCurrentRoute(rootState)).toEqual(nextState.routes[0]);
     expect(getStateCache(rootState)).toEqual(nextState);
+  });
+
+  test("should set online status", () => {
+    const action = setIsOnline(false);
+    const nextState = stateCacheSlice.reducer(initialState, action);
+
+    expect(nextState.isOnline).toEqual(false);
   });
 
   test("should set the authentication cache", () => {

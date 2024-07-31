@@ -3,15 +3,20 @@ import {
   BiometryType,
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { useState } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
 import { MiscRecordId } from "../../../../../core/agent/agent.types";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { store } from "../../../../../store";
+import {
+  DISCORD_LINK,
+  DOCUMENTATION_LINK,
+} from "../../../../globals/constants";
 import { Settings } from "./Settings";
+import { OptionIndex } from "./Settings.types";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -26,6 +31,16 @@ jest.mock("../../../../../core/storage", () => ({
     get: (key: string) => {
       return "111111";
     },
+  },
+}));
+
+const browserMock = jest.fn(({ link }: { link: string }) =>
+  Promise.resolve(link)
+);
+jest.mock("@capacitor/browser", () => ({
+  ...jest.requireActual("@capacitor/browser"),
+  Browser: {
+    open: (params: never) => browserMock(params),
   },
 }));
 
@@ -107,13 +122,10 @@ describe("Settings page", () => {
       getByText(EN_TRANSLATIONS.settings.sections.support.contact)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.troubleshooting)
-    ).toBeInTheDocument();
-    expect(
       getByText(EN_TRANSLATIONS.settings.sections.support.learnmore)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.terms)
+      getByText(EN_TRANSLATIONS.settings.sections.support.terms.title)
     ).toBeInTheDocument();
     expect(
       getByText(EN_TRANSLATIONS.settings.sections.support.version)
@@ -320,6 +332,44 @@ describe("Settings page", () => {
 
     await waitFor(() => {
       expect(openSettingMock).toBeCalledTimes(1);
+    });
+  });
+
+  test("Open discord and documentation link", async () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={store}>
+        <Settings />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.settings.sections.support.contact)
+    ).toBeInTheDocument();
+
+    expect(
+      getByText(EN_TRANSLATIONS.settings.sections.support.learnmore)
+    ).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(getByTestId(`settings-item-${OptionIndex.Contact}`));
+    });
+
+    await waitFor(() => {
+      expect(browserMock).toBeCalledWith({
+        url: DISCORD_LINK,
+      });
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId(`settings-item-${OptionIndex.Documentation}`)
+      );
+    });
+
+    await waitFor(() => {
+      expect(browserMock).toBeCalledWith({
+        url: DOCUMENTATION_LINK,
+      });
     });
   });
 });

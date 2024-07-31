@@ -1,17 +1,17 @@
 import { scanCircleOutline, qrCodeOutline } from "ionicons/icons";
-import { i18n } from "../../../i18n";
-import { ConnectModalProps } from "./ConnectModal.types";
-import { useAppDispatch } from "../../../store/hooks";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { OperationType } from "../../globals/types";
-import { OptionItem, OptionModal } from "../OptionsModal";
+import { i18n } from "../../../../../i18n";
+import { ConnectionsOptionModalProps } from "./ConnectionsOptionModal.types";
+import { useAppDispatch } from "../../../../../store/hooks";
+import { setCurrentOperation } from "../../../../../store/reducers/stateCache";
+import { OperationType } from "../../../../globals/types";
+import { OptionItem, OptionModal } from "../../../../components/OptionsModal";
 
-const ConnectModal = ({
+const ConnectionsOptionModal = ({
   type,
   connectModalIsOpen,
   setConnectModalIsOpen,
   handleProvideQr,
-}: ConnectModalProps) => {
+}: ConnectionsOptionModalProps) => {
   const dispatch = useAppDispatch();
 
   const options: OptionItem[] = [
@@ -27,7 +27,10 @@ const ConnectModal = ({
     {
       icon: qrCodeOutline,
       label: i18n.t("connectmodal.provide"),
-      onClick: handleProvideQr,
+      onClick: () => {
+        setConnectModalIsOpen(false);
+        handleProvideQr();
+      },
       testId: "add-connection-modal-provide-qr-code",
     },
   ];
@@ -50,4 +53,4 @@ const ConnectModal = ({
   );
 };
 
-export { ConnectModal };
+export { ConnectionsOptionModal };

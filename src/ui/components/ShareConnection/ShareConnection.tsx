@@ -1,44 +1,54 @@
-import { IonButton, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
 import { Share } from "@capacitor/share";
+import { IonButton, IonIcon } from "@ionic/react";
+import { copyOutline, openOutline, qrCodeOutline } from "ionicons/icons";
+import { useCallback, useMemo, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
-import { copyOutline, openOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
-import { ShareIdentifierProps } from "./ShareIdentifier.types";
-import { writeToClipboard } from "../../utils/clipboard";
-import "./ShareIdentifier.scss";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache, setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
-import { Agent } from "../../../core/agent/agent";
+import { useOnlineStatusEffect } from "../../hooks";
+import { writeToClipboard } from "../../utils/clipboard";
 import { PageHeader } from "../PageHeader";
 import { ResponsiveModal } from "../layout/ResponsiveModal";
+import "./ShareConnection.scss";
+import { ShareConnectionProps, ShareType } from "./ShareConnection.types";
 
-const ShareIdentifier = ({
+const ShareConnection = ({
   isOpen,
   setIsOpen,
   signifyName,
-}: ShareIdentifierProps) => {
+  shareType: shareLocation = ShareType.Identifier,
+}: ShareConnectionProps) => {
   const componentId = "share-identifier-modal";
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
 
-  useEffect(() => {
-    if (signifyName) {
-      const fetchOobi = async () => {
-        const oobiValue = await Agent.agent.connections.getOobi(
-          `${signifyName}`,
-          userName
-        );
-        if (oobiValue) {
-          setOobi(oobiValue);
-        }
-      };
-      fetchOobi();
+  const fetchOobi = useCallback(async () => {
+    if (!signifyName) return;
+
+    const oobiValue = await Agent.agent.connections.getOobi(
+      `${signifyName}`,
+      userName
+    );
+    if (oobiValue) {
+      setOobi(oobiValue);
     }
   }, [signifyName, userName]);
+
+  const subtitle = useMemo(() => {
+    switch (shareLocation) {
+    case ShareType.Connection:
+      return i18n.t("shareidentifier.subtitle.connection");
+    default:
+      return i18n.t("shareidentifier.subtitle.identifier");
+    }
+  }, [shareLocation]);
+
+  useOnlineStatusEffect(fetchOobi);
 
   return (
     <ResponsiveModal
@@ -53,12 +63,12 @@ const ShareIdentifier = ({
         closeButtonAction={() => setIsOpen(false)}
         title={`${i18n.t("shareidentifier.title")}`}
       />
-      <p className="share-identifier-subtitle">
-        {i18n.t("shareidentifier.subtitle")}
-      </p>
+      <p className="share-identifier-subtitle">{subtitle}</p>
       <div className="share-identifier-body">
         <div
-          className="share-identifier-body-component"
+          className={`share-identifier-body-component share-qr ${
+            oobi ? "reveal" : "blur"
+          }`}
           data-testid="share-identifier-qr-code"
         >
           <QRCode
@@ -73,6 +83,14 @@ const ShareIdentifier = ({
             logoOpacity={1}
             quietZone={10}
           />
+          <span className="share-qr-code-blur-overlay-container">
+            <span className="share-qr-code-blur-overlay-inner">
+              <IonIcon
+                slot="icon-only"
+                icon={qrCodeOutline}
+              />
+            </span>
+          </span>
         </div>
         <div className="share-identifier-divider">
           <span className="share-identifier-divider-line" />
@@ -140,4 +158,4 @@ const ShareIdentifier = ({
   );
 };
 
-export { ShareIdentifier };
+export { ShareConnection };

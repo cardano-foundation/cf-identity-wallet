@@ -11,6 +11,7 @@ import { OperationType, ToastMsgType } from "../../../ui/globals/types";
 
 const initialState: StateCacheProps = {
   initialized: false,
+  isOnline: true,
   routes: [],
   authentication: {
     loggedIn: false,
@@ -35,6 +36,9 @@ const stateCacheSlice = createSlice({
   name: "stateCache",
   initialState,
   reducers: {
+    setIsOnline: (state, action: PayloadAction<boolean>) => {
+      state.isOnline = action.payload;
+    },
     setInitialized: (state, action: PayloadAction<boolean>) => {
       state.initialized = action.payload;
     },
@@ -140,6 +144,7 @@ const {
   setQueueIncomingRequest,
   setPauseQueueIncomingRequest,
   enqueueIncomingRequest,
+  setIsOnline,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -153,6 +158,7 @@ const getCurrentOperation = (state: RootState) =>
 const getToastMsg = (state: RootState) => state.stateCache.toastMsg;
 const getQueueIncomingRequest = (state: RootState) =>
   state.stateCache.queueIncomingRequest;
+const getIsOnline = (state: RootState) => state.stateCache.isOnline;
 
 export type {
   CurrentRouteCacheProps,
@@ -161,6 +167,7 @@ export type {
 };
 
 export {
+  setIsOnline,
   initialState,
   setInitialized,
   getIsInitialized,
@@ -169,6 +176,7 @@ export {
   getRoutes,
   removeRoute,
   getCurrentRoute,
+  getIsOnline,
   setCurrentRoute,
   removeCurrentRoute,
   removeSetPasscodeRoute,

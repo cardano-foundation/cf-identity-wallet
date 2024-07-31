@@ -98,9 +98,10 @@ class ConnectionService extends AgentService {
       pending: !operation.done,
     };
     const groupId = new URL(url).searchParams.get("groupId") ?? "";
+    const connectionDate = operation.response?.dt ?? new Date();
     const connection = {
       id: connectionId,
-      connectionDate: operation.response.dt,
+      connectionDate,
       oobi: operation.metadata.oobi,
       status: ConnectionStatus.CONFIRMED,
       label: operation.alias,
@@ -342,7 +343,7 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async resolveOobi(url: string, waitForCompletion = false): Promise<any> {
+  async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
     const startTime = Date.now();
     if (ConnectionService.resolvedOobi[url]) {
       return ConnectionService.resolvedOobi[url];

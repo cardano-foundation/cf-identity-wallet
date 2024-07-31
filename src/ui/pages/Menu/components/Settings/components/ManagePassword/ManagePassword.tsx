@@ -134,7 +134,7 @@ const ManagePassword = () => {
       <AlertEnable
         isOpen={alertEnableIsOpen}
         setIsOpen={setAlertEnableIsOpen}
-        dataTestId="alert-cancel"
+        dataTestId="alert-cancel-enable-password"
         headerText={`${i18n.t(
           "settings.sections.security.managepassword.page.alert.enablemessage"
         )}`}
@@ -145,8 +145,8 @@ const ManagePassword = () => {
           "settings.sections.security.managepassword.page.alert.cancel"
         )}`}
         actionConfirm={() => setVerifyPasscodeIsOpen(true)}
-        actionCancel={() => handleClear()}
-        actionDismiss={() => handleClear()}
+        actionCancel={handleClear}
+        actionDismiss={handleClear}
       />
       <AlertDisable
         isOpen={alertDisableIsOpen}
@@ -162,8 +162,8 @@ const ManagePassword = () => {
           "settings.sections.security.managepassword.page.alert.cancel"
         )}`}
         actionConfirm={() => setVerifyPasswordIsOpen(true)}
-        actionCancel={() => handleClear()}
-        actionDismiss={() => handleClear()}
+        actionCancel={handleClear}
+        actionDismiss={handleClear}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
@@ -179,7 +179,7 @@ const ManagePassword = () => {
         isOpen={createPasswordModalIsOpen}
         className="create-password-modal"
         data-testid="create-password-modal"
-        onDidDismiss={() => handleClear()}
+        onDidDismiss={handleClear}
       >
         <CreatePassword
           handleClear={handleClear}

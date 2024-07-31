@@ -79,6 +79,7 @@ const initialStateKeri = {
       passcodeIsSet: true,
       passwordIsSet: true,
     },
+    isOnline: true,
   },
   seedPhraseCache: {
     seedPhrase:
@@ -446,6 +447,7 @@ describe("Cards Details page (not multi-sig)", () => {
           passcodeIsSet: true,
           passwordIsSet: false,
         },
+        isOnline: true,
       },
       seedPhraseCache: {
         seedPhrase: "",
@@ -560,6 +562,7 @@ describe("Cards Details page (multi-sig)", () => {
           passcodeIsSet: true,
           passwordIsSet: false,
         },
+        isOnline: true,
       },
       seedPhraseCache: {
         seedPhrase: "",

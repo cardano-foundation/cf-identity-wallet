@@ -5,7 +5,7 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import "./Credentials.scss";
@@ -26,9 +26,8 @@ import {
   getCredsCache,
   getFavouritesCredsCache,
 } from "../../../store/reducers/credsCache";
-import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { StartAnimationSource } from "../Identifiers/Identifiers.type";
-import { useToggleConnections } from "../../hooks";
+import { useOnlineStatusEffect, useToggleConnections } from "../../hooks";
 import {
   getCredsArchivedCache,
   setCredsArchivedCache,
@@ -93,17 +92,17 @@ const Creds = () => {
     TabsRoutePath.CREDENTIALS
   );
 
-  const fetchArchivedCreds = async () => {
+  const fetchArchivedCreds = useCallback(async () => {
     // @TODO - sdisalvo: handle error
     const creds = await Agent.agent.credentials.getCredentials(true);
     dispatch(setCredsArchivedCache(creds));
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     setShowPlaceholder(credsCache.length === 0);
   }, [credsCache]);
 
-  useEffect(() => {
+  const fetchDataUpdateCred = useCallback(() => {
     const validToastMsgTypes = [
       ToastMsgType.CREDENTIAL_ARCHIVED,
       ToastMsgType.CREDENTIAL_RESTORED,
@@ -115,7 +114,9 @@ const Creds = () => {
     if (toastMsg && validToastMsgTypes.includes(toastMsg)) {
       fetchArchivedCreds();
     }
-  }, [toastMsg]);
+  }, [fetchArchivedCreds, toastMsg]);
+
+  useOnlineStatusEffect(fetchDataUpdateCred);
 
   const handleCreateCred = () => {
     dispatch(setCurrentOperation(OperationType.SCAN_CONNECTION));

@@ -30,7 +30,13 @@ const SidePage = () => {
       dispatch(setPauseQueueIncomingRequest(true));
       pauseIncommingRequestByConnection.current = true;
     }
-  }, [canOpenIncomingRequest, canOpenPendingWalletConnection]);
+  }, [
+    canOpenIncomingRequest,
+    canOpenPendingWalletConnection,
+    dispatch,
+    queueIncomingRequest.isPaused,
+    stateCache.authentication.loggedIn,
+  ]);
 
   useEffect(() => {
     if (!stateCache.authentication.loggedIn) return;
