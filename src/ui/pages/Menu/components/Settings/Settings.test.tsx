@@ -2,7 +2,13 @@ import {
   BiometryErrorType,
   BiometryType,
 } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor,
+} from "@testing-library/react";
 import { useState } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -17,11 +23,17 @@ import {
 } from "../../../../globals/constants";
 import { Settings } from "./Settings";
 import { OptionIndex } from "./Settings.types";
+import { SubMenuKey } from "../../Menu.types";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen }: any) => (
-    <div style={{ display: isOpen ? "block" : "none" }}>{children}</div>
+  IonModal: (props: any) => (
+    <div
+      data-testid={props["data-testid"]}
+      style={{ display: props.isOpen ? "block" : "none" }}
+    >
+      {props.children}
+    </div>
   ),
 }));
 
@@ -372,4 +384,94 @@ describe("Settings page", () => {
       });
     });
   });
+
+  test("Switch page", async () => {
+    const switchViewMock = jest.fn();
+    const { getByText, getByTestId } = render(
+      <Provider store={store}>
+        <Settings switchView={switchViewMock} />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.settings.sections.support.terms.title)
+    ).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(getByTestId(`settings-item-${OptionIndex.Term}`));
+    });
+
+    await waitFor(() => {
+      expect(switchViewMock).toBeCalledWith(SubMenuKey.TermAndPrivacy);
+    });
+
+    expect(
+      getByText(EN_TRANSLATIONS.settings.sections.security.managepassword.title)
+    ).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(
+        getByTestId(`settings-item-${OptionIndex.ManagePassword}`)
+      );
+    });
+
+    await waitFor(() => {
+      expect(switchViewMock).toBeCalledWith(SubMenuKey.ManagePassword);
+    });
+
+    expect(
+      getByText(EN_TRANSLATIONS.settings.sections.security.seedphrase.title)
+    ).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(
+        getByTestId(`settings-item-${OptionIndex.RecoverySeedPhrase}`)
+      );
+    });
+
+    await waitFor(() => {
+      expect(switchViewMock).toBeCalledWith(SubMenuKey.RecoverySeedPhrase);
+    });
+  });
+
+  test("Open change passcode", async () => {
+    const switchViewMock = jest.fn();
+    const { getByText, getByTestId } = render(
+      <Provider store={store}>
+        <Settings switchView={switchViewMock} />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.settings.sections.security.changepin.title)
+    ).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(getByTestId(`settings-item-${OptionIndex.ChangePin}`));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("verify-passcode")).toBeVisible();
+    });
+
+    clickButtonRepeatedly(getByText, "1", 6);
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.settings.sections.security.changepin.createpasscode
+        )
+      ).toBeVisible();
+    });
+  });
 });
+
+const clickButtonRepeatedly = (
+  getByText: RenderResult["getByText"],
+  buttonLabel: string,
+  times: number
+) => {
+  for (let i = 0; i < times; i++) {
+    fireEvent.click(getByText(buttonLabel));
+  }
+};
