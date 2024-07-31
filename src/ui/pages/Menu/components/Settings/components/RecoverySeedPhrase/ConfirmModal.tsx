@@ -23,14 +23,14 @@ const ConditionItem = ({
     <IonItem
       data-testid={`condition-item-${index}`}
       className="condition-item"
-      onClick={() => onClick(index)}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick(index);
+      }}
     >
-      <p
-        className="text"
-        data-testid={`condition-title-${index}`}
-      >
-        {text}
-      </p>
+      <div className="text">
+        <p data-testid={`condition-title-${index}`}>{text}</p>
+      </div>
       <IonCheckbox
         checked={checked}
         aria-label=""
