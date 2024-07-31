@@ -1178,10 +1178,16 @@
       },
       "support": {
         "title": "Support & Legal",
-        "contact": "Contact",
-        "troubleshooting": "Troubleshooting",
+        "contact": "Connect via Discord",
         "learnmore": "Learn More About Cardano IDW",
-        "terms": "Terms and Privacy Policy",
+        "terms": {
+          "title": "Terms and Privacy Policy",
+          "submenu": {
+            "title": "Terms & privacy",
+            "termandcondition": "Terms & conditions",
+            "privacy": "Privacy policy"
+          }
+        },
         "version": "App Version"
       }
     }
@@ -1190,8 +1196,7 @@
     "tab": {
       "title": "Connections",
       "create": "Add a connection",
-      "searchconnections": "Search connections",
-      "indentifierselector":  {
+      "indentifierselector": {
         "title": "Choose identifier",
         "message": "Which KERI AID identifier would you like to make the connection with?",
         "button": {

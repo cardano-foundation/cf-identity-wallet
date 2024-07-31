@@ -33,6 +33,7 @@ enum SubMenuKey {
   Connections,
   ConnectWallet,
   ManagePassword,
+  TermAndPrivacy,
 }
 
 export type { SubMenuProps, MenuItemProps, SubMenuData };

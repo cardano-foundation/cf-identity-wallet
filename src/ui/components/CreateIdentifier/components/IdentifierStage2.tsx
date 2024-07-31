@@ -1,10 +1,4 @@
-import {
-  IonSearchbar,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonCheckbox,
-} from "@ionic/react";
+import { IonList, IonItem, IonLabel, IonCheckbox } from "@ionic/react";
 import { useState } from "react";
 import { i18n } from "../../../../i18n";
 import { PageFooter } from "../../PageFooter";
