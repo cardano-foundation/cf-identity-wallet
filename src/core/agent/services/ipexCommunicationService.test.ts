@@ -184,11 +184,12 @@ const agentServicesProps = {
   eventService,
 };
 
+const resolveOobiMock = jest.fn();
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
-        resolveOobi: jest.fn(),
+        resolveOobi: () => resolveOobiMock(),
       },
       signifyNotifications: {
         deleteNotificationRecordById: (id: string) =>
@@ -631,6 +632,7 @@ describe("Ipex communication service of agent", () => {
     schemaGetMock.mockRejectedValueOnce(
       new Error("request - 404 - SignifyClient message")
     );
+    resolveOobiMock.mockResolvedValueOnce({ done: false });
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       grantIpexMessageMock,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
@@ -642,6 +644,25 @@ describe("Ipex communication service of agent", () => {
       connectionId: grantIpexMessageMock.exn.i,
       historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
     });
+
+    schemaGetMock.mockRejectedValueOnce(
+      new Error("request - 404 - SignifyClient message")
+    );
+    resolveOobiMock.mockResolvedValueOnce({ done: true });
+    schemaGetMock.mockResolvedValueOnce(schemaMock);
+    await ipexCommunicationService.createLinkedIpexMessageRecord(
+      grantIpexMessageMock,
+      ConnectionHistoryType.CREDENTIAL_ISSUANCE
+    );
+    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
+      id: grantIpexMessageMock.exn.d,
+      credentialType: schemaMock.title,
+      content: grantIpexMessageMock,
+      connectionId: grantIpexMessageMock.exn.i,
+      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+    });
+    expect(schemaGetMock).toBeCalledTimes(4);
+    expect(resolveOobiMock).toBeCalledTimes(2);
   });
 
   test("Should throw error if schemas.get has an unexpected error", async () => {

@@ -343,38 +343,33 @@ class IpexCommunicationService extends AgentService {
     });
   }
 
+  private async getSchema(schemaSaid: string) {
+    try {
+      const schema = await this.props.signifyClient.schemas().get(schemaSaid);
+      return schema;
+    } catch (error) {
+      const errorStack = (error as Error).stack as string;
+      const status = errorStack.split("-")[1];
+      if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+        const oobi = await Agent.agent.connections.resolveOobi(
+          `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
+        );
+        if (oobi.done) {
+          await this.getSchema(schemaSaid);
+        }
+        return undefined;
+      } else {
+        throw error;
+      }
+    }
+  }
+
   async createLinkedIpexMessageRecord(
     message: IpexMessage,
     historyType: ConnectionHistoryType
   ): Promise<void> {
     const schemaSaid = message.exn.e.acdc.s;
-    const allSchemaSaids = Object.keys(message.exn.e.acdc?.e || {}).map(
-      // Chained schemas
-      (key) => message.exn.e.acdc.e?.[key]?.s
-    );
-    allSchemaSaids.push(schemaSaid);
-    await Promise.all(
-      allSchemaSaids.map(
-        async (schemaSaid) =>
-          await Agent.agent.connections.resolveOobi(
-            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`,
-            true
-          )
-      )
-    );
-
-    const schema = await this.props.signifyClient
-      .schemas()
-      .get(schemaSaid)
-      .catch((error) => {
-        const errorStack = (error as Error).stack as string;
-        const status = errorStack.split("-")[1];
-        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
-          return undefined;
-        } else {
-          throw error;
-        }
-      });
+    const schema = await this.getSchema(schemaSaid);
 
     await this.ipexMessageStorage.createIpexMessageRecord({
       id: message.exn.d,

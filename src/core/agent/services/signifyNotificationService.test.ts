@@ -588,8 +588,7 @@ describe("Signify notification service of agent", () => {
         m: "",
       },
     };
-    admitMock.mockResolvedValue([{}, ["sigs"], "end"]);
-    getCredentialMock.mockResolvedValue(acdcMock);
+    getCredentialMock.mockRejectedValueOnce(new Error());
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "signifyName",
     });
@@ -621,7 +620,8 @@ describe("Signify notification service of agent", () => {
         m: "",
       },
     };
-    getCredentialMock.mockRejectedValueOnce(new Error());
+    admitMock.mockResolvedValue([{}, ["sigs"], "end"]);
+    getCredentialMock.mockResolvedValue(acdcMock);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "signifyName",
     });

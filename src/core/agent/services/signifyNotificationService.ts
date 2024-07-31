@@ -232,14 +232,14 @@ class SignifyNotificationService extends AgentService {
           ]);
         await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
           exchange,
-          ConnectionHistoryType.CREDENTIAL_ISSUANCE
+          ConnectionHistoryType.CREDENTIAL_UPDATE
         );
         await this.markNotification(notif.i);
         return;
       } else {
         await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
           exchange,
-          ConnectionHistoryType.CREDENTIAL_UPDATE
+          ConnectionHistoryType.CREDENTIAL_ISSUANCE
         );
       }
     }
