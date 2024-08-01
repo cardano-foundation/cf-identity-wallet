@@ -830,12 +830,6 @@
           "color": "Choose card colour"
         }
       },
-      "view": {
-        "cancel": "Done",
-        "title": "Identifier JSON",
-        "copy": "Copy JSON",
-        "save": "Save to Device"
-      },
       "rotatekeys": {
         "done": "Done",
         "description": "Rotating your signing keys boosts security by reducing the risk of key compromise."
@@ -877,12 +871,6 @@
         "title": "Credential options",
         "view": "View JSON",
         "archive": "Archive credential"
-      },
-      "view": {
-        "cancel": "Done",
-        "title": "Credential JSON",
-        "copy": "Copy JSON",
-        "save": "Save to Device"
       },
       "button": {
         "delete": "Delete credential",

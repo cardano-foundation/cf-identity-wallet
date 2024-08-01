@@ -123,8 +123,6 @@ const IdentifierDetails = () => {
 
   const handleDelete = async () => {
     setVerifyPasswordIsOpen(false);
-    // @TODO - sdisalvo: Update Database.
-    // Remember to update identifiers.details.options file too.
     if (cardData) {
       const updatedIdentifiers = identifierData.filter(
         (item) => item.id !== cardData.id
