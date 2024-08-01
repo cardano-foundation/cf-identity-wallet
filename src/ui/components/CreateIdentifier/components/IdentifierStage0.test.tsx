@@ -335,4 +335,68 @@ describe("Identifier Stage 0", () => {
       );
     });
   });
+
+  test("Show AID type infomation modal", async () => {
+    const { getByTestId, getByText, queryByText } = render(
+      <Provider store={storeMocked}>
+        <IdentifierStage0
+          state={stage0State}
+          setState={setState}
+          componentId={"create-identifier-modal"}
+          setBlur={setBlur}
+          resetModal={resetModal}
+        />
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("type-input-title"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.title)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.delegated.text)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.individual.text)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.group.text)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.button.done)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(EN_TRANSLATIONS.createidentifier.aidinfo.title)
+      ).not.toBeVisible();
+      expect(
+        queryByText(EN_TRANSLATIONS.createidentifier.aidinfo.delegated.text)
+      ).not.toBeVisible();
+      expect(
+        queryByText(EN_TRANSLATIONS.createidentifier.aidinfo.individual.text)
+      ).not.toBeVisible();
+      expect(
+        queryByText(EN_TRANSLATIONS.createidentifier.aidinfo.group.text)
+      ).not.toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("identifier-delegated-container"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.title)
+      ).toBeVisible();
+    });
+  });
 });

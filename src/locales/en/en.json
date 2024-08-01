@@ -758,7 +758,7 @@
       "favourites": "Favourites",
       "allidentifiers": "All identifiers",
       "pendingidentifiers": "Pending identifiers",
-      "multisigidentifiers": "For multiple signers"
+      "multisigidentifiers": "For groups"
     },
     "layout": {
       "created": "CREATED"
@@ -1435,16 +1435,35 @@
     "aidtype": {
       "title": "AID type",
       "default": {
-        "label": "Default",
+        "label": "Individual",
         "tooltip": "Lorem ipsum dolor sit amet"
       },
       "multisig": {
-        "label": "Multi-sig",
+        "label": "Group",
         "tooltip": "Lorem ipsum dolor sit amet"
       },
       "delegated": {
         "label": "Delegated",
         "tooltip": "Lorem ipsum dolor sit amet"
+      }
+    },
+    "aidinfo": {
+      "title": "AID types",
+      "text": "A description of each KERI AID type you can create identifiers for.",
+      "individual": {
+        "label": "Individual",
+        "text": "Use these identifiers to represent all your individual personas. Currently, a single key pair is used to sign statements with these identifiers, and it can be updated. In the future, these identifiers might become more robust with multi-device support and social recovery options."
+      },
+      "group": {
+        "label": "Group",
+        "text": "Use a group identifier to represent an entity controlled by multiple people, like a committee. You can set a threshold to decide how many members are needed to create a valid signature or recover the identifier."
+      },
+      "delegated": {
+        "label": "Delegated",
+        "text": "The delegated option is currently being developed. Identifiers might be delegated for advanced recovery in case of a security breach, which is ideal for an organisational structure in enterprises."
+      },
+      "button": {
+        "done": "Done"
       }
     },
     "theme": {
