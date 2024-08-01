@@ -9,8 +9,6 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { IdentifierOptions } from "./IdentifierOptions";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { setToastMsg } from "../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../globals/types";
 
 const updateMock = jest.fn();
 
@@ -69,7 +67,6 @@ describe("Identifier Options modal", () => {
     );
     await waitForIonicReact();
 
-    expect(getByTestId("view-json-identifier-option")).toBeVisible();
     expect(getByTestId("edit-identifier-option")).toBeVisible();
     expect(getByTestId("rotate-keys-option")).toBeVisible();
     expect(getByTestId("share-identifier-option")).toBeVisible();
@@ -129,51 +126,6 @@ describe("Identifier Options function test", () => {
     };
   });
 
-  test("Display JSON view", async () => {
-    const setIdentifierOptionsIsOpen = jest.fn();
-    const setCardData = jest.fn();
-    const { getByTestId } = render(
-      <Provider store={mockedStore}>
-        <IdentifierOptions
-          handleRotateKey={jest.fn()}
-          optionsIsOpen={true}
-          setOptionsIsOpen={setIdentifierOptionsIsOpen}
-          cardData={identifierFix[0]}
-          setCardData={setCardData}
-          handleDeleteIdentifier={async () => {
-            jest.fn();
-          }}
-        />
-      </Provider>
-    );
-    await waitForIonicReact();
-
-    expect(getByTestId("view-json-identifier-option")).toBeVisible();
-
-    act(() => {
-      fireEvent.click(getByTestId("view-json-identifier-option"));
-    });
-
-    await waitFor(() => {
-      expect(setIdentifierOptionsIsOpen).toBeCalledTimes(1);
-    });
-
-    expect(getByTestId("identifier-content").innerHTML).toBe(
-      JSON.stringify(identifierFix[0], null, 2)
-    );
-    expect(getByTestId("identifier-copy-json")).toBeVisible();
-
-    act(() => {
-      fireEvent.click(getByTestId("identifier-copy-json"));
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD)
-      );
-    });
-  });
-
   test("Open edit modal view", async () => {
     const setIdentifierOptionsIsOpen = jest.fn();
     const setCardData = jest.fn();
@@ -206,7 +158,6 @@ describe("Identifier Options function test", () => {
     expect(
       getAllByText(EN_TRANSLATIONS.identifiers.details.options.edit)[0]
     ).toBeVisible();
-    expect(getByTestId("identifier-copy-json")).toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("identifier-theme-selector-item-1"));
