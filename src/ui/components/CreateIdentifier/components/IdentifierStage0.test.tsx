@@ -1,7 +1,7 @@
 import { Capacitor } from "@capacitor/core";
 import { IonInput, IonLabel, setupIonicReact } from "@ionic/react";
 import { ionFireEvent, mockIonicReact } from "@ionic/react-test-utils";
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, getByText, render, waitFor } from "@testing-library/react";
 import { ReactNode } from "react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
@@ -298,7 +298,7 @@ describe("Identifier Stage 0", () => {
   });
 
   test("Display error when display name invalid", async () => {
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <IdentifierStage0
           state={stage0State}
@@ -326,13 +326,77 @@ describe("Identifier Stage 0", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("close-button"));
+      fireEvent.click(getByText(EN_TRANSLATIONS.createidentifier.back));
     });
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
         setCurrentOperation(OperationType.IDLE)
       );
+    });
+  });
+
+  test("Show AID type infomation modal", async () => {
+    const { getByTestId, getByText, queryByText } = render(
+      <Provider store={storeMocked}>
+        <IdentifierStage0
+          state={stage0State}
+          setState={setState}
+          componentId={"create-identifier-modal"}
+          setBlur={setBlur}
+          resetModal={resetModal}
+        />
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("type-input-title"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.title)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.delegated.text)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.individual.text)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.group.text)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.button.done)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(EN_TRANSLATIONS.createidentifier.aidinfo.title)
+      ).not.toBeVisible();
+      expect(
+        queryByText(EN_TRANSLATIONS.createidentifier.aidinfo.delegated.text)
+      ).not.toBeVisible();
+      expect(
+        queryByText(EN_TRANSLATIONS.createidentifier.aidinfo.individual.text)
+      ).not.toBeVisible();
+      expect(
+        queryByText(EN_TRANSLATIONS.createidentifier.aidinfo.group.text)
+      ).not.toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("identifier-delegated-container"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.title)
+      ).toBeVisible();
     });
   });
 });
