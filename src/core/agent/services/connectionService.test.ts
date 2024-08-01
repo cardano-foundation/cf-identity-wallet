@@ -261,6 +261,15 @@ describe("Connection service of agent", () => {
         alias: "keri",
         oobi: "oobi",
         getTag: jest.fn(),
+        pending: false,
+      },
+      {
+        id: keriContacts[0].id,
+        createdAt: now,
+        alias: "keri",
+        oobi: "oobi",
+        getTag: jest.fn(),
+        pending: true,
       },
     ]);
     expect(await connectionService.getConnections()).toEqual([
@@ -269,6 +278,13 @@ describe("Connection service of agent", () => {
         label: "keri",
         oobi: "oobi",
         status: ConnectionStatus.CONFIRMED,
+        connectionDate: expect.any(String),
+      },
+      {
+        id: keriContacts[0].id,
+        label: "keri",
+        oobi: "oobi",
+        status: ConnectionStatus.PENDING,
         connectionDate: expect.any(String),
       },
     ]);

@@ -179,7 +179,9 @@ class ConnectionService extends AgentService {
       id: record.id,
       label: record.alias,
       connectionDate: record.createdAt.toISOString(),
-      status: ConnectionStatus.CONFIRMED,
+      status: record.pending
+        ? ConnectionStatus.PENDING
+        : ConnectionStatus.CONFIRMED,
       oobi: record.oobi,
     };
     const groupId = record.getTag("groupId");
