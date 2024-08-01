@@ -677,6 +677,8 @@
   },
   "createpassword": {
     "title": "Create password",
+    "change": "New password",
+    "cancel": "Cancel",
     "description": "Set your operations password so you can access additional wallet features.",
     "input": {
       "first": {
@@ -1156,7 +1158,22 @@
             "label": "Can't remember?"
           }
         },
-        "manageoperationspassword": "Manage Operations Password",
+        "managepassword": {
+          "title": "Manage operations password",
+          "page": {
+            "title": "Manage password",
+            "enable": "Enable operations password",
+            "change": "Change operations password",
+            "alert": {
+              "enablemessage": "By turning on an operations password you will be required to use this to verify any future operations instead of your passcode.",
+              "disablemessage": "By turning off your operations password you will be required to use your passcode to verify any future operations.",
+              "existingpassword": "Your new operations password must be different to your existing one.",
+              "confirm": "Continue",
+              "cancel": "Cancel",
+              "ok": "Ok"
+            }
+          }
+        },
         "seedphrase": "Seed Phrase"
       },
       "support": {
@@ -1173,7 +1190,15 @@
     "tab": {
       "title": "Connections",
       "create": "Add a connection",
-      "searchconnections": "Search connections"
+      "searchconnections": "Search connections",
+      "indentifierselector":  {
+        "title": "Choose identifier",
+        "message": "Which KERI AID identifier would you like to make the connection with?",
+        "button": {
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        }
+      }
     },
     "details": {
       "done": "Done",
@@ -1288,10 +1313,13 @@
   },
   "shareidentifier": {
     "title": "Share connection",
-    "subtitle": "To share, either scan the QR code or select from the provided options below",
+    "subtitle": {
+      "identifier": "To share, either scan the QR code or select from the provided options below",
+      "connection": "Show this QR code to the person you want to connect with, or click the 'More share options' link"
+    },
     "done": "Done",
     "divider": "or",
-    "copykey": "Copy Out-of-Band Invitation (OOBI)",
+    "copykey": "Copy connection URL",
     "more": "More share options"
   },
   "createidentifier": {
@@ -1394,6 +1422,10 @@
       "maxlength": "Must be less than 32 characters long"
     }
   },
+  "offline": {
+    "title": "You’re offline",
+    "description": "You’ve lost connection to the cloud agent. Once the connection has been re-established your wallet will return to normal usage."
+  },
   "shareqr": {
     "divider": "or",
     "more": "More share options"
@@ -1435,6 +1467,9 @@
     "multisignidentifiercreated": "Identifier added to \"For multiple signers\"",
     "delegatedidentifiercreated": "Identifier added to \"For delegates\"",
     "passcodeupdated": "Passcode updated successfully",
+    "passwordupdated": "Password updated successfully",
+    "passworddisabled": "Password turned off",
+    "passwordcreated": "Password created successfully",
     "sharecredsuccess": "Credential shared successfully",
     "sharecrederror": "Unable to share credential"
   },

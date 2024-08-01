@@ -6,7 +6,7 @@ import "./SideSlider.scss";
 const SIDE_SLIDER_Z_INDEX = 103;
 
 const SideSlider = ({
-  open,
+  isOpen,
   children,
   renderAsModal = false,
   zIndex = SIDE_SLIDER_Z_INDEX,
@@ -45,7 +45,7 @@ const SideSlider = ({
 
     return (
       <IonModal
-        isOpen={open}
+        isOpen={isOpen}
         data-testid="side-slider"
         enterAnimation={enterAnimation}
         leaveAnimation={leaveAnimation}
@@ -58,7 +58,7 @@ const SideSlider = ({
 
   const classes = combineClassNames(
     "side-slider-container",
-    open ? "open" : "close"
+    isOpen ? "open" : "close"
   );
 
   return (
@@ -68,7 +68,7 @@ const SideSlider = ({
       }}
       data-testid="side-slider"
       onTransitionEnd={() => {
-        open ? onOpenAnimationEnd?.() : onCloseAnimationEnd?.();
+        isOpen ? onOpenAnimationEnd?.() : onCloseAnimationEnd?.();
       }}
       className={classes}
     >

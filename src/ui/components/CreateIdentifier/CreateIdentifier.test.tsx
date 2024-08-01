@@ -57,6 +57,7 @@ describe("Create Identifier modal", () => {
         queues: [],
         isPaused: false,
       },
+      isOnline: true,
     },
     identifiersCache: {
       identifiers: [],

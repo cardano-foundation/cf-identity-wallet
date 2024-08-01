@@ -6,7 +6,7 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
@@ -51,7 +51,7 @@ import {
   OperationType,
   ToastMsgType,
 } from "../../globals/types";
-import { useAppIonRouter } from "../../hooks";
+import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
 import { combineClassNames } from "../../utils/style";
 import { CredentialContent } from "./components/CredentialContent";
 import "./CredentialDetails.scss";
@@ -90,20 +90,18 @@ const CredentialDetails = () => {
     credsCache.filter((item) => item.id === params.id).length === 0;
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === params.id);
 
-  useEffect(() => {
-    getCredDetails();
-  }, [params.id]);
-
-  useIonViewWillEnter(() => {
-    dispatch(setCurrentRoute({ path: history.location.pathname }));
-  });
-
-  const getCredDetails = async () => {
+  const getCredDetails = useCallback(async () => {
     const cardDetails = await Agent.agent.credentials.getCredentialDetailsById(
       params.id
     );
     setCardData(cardDetails);
-  };
+  }, [params.id]);
+
+  useOnlineStatusEffect(getCredDetails);
+
+  useIonViewWillEnter(() => {
+    dispatch(setCurrentRoute({ path: history.location.pathname }));
+  });
 
   const handleBackNotification = (
     notificationDetailCache: NotificationDetailCacheState

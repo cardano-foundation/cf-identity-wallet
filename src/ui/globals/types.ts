@@ -86,6 +86,9 @@ enum ToastMsgType {
   SCANNER_ERROR = "qrerror",
   NEW_MULTI_SIGN_MEMBER = "newmultisignmember",
   PASSCODE_UPDATED = "passcodeupdated",
+  PASSWORD_UPDATED = "passwordupdated",
+  PASSWORD_DISABLED = "passworddisabled",
+  PASSWORD_CREATED = "passwordcreated",
   SHARE_CRED_SUCCESS = "sharecredsuccess",
   SHARE_CRED_FAIL = "sharecrederror",
 }
@@ -130,9 +133,9 @@ const PASSCODE_MAPPING = {
 };
 
 enum BackEventPriorityType {
+  LockPage = 1001,
   Alert = 1000,
-  LockPage = 999,
-  Modal = 104,
+  Modal = 500,
   Scanner = 103,
   Page = 102,
   Tab = 101,

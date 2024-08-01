@@ -22,6 +22,7 @@ describe("NextRoute", () => {
     localStorageMock = {};
     storeMock = {
       stateCache: {
+        isOnline: true,
         initialized: true,
         routes: [],
         authentication: {
@@ -263,6 +264,7 @@ describe("NextRoute", () => {
 describe("getNextRoute", () => {
   const storeMock: RootState = {
     stateCache: {
+      isOnline: true,
       initialized: true,
       routes: [],
       authentication: {
