@@ -1,7 +1,7 @@
 import { Capacitor } from "@capacitor/core";
 import { IonInput, IonLabel, setupIonicReact } from "@ionic/react";
 import { ionFireEvent, mockIonicReact } from "@ionic/react-test-utils";
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, getByText, render, waitFor } from "@testing-library/react";
 import { ReactNode } from "react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
@@ -298,7 +298,7 @@ describe("Identifier Stage 0", () => {
   });
 
   test("Display error when display name invalid", async () => {
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <IdentifierStage0
           state={stage0State}
@@ -326,7 +326,7 @@ describe("Identifier Stage 0", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("close-button"));
+      fireEvent.click(getByText(EN_TRANSLATIONS.createidentifier.back));
     });
 
     await waitFor(() => {
