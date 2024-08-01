@@ -3,10 +3,12 @@ import {
   SQLiteConnection,
   SQLiteDBConnection,
 } from "@capacitor-community/sqlite";
-import { getUnMigrationSqls } from "./utils";
+import { getUnMigrationSqls, versionCompare } from "./utils";
+import { UPDATE_MIGRATIONS } from "./migrations/updates";
 
 class SqliteSession {
   static readonly VERSION_DATABASE_KEY = "VERSION_DATABASE_KEY";
+  static readonly VERSION_UPDATE_DATABASE_KEY = "VERSION_UPDATE_DATABASE_KEY";
 
   static readonly GET_KV_SQL = "SELECT * FROM kv where key = ?";
   static readonly INSERT_KV_SQL =
@@ -29,10 +31,10 @@ class SqliteSession {
     return undefined;
   }
 
-  private async getCurrentVersionDatabase(): Promise<string> {
+  private async getCurrentVersionDatabase(key?: string): Promise<string> {
     try {
       const currentVersionDatabase = await this.getKv(
-        SqliteSession.VERSION_DATABASE_KEY
+        key || SqliteSession.VERSION_DATABASE_KEY
       );
       return currentVersionDatabase;
     } catch (error) {
@@ -59,6 +61,7 @@ class SqliteSession {
     }
     await this.sessionInstance.open();
     await this.initDB();
+    await this.migrationDB();
   }
 
   private async initDB(): Promise<void> {
@@ -78,6 +81,30 @@ class SqliteSession {
         ],
       });
       await this.session?.executeTransaction(migrationStatements);
+    }
+  }
+
+  private async migrationDB(): Promise<void> {
+    const latestUpdate = UPDATE_MIGRATIONS[UPDATE_MIGRATIONS.length - 1];
+    const currentStoreVersion =
+      (await this.getCurrentVersionDatabase(
+        SqliteSession.VERSION_UPDATE_DATABASE_KEY
+      )) || "0.0.0";
+
+    const updateVersion = latestUpdate.version;
+
+    if (versionCompare(currentStoreVersion, updateVersion) === -1) {
+      const updateStatements = await latestUpdate.migrationStatements(
+        this?.session
+      );
+      updateStatements.push({
+        statement: SqliteSession.INSERT_KV_SQL,
+        values: [
+          SqliteSession.VERSION_UPDATE_DATABASE_KEY,
+          JSON.stringify(latestUpdate.version),
+        ],
+      });
+      await this.session?.executeSet(updateStatements);
     }
   }
 }
