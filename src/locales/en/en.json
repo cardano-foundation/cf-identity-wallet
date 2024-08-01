@@ -992,7 +992,7 @@
       },
       "labels": {
         "exnipexgrant": "<strong>{{connection}}</strong> wants to issue you a credential",
-        "multisigicp": "<strong>{{connection}}</strong> is requesting to create a multi-sig identifier with you",
+        "multisigicp": "<strong>{{connection}}</strong> is requesting to create a group identifier with you",
         "exnipexapply": "<strong>{{connection}}</strong> has requested a credential from you"
       }
     },
@@ -1033,7 +1033,7 @@
       },
       "identifier": {
         "title": "Identifier request",
-        "subtitle": "Review this multi-sig identifier request",
+        "subtitle": "Review this group identifier request",
         "requestfrom": "Request from",
         "othermembers": "Other members",
         "pending": "Pending",
@@ -1044,10 +1044,10 @@
         },
         "errorpage": {
           "title": "Please review",
-          "alerttext": "You are missing one or more connections required for this multi-sig request. Please scan all necessary QR codes to proceed.",
+          "alerttext": "You are missing one or more connections required for this group request. Please scan all necessary QR codes to proceed.",
           "instructions": {
             "title": "Instructions",
-            "detailtext": "In order to continue and complete the multi-sig setup, please follow the instructions below.",
+            "detailtext": "In order to continue and complete the group setup, please follow the instructions below.",
             "stepone": "Ensure you have scanned all participant's QR codes.",
             "steptwo": "After scanning, try to open this notification again."
           },
@@ -1372,7 +1372,7 @@
         "bottom": "To continue with the initiation of the mult-sig you must have scanned at least one other QR code."
       },
       "scanbutton": "Scan QR codes",
-      "initiatebutton": "Initiate multi-sig",
+      "initiatebutton": "Initiate group",
       "scanalert": {
         "text": "Have all the individuals you want to include as members scanned your QR code?",
         "confirm": "Confirm and scan",
@@ -1391,7 +1391,7 @@
       "cancel": "Cancel",
       "confirm": "Confirm",
       "pasteoobi": "Paste OOBI",
-      "initiate": "Initiate multi-sig",
+      "initiate": "Initiate group",
       "scanqrcode": "Scan QR code",
       "pastecontents": "Paste contents"
     },
@@ -1408,14 +1408,14 @@
     },
     "confirm": {
       "title": "Confirm",
-      "subtitle": "Confirm all details for your Keri AID multi-sig identifier are accurate",
+      "subtitle": "Confirm all details for your Keri AID group identifier are accurate",
       "displayname": "Display Name",
       "selectedmembers": "Selected Members",
       "treshold": "Threshold",
       "continue": "Confirm identifier",
       "cancel": "Cancel",
       "alert": {
-        "text": "Cancelling now means you'll need to restart the multi-sig initiation process.",
+        "text": "Cancelling now means you'll need to restart the group initiation process.",
         "cancel": "Yes, cancel",
         "back": "Back"
       }
@@ -1515,8 +1515,8 @@
     "setupbiometricsuccess": "Biometrics setup successfully",
     "rotatekeysuccess": "Keys rotated successfully",
     "rotatekeyerror": "Unable to rotate keys",
-    "newmultisignmember": "New member added to multi-sig",
-    "multisignidentifiercreated": "Identifier added to \"For multiple signers\"",
+    "newmultisignmember": "New member added to group",
+    "multisignidentifiercreated": "Identifier added to \"For groups\"",
     "delegatedidentifiercreated": "Identifier added to \"For delegates\"",
     "passcodeupdated": "Passcode updated successfully",
     "passwordupdated": "Password updated successfully",
