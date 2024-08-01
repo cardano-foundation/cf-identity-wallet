@@ -4,7 +4,7 @@ on:
 jobs:
   mobile-e2e-tests:
     timeout-minutes: 60
-    runs-on: macos-latest
+    runs-on: [self-hosted, macOS, ARM64]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,9 +31,6 @@ jobs:
 
       - name: 📱 Start iOS simulator app
         run: open -a Simulator.app
-
-      - name: 📱 Start iOS simulator device
-        run: xcrun simctl boot "iPhone 15 Pro Max"
 
       - name: 🏃🏼 Run tests for iOS simulator
         run: npm run wdio:ios:15promax -- --spec ./tests/features/onboarding.feature
