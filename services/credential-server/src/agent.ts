@@ -10,8 +10,6 @@ interface Aid {
 class Agent {
   static readonly ISSUER_AID_NAME = "issuer";
   static readonly HOLDER_AID_NAME = "holder";
-  static readonly VLEI_HOST =
-    "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
   static readonly QVI_SCHEMA_SAID =
     "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
   static readonly RARE_EVO_DEMO_SCHEMA_SAID =

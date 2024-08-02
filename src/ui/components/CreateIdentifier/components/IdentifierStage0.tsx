@@ -1,6 +1,7 @@
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
-import { IonCol, IonGrid, IonRow } from "@ionic/react";
+import { IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
+import { informationCircleOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../../../../core/agent/agent";
@@ -34,6 +35,7 @@ import { IdentifierColorSelector } from "./IdentifierColorSelector";
 import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
 import { TypeItem } from "./TypeItem";
 import { createThemeValue } from "../../../utils/theme";
+import { IADTypeInfoModal } from "./AIDTypeInfoModal";
 
 const IdentifierStage0 = ({
   state,
@@ -47,6 +49,7 @@ const IdentifierStage0 = ({
   const identifiersData = useAppSelector(getIdentifiersCache);
   const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
+  const [openAIDInfo, setOpenAIDInfo] = useState(false);
   const [displayNameValue, setDisplayNameValue] = useState(
     state.displayNameValue
   );
@@ -165,6 +168,10 @@ const IdentifierStage0 = ({
     resetModal && resetModal();
   };
 
+  const openAIDTypeInfoModal = () => {
+    setOpenAIDInfo(true);
+  };
+
   return (
     <>
       <ScrollablePageLayout
@@ -215,9 +222,15 @@ const IdentifierStage0 = ({
         </div>
         {!multiSigGroup && (
           <div className="aid-type">
-            <div className="type-input-title">{`${i18n.t(
-              "createidentifier.aidtype.title"
-            )}`}</div>
+            <div className="type-input-title">
+              {`${i18n.t("createidentifier.aidtype.title")}`}
+              <IonIcon
+                data-testid="type-input-title"
+                onClick={openAIDTypeInfoModal}
+                slot="icon-only"
+                src={informationCircleOutline}
+              />
+            </div>
             <IonGrid
               className="aid-type-selector"
               data-testid="aid-type-selector"
@@ -252,18 +265,24 @@ const IdentifierStage0 = ({
                   />
                 </IonCol>
                 <IonCol>
-                  <TypeItem
-                    dataTestId="identifier-aidtype-delegated"
-                    index={2}
-                    text={i18n.t("createidentifier.aidtype.delegated.label")}
-                    clickEvent={() =>
-                      setState((prevState: IdentifierStageProps) => ({
-                        ...prevState,
-                        selectedAidType: 2,
-                      }))
-                    }
-                    selectedType={state.selectedAidType}
-                  />
+                  <div
+                    data-testid="identifier-delegated-container"
+                    onClick={openAIDTypeInfoModal}
+                  >
+                    <TypeItem
+                      dataTestId="identifier-aidtype-delegated"
+                      index={2}
+                      text={i18n.t("createidentifier.aidtype.delegated.label")}
+                      clickEvent={() =>
+                        setState((prevState: IdentifierStageProps) => ({
+                          ...prevState,
+                          selectedAidType: 2,
+                        }))
+                      }
+                      disabled
+                      selectedType={state.selectedAidType}
+                    />
+                  </div>
                 </IonCol>
               </IonRow>
             </IonGrid>
@@ -304,6 +323,10 @@ const IdentifierStage0 = ({
         )}`}
         primaryButtonAction={handleContinue}
         primaryButtonDisabled={!displayNameValueIsValid}
+      />
+      <IADTypeInfoModal
+        isOpen={openAIDInfo}
+        setOpen={setOpenAIDInfo}
       />
     </>
   );

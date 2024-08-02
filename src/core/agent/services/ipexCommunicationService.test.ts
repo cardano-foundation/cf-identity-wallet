@@ -1,10 +1,10 @@
 import { EventService } from "./eventService";
 import { IpexCommunicationService } from "./ipexCommunicationService";
-import { CredentialStatus } from "./credentialService.types";
 import { Agent } from "../agent";
 import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { ConnectionHistoryType } from "./connection.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -46,6 +46,11 @@ const credentialStorage = jest.mocked({
   getCredentialMetadatasById: jest.fn(),
 });
 
+const ipexMessageRecordStorage = jest.mocked({
+  getIpexMessageMetadata: jest.fn(),
+  getIpexMessageMetadataByConnectionId: jest.fn(),
+  createIpexMessageRecord: jest.fn(),
+});
 const operationPendingStorage = jest.mocked({
   save: jest.fn(),
   delete: jest.fn(),
@@ -179,11 +184,12 @@ const agentServicesProps = {
   eventService,
 };
 
+const resolveOobiMock = jest.fn();
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
-        resolveOobi: jest.fn(),
+        resolveOobi: () => resolveOobiMock(),
       },
       signifyNotifications: {
         deleteNotificationRecordById: (id: string) =>
@@ -202,8 +208,52 @@ const ipexCommunicationService = new IpexCommunicationService(
   identifierStorage as any,
   credentialStorage as any,
   notificationStorage as any,
+  ipexMessageRecordStorage as any,
   operationPendingStorage as any
 );
+
+const grantIpexMessageMock = {
+  exn: {
+    v: "KERI10JSON000516_",
+    t: "exn",
+    d: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
+    i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+    p: "",
+    dt: "2024-07-30T04:19:55.801000+00:00",
+    r: "/ipex/grant",
+    q: {},
+    a: {
+      m: "",
+      i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+    },
+    e: {
+      acdc: {
+        d: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
+        i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+        s: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+        a: {
+          d: "ELHCh_X2aw7C-aYesOM4La23a5lsoNuJDuCsJuxwO2nq",
+          i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+          dt: "2024-07-30T04:19:55.348000+00:00",
+          attendeeName: "ccc",
+        },
+      },
+      iss: {
+        t: "iss",
+        d: "EHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
+        i: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
+        s: "0",
+        dt: "2024-07-30T04:19:55.348000+00:00",
+      },
+      d: "EKBPPnWxYw2I5CtQSyhyn5VUdSTJ61qF_-h-NwmFRkIF",
+    },
+  },
+  pathed: {
+    acdc: "-IABEEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn0AAAAAAAAAAAAAAAAAAAAAAAEHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
+    iss: "-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAEEO0xKzC8FOAXV-JgFZGgb0aIT2A3cPXPt9_0l_qcGM9",
+    anc: "-AABAACBlQqbI_qNpKYkzIog6tauSgt0XufBvGtrumfbnhSInFjSwnaIqZi353QT-c1W_gE9KIz3rgX5QNNWLcqA7bcM",
+  },
+};
 
 describe("Ipex communication service of agent", () => {
   beforeAll(async () => {
@@ -564,6 +614,91 @@ describe("Ipex communication service of agent", () => {
         licenseNumber: "SMITH01192OP",
       },
     });
+  });
+
+  test("can create linked ipex message record", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const schemaMock = { title: "title" };
+    schemaGetMock.mockResolvedValueOnce(schemaMock);
+    await ipexCommunicationService.createLinkedIpexMessageRecord(
+      grantIpexMessageMock,
+      ConnectionHistoryType.CREDENTIAL_ISSUANCE
+    );
+    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
+      id: grantIpexMessageMock.exn.d,
+      credentialType: schemaMock.title,
+      content: grantIpexMessageMock,
+      connectionId: grantIpexMessageMock.exn.i,
+      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+    });
+
+    schemaGetMock.mockResolvedValueOnce(schemaMock);
+    getExchangeMock.mockResolvedValueOnce({
+      exn: {
+        e: {
+          acdc: {
+            s: "s",
+          },
+        },
+      },
+    });
+    await ipexCommunicationService.createLinkedIpexMessageRecord(
+      grantIpexMessageMock,
+      ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
+    );
+    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
+      id: grantIpexMessageMock.exn.d,
+      credentialType: schemaMock.title,
+      content: grantIpexMessageMock,
+      connectionId: grantIpexMessageMock.exn.i,
+      historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE,
+    });
+
+    schemaGetMock.mockRejectedValueOnce(
+      new Error("request - 404 - SignifyClient message")
+    );
+    resolveOobiMock.mockResolvedValueOnce({ done: false });
+    await ipexCommunicationService.createLinkedIpexMessageRecord(
+      grantIpexMessageMock,
+      ConnectionHistoryType.CREDENTIAL_ISSUANCE
+    );
+    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
+      id: grantIpexMessageMock.exn.d,
+      credentialType: undefined,
+      content: grantIpexMessageMock,
+      connectionId: grantIpexMessageMock.exn.i,
+      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+    });
+
+    schemaGetMock.mockRejectedValueOnce(
+      new Error("request - 404 - SignifyClient message")
+    );
+    resolveOobiMock.mockResolvedValueOnce({ done: true });
+    schemaGetMock.mockResolvedValueOnce(schemaMock);
+    await ipexCommunicationService.createLinkedIpexMessageRecord(
+      grantIpexMessageMock,
+      ConnectionHistoryType.CREDENTIAL_ISSUANCE
+    );
+    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
+      id: grantIpexMessageMock.exn.d,
+      credentialType: schemaMock.title,
+      content: grantIpexMessageMock,
+      connectionId: grantIpexMessageMock.exn.i,
+      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+    });
+    expect(schemaGetMock).toBeCalledTimes(5);
+    expect(resolveOobiMock).toBeCalledTimes(2);
+  });
+
+  test("Should throw error if schemas.get has an unexpected error", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    schemaGetMock.mockRejectedValueOnce(new Error("Unknown error"));
+    await expect(
+      ipexCommunicationService.createLinkedIpexMessageRecord(
+        grantIpexMessageMock,
+        ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
+      )
+    ).rejects.toThrowError(new Error("Unknown error"));
   });
 
   test("cannot get matching credential for apply if cannot get the schema", async () => {

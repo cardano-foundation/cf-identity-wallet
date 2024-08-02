@@ -67,7 +67,7 @@ const Settings = ({ switchView }: SettingsProps) => {
     {
       index: OptionIndex.RecoverySeedPhrase,
       icon: keyOutline,
-      label: i18n.t("settings.sections.security.seedphrase"),
+      label: i18n.t("settings.sections.security.seedphrase.title"),
     },
   ];
 
@@ -199,6 +199,10 @@ const Settings = ({ switchView }: SettingsProps) => {
     }
     case OptionIndex.Term: {
       switchView && switchView(SubMenuKey.TermAndPrivacy);
+      break;
+    }
+    case OptionIndex.RecoverySeedPhrase: {
+      switchView && switchView(SubMenuKey.RecoverySeedPhrase);
       break;
     }
     default:

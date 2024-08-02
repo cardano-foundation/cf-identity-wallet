@@ -758,7 +758,7 @@
       "favourites": "Favourites",
       "allidentifiers": "All identifiers",
       "pendingidentifiers": "Pending identifiers",
-      "multisigidentifiers": "For multiple signers"
+      "multisigidentifiers": "For groups"
     },
     "layout": {
       "created": "CREATED"
@@ -830,12 +830,6 @@
           "color": "Choose card colour"
         }
       },
-      "view": {
-        "cancel": "Done",
-        "title": "Identifier JSON",
-        "copy": "Copy JSON",
-        "save": "Save to Device"
-      },
       "rotatekeys": {
         "done": "Done",
         "description": "Rotating your signing keys boosts security by reducing the risk of key compromise."
@@ -877,12 +871,6 @@
         "title": "Credential options",
         "view": "View JSON",
         "archive": "Archive credential"
-      },
-      "view": {
-        "cancel": "Done",
-        "title": "Credential JSON",
-        "copy": "Copy JSON",
-        "save": "Save to Device"
       },
       "button": {
         "delete": "Delete credential",
@@ -992,7 +980,7 @@
       },
       "labels": {
         "exnipexgrant": "<strong>{{connection}}</strong> wants to issue you a credential",
-        "multisigicp": "<strong>{{connection}}</strong> is requesting to create a multi-sig identifier with you",
+        "multisigicp": "<strong>{{connection}}</strong> is requesting to create a group identifier with you",
         "exnipexapply": "<strong>{{connection}}</strong> has requested a credential from you"
       }
     },
@@ -1033,7 +1021,7 @@
       },
       "identifier": {
         "title": "Identifier request",
-        "subtitle": "Review this multi-sig identifier request",
+        "subtitle": "Review this group identifier request",
         "requestfrom": "Request from",
         "othermembers": "Other members",
         "pending": "Pending",
@@ -1044,16 +1032,17 @@
         },
         "errorpage": {
           "title": "Please review",
-          "alerttext": "You are missing one or more connections required for this multi-sig request. Please scan all necessary QR codes to proceed.",
+          "alerttext": "You are missing one or more connections required for this group request. Please scan all necessary QR codes to proceed.",
           "instructions": {
             "title": "Instructions",
-            "detailtext": "In order to continue and complete the multi-sig setup, please follow the instructions below.",
+            "detailtext": "In order to continue and complete the group setup, please follow the instructions below.",
             "stepone": "Ensure you have scanned all participant's QR codes.",
             "steptwo": "After scanning, try to open this notification again."
           },
           "help": {
             "title": "Need help?",
-            "detailtext": "If you need assistance, please refer to our Help Center or contact support."
+            "detailtext": "If you need assistance, please message us on our <0>{{discordSupportChannel}}</0>.",
+            "supportchannel": "Discord support channel"
           },
           "continuesetup": "Continue setup"
         }
@@ -1174,7 +1163,34 @@
             }
           }
         },
-        "seedphrase": "Seed Phrase"
+        "seedphrase": {
+          "title": "Recovery phrase",
+          "page": {
+            "title": "Recovery phrase",
+            "tips": {
+              "label": "Useful tips:",
+              "one": "Write down or make a copy of your recovery phrase and store it in a safe location.",
+              "two": "Double-check that your words are copied in the correct order (1 to 18).",
+              "three": "Ensure there are no spelling errors."
+            },
+            "hiddentext": "Press the ‘view recovery phrase’ button when you’re ready to see your recovery phrase. Remember to make sure nobody is looking!",
+            "button": {
+              "view": "View recovery phrase",
+              "hide": "Hide recovery phrase"
+            },
+            "confirmmodal": {
+              "title": "Stay safe",
+              "subtitle": "Confirm and acknowledge the following:",
+              "firstcondition": "Nobody else can see my screen",
+              "secondcondition": "Sharing my recovery phrase with others puts my identity at risk",
+              "thirdcondition": "Losing my recovery phrase means I will lose access to my wallet",
+              "button": {
+                "confirm": "View recovery phrase",
+                "cancel": "Cancel"
+              }
+            }
+          }
+        }
       },
       "support": {
         "title": "Support & Legal",
@@ -1345,7 +1361,7 @@
         "bottom": "To continue with the initiation of the mult-sig you must have scanned at least one other QR code."
       },
       "scanbutton": "Scan QR codes",
-      "initiatebutton": "Initiate multi-sig",
+      "initiatebutton": "Initiate group",
       "scanalert": {
         "text": "Have all the individuals you want to include as members scanned your QR code?",
         "confirm": "Confirm and scan",
@@ -1364,7 +1380,7 @@
       "cancel": "Cancel",
       "confirm": "Confirm",
       "pasteoobi": "Paste OOBI",
-      "initiate": "Initiate multi-sig",
+      "initiate": "Initiate group",
       "scanqrcode": "Scan QR code",
       "pastecontents": "Paste contents"
     },
@@ -1381,14 +1397,14 @@
     },
     "confirm": {
       "title": "Confirm",
-      "subtitle": "Confirm all details for your Keri AID multi-sig identifier are accurate",
+      "subtitle": "Confirm all details for your Keri AID group identifier are accurate",
       "displayname": "Display Name",
       "selectedmembers": "Selected Members",
       "treshold": "Threshold",
       "continue": "Confirm identifier",
       "cancel": "Cancel",
       "alert": {
-        "text": "Cancelling now means you'll need to restart the multi-sig initiation process.",
+        "text": "Cancelling now means you'll need to restart the group initiation process.",
         "cancel": "Yes, cancel",
         "back": "Back"
       }
@@ -1408,16 +1424,35 @@
     "aidtype": {
       "title": "AID type",
       "default": {
-        "label": "Default",
+        "label": "Individual",
         "tooltip": "Lorem ipsum dolor sit amet"
       },
       "multisig": {
-        "label": "Multi-sig",
+        "label": "Group",
         "tooltip": "Lorem ipsum dolor sit amet"
       },
       "delegated": {
         "label": "Delegated",
         "tooltip": "Lorem ipsum dolor sit amet"
+      }
+    },
+    "aidinfo": {
+      "title": "AID types",
+      "text": "A description of each KERI AID type you can create identifiers for.",
+      "individual": {
+        "label": "Individual",
+        "text": "Use these identifiers to represent all your individual personas. Currently, a single key pair is used to sign statements with these identifiers, and it can be updated. In the future, these identifiers might become more robust with multi-device support and social recovery options."
+      },
+      "group": {
+        "label": "Group",
+        "text": "Use a group identifier to represent an entity controlled by multiple people, like a committee. You can set a threshold to decide how many members are needed to create a valid signature or recover the identifier."
+      },
+      "delegated": {
+        "label": "Delegated",
+        "text": "The delegated option is currently being developed. Identifiers might be delegated for advanced recovery in case of a security breach, which is ideal for an organisational structure in enterprises."
+      },
+      "button": {
+        "done": "Done"
       }
     },
     "theme": {
@@ -1464,12 +1499,13 @@
     "disconnectwallet": "Disconnected successfully",
     "unableconnectwallet": "Unable to connect",
     "peeridsuccess": "Peer ID successful",
+    "peeriderror": "Peer ID not recognised",
     "peeridnotrecognised": "Peer ID not recognised",
     "setupbiometricsuccess": "Biometrics setup successfully",
     "rotatekeysuccess": "Keys rotated successfully",
     "rotatekeyerror": "Unable to rotate keys",
-    "newmultisignmember": "New member added to multi-sig",
-    "multisignidentifiercreated": "Identifier added to \"For multiple signers\"",
+    "newmultisignmember": "New member added to group",
+    "multisignidentifiercreated": "Identifier added to \"For groups\"",
     "delegatedidentifiercreated": "Identifier added to \"For delegates\"",
     "passcodeupdated": "Passcode updated successfully",
     "passwordupdated": "Password updated successfully",

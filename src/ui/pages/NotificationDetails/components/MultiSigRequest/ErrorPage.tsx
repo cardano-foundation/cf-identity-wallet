@@ -1,6 +1,8 @@
 import { IonIcon, IonText } from "@ionic/react";
 import { alertCircleOutline } from "ionicons/icons";
 import { useState } from "react";
+import { Trans } from "react-i18next";
+import { Browser } from "@capacitor/browser";
 import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
 import { i18n } from "../../../../../i18n";
 import { useAppSelector } from "../../../../../store/hooks";
@@ -13,6 +15,7 @@ import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
 import "./ErrorPage.scss";
 import { ErrorPageProps } from "./ErrorPage.types";
+import { DISCORD_LINK } from "../../../../globals/constants";
 
 const ErrorPage = ({
   pageId,
@@ -46,6 +49,19 @@ const ErrorPage = ({
   const handleCloseCreateIdentifier = () => {
     setCreateIdentifierModalIsOpen(false);
     onFinishSetup();
+  };
+
+  const HandleDiscordLink = () => {
+    return (
+      <u
+        data-testid="discord-link-browser-handler"
+        onClick={() => Browser.open({ url: DISCORD_LINK })}
+      >
+        {i18n.t(
+          "notifications.details.identifier.errorpage.help.supportchannel"
+        )}
+      </u>
+    );
   };
 
   return (
@@ -119,9 +135,12 @@ const ErrorPage = ({
             {i18n.t("notifications.details.identifier.errorpage.help.title")}
           </h2>
           <IonText className="detail-text">
-            {i18n.t(
-              "notifications.details.identifier.errorpage.help.detailtext"
-            )}
+            <Trans
+              i18nKey={i18n.t(
+                "notifications.details.identifier.errorpage.help.detailtext"
+              )}
+              components={[<HandleDiscordLink key="" />]}
+            />
           </IonText>
         </div>
       </ScrollablePageLayout>

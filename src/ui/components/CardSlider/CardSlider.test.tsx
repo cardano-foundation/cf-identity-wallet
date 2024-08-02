@@ -117,7 +117,7 @@ describe("Card slider", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("cred-card-template-creds-index-1"));
+      fireEvent.click(getByTestId("keri-card-template-creds-index-1"));
     });
 
     expect(historyPushMock).toBeCalled();

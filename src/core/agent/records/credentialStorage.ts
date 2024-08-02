@@ -38,16 +38,6 @@ class CredentialStorage {
     return record;
   }
 
-  async getCredentialMetadataByConnectionId(connectionId: string) {
-    const record = await this.storageService.findAllByQuery(
-      {
-        connectionId,
-      },
-      CredentialMetadataRecord
-    );
-    return record;
-  }
-
   async saveCredentialMetadataRecord(data: CredentialMetadataRecordProps) {
     const record = new CredentialMetadataRecord(data);
     return this.storageService.save(record);

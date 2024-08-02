@@ -386,7 +386,6 @@ const CredentialDetails = () => {
           <CredentialOptions
             optionsIsOpen={optionsIsOpen}
             setOptionsIsOpen={setOptionsIsOpen}
-            cardData={cardData}
             credsOptionAction={() => setAlertDeleteArchiveIsOpen(true)}
           />
         </>

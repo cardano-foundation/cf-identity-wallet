@@ -10,6 +10,7 @@ interface SubMenuProps {
   additionalButtons?: ReactNode;
   children: ReactNode;
   pageId: string;
+  renderAsModal?: boolean;
 }
 
 export type { SubMenuProps };

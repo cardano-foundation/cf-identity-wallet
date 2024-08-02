@@ -1,7 +1,6 @@
 import { Share } from "@capacitor/share";
 import { IonButton } from "@ionic/react";
 import {
-  codeSlashOutline,
   pencilOutline,
   refreshOutline,
   shareOutline,
@@ -28,7 +27,6 @@ import { ErrorMessage } from "../ErrorMessage";
 import { OptionItem, OptionModal } from "../OptionsModal";
 import "./IdentifierOptions.scss";
 import { IdentifierOptionsProps } from "./IdentifierOptions.types";
-import { IdentifierJsonModal } from "./components";
 import { getTheme } from "../../utils/theme";
 
 const IdentifierOptions = ({
@@ -45,7 +43,6 @@ const IdentifierOptions = ({
   const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
   const [newSelectedTheme, setNewSelectedTheme] = useState(0);
   const [newSelectedColor, setNewSelectedColor] = useState(0);
-  const [viewIsOpen, setViewIsOpen] = useState(false);
   const [isMultiSig, setIsMultiSig] = useState(false);
 
   useEffect(() => {
@@ -120,11 +117,6 @@ const IdentifierOptions = ({
     setEditorIsOpen(true);
   };
 
-  const viewJson = () => {
-    setOptionsIsOpen(false);
-    setViewIsOpen(true);
-  };
-
   const share = async () => {
     await Share.share({
       text: cardData.displayName + " " + cardData.id,
@@ -149,12 +141,6 @@ const IdentifierOptions = ({
   };
 
   const optionsRotate: OptionItem[] = [
-    {
-      icon: codeSlashOutline,
-      label: i18n.t("identifiers.details.options.view"),
-      onClick: viewJson,
-      testId: "view-json-identifier-option",
-    },
     {
       icon: pencilOutline,
       label: i18n.t("identifiers.details.options.edit"),
@@ -258,11 +244,6 @@ const IdentifierOptions = ({
           {i18n.t("identifiers.details.options.inner.confirm")}
         </IonButton>
       </OptionModal>
-      <IdentifierJsonModal
-        cardData={cardData}
-        isOpen={viewIsOpen}
-        onDissmiss={() => setViewIsOpen(false)}
-      />
     </>
   );
 };

@@ -18,6 +18,7 @@ interface TypeItemProps {
   text: string;
   clickEvent: () => void;
   selectedType: number;
+  disabled?: boolean;
 }
 
 interface IdentifierThemeSelectorProps {
