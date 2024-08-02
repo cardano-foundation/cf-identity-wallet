@@ -1,8 +1,11 @@
+import { v4 as uuidv4 } from "uuid";
 import { Operation, Serder } from "signify-ts";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import {
   AcdcEventTypes,
+  ExchangeRoute,
+  IpexMessage,
   type AcdcStateChangedEvent,
   type AgentServicesProps,
   type KeriaNotification,
@@ -12,6 +15,7 @@ import {
   IdentifierStorage,
   NotificationStorage,
   OperationPendingStorage,
+  IpexMessageStorage,
 } from "../records";
 import {
   CredentialMetadataRecordProps,
@@ -22,6 +26,7 @@ import { CredentialStatus } from "./credentialService.types";
 import { OnlineOnly, getCredentialShortDetails } from "./utils";
 import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { ConnectionHistoryType } from "./connection.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -46,6 +51,7 @@ class IpexCommunicationService extends AgentService {
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;
   protected readonly notificationStorage: NotificationStorage;
+  protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
 
   constructor(
@@ -53,12 +59,14 @@ class IpexCommunicationService extends AgentService {
     identifierStorage: IdentifierStorage,
     credentialStorage: CredentialStorage,
     notificationStorage: NotificationStorage,
+    ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
     this.credentialStorage = credentialStorage;
     this.notificationStorage = notificationStorage;
+    this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
   }
 
@@ -68,6 +76,7 @@ class IpexCommunicationService extends AgentService {
     const exn = await this.props.signifyClient
       .exchanges()
       .get(notifRecord.a.d as string);
+
     const credentialId = exn.exn.e.acdc.d;
     const connectionId = exn.exn.i;
     const holder = await this.identifierStorage.getIdentifierMetadata(
@@ -330,6 +339,54 @@ class IpexCommunicationService extends AgentService {
         status: CredentialStatus.CONFIRMED,
         credential: getCredentialShortDetails(metadata),
       },
+    });
+  }
+
+  private async getSchema(schemaSaid: string, retry = true) {
+    try {
+      const schema = await this.props.signifyClient.schemas().get(schemaSaid);
+      return schema;
+    } catch (error) {
+      const errorStack = (error as Error).stack as string;
+      const status = errorStack.split("-")[1];
+      if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+        const oobi = await Agent.agent.connections
+          .resolveOobi(
+            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
+          )
+          .catch(() => undefined);
+        if (oobi?.done && retry) {
+          await this.getSchema(schemaSaid, false);
+        }
+        return undefined;
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  async createLinkedIpexMessageRecord(
+    message: IpexMessage,
+    historyType: ConnectionHistoryType
+  ): Promise<void> {
+    let schemaSaid;
+    if (message.exn.r === ExchangeRoute.IpexGrant) {
+      schemaSaid = message.exn.e.acdc.s;
+    } else if (message.exn.r === ExchangeRoute.IpexApply) {
+      schemaSaid = message.exn.a.s;
+    } else if (message.exn.r === ExchangeRoute.IpexAgree) {
+      const previousExchange = await this.props.signifyClient
+        .exchanges()
+        .get(message.exn.p);
+      schemaSaid = previousExchange.exn.e.acdc.s;
+    }
+    const schema = await this.getSchema(schemaSaid);
+    await this.ipexMessageStorage.createIpexMessageRecord({
+      id: message.exn.d,
+      credentialType: schema?.title,
+      content: message,
+      connectionId: message.exn.i,
+      historyType,
     });
   }
 }

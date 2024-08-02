@@ -97,6 +97,13 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
           KeyStoreKeys.APP_OP_PASSWORD,
           createPasswordValue
         );
+
+        if (authentication.passwordIsSkipped) {
+          await Agent.agent.basicStorage.deleteById(
+            MiscRecordId.APP_PASSWORD_SKIPPED
+          );
+        }
+
         dispatch(
           setAuthentication({
             ...authentication,

@@ -169,6 +169,18 @@ ion-modal.create-identifier-modal {
       padding: 0 0.063rem;
     }
 
+    .type-input-title {
+      display: flex;
+      align-items: center;
+
+      ion-icon {
+        width: 1rem;
+        height: 1rem;
+        margin-left: 0.25rem;
+        margin-top: 0.12rem;
+      }
+    }
+
     .identifier-name ion-label,
     .type-input-title,
     .identifier-theme .theme-input-title,
@@ -264,11 +276,6 @@ ion-modal.create-identifier-modal {
     .multisig-share-note {
       text-align: center;
       padding: 0 2.5rem;
-    }
-
-    ion-searchbar {
-      padding: 0;
-      min-height: 1rem;
     }
 
     ion-list {

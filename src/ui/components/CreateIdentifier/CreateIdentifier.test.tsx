@@ -71,7 +71,7 @@ describe("Create Identifier modal", () => {
   };
 
   test("It can dismiss the modal", async () => {
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <CreateIdentifier
           modalIsOpen={true}
@@ -80,8 +80,9 @@ describe("Create Identifier modal", () => {
         />
       </Provider>
     );
+
     act(() => {
-      fireEvent.click(getByTestId("close-button"));
+      fireEvent.click(getByText(EN_TRANSLATION.createidentifier.cancel));
     });
     expect(getByTestId("create-identifier-modal-content-page")).toHaveClass(
       "ion-hide"

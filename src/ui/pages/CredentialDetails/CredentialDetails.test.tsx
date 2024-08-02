@@ -143,9 +143,6 @@ describe("Cards Details page - current not archived credential", () => {
       expect(getByTestId("creds-options-modal").getAttribute("is-open")).toBe(
         "false"
       );
-      expect(getByTestId("view-creds-modal").getAttribute("is-open")).toBe(
-        "false"
-      );
       expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
         "false"
       );
@@ -234,41 +231,6 @@ describe("Cards Details page - current not archived credential", () => {
 
     const credsOptionsModalOpen = await findByTestId("creds-options-modal");
     expect(credsOptionsModalOpen.getAttribute("is-open")).toBe("true");
-  });
-
-  test.skip("It shows the credential viewer", async () => {
-    const { getByTestId, getByText } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredentialDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("options-button"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("creds-options-view-button")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("creds-options-view-button"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("view-creds-modal").getAttribute("is-open")).toBe(
-        "true"
-      );
-    });
-
-    await waitFor(() => {
-      expect(getByText(credsFixAcdc[0].id)).toBeVisible();
-    });
   });
 
   test("It shows the warning when I click on the big archive button", async () => {

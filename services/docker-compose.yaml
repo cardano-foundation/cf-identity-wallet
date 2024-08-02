@@ -36,28 +36,11 @@ services:
       - "traefik.http.routers.keria-boot.tls.certresolver=myresolver"
       - "traefik.http.routers.keria-boot.service=keria-boot"
       - "traefik.http.services.keria-boot.loadbalancer.server.port=3903"
-  
-  vlei:
-    container_name: vlei-server
-    restart: unless-stopped
-    build:
-      context: github.com/WebOfTrust/vLEI.git#ed982313dab86bfada3825857601a10d71ce9631
-      dockerfile: ./container/Dockerfile
-    entrypoint: vLEI-server -s ./schema/acdc -c ./samples/acdc/ -o ./samples/oobis/
-    ports:
-      - 7723:7723
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.vlei.rule=Host(`${VLEI_HOST:-vlei-server}`)"
-      - "traefik.http.routers.keria.entrypoints=websecure"
-      - "traefik.http.routers.keria.tls.certresolver=myresolver"
-      - "traefik.http.routers.keria.service=keria"
-      - "traefik.http.services.keria.loadbalancer.server.port=7723"
 
   cred-issuance:
     container_name: cred-issuance
     build:
-      context: ../cf-identity-wallet/credential-server
+      context: ../cf-identity-wallet/services/credential-server
       dockerfile: ./Dockerfile
     restart: unless-stopped
     environment:
@@ -75,6 +58,24 @@ services:
       - "traefik.http.services.credentials.loadbalancer.server.port=3010"
     volumes:
       - cred-issuance:/root/.afj
+  
+  cred-issuance-ui:
+    container_name: cred-issuance-ui
+    build:
+      context: ../cf-identity-wallet/services/credential-server-ui
+      dockerfile: ./Dockerfile
+    restart: unless-stopped
+    environment:
+      - REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL=https://${CRED_HOST}
+      - REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT=443
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.credentials-ui.rule=Host(`${CRED_UI_HOST:-credentials-ui}`)"
+      - "traefik.http.routers.credentials-ui.entrypoints=websecure"
+      - "traefik.http.routers.credentials-ui.tls.certresolver=myresolver"
+      - "traefik.http.services.credentials-ui.loadbalancer.server.port=3020"
+    ports:
+      - 3020:80
 
 volumes:
   keria-data:

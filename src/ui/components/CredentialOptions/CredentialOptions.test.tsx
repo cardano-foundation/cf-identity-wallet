@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Store, AnyAction } from "@reduxjs/toolkit";
@@ -6,10 +6,6 @@ import { act } from "react-dom/test-utils";
 import { ionFireEvent, waitForIonicReact } from "@ionic/react-test-utils";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CredentialOptions } from "./CredentialOptions";
-import { credsFixAcdc } from "../../__fixtures__/credsFix";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { setToastMsg } from "../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../globals/types";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -18,7 +14,7 @@ jest.mock("@ionic/react", () => ({
 
 const dispatchMock = jest.fn();
 
-describe("Identifier Options modal", () => {
+describe("Credential Options modal", () => {
   let mockedStore: Store<unknown, AnyAction>;
   beforeEach(() => {
     jest.resetAllMocks();
@@ -49,7 +45,6 @@ describe("Identifier Options modal", () => {
         <CredentialOptions
           optionsIsOpen={true}
           setOptionsIsOpen={setCredOptionsIsOpen}
-          cardData={credsFixAcdc[0]}
           credsOptionAction={optionDeleteMock}
         />
       </Provider>
@@ -57,7 +52,6 @@ describe("Identifier Options modal", () => {
 
     await waitForIonicReact();
 
-    expect(getByTestId("creds-options-view-button")).toBeVisible();
     expect(getByTestId("creds-options-archive-button")).toBeVisible();
   });
 
@@ -70,7 +64,6 @@ describe("Identifier Options modal", () => {
         <CredentialOptions
           optionsIsOpen={true}
           setOptionsIsOpen={setCredOptionsIsOpen}
-          cardData={credsFixAcdc[0]}
           credsOptionAction={optionArchivedMock}
         />
       </Provider>
@@ -87,52 +80,6 @@ describe("Identifier Options modal", () => {
     await waitFor(() => {
       expect(optionArchivedMock).toBeCalledTimes(1);
       expect(setCredOptionsIsOpen).toBeCalledTimes(1);
-    });
-  });
-
-  test("Click on show JSON option", async () => {
-    const setCredOptionsIsOpen = jest.fn();
-    const optionArchivedMock = jest.fn();
-
-    const { getByTestId, getByText } = render(
-      <Provider store={mockedStore}>
-        <CredentialOptions
-          optionsIsOpen={true}
-          setOptionsIsOpen={setCredOptionsIsOpen}
-          cardData={credsFixAcdc[0]}
-          credsOptionAction={optionArchivedMock}
-        />
-      </Provider>
-    );
-
-    await waitForIonicReact();
-
-    expect(getByTestId("creds-options-view-button")).toBeVisible();
-
-    act(() => {
-      ionFireEvent.click(getByTestId("creds-options-view-button"));
-    });
-
-    await waitFor(() => {
-      expect(setCredOptionsIsOpen).toBeCalledTimes(1);
-    });
-
-    expect(
-      getByText(EN_TRANSLATIONS.credentials.details.view.title)
-    ).toBeVisible();
-    expect(getByTestId("cred-content").innerHTML).toBe(
-      JSON.stringify(credsFixAcdc[0], null, 2)
-    );
-    expect(getByTestId("cred-copy-json")).toBeVisible();
-
-    act(() => {
-      fireEvent.click(getByTestId("cred-copy-json"));
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD)
-      );
     });
   });
 });

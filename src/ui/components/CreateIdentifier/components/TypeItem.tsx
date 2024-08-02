@@ -7,12 +7,14 @@ const TypeItem = ({
   text,
   clickEvent,
   selectedType,
+  disabled,
 }: TypeItemProps) => {
   return (
     <IonCard
       data-testid={dataTestId}
       onClick={clickEvent}
       className={`type-input ${selectedType === index ? "selected-type" : ""}`}
+      disabled={disabled}
     >
       <span>{text}</span>
     </IonCard>

@@ -74,6 +74,8 @@ const ConnectionDetails = () => {
   });
 
   const getDetails = useCallback(async () => {
+    if (!connectionShortDetails?.id) return;
+
     try {
       const connectionDetails = await Agent.agent.connections.getConnectionById(
         connectionShortDetails.id
@@ -87,9 +89,11 @@ const ConnectionDetails = () => {
     } finally {
       setLoading((value) => ({ ...value, details: false }));
     }
-  }, [connectionShortDetails.id]);
+  }, [connectionShortDetails?.id]);
 
   const getHistory = useCallback(async () => {
+    if (!connectionShortDetails?.id) return;
+
     try {
       const connectionHistory =
         await Agent.agent.connections.getConnectionHistoryById(
@@ -101,7 +105,7 @@ const ConnectionDetails = () => {
     } finally {
       setLoading((value) => ({ ...value, history: false }));
     }
-  }, [connectionShortDetails.id]);
+  }, [connectionShortDetails?.id]);
 
   const getData = useCallback(() => {
     if (!connectionShortDetails?.id) return;
@@ -260,32 +264,36 @@ const ConnectionDetails = () => {
                 className="connection-details-history"
                 title={i18n.t("connections.details.history")}
               >
-                {connectionHistory?.length > 0 && (
-                  <div className="connection-details-history-event">
-                    <div className="connection-details-logo">
-                      <img
-                        src={Minicred}
-                        alt="credential-miniature"
-                        className="credential-miniature"
-                      />
-                    </div>
-                    <p className="connection-details-history-event-info">
-                      {i18next.t("connections.details.received", {
-                        credential: connectionHistory[0]?.credentialType
-                          ?.replace(/([A-Z][a-z])/g, " $1")
-                          .replace(/^ /, "")
-                          .replace(/(\d)/g, "$1"),
-                      })}
-                      <span data-testid="connection-history-timestamp">
-                        {` ${formatShortDate(
-                          connectionHistory[0]?.timestamp
-                        )} - ${formatTimeToSec(
-                          connectionHistory[0]?.timestamp
-                        )}`}
-                      </span>
-                    </p>
-                  </div>
-                )}
+                {connectionHistory?.length > 0 &&
+                  connectionHistory.map(
+                    (historyItem: ConnectionHistoryItem, index: number) => (
+                      <div
+                        className="connection-details-history-event"
+                        key={index}
+                      >
+                        <div className="connection-details-logo">
+                          <img
+                            src={Minicred}
+                            alt="credential-miniature"
+                            className="credential-miniature"
+                          />
+                        </div>
+                        <p className="connection-details-history-event-info">
+                          {i18next.t("connections.details.received", {
+                            credential: historyItem.credentialType
+                              ?.replace(/([A-Z][a-z])/g, " $1")
+                              .replace(/^ /, "")
+                              .replace(/(\d)/g, "$1"),
+                          })}
+                          <span data-testid="connection-history-timestamp">
+                            {` ${formatShortDate(
+                              historyItem.timestamp
+                            )} - ${formatTimeToSec(historyItem.timestamp)}`}
+                          </span>
+                        </p>
+                      </div>
+                    )
+                  )}
                 <div className="connection-details-history-event">
                   <div className="connection-details-logo">
                     <img

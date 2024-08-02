@@ -8,6 +8,7 @@ interface SubMenuData {
   additionalButtons: ReactNode;
   pageId: string;
   nestedMenu: boolean;
+  renderAsModal?: boolean;
 }
 
 interface SubMenuProps {
@@ -33,6 +34,8 @@ enum SubMenuKey {
   Connections,
   ConnectWallet,
   ManagePassword,
+  TermAndPrivacy,
+  RecoverySeedPhrase,
 }
 
 export type { SubMenuProps, MenuItemProps, SubMenuData };

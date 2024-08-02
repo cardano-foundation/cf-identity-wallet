@@ -1,18 +1,17 @@
 import { IonButton } from "@ionic/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { i18n } from "../../../i18n";
-import { VerifyPasswordProps } from "./VerifyPassword.types";
-import { CustomInput } from "../CustomInput";
-import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
-import "./VerifyPassword.scss";
-import { Alert } from "../Alert";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
-import { OptionModal } from "../OptionsModal";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { i18n } from "../../../i18n";
+import { Alert } from "../Alert";
+import { CustomInput } from "../CustomInput";
+import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
 import { ForgotAuthInfo } from "../ForgotAuthInfo";
 import { ForgotType } from "../ForgotAuthInfo/ForgotAuthInfo.types";
-import { useOnlineStatusEffect } from "../../hooks";
+import { OptionModal } from "../OptionsModal";
+import "./VerifyPassword.scss";
+import { VerifyPasswordProps } from "./VerifyPassword.types";
 
 const VerifyPassword = ({
   isOpen,
@@ -136,6 +135,19 @@ const VerifyPassword = ({
     [verifyPasswordValue.length]
   );
 
+  const handleDissmissShowHint = () => {
+    setAlertHintIsOpen(false);
+  };
+
+  const handleDissmissForgotPassword = () => {
+    setAlertChoiceIsOpen(false);
+  };
+
+  const handleShowHint = () => {
+    setAlertChoiceIsOpen(false);
+    setAlertHintIsOpen(true);
+  };
+
   return (
     <>
       <OptionModal
@@ -195,15 +207,12 @@ const VerifyPassword = ({
         confirmButtonText={`${i18n.t(
           "verifypassword.alert.button.seepasswordhint"
         )}`}
-        cancelButtonText={`${i18n.t(
+        secondaryConfirmButtonText={`${i18n.t(
           "verifypassword.alert.button.resetmypassword"
         )}`}
-        actionConfirm={() => {
-          setAlertChoiceIsOpen(false);
-          setAlertHintIsOpen(true);
-        }}
-        actionCancel={handleRecoveryPassword}
-        actionDismiss={handleReset}
+        actionConfirm={handleShowHint}
+        actionSecondaryConfirm={handleRecoveryPassword}
+        actionDismiss={handleDissmissForgotPassword}
       />
       <Alert
         isOpen={alertHintIsOpen}
@@ -212,12 +221,12 @@ const VerifyPassword = ({
         headerText={i18n.t("verifypassword.alert.hint.title")}
         subheaderText={storedHint}
         confirmButtonText={`${i18n.t("verifypassword.alert.button.tryagain")}`}
-        cancelButtonText={`${i18n.t(
+        secondaryConfirmButtonText={`${i18n.t(
           "verifypassword.alert.button.resetmypassword"
         )}`}
-        actionCancel={handleRecoveryPassword}
-        actionConfirm={() => setAlertHintIsOpen(false)}
-        actionDismiss={handleReset}
+        actionSecondaryConfirm={handleRecoveryPassword}
+        actionConfirm={handleDissmissShowHint}
+        actionDismiss={handleDissmissShowHint}
       />
       <ForgotAuthInfo
         isOpen={openRecoveryAuth}

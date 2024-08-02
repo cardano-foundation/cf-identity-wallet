@@ -3,8 +3,7 @@ import {
   lockClosedOutline,
   informationCircleOutline,
   keyOutline,
-  chatboxEllipsesOutline,
-  hammerOutline,
+  logoDiscord,
   libraryOutline,
   checkboxOutline,
   layersOutline,
@@ -19,6 +18,7 @@ import {
   IOSSettings,
 } from "capacitor-native-settings";
 import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
+import { Browser } from "@capacitor/browser";
 import { i18n } from "../../../../../i18n";
 import pJson from "../../../../../../package.json";
 import { OptionIndex, OptionProps, SettingsProps } from "./Settings.types";
@@ -37,6 +37,10 @@ import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
 import { ChangePin } from "./components/ChangePin";
 import { SettingsItem } from "./components/SettingsItem";
 import { SubMenuKey } from "../../Menu.types";
+import {
+  DISCORD_LINK,
+  DOCUMENTATION_LINK,
+} from "../../../../globals/constants";
 
 const Settings = ({ switchView }: SettingsProps) => {
   const dispatch = useAppDispatch();
@@ -51,25 +55,25 @@ const Settings = ({ switchView }: SettingsProps) => {
 
   const securityItems: OptionProps[] = [
     {
-      index: 1,
+      index: OptionIndex.ChangePin,
       icon: lockClosedOutline,
       label: i18n.t("settings.sections.security.changepin.title"),
     },
     {
-      index: 2,
+      index: OptionIndex.ManagePassword,
       icon: informationCircleOutline,
       label: i18n.t("settings.sections.security.managepassword.title"),
     },
     {
-      index: 3,
+      index: OptionIndex.RecoverySeedPhrase,
       icon: keyOutline,
-      label: i18n.t("settings.sections.security.seedphrase"),
+      label: i18n.t("settings.sections.security.seedphrase.title"),
     },
   ];
 
   if (biometricsCache.enabled !== undefined) {
     securityItems.unshift({
-      index: 0,
+      index: OptionIndex.BiometricUpdate,
       icon: fingerPrintOutline,
       label: i18n.t("settings.sections.security.biometry"),
       actionIcon: (
@@ -84,27 +88,22 @@ const Settings = ({ switchView }: SettingsProps) => {
 
   const supportItems = [
     {
-      index: 4,
-      icon: chatboxEllipsesOutline,
-      label: i18n.t("settings.sections.support.contact"),
-    },
-    {
-      index: 5,
-      icon: hammerOutline,
-      label: i18n.t("settings.sections.support.troubleshooting"),
-    },
-    {
-      index: 6,
+      index: OptionIndex.Documentation,
       icon: libraryOutline,
       label: i18n.t("settings.sections.support.learnmore"),
     },
     {
-      index: 7,
+      index: OptionIndex.Term,
       icon: checkboxOutline,
-      label: i18n.t("settings.sections.support.terms"),
+      label: i18n.t("settings.sections.support.terms.title"),
     },
     {
-      index: 8,
+      index: OptionIndex.Contact,
+      icon: logoDiscord,
+      label: i18n.t("settings.sections.support.contact"),
+    },
+    {
+      index: OptionIndex.Version,
       icon: layersOutline,
       label: i18n.t("settings.sections.support.version"),
       note: pJson.version,
@@ -188,6 +187,22 @@ const Settings = ({ switchView }: SettingsProps) => {
     }
     case OptionIndex.ManagePassword: {
       switchView && switchView(SubMenuKey.ManagePassword);
+      break;
+    }
+    case OptionIndex.Contact: {
+      Browser.open({ url: DISCORD_LINK });
+      break;
+    }
+    case OptionIndex.Documentation: {
+      Browser.open({ url: DOCUMENTATION_LINK });
+      break;
+    }
+    case OptionIndex.Term: {
+      switchView && switchView(SubMenuKey.TermAndPrivacy);
+      break;
+    }
+    case OptionIndex.RecoverySeedPhrase: {
+      switchView && switchView(SubMenuKey.RecoverySeedPhrase);
       break;
     }
     default:
