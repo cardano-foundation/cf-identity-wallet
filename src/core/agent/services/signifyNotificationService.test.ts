@@ -670,13 +670,62 @@ describe("Signify notification service of agent", () => {
     );
   });
 
-  test("Should skip if notification route is /multisig/exn", async () => {
+  test("Should skip if notification route is /multisig/exn and `e.exn.r` is not ipex/admit", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/exn",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(markNotificationMock).toBeCalledTimes(1);
+  });
+
+  test("Should skip if notification route is /multisig/exn and the identifier is missing ", async () => {
     const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(identifierMetadataRecordProps);
+
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/exn",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
+
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(markNotificationMock).toBeCalledTimes(1);
+  });
+
+  test("Should skip if notification route is /multisig/exn and the credential exists ", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
     const notes = [
       {
@@ -712,7 +761,6 @@ describe("Signify notification service of agent", () => {
       },
     };
 
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
     getCredentialMock.mockResolvedValue(acdc);
 
     for (const notif of notes) {

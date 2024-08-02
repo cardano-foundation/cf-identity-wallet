@@ -981,7 +981,8 @@
       "labels": {
         "exnipexgrant": "<strong>{{connection}}</strong> wants to issue you a credential",
         "multisigicp": "<strong>{{connection}}</strong> is requesting to create a group identifier with you",
-        "exnipexapply": "<strong>{{connection}}</strong> has requested a credential from you"
+        "exnipexapply": "<strong>{{connection}}</strong> has requested a credential from you",
+        "multisigexn": "<strong>{{connection}}</strong> has requested admit the group identifier credentials from you"
       }
     },
     "details": {

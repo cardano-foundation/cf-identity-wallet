@@ -1,4 +1,13 @@
-import { Algos, d, EventResult, messagize, Serder, Siger } from "signify-ts";
+import {
+  Algos,
+  b,
+  d,
+  EventResult,
+  messagize,
+  Saider,
+  Serder,
+  Siger,
+} from "signify-ts";
 import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../agent";
 import {
@@ -30,6 +39,7 @@ import {
 } from "./multiSig.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { ConfigurationService } from "../../configuration";
 
 class MultiSigService extends AgentService {
   static readonly INVALID_THRESHOLD = "Invalid threshold";
@@ -975,8 +985,25 @@ class MultiSigService extends AgentService {
   async multisigAdmit(
     multisigSignifyName: string,
     notificationSaid: string,
-    timeAdmit?: string
+    allSchemaSaids?: any[],
+    multisigExn?: any
   ) {
+    let exn: Serder;
+    let sigsMes: string[];
+    let dtime: string;
+
+    if (allSchemaSaids) {
+      await Promise.all(
+        allSchemaSaids.map(
+          async (schemaSaid) =>
+            await Agent.agent.connections.resolveOobi(
+              `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`,
+              true
+            )
+        )
+      );
+    }
+
     const exchangeMessage = await this.props.signifyClient
       .exchanges()
       .get(notificationSaid);
@@ -990,38 +1017,70 @@ class MultiSigService extends AgentService {
       .identifiers()
       .get(ourIdentifier.signifyName);
 
-    const time = timeAdmit
-      ? timeAdmit
-      : new Date().toISOString().replace("Z", "000+00:00");
-
-    const [admit, sigs, end] = await this.props.signifyClient
-      .ipex()
-      .admit(multisigSignifyName, "", grantSaid, time);
-
-    const mstate = gHab["state"];
-    const seal = [
-      "SealEvent",
-      { i: gHab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
-    ];
-    const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
-    const ims = d(messagize(admit, sigers, seal));
-    let atc = ims.substring(admit.size);
-    atc += end;
-    const gembeds = {
-      exn: [admit, atc],
-    };
     const recp = multisigMembers
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
 
-    const [exn, sigsMes, dtime] = await this.props.signifyClient
-      .exchanges()
-      .createExchangeMessage(
-        mHab,
-        "/multisig/exn",
-        { gid: gHab["prefix"] },
-        gembeds
-      );
+    if (multisigExn) {
+      const [, ked] = Saider.saidify(multisigExn);
+      const admit = new Serder(ked);
+
+      const keeper = await this.props.signifyClient.manager!.get(gHab);
+      const sigs = await keeper.sign(b(JSON.stringify(multisigExn)));
+
+      const mstateNew = gHab["state"];
+      const seal = [
+        "SealEvent",
+        {
+          i: gHab["prefix"],
+          s: mstateNew["ee"]["s"],
+          d: mstateNew["ee"]["d"],
+        },
+      ];
+
+      const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
+      const ims = d(messagize(admit, sigers, seal));
+      const atc = ims.substring(admit.size);
+      const gembeds = {
+        exn: [admit, atc],
+      };
+
+      [exn, sigsMes, dtime] = await this.props.signifyClient
+        .exchanges()
+        .createExchangeMessage(
+          mHab,
+          "/multisig/exn",
+          { gid: gHab["prefix"] },
+          gembeds
+        );
+    } else {
+      const time = new Date().toISOString().replace("Z", "000+00:00");
+      const [admit, sigs, end] = await this.props.signifyClient
+        .ipex()
+        .admit(multisigSignifyName, "", grantSaid, time);
+
+      const mstate = gHab["state"];
+      const seal = [
+        "SealEvent",
+        { i: gHab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
+      ];
+      const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
+      const ims = d(messagize(admit, sigers, seal));
+      let atc = ims.substring(admit.size);
+      atc += end;
+      const gembeds = {
+        exn: [admit, atc],
+      };
+
+      [exn, sigsMes, dtime] = await this.props.signifyClient
+        .exchanges()
+        .createExchangeMessage(
+          mHab,
+          "/multisig/exn",
+          { gid: gHab["prefix"] },
+          gembeds
+        );
+    }
 
     const op = await this.props.signifyClient
       .ipex()

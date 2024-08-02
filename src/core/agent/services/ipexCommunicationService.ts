@@ -408,7 +408,7 @@ class IpexCommunicationService extends AgentService {
       .exchanges()
       .get(notifRecord.a.d as string);
 
-    const timeAdmit = exn?.exn?.e?.exn?.dt;
+    const multisigExn = exn?.exn?.e?.exn;
     const previousExnGrantMsg = await this.props.signifyClient
       .exchanges()
       .get(exn?.exn.e.exn.p);
@@ -429,15 +429,14 @@ class IpexCommunicationService extends AgentService {
       previousExnGrantMsg.exn.e.acdc?.e || {}
     ).map((key) => previousExnGrantMsg.exn.e.acdc.e?.[key]?.s);
     allSchemaSaids.push(schemaSaid);
-    await Promise.all(
-      allSchemaSaids.map(
-        async (schemaSaid) =>
-          await Agent.agent.connections.resolveOobi(
-            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`,
-            true
-          )
-      )
+
+    const op = await Agent.agent.multiSigs.multisigAdmit(
+      holder.signifyName,
+      previousExnGrantMsg.exn.d as string,
+      allSchemaSaids,
+      multisigExn
     );
+
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
     await this.saveAcdcMetadataRecord(
       previousExnGrantMsg.exn.e.acdc.d,
@@ -453,12 +452,6 @@ class IpexCommunicationService extends AgentService {
         status: CredentialStatus.PENDING,
       },
     });
-
-    const op = await Agent.agent.multiSigs.multisigAdmit(
-      holder.signifyName,
-      previousExnGrantMsg.exn.d as string,
-      timeAdmit
-    );
 
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
