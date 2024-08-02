@@ -153,6 +153,7 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   credentialType: "credType",
   status: CredentialMetadataRecordStatus.CONFIRMED,
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
+  schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(
@@ -187,12 +188,14 @@ describe("Credential service of agent", () => {
         credentialType: credentialMetadataRecordA.credentialType,
         issuanceDate: nowISO,
         status: CredentialMetadataRecordStatus.CONFIRMED,
+        schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       },
       {
         id: id2,
         credentialType: credentialMetadataRecordB.credentialType,
         issuanceDate: nowISO,
         status: CredentialMetadataRecordStatus.CONFIRMED,
+        schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       },
     ]);
   });
@@ -336,6 +339,7 @@ describe("Credential service of agent", () => {
         s: acdc.status.s,
         dt: nowISO,
       },
+      schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     });
   });
 
@@ -349,6 +353,7 @@ describe("Credential service of agent", () => {
       issuanceDate: nowISO,
       isDeleted: false,
       connectionId: undefined,
+      schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     });
     expect(
       await credentialService.getCredentialShortDetailsById(id)
@@ -357,6 +362,7 @@ describe("Credential service of agent", () => {
       status: CredentialMetadataRecordStatus.CONFIRMED,
       credentialType,
       issuanceDate: nowISO,
+      schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     });
   });
 

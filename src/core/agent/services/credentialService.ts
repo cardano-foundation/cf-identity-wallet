@@ -65,6 +65,7 @@ class CredentialService extends AgentService {
       issuanceDate: metadata.issuanceDate,
       credentialType: metadata.credentialType,
       status: metadata.status,
+      schema: metadata.schema,
     };
   }
 
@@ -150,7 +151,8 @@ class CredentialService extends AgentService {
     credentialId: string,
     dateTime: string,
     schemaTitle: string,
-    connectionId: string
+    connectionId: string,
+    schema: string
   ): Promise<void> {
     const credentialDetails: CredentialMetadataRecordProps = {
       id: `metadata:${credentialId}`,
@@ -159,6 +161,7 @@ class CredentialService extends AgentService {
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
       connectionId,
+      schema,
     };
     await this.createMetadata(credentialDetails);
   }
@@ -184,7 +187,8 @@ class CredentialService extends AgentService {
           credential.sad.d,
           credential.sad.a.dt,
           credential.schema.title,
-          credential.sad.i
+          credential.sad.i,
+          credential.schema.id
         );
       }
     }
