@@ -344,7 +344,7 @@ class IpexCommunicationService extends AgentService {
     });
   }
 
-  private async getSchema(schemaSaid: string, retry = true) {
+  private async getSchema(schemaSaid: string, retry = true): Promise<any> {
     try {
       const schema = await this.props.signifyClient.schemas().get(schemaSaid);
       return schema;
@@ -358,7 +358,7 @@ class IpexCommunicationService extends AgentService {
           )
           .catch(() => undefined);
         if (oobi?.done && retry) {
-          await this.getSchema(schemaSaid, false);
+          return await this.getSchema(schemaSaid, false);
         }
         return undefined;
       } else {

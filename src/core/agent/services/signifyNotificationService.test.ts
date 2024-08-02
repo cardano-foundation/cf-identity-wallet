@@ -1,4 +1,5 @@
 import { Agent } from "../agent";
+import { ExchangeRoute } from "../agent.types";
 import { IpexMessageStorage } from "../records";
 import { ConnectionHistoryType } from "./connection.types";
 import { EventService } from "./eventService";
@@ -19,7 +20,59 @@ const markNotificationMock = jest.fn();
 const getCredentialMock = jest.fn();
 const admitMock = jest.fn();
 const submitAdmitMock = jest.fn();
+const operationsGetMock = jest.fn().mockImplementation((id: string) => {
+  return {
+    done: true,
+    response: {
+      i: id,
+    },
+  };
+});
 
+const ipexMessageMock = {
+  exn: {
+    v: "KERI10JSON000516_",
+    t: "exn",
+    d: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
+    i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+    p: "",
+    dt: "2024-07-30T04:19:55.801000+00:00",
+    r: "/ipex/grant",
+    q: {},
+    a: {
+      m: "",
+      i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+    },
+    e: {
+      acdc: {
+        d: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
+        i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+        s: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+        a: {
+          d: "ELHCh_X2aw7C-aYesOM4La23a5lsoNuJDuCsJuxwO2nq",
+          i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+          dt: "2024-07-30T04:19:55.348000+00:00",
+          attendeeName: "ccc",
+        },
+      },
+      iss: {
+        t: "iss",
+        d: "EHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
+        i: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
+        s: "0",
+        dt: "2024-07-30T04:19:55.348000+00:00",
+      },
+      d: "EKBPPnWxYw2I5CtQSyhyn5VUdSTJ61qF_-h-NwmFRkIF",
+    },
+  },
+  pathed: {
+    acdc: "-IABEEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn0AAAAAAAAAAAAAAAAAAAAAAAEHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
+    iss: "-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAEEO0xKzC8FOAXV-JgFZGgb0aIT2A3cPXPt9_0l_qcGM9",
+    anc: "-AABAACBlQqbI_qNpKYkzIog6tauSgt0XufBvGtrumfbnhSInFjSwnaIqZi353QT-c1W_gE9KIz3rgX5QNNWLcqA7bcM",
+  },
+};
+
+const exchangesGetMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -33,14 +86,7 @@ const signifyClient = jest.mocked({
     members: identifiersMemberMock,
   }),
   operations: () => ({
-    get: jest.fn().mockImplementation((id: string) => {
-      return {
-        done: true,
-        response: {
-          i: id,
-        },
-      };
-    }),
+    get: operationsGetMock,
   }),
   oobis: () => ({
     get: jest.fn(),
@@ -70,7 +116,7 @@ const signifyClient = jest.mocked({
     list: jest.fn(),
   }),
   exchanges: () => ({
-    get: jest.fn().mockResolvedValue(ipexMessageMock),
+    get: exchangesGetMock,
     send: jest.fn(),
   }),
   agent: {
@@ -127,6 +173,7 @@ const connectionStorage = jest.mocked({
 
 const identifierStorage = jest.mocked({
   getIdentifierMetadata: jest.fn(),
+  updateIdentifierMetadata: jest.fn(),
 });
 
 const getIpexMessageMetadataMock = jest.fn();
@@ -136,7 +183,16 @@ const ipexMessageStorage = jest.mocked({
   getIpexMessageMetadataByConnectionId: jest.fn(),
 });
 
-const operationPendingStorage = jest.mocked({});
+const operationPendingGetAllMock = jest.fn();
+const operationPendingStorage = jest.mocked({
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: operationPendingGetAllMock,
+});
 
 const signifyNotificationService = new SignifyNotificationService(
   agentServicesProps,
@@ -151,57 +207,19 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       getKeriaOnlineStatus: jest.fn(),
-      multiSigs: { hasMultisig: jest.fn(), joinAuthorization: jest.fn() },
+      multiSigs: {
+        hasMultisig: jest.fn(),
+        joinAuthorization: jest.fn(),
+        endRoleAuthorization: jest.fn(),
+      },
       ipexCommunications: {
         grantAcdcFromAgree: jest.fn(),
         createLinkedIpexMessageRecord: jest.fn(),
+        markAcdcComplete: jest.fn(),
       },
     },
   },
 }));
-
-const ipexMessageMock = {
-  exn: {
-    v: "KERI10JSON000516_",
-    t: "exn",
-    d: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
-    i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-    p: "",
-    dt: "2024-07-30T04:19:55.801000+00:00",
-    r: "/ipex/grant",
-    q: {},
-    a: {
-      m: "",
-      i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
-    },
-    e: {
-      acdc: {
-        d: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
-        i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-        s: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
-        a: {
-          d: "ELHCh_X2aw7C-aYesOM4La23a5lsoNuJDuCsJuxwO2nq",
-          i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
-          dt: "2024-07-30T04:19:55.348000+00:00",
-          attendeeName: "ccc",
-        },
-      },
-      iss: {
-        t: "iss",
-        d: "EHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
-        i: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
-        s: "0",
-        dt: "2024-07-30T04:19:55.348000+00:00",
-      },
-      d: "EKBPPnWxYw2I5CtQSyhyn5VUdSTJ61qF_-h-NwmFRkIF",
-    },
-  },
-  pathed: {
-    acdc: "-IABEEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn0AAAAAAAAAAAAAAAAAAAAAAAEHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
-    iss: "-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAEEO0xKzC8FOAXV-JgFZGgb0aIT2A3cPXPt9_0l_qcGM9",
-    anc: "-AABAACBlQqbI_qNpKYkzIog6tauSgt0XufBvGtrumfbnhSInFjSwnaIqZi353QT-c1W_gE9KIz3rgX5QNNWLcqA7bcM",
-  },
-};
 
 const acdcMock = {
   sad: {
@@ -231,6 +249,7 @@ describe("Signify notification service of agent", () => {
 
   test("callback should be called when there are KERI notifications", async () => {
     const callback = jest.fn();
+    exchangesGetMock.mockResolvedValue(ipexMessageMock);
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [
@@ -281,6 +300,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should admit if there is an existing credential", async () => {
     const callback = jest.fn();
+    exchangesGetMock.mockResolvedValue(ipexMessageMock);
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [
@@ -545,6 +565,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT", async () => {
     const callback = jest.fn();
+    exchangesGetMock.mockResolvedValue(ipexMessageMock);
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -576,6 +597,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_ISSUANCE", async () => {
     const callback = jest.fn();
+    exchangesGetMock.mockResolvedValue(ipexMessageMock);
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -608,6 +630,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_UPDATE", async () => {
     const callback = jest.fn();
+    exchangesGetMock.mockResolvedValue(ipexMessageMock);
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -641,6 +664,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT_AGREE", async () => {
     const callback = jest.fn();
+    exchangesGetMock.mockResolvedValue(ipexMessageMock);
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -668,5 +692,195 @@ describe("Signify notification service of agent", () => {
       ipexMessageMock,
       ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
     );
+  });
+
+  test("Should handle long operations", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const callback = jest.fn();
+    const operationMock = {
+      metadata: {
+        said: "said",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    // We mock the setTimeout here so we can exit the while(true) loop
+    jest.spyOn(global, "setTimeout").mockImplementation(() => {
+      throw new Error("Force Exit");
+    });
+    // Group
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "group.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "group",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    identifierStorage.getIdentifierMetadata.mockResolvedValueOnce({
+      signifyName: "signifyName",
+    });
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(Agent.agent.multiSigs.endRoleAuthorization).toBeCalledWith(
+      "signifyName"
+    );
+    // Witness
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "witness.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "witness",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      {
+        isPending: false,
+      }
+    );
+    // Oobi
+    const connectionMock = {
+      id: "id",
+      pending: true,
+      createdAt: new Date(),
+    };
+    connectionStorage.findById.mockResolvedValueOnce(connectionMock);
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "oobi",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(connectionStorage.update).toBeCalledWith({
+      id: connectionMock.id,
+      pending: false,
+      createdAt: operationMock.response.dt,
+    });
+    // exchange.receivecredential
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "exchange.receivecredential",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    const credentialIdMock = "credentialId";
+    signifyClient
+      .exchanges()
+      .get.mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexAdmit,
+          p: "p",
+        },
+      })
+      .mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexGrant,
+          e: {
+            acdc: {
+              d: credentialIdMock,
+            },
+          },
+        },
+      });
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(Agent.agent.ipexCommunications.markAcdcComplete).toBeCalledWith(
+      credentialIdMock
+    );
+    expect(callback).toBeCalledTimes(3);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(4);
+  });
+
+  test("Should only delete the operation if the exchange route is not /ipex/admit", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const callback = jest.fn();
+    const operationMock = {
+      metadata: {
+        said: "said",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    // We mock the setTimeout here so we can exit the while(true) loop
+    jest.spyOn(global, "setTimeout").mockImplementation(() => {
+      throw new Error("Force Exit");
+    });
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "exchange.receivecredential",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    const credentialIdMock = "credentialId";
+    signifyClient.exchanges().get.mockResolvedValueOnce({
+      exn: {
+        r: ExchangeRoute.IpexGrant,
+        e: {
+          acdc: {
+            d: credentialIdMock,
+          },
+        },
+      },
+    });
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(operationsGetMock).toBeCalledTimes(1);
+    expect(Agent.agent.ipexCommunications.markAcdcComplete).toBeCalledTimes(0);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should call setTimeout  listening for pending operations if Keria is offline", async () => {
+    const callback = jest.fn();
+    jest.spyOn(global, "setTimeout").mockImplementation(() => {
+      throw new Error("Force Exit");
+    });
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(setTimeout).toBeCalledTimes(1);
   });
 });
