@@ -4,7 +4,7 @@ import {
   SQLiteDBConnection,
 } from "@capacitor-community/sqlite";
 import { getUnMigrationSqls, versionCompare } from "./utils";
-import { UPDATE_MIGRATIONS } from "./migrations/updates";
+import { MIGRATIONS } from "./migrations";
 
 class SqliteSession {
   static readonly VERSION_DATABASE_KEY = "VERSION_DATABASE_KEY";
@@ -31,10 +31,10 @@ class SqliteSession {
     return undefined;
   }
 
-  private async getCurrentVersionDatabase(key?: string): Promise<string> {
+  private async getCurrentVersionDatabase(): Promise<string> {
     try {
       const currentVersionDatabase = await this.getKv(
-        key || SqliteSession.VERSION_DATABASE_KEY
+        SqliteSession.VERSION_DATABASE_KEY
       );
       return currentVersionDatabase;
     } catch (error) {
@@ -60,51 +60,30 @@ class SqliteSession {
       );
     }
     await this.sessionInstance.open();
-    await this.initDB();
     await this.migrationDB();
   }
 
-  private async initDB(): Promise<void> {
-    const unMigrationSqls = getUnMigrationSqls(
-      await this.getCurrentVersionDatabase()
+  private async migrationDB(): Promise<void> {
+    const currentVersion = await this.getCurrentVersionDatabase();
+    const migrationStatements = await getUnMigrationSqls(
+      this.session,
+      currentVersion
     );
-    if (unMigrationSqls) {
-      const migrationStatements: { statement: string; values?: string[] }[] =
-        unMigrationSqls.sqls.map((sql) => {
-          return { statement: sql };
-        });
+
+    if (migrationStatements) {
+      const versionArr = MIGRATIONS.map((migration) => migration.version).sort(
+        (a, b) => versionCompare(a, b)
+      );
+      const latestVersion = versionArr[versionArr.length - 1];
+
       migrationStatements.push({
         statement: SqliteSession.INSERT_KV_SQL,
         values: [
           SqliteSession.VERSION_DATABASE_KEY,
-          JSON.stringify(unMigrationSqls.latestVersion),
+          JSON.stringify(latestVersion),
         ],
       });
       await this.session?.executeTransaction(migrationStatements);
-    }
-  }
-
-  private async migrationDB(): Promise<void> {
-    const latestUpdate = UPDATE_MIGRATIONS[UPDATE_MIGRATIONS.length - 1];
-    const currentStoreVersion =
-      (await this.getCurrentVersionDatabase(
-        SqliteSession.VERSION_UPDATE_DATABASE_KEY
-      )) || "0.0.0";
-
-    const updateVersion = latestUpdate.version;
-
-    if (versionCompare(currentStoreVersion, updateVersion) === -1) {
-      const updateStatements = await latestUpdate.migrationStatements(
-        this?.session
-      );
-      updateStatements.push({
-        statement: SqliteSession.INSERT_KV_SQL,
-        values: [
-          SqliteSession.VERSION_UPDATE_DATABASE_KEY,
-          JSON.stringify(latestUpdate.version),
-        ],
-      });
-      await this.session?.executeSet(updateStatements);
     }
   }
 }

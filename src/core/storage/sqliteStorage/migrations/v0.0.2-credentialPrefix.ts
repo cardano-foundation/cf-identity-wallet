@@ -1,17 +1,17 @@
 import { SQLiteDBConnection } from "@capacitor-community/sqlite";
-import { SqliteStorage } from "../../sqliteStorage";
-import { resolveTagsFromDb } from "../../utils";
-import { StorageRecord } from "../../../storage.types";
-import { CredentialMetadataRecord } from "../../../../agent/records";
-import { deserializeRecord } from "../../../utils";
+import { SqliteStorage } from "..";
+import { resolveTagsFromDb } from "../utils";
+import { StorageRecord } from "../../storage.types";
+import { CredentialMetadataRecord } from "../../../agent/records";
+import { deserializeRecord } from "../../utils";
 
-export const DATA_V001 = {
-  version: "0.0.1",
+export const DATA_V002 = {
+  version: "0.0.2",
   migrationStatements: (session?: SQLiteDBConnection) =>
-    statementCredentials(session),
+    credentialStatements(session),
 };
 
-async function statementCredentials(session?: SQLiteDBConnection) {
+async function credentialStatements(session?: SQLiteDBConnection) {
   const qValues = await session?.query(SqliteStorage.SCAN_QUERY_SQL, [
     CredentialMetadataRecord.type,
   ]);
@@ -33,7 +33,7 @@ async function statementCredentials(session?: SQLiteDBConnection) {
       credentialRecord,
       CredentialMetadataRecord
     );
-    const statement = await updateMetadataRecord({
+    const statement = await updateCredentialPrefix({
       ...credentialRecord,
       id: instance.id,
     });
@@ -43,7 +43,7 @@ async function statementCredentials(session?: SQLiteDBConnection) {
   return migrationStatements;
 }
 
-async function updateMetadataRecord(
+async function updateCredentialPrefix(
   credentialRecord: StorageRecord & { id: string }
 ): Promise<{ statement: string; values?: unknown[] }[]> {
   const newId = credentialRecord.id.replace("metadata:", "");
