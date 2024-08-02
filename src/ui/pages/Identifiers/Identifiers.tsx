@@ -104,12 +104,13 @@ const Identifiers = () => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
   });
   useEffect(() => {
-    if (
-      currentOperation === OperationType.CREATE_IDENTIFIER_CONNECT_WALLET &&
-      history.location.pathname === TabsRoutePath.IDENTIFIERS
-    ) {
+    (currentOperation === OperationType.CREATE_IDENTIFIER_CONNECT_WALLET ||
+      currentOperation ===
+        OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS ||
+      currentOperation ===
+        OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS) &&
+      history.location.pathname === TabsRoutePath.IDENTIFIERS &&
       setCreateIdentifierModalIsOpen(true);
-    }
   }, [currentOperation, history.location.pathname]);
   useEffect(() => {
     setShowPlaceholder(identifiersData.length === 0);
@@ -174,13 +175,23 @@ const Identifiers = () => {
         : ""
   }`;
   const handleCloseCreateIdentifier = (isOpen: boolean) => {
-    if (
-      !isOpen &&
-      currentOperation === OperationType.CREATE_IDENTIFIER_CONNECT_WALLET
-    ) {
+    switch (currentOperation) {
+    case OperationType.CREATE_IDENTIFIER_CONNECT_WALLET:
+      dispatch(setCurrentOperation(OperationType.BACK_TO_CONNECT_WALLET));
+      history.push(TabsRoutePath.MENU);
+      break;
+    case OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS:
+      dispatch(setCurrentOperation(OperationType.BACK_TO_SHARE_CONNECTION));
+      break;
+    case OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS:
+      dispatch(setCurrentOperation(OperationType.BACK_TO_SHARE_CONNECTION));
+      history.push(TabsRoutePath.CREDENTIALS);
+      break;
+    default:
       dispatch(setCurrentOperation(OperationType.IDLE));
+      break;
     }
-    setCreateIdentifierModalIsOpen(isOpen);
+    setCreateIdentifierModalIsOpen(false);
   };
   return (
     <>

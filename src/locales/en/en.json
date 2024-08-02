@@ -1219,6 +1219,11 @@
           "cancel": "Cancel",
           "confirm": "Confirm"
         }
+      },
+      "alert": {
+        "message": "To create a connection, you need to create an individual KERI AID identifier. Would you like to create one now?",
+        "confirm": "Create identifier",
+        "cancel": "Cancel"
       }
     },
     "details": {
