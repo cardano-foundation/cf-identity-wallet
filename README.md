@@ -173,13 +173,6 @@ You can discover how to run the application in an emulator by following this [li
 ## End-to-End (E2E) Testing
 You can gain additional insights into end-to-end testing by visiting the provided [link](docs/Testing.md).
 
-## Data migration guide
-
-**Method 1: Direct SQL Statements**: This method involves writing raw SQL statements in a file with the suffix `_sql.ts`, which should just be the initial setup.
-**Method 2: TypeScript Functions Returning SQL Statements and Parameters**: This method involves writing TypeScript functions that return SQL statements and their parameters.
-
-All migration files should be written in the `migration` directory and will apply the necessary updates when the application starts.
-
 # Contributing
 
 All contributions are welcome! Please feel free to open a new thread on the issue tracker or submit a new pull request.
