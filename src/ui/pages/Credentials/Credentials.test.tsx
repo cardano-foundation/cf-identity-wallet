@@ -153,7 +153,7 @@ describe("Creds Tab", () => {
       </MemoryRouter>
     );
 
-    expect(getByTestId("cred-card-template-favs-index-0")).toBeInTheDocument();
+    expect(getByTestId("keri-card-template-favs-index-0")).toBeInTheDocument();
   });
 
   test("Toggle Connections view", async () => {
