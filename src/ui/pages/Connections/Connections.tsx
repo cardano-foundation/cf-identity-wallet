@@ -121,6 +121,10 @@ const Connections = ({
     setConnectModalIsOpen(true);
   };
 
+  const handleCloseAlert = () => {
+    setOpenIdentifierMissingAlert(false);
+  };
+
   const handleShowConnectionDetails = async (item: ConnectionShortDetails) => {
     const data: DataProps = {
       store: { stateCache },
@@ -275,8 +279,8 @@ const Connections = ({
         confirmButtonText={`${i18n.t("connections.tab.alert.confirm")}`}
         cancelButtonText={`${i18n.t("connections.tab.alert.cancel")}`}
         actionConfirm={handleNavToCreateKeri}
-        actionCancel={() => setOpenIdentifierMissingAlert(false)}
-        actionDismiss={() => setOpenIdentifierMissingAlert(false)}
+        actionCancel={handleCloseAlert}
+        actionDismiss={handleCloseAlert}
       />
     </>
   );

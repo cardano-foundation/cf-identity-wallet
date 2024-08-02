@@ -11,6 +11,8 @@ import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { formatShortDate } from "../../utils/formatters";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { OperationType } from "../../globals/types";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -21,6 +23,19 @@ jest.mock("../../../core/agent/agent", () => ({
       },
     },
   },
+}));
+
+const historyPushMock = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useHistory: () => ({
+    push: (args: unknown) => {
+      historyPushMock(args);
+    },
+    location: {
+      pathname: TabsRoutePath.IDENTIFIERS,
+    },
+  }),
 }));
 
 const mockSetShowConnections = jest.fn();
@@ -53,6 +68,18 @@ const initialStateFull = {
 };
 
 let mockedStore: Store<unknown, AnyAction>;
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children, isOpen }: any) => (
+    <div
+      style={{ display: isOpen ? "block" : "none" }}
+      data-testid="add-connection-modal"
+    >
+      {children}
+    </div>
+  ),
+}));
 
 describe("Connections page", () => {
   beforeEach(() => {
@@ -137,6 +164,143 @@ describe("Connections page", () => {
     await waitFor(() => {
       expect(qrCodeBtn).not.toBeInTheDocument();
       expect(getByText("http://example.com/shorten/123")).toBeInTheDocument();
+    });
+  });
+
+  test.skip("It shows and dismiss an Alert when no Identifiers are available", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      identifiersCache: {
+        identifiers: [],
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      connectionsCache: {
+        connections: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, getByText, queryByText } = render(
+      <Provider store={storeMocked}>
+        <Connections
+          setShowConnections={mockSetShowConnections}
+          showConnections={true}
+        />
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-connections-tab"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("add-connection-modal-provide-qr-code")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("add-connection-modal-provide-qr-code"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.connections.tab.alert.message)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByText(EN_TRANSLATIONS.connections.tab.alert.cancel));
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(EN_TRANSLATIONS.connections.tab.alert.message)
+      ).toBeNull();
+    });
+  });
+
+  test.skip("It allows to create an Identifier when no Identifiers are available", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      identifiersCache: {
+        identifiers: [],
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      connectionsCache: {
+        connections: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, getByText, queryByText } = render(
+      <Provider store={storeMocked}>
+        <Connections
+          setShowConnections={mockSetShowConnections}
+          showConnections={true}
+        />
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-connections-tab"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("add-connection-modal-provide-qr-code")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("add-connection-modal-provide-qr-code"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.connections.tab.alert.message)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByText(EN_TRANSLATIONS.connections.tab.alert.confirm));
+    });
+
+    await waitFor(() => {
+      expect(historyPushMock).toBeCalledWith({
+        pathname: undefined,
+        state: {
+          currentOperation:
+            OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS,
+          openConnections: false,
+        },
+      });
     });
   });
 });
