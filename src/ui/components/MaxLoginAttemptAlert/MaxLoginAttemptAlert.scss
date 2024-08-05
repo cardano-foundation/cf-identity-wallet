@@ -1,0 +1,18 @@
+.login-attempt-alert {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 85%;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    font-weight: 500;
+  }
+}
