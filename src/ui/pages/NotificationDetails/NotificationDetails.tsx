@@ -8,6 +8,7 @@ import { CredentialRequest } from "./components/CredentialRequest";
 import { MultiSigRequest } from "./components/MultiSigRequest";
 import { ReceiveCredential } from "./components/ReceiveCredential";
 import { TabsRoutePath } from "../../../routes/paths";
+import { ReceiveCredentialMultisig } from "./components/ReceiveCredentialMultisig";
 
 const NotificationDetails = () => {
   const pageId = "notification-details";
@@ -53,12 +54,11 @@ const NotificationDetails = () => {
     );
   case NotificationRoute.MultiSigExn:
     return (
-      <ReceiveCredential
+      <ReceiveCredentialMultisig
         pageId={pageId}
         activeStatus={!!notificationDetails}
         notificationDetails={notificationDetails}
         handleBack={handleBack}
-        multisigExn
       />
     );
   default:

@@ -21,9 +21,9 @@ import { BackEventPriorityType } from "../../../../globals/types";
 import { useIonHardwareBackButton } from "../../../../hooks";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
-import "./ReceiveCredential.scss";
+import "./ReceiveCredentialMultisig.scss";
 
-const ReceiveCredential = ({
+const ReceiveCredentialMultisig = ({
   pageId,
   activeStatus,
   notificationDetails,
@@ -56,7 +56,9 @@ const ReceiveCredential = ({
 
   const handleAccept = async () => {
     setInitiateAnimation(true);
-    await Agent.agent.ipexCommunications.acceptAcdc(notificationDetails.id);
+    await Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn(
+      notificationDetails.id
+    );
     handleNotificationUpdate();
     setTimeout(() => {
       handleBack();
@@ -165,4 +167,4 @@ const ReceiveCredential = ({
   );
 };
 
-export { ReceiveCredential };
+export { ReceiveCredentialMultisig };
