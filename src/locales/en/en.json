@@ -1489,6 +1489,7 @@
     "newconnectionadded": "New connection added",
     "credentialrequestpending": "Credential request pending",
     "newcredentialadded": "New credential added",
+    "credentialrevoked": "The credential has been revoked",
     "notesupdated": "Notes updated successfully",
     "noteremoved": "Note removed successfully",
     "maxfavouritesreached": "Maximum of 5 favourites reached",

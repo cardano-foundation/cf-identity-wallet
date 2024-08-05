@@ -126,6 +126,10 @@ interface AcdcStateChangedEvent extends BaseEventEmitter {
     | {
         status: CredentialStatus.CONFIRMED;
         credential: CredentialShortDetails;
+      }
+    | {
+        status: CredentialStatus.REVOKED;
+        credential: CredentialShortDetails;
       };
 }
 

@@ -1,6 +1,7 @@
 enum CredentialMetadataRecordStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
+  REVOKED = "revoked",
 }
 
 interface CredentialMetadataRecordProps {

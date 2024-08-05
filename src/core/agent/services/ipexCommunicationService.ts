@@ -320,28 +320,30 @@ class IpexCommunicationService extends AgentService {
     return op;
   }
 
-  async markAcdcComplete(credentialId: string) {
+  async markAcdc(
+    credentialId: string,
+    status: CredentialStatus.CONFIRMED | CredentialStatus.REVOKED
+  ) {
     const metadata = await this.credentialStorage.getCredentialMetadata(
       `metadata:${credentialId}`
     );
-    if (!metadata) {
-      throw new Error(
-        IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+    if (metadata) {
+      metadata.status =
+        status === CredentialStatus.CONFIRMED
+          ? CredentialMetadataRecordStatus.CONFIRMED
+          : CredentialMetadataRecordStatus.REVOKED;
+      await this.credentialStorage.updateCredentialMetadata(
+        metadata.id,
+        metadata
       );
+      this.props.eventService.emit<AcdcStateChangedEvent>({
+        type: AcdcEventTypes.AcdcStateChanged,
+        payload: {
+          status,
+          credential: getCredentialShortDetails(metadata),
+        },
+      });
     }
-
-    metadata.status = CredentialMetadataRecordStatus.CONFIRMED;
-    await this.credentialStorage.updateCredentialMetadata(
-      metadata.id,
-      metadata
-    );
-    this.props.eventService.emit<AcdcStateChangedEvent>({
-      type: AcdcEventTypes.AcdcStateChanged,
-      payload: {
-        status: CredentialStatus.CONFIRMED,
-        credential: getCredentialShortDetails(metadata),
-      },
-    });
   }
 
   private async getSchema(schemaSaid: string, retry = true): Promise<any> {

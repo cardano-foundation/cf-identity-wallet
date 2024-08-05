@@ -108,6 +108,10 @@ const acdcChangeHandler = async (
   if (event.payload.status === CredentialStatus.PENDING) {
     dispatch(setCurrentOperation(OperationType.ADD_CREDENTIAL));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING));
+  } else if (event.payload.status === CredentialStatus.REVOKED) {
+    dispatch(updateOrAddCredsCache(event.payload.credential));
+    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_REVOKED));
+    dispatch(setCurrentOperation(OperationType.IDLE));
   } else {
     dispatch(updateOrAddCredsCache(event.payload.credential));
     dispatch(setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED));

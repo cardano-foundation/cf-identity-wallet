@@ -5,6 +5,7 @@ import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./connection.types";
+import { CredentialStatus } from "./credentialService.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -333,11 +334,7 @@ describe("Ipex communication service of agent", () => {
       },
     ]);
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
-    await expect(
-      ipexCommunicationService.markAcdcComplete(id)
-    ).rejects.toThrowError(
-      IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
-    );
+    await ipexCommunicationService.markAcdc(id, CredentialStatus.CONFIRMED);
     expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
   });
 

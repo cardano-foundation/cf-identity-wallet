@@ -2,6 +2,7 @@ import { Agent } from "../agent";
 import { ExchangeRoute } from "../agent.types";
 import { IpexMessageStorage } from "../records";
 import { ConnectionHistoryType } from "./connection.types";
+import { CredentialStatus } from "./credentialService.types";
 import { EventService } from "./eventService";
 import { SignifyNotificationService } from "./signifyNotificationService";
 
@@ -215,7 +216,10 @@ jest.mock("../../../core/agent/agent", () => ({
       ipexCommunications: {
         grantAcdcFromAgree: jest.fn(),
         createLinkedIpexMessageRecord: jest.fn(),
-        markAcdcComplete: jest.fn(),
+        markAcdc: jest.fn(),
+      },
+      signifyNotifications: {
+        addPendingOperationToQueue: jest.fn(),
       },
     },
   },
@@ -325,6 +329,10 @@ describe("Signify notification service of agent", () => {
     groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
     jest.useFakeTimers();
     admitMock.mockResolvedValue([{}, ["sigs"], "end"]);
+    submitAdmitMock.mockResolvedValueOnce({
+      name: "name",
+      done: true,
+    });
     for (const notif of notes) {
       await signifyNotificationService.processNotification(notif, callback);
     }
@@ -649,7 +657,10 @@ describe("Signify notification service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "signifyName",
     });
-
+    submitAdmitMock.mockResolvedValueOnce({
+      name: "name",
+      done: true,
+    });
     await signifyNotificationService.processNotification(
       notification,
       callback
@@ -814,11 +825,50 @@ describe("Signify notification service of agent", () => {
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
-    expect(Agent.agent.ipexCommunications.markAcdcComplete).toBeCalledWith(
-      credentialIdMock
+    expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
+      credentialIdMock,
+      CredentialStatus.CONFIRMED
+    );
+
+    // exchange.revokecredential
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "exchange.revokecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "exchange.revokecredential",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    signifyClient
+      .exchanges()
+      .get.mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexAdmit,
+          p: "p",
+        },
+      })
+      .mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexGrant,
+          e: {
+            acdc: {
+              d: credentialIdMock,
+            },
+          },
+        },
+      });
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
+      credentialIdMock,
+      CredentialStatus.REVOKED
     );
     expect(callback).toBeCalledTimes(3);
-    expect(operationPendingStorage.deleteById).toBeCalledTimes(4);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(5);
   });
 
   test("Should only delete the operation if the exchange route is not /ipex/admit", async () => {
@@ -865,7 +915,7 @@ describe("Signify notification service of agent", () => {
       expect((error as Error).message).toBe("Force Exit");
     }
     expect(operationsGetMock).toBeCalledTimes(1);
-    expect(Agent.agent.ipexCommunications.markAcdcComplete).toBeCalledTimes(0);
+    expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledTimes(0);
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 

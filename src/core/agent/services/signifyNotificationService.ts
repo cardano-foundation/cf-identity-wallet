@@ -7,7 +7,7 @@ import {
   MiscRecordId,
   NotificationRoute,
 } from "../agent.types";
-import { Notification } from "./credentialService.types";
+import { CredentialStatus, Notification } from "./credentialService.types";
 import {
   BasicRecord,
   ConnectionStorage,
@@ -225,11 +225,18 @@ class SignifyNotificationService extends AgentService {
         const [admit, sigs, aend] = await this.props.signifyClient
           .ipex()
           .admit(ourIdentifier.signifyName, "", notif.a.d, dt);
-        await this.props.signifyClient
+        const op = await this.props.signifyClient
           .ipex()
           .submitAdmit(ourIdentifier.signifyName, admit, sigs, aend, [
             exchange.exn.i,
           ]);
+        const pendingOperation = await this.operationPendingStorage.save({
+          id: op.name,
+          recordType: OperationPendingRecordType.ExchangeRevokeCredential,
+        });
+        Agent.agent.signifyNotifications.addPendingOperationToQueue(
+          pendingOperation
+        );
         await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
           exchange,
           ConnectionHistoryType.CREDENTIAL_UPDATE
@@ -557,8 +564,27 @@ class SignifyNotificationService extends AgentService {
                   .get(admitExchange.exn.p);
                 const credentialId = grantExchange.exn.e.acdc.d;
                 if (credentialId) {
-                  await Agent.agent.ipexCommunications.markAcdcComplete(
-                    credentialId
+                  await Agent.agent.ipexCommunications.markAcdc(
+                    credentialId,
+                    CredentialStatus.CONFIRMED
+                  );
+                }
+              }
+              break;
+            }
+            case OperationPendingRecordType.ExchangeRevokeCredential: {
+              const admitExchange = await this.props.signifyClient
+                .exchanges()
+                .get(operation.metadata?.said);
+              if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
+                const grantExchange = await this.props.signifyClient
+                  .exchanges()
+                  .get(admitExchange.exn.p);
+                const credentialId = grantExchange.exn.e.acdc.d;
+                if (credentialId) {
+                  await Agent.agent.ipexCommunications.markAcdc(
+                    credentialId,
+                    CredentialStatus.REVOKED
                   );
                 }
               }
