@@ -24,7 +24,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
           deleteNotificationMock(id),
       },
       ipexCommunications: {
-        acceptAcdc: (id: string) => acceptAcdcMock(id),
+        acceptAcdcFromMultisigExn: (id: string) => acceptAcdcMock(id),
       },
     },
   },
