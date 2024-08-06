@@ -121,7 +121,7 @@ describe("Connections page", () => {
     expect(getAllByText(connectionsFix[0].status)[0]).toBeInTheDocument();
   });
 
-  test.skip("It renders connection modal successfully", async () => {
+  test("It shows available sharing ID", async () => {
     const { getByTestId } = render(
       <Provider store={mockedStore}>
         <Connections
@@ -130,50 +130,29 @@ describe("Connections page", () => {
         />
       </Provider>
     );
-    const addConnectionBtn = getByTestId("add-connection-button");
     act(() => {
-      fireEvent.click(addConnectionBtn);
+      fireEvent.click(getByTestId("add-connection-button"));
     });
-    expect(
-      getByTestId("add-connection-modal-provide-qr-code")
-    ).toBeInTheDocument();
-  });
 
-  test.skip("It renders QR code successfully", async () => {
-    // jest
-    //   .spyOn(Agent.agent.connections, "createMediatorInvitation")
-    //   .mockResolvedValue({
-    //     invitationUrl: "http://example.com?oob=abc123",
-    //     record: {} as OutOfBandRecord,
-    //     invitation: {} as OutOfBandInvitation,
-    //   });
-    // jest
-    //   .spyOn(Agent.agent.connections, "getShortenUrl")
-    //   .mockResolvedValue("http://example.com/shorten/123");
-    const { getByText, getByTestId } = render(
-      <Provider store={mockedStore}>
-        <Connections
-          setShowConnections={mockSetShowConnections}
-          showConnections={true}
-        />
-      </Provider>
-    );
-    const addConnectionBtn = getByTestId("add-connection-button");
-    act(() => {
-      fireEvent.click(addConnectionBtn);
-    });
-    const qrCodeBtn = getByTestId("add-connection-modal-provide-qr-code");
-    expect(qrCodeBtn).toBeInTheDocument();
-    act(() => {
-      fireEvent.click(qrCodeBtn);
-    });
     await waitFor(() => {
-      expect(qrCodeBtn).not.toBeInTheDocument();
-      expect(getByText("http://example.com/shorten/123")).toBeInTheDocument();
+      expect(getByTestId("add-connection-modal-provide-qr-code")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("add-connection-modal-provide-qr-code"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("connection-identifier-selector-page")).toBeVisible();
+      expect(
+        getByTestId(
+          `card-item-${initialStateFull.identifiersCache.identifiers[0].id}`
+        )
+      ).toBeVisible();
     });
   });
 
-  test.skip("It shows and dismiss an Alert when no Identifiers are available", async () => {
+  test("It shows and dismiss an Alert when no Identifiers are available", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const initialState = {
@@ -229,7 +208,7 @@ describe("Connections page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(EN_TRANSLATIONS.connections.tab.alert.cancel));
+      fireEvent.click(getByTestId("alert-create-keri-cancel-button"));
     });
 
     await waitFor(() => {
