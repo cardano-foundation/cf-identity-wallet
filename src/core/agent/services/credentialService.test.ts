@@ -402,6 +402,7 @@ describe("Credential service of agent", () => {
           },
         },
         schema: {
+          $id: "id-1",
           tile: "title1",
         },
       },
@@ -420,6 +421,7 @@ describe("Credential service of agent", () => {
           },
         },
         schema: {
+          $id: "id-2",
           tile: "title2",
         },
       },

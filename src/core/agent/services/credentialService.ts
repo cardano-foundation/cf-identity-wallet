@@ -188,7 +188,7 @@ class CredentialService extends AgentService {
           credential.sad.a.dt,
           credential.schema.title,
           credential.sad.i,
-          credential.schema.id
+          credential.schema.$id
         );
       }
     }
