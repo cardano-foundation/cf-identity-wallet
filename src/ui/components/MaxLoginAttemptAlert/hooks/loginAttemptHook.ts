@@ -27,10 +27,11 @@ const useLoginAttempt = () => {
         attempt: remainAttempt,
       });
     case 1:
-    default:
       return i18n.t("lockpage.attempterror", {
         attempt: 1,
       });
+    default:
+      return undefined;
     }
   }, [remainAttempt]);
 

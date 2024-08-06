@@ -74,22 +74,22 @@ const LockPage = () => {
     runBiometrics();
   }, []);
 
-  const handlePinChange = (digit: number) => {
+  const handlePinChange = async (digit: number) => {
     const updatedPasscode = `${passcode}${digit}`;
 
     if (updatedPasscode.length <= 6) setPasscode(updatedPasscode);
 
     if (updatedPasscode.length === 6) {
-      verifyPasscode(updatedPasscode).then((verified) => {
-        if (verified) {
-          dispatch(login());
-          handleClearState();
-          resetLoginAttempt();
-        } else {
-          setPasscodeIncorrect(true);
-          incrementLoginAttempt();
-        }
-      });
+      const verified = await verifyPasscode(updatedPasscode);
+
+      if (verified) {
+        await resetLoginAttempt();
+        dispatch(login());
+        handleClearState();
+      } else {
+        await incrementLoginAttempt();
+        setPasscodeIncorrect(true);
+      }
     }
   };
 
@@ -123,14 +123,14 @@ const LockPage = () => {
   };
 
   const error = useMemo(() => {
-    if (!passcodeIncorrect) return undefined;
+    if (!passcodeIncorrect || isLock) return undefined;
 
     if (errorMessage) return errorMessage;
 
     if (passcode.length === 6) return `${i18n.t("lockpage.error")}`;
 
     return undefined;
-  }, [errorMessage, passcode.length, passcodeIncorrect]);
+  }, [errorMessage, passcode.length, passcodeIncorrect, isLock]);
 
   return (
     <ResponsivePageLayout
