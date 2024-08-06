@@ -371,6 +371,8 @@ describe("Lock Page: Max login attempt", () => {
 
   test("Show max login attemp alert", async () => {
     initialState.stateCache.authentication.loginAttempt.attempts = 5;
+    initialState.stateCache.authentication.loginAttempt.lockedUntil =
+      Date.now() + 60000;
 
     const storeMocked = {
       ...mockStore(initialState),
