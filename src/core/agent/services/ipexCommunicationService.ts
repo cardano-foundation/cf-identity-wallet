@@ -105,7 +105,8 @@ class IpexCommunicationService extends AgentService {
       exn.exn.e.acdc.d,
       exn.exn.e.acdc.a.dt,
       schema.title,
-      connectionId
+      connectionId,
+      schemaSaid
     );
 
     this.props.eventService.emit<AcdcStateChangedEvent>({
@@ -280,7 +281,8 @@ class IpexCommunicationService extends AgentService {
     credentialId: string,
     dateTime: string,
     schemaTitle: string,
-    connectionId: string
+    connectionId: string,
+    schema: string
   ): Promise<void> {
     const credentialDetails: CredentialMetadataRecordProps = {
       id: `metadata:${credentialId}`,
@@ -289,6 +291,7 @@ class IpexCommunicationService extends AgentService {
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
       connectionId,
+      schema,
     };
     await this.credentialStorage.saveCredentialMetadataRecord(
       credentialDetails
