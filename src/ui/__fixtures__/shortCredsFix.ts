@@ -35,6 +35,18 @@ const shortCredsFix: CredentialShortDetails[] = [
     credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialMetadataRecordStatus.PENDING,
   },
+  {
+    id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF2-ghumzCJ6nv",
+    issuanceDate: "2024-01-23T16:03:44.643Z",
+    credentialType: "Rare EVO 2024 Attendee",
+    status: CredentialMetadataRecordStatus.CONFIRMED,
+  },
+  {
+    id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF3-ghumzCJ6nv",
+    issuanceDate: "2024-01-23T16:03:44.643Z",
+    credentialType: "Rare EVO 2024 Attendee",
+    status: CredentialMetadataRecordStatus.PENDING,
+  },
 ];
 
 export { shortCredsFix };

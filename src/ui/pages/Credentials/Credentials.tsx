@@ -4,34 +4,33 @@ import {
   IonLabel,
   useIonViewWillEnter,
 } from "@ionic/react";
-import { peopleOutline, addOutline } from "ionicons/icons";
+import { addOutline, peopleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { TabLayout } from "../../components/layout/TabLayout";
-import { i18n } from "../../../i18n";
-import "./Credentials.scss";
-import { CardsPlaceholder } from "../../components/CardsPlaceholder";
-import { CardsStack } from "../../components/CardsStack";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getToastMsg,
-  setCurrentOperation,
-  setCurrentRoute,
-} from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../../../routes/paths";
-import { Connections } from "../Connections";
-import { CardType, OperationType, ToastMsgType } from "../../globals/types";
-import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { Agent } from "../../../core/agent/agent";
-import {
-  getCredsCache,
-  getFavouritesCredsCache,
-} from "../../../store/reducers/credsCache";
-import { StartAnimationSource } from "../Identifiers/Identifiers.type";
-import { useOnlineStatusEffect, useToggleConnections } from "../../hooks";
+import { i18n } from "../../../i18n";
+import { TabsRoutePath } from "../../../routes/paths";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCredsArchivedCache,
   setCredsArchivedCache,
 } from "../../../store/reducers/credsArchivedCache";
+import {
+  getCredsCache,
+  getFavouritesCredsCache,
+} from "../../../store/reducers/credsCache";
+import {
+  setCurrentOperation,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
+import { ArchivedCredentials } from "../../components/ArchivedCredentials";
+import { CardsPlaceholder } from "../../components/CardsPlaceholder";
+import { CardsStack } from "../../components/CardsStack";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { CardType, OperationType } from "../../globals/types";
+import { useOnlineStatusEffect, useToggleConnections } from "../../hooks";
+import { Connections } from "../Connections";
+import { StartAnimationSource } from "../Identifiers/Identifiers.type";
+import "./Credentials.scss";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -80,7 +79,6 @@ const Creds = () => {
   const credsCache = useAppSelector(getCredsCache);
   const archivedCreds = useAppSelector(getCredsArchivedCache);
   const favCredsCache = useAppSelector(getFavouritesCredsCache);
-  const toastMsg = useAppSelector(getToastMsg);
 
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
@@ -93,30 +91,19 @@ const Creds = () => {
   );
 
   const fetchArchivedCreds = useCallback(async () => {
-    // @TODO - sdisalvo: handle error
-    const creds = await Agent.agent.credentials.getCredentials(true);
-    dispatch(setCredsArchivedCache(creds));
+    try {
+      const creds = await Agent.agent.credentials.getCredentials(true);
+      dispatch(setCredsArchivedCache(creds));
+    } catch (e) {
+      // @TODO - duke: handle error
+    }
   }, [dispatch]);
 
   useEffect(() => {
     setShowPlaceholder(credsCache.length === 0);
   }, [credsCache]);
 
-  const fetchDataUpdateCred = useCallback(() => {
-    const validToastMsgTypes = [
-      ToastMsgType.CREDENTIAL_ARCHIVED,
-      ToastMsgType.CREDENTIAL_RESTORED,
-      ToastMsgType.CREDENTIALS_RESTORED,
-      ToastMsgType.CREDENTIAL_DELETED,
-      ToastMsgType.CREDENTIALS_DELETED,
-    ];
-
-    if (toastMsg && validToastMsgTypes.includes(toastMsg)) {
-      fetchArchivedCreds();
-    }
-  }, [fetchArchivedCreds, toastMsg]);
-
-  useOnlineStatusEffect(fetchDataUpdateCred);
+  useOnlineStatusEffect(fetchArchivedCreds);
 
   const handleCreateCred = () => {
     dispatch(setCurrentOperation(OperationType.SCAN_CONNECTION));
