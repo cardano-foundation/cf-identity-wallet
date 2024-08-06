@@ -122,6 +122,10 @@ class CredentialService extends AgentService {
     });
   }
 
+  async deleteStaleLocalCredential(id: string): Promise<void> {
+    await this.credentialStorage.deleteCredentialMetadata(id);
+  }
+
   async restoreCredential(id: string): Promise<void> {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);

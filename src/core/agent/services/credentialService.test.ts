@@ -434,4 +434,12 @@ describe("Credential service of agent", () => {
       credentialService.getCredentialDetailsById(id)
     ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_FOUND);
   });
+
+  test("Can delete stale local credential", async () => {
+    const credentialId = "credential-id";
+    await credentialService.deleteStaleLocalCredential(credentialId);
+    expect(credentialStorage.deleteCredentialMetadata).toBeCalledWith(
+      credentialId
+    );
+  });
 });

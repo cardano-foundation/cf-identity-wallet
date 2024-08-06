@@ -719,4 +719,10 @@ describe("Connection service of agent", () => {
       },
     ]);
   });
+
+  test("Can delete stale local connection", async () => {
+    const connectionId = "connection-id";
+    await connectionService.deleteStaleLocalConnectionById(connectionId);
+    expect(connectionStorage.deleteById).toBeCalledWith(connectionId);
+  });
 });

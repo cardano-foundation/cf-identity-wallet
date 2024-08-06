@@ -216,6 +216,10 @@ class ConnectionService extends AgentService {
     }
   }
 
+  async deleteStaleLocalConnectionById(id: string): Promise<void> {
+    await this.connectionStorage.deleteById(id);
+  }
+
   async getConnectionShortDetailById(
     id: string
   ): Promise<ConnectionShortDetails> {

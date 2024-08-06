@@ -210,6 +210,19 @@ class IdentifierService extends AgentService {
     }
   }
 
+  async deleteStaleLocalIdentifier(identifier: string): Promise<void> {
+    const connectedDApp =
+      PeerConnection.peerConnection.getConnectedDAppAddress();
+    if (
+      connectedDApp !== "" &&
+      identifier ===
+        (await PeerConnection.peerConnection.getConnectingIdentifier()).id
+    ) {
+      PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
+    }
+    await this.identifierStorage.deleteIdentifierMetadata(identifier);
+  }
+
   async restoreIdentifier(identifier: string): Promise<void> {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier

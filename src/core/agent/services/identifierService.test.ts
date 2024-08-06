@@ -98,6 +98,7 @@ const identifierStorage = jest.mocked({
   updateIdentifierMetadata: jest.fn(),
   createIdentifierMetadataRecord: jest.fn(),
   getIdentifierMetadataByGroupId: jest.fn(),
+  deleteIdentifierMetadata: jest.fn(),
 });
 
 const operationPendingStorage = jest.mocked({
@@ -552,6 +553,30 @@ describe("Single sig service of agent", () => {
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     await expect(identifierService.rotateIdentifier("id")).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
+    );
+  });
+
+  test("Can delete stale local identifier", async () => {
+    const identifierId = "identifier-id";
+    PeerConnection.peerConnection.getConnectedDAppAddress = jest
+      .fn()
+      .mockReturnValueOnce("")
+      .mockReturnValueOnce("dapp-address");
+    PeerConnection.peerConnection.getConnectingIdentifier = jest
+      .fn()
+      .mockResolvedValue({
+        id: identifierId,
+      });
+
+    await identifierService.deleteStaleLocalIdentifier(identifierId);
+    expect(identifierStorage.deleteIdentifierMetadata).toBeCalledWith(
+      identifierId
+    );
+
+    await identifierService.deleteStaleLocalIdentifier(identifierId);
+    expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledTimes(1);
+    expect(identifierStorage.deleteIdentifierMetadata).toBeCalledWith(
+      identifierId
     );
   });
 });
