@@ -9,7 +9,6 @@ import {
 import { LoginAttempts } from "../../../../core/agent/services/auth.types";
 
 const MAX_LOGIN_ATTEMP = 5;
-const LOCK_PERIOD = [60, 300, 600, 900, 3600, 14400, 28800];
 
 const useLoginAttempt = () => {
   const dispatch = useAppDispatch();
@@ -45,14 +44,7 @@ const useLoginAttempt = () => {
   const lockDuration = useMemo(() => {
     if (remainAttempt > 0) return 0;
 
-    const absAttempt = Math.abs(remainAttempt);
-    const lockTime =
-      absAttempt > LOCK_PERIOD.length - 1
-        ? LOCK_PERIOD[LOCK_PERIOD.length - 1]
-        : LOCK_PERIOD[absAttempt];
-
-    const unlockTime = loginAttempt.lockedUntil + lockTime * 1000;
-    return unlockTime - Date.now();
+    return loginAttempt.lockedUntil - Date.now();
   }, [loginAttempt.lockedUntil, remainAttempt]);
 
   const [isLock, setIsLock] = useState(lockDuration > 0);
