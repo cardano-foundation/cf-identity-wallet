@@ -1,5 +1,3 @@
-import { mockIonicReact } from "@ionic/react-test-utils";
-mockIonicReact();
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -13,6 +11,7 @@ import { formatShortDate } from "../../utils/formatters";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { OperationType } from "../../globals/types";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -24,6 +23,13 @@ jest.mock("../../../core/agent/agent", () => ({
     },
   },
 }));
+
+jest.mock("react-qrcode-logo", () => {
+  return {
+    ...jest.requireActual("react-qrcode-logo"),
+    QRCode: () => <div></div>,
+  };
+});
 
 const historyPushMock = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -233,7 +239,7 @@ describe("Connections page", () => {
     });
   });
 
-  test.skip("It allows to create an Identifier when no Identifiers are available", async () => {
+  test("It allows to create an Identifier when no Identifiers are available", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const initialState = {
@@ -261,7 +267,7 @@ describe("Connections page", () => {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
-    const { getByTestId, getByText, queryByText } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <Connections
           setShowConnections={mockSetShowConnections}
@@ -293,14 +299,11 @@ describe("Connections page", () => {
     });
 
     await waitFor(() => {
-      expect(historyPushMock).toBeCalledWith({
-        pathname: undefined,
-        state: {
-          currentOperation:
-            OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS,
-          openConnections: false,
-        },
-      });
+      expect(dispatchMock).toBeCalledWith(
+        setCurrentOperation(
+          OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS
+        )
+      );
     });
   });
 });
