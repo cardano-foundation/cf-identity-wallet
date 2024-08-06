@@ -13,6 +13,8 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { OperationType } from "../../globals/types";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 
+const combineMock = jest.fn(() => TabsRoutePath.IDENTIFIERS);
+
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -39,7 +41,7 @@ jest.mock("react-router-dom", () => ({
       historyPushMock(args);
     },
     location: {
-      pathname: TabsRoutePath.IDENTIFIERS,
+      pathname: combineMock(),
     },
   }),
 }));
@@ -48,7 +50,7 @@ const mockSetShowConnections = jest.fn();
 
 const initialStateFull = {
   stateCache: {
-    routes: [TabsRoutePath.CREDENTIALS],
+    routes: [TabsRoutePath.IDENTIFIERS],
     authentication: {
       loggedIn: true,
       time: Date.now(),
@@ -87,7 +89,7 @@ jest.mock("@ionic/react", () => ({
   ),
 }));
 
-describe("Connections page", () => {
+describe("Connections page from Identifiers tab", () => {
   beforeEach(() => {
     jest.resetAllMocks();
     const mockStore = configureStore();
@@ -97,6 +99,8 @@ describe("Connections page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
+
+    combineMock.mockReturnValue(TabsRoutePath.IDENTIFIERS);
   });
 
   test("It renders connections page successfully", async () => {
@@ -281,6 +285,89 @@ describe("Connections page", () => {
       expect(dispatchMock).toBeCalledWith(
         setCurrentOperation(
           OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS
+        )
+      );
+    });
+  });
+});
+
+describe("Connections page from Credentials tab", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+
+    mockedStore = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+
+    combineMock.mockReturnValue(TabsRoutePath.CREDENTIALS);
+  });
+
+  test("It allows to create an Identifier when no Identifiers are available", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.CREDENTIALS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      identifiersCache: {
+        identifiers: [],
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      connectionsCache: {
+        connections: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <Connections
+          setShowConnections={mockSetShowConnections}
+          showConnections={true}
+        />
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-connections-tab"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("add-connection-modal-provide-qr-code")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("add-connection-modal-provide-qr-code"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.connections.tab.alert.message)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByText(EN_TRANSLATIONS.connections.tab.alert.confirm));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setCurrentOperation(
+          OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS
         )
       );
     });
