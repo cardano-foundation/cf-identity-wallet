@@ -5,7 +5,7 @@ import { DATA_V002 } from "./v0.0.2-credentialPrefix";
 export const MIGRATIONS: {
   version: string;
   sql?: string[];
-  migrationStatements?: (session?: SQLiteDBConnection) => Promise<
+  migrationStatements?: (session: SQLiteDBConnection) => Promise<
     {
       statement: string;
       values?: unknown[];

@@ -7,7 +7,7 @@ import { deserializeRecord } from "../../utils";
 
 export const DATA_V002 = {
   version: "0.0.2",
-  migrationStatements: (session?: SQLiteDBConnection) =>
+  migrationStatements: (session: SQLiteDBConnection) =>
     credentialStatements(session),
 };
 
@@ -47,12 +47,11 @@ async function updateCredentialPrefix(
   credentialRecord: StorageRecord & { id: string }
 ): Promise<{ statement: string; values?: unknown[] }[]> {
   const newId = credentialRecord.id.replace("metadata:", "");
+  const tagId = credentialRecord.tags.id as string;
+
   const newTag = {
     ...credentialRecord.tags,
-    id:
-      typeof credentialRecord.tags.id === "string"
-        ? credentialRecord.tags.id?.replace("metadata:", "")
-        : "",
+    id: tagId.replace("metadata:", ""),
   };
   const valueObj = JSON.parse(credentialRecord.value);
   const newValue = {

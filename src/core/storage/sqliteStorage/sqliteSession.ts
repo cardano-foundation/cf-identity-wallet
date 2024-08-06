@@ -3,7 +3,7 @@ import {
   SQLiteConnection,
   SQLiteDBConnection,
 } from "@capacitor-community/sqlite";
-import { getUnMigrationSqls, versionCompare } from "./utils";
+import { getMigrationsToApply, versionCompare } from "./utils";
 import { MIGRATIONS } from "./migrations";
 
 class SqliteSession {
@@ -60,12 +60,12 @@ class SqliteSession {
       );
     }
     await this.sessionInstance.open();
-    await this.migrationDB();
+    await this.migrateDb();
   }
 
-  private async migrationDB(): Promise<void> {
+  private async migrateDb(): Promise<void> {
     const currentVersion = await this.getCurrentVersionDatabase();
-    const migrationStatements = await getUnMigrationSqls(
+    const migrationStatements = await getMigrationsToApply(
       this.session,
       currentVersion
     );

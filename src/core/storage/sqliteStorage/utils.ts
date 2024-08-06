@@ -3,7 +3,7 @@ import { BasicRecord } from "../../agent/records";
 import { Query } from "../storage.types";
 import { MIGRATIONS } from "./migrations";
 
-async function getUnMigrationSqls(
+async function getMigrationsToApply(
   session: SQLiteDBConnection | undefined,
   currentVersion: string
 ): Promise<{ statement: string; values?: unknown[] }[] | null> {
@@ -26,7 +26,7 @@ async function getUnMigrationSqls(
             statement: sql,
           });
         });
-      } else if (migration.migrationStatements) {
+      } else if (migration.migrationStatements && session) {
         const statements = await migration.migrationStatements(session);
         migrationStatements.push(...statements);
       }
@@ -126,7 +126,7 @@ function convertDbQuery(params: Query<BasicRecord>): Record<string, unknown> {
 }
 
 export {
-  getUnMigrationSqls,
+  getMigrationsToApply,
   versionCompare,
   convertDbQuery,
   resolveTagsFromDb,
