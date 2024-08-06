@@ -127,6 +127,10 @@ describe("Notifications cache", () => {
           passwordIsSkipped: true,
           ssiAgentIsSet: false,
           recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -205,6 +209,10 @@ describe("Notifications cache", () => {
           passwordIsSkipped: true,
           ssiAgentIsSet: false,
           recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {

@@ -32,6 +32,7 @@ describe("credsCacheSlice", () => {
         issuanceDate: "2010-01-01T19:23:24Z",
         credentialType: "University Credential",
         status: CredentialMetadataRecordStatus.CONFIRMED,
+        schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       },
     ];
     const newState = credsCacheSlice.reducer(
@@ -47,6 +48,7 @@ describe("credsCacheSlice", () => {
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "University Credential",
       status: CredentialMetadataRecordStatus.CONFIRMED,
+      schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     };
     const newState = credsCacheSlice.reducer(
       initialState,
@@ -63,12 +65,14 @@ describe("credsCacheSlice", () => {
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "University Credential",
       status: CredentialMetadataRecordStatus.PENDING,
+      schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     };
     const cred2: CredentialShortDetails = {
       id: credId2,
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "University Credential",
       status: CredentialMetadataRecordStatus.PENDING,
+      schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     };
     const updateCred: CredentialShortDetails = {
       ...cred1,
