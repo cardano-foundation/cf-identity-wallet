@@ -8,7 +8,6 @@ import { MIGRATIONS } from "./migrations";
 
 class SqliteSession {
   static readonly VERSION_DATABASE_KEY = "VERSION_DATABASE_KEY";
-  static readonly VERSION_UPDATE_DATABASE_KEY = "VERSION_UPDATE_DATABASE_KEY";
 
   static readonly GET_KV_SQL = "SELECT * FROM kv where key = ?";
   static readonly INSERT_KV_SQL =
