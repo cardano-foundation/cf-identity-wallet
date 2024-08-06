@@ -4,7 +4,7 @@ import { Query } from "../storage.types";
 import { MIGRATIONS } from "./migrations";
 
 async function getMigrationsToApply(
-  session: SQLiteDBConnection | undefined,
+  session: SQLiteDBConnection,
   currentVersion: string
 ): Promise<{ statement: string; values?: unknown[] }[] | null> {
   const versionArr: string[] = [];
@@ -26,7 +26,7 @@ async function getMigrationsToApply(
             statement: sql,
           });
         });
-      } else if (migration.migrationStatements && session) {
+      } else if (migration.migrationStatements) {
         const statements = await migration.migrationStatements(session);
         migrationStatements.push(...statements);
       }

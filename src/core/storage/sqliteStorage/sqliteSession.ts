@@ -66,7 +66,7 @@ class SqliteSession {
   private async migrateDb(): Promise<void> {
     const currentVersion = await this.getCurrentVersionDatabase();
     const migrationStatements = await getMigrationsToApply(
-      this.session,
+      this.session!,
       currentVersion
     );
 
