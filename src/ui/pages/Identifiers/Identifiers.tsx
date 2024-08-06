@@ -174,7 +174,7 @@ const Identifiers = () => {
         ? "favorite-identifier-nav"
         : ""
   }`;
-  const handleCloseCreateIdentifier = (isOpen: boolean) => {
+  const handleCloseCreateIdentifier = () => {
     switch (currentOperation) {
     case OperationType.CREATE_IDENTIFIER_CONNECT_WALLET:
       dispatch(setCurrentOperation(OperationType.BACK_TO_CONNECT_WALLET));

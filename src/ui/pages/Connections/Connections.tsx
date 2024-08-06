@@ -90,9 +90,9 @@ const Connections = ({
   useEffect(() => {
     if (currentOperation === OperationType.BACK_TO_SHARE_CONNECTION) {
       setShowConnections(true);
-      setCurrentOperation(OperationType.IDLE);
+      dispatch(setCurrentOperation(OperationType.IDLE));
     }
-  }, [currentOperation]);
+  }, [currentOperation, setShowConnections]);
 
   const handleNavToCreateKeri = () => {
     setOpenIdentifierMissingAlert(false);

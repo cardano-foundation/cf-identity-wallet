@@ -74,7 +74,7 @@ const AdditionalButtons = ({
   );
 };
 
-const Creds = () => {
+const Credentials = () => {
   const pageId = "credentials-tab";
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
@@ -269,4 +269,4 @@ const Creds = () => {
   );
 };
 
-export { Creds };
+export { Credentials };

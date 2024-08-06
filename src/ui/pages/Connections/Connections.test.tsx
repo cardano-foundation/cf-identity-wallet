@@ -2,7 +2,8 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route } from "react-router-dom";
+import { arch } from "os";
 import { Connections } from "./Connections";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
@@ -12,6 +13,8 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { OperationType } from "../../globals/types";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { Identifiers } from "../Identifiers";
+import { Credentials } from "../Credentials/Credentials";
 
 const combineMock = jest.fn(() => TabsRoutePath.IDENTIFIERS);
 
@@ -251,13 +254,23 @@ describe("Connections page from Identifiers tab", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId, getByText } = render(
-      <Provider store={storeMocked}>
-        <Connections
-          setShowConnections={mockSetShowConnections}
-          showConnections={true}
-        />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={storeMocked}>
+          <Route
+            path={TabsRoutePath.IDENTIFIERS}
+            component={Identifiers}
+          />
+        </Provider>
+      </MemoryRouter>
     );
+
+    expect(getByTestId("connections-button")).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("connections-button"));
+    });
+
+    expect(getByText(EN_TRANSLATIONS.connections.tab.title)).toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-connections-tab"));
@@ -287,6 +300,12 @@ describe("Connections page from Identifiers tab", () => {
           OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS
         )
       );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.add.title)
+      ).toBeVisible();
     });
   });
 });
@@ -321,6 +340,12 @@ describe("Connections page from Credentials tab", () => {
       identifiersCache: {
         identifiers: [],
       },
+      credsCache: {
+        creds: [],
+      },
+      credsArchivedCache: {
+        creds: [],
+      },
       identifierViewTypeCacheCache: {
         viewType: null,
       },
@@ -334,13 +359,23 @@ describe("Connections page from Credentials tab", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId, getByText } = render(
-      <Provider store={storeMocked}>
-        <Connections
-          setShowConnections={mockSetShowConnections}
-          showConnections={true}
-        />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Route
+            path={TabsRoutePath.CREDENTIALS}
+            component={Credentials}
+          />
+        </Provider>
+      </MemoryRouter>
     );
+
+    expect(getByTestId("connections-button")).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("connections-button"));
+    });
+
+    expect(getByText(EN_TRANSLATIONS.connections.tab.title)).toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-connections-tab"));
