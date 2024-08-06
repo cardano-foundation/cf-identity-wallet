@@ -15,4 +15,11 @@
   p {
     font-weight: 500;
   }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    h2 {
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+    }
+  }
 }
