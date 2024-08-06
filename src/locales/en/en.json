@@ -551,6 +551,15 @@
     "forgotten": {
       "button": "I've forgotten my passcode"
     },
+    "attempterror": "{{attempt}} attempt remaining",
+    "attemptalert": {
+      "title": "Login unavailable",
+      "content": "Try again in {{time}}",
+      "hour": "{{value}} hour",
+      "hours": "{{value}} hours",
+      "minute": "{{value}} minute",
+      "minutes": "{{value}} minutes"
+    },
     "alert": {
       "text": {
         "verify": "If you've forgotten your passcode, please verify your seed phrase to gain access to your wallet",
