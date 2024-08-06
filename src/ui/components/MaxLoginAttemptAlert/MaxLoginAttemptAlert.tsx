@@ -31,8 +31,13 @@ const MaxLoginAttemptAlert = ({ lockDuration }: MaxLoginAttemptAlertProps) => {
   const durationText = useMemo(() => {
     const remainMinute = remainLockTime / 1000 / 60;
 
-    const displayHours = Math.floor(remainMinute / 60);
-    const displayMinutes = Math.floor(remainMinute % 60);
+    let displayHours = Math.floor(remainMinute / 60);
+    let displayMinutes = Math.ceil(remainMinute % 60);
+
+    if (displayMinutes === 60) {
+      ++displayHours;
+      displayMinutes = 0;
+    }
 
     let text = "";
     if (displayHours > 0) {
