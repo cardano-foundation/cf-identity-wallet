@@ -74,7 +74,7 @@ const MaxLoginAttemptAlert = ({ lockDuration }: MaxLoginAttemptAlertProps) => {
       className="login-attempt-alert"
     >
       <h2>{i18n.t("lockpage.attemptalert.title")}</h2>
-      <p>
+      <p data-testid="alert-content">
         {i18n.t("lockpage.attemptalert.content", {
           time: durationText,
         })}
