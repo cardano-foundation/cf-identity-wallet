@@ -219,8 +219,10 @@ describe("Single sig service of agent", () => {
     identifiersGetMock.mockRejectedValue(
       new Error("request - 404 - SignifyClient message")
     );
-    expect(await identifierService.getIdentifier(keriMetadataRecord.id)).toBe(
-      undefined
+    await expect(
+      identifierService.getIdentifier(keriMetadataRecord.id)
+    ).rejects.toThrow(
+      new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${keriMetadataRecord.id}`)
     );
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
       keriMetadataRecord.id

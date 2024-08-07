@@ -193,7 +193,18 @@ class ConnectionService extends AgentService {
 
   @OnlineOnly
   async getConnectionById(id: string): Promise<ConnectionDetails> {
-    const connection = await this.props.signifyClient.contacts().get(id);
+    const connection = await this.props.signifyClient
+      .contacts()
+      .get(id)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${id}`);
+        } else {
+          throw error;
+        }
+      });
     return {
       label: connection?.alias,
       id: connection.id,

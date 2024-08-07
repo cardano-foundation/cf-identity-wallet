@@ -16,8 +16,6 @@ import {
 import { EventService } from "../../agent/services/eventService";
 
 class IdentityWalletConnect extends CardanoPeerConnect {
-  static readonly IDENTIFIER_ID_NOT_LOCATED =
-    "The id doesn't correspond with any stored identifier";
   private selectedAid: string;
   private eventService: EventService;
   static readonly MAX_SIGN_TIME = 3600000;
@@ -56,7 +54,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         this.selectedAid
       );
       if (!identifier) {
-        throw new Error(IdentityWalletConnect.IDENTIFIER_ID_NOT_LOCATED);
+        throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${this.selectedAid}`);
       }
       return {
         id: this.selectedAid,

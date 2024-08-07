@@ -52,7 +52,7 @@ describe("IdentityWalletConnect", () => {
       .mockResolvedValue(undefined);
 
     await expect(identityWalletConnect.getKeriIdentifier()).rejects.toThrow(
-      IdentityWalletConnect.IDENTIFIER_ID_NOT_LOCATED
+      `${Agent.MISSING_DATA_ON_KERIA}: ${selectedAid}`
     );
   });
 
