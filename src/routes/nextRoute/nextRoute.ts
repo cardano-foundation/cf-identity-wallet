@@ -67,7 +67,7 @@ const getNextCredentialDetailsRoute = () => {
 };
 
 const getNextNotificationsRoute = () => {
-  const path = RoutePath.NOTIFICATION_DETAILS;
+  const path = TabsRoutePath.NOTIFICATION_DETAILS;
   return { pathname: path };
 };
 
@@ -155,6 +155,7 @@ const getNextCreatePasswordRoute = (data: DataProps) => {
 
   return { pathname: RoutePath.GENERATE_SEED_PHRASE };
 };
+
 const updateStoreAfterCreatePassword = (data: DataProps) => {
   const skipped = data.state?.skipped;
   return setAuthentication({
@@ -255,7 +256,7 @@ const nextRoute: Record<string, any> = {
     nextPath: () => getNextNotificationsRoute(),
     updateRedux: [],
   },
-  [RoutePath.NOTIFICATION_DETAILS]: {
+  [TabsRoutePath.NOTIFICATION_DETAILS]: {
     nextPath: () => getNextNotificationDetailsRoute(),
     updateRedux: [],
   },

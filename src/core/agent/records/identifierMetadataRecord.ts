@@ -25,10 +25,10 @@ class IdentifierMetadataRecord extends BaseRecord {
   isArchived?: boolean;
   isDeleted?: boolean;
   isPending?: boolean;
-  signifyOpName?: string | undefined;
+  signifyOpName?: string;
   signifyName!: string;
   theme!: number;
-  multisigManageAid?: string | undefined;
+  multisigManageAid?: string;
   groupMetadata?: groupMetadata;
 
   static readonly type = "IdentifierMetadataRecord";

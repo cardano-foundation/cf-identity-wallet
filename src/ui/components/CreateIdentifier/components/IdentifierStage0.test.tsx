@@ -1,7 +1,8 @@
 import { Capacitor } from "@capacitor/core";
 import { IonInput, IonLabel, setupIonicReact } from "@ionic/react";
 import { ionFireEvent, mockIonicReact } from "@ionic/react-test-utils";
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, getByText, render, waitFor } from "@testing-library/react";
+import { ReactNode } from "react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -15,6 +16,7 @@ import {
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { OperationType, ToastMsgType } from "../../../globals/types";
 import { CustomInputProps } from "../../CustomInput/CustomInput.types";
+import { IdentifierColor } from "./IdentifierColorSelector";
 import { IdentifierStage0 } from "./IdentifierStage0";
 
 setupIonicReact();
@@ -22,36 +24,42 @@ mockIonicReact();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen }: any) => (
-    <div style={{ display: isOpen ? "block" : "none" }}>{children}</div>
-  ),
+  IonModal: ({
+    children,
+    isOpen,
+  }: {
+    children: ReactNode;
+    isOpen?: boolean;
+  }) => <div style={{ display: isOpen ? "block" : "none" }}>{children}</div>,
 }));
 
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
-    get: (key: string) => {
+    get: () => {
       return "111111";
     },
   },
 }));
 
-const mockGetMultisigConnection = jest.fn((args) =>
+const mockGetMultisigConnection = jest.fn((args: unknown) =>
   Promise.resolve([connectionsFix[3]])
 );
+
+const createIdentifierMock = jest.fn((args: unknown) => ({
+  identifier: "mock-id",
+  isPending: true,
+  signifyName: "mock name",
+}));
 
 jest.mock("../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       identifiers: {
         getIdentifiersCache: jest.fn(),
-        createIdentifier: jest.fn(() => ({
-          identifier: "mock-id",
-          isPending: true,
-          signifyName: "mock name",
-        })),
+        createIdentifier: (args: unknown) => createIdentifierMock(args),
       },
       connections: {
-        getMultisigLinkedContacts: (args: any) =>
+        getMultisigLinkedContacts: (args: unknown) =>
           mockGetMultisigConnection(args),
       },
     },
@@ -120,6 +128,7 @@ describe("Identifier Stage 0", () => {
       signifyName: "",
       groupMetadata: undefined,
     },
+    color: IdentifierColor.Green,
   };
 
   const dispatchMock = jest.fn();
@@ -129,7 +138,7 @@ describe("Identifier Stage 0", () => {
   };
 
   const innerSetState = jest.fn();
-  const setState = jest.fn((args: any) => {
+  const setState = jest.fn((args: unknown) => {
     if (typeof args === "function") {
       const result = args({});
 
@@ -254,8 +263,42 @@ describe("Identifier Stage 0", () => {
     });
   });
 
-  test("Display error when display name invalid", async () => {
+  test("Create new identifier with selected color: Dark", async () => {
     const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <IdentifierStage0
+          state={{
+            ...stage0State,
+            color: IdentifierColor.Dark,
+          }}
+          setState={setState}
+          componentId={"create-identifier-modal"}
+          setBlur={setBlur}
+          resetModal={resetModal}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(setState).toBeCalledTimes(2);
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
+    });
+
+    await waitFor(() => {
+      expect(createIdentifierMock).toBeCalledWith({
+        displayName: "",
+        theme: 10,
+        groupMetadata: undefined,
+      });
+      expect(setState).toBeCalledTimes(2);
+    });
+  });
+
+  test("Display error when display name invalid", async () => {
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <IdentifierStage0
           state={stage0State}
@@ -283,13 +326,77 @@ describe("Identifier Stage 0", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("close-button"));
+      fireEvent.click(getByText(EN_TRANSLATIONS.createidentifier.back));
     });
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
         setCurrentOperation(OperationType.IDLE)
       );
+    });
+  });
+
+  test("Show AID type infomation modal", async () => {
+    const { getByTestId, getByText, queryByText } = render(
+      <Provider store={storeMocked}>
+        <IdentifierStage0
+          state={stage0State}
+          setState={setState}
+          componentId={"create-identifier-modal"}
+          setBlur={setBlur}
+          resetModal={resetModal}
+        />
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("type-input-title"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.title)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.delegated.text)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.individual.text)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.group.text)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.button.done)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(EN_TRANSLATIONS.createidentifier.aidinfo.title)
+      ).not.toBeVisible();
+      expect(
+        queryByText(EN_TRANSLATIONS.createidentifier.aidinfo.delegated.text)
+      ).not.toBeVisible();
+      expect(
+        queryByText(EN_TRANSLATIONS.createidentifier.aidinfo.individual.text)
+      ).not.toBeVisible();
+      expect(
+        queryByText(EN_TRANSLATIONS.createidentifier.aidinfo.group.text)
+      ).not.toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("identifier-delegated-container"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.aidinfo.title)
+      ).toBeVisible();
     });
   });
 });

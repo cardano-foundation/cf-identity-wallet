@@ -1,4 +1,5 @@
 interface ScannerProps {
+  routePath?: string;
   setIsValueCaptured?: (value: boolean) => void;
   handleReset?: () => void;
 }

@@ -10,6 +10,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { formatShortDate } from "../../utils/formatters";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -45,6 +46,9 @@ const initialStateFull = {
   },
   connectionsCache: {
     connections: connectionsFix,
+  },
+  identifiersCache: {
+    identifiers: filteredIdentifierFix,
   },
 };
 

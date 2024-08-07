@@ -9,8 +9,6 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { IdentifierOptions } from "./IdentifierOptions";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { setToastMsg } from "../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../globals/types";
 
 const updateMock = jest.fn();
 
@@ -69,10 +67,32 @@ describe("Identifier Options modal", () => {
     );
     await waitForIonicReact();
 
-    expect(getByTestId("view-json-identifier-options")).toBeVisible();
-    expect(getByTestId("edit-identifier-options")).toBeVisible();
-    expect(getByTestId("share-identifier-options")).toBeVisible();
-    expect(getByTestId("delete-identifier-options")).toBeVisible();
+    expect(getByTestId("edit-identifier-option")).toBeVisible();
+    expect(getByTestId("rotate-keys-option")).toBeVisible();
+    expect(getByTestId("share-identifier-option")).toBeVisible();
+    expect(getByTestId("delete-identifier-option")).toBeVisible();
+  });
+
+  test("should not display the rotate-keys-option inside the modal", async () => {
+    const setIdentifierOptionsIsOpen = jest.fn();
+    const setCardData = jest.fn();
+    const { queryByTestId } = render(
+      <Provider store={mockedStore}>
+        <IdentifierOptions
+          handleRotateKey={jest.fn()}
+          optionsIsOpen={true}
+          setOptionsIsOpen={setIdentifierOptionsIsOpen}
+          cardData={identifierFix[2]}
+          setCardData={setCardData}
+          handleDeleteIdentifier={async () => {
+            jest.fn();
+          }}
+        />
+      </Provider>
+    );
+    await waitForIonicReact();
+
+    await waitFor(() => expect(queryByTestId("rotate-keys-option")).toBe(null));
   });
 });
 
@@ -106,51 +126,6 @@ describe("Identifier Options function test", () => {
     };
   });
 
-  test("Display JSON view", async () => {
-    const setIdentifierOptionsIsOpen = jest.fn();
-    const setCardData = jest.fn();
-    const { getByTestId, getByText } = render(
-      <Provider store={mockedStore}>
-        <IdentifierOptions
-          handleRotateKey={jest.fn()}
-          optionsIsOpen={true}
-          setOptionsIsOpen={setIdentifierOptionsIsOpen}
-          cardData={identifierFix[0]}
-          setCardData={setCardData}
-          handleDeleteIdentifier={async () => {
-            jest.fn();
-          }}
-        />
-      </Provider>
-    );
-    await waitForIonicReact();
-
-    expect(getByTestId("view-json-identifier-options")).toBeVisible();
-
-    act(() => {
-      fireEvent.click(getByTestId("view-json-identifier-options"));
-    });
-
-    await waitFor(() => {
-      expect(setIdentifierOptionsIsOpen).toBeCalledTimes(1);
-    });
-
-    expect(getByTestId("identifier-content").innerHTML).toBe(
-      JSON.stringify(identifierFix[0], null, 2)
-    );
-    expect(getByTestId("identifier-copy-json")).toBeVisible();
-
-    act(() => {
-      fireEvent.click(getByTestId("identifier-copy-json"));
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD)
-      );
-    });
-  });
-
   test("Open edit modal view", async () => {
     const setIdentifierOptionsIsOpen = jest.fn();
     const setCardData = jest.fn();
@@ -170,10 +145,10 @@ describe("Identifier Options function test", () => {
     );
     await waitForIonicReact();
 
-    expect(getByTestId("edit-identifier-options")).toBeVisible();
+    expect(getByTestId("edit-identifier-option")).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByTestId("edit-identifier-options"));
+      fireEvent.click(getByTestId("edit-identifier-option"));
     });
 
     await waitFor(() => {
@@ -183,7 +158,6 @@ describe("Identifier Options function test", () => {
     expect(
       getAllByText(EN_TRANSLATIONS.identifiers.details.options.edit)[0]
     ).toBeVisible();
-    expect(getByTestId("identifier-copy-json")).toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("identifier-theme-selector-item-1"));
@@ -208,7 +182,7 @@ describe("Identifier Options function test", () => {
     const setIdentifierOptionsIsOpen = jest.fn();
     const setCardData = jest.fn();
     const mockDelete = jest.fn();
-    const { getByTestId, getAllByText } = render(
+    const { getByTestId } = render(
       <Provider store={mockedStore}>
         <IdentifierOptions
           handleRotateKey={jest.fn()}
@@ -222,10 +196,10 @@ describe("Identifier Options function test", () => {
     );
     await waitForIonicReact();
 
-    expect(getByTestId("delete-identifier-options")).toBeVisible();
+    expect(getByTestId("delete-identifier-option")).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByTestId("delete-identifier-options"));
+      fireEvent.click(getByTestId("delete-identifier-option"));
     });
 
     await waitFor(() => {

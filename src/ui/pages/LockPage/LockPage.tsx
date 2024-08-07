@@ -1,5 +1,5 @@
 import i18n from "i18next";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch } from "../../../store/hooks";
@@ -18,6 +18,11 @@ import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayo
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
 import { useExitAppWithDoubleTap } from "../../hooks/useExitAppWithDoubleTap";
 import "./LockPage.scss";
+import { BackEventPriorityType } from "../../globals/types";
+import {
+  MaxLoginAttemptAlert,
+  useLoginAttempt,
+} from "../../components/MaxLoginAttemptAlert";
 
 const LockPage = () => {
   const pageId = "lock-page";
@@ -28,8 +33,18 @@ const LockPage = () => {
   const { handleBiometricAuth } = useBiometricAuth();
   const biometricsCache = useSelector(getBiometricsCacheCache);
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
+  const {
+    isLock,
+    lockDuration,
+    errorMessage,
+    incrementLoginAttempt,
+    resetLoginAttempt,
+  } = useLoginAttempt();
 
-  useExitAppWithDoubleTap(alertIsOpen || openRecoveryAuth);
+  useExitAppWithDoubleTap(
+    alertIsOpen || openRecoveryAuth,
+    BackEventPriorityType.LockPage
+  );
 
   const headerText = i18n.t("lockpage.alert.text.verify");
   const confirmButtonText = i18n.t("lockpage.alert.button.verify");
@@ -45,6 +60,7 @@ const LockPage = () => {
     if (passcodeIncorrect) {
       setTimeout(() => {
         setPasscodeIncorrect(false);
+        setPasscode("");
       }, MESSAGE_MILLISECONDS);
     }
   }, [passcodeIncorrect]);
@@ -58,20 +74,22 @@ const LockPage = () => {
     runBiometrics();
   }, []);
 
-  const handlePinChange = (digit: number) => {
+  const handlePinChange = async (digit: number) => {
     const updatedPasscode = `${passcode}${digit}`;
 
     if (updatedPasscode.length <= 6) setPasscode(updatedPasscode);
 
     if (updatedPasscode.length === 6) {
-      verifyPasscode(updatedPasscode).then((verified) => {
-        if (verified) {
-          dispatch(login());
-          handleClearState();
-        } else {
-          setPasscodeIncorrect(true);
-        }
-      });
+      const verified = await verifyPasscode(updatedPasscode);
+
+      if (verified) {
+        await resetLoginAttempt();
+        dispatch(login());
+        handleClearState();
+      } else {
+        await incrementLoginAttempt();
+        setPasscodeIncorrect(true);
+      }
     }
   };
 
@@ -103,42 +121,56 @@ const LockPage = () => {
   const resetPasscode = () => {
     setOpenRecoveryAuth(true);
   };
+
+  const error = useMemo(() => {
+    if (!passcodeIncorrect || isLock) return undefined;
+
+    if (errorMessage) return errorMessage;
+
+    if (passcode.length === 6) return `${i18n.t("lockpage.error")}`;
+
+    return undefined;
+  }, [errorMessage, passcode.length, passcodeIncorrect, isLock]);
+
   return (
     <ResponsivePageLayout
       pageId={pageId}
       activeStatus={true}
       customClass={"show animation-off max-overlay"}
     >
-      <h2
-        className={`${pageId}-title`}
-        data-testid={`${pageId}-title`}
-      >
-        {i18n.t("lockpage.title")}
-      </h2>
-      <p
-        className={`${pageId}-description small-hide`}
-        data-testid={`${pageId}-description`}
-      >
-        {i18n.t("lockpage.description")}
-      </p>
-      <PasscodeModule
-        error={
-          <ErrorMessage
-            message={
-              passcode.length === 6 && passcodeIncorrect
-                ? `${i18n.t("lockpage.error")}`
-                : undefined
+      {isLock ? (
+        <MaxLoginAttemptAlert lockDuration={lockDuration} />
+      ) : (
+        <>
+          <h2
+            className={`${pageId}-title`}
+            data-testid={`${pageId}-title`}
+          >
+            {i18n.t("lockpage.title")}
+          </h2>
+          <p
+            className={`${pageId}-description small-hide`}
+            data-testid={`${pageId}-description`}
+          >
+            {i18n.t("lockpage.description")}
+          </p>
+          <PasscodeModule
+            error={
+              <ErrorMessage
+                message={error}
+                timeout={true}
+                key={error}
+              />
             }
-            timeout={true}
+            passcode={passcode}
+            handlePinChange={handlePinChange}
+            handleRemove={handleRemove}
+            handleBiometricButtonClick={() => {
+              handleBiometrics();
+            }}
           />
-        }
-        passcode={passcode}
-        handlePinChange={handlePinChange}
-        handleRemove={handleRemove}
-        handleBiometricButtonClick={() => {
-          handleBiometrics();
-        }}
-      />
+        </>
+      )}
       <PageFooter
         pageId={pageId}
         secondaryButtonText={`${i18n.t("lockpage.forgotten.button")}`}

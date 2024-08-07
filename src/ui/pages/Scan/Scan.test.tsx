@@ -9,7 +9,7 @@ import { OperationType } from "../../globals/types";
 import { Scan } from "./Scan";
 
 const startScan = jest.fn(
-  (args: any) =>
+  (args: unknown) =>
     new Promise((resolve) => {
       setTimeout(() => {
         resolve({
@@ -30,7 +30,7 @@ jest.mock("@capacitor-community/barcode-scanner", () => {
           granted: true,
         }),
       hideBackground: jest.fn(),
-      startScan: (args: any) => startScan(args),
+      startScan: (args: unknown) => startScan(args),
       stopScan: jest.fn(),
       showBackground: jest.fn(),
     },
@@ -50,7 +50,7 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       connections: {
         connectByOobiUrl: () => connectByOobiUrlMock(),
-        getMultisigLinkedContacts: (args: any) =>
+        getMultisigLinkedContacts: (args: unknown) =>
           getMultisigLinkedContactsMock(args),
       },
     },
@@ -61,8 +61,11 @@ const historyPushMock = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useHistory: () => ({
-    push: (args: any) => {
+    push: (args: unknown) => {
       historyPushMock(args);
+    },
+    location: {
+      pathname: TabsRoutePath.SCAN,
     },
   }),
 }));

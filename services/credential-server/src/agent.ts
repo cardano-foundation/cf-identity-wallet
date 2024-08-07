@@ -10,12 +10,10 @@ interface Aid {
 class Agent {
   static readonly ISSUER_AID_NAME = "issuer";
   static readonly HOLDER_AID_NAME = "holder";
-  static readonly VLEI_HOST =
-    "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
   static readonly QVI_SCHEMA_SAID =
     "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
-  static readonly IIW_DEMO_SCHEMA_SAID =
-    "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu";
+  static readonly RARE_EVO_DEMO_SCHEMA_SAID =
+    "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb";
   static readonly LE_SCHEMA_SAID =
     "ENPXp1vQzRF6JwIuS-mp2U8Uf1MoADoP_GqQ62VsDZWY";
 
@@ -89,6 +87,10 @@ class Agent {
 
   async contacts() {
     return this.signifyApi.contacts();
+  }
+
+  async revokeCredential(credentialId: string, holder: string) {
+    return this.signifyApi.revokeCredential(Agent.HOLDER_AID_NAME, holder, credentialId);
   }
   async onNotificationKeriStateChanged() {
     // eslint-disable-next-line no-constant-condition

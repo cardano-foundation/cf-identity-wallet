@@ -64,7 +64,7 @@ describe("Card slider", () => {
       <Provider store={mockedStore}>
         <CardSlider
           cardType={CardType.IDENTIFIERS}
-          cardsData={identifierFix}
+          cardsData={[identifierFix[0]]}
           title="title"
           name="allidentifiers"
         />
@@ -117,7 +117,7 @@ describe("Card slider", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("cred-card-template-creds-index-1"));
+      fireEvent.click(getByTestId("keri-card-template-creds-index-1"));
     });
 
     expect(historyPushMock).toBeCalled();

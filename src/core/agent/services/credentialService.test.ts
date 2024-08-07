@@ -30,6 +30,7 @@ const oobiResolveMock = jest.fn();
 const groupGetRequestMock = jest.fn();
 const queryKeyStateMock = jest.fn();
 let credentialListMock = jest.fn();
+let getCredentialMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -77,6 +78,7 @@ const signifyClient = jest.mocked({
     submitAdmit: jest.fn(),
   }),
   credentials: () => ({
+    get: getCredentialMock,
     list: credentialListMock,
   }),
   exchanges: () => ({
@@ -151,6 +153,7 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   credentialType: "credType",
   status: CredentialMetadataRecordStatus.CONFIRMED,
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
+  schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(
@@ -185,12 +188,14 @@ describe("Credential service of agent", () => {
         credentialType: credentialMetadataRecordA.credentialType,
         issuanceDate: nowISO,
         status: CredentialMetadataRecordStatus.CONFIRMED,
+        schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       },
       {
         id: id2,
         credentialType: credentialMetadataRecordB.credentialType,
         issuanceDate: nowISO,
         status: CredentialMetadataRecordStatus.CONFIRMED,
+        schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       },
     ]);
   });
@@ -314,7 +319,7 @@ describe("Credential service of agent", () => {
         dt: nowISO,
       },
     };
-    credentialListMock = jest.fn().mockResolvedValue([acdc]);
+    getCredentialMock = jest.fn().mockResolvedValue(acdc);
 
     await expect(
       credentialService.getCredentialDetailsById(credentialMetadataRecordA.id)
@@ -334,6 +339,7 @@ describe("Credential service of agent", () => {
         s: acdc.status.s,
         dt: nowISO,
       },
+      schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     });
   });
 
@@ -347,6 +353,7 @@ describe("Credential service of agent", () => {
       issuanceDate: nowISO,
       isDeleted: false,
       connectionId: undefined,
+      schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     });
     expect(
       await credentialService.getCredentialShortDetailsById(id)
@@ -355,6 +362,7 @@ describe("Credential service of agent", () => {
       status: CredentialMetadataRecordStatus.CONFIRMED,
       credentialType,
       issuanceDate: nowISO,
+      schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     });
   });
 
@@ -393,6 +401,10 @@ describe("Credential service of agent", () => {
             LEI: "5493001KJTIIGC8Y1R17",
           },
         },
+        schema: {
+          $id: "id-1",
+          tile: "title1",
+        },
       },
       {
         sad: {
@@ -407,6 +419,10 @@ describe("Credential service of agent", () => {
             dt: "2023-11-29T02:12:35.716000+00:00",
             LEI: "5493001KJTIIGC8Y1R17",
           },
+        },
+        schema: {
+          $id: "id-2",
+          tile: "title2",
         },
       },
     ]);

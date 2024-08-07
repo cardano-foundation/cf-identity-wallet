@@ -10,7 +10,7 @@ describe("Side Slider", () => {
 
     const { getByText, getByTestId, rerender } = render(
       <SideSlider
-        open
+        isOpen
         renderAsModal
         onCloseAnimationEnd={closeAnimation}
         onOpenAnimationEnd={openAnimation}
@@ -34,7 +34,7 @@ describe("Side Slider", () => {
 
     rerender(
       <SideSlider
-        open={false}
+        isOpen={false}
         renderAsModal
         onCloseAnimationEnd={closeAnimation}
         onOpenAnimationEnd={openAnimation}
@@ -54,7 +54,7 @@ describe("Side Slider", () => {
 
     const { getByText, getByTestId, rerender } = render(
       <SideSlider
-        open
+        isOpen
         onCloseAnimationEnd={endAnimation}
         onOpenAnimationEnd={openAnimation}
       >
@@ -80,7 +80,7 @@ describe("Side Slider", () => {
 
     rerender(
       <SideSlider
-        open={false}
+        isOpen={false}
         onCloseAnimationEnd={endAnimation}
         onOpenAnimationEnd={openAnimation}
       >

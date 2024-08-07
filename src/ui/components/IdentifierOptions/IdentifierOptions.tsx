@@ -1,13 +1,10 @@
-import { Capacitor } from "@capacitor/core";
-import { Keyboard } from "@capacitor/keyboard";
 import { Share } from "@capacitor/share";
 import { IonButton } from "@ionic/react";
 import {
-  codeSlashOutline,
   pencilOutline,
+  refreshOutline,
   shareOutline,
   trashOutline,
-  refreshOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
@@ -23,14 +20,14 @@ import {
 } from "../../../store/reducers/stateCache";
 import { DISPLAY_NAME_LENGTH } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
+import { IdentifierColorSelector } from "../CreateIdentifier/components/IdentifierColorSelector";
 import { IdentifierThemeSelector } from "../CreateIdentifier/components/IdentifierThemeSelector";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import { OptionItem, OptionModal } from "../OptionsModal";
 import "./IdentifierOptions.scss";
 import { IdentifierOptionsProps } from "./IdentifierOptions.types";
-import { IdentifierJsonModal } from "./components";
-import { RotateKeyModal } from "../../pages/IdentifierDetails/components/RotateKeyModal/RotateKeyModal";
+import { getTheme } from "../../utils/theme";
 
 const IdentifierOptions = ({
   optionsIsOpen,
@@ -41,12 +38,19 @@ const IdentifierOptions = ({
   handleRotateKey,
 }: IdentifierOptionsProps) => {
   const dispatch = useAppDispatch();
-  const identifierData = useAppSelector(getIdentifiersCache);
+  const identifiersData = useAppSelector(getIdentifiersCache);
   const [editorOptionsIsOpen, setEditorIsOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
-  const [newSelectedTheme, setNewSelectedTheme] = useState(cardData.theme);
-  const [viewIsOpen, setViewIsOpen] = useState(false);
-  const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
+  const [newSelectedTheme, setNewSelectedTheme] = useState(0);
+  const [newSelectedColor, setNewSelectedColor] = useState(0);
+  const [isMultiSig, setIsMultiSig] = useState(false);
+
+  useEffect(() => {
+    const identifier = identifiersData.find((data) => data.id === cardData.id);
+    if (identifier && identifier.multisigManageAid) {
+      setIsMultiSig(true);
+    }
+  }, [identifiersData, cardData.id]);
 
   const verifyDisplayName =
     newDisplayName.length > 0 &&
@@ -59,19 +63,11 @@ const IdentifierOptions = ({
   }, [cardData.displayName]);
 
   useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      Keyboard.addListener("keyboardWillShow", () => {
-        setkeyboardIsOpen(true);
-      });
-      Keyboard.addListener("keyboardWillHide", () => {
-        setkeyboardIsOpen(false);
-      });
-    }
-  }, []);
+    const theme = getTheme(cardData.theme);
 
-  useEffect(() => {
-    setNewSelectedTheme(cardData.theme);
-  }, [editorOptionsIsOpen]);
+    setNewSelectedColor(Number(theme.color));
+    setNewSelectedTheme(Number(theme.layout));
+  }, [cardData.theme, editorOptionsIsOpen]);
 
   const handleClose = () => {
     setEditorIsOpen(false);
@@ -86,23 +82,24 @@ const IdentifierOptions = ({
   const handleSubmit = async () => {
     setEditorIsOpen(false);
     setOptionsIsOpen(false);
-    const updatedIdentifiers = [...identifierData];
+    const updatedIdentifiers = [...identifiersData];
     const index = updatedIdentifiers.findIndex(
       (identifier) => identifier.id === cardData.id
     );
+    const theme = Number(`${newSelectedColor}${newSelectedTheme}`);
     updatedIdentifiers[index] = {
       ...updatedIdentifiers[index],
       displayName: newDisplayName,
-      theme: newSelectedTheme,
+      theme,
     };
     await Agent.agent.identifiers.updateIdentifier(cardData.id, {
       displayName: newDisplayName,
-      theme: newSelectedTheme,
+      theme,
     });
     setCardData({
       ...cardData,
       displayName: newDisplayName,
-      theme: newSelectedTheme,
+      theme,
     });
     dispatch(setIdentifiersCache(updatedIdentifiers));
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
@@ -118,11 +115,6 @@ const IdentifierOptions = ({
     setNewDisplayName(cardData.displayName);
     setOptionsIsOpen(false);
     setEditorIsOpen(true);
-  };
-
-  const viewJson = () => {
-    setOptionsIsOpen(false);
-    setViewIsOpen(true);
   };
 
   const share = async () => {
@@ -148,38 +140,36 @@ const IdentifierOptions = ({
     dispatch(setCurrentOperation(OperationType.IDLE));
   };
 
-  const options: OptionItem[] = [
-    {
-      icon: codeSlashOutline,
-      label: i18n.t("identifiers.details.options.view"),
-      onClick: viewJson,
-      testId: "view-json-identifier-options",
-    },
+  const optionsRotate: OptionItem[] = [
     {
       icon: pencilOutline,
       label: i18n.t("identifiers.details.options.edit"),
       onClick: updateIdentifier,
-      testId: "edit-identifier-options",
+      testId: "edit-identifier-option",
     },
     {
       icon: refreshOutline,
       label: i18n.t("identifiers.details.options.rotatekeys"),
       onClick: rotateKey,
-      testId: "rotate-keys",
+      testId: "rotate-keys-option",
     },
     {
       icon: shareOutline,
       label: i18n.t("identifiers.details.options.share"),
       onClick: share,
-      testId: "share-identifier-options",
+      testId: "share-identifier-option",
     },
     {
       icon: trashOutline,
       label: i18n.t("identifiers.details.options.delete"),
       onClick: deleteIdentifier,
-      testId: "delete-identifier-options",
+      testId: "delete-identifier-option",
     },
   ];
+
+  const optionsNoRotate = optionsRotate.filter(
+    (option) => option.testId !== "rotate-keys-option"
+  );
 
   return (
     <>
@@ -190,7 +180,7 @@ const IdentifierOptions = ({
         header={{
           title: `${i18n.t("identifiers.details.options.title")}`,
         }}
-        items={options}
+        items={isMultiSig ? optionsNoRotate : optionsRotate}
       />
       <OptionModal
         modalIsOpen={editorOptionsIsOpen}
@@ -225,10 +215,20 @@ const IdentifierOptions = ({
           ) : null}
         </div>
         <span className="theme-input-title">{`${i18n.t(
+          "identifiers.details.options.inner.color"
+        )}`}</span>
+        <div className="card-theme">
+          <IdentifierColorSelector
+            value={newSelectedColor}
+            onColorChange={setNewSelectedColor}
+          />
+        </div>
+        <span className="theme-input-title">{`${i18n.t(
           "identifiers.details.options.inner.theme"
         )}`}</span>
         <div className="card-theme">
           <IdentifierThemeSelector
+            color={newSelectedColor}
             selectedTheme={newSelectedTheme}
             setSelectedTheme={setNewSelectedTheme}
           />
@@ -244,11 +244,6 @@ const IdentifierOptions = ({
           {i18n.t("identifiers.details.options.inner.confirm")}
         </IonButton>
       </OptionModal>
-      <IdentifierJsonModal
-        cardData={cardData}
-        isOpen={viewIsOpen}
-        onDissmiss={() => setViewIsOpen(false)}
-      />
     </>
   );
 };

@@ -18,6 +18,7 @@ import {
   StateCacheProps,
   stateCacheSlice,
   login,
+  setIsOnline,
 } from "./stateCache";
 import { RootState } from "../../index";
 import { RoutePath } from "../../../routes";
@@ -72,6 +73,13 @@ describe("State Cache", () => {
     expect(getStateCache(rootState)).toEqual(nextState);
   });
 
+  test("should set online status", () => {
+    const action = setIsOnline(false);
+    const nextState = stateCacheSlice.reducer(initialState, action);
+
+    expect(nextState.isOnline).toEqual(false);
+  });
+
   test("should set the authentication cache", () => {
     const authentication: AuthenticationCacheProps = {
       loggedIn: false,
@@ -83,6 +91,10 @@ describe("State Cache", () => {
       passwordIsSkipped: false,
       ssiAgentIsSet: false,
       recoveryWalletProgress: false,
+      loginAttempt: {
+        attempts: 0,
+        lockedUntil: Date.now(),
+      },
     };
     const action = setAuthentication(authentication);
     const nextState = stateCacheSlice.reducer(initialState, action);

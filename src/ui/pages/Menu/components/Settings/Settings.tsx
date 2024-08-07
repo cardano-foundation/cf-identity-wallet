@@ -1,19 +1,9 @@
+import { IonCard, IonList, IonToggle } from "@ionic/react";
 import {
-  IonCard,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonNote,
-  IonToggle,
-} from "@ionic/react";
-import {
-  chevronForward,
   lockClosedOutline,
   informationCircleOutline,
   keyOutline,
-  chatboxEllipsesOutline,
-  hammerOutline,
+  logoDiscord,
   libraryOutline,
   checkboxOutline,
   layersOutline,
@@ -28,9 +18,10 @@ import {
   IOSSettings,
 } from "capacitor-native-settings";
 import { BiometryErrorType } from "@aparajita/capacitor-biometric-auth";
+import { Browser } from "@capacitor/browser";
 import { i18n } from "../../../../../i18n";
 import pJson from "../../../../../../package.json";
-import { OptionProps } from "./Settings.types";
+import { OptionIndex, OptionProps, SettingsProps } from "./Settings.types";
 import { MiscRecordId } from "../../../../../core/agent/agent.types";
 import { BasicRecord } from "../../../../../core/agent/records";
 import { useAppDispatch } from "../../../../../store/hooks";
@@ -43,40 +34,52 @@ import { VerifyPassword } from "../../../../components/VerifyPassword";
 import { VerifyPasscode } from "../../../../components/VerifyPasscode";
 import { getStateCache } from "../../../../../store/reducers/stateCache";
 import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
+import { ChangePin } from "./components/ChangePin";
+import { SettingsItem } from "./components/SettingsItem";
+import { SubMenuKey } from "../../Menu.types";
+import {
+  DISCORD_LINK,
+  DOCUMENTATION_LINK,
+} from "../../../../globals/constants";
 
-const Settings = () => {
-  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
-
+const Settings = ({ switchView }: SettingsProps) => {
+  const dispatch = useAppDispatch();
   const stateCache = useSelector(getStateCache);
   const biometricsCache = useSelector(getBiometricsCacheCache);
-  const dispatch = useAppDispatch();
+  const [option, setOption] = useState<number | null>(null);
   const { biometricInfo, handleBiometricAuth } = useBiometricAuth();
   const inBiometricSetup = useRef(false);
+  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const [changePinIsOpen, setChangePinIsOpen] = useState(false);
 
   const securityItems: OptionProps[] = [
     {
+      index: OptionIndex.ChangePin,
       icon: lockClosedOutline,
-      label: i18n.t("settings.sections.security.changepin"),
+      label: i18n.t("settings.sections.security.changepin.title"),
     },
     {
+      index: OptionIndex.ManagePassword,
       icon: informationCircleOutline,
-      label: i18n.t("settings.sections.security.manageoperationspassword"),
+      label: i18n.t("settings.sections.security.managepassword.title"),
     },
     {
+      index: OptionIndex.RecoverySeedPhrase,
       icon: keyOutline,
-      label: i18n.t("settings.sections.security.seedphrase"),
+      label: i18n.t("settings.sections.security.seedphrase.title"),
     },
   ];
 
   if (biometricsCache.enabled !== undefined) {
     securityItems.unshift({
+      index: OptionIndex.BiometricUpdate,
       icon: fingerPrintOutline,
       label: i18n.t("settings.sections.security.biometry"),
       actionIcon: (
         <IonToggle
           aria-label="Biometric Toggle"
-          className="biometric-toggle"
+          className="toggle-button"
           checked={biometricsCache.enabled}
         />
       ),
@@ -85,20 +88,25 @@ const Settings = () => {
 
   const supportItems = [
     {
-      icon: chatboxEllipsesOutline,
-      label: i18n.t("settings.sections.support.contact"),
-    },
-    {
-      icon: hammerOutline,
-      label: i18n.t("settings.sections.support.troubleshooting"),
-    },
-    {
+      index: OptionIndex.Documentation,
       icon: libraryOutline,
       label: i18n.t("settings.sections.support.learnmore"),
     },
     {
+      index: OptionIndex.Term,
       icon: checkboxOutline,
-      label: i18n.t("settings.sections.support.terms"),
+      label: i18n.t("settings.sections.support.terms.title"),
+    },
+    {
+      index: OptionIndex.Contact,
+      icon: logoDiscord,
+      label: i18n.t("settings.sections.support.contact"),
+    },
+    {
+      index: OptionIndex.Version,
+      icon: layersOutline,
+      label: i18n.t("settings.sections.support.version"),
+      note: pJson.version,
     },
   ];
 
@@ -155,15 +163,67 @@ const Settings = () => {
     }
   }, [biometricInfo]);
 
+  const handleChangePin = () => {
+    if (
+      !stateCache?.authentication.passwordIsSkipped &&
+      stateCache?.authentication.passwordIsSet
+    ) {
+      setVerifyPasswordIsOpen(true);
+    } else {
+      setVerifyPasscodeIsOpen(true);
+    }
+  };
+
   const handleOptionClick = async (item: OptionProps) => {
-    switch (item.label) {
-    case i18n.t("settings.sections.security.biometry"): {
+    setOption(item.index);
+    switch (item.index) {
+    case OptionIndex.BiometricUpdate: {
       handleBiometricUpdate();
+      break;
+    }
+    case OptionIndex.ChangePin: {
+      handleChangePin();
+      break;
+    }
+    case OptionIndex.ManagePassword: {
+      switchView && switchView(SubMenuKey.ManagePassword);
+      break;
+    }
+    case OptionIndex.Contact: {
+      Browser.open({ url: DISCORD_LINK });
+      break;
+    }
+    case OptionIndex.Documentation: {
+      Browser.open({ url: DOCUMENTATION_LINK });
+      break;
+    }
+    case OptionIndex.Term: {
+      switchView && switchView(SubMenuKey.TermAndPrivacy);
+      break;
+    }
+    case OptionIndex.RecoverySeedPhrase: {
+      switchView && switchView(SubMenuKey.RecoverySeedPhrase);
       break;
     }
     default:
       return;
     }
+  };
+
+  const onVerify = () => {
+    switch (option) {
+    case 0: {
+      biometricAuth();
+      break;
+    }
+    case 1: {
+      setChangePinIsOpen(true);
+      break;
+    }
+    default:
+      return;
+    }
+    setOption(null);
   };
 
   return (
@@ -176,30 +236,13 @@ const Settings = () => {
           lines="none"
           data-testid="settings-security-items"
         >
-          {securityItems.map((item: OptionProps, index) => {
+          {securityItems.map((item: OptionProps) => {
             return (
-              <IonItem
-                key={index}
-                onClick={() => handleOptionClick(item)}
-                className="security-item"
-                data-testid={`security-item-${index}`}
-              >
-                <IonIcon
-                  aria-hidden="true"
-                  icon={item.icon}
-                  slot="start"
-                />
-                <IonLabel>{item.label}</IonLabel>
-                {item.actionIcon ? (
-                  item.actionIcon
-                ) : (
-                  <IonIcon
-                    aria-hidden="true"
-                    icon={chevronForward}
-                    slot="end"
-                  />
-                )}
-              </IonItem>
+              <SettingsItem
+                key={item.index}
+                item={item}
+                handleOptionClick={handleOptionClick}
+              />
             );
           })}
         </IonList>
@@ -212,48 +255,30 @@ const Settings = () => {
           lines="none"
           data-testid="settings-support-items"
         >
-          {supportItems.map((item, index) => {
+          {supportItems.map((item) => {
             return (
-              <IonItem
-                key={index}
-                onClick={() => handleOptionClick(item)}
-                className="support-item"
-                data-testid={`support-item-${index}`}
-              >
-                <IonIcon
-                  aria-hidden="true"
-                  icon={item.icon}
-                  slot="start"
-                />
-                <IonLabel>{item.label}</IonLabel>
-                <IonIcon
-                  aria-hidden="true"
-                  icon={chevronForward}
-                  slot="end"
-                />
-              </IonItem>
+              <SettingsItem
+                key={item.index}
+                item={item}
+                handleOptionClick={handleOptionClick}
+              />
             );
           })}
-          <IonItem className="support-item">
-            <IonIcon
-              aria-hidden="true"
-              icon={layersOutline}
-              slot="start"
-            />
-            <IonLabel>{i18n.t("settings.sections.support.version")}</IonLabel>
-            <IonNote slot="end">{pJson.version}</IonNote>
-          </IonItem>
         </IonList>
       </IonCard>
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
         setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={biometricAuth}
+        onVerify={onVerify}
       />
       <VerifyPasscode
         isOpen={verifyPasscodeIsOpen}
         setIsOpen={setVerifyPasscodeIsOpen}
-        onVerify={biometricAuth}
+        onVerify={onVerify}
+      />
+      <ChangePin
+        isOpen={changePinIsOpen}
+        setIsOpen={setChangePinIsOpen}
       />
     </>
   );

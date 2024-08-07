@@ -1,17 +1,17 @@
 import { IonButton } from "@ionic/react";
-import { useEffect, useMemo, useState } from "react";
-import { i18n } from "../../../i18n";
-import { VerifyPasswordProps } from "./VerifyPassword.types";
-import { CustomInput } from "../CustomInput";
-import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
-import "./VerifyPassword.scss";
-import { Alert } from "../Alert";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
-import { OptionModal } from "../OptionsModal";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { i18n } from "../../../i18n";
+import { Alert } from "../Alert";
+import { CustomInput } from "../CustomInput";
+import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
 import { ForgotAuthInfo } from "../ForgotAuthInfo";
 import { ForgotType } from "../ForgotAuthInfo/ForgotAuthInfo.types";
+import { OptionModal } from "../OptionsModal";
+import "./VerifyPassword.scss";
+import { VerifyPasswordProps } from "./VerifyPassword.types";
 
 const VerifyPassword = ({
   isOpen,
@@ -46,7 +46,7 @@ const VerifyPassword = ({
     hasNoMatch: i18n.t("verifypassword.error.hasNoMatch"),
   };
 
-  const handleFetchStoredValues = async () => {
+  const handleFetchStoredValues = useCallback(async () => {
     try {
       const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
       if (password) {
@@ -78,7 +78,7 @@ const VerifyPassword = ({
     if (hint) {
       setStoredHint(`${hint}`);
     }
-  };
+  }, [isOpen]);
 
   const resetModal = () => {
     setIsOpen(false);
@@ -87,7 +87,7 @@ const VerifyPassword = ({
 
   useEffect(() => {
     handleFetchStoredValues();
-  }, []);
+  }, [handleFetchStoredValues]);
 
   useEffect(() => {
     // @TODO - sdisalvo: display the available attempts remaining.
@@ -95,7 +95,6 @@ const VerifyPassword = ({
     // Count down timer must be persistent if the user navigates away from the page
     // or closes the application.
     // The UI will disable password input fields during count down timer.
-
     if (
       verifyPasswordValue.length > 0 &&
       verifyPasswordValue !== storedPassword
@@ -135,6 +134,19 @@ const VerifyPassword = ({
     }),
     [verifyPasswordValue.length]
   );
+
+  const handleDissmissShowHint = () => {
+    setAlertHintIsOpen(false);
+  };
+
+  const handleDissmissForgotPassword = () => {
+    setAlertChoiceIsOpen(false);
+  };
+
+  const handleShowHint = () => {
+    setAlertChoiceIsOpen(false);
+    setAlertHintIsOpen(true);
+  };
 
   return (
     <>
@@ -195,15 +207,12 @@ const VerifyPassword = ({
         confirmButtonText={`${i18n.t(
           "verifypassword.alert.button.seepasswordhint"
         )}`}
-        cancelButtonText={`${i18n.t(
+        secondaryConfirmButtonText={`${i18n.t(
           "verifypassword.alert.button.resetmypassword"
         )}`}
-        actionConfirm={() => {
-          setAlertChoiceIsOpen(false);
-          setAlertHintIsOpen(true);
-        }}
-        actionCancel={handleRecoveryPassword}
-        actionDismiss={handleReset}
+        actionConfirm={handleShowHint}
+        actionSecondaryConfirm={handleRecoveryPassword}
+        actionDismiss={handleDissmissForgotPassword}
       />
       <Alert
         isOpen={alertHintIsOpen}
@@ -212,12 +221,12 @@ const VerifyPassword = ({
         headerText={i18n.t("verifypassword.alert.hint.title")}
         subheaderText={storedHint}
         confirmButtonText={`${i18n.t("verifypassword.alert.button.tryagain")}`}
-        cancelButtonText={`${i18n.t(
+        secondaryConfirmButtonText={`${i18n.t(
           "verifypassword.alert.button.resetmypassword"
         )}`}
-        actionCancel={handleRecoveryPassword}
-        actionConfirm={() => setAlertHintIsOpen(false)}
-        actionDismiss={handleReset}
+        actionSecondaryConfirm={handleRecoveryPassword}
+        actionConfirm={handleDissmissShowHint}
+        actionDismiss={handleDissmissShowHint}
       />
       <ForgotAuthInfo
         isOpen={openRecoveryAuth}

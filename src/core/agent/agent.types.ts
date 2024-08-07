@@ -34,6 +34,7 @@ enum MiscRecordId {
   APP_IDENTIFIER_FAVOURITE_INDEX = "identifier-favourite-index",
   APP_PASSWORD_SKIPPED = "app-password-skipped",
   APP_RECOVERY_WALLET = "recovery-wallet",
+  LOGIN_METADATA = "login-metadata",
 }
 
 interface ConnectionShortDetails {
@@ -50,6 +51,41 @@ type ConnectionNoteDetails = {
   id: string;
   title: string;
   message: string;
+};
+
+interface JSONObject {
+  [x: string]: JSONValue;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface JSONArray extends Array<JSONValue> {}
+
+type JSONValue = string | number | boolean | JSONObject | JSONArray;
+
+type IpexMessage = {
+  exn: {
+    v: string;
+    t: string;
+    d: string;
+    i: string;
+    p: string;
+    dt: string;
+    r: string;
+    q: JSONValue;
+    a: any;
+    e: any;
+  };
+  pathed: {
+    acdc: string;
+    iss: string;
+    anc: string;
+  };
+};
+
+type IpexMessageDetails = {
+  id: string;
+  content: IpexMessage;
+  createdAt: Date;
 };
 
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
@@ -100,6 +136,24 @@ interface KeriaStatusChangedEvent extends BaseEventEmitter {
   };
 }
 
+interface NotificationRpy {
+  a: {
+    cid: string;
+    eid: string;
+    role: string;
+  };
+  d: string;
+  dt: string;
+  r: string;
+  t: string;
+  v: string;
+}
+
+interface AuthorizationRequestExn {
+  a: { gid: string };
+  e: { rpy: NotificationRpy; d: string };
+}
+
 interface KeriaNotification {
   id: string;
   createdAt: string;
@@ -115,8 +169,12 @@ enum KeriConnectionType {
 }
 
 type OobiScan =
-  | { type: KeriConnectionType.NORMAL }
-  | { type: KeriConnectionType.MULTI_SIG_INITIATOR; groupId: string };
+  | { type: KeriConnectionType.NORMAL; connection: ConnectionShortDetails }
+  | {
+      type: KeriConnectionType.MULTI_SIG_INITIATOR;
+      groupId: string;
+      connection: ConnectionShortDetails;
+    };
 
 interface BaseEventEmitter {
   type: string;
@@ -152,10 +210,19 @@ interface AgentUrls {
 
 enum NotificationRoute {
   ExnIpexGrant = "/exn/ipex/grant",
+  MultiSigExn = "/multisig/exn",
   MultiSigIcp = "/multisig/icp",
   MultiSigRot = "/multisig/rot",
+  MultiSigRpy = "/multisig/rpy",
   ExnIpexApply = "/exn/ipex/apply",
   ExnIpexAgree = "/exn/ipex/agree",
+}
+
+enum ExchangeRoute {
+  IpexAdmit = "/ipex/admit",
+  IpexGrant = "/ipex/grant",
+  IpexApply = "/ipex/apply",
+  IpexAgree = "/ipex/agree",
 }
 
 interface BranAndMnemonic {
@@ -169,6 +236,7 @@ export {
   ConnectionEventTypes,
   AcdcEventTypes,
   NotificationRoute,
+  ExchangeRoute,
   KeriConnectionType,
   KeriaStatusEventTypes,
 };
@@ -191,4 +259,8 @@ export type {
   KeriaStatusChangedEvent,
   AgentUrls,
   BranAndMnemonic,
+  IpexMessage,
+  IpexMessageDetails,
+  NotificationRpy,
+  AuthorizationRequestExn,
 };

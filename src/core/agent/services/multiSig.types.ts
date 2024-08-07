@@ -70,18 +70,29 @@ interface MultiSigExnMessage {
 
 interface CreateMultisigExnPayload {
   gid: string;
-  smids: any[];
-  rmids: any;
+  smids: string[];
+  rmids: string[];
   rstates: any;
   name: string;
 }
 
+interface AuthorizationExnPayload {
+  gid: string;
+}
+
 enum MultiSigRoute {
-  ROT = "/multisig/rot",
+  EXN = "/multisig/exn",
   ICP = "/multisig/icp",
   IXN = "/multisig/ixn",
+  RPY = "/multisig/rpy",
+  ROT = "/multisig/rot",
 }
 
 export { MultiSigRoute };
 
-export type { Aid, MultiSigExnMessage, CreateMultisigExnPayload };
+export type {
+  Aid,
+  MultiSigExnMessage,
+  CreateMultisigExnPayload,
+  AuthorizationExnPayload,
+};

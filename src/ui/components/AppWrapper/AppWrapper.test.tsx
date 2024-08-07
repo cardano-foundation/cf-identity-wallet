@@ -60,6 +60,14 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       start: jest.fn(),
       initDatabaseConnection: jest.fn(),
+      auth: {
+        getLoginAttempts: jest.fn(() =>
+          Promise.resolve({
+            attempts: 0,
+            lockedUntil: Date.now(),
+          })
+        ),
+      },
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
@@ -69,6 +77,7 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       connections: {
         getConnections: jest.fn().mockResolvedValue([]),
+        getMultisigConnections: jest.fn().mockResolvedValue([]),
         onConnectionStateChanged: jest.fn(),
         getConnectionShortDetails: jest.fn(),
         isConnectionRequestSent: jest.fn(),

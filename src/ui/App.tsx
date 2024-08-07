@@ -17,7 +17,8 @@ import {
   getAuthentication,
   getCurrentOperation,
   getCurrentRoute,
-  getStateCache,
+  getIsInitialized,
+  getIsOnline,
   getToastMsg,
 } from "../store/reducers/stateCache";
 import { useAppSelector } from "../store/hooks";
@@ -30,11 +31,13 @@ import { CustomToast } from "./components/CustomToast/CustomToast";
 import { LockPage } from "./pages/LockPage/LockPage";
 import { LoadingPage } from "./pages/LoadingPage/LoadingPage";
 import { SidePage } from "./pages/SidePage";
+import { AppOffline } from "./components/AppOffline";
 
 setupIonicReact();
 
 const App = () => {
-  const stateCache = useAppSelector(getStateCache);
+  const initialized = useAppSelector(getIsInitialized);
+  const isOnline = useAppSelector(getIsOnline);
   const authentication = useAppSelector(getAuthentication);
   const currentRoute = useAppSelector(getCurrentRoute);
   const [showSetUserName, setShowSetUserName] = useState(false);
@@ -85,7 +88,7 @@ const App = () => {
     ) {
       setShowSetUserName(true);
     }
-  }, [authentication.loggedIn, currentRoute]);
+  }, [authentication.loggedIn, authentication.userName, currentRoute]);
 
   useEffect(() => {
     const platforms = getPlatforms();
@@ -133,10 +136,11 @@ const App = () => {
     <IonApp>
       <AppWrapper>
         <StrictMode>
-          {stateCache.initialized ? (
+          {initialized ? (
             <>
               {renderApp()}
               {!isPublicPage && !authentication.loggedIn ? <LockPage /> : null}
+              {!isOnline ? <AppOffline /> : null}
             </>
           ) : (
             <LoadingPage />

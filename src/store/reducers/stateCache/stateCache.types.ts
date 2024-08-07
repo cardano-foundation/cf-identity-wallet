@@ -1,5 +1,4 @@
-import { KeriaNotification } from "../../../core/agent/agent.types";
-import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifier.types";
+import { LoginAttempts } from "../../../core/agent/services/auth.types";
 import { PeerConnectSigningEvent } from "../../../core/cardano/walletConnect/peerConnection.types";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
 import { ConnectionData } from "../walletConnectionsCache";
@@ -22,6 +21,7 @@ interface AuthenticationCacheProps {
   passwordIsSkipped: boolean;
   ssiAgentIsSet: boolean;
   recoveryWalletProgress: boolean;
+  loginAttempt: LoginAttempts;
 }
 enum IncomingRequestType {
   PEER_CONNECT_SIGN = "peer-connect-sign",
@@ -43,6 +43,7 @@ interface QueueProps<T> {
 
 interface StateCacheProps {
   initialized: boolean;
+  isOnline: boolean;
   routes: CurrentRouteCacheProps[];
   authentication: AuthenticationCacheProps;
   currentOperation: OperationType;
@@ -53,11 +54,11 @@ interface StateCacheProps {
 export { IncomingRequestType };
 
 export type {
-  PayloadData,
-  CurrentRouteCacheProps,
   AuthenticationCacheProps,
-  StateCacheProps,
+  CurrentRouteCacheProps,
   IncomingRequestProps,
-  QueueProps,
+  PayloadData,
   PeerConnectSigningEventRequest,
+  QueueProps,
+  StateCacheProps,
 };

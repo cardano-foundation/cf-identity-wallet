@@ -8,34 +8,36 @@ import {
   IonItemGroup,
   IonLabel,
   IonRow,
-  IonSearchbar,
 } from "@ionic/react";
-import { useEffect, useState } from "react";
 import { addOutline } from "ionicons/icons";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { TabLayout } from "../../components/layout/TabLayout";
-import { CardsPlaceholder } from "../../components/CardsPlaceholder";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
+import { getStateCache } from "../../../store/reducers/stateCache";
+import { updateReduxState } from "../../../store/utils";
+import { CardsPlaceholder } from "../../components/CardsPlaceholder";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { SideSlider } from "../../components/SideSlider";
+import { RequestType } from "../../globals/types";
+import { useSwipeBack } from "../../hooks/swipeBackHook";
+import { AlphabeticList } from "./components/AlphabeticList";
+import { AlphabetSelector } from "./components/AlphabetSelector";
+import { ConnectionsOptionModal } from "./components/ConnectionsOptionModal";
+import { IdentifierSelectorModal } from "./components/IdentifierSelectorModal/IdentifierSelectorModal";
+import "./Connections.scss";
 import {
   ConnectionsComponentProps,
   ConnectionShortDetails,
   MappedConnections,
 } from "./Connections.types";
-import "./Connections.scss";
-import { ConnectModal } from "../../components/ConnectModal";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { RequestType } from "../../globals/types";
-import { getStateCache } from "../../../store/reducers/stateCache";
-import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { getNextRoute } from "../../../routes/nextRoute";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
-import { updateReduxState } from "../../../store/utils";
-import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
-import { ShareQR } from "../../components/ShareQR/ShareQR";
-import { MoreOptions } from "../../components/ShareQR/MoreOptions";
-import { AlphabeticList } from "./components/AlphabeticList";
-import { AlphabetSelector } from "./components/AlphabetSelector";
-import { SideSlider } from "../../components/SideSlider";
+import { ShareConnection } from "../../components/ShareConnection";
+import { ShareType } from "../../components/ShareConnection/ShareConnection.types";
 
 const Connections = ({
   showConnections,
@@ -50,29 +52,29 @@ const Connections = ({
     MappedConnections[]
   >([]);
   const [connectModalIsOpen, setConnectModalIsOpen] = useState(false);
-  const [invitationLink, setInvitationLink] = useState<string>();
+  const [openIdentifierSelector, setOpenIdentifierSelector] = useState(false);
+  const [selectedIdentifier, setSelectedIdentifier] =
+    useState<IdentifierShortDetails | null>(null);
   const [showPlaceholder, setShowPlaceholder] = useState(
-    connectionsCache.length === 0
+    Object.keys(connectionsCache)?.length === 0
   );
 
   useEffect(() => {
-    const openConnections = (history.location.state as Record<string, any>)
+    const openConnections = (history.location.state as Record<string, unknown>)
       ?.openConnections;
 
     if (openConnections) {
       setShowConnections(true);
       history.replace(history.location.pathname, {});
     }
-  }, [history.location.state]);
+  }, [history, history.location.state, setShowConnections]);
 
   useEffect(() => {
-    setShowPlaceholder(connectionsCache.length === 0);
+    setShowPlaceholder(Object.keys(connectionsCache).length === 0);
   }, [connectionsCache]);
 
-  async function handleProvideQr() {
-    // TODO: bao-sotatek: define how to provide the QR
-    // setInvitationLink(shortUrl);
-    setConnectModalIsOpen(false);
+  function handleProvideQr() {
+    setOpenIdentifierSelector(true);
   }
 
   const handleConnectModal = () => {
@@ -112,8 +114,9 @@ const Connections = ({
   };
 
   useEffect(() => {
-    if (connectionsCache.length) {
-      const sortedConnections = [...connectionsCache].sort(function (a, b) {
+    const connections = Object.values(connectionsCache);
+    if (connections.length) {
+      const sortedConnections = [...connections].sort(function (a, b) {
         const textA = a.label.toUpperCase();
         const textB = b.label.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;
@@ -135,11 +138,28 @@ const Connections = ({
     }
   }, [connectionsCache]);
 
+  const backHardwareConfig = useMemo(
+    () => ({
+      prevent: !showConnections,
+    }),
+    [showConnections]
+  );
+
+  const getConnectionsTab = useCallback(() => {
+    return document.getElementById(pageId);
+  }, []);
+
+  const canStart = useCallback(() => {
+    return showConnections;
+  }, [showConnections]);
+
+  useSwipeBack(getConnectionsTab, canStart, () => setShowConnections(false));
+
   return (
     <>
-      <SideSlider open={showConnections}>
+      <SideSlider isOpen={showConnections}>
         <TabLayout
-          preventBackButtonEvent={!showConnections}
+          hardwareBackButtonConfig={backHardwareConfig}
           pageId={pageId}
           header={true}
           backButton={true}
@@ -158,73 +178,55 @@ const Connections = ({
           }
         >
           {!showPlaceholder && (
-            <>
-              <IonSearchbar
-                placeholder={`${i18n.t("connections.tab.searchconnections")}`}
-              />
-              <div className="connections-tab-center">
-                <IonContent className="connections-container">
-                  <IonGrid>
-                    <IonRow>
-                      <IonCol size="12">
-                        {mappedConnections.map((alphabeticGroup, index) => {
-                          return (
-                            <IonItemGroup
-                              className="connections-list"
-                              key={index}
-                            >
-                              <IonItemDivider id={alphabeticGroup.key}>
-                                <IonLabel>{alphabeticGroup.key}</IonLabel>
-                              </IonItemDivider>
-                              <AlphabeticList
-                                items={Array.from(alphabeticGroup.value)}
-                                handleShowConnectionDetails={
-                                  handleShowConnectionDetails
-                                }
-                              />
-                            </IonItemGroup>
-                          );
-                        })}
-                      </IonCol>
-                    </IonRow>
-                  </IonGrid>
-                </IonContent>
-                <AlphabetSelector />
-              </div>
-            </>
+            <div className="connections-tab-center">
+              <IonContent className="connections-container">
+                <IonGrid>
+                  <IonRow>
+                    <IonCol size="12">
+                      {mappedConnections.map((alphabeticGroup, index) => {
+                        return (
+                          <IonItemGroup
+                            className="connections-list"
+                            key={index}
+                          >
+                            <IonItemDivider id={alphabeticGroup.key}>
+                              <IonLabel>{alphabeticGroup.key}</IonLabel>
+                            </IonItemDivider>
+                            <AlphabeticList
+                              items={Array.from(alphabeticGroup.value)}
+                              handleShowConnectionDetails={
+                                handleShowConnectionDetails
+                              }
+                            />
+                          </IonItemGroup>
+                        );
+                      })}
+                    </IonCol>
+                  </IonRow>
+                </IonGrid>
+              </IonContent>
+              <AlphabetSelector />
+            </div>
           )}
         </TabLayout>
       </SideSlider>
-      <ConnectModal
+      <ConnectionsOptionModal
         type={RequestType.CONNECTION}
         connectModalIsOpen={connectModalIsOpen}
         setConnectModalIsOpen={setConnectModalIsOpen}
         handleProvideQr={handleProvideQr}
       />
-      {invitationLink && (
-        <ShareQR
-          isOpen={!!invitationLink}
-          setIsOpen={() => setInvitationLink(undefined)}
-          header={{
-            title: i18n.t("connectmodal.connect"),
-            titlePosition: "center",
-          }}
-          content={{
-            QRData: invitationLink,
-            copyBlock: [{ content: invitationLink }],
-          }}
-          moreComponent={
-            <MoreOptions
-              onClick={() => setInvitationLink(undefined)}
-              text={invitationLink}
-            />
-          }
-          modalOptions={{
-            initialBreakpoint: 0.75,
-            breakpoints: [0, 0.75],
-          }}
-        />
-      )}
+      <IdentifierSelectorModal
+        open={openIdentifierSelector}
+        setOpen={setOpenIdentifierSelector}
+        onSubmit={setSelectedIdentifier}
+      />
+      <ShareConnection
+        isOpen={!!selectedIdentifier}
+        setIsOpen={() => setSelectedIdentifier(null)}
+        signifyName={selectedIdentifier?.signifyName}
+        shareType={ShareType.Connection}
+      />
     </>
   );
 };

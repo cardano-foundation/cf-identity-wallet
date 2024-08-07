@@ -89,13 +89,13 @@ const SCHEMA_ACDC = {
     additionalProperties: false,
     required: ["i", "ri", "s", "d"],
   },
-  "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu": {
-    $id: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+  "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb": {
+    $id: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
     $schema: "http://json-schema.org/draft-07/schema#",
-    title: "IIW 2024 Demo Day Attendee",
-    description: "This Trust Over IP (ToIP) Authentic Chained Data Container (ACDC) Credential provides an end-verifiable attestation that the holder attended the Internet Identity Workshop (IIW) on April 16 - 18, 2024, and participated in the Cardano Foundation's Mobile Key Event Receipt Infrastructure (KERI) Wallet demonstration.",
+    title: "Rare EVO 2024 Attendee",
+    description: "This Trust Over IP (ToIP) Authentic Chained Data Container (ACDC) Credential provides an end-verifiable attestation that the holder attended the Rare EVO event on August 15 - 17, 2024, and participated in the Cardano Foundation's Identity Wallet demonstration leveraging Key Event Receipt Infrastructure (KERI).",
     type: "object",
-    credentialType: "DomainCredential",
+    credentialType: "RareEvo2024AttendeeCredential",
     version: "1.0.0",
     properties: {
       v: {

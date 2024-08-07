@@ -11,6 +11,7 @@ import {
   removeFavouritesCredsCache,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
+import { setNotificationDetailCache } from "../../../store/reducers/notificationsCache";
 import {
   setCurrentRoute,
   setToastMsg,
@@ -67,6 +68,7 @@ const initialStateNoPasswordCurrent = {
       passwordIsSet: false,
       passwordIsSkipped: true,
     },
+    isOnline: true,
   },
   seedPhraseCache: {
     seedPhrase:
@@ -77,6 +79,9 @@ const initialStateNoPasswordCurrent = {
   credsArchivedCache: { creds: credsFixAcdc },
   biometricsCache: {
     enabled: false,
+  },
+  notificationsCache: {
+    notificationDetailCache: null,
   },
 };
 
@@ -90,6 +95,7 @@ const initialStateNoPasswordArchived = {
       passwordIsSet: false,
       passwordIsSkipped: true,
     },
+    isOnline: true,
   },
   seedPhraseCache: {
     seedPhrase:
@@ -100,6 +106,9 @@ const initialStateNoPasswordArchived = {
   credsArchivedCache: { creds: [] },
   biometricsCache: {
     enabled: false,
+  },
+  notificationsCache: {
+    notificationDetailCache: null,
   },
 };
 
@@ -134,9 +143,6 @@ describe("Cards Details page - current not archived credential", () => {
       expect(getByTestId("creds-options-modal").getAttribute("is-open")).toBe(
         "false"
       );
-      expect(getByTestId("view-creds-modal").getAttribute("is-open")).toBe(
-        "false"
-      );
       expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
         "false"
       );
@@ -154,6 +160,7 @@ describe("Cards Details page - current not archived credential", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
         },
+        isOnline: true,
       },
       seedPhraseCache: {
         seedPhrase:
@@ -164,6 +171,9 @@ describe("Cards Details page - current not archived credential", () => {
       credsArchivedCache: { creds: credsFixAcdc },
       connectionsCache: {
         connections: [],
+      },
+      notificationsCache: {
+        notificationDetailCache: null,
       },
     };
 
@@ -221,41 +231,6 @@ describe("Cards Details page - current not archived credential", () => {
 
     const credsOptionsModalOpen = await findByTestId("creds-options-modal");
     expect(credsOptionsModalOpen.getAttribute("is-open")).toBe("true");
-  });
-
-  test.skip("It shows the credential viewer", async () => {
-    const { getByTestId, getByText } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredentialDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("options-button"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("creds-options-view-button")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("creds-options-view-button"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("view-creds-modal").getAttribute("is-open")).toBe(
-        "true"
-      );
-    });
-
-    await waitFor(() => {
-      expect(getByText(credsFixAcdc[0].id)).toBeVisible();
-    });
   });
 
   test("It shows the warning when I click on the big archive button", async () => {
@@ -362,6 +337,7 @@ describe("Cards Details page - current not archived credential", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
         },
+        isOnline: true,
       },
       seedPhraseCache: {
         seedPhrase:
@@ -376,6 +352,9 @@ describe("Cards Details page - current not archived credential", () => {
             time: mockNow,
           },
         ],
+      },
+      notificationsCache: {
+        notificationDetailCache: null,
       },
     };
 
@@ -427,6 +406,7 @@ describe("Cards Details page - current not archived credential", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
         },
+        isOnline: true,
       },
       seedPhraseCache: {
         seedPhrase:
@@ -439,6 +419,10 @@ describe("Cards Details page - current not archived credential", () => {
           id: index,
           time: mockNow,
         })),
+      },
+
+      notificationsCache: {
+        notificationDetailCache: null,
       },
     };
 
@@ -585,6 +569,87 @@ describe("Cards Details page - archived credential", () => {
       credDispatchMock.mockImplementation((action) => {
         expect(action).toEqual(setCredsCache(credsFixAcdc));
       });
+    });
+  });
+});
+
+describe("Cred detail - notification light mode", () => {
+  let storeMocked: Store<unknown, AnyAction>;
+  const credDispatchMock = jest.fn();
+
+  const state = {
+    stateCache: {
+      routes: [TabsRoutePath.CREDENTIALS],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+        passwordIsSet: false,
+        passwordIsSkipped: true,
+      },
+      isOnline: true,
+    },
+    seedPhraseCache: {
+      seedPhrase:
+        "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+      bran: "bran",
+    },
+    credsCache: { creds: credsFixAcdc },
+    credsArchivedCache: { creds: [] },
+    biometricsCache: {
+      enabled: false,
+    },
+    notificationsCache: {
+      notificationDetailCache: {
+        notificationId: "test-id",
+        viewCred: "test-cred",
+        step: 0,
+      },
+    },
+  };
+
+  beforeAll(() => {
+    jest
+      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFixAcdc[0]);
+  });
+  beforeEach(() => {
+    const mockStore = configureStore();
+    storeMocked = {
+      ...mockStore(state),
+      dispatch: credDispatchMock,
+    };
+  });
+
+  test("It show notification cred mode", async () => {
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredentialDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("notification-selected")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("tab-done-button"));
+    });
+
+    await waitFor(() => {
+      expect(credDispatchMock).toBeCalledWith(
+        setNotificationDetailCache({
+          notificationId: "test-id",
+          viewCred: "test-cred",
+          step: 1,
+          checked: false,
+        })
+      );
     });
   });
 });

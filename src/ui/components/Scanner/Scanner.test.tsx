@@ -19,14 +19,9 @@ import { Scanner } from "./Scanner";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen, ...props }: any) => (
-    <div
-      style={{ display: isOpen ? "block" : "none" }}
-      {...props}
-    >
-      {children}
-    </div>
-  ),
+  isPlatform: () => true,
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div {...props}>{children}</div> : null,
 }));
 
 const startScan = jest.fn(
@@ -71,11 +66,6 @@ jest.mock("../CustomInput", () => ({
   },
 }));
 
-jest.mock("@ionic/react", () => ({
-  ...jest.requireActual("@ionic/react"),
-  isPlatform: () => true,
-}));
-
 const connectByOobiUrlMock = jest.fn();
 const getMultisigLinkedContactsMock = jest.fn();
 
@@ -115,6 +105,17 @@ describe("Scanner", () => {
 
   const setIsValueCaptured = jest.fn();
 
+  beforeEach(() => {
+    startScan.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve("");
+          }, 10000);
+        })
+    );
+  });
+
   test("Renders spinner", async () => {
     const { getByTestId } = render(
       <Provider store={storeMocked}>
@@ -126,6 +127,19 @@ describe("Scanner", () => {
 
     expect(getByTestId("scanner-spinner-container")).toBeVisible();
   });
+
+  startScan.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            hasContent: true,
+            content:
+              "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+          });
+        }, 100);
+      })
+  );
 
   test("Renders content and input wallet connection pid", async () => {
     const { getByTestId } = render(
@@ -148,7 +162,10 @@ describe("Scanner", () => {
     });
 
     act(() => {
-      ionFireEvent.ionInput(getByTestId("scanner-input"), "11111");
+      ionFireEvent.ionInput(
+        getByTestId("scanner-input"),
+        "bd54hj38aK2sGhE5K9mPqR79Jkd4b23hJf5sL36nHk"
+      );
     });
 
     await waitFor(() => {
@@ -168,6 +185,47 @@ describe("Scanner", () => {
     });
   });
 
+  test("Renders error when entered a wrong input wallet connection pid", async () => {
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <Scanner setIsValueCaptured={setIsValueCaptured} />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("qr-code-scanner")).toBeVisible();
+      expect(getByTestId("secondary-button")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("secondary-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("scanner-input")).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("scanner-input"), "ABC123");
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("action-button").getAttribute("disabled")).toBe(
+        "false"
+      );
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("action-button"));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.PEER_ID_ERROR)
+      );
+    });
+  });
+
   test("Multisign initiator scan", async () => {
     const initialState = {
       stateCache: {
@@ -180,7 +238,12 @@ describe("Scanner", () => {
         },
         currentOperation: OperationType.MULTI_SIG_INITIATOR_SCAN,
       },
+      identifiersCache: {
+        identifiers: [],
+      },
     };
+
+    getMultisigLinkedContactsMock.mockReturnValue(connectionsFix);
 
     const storeMocked = {
       ...mockStore(initialState),
@@ -192,6 +255,19 @@ describe("Scanner", () => {
         type: KeriConnectionType.MULTI_SIG_INITIATOR,
       };
     });
+
+    startScan.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              hasContent: true,
+              content:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            });
+          }, 100);
+        })
+    );
 
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
@@ -236,6 +312,9 @@ describe("Scanner", () => {
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
       },
+      identifiersCache: {
+        identifiers: [],
+      },
     };
 
     const storeMocked = {
@@ -250,6 +329,19 @@ describe("Scanner", () => {
         type: KeriConnectionType.NORMAL,
       };
     });
+
+    startScan.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              hasContent: true,
+              content:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            });
+          }, 100);
+        })
+    );
 
     const { getByText } = render(
       <Provider store={storeMocked}>
@@ -291,6 +383,9 @@ describe("Scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.SCAN_CONNECTION,
+      },
+      identifiersCache: {
+        identifiers: [],
       },
     };
 

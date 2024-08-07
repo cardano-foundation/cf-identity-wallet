@@ -38,16 +38,6 @@ class CredentialStorage {
     return record;
   }
 
-  async getCredentialMetadataByConnectionId(connectionId: string) {
-    const record = await this.storageService.findAllByQuery(
-      {
-        connectionId,
-      },
-      CredentialMetadataRecord
-    );
-    return record;
-  }
-
   async saveCredentialMetadataRecord(data: CredentialMetadataRecordProps) {
     const record = new CredentialMetadataRecord(data);
     return this.storageService.save(record);
@@ -73,10 +63,11 @@ class CredentialStorage {
     }
   }
 
-  async getCredentialMetadatasById(ids: string[]) {
+  async getCredentialMetadatasById(ids: string[], query?: any) {
     return this.storageService.findAllByQuery(
       {
         $or: ids.map((id) => ({ id })),
+        ...query,
       },
       CredentialMetadataRecord
     );

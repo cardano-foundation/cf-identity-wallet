@@ -1,33 +1,21 @@
-import { useHistory, useParams } from "react-router-dom";
 import {
   IonButton,
+  IonCheckbox,
   IonIcon,
   IonSpinner,
   useIonViewWillEnter,
 } from "@ionic/react";
 import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
-import { TabLayout } from "../../components/layout/TabLayout";
-import { TabsRoutePath } from "../../../routes/paths";
-import { i18n } from "../../../i18n";
-import { updateReduxState } from "../../../store/utils";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getStateCache,
-  setCurrentOperation,
-  setCurrentRoute,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
-import { VerifyPassword } from "../../components/VerifyPassword";
-import {
-  Alert as AlertDeleteArchive,
-  Alert as AlertRestore,
-} from "../../components/Alert";
-import { CredentialOptions } from "../../components/CredentialOptions";
-import { MAX_FAVOURITES } from "../../globals/constants";
-import { OperationType, ToastMsgType } from "../../globals/types";
-import { VerifyPasscode } from "../../components/VerifyPasscode";
+import { useCallback, useMemo, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
+import { ACDCDetails } from "../../../core/agent/services/credentialService.types";
+import { i18n } from "../../../i18n";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { TabsRoutePath } from "../../../routes/paths";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   addFavouritesCredsCache,
   getCredsCache,
@@ -35,17 +23,40 @@ import {
   removeFavouritesCredsCache,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
-import { getNextRoute } from "../../../routes/nextRoute";
-import { CredentialCardTemplate } from "../../components/CredentialCardTemplate";
-import { ACDCDetails } from "../../../core/agent/services/credentialService.types";
+import {
+  getNotificationDetailCache,
+  setNotificationDetailCache,
+} from "../../../store/reducers/notificationsCache";
+import {
+  getStateCache,
+  setCurrentOperation,
+  setCurrentRoute,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
+import { updateReduxState } from "../../../store/utils";
+import {
+  Alert as AlertDeleteArchive,
+  Alert as AlertRestore,
+} from "../../components/Alert";
 import "../../components/CardDetails/CardDetails.scss";
-import "./CredentialDetails.scss";
+import { CredentialCardTemplate } from "../../components/CredentialCardTemplate";
+import { CredentialOptions } from "../../components/CredentialOptions";
+import { TabLayout } from "../../components/layout/TabLayout";
 import { PageFooter } from "../../components/PageFooter";
-import { CredentialContent } from "./components/CredentialContent";
+import { VerifyPasscode } from "../../components/VerifyPasscode";
+import { VerifyPassword } from "../../components/VerifyPassword";
+import { MAX_FAVOURITES } from "../../globals/constants";
+import {
+  BackEventPriorityType,
+  OperationType,
+  ToastMsgType,
+} from "../../globals/types";
+import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
 import { combineClassNames } from "../../utils/style";
-import { useAppIonRouter } from "../../hooks";
-import { MiscRecordId } from "../../../core/agent/agent.types";
-import { BasicRecord } from "../../../core/agent/records";
+import { CredentialContent } from "./components/CredentialContent";
+import "./CredentialDetails.scss";
+import { CredHistory } from "./CredentialDetails.types";
+import { NotificationDetailCacheState } from "../../../store/reducers/notificationsCache/notificationCache.types";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 
 const NAVIGATION_DELAY = 250;
@@ -54,7 +65,7 @@ const CLEAR_ANIMATION = 1000;
 const CredentialDetails = () => {
   const pageId = "credential-card-details";
   const ionRouter = useAppIonRouter();
-  const history = useHistory();
+  const history = useHistory<CredHistory>();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const favouritesCredsCache = useAppSelector(getFavouritesCredsCache);
@@ -67,30 +78,70 @@ const CredentialDetails = () => {
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<ACDCDetails>();
-
   const [navAnimation, setNavAnimation] = useState(false);
+
+  const notificationDetailCache = useAppSelector(getNotificationDetailCache);
+  const [notiSelected, setNotiSelected] = useState(
+    !!notificationDetailCache?.checked
+  );
+
+  const isLightMode = !!notificationDetailCache;
 
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === params.id);
 
-  useEffect(() => {
-    getCredDetails();
+  const fetchArchivedCreds = useCallback(async () => {
+    try {
+      const creds = await Agent.agent.credentials.getCredentials(true);
+      dispatch(setCredsArchivedCache(creds));
+    } catch (e) {
+      // @TODO - duke: handle error
+    }
+  }, [dispatch]);
+
+  const getCredDetails = useCallback(async () => {
+    const cardDetails = await Agent.agent.credentials.getCredentialDetailsById(
+      params.id
+    );
+    setCardData(cardDetails);
   }, [params.id]);
+
+  useOnlineStatusEffect(getCredDetails);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
   });
 
-  const getCredDetails = async () => {
-    const cardDetails = await Agent.agent.credentials.getCredentialDetailsById(
-      params.id
+  const handleBackNotification = (
+    notificationDetailCache: NotificationDetailCacheState
+  ) => {
+    dispatch(
+      setNotificationDetailCache({
+        ...notificationDetailCache,
+        step: 1,
+        checked: notiSelected,
+      })
     );
-    setCardData(cardDetails);
+
+    const path = `${TabsRoutePath.NOTIFICATIONS}/${notificationDetailCache.notificationId}`;
+
+    setTimeout(() => {
+      ionRouter.push(path, "back", "pop");
+    }, NAVIGATION_DELAY);
+
+    setTimeout(() => {
+      setNavAnimation(false);
+    }, CLEAR_ANIMATION);
   };
 
   const handleDone = () => {
     setNavAnimation(true);
+
+    if (isLightMode) {
+      handleBackNotification(notificationDetailCache);
+      return;
+    }
 
     const { nextPath, updateRedux } = getNextRoute(
       TabsRoutePath.CREDENTIAL_DETAILS,
@@ -117,12 +168,13 @@ const CredentialDetails = () => {
 
   const handleArchiveCredential = async () => {
     await Agent.agent.credentials.archiveCredential(params.id);
+    await fetchArchivedCreds();
     const creds = credsCache.filter((item) => item.id !== params.id);
     if (isFavourite) {
       handleSetFavourite(params.id);
     }
     dispatch(setCredsCache(creds));
-
+    dispatch(setNotificationDetailCache(null));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
   };
 
@@ -130,6 +182,7 @@ const CredentialDetails = () => {
     // @TODO - sdisalvo: handle error
     await Agent.agent.credentials.deleteCredential(params.id);
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
+    await fetchArchivedCreds();
   };
 
   const handleRestoreCredential = async () => {
@@ -138,6 +191,7 @@ const CredentialDetails = () => {
     const creds = await Agent.agent.credentials.getCredentialShortDetailsById(
       params.id
     );
+    await fetchArchivedCreds();
     dispatch(setCredsCache([...credsCache, creds]));
 
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
@@ -168,7 +222,7 @@ const CredentialDetails = () => {
         .then(() => {
           dispatch(removeFavouritesCredsCache(id));
         })
-        .catch((error) => {
+        .catch(() => {
           /*TODO: handle error*/
         });
     } else {
@@ -189,7 +243,7 @@ const CredentialDetails = () => {
         .then(() => {
           dispatch(addFavouritesCredsCache({ id, time: Date.now() }));
         })
-        .catch((error) => {
+        .catch(() => {
           /*TODO: handle error*/
         });
     }
@@ -206,6 +260,21 @@ const CredentialDetails = () => {
   };
 
   const AdditionalButtons = () => {
+    if (isLightMode) {
+      return (
+        <IonCheckbox
+          checked={notiSelected}
+          aria-label=""
+          className="notification-selected"
+          data-testid="notification-selected"
+          onIonChange={(e) => {
+            e.stopPropagation();
+            setNotiSelected(e.detail.checked);
+          }}
+        />
+      );
+    }
+
     return (
       <>
         <IonButton
@@ -273,6 +342,16 @@ const CredentialDetails = () => {
     }
   };
 
+  const hardwareBackButtonConfig = useMemo(
+    () => ({
+      prevent: false,
+      priority: isLightMode
+        ? BackEventPriorityType.Page
+        : BackEventPriorityType.Tab,
+    }),
+    [isLightMode]
+  );
+
   return (
     <TabLayout
       pageId={pageId}
@@ -284,6 +363,7 @@ const CredentialDetails = () => {
       actionButton={isArchived}
       actionButtonAction={() => setAlertRestoreIsOpen(true)}
       actionButtonLabel={`${i18n.t("credentials.details.restore")}`}
+      hardwareBackButtonConfig={hardwareBackButtonConfig}
     >
       {!cardData ? (
         <div
@@ -319,7 +399,6 @@ const CredentialDetails = () => {
           <CredentialOptions
             optionsIsOpen={optionsIsOpen}
             setOptionsIsOpen={setOptionsIsOpen}
-            cardData={cardData}
             credsOptionAction={() => setAlertDeleteArchiveIsOpen(true)}
           />
         </>

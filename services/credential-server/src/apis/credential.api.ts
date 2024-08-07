@@ -34,4 +34,15 @@ async function requestDisclosure(req: Request, res: Response): Promise<void> {
   httpResponse(res, response);
 }
 
-export { issueAcdcCredential, requestDisclosure };
+async function revokeCredential(req: Request, res: Response): Promise<void> {
+  const { credentialId, holder } = req.body;
+  await Agent.agent.revokeCredential(credentialId, holder);
+  const response: ResponseData<string> = {
+    statusCode: 200,
+    success: true,
+    data: "Revoke credential successfully",
+  };
+  httpResponse(res, response);
+}
+
+export { issueAcdcCredential, requestDisclosure, revokeCredential };

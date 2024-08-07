@@ -5,7 +5,7 @@ import {
   RouterOptions,
   useIonRouter,
 } from "@ionic/react";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 export const useAppIonRouter = () => {
   const ionRouter = useIonRouter();
@@ -29,11 +29,14 @@ export const useAppIonRouter = () => {
         animationBuilder
       );
     },
-    []
+    [ionRouter]
   );
 
-  return {
-    ...ionRouter,
-    push,
-  };
+  return useMemo(
+    () => ({
+      ...ionRouter,
+      push,
+    }),
+    [push, ionRouter]
+  );
 };

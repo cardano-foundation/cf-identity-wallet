@@ -1,6 +1,5 @@
 import { ConnectionStatus } from "../../core/agent/agent.types";
 import CardanoLogo from "../assets/images/CardanoLogo.jpg";
-import UserPicture from "../assets/images/UserPicture.jpg";
 import { ConnectionShortDetails } from "../pages/Connections/Connections.types";
 
 const connectionsFix: ConnectionShortDetails[] = [
@@ -29,7 +28,7 @@ const connectionsFix: ConnectionShortDetails[] = [
     id: "ebfeb1ebc6f1c276ef71212ec23",
     label: "John Smith",
     connectionDate: "2024-02-13T11:39:20Z",
-    logo: UserPicture,
+    logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
   },
   {
@@ -133,15 +132,16 @@ const credentialRequestData = {
   handshake_protocols: ["did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0"],
 };
 
-const connectionsForNotifications = [
-  {
+const connectionsForNotifications = {
+  EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB: {
     id: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
     label: "CF Credential Issuance",
     connectionDate: "2024-06-25T12:38:06.342Z",
     status: "confirmed",
     oobi: "http://keria:3902/oobi/EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB/agent/EK05Hv5jz3yZJD1UG4FwSE0-xgG2wgWeG4RCasOlr9iI?name=CF%20Credential%20Issuance",
+    groupId: "549eb79f-856c-4bb7-8dd5-d5eed865906a",
   },
-];
+};
 
 export {
   connectionsFix,

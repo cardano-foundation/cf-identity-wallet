@@ -12,7 +12,7 @@ import {
 } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import "./TabLayout.scss";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { TabLayoutProps } from "./TabLayout.types";
 import { useIonHardwareBackButton } from "../../../hooks";
 import { BackEventPriorityType } from "../../../globals/types";
@@ -33,7 +33,7 @@ const TabLayout = ({
   actionButtonLabel,
   children,
   placeholder,
-  preventBackButtonEvent,
+  hardwareBackButtonConfig,
 }: TabLayoutProps) => {
   const [isActive, setIsActive] = useState(false);
 
@@ -45,22 +45,36 @@ const TabLayout = ({
     setIsActive(false);
   });
 
-  const handleHardwareBackButtonClick = useCallback(() => {
-    if (backButton && backButtonAction) {
-      backButtonAction?.();
-      return;
-    }
+  const handleHardwareBackButtonClick = useCallback(
+    (processNext: () => void) => {
+      if (hardwareBackButtonConfig?.handler) {
+        hardwareBackButtonConfig.handler(processNext);
+        return;
+      }
 
-    if (doneLabel && doneAction) {
-      doneAction?.();
-      return;
-    }
-  }, [backButton, backButtonAction, doneLabel, doneAction]);
+      if (backButton && backButtonAction) {
+        backButtonAction?.();
+        return;
+      }
+
+      if (doneLabel && doneAction) {
+        doneAction?.();
+        return;
+      }
+    },
+    [
+      hardwareBackButtonConfig,
+      backButton,
+      backButtonAction,
+      doneLabel,
+      doneAction,
+    ]
+  );
 
   useIonHardwareBackButton(
-    BackEventPriorityType.Tab,
+    hardwareBackButtonConfig?.priority || BackEventPriorityType.Tab,
     handleHardwareBackButtonClick,
-    preventBackButtonEvent
+    hardwareBackButtonConfig?.prevent
   );
 
   return (
@@ -69,6 +83,7 @@ const TabLayout = ({
         customClass ? " " + customClass : ""
       }`}
       data-testid={pageId}
+      id={pageId}
     >
       {header && (
         <IonHeader className="ion-no-border tab-header">
@@ -125,6 +140,7 @@ const TabLayout = ({
       )}
       {placeholder || (
         <IonContent
+          id={pageId}
           className="tab-content"
           color="transparent"
         >

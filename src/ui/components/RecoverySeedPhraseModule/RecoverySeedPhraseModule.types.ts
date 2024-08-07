@@ -9,6 +9,7 @@ interface RecoverySeedPhraseModuleProps {
   testId: string;
   onVerifySuccess: () => void;
   overrideAlertZIndex?: boolean;
+  displaySwitchModeButton?: boolean;
 }
 
 interface RecoverySeedPhraseModuleRef {

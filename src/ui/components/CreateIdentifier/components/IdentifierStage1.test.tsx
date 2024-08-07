@@ -3,7 +3,6 @@ import { mockIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 import { store } from "../../../../store";
@@ -11,11 +10,10 @@ import {
   setCurrentOperation,
   setToastMsg,
 } from "../../../../store/reducers/stateCache";
-import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
-import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
 import { OperationType, ToastMsgType } from "../../../globals/types";
 import { TabsRoutePath } from "../../navigation/TabsMenu";
+import { IdentifierColor } from "./IdentifierColorSelector";
 import { IdentifierStage1 } from "./IdentifierStage1";
 
 setupIonicReact();
@@ -61,6 +59,7 @@ describe("Identifier Stage 1", () => {
         passwordIsSet: false,
         userName: "Duke",
       },
+      isOnline: true,
       queueIncomingRequest: {
         isProcessing: false,
         queues: [],
@@ -99,6 +98,7 @@ describe("Identifier Stage 1", () => {
         groupCreated: true,
       },
     },
+    color: IdentifierColor.Green,
   };
 
   const dispatchMock = jest.fn();
@@ -152,10 +152,12 @@ describe("Identifier Stage 1", () => {
     });
 
     expect(innerSetState).toBeCalledWith({
+      color: IdentifierColor.Green,
       scannedConections: [connectionsFix[3]],
       displayNameValue: stage1State.displayNameValue,
       ourIdentifier: stage1State.ourIdentifier,
       identifierCreationStage: 2,
+      selectedTheme: 0,
     });
   });
 
@@ -184,6 +186,7 @@ describe("Identifier Stage 1", () => {
           groupCreated: true,
         },
       },
+      color: IdentifierColor.Green,
     };
 
     const dispatchMock = jest.fn();
@@ -365,6 +368,7 @@ describe("Identifier Stage 1", () => {
           groupCreated: true,
         },
       },
+      color: IdentifierColor.Green,
     };
 
     const dispatchMock = jest.fn();

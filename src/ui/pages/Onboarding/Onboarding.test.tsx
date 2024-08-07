@@ -67,19 +67,21 @@ describe("Onboarding Page", () => {
 
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
+        queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode)
       ).toBeVisible()
     );
   });
 
-  test("If the user has already set a passcode but they haven't created a seed phrase, they will be asked to generate a seed phrase", async () => {
+  test("If the user has already set a passcode but they haven't created a password, they will be asked to create one", async () => {
     const mockStore = configureStore();
     const initialState = {
       stateCache: {
+        routes: [{ path: RoutePath.ONBOARDING }],
         authentication: {
           loggedIn: true,
           time: Date.now(),
           passcodeIsSet: true,
+          passwordIsSet: false,
         },
         currentOperation: OperationType.IDLE,
       },
@@ -90,7 +92,7 @@ describe("Onboarding Page", () => {
     };
     const storeMocked = mockStore(initialState);
 
-    const { getByText, queryByText } = render(
+    const { getByText, queryAllByText } = render(
       <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
         <Provider store={storeMocked}>
           <Route
@@ -112,7 +114,9 @@ describe("Onboarding Page", () => {
     fireEvent.click(buttonContinue);
 
     await waitFor(() => {
-      expect(queryByText(EN_TRANSLATIONS.createpassword.title)).toBeVisible();
+      expect(queryAllByText(EN_TRANSLATIONS.createpassword.title)).toHaveLength(
+        2
+      );
     });
   });
 });

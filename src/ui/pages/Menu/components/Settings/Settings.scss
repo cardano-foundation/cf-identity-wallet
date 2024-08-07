@@ -1,8 +1,13 @@
-.settings-content {
+.settings-content,
+.nested-content {
   margin-top: 2rem;
 
   .settings-section-title {
     margin: 0.625rem 1.25rem;
+  }
+
+  .settings-section-title-placeholder {
+    margin-top: 2.25rem;
   }
 
   ion-card {
@@ -21,8 +26,7 @@
       padding: 0;
     }
 
-    ion-item.security-item,
-    ion-item.support-item {
+    ion-item.settings-item {
       --min-height: 3rem;
       --inner-padding-end: 0px;
 
@@ -58,13 +62,13 @@
         font-weight: 500;
       }
 
-      .biometric-toggle {
+      .toggle-button {
         width: fit-content;
         &.toggle-checked {
           --track-background-checked: var(--ion-color-primary-gradient);
 
           &.md {
-            --handle-background-checked: #fff;
+            --handle-background-checked: white;
           }
         }
       }
@@ -79,14 +83,12 @@
     }
 
     .settings-section-title,
-    ion-item.security-item ion-label,
-    ion-item.support-item ion-label,
+    ion-item.settings-item ion-label,
     ion-note {
       font-size: 0.8rem !important;
     }
 
-    ion-item.security-item,
-    ion-item.support-item {
+    ion-item.settings-item {
       --min-height: 2.4rem;
 
       ion-icon {

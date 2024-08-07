@@ -30,7 +30,13 @@ const SidePage = () => {
       dispatch(setPauseQueueIncomingRequest(true));
       pauseIncommingRequestByConnection.current = true;
     }
-  }, [canOpenIncomingRequest, canOpenPendingWalletConnection]);
+  }, [
+    canOpenIncomingRequest,
+    canOpenPendingWalletConnection,
+    dispatch,
+    queueIncomingRequest.isPaused,
+    stateCache.authentication.loggedIn,
+  ]);
 
   useEffect(() => {
     if (!stateCache.authentication.loggedIn) return;
@@ -70,7 +76,7 @@ const SidePage = () => {
     <SideSlider
       renderAsModal
       onCloseAnimationEnd={unpauseIncomingRequest}
-      open={openSidePage}
+      isOpen={openSidePage}
     >
       {getContent()}
     </SideSlider>

@@ -1,0 +1,95 @@
+.notification-details-multi-sig-feedback {
+  .page-header {
+    margin-top: 0.625rem;
+
+    ion-toolbar {
+      --background: transparent;
+    }
+  }
+
+  .alert {
+    margin-top: 0.75rem;
+    margin-bottom: 1.75rem;
+
+    .card-details-info-block-inner {
+      background: rgba(212, 22, 48, 0.1);
+      padding: 1rem 1.25rem;
+      display: flex;
+
+      .alert-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+
+        ion-icon {
+          color: var(--ion-color-danger);
+        }
+      }
+    }
+  }
+
+  .title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--ion-color-primary);
+  }
+
+  .detail-text {
+    color: var(--ion-color-secondary);
+    font-size: 1rem;
+    line-height: 1.375rem;
+  }
+
+  .instructions {
+    margin-bottom: 1.75rem;
+
+    .content {
+      .card-details-info-block-inner {
+        padding: 1.25rem;
+      }
+
+      .instruction-list {
+        margin: 0;
+        padding-left: 1.25rem;
+
+        li:not(:last-child) {
+          margin-bottom: 0.5rem;
+        }
+      }
+
+      margin-top: 0.75rem;
+    }
+  }
+
+  .multisig-feedback-footer {
+    padding: 1rem 0;
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .alert {
+      margin-bottom: 1.5rem;
+
+      .card-details-info-block-inner {
+        font-size: 0.85rem;
+      }
+    }
+
+    .title {
+      font-size: 1rem;
+    }
+
+    .detail-text {
+      font-size: 0.85rem;
+    }
+
+    .instructions {
+      margin-bottom: 1.5rem;
+      .content {
+        .card-details-info-block-inner {
+          font-size: 0.85rem;
+        }
+      }
+    }
+  }
+}

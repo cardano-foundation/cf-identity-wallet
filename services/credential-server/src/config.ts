@@ -23,6 +23,7 @@ const config = {
     contacts: "/contacts",
     resolveOobi: "/resolveOobi",
     requestDisclosure: "/requestDisclosure",
+    revokeCredential: "/revokeCredential",
   },
 };
 

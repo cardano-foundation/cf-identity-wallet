@@ -14,7 +14,7 @@ class ConnectionNoteRecord extends BaseRecord {
   connectionId!: string;
   title!: string;
   message!: string;
-  static readonly type = "ConnectionRecord";
+  static readonly type = "ConnectionNoteRecord";
   readonly type = ConnectionNoteRecord.type;
 
   constructor(props: ConnectionNoteRecordStorageProps) {

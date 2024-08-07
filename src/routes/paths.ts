@@ -8,7 +8,6 @@ enum RoutePath {
   CREATE_PASSWORD = "/createpassword",
   SSI_AGENT = "/ssiagent",
   CONNECTION_DETAILS = "/connectiondetails",
-  NOTIFICATION_DETAILS = "/notificationdetails",
   VERIFY_RECOVERY_SEED_PHRASE = "/verifyrecoveryseedphrase",
 }
 
@@ -21,6 +20,7 @@ enum TabsRoutePath {
   MENU = "/tabs/menu",
   IDENTIFIER_DETAILS = "/tabs/identifiers/:id",
   CREDENTIAL_DETAILS = "/tabs/credentials/:id",
+  NOTIFICATION_DETAILS = "/tabs/notifications/:id",
 }
 
 const PublicRoutes = [
