@@ -17,10 +17,7 @@ import {
   OperationPendingStorage,
   IpexMessageStorage,
 } from "../records";
-import {
-  CredentialMetadataRecordProps,
-  CredentialMetadataRecordStatus,
-} from "../records/credentialMetadataRecord.types";
+import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
 import { CredentialStatus } from "./credentialService.types";
 import { OnlineOnly, getCredentialShortDetails } from "./utils";
@@ -287,7 +284,7 @@ class IpexCommunicationService extends AgentService {
       isArchived: false,
       credentialType: schemaTitle,
       issuanceDate: new Date(dateTime).toISOString(),
-      status: CredentialMetadataRecordStatus.PENDING,
+      status: CredentialStatus.PENDING,
       connectionId,
     };
     await this.credentialStorage.saveCredentialMetadataRecord(
@@ -328,10 +325,7 @@ class IpexCommunicationService extends AgentService {
       `metadata:${credentialId}`
     );
     if (metadata) {
-      metadata.status =
-        status === CredentialStatus.CONFIRMED
-          ? CredentialMetadataRecordStatus.CONFIRMED
-          : CredentialMetadataRecordStatus.REVOKED;
+      metadata.status = status;
       await this.credentialStorage.updateCredentialMetadata(
         metadata.id,
         metadata

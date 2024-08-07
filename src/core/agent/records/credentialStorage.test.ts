@@ -1,8 +1,6 @@
+import { CredentialStatus } from "../services/credentialService.types";
 import { CredentialMetadataRecord } from "./credentialMetadataRecord";
-import {
-  CredentialMetadataRecordProps,
-  CredentialMetadataRecordStatus,
-} from "./credentialMetadataRecord.types";
+import { CredentialMetadataRecordProps } from "./credentialMetadataRecord.types";
 import { CredentialStorage } from "./credentialStorage";
 
 const storageService = jest.mocked({
@@ -28,7 +26,7 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   createdAt: now,
   issuanceDate: nowISO,
   credentialType: "credType",
-  status: CredentialMetadataRecordStatus.CONFIRMED,
+  status: CredentialStatus.CONFIRMED,
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
 };
 

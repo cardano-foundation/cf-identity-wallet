@@ -4,11 +4,12 @@ import {
   AgentServicesProps,
 } from "../agent.types";
 import { AgentService } from "./agentService";
+import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import {
-  CredentialMetadataRecordProps,
-  CredentialMetadataRecordStatus,
-} from "../records/credentialMetadataRecord.types";
-import { CredentialShortDetails, ACDCDetails } from "./credentialService.types";
+  CredentialShortDetails,
+  ACDCDetails,
+  CredentialStatus,
+} from "./credentialService.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { OnlineOnly } from "./utils";
 import { CredentialStorage, NotificationStorage } from "../records";
@@ -157,7 +158,7 @@ class CredentialService extends AgentService {
       isArchived: false,
       credentialType: schemaTitle,
       issuanceDate: new Date(dateTime).toISOString(),
-      status: CredentialMetadataRecordStatus.PENDING,
+      status: CredentialStatus.PENDING,
       connectionId,
     };
     await this.createMetadata(credentialDetails);

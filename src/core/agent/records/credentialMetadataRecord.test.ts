@@ -1,15 +1,13 @@
+import { CredentialStatus } from "../services/credentialService.types";
 import { CredentialMetadataRecord } from "./credentialMetadataRecord";
-import {
-  CredentialMetadataRecordProps,
-  CredentialMetadataRecordStatus,
-} from "./credentialMetadataRecord.types";
+import { CredentialMetadataRecordProps } from "./credentialMetadataRecord.types";
 
 const mockData: CredentialMetadataRecordProps = {
   id: "credential:z6Mkpph7qyemfmHt5cSEXXbhm1VbSZT789X8Ep4eA7ndGxGh",
   isArchived: true,
   issuanceDate: "2010-01-01T19:23:24Z",
   credentialType: "test",
-  status: CredentialMetadataRecordStatus.CONFIRMED,
+  status: CredentialStatus.CONFIRMED,
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
 };
 
@@ -38,7 +36,7 @@ describe("Credential metadata record", () => {
       isArchived: mockData.isArchived,
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "test",
-      status: CredentialMetadataRecordStatus.CONFIRMED,
+      status: CredentialStatus.CONFIRMED,
       connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
     });
     expect(settingsRecord.createdAt.getTime()).toBeGreaterThan(
@@ -53,7 +51,7 @@ describe("Credential metadata record", () => {
       createdAt: createdAt,
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "test",
-      status: CredentialMetadataRecordStatus.CONFIRMED,
+      status: CredentialStatus.CONFIRMED,
       connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
     });
     expect(settingsRecord.isArchived).toBe(false);

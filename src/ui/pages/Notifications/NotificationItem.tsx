@@ -8,6 +8,7 @@ import {
 import { MouseEvent, useCallback, useEffect, useState } from "react";
 import { Trans } from "react-i18next";
 import {
+  ExchangeRoute,
   KeriaNotification,
   NotificationRoute,
 } from "../../../core/agent/agent.types";
@@ -45,6 +46,10 @@ const NotificationItem = ({
       case NotificationRoute.ExnIpexApply:
         return t("notifications.tab.labels.exnipexapply", {
           connection: connectionsCache?.[item.connectionId]?.label,
+        });
+      case ExchangeRoute.IpexGrant:
+        return t("notifications.tab.labels.ipexgrantrevoke", {
+          credential: item.a.credentialTitle,
         });
       default:
         return "";

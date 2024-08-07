@@ -8,9 +8,9 @@ import { store } from "../../../store";
 import { IdentifierDetails } from "../../pages/IdentifierDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
-import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
 import { CardType } from "../../globals/types";
 import { CredentialDetails } from "../../pages/CredentialDetails";
+import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -87,13 +87,13 @@ describe("Cards Stack Component", () => {
           cardsData={[
             {
               ...credsFixAcdc[0],
-              status: CredentialMetadataRecordStatus.PENDING,
+              status: CredentialStatus.PENDING,
             },
           ]}
         />
       </Provider>
     );
-    const labelPending = getByText(CredentialMetadataRecordStatus.PENDING);
+    const labelPending = getByText(CredentialStatus.PENDING);
     expect(labelPending).toBeInTheDocument();
   });
 

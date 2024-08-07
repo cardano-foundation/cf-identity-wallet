@@ -840,6 +840,12 @@ describe("Signify notification service of agent", () => {
         updatedAt: new Date("2024-08-01T10:36:17.814Z"),
       },
     ]);
+    getCredentialMock.mockResolvedValueOnce({
+      id: "id",
+      status: {
+        s: "1",
+      },
+    });
     signifyClient
       .exchanges()
       .get.mockResolvedValueOnce({

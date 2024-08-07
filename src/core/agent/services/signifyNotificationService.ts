@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
@@ -580,12 +581,30 @@ class SignifyNotificationService extends AgentService {
                 const grantExchange = await this.props.signifyClient
                   .exchanges()
                   .get(admitExchange.exn.p);
-                const credentialId = grantExchange.exn.e.acdc.d;
-                if (credentialId) {
+                const credentialId = grantExchange?.exn?.e?.acdc?.d;
+                const credential = await this.props.signifyClient
+                  .credentials()
+                  .get(credentialId);
+                if (credential && credential.status.s === "1") {
                   await Agent.agent.ipexCommunications.markAcdc(
                     credentialId,
                     CredentialStatus.REVOKED
                   );
+                  const metadata: any = {
+                    id: uuidv4(),
+                    a: {
+                      r: grantExchange.exn.r,
+                      credentialTitle: credential.schema.title,
+                    },
+                    read: false,
+                    route: grantExchange.exn.r,
+                    connectionId: grantExchange.exn.i,
+                  };
+                  await this.notificationStorage.save(metadata);
+                  callback({
+                    opType: pendingOperation.recordType,
+                    oid: recordId,
+                  });
                 }
               }
               break;

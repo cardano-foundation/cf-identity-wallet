@@ -338,6 +338,74 @@ describe("Ipex communication service of agent", () => {
     expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
   });
 
+  test("Can mark credential as confirmed", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    const pendingCredentialMock = {
+      id: "id",
+      createdAt: new Date(),
+      issuanceDate: "",
+      credentialType: "",
+      status: CredentialStatus.PENDING,
+      connectionId: "connection-id",
+    };
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(pendingCredentialMock);
+    await ipexCommunicationService.markAcdc(id, CredentialStatus.CONFIRMED);
+    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(
+      pendingCredentialMock.id,
+      {
+        ...pendingCredentialMock,
+        status: CredentialStatus.CONFIRMED,
+      }
+    );
+  });
+
+  test("Can mark credential as revoked", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    const pendingCredentialMock = {
+      id: "id",
+      createdAt: new Date(),
+      issuanceDate: "",
+      credentialType: "",
+      status: CredentialStatus.PENDING,
+      connectionId: "connection-id",
+    };
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(pendingCredentialMock);
+    await ipexCommunicationService.markAcdc(id, CredentialStatus.REVOKED);
+    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(
+      pendingCredentialMock.id,
+      {
+        ...pendingCredentialMock,
+        status: CredentialStatus.REVOKED,
+      }
+    );
+  });
+
   test("Should throw an error when KERIA is offline", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
     await expect(

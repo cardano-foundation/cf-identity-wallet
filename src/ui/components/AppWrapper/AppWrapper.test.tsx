@@ -257,23 +257,6 @@ describe("AppWrapper handler", () => {
       );
     });
 
-    test("handles credential state revoke", async () => {
-      const credentialMock = {} as CredentialShortDetails;
-      const credentialStateChangedEventMock = {
-        type: AcdcEventTypes.AcdcStateChanged,
-        payload: {
-          status: CredentialStatus.REVOKED,
-          credential: credentialMock,
-        },
-      } as AcdcStateChangedEvent;
-      await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
-      expect(dispatch).toBeCalledWith(updateOrAddCredsCache(credentialMock));
-      expect(dispatch).toBeCalledWith(setCurrentOperation(OperationType.IDLE));
-      expect(dispatch).toBeCalledWith(
-        setToastMsg(ToastMsgType.CREDENTIAL_REVOKED)
-      );
-    });
-
     test("handles credential state pending", async () => {
       const credentialMock = {} as CredentialShortDetails;
       const credentialStateChangedEventMock = {
