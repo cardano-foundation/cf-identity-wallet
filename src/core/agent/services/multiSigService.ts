@@ -982,19 +982,19 @@ class MultiSigService extends AgentService {
     );
   }
 
-  async multisigAdmit(
+  async admitExnToJoin(
     multisigSignifyName: string,
     notificationSaid: string,
-    allSchemaSaids?: any[],
+    schemaSaids: string[],
     multisigExn?: any
   ) {
     let exn: Serder;
     let sigsMes: string[];
     let dtime: string;
 
-    if (allSchemaSaids) {
+    if (schemaSaids) {
       await Promise.all(
-        allSchemaSaids.map(
+        schemaSaids.map(
           async (schemaSaid) =>
             await Agent.agent.connections.resolveOobi(
               `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`,
@@ -1026,7 +1026,7 @@ class MultiSigService extends AgentService {
       const admit = new Serder(ked);
 
       const keeper = await this.props.signifyClient.manager!.get(gHab);
-      const sigs = await keeper.sign(b(JSON.stringify(multisigExn)));
+      const sigs = await keeper.sign(b(new Serder(multisigExn).raw));
 
       const mstateNew = gHab["state"];
       const seal = [

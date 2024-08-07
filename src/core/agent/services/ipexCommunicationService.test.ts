@@ -197,7 +197,7 @@ jest.mock("../../../core/agent/agent", () => ({
         addPendingOperationToQueue: jest.fn(),
       },
       multiSigs: {
-        multisigAdmit: jest.fn().mockResolvedValue({ name: "opName" }),
+        admitExnToJoin: jest.fn().mockResolvedValue({ name: "opName" }),
       },
     },
   },
@@ -842,7 +842,7 @@ describe("Ipex communication service of agent", () => {
     });
 
     await ipexCommunicationService.acceptAcdcFromMultisigExn(id);
-    expect(Agent.agent.multiSigs.multisigAdmit).toBeCalledTimes(1);
+    expect(Agent.agent.multiSigs.admitExnToJoin).toBeCalledTimes(1);
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,

@@ -123,9 +123,10 @@ class IpexCommunicationService extends AgentService {
 
     let op: Operation;
     if (holder.multisigManageAid) {
-      op = await Agent.agent.multiSigs.multisigAdmit(
+      op = await Agent.agent.multiSigs.admitExnToJoin(
         holder.signifyName,
-        notifRecord.a.d as string
+        notifRecord.a.d as string,
+        [exn.exn.e.acdc.s, ...chainedSchemaSaids]
       );
     } else {
       op = await this.admitIpex(
@@ -433,7 +434,7 @@ class IpexCommunicationService extends AgentService {
     ).map((key) => previousExnGrantMsg.exn.e.acdc.e?.[key]?.s);
     allSchemaSaids.push(schemaSaid);
 
-    const op = await Agent.agent.multiSigs.multisigAdmit(
+    const op = await Agent.agent.multiSigs.admitExnToJoin(
       holder.signifyName,
       previousExnGrantMsg.exn.d as string,
       allSchemaSaids,
@@ -444,6 +445,7 @@ class IpexCommunicationService extends AgentService {
     await this.saveAcdcMetadataRecord(
       previousExnGrantMsg.exn.e.acdc.d,
       previousExnGrantMsg.exn.e.acdc.a.dt,
+      connectionId,
       schema.title,
       connectionId
     );
