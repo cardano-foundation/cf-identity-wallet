@@ -41,12 +41,12 @@ import { EditConnectionsModal } from "./components/EditConnectionsModal";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import Minicred from "../../assets/images/minicred.jpg";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { CardDetailsBlock } from "../../components/CardDetails";
 import { ConnectionNotes } from "./components/ConnectionNotes";
 import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
 import { getBackRoute } from "../../../routes/backRoute";
+import { ConnectionHistoryEvent } from "./components/ConnectionHistoryEvent";
 
 const ConnectionDetails = () => {
   const pageId = "connection-details";
@@ -267,53 +267,15 @@ const ConnectionDetails = () => {
                 {connectionHistory?.length > 0 &&
                   connectionHistory.map(
                     (historyItem: ConnectionHistoryItem, index: number) => (
-                      <div
-                        className="connection-details-history-event"
+                      <ConnectionHistoryEvent
                         key={index}
-                      >
-                        <div className="connection-details-logo">
-                          <img
-                            src={Minicred}
-                            alt="credential-miniature"
-                            className="credential-miniature"
-                          />
-                        </div>
-                        <p className="connection-details-history-event-info">
-                          {i18next.t("connections.details.received", {
-                            credential: historyItem.credentialType
-                              ?.replace(/([A-Z][a-z])/g, " $1")
-                              .replace(/^ /, "")
-                              .replace(/(\d)/g, "$1"),
-                          })}
-                          <span data-testid="connection-history-timestamp">
-                            {` ${formatShortDate(
-                              historyItem.timestamp
-                            )} - ${formatTimeToSec(historyItem.timestamp)}`}
-                          </span>
-                        </p>
-                      </div>
+                        index={index}
+                        historyItem={historyItem}
+                        connectionDetails={connectionDetails}
+                      />
                     )
                   )}
-                <div className="connection-details-history-event">
-                  <div className="connection-details-logo">
-                    <img
-                      src={connectionDetails?.logo || KeriLogo}
-                      alt="connection-logo"
-                    />
-                  </div>
-                  <p className="connection-details-history-event-info">
-                    {i18next.t("connections.details.connectedwith", {
-                      issuer: connectionDetails?.label,
-                    })}
-                    <span data-testid="connection-detail-date">
-                      {` ${formatShortDate(
-                        `${connectionDetails?.connectionDate}`
-                      )} - ${formatTimeToSec(
-                        `${connectionDetails?.connectionDate}`
-                      )}`}
-                    </span>
-                  </p>
-                </div>
+                <ConnectionHistoryEvent connectionDetails={connectionDetails} />
               </CardDetailsBlock>
               <PageFooter
                 pageId={pageId}

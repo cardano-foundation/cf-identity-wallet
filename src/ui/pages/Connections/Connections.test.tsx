@@ -3,7 +3,6 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { MemoryRouter, Route } from "react-router-dom";
-import { arch } from "os";
 import { Connections } from "./Connections";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
