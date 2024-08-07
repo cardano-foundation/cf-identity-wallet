@@ -49,7 +49,6 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
   (props, ref) => {
     const history = useHistory();
     const dispatch = useAppDispatch();
-
     const toastMsg = useAppSelector(getToastMsg);
     const pendingConnection = useAppSelector(getPendingConnection);
     const defaultIdentifierCache = useAppSelector(getIdentifiersCache).filter(
@@ -63,7 +62,6 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     const [actionInfo, setActionInfo] = useState<ActionInfo>({
       type: ActionType.None,
     });
-
     const [openExistConenctedWalletAlert, setOpenExistConnectedWalletAlert] =
       useState<boolean>(false);
     const [openDeleteAlert, setOpenDeleteAlert] = useState<boolean>(false);
@@ -71,14 +69,12 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       useState<boolean>(false);
     const [openIdentifierMissingAlert, setOpenIdentifierMissingAlert] =
       useState<boolean>(false);
-
     const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
     const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
     const displayConnection = useMemo((): CardItem<ConnectionData>[] => {
       return connections.map((connection) => {
         const dAppName = connection.name ? connection.name : connection.id;
-
         return {
           id: connection.id,
           title: dAppName,

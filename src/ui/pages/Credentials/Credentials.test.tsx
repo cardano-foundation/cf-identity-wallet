@@ -9,7 +9,7 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { formatShortDate } from "../../utils/formatters";
-import { Creds } from "./Credentials";
+import { Credentials } from "./Credentials";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -95,7 +95,7 @@ describe("Creds Tab", () => {
     const { getByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={mockedStore}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -113,7 +113,7 @@ describe("Creds Tab", () => {
     const { getByText, getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -130,7 +130,7 @@ describe("Creds Tab", () => {
     const { getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -148,7 +148,7 @@ describe("Creds Tab", () => {
     const { getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -164,7 +164,7 @@ describe("Creds Tab", () => {
     const { getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -198,7 +198,7 @@ describe("Creds Tab", () => {
     const { getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -222,7 +222,7 @@ describe("Creds Tab", () => {
     const { getByTestId, queryByTestId, getByText, getAllByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -250,7 +250,7 @@ describe("Creds Tab", () => {
     const { getByTestId, queryByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );

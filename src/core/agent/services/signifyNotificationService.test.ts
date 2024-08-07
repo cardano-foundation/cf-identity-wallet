@@ -220,6 +220,7 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       signifyNotifications: {
         addPendingOperationToQueue: jest.fn(),
+        markAcdcComplete: jest.fn(),
       },
     },
   },
@@ -703,6 +704,340 @@ describe("Signify notification service of agent", () => {
       ipexMessageMock,
       ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
     );
+  });
+
+  test("Should skip if notification route is /multisig/exn and `e.exn.r` is not ipex/admit", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/exn",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(markNotificationMock).toBeCalledTimes(1);
+  });
+
+  test("Should skip if notification route is /multisig/exn and the identifier is missing ", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(identifierMetadataRecordProps);
+
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/exn",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
+
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(markNotificationMock).toBeCalledTimes(1);
+  });
+
+  test("Should skip if notification route is /multisig/exn and the credential exists ", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/exn",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    const acdc = {
+      sad: {
+        a: { LEI: "5493001KJTIIGC8Y1R17" },
+        d: "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli",
+        i: "EIpeOFh268oRJTM4vNNoQvMWw-NBUPDv1NqYbx6Lc1Mk",
+        ri: "EOIj7V-rqu_Q9aGSmPfviBceEtRk1UZBN5H2P_L-Hhx5",
+        s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        v: "ACDC10JSON000197_",
+      },
+      schema: {
+        title: "Qualified vLEI Issuer Credential",
+        description: "vLEI Issuer Description",
+        version: "1.0.0",
+        credentialType: "QualifiedvLEIIssuervLEICredential",
+      },
+      status: {
+        s: "0",
+        dt: new Date().toISOString(),
+      },
+    };
+
+    getCredentialMock.mockResolvedValue(acdc);
+
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(markNotificationMock).toBeCalledTimes(1);
+  });
+});
+
+describe("Long running operation tracker", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    // We mock the setTimeout here so we can exit the while(true) loop
+    jest.spyOn(global, "setTimeout").mockImplementation(() => {
+      throw new Error("Force Exit");
+    });
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const operationMock = {
+      metadata: {
+        said: "said",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+  });
+
+  test("Should handle long operations with type group", async () => {
+    const callback = jest.fn();
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "group.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "group",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    identifierStorage.getIdentifierMetadata.mockResolvedValueOnce({
+      signifyName: "signifyName",
+    });
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(Agent.agent.multiSigs.endRoleAuthorization).toBeCalledWith(
+      "signifyName"
+    );
+    expect(callback).toBeCalledTimes(1);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should handle long operations with type witness", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const callback = jest.fn();
+    const operationMock = {
+      metadata: {
+        said: "said",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "witness.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "witness",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      {
+        isPending: false,
+      }
+    );
+    expect(callback).toBeCalledTimes(1);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should handle long operations with type oobi", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const callback = jest.fn();
+    const operationMock = {
+      metadata: {
+        said: "said",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    const connectionMock = {
+      id: "id",
+      pending: true,
+      createdAt: new Date(),
+    };
+    connectionStorage.findById.mockResolvedValueOnce(connectionMock);
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "oobi",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(connectionStorage.update).toBeCalledWith({
+      id: connectionMock.id,
+      pending: false,
+      createdAt: operationMock.response.dt,
+    });
+    expect(callback).toBeCalledTimes(1);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should handle long operations with type exchange.receivecredential", async () => {
+    const callback = jest.fn();
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "exchange.receivecredential",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    const credentialIdMock = "credentialId";
+    signifyClient
+      .exchanges()
+      .get.mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexAdmit,
+          p: "p",
+        },
+      })
+      .mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexGrant,
+          e: {
+            acdc: {
+              d: credentialIdMock,
+            },
+          },
+        },
+      });
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(Agent.agent.ipexCommunications.markAcdcComplete).toBeCalledWith(
+      credentialIdMock
+    );
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("ExchangeReceiveCredential operations must have an exchange route of /ipex/admit", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const callback = jest.fn();
+    const operationMock = {
+      metadata: {
+        said: "said",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "exchange.receivecredential",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    const credentialIdMock = "credentialId";
+    signifyClient.exchanges().get.mockResolvedValueOnce({
+      exn: {
+        r: ExchangeRoute.IpexGrant,
+        e: {
+          acdc: {
+            d: credentialIdMock,
+          },
+        },
+      },
+    });
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(operationsGetMock).toBeCalledTimes(1);
+    expect(Agent.agent.ipexCommunications.markAcdcComplete).toBeCalledTimes(0);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should call setTimeout listening for pending operations if Keria is offline", async () => {
+    const callback = jest.fn();
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "exchange.receivecredential",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(setTimeout).toBeCalledTimes(1);
+    expect(operationsGetMock).not.toBeCalled();
   });
 });
 

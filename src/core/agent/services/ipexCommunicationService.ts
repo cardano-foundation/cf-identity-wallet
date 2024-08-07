@@ -118,12 +118,22 @@ class IpexCommunicationService extends AgentService {
       (key) => exn.exn.e.acdc.e?.[key]?.s
     );
 
-    const op = await this.admitIpex(
-      notifRecord.a.d as string,
-      holder.signifyName,
-      exn.exn.i,
-      [exn.exn.e.acdc.s, ...chainedSchemaSaids]
-    );
+    let op: Operation;
+    if (holder.multisigManageAid) {
+      op = await Agent.agent.multiSigs.multisigAdmit(
+        holder.signifyName,
+        notifRecord.a.d as string,
+        [exn.exn.e.acdc.s, ...chainedSchemaSaids]
+      );
+    } else {
+      op = await this.admitIpex(
+        notifRecord.a.d as string,
+        holder.signifyName,
+        exn.exn.i,
+        [exn.exn.e.acdc.s, ...chainedSchemaSaids]
+      );
+    }
+
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
@@ -389,6 +399,69 @@ class IpexCommunicationService extends AgentService {
       connectionId: message.exn.i,
       historyType,
     });
+  }
+
+  @OnlineOnly
+  async acceptAcdcFromMultisigExn(id: string): Promise<void> {
+    const notifRecord = await this.getNotificationRecordById(id);
+    const exn = await this.props.signifyClient
+      .exchanges()
+      .get(notifRecord.a.d as string);
+
+    const multisigExn = exn?.exn?.e?.exn;
+    const previousExnGrantMsg = await this.props.signifyClient
+      .exchanges()
+      .get(exn?.exn.e.exn.p);
+
+    const holder = await this.identifierStorage.getIdentifierMetadata(
+      exn.exn.e.exn.i
+    );
+
+    if (!holder) {
+      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+    }
+
+    const credentialId = previousExnGrantMsg.exn.e.acdc.d;
+    const connectionId = previousExnGrantMsg.exn.i;
+
+    const schemaSaid = previousExnGrantMsg.exn.e.acdc.s;
+    const allSchemaSaids = Object.keys(
+      previousExnGrantMsg.exn.e.acdc?.e || {}
+    ).map((key) => previousExnGrantMsg.exn.e.acdc.e?.[key]?.s);
+    allSchemaSaids.push(schemaSaid);
+
+    const op = await Agent.agent.multiSigs.multisigAdmit(
+      holder.signifyName,
+      previousExnGrantMsg.exn.d as string,
+      allSchemaSaids,
+      multisigExn
+    );
+
+    const schema = await this.props.signifyClient.schemas().get(schemaSaid);
+    await this.saveAcdcMetadataRecord(
+      previousExnGrantMsg.exn.e.acdc.d,
+      previousExnGrantMsg.exn.e.acdc.a.dt,
+      connectionId,
+      schema.title,
+      connectionId
+    );
+
+    this.props.eventService.emit<AcdcStateChangedEvent>({
+      type: AcdcEventTypes.AcdcStateChanged,
+      payload: {
+        credentialId,
+        status: CredentialStatus.PENDING,
+      },
+    });
+
+    const pendingOperation = await this.operationPendingStorage.save({
+      id: op.name,
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+    Agent.agent.signifyNotifications.addPendingOperationToQueue(
+      pendingOperation
+    );
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
   }
 }
 

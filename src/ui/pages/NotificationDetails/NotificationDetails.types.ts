@@ -12,6 +12,7 @@ interface NotificationDetailsProps {
   activeStatus: boolean;
   notificationDetails: KeriaNotification;
   handleBack: () => void;
+  multisigExn?: boolean;
 }
 
 export type { NotificationDetailsProps, NotificationDetailState };
