@@ -693,6 +693,105 @@ describe("Signify notification service of agent", () => {
       ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
     );
   });
+
+  test("Should skip if notification route is /multisig/exn and `e.exn.r` is not ipex/admit", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/exn",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(markNotificationMock).toBeCalledTimes(1);
+  });
+
+  test("Should skip if notification route is /multisig/exn and the identifier is missing ", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(identifierMetadataRecordProps);
+
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/exn",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
+
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(markNotificationMock).toBeCalledTimes(1);
+  });
+
+  test("Should skip if notification route is /multisig/exn and the credential exists ", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/exn",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    const acdc = {
+      sad: {
+        a: { LEI: "5493001KJTIIGC8Y1R17" },
+        d: "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli",
+        i: "EIpeOFh268oRJTM4vNNoQvMWw-NBUPDv1NqYbx6Lc1Mk",
+        ri: "EOIj7V-rqu_Q9aGSmPfviBceEtRk1UZBN5H2P_L-Hhx5",
+        s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        v: "ACDC10JSON000197_",
+      },
+      schema: {
+        title: "Qualified vLEI Issuer Credential",
+        description: "vLEI Issuer Description",
+        version: "1.0.0",
+        credentialType: "QualifiedvLEIIssuervLEICredential",
+      },
+      status: {
+        s: "0",
+        dt: new Date().toISOString(),
+      },
+    };
+
+    getCredentialMock.mockResolvedValue(acdc);
+
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(markNotificationMock).toBeCalledTimes(1);
+  });
 });
 
 describe("Long running operation tracker", () => {
