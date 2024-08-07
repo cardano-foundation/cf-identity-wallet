@@ -911,11 +911,21 @@ describe("Long running operation tracker", () => {
   test("Should call setTimeout listening for pending operations if Keria is offline", async () => {
     const callback = jest.fn();
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "exchange.receivecredential",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
     try {
       await signifyNotificationService.onSignifyOperationStateChanged(callback);
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
     expect(setTimeout).toBeCalledTimes(1);
+    expect(operationsGetMock).not.toBeCalled();
   });
 });
