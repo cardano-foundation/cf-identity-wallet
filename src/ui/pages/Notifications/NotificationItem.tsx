@@ -48,7 +48,7 @@ const NotificationItem = ({
           connection: connectionsCache?.[item.connectionId]?.label,
         });
       case ExchangeRoute.IpexGrant:
-        return t("notifications.tab.labels.ipexgrantrevoke", {
+        return t("notifications.tab.labels.exnipexgrantrevoke", {
           credential: item.a.credentialTitle,
         });
       default:
