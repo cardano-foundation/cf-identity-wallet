@@ -1,0 +1,32 @@
+.delete-pending-modal {
+  .user-tips {
+    margin-top: 0.75rem;
+    margin-bottom: 1.5rem !important;
+
+    p {
+      margin: 0 0 0.5rem;
+    }
+
+    .card-details-info-block-inner {
+      background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: row;
+
+      .alert-icon {
+        margin-left: 0.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+
+        ion-icon {
+          color: var(--ion-color-secondary);
+        }
+      }
+    }
+
+    @media screen and (min-width: 250px) and (max-width: 370px) {
+      margin-top: 0.25rem;
+      margin-bottom: 1rem !important;
+    }
+  }
+}
