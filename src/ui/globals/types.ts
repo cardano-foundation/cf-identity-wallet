@@ -18,6 +18,7 @@ import BackgroundKERI40 from "../assets/images/keri-40.svg";
 import BackgroundKERI41 from "../assets/images/keri-41.svg";
 import BackgroundKERI42 from "../assets/images/keri-42.svg";
 import BackgroundKERI43 from "../assets/images/keri-43.svg";
+import BackgroundRAREVO from "../assets/images/rare-evo-bg.jpg";
 
 enum CardType {
   CREDENTIALS = "credentials",
@@ -121,6 +122,11 @@ const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {
   43: BackgroundKERI43,
 };
 
+const CREDENTIAL_BG = {
+  KERI: BackgroundKERI0,
+  RARE: BackgroundRAREVO,
+};
+
 const PASSCODE_MAPPING = {
   numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0],
   labels: [
@@ -154,4 +160,5 @@ export {
   BackEventPriorityType,
   IDENTIFIER_BG_MAPPING,
   PASSCODE_MAPPING,
+  CREDENTIAL_BG,
 };

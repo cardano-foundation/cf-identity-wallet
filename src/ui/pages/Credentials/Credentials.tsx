@@ -5,7 +5,7 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import { addOutline, peopleOutline } from "ionicons/icons";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -17,20 +17,27 @@ import {
 import {
   getCredsCache,
   getFavouritesCredsCache,
+  setCredsCache,
 } from "../../../store/reducers/credsCache";
 import {
   setCurrentOperation,
   setCurrentRoute,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { TabLayout } from "../../components/layout/TabLayout";
-import { CardType, OperationType } from "../../globals/types";
+import { CardType, OperationType, ToastMsgType } from "../../globals/types";
 import { useOnlineStatusEffect, useToggleConnections } from "../../hooks";
 import { Connections } from "../Connections";
 import { StartAnimationSource } from "../Identifiers/Identifiers.type";
 import "./Credentials.scss";
+import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
+import { ListHeader } from "../../components/ListHeader";
+import { CardList as CredentialCardList } from "../../components/SwitchCardView";
+import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -90,6 +97,25 @@ const Credentials = () => {
     TabsRoutePath.CREDENTIALS
   );
 
+  const [deletedPendingItem, setDeletePendingItem] =
+    useState<CredentialShortDetails | null>(null);
+  const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
+
+  const pendingCreds = useMemo(
+    () =>
+      credsCache.filter(
+        (item) => item.status === CredentialMetadataRecordStatus.PENDING
+      ),
+    [credsCache]
+  );
+  const confirmedCreds = useMemo(
+    () =>
+      credsCache.filter(
+        (item) => item.status === CredentialMetadataRecordStatus.CONFIRMED
+      ),
+    [credsCache]
+  );
+
   const fetchArchivedCreds = useCallback(async () => {
     try {
       const creds = await Agent.agent.credentials.getCredentials(true);
@@ -133,7 +159,7 @@ const Credentials = () => {
     return timeA - timeB;
   });
 
-  const allCreds = credsCache.filter(
+  const allCreds = confirmedCreds.filter(
     (cred) => !favCredsCache?.some((fav) => fav.id === cred.id)
   );
 
@@ -181,6 +207,32 @@ const Credentials = () => {
         </IonButton>
       </div>
     );
+  };
+
+  const deletePendingCheck = useMemo(
+    () => ({
+      title: i18n.t("credentials.tab.detelepending.title"),
+      description: i18n.t("credentials.tab.detelepending.description"),
+      button: i18n.t("credentials.tab.detelepending.button"),
+    }),
+    []
+  );
+
+  const deletePendingCred = async () => {
+    if (!deletedPendingItem) return;
+    setDeletePendingItem(null);
+
+    try {
+      await Agent.agent.credentials.archiveCredential(deletedPendingItem.id);
+      await Agent.agent.credentials.deleteCredential(deletedPendingItem.id);
+
+      dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
+
+      const creds = await Agent.agent.credentials.getCredentials();
+      dispatch(setCredsCache(creds));
+    } catch (e) {
+      // TODO: Handle error
+    }
   };
 
   return (
@@ -243,10 +295,36 @@ const Credentials = () => {
                 />
               </div>
             )}
+            {!!pendingCreds.length && (
+              <div className="credetial-tab-content-block">
+                <ListHeader
+                  title={`${i18n.t("credentials.tab.pendingcred")}`}
+                />
+                <CredentialCardList
+                  cardsData={pendingCreds}
+                  cardTypes={CardType.CREDENTIALS}
+                  testId="pending-creds-list"
+                  onCardClick={(cred) => {
+                    setDeletePendingItem(cred as CredentialShortDetails);
+                    setOpenDeletePendingAlert(true);
+                  }}
+                />
+              </div>
+            )}
             {!!archivedCreds.length && <ArchivedCredentialsButton />}
           </>
         )}
       </TabLayout>
+      <RemovePendingAlert
+        pageId={pageId}
+        openFirstCheck={openDeletePendingAlert}
+        firstCheckProps={deletePendingCheck}
+        onClose={() => setOpenDeletePendingAlert(false)}
+        secondCheckTitle={`${i18n.t(
+          "credentials.tab.detelepending.secondchecktitle"
+        )}`}
+        onDeletePendingItem={deletePendingCred}
+      />
       <ArchivedCredentials
         archivedCreds={archivedCreds}
         archivedCredentialsIsOpen={archivedCredentialsIsOpen}

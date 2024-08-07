@@ -865,7 +865,14 @@
       "create": "Add a credential",
       "viewarchived": "View archived credentials",
       "favourites": "Favourites",
-      "allcreds": "All credentials"
+      "allcreds": "All credentials",
+      "pendingcred": "Pending credentials",
+      "detelepending": {
+        "title": "Credential options",
+        "description": "Your credential is pending and may still complete. If you no longer require this credential, tap “Delete credential” to remove it.",
+        "button": "Delete credential",
+        "secondchecktitle": "Are you sure you want to delete this credential?"
+      }
     },
     "layout": {
       "issued": "Issued"
