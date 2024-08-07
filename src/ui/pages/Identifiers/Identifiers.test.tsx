@@ -178,4 +178,53 @@ describe("Identifiers Tab", () => {
     });
     expect(queryByText(EN_TRANSLATIONS.identifiers.tab.title)).toBeVisible();
   });
+
+  test("Open Connections tab", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      identifiersCache: {
+        identifiers: [],
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      connectionsCache: {
+        connections: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText, getByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={storeMocked}>
+          <Route
+            path={TabsRoutePath.IDENTIFIERS}
+            component={Identifiers}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(getByTestId("connections-button")).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("connections-button"));
+    });
+
+    expect(getByText(EN_TRANSLATIONS.connections.tab.title)).toBeVisible();
+  });
 });

@@ -13,7 +13,7 @@ import { RoutePath } from "../../../routes";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { Creds } from "../Credentials";
+import { Credentials } from "../Credentials";
 import { ConnectionDetails } from "./ConnectionDetails";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { Agent } from "../../../core/agent/agent";
@@ -110,7 +110,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -158,7 +158,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -202,7 +202,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -261,7 +261,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -293,7 +293,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -329,7 +329,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -384,7 +384,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -439,7 +439,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -533,7 +533,7 @@ describe("Checking the Connection Details Page when no notes are available", () 
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -610,7 +610,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -694,7 +694,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
