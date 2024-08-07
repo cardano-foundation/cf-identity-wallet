@@ -9,6 +9,7 @@ const mockData: CredentialMetadataRecordProps = {
   credentialType: "test",
   status: CredentialStatus.CONFIRMED,
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
+  schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
 };
 
 describe("Credential metadata record", () => {
@@ -38,6 +39,7 @@ describe("Credential metadata record", () => {
       credentialType: "test",
       status: CredentialStatus.CONFIRMED,
       connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
+      schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     });
     expect(settingsRecord.createdAt.getTime()).toBeGreaterThan(
       createdAt.getTime()
@@ -53,6 +55,7 @@ describe("Credential metadata record", () => {
       credentialType: "test",
       status: CredentialStatus.CONFIRMED,
       connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
+      schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     });
     expect(settingsRecord.isArchived).toBe(false);
   });

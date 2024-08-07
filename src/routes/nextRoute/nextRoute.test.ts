@@ -35,6 +35,10 @@ describe("NextRoute", () => {
           passwordIsSkipped: false,
           ssiAgentIsSet: false,
           recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -277,6 +281,10 @@ describe("getNextRoute", () => {
         passwordIsSkipped: false,
         ssiAgentIsSet: false,
         recoveryWalletProgress: false,
+        loginAttempt: {
+          attempts: 0,
+          lockedUntil: Date.now(),
+        },
       },
       currentOperation: OperationType.IDLE,
       queueIncomingRequest: {

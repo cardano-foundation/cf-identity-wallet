@@ -57,8 +57,8 @@ const ReceiveCredential = ({
   const handleAccept = async () => {
     setInitiateAnimation(true);
     await Agent.agent.ipexCommunications.acceptAcdc(notificationDetails.id);
-    handleNotificationUpdate();
     setTimeout(() => {
+      handleNotificationUpdate();
       handleBack();
     }, ANIMATION_DELAY);
   };

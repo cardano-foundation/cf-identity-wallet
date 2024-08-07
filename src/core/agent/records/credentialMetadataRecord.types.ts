@@ -9,6 +9,7 @@ interface CredentialMetadataRecordProps {
   credentialType: string;
   status: CredentialStatus;
   connectionId: string;
+  schema: string;
 }
 
 export type { CredentialMetadataRecordProps };

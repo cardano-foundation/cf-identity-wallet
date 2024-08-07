@@ -8,6 +8,7 @@ import {
 } from "./stateCache.types";
 import { RoutePath } from "../../../routes";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
+import { LoginAttempts } from "../../../core/agent/services/auth.types";
 
 const initialState: StateCacheProps = {
   initialized: false,
@@ -23,6 +24,10 @@ const initialState: StateCacheProps = {
     passwordIsSkipped: false,
     ssiAgentIsSet: false,
     recoveryWalletProgress: false,
+    loginAttempt: {
+      attempts: 0,
+      lockedUntil: Date.now(),
+    },
   },
   currentOperation: OperationType.IDLE,
   queueIncomingRequest: {
@@ -60,6 +65,9 @@ const stateCacheSlice = createSlice({
       state.routes = state.routes.filter(
         (route) => route.path !== RoutePath.SET_PASSCODE
       );
+    },
+    setLoginAttempt: (state, action: PayloadAction<LoginAttempts>) => {
+      state.authentication.loginAttempt = { ...action.payload };
     },
     login: (state) => {
       state.authentication = {
@@ -145,6 +153,7 @@ const {
   setPauseQueueIncomingRequest,
   enqueueIncomingRequest,
   setIsOnline,
+  setLoginAttempt,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -159,6 +168,8 @@ const getToastMsg = (state: RootState) => state.stateCache.toastMsg;
 const getQueueIncomingRequest = (state: RootState) =>
   state.stateCache.queueIncomingRequest;
 const getIsOnline = (state: RootState) => state.stateCache.isOnline;
+const getLoginAttempt = (state: RootState) =>
+  state.stateCache.authentication.loginAttempt;
 
 export type {
   CurrentRouteCacheProps,
@@ -167,6 +178,8 @@ export type {
 };
 
 export {
+  setLoginAttempt,
+  getLoginAttempt,
   setIsOnline,
   initialState,
   setInitialized,

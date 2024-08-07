@@ -1,5 +1,11 @@
 import { MemoryRouter, Route } from "react-router-dom";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { IonReactRouter } from "@ionic/react-router";
@@ -15,6 +21,28 @@ import { RoutePath } from "../../../routes";
 import { OperationType } from "../../globals/types";
 import { SetPasscode } from "../SetPasscode";
 import { LockPage } from "./LockPage";
+
+const incrementLoginAttemptMock = jest.fn();
+const resetLoginAttemptsMock = jest.fn();
+
+jest.mock("../../../core/storage", () => ({
+  ...jest.requireActual("../../../core/storage"),
+  SecureStorage: {
+    get: () => "111111",
+  },
+}));
+
+jest.mock("../../../core/agent/agent", () => ({
+  ...jest.requireActual("../../../core/agent/agent"),
+  Agent: {
+    agent: {
+      auth: {
+        incrementLoginAttempts: () => incrementLoginAttemptMock(),
+        resetLoginAttempts: () => resetLoginAttemptsMock(),
+      },
+    },
+  },
+}));
 
 jest.mock("../../hooks/useBiometricsHook", () => ({
   useBiometricAuth: jest.fn(() => ({
@@ -70,6 +98,10 @@ const initialState = {
       time: Date.now(),
       passcodeIsSet: true,
       seedPhraseIsSet: false,
+      loginAttempt: {
+        attempts: 0,
+        lockedUntil: Date.now(),
+      },
     },
     currentOperation: OperationType.IDLE,
   },
@@ -282,5 +314,125 @@ describe("Lock Page", () => {
     });
   });
 });
+
+describe("Lock Page: Max login attempt", () => {
+  const initialState = {
+    stateCache: {
+      routes: [RoutePath.GENERATE_SEED_PHRASE],
+      authentication: {
+        loggedIn: false,
+        time: Date.now(),
+        passcodeIsSet: true,
+        seedPhraseIsSet: false,
+        loginAttempt: {
+          attempts: 0,
+          lockedUntil: Date.now(),
+        },
+      },
+      currentOperation: OperationType.IDLE,
+    },
+    seedPhraseCache: {
+      seedPhrase: "",
+      bran: "",
+    },
+    cryptoAccountsCache: {
+      cryptoAccounts: [],
+    },
+    biometricsCache: {
+      enabled: true,
+    },
+  };
+
+  test("Show remain login error", async () => {
+    initialState.stateCache.authentication.loginAttempt.attempts = 2;
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <LockPage />
+      </Provider>
+    );
+
+    expect(getByText(EN_TRANSLATIONS.lockpage.title)).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.lockpage.description)).toBeInTheDocument();
+
+    act(() => {
+      clickButtonRepeatedly(getByText, getByTestId, "2", 6);
+    });
+    await waitFor(() => {
+      expect(getByText("3 attempt remaining")).toBeInTheDocument();
+      expect(incrementLoginAttemptMock).toBeCalled();
+    });
+  });
+
+  test("Show max login attemp alert", async () => {
+    initialState.stateCache.authentication.loginAttempt.attempts = 5;
+    initialState.stateCache.authentication.loginAttempt.lockedUntil =
+      Date.now() + 60000;
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <LockPage />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.lockpage.attemptalert.title)
+    ).toBeInTheDocument();
+  });
+
+  test("Reset login attempt", async () => {
+    initialState.stateCache.authentication.loginAttempt.attempts = 2;
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <LockPage />
+      </Provider>
+    );
+
+    expect(getByText(EN_TRANSLATIONS.lockpage.title)).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.lockpage.description)).toBeInTheDocument();
+
+    act(() => {
+      clickButtonRepeatedly(getByText, getByTestId, "1", 6);
+    });
+    await waitFor(() => {
+      expect(resetLoginAttemptsMock).toBeCalled();
+    });
+  });
+});
+
+const clickButtonRepeatedly = async (
+  getByText: RenderResult["getByText"],
+  getByTestId: RenderResult["getByTestId"],
+  buttonLabel: string,
+  times: number
+) => {
+  for (let i = 0; i < times; i++) {
+    fireEvent.click(getByText(buttonLabel));
+
+    await waitFor(() => {
+      expect(
+        getByTestId("circle-" + i).classList.contains(
+          "passcode-module-circle-fill"
+        )
+      ).toBe(true);
+    });
+  }
+};
 
 export type { StoreMockedProps };
