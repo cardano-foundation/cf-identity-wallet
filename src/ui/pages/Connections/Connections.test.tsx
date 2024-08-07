@@ -1,22 +1,23 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
-import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
+import { act, fireEvent, render, RenderResult, waitFor } from "@testing-library/react";
+import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
-import { arch } from "os";
-import { Connections } from "./Connections";
-import { TabsRoutePath } from "../../../routes/paths";
-import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
-import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { formatShortDate } from "../../utils/formatters";
-import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { OperationType } from "../../globals/types";
+import { TabsRoutePath } from "../../../routes/paths";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { Identifiers } from "../Identifiers";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import { OperationType } from "../../globals/types";
+import { formatShortDate } from "../../utils/formatters";
 import { Credentials } from "../Credentials/Credentials";
+import { Identifiers } from "../Identifiers";
+import { Connections } from "./Connections";
 
 const combineMock = jest.fn(() => TabsRoutePath.IDENTIFIERS);
+
+const deleteConnectionByIdMock = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -24,6 +25,7 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         createMediatorInvitation: jest.fn(),
         getShortenUrl: jest.fn(),
+        deleteConnectionById: () => deleteConnectionByIdMock(),
       },
     },
   },
@@ -47,6 +49,19 @@ jest.mock("react-router-dom", () => ({
       pathname: combineMock(),
     },
   }),
+}));
+
+jest.mock("../../../core/storage", () => ({
+  ...jest.requireActual("../../../core/storage"),
+  SecureStorage: {
+    get: () => "111111",
+  },
+}));
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div {...props}>{children}</div> : null,
 }));
 
 const mockSetShowConnections = jest.fn();
@@ -407,4 +422,107 @@ describe("Connections page from Credentials tab", () => {
       );
     });
   });
+
+  test("Remove pending connection alert", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIER_DETAILS, TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      identifiersCache: {
+        identifiers: filteredIdentifierFix,
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      connectionsCache: {
+        connections: connectionsFix,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, getByText } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={storeMocked}>
+          <Connections
+            setShowConnections={mockSetShowConnections}
+            showConnections={true}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId(`card-item-${connectionsFix[4].id}`)).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId(`card-item-${connectionsFix[4].id}`));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.connections.tab.detelepending.title)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.connections.tab.detelepending.description)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.connections.tab.detelepending.button)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.connections.tab.detelepending.button)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.connections.tab.detelepending.secondchecktitle
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("connections-tab-delete-pending-modal-confirm-button")
+      );
+    });
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    clickButtonRepeatedly(getByText, "1", 6);
+
+    await waitFor(() => {
+      expect(deleteConnectionByIdMock).toBeCalled();
+    });
+  });
 });
+
+const clickButtonRepeatedly = (
+  getByText: RenderResult["getByText"],
+  buttonLabel: string,
+  times: number
+) => {
+  for (let i = 0; i < times; i++) {
+    act(() => {
+      fireEvent.click(getByText(buttonLabel));
+    });
+  }
+};

@@ -1,6 +1,6 @@
 import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
 import { addOutline, peopleOutline } from "ionicons/icons";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
@@ -9,11 +9,13 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getFavouritesIdentifiersCache,
   getIdentifiersCache,
+  setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
   setCurrentOperation,
   setCurrentRoute,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { CardSlider } from "../../components/CardSlider";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
@@ -24,11 +26,13 @@ import {
   SwitchCardView,
 } from "../../components/SwitchCardView";
 import { TabLayout } from "../../components/layout/TabLayout";
-import { CardType, OperationType } from "../../globals/types";
+import { CardType, OperationType, ToastMsgType } from "../../globals/types";
 import { useToggleConnections } from "../../hooks";
 import { Connections } from "../Connections";
 import "./Identifiers.scss";
 import { StartAnimationSource } from "./Identifiers.type";
+import { RemovePendingAlert } from "../../components/RemovePendingAlert";
+import { Agent } from "../../../core/agent/agent";
 
 const CLEAR_STATE_DELAY = 1000;
 interface AdditionalButtonsProps {
@@ -94,6 +98,11 @@ const Identifiers = () => {
     useState<IdentifierShortDetails | null>(null);
   const [navAnimation, setNavAnimation] =
     useState<StartAnimationSource>("none");
+
+  const [deletedPendingItem, setDeletePendingItem] =
+    useState<IdentifierShortDetails | null>(null);
+  const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
+
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
 
   const { showConnections, setShowConnections } = useToggleConnections(
@@ -193,6 +202,40 @@ const Identifiers = () => {
     }
     setCreateIdentifierModalIsOpen(false);
   };
+
+  const deletePendingIdentifier = async () => {
+    if (!deletedPendingItem) return;
+    setDeletePendingItem(null);
+
+    try {
+      const updatedIdentifiers = identifiersData.filter(
+        (item) => item.id !== deletedPendingItem.id
+      );
+
+      // For now there is no archiving in the UI so does both.
+      await Agent.agent.identifiers.archiveIdentifier(deletedPendingItem.id);
+      await Agent.agent.identifiers.deleteIdentifier(deletedPendingItem.id);
+
+      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
+      dispatch(setIdentifiersCache(updatedIdentifiers));
+    } catch (e) {
+      //TODO: handle delete
+    }
+  };
+
+  const deletePendingCheck = useMemo(
+    () => ({
+      title: i18n.t("identifiers.detelepending.title"),
+      description: i18n.t(
+        deletedPendingItem?.groupMetadata?.groupId
+          ? "identifiers.detelepending.mutilsigdescription"
+          : "identifiers.detelepending.description"
+      ),
+      button: i18n.t("identifiers.detelepending.button"),
+    }),
+    [deletedPendingItem]
+  );
+
   return (
     <>
       <Connections
@@ -266,13 +309,27 @@ const Identifiers = () => {
                 <IdentifierCardList
                   cardsData={pendingIdentifiers}
                   cardTypes={CardType.IDENTIFIERS}
-                  testId="identifiers-list"
+                  testId="pending-identifiers-list"
+                  onCardClick={(identifier) => {
+                    setDeletePendingItem(identifier as IdentifierShortDetails);
+                    setOpenDeletePendingAlert(true);
+                  }}
                 />
               </div>
             )}
           </>
         )}
       </TabLayout>
+      <RemovePendingAlert
+        pageId={pageId}
+        openFirstCheck={openDeletePendingAlert}
+        firstCheckProps={deletePendingCheck}
+        onClose={() => setOpenDeletePendingAlert(false)}
+        secondCheckTitle={`${i18n.t(
+          "identifiers.detelepending.secondchecktitle"
+        )}`}
+        onDeletePendingItem={deletePendingIdentifier}
+      />
       <CreateIdentifier
         modalIsOpen={createIdentifierModalIsOpen}
         setModalIsOpen={handleCloseCreateIdentifier}

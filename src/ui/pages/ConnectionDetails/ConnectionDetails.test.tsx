@@ -83,7 +83,7 @@ describe("ConnectionDetails Page", () => {
           label: "Cambridge University",
           connectionDate: "2017-08-14T19:23:24Z",
           logo: ".png",
-          status: "pending" as ConnectionStatus,
+          status: ConnectionStatus.ACCEPTED,
           notes: [
             {
               id: "ebfeb1ebc6f1c276ef71212ec20",
@@ -129,10 +129,10 @@ describe("ConnectionDetails Page", () => {
       expect(queryByTestId("connection-item-0")).toBeNull();
     });
 
-    expect(getByText(connectionsFix[0].label)).toBeVisible();
+    expect(getByText(connectionsFix[1].label)).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() =>
@@ -174,7 +174,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() => {
@@ -218,7 +218,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     const alertDeleteConnection = await findByTestId(
@@ -277,7 +277,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     expect(getByTestId("connection-detail-spinner-container")).toBeVisible();
@@ -309,7 +309,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     expect(getByTestId("connection-detail-spinner-container")).toBeVisible();
@@ -345,7 +345,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() => {
@@ -400,7 +400,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() => {
@@ -458,10 +458,10 @@ describe("ConnectionDetails Page", () => {
       expect(queryByTestId("connection-item-0")).toBeNull();
     });
 
-    expect(getByText(connectionsFix[0].label)).toBeVisible();
+    expect(getByText(connectionsFix[1].label)).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() => {
@@ -552,10 +552,10 @@ describe("Checking the Connection Details Page when no notes are available", () 
       expect(queryByTestId("connection-item-0")).toBeNull();
     });
 
-    expect(getByText(connectionsFix[0].label)).toBeVisible();
+    expect(getByText(connectionsFix[1].label)).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() => {
@@ -629,10 +629,10 @@ describe("Checking the Connection Details Page when notes are available", () => 
       expect(queryByTestId("connection-item-0")).toBeNull();
     });
 
-    expect(getByText(connectionsFix[0].label)).toBeVisible();
+    expect(getByText(connectionsFix[1].label)).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() => {
@@ -678,7 +678,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
     ];
     jest
       .spyOn(Agent.agent.connections, "getConnectionById")
-      .mockResolvedValue(connectionsFix[0]);
+      .mockResolvedValue(connectionsFix[1]);
 
     jest
       .spyOn(Agent.agent.connections, "getConnectionHistoryById")
@@ -713,10 +713,10 @@ describe("Checking the Connection Details Page when notes are available", () => 
       expect(queryByTestId("connection-item-0")).toBeNull();
     });
 
-    expect(getByText(connectionsFix[0].label)).toBeVisible();
+    expect(getByText(connectionsFix[1].label)).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() =>
@@ -778,7 +778,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
     );
 
     await waitFor(() =>
-      expect(getByText("Connected with \"Cambridge University\"")).toBeVisible()
+      expect(getByText("Connected with \"Passport Office\"")).toBeVisible()
     );
   });
 });
