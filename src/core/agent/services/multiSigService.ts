@@ -982,27 +982,25 @@ class MultiSigService extends AgentService {
     );
   }
 
-  async admitExnToJoin(
+  async multisigAdmit(
     multisigSignifyName: string,
     notificationSaid: string,
     schemaSaids: string[],
-    multisigExn?: any
+    admitExnToJoin?: any
   ) {
     let exn: Serder;
     let sigsMes: string[];
     let dtime: string;
 
-    if (schemaSaids) {
-      await Promise.all(
-        schemaSaids.map(
-          async (schemaSaid) =>
-            await Agent.agent.connections.resolveOobi(
-              `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`,
-              true
-            )
-        )
-      );
-    }
+    await Promise.all(
+      schemaSaids.map(
+        async (schemaSaid) =>
+          await Agent.agent.connections.resolveOobi(
+            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`,
+            true
+          )
+      )
+    );
 
     const exchangeMessage = await this.props.signifyClient
       .exchanges()
@@ -1021,12 +1019,12 @@ class MultiSigService extends AgentService {
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
 
-    if (multisigExn) {
-      const [, ked] = Saider.saidify(multisigExn);
+    if (admitExnToJoin) {
+      const [, ked] = Saider.saidify(admitExnToJoin);
       const admit = new Serder(ked);
 
       const keeper = await this.props.signifyClient.manager!.get(gHab);
-      const sigs = await keeper.sign(b(new Serder(multisigExn).raw));
+      const sigs = await keeper.sign(b(new Serder(admitExnToJoin).raw));
 
       const mstateNew = gHab["state"];
       const seal = [

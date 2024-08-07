@@ -2112,7 +2112,7 @@ describe("Multisig sig service of agent", () => {
       mockDtime,
     ]);
 
-    await multiSigService.admitExnToJoin(
+    await multiSigService.multisigAdmit(
       multisigSignifyName,
       notificationSaid,
       schemaSaids
@@ -2123,190 +2123,6 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("can agree to admit a credential with a multi-sig identifier", async () => {
-    const multisigSignifyName = "multisigSignifyName";
-    const notificationSaid = "ELykd_2bX6yvuVEgLQqnCgZ7QLdxpUBze-RzHVwfCUfW";
-    const schemaSaids = ["schemaSaid"];
-    const multisigExn = {
-      v: "KERI10JSON000111_",
-      t: "exn",
-      d: "EO6rXPzJVLNEOjs3puI5Kn4L2UsiB-iJJJKpXi26F73X",
-      i: "EHQDKkV40qP65N8yHaOJFlVS1CUvsYTvGlHPfcy2tFUb",
-      p: "EKWG4i9hT8vjwRPHsW7vqWrPq0utZHVgdu24fAf0j2Cb",
-      dt: "2024-08-02T07:06:24.884000+00:00",
-      r: "/ipex/admit",
-      q: {},
-      a: { m: "" },
-      e: {},
-    };
-    const mockSaider = [
-      {} as Saider,
-      {
-        v: "KERI10JSON000111_",
-        t: "exn",
-        d: "EKm404jyX0iquIOu0BtZ6xR04opEQYoClKeSTuuS4fwn",
-        i: "EL3BEUfwxS1_mCWqKUrH5nGPkikoiHskhVhGenV2lcAZ",
-        p: "EBXi4JFZqjsKMzaMAz-gJWxJj992R988JcdN8EfzL4Po",
-        dt: "2024-08-02T07:11:59.510000+00:00",
-        r: "/ipex/admit",
-        q: {},
-        a: { m: "" },
-        e: {},
-      },
-    ] as [Saider, Dict<any>];
-
-    mockResolveOobi.mockResolvedValueOnce({
-      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
-      metadata: {
-        oobi: "testOobi",
-      },
-      done: true,
-      error: null,
-      response: {},
-      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
-    });
-    getExchangesMock.mockResolvedValueOnce({
-      exn: {
-        d: "EO65SZOen5Qm26gYeAZZ_J_p8_Uy_6jB3cUpv0DzgDA4",
-      },
-    });
-    identifiersMemberMock = jest.fn().mockResolvedValueOnce({
-      signing: [{ ends: { agent: { [keriMetadataRecord.id]: "" } } }],
-    });
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce(
-      new IdentifierMetadataRecord({
-        id: "aidHere",
-        displayName: "Identifier 2",
-        signifyName: "uuid-here",
-        createdAt: now,
-        theme: 0,
-        groupMetadata: {
-          groupId: "group-id",
-          groupInitiator: true,
-          groupCreated: true,
-        },
-      })
-    );
-    identifiersGetMock = jest
-      .fn()
-      .mockResolvedValueOnce(gHab)
-      .mockResolvedValueOnce(mHab);
-
-    jest.spyOn(Saider, "saidify").mockReturnValueOnce(mockSaider);
-    getMemberMock.mockResolvedValue({
-      sign: () => [
-        "ABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB",
-      ],
-    });
-    createExchangeMessageMock.mockResolvedValue([
-      mockExn,
-      mockSigsMes,
-      mockDtime,
-    ]);
-
-    await multiSigService.admitExnToJoin(
-      multisigSignifyName,
-      notificationSaid,
-      schemaSaids,
-      multisigExn
-    );
-    expect(ipexAdmitMock).toBeCalledTimes(0);
-    expect(createExchangeMessageMock).toBeCalledTimes(1);
-    expect(ipexSubmitAdmitMock).toBeCalledTimes(1);
-  });
-
-  test("can agree to admit a credential with a multi-sig identifier", async () => {
-    const multisigSignifyName = "multisigSignifyName";
-    const notificationSaid = "ELykd_2bX6yvuVEgLQqnCgZ7QLdxpUBze-RzHVwfCUfW";
-    const schemaSaids = ["schemaSaid"];
-    const multisigExn = {
-      v: "KERI10JSON000111_",
-      t: "exn",
-      d: "EO6rXPzJVLNEOjs3puI5Kn4L2UsiB-iJJJKpXi26F73X",
-      i: "EHQDKkV40qP65N8yHaOJFlVS1CUvsYTvGlHPfcy2tFUb",
-      p: "EKWG4i9hT8vjwRPHsW7vqWrPq0utZHVgdu24fAf0j2Cb",
-      dt: "2024-08-02T07:06:24.884000+00:00",
-      r: "/ipex/admit",
-      q: {},
-      a: { m: "" },
-      e: {},
-    };
-    const mockSaider = [
-      {} as Saider,
-      {
-        v: "KERI10JSON000111_",
-        t: "exn",
-        d: "EKm404jyX0iquIOu0BtZ6xR04opEQYoClKeSTuuS4fwn",
-        i: "EL3BEUfwxS1_mCWqKUrH5nGPkikoiHskhVhGenV2lcAZ",
-        p: "EBXi4JFZqjsKMzaMAz-gJWxJj992R988JcdN8EfzL4Po",
-        dt: "2024-08-02T07:11:59.510000+00:00",
-        r: "/ipex/admit",
-        q: {},
-        a: { m: "" },
-        e: {},
-      },
-    ] as [Saider, Dict<any>];
-
-    mockResolveOobi.mockResolvedValueOnce({
-      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
-      metadata: {
-        oobi: "testOobi",
-      },
-      done: true,
-      error: null,
-      response: {},
-      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
-    });
-    getExchangesMock.mockResolvedValueOnce({
-      exn: {
-        d: "EO65SZOen5Qm26gYeAZZ_J_p8_Uy_6jB3cUpv0DzgDA4",
-      },
-    });
-    identifiersMemberMock = jest.fn().mockResolvedValueOnce({
-      signing: [{ ends: { agent: { [keriMetadataRecord.id]: "" } } }],
-    });
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce(
-      new IdentifierMetadataRecord({
-        id: "aidHere",
-        displayName: "Identifier 2",
-        signifyName: "uuid-here",
-        createdAt: now,
-        theme: 0,
-        groupMetadata: {
-          groupId: "group-id",
-          groupInitiator: true,
-          groupCreated: true,
-        },
-      })
-    );
-    identifiersGetMock = jest
-      .fn()
-      .mockResolvedValueOnce(gHab)
-      .mockResolvedValueOnce(mHab);
-
-    jest.spyOn(Saider, "saidify").mockReturnValueOnce(mockSaider);
-    getMemberMock.mockResolvedValue({
-      sign: () => [
-        "ABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB",
-      ],
-    });
-    createExchangeMessageMock.mockResolvedValue([
-      mockExn,
-      mockSigsMes,
-      mockDtime,
-    ]);
-
-    await multiSigService.admitExnToJoin(
-      multisigSignifyName,
-      notificationSaid,
-      schemaSaids,
-      multisigExn
-    );
-    expect(ipexAdmitMock).toBeCalledTimes(0);
-    expect(createExchangeMessageMock).toBeCalledTimes(1);
-    expect(ipexSubmitAdmitMock).toBeCalledTimes(1);
-  });
-
-  test("can agree to admit a credential with data from mutisig/exn", async () => {
     const multisigSignifyName = "multisigSignifyName";
     const notificationSaid = "ELykd_2bX6yvuVEgLQqnCgZ7QLdxpUBze-RzHVwfCUfW";
     const schemaSaids = ["schemaSaid"];
@@ -2390,13 +2206,14 @@ describe("Multisig sig service of agent", () => {
       mockDtime,
     ]);
 
-    await multiSigService.admitExnToJoin(
+    await multiSigService.multisigAdmit(
       multisigSignifyName,
       notificationSaid,
       schemaSaids,
       multisigExn
     );
 
+    expect(ipexAdmitMock).toBeCalledTimes(0);
     expect(createExchangeMessageMock).toBeCalledWith(
       mHab,
       "/multisig/exn",
