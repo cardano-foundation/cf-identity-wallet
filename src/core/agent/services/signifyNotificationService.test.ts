@@ -704,10 +704,16 @@ describe("Signify notification service of agent", () => {
       ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
     );
   });
+});
 
-  test("Should handle long operations", async () => {
+describe("Long running operation tracker", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    // We mock the setTimeout here so we can exit the while(true) loop
+    jest.spyOn(global, "setTimeout").mockImplementation(() => {
+      throw new Error("Force Exit");
+    });
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    const callback = jest.fn();
     const operationMock = {
       metadata: {
         said: "said",
@@ -719,11 +725,10 @@ describe("Signify notification service of agent", () => {
       },
     };
     operationsGetMock.mockResolvedValue(operationMock);
-    // We mock the setTimeout here so we can exit the while(true) loop
-    jest.spyOn(global, "setTimeout").mockImplementation(() => {
-      throw new Error("Force Exit");
-    });
-    // Group
+  });
+
+  test("Should handle long operations with type group", async () => {
+    const callback = jest.fn();
     operationPendingGetAllMock.mockResolvedValueOnce([
       {
         type: "OperationPendingRecord",
@@ -744,7 +749,24 @@ describe("Signify notification service of agent", () => {
     expect(Agent.agent.multiSigs.endRoleAuthorization).toBeCalledWith(
       "signifyName"
     );
-    // Witness
+    expect(callback).toBeCalledTimes(1);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should handle long operations with type witness", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const callback = jest.fn();
+    const operationMock = {
+      metadata: {
+        said: "said",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
     operationPendingGetAllMock.mockResolvedValueOnce([
       {
         type: "OperationPendingRecord",
@@ -765,7 +787,24 @@ describe("Signify notification service of agent", () => {
         isPending: false,
       }
     );
-    // Oobi
+    expect(callback).toBeCalledTimes(1);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should handle long operations with type oobi", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const callback = jest.fn();
+    const operationMock = {
+      metadata: {
+        said: "said",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
     const connectionMock = {
       id: "id",
       pending: true,
@@ -791,7 +830,12 @@ describe("Signify notification service of agent", () => {
       pending: false,
       createdAt: operationMock.response.dt,
     });
-    // exchange.receivecredential
+    expect(callback).toBeCalledTimes(1);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should handle long operations with type exchange.receivecredential", async () => {
+    const callback = jest.fn();
     operationPendingGetAllMock.mockResolvedValueOnce([
       {
         type: "OperationPendingRecord",
@@ -829,8 +873,12 @@ describe("Signify notification service of agent", () => {
       credentialIdMock,
       CredentialStatus.CONFIRMED
     );
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
 
-    // exchange.revokecredential
+  test("Should handle long operations with type exchange.revokecredential", async () => {
+    const callback = jest.fn();
+    const credentialIdMock = "credentialId";
     operationPendingGetAllMock.mockResolvedValueOnce([
       {
         type: "OperationPendingRecord",
@@ -842,6 +890,9 @@ describe("Signify notification service of agent", () => {
     ]);
     getCredentialMock.mockResolvedValueOnce({
       id: "id",
+      schema: {
+        title: "title",
+      },
       status: {
         s: "1",
       },
@@ -873,11 +924,10 @@ describe("Signify notification service of agent", () => {
       credentialIdMock,
       CredentialStatus.REVOKED
     );
-    expect(callback).toBeCalledTimes(3);
-    expect(operationPendingStorage.deleteById).toBeCalledTimes(5);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 
-  test("Should only delete the operation if the exchange route is not /ipex/admit", async () => {
+  test("ExchangeReceiveCredential operations must have an exchange route of /ipex/admit", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const callback = jest.fn();
     const operationMock = {
@@ -891,10 +941,6 @@ describe("Signify notification service of agent", () => {
       },
     };
     operationsGetMock.mockResolvedValue(operationMock);
-    // We mock the setTimeout here so we can exit the while(true) loop
-    jest.spyOn(global, "setTimeout").mockImplementation(() => {
-      throw new Error("Force Exit");
-    });
     operationPendingGetAllMock.mockResolvedValueOnce([
       {
         type: "OperationPendingRecord",
@@ -925,13 +971,9 @@ describe("Signify notification service of agent", () => {
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 
-  test("Should call setTimeout  listening for pending operations if Keria is offline", async () => {
+  test("Should call setTimeout listening for pending operations if Keria is offline", async () => {
     const callback = jest.fn();
-    jest.spyOn(global, "setTimeout").mockImplementation(() => {
-      throw new Error("Force Exit");
-    });
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
-
     try {
       await signifyNotificationService.onSignifyOperationStateChanged(callback);
     } catch (error) {
