@@ -358,6 +358,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       MiscRecordId.APP_PASSWORD_SKIPPED
     );
 
+    const loginAttempt = await Agent.agent.auth.getLoginAttempts();
+
     dispatch(
       setAuthentication({
         ...authentication,
@@ -369,6 +371,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         ssiAgentIsSet:
           !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
         recoveryWalletProgress: !!recoveryWalletProgress?.content.value,
+        loginAttempt,
       })
     );
 

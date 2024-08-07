@@ -1,3 +1,4 @@
+import { LoginAttempts } from "../../../core/agent/services/auth.types";
 import { PeerConnectSigningEvent } from "../../../core/cardano/walletConnect/peerConnection.types";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
 import { ConnectionData } from "../walletConnectionsCache";
@@ -20,6 +21,7 @@ interface AuthenticationCacheProps {
   passwordIsSkipped: boolean;
   ssiAgentIsSet: boolean;
   recoveryWalletProgress: boolean;
+  loginAttempt: LoginAttempts;
 }
 enum IncomingRequestType {
   PEER_CONNECT_SIGN = "peer-connect-sign",

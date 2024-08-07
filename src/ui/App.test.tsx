@@ -68,6 +68,14 @@ jest.mock("../core/agent/agent", () => ({
       basicStorage: {
         findById: jest.fn(),
       },
+      auth: {
+        getLoginAttempts: jest.fn(() =>
+          Promise.resolve({
+            attempts: 0,
+            lockedUntil: Date.now(),
+          })
+        ),
+      },
     },
   },
 }));
@@ -114,6 +122,10 @@ const initialState = {
       userName: "",
       time: Date.now(),
       passcodeIsSet: true,
+      loginAttempt: {
+        attempts: 0,
+        lockedUntil: Date.now(),
+      },
     },
   },
   connectionsCache: {
@@ -215,6 +227,10 @@ describe("App", () => {
           time: 0,
           ssiAgentIsSet: false,
           recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
