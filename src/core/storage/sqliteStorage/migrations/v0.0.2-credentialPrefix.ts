@@ -77,10 +77,6 @@ async function updateCredentialPrefix(
       credentialRecord.id,
     ],
   });
-  transactionStatements.push({
-    statement: SqliteStorage.DELETE_ITEM_TAGS_SQL,
-    values: [credentialRecord.id],
-  });
 
   transactionStatements.push(
     ...new SqliteStorage().getTagsInsertSql(newId, newTag)
