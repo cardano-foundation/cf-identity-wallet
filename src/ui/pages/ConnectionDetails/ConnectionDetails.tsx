@@ -265,16 +265,18 @@ const ConnectionDetails = () => {
                 title={i18n.t("connections.details.history")}
               >
                 {connectionHistory?.length > 0 &&
-                  connectionHistory.map(
-                    (historyItem: ConnectionHistoryItem, index: number) => (
-                      <ConnectionHistoryEvent
-                        key={index}
-                        index={index}
-                        historyItem={historyItem}
-                        connectionDetails={connectionDetails}
-                      />
-                    )
-                  )}
+                  connectionHistory
+                    .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+                    .map(
+                      (historyItem: ConnectionHistoryItem, index: number) => (
+                        <ConnectionHistoryEvent
+                          key={index}
+                          index={index}
+                          historyItem={historyItem}
+                          connectionDetails={connectionDetails}
+                        />
+                      )
+                    )}
                 <ConnectionHistoryEvent connectionDetails={connectionDetails} />
               </CardDetailsBlock>
               <PageFooter
