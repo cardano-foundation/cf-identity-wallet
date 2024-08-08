@@ -653,32 +653,39 @@ describe("Checking the Connection Details Page when notes are available", () => 
     await waitFor(() => expect(getByText("Message")).toBeVisible());
   });
 
-  test("Get multiple connection history items", async () => {
+  test("Get all connection history items", async () => {
+    const connectionDetails = {
+      ...connectionsFix[6],
+      serviceEndpoints: [
+        "http://keria:3902/oobi/EBvcao4Ub-Q7Wwkm0zJzwigvPTrthP4uH5mQ4efRv9aU/agent/EBJBjEDV_ysVyJHg7fDdqB332gCVhpgb6a3a00BtmWdg?name=The%20Pentagon",
+      ],
+      notes: [],
+    };
     const historyEvents = [
       {
-        type: 0,
-        timestamp: "2024-02-13T10:16:08.756Z",
-        credentialType: "UniversityDegreeCredential",
+        type: 3,
+        timestamp: "2024-08-07T15:33:18.204Z",
+        credentialType: "Rare EVO 2024 Attendee",
+      },
+      {
+        type: 2,
+        timestamp: "2024-08-07T15:32:26.006Z",
+        credentialType: "Rare EVO 2024 Attendee",
+      },
+      {
+        type: 1,
+        timestamp: "2024-08-07T15:32:13.597Z",
+        credentialType: "Rare EVO 2024 Attendee",
       },
       {
         type: 0,
-        timestamp: "2024-02-14T10:16:26.919Z",
-        credentialType: "PermanentResidentCard",
-      },
-      {
-        type: 0,
-        timestamp: "2024-02-15T10:16:08.756Z",
-        credentialType: "AccessPassCredential",
-      },
-      {
-        type: 0,
-        timestamp: "2024-02-16T11:39:22.919Z",
-        credentialType: "Qualified vLEI Issuer Credential",
+        timestamp: "2024-08-07T15:31:17.382Z",
+        credentialType: "Rare EVO 2024 Attendee",
       },
     ];
     jest
       .spyOn(Agent.agent.connections, "getConnectionById")
-      .mockResolvedValue(connectionsFix[0]);
+      .mockResolvedValue(connectionDetails);
 
     jest
       .spyOn(Agent.agent.connections, "getConnectionHistoryById")
@@ -713,72 +720,99 @@ describe("Checking the Connection Details Page when notes are available", () => 
       expect(queryByTestId("connection-item-0")).toBeNull();
     });
 
-    expect(getByText(connectionsFix[0].label)).toBeVisible();
+    expect(getByText(connectionDetails.label)).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionDetails.label));
     });
 
-    await waitFor(() =>
-      expect(getByText("Received \"University Degree Credential\"")).toBeVisible()
-    );
-
-    await waitFor(() =>
+    await waitFor(() => {
+      expect(
+        getByText(
+          `${EN_TRANSLATIONS.connections.details.connectedwith.replace(
+            "{{ issuer }}",
+            connectionDetails.label
+          )}`
+        )
+      ).toBeVisible();
+      expect(
+        getByText(
+          `${formatShortDate(
+            connectionDetails.connectionDate
+          )} - ${formatTimeToSec(connectionDetails.connectionDate)}`
+        )
+      ).toBeVisible();
+    });
+    await waitFor(() => {
+      expect(
+        getByText(
+          `${EN_TRANSLATIONS.connections.details.issuance.replace(
+            "{{ credential }}",
+            historyEvents[0].credentialType
+              ?.replace(/([A-Z][a-z])/g, " $1")
+              .replace(/^ /, "")
+              .replace(/(\d)/g, "$1")
+              .replace(/ {2,}/g, " ")
+          )}`
+        )
+      ).toBeVisible();
       expect(
         getByText(
           `${formatShortDate(historyEvents[0].timestamp)} - ${formatTimeToSec(
             historyEvents[0].timestamp
           )}`
         )
-      ).toBeVisible()
-    );
-
-    await waitFor(() =>
-      expect(getByText("Received \"Permanent Resident Card\"")).toBeVisible()
-    );
-
-    await waitFor(() =>
+      ).toBeVisible();
+    });
+    await waitFor(() => {
+      expect(
+        getByText(
+          `${EN_TRANSLATIONS.connections.details.present.replace(
+            "{{ issuer }}",
+            connectionDetails.label
+          )}`
+        )
+      ).toBeVisible();
       expect(
         getByText(
           `${formatShortDate(historyEvents[1].timestamp)} - ${formatTimeToSec(
             historyEvents[1].timestamp
           )}`
         )
-      ).toBeVisible()
-    );
-
-    await waitFor(() =>
-      expect(getByText("Received \"Access Pass Credential\"")).toBeVisible()
-    );
-
-    await waitFor(() =>
+      ).toBeVisible();
+    });
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.connections.details.agree)
+      ).toBeVisible();
       expect(
         getByText(
           `${formatShortDate(historyEvents[2].timestamp)} - ${formatTimeToSec(
             historyEvents[2].timestamp
           )}`
         )
-      ).toBeVisible()
-    );
-
-    await waitFor(() =>
+      ).toBeVisible();
+    });
+    await waitFor(() => {
       expect(
-        getByText("Received \"Qualified vLEI Issuer Credential\"")
-      ).toBeVisible()
-    );
-
-    await waitFor(() =>
+        getByText(
+          `${EN_TRANSLATIONS.connections.details.update.replace(
+            "{{ credential }}",
+            historyEvents[1].credentialType
+              ?.replace(/([A-Z][a-z])/g, " $1")
+              .replace(/^ /, "")
+              .replace(/(\d)/g, "$1")
+              .replace(/ {2,}/g, " ")
+          )}`
+        )
+      ).toBeVisible();
       expect(
         getByText(
           `${formatShortDate(historyEvents[3].timestamp)} - ${formatTimeToSec(
             historyEvents[3].timestamp
           )}`
         )
-      ).toBeVisible()
-    );
-
-    await waitFor(() =>
-      expect(getByText("Connected with \"Cambridge University\"")).toBeVisible()
-    );
+      ).toBeVisible();
+    });
   });
 });

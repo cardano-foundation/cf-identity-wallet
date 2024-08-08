@@ -21,6 +21,7 @@ const ConnectionHistoryEvent = ({
   return historyItem ? (
     <div
       className="connection-details-history-event"
+      data-testid={`connection-history-event-${index}`}
       key={index}
     >
       <div className="connection-details-logo">
@@ -45,7 +46,8 @@ const ConnectionHistoryEvent = ({
               credential: historyItem.credentialType
                 ?.replace(/([A-Z][a-z])/g, " $1")
                 .replace(/^ /, "")
-                .replace(/(\d)/g, "$1"),
+                .replace(/(\d)/g, "$1")
+                .replace(/ {2,}/g, " "),
             })}
           {historyItem.type ===
             ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT &&
@@ -60,7 +62,8 @@ const ConnectionHistoryEvent = ({
               credential: historyItem.credentialType
                 ?.replace(/([A-Z][a-z])/g, " $1")
                 .replace(/^ /, "")
-                .replace(/(\d)/g, "$1"),
+                .replace(/(\d)/g, "$1")
+                .replace(/ {2,}/g, " "),
             })}
         </span>
         <span
@@ -74,7 +77,10 @@ const ConnectionHistoryEvent = ({
       </p>
     </div>
   ) : (
-    <div className="connection-details-history-event">
+    <div
+      className="connection-details-history-event"
+      data-testid="connection-history-event-connection"
+    >
       <div className="connection-details-logo">
         <img
           src={connectionDetails?.logo || KeriLogo}
