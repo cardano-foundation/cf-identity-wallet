@@ -24,23 +24,11 @@ const SidePage = () => {
   const canOpenPendingWalletConnection = !!pendingConnection;
 
   useEffect(() => {
-    if (canOpenIncomingRequest || !stateCache.authentication.loggedIn) return;
-
-    if (canOpenPendingWalletConnection && !queueIncomingRequest.isPaused) {
-      dispatch(setPauseQueueIncomingRequest(true));
-      pauseIncommingRequestByConnection.current = true;
-    }
-  }, [
-    canOpenIncomingRequest,
-    canOpenPendingWalletConnection,
-    dispatch,
-    queueIncomingRequest.isPaused,
-    stateCache.authentication.loggedIn,
-  ]);
-
-  useEffect(() => {
     if (!stateCache.authentication.loggedIn) return;
     setOpenSidePage(canOpenIncomingRequest || canOpenPendingWalletConnection);
+    if (canOpenPendingWalletConnection) {
+      pauseIncommingRequestByConnection.current = true;
+    }
   }, [
     canOpenIncomingRequest,
     canOpenPendingWalletConnection,

@@ -51,10 +51,11 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
         connectedWallet.id !== incomingRequest.peerConnection?.id)
     ) {
       handleReset();
+      return;
     }
     setRequestData(incomingRequest);
     setOpenPage(true);
-  }, [incomingRequest]);
+  }, [connectedWallet, incomingRequest, setOpenPage]);
 
   useEffect(() => {
     if (blur) {
