@@ -180,7 +180,7 @@ const CredentialDetails = () => {
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error("Unable to archived credential", e);
+      console.error("Unable to archive credential", e);
       dispatch(setToastMsg(ToastMsgType.ARCHIVED_CRED_FAIL));
     }
   };

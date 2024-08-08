@@ -1557,7 +1557,7 @@
     "deleteconnectionerror": "Unable to delete connection",
     "deletecrederror": "Unable to delete credential",
     "deleteidentifiererror": "Unable to delete identifier",
-    "archivedcrederror": "Unable to archived credential"
+    "archivedcrederror": "Unable to archive credential"
   },
   "request": {
     "sign": {
