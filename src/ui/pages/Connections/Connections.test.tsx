@@ -1,22 +1,31 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
-import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor,
+} from "@testing-library/react";
+import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
-import { arch } from "os";
-import { Connections } from "./Connections";
-import { TabsRoutePath } from "../../../routes/paths";
-import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
-import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { formatShortDate } from "../../utils/formatters";
-import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import configureStore from "redux-mock-store";
+import { IonReactMemoryRouter } from "@ionic/react-router";
+import { createMemoryHistory } from "history";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { OperationType } from "../../globals/types";
+import { TabsRoutePath } from "../../../routes/paths";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { Identifiers } from "../Identifiers";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import { OperationType } from "../../globals/types";
+import { formatShortDate } from "../../utils/formatters";
 import { Credentials } from "../Credentials/Credentials";
+import { Identifiers } from "../Identifiers";
+import { Connections } from "./Connections";
 
 const combineMock = jest.fn(() => TabsRoutePath.IDENTIFIERS);
+
+const deleteConnectionByIdMock = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -24,6 +33,7 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         createMediatorInvitation: jest.fn(),
         getShortenUrl: jest.fn(),
+        deleteConnectionById: () => deleteConnectionByIdMock(),
       },
     },
   },
@@ -49,6 +59,19 @@ jest.mock("react-router-dom", () => ({
   }),
 }));
 
+jest.mock("../../../core/storage", () => ({
+  ...jest.requireActual("../../../core/storage"),
+  SecureStorage: {
+    get: () => "111111",
+  },
+}));
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div {...props}>{children}</div> : null,
+}));
+
 const mockSetShowConnections = jest.fn();
 
 const initialStateFull = {
@@ -59,6 +82,10 @@ const initialStateFull = {
       time: Date.now(),
       passcodeIsSet: true,
     },
+  },
+  identifierViewTypeCacheCache: {
+    viewType: null,
+    favouriteIndex: 0,
   },
   seedPhraseCache: {},
   credsCache: {
@@ -80,23 +107,12 @@ const initialStateFull = {
 
 let mockedStore: Store<unknown, AnyAction>;
 
-jest.mock("@ionic/react", () => ({
-  ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen }: any) => (
-    <div
-      style={{ display: isOpen ? "block" : "none" }}
-      data-testid="add-connection-modal"
-    >
-      {children}
-    </div>
-  ),
-}));
+describe("Connections page", () => {
+  const dispatchMock = jest.fn();
 
-describe("Connections page from Identifiers tab", () => {
   beforeEach(() => {
     jest.resetAllMocks();
     const mockStore = configureStore();
-    const dispatchMock = jest.fn();
 
     mockedStore = {
       ...mockStore(initialStateFull),
@@ -104,6 +120,73 @@ describe("Connections page from Identifiers tab", () => {
     };
 
     combineMock.mockReturnValue(TabsRoutePath.IDENTIFIERS);
+  });
+
+  test("Render connections page empty", async () => {
+    const initialStateFull = {
+      stateCache: {
+        routes: [TabsRoutePath.CREDENTIALS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      credsCache: {
+        creds: filteredCredsFix,
+        favourites: [
+          {
+            id: filteredCredsFix[0].id,
+            time: 1,
+          },
+        ],
+      },
+      connectionsCache: {
+        connections: [],
+      },
+      identifiersCache: {
+        identifiers: filteredIdentifierFix,
+      },
+    };
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+
+    const mockedStore = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, getByText } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={mockedStore}>
+          <Connections
+            setShowConnections={mockSetShowConnections}
+            showConnections={true}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(getByTestId("connections-tab-cards-placeholder")).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-connections-tab"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("add-a-connection-title")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("add-connection-modal-provide-qr-code"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.connections.tab.indentifierselector.title)
+      ).toBeVisible();
+    });
   });
 
   test("It renders connections page successfully", async () => {
@@ -311,10 +394,11 @@ describe("Connections page from Identifiers tab", () => {
 });
 
 describe("Connections page from Credentials tab", () => {
+  const dispatchMock = jest.fn();
+
   beforeEach(() => {
     jest.resetAllMocks();
     const mockStore = configureStore();
-    const dispatchMock = jest.fn();
 
     mockedStore = {
       ...mockStore(initialStateFull),
@@ -407,4 +491,166 @@ describe("Connections page from Credentials tab", () => {
       );
     });
   });
+  test("Open connection when history.state.openConnections contain", async () => {
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.IDENTIFIERS, {
+      openConnections: true,
+    });
+
+    const { getByTestId } = render(
+      <IonReactMemoryRouter
+        history={history}
+        initialEntries={[TabsRoutePath.IDENTIFIERS]}
+      >
+        <Provider store={mockedStore}>
+          <Route
+            path={TabsRoutePath.IDENTIFIERS}
+            component={Identifiers}
+          />
+        </Provider>
+      </IonReactMemoryRouter>
+    );
+
+    await waitFor(() => {
+      const addConnectionBtn = getByTestId("add-connection-button");
+      expect(addConnectionBtn).toBeInTheDocument();
+      const title = getByTestId("tab-title-connections");
+      expect(title).toBeInTheDocument();
+    });
+  });
+
+  test("Redirect to connection detail when click on connection item", async () => {
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.IDENTIFIERS);
+
+    const { getByTestId } = render(
+      <IonReactMemoryRouter
+        history={history}
+        initialEntries={[TabsRoutePath.IDENTIFIERS]}
+      >
+        <Provider store={mockedStore}>
+          <Connections
+            setShowConnections={mockSetShowConnections}
+            showConnections={true}
+          />
+        </Provider>
+      </IonReactMemoryRouter>
+    );
+
+    await waitFor(() => {
+      const addConnectionBtn = getByTestId("add-connection-button");
+      expect(addConnectionBtn).toBeInTheDocument();
+      const title = getByTestId("tab-title-connections");
+      expect(title).toBeInTheDocument();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId(`card-item-${connectionsFix[2].id}`));
+    });
+
+    expect(dispatchMock).toBeCalled();
+  });
+
+  test("Remove pending connection alert", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIER_DETAILS, TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      identifiersCache: {
+        identifiers: filteredIdentifierFix,
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      connectionsCache: {
+        connections: connectionsFix,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, getByText } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={storeMocked}>
+          <Connections
+            setShowConnections={mockSetShowConnections}
+            showConnections={true}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId(`card-item-${connectionsFix[4].id}`)).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId(`card-item-${connectionsFix[4].id}`));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.connections.tab.detelepending.title)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.connections.tab.detelepending.description)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.connections.tab.detelepending.button)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.connections.tab.detelepending.button)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.connections.tab.detelepending.secondchecktitle
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("connections-tab-delete-pending-modal-confirm-button")
+      );
+    });
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    clickButtonRepeatedly(getByText, "1", 6);
+
+    await waitFor(() => {
+      expect(deleteConnectionByIdMock).toBeCalled();
+    });
+  });
 });
+
+const clickButtonRepeatedly = (
+  getByText: RenderResult["getByText"],
+  buttonLabel: string,
+  times: number
+) => {
+  for (let i = 0; i < times; i++) {
+    act(() => {
+      fireEvent.click(getByText(buttonLabel));
+    });
+  }
+};
