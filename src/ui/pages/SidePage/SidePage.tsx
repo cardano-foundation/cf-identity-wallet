@@ -34,20 +34,24 @@ const SidePage = () => {
   ]);
 
   const getContent = () => {
-    if (canOpenIncomingRequest)
-      return (
-        <IncomingRequest
-          open={openSidePage}
-          setOpenPage={setOpenSidePage}
-        />
-      );
-    if (canOpenPendingWalletConnection)
+    if (canOpenPendingWalletConnection) {
       return (
         <WalletConnect
           open={openSidePage}
           setOpenPage={setOpenSidePage}
         />
       );
+    }
+
+    if (canOpenIncomingRequest) {
+      return (
+        <IncomingRequest
+          open={openSidePage}
+          setOpenPage={setOpenSidePage}
+        />
+      );
+    }
+
     return null;
   };
 
