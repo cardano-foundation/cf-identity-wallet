@@ -3,15 +3,13 @@ import { SideSlider } from "../../components/SideSlider";
 import {
   getQueueIncomingRequest,
   getStateCache,
-  setPauseQueueIncomingRequest,
 } from "../../../store/reducers/stateCache";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { useAppSelector } from "../../../store/hooks";
 import { getPendingConnection } from "../../../store/reducers/walletConnectionsCache";
 import { IncomingRequest } from "./components/IncomingRequest";
 import { WalletConnect } from "./components/WalletConnect";
 
 const SidePage = () => {
-  const dispatch = useAppDispatch();
   const [openSidePage, setOpenSidePage] = useState(false);
   const pauseIncommingRequestByConnection = useRef(false);
 
@@ -35,13 +33,6 @@ const SidePage = () => {
     stateCache.authentication.loggedIn,
   ]);
 
-  const unpauseIncomingRequest = () => {
-    if (pauseIncommingRequestByConnection.current) {
-      dispatch(setPauseQueueIncomingRequest(false));
-      pauseIncommingRequestByConnection.current = false;
-    }
-  };
-
   const getContent = () => {
     if (canOpenIncomingRequest)
       return (
@@ -63,7 +54,6 @@ const SidePage = () => {
   return (
     <SideSlider
       renderAsModal
-      onCloseAnimationEnd={unpauseIncomingRequest}
       isOpen={openSidePage}
     >
       {getContent()}
