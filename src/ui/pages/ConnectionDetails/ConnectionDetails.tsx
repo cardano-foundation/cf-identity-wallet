@@ -141,14 +141,18 @@ const ConnectionDetails = () => {
 
   const verifyAction = () => {
     async function deleteConnection() {
-      await Agent.agent.connections.deleteConnectionById(
-        connectionShortDetails.id
-      );
-      dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
-      dispatch(removeConnectionCache(connectionShortDetails.id));
-      handleDone();
-      setVerifyPasswordIsOpen(false);
-      setVerifyPasscodeIsOpen(false);
+      try {
+        await Agent.agent.connections.deleteConnectionById(
+          connectionShortDetails.id
+        );
+        dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
+        dispatch(removeConnectionCache(connectionShortDetails.id));
+        handleDone();
+        setVerifyPasswordIsOpen(false);
+        setVerifyPasscodeIsOpen(false);
+      } catch (error) {
+        dispatch(setToastMsg(ToastMsgType.DELETE_CONNECTION_FAIL));
+      }
     }
     deleteConnection();
   };

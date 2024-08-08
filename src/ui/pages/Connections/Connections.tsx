@@ -19,7 +19,10 @@ import { i18n } from "../../../i18n";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getConnectionsCache, removeConnectionCache } from "../../../store/reducers/connectionsCache";
+import {
+  getConnectionsCache,
+  removeConnectionCache,
+} from "../../../store/reducers/connectionsCache";
 import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
@@ -230,7 +233,7 @@ const Connections = ({
       dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
       dispatch(removeConnectionCache(deletePendingItem.id));
     } catch (error) {
-      // TODO
+      dispatch(setToastMsg(ToastMsgType.DELETE_CONNECTION_FAIL));
     }
   };
 

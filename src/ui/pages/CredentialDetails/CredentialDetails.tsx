@@ -96,7 +96,7 @@ const CredentialDetails = () => {
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
-      // @TODO - duke: handle error
+      dispatch(setToastMsg(ToastMsgType.GET_ARCH_CRED_FAIL));
     }
   }, [dispatch]);
 
@@ -179,10 +179,13 @@ const CredentialDetails = () => {
   };
 
   const handleDeleteCredential = async () => {
-    // @TODO - sdisalvo: handle error
-    await Agent.agent.credentials.deleteCredential(params.id);
-    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
-    await fetchArchivedCreds();
+    try {
+      await Agent.agent.credentials.deleteCredential(params.id);
+      dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
+      await fetchArchivedCreds();
+    } catch (e) {
+      dispatch(setToastMsg(ToastMsgType.DELETE_CRED_FAIL));
+    }
   };
 
   const handleRestoreCredential = async () => {

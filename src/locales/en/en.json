@@ -1553,7 +1553,11 @@
     "passworddisabled": "Password turned off",
     "passwordcreated": "Password created successfully",
     "sharecredsuccess": "Credential shared successfully",
-    "sharecrederror": "Unable to share credential"
+    "sharecrederror": "Unable to share credential",
+    "deleteconnectionerror": "Unable to delete connection",
+    "deletecrederror": "Unable to delete credential",
+    "deleteidentifiererror": "Unable to delete identifier",
+    "getarchcrederror": "Unable to get archived credentials"
   },
   "request": {
     "sign": {

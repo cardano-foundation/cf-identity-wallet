@@ -121,7 +121,7 @@ const Credentials = () => {
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
-      // @TODO - duke: handle error
+      dispatch(setToastMsg(ToastMsgType.GET_ARCH_CRED_FAIL));
     }
   }, [dispatch]);
 
@@ -231,7 +231,7 @@ const Credentials = () => {
       const creds = await Agent.agent.credentials.getCredentials();
       dispatch(setCredsCache(creds));
     } catch (e) {
-      // TODO: Handle error
+      dispatch(setToastMsg(ToastMsgType.DELETE_CRED_FAIL));
     }
   };
 

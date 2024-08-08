@@ -219,7 +219,7 @@ const Identifiers = () => {
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
       dispatch(setIdentifiersCache(updatedIdentifiers));
     } catch (e) {
-      //TODO: handle delete
+      dispatch(setToastMsg(ToastMsgType.DELETE_IDENTIFIER_FAIL));
     }
   };
 
