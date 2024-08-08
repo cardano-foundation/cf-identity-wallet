@@ -118,6 +118,14 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
               content: { value: hintValue },
             })
           );
+        } else {
+          try {
+            await Agent.agent.basicStorage.deleteById(
+              MiscRecordId.OP_PASS_HINT
+            );
+          } catch (e) {
+            // TODO: handle error
+          }
         }
       }
 
