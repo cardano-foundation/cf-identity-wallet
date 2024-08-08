@@ -62,6 +62,7 @@ const pendingCredFixs: ACDCDetails[] = [
       s: "0",
       dt: "2024-08-07T16:05:44.643Z",
     },
+    schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
   },
 ];
 

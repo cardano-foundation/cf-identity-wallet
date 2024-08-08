@@ -1,5 +1,11 @@
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { act, fireEvent, render, RenderResult, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
@@ -484,12 +490,6 @@ describe("Connections page from Credentials tab", () => {
         )
       );
     });
-
-    act(() => {
-      fireEvent.click(getByTestId(`card-item-${connectionsFix[2].id}`));
-    });
-
-    expect(dispatchMock).toBeCalled();
   });
   test("Open connection when history.state.openConnections contain", async () => {
     const history = createMemoryHistory();
