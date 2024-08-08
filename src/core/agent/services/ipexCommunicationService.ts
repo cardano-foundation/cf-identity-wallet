@@ -246,7 +246,7 @@ class IpexCommunicationService extends AgentService {
 
     const credentialMetadatas =
       await this.credentialStorage.getCredentialMetadatasById(
-        creds.map((cred: any) => `metadata:${cred.sad.d}`),
+        creds.map((cred: any) => cred.sad.d),
         {
           $and: [{ isDeleted: false }, { isArchived: false }],
         }
@@ -257,9 +257,7 @@ class IpexCommunicationService extends AgentService {
         description: schemaKeri.description,
       },
       credentials: credentialMetadatas.map((cr) => {
-        const credKeri = creds.find(
-          (cred: any) => `metadata:${cred.sad.d}` === cr.id
-        );
+        const credKeri = creds.find((cred: any) => cred.sad.d === cr.id);
         return {
           connectionId: cr.connectionId,
           acdc: credKeri.sad,
@@ -295,7 +293,7 @@ class IpexCommunicationService extends AgentService {
     schema: string
   ): Promise<void> {
     const credentialDetails: CredentialMetadataRecordProps = {
-      id: `metadata:${credentialId}`,
+      id: credentialId,
       isArchived: false,
       credentialType: schemaTitle,
       issuanceDate: new Date(dateTime).toISOString(),
@@ -335,7 +333,7 @@ class IpexCommunicationService extends AgentService {
 
   async markAcdcComplete(credentialId: string) {
     const metadata = await this.credentialStorage.getCredentialMetadata(
-      `metadata:${credentialId}`
+      credentialId
     );
     if (!metadata) {
       throw new Error(

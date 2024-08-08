@@ -122,16 +122,22 @@ const IdentifierDetails = () => {
   };
 
   const handleDelete = async () => {
-    setVerifyPasswordIsOpen(false);
-    if (cardData) {
-      const updatedIdentifiers = identifierData.filter(
-        (item) => item.id !== cardData.id
-      );
-      await deleteIdentifier();
-      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
-      dispatch(setIdentifiersCache(updatedIdentifiers));
+    try {
+      setVerifyPasswordIsOpen(false);
+      if (cardData) {
+        const updatedIdentifiers = identifierData.filter(
+          (item) => item.id !== cardData.id
+        );
+        await deleteIdentifier();
+        dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
+        dispatch(setIdentifiersCache(updatedIdentifiers));
+      }
+      handleDone();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Unable to delete identifier", e);
+      dispatch(setToastMsg(ToastMsgType.DELETE_IDENTIFIER_FAIL));
     }
-    handleDone();
   };
 
   const deleteIdentifier = async () => {

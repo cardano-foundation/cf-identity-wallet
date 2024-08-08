@@ -12,24 +12,34 @@ import {
 import { addOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { t } from "i18next";
+import { Agent } from "../../../core/agent/agent";
+import { ConnectionStatus } from "../../../core/agent/agent.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
+import {
+  getConnectionsCache,
+  removeConnectionCache,
+} from "../../../store/reducers/connectionsCache";
+import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
   getStateCache,
   setCurrentOperation,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
+import { Alert } from "../../components/Alert";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { RemovePendingAlert } from "../../components/RemovePendingAlert";
+import { ShareConnection } from "../../components/ShareConnection";
+import { ShareType } from "../../components/ShareConnection/ShareConnection.types";
 import { SideSlider } from "../../components/SideSlider";
-import { OperationType, RequestType } from "../../globals/types";
+import { OperationType, RequestType, ToastMsgType } from "../../globals/types";
 import { useSwipeBack } from "../../hooks/swipeBackHook";
 import { AlphabeticList } from "./components/AlphabeticList";
 import { AlphabetSelector } from "./components/AlphabetSelector";
@@ -41,10 +51,6 @@ import {
   ConnectionShortDetails,
   MappedConnections,
 } from "./Connections.types";
-import { ShareConnection } from "../../components/ShareConnection";
-import { ShareType } from "../../components/ShareConnection/ShareConnection.types";
-import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
-import { Alert } from "../../components/Alert";
 
 const Connections = ({
   showConnections,
@@ -72,6 +78,10 @@ const Connections = ({
   );
   const [openIdentifierMissingAlert, setOpenIdentifierMissingAlert] =
     useState<boolean>(false);
+
+  const [deletePendingItem, setDeletePendingItem] =
+    useState<ConnectionShortDetails | null>(null);
+  const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
 
   useEffect(() => {
     const openConnections = (history.location.state as Record<string, unknown>)
@@ -126,6 +136,12 @@ const Connections = ({
   };
 
   const handleShowConnectionDetails = async (item: ConnectionShortDetails) => {
+    if (item.status === ConnectionStatus.PENDING) {
+      setDeletePendingItem(item);
+      setOpenDeletePendingAlert(true);
+      return;
+    }
+
     const data: DataProps = {
       store: { stateCache },
     };
@@ -198,6 +214,30 @@ const Connections = ({
   }, [showConnections]);
 
   useSwipeBack(getConnectionsTab, canStart, () => setShowConnections(false));
+
+  const deletePendingCheckProps = useMemo(
+    () => ({
+      title: i18n.t("connections.tab.detelepending.title"),
+      description: i18n.t("connections.tab.detelepending.description"),
+      button: i18n.t("connections.tab.detelepending.button"),
+    }),
+    []
+  );
+
+  const deleteConnection = async () => {
+    if (!deletePendingItem) return;
+
+    try {
+      setDeletePendingItem(null);
+      await Agent.agent.connections.deleteConnectionById(deletePendingItem.id);
+      dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
+      dispatch(removeConnectionCache(deletePendingItem.id));
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Unable to delete connection", error);
+      dispatch(setToastMsg(ToastMsgType.DELETE_CONNECTION_FAIL));
+    }
+  };
 
   return (
     <>
@@ -281,6 +321,16 @@ const Connections = ({
         actionConfirm={handleNavToCreateKeri}
         actionCancel={handleCloseAlert}
         actionDismiss={handleCloseAlert}
+      />
+      <RemovePendingAlert
+        pageId={pageId}
+        openFirstCheck={openDeletePendingAlert}
+        firstCheckProps={deletePendingCheckProps}
+        onClose={() => setOpenDeletePendingAlert(false)}
+        secondCheckTitle={`${i18n.t(
+          "connections.tab.detelepending.secondchecktitle"
+        )}`}
+        onDeletePendingItem={deleteConnection}
       />
     </>
   );
