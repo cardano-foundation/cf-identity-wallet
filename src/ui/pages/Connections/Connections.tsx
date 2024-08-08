@@ -234,7 +234,7 @@ const Connections = ({
       dispatch(removeConnectionCache(deletePendingItem.id));
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error(error);
+      console.error("Unable to delete connection", error);
       dispatch(setToastMsg(ToastMsgType.DELETE_CONNECTION_FAIL));
     }
   };

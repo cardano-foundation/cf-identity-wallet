@@ -220,7 +220,7 @@ const Identifiers = () => {
       dispatch(setIdentifiersCache(updatedIdentifiers));
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error(e);
+      console.error("Unable to delete identifier", e);
       dispatch(setToastMsg(ToastMsgType.DELETE_IDENTIFIER_FAIL));
     }
   };

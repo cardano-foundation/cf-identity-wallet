@@ -1556,7 +1556,8 @@
     "sharecrederror": "Unable to share credential",
     "deleteconnectionerror": "Unable to delete connection",
     "deletecrederror": "Unable to delete credential",
-    "deleteidentifiererror": "Unable to delete identifier"
+    "deleteidentifiererror": "Unable to delete identifier",
+    "archivedcrederror": "Unable to archived credential"
   },
   "request": {
     "sign": {

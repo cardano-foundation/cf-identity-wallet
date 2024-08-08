@@ -122,7 +122,7 @@ const Credentials = () => {
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error(e);
+      console.error("Unable to get archived credential", e);
     }
   }, [dispatch]);
 
@@ -233,7 +233,7 @@ const Credentials = () => {
       dispatch(setCredsCache(creds));
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error(e);
+      console.error("Unable to delete credential", e);
       dispatch(setToastMsg(ToastMsgType.DELETE_CRED_FAIL));
     }
   };

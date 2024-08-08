@@ -135,7 +135,7 @@ const IdentifierDetails = () => {
       handleDone();
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error(e);
+      console.error("Unable to delete identifier", e);
       dispatch(setToastMsg(ToastMsgType.DELETE_IDENTIFIER_FAIL));
     }
   };
