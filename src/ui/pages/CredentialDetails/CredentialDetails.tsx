@@ -96,6 +96,8 @@ const CredentialDetails = () => {
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
       dispatch(setToastMsg(ToastMsgType.GET_ARCH_CRED_FAIL));
     }
   }, [dispatch]);
@@ -184,6 +186,8 @@ const CredentialDetails = () => {
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
       await fetchArchivedCreds();
     } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
       dispatch(setToastMsg(ToastMsgType.DELETE_CRED_FAIL));
     }
   };

@@ -134,6 +134,8 @@ const IdentifierDetails = () => {
       }
       handleDone();
     } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
       dispatch(setToastMsg(ToastMsgType.DELETE_IDENTIFIER_FAIL));
     }
   };

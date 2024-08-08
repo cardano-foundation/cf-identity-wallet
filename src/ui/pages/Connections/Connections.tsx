@@ -233,6 +233,8 @@ const Connections = ({
       dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
       dispatch(removeConnectionCache(deletePendingItem.id));
     } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
       dispatch(setToastMsg(ToastMsgType.DELETE_CONNECTION_FAIL));
     }
   };
