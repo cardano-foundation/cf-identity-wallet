@@ -162,8 +162,13 @@ class SignifyNotificationService extends AgentService {
     this.loggedIn = false;
   }
 
-  async deleteNotificationRecordById(id: string): Promise<void> {
-    await this.markNotification(id);
+  async deleteNotificationRecordById(
+    id: string,
+    route: NotificationRoute
+  ): Promise<void> {
+    if (!/^\/local/.test(route)) {
+      await this.markNotification(id);
+    }
     await this.notificationStorage.deleteById(id);
   }
 
@@ -625,12 +630,12 @@ class SignifyNotificationService extends AgentService {
                   const metadata: any = {
                     id: uuidv4(),
                     a: {
-                      r: grantExchange.exn.r,
+                      r: NotificationRoute.LocalAcdcRevoked,
                       credentialTitle: credential.schema.title,
                     },
                     read: false,
                     route: grantExchange.exn.r,
-                    connectionId: grantExchange.exn.i,
+                    connectionId: NotificationRoute.LocalAcdcRevoked,
                   };
                   await this.notificationStorage.save(metadata);
                   callback({

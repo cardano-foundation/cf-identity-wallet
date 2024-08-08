@@ -154,6 +154,7 @@ describe("Multisign request", () => {
     await waitFor(() => {
       expect(joinMultisignMock).toBeCalledWith(
         notificationsFix[3].id,
+        notificationsFix[3].a.r,
         notificationsFix[3].a.d,
         {
           theme: multisigIcpDetails.ourIdentifier.theme,

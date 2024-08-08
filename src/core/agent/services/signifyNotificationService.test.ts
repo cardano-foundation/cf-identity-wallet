@@ -1,5 +1,5 @@
 import { Agent } from "../agent";
-import { ExchangeRoute } from "../agent.types";
+import { ExchangeRoute, NotificationRoute } from "../agent.types";
 import { IpexMessageStorage } from "../records";
 import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
@@ -361,7 +361,10 @@ describe("Signify notification service of agent", () => {
 
   test("can delete keri notification by ID", async () => {
     const id = "uuid";
-    await signifyNotificationService.deleteNotificationRecordById(id);
+    await signifyNotificationService.deleteNotificationRecordById(
+      id,
+      NotificationRoute.ExnIpexGrant
+    );
     expect(notificationStorage.deleteById).toBeCalled();
     expect(markNotificationMock).toBeCalled();
   });
@@ -969,8 +972,9 @@ describe("Long running operation tracker", () => {
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
-    expect(Agent.agent.ipexCommunications.markAcdcComplete).toBeCalledWith(
-      credentialIdMock
+    expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
+      credentialIdMock,
+      CredentialStatus.CONFIRMED
     );
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
@@ -1015,7 +1019,7 @@ describe("Long running operation tracker", () => {
       expect((error as Error).message).toBe("Force Exit");
     }
     expect(operationsGetMock).toBeCalledTimes(1);
-    expect(Agent.agent.ipexCommunications.markAcdcComplete).toBeCalledTimes(0);
+    expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledTimes(0);
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 

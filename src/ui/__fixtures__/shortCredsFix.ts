@@ -43,14 +43,14 @@ const shortCredsFix: CredentialShortDetails[] = [
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
   },
   {
-    id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF2-ghumzCJ6nv",
+    id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF2-ghumzCJ6nv",
     issuanceDate: "2024-01-23T16:03:44.643Z",
     credentialType: "Rare EVO 2024 Attendee",
     status: CredentialStatus.CONFIRMED,
     schema: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
   },
   {
-    id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF3-ghumzCJ6nv",
+    id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF3-ghumzCJ6nv",
     issuanceDate: "2024-01-23T16:03:44.643Z",
     credentialType: "Rare EVO 2024 Attendee",
     status: CredentialStatus.PENDING,

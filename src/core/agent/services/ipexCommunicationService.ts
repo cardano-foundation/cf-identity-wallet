@@ -6,6 +6,7 @@ import {
   AcdcEventTypes,
   ExchangeRoute,
   IpexMessage,
+  NotificationRoute,
   type AcdcStateChangedEvent,
   type AgentServicesProps,
   type KeriaNotification,
@@ -141,7 +142,10 @@ class IpexCommunicationService extends AgentService {
     Agent.agent.signifyNotifications.addPendingOperationToQueue(
       pendingOperation
     );
-    Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      id,
+      notifRecord.a.r as NotificationRoute
+    );
   }
 
   @OnlineOnly
@@ -163,7 +167,8 @@ class IpexCommunicationService extends AgentService {
       .ipex()
       .submitOffer(holderSignifyName, offer, sigs, end, [msg.exn.i]);
     Agent.agent.signifyNotifications.deleteNotificationRecordById(
-      notification.id
+      notification.id,
+      notification.a.r as NotificationRoute
     );
   }
 
@@ -335,20 +340,23 @@ class IpexCommunicationService extends AgentService {
     const metadata = await this.credentialStorage.getCredentialMetadata(
       credentialId
     );
-    if (metadata) {
-      metadata.status = status;
-      await this.credentialStorage.updateCredentialMetadata(
-        metadata.id,
-        metadata
+    if (!metadata) {
+      throw new Error(
+        IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
       );
-      this.props.eventService.emit<AcdcStateChangedEvent>({
-        type: AcdcEventTypes.AcdcStateChanged,
-        payload: {
-          status,
-          credential: getCredentialShortDetails(metadata),
-        },
-      });
     }
+    metadata.status = status;
+    await this.credentialStorage.updateCredentialMetadata(
+      metadata.id,
+      metadata
+    );
+    this.props.eventService.emit<AcdcStateChangedEvent>({
+      type: AcdcEventTypes.AcdcStateChanged,
+      payload: {
+        status,
+        credential: getCredentialShortDetails(metadata),
+      },
+    });
   }
 
   private async getSchema(schemaSaid: string, retry = true): Promise<any> {
@@ -459,7 +467,10 @@ class IpexCommunicationService extends AgentService {
     Agent.agent.signifyNotifications.addPendingOperationToQueue(
       pendingOperation
     );
-    Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      id,
+      notifRecord.a.r as NotificationRoute
+    );
   }
 }
 

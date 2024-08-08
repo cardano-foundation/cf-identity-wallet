@@ -337,7 +337,11 @@ describe("Ipex communication service of agent", () => {
       },
     ]);
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
-    await ipexCommunicationService.markAcdc(id, CredentialStatus.CONFIRMED);
+    await expect(
+      ipexCommunicationService.markAcdc(id, CredentialStatus.CONFIRMED)
+    ).rejects.toThrowError(
+      IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+    );
     expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
   });
 

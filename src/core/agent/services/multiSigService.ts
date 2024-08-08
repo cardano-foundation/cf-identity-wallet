@@ -354,7 +354,8 @@ class MultiSigService extends AgentService {
       multiSig.signifyName
     );
     Agent.agent.signifyNotifications.deleteNotificationRecordById(
-      notification.id
+      notification.id,
+      notification.a.r as NotificationRoute
     );
     return res.op.name.split(".")[1];
   }
@@ -451,6 +452,7 @@ class MultiSigService extends AgentService {
   @OnlineOnly
   async joinMultisig(
     notificationId: string,
+    notificationRoute: NotificationRoute,
     notificationSaid: string,
     meta: Pick<IdentifierMetadataRecordProps, "displayName" | "theme">
   ): Promise<CreateIdentifierResult | undefined> {
@@ -458,7 +460,8 @@ class MultiSigService extends AgentService {
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {
       Agent.agent.signifyNotifications.deleteNotificationRecordById(
-        notificationId
+        notificationId,
+        notificationRoute
       );
       return;
     }

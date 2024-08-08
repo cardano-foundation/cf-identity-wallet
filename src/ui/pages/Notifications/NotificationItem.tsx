@@ -47,7 +47,7 @@ const NotificationItem = ({
         return t("notifications.tab.labels.exnipexapply", {
           connection: connectionsCache?.[item.connectionId]?.label,
         });
-      case ExchangeRoute.IpexGrant:
+      case NotificationRoute.LocalAcdcRevoked:
         return t("notifications.tab.labels.exnipexgrantrevoke", {
           credential: item.a.credentialTitle,
         });
