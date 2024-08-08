@@ -40,7 +40,7 @@ const ConnectionHistoryEvent = ({
           )}
       </div>
       <p className="connection-details-history-event-info">
-        <span>
+        <span className="connection-details-history-text">
           {historyItem.type === ConnectionHistoryType.CREDENTIAL_ISSUANCE &&
             i18next.t("connections.details.issuance", {
               credential: historyItem.credentialType
@@ -88,9 +88,11 @@ const ConnectionHistoryEvent = ({
         />
       </div>
       <p className="connection-details-history-event-info">
-        {i18next.t("connections.details.connectedwith", {
-          issuer: connectionDetails?.label,
-        })}
+        <span className="connection-details-history-text">
+          {i18next.t("connections.details.connectedwith", {
+            issuer: connectionDetails?.label,
+          })}
+        </span>
         <span
           data-testid="connection-detail-date"
           className="connection-details-history-timestamp"
