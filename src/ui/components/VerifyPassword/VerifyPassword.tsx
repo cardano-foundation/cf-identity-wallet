@@ -47,6 +47,8 @@ const VerifyPassword = ({
   };
 
   const handleFetchStoredValues = useCallback(async () => {
+    if (!isOpen) return;
+
     try {
       const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
       if (password) {
@@ -75,9 +77,7 @@ const VerifyPassword = ({
       // TODO: @bao-sotatek handle error for this
     }
 
-    if (hint) {
-      setStoredHint(`${hint}`);
-    }
+    setStoredHint(hint ? String(hint) : "");
   }, [isOpen]);
 
   const resetModal = () => {
@@ -192,7 +192,7 @@ const VerifyPassword = ({
               expand="block"
               fill="outline"
               className="secondary-button"
-              onClick={handleReset}
+              onClick={handleRecoveryPassword}
             >
               {i18n.t("verifypassword.alert.button.resetmypassword")}
             </IonButton>
