@@ -4,6 +4,7 @@ import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
 import { SCHEMA_ACDC } from "../utils/schemas/schemaAcdc";
 import { log } from "../log";
+import { SignifyApi } from "../modules/signify";
 
 async function issueAcdcCredential(req: Request, res: Response): Promise<void> {
   const { schemaSaid, aid, attribute } = req.body;
@@ -45,11 +46,20 @@ async function revokeCredential(req: Request, res: Response): Promise<void> {
   try {
     await Agent.agent.revokeCredential(credentialId, holder);
   } catch (error) {
-    log({ error: (error as Error).message })
+    log({ error: (error as Error).message });
     response = {
       statusCode: 500,
       success: false,
       data: (error as Error).message,
+    };
+    if ((error as Error).message === SignifyApi.CREDENTIAL_REVOKED_ALREADY) {
+      response.statusCode = 409;
+    } else if (
+      new RegExp(`${SignifyApi.CREDENTIAL_NOT_FOUND}`, "gi").test(
+        (error as Error).message
+      )
+    ) {
+      response.statusCode = 404;
     }
   }
   httpResponse(res, response);
