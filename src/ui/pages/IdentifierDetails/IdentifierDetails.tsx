@@ -74,6 +74,20 @@ const IdentifierDetails = () => {
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [openRotateKeyModal, setOpenRotateKeyModal] = useState(false);
   const [navAnimation, setNavAnimation] = useState(false);
+  const userName = stateCache.authentication.userName;
+  const [oobi, setOobi] = useState("");
+
+  const fetchOobi = useCallback(async () => {
+    if (!cardData?.signifyName) return;
+
+    const oobiValue = await Agent.agent.connections.getOobi(
+      `${cardData.signifyName}`,
+      userName
+    );
+    if (oobiValue) {
+      setOobi(oobiValue);
+    }
+  }, [cardData?.signifyName, userName]);
 
   const isFavourite = favouritesIdentifiersData?.some(
     (fav) => fav.id === params.id
@@ -91,6 +105,7 @@ const IdentifierDetails = () => {
   }, [params.id]);
 
   useOnlineStatusEffect(fetchDetails);
+  useOnlineStatusEffect(fetchOobi);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
@@ -324,7 +339,7 @@ const IdentifierDetails = () => {
           <ShareConnection
             isOpen={shareIsOpen}
             setIsOpen={setShareIsOpen}
-            signifyName={cardData.signifyName}
+            oobi={oobi}
           />
           <IdentifierOptions
             handleRotateKey={() => setOpenRotateKeyModal(true)}
@@ -332,6 +347,7 @@ const IdentifierDetails = () => {
             setOptionsIsOpen={setIdentifierOptionsIsOpen}
             cardData={cardData}
             setCardData={setCardData}
+            oobi={oobi}
             handleDeleteIdentifier={() => setAlertIsOpen(true)}
           />
         </>

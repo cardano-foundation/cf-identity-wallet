@@ -6,7 +6,7 @@ enum ShareType {
 interface ShareConnectionProps {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
-  signifyName?: string;
+  oobi: string;
   shareType?: ShareType;
 }
 

@@ -51,6 +51,7 @@ import {
   ConnectionShortDetails,
   MappedConnections,
 } from "./Connections.types";
+import { useOnlineStatusEffect } from "../../hooks";
 
 const Connections = ({
   showConnections,
@@ -78,10 +79,25 @@ const Connections = ({
   );
   const [openIdentifierMissingAlert, setOpenIdentifierMissingAlert] =
     useState<boolean>(false);
-
   const [deletePendingItem, setDeletePendingItem] =
     useState<ConnectionShortDetails | null>(null);
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
+  const userName = stateCache.authentication.userName;
+  const [oobi, setOobi] = useState("");
+
+  const fetchOobi = useCallback(async () => {
+    if (!selectedIdentifier?.signifyName) return;
+
+    const oobiValue = await Agent.agent.connections.getOobi(
+      `${selectedIdentifier.signifyName}`,
+      userName
+    );
+    if (oobiValue) {
+      setOobi(oobiValue);
+    }
+  }, [selectedIdentifier?.signifyName, userName]);
+
+  useOnlineStatusEffect(fetchOobi);
 
   useEffect(() => {
     const openConnections = (history.location.state as Record<string, unknown>)
@@ -308,7 +324,7 @@ const Connections = ({
       <ShareConnection
         isOpen={!!selectedIdentifier}
         setIsOpen={() => setSelectedIdentifier(null)}
-        signifyName={selectedIdentifier?.signifyName}
+        oobi={oobi}
         shareType={ShareType.Connection}
       />
       <Alert
