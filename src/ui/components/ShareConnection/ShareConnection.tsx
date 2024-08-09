@@ -1,14 +1,12 @@
 import { Share } from "@capacitor/share";
 import { IonButton, IonIcon } from "@ionic/react";
 import { copyOutline, openOutline, qrCodeOutline } from "ionicons/icons";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { QRCode } from "react-qrcode-logo";
-import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getStateCache, setToastMsg } from "../../../store/reducers/stateCache";
+import { useAppDispatch } from "../../../store/hooks";
+import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
-import { useOnlineStatusEffect } from "../../hooks";
 import { writeToClipboard } from "../../utils/clipboard";
 import { PageHeader } from "../PageHeader";
 import { ResponsiveModal } from "../layout/ResponsiveModal";
@@ -18,26 +16,11 @@ import { ShareConnectionProps, ShareType } from "./ShareConnection.types";
 const ShareConnection = ({
   isOpen,
   setIsOpen,
-  signifyName,
+  oobi,
   shareType: shareLocation = ShareType.Identifier,
 }: ShareConnectionProps) => {
-  const componentId = "share-identifier-modal";
+  const componentId = "share-connection-modal";
   const dispatch = useAppDispatch();
-  const stateCache = useAppSelector(getStateCache);
-  const userName = stateCache.authentication.userName;
-  const [oobi, setOobi] = useState("");
-
-  const fetchOobi = useCallback(async () => {
-    if (!signifyName) return;
-
-    const oobiValue = await Agent.agent.connections.getOobi(
-      `${signifyName}`,
-      userName
-    );
-    if (oobiValue) {
-      setOobi(oobiValue);
-    }
-  }, [signifyName, userName]);
 
   const subtitle = useMemo(() => {
     switch (shareLocation) {
@@ -47,8 +30,6 @@ const ShareConnection = ({
       return i18n.t("shareidentifier.subtitle.identifier");
     }
   }, [shareLocation]);
-
-  useOnlineStatusEffect(fetchOobi);
 
   return (
     <ResponsiveModal
@@ -77,7 +58,7 @@ const ShareConnection = ({
             fgColor={"black"}
             bgColor={"white"}
             qrStyle={"squares"}
-            logoImage={""} // Optional - leaving as a reminder for possible future customisation
+            logoImage={""}
             logoWidth={60}
             logoHeight={60}
             logoOpacity={1}

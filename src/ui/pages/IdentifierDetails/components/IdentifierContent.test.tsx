@@ -94,7 +94,7 @@ describe("Cards Details page", () => {
       ).toBeInTheDocument()
     );
     expect(getByText(filteredIdentifierFix[0].displayName)).toBeInTheDocument();
-    expect(getByTestId("share-identifier-modal").getAttribute("is-open")).toBe(
+    expect(getByTestId("share-connection-modal").getAttribute("is-open")).toBe(
       "false"
     );
     expect(

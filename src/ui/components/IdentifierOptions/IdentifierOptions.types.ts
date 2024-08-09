@@ -7,6 +7,7 @@ interface IdentifierOptionsProps {
   setCardData: (value: IdentifierDetails) => void;
   handleDeleteIdentifier: () => void;
   handleRotateKey: () => void;
+  oobi: string;
 }
 
 export type { IdentifierOptionsProps };

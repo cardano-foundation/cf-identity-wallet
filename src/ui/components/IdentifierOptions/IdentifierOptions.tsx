@@ -36,6 +36,7 @@ const IdentifierOptions = ({
   setCardData,
   handleDeleteIdentifier,
   handleRotateKey,
+  oobi,
 }: IdentifierOptionsProps) => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
@@ -119,7 +120,7 @@ const IdentifierOptions = ({
 
   const share = async () => {
     await Share.share({
-      text: cardData.displayName + " " + cardData.id,
+      text: oobi,
     });
   };
 

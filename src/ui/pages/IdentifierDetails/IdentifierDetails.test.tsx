@@ -124,14 +124,14 @@ describe("Cards Details page (not multi-sig)", () => {
       );
     });
 
-    expect(queryByTestId("share-identifier-modal")).not.toBeVisible();
+    expect(queryByTestId("share-connection-modal")).not.toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("share-button"));
     });
 
     await waitFor(() => {
-      expect(getByTestId("share-identifier-modal")).toBeVisible();
+      expect(getByTestId("share-connection-modal")).toBeVisible();
     });
   });
 

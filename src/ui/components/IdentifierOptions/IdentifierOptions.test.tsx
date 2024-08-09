@@ -11,6 +11,8 @@ import { TabsRoutePath } from "../navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 
 const updateMock = jest.fn();
+const oobi =
+  "http://keria:3902/oobi/EIEm2e5njbFZMUBPOtfRKdOUJ2EEN2e6NDnAMgBfdc3x/agent/ENjGAcU_Zq95OP_BIyTLgTahVd4xh-cVkecse6kaJqYv?name=Frank";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -58,6 +60,7 @@ describe("Identifier Options modal", () => {
           optionsIsOpen={true}
           setOptionsIsOpen={setIdentifierOptionsIsOpen}
           cardData={identifierFix[0]}
+          oobi={oobi}
           setCardData={setCardData}
           handleDeleteIdentifier={async () => {
             jest.fn();
@@ -83,6 +86,7 @@ describe("Identifier Options modal", () => {
           optionsIsOpen={true}
           setOptionsIsOpen={setIdentifierOptionsIsOpen}
           cardData={identifierFix[2]}
+          oobi={oobi}
           setCardData={setCardData}
           handleDeleteIdentifier={async () => {
             jest.fn();
@@ -136,6 +140,7 @@ describe("Identifier Options function test", () => {
           optionsIsOpen={true}
           setOptionsIsOpen={setIdentifierOptionsIsOpen}
           cardData={identifierFix[0]}
+          oobi={oobi}
           setCardData={setCardData}
           handleDeleteIdentifier={async () => {
             jest.fn();
@@ -189,6 +194,7 @@ describe("Identifier Options function test", () => {
           optionsIsOpen={true}
           setOptionsIsOpen={setIdentifierOptionsIsOpen}
           cardData={identifierFix[0]}
+          oobi={oobi}
           setCardData={setCardData}
           handleDeleteIdentifier={mockDelete}
         />
