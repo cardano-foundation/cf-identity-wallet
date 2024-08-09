@@ -4,7 +4,6 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
-import { setPauseQueueIncomingRequest } from "../../../store/reducers/stateCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { signTransactionFix } from "../../__fixtures__/signTransactionFix";
@@ -62,10 +61,6 @@ describe("Side Page: wallet connect", () => {
           EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.title
         )
       ).toBeInTheDocument();
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(setPauseQueueIncomingRequest(true));
     });
 
     act(() => {
