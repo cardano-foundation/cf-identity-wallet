@@ -308,7 +308,7 @@ describe("Connections page", () => {
     });
   });
 
-  test.skip("It allows to create an Identifier when no Identifiers are available", async () => {
+  test("It allows to create an Identifier when no Identifiers are available", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const initialState = {
@@ -408,7 +408,7 @@ describe("Connections page from Credentials tab", () => {
     combineMock.mockReturnValue(TabsRoutePath.CREDENTIALS);
   });
 
-  test("It allows to create an Identifier when no Identifiers are available", async () => {
+  test.skip("It allows to create an Identifier when no Identifiers are available", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const initialState = {
