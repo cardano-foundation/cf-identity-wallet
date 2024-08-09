@@ -46,7 +46,7 @@ const pendingCredFixs: ACDCDetails[] = [
     id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6wv",
     issuanceDate: "2024-08-07T16:03:44.643Z",
     credentialType: "Rare EVO 2024 Attendee",
-    status: CredentialMetadataRecordStatus.PENDING,
+    status: CredentialStatus.PENDING,
     i: "EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5",
     a: {
       d: "EJ3HSnEqtSm3WiucWkeBbKspmEAIjf2N6wr5EKOcQ9Vl",
