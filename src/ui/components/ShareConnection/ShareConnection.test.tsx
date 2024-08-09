@@ -20,7 +20,7 @@ const props: ShareConnectionProps = {
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children }: never) => (
-    <div data-testid="share-identifier-modal">{children}</div>
+    <div data-testid="share-connection-modal">{children}</div>
   ),
 }));
 
@@ -57,7 +57,7 @@ describe("Share Indentifier", () => {
       expect(
         getByText(ENG_trans.shareidentifier.subtitle.identifier)
       ).toBeVisible();
-      expect(getByTestId("share-identifier-modal")).toBeInTheDocument();
+      expect(getByTestId("share-connection-modal")).toBeInTheDocument();
       expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
     });
 
@@ -87,7 +87,7 @@ describe("Share Indentifier", () => {
       expect(
         getByText(ENG_trans.shareidentifier.subtitle.identifier)
       ).toBeVisible();
-      expect(getByTestId("share-identifier-modal")).toBeInTheDocument();
+      expect(getByTestId("share-connection-modal")).toBeInTheDocument();
       expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
     });
   });
@@ -108,7 +108,7 @@ describe("Share Indentifier", () => {
       expect(
         getByText(ENG_trans.shareidentifier.subtitle.connection)
       ).toBeVisible();
-      expect(getByTestId("share-identifier-modal")).toBeInTheDocument();
+      expect(getByTestId("share-connection-modal")).toBeInTheDocument();
       expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
     });
   });
