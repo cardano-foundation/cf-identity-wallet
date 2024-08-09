@@ -22,6 +22,7 @@ import { useIonHardwareBackButton } from "../../../../hooks";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./ReceiveCredential.scss";
+import { NotificationRoute } from "../../../../../core/agent/agent.types";
 
 const ReceiveCredential = ({
   pageId,
@@ -73,7 +74,8 @@ const ReceiveCredential = ({
 
   const handleDecline = async () => {
     await Agent.agent.signifyNotifications.deleteNotificationRecordById(
-      notificationDetails.id
+      notificationDetails.id,
+      notificationDetails.a.r as NotificationRoute
     );
     handleNotificationUpdate();
     handleBack();

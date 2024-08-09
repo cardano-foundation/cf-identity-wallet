@@ -5,8 +5,10 @@ import {
   getCredsArchivedCache,
 } from "./credsArchivedCache";
 import { RootState } from "../../index";
-import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
-import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import {
+  CredentialShortDetails,
+  CredentialStatus,
+} from "../../../core/agent/services/credentialService.types";
 
 describe("credsArchivedCacheSlice", () => {
   const initialState = {
@@ -24,7 +26,7 @@ describe("credsArchivedCacheSlice", () => {
         id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
         issuanceDate: "2010-01-01T19:23:24Z",
         credentialType: "University Credential",
-        status: CredentialMetadataRecordStatus.CONFIRMED,
+        status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       },
     ];

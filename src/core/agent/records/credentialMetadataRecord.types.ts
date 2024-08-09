@@ -1,7 +1,4 @@
-enum CredentialMetadataRecordStatus {
-  CONFIRMED = "confirmed",
-  PENDING = "pending",
-}
+import { CredentialStatus } from "../services/credentialService.types";
 
 interface CredentialMetadataRecordProps {
   id: string;
@@ -10,10 +7,9 @@ interface CredentialMetadataRecordProps {
   isDeleted?: boolean;
   issuanceDate: string;
   credentialType: string;
-  status: CredentialMetadataRecordStatus;
+  status: CredentialStatus;
   connectionId: string;
   schema: string;
 }
 
-export { CredentialMetadataRecordStatus };
 export type { CredentialMetadataRecordProps };

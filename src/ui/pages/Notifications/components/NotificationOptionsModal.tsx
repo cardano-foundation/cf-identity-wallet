@@ -15,6 +15,7 @@ import {
 import { Alert } from "../../../components/Alert";
 import { OptionItem, OptionModal } from "../../../components/OptionsModal";
 import { NotificationOptionModalProps } from "./NotificationOptionsModal.types";
+import { NotificationRoute } from "../../../../core/agent/agent.types";
 
 const NotificationOptionsModal = ({
   optionsIsOpen,
@@ -56,7 +57,8 @@ const NotificationOptionsModal = ({
   const removeNotification = async () => {
     try {
       await Agent.agent.signifyNotifications.deleteNotificationRecordById(
-        notification.id
+        notification.id,
+        notification.a.r as NotificationRoute
       );
       dispatch(deleteNotification(notification));
       closeModal();

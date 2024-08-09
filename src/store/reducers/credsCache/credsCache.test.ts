@@ -10,8 +10,10 @@ import {
   updateOrAddCredsCache,
 } from "./credsCache";
 import { RootState } from "../../index";
-import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
-import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import {
+  CredentialShortDetails,
+  CredentialStatus,
+} from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../identifiersCache/identifiersCache.types";
 
 describe("credsCacheSlice", () => {
@@ -31,7 +33,7 @@ describe("credsCacheSlice", () => {
         id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
         issuanceDate: "2010-01-01T19:23:24Z",
         credentialType: "University Credential",
-        status: CredentialMetadataRecordStatus.CONFIRMED,
+        status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       },
     ];
@@ -47,7 +49,7 @@ describe("credsCacheSlice", () => {
       id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "University Credential",
-      status: CredentialMetadataRecordStatus.CONFIRMED,
+      status: CredentialStatus.CONFIRMED,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     };
     const newState = credsCacheSlice.reducer(
@@ -64,19 +66,19 @@ describe("credsCacheSlice", () => {
       id: credId1,
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "University Credential",
-      status: CredentialMetadataRecordStatus.PENDING,
+      status: CredentialStatus.PENDING,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     };
     const cred2: CredentialShortDetails = {
       id: credId2,
       issuanceDate: "2010-01-01T19:23:24Z",
       credentialType: "University Credential",
-      status: CredentialMetadataRecordStatus.PENDING,
+      status: CredentialStatus.PENDING,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     };
     const updateCred: CredentialShortDetails = {
       ...cred1,
-      status: CredentialMetadataRecordStatus.CONFIRMED,
+      status: CredentialStatus.CONFIRMED,
     };
     const newState = credsCacheSlice.reducer(
       { creds: [cred1, cred2], favourites: [] },

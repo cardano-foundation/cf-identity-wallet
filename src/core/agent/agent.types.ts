@@ -126,6 +126,10 @@ interface AcdcStateChangedEvent extends BaseEventEmitter {
     | {
         status: CredentialStatus.CONFIRMED;
         credential: CredentialShortDetails;
+      }
+    | {
+        status: CredentialStatus.REVOKED;
+        credential: CredentialShortDetails;
       };
 }
 
@@ -209,6 +213,7 @@ interface AgentUrls {
 }
 
 enum NotificationRoute {
+  // "Real" notifications from KERIA
   ExnIpexGrant = "/exn/ipex/grant",
   MultiSigExn = "/multisig/exn",
   MultiSigIcp = "/multisig/icp",
@@ -216,6 +221,8 @@ enum NotificationRoute {
   MultiSigRpy = "/multisig/rpy",
   ExnIpexApply = "/exn/ipex/apply",
   ExnIpexAgree = "/exn/ipex/agree",
+  // Notifications from our wallet to give further feedback to the user
+  LocalAcdcRevoked = "/local/acdc/revoked",
 }
 
 enum ExchangeRoute {

@@ -3,4 +3,5 @@ export enum OperationPendingRecordType {
   Group = "group",
   Oobi = "oobi",
   ExchangeReceiveCredential = "exchange.receivecredential",
+  ExchangeRevokeCredential = "exchange.revokecredential",
 }

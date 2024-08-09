@@ -39,7 +39,6 @@ enum OperationType {
   ARCHIVE_CREDENTIAL = "archiveCredential",
   DELETE_CREDENTIAL = "deleteCredential",
   SCAN_CONNECTION = "scanConnection",
-  ADD_CREDENTIAL = "addCredential",
   RECEIVE_CONNECTION = "receiveConnection",
   MULTI_SIG_INITIATOR_SCAN = "multiSigInitiatorScan",
   MULTI_SIG_RECEIVER_SCAN = "multiSigReceiverScan",

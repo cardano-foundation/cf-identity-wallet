@@ -258,9 +258,6 @@ describe("AppWrapper handler", () => {
       } as AcdcStateChangedEvent;
       await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
       expect(dispatch).toBeCalledWith(
-        setCurrentOperation(OperationType.ADD_CREDENTIAL)
-      );
-      expect(dispatch).toBeCalledWith(
         setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING)
       );
     });
@@ -276,7 +273,6 @@ describe("AppWrapper handler", () => {
       } as AcdcStateChangedEvent;
       await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
       expect(dispatch).toBeCalledWith(updateOrAddCredsCache(credentialMock));
-      expect(dispatch).toBeCalledWith(setCurrentOperation(OperationType.IDLE));
       expect(dispatch).toBeCalledWith(
         setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED)
       );

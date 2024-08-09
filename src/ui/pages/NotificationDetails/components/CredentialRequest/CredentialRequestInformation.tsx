@@ -19,6 +19,7 @@ import { CredentialRequestProps } from "./CredentialRequest.types";
 import "./CredentialRequestInformation.scss";
 import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
+import { NotificationRoute } from "../../../../../core/agent/agent.types";
 
 const CredentialRequestInformation = ({
   pageId,
@@ -46,7 +47,8 @@ const CredentialRequestInformation = ({
 
   const handleDecline = async () => {
     await Agent.agent.signifyNotifications.deleteNotificationRecordById(
-      notificationDetails.id
+      notificationDetails.id,
+      notificationDetails.a.r as NotificationRoute
     );
     handleNotificationUpdate();
     onBack();

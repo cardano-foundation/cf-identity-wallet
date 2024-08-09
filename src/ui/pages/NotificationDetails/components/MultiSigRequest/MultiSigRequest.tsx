@@ -29,7 +29,10 @@ import { PageHeader } from "../../../../components/PageHeader";
 import { i18n } from "../../../../../i18n";
 import { PageFooter } from "../../../../components/PageFooter";
 import "./MultiSigRequest.scss";
-import { CreateIdentifierResult } from "../../../../../core/agent/agent.types";
+import {
+  CreateIdentifierResult,
+  NotificationRoute,
+} from "../../../../../core/agent/agent.types";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import {
   getNotificationsCache,
@@ -101,6 +104,7 @@ const MultiSigRequest = ({
       const { identifier, signifyName, isPending } =
         (await Agent.agent.multiSigs.joinMultisig(
           notificationDetails.id,
+          notificationDetails.a.r as NotificationRoute,
           notificationDetails.a.d as string,
           {
             theme: multisigIcpDetails.ourIdentifier.theme,
@@ -137,7 +141,8 @@ const MultiSigRequest = ({
   const actionDecline = async () => {
     setAlertDeclineIsOpen(false);
     await Agent.agent.signifyNotifications.deleteNotificationRecordById(
-      notificationDetails.id
+      notificationDetails.id,
+      notificationDetails.a.r as NotificationRoute
     );
     handleNotificationUpdate();
     handleBack();
