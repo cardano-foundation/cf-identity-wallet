@@ -24,6 +24,13 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
+jest.mock("react-qrcode-logo", () => {
+  return {
+    ...jest.requireActual("react-qrcode-logo"),
+    QRCode: () => <div></div>,
+  };
+});
+
 describe("Identifier Options modal", () => {
   const dispatchMock = jest.fn();
   let mockedStore: Store<unknown, AnyAction>;

@@ -106,7 +106,7 @@ describe("Cards Details page (not multi-sig)", () => {
   });
 
   test("It opens the sharing modal", async () => {
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId, queryAllByTestId } = render(
       <Provider store={storeMockedAidKeri}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -124,14 +124,14 @@ describe("Cards Details page (not multi-sig)", () => {
       );
     });
 
-    expect(queryByTestId("share-connection-modal")).not.toBeVisible();
+    expect(queryAllByTestId("share-connection-modal")[0]).not.toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("share-button"));
     });
 
     await waitFor(() => {
-      expect(getByTestId("share-connection-modal")).toBeVisible();
+      expect(queryAllByTestId("share-connection-modal")[0]).toBeVisible();
     });
   });
 

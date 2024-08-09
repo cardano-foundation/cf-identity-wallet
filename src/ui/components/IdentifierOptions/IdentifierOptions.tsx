@@ -1,4 +1,3 @@
-import { Share } from "@capacitor/share";
 import { IonButton } from "@ionic/react";
 import {
   pencilOutline,
@@ -28,6 +27,7 @@ import { OptionItem, OptionModal } from "../OptionsModal";
 import "./IdentifierOptions.scss";
 import { IdentifierOptionsProps } from "./IdentifierOptions.types";
 import { getTheme } from "../../utils/theme";
+import { ShareConnection } from "../ShareConnection";
 
 const IdentifierOptions = ({
   optionsIsOpen,
@@ -45,6 +45,7 @@ const IdentifierOptions = ({
   const [newSelectedTheme, setNewSelectedTheme] = useState(0);
   const [newSelectedColor, setNewSelectedColor] = useState(0);
   const [isMultiSig, setIsMultiSig] = useState(false);
+  const [shareIsOpen, setShareIsOpen] = useState(false);
 
   useEffect(() => {
     const identifier = identifiersData.find((data) => data.id === cardData.id);
@@ -118,12 +119,6 @@ const IdentifierOptions = ({
     setEditorIsOpen(true);
   };
 
-  const share = async () => {
-    await Share.share({
-      text: oobi,
-    });
-  };
-
   const deleteIdentifier = () => {
     setOptionsIsOpen(false);
     handleDelete();
@@ -157,7 +152,7 @@ const IdentifierOptions = ({
     {
       icon: shareOutline,
       label: i18n.t("identifiers.details.options.share"),
-      onClick: share,
+      onClick: () => setShareIsOpen(true),
       testId: "share-identifier-option",
     },
     {
@@ -245,6 +240,11 @@ const IdentifierOptions = ({
           {i18n.t("identifiers.details.options.inner.confirm")}
         </IonButton>
       </OptionModal>
+      <ShareConnection
+        isOpen={shareIsOpen}
+        setIsOpen={setShareIsOpen}
+        oobi={oobi}
+      />
     </>
   );
 };
