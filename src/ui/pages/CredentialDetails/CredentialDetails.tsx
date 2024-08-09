@@ -57,6 +57,7 @@ import { CredentialContent } from "./components/CredentialContent";
 import "./CredentialDetails.scss";
 import { CredHistory } from "./CredentialDetails.types";
 import { NotificationDetailCacheState } from "../../../store/reducers/notificationsCache/notificationCache.types";
+import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -89,6 +90,16 @@ const CredentialDetails = () => {
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === params.id);
+
+  const fetchArchivedCreds = useCallback(async () => {
+    try {
+      const creds = await Agent.agent.credentials.getCredentials(true);
+      dispatch(setCredsArchivedCache(creds));
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Unable to get archived credential", e);
+    }
+  }, [dispatch]);
 
   const getCredDetails = useCallback(async () => {
     const cardDetails = await Agent.agent.credentials.getCredentialDetailsById(
@@ -157,20 +168,33 @@ const CredentialDetails = () => {
   };
 
   const handleArchiveCredential = async () => {
-    await Agent.agent.credentials.archiveCredential(params.id);
-    const creds = credsCache.filter((item) => item.id !== params.id);
-    if (isFavourite) {
-      handleSetFavourite(params.id);
+    try {
+      await Agent.agent.credentials.archiveCredential(params.id);
+      await fetchArchivedCreds();
+      const creds = credsCache.filter((item) => item.id !== params.id);
+      if (isFavourite) {
+        handleSetFavourite(params.id);
+      }
+      dispatch(setCredsCache(creds));
+      dispatch(setNotificationDetailCache(null));
+      dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Unable to archive credential", e);
+      dispatch(setToastMsg(ToastMsgType.ARCHIVED_CRED_FAIL));
     }
-    dispatch(setCredsCache(creds));
-    dispatch(setNotificationDetailCache(null));
-    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
   };
 
   const handleDeleteCredential = async () => {
-    // @TODO - sdisalvo: handle error
-    await Agent.agent.credentials.deleteCredential(params.id);
-    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
+    try {
+      await Agent.agent.credentials.deleteCredential(params.id);
+      dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
+      await fetchArchivedCreds();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Unable to delete credential", e);
+      dispatch(setToastMsg(ToastMsgType.DELETE_CRED_FAIL));
+    }
   };
 
   const handleRestoreCredential = async () => {
@@ -179,6 +203,7 @@ const CredentialDetails = () => {
     const creds = await Agent.agent.credentials.getCredentialShortDetailsById(
       params.id
     );
+    await fetchArchivedCreds();
     dispatch(setCredsCache([...credsCache, creds]));
 
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));

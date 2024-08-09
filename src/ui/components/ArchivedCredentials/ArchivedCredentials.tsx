@@ -44,6 +44,7 @@ import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
 import { CredentialItem } from "./CredentialItem";
 import { TabsRoutePath } from "../navigation/TabsMenu";
+import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 
 const ArchivedCredentialsContainer = forwardRef<
   ArchivedCredentialsContainerRef,
@@ -135,6 +136,9 @@ const ArchivedCredentialsContainer = forwardRef<
       if (restoreSuccessCrendentials.length === 0) return;
 
       dispatch(setCredsCache([...credsCache, ...restoreSuccessCrendentials]));
+
+      const creds = await Agent.agent.credentials.getCredentials(true);
+      dispatch(setCredsArchivedCache(creds));
     } catch (e) {
       // TODO: Handle error
     }

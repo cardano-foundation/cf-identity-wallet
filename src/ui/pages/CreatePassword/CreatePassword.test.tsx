@@ -244,7 +244,6 @@ describe("Create Password Page", () => {
       },
     };
 
-
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const storeMocked = {

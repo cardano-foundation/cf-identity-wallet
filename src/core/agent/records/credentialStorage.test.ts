@@ -30,6 +30,7 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   credentialType: "credType",
   status: CredentialMetadataRecordStatus.CONFIRMED,
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
+  schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(

@@ -24,6 +24,7 @@ const IdentifierSelectorModal = ({
 
   const displayIdentifiers = identifierCache
     .filter((item) => !item.isPending)
+    .filter((item) => !item.groupMetadata?.groupId)
     .map(
       (identifier): CardItem<IdentifierShortDetails> => ({
         id: identifier.id,

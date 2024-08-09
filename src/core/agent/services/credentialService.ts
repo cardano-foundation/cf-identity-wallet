@@ -65,6 +65,7 @@ class CredentialService extends AgentService {
       issuanceDate: metadata.issuanceDate,
       credentialType: metadata.credentialType,
       status: metadata.status,
+      schema: metadata.schema,
     };
   }
 
@@ -77,9 +78,7 @@ class CredentialService extends AgentService {
   @OnlineOnly
   async getCredentialDetailsById(id: string): Promise<ACDCDetails> {
     const metadata = await this.getMetadataById(id);
-    const acdc = await this.props.signifyClient
-      .credentials()
-      .get(metadata.id.replace("metadata:", ""));
+    const acdc = await this.props.signifyClient.credentials().get(metadata.id);
     if (!acdc) {
       throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
     }
@@ -154,15 +153,17 @@ class CredentialService extends AgentService {
     credentialId: string,
     dateTime: string,
     schemaTitle: string,
-    connectionId: string
+    connectionId: string,
+    schema: string
   ): Promise<void> {
     const credentialDetails: CredentialMetadataRecordProps = {
-      id: `metadata:${credentialId}`,
+      id: credentialId,
       isArchived: false,
       credentialType: schemaTitle,
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
       connectionId,
+      schema,
     };
     await this.createMetadata(credentialDetails);
   }
@@ -177,9 +178,7 @@ class CredentialService extends AgentService {
       await this.credentialStorage.getAllCredentialMetadata();
     const unSyncedData = signifyCredentials.filter(
       (credential: any) =>
-        !storedCredentials.find(
-          (item) => credential.sad.d === item.id.replace("metadata:", "")
-        )
+        !storedCredentials.find((item) => credential.sad.d === item.id)
     );
     if (unSyncedData.length) {
       //sync the storage with the signify data
@@ -188,7 +187,8 @@ class CredentialService extends AgentService {
           credential.sad.d,
           credential.sad.a.dt,
           credential.schema.title,
-          credential.sad.i
+          credential.sad.i,
+          credential.schema.$id
         );
       }
     }

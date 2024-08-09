@@ -105,7 +105,8 @@ class IpexCommunicationService extends AgentService {
       exn.exn.e.acdc.d,
       exn.exn.e.acdc.a.dt,
       schema.title,
-      connectionId
+      connectionId,
+      schemaSaid
     );
 
     this.props.eventService.emit<AcdcStateChangedEvent>({
@@ -120,12 +121,22 @@ class IpexCommunicationService extends AgentService {
       (key) => exn.exn.e.acdc.e?.[key]?.s
     );
 
-    const op = await this.admitIpex(
-      notifRecord.a.d as string,
-      holder.signifyName,
-      exn.exn.i,
-      [exn.exn.e.acdc.s, ...chainedSchemaSaids]
-    );
+    let op: Operation;
+    if (holder.multisigManageAid) {
+      op = await Agent.agent.multiSigs.multisigAdmit(
+        holder.signifyName,
+        notifRecord.a.d as string,
+        [exn.exn.e.acdc.s, ...chainedSchemaSaids]
+      );
+    } else {
+      op = await this.admitIpex(
+        notifRecord.a.d as string,
+        holder.signifyName,
+        exn.exn.i,
+        [exn.exn.e.acdc.s, ...chainedSchemaSaids]
+      );
+    }
+
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
@@ -235,7 +246,7 @@ class IpexCommunicationService extends AgentService {
 
     const credentialMetadatas =
       await this.credentialStorage.getCredentialMetadatasById(
-        creds.map((cred: any) => `metadata:${cred.sad.d}`),
+        creds.map((cred: any) => cred.sad.d),
         {
           $and: [{ isDeleted: false }, { isArchived: false }],
         }
@@ -246,9 +257,7 @@ class IpexCommunicationService extends AgentService {
         description: schemaKeri.description,
       },
       credentials: credentialMetadatas.map((cr) => {
-        const credKeri = creds.find(
-          (cred: any) => `metadata:${cred.sad.d}` === cr.id
-        );
+        const credKeri = creds.find((cred: any) => cred.sad.d === cr.id);
         return {
           connectionId: cr.connectionId,
           acdc: credKeri.sad,
@@ -280,15 +289,17 @@ class IpexCommunicationService extends AgentService {
     credentialId: string,
     dateTime: string,
     schemaTitle: string,
-    connectionId: string
+    connectionId: string,
+    schema: string
   ): Promise<void> {
     const credentialDetails: CredentialMetadataRecordProps = {
-      id: `metadata:${credentialId}`,
+      id: credentialId,
       isArchived: false,
       credentialType: schemaTitle,
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
       connectionId,
+      schema,
     };
     await this.credentialStorage.saveCredentialMetadataRecord(
       credentialDetails
@@ -322,7 +333,7 @@ class IpexCommunicationService extends AgentService {
 
   async markAcdcComplete(credentialId: string) {
     const metadata = await this.credentialStorage.getCredentialMetadata(
-      `metadata:${credentialId}`
+      credentialId
     );
     if (!metadata) {
       throw new Error(
@@ -344,7 +355,7 @@ class IpexCommunicationService extends AgentService {
     });
   }
 
-  private async getSchema(schemaSaid: string, retry = true) {
+  private async getSchema(schemaSaid: string, retry = true): Promise<any> {
     try {
       const schema = await this.props.signifyClient.schemas().get(schemaSaid);
       return schema;
@@ -358,7 +369,7 @@ class IpexCommunicationService extends AgentService {
           )
           .catch(() => undefined);
         if (oobi?.done && retry) {
-          await this.getSchema(schemaSaid, false);
+          return await this.getSchema(schemaSaid, false);
         }
         return undefined;
       } else {
@@ -390,6 +401,69 @@ class IpexCommunicationService extends AgentService {
       connectionId: message.exn.i,
       historyType,
     });
+  }
+
+  @OnlineOnly
+  async acceptAcdcFromMultisigExn(id: string): Promise<void> {
+    const notifRecord = await this.getNotificationRecordById(id);
+    const exn = await this.props.signifyClient
+      .exchanges()
+      .get(notifRecord.a.d as string);
+
+    const multisigExn = exn?.exn?.e?.exn;
+    const previousExnGrantMsg = await this.props.signifyClient
+      .exchanges()
+      .get(exn?.exn.e.exn.p);
+
+    const holder = await this.identifierStorage.getIdentifierMetadata(
+      exn.exn.e.exn.i
+    );
+
+    if (!holder) {
+      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+    }
+
+    const credentialId = previousExnGrantMsg.exn.e.acdc.d;
+    const connectionId = previousExnGrantMsg.exn.i;
+
+    const schemaSaid = previousExnGrantMsg.exn.e.acdc.s;
+    const allSchemaSaids = Object.keys(
+      previousExnGrantMsg.exn.e.acdc?.e || {}
+    ).map((key) => previousExnGrantMsg.exn.e.acdc.e?.[key]?.s);
+    allSchemaSaids.push(schemaSaid);
+
+    const op = await Agent.agent.multiSigs.multisigAdmit(
+      holder.signifyName,
+      previousExnGrantMsg.exn.d as string,
+      allSchemaSaids,
+      multisigExn
+    );
+
+    const schema = await this.props.signifyClient.schemas().get(schemaSaid);
+    await this.saveAcdcMetadataRecord(
+      previousExnGrantMsg.exn.e.acdc.d,
+      previousExnGrantMsg.exn.e.acdc.a.dt,
+      connectionId,
+      schema.title,
+      connectionId
+    );
+
+    this.props.eventService.emit<AcdcStateChangedEvent>({
+      type: AcdcEventTypes.AcdcStateChanged,
+      payload: {
+        credentialId,
+        status: CredentialStatus.PENDING,
+      },
+    });
+
+    const pendingOperation = await this.operationPendingStorage.save({
+      id: op.name,
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+    Agent.agent.signifyNotifications.addPendingOperationToQueue(
+      pendingOperation
+    );
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
   }
 }
 

@@ -12,19 +12,34 @@ import {
 import { addOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { Agent } from "../../../core/agent/agent";
+import { ConnectionStatus } from "../../../core/agent/agent.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getConnectionsCache,
+  removeConnectionCache,
+} from "../../../store/reducers/connectionsCache";
+import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
+import {
+  getCurrentOperation,
+  getStateCache,
+  setCurrentOperation,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
+import { Alert } from "../../components/Alert";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { RemovePendingAlert } from "../../components/RemovePendingAlert";
+import { ShareConnection } from "../../components/ShareConnection";
+import { ShareType } from "../../components/ShareConnection/ShareConnection.types";
 import { SideSlider } from "../../components/SideSlider";
-import { RequestType } from "../../globals/types";
+import { OperationType, RequestType, ToastMsgType } from "../../globals/types";
 import { useSwipeBack } from "../../hooks/swipeBackHook";
 import { AlphabeticList } from "./components/AlphabeticList";
 import { AlphabetSelector } from "./components/AlphabetSelector";
@@ -36,8 +51,6 @@ import {
   ConnectionShortDetails,
   MappedConnections,
 } from "./Connections.types";
-import { ShareConnection } from "../../components/ShareConnection";
-import { ShareType } from "../../components/ShareConnection/ShareConnection.types";
 
 const Connections = ({
   showConnections,
@@ -47,7 +60,12 @@ const Connections = ({
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+  const currentOperation = useAppSelector(getCurrentOperation);
   const connectionsCache = useAppSelector(getConnectionsCache);
+  const identifierCache = useAppSelector(getIdentifiersCache);
+  const availableIdentifiers = identifierCache.filter(
+    (item) => !item.isPending
+  );
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
   >([]);
@@ -58,6 +76,12 @@ const Connections = ({
   const [showPlaceholder, setShowPlaceholder] = useState(
     Object.keys(connectionsCache)?.length === 0
   );
+  const [openIdentifierMissingAlert, setOpenIdentifierMissingAlert] =
+    useState<boolean>(false);
+
+  const [deletePendingItem, setDeletePendingItem] =
+    useState<ConnectionShortDetails | null>(null);
+  const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
 
   useEffect(() => {
     const openConnections = (history.location.state as Record<string, unknown>)
@@ -73,15 +97,51 @@ const Connections = ({
     setShowPlaceholder(Object.keys(connectionsCache).length === 0);
   }, [connectionsCache]);
 
-  function handleProvideQr() {
-    setOpenIdentifierSelector(true);
-  }
+  useEffect(() => {
+    if (currentOperation === OperationType.BACK_TO_SHARE_CONNECTION) {
+      setShowConnections(true);
+      dispatch(setCurrentOperation(OperationType.IDLE));
+    }
+  }, [currentOperation, setShowConnections]);
+
+  const handleNavToCreateKeri = () => {
+    setOpenIdentifierMissingAlert(false);
+    history.location.pathname === TabsRoutePath.IDENTIFIERS &&
+      dispatch(
+        setCurrentOperation(
+          OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS
+        )
+      );
+    history.location.pathname === TabsRoutePath.CREDENTIALS &&
+      dispatch(
+        setCurrentOperation(
+          OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS
+        )
+      ) &&
+      history.push(TabsRoutePath.IDENTIFIERS);
+  };
+
+  const handleProvideQr = () => {
+    availableIdentifiers.length
+      ? setOpenIdentifierSelector(true)
+      : setOpenIdentifierMissingAlert(true);
+  };
 
   const handleConnectModal = () => {
     setConnectModalIsOpen(true);
   };
 
+  const handleCloseAlert = () => {
+    setOpenIdentifierMissingAlert(false);
+  };
+
   const handleShowConnectionDetails = async (item: ConnectionShortDetails) => {
+    if (item.status === ConnectionStatus.PENDING) {
+      setDeletePendingItem(item);
+      setOpenDeletePendingAlert(true);
+      return;
+    }
+
     const data: DataProps = {
       store: { stateCache },
     };
@@ -155,6 +215,30 @@ const Connections = ({
 
   useSwipeBack(getConnectionsTab, canStart, () => setShowConnections(false));
 
+  const deletePendingCheckProps = useMemo(
+    () => ({
+      title: i18n.t("connections.tab.detelepending.title"),
+      description: i18n.t("connections.tab.detelepending.description"),
+      button: i18n.t("connections.tab.detelepending.button"),
+    }),
+    []
+  );
+
+  const deleteConnection = async () => {
+    if (!deletePendingItem) return;
+
+    try {
+      setDeletePendingItem(null);
+      await Agent.agent.connections.deleteConnectionById(deletePendingItem.id);
+      dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
+      dispatch(removeConnectionCache(deletePendingItem.id));
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Unable to delete connection", error);
+      dispatch(setToastMsg(ToastMsgType.DELETE_CONNECTION_FAIL));
+    }
+  };
+
   return (
     <>
       <SideSlider isOpen={showConnections}>
@@ -226,6 +310,27 @@ const Connections = ({
         setIsOpen={() => setSelectedIdentifier(null)}
         signifyName={selectedIdentifier?.signifyName}
         shareType={ShareType.Connection}
+      />
+      <Alert
+        isOpen={openIdentifierMissingAlert}
+        setIsOpen={setOpenIdentifierMissingAlert}
+        dataTestId="alert-create-keri"
+        headerText={i18n.t("connections.tab.alert.message")}
+        confirmButtonText={`${i18n.t("connections.tab.alert.confirm")}`}
+        cancelButtonText={`${i18n.t("connections.tab.alert.cancel")}`}
+        actionConfirm={handleNavToCreateKeri}
+        actionCancel={handleCloseAlert}
+        actionDismiss={handleCloseAlert}
+      />
+      <RemovePendingAlert
+        pageId={pageId}
+        openFirstCheck={openDeletePendingAlert}
+        firstCheckProps={deletePendingCheckProps}
+        onClose={() => setOpenDeletePendingAlert(false)}
+        secondCheckTitle={`${i18n.t(
+          "connections.tab.detelepending.secondchecktitle"
+        )}`}
+        onDeletePendingItem={deleteConnection}
       />
     </>
   );

@@ -551,6 +551,15 @@
     "forgotten": {
       "button": "I've forgotten my passcode"
     },
+    "attempterror": "{{attempt}} attempt remaining",
+    "attemptalert": {
+      "title": "Login unavailable",
+      "content": "Try again in {{time}}",
+      "hour": "{{value}} hour",
+      "hours": "{{value}} hours",
+      "minute": "{{value}} minute",
+      "minutes": "{{value}} minutes"
+    },
     "alert": {
       "text": {
         "verify": "If you've forgotten your passcode, please verify your seed phrase to gain access to your wallet",
@@ -675,6 +684,13 @@
     },
     "checkbox": "I have read and understand."
   },
+  "removependingalert": {
+    "button": {
+      "done": "Done",
+      "confirm": "Yes, I'm sure",
+      "cancel": "Cancel"
+    }
+  },
   "createpassword": {
     "title": "Create password",
     "change": "New password",
@@ -760,6 +776,13 @@
       "pendingidentifiers": "Pending identifiers",
       "multisigidentifiers": "For groups"
     },
+    "detelepending": {
+      "title": "Identifier options",
+      "description": "Your identifier is pending and may still complete. If you no longer require this identifier, tap “Delete identifier” to remove it.",
+      "mutilsigdescription": "This multi-sig is pending. It will complete once it meets the required member threshold. To remove it from your pending list, tap “Delete identifier”.",
+      "button": "Delete identifier",
+      "secondchecktitle": "Are you sure you want to delete this identifier?"
+    },
     "layout": {
       "created": "CREATED"
     },
@@ -842,7 +865,14 @@
       "create": "Add a credential",
       "viewarchived": "View archived credentials",
       "favourites": "Favourites",
-      "allcreds": "All credentials"
+      "allcreds": "All credentials",
+      "pendingcred": "Pending credentials",
+      "detelepending": {
+        "title": "Credential options",
+        "description": "Your credential is pending and may still complete. If you no longer require this credential, tap “Delete credential” to remove it.",
+        "button": "Delete credential",
+        "secondchecktitle": "Are you sure you want to delete this credential?"
+      }
     },
     "layout": {
       "issued": "Issued"
@@ -1219,6 +1249,17 @@
           "cancel": "Cancel",
           "confirm": "Confirm"
         }
+      },
+      "alert": {
+        "message": "To create a connection, you need to create an individual KERI AID identifier. Would you like to create one now?",
+        "confirm": "Create identifier",
+        "cancel": "Cancel"
+      },
+      "detelepending": {
+        "title": "Connection options",
+        "description": "This connection is pending you’ll be notified once they accept. If you no longer require this connection, tap “Delete connection” to remove.",
+        "button": "Delete connection",
+        "secondchecktitle": "Are you sure you want to delete this connection?"
       }
     },
     "details": {
@@ -1262,7 +1303,7 @@
     }
   },
   "connectmodal": {
-    "title": "Add a ",
+    "title": "Add a",
     "scan": "Scan QR Code",
     "connect": "Scan to connect",
     "provide": "Provide QR Code",
@@ -1512,7 +1553,11 @@
     "passworddisabled": "Password turned off",
     "passwordcreated": "Password created successfully",
     "sharecredsuccess": "Credential shared successfully",
-    "sharecrederror": "Unable to share credential"
+    "sharecrederror": "Unable to share credential",
+    "deleteconnectionerror": "Unable to delete connection",
+    "deletecrederror": "Unable to delete credential",
+    "deleteidentifiererror": "Unable to delete identifier",
+    "archivedcrederror": "Unable to archive credential"
   },
   "request": {
     "sign": {

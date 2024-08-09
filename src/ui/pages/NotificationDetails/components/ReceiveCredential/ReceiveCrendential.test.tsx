@@ -12,6 +12,7 @@ import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { ReceiveCredential } from "./ReceiveCredential";
 
 mockIonicReact();
+jest.useFakeTimers();
 
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const acceptAcdcMock = jest.fn((id: string) => Promise.resolve(id));
@@ -128,10 +129,17 @@ describe("Credential request", () => {
       expect(acceptAcdcMock).toBeCalledWith(notificationsFix[0].id);
     });
 
-    const newNotification = notificationsFix.filter(
-      (notification) => notification.id !== notificationsFix[0].id
-    );
+    await act(async () => {
+      jest.runAllTimers();
+      const newNotification = notificationsFix.filter(
+        (notification) => notification.id !== notificationsFix[0].id
+      );
 
-    expect(dispatchMock).lastCalledWith(setNotificationsCache(newNotification));
-  });
+      await waitFor(() => {
+        expect(dispatchMock).lastCalledWith(
+          setNotificationsCache(newNotification)
+        );
+      });
+    });
+  }, 10000);
 });
