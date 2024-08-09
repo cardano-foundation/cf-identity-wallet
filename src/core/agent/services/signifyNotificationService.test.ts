@@ -73,6 +73,20 @@ const ipexMessageMock = {
   },
 };
 
+const credentialMetadataMock = {
+  type: "CredentialMetadataRecord",
+  id: "EJuFvMGiT3uhEXtd7UQlkAm4N_MymeHfhkgnOgPhK0cJ",
+  isArchived: false,
+  isDeleted: false,
+  createdAt: "2024-08-09T04:21:18.311Z",
+  issuanceDate: "2024-08-09T04:21:12.575Z",
+  credentialType: "Qualified vLEI Issuer Credential",
+  status: CredentialStatus.CONFIRMED,
+  connectionId: "EP0fEaRWZDR7caQbdserTOWlC_4trvqB1tzbr2xVo3a4",
+  schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+  updatedAt: "2024-08-09T04:21:19.695Z",
+};
+
 const exchangesGetMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -195,13 +209,23 @@ const operationPendingStorage = jest.mocked({
   getAll: operationPendingGetAllMock,
 });
 
+const credentialStorage = jest.mocked({
+  getAllCredentialMetadata: jest.fn(),
+  deleteCredentialMetadata: jest.fn(),
+  getCredentialMetadata: jest.fn(),
+  saveCredentialMetadataRecord: jest.fn(),
+  updateCredentialMetadata: jest.fn(),
+  getCredentialMetadatasById: jest.fn(),
+});
+
 const signifyNotificationService = new SignifyNotificationService(
   agentServicesProps,
   notificationStorage as any,
   identifierStorage as any,
   operationPendingStorage as any,
   connectionStorage as any,
-  ipexMessageStorage as any
+  ipexMessageStorage as any,
+  credentialStorage as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -320,6 +344,9 @@ describe("Signify notification service of agent", () => {
         },
       },
     ];
+    credentialStorage.getCredentialMetadata.mockResolvedValue(
+      credentialMetadataMock
+    );
     getCredentialMock.mockResolvedValue(acdcMock);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "signifyName",
@@ -640,7 +667,7 @@ describe("Signify notification service of agent", () => {
     );
   });
 
-  test("Should call createLinkedIpexMessageRecord with CREDENTIAL_UPDATE", async () => {
+  test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REVOKED", async () => {
     const callback = jest.fn();
     exchangesGetMock.mockResolvedValue(ipexMessageMock);
     notificationStorage.save = jest
@@ -656,6 +683,9 @@ describe("Signify notification service of agent", () => {
         m: "",
       },
     };
+    credentialStorage.getCredentialMetadata.mockResolvedValue(
+      credentialMetadataMock
+    );
     admitMock.mockResolvedValue([{}, ["sigs"], "end"]);
     getCredentialMock.mockResolvedValue(acdcMock);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
@@ -670,11 +700,8 @@ describe("Signify notification service of agent", () => {
       callback
     );
     expect(
-      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
-    ).toHaveBeenCalledWith(
-      ipexMessageMock,
-      ConnectionHistoryType.CREDENTIAL_UPDATE
-    );
+      Agent.agent.signifyNotifications.addPendingOperationToQueue
+    ).toBeCalledTimes(1);
   });
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT_AGREE", async () => {

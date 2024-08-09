@@ -171,7 +171,8 @@ class Agent {
         this.identifierStorage,
         this.operationPendingStorage,
         this.connectionStorage,
-        this.ipexMessageStorage
+        this.ipexMessageStorage,
+        this.credentialStorage
       );
     }
     return this.signifyNotificationService;

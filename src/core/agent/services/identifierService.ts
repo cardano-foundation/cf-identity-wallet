@@ -88,7 +88,7 @@ class IdentifierService extends AgentService {
       .get(metadata.signifyName)
       .catch((error) => {
         const errorStack = (error as Error).stack as string;
-        const status = errorStack.split("-")[1];
+        const status = errorStack.split(" - ")[1];
         if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
           return undefined;
         } else {

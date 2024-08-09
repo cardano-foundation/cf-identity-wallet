@@ -16,4 +16,8 @@ async function postRequestAndGenQR(endpoint: string, body?: any) {
   qrcode.generate(invitationLink, { small: true });
 }
 
-export { requestAndGenQR, postRequestAndGenQR };
+async function requestRevokeCredential(endpoint: string, body: { credentialId: string; holder: string }) {
+  await axios.post(endpoint, body);
+  log(`Credential with id ${body.credentialId} has been revoked from holder ${body.holder}`)
+}
+export { requestAndGenQR, postRequestAndGenQR, requestRevokeCredential };

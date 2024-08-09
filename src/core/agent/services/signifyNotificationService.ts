@@ -12,6 +12,7 @@ import { CredentialStatus, Notification } from "./credentialService.types";
 import {
   BasicRecord,
   ConnectionStorage,
+  CredentialStorage,
   IdentifierStorage,
   IpexMessageStorage,
   NotificationStorage,
@@ -33,6 +34,7 @@ class SignifyNotificationService extends AgentService {
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly connectionStorage: ConnectionStorage;
   protected readonly ipexMessageStorage: IpexMessageStorage;
+  protected readonly credentialStorage: CredentialStorage;
 
   protected pendingOperations: OperationPendingRecord[] = [];
   private loggedIn = true;
@@ -43,7 +45,8 @@ class SignifyNotificationService extends AgentService {
     identifierStorage: IdentifierStorage,
     operationPendingStorage: OperationPendingStorage,
     connectionStorage: ConnectionStorage,
-    ipexMessageStorage: IpexMessageStorage
+    ipexMessageStorage: IpexMessageStorage,
+    credentialStorage: CredentialStorage
   ) {
     super(agentServiceProps);
     this.notificationStorage = notificationStorage;
@@ -51,6 +54,7 @@ class SignifyNotificationService extends AgentService {
     this.operationPendingStorage = operationPendingStorage;
     this.connectionStorage = connectionStorage;
     this.ipexMessageStorage = ipexMessageStorage;
+    this.credentialStorage = credentialStorage;
   }
 
   async onNotificationStateChanged(
@@ -206,10 +210,10 @@ class SignifyNotificationService extends AgentService {
       const exchange = await this.props.signifyClient
         .exchanges()
         .get(notif.a.d);
-      const existingCredential = await this.props.signifyClient
-        .credentials()
-        .get(exchange.exn.e.acdc.d)
-        .catch(() => undefined);
+      const existingCredential =
+        await this.credentialStorage.getCredentialMetadata(
+          exchange.exn.e.acdc.d
+        );
       const ourIdentifier = await this.identifierStorage
         .getIdentifierMetadata(exchange.exn.a.i)
         .catch((error) => {
@@ -226,7 +230,10 @@ class SignifyNotificationService extends AgentService {
         await this.markNotification(notif.i);
         return;
       }
-      if (existingCredential) {
+      if (
+        existingCredential &&
+        existingCredential.status !== CredentialStatus.REVOKED
+      ) {
         const dt = new Date().toISOString().replace("Z", "000+00:00");
         const [admit, sigs, aend] = await this.props.signifyClient
           .ipex()
@@ -243,10 +250,6 @@ class SignifyNotificationService extends AgentService {
         Agent.agent.signifyNotifications.addPendingOperationToQueue(
           pendingOperation
         );
-        await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
-          exchange,
-          ConnectionHistoryType.CREDENTIAL_UPDATE
-        );
         await this.markNotification(notif.i);
         return;
       } else {
@@ -262,7 +265,7 @@ class SignifyNotificationService extends AgentService {
         .getRequest(notif.a.d)
         .catch((error) => {
           const errorStack = (error as Error).stack as string;
-          const status = errorStack.split("-")[1];
+          const status = errorStack.split(" - ")[1];
           if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
             return [];
           } else {
@@ -309,7 +312,7 @@ class SignifyNotificationService extends AgentService {
         .getRequest(notif.a.d)
         .catch((error) => {
           const errorStack = (error as Error).stack as string;
-          const status = errorStack.split("-")[1];
+          const status = errorStack.split(" - ")[1];
           if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
             return [];
           } else {
@@ -435,7 +438,7 @@ class SignifyNotificationService extends AgentService {
         .getRequest(event.a.d)
         .catch((error) => {
           const errorStack = (error as Error).stack as string;
-          const status = errorStack.split("-")[1];
+          const status = errorStack.split(" - ")[1];
           if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
             return [];
           } else {
@@ -619,13 +622,25 @@ class SignifyNotificationService extends AgentService {
                   .exchanges()
                   .get(admitExchange.exn.p);
                 const credentialId = grantExchange?.exn?.e?.acdc?.d;
+                const credentialMetadata =
+                    await this.credentialStorage.getCredentialMetadata(
+                      credentialId
+                    );
                 const credential = await this.props.signifyClient
                   .credentials()
                   .get(credentialId);
-                if (credential && credential.status.s === "1") {
+                if (
+                  credential &&
+                    credential.status.s === "1" &&
+                    credentialMetadata?.status !== CredentialStatus.REVOKED
+                ) {
                   await Agent.agent.ipexCommunications.markAcdc(
                     credentialId,
                     CredentialStatus.REVOKED
+                  );
+                  await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
+                    grantExchange,
+                    ConnectionHistoryType.CREDENTIAL_REVOKED
                   );
                   const metadata: any = {
                     id: uuidv4(),
