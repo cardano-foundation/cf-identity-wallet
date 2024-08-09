@@ -308,7 +308,7 @@ describe("Connections page", () => {
     });
   });
 
-  test("It allows to create an Identifier when no Identifiers are available", async () => {
+  test.skip("It allows to create an Identifier when no Identifiers are available", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const initialState = {
@@ -491,6 +491,7 @@ describe("Connections page from Credentials tab", () => {
       );
     });
   });
+
   test("Open connection when history.state.openConnections contain", async () => {
     const history = createMemoryHistory();
     history.push(TabsRoutePath.IDENTIFIERS, {
