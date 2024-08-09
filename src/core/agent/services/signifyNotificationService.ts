@@ -649,8 +649,7 @@ class SignifyNotificationService extends AgentService {
                       credentialTitle: credential.schema.title,
                     },
                     read: false,
-                    route: grantExchange.exn.r,
-                    connectionId: NotificationRoute.LocalAcdcRevoked,
+                    route: NotificationRoute.LocalAcdcRevoked,
                   };
                   await this.notificationStorage.save(metadata);
                   callback({
