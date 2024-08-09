@@ -167,10 +167,7 @@ const updateStoreAfterCreatePassword = (data: DataProps) => {
 
 const getNextScanRoute = (data: DataProps) => {
   const currentOperation = data?.state?.currentOperation;
-  let path;
-  if (currentOperation === OperationType.ADD_CREDENTIAL) {
-    path = TabsRoutePath.CREDENTIALS;
-  }
+  let path = TabsRoutePath.CREDENTIALS;
 
   if (currentOperation === OperationType.RECEIVE_CONNECTION) {
     let previousPath = data.store.stateCache.routes[1]?.path;
@@ -184,7 +181,7 @@ const getNextScanRoute = (data: DataProps) => {
       previousPath = TabsRoutePath.IDENTIFIERS;
     }
 
-    path = previousPath;
+    path = previousPath as TabsRoutePath;
   }
 
   return { pathname: path };
