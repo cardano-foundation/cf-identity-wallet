@@ -70,8 +70,9 @@
       width: 82%;
       margin: 0 0 0 3%;
 
-      span {
+      .connection-details-history-timestamp {
         font-weight: 400;
+        text-wrap: nowrap;
       }
     }
   }
