@@ -26,9 +26,6 @@ jobs:
       - name: 🔨 Build app for iOS simulator
         run: xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Debug -sdk iphonesimulator17.5 CODE_SIGN_INDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
-      - name: 📱 List iOS simulator
-        run: xcrun simctl list
-
       - name: 📱 Start iOS simulator app
         run: open -a Simulator.app
 
