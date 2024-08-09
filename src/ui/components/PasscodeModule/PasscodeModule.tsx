@@ -12,6 +12,7 @@ import faceIdIcon from "../../assets/images/face-id.png";
 const PasscodeModule = ({
   error,
   passcode,
+  hasError,
   handlePinChange,
   handleRemove,
   handleBiometricButtonClick,
@@ -95,6 +96,7 @@ const PasscodeModule = ({
                         <IonButton
                           data-testid="passcode-button-#"
                           className="passcode-module-number-button"
+                          disabled={hasError}
                           onClick={() =>
                             biometricInfo?.strongBiometryIsAvailable &&
                           handleBiometricButton()
@@ -112,6 +114,7 @@ const PasscodeModule = ({
                       data-testid={`passcode-button-${number}`}
                       className="passcode-module-number-button"
                       onClick={() => handlePinChange(number)}
+                      disabled={hasError}
                     >
                       <div className="passcode-module-number-button-inner">
                         {number}
@@ -131,11 +134,12 @@ const PasscodeModule = ({
                 ))}
                 {rowIndex === rows.length - 1 && (
                   <IonCol>
-                    {passcode !== "" && (
+                    {passcode !== "" && !hasError && (
                       <IonButton
                         className="passcode-module-backspace-button"
                         data-testid="setpasscode-backspace-button"
                         onClick={() => handleRemove()}
+                        disabled={hasError}
                       >
                         <IonIcon
                           slot="icon-only"

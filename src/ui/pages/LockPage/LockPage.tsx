@@ -162,6 +162,7 @@ const LockPage = () => {
                 key={error}
               />
             }
+            hasError={!!error}
             passcode={passcode}
             handlePinChange={handlePinChange}
             handleRemove={handleRemove}
