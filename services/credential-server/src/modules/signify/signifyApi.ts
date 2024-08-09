@@ -139,24 +139,18 @@ export class SignifyApi {
   async issueQVICredential(
     issuerName: string,
     registryId: string,
-    schemaId: string,
     recipientPrefix: string
   ) {
-    await this.resolveOobi(`${config.oobiEndpoint}/oobi/${schemaId}`);
+    await this.resolveOobi(`${config.oobiEndpoint}/oobi/${Agent.QVI_SCHEMA_SAID}`);
 
-    let vcdata = {};
-    if (schemaId === Agent.QVI_SCHEMA_SAID) {
-      vcdata = {
-        LEI: "5493001KJTIIGC8Y1R17",
-        i: recipientPrefix,
-      };
-    } else {
-      throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);
-    }
+    const vcdata = {
+      LEI: "5493001KJTIIGC8Y1R17",
+      i: recipientPrefix,
+    };
     const result = await this.signifyClient.credentials().issue({
       issuerName,
       registryId,
-      schemaId,
+      schemaId: Agent.QVI_SCHEMA_SAID,
       recipient: recipientPrefix,
       data: vcdata,
     });

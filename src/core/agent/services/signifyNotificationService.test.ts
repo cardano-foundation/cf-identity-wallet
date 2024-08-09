@@ -595,39 +595,6 @@ describe("Signify notification service of agent", () => {
     );
   });
 
-  test("Should call createLinkedIpexMessageRecord with CREDENTIAL_ISSUANCE", async () => {
-    const callback = jest.fn();
-    exchangesGetMock.mockResolvedValue(ipexMessageMock);
-    notificationStorage.save = jest
-      .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
-    const notification = {
-      i: "string",
-      dt: "string",
-      r: false,
-      a: {
-        r: "/exn/ipex/grant",
-        d: "string",
-        m: "",
-      },
-    };
-    getCredentialMock.mockRejectedValueOnce(new Error());
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "signifyName",
-    });
-
-    await signifyNotificationService.processNotification(
-      notification,
-      callback
-    );
-    expect(
-      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
-    ).toHaveBeenCalledWith(
-      ipexMessageMock,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
-    );
-  });
-
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_UPDATE", async () => {
     const callback = jest.fn();
     exchangesGetMock.mockResolvedValue(ipexMessageMock);

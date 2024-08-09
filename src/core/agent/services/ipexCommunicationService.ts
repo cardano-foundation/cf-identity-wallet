@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import { Operation, Serder } from "signify-ts";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
@@ -43,8 +42,6 @@ class IpexCommunicationService extends AgentService {
 
   static readonly CREDENTIAL_SERVER =
     "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
-  static readonly SCHEMA_SAID_VLEI =
-    "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
   static readonly SCHEMA_SAID_RARE_EVO_DEMO =
     "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb";
 
@@ -72,38 +69,36 @@ class IpexCommunicationService extends AgentService {
 
   @OnlineOnly
   async acceptAcdc(id: string): Promise<void> {
-    const notifRecord = await this.getNotificationRecordById(id);
-    const exn = await this.props.signifyClient
+    const grantNoteRecord = await this.getNotificationRecordById(id);
+    const grantExn = await this.props.signifyClient
       .exchanges()
-      .get(notifRecord.a.d as string);
+      .get(grantNoteRecord.a.d as string);
 
-    const credentialId = exn.exn.e.acdc.d;
-    const connectionId = exn.exn.i;
+    const credentialId = grantExn.exn.e.acdc.d;
+    const connectionId = grantExn.exn.i;
+
     const holder = await this.identifierStorage.getIdentifierMetadata(
-      exn.exn.a.i
+      grantExn.exn.a.i
     );
     if (!holder) {
       throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     }
-    const schemaSaid = exn.exn.e.acdc.s;
-    const allSchemaSaids = Object.keys(exn.exn.e.acdc?.e || {}).map(
-      // Chained schemas
-      (key) => exn.exn.e.acdc.e?.[key]?.s
+
+    const schemaSaid = grantExn.exn.e.acdc.s;
+    await Agent.agent.connections.resolveOobi(
+      `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
+    );
+
+    const allSchemaSaids = Object.keys(grantExn.exn.e.acdc?.e || {}).map(
+      // Chained schemas, will be resolved in admit/multisigAdmit
+      (key) => grantExn.exn.e.acdc.e?.[key]?.s
     );
     allSchemaSaids.push(schemaSaid);
-    await Promise.all(
-      allSchemaSaids.map(
-        async (schemaSaid) =>
-          await Agent.agent.connections.resolveOobi(
-            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`,
-            true
-          )
-      )
-    );
+
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
     await this.saveAcdcMetadataRecord(
-      exn.exn.e.acdc.d,
-      exn.exn.e.acdc.a.dt,
+      grantExn.exn.e.acdc.d,
+      grantExn.exn.e.acdc.a.dt,
       schema.title,
       connectionId,
       schemaSaid
@@ -117,25 +112,26 @@ class IpexCommunicationService extends AgentService {
       },
     });
 
-    const chainedSchemaSaids = Object.keys(exn.exn.e.acdc?.e || {}).map(
-      (key) => exn.exn.e.acdc.e?.[key]?.s
-    );
-
     let op: Operation;
     if (holder.multisigManageAid) {
       op = await Agent.agent.multiSigs.multisigAdmit(
         holder.signifyName,
-        notifRecord.a.d as string,
-        [exn.exn.e.acdc.s, ...chainedSchemaSaids]
+        grantNoteRecord.a.d as string,
+        allSchemaSaids
       );
     } else {
       op = await this.admitIpex(
-        notifRecord.a.d as string,
+        grantNoteRecord.a.d as string,
         holder.signifyName,
-        exn.exn.i,
-        [exn.exn.e.acdc.s, ...chainedSchemaSaids]
+        grantExn.exn.i,
+        allSchemaSaids
       );
     }
+
+    await this.createLinkedIpexMessageRecord(
+      grantExn,
+      ConnectionHistoryType.CREDENTIAL_ISSUANCE
+    );
 
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
@@ -355,29 +351,6 @@ class IpexCommunicationService extends AgentService {
     });
   }
 
-  private async getSchema(schemaSaid: string, retry = true): Promise<any> {
-    try {
-      const schema = await this.props.signifyClient.schemas().get(schemaSaid);
-      return schema;
-    } catch (error) {
-      const errorStack = (error as Error).stack as string;
-      const status = errorStack.split("-")[1];
-      if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
-        const oobi = await Agent.agent.connections
-          .resolveOobi(
-            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
-          )
-          .catch(() => undefined);
-        if (oobi?.done && retry) {
-          return await this.getSchema(schemaSaid, false);
-        }
-        return undefined;
-      } else {
-        throw error;
-      }
-    }
-  }
-
   async createLinkedIpexMessageRecord(
     message: IpexMessage,
     historyType: ConnectionHistoryType
@@ -393,7 +366,11 @@ class IpexCommunicationService extends AgentService {
         .get(message.exn.p);
       schemaSaid = previousExchange.exn.e.acdc.s;
     }
-    const schema = await this.getSchema(schemaSaid);
+
+    await Agent.agent.connections.resolveOobi(
+      `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
+    );
+    const schema = await this.props.signifyClient.schemas().get(schemaSaid);
     await this.ipexMessageStorage.createIpexMessageRecord({
       id: message.exn.d,
       credentialType: schema?.title,
