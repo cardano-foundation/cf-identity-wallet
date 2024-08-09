@@ -10,6 +10,13 @@ const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();
 const getOobiMock = jest.fn();
 const getIdentifier = jest.fn();
+const contactGetMock = jest.fn().mockImplementation((id: string) => {
+  return {
+    alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
+    oobi: "oobi",
+    id,
+  };
+});
 
 const failUuid = "fail-uuid";
 const signifyClient = jest.mocked({
@@ -68,13 +75,7 @@ const signifyClient = jest.mocked({
   }),
   contacts: () => ({
     list: contactListMock,
-    get: jest.fn().mockImplementation((id: string) => {
-      return {
-        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
-        oobi: "oobi",
-        id,
-      };
-    }),
+    get: contactGetMock,
     delete: deleteContactMock,
   }),
   notifications: () => ({
@@ -718,5 +719,21 @@ describe("Connection service of agent", () => {
         credentialType: "IIW 2024 Demo Day Attendee",
       },
     ]);
+  });
+
+  test("Can delete stale local connection", async () => {
+    const connectionId = "connection-id";
+    await connectionService.deleteStaleLocalConnectionById(connectionId);
+    expect(connectionStorage.deleteById).toBeCalledWith(connectionId);
+  });
+
+  test("connection exists in the database but not on Signify", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    contactGetMock.mockRejectedValue(
+      new Error("request - 404 - SignifyClient message")
+    );
+    await expect(connectionService.getConnectionById("id")).rejects.toThrow(
+      new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`)
+    );
   });
 });

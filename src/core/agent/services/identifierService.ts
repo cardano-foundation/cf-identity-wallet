@@ -35,7 +35,8 @@ class IdentifierService extends AgentService {
     "Failed to rotate AID, operation not completing...";
   static readonly FAILED_TO_OBTAIN_KEY_MANAGER =
     "Failed to obtain key manager for given AID";
-
+  static readonly IDENTIFIER_IS_PENDING =
+    "Cannot fetch identifier details as the identifier is still pending";
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
 
@@ -74,14 +75,12 @@ class IdentifierService extends AgentService {
   }
 
   @OnlineOnly
-  async getIdentifier(
-    identifier: string
-  ): Promise<IdentifierDetails | undefined> {
+  async getIdentifier(identifier: string): Promise<IdentifierDetails> {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
     );
     if (metadata.isPending && metadata.signifyOpName) {
-      return undefined;
+      throw new Error(IdentifierService.IDENTIFIER_IS_PENDING);
     }
     const aid = await this.props.signifyClient
       .identifiers()
@@ -90,15 +89,11 @@ class IdentifierService extends AgentService {
         const errorStack = (error as Error).stack as string;
         const status = errorStack.split(" - ")[1];
         if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
-          return undefined;
+          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${metadata.id}`);
         } else {
           throw error;
         }
       });
-
-    if (!aid) {
-      return undefined;
-    }
 
     return {
       id: aid.prefix,
@@ -208,6 +203,19 @@ class IdentifierService extends AgentService {
     ) {
       PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
     }
+  }
+
+  async deleteStaleLocalIdentifier(identifier: string): Promise<void> {
+    const connectedDApp =
+      PeerConnection.peerConnection.getConnectedDAppAddress();
+    if (
+      connectedDApp !== "" &&
+      identifier ===
+        (await PeerConnection.peerConnection.getConnectingIdentifier()).id
+    ) {
+      PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
+    }
+    await this.identifierStorage.deleteIdentifierMetadata(identifier);
   }
 
   async restoreIdentifier(identifier: string): Promise<void> {
