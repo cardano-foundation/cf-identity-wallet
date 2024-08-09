@@ -53,9 +53,6 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       const identifier = await Agent.agent.identifiers.getIdentifier(
         this.selectedAid
       );
-      if (!identifier) {
-        throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${this.selectedAid}`);
-      }
       return {
         id: this.selectedAid,
         oobi: await Agent.agent.connections.getOobi(identifier.signifyName),

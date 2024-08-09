@@ -35,7 +35,8 @@ class IdentifierService extends AgentService {
     "Failed to rotate AID, operation not completing...";
   static readonly FAILED_TO_OBTAIN_KEY_MANAGER =
     "Failed to obtain key manager for given AID";
-
+  static readonly IDENTIFIER_IS_PENDING =
+    "Cannot fetch identifier details as the identifier is still pending";
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
 
@@ -74,14 +75,12 @@ class IdentifierService extends AgentService {
   }
 
   @OnlineOnly
-  async getIdentifier(
-    identifier: string
-  ): Promise<IdentifierDetails | undefined> {
+  async getIdentifier(identifier: string): Promise<IdentifierDetails> {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
     );
     if (metadata.isPending && metadata.signifyOpName) {
-      return undefined;
+      throw new Error(IdentifierService.IDENTIFIER_IS_PENDING);
     }
     const aid = await this.props.signifyClient
       .identifiers()

@@ -229,6 +229,18 @@ describe("Single sig service of agent", () => {
     );
   });
 
+  test("Should throw error if the identifier is pending", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...keriMetadataRecord,
+      isPending: true,
+      signifyOpName: "signifyOpName",
+    });
+    await expect(
+      identifierService.getIdentifier(keriMetadataRecord.id)
+    ).rejects.toThrow(new Error(IdentifierService.IDENTIFIER_IS_PENDING));
+  });
+
   test("can get a keri identifier in detailed view", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     identifierStorage.getIdentifierMetadata = jest
