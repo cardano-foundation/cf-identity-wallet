@@ -1,8 +1,11 @@
-import { Serder } from "signify-ts";
+import { v4 as uuidv4 } from "uuid";
+import { Operation, Serder } from "signify-ts";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import {
   AcdcEventTypes,
+  ExchangeRoute,
+  IpexMessage,
   type AcdcStateChangedEvent,
   type AgentServicesProps,
   type KeriaNotification,
@@ -11,18 +14,19 @@ import {
   CredentialStorage,
   IdentifierStorage,
   NotificationStorage,
+  OperationPendingStorage,
+  IpexMessageStorage,
 } from "../records";
 import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
-import {
-  CredentialShortDetails,
-  CredentialStatus,
-} from "./credentialService.types";
+import { CredentialStatus } from "./credentialService.types";
 import { OnlineOnly, getCredentialShortDetails } from "./utils";
 import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { ConnectionHistoryType } from "./connection.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -41,40 +45,68 @@ class IpexCommunicationService extends AgentService {
     "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
   static readonly SCHEMA_SAID_VLEI =
     "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
-  static readonly SCHEMA_SAID_IIW_DEMO =
-    "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu";
+  static readonly SCHEMA_SAID_RARE_EVO_DEMO =
+    "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb";
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;
   protected readonly notificationStorage: NotificationStorage;
+  protected readonly ipexMessageStorage: IpexMessageStorage;
+  protected readonly operationPendingStorage: OperationPendingStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
     credentialStorage: CredentialStorage,
-    notificationStorage: NotificationStorage
+    notificationStorage: NotificationStorage,
+    ipexMessageStorage: IpexMessageStorage,
+    operationPendingStorage: OperationPendingStorage
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
     this.credentialStorage = credentialStorage;
     this.notificationStorage = notificationStorage;
+    this.ipexMessageStorage = ipexMessageStorage;
+    this.operationPendingStorage = operationPendingStorage;
   }
 
   @OnlineOnly
-  async acceptAcdc(
-    id: string,
-    waitForAcdcConfig = { maxAttempts: 120, interval: 500 }
-  ): Promise<void> {
+  async acceptAcdc(id: string): Promise<void> {
     const notifRecord = await this.getNotificationRecordById(id);
     const exn = await this.props.signifyClient
       .exchanges()
       .get(notifRecord.a.d as string);
+
     const credentialId = exn.exn.e.acdc.d;
     const connectionId = exn.exn.i;
+    const holder = await this.identifierStorage.getIdentifierMetadata(
+      exn.exn.a.i
+    );
+    if (!holder) {
+      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+    }
+    const schemaSaid = exn.exn.e.acdc.s;
+    const allSchemaSaids = Object.keys(exn.exn.e.acdc?.e || {}).map(
+      // Chained schemas
+      (key) => exn.exn.e.acdc.e?.[key]?.s
+    );
+    allSchemaSaids.push(schemaSaid);
+    await Promise.all(
+      allSchemaSaids.map(
+        async (schemaSaid) =>
+          await Agent.agent.connections.resolveOobi(
+            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`,
+            true
+          )
+      )
+    );
+    const schema = await this.props.signifyClient.schemas().get(schemaSaid);
     await this.saveAcdcMetadataRecord(
       exn.exn.e.acdc.d,
       exn.exn.e.acdc.a.dt,
-      connectionId
+      schema.title,
+      connectionId,
+      schemaSaid
     );
 
     this.props.eventService.emit<AcdcStateChangedEvent>({
@@ -85,41 +117,34 @@ class IpexCommunicationService extends AgentService {
       },
     });
 
-    const holder = await this.identifierStorage.getIdentifierMetadata(
-      exn.exn.a.i
-    );
-    if (!holder) {
-      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
-    }
     const chainedSchemaSaids = Object.keys(exn.exn.e.acdc?.e || {}).map(
       (key) => exn.exn.e.acdc.e?.[key]?.s
     );
 
-    await this.admitIpex(
-      notifRecord.a.d as string,
-      holder.signifyName,
-      exn.exn.i,
-      [exn.exn.e.acdc.s, ...chainedSchemaSaids]
-    );
+    let op: Operation;
+    if (holder.multisigManageAid) {
+      op = await Agent.agent.multiSigs.multisigAdmit(
+        holder.signifyName,
+        notifRecord.a.d as string,
+        [exn.exn.e.acdc.s, ...chainedSchemaSaids]
+      );
+    } else {
+      op = await this.admitIpex(
+        notifRecord.a.d as string,
+        holder.signifyName,
+        exn.exn.i,
+        [exn.exn.e.acdc.s, ...chainedSchemaSaids]
+      );
+    }
 
-    // @TODO - foconnor: This should be event driven, need to fix the notification in KERIA/Signify.
-    const cred = await this.waitForAcdcToAppear(
-      credentialId,
-      waitForAcdcConfig
-    );
-    const credentialShortDetails = await this.updateAcdcMetadataRecordCompleted(
-      credentialId,
-      cred
-    );
-
-    Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
-    this.props.eventService.emit<AcdcStateChangedEvent>({
-      type: AcdcEventTypes.AcdcStateChanged,
-      payload: {
-        status: CredentialStatus.CONFIRMED,
-        credential: credentialShortDetails,
-      },
+    const pendingOperation = await this.operationPendingStorage.save({
+      id: op.name,
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
+    Agent.agent.signifyNotifications.addPendingOperationToQueue(
+      pendingOperation
+    );
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
   }
 
   @OnlineOnly
@@ -177,25 +202,6 @@ class IpexCommunicationService extends AgentService {
       .submitGrant(holderSignifyName, grant, sigs, end, [msgAgree.exn.i]);
   }
 
-  private async waitForAcdcToAppear(
-    credentialId: string,
-    waitForAcdcConfig: { maxAttempts: number; interval: number }
-  ): Promise<any> {
-    let acdc;
-    let retryTimes = 0;
-    while (!acdc) {
-      if (retryTimes >= waitForAcdcConfig.maxAttempts) {
-        throw new Error(IpexCommunicationService.ACDC_NOT_APPEARING);
-      }
-      await new Promise((resolve) =>
-        setTimeout(resolve, waitForAcdcConfig.interval)
-      );
-      acdc = (await this.getCredentialBySaid(credentialId)).acdc;
-      retryTimes++;
-    }
-    return acdc;
-  }
-
   @OnlineOnly
   async getIpexApplyDetails(
     notification: KeriaNotification
@@ -240,7 +246,7 @@ class IpexCommunicationService extends AgentService {
 
     const credentialMetadatas =
       await this.credentialStorage.getCredentialMetadatasById(
-        creds.map((cred: any) => `metadata:${cred.sad.d}`),
+        creds.map((cred: any) => cred.sad.d),
         {
           $and: [{ isDeleted: false }, { isArchived: false }],
         }
@@ -251,9 +257,7 @@ class IpexCommunicationService extends AgentService {
         description: schemaKeri.description,
       },
       credentials: credentialMetadatas.map((cr) => {
-        const credKeri = creds.find(
-          (cred: any) => `metadata:${cred.sad.d}` === cr.id
-        );
+        const credKeri = creds.find((cred: any) => cred.sad.d === cr.id);
         return {
           connectionId: cr.connectionId,
           acdc: credKeri.sad,
@@ -281,40 +285,21 @@ class IpexCommunicationService extends AgentService {
     };
   }
 
-  private async updateAcdcMetadataRecordCompleted(
-    id: string,
-    cred: any
-  ): Promise<CredentialShortDetails> {
-    const metadata = await this.credentialStorage.getCredentialMetadata(
-      `metadata:${id}`
-    );
-    if (!metadata) {
-      throw new Error(
-        IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
-      );
-    }
-
-    metadata.status = CredentialMetadataRecordStatus.CONFIRMED;
-    metadata.credentialType = cred.schema?.title;
-    await this.credentialStorage.updateCredentialMetadata(
-      metadata.id,
-      metadata
-    );
-    return getCredentialShortDetails(metadata);
-  }
-
   private async saveAcdcMetadataRecord(
     credentialId: string,
     dateTime: string,
-    connectionId: string
+    schemaTitle: string,
+    connectionId: string,
+    schema: string
   ): Promise<void> {
     const credentialDetails: CredentialMetadataRecordProps = {
-      id: `metadata:${credentialId}`,
+      id: credentialId,
       isArchived: false,
-      credentialType: "",
+      credentialType: schemaTitle,
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
       connectionId,
+      schema,
     };
     await this.credentialStorage.saveCredentialMetadataRecord(
       credentialDetails
@@ -326,7 +311,7 @@ class IpexCommunicationService extends AgentService {
     holderAidName: string,
     issuerAid: string,
     schemaSaids: string[]
-  ): Promise<void> {
+  ): Promise<Operation> {
     // @TODO - foconnor: For now this will only work with our test server, we need to find a better way to handle this in production.
     for (const schemaSaid of schemaSaids) {
       if (schemaSaid) {
@@ -340,28 +325,145 @@ class IpexCommunicationService extends AgentService {
     const [admit, sigs, aend] = await this.props.signifyClient
       .ipex()
       .admit(holderAidName, "", notificationD, dt);
-    await this.props.signifyClient
+    const op = await this.props.signifyClient
       .ipex()
       .submitAdmit(holderAidName, admit, sigs, aend, [issuerAid]);
+    return op;
   }
 
-  private async getCredentialBySaid(
-    sad: string
-  ): Promise<{ acdc?: any; error?: unknown }> {
-    try {
-      const results = await this.props.signifyClient.credentials().list({
-        filter: {
-          "-d": { $eq: sad },
-        },
-      });
-      return {
-        acdc: results[0],
-      };
-    } catch (error) {
-      return {
-        error,
-      };
+  async markAcdcComplete(credentialId: string) {
+    const metadata = await this.credentialStorage.getCredentialMetadata(
+      credentialId
+    );
+    if (!metadata) {
+      throw new Error(
+        IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+      );
     }
+
+    metadata.status = CredentialMetadataRecordStatus.CONFIRMED;
+    await this.credentialStorage.updateCredentialMetadata(
+      metadata.id,
+      metadata
+    );
+    this.props.eventService.emit<AcdcStateChangedEvent>({
+      type: AcdcEventTypes.AcdcStateChanged,
+      payload: {
+        status: CredentialStatus.CONFIRMED,
+        credential: getCredentialShortDetails(metadata),
+      },
+    });
+  }
+
+  private async getSchema(schemaSaid: string, retry = true): Promise<any> {
+    try {
+      const schema = await this.props.signifyClient.schemas().get(schemaSaid);
+      return schema;
+    } catch (error) {
+      const errorStack = (error as Error).stack as string;
+      const status = errorStack.split("-")[1];
+      if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+        const oobi = await Agent.agent.connections
+          .resolveOobi(
+            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
+          )
+          .catch(() => undefined);
+        if (oobi?.done && retry) {
+          return await this.getSchema(schemaSaid, false);
+        }
+        return undefined;
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  async createLinkedIpexMessageRecord(
+    message: IpexMessage,
+    historyType: ConnectionHistoryType
+  ): Promise<void> {
+    let schemaSaid;
+    if (message.exn.r === ExchangeRoute.IpexGrant) {
+      schemaSaid = message.exn.e.acdc.s;
+    } else if (message.exn.r === ExchangeRoute.IpexApply) {
+      schemaSaid = message.exn.a.s;
+    } else if (message.exn.r === ExchangeRoute.IpexAgree) {
+      const previousExchange = await this.props.signifyClient
+        .exchanges()
+        .get(message.exn.p);
+      schemaSaid = previousExchange.exn.e.acdc.s;
+    }
+    const schema = await this.getSchema(schemaSaid);
+    await this.ipexMessageStorage.createIpexMessageRecord({
+      id: message.exn.d,
+      credentialType: schema?.title,
+      content: message,
+      connectionId: message.exn.i,
+      historyType,
+    });
+  }
+
+  @OnlineOnly
+  async acceptAcdcFromMultisigExn(id: string): Promise<void> {
+    const notifRecord = await this.getNotificationRecordById(id);
+    const exn = await this.props.signifyClient
+      .exchanges()
+      .get(notifRecord.a.d as string);
+
+    const multisigExn = exn?.exn?.e?.exn;
+    const previousExnGrantMsg = await this.props.signifyClient
+      .exchanges()
+      .get(exn?.exn.e.exn.p);
+
+    const holder = await this.identifierStorage.getIdentifierMetadata(
+      exn.exn.e.exn.i
+    );
+
+    if (!holder) {
+      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+    }
+
+    const credentialId = previousExnGrantMsg.exn.e.acdc.d;
+    const connectionId = previousExnGrantMsg.exn.i;
+
+    const schemaSaid = previousExnGrantMsg.exn.e.acdc.s;
+    const allSchemaSaids = Object.keys(
+      previousExnGrantMsg.exn.e.acdc?.e || {}
+    ).map((key) => previousExnGrantMsg.exn.e.acdc.e?.[key]?.s);
+    allSchemaSaids.push(schemaSaid);
+
+    const op = await Agent.agent.multiSigs.multisigAdmit(
+      holder.signifyName,
+      previousExnGrantMsg.exn.d as string,
+      allSchemaSaids,
+      multisigExn
+    );
+
+    const schema = await this.props.signifyClient.schemas().get(schemaSaid);
+    await this.saveAcdcMetadataRecord(
+      previousExnGrantMsg.exn.e.acdc.d,
+      previousExnGrantMsg.exn.e.acdc.a.dt,
+      connectionId,
+      schema.title,
+      connectionId
+    );
+
+    this.props.eventService.emit<AcdcStateChangedEvent>({
+      type: AcdcEventTypes.AcdcStateChanged,
+      payload: {
+        credentialId,
+        status: CredentialStatus.PENDING,
+      },
+    });
+
+    const pendingOperation = await this.operationPendingStorage.save({
+      id: op.name,
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+    Agent.agent.signifyNotifications.addPendingOperationToQueue(
+      pendingOperation
+    );
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
   }
 }
 

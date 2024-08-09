@@ -2,6 +2,10 @@
   .identifiers-tab-content-block {
     margin: 1.5rem 0;
 
+    & > h3 {
+      line-height: 1.5rem;
+    }
+
     &:first-of-type {
       margin-bottom: 2.5rem;
     }
@@ -13,51 +17,8 @@
     ion-list {
       padding: 0;
 
-      ion-item.identifier-item {
-        --inner-padding-end: 0;
-
-        &:not(:last-child) {
-          border-bottom: 1px solid rgba(var(--ion-color-dark-grey-rgb), 0.5);
-        }
-
-        &::part(native) {
-          padding: 0;
-          background: var(--ion-color-light);
-        }
-
-        ion-label {
-          display: flex;
-          flex-direction: row;
-
-          .identifier-miniature {
-            height: 2.75rem;
-            width: 4.813rem;
-            border-radius: 0.25rem;
-          }
-
-          .identifier-info {
-            padding: 0.125rem 0;
-            margin-left: 0.94rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-
-            .identifier-info-top-line {
-              font-size: 1rem;
-              font-weight: 500;
-              color: var(--ion-color-primary);
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-            }
-
-            .identifier-info-bottom-line {
-              font-size: 0.875rem;
-              font-weight: 400;
-              color: var(--ion-color-secondary);
-            }
-          }
-        }
+      ion-item.card-item {
+        --card-height: calc(4.8125rem * 200 / 350);
       }
     }
   }
@@ -124,25 +85,8 @@
       }
 
       ion-list {
-        ion-item.identifier-item ion-label {
-          .identifier-miniature {
-            height: 2.2rem;
-            width: 3.85rem;
-            border-radius: 0.2rem;
-          }
-
-          .identifier-info {
-            margin-left: 0.752rem;
-
-            .identifier-info-top-line {
-              font-size: 0.8rem;
-              margin-bottom: 0.31rem;
-            }
-
-            .identifier-info-bottom-line {
-              font-size: 0.7rem;
-            }
-          }
+        ion-item.card-item {
+          --card-height: calc(4.8125rem * 200 / 350 * 0.9);
         }
       }
     }

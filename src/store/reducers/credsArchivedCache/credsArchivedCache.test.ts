@@ -25,6 +25,7 @@ describe("credsArchivedCacheSlice", () => {
         issuanceDate: "2010-01-01T19:23:24Z",
         credentialType: "University Credential",
         status: CredentialMetadataRecordStatus.CONFIRMED,
+        schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       },
     ];
     const newState = credsArchivedCacheSlice.reducer(

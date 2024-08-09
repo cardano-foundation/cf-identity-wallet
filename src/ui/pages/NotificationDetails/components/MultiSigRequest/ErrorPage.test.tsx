@@ -12,6 +12,7 @@ import {
 import { multisignIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { ErrorPage } from "./ErrorPage";
+import { DISCORD_LINK } from "../../../../globals/constants";
 
 mockIonicReact();
 
@@ -34,6 +35,16 @@ jest.mock("../../../../../core/agent/agent", () => ({
         getMultisigLinkedContacts: () => mockGetMultisigConnection(),
       },
     },
+  },
+}));
+
+const browserMock = jest.fn(({ link }: { link: string }) =>
+  Promise.resolve(link)
+);
+jest.mock("@capacitor/browser", () => ({
+  ...jest.requireActual("@capacitor/browser"),
+  Browser: {
+    open: (params: never) => browserMock(params),
   },
 }));
 
@@ -125,8 +136,17 @@ describe("Multisign error feedback", () => {
 
     expect(
       getByText(
+        EN_TRANSLATIONS.notifications.details.identifier.errorpage.help.detailtext.replace(
+          "<0>{{discordSupportChannel}}</0>",
+          ""
+        )
+      )
+    ).toBeVisible();
+
+    expect(
+      getByText(
         EN_TRANSLATIONS.notifications.details.identifier.errorpage.help
-          .detailtext
+          .supportchannel
       )
     ).toBeVisible();
 
@@ -136,6 +156,46 @@ describe("Multisign error feedback", () => {
 
     await waitFor(() => {
       expect(getByText(EN_TRANSLATIONS.createidentifier.share.title));
+    });
+  });
+
+  test("Open discord link", async () => {
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <ErrorPage
+          pageId="feedback"
+          activeStatus
+          handleBack={jest.fn()}
+          notificationDetails={notificationsFix[4]}
+          onFinishSetup={jest.fn}
+        />
+      </Provider>
+    );
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.notifications.details.identifier.errorpage.help
+          .supportchannel
+      )
+    ).toBeVisible();
+
+    act(() => {
+      fireEvent.click(
+        getByText(
+          EN_TRANSLATIONS.notifications.details.identifier.errorpage.help
+            .supportchannel
+        )
+      );
+    });
+
+    await waitFor(() => {
+      expect(browserMock).toBeCalledWith({
+        url: DISCORD_LINK,
+      });
     });
   });
 });

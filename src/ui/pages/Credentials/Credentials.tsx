@@ -4,35 +4,40 @@ import {
   IonLabel,
   useIonViewWillEnter,
 } from "@ionic/react";
-import { peopleOutline, addOutline } from "ionicons/icons";
-import { useEffect, useRef, useState } from "react";
-import { TabLayout } from "../../components/layout/TabLayout";
-import { i18n } from "../../../i18n";
-import "./Credentials.scss";
-import { CardsPlaceholder } from "../../components/CardsPlaceholder";
-import { CardsStack } from "../../components/CardsStack";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getToastMsg,
-  setCurrentOperation,
-  setCurrentRoute,
-} from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../../../routes/paths";
-import { Connections } from "../Connections";
-import { CardType, OperationType, ToastMsgType } from "../../globals/types";
-import { ArchivedCredentials } from "../../components/ArchivedCredentials";
+import { addOutline, peopleOutline } from "ionicons/icons";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
-import {
-  getCredsCache,
-  getFavouritesCredsCache,
-} from "../../../store/reducers/credsCache";
-import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
-import { StartAnimationSource } from "../Identifiers/Identifiers.type";
-import { useToggleConnections } from "../../hooks";
+import { i18n } from "../../../i18n";
+import { TabsRoutePath } from "../../../routes/paths";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCredsArchivedCache,
   setCredsArchivedCache,
 } from "../../../store/reducers/credsArchivedCache";
+import {
+  getCredsCache,
+  getFavouritesCredsCache,
+  setCredsCache,
+} from "../../../store/reducers/credsCache";
+import {
+  setCurrentOperation,
+  setCurrentRoute,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
+import { ArchivedCredentials } from "../../components/ArchivedCredentials";
+import { CardsPlaceholder } from "../../components/CardsPlaceholder";
+import { CardsStack } from "../../components/CardsStack";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { CardType, OperationType, ToastMsgType } from "../../globals/types";
+import { useOnlineStatusEffect, useToggleConnections } from "../../hooks";
+import { Connections } from "../Connections";
+import { StartAnimationSource } from "../Identifiers/Identifiers.type";
+import "./Credentials.scss";
+import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
+import { ListHeader } from "../../components/ListHeader";
+import { CardList as CredentialCardList } from "../../components/SwitchCardView";
+import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -75,13 +80,12 @@ const AdditionalButtons = ({
   );
 };
 
-const Creds = () => {
+const Credentials = () => {
   const pageId = "credentials-tab";
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const archivedCreds = useAppSelector(getCredsArchivedCache);
   const favCredsCache = useAppSelector(getFavouritesCredsCache);
-  const toastMsg = useAppSelector(getToastMsg);
 
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
@@ -93,29 +97,40 @@ const Creds = () => {
     TabsRoutePath.CREDENTIALS
   );
 
-  const fetchArchivedCreds = async () => {
-    // @TODO - sdisalvo: handle error
-    const creds = await Agent.agent.credentials.getCredentials(true);
-    dispatch(setCredsArchivedCache(creds));
-  };
+  const [deletedPendingItem, setDeletePendingItem] =
+    useState<CredentialShortDetails | null>(null);
+  const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
+
+  const pendingCreds = useMemo(
+    () =>
+      credsCache.filter(
+        (item) => item.status === CredentialMetadataRecordStatus.PENDING
+      ),
+    [credsCache]
+  );
+  const confirmedCreds = useMemo(
+    () =>
+      credsCache.filter(
+        (item) => item.status === CredentialMetadataRecordStatus.CONFIRMED
+      ),
+    [credsCache]
+  );
+
+  const fetchArchivedCreds = useCallback(async () => {
+    try {
+      const creds = await Agent.agent.credentials.getCredentials(true);
+      dispatch(setCredsArchivedCache(creds));
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Unable to get archived credential", e);
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     setShowPlaceholder(credsCache.length === 0);
   }, [credsCache]);
 
-  useEffect(() => {
-    const validToastMsgTypes = [
-      ToastMsgType.CREDENTIAL_ARCHIVED,
-      ToastMsgType.CREDENTIAL_RESTORED,
-      ToastMsgType.CREDENTIALS_RESTORED,
-      ToastMsgType.CREDENTIAL_DELETED,
-      ToastMsgType.CREDENTIALS_DELETED,
-    ];
-
-    if (toastMsg && validToastMsgTypes.includes(toastMsg)) {
-      fetchArchivedCreds();
-    }
-  }, [toastMsg]);
+  useOnlineStatusEffect(fetchArchivedCreds);
 
   const handleCreateCred = () => {
     dispatch(setCurrentOperation(OperationType.SCAN_CONNECTION));
@@ -145,7 +160,7 @@ const Creds = () => {
     return timeA - timeB;
   });
 
-  const allCreds = credsCache.filter(
+  const allCreds = confirmedCreds.filter(
     (cred) => !favCredsCache?.some((fav) => fav.id === cred.id)
   );
 
@@ -193,6 +208,34 @@ const Creds = () => {
         </IonButton>
       </div>
     );
+  };
+
+  const deletePendingCheck = useMemo(
+    () => ({
+      title: i18n.t("credentials.tab.detelepending.title"),
+      description: i18n.t("credentials.tab.detelepending.description"),
+      button: i18n.t("credentials.tab.detelepending.button"),
+    }),
+    []
+  );
+
+  const deletePendingCred = async () => {
+    if (!deletedPendingItem) return;
+    setDeletePendingItem(null);
+
+    try {
+      await Agent.agent.credentials.archiveCredential(deletedPendingItem.id);
+      await Agent.agent.credentials.deleteCredential(deletedPendingItem.id);
+
+      dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
+
+      const creds = await Agent.agent.credentials.getCredentials();
+      dispatch(setCredsCache(creds));
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Unable to delete credential", e);
+      dispatch(setToastMsg(ToastMsgType.DELETE_CRED_FAIL));
+    }
   };
 
   return (
@@ -255,10 +298,36 @@ const Creds = () => {
                 />
               </div>
             )}
+            {!!pendingCreds.length && (
+              <div className="credetial-tab-content-block">
+                <ListHeader
+                  title={`${i18n.t("credentials.tab.pendingcred")}`}
+                />
+                <CredentialCardList
+                  cardsData={pendingCreds}
+                  cardTypes={CardType.CREDENTIALS}
+                  testId="pending-creds-list"
+                  onCardClick={(cred) => {
+                    setDeletePendingItem(cred as CredentialShortDetails);
+                    setOpenDeletePendingAlert(true);
+                  }}
+                />
+              </div>
+            )}
             {!!archivedCreds.length && <ArchivedCredentialsButton />}
           </>
         )}
       </TabLayout>
+      <RemovePendingAlert
+        pageId={pageId}
+        openFirstCheck={openDeletePendingAlert}
+        firstCheckProps={deletePendingCheck}
+        onClose={() => setOpenDeletePendingAlert(false)}
+        secondCheckTitle={`${i18n.t(
+          "credentials.tab.detelepending.secondchecktitle"
+        )}`}
+        onDeletePendingItem={deletePendingCred}
+      />
       <ArchivedCredentials
         archivedCreds={archivedCreds}
         archivedCredentialsIsOpen={archivedCredentialsIsOpen}
@@ -268,4 +337,4 @@ const Creds = () => {
   );
 };
 
-export { Creds };
+export { Credentials };

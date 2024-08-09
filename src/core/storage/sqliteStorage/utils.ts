@@ -1,10 +1,12 @@
+import { SQLiteDBConnection } from "@capacitor-community/sqlite";
 import { BasicRecord } from "../../agent/records";
 import { Query } from "../storage.types";
 import { MIGRATIONS } from "./migrations";
 
-function getUnMigrationSqls(
+async function getMigrationsToApply(
+  session: SQLiteDBConnection,
   currentVersion: string
-): { sqls: string[]; latestVersion: string } | null {
+): Promise<{ statement: string; values?: unknown[] }[] | null> {
   const versionArr: string[] = [];
   MIGRATIONS.forEach((migration) => {
     versionArr.push(migration.version);
@@ -14,13 +16,24 @@ function getUnMigrationSqls(
   if (versionCompare(latestVersion, currentVersion) == 0) {
     return null;
   }
-  const sqlUnMigrations: string[] = [];
-  MIGRATIONS.forEach((migration) => {
+
+  const migrationStatements: { statement: string; values?: unknown[] }[] = [];
+  for (const migration of MIGRATIONS) {
     if (versionCompare(currentVersion, migration.version) == -1) {
-      sqlUnMigrations.push(...migration.sql);
+      if (migration?.sql) {
+        migration?.sql.forEach((sql) => {
+          migrationStatements.push({
+            statement: sql,
+          });
+        });
+      } else if (migration.migrationStatements) {
+        const statements = await migration.migrationStatements(session);
+        migrationStatements.push(...statements);
+      }
     }
-  });
-  return { sqls: sqlUnMigrations, latestVersion };
+  }
+
+  return migrationStatements;
 }
 
 function isValidPart(x: string): boolean {
@@ -28,8 +41,8 @@ function isValidPart(x: string): boolean {
 }
 
 function versionCompare(v1: string, v2: string) {
-  const v1parts = v1.split("."),
-    v2parts = v2.split(".");
+  const v1parts = v1?.split("."),
+    v2parts = v2?.split(".");
 
   if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {
     throw new Error("Invalid version format");
@@ -113,7 +126,7 @@ function convertDbQuery(params: Query<BasicRecord>): Record<string, unknown> {
 }
 
 export {
-  getUnMigrationSqls,
+  getMigrationsToApply,
   versionCompare,
   convertDbQuery,
   resolveTagsFromDb,

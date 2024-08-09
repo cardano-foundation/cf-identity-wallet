@@ -1,9 +1,9 @@
 import { AlertButton, IonAlert } from "@ionic/react";
-import { AlertProps } from "./Alert.types";
-import "./Alert.scss";
-import { useIonHardwareBackButton } from "../../hooks";
 import { BackEventPriorityType } from "../../globals/types";
+import { useIonHardwareBackButton } from "../../hooks";
 import { combineClassNames } from "../../utils/style";
+import "./Alert.scss";
+import { AlertProps } from "./Alert.types";
 
 const Alert = ({
   isOpen,
@@ -13,9 +13,11 @@ const Alert = ({
   headerText,
   subheaderText,
   confirmButtonText,
+  secondaryConfirmButtonText,
   cancelButtonText,
   className,
   actionConfirm,
+  actionSecondaryConfirm,
   actionCancel,
   actionDismiss,
 }: AlertProps) => {
@@ -32,6 +34,21 @@ const Alert = ({
       handler: () => {
         setIsOpen(false);
         actionConfirm && actionConfirm();
+      },
+    });
+  }
+
+  if (secondaryConfirmButtonText && actionSecondaryConfirm) {
+    buttons.push({
+      id: "secondary-confirm-alert-button",
+      text: secondaryConfirmButtonText,
+      role: "confirm",
+      htmlAttributes: {
+        "data-testid": `${dataTestId}-secondary-confirm-button`,
+      },
+      handler: () => {
+        setIsOpen(false);
+        actionSecondaryConfirm && actionSecondaryConfirm();
       },
     });
   }
@@ -85,7 +102,7 @@ const Alert = ({
         subHeader={subheaderText}
         buttons={buttons}
         onDidDismiss={({ detail }) =>
-          detail.role === "backdrop" && handleDismiss
+          detail.role === "backdrop" && handleDismiss()
         }
       />
     </div>

@@ -1,26 +1,36 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
+import { useSelector } from "react-redux";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { i18n } from "../../../i18n";
 import { passwordStrengthChecker } from "../../utils/passwordStrengthChecker";
-import { Alert } from "../Alert";
+import { Alert as AlertCancel, Alert as AlertExisting } from "../Alert";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import { PageFooter } from "../PageFooter";
 import { PasswordValidation } from "../PasswordValidation";
 import "./PasswordModule.scss";
 import { PasswordModuleProps, PasswordModuleRef } from "./PasswordModule.types";
+import {
+  getStateCache,
+  setAuthentication,
+} from "../../../store/reducers/stateCache";
+import { useAppDispatch } from "../../../store/hooks";
 
 const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
-  ({ title, description, testId, onCreateSuccess }, ref) => {
+  ({ title, isOnboarding, description, testId, onCreateSuccess }, ref) => {
+    const dispatch = useAppDispatch();
+    const stateCache = useSelector(getStateCache);
+    const authentication = stateCache.authentication;
     const [createPasswordValue, setCreatePasswordValue] = useState("");
     const [confirmPasswordValue, setConfirmPasswordValue] = useState("");
     const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
     const [createPasswordFocus, setCreatePasswordFocus] = useState(false);
     const [hintValue, setHintValue] = useState("");
-    const [alertIsOpen, setAlertIsOpen] = useState(false);
+    const [alertCancelIsOpen, setAlertCancelIsOpen] = useState(false);
+    const [alertExistingIsOpen, setAlertExistingIsOpen] = useState(false);
     const createPasswordValueMatching =
       createPasswordValue.length > 0 &&
       confirmPasswordValue.length > 0 &&
@@ -44,15 +54,62 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
       setHintValue("");
     };
 
+    const handleClearExisting = () => {
+      setAlertExistingIsOpen(false);
+      handleClearState();
+    };
+
     useImperativeHandle(ref, () => ({
       clearState: handleClearState,
     }));
 
     const handleContinue = async (skipped: boolean) => {
-      if (!skipped) {
+      if (skipped) {
+        await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.APP_PASSWORD_SKIPPED,
+            content: { value: skipped },
+          })
+        );
+      } else {
+        if (authentication.passwordIsSet) {
+          const currentPassword = await SecureStorage.get(
+            KeyStoreKeys.APP_OP_PASSWORD
+          ).catch((e) => {
+            if (
+              e instanceof Error &&
+              e.message ===
+                `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_OP_PASSWORD}`
+            ) {
+              return undefined;
+            }
+            throw e;
+          });
+          if (
+            currentPassword !== undefined &&
+            currentPassword === createPasswordValue
+          ) {
+            setAlertExistingIsOpen(true);
+            return;
+          }
+        }
         await SecureStorage.set(
           KeyStoreKeys.APP_OP_PASSWORD,
           createPasswordValue
+        );
+
+        if (authentication.passwordIsSkipped) {
+          await Agent.agent.basicStorage.deleteById(
+            MiscRecordId.APP_PASSWORD_SKIPPED
+          );
+        }
+
+        dispatch(
+          setAuthentication({
+            ...authentication,
+            passwordIsSet: true,
+            passwordIsSkipped: false,
+          })
         );
         if (hintValue) {
           await Agent.agent.basicStorage.createOrUpdateBasicRecord(
@@ -62,13 +119,6 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
             })
           );
         }
-      } else {
-        await Agent.agent.basicStorage.createOrUpdateBasicRecord(
-          new BasicRecord({
-            id: MiscRecordId.APP_PASSWORD_SKIPPED,
-            content: { value: skipped },
-          })
-        );
       }
 
       onCreateSuccess(skipped);
@@ -89,7 +139,7 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
               </p>
             )}
             <CustomInput
-              dataTestId="createPasswordValue"
+              dataTestId="create-password-input"
               title={`${i18n.t("createpassword.input.first.title")}`}
               placeholder={`${i18n.t(
                 "createpassword.input.first.placeholder"
@@ -115,7 +165,7 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
               <PasswordValidation password={createPasswordValue} />
             )}
             <CustomInput
-              dataTestId="confirm-password-value"
+              dataTestId="confirm-password-input"
               title={`${i18n.t("createpassword.input.second.title")}`}
               placeholder={`${i18n.t(
                 "createpassword.input.second.placeholder"
@@ -138,7 +188,7 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
               />
             )}
             <CustomInput
-              dataTestId="hintValue"
+              dataTestId="create-hint-input"
               title={`${i18n.t("createpassword.input.third.title")}`}
               placeholder={`${i18n.t(
                 "createpassword.input.third.placeholder"
@@ -159,18 +209,34 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
             primaryButtonText={`${i18n.t("createpassword.button.continue")}`}
             primaryButtonAction={() => handleContinue(false)}
             primaryButtonDisabled={!validated}
-            tertiaryButtonText={`${i18n.t("createpassword.button.skip")}`}
-            tertiaryButtonAction={() => setAlertIsOpen(true)}
+            tertiaryButtonText={
+              isOnboarding
+                ? `${i18n.t("createpassword.button.skip")}`
+                : undefined
+            }
+            tertiaryButtonAction={() => setAlertCancelIsOpen(true)}
           />
         </div>
-        <Alert
-          isOpen={alertIsOpen}
-          setIsOpen={setAlertIsOpen}
+        <AlertCancel
+          isOpen={alertCancelIsOpen}
+          setIsOpen={setAlertCancelIsOpen}
           dataTestId="create-password-alert-skip"
           headerText={`${i18n.t("createpassword.alert.text")}`}
           confirmButtonText={`${i18n.t("createpassword.alert.button.confirm")}`}
           cancelButtonText={`${i18n.t("createpassword.alert.button.cancel")}`}
           actionConfirm={() => handleContinue(true)}
+        />
+        <AlertExisting
+          isOpen={alertExistingIsOpen}
+          setIsOpen={setAlertExistingIsOpen}
+          dataTestId="manage-password-alert-existing"
+          headerText={`${i18n.t(
+            "settings.sections.security.managepassword.page.alert.existingpassword"
+          )}`}
+          confirmButtonText={`${i18n.t(
+            "settings.sections.security.managepassword.page.alert.ok"
+          )}`}
+          actionConfirm={() => handleClearExisting()}
         />
       </>
     );

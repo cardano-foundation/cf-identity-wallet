@@ -11,7 +11,7 @@ import {
   heartOutline,
   heart,
 } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
 import { getBackRoute } from "../../../routes/backRoute";
@@ -23,7 +23,7 @@ import {
   setCurrentRoute,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { ShareIdentifier } from "../../components/ShareIdentifier";
+import { ShareConnection } from "../../components/ShareConnection";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
 import {
@@ -47,7 +47,7 @@ import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayo
 import { PageHeader } from "../../components/PageHeader";
 import { combineClassNames } from "../../utils/style";
 import { IdentifierDetails as IdentifierDetailsCore } from "../../../core/agent/services/identifier.types";
-import { useAppIonRouter } from "../../hooks";
+import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { RotateKeyModal } from "./components/RotateKeyModal";
@@ -79,20 +79,18 @@ const IdentifierDetails = () => {
     (fav) => fav.id === params.id
   );
 
-  const fetchDetails = async () => {
-    const cardDetailsResult = await Agent.agent.identifiers.getIdentifier(
-      params.id
-    );
-    if (cardDetailsResult) {
+  const fetchDetails = useCallback(async () => {
+    try {
+      const cardDetailsResult = await Agent.agent.identifiers.getIdentifier(
+        params.id
+      );
       setCardData(cardDetailsResult);
-    } else {
+    } catch (error) {
       // @TODO - Error handling.
     }
-  };
-
-  useEffect(() => {
-    fetchDetails();
   }, [params.id]);
+
+  useOnlineStatusEffect(fetchDetails);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
@@ -124,18 +122,22 @@ const IdentifierDetails = () => {
   };
 
   const handleDelete = async () => {
-    setVerifyPasswordIsOpen(false);
-    // @TODO - sdisalvo: Update Database.
-    // Remember to update identifiers.details.options file too.
-    if (cardData) {
-      const updatedIdentifiers = identifierData.filter(
-        (item) => item.id !== cardData.id
-      );
-      await deleteIdentifier();
-      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
-      dispatch(setIdentifiersCache(updatedIdentifiers));
+    try {
+      setVerifyPasswordIsOpen(false);
+      if (cardData) {
+        const updatedIdentifiers = identifierData.filter(
+          (item) => item.id !== cardData.id
+        );
+        await deleteIdentifier();
+        dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
+        dispatch(setIdentifiersCache(updatedIdentifiers));
+      }
+      handleDone();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Unable to delete identifier", e);
+      dispatch(setToastMsg(ToastMsgType.DELETE_IDENTIFIER_FAIL));
     }
-    handleDone();
   };
 
   const deleteIdentifier = async () => {
@@ -319,7 +321,7 @@ const IdentifierDetails = () => {
               deleteButtonAction={() => deleteButtonAction()}
             />
           </div>
-          <ShareIdentifier
+          <ShareConnection
             isOpen={shareIsOpen}
             setIsOpen={setShareIsOpen}
             signifyName={cardData.signifyName}

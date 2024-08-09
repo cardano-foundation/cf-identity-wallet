@@ -1,5 +1,5 @@
 import { IonSpinner } from "@ionic/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
 import { CredentialsMatchingApply } from "../../../../../core/agent/services/ipexCommunicationService.types";
 import { useAppSelector } from "../../../../../store/hooks";
@@ -8,6 +8,7 @@ import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import { ChooseCredential } from "./ChooseCredential";
 import "./CredentialRequest.scss";
 import { CredentialRequestInformation } from "./CredentialRequestInformation";
+import { useOnlineStatusEffect } from "../../../../hooks";
 
 const CredentialRequest = ({
   pageId,
@@ -30,22 +31,19 @@ const CredentialRequest = ({
     setRequestStage(notificationDetailCache.step || 0);
   }, [notificationDetailCache]);
 
-  useEffect(() => {
-    async function getCrendetialRequest() {
-      try {
-        const request =
-          await Agent.agent.ipexCommunications.getIpexApplyDetails(
-            notificationDetails
-          );
+  const getCrendetialRequest = useCallback(async () => {
+    try {
+      const request = await Agent.agent.ipexCommunications.getIpexApplyDetails(
+        notificationDetails
+      );
 
-        setCredentialRequest(request);
-      } catch (e) {
-        // TODO: handle error
-      }
+      setCredentialRequest(request);
+    } catch (e) {
+      // TODO: handle error
     }
-
-    getCrendetialRequest();
   }, [notificationDetails]);
+
+  useOnlineStatusEffect(getCrendetialRequest);
 
   const changeToStageTwo = () => {
     setRequestStage(1);

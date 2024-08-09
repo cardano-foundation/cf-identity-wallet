@@ -72,14 +72,16 @@ describe("Onboarding Page", () => {
     );
   });
 
-  test("If the user has already set a passcode but they haven't created a seed phrase, they will be asked to generate a seed phrase", async () => {
+  test("If the user has already set a passcode but they haven't created a password, they will be asked to create one", async () => {
     const mockStore = configureStore();
     const initialState = {
       stateCache: {
+        routes: [{ path: RoutePath.ONBOARDING }],
         authentication: {
           loggedIn: true,
           time: Date.now(),
           passcodeIsSet: true,
+          passwordIsSet: false,
         },
         currentOperation: OperationType.IDLE,
       },
@@ -112,9 +114,9 @@ describe("Onboarding Page", () => {
     fireEvent.click(buttonContinue);
 
     await waitFor(() => {
-      expect(
-        queryAllByText(EN_TRANSLATIONS.createpassword.title)[0]
-      ).toBeVisible();
+      expect(queryAllByText(EN_TRANSLATIONS.createpassword.title)).toHaveLength(
+        2
+      );
     });
   });
 });

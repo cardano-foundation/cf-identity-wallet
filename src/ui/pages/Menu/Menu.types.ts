@@ -1,10 +1,14 @@
 import { ReactElement, ReactNode } from "react";
 
 interface SubMenuData {
-  Component: () => ReactElement;
+  Component: (props?: {
+    switchView: (key: SubMenuKey) => void;
+  }) => ReactElement;
   title: string;
   additionalButtons: ReactNode;
   pageId: string;
+  nestedMenu: boolean;
+  renderAsModal?: boolean;
 }
 
 interface SubMenuProps {
@@ -29,6 +33,9 @@ enum SubMenuKey {
   Crypto,
   Connections,
   ConnectWallet,
+  ManagePassword,
+  TermAndPrivacy,
+  RecoverySeedPhrase,
 }
 
 export type { SubMenuProps, MenuItemProps, SubMenuData };

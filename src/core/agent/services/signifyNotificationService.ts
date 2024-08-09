@@ -1,6 +1,7 @@
 import { AgentService } from "./agentService";
 import {
   AgentServicesProps,
+  ExchangeRoute,
   KeriaNotification,
   KeriaNotificationMarker,
   MiscRecordId,
@@ -11,6 +12,7 @@ import {
   BasicRecord,
   ConnectionStorage,
   IdentifierStorage,
+  IpexMessageStorage,
   NotificationStorage,
   OperationPendingStorage,
 } from "../records";
@@ -18,6 +20,7 @@ import { Agent } from "../agent";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { IonicStorage } from "../../storage/ionicStorage";
+import { ConnectionHistoryType } from "./connection.types";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -28,6 +31,7 @@ class SignifyNotificationService extends AgentService {
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly connectionStorage: ConnectionStorage;
+  protected readonly ipexMessageStorage: IpexMessageStorage;
 
   protected pendingOperations: OperationPendingRecord[] = [];
   private loggedIn = true;
@@ -37,13 +41,15 @@ class SignifyNotificationService extends AgentService {
     notificationStorage: NotificationStorage,
     identifierStorage: IdentifierStorage,
     operationPendingStorage: OperationPendingStorage,
-    connectionStorage: ConnectionStorage
+    connectionStorage: ConnectionStorage,
+    ipexMessageStorage: IpexMessageStorage
   ) {
     super(agentServiceProps);
     this.notificationStorage = notificationStorage;
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.connectionStorage = connectionStorage;
+    this.ipexMessageStorage = ipexMessageStorage;
   }
 
   async onNotificationStateChanged(
@@ -167,7 +173,76 @@ class SignifyNotificationService extends AgentService {
     if (notif.r) {
       return;
     }
-
+    if (notif.a.r === NotificationRoute.ExnIpexApply) {
+      const existingLinkedIpexRecord = await this.ipexMessageStorage
+        .getIpexMessageMetadata(notif.a.d)
+        .catch((error) => {
+          if (
+            error.message ===
+            IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
+      if (!existingLinkedIpexRecord) {
+        const exchange = await this.props.signifyClient
+          .exchanges()
+          .get(notif.a.d);
+        await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
+          exchange,
+          ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
+        );
+      }
+    }
+    if (notif.a.r === NotificationRoute.ExnIpexGrant) {
+      const exchange = await this.props.signifyClient
+        .exchanges()
+        .get(notif.a.d);
+      const existingCredential = await this.props.signifyClient
+        .credentials()
+        .get(exchange.exn.e.acdc.d)
+        .catch(() => undefined);
+      const ourIdentifier = await this.identifierStorage
+        .getIdentifierMetadata(exchange.exn.a.i)
+        .catch((error) => {
+          if (
+            (error as Error).message ===
+            IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
+      if (!ourIdentifier) {
+        await this.markNotification(notif.i);
+        return;
+      }
+      if (existingCredential) {
+        const dt = new Date().toISOString().replace("Z", "000+00:00");
+        const [admit, sigs, aend] = await this.props.signifyClient
+          .ipex()
+          .admit(ourIdentifier.signifyName, "", notif.a.d, dt);
+        await this.props.signifyClient
+          .ipex()
+          .submitAdmit(ourIdentifier.signifyName, admit, sigs, aend, [
+            exchange.exn.i,
+          ]);
+        await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
+          exchange,
+          ConnectionHistoryType.CREDENTIAL_UPDATE
+        );
+        await this.markNotification(notif.i);
+        return;
+      } else {
+        await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
+          exchange,
+          ConnectionHistoryType.CREDENTIAL_ISSUANCE
+        );
+      }
+    }
     if (notif.a.r === NotificationRoute.MultiSigRpy) {
       const multisigNotification = await this.props.signifyClient
         .groups()
@@ -245,8 +320,61 @@ class SignifyNotificationService extends AgentService {
         return;
       }
     }
+    if (notif.a.r === NotificationRoute.MultiSigExn) {
+      const exchange = await this.props.signifyClient
+        .exchanges()
+        .get(notif.a.d);
+
+      if (exchange?.exn?.e?.exn?.r !== ExchangeRoute.IpexAdmit) {
+        await this.markNotification(notif.i);
+        return;
+      }
+
+      const existMultisig = await Agent.agent.identifiers.getIdentifier(
+        exchange?.exn?.e?.exn?.i
+      );
+      if (!existMultisig) {
+        await this.markNotification(notif.i);
+        return;
+      }
+
+      const previousExnGrantMsg = await this.props.signifyClient
+        .exchanges()
+        .get(exchange?.exn.e.exn.p);
+
+      const existingCredential = await this.props.signifyClient
+        .credentials()
+        .get(previousExnGrantMsg.exn.e.acdc.d)
+        .catch(() => undefined);
+
+      if (existingCredential) {
+        await this.markNotification(notif.i);
+        return;
+      }
+    }
 
     if (notif.a.r === NotificationRoute.ExnIpexAgree) {
+      const existingLinkedIpexRecord = await this.ipexMessageStorage
+        .getIpexMessageMetadata(notif.a.d)
+        .catch((error) => {
+          if (
+            error.message ===
+            IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
+      if (!existingLinkedIpexRecord) {
+        const exchange = await this.props.signifyClient
+          .exchanges()
+          .get(notif.a.d);
+        await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
+          exchange,
+          ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
+        );
+      }
       await Agent.agent.ipexCommunications.grantAcdcFromAgree(notif.a.d);
       await this.markNotification(notif.i);
       return;
@@ -442,12 +570,30 @@ class SignifyNotificationService extends AgentService {
               );
               if (connectionRecord) {
                 connectionRecord.pending = false;
+                connectionRecord.createdAt = (operation.response as any).dt;
                 await this.connectionStorage.update(connectionRecord);
               }
               callback({
                 opType: pendingOperation.recordType,
                 oid: recordId,
               });
+              break;
+            }
+            case OperationPendingRecordType.ExchangeReceiveCredential: {
+              const admitExchange = await this.props.signifyClient
+                .exchanges()
+                .get(operation.metadata?.said);
+              if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
+                const grantExchange = await this.props.signifyClient
+                  .exchanges()
+                  .get(admitExchange.exn.p);
+                const credentialId = grantExchange.exn.e.acdc.d;
+                if (credentialId) {
+                  await Agent.agent.ipexCommunications.markAcdcComplete(
+                    credentialId
+                  );
+                }
+              }
               break;
             }
             default:

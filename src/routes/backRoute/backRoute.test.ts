@@ -15,7 +15,7 @@ jest.mock("../../store/reducers/seedPhraseCache", () => ({
 
 describe("getBackRoute", () => {
   let storeMock: RootState;
-  const state = {};
+
   beforeEach(() => {
     storeMock = {
       seedPhraseCache: {
@@ -27,6 +27,7 @@ describe("getBackRoute", () => {
         connectUrl: "",
       },
       stateCache: {
+        isOnline: true,
         initialized: true,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
@@ -39,6 +40,10 @@ describe("getBackRoute", () => {
           time: 0,
           ssiAgentIsSet: false,
           recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -160,6 +165,7 @@ describe("getPreviousRoute", () => {
         connectUrl: "",
       },
       stateCache: {
+        isOnline: true,
         initialized: true,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
@@ -172,6 +178,10 @@ describe("getPreviousRoute", () => {
           time: 0,
           ssiAgentIsSet: false,
           recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {

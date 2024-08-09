@@ -22,6 +22,7 @@ describe("NextRoute", () => {
     localStorageMock = {};
     storeMock = {
       stateCache: {
+        isOnline: true,
         initialized: true,
         routes: [],
         authentication: {
@@ -34,6 +35,10 @@ describe("NextRoute", () => {
           passwordIsSkipped: false,
           ssiAgentIsSet: false,
           recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -263,6 +268,7 @@ describe("NextRoute", () => {
 describe("getNextRoute", () => {
   const storeMock: RootState = {
     stateCache: {
+      isOnline: true,
       initialized: true,
       routes: [],
       authentication: {
@@ -275,6 +281,10 @@ describe("getNextRoute", () => {
         passwordIsSkipped: false,
         ssiAgentIsSet: false,
         recoveryWalletProgress: false,
+        loginAttempt: {
+          attempts: 0,
+          lockedUntil: Date.now(),
+        },
       },
       currentOperation: OperationType.IDLE,
       queueIncomingRequest: {

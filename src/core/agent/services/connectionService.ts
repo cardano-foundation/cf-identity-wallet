@@ -11,6 +11,7 @@ import {
   AgentServicesProps,
   OobiScan,
   KeriConnectionType,
+  ExchangeRoute,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { Agent } from "../agent";
@@ -20,6 +21,7 @@ import {
   CredentialStorage,
   ConnectionStorage,
   OperationPendingStorage,
+  IpexMessageStorage,
 } from "../records";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { ConnectionHistoryType, KeriaContact } from "./connection.types";
@@ -29,6 +31,7 @@ class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
   protected readonly connectionNoteStorage!: ConnectionNoteStorage;
   protected readonly credentialStorage: CredentialStorage;
+  protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
 
   constructor(
@@ -36,12 +39,14 @@ class ConnectionService extends AgentService {
     connectionStorage: ConnectionStorage,
     connectionNoteStorage: ConnectionNoteStorage,
     credentialStorage: CredentialStorage,
+    ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
     this.connectionNoteStorage = connectionNoteStorage;
     this.credentialStorage = credentialStorage;
+    this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
   }
 
@@ -93,9 +98,10 @@ class ConnectionService extends AgentService {
       pending: !operation.done,
     };
     const groupId = new URL(url).searchParams.get("groupId") ?? "";
+    const connectionDate = operation.response?.dt ?? new Date();
     const connection = {
       id: connectionId,
-      connectionDate: operation.response.dt,
+      connectionDate,
       oobi: operation.metadata.oobi,
       status: ConnectionStatus.CONFIRMED,
       label: operation.alias,
@@ -173,7 +179,9 @@ class ConnectionService extends AgentService {
       id: record.id,
       label: record.alias,
       connectionDate: record.createdAt.toISOString(),
-      status: ConnectionStatus.CONFIRMED,
+      status: record.pending
+        ? ConnectionStatus.PENDING
+        : ConnectionStatus.CONFIRMED,
       oobi: record.oobi,
     };
     const groupId = record.getTag("groupId");
@@ -185,7 +193,18 @@ class ConnectionService extends AgentService {
 
   @OnlineOnly
   async getConnectionById(id: string): Promise<ConnectionDetails> {
-    const connection = await this.props.signifyClient.contacts().get(id);
+    const connection = await this.props.signifyClient
+      .contacts()
+      .get(id)
+      .catch((error) => {
+        const errorStack = (error as Error).stack as string;
+        const status = errorStack.split("-")[1];
+        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${id}`);
+        } else {
+          throw error;
+        }
+      });
     return {
       label: connection?.alias,
       id: connection.id,
@@ -206,6 +225,10 @@ class ConnectionService extends AgentService {
     for (const note of notes) {
       this.connectionNoteStorage.deleteById(note.id);
     }
+  }
+
+  async deleteStaleLocalConnectionById(id: string): Promise<void> {
+    await this.connectionStorage.deleteById(id);
   }
 
   async getConnectionShortDetailById(
@@ -299,21 +322,21 @@ class ConnectionService extends AgentService {
   async getConnectionHistoryById(
     connectionId: string
   ): Promise<ConnectionHistoryItem[]> {
-    let histories: ConnectionHistoryItem[] = [];
-    const credentialRecords =
-      await this.credentialStorage.getCredentialMetadataByConnectionId(
+    const linkedIpexMessages =
+      await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(
         connectionId
       );
-    histories = histories.concat(
-      credentialRecords.map((record) => {
+    const requestMessages = linkedIpexMessages
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .map((messageRecord) => {
+        const { historyType, createdAt, credentialType } = messageRecord;
         return {
-          type: ConnectionHistoryType.CREDENTIAL_ACCEPTED,
-          timestamp: record.createdAt.toISOString(),
-          credentialType: record.credentialType,
+          type: historyType,
+          timestamp: createdAt.toISOString(),
+          credentialType,
         };
-      })
-    );
-    return histories;
+      });
+    return requestMessages;
   }
 
   // @TODO - foconnor: Contacts that are smid/rmids for multisigs will be synced too.
@@ -337,7 +360,7 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async resolveOobi(url: string, waitForCompletion = false): Promise<any> {
+  async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
     const startTime = Date.now();
     if (ConnectionService.resolvedOobi[url]) {
       return ConnectionService.resolvedOobi[url];

@@ -6,12 +6,14 @@ import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
 import { IdentifierStage4 } from "./IdentifierStage4";
 import { IdentifierStage2 } from "./IdentifierStage2";
+import { IdentifierColor } from "./IdentifierColorSelector";
 
 describe("Identifier Theme Selector", () => {
   test("It switches KERI card from theme 0 to theme 1", async () => {
     const setNewSelectedTheme = jest.fn();
     const { getByTestId } = render(
       <IdentifierThemeSelector
+        color={IdentifierColor.Green}
         selectedTheme={0}
         setSelectedTheme={setNewSelectedTheme}
       />
@@ -86,6 +88,7 @@ describe("Render Identifier Stage", () => {
               isPending: false,
               signifyName: "",
             },
+            color: IdentifierColor.Green,
           }}
           resetModal={jest.fn()}
           setState={jest.fn()}
@@ -125,6 +128,7 @@ describe("Render Identifier Stage", () => {
               isPending: false,
               signifyName: "",
             },
+            color: IdentifierColor.Green,
           }}
           resetModal={jest.fn()}
           setState={jest.fn()}

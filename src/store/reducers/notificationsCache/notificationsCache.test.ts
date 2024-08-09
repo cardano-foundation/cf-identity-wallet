@@ -114,6 +114,7 @@ describe("Notifications cache", () => {
   it("should return the notifications cache from RootState", () => {
     const state: RootState = {
       stateCache: {
+        isOnline: true,
         initialized: true,
         routes: [],
         authentication: {
@@ -126,6 +127,10 @@ describe("Notifications cache", () => {
           passwordIsSkipped: true,
           ssiAgentIsSet: false,
           recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -192,6 +197,7 @@ describe("Notifications cache", () => {
     const state: RootState = {
       stateCache: {
         initialized: true,
+        isOnline: true,
         routes: [],
         authentication: {
           loggedIn: false,
@@ -203,6 +209,10 @@ describe("Notifications cache", () => {
           passwordIsSkipped: true,
           ssiAgentIsSet: false,
           recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: Date.now(),
+          },
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {

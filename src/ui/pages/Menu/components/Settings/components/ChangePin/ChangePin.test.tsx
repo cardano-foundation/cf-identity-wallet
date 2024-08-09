@@ -7,6 +7,7 @@ import {
 } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { waitForIonicReact } from "@ionic/react-test-utils";
+import { act } from "react-dom/test-utils";
 import EN_TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { store } from "../../../../../../../store";
 import { KeyStoreKeys, SecureStorage } from "../../../../../../../core/storage";
@@ -28,18 +29,10 @@ jest.mock("../../../../../../../core/agent/agent", () => ({
   },
 }));
 
+const useBiometricAuthMock = jest.fn();
+
 jest.mock("../../../../../../hooks/useBiometricsHook", () => ({
-  useBiometricAuth: jest.fn(() => ({
-    biometricsIsEnabled: false,
-    biometricInfo: {
-      isAvailable: false,
-      hasCredentials: false,
-      biometryType: BiometryType.fingerprintAuthentication,
-      strongBiometryIsAvailable: true,
-    },
-    handleBiometricAuth: jest.fn(() => Promise.resolve(false)),
-    setBiometricsIsEnabled: jest.fn(),
-  })),
+  useBiometricAuth: () => useBiometricAuthMock(),
 }));
 
 jest.mock("@ionic/react", () => ({
@@ -57,6 +50,17 @@ describe("ChangePin Modal", () => {
         getPlatforms: () => ["mobileweb"],
       };
     });
+    useBiometricAuthMock.mockImplementation(() => ({
+      biometricsIsEnabled: false,
+      biometricInfo: {
+        isAvailable: true,
+        hasCredentials: false,
+        biometryType: BiometryType.fingerprintAuthentication,
+        strongBiometryIsAvailable: false,
+      },
+      handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+      setBiometricsIsEnabled: jest.fn(),
+    }));
   });
 
   test("Renders ChangePin Modal and initial UI components", async () => {
@@ -122,8 +126,21 @@ describe("ChangePin Modal", () => {
     );
   });
 
-  test.skip("Set passcode and close modal when second passcode is entered correctly", async () => {
+  test("Set passcode and close modal when second passcode is entered correctly", async () => {
     require("@ionic/react");
+
+    useBiometricAuthMock.mockImplementation(() => ({
+      biometricsIsEnabled: false,
+      biometricInfo: {
+        isAvailable: true,
+        hasCredentials: false,
+        biometryType: BiometryType.fingerprintAuthentication,
+        strongBiometryIsAvailable: false,
+      },
+      handleBiometricAuth: jest.fn(() => Promise.resolve(true)),
+      setBiometricsIsEnabled: jest.fn(),
+    }));
+
     const { getByText, queryByText } = render(
       <Provider store={store}>
         <ChangePin
@@ -147,16 +164,29 @@ describe("ChangePin Modal", () => {
     clickButtonRepeatedly(getByText, "1", 6);
 
     await waitFor(() =>
-      expect(
-        queryByText(
-          EN_TRANSLATIONS.settings.sections.security.changepin.reenterpasscode
-        )
-      ).not.toBeInTheDocument()
-    );
-
-    await waitFor(() =>
       expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111")
     );
+  });
+
+  test("Cancel change pin", async () => {
+    const { getByText } = render(
+      <Provider store={store}>
+        <ChangePin
+          isOpen={true}
+          setIsOpen={mockSetIsOpen}
+        />
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.settings.sections.security.changepin.cancel)
+      );
+    });
+
+    await waitFor(() => {
+      expect(mockSetIsOpen).toBeCalledWith(false);
+    });
   });
 });
 

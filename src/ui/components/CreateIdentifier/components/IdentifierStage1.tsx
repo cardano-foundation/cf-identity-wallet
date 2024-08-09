@@ -1,23 +1,23 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { IdentifierStageProps } from "../CreateIdentifier.types";
+import { Agent } from "../../../../core/agent/agent";
+import { i18n } from "../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { getMultiSigGroupCache } from "../../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
-  getQueueIncomingRequest,
   getStateCache,
   setCurrentOperation,
 } from "../../../../store/reducers/stateCache";
-import { Agent } from "../../../../core/agent/agent";
+import { OperationType } from "../../../globals/types";
+import { useOnlineStatusEffect } from "../../../hooks";
+import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
+import { getTheme } from "../../../utils/theme";
+import { Alert } from "../../Alert";
+import { TabsRoutePath } from "../../navigation/TabsMenu";
+import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { IdentifierStage1BodyInit } from "./IdentifierStage1BodyInit";
 import { IdentifierStage1BodyResume } from "./IdentifierStage1BodyResume";
-import { Alert } from "../../Alert";
-import { i18n } from "../../../../i18n";
-import { TabsRoutePath } from "../../navigation/TabsMenu";
-import { OperationType } from "../../../globals/types";
-import { getMultiSigGroupCache } from "../../../../store/reducers/identifiersCache";
-import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
-import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
 
 const IdentifierStage1 = ({
   state,
@@ -33,7 +33,6 @@ const IdentifierStage1 = ({
   const stateCache = useAppSelector(getStateCache);
   const currentOperation = useAppSelector(getCurrentOperation);
   const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
-  const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
   const signifyName =
@@ -48,32 +47,23 @@ const IdentifierStage1 = ({
   const [scannedConections, setScannedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
-  const incomingRequest = useMemo(() => {
-    return !queueIncomingRequest.isProcessing
-      ? undefined
-      : queueIncomingRequest.queues.length > 0
-        ? queueIncomingRequest.queues[0]
-        : undefined;
-  }, [queueIncomingRequest]);
 
-  useEffect(() => {
-    async function fetchOobi() {
-      try {
-        const oobiValue = await Agent.agent.connections.getOobi(
-          signifyName,
-          userName,
-          groupId
-        );
-        if (oobiValue) {
-          setOobi(oobiValue);
-        }
-      } catch (e) {
-        // @TODO - Error handling.
+  const fetchOobi = useCallback(async () => {
+    try {
+      const oobiValue = await Agent.agent.connections.getOobi(
+        signifyName,
+        userName,
+        groupId
+      );
+      if (oobiValue) {
+        setOobi(oobiValue);
       }
+    } catch (e) {
+      // @TODO - Error handling.
     }
-
-    fetchOobi();
   }, [groupId, signifyName, userName]);
+
+  useOnlineStatusEffect(fetchOobi);
 
   useEffect(() => {
     if (groupId) {
@@ -113,6 +103,8 @@ const IdentifierStage1 = ({
   };
 
   const handleInitiateMultiSig = () => {
+    const theme = getTheme(resumeMultiSig?.theme || 0);
+
     dispatch(setCurrentOperation(OperationType.IDLE));
     setState((prevState: IdentifierStageProps) => ({
       ...prevState,
@@ -120,6 +112,8 @@ const IdentifierStage1 = ({
       displayNameValue: state.displayNameValue || resumeMultiSig?.displayName,
       ourIdentifier: state.ourIdentifier || resumeMultiSig?.id,
       identifierCreationStage: 2,
+      color: theme.color,
+      selectedTheme: theme.layout,
     }));
   };
 

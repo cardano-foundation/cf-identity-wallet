@@ -2,6 +2,8 @@ interface SeedPhraseModuleProps {
   testId: string;
   seedPhrase: string[];
   hideSeedPhrase?: boolean;
+  showSeedPhraseButton?: boolean;
+  overlayText?: string;
   setHideSeedPhrase?: (value: boolean) => void;
   addSeedPhraseSelected?: (word: string) => void;
   removeSeedPhraseSelected?: (index: number) => void;

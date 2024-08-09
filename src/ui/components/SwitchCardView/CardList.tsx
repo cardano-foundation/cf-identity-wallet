@@ -1,7 +1,11 @@
 import { useMemo } from "react";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
-import { CardType, IDENTIFIER_BG_MAPPING } from "../../globals/types";
+import {
+  CardType,
+  CREDENTIAL_BG,
+  IDENTIFIER_BG_MAPPING,
+} from "../../globals/types";
 import { formatShortDate } from "../../utils/formatters";
 import { CardItem, CardList as BaseCardList } from "../CardList";
 import "./SwitchCardView.scss";
@@ -36,6 +40,10 @@ const CardList = ({
           title: cred.credentialType,
           subtitle: formatShortDate(cred.issuanceDate),
           data: cred,
+          image:
+            cred.credentialType === "Rare EVO 2024 Attendee"
+              ? CREDENTIAL_BG.RARE
+              : CREDENTIAL_BG.KERI,
         };
       }
     );

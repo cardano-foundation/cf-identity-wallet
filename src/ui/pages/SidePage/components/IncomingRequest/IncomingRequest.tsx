@@ -54,7 +54,7 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
     }
     setRequestData(incomingRequest);
     setOpenPage(true);
-  }, [incomingRequest]);
+  }, [connectedWallet, incomingRequest, setOpenPage]);
 
   useEffect(() => {
     if (blur) {

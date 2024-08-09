@@ -1,34 +1,41 @@
-import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
-import { IonGrid, IonRow, IonCol } from "@ionic/react";
+import { Keyboard } from "@capacitor/keyboard";
+import { IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
+import { informationCircleOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { i18n } from "../../../../i18n";
-import { CustomInput } from "../../CustomInput";
-import { ErrorMessage } from "../../ErrorMessage";
-import { PageFooter } from "../../PageFooter";
-import { PageHeader } from "../../PageHeader";
-import { TypeItem } from "./TypeItem";
-import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { Agent } from "../../../../core/agent/agent";
 import {
   CreateIdentifierInputs,
   IdentifierShortDetails,
 } from "../../../../core/agent/services/identifier.types";
-import { Agent } from "../../../../core/agent/agent";
+import { i18n } from "../../../../i18n";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
   getIdentifiersCache,
   setIdentifiersCache,
   setMultiSigGroupCache,
 } from "../../../../store/reducers/identifiersCache";
+import { MultiSigGroup } from "../../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
   setCurrentOperation,
   setToastMsg,
 } from "../../../../store/reducers/stateCache";
-import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { OperationType, ToastMsgType } from "../../../globals/types";
+import { CustomInput } from "../../CustomInput";
+import { ErrorMessage } from "../../ErrorMessage";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
+import { PageFooter } from "../../PageFooter";
+import { PageHeader } from "../../PageHeader";
+import {
+  IdentifierStageProps,
+  IdentifierStageStateProps,
+} from "../CreateIdentifier.types";
+import { IdentifierColorSelector } from "./IdentifierColorSelector";
 import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
-import { MultiSigGroup } from "../../../../store/reducers/identifiersCache/identifiersCache.types";
+import { TypeItem } from "./TypeItem";
+import { createThemeValue } from "../../../utils/theme";
+import { IADTypeInfoModal } from "./AIDTypeInfoModal";
 
 const IdentifierStage0 = ({
   state,
@@ -42,6 +49,7 @@ const IdentifierStage0 = ({
   const identifiersData = useAppSelector(getIdentifiersCache);
   const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
+  const [openAIDInfo, setOpenAIDInfo] = useState(false);
   const [displayNameValue, setDisplayNameValue] = useState(
     state.displayNameValue
   );
@@ -61,23 +69,25 @@ const IdentifierStage0 = ({
   }, []);
 
   useEffect(() => {
-    setState((prevState: IdentifierStageProps) => ({
+    setState((prevState: IdentifierStageStateProps) => ({
       ...prevState,
       displayNameValue: displayNameValue,
     }));
   }, [displayNameValue, setState]);
 
   useEffect(() => {
-    setState((prevState: IdentifierStageProps) => ({
+    setState((prevState: IdentifierStageStateProps) => ({
       ...prevState,
       selectedTheme: selectedTheme,
     }));
   }, [selectedTheme, setState]);
 
   const handleCreateIdentifier = async () => {
+    const selectedTheme = createThemeValue(state.color, state.selectedTheme);
+
     const metadata: CreateIdentifierInputs = {
       displayName: state.displayNameValue,
-      theme: state.selectedTheme,
+      theme: selectedTheme,
     };
     let groupMetadata;
     if (multiSigGroup) {
@@ -101,7 +111,7 @@ const IdentifierStage0 = ({
         id: identifier,
         displayName: state.displayNameValue,
         createdAtUTC: new Date().toISOString(),
-        theme: state.selectedTheme,
+        theme: selectedTheme,
         isPending: isPending,
         signifyName,
       };
@@ -158,6 +168,10 @@ const IdentifierStage0 = ({
     resetModal && resetModal();
   };
 
+  const openAIDTypeInfoModal = () => {
+    setOpenAIDInfo(true);
+  };
+
   return (
     <>
       <ScrollablePageLayout
@@ -208,9 +222,15 @@ const IdentifierStage0 = ({
         </div>
         {!multiSigGroup && (
           <div className="aid-type">
-            <div className="type-input-title">{`${i18n.t(
-              "createidentifier.aidtype.title"
-            )}`}</div>
+            <div className="type-input-title">
+              {`${i18n.t("createidentifier.aidtype.title")}`}
+              <IonIcon
+                data-testid="type-input-title"
+                onClick={openAIDTypeInfoModal}
+                slot="icon-only"
+                src={informationCircleOutline}
+              />
+            </div>
             <IonGrid
               className="aid-type-selector"
               data-testid="aid-type-selector"
@@ -245,18 +265,24 @@ const IdentifierStage0 = ({
                   />
                 </IonCol>
                 <IonCol>
-                  <TypeItem
-                    dataTestId="identifier-aidtype-delegated"
-                    index={2}
-                    text={i18n.t("createidentifier.aidtype.delegated.label")}
-                    clickEvent={() =>
-                      setState((prevState: IdentifierStageProps) => ({
-                        ...prevState,
-                        selectedAidType: 2,
-                      }))
-                    }
-                    selectedType={state.selectedAidType}
-                  />
+                  <div
+                    data-testid="identifier-delegated-container"
+                    onClick={openAIDTypeInfoModal}
+                  >
+                    <TypeItem
+                      dataTestId="identifier-aidtype-delegated"
+                      index={2}
+                      text={i18n.t("createidentifier.aidtype.delegated.label")}
+                      clickEvent={() =>
+                        setState((prevState: IdentifierStageProps) => ({
+                          ...prevState,
+                          selectedAidType: 2,
+                        }))
+                      }
+                      disabled
+                      selectedType={state.selectedAidType}
+                    />
+                  </div>
                 </IonCol>
               </IonRow>
             </IonGrid>
@@ -264,9 +290,24 @@ const IdentifierStage0 = ({
         )}
         <div className="identifier-theme">
           <div className="theme-input-title">{`${i18n.t(
+            "createidentifier.color.title"
+          )}`}</div>
+          <IdentifierColorSelector
+            value={state.color}
+            onColorChange={(color) => {
+              setState((prevState: IdentifierStageStateProps) => ({
+                ...prevState,
+                color,
+              }));
+            }}
+          />
+        </div>
+        <div className="identifier-theme">
+          <div className="theme-input-title">{`${i18n.t(
             "createidentifier.theme.title"
           )}`}</div>
           <IdentifierThemeSelector
+            color={state.color}
             selectedTheme={selectedTheme}
             setSelectedTheme={setSelectedTheme}
           />
@@ -282,6 +323,10 @@ const IdentifierStage0 = ({
         )}`}
         primaryButtonAction={handleContinue}
         primaryButtonDisabled={!displayNameValueIsValid}
+      />
+      <IADTypeInfoModal
+        isOpen={openAIDInfo}
+        setOpen={setOpenAIDInfo}
       />
     </>
   );

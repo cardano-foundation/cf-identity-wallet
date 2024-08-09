@@ -38,3 +38,11 @@
     }
   }
 }
+
+.recovery-phrase-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: calc(100vh - (4.5rem + var(--ion-safe-area-top)));
+  margin-bottom: 0 !important;
+}

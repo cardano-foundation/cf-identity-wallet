@@ -29,7 +29,7 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       credentials: {
         getCredentialDetailsById: jest.fn().mockResolvedValue({
-          id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
+          id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
           issuanceDate: "2024-01-22T16:03:44.643Z",
           credentialType: "Qualified vLEI Issuer Credential",
           status: "confirmed",
@@ -154,7 +154,7 @@ describe("Cards Stack Component", () => {
       </IonReactRouter>
     );
 
-    const firstCard = await findByTestId("cred-card-template-example-index-0");
+    const firstCard = await findByTestId("keri-card-template-example-index-0");
     await waitFor(() => expect(firstCard).not.toHaveClass("active"));
 
     act(() => {

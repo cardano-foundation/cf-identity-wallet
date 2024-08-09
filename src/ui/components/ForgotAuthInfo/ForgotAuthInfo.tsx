@@ -17,6 +17,7 @@ import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import "./ForgotAuthInfo.scss";
 import { ForgotAuthInfoProps, ForgotType } from "./ForgotAuthInfo.types";
 import { combineClassNames } from "../../utils/style";
+import { BackEventPriorityType } from "../../globals/types";
 
 const ForgotAuthInfo = ({
   isOpen,
@@ -97,6 +98,10 @@ const ForgotAuthInfo = ({
             closeButtonLabel={`${i18n.t("forgotauth.cancel")}`}
             closeButtonAction={handleClose}
             title={`${i18n.t(pageTitle)}`}
+            hardwareBackButtonConfig={{
+              prevent: false,
+              priority: BackEventPriorityType.Modal,
+            }}
           />
         }
       >
@@ -123,6 +128,7 @@ const ForgotAuthInfo = ({
             testId={pageId}
             description={`${i18n.t("forgotauth.newpassword.description")}`}
             onCreateSuccess={handleCreatePasswordSuccess}
+            isOnboarding={true}
           />
         )}
       </ScrollablePageLayout>

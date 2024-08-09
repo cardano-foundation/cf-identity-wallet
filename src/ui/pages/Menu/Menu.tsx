@@ -16,10 +16,14 @@ import {
   linkOutline,
   addOutline,
 } from "ionicons/icons";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
-import { useAppDispatch } from "../../../store/hooks";
-import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getCurrentOperation,
+  setCurrentOperation,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import "./Menu.scss";
 import { i18n } from "../../../i18n";
@@ -30,12 +34,18 @@ import {
   ConnectWallet,
   ConnectWalletOptionRef,
 } from "./components/ConnectWallet";
+import { ManagePassword } from "./components/Settings/components/ManagePassword";
+import { TermAndPrivacy } from "./components/Settings/components/TermAndPrivacy";
+import { RecoverySeedPhrase } from "./components/Settings/components/RecoverySeedPhrase";
+import { OperationType } from "../../globals/types";
 
 const emptySubMenu = {
   Component: () => <></>,
   title: "",
   additionalButtons: <></>,
   pageId: "empty",
+  nestedMenu: false,
+  renderAsModal: false,
 };
 
 const MenuItem = ({
@@ -68,6 +78,7 @@ const MenuItem = ({
 const Menu = () => {
   const pageId = "menu-tab";
   const dispatch = useAppDispatch();
+  const currentOperation = useAppSelector(getCurrentOperation);
   const [showSubMenu, setShowSubMenu] = useState(false);
   const [selectedOption, setSelectedOption] = useState<
     SubMenuKey | undefined
@@ -77,49 +88,91 @@ const Menu = () => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
   });
 
+  useEffect(() => {
+    if (currentOperation === OperationType.BACK_TO_CONNECT_WALLET) {
+      showSelectedOption(SubMenuKey.ConnectWallet);
+      dispatch(setCurrentOperation(OperationType.IDLE));
+    }
+  }, [currentOperation]);
+
   const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
 
-  const submenuMap = useMemo(
-    () =>
-      new Map<SubMenuKey, SubMenuData>([
-        [
-          SubMenuKey.Settings,
-          {
-            Component: Settings,
-            title: "settings.sections.header",
-            additionalButtons: <></>,
-            pageId: "menu-setting",
-          },
-        ],
-        [
-          SubMenuKey.ConnectWallet,
-          {
-            Component: () => <ConnectWallet ref={connectWalletRef} />,
-            title: "menu.tab.items.connectwallet.tabheader",
-            pageId: "connect-wallet",
-            additionalButtons: (
-              <IonButton
-                shape="round"
-                className="connect-wallet-button"
-                data-testid="menu-add-connection-button"
-                onClick={() => connectWalletRef.current?.openConnectWallet()}
-              >
-                <IonIcon
-                  slot="icon-only"
-                  icon={addOutline}
-                  color="primary"
-                />
-              </IonButton>
-            ),
-          },
-        ],
-      ]),
-    []
-  );
+  const submenuMapData: [SubMenuKey, SubMenuData][] = [
+    [
+      SubMenuKey.Settings,
+      {
+        Component: (props?: { switchView: (key: SubMenuKey) => void }) => (
+          <Settings
+            {...props}
+            switchView={showSelectedOption}
+          />
+        ),
+        title: "settings.sections.header",
+        additionalButtons: <></>,
+        pageId: "menu-setting",
+        nestedMenu: false,
+      },
+    ],
+    [
+      SubMenuKey.ManagePassword,
+      {
+        Component: ManagePassword,
+        title: "settings.sections.security.managepassword.page.title",
+        additionalButtons: <></>,
+        pageId: "manage-password",
+        nestedMenu: true,
+      },
+    ],
+    [
+      SubMenuKey.ConnectWallet,
+      {
+        Component: () => <ConnectWallet ref={connectWalletRef} />,
+        title: "menu.tab.items.connectwallet.tabheader",
+        pageId: "connect-wallet",
+        nestedMenu: false,
+        additionalButtons: (
+          <IonButton
+            shape="round"
+            className="connect-wallet-button"
+            data-testid="menu-add-connection-button"
+            onClick={() => connectWalletRef.current?.openConnectWallet()}
+          >
+            <IonIcon
+              slot="icon-only"
+              icon={addOutline}
+              color="primary"
+            />
+          </IonButton>
+        ),
+        renderAsModal: false,
+      },
+    ],
+    [
+      SubMenuKey.TermAndPrivacy,
+      {
+        Component: TermAndPrivacy,
+        title: "settings.sections.support.terms.submenu.title",
+        pageId: "term-and-privacy",
+        nestedMenu: true,
+        additionalButtons: <></>,
+      },
+    ],
+    [
+      SubMenuKey.RecoverySeedPhrase,
+      {
+        Component: RecoverySeedPhrase,
+        title: "settings.sections.security.seedphrase.page.title",
+        pageId: "recovery-seed-phrase",
+        nestedMenu: true,
+        additionalButtons: <></>,
+      },
+    ],
+  ];
+
+  const submenuMap = useMemo(() => new Map(submenuMapData), []);
 
   const showSelectedOption = (key: SubMenuKey) => {
     if (!submenuMap.has(key)) return;
-
     setShowSubMenu(true);
     setSelectedOption(key);
   };
@@ -171,7 +224,7 @@ const Menu = () => {
     return selectedOption !== undefined
       ? submenuMap.get(selectedOption) || emptySubMenu
       : emptySubMenu;
-  }, [selectedOption]);
+  }, [selectedOption, submenuMap]);
 
   return (
     <>
@@ -199,9 +252,12 @@ const Menu = () => {
       <SubMenu
         showSubMenu={showSubMenu}
         setShowSubMenu={setShowSubMenu}
+        nestedMenu={selectSubmenu.nestedMenu}
         title={`${i18n.t(selectSubmenu.title)}`}
         additionalButtons={selectSubmenu.additionalButtons}
         pageId={selectSubmenu.pageId}
+        switchView={showSelectedOption}
+        renderAsModal={selectSubmenu.renderAsModal}
       >
         <selectSubmenu.Component />
       </SubMenu>

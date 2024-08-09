@@ -13,11 +13,12 @@ import { RoutePath } from "../../../routes";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { Creds } from "../Credentials";
+import { Credentials } from "../Credentials";
 import { ConnectionDetails } from "./ConnectionDetails";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { Agent } from "../../../core/agent/agent";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -53,6 +54,7 @@ const initialStateFull = {
       time: Date.now(),
       passcodeIsSet: true,
     },
+    isOnline: true,
   },
   seedPhraseCache: {},
   credsCache: {
@@ -67,6 +69,9 @@ const initialStateFull = {
   biometricsCache: {
     enabled: false,
   },
+  identifiersCache: {
+    identifiers: filteredIdentifierFix,
+  },
 };
 
 describe("ConnectionDetails Page", () => {
@@ -78,7 +83,7 @@ describe("ConnectionDetails Page", () => {
           label: "Cambridge University",
           connectionDate: "2017-08-14T19:23:24Z",
           logo: ".png",
-          status: "pending" as ConnectionStatus,
+          status: ConnectionStatus.ACCEPTED,
           notes: [
             {
               id: "ebfeb1ebc6f1c276ef71212ec20",
@@ -105,7 +110,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -124,10 +129,10 @@ describe("ConnectionDetails Page", () => {
       expect(queryByTestId("connection-item-0")).toBeNull();
     });
 
-    expect(getByText(connectionsFix[0].label)).toBeVisible();
+    expect(getByText(connectionsFix[1].label)).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() =>
@@ -153,7 +158,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -169,7 +174,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() => {
@@ -197,7 +202,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -213,7 +218,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     const alertDeleteConnection = await findByTestId(
@@ -256,7 +261,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -272,7 +277,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     expect(getByTestId("connection-detail-spinner-container")).toBeVisible();
@@ -288,7 +293,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -304,7 +309,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     expect(getByTestId("connection-detail-spinner-container")).toBeVisible();
@@ -324,7 +329,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -340,7 +345,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() => {
@@ -379,7 +384,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -395,7 +400,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() => {
@@ -434,7 +439,7 @@ describe("ConnectionDetails Page", () => {
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -453,10 +458,10 @@ describe("ConnectionDetails Page", () => {
       expect(queryByTestId("connection-item-0")).toBeNull();
     });
 
-    expect(getByText(connectionsFix[0].label)).toBeVisible();
+    expect(getByText(connectionsFix[1].label)).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() => {
@@ -528,7 +533,7 @@ describe("Checking the Connection Details Page when no notes are available", () 
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -547,10 +552,10 @@ describe("Checking the Connection Details Page when no notes are available", () 
       expect(queryByTestId("connection-item-0")).toBeNull();
     });
 
-    expect(getByText(connectionsFix[0].label)).toBeVisible();
+    expect(getByText(connectionsFix[1].label)).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() => {
@@ -605,7 +610,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -624,10 +629,10 @@ describe("Checking the Connection Details Page when notes are available", () => 
       expect(queryByTestId("connection-item-0")).toBeNull();
     });
 
-    expect(getByText(connectionsFix[0].label)).toBeVisible();
+    expect(getByText(connectionsFix[1].label)).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
+      fireEvent.click(getByText(connectionsFix[1].label));
     });
 
     await waitFor(() => {
@@ -647,184 +652,49 @@ describe("Checking the Connection Details Page when notes are available", () => 
 
     await waitFor(() => expect(getByText("Message")).toBeVisible());
   });
-});
 
-describe("Checking the Connection Details Page when different Credentials are issued", () => {
-  test("We can see the connection details for UniversityDegreeCredential", async () => {
-    const historyEvent = {
-      type: 0,
-      timestamp: "2024-02-13T10:16:08.756Z",
-      credentialType: "UniversityDegreeCredential",
-    };
-    jest
-      .spyOn(Agent.agent.connections, "getConnectionById")
-      .mockResolvedValue(connectionsFix[0]);
-
-    jest
-      .spyOn(Agent.agent.connections, "getConnectionHistoryById")
-      .mockResolvedValue([historyEvent]);
-
-    const storeMocked = {
-      ...mockStore(initialStateFull),
-      dispatch: dispatchMock,
-    };
-
-    const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
-          />
-
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("connection-item-0")).toBeNull();
-    });
-
-    expect(getByText(connectionsFix[0].label)).toBeVisible();
-
-    act(() => {
-      fireEvent.click(getByText(connectionsFix[0].label));
-    });
-
-    await waitFor(() =>
-      expect(getByText("Connected with \"Cambridge University\"")).toBeVisible()
-    );
-
-    await waitFor(() => {
-      expect(getByTestId("connection-detail-date")).toBeVisible();
-      expect(getByTestId("connection-detail-date")).toHaveTextContent(
-        `${formatShortDate(
-          connectionsFix[0].connectionDate
-        )} - ${formatTimeToSec(connectionsFix[0].connectionDate)}`
-      );
-    });
-
-    await waitFor(() =>
-      expect(getByText("Received \"University Degree Credential\"")).toBeVisible()
-    );
-
-    await waitFor(() =>
-      expect(getByTestId("connection-history-timestamp")).toHaveTextContent(
-        `${formatShortDate("2024-02-13T10:16:08.756Z")} - ${formatTimeToSec(
-          "2024-02-13T10:16:08.756Z"
-        )}`
-      )
-    );
-  });
-
-  test("We can see the connection details for AccessPassCredential", async () => {
-    jest
-      .spyOn(Agent.agent.connections, "getConnectionById")
-      .mockResolvedValue(connectionsFix[2]);
-
-    jest
-      .spyOn(Agent.agent.connections, "getConnectionHistoryById")
-      .mockResolvedValue([
-        {
-          type: 0,
-          timestamp: "2024-02-15T10:16:08.756Z",
-          credentialType: "AccessPassCredential",
-        },
-      ]);
-
-    const storeMocked = {
-      ...mockStore(initialStateFull),
-      dispatch: dispatchMock,
-    };
-    const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
-          />
-
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("connection-item-0")).toBeNull();
-    });
-
-    expect(getByText(connectionsFix[2].label)).toBeVisible();
-
-    act(() => {
-      fireEvent.click(getByText(connectionsFix[2].label));
-    });
-
-    await waitFor(() =>
-      expect(getByText("Connected with \"Cardano Foundation\"")).toBeVisible()
-    );
-
-    await waitFor(() => {
-      expect(getByTestId("connection-detail-date")).toBeVisible();
-      expect(getByTestId("connection-detail-date")).toHaveTextContent(
-        `${formatShortDate(
-          connectionsFix[2].connectionDate
-        )} - ${formatTimeToSec(connectionsFix[2].connectionDate)}`
-      );
-    });
-
-    await waitFor(() =>
-      expect(getByText("Received \"Access Pass Credential\"")).toBeVisible()
-    );
-
-    await waitFor(() =>
-      expect(getByTestId("connection-history-timestamp")).toHaveTextContent(
-        `${formatShortDate("2024-02-15T10:16:08.756Z")} - ${formatTimeToSec(
-          "2024-02-15T10:16:08.756Z"
-        )}`
-      )
-    );
-  });
-
-  test("We can see the connection details for PermanentResidentCard", async () => {
+  test("Get multiple connection history items", async () => {
+    const historyEvents = [
+      {
+        type: 0,
+        timestamp: "2024-02-13T10:16:08.756Z",
+        credentialType: "UniversityDegreeCredential",
+      },
+      {
+        type: 0,
+        timestamp: "2024-02-14T10:16:26.919Z",
+        credentialType: "PermanentResidentCard",
+      },
+      {
+        type: 0,
+        timestamp: "2024-02-15T10:16:08.756Z",
+        credentialType: "AccessPassCredential",
+      },
+      {
+        type: 0,
+        timestamp: "2024-02-16T11:39:22.919Z",
+        credentialType: "Qualified vLEI Issuer Credential",
+      },
+    ];
     jest
       .spyOn(Agent.agent.connections, "getConnectionById")
       .mockResolvedValue(connectionsFix[1]);
 
     jest
       .spyOn(Agent.agent.connections, "getConnectionHistoryById")
-      .mockResolvedValue([
-        {
-          type: 0,
-          timestamp: "2024-02-13T10:16:26.919Z",
-          credentialType: "PermanentResidentCard",
-        },
-      ]);
+      .mockResolvedValue(historyEvents);
 
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
+
     const { getByTestId, queryByTestId, getByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
+            component={Credentials}
           />
 
           <Route
@@ -850,92 +720,46 @@ describe("Checking the Connection Details Page when different Credentials are is
     });
 
     await waitFor(() =>
-      expect(getByText("Connected with \"Passport Office\"")).toBeVisible()
+      expect(getByText("Received \"University Degree Credential\"")).toBeVisible()
     );
 
-    await waitFor(() => {
-      expect(getByTestId("connection-detail-date")).toBeVisible();
-      expect(getByTestId("connection-detail-date")).toHaveTextContent(
-        `${formatShortDate(
-          connectionsFix[1].connectionDate
-        )} - ${formatTimeToSec(connectionsFix[1].connectionDate)}`
-      );
-    });
+    await waitFor(() =>
+      expect(
+        getByText(
+          `${formatShortDate(historyEvents[0].timestamp)} - ${formatTimeToSec(
+            historyEvents[0].timestamp
+          )}`
+        )
+      ).toBeVisible()
+    );
 
     await waitFor(() =>
       expect(getByText("Received \"Permanent Resident Card\"")).toBeVisible()
     );
 
     await waitFor(() =>
-      expect(getByTestId("connection-history-timestamp")).toHaveTextContent(
-        `${formatShortDate("2024-02-13T10:16:26.919Z")} - ${formatTimeToSec(
-          "2024-02-13T10:16:26.919Z"
-        )}`
-      )
+      expect(
+        getByText(
+          `${formatShortDate(historyEvents[1].timestamp)} - ${formatTimeToSec(
+            historyEvents[1].timestamp
+          )}`
+        )
+      ).toBeVisible()
     );
-  });
-
-  test("We can see the connection details for Qualified vLEI Issuer", async () => {
-    jest
-      .spyOn(Agent.agent.connections, "getConnectionById")
-      .mockResolvedValue(connectionsFix[3]);
-
-    jest
-      .spyOn(Agent.agent.connections, "getConnectionHistoryById")
-      .mockResolvedValue([
-        {
-          type: 0,
-          timestamp: "2024-02-13T11:39:22.919Z",
-          credentialType: "Qualified vLEI Issuer Credential",
-        },
-      ]);
-
-    const storeMocked = {
-      ...mockStore(initialStateFull),
-      dispatch: dispatchMock,
-    };
-    const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.CREDENTIALS}
-            component={Creds}
-          />
-
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("connection-item-0")).toBeNull();
-    });
-
-    expect(getByText(connectionsFix[3].label)).toBeVisible();
-
-    act(() => {
-      fireEvent.click(getByText(connectionsFix[3].label));
-    });
 
     await waitFor(() =>
-      expect(getByText("Connected with \"John Smith\"")).toBeVisible()
+      expect(getByText("Received \"Access Pass Credential\"")).toBeVisible()
     );
 
-    await waitFor(() => {
-      expect(getByTestId("connection-detail-date")).toBeVisible();
-      expect(getByTestId("connection-detail-date")).toHaveTextContent(
-        `${formatShortDate(
-          connectionsFix[3].connectionDate
-        )} - ${formatTimeToSec(connectionsFix[3].connectionDate)}`
-      );
-    });
+    await waitFor(() =>
+      expect(
+        getByText(
+          `${formatShortDate(historyEvents[2].timestamp)} - ${formatTimeToSec(
+            historyEvents[2].timestamp
+          )}`
+        )
+      ).toBeVisible()
+    );
 
     await waitFor(() =>
       expect(
@@ -944,11 +768,17 @@ describe("Checking the Connection Details Page when different Credentials are is
     );
 
     await waitFor(() =>
-      expect(getByTestId("connection-history-timestamp")).toHaveTextContent(
-        `${formatShortDate("2024-02-13T11:39:22.919Z")} - ${formatTimeToSec(
-          "2024-02-13T11:39:22.919Z"
-        )}`
-      )
+      expect(
+        getByText(
+          `${formatShortDate(historyEvents[3].timestamp)} - ${formatTimeToSec(
+            historyEvents[3].timestamp
+          )}`
+        )
+      ).toBeVisible()
+    );
+
+    await waitFor(() =>
+      expect(getByText("Connected with \"Passport Office\"")).toBeVisible()
     );
   });
 });
