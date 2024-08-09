@@ -46,16 +46,6 @@ describe("IdentityWalletConnect", () => {
     jest.clearAllTimers();
   });
 
-  test("should throw an error if identifier is not located", async () => {
-    Agent.agent.identifiers.getIdentifier = jest
-      .fn()
-      .mockResolvedValue(undefined);
-
-    await expect(identityWalletConnect.getKeriIdentifier()).rejects.toThrow(
-      IdentityWalletConnect.IDENTIFIER_ID_NOT_LOCATED
-    );
-  });
-
   test("should return OOBI if identifier is located", async () => {
     const mockIdentifier = { signifyName: "test-signify-name" };
     Agent.agent.identifiers.getIdentifier = jest

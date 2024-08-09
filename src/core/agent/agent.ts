@@ -61,6 +61,8 @@ class Agent {
   static readonly KERIA_NOT_BOOTED =
     "Agent has not been booted for a given Signify passcode";
   static readonly INVALID_MNEMONIC = "Seed phrase is invalid";
+  static readonly MISSING_DATA_ON_KERIA =
+    "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.";
 
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {

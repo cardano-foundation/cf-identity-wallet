@@ -80,12 +80,12 @@ const IdentifierDetails = () => {
   );
 
   const fetchDetails = useCallback(async () => {
-    const cardDetailsResult = await Agent.agent.identifiers.getIdentifier(
-      params.id
-    );
-    if (cardDetailsResult) {
+    try {
+      const cardDetailsResult = await Agent.agent.identifiers.getIdentifier(
+        params.id
+      );
       setCardData(cardDetailsResult);
-    } else {
+    } catch (error) {
       // @TODO - Error handling.
     }
   }, [params.id]);
