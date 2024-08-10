@@ -1,40 +1,5 @@
-import { SQLiteDBConnection } from "@capacitor-community/sqlite";
 import { BasicRecord } from "../../agent/records";
 import { Query } from "../storage.types";
-import { MIGRATIONS } from "./migrations";
-
-async function getMigrationsToApply(
-  session: SQLiteDBConnection,
-  currentVersion: string
-): Promise<{ statement: string; values?: unknown[] }[] | null> {
-  const versionArr: string[] = [];
-  MIGRATIONS.forEach((migration) => {
-    versionArr.push(migration.version);
-  });
-  versionArr.sort((a, b) => versionCompare(a, b));
-  const latestVersion = versionArr[versionArr.length - 1];
-  if (versionCompare(latestVersion, currentVersion) == 0) {
-    return null;
-  }
-
-  const migrationStatements: { statement: string; values?: unknown[] }[] = [];
-  for (const migration of MIGRATIONS) {
-    if (versionCompare(currentVersion, migration.version) == -1) {
-      if (migration?.sql) {
-        migration?.sql.forEach((sql) => {
-          migrationStatements.push({
-            statement: sql,
-          });
-        });
-      } else if (migration.migrationStatements) {
-        const statements = await migration.migrationStatements(session);
-        migrationStatements.push(...statements);
-      }
-    }
-  }
-
-  return migrationStatements;
-}
 
 function isValidPart(x: string): boolean {
   return /^\d+$/.test(x);
@@ -126,7 +91,6 @@ function convertDbQuery(params: Query<BasicRecord>): Record<string, unknown> {
 }
 
 export {
-  getMigrationsToApply,
   versionCompare,
   convertDbQuery,
   resolveTagsFromDb,

@@ -3,15 +3,16 @@ import {
   SQLiteConnection,
   SQLiteDBConnection,
 } from "@capacitor-community/sqlite";
-import { getMigrationsToApply, versionCompare } from "./utils";
+import { versionCompare } from "./utils";
 import { MIGRATIONS } from "./migrations";
+import { MigrationType } from "./migrations/migrations.types";
 
 class SqliteSession {
   static readonly VERSION_DATABASE_KEY = "VERSION_DATABASE_KEY";
-
   static readonly GET_KV_SQL = "SELECT * FROM kv where key = ?";
   static readonly INSERT_KV_SQL =
     "INSERT OR REPLACE INTO kv (key,value) VALUES (?,?)";
+  static readonly BASE_VERSION = "0.0.0";
 
   private sessionInstance?: SQLiteDBConnection;
 
@@ -37,9 +38,10 @@ class SqliteSession {
       );
       return currentVersionDatabase;
     } catch (error) {
-      return "0.0.0";
+      return SqliteSession.BASE_VERSION;
     }
   }
+
   async open(storageName: string): Promise<void> {
     const connection = new SQLiteConnection(CapacitorSQLite);
     const ret = await connection.checkConnectionsConsistency();
@@ -64,25 +66,30 @@ class SqliteSession {
 
   private async migrateDb(): Promise<void> {
     const currentVersion = await this.getCurrentVersionDatabase();
-    const migrationStatements = await getMigrationsToApply(
-      this.session!,
-      currentVersion
-    );
 
-    if (migrationStatements) {
-      const versionArr = MIGRATIONS.map((migration) => migration.version).sort(
-        (a, b) => versionCompare(a, b)
-      );
-      const latestVersion = versionArr[versionArr.length - 1];
+    const orderedMigrations = MIGRATIONS.sort((a, b) =>
+      versionCompare(a.version, b.version)
+    );
+    for (const migration of orderedMigrations) {
+      if (versionCompare(migration.version, currentVersion) !== 1) {
+        continue;
+      }
+
+      const migrationStatements = [];
+      if (migration.type === MigrationType.SQL) {
+        for (const sqlStatement of migration.sql) {
+          migrationStatements.push({ statement: sqlStatement });
+        }
+      } else {
+        const statements = await migration.migrationStatements(this.session!);
+        migrationStatements.push(...statements);
+      }
 
       migrationStatements.push({
         statement: SqliteSession.INSERT_KV_SQL,
-        values: [
-          SqliteSession.VERSION_DATABASE_KEY,
-          JSON.stringify(latestVersion),
-        ],
+        values: [SqliteSession.VERSION_DATABASE_KEY, migration.version],
       });
-      await this.session?.executeTransaction(migrationStatements);
+      await this.session!.executeTransaction(migrationStatements);
     }
   }
 }
