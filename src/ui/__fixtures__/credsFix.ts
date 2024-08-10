@@ -2,8 +2,10 @@ import {
   ConnectionDetails,
   ConnectionStatus,
 } from "../../core/agent/agent.types";
-import { CredentialMetadataRecordStatus } from "../../core/agent/records/credentialMetadataRecord.types";
-import { ACDCDetails } from "../../core/agent/services/credentialService.types";
+import {
+  ACDCDetails,
+  CredentialStatus,
+} from "../../core/agent/services/credentialService.types";
 
 const connectionDetailsFix: ConnectionDetails = {
   id: "test_id",
@@ -17,7 +19,7 @@ const credsFixAcdc: ACDCDetails[] = [
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
     issuanceDate: "2024-01-22T16:03:44.643Z",
     credentialType: "Qualified vLEI Issuer Credential",
-    status: CredentialMetadataRecordStatus.CONFIRMED,
+    status: CredentialStatus.CONFIRMED,
     i: "EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5",
     a: {
       d: "EJ3HSnEqtSm3WiucWkeBbKspmEAIjf2N6wr5EKOcQ9Vl",
@@ -44,7 +46,7 @@ const pendingCredFixs: ACDCDetails[] = [
     id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6wv",
     issuanceDate: "2024-08-07T16:03:44.643Z",
     credentialType: "Rare EVO 2024 Attendee",
-    status: CredentialMetadataRecordStatus.PENDING,
+    status: CredentialStatus.PENDING,
     i: "EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5",
     a: {
       d: "EJ3HSnEqtSm3WiucWkeBbKspmEAIjf2N6wr5EKOcQ9Vl",

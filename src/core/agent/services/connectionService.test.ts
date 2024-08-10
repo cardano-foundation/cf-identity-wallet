@@ -695,7 +695,7 @@ describe("Connection service of agent", () => {
         },
         credentialType: "IIW 2024 Demo Day Attendee",
         connectionId,
-        historyType: ConnectionHistoryType.CREDENTIAL_UPDATE,
+        historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
         createdAt: date3,
       },
     ]);
@@ -709,7 +709,7 @@ describe("Connection service of agent", () => {
         credentialType: "IIW 2024 Demo Day Attendee",
       },
       {
-        type: ConnectionHistoryType.CREDENTIAL_UPDATE,
+        type: ConnectionHistoryType.CREDENTIAL_REVOKED,
         timestamp: date3.toISOString(),
         credentialType: "IIW 2024 Demo Day Attendee",
       },

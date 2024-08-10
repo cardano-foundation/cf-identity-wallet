@@ -1,12 +1,10 @@
 import { CredentialService } from "./credentialService";
-import {
-  CredentialMetadataRecordProps,
-  CredentialMetadataRecordStatus,
-} from "../records/credentialMetadataRecord.types";
+import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { EventService } from "./eventService";
 import { NotificationRoute } from "../agent.types";
 import { Agent } from "../agent";
+import { CredentialStatus } from "./credentialService.types";
 
 const basicStorage = jest.mocked({
   open: jest.fn(),
@@ -151,7 +149,7 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   createdAt: now,
   issuanceDate: nowISO,
   credentialType: "credType",
-  status: CredentialMetadataRecordStatus.CONFIRMED,
+  status: CredentialStatus.CONFIRMED,
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
   schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
 };
@@ -187,14 +185,14 @@ describe("Credential service of agent", () => {
         id: id1,
         credentialType: credentialMetadataRecordA.credentialType,
         issuanceDate: nowISO,
-        status: CredentialMetadataRecordStatus.CONFIRMED,
+        status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       },
       {
         id: id2,
         credentialType: credentialMetadataRecordB.credentialType,
         issuanceDate: nowISO,
-        status: CredentialMetadataRecordStatus.CONFIRMED,
+        status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       },
     ]);
@@ -327,7 +325,7 @@ describe("Credential service of agent", () => {
       id: credentialMetadataRecordA.id,
       credentialType: credentialMetadataRecordA.credentialType,
       issuanceDate: nowISO,
-      status: CredentialMetadataRecordStatus.CONFIRMED,
+      status: CredentialStatus.CONFIRMED,
       i: acdc.sad.i,
       a: acdc.sad.a,
       s: {
@@ -348,7 +346,7 @@ describe("Credential service of agent", () => {
     const credentialType = "TYPE-001";
     credentialStorage.getCredentialMetadata = jest.fn().mockReturnValue({
       id,
-      status: CredentialMetadataRecordStatus.CONFIRMED,
+      status: CredentialStatus.CONFIRMED,
       credentialType,
       issuanceDate: nowISO,
       isDeleted: false,
@@ -359,7 +357,7 @@ describe("Credential service of agent", () => {
       await credentialService.getCredentialShortDetailsById(id)
     ).toStrictEqual({
       id,
-      status: CredentialMetadataRecordStatus.CONFIRMED,
+      status: CredentialStatus.CONFIRMED,
       credentialType,
       issuanceDate: nowISO,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",

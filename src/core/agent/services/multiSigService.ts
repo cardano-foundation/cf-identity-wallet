@@ -249,7 +249,7 @@ class MultiSigService extends AgentService {
       .get(metadata.signifyName)
       .catch((error) => {
         const errorStack = (error as Error).stack as string;
-        const status = errorStack.split("-")[1];
+        const status = errorStack.split(" - ")[1];
         if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
           return undefined;
         } else {
@@ -319,7 +319,7 @@ class MultiSigService extends AgentService {
       .getRequest(msgSaid)
       .catch((error) => {
         const errorStack = (error as Error).stack as string;
-        const status = errorStack.split("-")[1];
+        const status = errorStack.split(" - ")[1];
         if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
           return [];
         } else {
@@ -354,7 +354,8 @@ class MultiSigService extends AgentService {
       multiSig.signifyName
     );
     Agent.agent.signifyNotifications.deleteNotificationRecordById(
-      notification.id
+      notification.id,
+      notification.a.r as NotificationRoute
     );
     return res.op.name.split(".")[1];
   }
@@ -365,7 +366,7 @@ class MultiSigService extends AgentService {
       .getRequest(msgSaid)
       .catch((error) => {
         const errorStack = (error as Error).stack as string;
-        const status = errorStack.split("-")[1];
+        const status = errorStack.split(" - ")[1];
         if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
           return [];
         } else {
@@ -397,7 +398,7 @@ class MultiSigService extends AgentService {
       .getRequest(notificationSaid)
       .catch((error) => {
         const errorStack = (error as Error).stack as string;
-        const status = errorStack.split("-")[1];
+        const status = errorStack.split(" - ")[1];
         if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
           return [];
         } else {
@@ -451,6 +452,7 @@ class MultiSigService extends AgentService {
   @OnlineOnly
   async joinMultisig(
     notificationId: string,
+    notificationRoute: NotificationRoute,
     notificationSaid: string,
     meta: Pick<IdentifierMetadataRecordProps, "displayName" | "theme">
   ): Promise<CreateIdentifierResult | undefined> {
@@ -458,7 +460,8 @@ class MultiSigService extends AgentService {
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {
       Agent.agent.signifyNotifications.deleteNotificationRecordById(
-        notificationId
+        notificationId,
+        notificationRoute
       );
       return;
     }
@@ -467,7 +470,7 @@ class MultiSigService extends AgentService {
       .getRequest(notificationSaid)
       .catch((error) => {
         const errorStack = (error as Error).stack as string;
-        const status = errorStack.split("-")[1];
+        const status = errorStack.split(" - ")[1];
         if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
           return [];
         } else {
@@ -548,7 +551,7 @@ class MultiSigService extends AgentService {
       .get(metadata.signifyOpName)
       .catch((error) => {
         const errorStack = (error as Error).stack as string;
-        const status = errorStack.split("-")[1];
+        const status = errorStack.split(" - ")[1];
         if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
           return undefined;
         } else {

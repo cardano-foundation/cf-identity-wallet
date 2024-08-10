@@ -6,6 +6,7 @@ import {
   AcdcEventTypes,
   ExchangeRoute,
   IpexMessage,
+  NotificationRoute,
   type AcdcStateChangedEvent,
   type AgentServicesProps,
   type KeriaNotification,
@@ -17,10 +18,7 @@ import {
   OperationPendingStorage,
   IpexMessageStorage,
 } from "../records";
-import {
-  CredentialMetadataRecordProps,
-  CredentialMetadataRecordStatus,
-} from "../records/credentialMetadataRecord.types";
+import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
 import { CredentialStatus } from "./credentialService.types";
 import { OnlineOnly, getCredentialShortDetails } from "./utils";
@@ -144,7 +142,10 @@ class IpexCommunicationService extends AgentService {
     Agent.agent.signifyNotifications.addPendingOperationToQueue(
       pendingOperation
     );
-    Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      id,
+      notifRecord.a.r as NotificationRoute
+    );
   }
 
   @OnlineOnly
@@ -166,7 +167,8 @@ class IpexCommunicationService extends AgentService {
       .ipex()
       .submitOffer(holderSignifyName, offer, sigs, end, [msg.exn.i]);
     Agent.agent.signifyNotifications.deleteNotificationRecordById(
-      notification.id
+      notification.id,
+      notification.a.r as NotificationRoute
     );
   }
 
@@ -215,7 +217,7 @@ class IpexCommunicationService extends AgentService {
       .get(schemaSaid)
       .catch((error) => {
         const errorStack = (error as Error).stack as string;
-        const status = errorStack.split("-")[1];
+        const status = errorStack.split(" - ")[1];
         if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
           return undefined;
         } else {
@@ -297,7 +299,7 @@ class IpexCommunicationService extends AgentService {
       isArchived: false,
       credentialType: schemaTitle,
       issuanceDate: new Date(dateTime).toISOString(),
-      status: CredentialMetadataRecordStatus.PENDING,
+      status: CredentialStatus.PENDING,
       connectionId,
       schema,
     };
@@ -331,7 +333,10 @@ class IpexCommunicationService extends AgentService {
     return op;
   }
 
-  async markAcdcComplete(credentialId: string) {
+  async markAcdc(
+    credentialId: string,
+    status: CredentialStatus.CONFIRMED | CredentialStatus.REVOKED
+  ) {
     const metadata = await this.credentialStorage.getCredentialMetadata(
       credentialId
     );
@@ -340,8 +345,7 @@ class IpexCommunicationService extends AgentService {
         IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
       );
     }
-
-    metadata.status = CredentialMetadataRecordStatus.CONFIRMED;
+    metadata.status = status;
     await this.credentialStorage.updateCredentialMetadata(
       metadata.id,
       metadata
@@ -349,7 +353,7 @@ class IpexCommunicationService extends AgentService {
     this.props.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
       payload: {
-        status: CredentialStatus.CONFIRMED,
+        status,
         credential: getCredentialShortDetails(metadata),
       },
     });
@@ -361,7 +365,7 @@ class IpexCommunicationService extends AgentService {
       return schema;
     } catch (error) {
       const errorStack = (error as Error).stack as string;
-      const status = errorStack.split("-")[1];
+      const status = errorStack.split(" - ")[1];
       if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
         const oobi = await Agent.agent.connections
           .resolveOobi(
@@ -463,7 +467,10 @@ class IpexCommunicationService extends AgentService {
     Agent.agent.signifyNotifications.addPendingOperationToQueue(
       pendingOperation
     );
-    Agent.agent.signifyNotifications.deleteNotificationRecordById(id);
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      id,
+      notifRecord.a.r as NotificationRoute
+    );
   }
 }
 

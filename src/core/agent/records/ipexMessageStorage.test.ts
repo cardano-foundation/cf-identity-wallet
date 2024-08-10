@@ -52,7 +52,7 @@ const ipexMessageRecordA = new IpexMessageRecord(ipexMessageRecordProps);
 const ipexMessageRecordB = new IpexMessageRecord({
   ...ipexMessageRecordProps,
   id: id2,
-  historyType: ConnectionHistoryType.CREDENTIAL_UPDATE,
+  historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
 });
 
 describe("ipexMessage Storage", () => {

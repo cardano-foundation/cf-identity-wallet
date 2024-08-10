@@ -3,6 +3,7 @@ import { CredentialMetadataRecordProps } from "../records/credentialMetadataReco
 enum CredentialStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
+  REVOKED = "revoked",
 }
 
 type CredentialShortDetails = Omit<

@@ -106,12 +106,12 @@ const acdcChangeHandler = async (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === CredentialStatus.PENDING) {
-    dispatch(setCurrentOperation(OperationType.ADD_CREDENTIAL));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING));
+  } else if (event.payload.status === CredentialStatus.REVOKED) {
+    dispatch(updateOrAddCredsCache(event.payload.credential));
   } else {
     dispatch(updateOrAddCredsCache(event.payload.credential));
     dispatch(setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED));
-    dispatch(setCurrentOperation(OperationType.IDLE));
   }
 };
 
@@ -180,6 +180,12 @@ const signifyOperationStateChangeHandler = async (
     dispatch(updateIsPending({ id: oid, isPending: false }));
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     break;
+  case OperationPendingRecordType.ExchangeRevokeCredential: {
+    const notifications =
+        await Agent.agent.signifyNotifications.getAllNotifications();
+    dispatch(setNotificationsCache(notifications));
+    break;
+  }
   }
 };
 

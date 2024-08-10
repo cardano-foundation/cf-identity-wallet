@@ -3,12 +3,12 @@ import { IonChip, IonIcon } from "@ionic/react";
 import { hourglassOutline } from "ionicons/icons";
 import { Alert } from "../../../Alert";
 import { CredentialCardTemplateProps } from "../../CredentialCardTemplate.types";
-import { CredentialMetadataRecordStatus } from "../../../../../core/agent/records/credentialMetadataRecord.types";
 import { i18n } from "../../../../../i18n";
 import ACDCLogo from "../../../../../ui/assets/images/keri-acdc.svg";
 import KeriBackground from "../../../../../ui/assets/images/keri-00.svg";
 import "./KeriCardTemplate.scss";
 import { formatShortDate } from "../../../../utils/formatters";
+import { CredentialStatus } from "../../../../../core/agent/services/credentialService.types";
 
 const KeriCardTemplate = ({
   name = "default",
@@ -27,7 +27,7 @@ const KeriCardTemplate = ({
   };
 
   const handleCardClick = () => {
-    if (cardData.status === CredentialMetadataRecordStatus.PENDING) {
+    if (cardData.status === CredentialStatus.PENDING) {
       setAlertIsOpen(true);
     } else if (onHandleShowCardDetails) {
       onHandleShowCardDetails(index);
@@ -54,13 +54,13 @@ const KeriCardTemplate = ({
               alt="card-logo"
             />
           </span>
-          {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
+          {cardData.status === CredentialStatus.PENDING ? (
             <IonChip>
               <IonIcon
                 icon={hourglassOutline}
                 color="primary"
               />
-              <span>{CredentialMetadataRecordStatus.PENDING}</span>
+              <span>{CredentialStatus.PENDING}</span>
             </IonChip>
           ) : (
             <span className="credential-type">{cardData.credentialType}</span>
@@ -72,7 +72,7 @@ const KeriCardTemplate = ({
               {i18n.t("credentials.layout.issued")}
             </span>
             <span className="card-footer-column-value">
-              {cardData.status === CredentialMetadataRecordStatus.CONFIRMED ? (
+              {cardData.status === CredentialStatus.CONFIRMED ? (
                 formatShortDate(cardData.issuanceDate)
               ) : (
                 <>&nbsp;</>
@@ -81,8 +81,7 @@ const KeriCardTemplate = ({
           </div>
         </div>
       </div>
-      {cardData.status === CredentialMetadataRecordStatus.PENDING &&
-        alertIsOpen && (
+      {cardData.status === CredentialStatus.PENDING && alertIsOpen && (
         <Alert
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}

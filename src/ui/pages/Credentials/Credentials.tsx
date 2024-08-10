@@ -33,10 +33,12 @@ import { useOnlineStatusEffect, useToggleConnections } from "../../hooks";
 import { Connections } from "../Connections";
 import { StartAnimationSource } from "../Identifiers/Identifiers.type";
 import "./Credentials.scss";
-import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
 import { ListHeader } from "../../components/ListHeader";
 import { CardList as CredentialCardList } from "../../components/SwitchCardView";
-import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import {
+  CredentialShortDetails,
+  CredentialStatus,
+} from "../../../core/agent/services/credentialService.types";
 import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 
 const CLEAR_STATE_DELAY = 1000;
@@ -102,17 +104,12 @@ const Credentials = () => {
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
 
   const pendingCreds = useMemo(
-    () =>
-      credsCache.filter(
-        (item) => item.status === CredentialMetadataRecordStatus.PENDING
-      ),
+    () => credsCache.filter((item) => item.status === CredentialStatus.PENDING),
     [credsCache]
   );
   const confirmedCreds = useMemo(
     () =>
-      credsCache.filter(
-        (item) => item.status === CredentialMetadataRecordStatus.CONFIRMED
-      ),
+      credsCache.filter((item) => item.status === CredentialStatus.CONFIRMED),
     [credsCache]
   );
 
