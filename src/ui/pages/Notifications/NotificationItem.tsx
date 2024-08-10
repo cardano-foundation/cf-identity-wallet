@@ -8,7 +8,6 @@ import {
 import { MouseEvent, useCallback, useEffect, useState } from "react";
 import { Trans } from "react-i18next";
 import {
-  ExchangeRoute,
   KeriaNotification,
   NotificationRoute,
 } from "../../../core/agent/agent.types";
