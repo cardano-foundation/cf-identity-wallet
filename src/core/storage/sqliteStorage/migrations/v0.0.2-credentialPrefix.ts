@@ -4,8 +4,10 @@ import { resolveTagsFromDb } from "../utils";
 import { StorageRecord } from "../../storage.types";
 import { CredentialMetadataRecord } from "../../../agent/records";
 import { deserializeRecord } from "../../utils";
+import { MigrationType, TsMigration } from "./migrations.types";
 
-export const DATA_V002 = {
+export const DATA_V002: TsMigration = {
+  type: MigrationType.TS,
   version: "0.0.2",
   migrationStatements: (session: SQLiteDBConnection) =>
     credentialStatements(session),
