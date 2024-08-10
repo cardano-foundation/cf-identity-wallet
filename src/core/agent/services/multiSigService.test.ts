@@ -3,7 +3,7 @@ import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
-import { ConnectionStatus } from "../agent.types";
+import { ConnectionStatus, NotificationRoute } from "../agent.types";
 import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { MultiSigService } from "./multiSigService";
@@ -696,10 +696,15 @@ describe("Multisig sig service of agent", () => {
       };
     });
     expect(
-      await multiSigService.joinMultisig("id", "d", {
-        theme: 0,
-        displayName: "Multisig",
-      })
+      await multiSigService.joinMultisig(
+        "id",
+        NotificationRoute.MultiSigIcp,
+        "d",
+        {
+          theme: 0,
+          displayName: "Multisig",
+        }
+      )
     ).toEqual({
       identifier: multisigIdentifier,
       isPending: true,
@@ -732,10 +737,15 @@ describe("Multisig sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    await multiSigService.joinMultisig("id", "d", {
-      theme: 0,
-      displayName: "Multisig",
-    });
+    await multiSigService.joinMultisig(
+      "id",
+      NotificationRoute.MultiSigIcp,
+      "d",
+      {
+        theme: 0,
+        displayName: "Multisig",
+      }
+    );
     expect(addEndRoleMock).toBeCalledTimes(1);
   });
 
@@ -745,7 +755,7 @@ describe("Multisig sig service of agent", () => {
       .mockRejectedValue(new Error("request - 404 - SignifyClient message"));
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     await expect(
-      multiSigService.joinMultisig("id", "d", {
+      multiSigService.joinMultisig("id", NotificationRoute.MultiSigIcp, "d", {
         theme: 0,
         displayName: "Multisig",
       })
@@ -815,7 +825,7 @@ describe("Multisig sig service of agent", () => {
     // Cannot get key states both smid and rmid
     queryKeyStateGetMock = jest.fn().mockResolvedValue([]);
     await expect(
-      multiSigService.joinMultisig("id", "d", {
+      multiSigService.joinMultisig("id", NotificationRoute.MultiSigIcp, "d", {
         theme: 0,
         displayName: "Multisig",
       })
@@ -847,7 +857,7 @@ describe("Multisig sig service of agent", () => {
     // Cannot get key states both smid and rmid
     queryKeyStateGetMock = jest.fn().mockResolvedValue([]);
     await expect(
-      multiSigService.joinMultisig("id", "d", {
+      multiSigService.joinMultisig("id", NotificationRoute.MultiSigIcp, "d", {
         theme: 0,
         displayName: "Multisig",
       })
@@ -1318,7 +1328,7 @@ describe("Multisig sig service of agent", () => {
       },
     ]);
     await expect(
-      multiSigService.joinMultisig("id", "d", {
+      multiSigService.joinMultisig("id", NotificationRoute.MultiSigIcp, "d", {
         theme: 0,
         displayName: "Multisig",
       })
@@ -1885,7 +1895,7 @@ describe("Multisig sig service of agent", () => {
       multiSigService.getMultisigIcpDetails("d")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     await expect(
-      multiSigService.joinMultisig("id", "d", {
+      multiSigService.joinMultisig("id", NotificationRoute.MultiSigIcp, "d", {
         theme: 0,
         displayName: "Multisig",
       })

@@ -17,6 +17,8 @@ export class SignifyApi {
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
   static readonly UNKNOW_SCHEMA_ID = "Unknow Schema ID: ";
+  static readonly CREDENTIAL_NOT_FOUND = "Not found credential with ID: ";
+  static readonly CREDENTIAL_REVOKED_ALREADY = "The credential has been revoked already";
   private signifyClient!: SignifyClient;
   private opTimeout: number;
   private opRetryInterval: number;
@@ -327,6 +329,14 @@ export class SignifyApi {
   }
 
   async revokeCredential(issuerName: string, holder: string, credentialId: string) {
+    // TODO: If the credential does not exist, this will throw 500 at the moment. Will change this later
+    const credential = await this.signifyClient.credentials().get(credentialId).catch(() => undefined);
+    if (!credential) {
+      throw new Error(`${SignifyApi.CREDENTIAL_NOT_FOUND} ${credentialId}`);
+    }
+    if (credential.status.s === "1") {
+      throw new Error(SignifyApi.CREDENTIAL_REVOKED_ALREADY);
+    }
     const result = await this.signifyClient.credentials().revoke(issuerName, credentialId);
     await waitAndGetDoneOp(
       this.signifyClient,
@@ -334,7 +344,6 @@ export class SignifyApi {
       this.opTimeout,
       this.opRetryInterval
     );
-    const credential = await this.signifyClient.credentials().get(credentialId);
     const datetime = new Date().toISOString().replace("Z", "000+00:00");
     const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
       senderName: issuerName,

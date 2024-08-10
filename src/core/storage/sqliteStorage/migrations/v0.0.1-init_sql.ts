@@ -1,4 +1,7 @@
-const DATA_V001 = {
+import { MigrationType, SqlMigration } from "./migrations.types";
+
+const DATA_V001: SqlMigration = {
+  type: MigrationType.SQL,
   version: "0.0.1",
   sql: [
     "CREATE TABLE IF NOT EXISTS kv (key text unique, value text)",
