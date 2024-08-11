@@ -140,7 +140,7 @@ class IpexCommunicationService extends AgentService {
     );
     Agent.agent.signifyNotifications.deleteNotificationRecordById(
       id,
-      notifRecord.a.r as NotificationRoute
+      grantNoteRecord.a.r as NotificationRoute
     );
   }
 
