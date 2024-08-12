@@ -4,6 +4,7 @@ import configureStore from "redux-mock-store";
 import { Store, AnyAction } from "@reduxjs/toolkit";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import { act } from "react-dom/test-utils";
+import { KeyboardResize } from "@capacitor/keyboard";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { IdentifierOptions } from "./IdentifierOptions";
@@ -31,10 +32,31 @@ jest.mock("react-qrcode-logo", () => {
   };
 });
 
+const isNativeMock = jest.fn();
+jest.mock("@capacitor/core", () => {
+  return {
+    ...jest.requireActual("@capacitor/core"),
+    Capacitor: {
+      isNativePlatform: () => isNativeMock(),
+    },
+  };
+});
+
+const setResizeModeMock = jest.fn();
+jest.mock("@capacitor/keyboard", () => {
+  return {
+    ...jest.requireActual("@capacitor/keyboard"),
+    Keyboard: {
+      setResizeMode: (params: unknown) => setResizeModeMock(params),
+    },
+  };
+});
+
 describe("Identifier Options modal", () => {
   const dispatchMock = jest.fn();
   let mockedStore: Store<unknown, AnyAction>;
   beforeEach(() => {
+    isNativeMock.mockImplementation(() => false);
     jest.resetAllMocks();
     const mockStore = configureStore();
     const initialState = {
@@ -81,6 +103,38 @@ describe("Identifier Options modal", () => {
     expect(getByTestId("rotate-keys-option")).toBeVisible();
     expect(getByTestId("share-identifier-option")).toBeVisible();
     expect(getByTestId("delete-identifier-option")).toBeVisible();
+  });
+
+  test("Change keyboard of resize mode of identifier options", async () => {
+    isNativeMock.mockImplementation(() => true);
+
+    const setIdentifierOptionsIsOpen = jest.fn();
+    const setCardData = jest.fn();
+    const { unmount } = render(
+      <Provider store={mockedStore}>
+        <IdentifierOptions
+          handleRotateKey={jest.fn()}
+          optionsIsOpen={true}
+          setOptionsIsOpen={setIdentifierOptionsIsOpen}
+          cardData={identifierFix[0]}
+          oobi={oobi}
+          setCardData={setCardData}
+          handleDeleteIdentifier={async () => {
+            jest.fn();
+          }}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(setResizeModeMock).toBeCalledWith({ mode: KeyboardResize.None });
+    });
+
+    unmount();
+
+    await waitFor(() => {
+      expect(setResizeModeMock).toBeCalledWith({ mode: KeyboardResize.Native });
+    });
   });
 
   test("should not display the rotate-keys-option inside the modal", async () => {

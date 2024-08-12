@@ -13,6 +13,14 @@
     }
   }
 
+  .notification-empty {
+    text-align: center;
+    color: rgba(54, 60, 74, 0.5);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    margin: 1rem 0;
+  }
+
   .notifications-tab-chips {
     margin-top: 0.5rem;
     display: flex;
@@ -48,14 +56,6 @@
       &::part(native) {
         border: none;
       }
-    }
-
-    .end-message {
-      text-align: center;
-      color: rgba(54, 60, 74, 0.5);
-      font-size: 0.875rem;
-      line-height: 1.25rem;
-      margin: 1rem 0;
     }
 
     .notifications-tab-section {

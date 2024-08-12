@@ -174,13 +174,13 @@ const IdentifierOptions = ({
       Keyboard.setResizeMode({
         mode: KeyboardResize.None,
       });
-    }
 
-    return () => {
-      Keyboard.setResizeMode({
-        mode: KeyboardResize.Native,
-      });
-    };
+      return () => {
+        Keyboard.setResizeMode({
+          mode: KeyboardResize.Native,
+        });
+      };
+    }
   }, []);
 
   return (

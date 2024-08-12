@@ -980,6 +980,7 @@
   "notifications": {
     "tab": {
       "header": "Notifications",
+      "empty": "No notifications",
       "chips": {
         "all": "All",
         "identifiers": "Identifiers",
