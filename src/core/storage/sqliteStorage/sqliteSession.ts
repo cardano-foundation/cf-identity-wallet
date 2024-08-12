@@ -87,7 +87,10 @@ class SqliteSession {
 
       migrationStatements.push({
         statement: SqliteSession.INSERT_KV_SQL,
-        values: [SqliteSession.VERSION_DATABASE_KEY, migration.version],
+        values: [
+          SqliteSession.VERSION_DATABASE_KEY,
+          JSON.stringify(migration.version),
+        ],
       });
       await this.session!.executeTransaction(migrationStatements);
     }
