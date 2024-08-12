@@ -57,7 +57,7 @@ const ConnectionHistoryEvent = ({
           {historyItem.type ===
             ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE &&
             i18n.t("connections.details.agree")}
-          {historyItem.type === ConnectionHistoryType.CREDENTIAL_UPDATE &&
+          {historyItem.type === ConnectionHistoryType.CREDENTIAL_REVOKED &&
             i18next.t("connections.details.update", {
               credential: historyItem.credentialType
                 ?.replace(/([A-Z][a-z])/g, " $1")
