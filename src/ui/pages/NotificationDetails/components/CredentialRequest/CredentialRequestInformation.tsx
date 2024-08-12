@@ -109,22 +109,24 @@ const CredentialRequestInformation = ({
               {credentialRequest.schema.name}
             </IonText>
           </CardDetailsBlock>
-          <CardDetailsBlock
-            className="request-data"
-            title={i18n.t(
-              "notifications.details.credential.request.information.informationrequired"
-            )}
-          >
-            <CardDetailsAttributes
-              data={credentialRequest.attributes as Record<string, string>}
-              itemProps={{
-                mask: false,
-                fullText: true,
-                copyButton: false,
-                className: "credential-info-item",
-              }}
-            />
-          </CardDetailsBlock>
+          {JSON.stringify(credentialRequest.attributes) !== "{}" && (
+            <CardDetailsBlock
+              className="request-data"
+              title={i18n.t(
+                "notifications.details.credential.request.information.informationrequired"
+              )}
+            >
+              <CardDetailsAttributes
+                data={credentialRequest.attributes as Record<string, string>}
+                itemProps={{
+                  mask: false,
+                  fullText: true,
+                  copyButton: false,
+                  className: "credential-info-item",
+                }}
+              />
+            </CardDetailsBlock>
+          )}
         </div>
       </ScrollablePageLayout>
       <AlertDecline
