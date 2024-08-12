@@ -6,6 +6,8 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
+import { Capacitor } from "@capacitor/core";
+import { Keyboard, KeyboardResize } from "@capacitor/keyboard";
 import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -166,6 +168,20 @@ const IdentifierOptions = ({
   const optionsNoRotate = optionsRotate.filter(
     (option) => option.testId !== "rotate-keys-option"
   );
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      Keyboard.setResizeMode({
+        mode: KeyboardResize.None,
+      });
+    }
+
+    return () => {
+      Keyboard.setResizeMode({
+        mode: KeyboardResize.Native,
+      });
+    };
+  }, []);
 
   return (
     <>

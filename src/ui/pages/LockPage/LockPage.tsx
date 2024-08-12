@@ -1,6 +1,8 @@
 import i18n from "i18next";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
+import { Capacitor } from "@capacitor/core";
+import { Keyboard } from "@capacitor/keyboard";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch } from "../../../store/hooks";
 import { getBiometricsCacheCache } from "../../../store/reducers/biometricsCache";
@@ -132,6 +134,14 @@ const LockPage = () => {
     return undefined;
   }, [errorMessage, passcode.length, passcodeIncorrect, isLock]);
 
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      // NOTE: focus to passcode button when open lock page to close keyboard and unfocus any textbox
+      Keyboard.hide();
+      document.getElementById("passcode-button-1")?.focus();
+    }
+  }, []);
+
   return (
     <ResponsivePageLayout
       pageId={pageId}
@@ -145,6 +155,7 @@ const LockPage = () => {
           <h2
             className={`${pageId}-title`}
             data-testid={`${pageId}-title`}
+            id="page-title"
           >
             {i18n.t("lockpage.title")}
           </h2>

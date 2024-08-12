@@ -114,6 +114,7 @@ const PasscodeModule = ({
                       data-testid={`passcode-button-${number}`}
                       className="passcode-module-number-button"
                       onClick={() => handlePinChange(number)}
+                      id={`passcode-button-${number}`}
                       disabled={hasError}
                     >
                       <div className="passcode-module-number-button-inner">
