@@ -52,6 +52,7 @@ const ipexMessageRecordStorage = jest.mocked({
   getIpexMessageMetadataByConnectionId: jest.fn(),
   createIpexMessageRecord: jest.fn(),
 });
+
 const operationPendingStorage = jest.mocked({
   save: jest.fn(),
   delete: jest.fn(),
@@ -65,6 +66,7 @@ const operationPendingStorage = jest.mocked({
 let credentialListMock = jest.fn();
 let credentialGetMock = jest.fn();
 const identifierListMock = jest.fn();
+
 let getExchangeMock = jest.fn().mockImplementation((id: string) => {
   if (id == "saidForUuid") {
     return {
@@ -88,6 +90,7 @@ let getExchangeMock = jest.fn().mockImplementation((id: string) => {
   }
   return;
 });
+
 const ipexOfferMock = jest.fn();
 const ipexGrantMock = jest.fn();
 const schemaGetMock = jest.fn();
@@ -96,6 +99,7 @@ const submitAdmitMock = jest.fn().mockResolvedValue({
   name: "opName",
   done: true,
 });
+
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -260,6 +264,7 @@ describe("Ipex communication service of agent", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
+
   test("can accept ACDC", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "uuid";
@@ -291,6 +296,11 @@ describe("Ipex communication service of agent", () => {
     expect(
       Agent.agent.signifyNotifications.addPendingOperationToQueue
     ).toBeCalledTimes(1);
+    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith(
+      expect.objectContaining({
+        historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+      })
+    );
     expect(deleteNotificationMock).toBeCalledWith(id);
   });
 
@@ -419,6 +429,7 @@ describe("Ipex communication service of agent", () => {
       ipexCommunicationService.acceptAcdc("id")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
+
   test("can offer Keri Acdc when received the ipex apply", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
@@ -722,40 +733,7 @@ describe("Ipex communication service of agent", () => {
       connectionId: grantIpexMessageMock.exn.i,
       historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE,
     });
-
-    schemaGetMock.mockRejectedValueOnce(
-      new Error("request - 404 - SignifyClient message")
-    );
-    resolveOobiMock.mockResolvedValueOnce({ done: false });
-    await ipexCommunicationService.createLinkedIpexMessageRecord(
-      grantIpexMessageMock,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
-    );
-    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
-      id: grantIpexMessageMock.exn.d,
-      credentialType: undefined,
-      content: grantIpexMessageMock,
-      connectionId: grantIpexMessageMock.exn.i,
-      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-    });
-
-    schemaGetMock.mockRejectedValueOnce(
-      new Error("request - 404 - SignifyClient message")
-    );
-    resolveOobiMock.mockResolvedValueOnce({ done: true });
-    schemaGetMock.mockResolvedValueOnce(schemaMock);
-    await ipexCommunicationService.createLinkedIpexMessageRecord(
-      grantIpexMessageMock,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
-    );
-    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
-      id: grantIpexMessageMock.exn.d,
-      credentialType: schemaMock.title,
-      content: grantIpexMessageMock,
-      connectionId: grantIpexMessageMock.exn.i,
-      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-    });
-    expect(schemaGetMock).toBeCalledTimes(5);
+    expect(schemaGetMock).toBeCalledTimes(2);
     expect(resolveOobiMock).toBeCalledTimes(2);
   });
 

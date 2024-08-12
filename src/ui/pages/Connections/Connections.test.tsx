@@ -491,6 +491,7 @@ describe("Connections page from Credentials tab", () => {
       );
     });
   });
+
   test("Open connection when history.state.openConnections contain", async () => {
     const history = createMemoryHistory();
     history.push(TabsRoutePath.IDENTIFIERS, {
