@@ -110,7 +110,7 @@ describe("Identifier Options modal", () => {
 
     const setIdentifierOptionsIsOpen = jest.fn();
     const setCardData = jest.fn();
-    const { unmount } = render(
+    const { unmount, getByTestId } = render(
       <Provider store={mockedStore}>
         <IdentifierOptions
           handleRotateKey={jest.fn()}
@@ -125,6 +125,16 @@ describe("Identifier Options modal", () => {
         />
       </Provider>
     );
+
+    expect(getByTestId("edit-identifier-option")).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("edit-identifier-option"));
+    });
+
+    await waitFor(() => {
+      expect(setIdentifierOptionsIsOpen).toBeCalledTimes(1);
+    });
 
     await waitFor(() => {
       expect(setResizeModeMock).toBeCalledWith({ mode: KeyboardResize.None });

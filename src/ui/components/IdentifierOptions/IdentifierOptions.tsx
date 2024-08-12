@@ -170,7 +170,7 @@ const IdentifierOptions = ({
   );
 
   useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.isNativePlatform() && editorOptionsIsOpen) {
       Keyboard.setResizeMode({
         mode: KeyboardResize.None,
       });
@@ -181,7 +181,7 @@ const IdentifierOptions = ({
         });
       };
     }
-  }, []);
+  }, [editorOptionsIsOpen]);
 
   return (
     <>
