@@ -155,7 +155,6 @@ const LockPage = () => {
           <h2
             className={`${pageId}-title`}
             data-testid={`${pageId}-title`}
-            id="page-title"
           >
             {i18n.t("lockpage.title")}
           </h2>

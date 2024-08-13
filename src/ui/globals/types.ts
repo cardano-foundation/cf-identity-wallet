@@ -100,6 +100,8 @@ enum ToastMsgType {
   DELETE_CRED_FAIL = "deletecrederror",
   DELETE_IDENTIFIER_FAIL = "deleteidentifiererror",
   ARCHIVED_CRED_FAIL = "archivedcrederror",
+  UNABLE_DELETE_PASSWORD_HINT = "deletepasswordhinterror",
+  UNABLE_EDIT_IDENTIFIER = "editidentifiererror",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {

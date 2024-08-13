@@ -77,7 +77,7 @@ const VerifyPassword = ({
       // TODO: @bao-sotatek handle error for this
     }
 
-    setStoredHint(hint ? String(hint) : "");
+    setStoredHint(`${hint || ""}`);
   }, [isOpen]);
 
   const resetModal = () => {
