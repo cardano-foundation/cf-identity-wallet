@@ -252,11 +252,6 @@ class SignifyNotificationService extends AgentService {
         );
         await this.markNotification(notif.i);
         return;
-      } else {
-        await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
-          exchange,
-          ConnectionHistoryType.CREDENTIAL_ISSUANCE
-        );
       }
     }
     if (notif.a.r === NotificationRoute.MultiSigRpy) {
