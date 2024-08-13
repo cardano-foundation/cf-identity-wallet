@@ -44,6 +44,7 @@ import {
 } from "../../../../hooks";
 import { MultiSigService } from "../../../../../core/agent/services/multiSigService";
 import { ErrorPage } from "./ErrorPage";
+import { Verification } from "../../../../components/Verification";
 
 const MultiSigRequest = ({
   pageId,
@@ -60,6 +61,7 @@ const MultiSigRequest = ({
   const [multisigIcpDetails, setMultisigIcpDetails] =
     useState<MultiSigIcpRequestDetails | null>(null);
   const [showErrorPage, setShowErrorPage] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
 
   useIonHardwareBackButton(
     BackEventPriorityType.Page,
@@ -296,7 +298,7 @@ const MultiSigRequest = ({
         pageId={pageId}
         customClass="multisig-request-footer"
         primaryButtonText={`${i18n.t("notifications.details.buttons.accept")}`}
-        primaryButtonAction={() => actionAccept()}
+        primaryButtonAction={() => setVerifyIsOpen(true)}
         secondaryButtonText={`${i18n.t(
           "notifications.details.buttons.decline"
         )}`}
@@ -323,6 +325,11 @@ const MultiSigRequest = ({
           <IonSpinner name="circular" />
         </div>
       )}
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
+        onVerify={() => actionAccept()}
+      />
     </>
   );
 };
