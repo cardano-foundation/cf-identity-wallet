@@ -1564,7 +1564,7 @@
     "deleteidentifiererror": "Unable to delete identifier",
     "archivedcrederror": "Unable to archive credential",
     "savepasswordhinterror": "Unable to delete password hint",
-    "editidentifiererror": "Unable to edit identifier"
+    "editidentifiererror": "Unable to update identifier"
   },
   "request": {
     "sign": {
