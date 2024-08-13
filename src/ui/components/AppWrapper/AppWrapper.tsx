@@ -409,10 +409,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
         setIsOnline(true);
       } catch (e) {
         const errorStack = (e as Error).stack as string;
+        const errorMessage = (e as Error).message;
         // If the error is failed to fetch with signify, we retry until the connection is secured
         if (
-          /Failed to fetch/gi.test(errorStack) &&
-          /SignifyClient/gi.test(errorStack)
+          (/Failed to fetch/gi.test(errorStack) &&
+            /SignifyClient/gi.test(errorStack)) ||
+          /Load failed/gi.test(errorMessage)
         ) {
           Agent.agent.connect().then(() => {
             setIsOnline(Agent.agent.getKeriaOnlineStatus());
