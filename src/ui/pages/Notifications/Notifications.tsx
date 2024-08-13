@@ -186,6 +186,11 @@ const Notifications = () => {
           onNotificationClick={handleNotificationClick}
           onOpenOptionModal={onOpenOptionModal}
         />
+        <p className="notification-empty">
+          {filteredNotification.length === 0
+            ? i18n.t("notifications.tab.empty")
+            : i18n.t("notifications.tab.sections.earlier.end")}
+        </p>
       </div>
       {selectedItem && (
         <NotificationOptionsModal

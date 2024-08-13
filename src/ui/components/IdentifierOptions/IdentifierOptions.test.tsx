@@ -1,14 +1,14 @@
+import { waitForIonicReact } from "@ionic/react-test-utils";
+import { AnyAction, Store } from "@reduxjs/toolkit";
 import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { Store, AnyAction } from "@reduxjs/toolkit";
-import { waitForIonicReact } from "@ionic/react-test-utils";
-import { act } from "react-dom/test-utils";
-import { identifierFix } from "../../__fixtures__/identifierFix";
-import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { IdentifierOptions } from "./IdentifierOptions";
-import { TabsRoutePath } from "../navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import { identifierFix } from "../../__fixtures__/identifierFix";
+import { TabsRoutePath } from "../navigation/TabsMenu";
+import { IdentifierOptions } from "./IdentifierOptions";
 
 const updateMock = jest.fn();
 const oobi =
@@ -176,13 +176,13 @@ describe("Identifier Options function test", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("continue-button").getAttribute("disabled")).toBe(
-        "false"
-      );
+      expect(
+        getByTestId("primary-button-edit-identifier").getAttribute("disabled")
+      ).toBe("false");
     });
 
     act(() => {
-      fireEvent.click(getByTestId("continue-button"));
+      fireEvent.click(getByTestId("primary-button-edit-identifier"));
     });
 
     await waitFor(() => {
