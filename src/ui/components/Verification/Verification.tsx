@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { VerifyPassword } from "../VerifyPassword";
 import { VerifyPasscode } from "../VerifyPasscode";
-import { VerifyProps } from "./Verification";
+import { VerifyProps } from "./Verification.types";
 
 const Verification = ({
   verifyIsOpen,

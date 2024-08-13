@@ -129,7 +129,7 @@ describe("Cards Details page - current not archived credential", () => {
   });
 
   test("It renders Card Details", async () => {
-    const { getByTestId, getAllByTestId } = render(
+    const { getByText, getAllByText } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -140,12 +140,13 @@ describe("Cards Details page - current not archived credential", () => {
       </Provider>
     );
     await waitFor(() => {
-      expect(getByTestId("creds-options-modal").getAttribute("is-open")).toBe(
-        "false"
-      );
-      expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
-        "false"
-      );
+      expect(getAllByText(credsFixAcdc[0].credentialType)).toHaveLength(2);
+    });
+    await waitFor(() => {
+      expect(getByText(credsFixAcdc[0].s.description)).toBeVisible;
+    });
+    await waitFor(() => {
+      expect(getByText(credsFixAcdc[0].a.i)).toBeVisible;
     });
   });
 
