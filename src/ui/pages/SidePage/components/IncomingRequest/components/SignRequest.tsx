@@ -13,6 +13,7 @@ import "./SignRequest.scss";
 import { Spinner } from "../../../../../components/Spinner";
 import { PageHeader } from "../../../../../components/PageHeader";
 import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
+import { Verification } from "../../../../../components/Verification";
 
 const SignRequest = ({
   pageId,
@@ -23,6 +24,7 @@ const SignRequest = ({
   handleCancel,
 }: RequestProps<IncomingRequestType.PEER_CONNECT_SIGN>) => {
   const [isSigningObject, setIsSigningObject] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const signDetails = useMemo(() => {
     if (!requestData.signTransaction) {
       return {};
@@ -61,7 +63,7 @@ const SignRequest = ({
           <PageFooter
             customClass="sign-footer"
             primaryButtonText={`${i18n.t("request.button.sign")}`}
-            primaryButtonAction={handleSign}
+            primaryButtonAction={() => setVerifyIsOpen(true)}
             secondaryButtonText={`${i18n.t("request.button.dontallow")}`}
             secondaryButtonAction={handleCancel}
           />
@@ -109,6 +111,11 @@ const SignRequest = ({
         </div>
       </ScrollablePageLayout>
       <Spinner show={initiateAnimation} />
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
+        onVerify={handleSign}
+      />
     </>
   );
 };

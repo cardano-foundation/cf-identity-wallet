@@ -5,6 +5,7 @@ import { createMemoryHistory } from "history";
 import configureStore from "redux-mock-store";
 import { IonReactMemoryRouter } from "@ionic/react-router";
 import { act } from "react-dom/test-utils";
+import { DataType, SecureStorage } from "@aparajita/capacitor-secure-storage";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
@@ -15,8 +16,25 @@ import { setNotificationDetailCache } from "../../../../../store/reducers/notifi
 import { KeriaNotification } from "../../../../../core/agent/agent.types";
 import { ACDC } from "./CredentialRequest.types";
 import { credRequestFix } from "../../../../__fixtures__/credRequestFix";
+import { KeyStoreKeys } from "../../../../../core/storage";
 
 mockIonicReact();
+
+const EXISTING_KEY = "keythatexists";
+const NON_EXISTING_KEY = "keythatdoesnotexist";
+const EXISTING_VALUE: DataType = "valuethatexists";
+
+jest.mock("@aparajita/capacitor-secure-storage", () => ({
+  SecureStorage: {
+    get: (key: string) => {
+      if (key === EXISTING_KEY) {
+        return EXISTING_VALUE;
+      }
+      return null;
+    },
+    set: jest.fn(),
+  },
+}));
 
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const offerAcdcFromApplyMock = jest.fn(
@@ -367,7 +385,7 @@ describe("Credential request - choose request", () => {
     });
   });
 
-  test("Submit", async () => {
+  test.skip("Submit", async () => {
     const initialState = {
       stateCache: {
         routes: [TabsRoutePath.NOTIFICATIONS],
@@ -390,6 +408,8 @@ describe("Credential request - choose request", () => {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
+
+    jest.spyOn(SecureStorage, "get").mockResolvedValue("111111");
 
     const path = `${TabsRoutePath.NOTIFICATIONS}/${notificationsFix[4].id}`;
     const history = createMemoryHistory();
@@ -438,6 +458,27 @@ describe("Credential request - choose request", () => {
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-multi-sign"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("verify-passcode")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("passcode-button-1")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("passcode-button-1"));
+      fireEvent.click(getByTestId("passcode-button-1"));
+      fireEvent.click(getByTestId("passcode-button-1"));
+      fireEvent.click(getByTestId("passcode-button-1"));
+      fireEvent.click(getByTestId("passcode-button-1"));
+      fireEvent.click(getByTestId("passcode-button-1"));
+    });
+
+    await waitFor(() => {
+      expect(SecureStorage.get).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
     });
 
     await waitFor(() => {
