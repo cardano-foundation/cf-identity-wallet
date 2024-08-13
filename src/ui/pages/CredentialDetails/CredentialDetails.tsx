@@ -43,8 +43,6 @@ import { CredentialCardTemplate } from "../../components/CredentialCardTemplate"
 import { CredentialOptions } from "../../components/CredentialOptions";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { PageFooter } from "../../components/PageFooter";
-import { VerifyPasscode } from "../../components/VerifyPasscode";
-import { VerifyPassword } from "../../components/VerifyPassword";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import {
   BackEventPriorityType,
@@ -58,6 +56,7 @@ import "./CredentialDetails.scss";
 import { CredHistory } from "./CredentialDetails.types";
 import { NotificationDetailCacheState } from "../../../store/reducers/notificationsCache/notificationCache.types";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
+import { Verification } from "../../components/Verification";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -74,8 +73,7 @@ const CredentialDetails = () => {
   const [alertDeleteArchiveIsOpen, setAlertDeleteArchiveIsOpen] =
     useState(false);
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
-  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<ACDCDetails>();
   const [navAnimation, setNavAnimation] = useState(false);
@@ -216,8 +214,7 @@ const CredentialDetails = () => {
     } else {
       await handleArchiveCredential();
     }
-    setVerifyPasswordIsOpen(false);
-    setVerifyPasscodeIsOpen(false);
+    setVerifyIsOpen(false);
     handleDone();
   };
 
@@ -344,14 +341,7 @@ const CredentialDetails = () => {
   };
 
   const handleAuthentication = () => {
-    if (
-      !stateCache?.authentication.passwordIsSkipped &&
-      stateCache?.authentication.passwordIsSet
-    ) {
-      setVerifyPasswordIsOpen(true);
-    } else {
-      setVerifyPasscodeIsOpen(true);
-    }
+    setVerifyIsOpen(true);
   };
 
   const hardwareBackButtonConfig = useMemo(
@@ -454,14 +444,9 @@ const CredentialDetails = () => {
         actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
         actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
       />
-      <VerifyPassword
-        isOpen={verifyPasswordIsOpen}
-        setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={onVerify}
-      />
-      <VerifyPasscode
-        isOpen={verifyPasscodeIsOpen}
-        setIsOpen={setVerifyPasscodeIsOpen}
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
         onVerify={onVerify}
       />
     </TabLayout>

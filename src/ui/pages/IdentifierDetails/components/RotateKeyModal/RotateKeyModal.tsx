@@ -1,5 +1,6 @@
 import { IonButton, IonIcon } from "@ionic/react";
 import { refreshOutline } from "ionicons/icons";
+import { useState } from "react";
 import { i18n } from "../../../../../i18n";
 import {
   CardDetailsBlock,
@@ -8,17 +9,12 @@ import {
 import { OptionModal } from "../../../../components/OptionsModal";
 import { RotateKeyModalProps } from "./RotateKeyModal.types";
 import "./RotateKeyModal.scss";
-import { VerifyPasscode } from "../../../../components/VerifyPasscode";
-import { VerifyPassword } from "../../../../components/VerifyPassword";
-import { useState } from "react";
-import {
-  getStateCache,
-  setToastMsg,
-} from "../../../../../store/reducers/stateCache";
-import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
+import { setToastMsg } from "../../../../../store/reducers/stateCache";
+import { useAppDispatch } from "../../../../../store/hooks";
 import { Spinner } from "../../../../components/Spinner";
 import { Agent } from "../../../../../core/agent/agent";
 import { ToastMsgType } from "../../../../globals/types";
+import { Verification } from "../../../../components/Verification";
 
 const RotateKeyModal = ({
   isOpen,
@@ -28,20 +24,11 @@ const RotateKeyModal = ({
   onReloadData,
 }: RotateKeyModalProps) => {
   const dispatch = useAppDispatch();
-  const stateCache = useAppSelector(getStateCache);
-  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleRotateKey = () => {
-    if (
-      !stateCache?.authentication.passwordIsSkipped &&
-      stateCache?.authentication.passwordIsSet
-    ) {
-      setVerifyPasswordIsOpen(true);
-    } else {
-      setVerifyPasscodeIsOpen(true);
-    }
+    setVerifyIsOpen(true);
   };
 
   const handleAfterVerify = async () => {
@@ -103,14 +90,9 @@ const RotateKeyModal = ({
           {i18n.t("identifiers.details.options.rotatekeys")}
         </IonButton>
       </OptionModal>
-      <VerifyPassword
-        isOpen={verifyPasswordIsOpen}
-        setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={handleAfterVerify}
-      />
-      <VerifyPasscode
-        isOpen={verifyPasscodeIsOpen}
-        setIsOpen={setVerifyPasscodeIsOpen}
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
         onVerify={handleAfterVerify}
       />
     </>

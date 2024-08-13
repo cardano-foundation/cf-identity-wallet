@@ -30,9 +30,6 @@ import {
   setEnableBiometricsCache,
 } from "../../../../../store/reducers/biometricsCache";
 import { Agent } from "../../../../../core/agent/agent";
-import { VerifyPassword } from "../../../../components/VerifyPassword";
-import { VerifyPasscode } from "../../../../components/VerifyPasscode";
-import { getStateCache } from "../../../../../store/reducers/stateCache";
 import { useBiometricAuth } from "../../../../hooks/useBiometricsHook";
 import { ChangePin } from "./components/ChangePin";
 import { SettingsItem } from "./components/SettingsItem";
@@ -41,16 +38,15 @@ import {
   DISCORD_LINK,
   DOCUMENTATION_LINK,
 } from "../../../../globals/constants";
+import { Verification } from "../../../../components/Verification";
 
 const Settings = ({ switchView }: SettingsProps) => {
   const dispatch = useAppDispatch();
-  const stateCache = useSelector(getStateCache);
   const biometricsCache = useSelector(getBiometricsCacheCache);
   const [option, setOption] = useState<number | null>(null);
   const { biometricInfo, handleBiometricAuth } = useBiometricAuth();
   const inBiometricSetup = useRef(false);
-  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [changePinIsOpen, setChangePinIsOpen] = useState(false);
 
   const securityItems: OptionProps[] = [
@@ -142,14 +138,7 @@ const Settings = ({ switchView }: SettingsProps) => {
       return;
     }
 
-    if (
-      !stateCache?.authentication.passwordIsSkipped &&
-      stateCache?.authentication.passwordIsSet
-    ) {
-      setVerifyPasswordIsOpen(true);
-    } else {
-      setVerifyPasscodeIsOpen(true);
-    }
+    setVerifyIsOpen(true);
   };
 
   const biometricAuth = async () => {
@@ -164,14 +153,7 @@ const Settings = ({ switchView }: SettingsProps) => {
   }, [biometricInfo]);
 
   const handleChangePin = () => {
-    if (
-      !stateCache?.authentication.passwordIsSkipped &&
-      stateCache?.authentication.passwordIsSet
-    ) {
-      setVerifyPasswordIsOpen(true);
-    } else {
-      setVerifyPasscodeIsOpen(true);
-    }
+    setVerifyIsOpen(true);
   };
 
   const handleOptionClick = async (item: OptionProps) => {
@@ -266,14 +248,9 @@ const Settings = ({ switchView }: SettingsProps) => {
           })}
         </IonList>
       </IonCard>
-      <VerifyPassword
-        isOpen={verifyPasswordIsOpen}
-        setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={onVerify}
-      />
-      <VerifyPasscode
-        isOpen={verifyPasscodeIsOpen}
-        setIsOpen={setVerifyPasscodeIsOpen}
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
         onVerify={onVerify}
       />
       <ChangePin
