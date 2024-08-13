@@ -44,6 +44,26 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
+const isNativeMock = jest.fn();
+jest.mock("@capacitor/core", () => {
+  return {
+    ...jest.requireActual("@capacitor/core"),
+    Capacitor: {
+      isNativePlatform: () => isNativeMock(),
+    },
+  };
+});
+
+const hideMock = jest.fn();
+jest.mock("@capacitor/keyboard", () => {
+  return {
+    ...jest.requireActual("@capacitor/keyboard"),
+    Keyboard: {
+      hide: () => hideMock(),
+    },
+  };
+});
+
 jest.mock("../../hooks/useBiometricsHook", () => ({
   useBiometricAuth: jest.fn(() => ({
     biometricsIsEnabled: true,
@@ -127,6 +147,7 @@ describe("Lock Page", () => {
         getPlatforms: () => ["ios"],
       };
     });
+    isNativeMock.mockImplementation(() => false);
   });
 
   test("Renders Lock modal with title and description", () => {
@@ -153,6 +174,20 @@ describe("Lock Page", () => {
     expect(circleElement.classList).not.toContain(
       "passcode-module-circle-fill"
     );
+  });
+
+  test("Hide keyboard when display lock page", async () => {
+    isNativeMock.mockImplementation(() => true);
+
+    render(
+      <Provider store={storeMocked(initialState)}>
+        <LockPage />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(hideMock).toBeCalled();
+    });
   });
 
   test("I click on I forgot my passcode, I can start over", async () => {

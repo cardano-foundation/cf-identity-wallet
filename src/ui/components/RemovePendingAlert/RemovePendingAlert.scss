@@ -1,4 +1,8 @@
 .delete-pending-modal {
+  &.responsive-modal .responsive-modal-content .page-header ion-buttons {
+    min-width: 10%;
+  }
+
   .user-tips {
     margin-top: 0.75rem;
     margin-bottom: 1.5rem !important;

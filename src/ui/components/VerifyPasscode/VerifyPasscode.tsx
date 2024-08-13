@@ -124,6 +124,7 @@ const VerifyPasscode = ({
               timeout={true}
             />
           }
+          hasError={passcode.length === 6 && passcodeIncorrect}
           passcode={passcode}
           handlePinChange={handlePinChange}
           handleRemove={handleRemove}
