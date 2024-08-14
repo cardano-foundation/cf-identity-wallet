@@ -980,6 +980,7 @@
   "notifications": {
     "tab": {
       "header": "Notifications",
+      "empty": "No notifications",
       "chips": {
         "all": "All",
         "identifiers": "Identifiers",
@@ -1562,7 +1563,9 @@
     "deletecrederror": "Unable to delete credential",
     "deleteidentifiererror": "Unable to delete identifier",
     "archivedcrederror": "Unable to archive credential",
-    "signsuccessful": "Sign successful"
+    "signsuccessful": "Sign successful",
+    "savepasswordhinterror": "Unable to delete password hint",
+    "editidentifiererror": "Unable to update identifier"
   },
   "request": {
     "sign": {

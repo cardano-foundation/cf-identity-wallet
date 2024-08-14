@@ -1,0 +1,71 @@
+.edit-identifier-modal {
+  .scrollable-page-layout {
+    .page-header {
+      ion-toolbar {
+        --background: transparent;
+      }
+    }
+
+    .page-footer {
+      padding: 1.5rem 0;
+    }
+
+    .scrollable-page-content {
+      .error-message {
+        text-align: left;
+      }
+
+      .theme-input-title {
+        margin-bottom: 0.625rem;
+        display: block;
+      }
+
+      .card-theme {
+        margin-bottom: 1.5rem;
+
+        & > .identifier-theme-selector {
+          padding: 0;
+        }
+      }
+
+      .indentifier-input {
+        margin-bottom: 2.375rem;
+        &.has-error {
+          margin-bottom: 0;
+        }
+
+        .label-stacked {
+          font-size: 1rem;
+        }
+      }
+
+      @media screen and (min-width: 250px) and (max-width: 370px) {
+        .theme-input-title {
+          font-size: 0.875rem;
+        }
+
+        .indentifier-input {
+          margin-bottom: 1.725rem;
+
+          .label-stacked {
+            font-size: 0.875rem;
+          }
+        }
+      }
+    }
+  }
+
+  .spinner-container {
+    z-index: 1000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem 0.5rem 0rem 0rem;
+    background: rgba(3, 3, 33, 0.2);
+  }
+}
