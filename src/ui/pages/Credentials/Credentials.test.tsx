@@ -17,6 +17,7 @@ import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { formatShortDate } from "../../utils/formatters";
 import { Credentials } from "./Credentials";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 
 const deleteIdentifierMock = jest.fn();
 const archiveIdentifierMock = jest.fn();
@@ -385,7 +386,7 @@ describe("Creds Tab", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(deleteIdentifierMock).toBeCalled();
@@ -393,15 +394,3 @@ describe("Creds Tab", () => {
     });
   });
 });
-
-const clickButtonRepeatedly = (
-  getByText: RenderResult["getByText"],
-  buttonLabel: string,
-  times: number
-) => {
-  for (let i = 0; i < times; i++) {
-    act(() => {
-      fireEvent.click(getByText(buttonLabel));
-    });
-  }
-};

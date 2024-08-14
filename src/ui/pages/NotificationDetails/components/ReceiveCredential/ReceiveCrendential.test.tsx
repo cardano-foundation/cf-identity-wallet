@@ -1,10 +1,5 @@
 import { mockIonicReact } from "@ionic/react-test-utils";
-import {
-  fireEvent,
-  render,
-  RenderResult,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -16,6 +11,7 @@ import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifi
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { ReceiveCredential } from "./ReceiveCredential";
 import { KeyStoreKeys } from "../../../../../core/storage";
+import { passcodeFiller } from "../../../../utils/passcodeFiller";
 
 mockIonicReact();
 jest.useFakeTimers();
@@ -165,7 +161,7 @@ describe("Credential request", () => {
     });
 
     act(() => {
-      clickButtonRepeatedly(getByText, getByTestId, "1", 6);
+      passcodeFiller(getByText, getByTestId, "1", 6);
     });
 
     await waitFor(() => {
@@ -190,22 +186,3 @@ describe("Credential request", () => {
     });
   }, 10000);
 });
-
-const clickButtonRepeatedly = async (
-  getByText: RenderResult["getByText"],
-  getByTestId: RenderResult["getByTestId"],
-  buttonLabel: string,
-  times: number
-) => {
-  for (let i = 0; i < times; i++) {
-    fireEvent.click(getByText(buttonLabel));
-
-    await waitFor(() => {
-      expect(
-        getByTestId("circle-" + i).classList.contains(
-          "passcode-module-circle-fill"
-        )
-      ).toBe(true);
-    });
-  }
-};

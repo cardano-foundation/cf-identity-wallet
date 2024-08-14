@@ -1,11 +1,5 @@
 import { mockIonicReact, waitForIonicReact } from "@ionic/react-test-utils";
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  waitFor,
-} from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
@@ -18,6 +12,7 @@ import {
 } from "../../../../__fixtures__/signTransactionFix";
 import { IncomingRequest } from "./IncomingRequest";
 import { KeyStoreKeys } from "../../../../../core/storage";
+import { passcodeFiller } from "../../../../utils/passcodeFiller";
 mockIonicReact();
 
 const mockApprovalCallback = jest.fn((status: boolean) => status);
@@ -194,7 +189,7 @@ describe("Sign request", () => {
     });
 
     act(() => {
-      clickButtonRepeatedly(getByText, getByTestId, "1", 6);
+      passcodeFiller(getByText, getByTestId, "1", 6);
     });
 
     await waitFor(() => {
@@ -256,22 +251,3 @@ describe("Sign request", () => {
     ).toBeVisible();
   });
 });
-
-const clickButtonRepeatedly = async (
-  getByText: RenderResult["getByText"],
-  getByTestId: RenderResult["getByTestId"],
-  buttonLabel: string,
-  times: number
-) => {
-  for (let i = 0; i < times; i++) {
-    fireEvent.click(getByText(buttonLabel));
-
-    await waitFor(() => {
-      expect(
-        getByTestId("circle-" + i).classList.contains(
-          "passcode-module-circle-fill"
-        )
-      ).toBe(true);
-    });
-  }
-};

@@ -1,10 +1,5 @@
 import { mockIonicReact } from "@ionic/react-test-utils";
-import {
-  fireEvent,
-  render,
-  RenderResult,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { createMemoryHistory } from "history";
 import configureStore from "redux-mock-store";
@@ -22,6 +17,7 @@ import { KeriaNotification } from "../../../../../core/agent/agent.types";
 import { ACDC } from "./CredentialRequest.types";
 import { credRequestFix } from "../../../../__fixtures__/credRequestFix";
 import { KeyStoreKeys } from "../../../../../core/storage";
+import { passcodeFiller } from "../../../../utils/passcodeFiller";
 
 mockIonicReact();
 
@@ -481,9 +477,7 @@ describe("Credential request - choose request", () => {
       expect(getByTestId("passcode-button-1")).toBeVisible();
     });
 
-    act(() => {
-      clickButtonRepeatedly(getByText, getByTestId, "1", 6);
-    });
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(SecureStorage.get).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
@@ -499,22 +493,3 @@ describe("Credential request - choose request", () => {
     );
   });
 });
-
-const clickButtonRepeatedly = async (
-  getByText: RenderResult["getByText"],
-  getByTestId: RenderResult["getByTestId"],
-  buttonLabel: string,
-  times: number
-) => {
-  for (let i = 0; i < times; i++) {
-    fireEvent.click(getByText(buttonLabel));
-
-    await waitFor(() => {
-      expect(
-        getByTestId("circle-" + i).classList.contains(
-          "passcode-module-circle-fill"
-        )
-      ).toBe(true);
-    });
-  }
-};
