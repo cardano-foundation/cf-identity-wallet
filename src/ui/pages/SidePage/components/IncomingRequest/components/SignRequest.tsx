@@ -52,7 +52,7 @@ const SignRequest = ({
       <ScrollablePageLayout
         activeStatus={activeStatus}
         pageId={pageId}
-        customClass="sign-request"
+        customClass={`sign-request${initiateAnimation ? " blur" : ""}`}
         header={
           <PageHeader
             onBack={handleCancel}

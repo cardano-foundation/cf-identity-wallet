@@ -92,6 +92,7 @@ const VerifyPasscode = ({
       onDidDismiss={() => handleClearState()}
     >
       <ResponsivePageLayout
+        activeStatus={isOpen}
         header={
           <PageHeader
             closeButton={true}

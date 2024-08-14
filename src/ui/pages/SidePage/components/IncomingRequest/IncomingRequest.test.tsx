@@ -1,5 +1,11 @@
 import { mockIonicReact, waitForIonicReact } from "@ionic/react-test-utils";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
@@ -11,9 +17,26 @@ import {
   signTransactionFix,
 } from "../../../../__fixtures__/signTransactionFix";
 import { IncomingRequest } from "./IncomingRequest";
+import { KeyStoreKeys } from "../../../../../core/storage";
 mockIonicReact();
 
 const mockApprovalCallback = jest.fn((status: boolean) => status);
+
+const mockGet = jest.fn((arg: unknown) => Promise.resolve("111111"));
+
+jest.mock("@aparajita/capacitor-secure-storage", () => ({
+  SecureStorage: {
+    get: (key: string) => mockGet(key),
+    set: jest.fn(),
+  },
+}));
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  isPlatform: () => true,
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div {...props}>{children}</div> : null,
+}));
 
 const requestData = {
   id: "abc123456",
@@ -147,7 +170,7 @@ describe("Sign request", () => {
   });
 
   test("Accept request", async () => {
-    const { getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <IncomingRequest
           open={true}
@@ -160,6 +183,22 @@ describe("Sign request", () => {
 
     act(() => {
       fireEvent.click(getByTestId("primary-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("verify-passcode")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("passcode-button-1")).toBeVisible();
+    });
+
+    act(() => {
+      clickButtonRepeatedly(getByText, getByTestId, "1", 6);
+    });
+
+    await waitFor(() => {
+      expect(mockGet).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
     });
 
     await waitFor(() => {
@@ -217,3 +256,22 @@ describe("Sign request", () => {
     ).toBeVisible();
   });
 });
+
+const clickButtonRepeatedly = async (
+  getByText: RenderResult["getByText"],
+  getByTestId: RenderResult["getByTestId"],
+  buttonLabel: string,
+  times: number
+) => {
+  for (let i = 0; i < times; i++) {
+    fireEvent.click(getByText(buttonLabel));
+
+    await waitFor(() => {
+      expect(
+        getByTestId("circle-" + i).classList.contains(
+          "passcode-module-circle-fill"
+        )
+      ).toBe(true);
+    });
+  }
+};

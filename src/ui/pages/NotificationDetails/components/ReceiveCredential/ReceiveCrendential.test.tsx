@@ -1,5 +1,10 @@
 import { mockIonicReact } from "@ionic/react-test-utils";
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor,
+} from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -10,12 +15,31 @@ import { connectionsForNotifications } from "../../../../__fixtures__/connection
 import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { ReceiveCredential } from "./ReceiveCredential";
+import { KeyStoreKeys } from "../../../../../core/storage";
 
 mockIonicReact();
 jest.useFakeTimers();
 
+const mockGet = jest.fn((arg: unknown) => Promise.resolve("111111"));
+
+jest.mock("@aparajita/capacitor-secure-storage", () => ({
+  SecureStorage: {
+    get: (key: string) => mockGet(key),
+    set: jest.fn(),
+  },
+}));
+
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
-const acceptAcdcMock = jest.fn((id: string) => Promise.resolve(id));
+const acceptAcdcMock = jest.fn(
+  (id: string) =>
+    new Promise((res) => {
+      setTimeout(() => {
+        res({
+          id,
+        });
+      }, 700);
+    })
+);
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -54,6 +78,13 @@ const initialState = {
     identifiers: filteredIdentifierFix,
   },
 };
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  isPlatform: () => true,
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div {...props}>{children}</div> : null,
+}));
 
 describe("Credential request", () => {
   test("Render and decline", async () => {
@@ -126,6 +157,22 @@ describe("Credential request", () => {
     });
 
     await waitFor(() => {
+      expect(getByTestId("verify-passcode")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("passcode-button-1")).toBeVisible();
+    });
+
+    act(() => {
+      clickButtonRepeatedly(getByText, getByTestId, "1", 6);
+    });
+
+    await waitFor(() => {
+      expect(mockGet).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
+    });
+
+    await waitFor(() => {
       expect(acceptAcdcMock).toBeCalledWith(notificationsFix[0].id);
     });
 
@@ -143,3 +190,22 @@ describe("Credential request", () => {
     });
   }, 10000);
 });
+
+const clickButtonRepeatedly = async (
+  getByText: RenderResult["getByText"],
+  getByTestId: RenderResult["getByTestId"],
+  buttonLabel: string,
+  times: number
+) => {
+  for (let i = 0; i < times; i++) {
+    fireEvent.click(getByText(buttonLabel));
+
+    await waitFor(() => {
+      expect(
+        getByTestId("circle-" + i).classList.contains(
+          "passcode-module-circle-fill"
+        )
+      ).toBe(true);
+    });
+  }
+};

@@ -1,11 +1,16 @@
 import { mockIonicReact } from "@ionic/react-test-utils";
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import { createMemoryHistory } from "history";
 import configureStore from "redux-mock-store";
 import { IonReactMemoryRouter } from "@ionic/react-router";
 import { act } from "react-dom/test-utils";
-import { DataType, SecureStorage } from "@aparajita/capacitor-secure-storage";
+import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
@@ -20,16 +25,13 @@ import { KeyStoreKeys } from "../../../../../core/storage";
 
 mockIonicReact();
 
-const EXISTING_KEY = "keythatexists";
-const NON_EXISTING_KEY = "keythatdoesnotexist";
-const EXISTING_VALUE: DataType = "valuethatexists";
-
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
     get: (key: string) => {
-      if (key === EXISTING_KEY) {
-        return EXISTING_VALUE;
+      if (key === KeyStoreKeys.APP_PASSCODE) {
+        return "111111";
       }
+
       return null;
     },
     set: jest.fn(),
@@ -39,9 +41,13 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const offerAcdcFromApplyMock = jest.fn(
   (detail: KeriaNotification, acdc: ACDC) =>
-    Promise.resolve({
-      detail,
-      acdc,
+    new Promise((res) => {
+      setTimeout(() => {
+        res({
+          detail,
+          acdc,
+        });
+      }, 700);
     })
 );
 
@@ -58,6 +64,13 @@ jest.mock("../../../../../core/agent/agent", () => ({
       },
     },
   },
+}));
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  isPlatform: () => true,
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div {...props}>{children}</div> : null,
 }));
 
 const mockStore = configureStore();
@@ -385,7 +398,7 @@ describe("Credential request - choose request", () => {
     });
   });
 
-  test.skip("Submit", async () => {
+  test("Submit", async () => {
     const initialState = {
       stateCache: {
         routes: [TabsRoutePath.NOTIFICATIONS],
@@ -469,12 +482,7 @@ describe("Credential request - choose request", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-      fireEvent.click(getByTestId("passcode-button-1"));
-      fireEvent.click(getByTestId("passcode-button-1"));
-      fireEvent.click(getByTestId("passcode-button-1"));
-      fireEvent.click(getByTestId("passcode-button-1"));
-      fireEvent.click(getByTestId("passcode-button-1"));
+      clickButtonRepeatedly(getByText, getByTestId, "1", 6);
     });
 
     await waitFor(() => {
@@ -491,3 +499,22 @@ describe("Credential request - choose request", () => {
     );
   });
 });
+
+const clickButtonRepeatedly = async (
+  getByText: RenderResult["getByText"],
+  getByTestId: RenderResult["getByTestId"],
+  buttonLabel: string,
+  times: number
+) => {
+  for (let i = 0; i < times; i++) {
+    fireEvent.click(getByText(buttonLabel));
+
+    await waitFor(() => {
+      expect(
+        getByTestId("circle-" + i).classList.contains(
+          "passcode-module-circle-fill"
+        )
+      ).toBe(true);
+    });
+  }
+};
