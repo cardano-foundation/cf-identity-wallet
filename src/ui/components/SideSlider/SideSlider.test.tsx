@@ -70,10 +70,6 @@ describe("Side Slider", () => {
       ).toBe(true);
     });
 
-    act(() => {
-      fireEvent.transitionEnd(getByTestId("side-slider"));
-    });
-
     await waitFor(() => {
       expect(openAnimation).toBeCalled();
     });
@@ -87,10 +83,6 @@ describe("Side Slider", () => {
         <div>Content</div>
       </SideSlider>
     );
-
-    act(() => {
-      fireEvent.transitionEnd(getByTestId("side-slider"));
-    });
 
     await waitFor(() => {
       expect(endAnimation).toBeCalled();
