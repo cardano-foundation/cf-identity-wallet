@@ -14,7 +14,7 @@ const SideSlider = ({
   onOpenAnimationEnd,
   onCloseAnimationEnd,
 }: SideSliderProps) => {
-  const prevOpenState = useRef(isOpen);
+  const prevOpenState = useRef(false);
   const sliderEl = useRef<HTMLDivElement | null>(null);
 
   const slideAnimation = (baseEl: HTMLElement) => {
