@@ -408,12 +408,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
         await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
         setIsOnline(true);
       } catch (e) {
-        const errorStack = (e as Error).stack as string;
         const errorMessage = (e as Error).message;
         // If the error is failed to fetch with signify, we retry until the connection is secured
         if (
-          (/Failed to fetch/gi.test(errorStack) &&
-            /SignifyClient/gi.test(errorStack)) ||
+          /Failed to fetch/gi.test(errorMessage) ||
           /Load failed/gi.test(errorMessage)
         ) {
           Agent.agent.connect().then(() => {
