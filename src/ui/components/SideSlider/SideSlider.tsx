@@ -1,7 +1,8 @@
 import { IonModal, createAnimation } from "@ionic/react";
-import { ANIMATION_DURATION, SideSliderProps } from "./SideSlider.types";
+import { useCallback, useEffect, useRef } from "react";
 import { combineClassNames } from "../../utils/style";
 import "./SideSlider.scss";
+import { ANIMATION_DURATION, SideSliderProps } from "./SideSlider.types";
 
 const SIDE_SLIDER_Z_INDEX = 103;
 
@@ -13,36 +14,53 @@ const SideSlider = ({
   onOpenAnimationEnd,
   onCloseAnimationEnd,
 }: SideSliderProps) => {
-  if (renderAsModal) {
-    const slideAnimation = (baseEl: HTMLElement) => {
-      const root = baseEl.shadowRoot;
-      const modalWrapper = root?.querySelector(".modal-wrapper") ?? baseEl;
+  const sliderEl = useRef<HTMLDivElement | null>(null);
 
-      return createAnimation()
-        .addElement(modalWrapper)
-        .easing("ease-out")
-        .duration(ANIMATION_DURATION)
-        .fromTo("transform", "translateX(100%)", "translateX(0)")
-        .fromTo("opacity", 1, 1)
-        .afterStyles({
-          opacity: 1,
-        });
-    };
+  const slideAnimation = (baseEl: HTMLElement) => {
+    const root = baseEl.shadowRoot;
+    const modalWrapper = root?.querySelector(".modal-wrapper") ?? baseEl;
 
-    const enterAnimation = (baseEl: HTMLElement) => {
+    return createAnimation()
+      .addElement(modalWrapper)
+      .duration(ANIMATION_DURATION)
+      .fromTo("transform", "translateX(100%)", "translateX(0)")
+      .fromTo("opacity", 1, 1)
+      .afterStyles({
+        opacity: 1,
+      });
+  };
+
+  const enterAnimation = useCallback(
+    (baseEl: HTMLElement) => {
       return slideAnimation(baseEl).onFinish(() => {
         onOpenAnimationEnd?.();
       });
-    };
+    },
+    [onOpenAnimationEnd]
+  );
 
-    const leaveAnimation = (baseEl: HTMLElement) => {
+  const leaveAnimation = useCallback(
+    (baseEl: HTMLElement) => {
       return slideAnimation(baseEl)
         .direction("reverse")
-        .onFinish((e) => {
+        .onFinish(() => {
           onCloseAnimationEnd?.();
         });
-    };
+    },
+    [onCloseAnimationEnd]
+  );
 
+  useEffect(() => {
+    if (!sliderEl?.current || renderAsModal) return;
+
+    if (!isOpen) {
+      leaveAnimation(sliderEl.current).play();
+    } else {
+      enterAnimation(sliderEl.current).play();
+    }
+  }, [enterAnimation, isOpen, leaveAnimation, renderAsModal]);
+
+  if (renderAsModal) {
     return (
       <IonModal
         isOpen={isOpen}
@@ -56,13 +74,11 @@ const SideSlider = ({
     );
   }
 
-  const classes = combineClassNames(
-    "side-slider-container",
-    isOpen ? "open" : "close"
-  );
+  const classes = combineClassNames("side-slider-container");
 
   return (
     <div
+      ref={sliderEl}
       style={{
         zIndex,
       }}
