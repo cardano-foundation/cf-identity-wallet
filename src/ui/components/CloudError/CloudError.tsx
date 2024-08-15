@@ -1,10 +1,24 @@
+import { IonCard, IonIcon } from "@ionic/react";
+import { informationCircleOutline } from "ionicons/icons";
 import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
 import { CloudErrorProps } from "./CloudError.types";
 import "./CloudError.scss";
-// eslint-disable-next-line import/order
-import { IonCard } from "@ionic/react";
+import { i18n } from "../../../i18n";
 
 const CloudError = ({ pageId, header, children }: CloudErrorProps) => {
+  const getMessage = (pageId: string) => {
+    switch (pageId) {
+    case "identifier-card-details":
+      return i18n.t("identifiers.details.clouderror");
+    case "credential-card-details":
+      return i18n.t("credentials.details.clouderror");
+    case "connection-details":
+      return i18n.t("connections.details.clouderror");
+    default:
+      return "";
+    }
+  };
+
   return (
     <ResponsivePageLayout
       pageId={`${pageId}-cloud-error`}
@@ -13,11 +27,13 @@ const CloudError = ({ pageId, header, children }: CloudErrorProps) => {
       customClass={""}
     >
       <IonCard>
-        <p>
-          We couldn’t locate this connection in the cloud. It might become
-          available again soon, but some information could be lost. If you no
-          longer require this connection, tap “Delete connection” to remove.
-        </p>
+        <p>{getMessage(pageId)}</p>
+        <div className="alert-icon">
+          <IonIcon
+            icon={informationCircleOutline}
+            slot="icon-only"
+          />
+        </div>
       </IonCard>
       {children}
     </ResponsivePageLayout>

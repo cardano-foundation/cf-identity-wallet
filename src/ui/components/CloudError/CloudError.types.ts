@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 interface CloudErrorProps {
-  pageId?: string;
+  pageId: string;
   header?: ReactNode;
   children?: ReactNode;
 }
