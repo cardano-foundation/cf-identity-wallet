@@ -14,6 +14,7 @@ const SideSlider = ({
   onOpenAnimationEnd,
   onCloseAnimationEnd,
 }: SideSliderProps) => {
+  const prevOpenState = useRef(isOpen);
   const sliderEl = useRef<HTMLDivElement | null>(null);
 
   const slideAnimation = (baseEl: HTMLElement) => {
@@ -51,7 +52,10 @@ const SideSlider = ({
   );
 
   useEffect(() => {
-    if (!sliderEl?.current || renderAsModal) return;
+    // NOTE: Because IonApp renders twice, it make leave animation run when page render. Need check isOpen state change to make sure animation run correctly.
+    if (!sliderEl?.current || renderAsModal || prevOpenState.current === isOpen)
+      return;
+    prevOpenState.current = isOpen;
 
     if (!isOpen) {
       leaveAnimation(sliderEl.current).play();
@@ -83,9 +87,6 @@ const SideSlider = ({
         zIndex,
       }}
       data-testid="side-slider"
-      onTransitionEnd={() => {
-        isOpen ? onOpenAnimationEnd?.() : onCloseAnimationEnd?.();
-      }}
       className={classes}
     >
       {children}
