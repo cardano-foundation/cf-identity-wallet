@@ -22,6 +22,7 @@ import { OperationType } from "../../globals/types";
 import { Credentials } from "../Credentials/Credentials";
 import { Identifiers } from "../Identifiers";
 import { Connections } from "./Connections";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 
 const combineMock = jest.fn(() => TabsRoutePath.IDENTIFIERS);
 
@@ -636,22 +637,10 @@ describe("Connections page from Credentials tab", () => {
       expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
     });
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(deleteConnectionByIdMock).toBeCalled();
     });
   });
 });
-
-const clickButtonRepeatedly = (
-  getByText: RenderResult["getByText"],
-  buttonLabel: string,
-  times: number
-) => {
-  for (let i = 0; i < times; i++) {
-    act(() => {
-      fireEvent.click(getByText(buttonLabel));
-    });
-  }
-};

@@ -14,6 +14,7 @@ import { OperationType } from "../../../../../../globals/types";
 import { RecoverySeedPhrase } from "./RecoverySeedPhrase";
 import ENG_trans from "../../../../../../../locales/en/en.json";
 import { KeyStoreKeys } from "../../../../../../../core/storage";
+import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
 
 jest.mock("../../../../../../../core/storage", () => ({
   ...jest.requireActual("../../../../../../../core/storage"),
@@ -159,7 +160,7 @@ describe("Recovery Phrase", () => {
       fireEvent.click(getByTestId("primary-button-confirm-view-seedpharse"));
     });
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(queryByTestId("confirm-view-seedpharse")).toBe(null);
@@ -192,13 +193,3 @@ describe("Recovery Phrase", () => {
     });
   });
 });
-
-const clickButtonRepeatedly = (
-  getByText: RenderResult["getByText"],
-  buttonLabel: string,
-  times: number
-) => {
-  for (let i = 0; i < times; i++) {
-    fireEvent.click(getByText(buttonLabel));
-  }
-};

@@ -28,6 +28,7 @@ import { Agent } from "../../../../../core/agent/agent";
 import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
 import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../../globals/types";
+import { Verification } from "../../../../components/Verification";
 
 const CRED_EMPTY = "Credential is empty";
 
@@ -48,7 +49,7 @@ const ChooseCredential = ({
     null
   );
   const [loading, setLoading] = useState(false);
-
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const displayIdentifiers = credentialRequest.credentials.map(
     (cred): CardItem<RequestCredential> => {
       const connection = connections?.[cred.connectionId]?.label || "";
@@ -175,7 +176,7 @@ const ChooseCredential = ({
             primaryButtonText={`${i18n.t(
               "notifications.details.buttons.providecredential"
             )}`}
-            primaryButtonAction={handleRequestCredential}
+            primaryButtonAction={() => setVerifyIsOpen(true)}
             primaryButtonDisabled={!selectedCred}
           />
         }
@@ -230,6 +231,11 @@ const ChooseCredential = ({
           <IonSpinner name="circular" />
         </div>
       )}
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
+        onVerify={handleRequestCredential}
+      />
     </>
   );
 };

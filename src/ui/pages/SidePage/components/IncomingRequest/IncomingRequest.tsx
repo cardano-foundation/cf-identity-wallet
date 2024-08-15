@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import {
   dequeueIncomingRequest,
   getQueueIncomingRequest,
+  setToastMsg,
 } from "../../../../../store/reducers/stateCache";
 import { SidePageContentProps } from "../../SidePage.types";
 import { SignRequest } from "./components/SignRequest"; // Import SignRequest component
@@ -12,6 +13,7 @@ import {
   PeerConnectSigningEventRequest,
 } from "../../../../../store/reducers/stateCache/stateCache.types";
 import { getConnectedWallet } from "../../../../../store/reducers/walletConnectionsCache";
+import { ToastMsgType } from "../../../../globals/types";
 
 const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const pageId = "incoming-request";
@@ -90,6 +92,7 @@ const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
     incomingRequest.signTransaction?.payload.approvalCallback(true);
     setTimeout(() => {
       handleReset();
+      dispatch(setToastMsg(ToastMsgType.SIGN_SUCCESSFUL));
     }, ANIMATION_DELAY);
   };
 

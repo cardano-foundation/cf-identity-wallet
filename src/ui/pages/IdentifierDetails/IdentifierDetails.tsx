@@ -24,7 +24,6 @@ import {
   setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { ShareConnection } from "../../components/ShareConnection";
-import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
 import {
   addFavouriteIdentifierCache,
@@ -34,7 +33,6 @@ import {
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import { Agent } from "../../../core/agent/agent";
-import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { IdentifierContent } from "./components/IdentifierContent";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
@@ -51,6 +49,7 @@ import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { RotateKeyModal } from "./components/RotateKeyModal";
+import { Verification } from "../../components/Verification";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -68,10 +67,9 @@ const IdentifierDetails = () => {
   const [shareIsOpen, setShareIsOpen] = useState(false);
   const [identifierOptionsIsOpen, setIdentifierOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<IdentifierDetailsCore | undefined>();
-  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [openRotateKeyModal, setOpenRotateKeyModal] = useState(false);
   const [navAnimation, setNavAnimation] = useState(false);
   const userName = stateCache.authentication.userName;
@@ -138,7 +136,7 @@ const IdentifierDetails = () => {
 
   const handleDelete = async () => {
     try {
-      setVerifyPasswordIsOpen(false);
+      setVerifyIsOpen(false);
       if (cardData) {
         const updatedIdentifiers = identifierData.filter(
           (item) => item.id !== cardData.id
@@ -217,14 +215,7 @@ const IdentifierDetails = () => {
   };
 
   const handleAuthentication = () => {
-    if (
-      !stateCache?.authentication.passwordIsSkipped &&
-      stateCache?.authentication.passwordIsSet
-    ) {
-      setVerifyPasswordIsOpen(true);
-    } else {
-      setVerifyPasscodeIsOpen(true);
-    }
+    setVerifyIsOpen(true);
   };
 
   const toggleFavourite = () => {
@@ -367,14 +358,9 @@ const IdentifierDetails = () => {
         actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
         actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
       />
-      <VerifyPassword
-        isOpen={verifyPasswordIsOpen}
-        setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={handleDelete}
-      />
-      <VerifyPasscode
-        isOpen={verifyPasscodeIsOpen}
-        setIsOpen={setVerifyPasscodeIsOpen}
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
         onVerify={handleDelete}
       />
       <RotateKeyModal
