@@ -45,6 +45,7 @@ import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
 import { getBackRoute } from "../../../routes/backRoute";
 import { ConnectionHistoryEvent } from "./components/ConnectionHistoryEvent";
 import { Verification } from "../../components/Verification";
+import { CloudError } from "../../components/CloudError";
 
 const ConnectionDetails = () => {
   const pageId = "connection-details";
@@ -69,20 +70,30 @@ const ConnectionDetails = () => {
     details: false,
     history: false,
   });
+  const [cloudError, setCloudError] = useState(false);
 
   const getDetails = useCallback(async () => {
     if (!connectionShortDetails?.id) return;
 
     try {
       const connectionDetails = await Agent.agent.connections.getConnectionById(
-        connectionShortDetails.id
+        //connectionShortDetails.id
+        "abc"
       );
       setConnectionDetails(connectionDetails);
       if (connectionDetails.notes) {
         setNotes(connectionDetails.notes);
       }
     } catch (e) {
-      // @TODO - Error handling.
+      if (
+        e instanceof Error &&
+        e.message.includes(Agent.MISSING_DATA_ON_KERIA)
+      ) {
+        setCloudError(true);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("Unable to fetch credential details", e);
+      }
     } finally {
       setLoading((value) => ({ ...value, details: false }));
     }
@@ -198,113 +209,137 @@ const ConnectionDetails = () => {
 
   return (
     <>
-      <ScrollablePageLayout
-        pageId={pageId}
-        customClass="item-details-page"
-        header={
-          <PageHeader
-            closeButton={true}
-            closeButtonAction={handleDone}
-            closeButtonLabel={`${i18n.t("connections.details.done")}`}
-            currentPath={RoutePath.CONNECTION_DETAILS}
-            actionButton={true}
-            actionButtonAction={() => setOptionsIsOpen(true)}
-            actionButtonIcon={ellipsisVertical}
+      {cloudError ? (
+        <CloudError
+          pageId={pageId}
+          header={
+            <PageHeader
+              closeButton={true}
+              closeButtonAction={handleDone}
+              closeButtonLabel={`${i18n.t("connections.details.done")}`}
+              currentPath={RoutePath.CONNECTION_DETAILS}
+            />
+          }
+        >
+          <PageFooter
+            pageId={pageId}
+            deleteButtonText={`${i18n.t("connections.details.delete")}`}
+            deleteButtonAction={() => deleteButtonAction()}
           />
-        }
-      >
-        <div className="connection-details-content">
-          <ConnectionDetailsHeader
-            logo={connectionDetails?.logo || KeriLogo}
-            label={connectionDetails?.label}
-            date={connectionDetails?.connectionDate}
-          />
-          <IonSegment
-            data-testid="connection-details-segment"
-            value={segmentValue}
-            onIonChange={(event) => setSegmentValue(`${event.detail.value}`)}
-          >
-            <IonSegmentButton
-              value="details"
-              data-testid="connection-details-segment-button"
+        </CloudError>
+      ) : (
+        <ScrollablePageLayout
+          pageId={pageId}
+          customClass="item-details-page"
+          header={
+            <PageHeader
+              closeButton={true}
+              closeButtonAction={handleDone}
+              closeButtonLabel={`${i18n.t("connections.details.done")}`}
+              currentPath={RoutePath.CONNECTION_DETAILS}
+              actionButton={true}
+              actionButtonAction={() => setOptionsIsOpen(true)}
+              actionButtonIcon={ellipsisVertical}
+            />
+          }
+        >
+          <div className="connection-details-content">
+            <ConnectionDetailsHeader
+              logo={connectionDetails?.logo || KeriLogo}
+              label={connectionDetails?.label}
+              date={connectionDetails?.connectionDate}
+            />
+            <IonSegment
+              data-testid="connection-details-segment"
+              value={segmentValue}
+              onIonChange={(event) => setSegmentValue(`${event.detail.value}`)}
             >
-              <IonLabel>{`${i18n.t("connections.details.details")}`}</IonLabel>
-            </IonSegmentButton>
-            <IonSegmentButton
-              value="notes"
-              data-testid="connection-notes-segment-button"
-            >
-              <IonLabel>{`${i18n.t("connections.details.notes")}`}</IonLabel>
-            </IonSegmentButton>
-          </IonSegment>
-          {segmentValue === "details" ? (
-            <div
-              className="connection-details-tab"
-              data-testid="connection-details-tab"
-            >
-              {connectionDetailsData.map((infoBlock, index) => (
-                <CardDetailsBlock
-                  className="connection-details-card"
-                  key={index}
-                  title={infoBlock.title}
-                >
-                  {typeof infoBlock.value === "string" ? (
-                    <IonText>{infoBlock.value}</IonText>
-                  ) : (
-                    infoBlock.value
-                  )}
-                </CardDetailsBlock>
-              ))}
-              <CardDetailsBlock
-                className="connection-details-history"
-                title={i18n.t("connections.details.history")}
+              <IonSegmentButton
+                value="details"
+                data-testid="connection-details-segment-button"
               >
-                {connectionHistory?.length > 0 &&
-                  connectionHistory
-                    .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
-                    .map(
-                      (historyItem: ConnectionHistoryItem, index: number) => (
-                        <ConnectionHistoryEvent
-                          key={index}
-                          index={index}
-                          historyItem={historyItem}
-                          connectionDetails={connectionDetails}
-                        />
-                      )
+                <IonLabel>{`${i18n.t(
+                  "connections.details.details"
+                )}`}</IonLabel>
+              </IonSegmentButton>
+              <IonSegmentButton
+                value="notes"
+                data-testid="connection-notes-segment-button"
+              >
+                <IonLabel>{`${i18n.t("connections.details.notes")}`}</IonLabel>
+              </IonSegmentButton>
+            </IonSegment>
+            {segmentValue === "details" ? (
+              <div
+                className="connection-details-tab"
+                data-testid="connection-details-tab"
+              >
+                {connectionDetailsData.map((infoBlock, index) => (
+                  <CardDetailsBlock
+                    className="connection-details-card"
+                    key={index}
+                    title={infoBlock.title}
+                  >
+                    {typeof infoBlock.value === "string" ? (
+                      <IonText>{infoBlock.value}</IonText>
+                    ) : (
+                      infoBlock.value
                     )}
-                <ConnectionHistoryEvent connectionDetails={connectionDetails} />
-              </CardDetailsBlock>
-              <PageFooter
-                pageId={pageId}
-                deleteButtonText={`${i18n.t("connections.details.delete")}`}
-                deleteButtonAction={() => deleteButtonAction()}
-              />
-            </div>
-          ) : (
-            <div
-              className="connection-notes-tab"
-              data-testid="connection-notes-tab"
-            >
-              <ConnectionNotes
-                notes={notes}
-                pageId={pageId}
-                onOptionButtonClick={handleOpenNoteManageModal}
-              />
-            </div>
-          )}
-        </div>
-        <ConnectionOptions
-          optionsIsOpen={optionsIsOpen}
-          setOptionsIsOpen={setOptionsIsOpen}
-          handleEdit={setModalIsOpen}
-          handleDelete={handleDelete}
-        />
-        <Verification
-          verifyIsOpen={verifyIsOpen}
-          setVerifyIsOpen={setVerifyIsOpen}
-          onVerify={verifyAction}
-        />
-      </ScrollablePageLayout>
+                  </CardDetailsBlock>
+                ))}
+                <CardDetailsBlock
+                  className="connection-details-history"
+                  title={i18n.t("connections.details.history")}
+                >
+                  {connectionHistory?.length > 0 &&
+                    connectionHistory
+                      .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+                      .map(
+                        (historyItem: ConnectionHistoryItem, index: number) => (
+                          <ConnectionHistoryEvent
+                            key={index}
+                            index={index}
+                            historyItem={historyItem}
+                            connectionDetails={connectionDetails}
+                          />
+                        )
+                      )}
+                  <ConnectionHistoryEvent
+                    connectionDetails={connectionDetails}
+                  />
+                </CardDetailsBlock>
+                <PageFooter
+                  pageId={pageId}
+                  deleteButtonText={`${i18n.t("connections.details.delete")}`}
+                  deleteButtonAction={() => deleteButtonAction()}
+                />
+              </div>
+            ) : (
+              <div
+                className="connection-notes-tab"
+                data-testid="connection-notes-tab"
+              >
+                <ConnectionNotes
+                  notes={notes}
+                  pageId={pageId}
+                  onOptionButtonClick={handleOpenNoteManageModal}
+                />
+              </div>
+            )}
+          </div>
+          <ConnectionOptions
+            optionsIsOpen={optionsIsOpen}
+            setOptionsIsOpen={setOptionsIsOpen}
+            handleEdit={setModalIsOpen}
+            handleDelete={handleDelete}
+          />
+          <Verification
+            verifyIsOpen={verifyIsOpen}
+            setVerifyIsOpen={setVerifyIsOpen}
+            onVerify={verifyAction}
+          />
+        </ScrollablePageLayout>
+      )}
       {connectionDetails && (
         <EditConnectionsModal
           notes={notes}
