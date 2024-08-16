@@ -102,6 +102,7 @@ class IdentifierService extends AgentService {
       signifyName: metadata.signifyName,
       theme: metadata.theme,
       signifyOpName: metadata.signifyOpName,
+      multisigManageAid: metadata.multisigManageAid,
       isPending: metadata.isPending ?? false,
       groupMetadata: metadata.groupMetadata,
       s: aid.state.s,
