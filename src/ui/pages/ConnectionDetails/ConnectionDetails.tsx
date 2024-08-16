@@ -77,23 +77,16 @@ const ConnectionDetails = () => {
 
     try {
       const connectionDetails = await Agent.agent.connections.getConnectionById(
-        //connectionShortDetails.id
-        "abc"
+        connectionShortDetails.id
       );
       setConnectionDetails(connectionDetails);
       if (connectionDetails.notes) {
         setNotes(connectionDetails.notes);
       }
-    } catch (e) {
-      if (
-        e instanceof Error &&
-        e.message.includes(Agent.MISSING_DATA_ON_KERIA)
-      ) {
-        setCloudError(true);
-      } else {
-        // eslint-disable-next-line no-console
-        console.error("Unable to fetch credential details", e);
-      }
+    } catch (error) {
+      setCloudError(true);
+      // eslint-disable-next-line no-console
+      console.error(error);
     } finally {
       setLoading((value) => ({ ...value, details: false }));
     }
@@ -109,7 +102,8 @@ const ConnectionDetails = () => {
         );
       setConnectionHistory(connectionHistory);
     } catch (e) {
-      // @TODO - Error handling.
+      // eslint-disable-next-line no-console
+      console.error("Unable to get connection history", e);
     } finally {
       setLoading((value) => ({ ...value, history: false }));
     }
@@ -333,11 +327,6 @@ const ConnectionDetails = () => {
             handleEdit={setModalIsOpen}
             handleDelete={handleDelete}
           />
-          <Verification
-            verifyIsOpen={verifyIsOpen}
-            setVerifyIsOpen={setVerifyIsOpen}
-            onVerify={verifyAction}
-          />
         </ScrollablePageLayout>
       )}
       {connectionDetails && (
@@ -366,6 +355,11 @@ const ConnectionDetails = () => {
         actionConfirm={() => handleAuthentication()}
         actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
         actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+      />
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
+        onVerify={verifyAction}
       />
     </>
   );

@@ -50,6 +50,8 @@ import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { RotateKeyModal } from "./components/RotateKeyModal";
 import { Verification } from "../../components/Verification";
+import { CloudError } from "../../components/CloudError";
+import { TabLayout } from "../../components/layout/TabLayout";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -74,6 +76,7 @@ const IdentifierDetails = () => {
   const [navAnimation, setNavAnimation] = useState(false);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
+  const [cloudError, setCloudError] = useState(false);
 
   const fetchOobi = useCallback(async () => {
     if (!cardData?.signifyName) return;
@@ -91,18 +94,20 @@ const IdentifierDetails = () => {
     (fav) => fav.id === params.id
   );
 
-  const fetchDetails = useCallback(async () => {
+  const getDetails = useCallback(async () => {
     try {
       const cardDetailsResult = await Agent.agent.identifiers.getIdentifier(
         params.id
       );
       setCardData(cardDetailsResult);
     } catch (error) {
-      // @TODO - Error handling.
+      setCloudError(true);
+      // eslint-disable-next-line no-console
+      console.error(error);
     }
   }, [params.id]);
 
-  useOnlineStatusEffect(fetchDetails);
+  useOnlineStatusEffect(getDetails);
   useOnlineStatusEffect(fetchOobi);
 
   useIonViewWillEnter(() => {
@@ -180,8 +185,9 @@ const IdentifierDetails = () => {
         .then(() => {
           dispatch(removeFavouriteIdentifierCache(id));
         })
-        .catch((error) => {
-          /*TODO: handle error*/
+        .catch((e) => {
+          // eslint-disable-next-line no-console
+          console.error("Unable to remove favourite identifier", e);
         });
     } else {
       if (favouritesIdentifiersData.length >= MAX_FAVOURITES) {
@@ -203,8 +209,9 @@ const IdentifierDetails = () => {
         .then(() => {
           dispatch(addFavouriteIdentifierCache({ id, time: Date.now() }));
         })
-        .catch((error) => {
-          /*TODO: handle error*/
+        .catch((e) => {
+          // eslint-disable-next-line no-console
+          console.error("Unable to add favourite identifier", e);
         });
     }
   };
@@ -289,59 +296,83 @@ const IdentifierDetails = () => {
   });
 
   return (
-    <ScrollablePageLayout
-      pageId={pageId}
-      customClass={pageClasses}
-      header={
-        <PageHeader
-          closeButton={true}
-          closeButtonLabel={`${i18n.t("identifiers.details.done")}`}
-          closeButtonAction={() => handleDone()}
-          additionalButtons={<AdditionalButtons />}
-        />
-      }
-    >
-      {!cardData ? (
-        <div
-          className="identifier-card-detail-spinner-container"
-          data-testid="identifier-card-detail-spinner-container"
+    <>
+      {cloudError ? (
+        <CloudError
+          pageId={pageId}
+          header={
+            <PageHeader
+              closeButton={true}
+              closeButtonLabel={`${i18n.t("identifiers.details.done")}`}
+              closeButtonAction={() => handleDone()}
+            />
+          }
         >
-          <IonSpinner name="circular" />
-        </div>
+          <PageFooter
+            pageId={pageId}
+            deleteButtonText={`${i18n.t("identifiers.details.delete.button")}`}
+            deleteButtonAction={() => deleteButtonAction()}
+          />
+        </CloudError>
       ) : (
-        <>
-          <IdentifierCardTemplate
-            cardData={cardData}
-            isActive={false}
+        <TabLayout
+          pageId={pageId}
+          customClass={pageClasses}
+          header={true}
+          doneLabel={`${i18n.t("identifiers.details.done")}`}
+          doneAction={handleDone}
+          additionalButtons={<AdditionalButtons />}
+        >
+          {!cardData ? (
+            <div
+              className="identifier-card-detail-spinner-container"
+              data-testid="identifier-card-detail-spinner-container"
+            >
+              <IonSpinner name="circular" />
+            </div>
+          ) : (
+            <>
+              <IdentifierCardTemplate
+                cardData={cardData}
+                isActive={false}
+              />
+              <div className="card-details-content">
+                <IdentifierContent
+                  onOpenRotateKey={() => setOpenRotateKeyModal(true)}
+                  cardData={cardData as IdentifierDetailsCore}
+                />
+                <PageFooter
+                  pageId={pageId}
+                  deleteButtonText={`${i18n.t(
+                    "identifiers.details.delete.button"
+                  )}`}
+                  deleteButtonAction={() => deleteButtonAction()}
+                />
+              </div>
+              <ShareConnection
+                isOpen={shareIsOpen}
+                setIsOpen={setShareIsOpen}
+                oobi={oobi}
+              />
+              <IdentifierOptions
+                handleRotateKey={() => setOpenRotateKeyModal(true)}
+                optionsIsOpen={identifierOptionsIsOpen}
+                setOptionsIsOpen={setIdentifierOptionsIsOpen}
+                cardData={cardData}
+                setCardData={setCardData}
+                oobi={oobi}
+                handleDeleteIdentifier={() => setAlertIsOpen(true)}
+              />
+            </>
+          )}
+          <RotateKeyModal
+            identifierId={params.id}
+            onReloadData={getDetails}
+            signingKey={cardData?.k[0] || ""}
+            isOpen={openRotateKeyModal}
+            onClose={() => setOpenRotateKeyModal(false)}
           />
-          <div className="card-details-content">
-            <IdentifierContent
-              onOpenRotateKey={() => setOpenRotateKeyModal(true)}
-              cardData={cardData as IdentifierDetailsCore}
-            />
-            <PageFooter
-              pageId={pageId}
-              deleteButtonText={`${i18n.t(
-                "identifiers.details.delete.button"
-              )}`}
-              deleteButtonAction={() => deleteButtonAction()}
-            />
-          </div>
-          <ShareConnection
-            isOpen={shareIsOpen}
-            setIsOpen={setShareIsOpen}
-            oobi={oobi}
-          />
-          <IdentifierOptions
-            handleRotateKey={() => setOpenRotateKeyModal(true)}
-            optionsIsOpen={identifierOptionsIsOpen}
-            setOptionsIsOpen={setIdentifierOptionsIsOpen}
-            cardData={cardData}
-            setCardData={setCardData}
-            oobi={oobi}
-            handleDeleteIdentifier={() => setAlertIsOpen(true)}
-          />
-        </>
+        </TabLayout>
       )}
       <Alert
         isOpen={alertIsOpen}
@@ -363,14 +394,7 @@ const IdentifierDetails = () => {
         setVerifyIsOpen={setVerifyIsOpen}
         onVerify={handleDelete}
       />
-      <RotateKeyModal
-        identifierId={params.id}
-        onReloadData={fetchDetails}
-        signingKey={cardData?.k[0] || ""}
-        isOpen={openRotateKeyModal}
-        onClose={() => setOpenRotateKeyModal(false)}
-      />
-    </ScrollablePageLayout>
+    </>
   );
 };
 

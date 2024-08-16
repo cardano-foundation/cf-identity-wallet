@@ -24,7 +24,7 @@ const CloudError = ({ pageId, header, children }: CloudErrorProps) => {
       pageId={`${pageId}-cloud-error`}
       header={header}
       activeStatus={true}
-      customClass={""}
+      customClass={"cloud-error"}
     >
       <IonCard>
         <p>{getMessage(pageId)}</p>
