@@ -18,6 +18,7 @@ const groupGetRequestMock = jest.fn();
 const oobiResolveMock = jest.fn();
 const queryKeyStateMock = jest.fn();
 const markNotificationMock = jest.fn();
+const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const getCredentialMock = jest.fn();
 const admitMock = jest.fn();
 const submitAdmitMock = jest.fn();
@@ -243,6 +244,8 @@ jest.mock("../../../core/agent/agent", () => ({
         markAcdc: jest.fn(),
       },
       signifyNotifications: {
+        deleteNotificationRecordById: (id: string) =>
+          deleteNotificationMock(id),
         addPendingOperationToQueue: jest.fn(),
         markAcdcComplete: jest.fn(),
       },
@@ -964,6 +967,7 @@ describe("Long running operation tracker", () => {
       .mockResolvedValueOnce({
         exn: {
           r: ExchangeRoute.IpexGrant,
+          d: "d",
           e: {
             acdc: {
               d: credentialIdMock,
@@ -971,6 +975,41 @@ describe("Long running operation tracker", () => {
           },
         },
       });
+
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
+      {
+        _tags: {
+          route: "/exn/ipex/grant",
+          read: false,
+          grantSaid: "EC5N3brbT8U0mMlWemYpRBnSYVpX00QPfK2ugYx-0isg",
+        },
+        type: "NotificationRecord",
+        id: "AAVU53pb7_zTiRP9VHro0qr52cJC_S_bXCZ8GXUXok-n",
+        createdAt: "2024-08-16T03:21:44.387Z",
+        a: {
+          r: "/exn/ipex/grant",
+          d: "EC5N3brbT8U0mMlWemYpRBnSYVpX00QPfK2ugYx-0isg",
+          m: "",
+        },
+        route: "/exn/ipex/grant",
+        read: false,
+        connectionId: "EBRg2Ur0JYi92jP0r0ZEO385sWr_8KNMqRIsv9s2JUFI",
+        multisigLinks: {
+          "EIzCD7k_SlEWubN5RL_Xxg1FucTYiOKpCE-OAlQm8VkT": [
+            "EP_DgYAq7TCCyH9FohNjniJsEJTq7LjrNr_6M5zXbu91",
+            "EM54J4cqI__WeaKJqr4zHlpKOIykZp1OwU5Cdl--S2Ji",
+          ],
+        },
+        grantSaid: "EC5N3brbT8U0mMlWemYpRBnSYVpX00QPfK2ugYx-0isg",
+        updatedAt: "2024-08-16T03:21:57.455Z",
+      },
+    ]);
+
+    await signifyNotificationService.deleteNotificationRecordById(
+      "AAVU53pb7_zTiRP9VHro0qr52cJC_S_bXCZ8GXUXok-n",
+      NotificationRoute.ExnIpexGrant
+    );
+
     try {
       await signifyNotificationService.onSignifyOperationStateChanged(callback);
     } catch (error) {

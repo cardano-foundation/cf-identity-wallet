@@ -164,6 +164,8 @@ interface KeriaNotification {
   a: Record<string, unknown>;
   multisigId?: string | undefined;
   connectionId: string;
+  grantSaid?: string | undefined;
+  multisigLinks?: Record<string, Array<string>> | undefined;
   read: boolean;
 }
 

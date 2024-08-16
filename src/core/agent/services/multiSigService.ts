@@ -1050,7 +1050,7 @@ class MultiSigService extends AgentService {
         .exchanges()
         .createExchangeMessage(
           mHab,
-          "/multisig/exn",
+          MultiSigRoute.EXN,
           { gid: gHab["prefix"] },
           gembeds
         );
@@ -1077,7 +1077,7 @@ class MultiSigService extends AgentService {
         .exchanges()
         .createExchangeMessage(
           mHab,
-          "/multisig/exn",
+          MultiSigRoute.EXN,
           { gid: gHab["prefix"] },
           gembeds
         );

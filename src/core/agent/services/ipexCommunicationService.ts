@@ -138,10 +138,38 @@ class IpexCommunicationService extends AgentService {
     Agent.agent.signifyNotifications.addPendingOperationToQueue(
       pendingOperation
     );
-    Agent.agent.signifyNotifications.deleteNotificationRecordById(
-      id,
-      grantNoteRecord.a.r as NotificationRoute
-    );
+
+    const notificationRecord = await this.notificationStorage.findById(id);
+    if (!notificationRecord) {
+      throw new Error(
+        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+      );
+    }
+    if (holder.multisigManageAid && op.metadata?.said) {
+      if (
+        !notificationRecord.multisigLinks ||
+        !Object.keys(notificationRecord.multisigLinks).length
+      ) {
+        notificationRecord.multisigLinks = {
+          [op.metadata.said]: [holder.multisigManageAid],
+        };
+      } else {
+        notificationRecord.multisigLinks = {
+          [op.metadata.said]: [
+            ...notificationRecord.multisigLinks[op.metadata.said],
+            holder.multisigManageAid,
+          ],
+        };
+      }
+    }
+    await this.notificationStorage.update(notificationRecord);
+
+    if (!holder.multisigManageAid) {
+      Agent.agent.signifyNotifications.deleteNotificationRecordById(
+        id,
+        grantNoteRecord.a.r as NotificationRoute
+      );
+    }
   }
 
   @OnlineOnly
@@ -444,6 +472,27 @@ class IpexCommunicationService extends AgentService {
     Agent.agent.signifyNotifications.addPendingOperationToQueue(
       pendingOperation
     );
+
+    const notifications = await this.notificationStorage.findAllByQuery({
+      grantSaid: exn?.exn.e.exn.p,
+    });
+
+    if (notifications.length && holder.multisigManageAid && op.metadata?.said) {
+      const notificationRecord = notifications[0];
+      if (
+        notificationRecord.multisigLinks &&
+        Object.keys(notificationRecord.multisigLinks).length
+      ) {
+        notificationRecord.multisigLinks = {
+          [op.metadata.said]: [
+            ...notificationRecord.multisigLinks[op.metadata.said],
+            holder.multisigManageAid,
+          ],
+        };
+
+        await this.notificationStorage.update(notificationRecord);
+      }
+    }
     Agent.agent.signifyNotifications.deleteNotificationRecordById(
       id,
       notifRecord.a.r as NotificationRoute

@@ -341,9 +341,10 @@ class SignifyNotificationService extends AgentService {
         return;
       }
 
-      const existMultisig = await Agent.agent.identifiers.getIdentifier(
-        exchange?.exn?.e?.exn?.i
-      );
+      const existMultisig = await Agent.agent.identifiers
+        .getIdentifier(exchange?.exn?.e?.exn?.i)
+        .catch(() => undefined);
+
       if (!existMultisig) {
         await this.markNotification(notif.i);
         return;
@@ -357,6 +358,30 @@ class SignifyNotificationService extends AgentService {
         .credentials()
         .get(previousExnGrantMsg.exn.e.acdc.d)
         .catch(() => undefined);
+
+      const notifications = await this.notificationStorage.findAllByQuery({
+        grantSaid: previousExnGrantMsg.exn.d,
+      });
+
+      if (notifications.length) {
+        const notificationRecord = notifications[0];
+        if (
+          !notificationRecord.multisigLinks ||
+          !Object.keys(notificationRecord.multisigLinks).length
+        ) {
+          notificationRecord.multisigLinks = {
+            [exchange?.exn.e.exn.d]: [exchange.exn.i],
+          };
+        } else {
+          notificationRecord.multisigLinks = {
+            [exchange?.exn.e.exn.d]: [
+              ...notificationRecord.multisigLinks[exchange?.exn.e.exn.d],
+              exchange.exn.i,
+            ],
+          };
+        }
+        await this.notificationStorage.update(notificationRecord);
+      }
 
       if (existingCredential) {
         await this.markNotification(notif.i);
@@ -444,6 +469,11 @@ class SignifyNotificationService extends AgentService {
         metadata.multisigId = multisigNotification[0].exn?.a?.gid;
       }
     }
+    if (event.a.r === NotificationRoute.ExnIpexGrant) {
+      metadata.multisigLinks = {};
+      metadata.grantSaid = event.a.d;
+    }
+
     const result = await this.notificationStorage.save(metadata);
     return {
       id: result.id,
@@ -600,6 +630,16 @@ class SignifyNotificationService extends AgentService {
                   .get(admitExchange.exn.p);
                 const credentialId = grantExchange.exn.e.acdc.d;
                 if (credentialId) {
+                  const notifications =
+                      await this.notificationStorage.findAllByQuery({
+                        grantSaid: grantExchange.exn.d,
+                      });
+                  for (const notification of notifications) {
+                    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+                      notification.id,
+                        notification.a.r as NotificationRoute
+                    );
+                  }
                   await Agent.agent.ipexCommunications.markAcdc(
                     credentialId,
                     CredentialStatus.CONFIRMED
