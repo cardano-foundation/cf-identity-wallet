@@ -254,6 +254,7 @@ describe("Single sig service of agent", () => {
       displayName: keriMetadataRecordProps.displayName,
       createdAtUTC: nowISO,
       theme: 0,
+      groupMetadata: keriMetadataRecord.groupMetadata,
       ...aidReturnedBySignify.state,
       signifyOpName: undefined,
       signifyName: "uuid-here",
