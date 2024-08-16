@@ -2,9 +2,11 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import {
   getConnectedWallet,
+  getIsConnecting,
   getPendingConnection,
   getWalletConnectionsCache,
   setConnectedWallet,
+  setIsConnecting,
   setPendingConnection,
   setWalletConnectionsCache,
   walletConnectionsCacheSlice,
@@ -19,6 +21,7 @@ describe("walletConnectionsCacheSlice", () => {
     walletConnections: [],
     connectedWallet: null,
     pendingConnection: null,
+    isConnecting: false,
   };
 
   it("should return the initial state", () => {
@@ -63,6 +66,13 @@ describe("walletConnectionsCacheSlice", () => {
       })
     );
     expect(newState.pendingConnection?.id).toEqual("pending-meerkat");
+  });
+  it("should handle setIsConnecting", () => {
+    const newState = walletConnectionsCacheSlice.reducer(
+      initialState,
+      setIsConnecting(true)
+    );
+    expect(newState.isConnecting).toEqual(true);
   });
 });
 
@@ -117,6 +127,17 @@ describe("Get wallet connections cache", () => {
     const pendingMeerKatCache = getPendingConnection(state);
     expect(pendingMeerKatCache).toEqual(
       state.walletConnectionsCache.pendingConnection
+    );
+  });
+  it("should get is connecting", () => {
+    const state = {
+      walletConnectionsCache: {
+        isConnecting: false,
+      },
+    } as RootState;
+    const pendingMeerKatCache = getIsConnecting(state);
+    expect(pendingMeerKatCache).toEqual(
+      state.walletConnectionsCache.isConnecting
     );
   });
 });

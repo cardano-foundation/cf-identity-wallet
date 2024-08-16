@@ -57,7 +57,6 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     const connectedWallet = useAppSelector(getConnectedWallet);
     const currentOperation = useAppSelector(getCurrentOperation);
     const pageId = "connect-wallet-placeholder";
-    const stateCache = useAppSelector(getStateCache);
     const [actionInfo, setActionInfo] = useState<ActionInfo>({
       type: ActionType.None,
     });
