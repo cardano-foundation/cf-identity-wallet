@@ -23,6 +23,7 @@ import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./ReceiveCredential.scss";
 import { NotificationRoute } from "../../../../../core/agent/agent.types";
+import { Verification } from "../../../../components/Verification";
 
 const ReceiveCredential = ({
   pageId,
@@ -37,6 +38,7 @@ const ReceiveCredential = ({
   const connectionsCache = useAppSelector(getConnectionsCache);
   const fallbackLogo = KeriLogo;
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const connection =
     connectionsCache?.[notificationDetails.connectionId]?.label;
@@ -151,7 +153,7 @@ const ReceiveCredential = ({
           primaryButtonText={`${i18n.t(
             "notifications.details.buttons.accept"
           )}`}
-          primaryButtonAction={handleAccept}
+          primaryButtonAction={() => setVerifyIsOpen(true)}
           secondaryButtonText={`${i18n.t(
             "notifications.details.buttons.decline"
           )}`}
@@ -170,6 +172,11 @@ const ReceiveCredential = ({
         actionConfirm={() => handleDecline()}
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}
+      />
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
+        onVerify={handleAccept}
       />
     </>
   );

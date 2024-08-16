@@ -8,9 +8,8 @@ import {
   IonSpinner,
   IonText,
 } from "@ionic/react";
-import i18next from "i18next";
 import { i18n } from "../../../i18n";
-import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
+import { formatShortDate } from "../../utils/formatters";
 import "./ConnectionDetails.scss";
 import {
   ConnectionDetails as ConnectionData,
@@ -26,10 +25,8 @@ import {
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { ConnectionOptions } from "../../components/ConnectionOptions";
-import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert as AlertDeleteConnection } from "../../components/Alert";
 import { removeConnectionCache } from "../../../store/reducers/connectionsCache";
-import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { Agent } from "../../../core/agent/agent";
 import {
@@ -47,6 +44,7 @@ import { ConnectionNotes } from "./components/ConnectionNotes";
 import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
 import { getBackRoute } from "../../../routes/backRoute";
 import { ConnectionHistoryEvent } from "./components/ConnectionHistoryEvent";
+import { Verification } from "../../components/Verification";
 
 const ConnectionDetails = () => {
   const pageId = "connection-details";
@@ -63,8 +61,7 @@ const ConnectionDetails = () => {
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertDeleteConnectionIsOpen, setAlertDeleteConnectionIsOpen] =
     useState(false);
-  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [notes, setNotes] = useState<ConnectionNoteDetails[]>([]);
   const [segmentValue, setSegmentValue] = useState("details");
@@ -148,8 +145,7 @@ const ConnectionDetails = () => {
         dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
         dispatch(removeConnectionCache(connectionShortDetails.id));
         handleDone();
-        setVerifyPasswordIsOpen(false);
-        setVerifyPasscodeIsOpen(false);
+        setVerifyIsOpen(false);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error("Unable to delete connection", error);
@@ -193,14 +189,7 @@ const ConnectionDetails = () => {
   };
 
   const handleAuthentication = () => {
-    if (
-      !stateCache?.authentication.passwordIsSkipped &&
-      stateCache?.authentication.passwordIsSet
-    ) {
-      setVerifyPasswordIsOpen(true);
-    } else {
-      setVerifyPasscodeIsOpen(true);
-    }
+    setVerifyIsOpen(true);
   };
 
   const handleOpenNoteManageModal = () => {
@@ -310,14 +299,9 @@ const ConnectionDetails = () => {
           handleEdit={setModalIsOpen}
           handleDelete={handleDelete}
         />
-        <VerifyPassword
-          isOpen={verifyPasswordIsOpen}
-          setIsOpen={setVerifyPasswordIsOpen}
-          onVerify={verifyAction}
-        />
-        <VerifyPasscode
-          isOpen={verifyPasscodeIsOpen}
-          setIsOpen={setVerifyPasscodeIsOpen}
+        <Verification
+          verifyIsOpen={verifyIsOpen}
+          setVerifyIsOpen={setVerifyIsOpen}
           onVerify={verifyAction}
         />
       </ScrollablePageLayout>

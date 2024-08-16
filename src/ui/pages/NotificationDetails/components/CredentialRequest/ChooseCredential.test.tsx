@@ -5,6 +5,7 @@ import { createMemoryHistory } from "history";
 import configureStore from "redux-mock-store";
 import { IonReactMemoryRouter } from "@ionic/react-router";
 import { act } from "react-dom/test-utils";
+import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
@@ -15,15 +16,34 @@ import { setNotificationDetailCache } from "../../../../../store/reducers/notifi
 import { KeriaNotification } from "../../../../../core/agent/agent.types";
 import { ACDC } from "./CredentialRequest.types";
 import { credRequestFix } from "../../../../__fixtures__/credRequestFix";
+import { KeyStoreKeys } from "../../../../../core/storage";
+import { passcodeFiller } from "../../../../utils/passcodeFiller";
 
 mockIonicReact();
+
+jest.mock("@aparajita/capacitor-secure-storage", () => ({
+  SecureStorage: {
+    get: (key: string) => {
+      if (key === KeyStoreKeys.APP_PASSCODE) {
+        return "111111";
+      }
+
+      return null;
+    },
+    set: jest.fn(),
+  },
+}));
 
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const offerAcdcFromApplyMock = jest.fn(
   (detail: KeriaNotification, acdc: ACDC) =>
-    Promise.resolve({
-      detail,
-      acdc,
+    new Promise((res) => {
+      setTimeout(() => {
+        res({
+          detail,
+          acdc,
+        });
+      }, 700);
     })
 );
 
@@ -40,6 +60,13 @@ jest.mock("../../../../../core/agent/agent", () => ({
       },
     },
   },
+}));
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  isPlatform: () => true,
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div {...props}>{children}</div> : null,
 }));
 
 const mockStore = configureStore();
@@ -391,6 +418,8 @@ describe("Credential request - choose request", () => {
       dispatch: dispatchMock,
     };
 
+    jest.spyOn(SecureStorage, "get").mockResolvedValue("111111");
+
     const path = `${TabsRoutePath.NOTIFICATIONS}/${notificationsFix[4].id}`;
     const history = createMemoryHistory();
     history.push(path);
@@ -438,6 +467,20 @@ describe("Credential request - choose request", () => {
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-multi-sign"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("verify-passcode")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("passcode-button-1")).toBeVisible();
+    });
+
+    passcodeFiller(getByText, getByTestId, "1", 6);
+
+    await waitFor(() => {
+      expect(SecureStorage.get).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
     });
 
     await waitFor(() => {

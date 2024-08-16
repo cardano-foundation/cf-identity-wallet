@@ -1,4 +1,8 @@
 .sign-request {
+  &.blur {
+    filter: blur(0.1rem);
+  }
+
   .sign-request-header {
     height: 44px;
   }

@@ -10,12 +10,32 @@ import { connectionsForNotifications } from "../../../../__fixtures__/connection
 import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { ReceiveCredential } from "./ReceiveCredential";
+import { KeyStoreKeys } from "../../../../../core/storage";
+import { passcodeFiller } from "../../../../utils/passcodeFiller";
 
 mockIonicReact();
 jest.useFakeTimers();
 
+const mockGet = jest.fn((arg: unknown) => Promise.resolve("111111"));
+
+jest.mock("@aparajita/capacitor-secure-storage", () => ({
+  SecureStorage: {
+    get: (key: string) => mockGet(key),
+    set: jest.fn(),
+  },
+}));
+
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
-const acceptAcdcMock = jest.fn((id: string) => Promise.resolve(id));
+const acceptAcdcMock = jest.fn(
+  (id: string) =>
+    new Promise((res) => {
+      setTimeout(() => {
+        res({
+          id,
+        });
+      }, 700);
+    })
+);
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -54,6 +74,13 @@ const initialState = {
     identifiers: filteredIdentifierFix,
   },
 };
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  isPlatform: () => true,
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div {...props}>{children}</div> : null,
+}));
 
 describe("Credential request", () => {
   test("Render and decline", async () => {
@@ -123,6 +150,22 @@ describe("Credential request", () => {
 
     act(() => {
       fireEvent.click(getByTestId("primary-button-creadential-request"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("verify-passcode")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("passcode-button-1")).toBeVisible();
+    });
+
+    act(() => {
+      passcodeFiller(getByText, getByTestId, "1", 6);
+    });
+
+    await waitFor(() => {
+      expect(mockGet).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
     });
 
     await waitFor(() => {

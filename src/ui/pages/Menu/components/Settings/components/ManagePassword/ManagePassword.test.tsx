@@ -16,6 +16,7 @@ import { RoutePath } from "../../../../../../../routes";
 import { CustomInputProps } from "../../../../../../components/CustomInput/CustomInput.types";
 import { OperationType } from "../../../../../../globals/types";
 import { ManagePassword } from "./ManagePassword";
+import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
 
 const deletePasswordMock = jest.fn();
 
@@ -144,7 +145,7 @@ describe("Manage password", () => {
 
     await waitForIonicReact();
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitForIonicReact();
 
@@ -320,13 +321,3 @@ describe("Manage password", () => {
     expect(getByTestId("create-password-modal")).toBeVisible();
   });
 });
-
-const clickButtonRepeatedly = (
-  getByText: RenderResult["getByText"],
-  buttonLabel: string,
-  times: number
-) => {
-  for (let i = 0; i < times; i++) {
-    fireEvent.click(getByText(buttonLabel));
-  }
-};

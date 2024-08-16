@@ -18,14 +18,11 @@ import i18next from "i18next";
 import { i18n } from "../../../i18n";
 import "./ArchivedCredentials.scss";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { VerifyPassword } from "../VerifyPassword";
-import { VerifyPasscode } from "../VerifyPasscode";
 import {
   Alert as AlertDelete,
   Alert as AlertRestore,
 } from "../../components/Alert";
 import {
-  getStateCache,
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
@@ -45,6 +42,7 @@ import { PageHeader } from "../PageHeader";
 import { CredentialItem } from "./CredentialItem";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
+import { Verification } from "../Verification";
 
 const ArchivedCredentialsContainer = forwardRef<
   ArchivedCredentialsContainerRef,
@@ -54,17 +52,15 @@ const ArchivedCredentialsContainer = forwardRef<
   const history = useHistory();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
-  const stateCache = useAppSelector(getStateCache);
   const [activeList, setActiveList] = useState(false);
   const [selectedCredentials, setSelectedCredentials] = useState<string[]>([]);
-  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [alertDeleteIsOpen, setAlertDeleteIsOpen] = useState(false);
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
 
   useEffect(() => {
     if (archivedCreds.length === 0) setArchivedCredentialsIsOpen(false);
-  }, [archivedCreds.length]);
+  }, [archivedCreds.length, setArchivedCredentialsIsOpen]);
 
   const resetList = () => {
     setActiveList(false);
@@ -100,17 +96,14 @@ const ArchivedCredentialsContainer = forwardRef<
   };
 
   const handleDeleteCredentialBatches = async (ids: string[]) => {
-    setVerifyPasswordIsOpen(false);
-    setVerifyPasscodeIsOpen(false);
-    // @TODO - sdisalvo: handle error
+    setVerifyIsOpen(false);
     await Promise.all(
       ids.map((id) => Agent.agent.credentials.deleteCredential(id))
     );
   };
 
   const handleRestoreCredentials = async (selectedIds: string[]) => {
-    setVerifyPasswordIsOpen(false);
-    setVerifyPasscodeIsOpen(false);
+    setVerifyIsOpen(false);
 
     if (selectedIds.length === 0) return;
 
@@ -193,7 +186,7 @@ const ArchivedCredentialsContainer = forwardRef<
     setAlertDeleteIsOpen(true);
   };
 
-  const handleAfterVerify = async () => {
+  const handleOnVerify = async () => {
     await handleDeleteCredentialBatches(selectedCredentials);
     dispatch(
       setToastMsg(
@@ -306,16 +299,7 @@ const ArchivedCredentialsContainer = forwardRef<
         cancelButtonText={`${i18n.t(
           "credentials.details.alert.delete.cancel"
         )}`}
-        actionConfirm={() => {
-          if (
-            !stateCache?.authentication.passwordIsSkipped &&
-            stateCache?.authentication.passwordIsSet
-          ) {
-            setVerifyPasswordIsOpen(true);
-          } else {
-            setVerifyPasscodeIsOpen(true);
-          }
-        }}
+        actionConfirm={() => setVerifyIsOpen(true)}
         actionCancel={handleCancelAction}
         actionDismiss={handleCancelAction}
       />
@@ -344,15 +328,10 @@ const ArchivedCredentialsContainer = forwardRef<
         actionCancel={handleCancelAction}
         actionDismiss={handleCancelAction}
       />
-      <VerifyPassword
-        isOpen={verifyPasswordIsOpen}
-        setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={handleAfterVerify}
-      />
-      <VerifyPasscode
-        isOpen={verifyPasscodeIsOpen}
-        setIsOpen={setVerifyPasscodeIsOpen}
-        onVerify={handleAfterVerify}
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
+        onVerify={handleOnVerify}
       />
     </>
   );

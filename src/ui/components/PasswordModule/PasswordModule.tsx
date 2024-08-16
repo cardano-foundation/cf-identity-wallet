@@ -16,8 +16,10 @@ import { PasswordModuleProps, PasswordModuleRef } from "./PasswordModule.types";
 import {
   getStateCache,
   setAuthentication,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { useAppDispatch } from "../../../store/hooks";
+import { ToastMsgType } from "../../globals/types";
 
 const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
   ({ title, isOnboarding, description, testId, onCreateSuccess }, ref) => {
@@ -118,6 +120,22 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
               content: { value: hintValue },
             })
           );
+        } else {
+          try {
+            const previousHint = (
+              await Agent.agent.basicStorage.findById(MiscRecordId.OP_PASS_HINT)
+            )?.content?.value;
+
+            if (previousHint) {
+              await Agent.agent.basicStorage.deleteById(
+                MiscRecordId.OP_PASS_HINT
+              );
+            }
+          } catch (e) {
+            // eslint-disable-next-line no-console
+            console.error("Unable to delete password hint", e);
+            dispatch(setToastMsg(ToastMsgType.UNABLE_DELETE_PASSWORD_HINT));
+          }
         }
       }
 
