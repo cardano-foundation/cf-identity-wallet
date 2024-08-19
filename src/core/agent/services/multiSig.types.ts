@@ -1,20 +1,20 @@
 interface Aid {
   name: string;
   prefix: string;
-  salty: any;
+  salty?: any;
   transferable: boolean;
   state: {
     vn: number[];
     i: string;
     s: string;
-    p: string;
+    p?: string;
     d: string;
     f: string;
     dt: string;
     et: string;
-    kt: string;
+    kt: string | string[];
     k: string[];
-    nt: string;
+    nt: string | string[];
     n: string[];
     bt: string;
     b: string[];

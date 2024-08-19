@@ -3,6 +3,7 @@ import {
   b,
   d,
   EventResult,
+  HabState,
   messagize,
   Saider,
   Serder,
@@ -111,7 +112,7 @@ class MultiSigService extends AgentService {
     if (notLinkedContacts.length) {
       throw new Error(MultiSigService.ONLY_ALLOW_LINKED_CONTACTS);
     }
-    const ourAid: Aid = await this.props.signifyClient
+    const ourAid: HabState = await this.props.signifyClient
       .identifiers()
       .get(ourMetadata.signifyName as string);
     const otherAids = await Promise.all(
@@ -172,7 +173,7 @@ class MultiSigService extends AgentService {
   }
 
   private async createAidMultisig(
-    aid: Aid,
+    aid: HabState,
     otherAids: Pick<Aid, "state">[],
     name: string,
     threshold: number,
@@ -578,7 +579,7 @@ class MultiSigService extends AgentService {
   }
 
   private async rotateMultisigAid(
-    aid: Aid,
+    aid: HabState,
     smids: any[],
     rmids: any[],
     states: any[],
@@ -674,7 +675,7 @@ class MultiSigService extends AgentService {
 
   private async joinMultisigRotationKeri(
     exn: MultiSigExnMessage["exn"],
-    aid: Aid,
+    aid: HabState,
     name: string
   ): Promise<{
     op: any;
@@ -734,7 +735,7 @@ class MultiSigService extends AgentService {
 
   private async joinMultisigKeri(
     exn: MultiSigExnMessage["exn"],
-    aid: Aid,
+    aid: HabState,
     name: string
   ): Promise<{
     op: any;
@@ -818,7 +819,7 @@ class MultiSigService extends AgentService {
 
   private async sendMultisigExn(
     name: string,
-    aid: Aid,
+    aid: HabState,
     route: MultiSigRoute,
     embeds: {
       icp?: (string | Serder)[];
@@ -896,7 +897,7 @@ class MultiSigService extends AgentService {
     const recp = multisigMembers
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
-    const ourAid: Aid = await this.props.signifyClient
+    const ourAid = await this.props.signifyClient
       .identifiers()
       .get(ourIdentifier.signifyName as string);
     for (const member of multisigMembers) {
@@ -971,7 +972,7 @@ class MultiSigService extends AgentService {
     const recp = multisigMembers
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
-    const ourAid: Aid = await this.props.signifyClient
+    const ourAid = await this.props.signifyClient
       .identifiers()
       .get(ourIdentifier.signifyName as string);
 
@@ -1052,13 +1053,18 @@ class MultiSigService extends AgentService {
           mHab,
           "/multisig/exn",
           { gid: gHab["prefix"] },
-          gembeds
+          gembeds,
+          exchangeMessage.exn.i
         );
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
-      const [admit, sigs, end] = await this.props.signifyClient
-        .ipex()
-        .admit(multisigSignifyName, "", grantSaid, time);
+      const [admit, sigs, end] = await this.props.signifyClient.ipex().admit({
+        senderName: multisigSignifyName,
+        message: "",
+        grantSaid,
+        datetime: time,
+        recipient: exchangeMessage.exn.i,
+      });
 
       const mstate = gHab["state"];
       const seal = [
@@ -1079,7 +1085,8 @@ class MultiSigService extends AgentService {
           mHab,
           "/multisig/exn",
           { gid: gHab["prefix"] },
-          gembeds
+          gembeds,
+          exchangeMessage.exn.i
         );
     }
 

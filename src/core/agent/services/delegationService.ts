@@ -70,7 +70,7 @@ class DelegationService extends AgentService {
       .get(metadata.signifyName);
     const operation = await this.props.signifyClient
       .keyStates()
-      .query(identifier.state.di, "1");
+      .query(identifier.state.di as string, "1");
     await waitAndGetDoneOp(this.props.signifyClient, operation);
     const isDone = operation.done;
     if (isDone) {

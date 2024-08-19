@@ -168,10 +168,10 @@ describe("Cards Details page", () => {
       ).toBeInTheDocument()
     );
     await waitFor(() =>
-      expect(getByText(identifierFix[0].kt)).toBeInTheDocument()
+      expect(getByText(identifierFix[0].kt as string)).toBeInTheDocument()
     );
     await waitFor(() =>
-      expect(getByText(identifierFix[0].nt)).toBeInTheDocument()
+      expect(getByText(identifierFix[0].nt as string)).toBeInTheDocument()
     );
     await waitFor(() =>
       expect(
