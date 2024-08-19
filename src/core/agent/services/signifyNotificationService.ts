@@ -638,6 +638,7 @@ class SignifyNotificationService extends AgentService {
                     id: uuidv4(),
                     a: {
                       r: NotificationRoute.LocalAcdcRevoked,
+                      credentialId,
                       credentialTitle: credential.schema.title,
                     },
                     read: false,
