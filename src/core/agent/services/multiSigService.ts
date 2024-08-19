@@ -1089,6 +1089,109 @@ class MultiSigService extends AgentService {
 
     return op;
   }
+
+  async grantPresentMultisigAcdc(
+    multisigSignifyName: string,
+    issuerPrefix: string,
+    acdcDetail: any,
+    admitExnToGrant?: any,
+    previousAtc?: string
+  ) {
+    let exn: Serder;
+    let sigsMes: string[];
+    let dtime: string;
+
+    const { ourIdentifier, multisigMembers } =
+      await this.getMultisigParticipants(multisigSignifyName);
+    const gHab = await this.props.signifyClient
+      .identifiers()
+      .get(multisigSignifyName);
+    const mHab = await this.props.signifyClient
+      .identifiers()
+      .get(ourIdentifier.signifyName);
+
+    const recp = multisigMembers
+      .filter((signing: any) => signing.aid !== ourIdentifier.id)
+      .map((member: any) => member.aid);
+
+    if (admitExnToGrant) {
+      const [, ked] = Saider.saidify(admitExnToGrant);
+      const admit = new Serder(ked);
+      const keeper = await this.props.signifyClient.manager!.get(gHab);
+      const sigs = await keeper.sign(b(new Serder(admitExnToGrant).raw));
+      const mstateNew = gHab["state"];
+      const seal = [
+        "SealEvent",
+        {
+          i: gHab["prefix"],
+          s: mstateNew["ee"]["s"],
+          d: mstateNew["ee"]["d"],
+        },
+      ];
+
+      const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
+      const ims = d(messagize(admit, sigers, seal));
+      let atc = ims.substring(admit.size);
+
+      const previousEnd = previousAtc ? previousAtc.slice(atc.length) : "";
+      atc += previousEnd;
+
+      const gembeds = {
+        exn: [admit, atc],
+      };
+
+      [exn, sigsMes, dtime] = await this.props.signifyClient
+        .exchanges()
+        .createExchangeMessage(
+          mHab,
+          "/multisig/exn",
+          { gid: gHab["prefix"] },
+          gembeds
+        );
+    } else {
+      const time = new Date().toISOString().replace("Z", "000+00:00");
+      const [admit, sigs, end] = await this.props.signifyClient.ipex().grant({
+        senderName: multisigSignifyName,
+        recipient: issuerPrefix,
+        message: "grant/present",
+        acdc: new Serder(acdcDetail.sad),
+        iss: new Serder(acdcDetail.iss),
+        anc: new Serder(acdcDetail.anc),
+        acdcAttachment: acdcDetail.atc,
+        ancAttachment: acdcDetail.ancatc,
+        issAttachment: acdcDetail.issAtc,
+        datetime: time,
+      });
+
+      const mstate = gHab["state"];
+      const seal = [
+        "SealEvent",
+        { i: gHab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
+      ];
+      const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
+      const ims = d(messagize(admit, sigers, seal));
+      let atc = ims.substring(admit.size);
+      atc += end;
+      const gembeds = {
+        exn: [admit, atc],
+      };
+
+      [exn, sigsMes, dtime] = await this.props.signifyClient
+        .exchanges()
+        .createExchangeMessage(
+          mHab,
+          "/multisig/exn",
+          { gid: gHab["prefix"] },
+          gembeds
+        );
+    }
+
+    const op = await this.props.signifyClient
+      .ipex()
+      .submitGrant(multisigSignifyName, exn, sigsMes, dtime, recp);
+
+    return op;
+  }
 }
 
 export { MultiSigService };

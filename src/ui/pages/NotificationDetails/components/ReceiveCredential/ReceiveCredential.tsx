@@ -61,7 +61,7 @@ const ReceiveCredential = ({
   const handleAccept = async () => {
     setInitiateAnimation(true);
     if (multisigExn) {
-      await Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn(
+      await Agent.agent.ipexCommunications.handleMessageFromMultisigExn(
         notificationDetails.id
       );
     } else {

@@ -336,31 +336,29 @@ class SignifyNotificationService extends AgentService {
         .exchanges()
         .get(notif.a.d);
 
-      if (exchange?.exn?.e?.exn?.r !== ExchangeRoute.IpexAdmit) {
-        await this.markNotification(notif.i);
-        return;
-      }
+      if (exchange?.exn?.e?.exn?.r === ExchangeRoute.IpexAdmit) {
+        const existMultisig = await Agent.agent.identifiers.getIdentifier(
+          exchange?.exn?.e?.exn?.i
+        );
 
-      const existMultisig = await Agent.agent.identifiers.getIdentifier(
-        exchange?.exn?.e?.exn?.i
-      );
-      if (!existMultisig) {
-        await this.markNotification(notif.i);
-        return;
-      }
+        if (!existMultisig) {
+          await this.markNotification(notif.i);
+          return;
+        }
 
-      const previousExnGrantMsg = await this.props.signifyClient
-        .exchanges()
-        .get(exchange?.exn.e.exn.p);
+        const previousExnGrantMsg = await this.props.signifyClient
+          .exchanges()
+          .get(exchange?.exn.e.exn.p);
 
-      const existingCredential = await this.props.signifyClient
-        .credentials()
-        .get(previousExnGrantMsg.exn.e.acdc.d)
-        .catch(() => undefined);
+        const existingCredential = await this.props.signifyClient
+          .credentials()
+          .get(previousExnGrantMsg.exn.e.acdc.d)
+          .catch(() => undefined);
 
-      if (existingCredential) {
-        await this.markNotification(notif.i);
-        return;
+        if (existingCredential) {
+          await this.markNotification(notif.i);
+          return;
+        }
       }
     }
 
@@ -653,6 +651,10 @@ class SignifyNotificationService extends AgentService {
                   });
                 }
               }
+              break;
+            }
+            case OperationPendingRecordType.ExchangePresentCredential: {
+              // TODO: handle logic with exchange present ACDC
               break;
             }
             default:

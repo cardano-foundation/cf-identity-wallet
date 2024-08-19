@@ -41,6 +41,8 @@ const ipexAdmitMock = jest.fn();
 const ipexSubmitAdmitMock = jest.fn();
 const createExchangeMessageMock = jest.fn();
 const getMemberMock = jest.fn();
+const ipexGrantMock = jest.fn();
+const ipexSubmitGrantMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -86,6 +88,8 @@ const signifyClient = jest.mocked({
   ipex: () => ({
     admit: ipexAdmitMock,
     submitAdmit: ipexSubmitAdmitMock,
+    grant: ipexGrantMock,
+    submitGrant: ipexSubmitGrantMock,
   }),
   credentials: () => ({
     list: jest.fn(),
@@ -320,6 +324,41 @@ const mockSigsMes = [
 ];
 const mockDtime =
   "-LA35AACAA-e-exn-FABEPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC0AAAAAAAAAAAAAAAAAAAAAAAEPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC-AABAABTAefC5IBObzL5ZteOa6me6iLQXV1v1rTcsBOrJDfk6uwRfR1nxm2DKWxehRMHEdq6YlqxysCdWfVBIvd4t3gH";
+
+const acdcDetail = {
+  sad: {
+    v: "ACDC10JSON000197_",
+    d: "EBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r",
+    i: "EEozWLiY6DrCMCLfPqdBaIvUX1aUyjLKkT6-RxFrIMd9",
+    ri: "EPUFfq94pBLYKDRWyfOe7m-RKsET_zriJbfU3iUtM450",
+    s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    a: {},
+  },
+  atc: "-IABEBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r0AAAAAAAAAAAAAAAAAAAAAAAEBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r",
+  iss: {
+    v: "KERI10JSON0000ed_",
+    t: "iss",
+    d: "EEuxEi0sa45nAcVQc_MwGh8EGK0Lh1pgiHY18hbh1yNF",
+    i: "EBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r",
+    s: "0",
+    ri: "EPUFfq94pBLYKDRWyfOe7m-RKsET_zriJbfU3iUtM450",
+    dt: "2024-08-15T08:44:13.141000+00:00",
+  },
+  issatc:
+    "-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAACEJS94k_1jFBJDqibDrambXKWTx4OS3axqsb76-4qbIY-",
+  anc: {
+    v: "KERI10JSON00013a_",
+    t: "ixn",
+    d: "EJS94k_1jFBJDqibDrambXKWTx4OS3axqsb76-4qbIY-",
+    i: "EEozWLiY6DrCMCLfPqdBaIvUX1aUyjLKkT6-RxFrIMd9",
+    s: "2",
+    p: "EJpMvkYRQw7CKM_slbyJ0tmDQTJ46utkD3v6oOhLtaw3",
+    a: [{}],
+  },
+  ancatc: [
+    "-VAn-AABAAAfKRBq-VlL5Py28LEQjamfj0FLNcn83rw_nye2oCEUciih6D0tr8y9abpwRxx2hq3gSYyZRcZcxaLA5AFaYfQG-EAB0AAAAAAAAAAAAAAAAAAAAAAA1AAG2024-08-15T08c44c14d346253p00c00",
+  ],
+};
 
 describe("Multisig sig service of agent", () => {
   beforeEach(async () => {
@@ -2236,6 +2275,184 @@ describe("Multisig sig service of agent", () => {
     );
 
     expect(ipexSubmitAdmitMock).toBeCalledWith(
+      multisigSignifyName,
+      mockExn,
+      mockSigsMes,
+      mockDtime,
+      []
+    );
+  });
+
+  test("can initiate granting an ACDC from a multi-sig identifier", async () => {
+    const multisigSignifyName = "multisigSignifyName";
+    const issuerPrefix = "issuerPrefix";
+
+    const mockGrant = {
+      _kind: "JSON",
+      _raw: "{\"v\":\"KERI10JSON0004b1_\",\"t\":\"exn\",\"d\":\"EIGHcMNSHqnRlQWy-tIg04k24wIy5_mqBfOXDhhAsHvx\",\"i\":\"EHis8uP3C9jJ70OjwRfY9tLxvqefH7qVIazlpaVJI5zm\",\"p\":\"\",\"dt\":\"2024-08-15T08:44:16.867000+00:00\",\"r\":\"/ipex/grant\",\"q\":{},\"a\":{\"m\":\"\",\"i\":\"EEozWLiY6DrCMCLfPqdBaIvUX1aUyjLKkT6-RxFrIMd9\"},\"e\":{\"acdc\":{\"v\":\"ACDC10JSON000197_\",\"d\":\"EBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r\",\"i\":\"EEozWLiY6DrCMCLfPqdBaIvUX1aUyjLKkT6-RxFrIMd9\",\"ri\":\"EPUFfq94pBLYKDRWyfOe7m-RKsET_zriJbfU3iUtM450\",\"s\":\"EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao\",\"a\":{\"d\":\"EIK0Xph_pH3RYIgLniWMuMVlgvoLK8eIICN7cIUJv2j8\",\"i\":\"EHis8uP3C9jJ70OjwRfY9tLxvqefH7qVIazlpaVJI5zm\",\"LEI\":\"5493001KJTIIGC8Y1R17\",\"dt\":\"2024-08-15T08:44:13.141000+00:00\"}},\"iss\":{\"v\":\"KERI10JSON0000ed_\",\"t\":\"iss\",\"d\":\"EEuxEi0sa45nAcVQc_MwGh8EGK0Lh1pgiHY18hbh1yNF\",\"i\":\"EBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r\",\"s\":\"0\",\"ri\":\"EPUFfq94pBLYKDRWyfOe7m-RKsET_zriJbfU3iUtM450\",\"dt\":\"2024-08-15T08:44:13.141000+00:00\"},\"anc\":{\"v\":\"KERI10JSON0000cd_\",\"t\":\"ixn\",\"d\":\"EK9x8RSjMJ_oxuBHIWftq5lYQcTW7WYZ3HwCT34s62jQ\",\"i\":\"EEozWLiY6DrCMCLfPqdBaIvUX1aUyjLKkT6-RxFrIMd9\",\"s\":\"1\",\"p\":\"EBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r\",\"a\":[{}]},\"d\":\"EO_bCCneshP2lNWQ8gKSqyU9frP9V8Zo6tLczIHeXhXg\"}}",
+      _ked: {
+        v: "KERI10JSON0004b1_",
+        t: "exn",
+        d: "EIGHcMNSHqnRlQWy-tIg04k24wIy5_mqBfOXDhhAsHvx",
+        i: "EHis8uP3C9jJ70OjwRfY9tLxvqefH7qVIazlpaVJI5zm",
+        p: "",
+        dt: "2024-08-15T08:44:16.867000+00:00",
+        r: "/ipex/grant",
+        q: {},
+        a: { m: "", i: "EEozWLiY6DrCMCLfPqdBaIvUX1aUyjLKkT6-RxFrIMd9" },
+        e: {
+          acdc: {},
+          iss: {},
+          anc: {},
+          d: "EO_bCCneshP2lNWQ8gKSqyU9frP9V8Zo6tLczIHeXhXg",
+        },
+      },
+      _size: 1201,
+    };
+
+    const mockSigs = [
+      "AACfmWTQqrzUi9uSrnD439sFYFU95m4AFwLqihBzL94MltV7TFVOPKnFLl8z9O0hOyFCpspLmCPi9laBi7bocC8I",
+    ];
+    const mockEnd =
+      " -LAg4AACA-e-acdc-IABEBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r0AAAAAAAAAAAAAAAAAAAAAAAEEuxEi0sa45nAcVQc_MwGh8EGK0Lh1pgiHY18hbh1yNF-LAW5AACAA-e-iss-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAEK9x8RSjMJ_oxuBHIWftq5lYQcTW7WYZ3HwCT34s62jQ-LAa5AACAA-e-anc-AABAADHCaE5QMSHK1D83emSdbA5I6CvhRwmkMlGTm__zi4hB4dEvbcVPyexX1euccTCVW6pViLlqExvJBdz1J3PIgUI";
+
+    identifiersMemberMock = jest.fn().mockResolvedValueOnce({
+      signing: [{ ends: { agent: { [keriMetadataRecord.id]: "" } } }],
+    });
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce(
+      new IdentifierMetadataRecord({
+        id: "aidHere",
+        displayName: "Identifier 2",
+        signifyName: "uuid-here",
+        createdAt: now,
+        theme: 0,
+        groupMetadata: {
+          groupId: "group-id",
+          groupInitiator: true,
+          groupCreated: true,
+        },
+      })
+    );
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+    ipexGrantMock.mockResolvedValue([mockGrant, mockSigs, mockEnd]);
+    createExchangeMessageMock.mockResolvedValue([
+      mockExn,
+      mockSigsMes,
+      mockDtime,
+    ]);
+
+    await multiSigService.grantPresentMultisigAcdc(
+      multisigSignifyName,
+      issuerPrefix,
+      acdcDetail
+    );
+    expect(ipexGrantMock).toBeCalledTimes(1);
+    expect(createExchangeMessageMock).toBeCalledTimes(1);
+    expect(ipexSubmitGrantMock).toBeCalledTimes(1);
+  });
+
+  test("can agree to grant a credential with a multi-sig identifier", async () => {
+    const multisigSignifyName = "multisigSignifyName";
+    const issuerPrefix = "issuerPrefix";
+    const multisigExn = {
+      v: "KERI10JSON0004b1_",
+      t: "exn",
+      d: "EKJEr0WbRERI1j2GjjfuReOIHjBSjC0tXguEaNYo5Hl6",
+      i: "EDUyYtn0Z_99t9xoJAIUVredQBI21NJvVFarKwtF397j",
+      p: "",
+      dt: "2024-08-15T09:31:16.983000+00:00",
+      r: "/ipex/grant",
+      q: {},
+      a: { m: "", i: "EG4qVEPvGtUo8BMgwxTqVbajiYpkG_OpU1Zfx42OOehm" },
+      e: {
+        acdc: {},
+        iss: {},
+        anc: {},
+        d: "EIkdd8Twe0JNOZHEVZ9_LV1xJy1uy_hfiuGNHjqVLsJv",
+      },
+    };
+
+    const ked = {
+      v: "KERI10JSON0004b1_",
+      t: "exn",
+      d: "EKJEr0WbRERI1j2GjjfuReOIHjBSjC0tXguEaNYo5Hl6",
+      i: "EDUyYtn0Z_99t9xoJAIUVredQBI21NJvVFarKwtF397j",
+      p: "",
+      dt: "2024-08-15T09:31:16.983000+00:00",
+      r: "/ipex/grant",
+      q: {},
+      a: { m: "", i: "EG4qVEPvGtUo8BMgwxTqVbajiYpkG_OpU1Zfx42OOehm" },
+      e: {
+        acdc: {},
+        iss: {},
+        anc: {},
+        d: "EIkdd8Twe0JNOZHEVZ9_LV1xJy1uy_hfiuGNHjqVLsJv",
+      },
+    };
+    const admit = new Serder(ked);
+    const atc =
+      "-FABEFr4DyYerYKgdUq3Nw5wbq7OjEZT6cn45omHCiIZ0elD0AAAAAAAAAAAAAAAAAAAAAAAEMoyFLuJpu0B79yPM7QKFE_R_D4CTq7H7GLsKxIpukXX-AABABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB-LAg4AACA-e-acdc-IABEEGUqZhZh6xzLrSINDvIN7bRPpMWZ2U9_ZqOcHMlhgbg0AAAAAAAAAAAAAAAAAAAAAAAEMVYTf_mX61cKxVRbdWBHogVLNnb5vAfzXhKmNjEAIus-LAW5AACAA-e-iss-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAEB9sUjT1dKIqXTw2UJRVnyOSR37jj_NX6JXYtOh8jlYD-LAa5AACAA-e-anc-AABAABiw1xpT74ifuhdys2komq-9ZCUznqZcfRYHU27320gTdtBT3ijTshz2csLTcK77nw-dEssXfc4VEru-0Loq6wK";
+
+    const mockSaider = [{} as Saider, ked] as [Saider, Dict<any>];
+
+    identifiersMemberMock = jest.fn().mockResolvedValueOnce({
+      signing: [{ ends: { agent: { [keriMetadataRecord.id]: "" } } }],
+    });
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce(
+      new IdentifierMetadataRecord({
+        id: "aidHere",
+        displayName: "Identifier 2",
+        signifyName: "uuid-here",
+        createdAt: now,
+        theme: 0,
+        groupMetadata: {
+          groupId: "group-id",
+          groupInitiator: true,
+          groupCreated: true,
+        },
+      })
+    );
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+
+    jest.spyOn(Saider, "saidify").mockReturnValueOnce(mockSaider);
+    getMemberMock.mockResolvedValue({
+      sign: () => [
+        "ABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB",
+      ],
+    });
+    createExchangeMessageMock.mockResolvedValue([
+      mockExn,
+      mockSigsMes,
+      mockDtime,
+    ]);
+
+    await multiSigService.grantPresentMultisigAcdc(
+      multisigSignifyName,
+      issuerPrefix,
+      acdcDetail,
+      multisigExn,
+      atc
+    );
+
+    expect(ipexGrantMock).toBeCalledTimes(0);
+    expect(createExchangeMessageMock).toBeCalledWith(
+      mHab,
+      "/multisig/exn",
+      {
+        gid: gHab["prefix"],
+      },
+      {
+        exn: [admit, atc],
+      }
+    );
+
+    expect(ipexSubmitGrantMock).toBeCalledWith(
       multisigSignifyName,
       mockExn,
       mockSigsMes,

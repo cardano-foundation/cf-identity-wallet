@@ -6,10 +6,19 @@ import { act } from "react-dom/test-utils";
 import { ionFireEvent, waitForIonicReact } from "@ionic/react-test-utils";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CredentialOptions } from "./CredentialOptions";
+import { credsFixAcdc } from "../../__fixtures__/credsFix";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children }: { children: any }) => children,
+}));
+
+// Temporary test for grant present ACDC
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: () => ({
+    id: credsFixAcdc[0].id,
+  }),
 }));
 
 const dispatchMock = jest.fn();

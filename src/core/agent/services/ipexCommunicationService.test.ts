@@ -203,6 +203,9 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       multiSigs: {
         multisigAdmit: jest.fn().mockResolvedValue({ name: "opName" }),
+        grantPresentMultisigAcdc: jest
+          .fn()
+          .mockResolvedValue({ name: "opName" }),
       },
     },
   },
@@ -999,5 +1002,185 @@ describe("Ipex communication service of agent", () => {
       ipexCommunicationService.acceptAcdcFromMultisigExn(id)
     ).rejects.toThrowError(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     expect(deleteNotificationMock).not.toBeCalledWith(id);
+  });
+
+  test("can accept present ACDC from multisig exn", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+
+    notificationStorage.findById = jest.fn().mockResolvedValue({
+      id,
+      createdAt: new Date("2024-04-29T11:01:04.903Z"),
+      a: {
+        d: "saidForUuid",
+      },
+    });
+
+    signifyClient.exchanges = jest.fn().mockReturnValue({
+      get: jest.fn().mockImplementationOnce(() =>
+        Promise.resolve({
+          exn: {
+            e: {
+              exn: [
+                {
+                  d: "EIWhW9nK8NarL0T8jDFsWbziL38q8kYr836G47hAjlYC",
+                  i: "EPVLlv7EWv3xFJdFlbXbGVoWuZ-6dKsotgaW51wHccYp",
+                  dt: "2024-08-15T09:38:09.661000+00:00",
+                  r: "/ipex/grant",
+                  a: {
+                    m: "",
+                    i: "EFguIgJtUfNRllkA_QN1w1To3qKtIeejuxWxkEjk3PFn",
+                  },
+                  e: {
+                    acdc: {},
+                    iss: {},
+                    anc: {},
+                    d: "EGeaVi1sQujHHaNLW0fO59S25sxs3IKTP1lpkDGXXk_D",
+                  },
+                },
+              ],
+              d: "EGzSJCnYGcprv2cXMuNCCtlIQl52IkNK_Sw-QlvKj-xn",
+            },
+          },
+          pathed: {
+            exn: "-FABEPVLlv7EWv3xFJdFlbXbGVoWuZ-6dKsotgaW51wHccYp0AAAAAAAAAAAAAAAAAAAAAAAEPVLlv7EWv3xFJdFlbXbGVoWuZ-6dKsotgaW51wHccYp-AABAAAF0c5F62SrGcZZiNu9Izwg-mHCIrd5emQovBBbN0WhObVbQA_Z3_lOQlPr7rn5L7X7Z4Ba5wrgYSnpTL_2adcF-LAg4AACA-e-acdc-IABEEGUqZhZh6xzLrSINDvIN7bRPpMWZ2U9_ZqOcHMlhgbg0AAAAAAAAAAAAAAAAAAAAAAAEMVYTf_mX61cKxVRbdWBHogVLNnb5vAfzXhKmNjEAIus-LAW5AACAA-e-iss-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAEB9sUjT1dKIqXTw2UJRVnyOSR37jj_NX6JXYtOh8jlYD-LAa5AACAA-e-anc-AABAABiw1xpT74ifuhdys2komq-9ZCUznqZcfRYHU27320gTdtBT3ijTshz2csLTcK77nw-dEssXfc4VEru-0Loq6wK",
+          },
+        })
+      ),
+    });
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+
+    schemaGetMock.mockResolvedValue({ title: "title" });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
+      id: "id",
+    });
+
+    await ipexCommunicationService.acceptPresentAcdcFromMultisigExn(id);
+    expect(Agent.agent.multiSigs.grantPresentMultisigAcdc).toBeCalledTimes(1);
+    expect(operationPendingStorage.save).toBeCalledWith({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangePresentCredential,
+    });
+    expect(
+      Agent.agent.signifyNotifications.addPendingOperationToQueue
+    ).toBeCalledTimes(1);
+    expect(deleteNotificationMock).toBeCalledWith(id);
+  });
+
+  test("cannot accept present ACDC from multisig exn if the notification is missing in the DB", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "not-found-id";
+    notificationStorage.findById.mockResolvedValueOnce(null);
+
+    await expect(
+      ipexCommunicationService.acceptPresentAcdcFromMultisigExn(id)
+    ).rejects.toThrowError(
+      `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+    );
+  });
+
+  test("cannot accept present ACDC from multisig exn if identifier is not locally stored", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+
+    notificationStorage.findById = jest.fn().mockResolvedValue({
+      id,
+      createdAt: new Date("2024-04-29T11:01:04.903Z"),
+      a: {
+        d: "saidForUuid",
+      },
+    });
+
+    signifyClient.exchanges = jest.fn().mockReturnValue({
+      get: jest.fn().mockImplementationOnce(() =>
+        Promise.resolve({
+          exn: {
+            e: {
+              exn: [
+                {
+                  d: "EIWhW9nK8NarL0T8jDFsWbziL38q8kYr836G47hAjlYC",
+                  i: "EPVLlv7EWv3xFJdFlbXbGVoWuZ-6dKsotgaW51wHccYp",
+                  dt: "2024-08-15T09:38:09.661000+00:00",
+                  r: "/ipex/grant",
+                  a: {
+                    m: "",
+                    i: "EFguIgJtUfNRllkA_QN1w1To3qKtIeejuxWxkEjk3PFn",
+                  },
+                  e: {
+                    acdc: {},
+                    iss: {},
+                    anc: {},
+                    d: "EGeaVi1sQujHHaNLW0fO59S25sxs3IKTP1lpkDGXXk_D",
+                  },
+                },
+              ],
+              d: "EGzSJCnYGcprv2cXMuNCCtlIQl52IkNK_Sw-QlvKj-xn",
+            },
+          },
+          pathed: {
+            exn: "-FABEPVLlv7EWv3xFJdFlbXbGVoWuZ-6dKsotgaW51wHccYp0AAAAAAAAAAAAAAAAAAAAAAAEPVLlv7EWv3xFJdFlbXbGVoWuZ-6dKsotgaW51wHccYp-AABAAAF0c5F62SrGcZZiNu9Izwg-mHCIrd5emQovBBbN0WhObVbQA_Z3_lOQlPr7rn5L7X7Z4Ba5wrgYSnpTL_2adcF-LAg4AACA-e-acdc-IABEEGUqZhZh6xzLrSINDvIN7bRPpMWZ2U9_ZqOcHMlhgbg0AAAAAAAAAAAAAAAAAAAAAAAEMVYTf_mX61cKxVRbdWBHogVLNnb5vAfzXhKmNjEAIus-LAW5AACAA-e-iss-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAEB9sUjT1dKIqXTw2UJRVnyOSR37jj_NX6JXYtOh8jlYD-LAa5AACAA-e-anc-AABAABiw1xpT74ifuhdys2komq-9ZCUznqZcfRYHU27320gTdtBT3ijTshz2csLTcK77nw-dEssXfc4VEru-0Loq6wK",
+          },
+        })
+      ),
+    });
+
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(undefined);
+
+    await expect(
+      ipexCommunicationService.acceptPresentAcdcFromMultisigExn(id)
+    ).rejects.toThrowError(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+    expect(deleteNotificationMock).not.toBeCalledWith(id);
+  });
+
+  test("can grant present ACDC with id", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "credential-id";
+    credentialGetMock.mockResolvedValueOnce({
+      sad: {
+        v: "ACDC10JSON000197_",
+        d: "EBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r",
+        i: "EEozWLiY6DrCMCLfPqdBaIvUX1aUyjLKkT6-RxFrIMd9",
+        ri: "EPUFfq94pBLYKDRWyfOe7m-RKsET_zriJbfU3iUtM450",
+        s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        a: {},
+      },
+      atc: "-IABEBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r0AAAAAAAAAAAAAAAAAAAAAAAEBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r",
+      iss: {},
+      issatc:
+        "-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAACEJS94k_1jFBJDqibDrambXKWTx4OS3axqsb76-4qbIY-",
+      anc: {},
+      ancatc: [
+        "-VAn-AABAAAfKRBq-VlL5Py28LEQjamfj0FLNcn83rw_nye2oCEUciih6D0tr8y9abpwRxx2hq3gSYyZRcZcxaLA5AFaYfQG-EAB0AAAAAAAAAAAAAAAAAAAAAAA1AAG2024-08-15T08c44c14d346253p00c00",
+      ],
+    });
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+
+    await ipexCommunicationService.admitGrantAcdcById(id);
+    expect(Agent.agent.multiSigs.grantPresentMultisigAcdc).toBeCalledTimes(1);
+  });
+
+  test("cannot grant present ACDC with id if the ACDC is missing in the DB", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "not-found-id";
+    credentialGetMock.mockResolvedValueOnce(null);
+
+    await expect(
+      ipexCommunicationService.admitGrantAcdcById(id)
+    ).rejects.toThrowError(`${IpexCommunicationService.CREDENTIAL_NOT_FOUND}`);
   });
 });

@@ -385,6 +385,26 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
+  async handleMessageFromMultisigExn(id: string) {
+    const notifRecord = await this.getNotificationRecordById(id);
+    const exn = await this.props.signifyClient
+      .exchanges()
+      .get(notifRecord.a.d as string);
+    const route = exn?.exn?.e?.exn?.r;
+
+    switch (route) {
+    case ExchangeRoute.IpexAdmit:
+      await this.acceptAcdcFromMultisigExn(id);
+      break;
+    case ExchangeRoute.IpexGrant:
+      await this.acceptPresentAcdcFromMultisigExn(id);
+      break;
+    default:
+      break;
+    }
+  }
+
+  @OnlineOnly
   async acceptAcdcFromMultisigExn(id: string): Promise<void> {
     const notifRecord = await this.getNotificationRecordById(id);
     const exn = await this.props.signifyClient
@@ -440,6 +460,66 @@ class IpexCommunicationService extends AgentService {
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+    Agent.agent.signifyNotifications.addPendingOperationToQueue(
+      pendingOperation
+    );
+    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      id,
+      notifRecord.a.r as NotificationRoute
+    );
+  }
+
+  @OnlineOnly
+  async admitGrantAcdcById(credentialId: string) {
+    const pickedCred = await this.props.signifyClient
+      .credentials()
+      .get(credentialId);
+
+    if (!pickedCred) {
+      throw new Error(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
+    }
+
+    const holderSignifyName = (
+      await this.identifierStorage.getIdentifierMetadata(pickedCred.sad.a.i)
+    ).signifyName;
+
+    await Agent.agent.multiSigs.grantPresentMultisigAcdc(
+      holderSignifyName,
+      pickedCred.sad?.i,
+      pickedCred
+    );
+  }
+
+  @OnlineOnly
+  async acceptPresentAcdcFromMultisigExn(id: string): Promise<void> {
+    const notifRecord = await this.getNotificationRecordById(id);
+    const exn = await this.props.signifyClient
+      .exchanges()
+      .get(notifRecord.a.d as string);
+
+    const admitExnToGrant = exn?.exn?.e?.exn;
+    const credential = admitExnToGrant?.e?.acdc;
+    const previousAtc = exn?.pathed?.exn;
+    const holder = await this.identifierStorage.getIdentifierMetadata(
+      exn.exn.e.exn.i
+    );
+
+    if (!holder) {
+      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+    }
+
+    const op = await Agent.agent.multiSigs.grantPresentMultisigAcdc(
+      holder.signifyName,
+      credential?.i,
+      credential,
+      admitExnToGrant,
+      previousAtc
+    );
+
+    const pendingOperation = await this.operationPendingStorage.save({
+      id: op.name,
+      recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
     Agent.agent.signifyNotifications.addPendingOperationToQueue(
       pendingOperation
