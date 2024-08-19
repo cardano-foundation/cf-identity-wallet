@@ -22,11 +22,16 @@ const IdentifierContent = ({
   const [isMultiSig, setIsMultiSig] = useState(false);
 
   useEffect(() => {
+    if (cardData.multisigManageAid) {
+      setIsMultiSig(true);
+      return;
+    }
+
     const identifier = identifiersData.find((data) => data.id === cardData.id);
     if (identifier && identifier.multisigManageAid) {
       setIsMultiSig(true);
     }
-  }, [identifiersData, cardData.id]);
+  }, [identifiersData, cardData.id, cardData.multisigManageAid]);
 
   return (
     <>
