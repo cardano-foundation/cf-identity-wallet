@@ -333,50 +333,54 @@ const ArchivedCredentialsContainer = forwardRef<
             title={`${i18n.t("credentials.archived.archivedtitle")}`}
           />
         )}
-        <IonList
-          lines="none"
-          className={`archived-credentials-list ${
-            haveRevokedCreds ? "all-border" : ""
-          }`}
-        >
-          {archivedCreds.map((credential: CredentialShortDetails) => {
-            return (
-              <CredentialItem
-                key={credential.id}
-                credential={credential}
-                activeList={activeList}
-                onClick={handleClickCard}
-                onCheckboxChange={handleCardCheckboxChange}
-                onDelete={handleCardDeleteClick}
-                onRestore={handleCardRestoreClick}
-                isSelected={selectedCredentials.includes(credential.id)}
-              />
-            );
-          })}
-        </IonList>
+        {haveArchivedCreds && (
+          <IonList
+            lines="none"
+            className={`archived-credentials-list ${
+              haveRevokedCreds ? "all-border" : ""
+            }`}
+          >
+            {archivedCreds.map((credential: CredentialShortDetails) => {
+              return (
+                <CredentialItem
+                  key={credential.id}
+                  credential={credential}
+                  activeList={activeList}
+                  onClick={handleClickCard}
+                  onCheckboxChange={handleCardCheckboxChange}
+                  onDelete={handleCardDeleteClick}
+                  onRestore={handleCardRestoreClick}
+                  isSelected={selectedCredentials.includes(credential.id)}
+                />
+              );
+            })}
+          </IonList>
+        )}
         {haveRevokedCreds && haveArchivedCreds && (
           <ListHeader
             title={`${i18n.t("credentials.archived.revokedtitle")}`}
           />
         )}
-        <IonList
-          lines="none"
-          className="archived-credentials-list"
-        >
-          {revokedCreds.map((credential: CredentialShortDetails) => {
-            return (
-              <CredentialItem
-                key={credential.id}
-                credential={credential}
-                activeList={activeList}
-                onClick={handleClickCard}
-                onCheckboxChange={handleCardCheckboxChange}
-                onDelete={handleCardDeleteClick}
-                isSelected={selectedCredentials.includes(credential.id)}
-              />
-            );
-          })}
-        </IonList>
+        {haveRevokedCreds && (
+          <IonList
+            lines="none"
+            className="archived-credentials-list"
+          >
+            {revokedCreds.map((credential: CredentialShortDetails) => {
+              return (
+                <CredentialItem
+                  key={credential.id}
+                  credential={credential}
+                  activeList={activeList}
+                  onClick={handleClickCard}
+                  onCheckboxChange={handleCardCheckboxChange}
+                  onDelete={handleCardDeleteClick}
+                  isSelected={selectedCredentials.includes(credential.id)}
+                />
+              );
+            })}
+          </IonList>
+        )}
         {activeList && (
           <IonFooter
             collapse="fade"

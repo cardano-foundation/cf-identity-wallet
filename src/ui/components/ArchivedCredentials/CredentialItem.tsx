@@ -11,7 +11,9 @@ import "./ArchivedCredentials.scss";
 import { formatShortDate } from "../../utils/formatters";
 import { CredentialItemProps } from "./ArchivedCredentials.types";
 import Minicred from "../../assets/images/minicred.jpg";
+import RareEvoBackground from "../../assets/images/rare-evo-bg.jpg";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
+import { IpexCommunicationService } from "../../../core/agent/services/ipexCommunicationService";
 
 const CredentialItem = ({
   credential,
@@ -23,6 +25,10 @@ const CredentialItem = ({
   onRestore,
 }: CredentialItemProps) => {
   const isRevoked = credential.status === CredentialStatus.REVOKED;
+  const isRareEvo =
+    credential.schema === IpexCommunicationService.SCHEMA_SAID_RARE_EVO_DEMO;
+
+  const image = isRareEvo ? RareEvoBackground : Minicred;
 
   return (
     <IonItemSliding>
@@ -42,7 +48,7 @@ const CredentialItem = ({
             />
           )}
           <img
-            src={Minicred}
+            src={image}
             alt="credential-miniature"
             className="credential-miniature"
           />
