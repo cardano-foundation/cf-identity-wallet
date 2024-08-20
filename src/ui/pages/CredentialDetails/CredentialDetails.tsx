@@ -11,7 +11,10 @@ import { useHistory, useParams } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
-import { ACDCDetails } from "../../../core/agent/services/credentialService.types";
+import {
+  ACDCDetails,
+  CredentialStatus,
+} from "../../../core/agent/services/credentialService.types";
 import { i18n } from "../../../i18n";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -59,7 +62,6 @@ import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCach
 import { Verification } from "../../components/Verification";
 import { CloudError } from "../../components/CloudError";
 import { PageHeader } from "../../components/PageHeader";
-import { CredentialService } from "../../../core/agent/services";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -87,6 +89,9 @@ const CredentialDetails = () => {
   const isLightMode = !!notificationDetailCache;
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
+  const isRevoked = cardData?.status === CredentialStatus.REVOKED;
+  const isInactiveCred = isArchived || isRevoked;
+
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === params.id);
   const [cloudError, setCloudError] = useState(false);
 
@@ -171,6 +176,25 @@ const CredentialDetails = () => {
     }, CLEAR_ANIMATION);
   };
 
+  const handleDeleteRevokedCred = async () => {
+    try {
+      await Agent.agent.credentials.archiveCredential(params.id);
+      await Agent.agent.credentials.deleteCredential(params.id);
+      await getArchivedCreds();
+      const creds = credsCache.filter((item) => item.id !== params.id);
+      if (isFavourite) {
+        handleSetFavourite(params.id);
+      }
+      dispatch(setCredsCache(creds));
+      dispatch(setNotificationDetailCache(null));
+      dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Unable to archive credential", e);
+      dispatch(setToastMsg(ToastMsgType.ARCHIVED_CRED_FAIL));
+    }
+  };
+
   const handleArchiveCredential = async () => {
     try {
       await Agent.agent.credentials.archiveCredential(params.id);
@@ -220,6 +244,8 @@ const CredentialDetails = () => {
   const onVerify = async () => {
     if (isArchived) {
       await handleDeleteCredential();
+    } else if (isRevoked) {
+      await handleDeleteRevokedCred();
     } else {
       await handleArchiveCredential();
     }
@@ -334,7 +360,7 @@ const CredentialDetails = () => {
   const pageClasses = combineClassNames(
     "cred-card-detail card-details cred-open-animation",
     {
-      "archived-credential": isArchived,
+      "archived-credential": isInactiveCred,
       "cred-back-animation": navAnimation,
       "cred-open-animation": !navAnimation,
     }
@@ -352,6 +378,18 @@ const CredentialDetails = () => {
 
   const handleAuthentication = () => {
     setVerifyIsOpen(true);
+  };
+
+  const actionButtonLabel = i18n.t(
+    isRevoked ? "credentials.details.delete" : "credentials.details.restore"
+  );
+
+  const action = () => {
+    if (isRevoked) {
+      return handleDelete();
+    }
+
+    setAlertRestoreIsOpen(true);
   };
 
   const hardwareBackButtonConfig = useMemo(
@@ -390,10 +428,10 @@ const CredentialDetails = () => {
           header={true}
           doneLabel={`${i18n.t("credentials.details.done")}`}
           doneAction={handleDone}
-          additionalButtons={!isArchived && <AdditionalButtons />}
-          actionButton={isArchived}
-          actionButtonAction={() => setAlertRestoreIsOpen(true)}
-          actionButtonLabel={`${i18n.t("credentials.details.restore")}`}
+          additionalButtons={!isInactiveCred && <AdditionalButtons />}
+          actionButton={isInactiveCred}
+          actionButtonAction={action}
+          actionButtonLabel={`${actionButtonLabel}`}
           hardwareBackButtonConfig={hardwareBackButtonConfig}
         >
           {!cardData ? (
@@ -405,6 +443,11 @@ const CredentialDetails = () => {
             </div>
           ) : (
             <>
+              {isRevoked && (
+                <div className="revoked-alert">
+                  {i18n.t("credentials.details.revoked")}
+                </div>
+              )}
               <CredentialCardTemplate
                 cardData={cardData}
                 isActive={false}
@@ -414,13 +457,13 @@ const CredentialDetails = () => {
                 <PageFooter
                   pageId={pageId}
                   archiveButtonText={
-                    !isArchived
+                    !isInactiveCred
                       ? `${i18n.t("credentials.details.button.archive")}`
                       : ""
                   }
                   archiveButtonAction={() => handleArchive()}
                   deleteButtonText={
-                    isArchived
+                    isInactiveCred
                       ? `${i18n.t("credentials.details.button.delete")}`
                       : ""
                   }
@@ -441,17 +484,17 @@ const CredentialDetails = () => {
         setIsOpen={setAlertDeleteArchiveIsOpen}
         dataTestId="alert-delete-archive"
         headerText={i18n.t(
-          isArchived
+          isInactiveCred
             ? "credentials.details.alert.delete.title"
             : "credentials.details.alert.archive.title"
         )}
         confirmButtonText={`${i18n.t(
-          isArchived
+          isInactiveCred
             ? "credentials.details.alert.delete.confirm"
             : "credentials.details.alert.archive.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          isArchived
+          isInactiveCred
             ? "credentials.details.alert.delete.cancel"
             : "credentials.details.alert.archive.cancel"
         )}`}

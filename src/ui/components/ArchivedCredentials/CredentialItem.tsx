@@ -11,6 +11,7 @@ import "./ArchivedCredentials.scss";
 import { formatShortDate } from "../../utils/formatters";
 import { CredentialItemProps } from "./ArchivedCredentials.types";
 import Minicred from "../../assets/images/minicred.jpg";
+import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 
 const CredentialItem = ({
   credential,
@@ -21,6 +22,8 @@ const CredentialItem = ({
   onDelete,
   onRestore,
 }: CredentialItemProps) => {
+  const isRevoked = credential.status === CredentialStatus.REVOKED;
+
   return (
     <IonItemSliding>
       <IonItem
@@ -53,21 +56,31 @@ const CredentialItem = ({
                 .replace(/(\d)/g, " $1")}
             </div>
             <div className="credential-expiration">
-              {formatShortDate(credential.issuanceDate)}
+              {!isRevoked ? (
+                formatShortDate(credential.issuanceDate)
+              ) : (
+                <>
+                  {/* <span>KERI ACDC</span>
+                <span className="dot">•</span> */}
+                  <span className="revoked-label">{credential.status}</span>
+                </>
+              )}
             </div>
           </div>
         </IonLabel>
       </IonItem>
 
       <IonItemOptions>
-        <IonItemOption
-          color="dark-grey"
-          onClick={() => {
-            onRestore(credential.id);
-          }}
-        >
-          {i18n.t("credentials.archived.restore")}
-        </IonItemOption>
+        {onRestore && (
+          <IonItemOption
+            color="dark-grey"
+            onClick={() => {
+              onRestore(credential.id);
+            }}
+          >
+            {i18n.t("credentials.archived.restore")}
+          </IonItemOption>
+        )}
         <IonItemOption
           color="danger"
           onClick={() => {

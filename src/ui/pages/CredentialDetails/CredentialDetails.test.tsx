@@ -23,7 +23,7 @@ import {
   setCurrentRoute,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { credsFixAcdc } from "../../__fixtures__/credsFix";
+import { credsFixAcdc, revokedCredFixs } from "../../__fixtures__/credsFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
 import { CredentialDetails } from "./CredentialDetails";
@@ -664,6 +664,7 @@ describe("Cred detail - notification light mode", () => {
   });
 });
 
+
 describe("Checking the Credential Details Page when information is missing from the cloud", () => {
   let storeMocked: Store<unknown, AnyAction>;
   beforeAll(() => {
@@ -709,6 +710,79 @@ describe("Checking the Credential Details Page when information is missing from 
         getByText(EN_TRANSLATIONS.credentials.details.clouderror, {
           normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
         })
+      ).toBeVisible();
+    });
+  });
+});
+
+
+describe("Cred detail - revoked", () => {
+  let storeMocked: Store<unknown, AnyAction>;
+  const credDispatchMock = jest.fn();
+
+  const state = {
+    stateCache: {
+      routes: [TabsRoutePath.CREDENTIALS],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+        passwordIsSet: false,
+        passwordIsSkipped: true,
+      },
+      isOnline: true,
+    },
+    seedPhraseCache: {
+      seedPhrase:
+        "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+      bran: "bran",
+    },
+    credsCache: { creds: credsFixAcdc },
+    credsArchivedCache: { creds: [] },
+    biometricsCache: {
+      enabled: false,
+    },
+    notificationsCache: {
+      notificationDetailCache: {
+        notificationId: "test-id",
+        viewCred: "test-cred",
+        step: 0,
+      },
+    },
+  };
+
+  beforeAll(() => {
+    jest
+      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(revokedCredFixs[0]);
+  });
+
+  beforeEach(() => {
+    const mockStore = configureStore();
+    storeMocked = {
+      ...mockStore(state),
+      dispatch: credDispatchMock,
+    };
+  });
+
+  test("It show notification cred mode", async () => {
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredentialDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.credentials.details.revoked)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.credentials.details.delete)
       ).toBeVisible();
     });
   });

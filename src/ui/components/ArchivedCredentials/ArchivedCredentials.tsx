@@ -1,12 +1,4 @@
 import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
-import { useHistory } from "react-router-dom";
-import {
   IonButton,
   IonButtons,
   IonFooter,
@@ -15,56 +7,74 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import i18next from "i18next";
-import { i18n } from "../../../i18n";
-import "./ArchivedCredentials.scss";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { VerifyPassword } from "../VerifyPassword";
-import { VerifyPasscode } from "../VerifyPasscode";
 import {
-  Alert as AlertDelete,
-  Alert as AlertRestore,
-} from "../../components/Alert";
-import {
-  getStateCache,
-  setCurrentOperation,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
-import {
-  ArchivedCredentialsContainerRef,
-  ArchivedCredentialsProps,
-} from "./ArchivedCredentials.types";
-import { OperationType, ToastMsgType } from "../../globals/types";
+import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import { i18n } from "../../../i18n";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 import {
   getCredsCache,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
-import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import {
+  setCurrentOperation,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
+import {
+  Alert as AlertDelete,
+  Alert as AlertRestore,
+} from "../../components/Alert";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
-import { PageHeader } from "../PageHeader";
-import { CredentialItem } from "./CredentialItem";
+import { ListHeader } from "../ListHeader";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
+import { PageHeader } from "../PageHeader";
+import { Verification } from "../Verification";
+import "./ArchivedCredentials.scss";
+import {
+  ArchivedCredentialsContainerRef,
+  ArchivedCredentialsProps,
+} from "./ArchivedCredentials.types";
+import { CredentialItem } from "./CredentialItem";
+import {
+  getNotificationsCache,
+  setNotificationsCache,
+} from "../../../store/reducers/notificationsCache";
+import { NotificationRoute } from "../../../core/agent/agent.types";
 
 const ArchivedCredentialsContainer = forwardRef<
   ArchivedCredentialsContainerRef,
   ArchivedCredentialsProps
->(({ archivedCreds, setArchivedCredentialsIsOpen }, ref) => {
+>(({ archivedCreds, revokedCreds, setArchivedCredentialsIsOpen }, ref) => {
   const componentId = "archived-credentials";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
-  const stateCache = useAppSelector(getStateCache);
+  const notifications = useAppSelector(getNotificationsCache);
+
   const [activeList, setActiveList] = useState(false);
   const [selectedCredentials, setSelectedCredentials] = useState<string[]>([]);
-  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [alertDeleteIsOpen, setAlertDeleteIsOpen] = useState(false);
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
+  const [alertRestoreRevoked, setAlertRestoreRevoked] = useState(false);
+
+  const haveRevokedCreds = revokedCreds.length > 0;
+  const haveArchivedCreds = archivedCreds.length > 0;
+
+  const hasData = haveArchivedCreds || haveRevokedCreds;
 
   useEffect(() => {
-    if (archivedCreds.length === 0) setArchivedCredentialsIsOpen(false);
-  }, [archivedCreds.length, setArchivedCredentialsIsOpen]);
+    if (!hasData) setArchivedCredentialsIsOpen(false);
+  }, [hasData, setArchivedCredentialsIsOpen]);
 
   const resetList = () => {
     setActiveList(false);
@@ -99,33 +109,77 @@ const ArchivedCredentialsContainer = forwardRef<
     setSelectedCredentials(data);
   };
 
+  const deleteRevokedNotification = async (deletedRevokedIds: string[]) => {
+    const deleteRes = await Promise.allSettled(
+      deletedRevokedIds.map((id) => {
+        const notification = notifications.find(
+          (noti) => noti.a.credentialId === id
+        );
+
+        if (!notification) return Promise.reject();
+
+        return Agent.agent.signifyNotifications.deleteNotificationRecordById(
+          notification.id,
+          notification.a.r as NotificationRoute
+        );
+      })
+    );
+
+    let newNotification = [...notifications];
+
+    deleteRes.forEach((item, index) => {
+      if (item.status === "rejected") return;
+      newNotification = newNotification.filter(
+        (noti) => noti.a.credentialId === deletedRevokedIds[index]
+      );
+    });
+
+    dispatch(setNotificationsCache(newNotification));
+  };
+
   const handleDeleteCredentialBatches = async (selectedIds: string[]) => {
-    setVerifyPasswordIsOpen(false);
-    setVerifyPasscodeIsOpen(false);
+    setVerifyIsOpen(false);
 
     if (selectedIds.length === 0) return;
 
+    const selectedRevokedIds = selectedIds.filter((id) =>
+      revokedCreds.some((item) => item.id === id)
+    );
+
     try {
+      await Promise.all(
+        selectedRevokedIds.map((id) =>
+          Agent.agent.credentials.archiveCredential(id)
+        )
+      );
       const deleteRes = await Promise.allSettled(
         selectedIds.map((id) => Agent.agent.credentials.deleteCredential(id))
       );
 
-      const deleteSuccessCrendentials: CredentialShortDetails[] = [];
+      const deleteSuccessCrendentials: string[] = [];
+      const deletedRevokedIds: string[] = [];
 
       deleteRes.forEach((res, index) => {
         if (res.status === "rejected") return;
 
-        const restoredCred = archivedCreds.find(
-          (cred) => cred.id === selectedIds[index]
-        );
+        deleteSuccessCrendentials.push(selectedIds[index]);
 
-        if (restoredCred) {
-          deleteSuccessCrendentials.push(restoredCred);
+        if (selectedRevokedIds.includes(selectedIds[index])) {
+          deletedRevokedIds.push(selectedIds[index]);
         }
       });
 
       if (deleteSuccessCrendentials.length === 0) return;
 
+      if (deletedRevokedIds.length > 0) {
+        await deleteRevokedNotification(deletedRevokedIds);
+      }
+
+      const newCredData = credsCache.filter(
+        (item) => !deleteSuccessCrendentials.includes(item.id)
+      );
+
+      dispatch(setCredsCache(newCredData));
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
@@ -136,8 +190,7 @@ const ArchivedCredentialsContainer = forwardRef<
   };
 
   const handleRestoreCredentials = async (selectedIds: string[]) => {
-    setVerifyPasswordIsOpen(false);
-    setVerifyPasscodeIsOpen(false);
+    setVerifyIsOpen(false);
 
     if (selectedIds.length === 0) return;
 
@@ -241,6 +294,19 @@ const ArchivedCredentialsContainer = forwardRef<
     setArchivedCredentialsIsOpen(false);
   };
 
+  const handleBatchRestore = () => {
+    const isRestoreRevokedCred = selectedCredentials.some((id) =>
+      revokedCreds.some((item) => item.id === id)
+    );
+
+    if (isRestoreRevokedCred) {
+      setAlertRestoreRevoked(true);
+      return;
+    }
+
+    setAlertRestoreIsOpen(true);
+  };
+
   return (
     <>
       <ScrollablePageLayout
@@ -262,9 +328,16 @@ const ArchivedCredentialsContainer = forwardRef<
           />
         }
       >
+        {haveRevokedCreds && haveArchivedCreds && (
+          <ListHeader
+            title={`${i18n.t("credentials.archived.archivedtitle")}`}
+          />
+        )}
         <IonList
           lines="none"
-          className="archived-credentials-list"
+          className={`archived-credentials-list ${
+            haveRevokedCreds ? "all-border" : ""
+          }`}
         >
           {archivedCreds.map((credential: CredentialShortDetails) => {
             return (
@@ -276,6 +349,29 @@ const ArchivedCredentialsContainer = forwardRef<
                 onCheckboxChange={handleCardCheckboxChange}
                 onDelete={handleCardDeleteClick}
                 onRestore={handleCardRestoreClick}
+                isSelected={selectedCredentials.includes(credential.id)}
+              />
+            );
+          })}
+        </IonList>
+        {haveRevokedCreds && haveArchivedCreds && (
+          <ListHeader
+            title={`${i18n.t("credentials.archived.revokedtitle")}`}
+          />
+        )}
+        <IonList
+          lines="none"
+          className="archived-credentials-list"
+        >
+          {revokedCreds.map((credential: CredentialShortDetails) => {
+            return (
+              <CredentialItem
+                key={credential.id}
+                credential={credential}
+                activeList={activeList}
+                onClick={handleClickCard}
+                onCheckboxChange={handleCardCheckboxChange}
+                onDelete={handleCardDeleteClick}
                 isSelected={selectedCredentials.includes(credential.id)}
               />
             );
@@ -312,7 +408,7 @@ const ArchivedCredentialsContainer = forwardRef<
               <IonButtons slot="end">
                 <IonButton
                   className="restore-credentials-label"
-                  onClick={() => setAlertRestoreIsOpen(true)}
+                  onClick={handleBatchRestore}
                   data-testid="restore-credentials"
                 >
                   {i18n.t("credentials.archived.restore")}
@@ -334,14 +430,7 @@ const ArchivedCredentialsContainer = forwardRef<
           "credentials.details.alert.delete.cancel"
         )}`}
         actionConfirm={() => {
-          if (
-            !stateCache?.authentication.passwordIsSkipped &&
-            stateCache?.authentication.passwordIsSet
-          ) {
-            setVerifyPasswordIsOpen(true);
-          } else {
-            setVerifyPasscodeIsOpen(true);
-          }
+          setVerifyIsOpen(true);
         }}
         actionCancel={handleCancelAction}
         actionDismiss={handleCancelAction}
@@ -371,14 +460,21 @@ const ArchivedCredentialsContainer = forwardRef<
         actionCancel={handleCancelAction}
         actionDismiss={handleCancelAction}
       />
-      <VerifyPassword
-        isOpen={verifyPasswordIsOpen}
-        setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={handleAfterVerify}
+      <AlertRestore
+        isOpen={alertRestoreRevoked}
+        setIsOpen={setAlertRestoreRevoked}
+        dataTestId="alert-restore-revoked"
+        headerText={i18n.t("credentials.archived.alert.restorerevoked.title")}
+        confirmButtonText={`${i18n.t(
+          "credentials.archived.alert.restorerevoked.confirm"
+        )}`}
+        actionConfirm={() => {
+          setAlertRestoreRevoked(false);
+        }}
       />
-      <VerifyPasscode
-        isOpen={verifyPasscodeIsOpen}
-        setIsOpen={setVerifyPasscodeIsOpen}
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
         onVerify={handleAfterVerify}
       />
     </>
@@ -388,6 +484,7 @@ const ArchivedCredentialsContainer = forwardRef<
 const ArchivedCredentials = ({
   archivedCreds,
   archivedCredentialsIsOpen,
+  revokedCreds,
   setArchivedCredentialsIsOpen,
 }: ArchivedCredentialsProps) => {
   const componentId = "archived-credentials";
@@ -405,6 +502,7 @@ const ArchivedCredentials = ({
       }}
     >
       <ArchivedCredentialsContainer
+        revokedCreds={revokedCreds}
         ref={containerRef}
         archivedCreds={archivedCreds}
         archivedCredentialsIsOpen={archivedCredentialsIsOpen}

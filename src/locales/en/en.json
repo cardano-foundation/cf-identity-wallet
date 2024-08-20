@@ -864,7 +864,7 @@
     "tab": {
       "title": "Credentials",
       "create": "Add a credential",
-      "viewarchived": "View archived credentials",
+      "viewarchived": "Archived & revoked credentials",
       "favourites": "Favourites",
       "allcreds": "All credentials",
       "pendingcred": "Pending credentials",
@@ -881,9 +881,11 @@
     "details": {
       "done": "Done",
       "restore": "Restore",
+      "delete": "Delete",
       "type": "Type",
       "title": "Title",
       "description": "Description",
+      "revoked": "Revoked",
       "attributes": {
         "label": "Attributes",
         "issuee": "Issuee",
@@ -936,7 +938,7 @@
       }
     },
     "archived": {
-      "title": "Archived",
+      "title": "Archived & Revoked",
       "done": "Done",
       "select": "Select",
       "selectall": "Select All",
@@ -946,6 +948,9 @@
       "restore": "Restore",
       "oneselected": "1 Credential Selected",
       "manyselected": "{{amount}} Credentials Selected",
+      "archivedtitle": "Archived credentials",
+      "revokedtitle": "Revoked credentials",
+      "revokedlabel": "Revoked",
       "alert": {
         "restoresingle": {
           "title": "Are you sure you want to view this with your other credentials?",
@@ -966,6 +971,10 @@
           "title": "This will delete the selected credentials from your wallet permanently",
           "confirm": "Delete from wallet",
           "cancel": "Cancel"
+        },
+        "restorerevoked": {
+          "title": "You cannot restore revoked credentials.",
+          "confirm": "Ok"
         }
       }
     }
