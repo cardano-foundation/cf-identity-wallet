@@ -86,9 +86,8 @@ class IdentifierService extends AgentService {
       .identifiers()
       .get(metadata.signifyName)
       .catch((error) => {
-        const errorStack = (error as Error).stack as string;
-        const status = errorStack.split(" - ")[1];
-        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
           throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${metadata.id}`);
         } else {
           throw error;
