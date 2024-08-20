@@ -84,9 +84,15 @@ const ConnectionDetails = () => {
         setNotes(connectionDetails.notes);
       }
     } catch (error) {
-      setCloudError(true);
-      // eslint-disable-next-line no-console
-      console.error(error);
+      if (
+        error instanceof Error &&
+        error.message.includes(Agent.MISSING_DATA_ON_KERIA)
+      ) {
+        setCloudError(true);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("Unable to get connection details", error);
+      }
     } finally {
       setLoading((value) => ({ ...value, details: false }));
     }
