@@ -816,3 +816,40 @@ describe("Checking the Connection Details Page when notes are available", () => 
     });
   });
 });
+
+describe("Checking the Connection Details Page when connection is missing from the cloud", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(Agent.agent.connections, "getConnectionById")
+      .mockImplementation(() => {
+        throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`);
+      });
+  });
+
+  jest
+    .spyOn(Agent.agent.connections, "getConnectionById")
+    .mockImplementation(
+      (): Promise<MockConnectionDetails> =>
+        Promise.reject(new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`))
+    );
+  test("Connection exists in the database but not on Signify", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, queryByTestId, getByText } = render(
+      <MemoryRouter initialEntries={[RoutePath.CONNECTION_DETAILS]}>
+        <Provider store={storeMocked}>
+          <Route
+            path={RoutePath.CONNECTION_DETAILS}
+            component={ConnectionDetails}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      expect(getByTestId("connection-details-cloud-error")).toBeVisible();
+    });
+  });
+});
