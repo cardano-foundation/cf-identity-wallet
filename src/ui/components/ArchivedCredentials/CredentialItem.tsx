@@ -59,11 +59,7 @@ const CredentialItem = ({
               {!isRevoked ? (
                 formatShortDate(credential.issuanceDate)
               ) : (
-                <>
-                  {/* <span>KERI ACDC</span>
-                <span className="dot">•</span> */}
-                  <span className="revoked-label">{credential.status}</span>
-                </>
+                <span className="revoked-label">{credential.status}</span>
               )}
             </div>
           </div>
