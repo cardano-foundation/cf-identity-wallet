@@ -25,7 +25,6 @@ const notification = {
 describe("Notifications cache", () => {
   const initialState = {
     notifications: [],
-    notificationDetailCache: null,
   };
   it("should return the initial state", () => {
     expect(
