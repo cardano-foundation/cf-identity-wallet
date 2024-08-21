@@ -266,11 +266,12 @@ class Agent {
     try {
       const mnemonic = seedPhrase.join(" ");
       const entropy = mnemonicToEntropy(mnemonic);
-      let branBuffer = Buffer.from(entropy, "hex");
-      branBuffer = branBuffer.slice(0, -Agent.BUFFER_ALLOC_SIZE);
-      const hexString = branBuffer.toString("hex");
+      const branBuffer = Buffer.from(entropy, "hex").slice(
+        0,
+        -Agent.BUFFER_ALLOC_SIZE
+      );
 
-      bran = Buffer.from(hexString, "hex").toString("utf-8");
+      bran = branBuffer.toString("utf-8");
 
       this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
 
