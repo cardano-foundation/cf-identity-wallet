@@ -41,6 +41,7 @@ import {
   BackReason,
   CredentialDetailModuleProps,
 } from "./CredentialDetailModule.types";
+import { CloudError } from "../CloudError";
 
 const CredentialDetailModule = ({
   pageId,
@@ -69,6 +70,7 @@ const CredentialDetailModule = ({
   const isInactiveCred = isArchived || isRevoked;
 
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === id);
+  const [cloudError, setCloudError] = useState(false);
 
   const fetchArchivedCreds = useCallback(async () => {
     try {
@@ -81,12 +83,15 @@ const CredentialDetailModule = ({
   }, [dispatch]);
 
   const getCredDetails = useCallback(async () => {
-    if (!id) return;
-
-    const cardDetails = await Agent.agent.credentials.getCredentialDetailsById(
-      id
-    );
-    setCardData(cardDetails);
+    try {
+      const cardDetails =
+        await Agent.agent.credentials.getCredentialDetailsById(id);
+      setCardData(cardDetails);
+    } catch (error) {
+      setCloudError(true);
+      // eslint-disable-next-line no-console
+      console.error(error);
+    }
   }, [id]);
 
   useOnlineStatusEffect(getCredDetails);
@@ -303,6 +308,28 @@ const CredentialDetailModule = ({
 
     setAlertRestoreIsOpen(true);
   };
+
+
+  if(cloudError) {
+    return (
+      <CloudError
+        pageId={pageId}
+        header={
+          <PageHeader
+            closeButton={true}
+            closeButtonLabel={`${i18n.t("identifiers.details.done")}`}
+            closeButtonAction={() => onClose?.(BackReason.DELETE)}
+          />
+        }
+      >
+        <PageFooter
+          pageId={pageId}
+          deleteButtonText={`${i18n.t("credentials.details.button.delete")}`}
+          deleteButtonAction={() => handleDelete()}
+        />
+      </CloudError>
+    )
+  }
 
   return (
     <>

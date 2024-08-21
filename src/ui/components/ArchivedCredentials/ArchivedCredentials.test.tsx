@@ -32,14 +32,14 @@ jest.mock("../../../core/agent/agent", () => ({
 jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
   SecureStorage: {
-    get: (key: string) => "111111",
+    get: () => "111111",
   },
 }));
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  IonModal: ({ children, isOpen }: { children: any; isOpen: boolean }) =>
-    isOpen ? children : null,
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
 }));
 
 const initialStateEmpty = {
@@ -101,6 +101,31 @@ describe("Archived and revoked credentials", () => {
     expect(getByTestId("action-button").children.item(0)?.innerHTML).toBe(
       "Select"
     );
+  });
+
+  test("Show cred detail", async () => {
+    const { getByTestId, queryByTestId } = render(
+      <Provider store={mockedStore}>
+        <ArchivedCredentialsContainer
+          revokedCreds={[]}
+          archivedCredentialsIsOpen={true}
+          archivedCreds={credsFixAcdc}
+          setArchivedCredentialsIsOpen={jest.fn()}
+        />
+      </Provider>
+    );
+
+    expect(queryByTestId("archived-credential-detail-modal")).toBe(null);
+
+    const cardItem = getByTestId(`crendential-card-item-${credsFixAcdc[0].id}`);
+
+    act(() => {
+      fireEvent.click(cardItem);
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("archived-credential-detail-modal")).toBeVisible();
+    });
   });
 
   describe("Archived credentials", () => {

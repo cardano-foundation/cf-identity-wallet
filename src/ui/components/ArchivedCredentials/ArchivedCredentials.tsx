@@ -6,7 +6,7 @@ import {
   IonModal,
   IonToolbar,
 } from "@ionic/react";
-import i18next from "i18next";
+import { t } from "i18next";
 import {
   forwardRef,
   useEffect,
@@ -14,8 +14,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
+import { NotificationRoute } from "../../../core/agent/agent.types";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -25,6 +25,10 @@ import {
   setCredsCache,
 } from "../../../store/reducers/credsCache";
 import {
+  getNotificationsCache,
+  setNotificationsCache,
+} from "../../../store/reducers/notificationsCache";
+import {
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
@@ -33,9 +37,9 @@ import {
   Alert as AlertRestore,
 } from "../../components/Alert";
 import { OperationType, ToastMsgType } from "../../globals/types";
+import { CredentialDetailModal } from "../CredentialDetailModule";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { ListHeader } from "../ListHeader";
-import { TabsRoutePath } from "../navigation/TabsMenu";
 import { PageHeader } from "../PageHeader";
 import { Verification } from "../Verification";
 import "./ArchivedCredentials.scss";
@@ -44,18 +48,12 @@ import {
   ArchivedCredentialsProps,
 } from "./ArchivedCredentials.types";
 import { CredentialItem } from "./CredentialItem";
-import {
-  getNotificationsCache,
-  setNotificationsCache,
-} from "../../../store/reducers/notificationsCache";
-import { NotificationRoute } from "../../../core/agent/agent.types";
 
 const ArchivedCredentialsContainer = forwardRef<
   ArchivedCredentialsContainerRef,
   ArchivedCredentialsProps
 >(({ archivedCreds, revokedCreds, setArchivedCredentialsIsOpen }, ref) => {
   const componentId = "archived-credentials";
-  const history = useHistory();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const notifications = useAppSelector(getNotificationsCache);
@@ -66,6 +64,9 @@ const ArchivedCredentialsContainer = forwardRef<
   const [alertDeleteIsOpen, setAlertDeleteIsOpen] = useState(false);
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
   const [alertRestoreRevoked, setAlertRestoreRevoked] = useState(false);
+
+  const [viewCred, setViewCred] = useState("");
+  const [isOpenCredModal, setIsOpenCredModal] = useState(false);
 
   const haveRevokedCreds = revokedCreds.length > 0;
   const haveArchivedCreds = archivedCreds.length > 0;
@@ -94,9 +95,13 @@ const ArchivedCredentialsContainer = forwardRef<
   };
 
   const handleShowCardDetails = (id: string) => {
-    const pathname = `${TabsRoutePath.CREDENTIALS}/${id}`;
-    history.push({ pathname: pathname });
-    setArchivedCredentialsIsOpen(false);
+    setViewCred(id);
+    setIsOpenCredModal(true);
+  };
+
+  const handleHideCardDetails = () => {
+    setViewCred("");
+    setIsOpenCredModal(false);
   };
 
   const handleSelectCredentials = (id: string) => {
@@ -405,7 +410,7 @@ const ArchivedCredentialsContainer = forwardRef<
               >
                 {selectedCredentials.length === 1
                   ? i18n.t("credentials.archived.oneselected")
-                  : i18next.t("credentials.archived.manyselected", {
+                  : t("credentials.archived.manyselected", {
                     amount: selectedCredentials.length,
                   })}
               </div>
@@ -481,6 +486,13 @@ const ArchivedCredentialsContainer = forwardRef<
         setVerifyIsOpen={setVerifyIsOpen}
         onVerify={handleAfterVerify}
       />
+      <CredentialDetailModal
+        pageId="archived-credential-detail"
+        isOpen={isOpenCredModal}
+        setIsOpen={setIsOpenCredModal}
+        onClose={handleHideCardDetails}
+        id={viewCred}
+      />
     </>
   );
 });
@@ -496,23 +508,25 @@ const ArchivedCredentials = ({
   const containerRef = useRef<ArchivedCredentialsContainerRef>(null);
 
   return (
-    <IonModal
-      isOpen={archivedCredentialsIsOpen}
-      className={`${componentId}-modal`}
-      data-testid={componentId}
-      onDidDismiss={() => {
-        setArchivedCredentialsIsOpen(false);
-        containerRef.current?.clearAchirvedState();
-      }}
-    >
-      <ArchivedCredentialsContainer
-        revokedCreds={revokedCreds}
-        ref={containerRef}
-        archivedCreds={archivedCreds}
-        archivedCredentialsIsOpen={archivedCredentialsIsOpen}
-        setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
-      />
-    </IonModal>
+    <>
+      <IonModal
+        isOpen={archivedCredentialsIsOpen}
+        className={`${componentId}-modal`}
+        data-testid={componentId}
+        onDidDismiss={() => {
+          setArchivedCredentialsIsOpen(false);
+          containerRef.current?.clearAchirvedState();
+        }}
+      >
+        <ArchivedCredentialsContainer
+          revokedCreds={revokedCreds}
+          ref={containerRef}
+          archivedCreds={archivedCreds}
+          archivedCredentialsIsOpen={archivedCredentialsIsOpen}
+          setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
+        />
+      </IonModal>
+    </>
   );
 };
 
