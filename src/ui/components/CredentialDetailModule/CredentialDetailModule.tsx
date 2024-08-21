@@ -277,6 +277,7 @@ const CredentialDetailModule = ({
       "archived-credential": isInactiveCred,
       "cred-back-animation": navAnimation,
       "cred-open-animation": !navAnimation,
+      revoked: isRevoked,
     }
   );
 
