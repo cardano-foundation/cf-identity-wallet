@@ -30,10 +30,10 @@ const IdentifierContent = ({
 
   return (
     <>
-      {cardData.di !== "" && (
+      {cardData.di !== "" && cardData.di && (
         <CardDetailsBlock title={i18n.t("identifiers.details.delegator.title")}>
           <CardDetailsItem
-            info={cardData.di as string}
+            info={cardData.di}
             copyButton={true}
             textIcon="identifiers.details.delegator.icon"
             testId="delegator"
@@ -59,7 +59,7 @@ const IdentifierContent = ({
           })}
         </CardDetailsBlock>
       )}
-      {Number(cardData.kt) > 1 && (
+      {typeof cardData.kt === "string" && Number(cardData.kt) > 1 && (
         <CardDetailsBlock
           title={i18n.t("identifiers.details.signingkeysthreshold.title")}
         >
@@ -88,7 +88,7 @@ const IdentifierContent = ({
           })}
         </CardDetailsBlock>
       )}
-      {Number(cardData.nt) > 1 && (
+      {typeof cardData.nt === "string" && Number(cardData.nt) > 1 && (
         <CardDetailsBlock
           title={i18n.t("identifiers.details.nextkeysthreshold.title")}
         >

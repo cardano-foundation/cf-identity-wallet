@@ -103,6 +103,7 @@ describe("Delegation sig service of agent", () => {
     identifiersGetMock.mockResolvedValue({
       state: {
         id: metadata.id,
+        di: "di",
       },
     });
     queryKeyStateMock.mockResolvedValue({
@@ -115,6 +116,28 @@ describe("Delegation sig service of agent", () => {
       metadata.id,
       { isPending: false }
     );
+  });
+  test("should throw error if the identifier.state.di is undefined", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "john_doe",
+      theme: 0,
+    } as IdentifierMetadataRecord;
+    identifiersGetMock.mockResolvedValue({
+      state: {
+        id: metadata.id,
+      },
+    });
+    queryKeyStateMock.mockResolvedValue({
+      done: true,
+    });
+    await expect(
+      delegationService.checkDelegationSuccess(metadata)
+    ).rejects.toThrowError(DelegationService.INVALID_IDENTIFIER);
   });
   test("should call signify.checkDelegationSuccess with isPending is false and return true", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);

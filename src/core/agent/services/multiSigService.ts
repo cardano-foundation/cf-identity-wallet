@@ -32,7 +32,6 @@ import {
 import { AgentService } from "./agentService";
 import { MultiSigIcpRequestDetails } from "./identifier.types";
 import {
-  Aid,
   MultiSigRoute,
   MultiSigExnMessage,
   CreateMultisigExnPayload,
@@ -128,7 +127,7 @@ class MultiSigService extends AgentService {
       const delegator = await Agent.agent.connections.resolveOobi(
         delegateContact.oobi as string
       );
-      delegateAid = { state: delegator.response } as Aid;
+      delegateAid = { state: delegator.response } as HabState;
     }
 
     const signifyName = uuidv4();
@@ -174,10 +173,10 @@ class MultiSigService extends AgentService {
 
   private async createAidMultisig(
     aid: HabState,
-    otherAids: Pick<Aid, "state">[],
+    otherAids: Pick<HabState, "state">[],
     name: string,
     threshold: number,
-    delegate?: Aid
+    delegate?: HabState
   ): Promise<{
     op: any;
     icpResult: EventResult;
