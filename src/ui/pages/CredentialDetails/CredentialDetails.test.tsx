@@ -1,6 +1,13 @@
 import { waitForIonicReact } from "@ionic/react-test-utils";
+import { createMemoryHistory } from "history";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  getDefaultNormalizer,
+  render,
+  waitFor,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
@@ -25,6 +32,8 @@ const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
+    MISSING_DATA_ON_KERIA:
+      "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.",
     agent: {
       credentials: {
         getCredentialDetailsById: jest.fn(),
@@ -651,6 +660,56 @@ describe("Cred detail - notification light mode", () => {
           checked: false,
         })
       );
+    });
+  });
+});
+
+describe("Checking the Credential Details Page when information is missing from the cloud", () => {
+  let storeMocked: Store<unknown, AnyAction>;
+  beforeAll(() => {
+    jest
+      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
+      .mockImplementation(() => {
+        throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`);
+      });
+  });
+  beforeEach(() => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    storeMocked = {
+      ...mockStore(initialStateNoPasswordCurrent),
+      dispatch: dispatchMock,
+    };
+  });
+
+  test("Credential exists in the database but not on Signify", async () => {
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.CREDENTIAL_DETAILS, {
+      ...credsFixAcdc[0],
+    });
+
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredentialDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(
+        getByTestId("credential-card-details-cloud-error-page")
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.credentials.details.clouderror, {
+          normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
+        })
+      ).toBeVisible();
     });
   });
 });
