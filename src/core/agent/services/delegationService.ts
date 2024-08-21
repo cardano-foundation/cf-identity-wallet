@@ -10,7 +10,7 @@ import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 
 class DelegationService extends AgentService {
   protected readonly identifierStorage: IdentifierStorage;
-  static readonly IDENTIFIER_NOT_DELEGATED = "Invalid is not delegated";
+  static readonly IDENTIFIER_NOT_DELEGATED = "Identifier is not delegated";
 
   constructor(
     agentServiceProps: AgentServicesProps,
