@@ -10,7 +10,7 @@ import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 
 class DelegationService extends AgentService {
   protected readonly identifierStorage: IdentifierStorage;
-  static readonly INVALID_IDENTIFIER = "Invalid identifier";
+  static readonly IDENTIFIER_NOT_DELEGATED = "Invalid is not delegated";
 
   constructor(
     agentServiceProps: AgentServicesProps,
@@ -70,7 +70,7 @@ class DelegationService extends AgentService {
       .identifiers()
       .get(metadata.signifyName);
     if (!identifier.state.di) {
-      throw new Error(DelegationService.INVALID_IDENTIFIER);
+      throw new Error(DelegationService.IDENTIFIER_NOT_DELEGATED);
     }
     const operation = await this.props.signifyClient
       .keyStates()

@@ -117,6 +117,7 @@ describe("Delegation sig service of agent", () => {
       { isPending: false }
     );
   });
+
   test("should throw error if the identifier.state.di is undefined", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const metadata = {
@@ -137,8 +138,9 @@ describe("Delegation sig service of agent", () => {
     });
     await expect(
       delegationService.checkDelegationSuccess(metadata)
-    ).rejects.toThrowError(DelegationService.INVALID_IDENTIFIER);
+    ).rejects.toThrowError(DelegationService.IDENTIFIER_NOT_DELEGATED);
   });
+
   test("should call signify.checkDelegationSuccess with isPending is false and return true", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const metadata = {
