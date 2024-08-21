@@ -239,13 +239,25 @@ class Agent {
         Tier.low,
         agentUrls.bootUrl
       );
-      try {
-        await this.signifyClient.boot();
-      } catch (e) {
+      const bootResult = await this.signifyClient.boot().catch((e) => {
         /* eslint-disable no-console */
         console.error(e);
         throw new Error(Agent.KERIA_BOOT_FAILED);
+      });
+
+      if (!bootResult.ok && bootResult.status !== 400) {
+        /* eslint-disable no-console */
+        console.warn(
+          `Unexpected KERIA boot status returned: ${bootResult.status} ${bootResult.statusText}`
+        );
+        throw new Error(Agent.KERIA_BOOT_FAILED);
       }
+
+      await this.signifyClient.connect().catch((e) => {
+        /* eslint-disable no-console */
+        console.error(e);
+        throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
+      });
       try {
         await this.signifyClient.connect();
       } catch (e) {
