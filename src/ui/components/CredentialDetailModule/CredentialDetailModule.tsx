@@ -18,7 +18,6 @@ import {
   removeFavouritesCredsCache,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
-import { setNotificationDetailCache } from "../../../store/reducers/notificationsCache";
 import {
   setCurrentOperation,
   setToastMsg,
@@ -105,7 +104,6 @@ const CredentialDetailModule = ({
         handleSetFavourite(id);
       }
       dispatch(setCredsCache(creds));
-      dispatch(setNotificationDetailCache(null));
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -123,7 +121,6 @@ const CredentialDetailModule = ({
         handleSetFavourite(id);
       }
       dispatch(setCredsCache(creds));
-      dispatch(setNotificationDetailCache(null));
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
     } catch (e) {
       // eslint-disable-next-line no-console
