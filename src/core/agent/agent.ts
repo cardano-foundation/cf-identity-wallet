@@ -250,7 +250,7 @@ class Agent {
         console.warn(
           `Unexpected KERIA boot status returned: ${bootResult.status} ${bootResult.statusText}`
         );
-        throw new Error(Agent.KERIA_NOT_BOOTED);
+        throw new Error(Agent.KERIA_BOOT_FAILED);
       }
 
       await this.signifyClient.connect().catch((e) => {
