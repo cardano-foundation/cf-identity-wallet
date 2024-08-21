@@ -239,11 +239,16 @@ class Agent {
         Tier.low,
         agentUrls.bootUrl
       );
-      const bootResult = await this.signifyClient.boot();
-      if (bootResult.status !== 202 && bootResult.status !== 400) {
-        throw new Error(Agent.KERIA_NOT_BOOTED);
+      try {
+        const bootResult = await this.signifyClient.boot();
+        if (bootResult.status !== 202 && bootResult.status !== 400) {
+          throw new Error(Agent.KERIA_NOT_BOOTED);
+        }
+      } catch (e) {
+        /* eslint-disable no-console */
+        console.error(e);
+        throw e;
       }
-
       try {
         await this.signifyClient.connect();
       } catch (e) {
