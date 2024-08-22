@@ -1,5 +1,6 @@
 import { KeriaNotification } from "../../../../../core/agent/agent.types";
 import { CredentialsMatchingApply } from "../../../../../core/agent/services/ipexCommunicationService.types";
+import { BackReason } from "../../../../components/CredentialDetailModule/CredentialDetailModule.types";
 
 interface CredentialRequestProps {
   pageId: string;
@@ -15,6 +16,7 @@ interface ChooseCredentialProps {
   activeStatus: boolean;
   credentialRequest: CredentialsMatchingApply;
   notificationDetails: KeriaNotification;
+  reloadData: () => void;
   onBack: () => void;
   onClose: () => void;
 }
@@ -40,7 +42,16 @@ interface RequestCredential {
   acdc: ACDC;
 }
 
+interface LightCredentialDetailModalProps {
+  credId: string;
+  isOpen: boolean;
+  defaultSelected: boolean;
+  setIsOpen: (value: boolean) => void;
+  onClose: (reason: BackReason, isSelected: boolean, id: string) => void;
+}
+
 export type {
+  LightCredentialDetailModalProps,
   CredentialRequestProps,
   ChooseCredentialProps,
   RequestCredential,

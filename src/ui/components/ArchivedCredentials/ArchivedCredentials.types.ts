@@ -2,6 +2,7 @@ import { CredentialShortDetails } from "../../../core/agent/services/credentialS
 
 interface ArchivedCredentialsProps {
   archivedCreds: CredentialShortDetails[];
+  revokedCreds: CredentialShortDetails[];
   archivedCredentialsIsOpen: boolean;
   setArchivedCredentialsIsOpen: (value: boolean) => void;
 }
@@ -16,7 +17,7 @@ interface CredentialItemProps {
   onClick: (credentialId: string) => void;
   isSelected: boolean;
   onCheckboxChange: (credentialId: string) => void;
-  onRestore: (credentialId: string) => void;
+  onRestore?: (credentialId: string) => void;
   onDelete: (credentialId: string) => void;
 }
 

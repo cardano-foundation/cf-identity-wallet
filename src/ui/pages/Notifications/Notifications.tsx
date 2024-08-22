@@ -104,6 +104,11 @@ const Notifications = () => {
   const handleNotificationClick = async (item: KeriaNotification) => {
     await maskAsReaded(item);
 
+    if (item.a.r === NotificationRoute.LocalAcdcRevoked) {
+      history.push(`${TabsRoutePath.CREDENTIALS}/${item.a.credentialId}`);
+      return;
+    }
+
     const path = `${TabsRoutePath.NOTIFICATIONS}/${item.id}`;
 
     history.push(path);

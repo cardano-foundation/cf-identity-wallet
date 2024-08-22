@@ -18,6 +18,7 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { formatShortDate } from "../../utils/formatters";
 import { Credentials } from "./Credentials";
 import { passcodeFiller } from "../../utils/passcodeFiller";
+import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 
 const deleteIdentifierMock = jest.fn();
 const archiveIdentifierMock = jest.fn();
@@ -84,6 +85,42 @@ const initialStateFull = {
   seedPhraseCache: {},
   credsCache: {
     creds: filteredCredsFix,
+    favourites: [
+      {
+        id: filteredCredsFix[0].id,
+        time: 1,
+      },
+    ],
+  },
+  credsArchivedCache: {
+    creds: filteredCredsFix,
+  },
+  connectionsCache: {
+    connections: connectionsFix,
+  },
+  identifiersCache: {
+    identifiers: filteredIdentifierFix,
+  },
+};
+
+const archivedAndRevokedState = {
+  stateCache: {
+    routes: [TabsRoutePath.CREDENTIALS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+    },
+  },
+  seedPhraseCache: {},
+  credsCache: {
+    creds: [
+      filteredCredsFix[0],
+      {
+        ...filteredCredsFix[1],
+        status: CredentialStatus.REVOKED,
+      },
+    ],
     favourites: [
       {
         id: filteredCredsFix[0].id,
@@ -392,5 +429,21 @@ describe("Creds Tab", () => {
       expect(deleteIdentifierMock).toBeCalled();
       expect(archiveIdentifierMock).toBeCalled();
     });
+  });
+
+  test("Show archived & revoked credentials", async () => {
+    const storeMocked = {
+      ...mockStore(archivedAndRevokedState),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Credentials />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(getByTestId("cred-archived-revoked-button")).toBeVisible();
   });
 });
