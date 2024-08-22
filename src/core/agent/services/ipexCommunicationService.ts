@@ -212,9 +212,8 @@ class IpexCommunicationService extends AgentService {
       .schemas()
       .get(schemaSaid)
       .catch((error) => {
-        const errorStack = (error as Error).stack as string;
-        const status = errorStack.split(" - ")[1];
-        if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
           return undefined;
         } else {
           throw error;

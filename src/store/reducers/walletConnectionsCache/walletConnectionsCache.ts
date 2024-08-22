@@ -9,6 +9,7 @@ const initialState: WalletConnectState = {
   walletConnections: [],
   connectedWallet: null,
   pendingConnection: null,
+  isConnecting: false,
 };
 const walletConnectionsCacheSlice = createSlice({
   name: "walletConnectionsCache",
@@ -30,7 +31,14 @@ const walletConnectionsCacheSlice = createSlice({
       state,
       action: PayloadAction<ConnectionData | null>
     ) => {
+      if (state.pendingConnection?.id !== action.payload?.id) {
+        state.isConnecting = false;
+      }
+
       state.pendingConnection = action.payload;
+    },
+    setIsConnecting: (state, action: PayloadAction<boolean>) => {
+      state.isConnecting = action.payload;
     },
   },
 });
@@ -41,6 +49,7 @@ export const {
   setWalletConnectionsCache,
   setConnectedWallet,
   setPendingConnection,
+  setIsConnecting,
 } = walletConnectionsCacheSlice.actions;
 
 const getWalletConnectionsCache = (state: RootState) =>
@@ -52,4 +61,12 @@ const getConnectedWallet = (state: RootState) =>
 const getPendingConnection = (state: RootState) =>
   state.walletConnectionsCache.pendingConnection;
 
-export { getWalletConnectionsCache, getConnectedWallet, getPendingConnection };
+const getIsConnecting = (state: RootState) =>
+  state.walletConnectionsCache.isConnecting;
+
+export {
+  getWalletConnectionsCache,
+  getConnectedWallet,
+  getPendingConnection,
+  getIsConnecting,
+};

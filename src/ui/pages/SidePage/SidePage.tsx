@@ -5,7 +5,10 @@ import {
   getStateCache,
 } from "../../../store/reducers/stateCache";
 import { useAppSelector } from "../../../store/hooks";
-import { getPendingConnection } from "../../../store/reducers/walletConnectionsCache";
+import {
+  getIsConnecting,
+  getPendingConnection,
+} from "../../../store/reducers/walletConnectionsCache";
 import { IncomingRequest } from "./components/IncomingRequest";
 import { WalletConnect } from "./components/WalletConnect";
 
@@ -15,6 +18,7 @@ const SidePage = () => {
 
   const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
   const pendingConnection = useAppSelector(getPendingConnection);
+  const isConnecting = useAppSelector(getIsConnecting);
   const stateCache = useAppSelector(getStateCache);
 
   const canOpenIncomingRequest =
@@ -22,7 +26,7 @@ const SidePage = () => {
   const canOpenPendingWalletConnection = !!pendingConnection;
 
   useEffect(() => {
-    if (!stateCache.authentication.loggedIn) return;
+    if (!stateCache.authentication.loggedIn || isConnecting) return;
     setOpenSidePage(canOpenIncomingRequest || canOpenPendingWalletConnection);
     if (canOpenPendingWalletConnection) {
       pauseIncommingRequestByConnection.current = true;
@@ -31,6 +35,7 @@ const SidePage = () => {
     canOpenIncomingRequest,
     canOpenPendingWalletConnection,
     stateCache.authentication.loggedIn,
+    isConnecting,
   ]);
 
   const getContent = () => {

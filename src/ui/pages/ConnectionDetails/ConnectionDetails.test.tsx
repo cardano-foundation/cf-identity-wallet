@@ -1,4 +1,9 @@
-import { act, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  getDefaultNormalizer,
+  render,
+  waitFor,
+} from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import {
   ionFireEvent as fireEvent,
@@ -22,6 +27,8 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
+    MISSING_DATA_ON_KERIA:
+      "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.",
     agent: {
       connections: {
         getConnectionById: jest.fn(),
@@ -812,6 +819,53 @@ describe("Checking the Connection Details Page when notes are available", () => 
             historyEvents[3].timestamp
           )}`
         )
+      ).toBeVisible();
+    });
+  });
+});
+
+describe("Checking the Connection Details Page when connection is missing from the cloud", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(Agent.agent.connections, "getConnectionById")
+      .mockImplementation(() => {
+        throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`);
+      });
+  });
+
+  test("Connection exists in the database but not on Signify", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+
+    const history = createMemoryHistory();
+    history.push(RoutePath.CONNECTION_DETAILS, {
+      ...connectionsFix[0],
+    });
+
+    const { getByTestId, getByText } = render(
+      <IonReactMemoryRouter
+        history={history}
+        initialEntries={[RoutePath.CONNECTION_DETAILS]}
+      >
+        <Provider store={storeMocked}>
+          <Route
+            path={RoutePath.CONNECTION_DETAILS}
+            component={ConnectionDetails}
+          />
+        </Provider>
+      </IonReactMemoryRouter>
+    );
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(getByTestId("connection-details-cloud-error-page")).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.connections.details.clouderror, {
+          normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
+        })
       ).toBeVisible();
     });
   });

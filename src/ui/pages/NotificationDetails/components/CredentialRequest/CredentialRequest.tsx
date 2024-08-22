@@ -9,6 +9,8 @@ import { ChooseCredential } from "./ChooseCredential";
 import "./CredentialRequest.scss";
 import { CredentialRequestInformation } from "./CredentialRequestInformation";
 import { useOnlineStatusEffect } from "../../../../hooks";
+import { Alert } from "../../../../components/Alert";
+import { i18n } from "../../../../../i18n";
 
 const CredentialRequest = ({
   pageId,
@@ -22,6 +24,8 @@ const CredentialRequest = ({
   );
   const [credentialRequest, setCredentialRequest] =
     useState<CredentialsMatchingApply | null>();
+
+  const [isOpenAlert, setIsOpenAlert] = useState(false);
 
   useEffect(() => {
     if (!notificationDetailCache) {
@@ -46,11 +50,20 @@ const CredentialRequest = ({
   useOnlineStatusEffect(getCrendetialRequest);
 
   const changeToStageTwo = () => {
+    if (credentialRequest?.credentials.length === 0) {
+      setIsOpenAlert(true);
+      return;
+    }
+
     setRequestStage(1);
   };
 
   const backToStageOne = () => {
     setRequestStage(0);
+  };
+
+  const handleClose = () => {
+    setIsOpenAlert(false);
   };
 
   if (!credentialRequest) {
@@ -85,6 +98,19 @@ const CredentialRequest = ({
           onClose={handleBack}
         />
       )}
+      <Alert
+        isOpen={isOpenAlert}
+        setIsOpen={setIsOpenAlert}
+        dataTestId="alert-empty-cred"
+        headerText={i18n.t(
+          "notifications.details.credential.request.alert.text"
+        )}
+        confirmButtonText={`${i18n.t(
+          "notifications.details.credential.request.alert.confirm"
+        )}`}
+        actionConfirm={handleClose}
+        actionDismiss={handleClose}
+      />
     </div>
   );
 };

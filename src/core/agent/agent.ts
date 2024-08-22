@@ -63,6 +63,7 @@ class Agent {
   static readonly INVALID_MNEMONIC = "Seed phrase is invalid";
   static readonly MISSING_DATA_ON_KERIA =
     "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.";
+  static readonly BUFFER_ALLOC_SIZE = 3;
 
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {
@@ -238,13 +239,25 @@ class Agent {
         Tier.low,
         agentUrls.bootUrl
       );
-      try {
-        await this.signifyClient.boot();
-      } catch (e) {
+      const bootResult = await this.signifyClient.boot().catch((e) => {
         /* eslint-disable no-console */
         console.error(e);
         throw new Error(Agent.KERIA_BOOT_FAILED);
+      });
+
+      if (!bootResult.ok && bootResult.status !== 400) {
+        /* eslint-disable no-console */
+        console.warn(
+          `Unexpected KERIA boot status returned: ${bootResult.status} ${bootResult.statusText}`
+        );
+        throw new Error(Agent.KERIA_BOOT_FAILED);
       }
+
+      await this.signifyClient.connect().catch((e) => {
+        /* eslint-disable no-console */
+        console.error(e);
+        throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
+      });
       try {
         await this.signifyClient.connect();
       } catch (e) {
@@ -264,9 +277,13 @@ class Agent {
     let bran = "";
     try {
       const mnemonic = seedPhrase.join(" ");
-      bran = Buffer.from(mnemonicToEntropy(mnemonic), "hex")
-        .toString("utf-8")
-        .replace(/\0/g, "");
+      const entropy = mnemonicToEntropy(mnemonic);
+      const branBuffer = Buffer.from(entropy, "hex").slice(
+        0,
+        -Agent.BUFFER_ALLOC_SIZE
+      );
+
+      bran = branBuffer.toString("utf-8");
 
       this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
 
@@ -417,7 +434,7 @@ class Agent {
     // We believe it's easier to encode it as UTF-8 in case there is a change in Signify TS in how the passcode is handled.
     const passcodeBytes = Buffer.concat([
       Buffer.from(bran, "utf-8"),
-      Buffer.alloc(3),
+      Buffer.alloc(Agent.BUFFER_ALLOC_SIZE),
     ]);
     return entropyToMnemonic(passcodeBytes);
   }

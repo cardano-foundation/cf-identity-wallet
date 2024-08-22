@@ -11,6 +11,7 @@ interface WalletConnectState {
   walletConnections: ConnectionData[];
   connectedWallet: ConnectionData | null;
   pendingConnection: ConnectionData | null;
+  isConnecting?: boolean;
 }
 
 export type { ConnectionData, WalletConnectState };
