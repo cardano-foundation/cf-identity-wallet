@@ -8,6 +8,7 @@ import {
   Saider,
   Serder,
   Siger,
+  State,
 } from "signify-ts";
 import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../agent";
@@ -267,8 +268,8 @@ class MultiSigService extends AgentService {
     const smids = members?.signing;
     const rmids = members?.rotation;
 
-    const states: any[] = [];
-    const rstates: any[] = [];
+    const states: State[] = [];
+    const rstates: State[] = [];
 
     await Promise.allSettled(
       smids.map(async (signing: any) => {
@@ -581,8 +582,8 @@ class MultiSigService extends AgentService {
     aid: HabState,
     smids: any[],
     rmids: any[],
-    states: any[],
-    rstates: any[],
+    states: State[],
+    rstates: State[],
     name: string
   ): Promise<{
     op: any;
@@ -646,7 +647,7 @@ class MultiSigService extends AgentService {
     const nextSequence = (Number(multiSig.state.s) + 1).toString();
     const smids = members.signing;
 
-    const states: any[] = [];
+    const states: State[] = [];
     await Promise.all(
       smids.map(async (signing: any) => {
         const op = await this.props.signifyClient

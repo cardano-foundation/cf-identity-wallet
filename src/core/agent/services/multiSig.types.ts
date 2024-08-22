@@ -1,4 +1,4 @@
-import { HabState } from "signify-ts";
+import { HabState, State } from "signify-ts";
 
 interface MultiSigExnMessage {
   exn: {
@@ -42,7 +42,7 @@ interface CreateMultisigExnPayload {
   gid: string;
   smids: string[];
   rmids: string[];
-  rstates: any;
+  rstates: State[];
   name: string;
 }
 

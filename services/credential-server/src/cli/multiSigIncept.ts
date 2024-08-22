@@ -1,4 +1,4 @@
-import { SignifyClient, randomPasscode, Tier, ready as signifyReady, Algos, Siger, d, messagize } from "signify-ts";
+import { SignifyClient, randomPasscode, Tier, ready as signifyReady, Algos, Siger, d, messagize, State } from "signify-ts";
 import qrcode from "qrcode-terminal";
 import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from 'node:process';
@@ -80,7 +80,7 @@ async function main() {
   await rl.question("After scanning the QR codes, press enter to trigger inception of the multi-sig...");
 
   // --> Alice creates and sends to Bob and our IDW.
-  const states = [aliceAid["state"], bobAid["state"], resolveIdwOpA.response];
+  const states: State[] = [aliceAid["state"], bobAid["state"], resolveIdwOpA.response];
   const aliceIcp = await aliceClient.identifiers().create("multisig", {
     algo: Algos.group,
     mhab: aliceAid,
