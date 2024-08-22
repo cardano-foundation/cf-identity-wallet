@@ -2,7 +2,10 @@ import { IonButton, IonCheckbox, IonIcon, IonSpinner } from "@ionic/react";
 import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
 import { useCallback, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
-import { MiscRecordId } from "../../../core/agent/agent.types";
+import {
+  MiscRecordId,
+  NotificationRoute,
+} from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import {
   ACDCDetails,
@@ -41,6 +44,10 @@ import {
   CredentialDetailModuleProps,
 } from "./CredentialDetailModule.types";
 import { CloudError } from "../CloudError";
+import {
+  getNotificationsCache,
+  setNotificationsCache,
+} from "../../../store/reducers/notificationsCache";
 
 const CredentialDetailModule = ({
   pageId,
@@ -57,6 +64,8 @@ const CredentialDetailModule = ({
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const favouritesCredsCache = useAppSelector(getFavouritesCredsCache);
+  const notifications = useAppSelector(getNotificationsCache);
+
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertDeleteArchiveIsOpen, setAlertDeleteArchiveIsOpen] =
     useState(false);
@@ -95,6 +104,27 @@ const CredentialDetailModule = ({
 
   useOnlineStatusEffect(getCredDetails);
 
+  const deleteRevokedNotification = async () => {
+    const notification = notifications.find(
+      (noti) => noti.a.credentialId === id
+    );
+
+    if (!notification) return;
+
+    await Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      notification.id,
+      notification.a.r as NotificationRoute
+    );
+
+    let newNotification = [...notifications];
+
+    newNotification = newNotification.filter(
+      (noti) => noti.a.credentialId !== id
+    );
+
+    dispatch(setNotificationsCache(newNotification));
+  };
+
   const handleDeleteRevokedCred = async () => {
     try {
       await Agent.agent.credentials.archiveCredential(id);
@@ -105,6 +135,7 @@ const CredentialDetailModule = ({
       }
       dispatch(setCredsCache(creds));
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
+      await deleteRevokedNotification();
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error("Unable to archive credential", e);

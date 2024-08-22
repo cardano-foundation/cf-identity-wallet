@@ -134,8 +134,9 @@ const ArchivedCredentialsContainer = forwardRef<
 
     deleteRes.forEach((item, index) => {
       if (item.status === "rejected") return;
+
       newNotification = newNotification.filter(
-        (noti) => noti.a.credentialId === deletedRevokedIds[index]
+        (noti) => noti.a.credentialId !== deletedRevokedIds[index]
       );
     });
 
