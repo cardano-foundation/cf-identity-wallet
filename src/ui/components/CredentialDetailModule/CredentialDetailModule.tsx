@@ -91,6 +91,8 @@ const CredentialDetailModule = ({
   }, [dispatch]);
 
   const getCredDetails = useCallback(async () => {
+    if (!id) return;
+
     try {
       const cardDetails =
         await Agent.agent.credentials.getCredentialDetailsById(id);
@@ -338,8 +340,7 @@ const CredentialDetailModule = ({
     setAlertRestoreIsOpen(true);
   };
 
-
-  if(cloudError) {
+  if (cloudError) {
     return (
       <CloudError
         pageId={pageId}
@@ -357,7 +358,7 @@ const CredentialDetailModule = ({
           deleteButtonAction={() => handleDelete()}
         />
       </CloudError>
-    )
+    );
   }
 
   return (
