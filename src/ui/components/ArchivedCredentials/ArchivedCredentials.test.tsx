@@ -6,15 +6,16 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { ArchivedCredentialsContainer } from "./ArchivedCredentials";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 
-const deleteCredentailsMock = jest.fn((id: string) => Promise.resolve(true));
+const deleteCredentialsMock = jest.fn((id: string) => Promise.resolve(true));
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       credentials: {
         restoreCredential: jest.fn((id: string) => Promise.resolve(id)),
-        deleteCredential: (id: string) => deleteCredentailsMock(id),
+        deleteCredential: (id: string) => deleteCredentialsMock(id),
         getCredentials: jest.fn().mockResolvedValue([]),
       },
     },
@@ -26,6 +27,12 @@ jest.mock("../../../core/storage", () => ({
   SecureStorage: {
     get: (key: string) => "111111",
   },
+}));
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children, isOpen }: { children: any; isOpen: boolean }) =>
+    isOpen ? children : null,
 }));
 
 const initialStateEmpty = {
@@ -173,14 +180,31 @@ describe("Creds Tab", () => {
 
     const cardItem = getByTestId(`crendential-card-item-${credsFixAcdc[0].id}`);
 
-    fireEvent.click(cardItem);
-
-    fireEvent.click(getByTestId("delete-credentials"));
+    act(() => {
+      fireEvent.click(cardItem);
+      fireEvent.click(getByTestId("delete-credentials"));
+    });
 
     await waitFor(() => {
       expect(
         getByText(EN_TRANSLATIONS.credentials.details.alert.delete.confirm)
       ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("alert-delete-confirm-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    act(() => {
+      passcodeFiller(getByText, getByTestId, "1", 6);
+    });
+
+    await waitFor(() => {
+      expect(deleteCredentialsMock).toBeCalled();
     });
   });
 });

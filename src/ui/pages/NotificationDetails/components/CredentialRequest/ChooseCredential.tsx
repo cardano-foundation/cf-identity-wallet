@@ -133,7 +133,7 @@ const ChooseCredential = ({
   };
 
   const showCredDetail = (data: RequestCredential) => {
-    const pathname = `${TabsRoutePath.CREDENTIALS}/metadata:${data.acdc.d}`;
+    const pathname = `${TabsRoutePath.CREDENTIALS}/${data.acdc.d}`;
     dispatch(
       setNotificationDetailCache({
         notificationId: notificationDetails.id,

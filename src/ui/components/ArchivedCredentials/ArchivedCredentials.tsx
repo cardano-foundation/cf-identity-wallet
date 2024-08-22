@@ -18,11 +18,14 @@ import i18next from "i18next";
 import { i18n } from "../../../i18n";
 import "./ArchivedCredentials.scss";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { VerifyPassword } from "../VerifyPassword";
+import { VerifyPasscode } from "../VerifyPasscode";
 import {
   Alert as AlertDelete,
   Alert as AlertRestore,
 } from "../../components/Alert";
 import {
+  getStateCache,
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
@@ -42,7 +45,6 @@ import { PageHeader } from "../PageHeader";
 import { CredentialItem } from "./CredentialItem";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
-import { Verification } from "../Verification";
 
 const ArchivedCredentialsContainer = forwardRef<
   ArchivedCredentialsContainerRef,
@@ -52,9 +54,11 @@ const ArchivedCredentialsContainer = forwardRef<
   const history = useHistory();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
+  const stateCache = useAppSelector(getStateCache);
   const [activeList, setActiveList] = useState(false);
   const [selectedCredentials, setSelectedCredentials] = useState<string[]>([]);
-  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
+  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [alertDeleteIsOpen, setAlertDeleteIsOpen] = useState(false);
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
 
@@ -95,15 +99,45 @@ const ArchivedCredentialsContainer = forwardRef<
     setSelectedCredentials(data);
   };
 
-  const handleDeleteCredentialBatches = async (ids: string[]) => {
-    setVerifyIsOpen(false);
-    await Promise.all(
-      ids.map((id) => Agent.agent.credentials.deleteCredential(id))
-    );
+  const handleDeleteCredentialBatches = async (selectedIds: string[]) => {
+    setVerifyPasswordIsOpen(false);
+    setVerifyPasscodeIsOpen(false);
+
+    if (selectedIds.length === 0) return;
+
+    try {
+      const deleteRes = await Promise.allSettled(
+        selectedIds.map((id) => Agent.agent.credentials.deleteCredential(id))
+      );
+
+      const deleteSuccessCrendentials: CredentialShortDetails[] = [];
+
+      deleteRes.forEach((res, index) => {
+        if (res.status === "rejected") return;
+
+        const restoredCred = archivedCreds.find(
+          (cred) => cred.id === selectedIds[index]
+        );
+
+        if (restoredCred) {
+          deleteSuccessCrendentials.push(restoredCred);
+        }
+      });
+
+      if (deleteSuccessCrendentials.length === 0) return;
+
+      const creds = await Agent.agent.credentials.getCredentials(true);
+      dispatch(setCredsArchivedCache(creds));
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Unable to delete creds:", e);
+      dispatch(setToastMsg(ToastMsgType.DELETE_CRED_FAIL));
+    }
   };
 
   const handleRestoreCredentials = async (selectedIds: string[]) => {
-    setVerifyIsOpen(false);
+    setVerifyPasswordIsOpen(false);
+    setVerifyPasscodeIsOpen(false);
 
     if (selectedIds.length === 0) return;
 
@@ -186,7 +220,7 @@ const ArchivedCredentialsContainer = forwardRef<
     setAlertDeleteIsOpen(true);
   };
 
-  const handleOnVerify = async () => {
+  const handleAfterVerify = async () => {
     await handleDeleteCredentialBatches(selectedCredentials);
     dispatch(
       setToastMsg(
@@ -299,7 +333,16 @@ const ArchivedCredentialsContainer = forwardRef<
         cancelButtonText={`${i18n.t(
           "credentials.details.alert.delete.cancel"
         )}`}
-        actionConfirm={() => setVerifyIsOpen(true)}
+        actionConfirm={() => {
+          if (
+            !stateCache?.authentication.passwordIsSkipped &&
+            stateCache?.authentication.passwordIsSet
+          ) {
+            setVerifyPasswordIsOpen(true);
+          } else {
+            setVerifyPasscodeIsOpen(true);
+          }
+        }}
         actionCancel={handleCancelAction}
         actionDismiss={handleCancelAction}
       />
@@ -328,10 +371,15 @@ const ArchivedCredentialsContainer = forwardRef<
         actionCancel={handleCancelAction}
         actionDismiss={handleCancelAction}
       />
-      <Verification
-        verifyIsOpen={verifyIsOpen}
-        setVerifyIsOpen={setVerifyIsOpen}
-        onVerify={handleOnVerify}
+      <VerifyPassword
+        isOpen={verifyPasswordIsOpen}
+        setIsOpen={setVerifyPasswordIsOpen}
+        onVerify={handleAfterVerify}
+      />
+      <VerifyPasscode
+        isOpen={verifyPasscodeIsOpen}
+        setIsOpen={setVerifyPasscodeIsOpen}
+        onVerify={handleAfterVerify}
       />
     </>
   );

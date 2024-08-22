@@ -20,6 +20,7 @@ import { WalletConnectStageTwoProps } from "./WalletConnect.types";
 import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
 import {
   getWalletConnectionsCache,
+  setIsConnecting,
   setWalletConnectionsCache,
 } from "../../../../../store/reducers/walletConnectionsCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
@@ -88,6 +89,7 @@ const WalletConnectStageTwo = ({
           );
         }
 
+        dispatch(setIsConnecting(true));
         dispatch(
           setCurrentOperation(OperationType.OPEN_WALLET_CONNECTION_DETAIL)
         );

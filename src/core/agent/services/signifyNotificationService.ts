@@ -259,9 +259,8 @@ class SignifyNotificationService extends AgentService {
         .groups()
         .getRequest(notif.a.d)
         .catch((error) => {
-          const errorStack = (error as Error).stack as string;
-          const status = errorStack.split(" - ")[1];
-          if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          const status = error.message.split(" - ")[1];
+          if (/404/gi.test(status)) {
             return [];
           } else {
             throw error;
@@ -306,9 +305,8 @@ class SignifyNotificationService extends AgentService {
         .groups()
         .getRequest(notif.a.d)
         .catch((error) => {
-          const errorStack = (error as Error).stack as string;
-          const status = errorStack.split(" - ")[1];
-          if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          const status = error.message.split(" - ")[1];
+          if (/404/gi.test(status)) {
             return [];
           } else {
             throw error;
@@ -457,9 +455,8 @@ class SignifyNotificationService extends AgentService {
         .groups()
         .getRequest(event.a.d)
         .catch((error) => {
-          const errorStack = (error as Error).stack as string;
-          const status = errorStack.split(" - ")[1];
-          if (/404/gi.test(status) && /SignifyClient/gi.test(errorStack)) {
+          const status = error.message.split(" - ")[1];
+          if (/404/gi.test(status)) {
             return [];
           } else {
             throw error;

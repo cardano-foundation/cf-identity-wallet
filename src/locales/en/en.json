@@ -1028,6 +1028,10 @@
       },
       "credential": {
         "request": {
+          "alert": {
+              "text": "You don’t have any credentials available that match this request. In order to offer this credential you will need to acquire one first.",
+              "confirm": "OK"
+          },
           "information": {
             "title": "Credential request",
             "requestfrom": "Request from",
