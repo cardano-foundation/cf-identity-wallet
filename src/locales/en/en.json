@@ -938,7 +938,7 @@
       }
     },
     "archived": {
-      "title": "Archived & Revoked",
+      "title": "History",
       "done": "Done",
       "select": "Select",
       "selectall": "Select All",
