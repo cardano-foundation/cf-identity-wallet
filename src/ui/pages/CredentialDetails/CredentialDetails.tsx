@@ -57,6 +57,9 @@ import { CredHistory } from "./CredentialDetails.types";
 import { NotificationDetailCacheState } from "../../../store/reducers/notificationsCache/notificationCache.types";
 import { setCredsArchivedCache } from "../../../store/reducers/credsArchivedCache";
 import { Verification } from "../../components/Verification";
+import { CloudError } from "../../components/CloudError";
+import { PageHeader } from "../../components/PageHeader";
+import { CredentialService } from "../../../core/agent/services";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -77,36 +80,39 @@ const CredentialDetails = () => {
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<ACDCDetails>();
   const [navAnimation, setNavAnimation] = useState(false);
-
   const notificationDetailCache = useAppSelector(getNotificationDetailCache);
   const [notiSelected, setNotiSelected] = useState(
     !!notificationDetailCache?.checked
   );
-
   const isLightMode = !!notificationDetailCache;
-
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === params.id);
+  const [cloudError, setCloudError] = useState(false);
 
-  const fetchArchivedCreds = useCallback(async () => {
+  const getArchivedCreds = useCallback(async () => {
     try {
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error("Unable to get archived credential", e);
+      console.error("Unable to get archived credentials", e);
     }
   }, [dispatch]);
 
-  const getCredDetails = useCallback(async () => {
-    const cardDetails = await Agent.agent.credentials.getCredentialDetailsById(
-      params.id
-    );
-    setCardData(cardDetails);
+  const getDetails = useCallback(async () => {
+    try {
+      const cardDetails =
+        await Agent.agent.credentials.getCredentialDetailsById(params.id);
+      setCardData(cardDetails);
+    } catch (error) {
+      setCloudError(true);
+      // eslint-disable-next-line no-console
+      console.error(error);
+    }
   }, [params.id]);
 
-  useOnlineStatusEffect(getCredDetails);
+  useOnlineStatusEffect(getDetails);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
@@ -168,7 +174,7 @@ const CredentialDetails = () => {
   const handleArchiveCredential = async () => {
     try {
       await Agent.agent.credentials.archiveCredential(params.id);
-      await fetchArchivedCreds();
+      await getArchivedCreds();
       const creds = credsCache.filter((item) => item.id !== params.id);
       if (isFavourite) {
         handleSetFavourite(params.id);
@@ -187,7 +193,7 @@ const CredentialDetails = () => {
     try {
       await Agent.agent.credentials.deleteCredential(params.id);
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
-      await fetchArchivedCreds();
+      await getArchivedCreds();
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error("Unable to delete credential", e);
@@ -196,16 +202,19 @@ const CredentialDetails = () => {
   };
 
   const handleRestoreCredential = async () => {
-    await Agent.agent.credentials.restoreCredential(params.id);
-    // @TODO - sdisalvo: handle error
-    const creds = await Agent.agent.credentials.getCredentialShortDetailsById(
-      params.id
-    );
-    await fetchArchivedCreds();
-    dispatch(setCredsCache([...credsCache, creds]));
-
-    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
-    handleDone();
+    try {
+      await Agent.agent.credentials.restoreCredential(params.id);
+      const creds = await Agent.agent.credentials.getCredentialShortDetailsById(
+        params.id
+      );
+      await getArchivedCreds();
+      dispatch(setCredsCache([...credsCache, creds]));
+      dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
+      handleDone();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Unable to restore credential", e);
+    }
   };
 
   const onVerify = async () => {
@@ -231,15 +240,15 @@ const CredentialDetails = () => {
         .then(() => {
           dispatch(removeFavouritesCredsCache(id));
         })
-        .catch(() => {
-          /*TODO: handle error*/
+        .catch((e) => {
+          // eslint-disable-next-line no-console
+          console.error("Unable to remove favourite credential", e);
         });
     } else {
       if (favouritesCredsCache.length >= MAX_FAVOURITES) {
         dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
         return;
       }
-
       Agent.agent.basicStorage
         .createOrUpdateBasicRecord(
           new BasicRecord({
@@ -252,8 +261,9 @@ const CredentialDetails = () => {
         .then(() => {
           dispatch(addFavouritesCredsCache({ id, time: Date.now() }));
         })
-        .catch(() => {
-          /*TODO: handle error*/
+        .catch((e) => {
+          // eslint-disable-next-line no-console
+          console.error("Unable to add favourite credential", e);
         });
     }
   };
@@ -355,57 +365,77 @@ const CredentialDetails = () => {
   );
 
   return (
-    <TabLayout
-      pageId={pageId}
-      customClass={pageClasses}
-      header={true}
-      doneLabel={`${i18n.t("credentials.details.done")}`}
-      doneAction={handleDone}
-      additionalButtons={!isArchived && <AdditionalButtons />}
-      actionButton={isArchived}
-      actionButtonAction={() => setAlertRestoreIsOpen(true)}
-      actionButtonLabel={`${i18n.t("credentials.details.restore")}`}
-      hardwareBackButtonConfig={hardwareBackButtonConfig}
-    >
-      {!cardData ? (
-        <div
-          className="cred-detail-spinner-container"
-          data-testid="cred-detail-spinner-container"
-        >
-          <IonSpinner name="circular" />
-        </div>
-      ) : (
-        <>
-          <CredentialCardTemplate
-            cardData={cardData}
-            isActive={false}
-          />
-          <div className="card-details-content">
-            <CredentialContent cardData={cardData} />
-            <PageFooter
-              pageId={pageId}
-              archiveButtonText={
-                !isArchived
-                  ? `${i18n.t("credentials.details.button.archive")}`
-                  : ""
-              }
-              archiveButtonAction={() => handleArchive()}
-              deleteButtonText={
-                isArchived
-                  ? `${i18n.t("credentials.details.button.delete")}`
-                  : ""
-              }
-              deleteButtonAction={() => handleDelete()}
+    <>
+      {cloudError ? (
+        <CloudError
+          pageId={pageId}
+          header={
+            <PageHeader
+              closeButton={true}
+              closeButtonLabel={`${i18n.t("identifiers.details.done")}`}
+              closeButtonAction={() => handleDone()}
             />
-          </div>
-          <CredentialOptions
-            optionsIsOpen={optionsIsOpen}
-            setOptionsIsOpen={setOptionsIsOpen}
-            credsOptionAction={() => setAlertDeleteArchiveIsOpen(true)}
+          }
+        >
+          <PageFooter
+            pageId={pageId}
+            deleteButtonText={`${i18n.t("credentials.details.button.delete")}`}
+            deleteButtonAction={() => handleDelete()}
           />
-        </>
+        </CloudError>
+      ) : (
+        <TabLayout
+          pageId={pageId}
+          customClass={pageClasses}
+          header={true}
+          doneLabel={`${i18n.t("credentials.details.done")}`}
+          doneAction={handleDone}
+          additionalButtons={!isArchived && <AdditionalButtons />}
+          actionButton={isArchived}
+          actionButtonAction={() => setAlertRestoreIsOpen(true)}
+          actionButtonLabel={`${i18n.t("credentials.details.restore")}`}
+          hardwareBackButtonConfig={hardwareBackButtonConfig}
+        >
+          {!cardData ? (
+            <div
+              className="cred-detail-spinner-container"
+              data-testid="cred-detail-spinner-container"
+            >
+              <IonSpinner name="circular" />
+            </div>
+          ) : (
+            <>
+              <CredentialCardTemplate
+                cardData={cardData}
+                isActive={false}
+              />
+              <div className="card-details-content">
+                <CredentialContent cardData={cardData} />
+                <PageFooter
+                  pageId={pageId}
+                  archiveButtonText={
+                    !isArchived
+                      ? `${i18n.t("credentials.details.button.archive")}`
+                      : ""
+                  }
+                  archiveButtonAction={() => handleArchive()}
+                  deleteButtonText={
+                    isArchived
+                      ? `${i18n.t("credentials.details.button.delete")}`
+                      : ""
+                  }
+                  deleteButtonAction={() => handleDelete()}
+                />
+              </div>
+              <CredentialOptions
+                optionsIsOpen={optionsIsOpen}
+                setOptionsIsOpen={setOptionsIsOpen}
+                credsOptionAction={() => setAlertDeleteArchiveIsOpen(true)}
+              />
+            </>
+          )}
+        </TabLayout>
       )}
-
       <AlertDeleteArchive
         isOpen={alertDeleteArchiveIsOpen}
         setIsOpen={setAlertDeleteArchiveIsOpen}
@@ -449,7 +479,7 @@ const CredentialDetails = () => {
         setVerifyIsOpen={setVerifyIsOpen}
         onVerify={onVerify}
       />
-    </TabLayout>
+    </>
   );
 };
 
