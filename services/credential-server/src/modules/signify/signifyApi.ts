@@ -116,7 +116,14 @@ export class SignifyApi {
 
     const result = await this.signifyClient
       .credentials()
-      .issue({ issuerName, registryId, schemaId, recipient, data: vcdata });
+      .issue(issuerName, {
+        ri: registryId, 
+        s: schemaId,
+        a: {
+          i: recipient, 
+          ...vcdata,
+        }
+      });
     await waitAndGetDoneOp(
       this.signifyClient,
       result.op,
@@ -147,14 +154,14 @@ export class SignifyApi {
 
     const vcdata = {
       LEI: "5493001KJTIIGC8Y1R17",
-      i: recipientPrefix,
     };
-    const result = await this.signifyClient.credentials().issue({
-      issuerName,
-      registryId,
-      schemaId: Agent.QVI_SCHEMA_SAID,
-      recipient: recipientPrefix,
-      data: vcdata,
+    const result = await this.signifyClient.credentials().issue(issuerName, {
+      ri: registryId,
+      s: Agent.QVI_SCHEMA_SAID,
+      a: {
+        i: recipientPrefix,
+        ...vcdata,
+      }
     });
     await waitAndGetDoneOp(
       this.signifyClient,
@@ -193,13 +200,14 @@ export class SignifyApi {
     issuerAidPrefix: string
   ) {
     const [admit, sigs, aend] = await this.signifyClient
-      .ipex()
-      .admit(
-        holderAidName,
-        "",
-        d,
-        new Date().toISOString().replace("Z", "000+00:00")
-      );
+    .ipex()
+    .admit({
+      senderName: holderAidName,
+      message: "",
+      grantSaid: d,
+      recipient: issuerAidPrefix,
+      datetime: new Date().toISOString().replace("Z", "000+00:00")
+    });
     const op = await this.signifyClient
       .ipex()
       .submitAdmit(holderAidName, admit, sigs, aend, [issuerAidPrefix]);
@@ -227,15 +235,15 @@ export class SignifyApi {
     const qviCredential = await this.signifyClient
       .credentials()
       .get(qviCredentialId);
-    const result = await this.signifyClient.credentials().issue({
-      issuerName: holderAidName,
-      data: {
+    
+    const result = await this.signifyClient.credentials().issue(holderAidName, {
+      ri: registryId,
+      s: Agent.LE_SCHEMA_SAID,
+      a: {
         i: legalEntityAidPrefix,
         ...attribute,
       },
-      registryId: registryId,
-      schemaId: Agent.LE_SCHEMA_SAID,
-      rules: Saider.saidify({
+      r: Saider.saidify({
         d: "",
         usageDisclaimer: {
           l: "Usage of a valid, unexpired, and non-revoked vLEI Credential, as defined in the associated Ecosystem Governance Framework, does not assert that the Legal Entity is trustworthy, honest, reputable in its business dealings, safe to do business with, or compliant with any laws or that an implied or expressly intended purpose will be fulfilled.",
@@ -244,8 +252,7 @@ export class SignifyApi {
           l: "All information in a valid, unexpired, and non-revoked vLEI Credential, as defined in the associated Ecosystem Governance Framework, is accurate as of the date the validation process was complete. The vLEI Credential has been issued to the legal entity or person named in the vLEI Credential as the subject; and the qualified vLEI Issuer exercised reasonable care to perform the validation process set forth in the vLEI Ecosystem Governance Framework.",
         },
       })[1],
-      recipient: legalEntityAidPrefix,
-      source: Saider.saidify({
+      e: Saider.saidify({
         d: "",
         qvi: {
           n: qviCredential.sad.d,
@@ -289,7 +296,7 @@ export class SignifyApi {
     const [apply, sigs] = await this.signifyClient.ipex().apply({
       senderName,
       recipient,
-      schema: schemaSaid,
+      schemaSaid,
       attributes,
     });
     await this.signifyClient
@@ -309,7 +316,7 @@ export class SignifyApi {
     const [apply, sigs] = await this.signifyClient.ipex().agree({
       senderName,
       recipient,
-      offer: offerSaid,
+      offerSaid,
     });
     await this.signifyClient
       .ipex()

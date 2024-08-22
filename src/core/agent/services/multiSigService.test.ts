@@ -2177,11 +2177,13 @@ describe("Multisig sig service of agent", () => {
       response: {},
       alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
     });
-    getExchangesMock.mockResolvedValueOnce({
+    const exchangeMock = {
       exn: {
+        i: "ELWFo-DV4GujnvcwwIbzTzjc-nIf0ijv6W1ecajvQYBY",
         d: "EO65SZOen5Qm26gYeAZZ_J_p8_Uy_6jB3cUpv0DzgDA4",
       },
-    });
+    };
+    getExchangesMock.mockResolvedValueOnce(exchangeMock);
     identifiersMemberMock = jest.fn().mockResolvedValueOnce({
       signing: [{ ends: { agent: { [keriMetadataRecord.id]: "" } } }],
     });
@@ -2232,7 +2234,8 @@ describe("Multisig sig service of agent", () => {
       },
       {
         exn: [admit, atc],
-      }
+      },
+      exchangeMock.exn.i
     );
 
     expect(ipexSubmitAdmitMock).toBeCalledWith(
