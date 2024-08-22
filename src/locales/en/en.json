@@ -864,7 +864,7 @@
     "tab": {
       "title": "Credentials",
       "create": "Add a credential",
-      "viewarchived": "Archived & revoked",
+      "viewarchived": "Archived & Revoked",
       "favourites": "Favourites",
       "allcreds": "All credentials",
       "pendingcred": "Pending credentials",
