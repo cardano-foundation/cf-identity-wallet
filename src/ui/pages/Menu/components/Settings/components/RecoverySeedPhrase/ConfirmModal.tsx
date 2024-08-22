@@ -1,17 +1,14 @@
 import { IonCheckbox, IonItem, IonList } from "@ionic/react";
 import { useCallback, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
 import { i18n } from "../../../../../../../i18n";
-import { getStateCache } from "../../../../../../../store/reducers/stateCache";
 import { OptionModal } from "../../../../../../components/OptionsModal";
 import { PageFooter } from "../../../../../../components/PageFooter";
-import { VerifyPasscode } from "../../../../../../components/VerifyPasscode";
 import {
   ConditionItemProps,
   ConfirmModalProps,
 } from "./RecoverySeedPhrase.types";
-import { VerifyPassword } from "../../../../../../components/VerifyPassword";
 import "./RecoverySeedPhrase.scss";
+import { Verification } from "../../../../../../components/Verification";
 
 const ConditionItem = ({
   text,
@@ -47,14 +44,12 @@ const ConfirmModal = ({
   setIsOpen,
   onShowPhrase: onVerify,
 }: ConfirmModalProps) => {
-  const stateCache = useSelector(getStateCache);
   const [confirmCondition, setConfirmCondition] = useState([
     false,
     false,
     false,
   ]);
-  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const isAcceptAll = confirmCondition.every((item) => item);
 
   const resetModal = useCallback(() => {
@@ -83,14 +78,7 @@ const ConfirmModal = ({
 
   const handleAuthentication = () => {
     setIsOpen(false);
-    if (
-      !stateCache?.authentication.passwordIsSkipped &&
-      stateCache?.authentication.passwordIsSet
-    ) {
-      setVerifyPasswordIsOpen(true);
-    } else {
-      setVerifyPasscodeIsOpen(true);
-    }
+    setVerifyIsOpen(true);
   };
 
   return (
@@ -142,14 +130,9 @@ const ConfirmModal = ({
           primaryButtonDisabled={!isAcceptAll}
         />
       </OptionModal>
-      <VerifyPassword
-        isOpen={verifyPasswordIsOpen}
-        setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={onVerify}
-      />
-      <VerifyPasscode
-        isOpen={verifyPasscodeIsOpen}
-        setIsOpen={setVerifyPasscodeIsOpen}
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
         onVerify={onVerify}
       />
     </>

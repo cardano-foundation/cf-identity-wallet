@@ -856,14 +856,15 @@
       "rotatekeys": {
         "done": "Done",
         "description": "Rotating your signing keys boosts security by reducing the risk of key compromise."
-      }
+      },
+      "clouderror": "We couldn’t locate this identifier in the cloud. It might become available again soon, but some information could be lost.\n\nIf you no longer require this identifier, tap “Delete identifier” to remove."
     }
   },
   "credentials": {
     "tab": {
       "title": "Credentials",
       "create": "Add a credential",
-      "viewarchived": "View archived credentials",
+      "viewarchived": "Archived & Revoked",
       "favourites": "Favourites",
       "allcreds": "All credentials",
       "pendingcred": "Pending credentials",
@@ -880,9 +881,11 @@
     "details": {
       "done": "Done",
       "restore": "Restore",
+      "delete": "Delete",
       "type": "Type",
       "title": "Title",
       "description": "Description",
+      "revoked": "Revoked",
       "attributes": {
         "label": "Attributes",
         "issuee": "Issuee",
@@ -925,7 +928,8 @@
       },
       "toast": {
         "clipboard": "Copied to clipboard"
-      }
+      },
+      "clouderror": "We couldn’t locate this credential in the cloud. It might become available again soon, but some information could be lost.\n\nIf you no longer require this credential, tap “Delete credential” to remove."
     },
     "create": {
       "alert": {
@@ -934,7 +938,7 @@
       }
     },
     "archived": {
-      "title": "Archived",
+      "title": "History",
       "done": "Done",
       "select": "Select",
       "selectall": "Select All",
@@ -944,6 +948,9 @@
       "restore": "Restore",
       "oneselected": "1 Credential Selected",
       "manyselected": "{{amount}} Credentials Selected",
+      "archivedtitle": "Archived credentials",
+      "revokedtitle": "Revoked credentials",
+      "revokedlabel": "Revoked",
       "alert": {
         "restoresingle": {
           "title": "Are you sure you want to view this with your other credentials?",
@@ -964,6 +971,10 @@
           "title": "This will delete the selected credentials from your wallet permanently",
           "confirm": "Delete from wallet",
           "cancel": "Cancel"
+        },
+        "restorerevoked": {
+          "title": "You cannot restore revoked credentials.",
+          "confirm": "Ok"
         }
       }
     }
@@ -1028,6 +1039,10 @@
       },
       "credential": {
         "request": {
+          "alert": {
+              "text": "You don’t have any credentials available that match this request. In order to offer this credential you will need to acquire one first.",
+              "confirm": "OK"
+          },
           "information": {
             "title": "Credential request",
             "requestfrom": "Request from",
@@ -1304,7 +1319,8 @@
             "cancel": "Cancel"
           }
         }
-      }
+      },
+      "clouderror": "We couldn’t locate this connection in the cloud. It might become available again soon, but some information could be lost.\n\nIf you no longer require this connection, tap “Delete connection” to remove."
     }
   },
   "connectmodal": {
@@ -1563,6 +1579,7 @@
     "deletecrederror": "Unable to delete credential",
     "deleteidentifiererror": "Unable to delete identifier",
     "archivedcrederror": "Unable to archive credential",
+    "signsuccessful": "Sign successful",
     "savepasswordhinterror": "Unable to delete password hint",
     "editidentifiererror": "Unable to update identifier"
   },

@@ -1,14 +1,14 @@
 import { IonSpinner } from "@ionic/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
 import { CredentialsMatchingApply } from "../../../../../core/agent/services/ipexCommunicationService.types";
-import { useAppSelector } from "../../../../../store/hooks";
-import { getNotificationDetailCache } from "../../../../../store/reducers/notificationsCache";
+import { i18n } from "../../../../../i18n";
+import { Alert } from "../../../../components/Alert";
+import { useOnlineStatusEffect } from "../../../../hooks";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import { ChooseCredential } from "./ChooseCredential";
 import "./CredentialRequest.scss";
 import { CredentialRequestInformation } from "./CredentialRequestInformation";
-import { useOnlineStatusEffect } from "../../../../hooks";
 
 const CredentialRequest = ({
   pageId,
@@ -16,20 +16,11 @@ const CredentialRequest = ({
   notificationDetails,
   handleBack,
 }: NotificationDetailsProps) => {
-  const notificationDetailCache = useAppSelector(getNotificationDetailCache);
-  const [requestStage, setRequestStage] = useState(
-    notificationDetailCache?.step || 0
-  );
+  const [requestStage, setRequestStage] = useState(0);
   const [credentialRequest, setCredentialRequest] =
     useState<CredentialsMatchingApply | null>();
 
-  useEffect(() => {
-    if (!notificationDetailCache) {
-      return;
-    }
-
-    setRequestStage(notificationDetailCache.step || 0);
-  }, [notificationDetailCache]);
+  const [isOpenAlert, setIsOpenAlert] = useState(false);
 
   const getCrendetialRequest = useCallback(async () => {
     try {
@@ -46,11 +37,20 @@ const CredentialRequest = ({
   useOnlineStatusEffect(getCrendetialRequest);
 
   const changeToStageTwo = () => {
+    if (credentialRequest?.credentials.length === 0) {
+      setIsOpenAlert(true);
+      return;
+    }
+
     setRequestStage(1);
   };
 
   const backToStageOne = () => {
     setRequestStage(0);
+  };
+
+  const handleClose = () => {
+    setIsOpenAlert(false);
   };
 
   if (!credentialRequest) {
@@ -83,8 +83,22 @@ const CredentialRequest = ({
           notificationDetails={notificationDetails}
           onBack={backToStageOne}
           onClose={handleBack}
+          reloadData={getCrendetialRequest}
         />
       )}
+      <Alert
+        isOpen={isOpenAlert}
+        setIsOpen={setIsOpenAlert}
+        dataTestId="alert-empty-cred"
+        headerText={i18n.t(
+          "notifications.details.credential.request.alert.text"
+        )}
+        confirmButtonText={`${i18n.t(
+          "notifications.details.credential.request.alert.confirm"
+        )}`}
+        actionConfirm={handleClose}
+        actionDismiss={handleClose}
+      />
     </div>
   );
 };

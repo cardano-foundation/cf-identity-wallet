@@ -9,7 +9,6 @@ interface NotificationDetailCacheState {
 
 interface NotificationCacheState {
   notifications: KeriaNotification[];
-  notificationDetailCache?: NotificationDetailCacheState | null;
 }
 
 export type { NotificationCacheState, NotificationDetailCacheState };

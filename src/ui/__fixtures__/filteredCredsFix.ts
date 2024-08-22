@@ -20,4 +20,14 @@ const filteredCredsFix: CredentialShortDetails[] = [
   },
 ];
 
-export { filteredCredsFix };
+const revokedCredsFix: CredentialShortDetails[] = [
+  {
+    id: "did:example:ebfeb1ebc6f1c276ef71212ec33",
+    issuanceDate: "2010-01-01T19:23:24Z",
+    credentialType: "University Credential",
+    status: CredentialStatus.REVOKED,
+    schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+  },
+];
+
+export { filteredCredsFix, revokedCredsFix };

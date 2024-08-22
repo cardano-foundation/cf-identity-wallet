@@ -13,11 +13,13 @@ import { credRequestFix } from "../../../../__fixtures__/credRequestFix";
 
 mockIonicReact();
 
+const getIpexApplyDetailsMock = jest.fn(() => Promise.resolve(credRequestFix));
+
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       ipexCommunications: {
-        getIpexApplyDetails: jest.fn(() => Promise.resolve(credRequestFix)),
+        getIpexApplyDetails: () => getIpexApplyDetailsMock(),
       },
     },
   },
@@ -88,6 +90,60 @@ describe("Credential request", () => {
         getByText(
           EN_TRANSLATIONS.notifications.details.credential.request
             .choosecredential.title
+        )
+      ).toBeVisible();
+    });
+  });
+
+  test("Alert when credential is empty", async () => {
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const history = createMemoryHistory();
+
+    getIpexApplyDetailsMock.mockImplementation(() =>
+      Promise.resolve({
+        ...credRequestFix,
+        credentials: [],
+      })
+    );
+
+    const { getByText, getByTestId, queryByTestId } = render(
+      <Provider store={storeMocked}>
+        <IonReactMemoryRouter history={history}>
+          <CredentialRequest
+            pageId="multi-sign"
+            activeStatus
+            handleBack={jest.fn()}
+            notificationDetails={notificationsFix[4]}
+          />
+        </IonReactMemoryRouter>
+      </Provider>
+    );
+
+    expect(getByTestId("cre-request-spinner-container")).toBeVisible();
+
+    await waitFor(() => {
+      expect(queryByTestId("cre-request-spinner-container")).toBe(null);
+
+      expect(
+        getByText(
+          EN_TRANSLATIONS.notifications.details.credential.request.information
+            .title
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-multi-sign"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.notifications.details.credential.request.alert.text
         )
       ).toBeVisible();
     });

@@ -7,11 +7,8 @@ import { RemovePendingAlertProps } from "./RemovePendingAlert.types";
 import { i18n } from "../../../i18n";
 import { PageFooter } from "../PageFooter";
 import "./RemovePendingAlert.scss";
-import { VerifyPassword } from "../VerifyPassword";
-import { VerifyPasscode } from "../VerifyPasscode";
-import { useAppSelector } from "../../../store/hooks";
-import { getStateCache } from "../../../store/reducers/stateCache";
 import { CardDetailsBlock } from "../CardDetails";
+import { Verification } from "../Verification";
 
 const RemovePendingAlert = ({
   pageId,
@@ -22,21 +19,12 @@ const RemovePendingAlert = ({
   onDeletePendingItem,
 }: RemovePendingAlertProps) => {
   const alertId = `${pageId}-delete-pending-modal`;
-  const stateCache = useAppSelector(getStateCache);
   const [isOpenSecondCheck, setOpenSecondCheck] = useState(false);
-  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
 
   const handleConfirm = () => {
     handleCloseSecondCheck();
-    if (
-      !stateCache?.authentication.passwordIsSkipped &&
-      stateCache?.authentication.passwordIsSet
-    ) {
-      setVerifyPasswordIsOpen(true);
-    } else {
-      setVerifyPasscodeIsOpen(true);
-    }
+    setVerifyIsOpen(true);
   };
 
   const handleCloseSecondCheck = () => {
@@ -44,8 +32,7 @@ const RemovePendingAlert = ({
   };
 
   const deleteItem = () => {
-    setVerifyPasswordIsOpen(false);
-    setVerifyPasscodeIsOpen(false);
+    setVerifyIsOpen(false);
     onDeletePendingItem();
   };
 
@@ -94,14 +81,9 @@ const RemovePendingAlert = ({
         actionCancel={handleCloseSecondCheck}
         actionDismiss={handleCloseSecondCheck}
       />
-      <VerifyPassword
-        isOpen={verifyPasswordIsOpen}
-        setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={deleteItem}
-      />
-      <VerifyPasscode
-        isOpen={verifyPasscodeIsOpen}
-        setIsOpen={setVerifyPasscodeIsOpen}
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
         onVerify={deleteItem}
       />
     </>

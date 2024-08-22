@@ -103,6 +103,11 @@ const Credentials = () => {
     useState<CredentialShortDetails | null>(null);
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
 
+  const revokedCreds = useMemo(
+    () => credsCache.filter((item) => item.status === CredentialStatus.REVOKED),
+    [credsCache]
+  );
+
   const pendingCreds = useMemo(
     () => credsCache.filter((item) => item.status === CredentialStatus.PENDING),
     [credsCache]
@@ -124,8 +129,8 @@ const Credentials = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    setShowPlaceholder(credsCache.length === 0);
-  }, [credsCache]);
+    setShowPlaceholder(credsCache.length === 0 && revokedCreds.length === 0);
+  }, [credsCache.length, revokedCreds.length]);
 
   useOnlineStatusEffect(fetchArchivedCreds);
 
@@ -197,6 +202,7 @@ const Credentials = () => {
         <IonButton
           fill="outline"
           className="secondary-button"
+          data-testid="cred-archived-revoked-button"
           onClick={() => setArchivedCredentialsIsOpen(true)}
         >
           <IonLabel color="secondary">
@@ -311,7 +317,9 @@ const Credentials = () => {
                 />
               </div>
             )}
-            {!!archivedCreds.length && <ArchivedCredentialsButton />}
+            {(!!archivedCreds.length || revokedCreds.length > 0) && (
+              <ArchivedCredentialsButton />
+            )}
           </>
         )}
       </TabLayout>
@@ -326,6 +334,7 @@ const Credentials = () => {
         onDeletePendingItem={deletePendingCred}
       />
       <ArchivedCredentials
+        revokedCreds={revokedCreds}
         archivedCreds={archivedCreds}
         archivedCredentialsIsOpen={archivedCredentialsIsOpen}
         setArchivedCredentialsIsOpen={handleArchivedCredentialsDisplayChange}

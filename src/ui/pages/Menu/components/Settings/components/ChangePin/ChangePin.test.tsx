@@ -12,6 +12,7 @@ import EN_TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { store } from "../../../../../../../store";
 import { KeyStoreKeys, SecureStorage } from "../../../../../../../core/storage";
 import { ChangePin } from "./ChangePin";
+import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
 
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 const mockSetIsOpen = jest.fn();
@@ -95,7 +96,7 @@ describe("ChangePin Modal", () => {
 
   test("Renders Re-enter Passcode when first time passcode is set", async () => {
     require("@ionic/react");
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getByTestId } = render(
       <Provider store={store}>
         <ChangePin
           isOpen={true}
@@ -105,7 +106,7 @@ describe("ChangePin Modal", () => {
     );
     await waitForIonicReact();
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -141,7 +142,7 @@ describe("ChangePin Modal", () => {
       setBiometricsIsEnabled: jest.fn(),
     }));
 
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getByTestId } = render(
       <Provider store={store}>
         <ChangePin
           isOpen={true}
@@ -151,7 +152,7 @@ describe("ChangePin Modal", () => {
     );
     await waitForIonicReact();
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -161,7 +162,7 @@ describe("ChangePin Modal", () => {
       ).toBeInTheDocument()
     );
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() =>
       expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111")
@@ -189,13 +190,3 @@ describe("ChangePin Modal", () => {
     });
   });
 });
-
-const clickButtonRepeatedly = (
-  getByText: RenderResult["getByText"],
-  buttonLabel: string,
-  times: number
-) => {
-  for (let i = 0; i < times; i++) {
-    fireEvent.click(getByText(buttonLabel));
-  }
-};

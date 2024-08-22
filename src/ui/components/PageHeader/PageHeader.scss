@@ -8,6 +8,14 @@
     height: 0;
   }
 
+  ion-toolbar {
+    --background: transparent;
+
+    ion-title.md {
+      margin-left: 0;
+    }
+  }
+
   ion-toolbar,
   ion-grid,
   ion-col {

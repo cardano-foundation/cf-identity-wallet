@@ -24,6 +24,7 @@ import {
 import { Settings } from "./Settings";
 import { OptionIndex } from "./Settings.types";
 import { SubMenuKey } from "../../Menu.types";
+import { passcodeFiller } from "../../../../utils/passcodeFiller";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -454,7 +455,7 @@ describe("Settings page", () => {
       expect(getByTestId("verify-passcode")).toBeVisible();
     });
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(
@@ -465,13 +466,3 @@ describe("Settings page", () => {
     });
   });
 });
-
-const clickButtonRepeatedly = (
-  getByText: RenderResult["getByText"],
-  buttonLabel: string,
-  times: number
-) => {
-  for (let i = 0; i < times; i++) {
-    fireEvent.click(getByText(buttonLabel));
-  }
-};
