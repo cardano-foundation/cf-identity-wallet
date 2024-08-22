@@ -12,8 +12,13 @@ const SubMenu = ({
   setShowSubMenu,
   switchView,
   nestedMenu,
+  closeButtonLabel,
+  closeButtonAction,
   title,
   additionalButtons,
+  actionButton,
+  actionButtonAction,
+  actionButtonLabel,
   children,
   pageId: customPageId,
   renderAsModal = true,
@@ -38,10 +43,14 @@ const SubMenu = ({
         header={
           <PageHeader
             closeButton={true}
-            closeButtonAction={handleClose}
-            closeButtonIcon={arrowBackOutline}
+            closeButtonLabel={closeButtonLabel}
+            closeButtonAction={closeButtonAction || handleClose}
+            closeButtonIcon={closeButtonLabel || arrowBackOutline}
             title={title}
             additionalButtons={additionalButtons}
+            actionButton={actionButton}
+            actionButtonAction={actionButtonAction}
+            actionButtonLabel={actionButtonLabel}
           />
         }
       >

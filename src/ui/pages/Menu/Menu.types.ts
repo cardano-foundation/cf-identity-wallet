@@ -5,6 +5,11 @@ interface SubMenuData {
     switchView: (key: SubMenuKey) => void;
   }) => ReactElement;
   title: string;
+  closeButtonLabel?: string;
+  closeButtonAction?: () => void;
+  actionButton?: boolean;
+  actionButtonAction?: () => void;
+  actionButtonLabel?: string;
   additionalButtons: ReactNode;
   pageId: string;
   nestedMenu: boolean;
@@ -15,6 +20,11 @@ interface SubMenuProps {
   showSubMenu: boolean;
   setShowSubMenu: (value: boolean) => void;
   title: string;
+  closeButtonLabel?: string;
+  closeButtonAction?: () => void;
+  actionButton?: boolean;
+  actionButtonAction?: () => void;
+  actionButtonLabel?: string;
   additionalButtons?: ReactNode;
   children: ReactNode;
 }

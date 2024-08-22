@@ -29,7 +29,6 @@ import "./Menu.scss";
 import { i18n } from "../../../i18n";
 import { SubMenu } from "./components/SubMenu";
 import { MenuItemProps, SubMenuData, SubMenuKey } from "./Menu.types";
-import { Settings } from "./components/Settings";
 import {
   ConnectWallet,
   ConnectWalletOptionRef,
@@ -38,11 +37,18 @@ import { ManagePassword } from "./components/Settings/components/ManagePassword"
 import { TermAndPrivacy } from "./components/Settings/components/TermAndPrivacy";
 import { RecoverySeedPhrase } from "./components/Settings/components/RecoverySeedPhrase";
 import { OperationType } from "../../globals/types";
+import { Profile } from "./components/Profile";
+import { Settings } from "./components/Settings";
 
 const emptySubMenu = {
   Component: () => <></>,
   title: "",
+  closeButtonLabel: undefined,
+  closeButtonAction: undefined,
   additionalButtons: <></>,
+  actionButton: false,
+  actionButtonAction: undefined,
+  actionButtonLabel: undefined,
   pageId: "empty",
   nestedMenu: false,
   renderAsModal: false,
@@ -97,6 +103,14 @@ const Menu = () => {
 
   const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
 
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const toggleEditProfile = () => {
+    setIsEditingProfile((prev) => {
+      const newState = !prev;
+      return newState;
+    });
+  };
+
   const submenuMapData: [SubMenuKey, SubMenuData][] = [
     [
       SubMenuKey.Settings,
@@ -111,6 +125,27 @@ const Menu = () => {
         additionalButtons: <></>,
         pageId: "menu-setting",
         nestedMenu: false,
+      },
+    ],
+    [
+      SubMenuKey.Profile,
+      {
+        Component: () => <Profile />,
+        closeButtonLabel: isEditingProfile
+          ? `${i18n.t("menu.tab.items.profile.actioncancel")}`
+          : undefined,
+        closeButtonAction: isEditingProfile ? toggleEditProfile : undefined,
+        title: isEditingProfile
+          ? "menu.tab.items.profile.tabedit"
+          : "menu.tab.items.profile.tabheader",
+        pageId: "profile",
+        additionalButtons: <></>,
+        nestedMenu: false,
+        actionButton: true,
+        actionButtonAction: toggleEditProfile,
+        actionButtonLabel: isEditingProfile
+          ? `${i18n.t("menu.tab.items.profile.actionconfirm")}`
+          : `${i18n.t("menu.tab.items.profile.actionedit")}`,
       },
     ],
     [
@@ -169,7 +204,7 @@ const Menu = () => {
     ],
   ];
 
-  const submenuMap = useMemo(() => new Map(submenuMapData), []);
+  const submenuMap = useMemo(() => new Map(submenuMapData), [isEditingProfile]);
 
   const showSelectedOption = (key: SubMenuKey) => {
     if (!submenuMap.has(key)) return;
@@ -253,8 +288,13 @@ const Menu = () => {
         showSubMenu={showSubMenu}
         setShowSubMenu={setShowSubMenu}
         nestedMenu={selectSubmenu.nestedMenu}
+        closeButtonLabel={selectSubmenu.closeButtonLabel}
+        closeButtonAction={selectSubmenu.closeButtonAction}
         title={`${i18n.t(selectSubmenu.title)}`}
         additionalButtons={selectSubmenu.additionalButtons}
+        actionButton={selectSubmenu.actionButton}
+        actionButtonAction={selectSubmenu.actionButtonAction}
+        actionButtonLabel={selectSubmenu.actionButtonLabel}
         pageId={selectSubmenu.pageId}
         switchView={showSelectedOption}
         renderAsModal={selectSubmenu.renderAsModal}
