@@ -646,7 +646,7 @@
   },
   "tabsmenu": {
     "label": {
-      "identifiers": "Identity",
+      "identifiers": "Identifiers",
       "creds": "Credentials",
       "scan": "Scan",
       "notifications": "Notifications",
@@ -769,7 +769,7 @@
   },
   "identifiers": {
     "tab": {
-      "title": "Identity",
+      "title": "Identifiers",
       "create": "Add an identifier",
       "favourites": "Favourites",
       "allidentifiers": "All identifiers",
