@@ -185,16 +185,19 @@ const CredentialDetailModule = ({
   };
 
   const handleRestoreCredential = async () => {
-    await Agent.agent.credentials.restoreCredential(id);
-    // @TODO - sdisalvo: handle error
-    const creds = await Agent.agent.credentials.getCredentialShortDetailsById(
-      id
-    );
-    await fetchArchivedCreds();
-    dispatch(setCredsCache([...credsCache, creds]));
+    try {
+      await Agent.agent.credentials.restoreCredential(id);
+      const creds = await Agent.agent.credentials.getCredentialShortDetailsById(
+        id
+      );
+      await fetchArchivedCreds();
+      dispatch(setCredsCache([...credsCache, creds]));
 
-    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
-    onClose?.(BackReason.RESTORE);
+      dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
+      onClose?.(BackReason.RESTORE);
+    } catch (e) {
+      showError("Unable to restore credential", e);
+    }
   };
 
   const onVerify = async () => {

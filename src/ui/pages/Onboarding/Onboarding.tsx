@@ -65,7 +65,6 @@ const Onboarding = () => {
     },
   ];
 
-  // @TODO - foconnor: This should be op: OperationType when available (non optional)
   const handleNavigation = (op?: string) => {
     const data: DataProps = {
       store: { stateCache },
