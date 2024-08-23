@@ -3,10 +3,12 @@ import {
   b,
   d,
   EventResult,
+  HabState,
   messagize,
   Saider,
   Serder,
   Siger,
+  State,
 } from "signify-ts";
 import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../agent";
@@ -31,7 +33,6 @@ import {
 import { AgentService } from "./agentService";
 import { MultiSigIcpRequestDetails } from "./identifier.types";
 import {
-  Aid,
   MultiSigRoute,
   MultiSigExnMessage,
   CreateMultisigExnPayload,
@@ -111,7 +112,7 @@ class MultiSigService extends AgentService {
     if (notLinkedContacts.length) {
       throw new Error(MultiSigService.ONLY_ALLOW_LINKED_CONTACTS);
     }
-    const ourAid: Aid = await this.props.signifyClient
+    const ourAid: HabState = await this.props.signifyClient
       .identifiers()
       .get(ourMetadata.signifyName as string);
     const otherAids = await Promise.all(
@@ -127,7 +128,7 @@ class MultiSigService extends AgentService {
       const delegator = await Agent.agent.connections.resolveOobi(
         delegateContact.oobi as string
       );
-      delegateAid = { state: delegator.response } as Aid;
+      delegateAid = { state: delegator.response } as HabState;
     }
 
     const signifyName = uuidv4();
@@ -172,11 +173,11 @@ class MultiSigService extends AgentService {
   }
 
   private async createAidMultisig(
-    aid: Aid,
-    otherAids: Pick<Aid, "state">[],
+    aid: HabState,
+    otherAids: Pick<HabState, "state">[],
     name: string,
     threshold: number,
-    delegate?: Aid
+    delegate?: HabState
   ): Promise<{
     op: any;
     icpResult: EventResult;
@@ -266,8 +267,8 @@ class MultiSigService extends AgentService {
     const smids = members?.signing;
     const rmids = members?.rotation;
 
-    const states: any[] = [];
-    const rstates: any[] = [];
+    const states: State[] = [];
+    const rstates: State[] = [];
 
     await Promise.allSettled(
       smids.map(async (signing: any) => {
@@ -572,11 +573,11 @@ class MultiSigService extends AgentService {
   }
 
   private async rotateMultisigAid(
-    aid: Aid,
+    aid: HabState,
     smids: any[],
     rmids: any[],
-    states: any[],
-    rstates: any[],
+    states: State[],
+    rstates: State[],
     name: string
   ): Promise<{
     op: any;
@@ -640,7 +641,7 @@ class MultiSigService extends AgentService {
     const nextSequence = (Number(multiSig.state.s) + 1).toString();
     const smids = members.signing;
 
-    const states: any[] = [];
+    const states: State[] = [];
     await Promise.all(
       smids.map(async (signing: any) => {
         const op = await this.props.signifyClient
@@ -668,7 +669,7 @@ class MultiSigService extends AgentService {
 
   private async joinMultisigRotationKeri(
     exn: MultiSigExnMessage["exn"],
-    aid: Aid,
+    aid: HabState,
     name: string
   ): Promise<{
     op: any;
@@ -728,7 +729,7 @@ class MultiSigService extends AgentService {
 
   private async joinMultisigKeri(
     exn: MultiSigExnMessage["exn"],
-    aid: Aid,
+    aid: HabState,
     name: string
   ): Promise<{
     op: any;
@@ -812,7 +813,7 @@ class MultiSigService extends AgentService {
 
   private async sendMultisigExn(
     name: string,
-    aid: Aid,
+    aid: HabState,
     route: MultiSigRoute,
     embeds: {
       icp?: (string | Serder)[];
@@ -890,7 +891,7 @@ class MultiSigService extends AgentService {
     const recp = multisigMembers
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
-    const ourAid: Aid = await this.props.signifyClient
+    const ourAid = await this.props.signifyClient
       .identifiers()
       .get(ourIdentifier.signifyName as string);
     for (const member of multisigMembers) {
@@ -965,7 +966,7 @@ class MultiSigService extends AgentService {
     const recp = multisigMembers
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
-    const ourAid: Aid = await this.props.signifyClient
+    const ourAid = await this.props.signifyClient
       .identifiers()
       .get(ourIdentifier.signifyName as string);
 
@@ -1046,13 +1047,18 @@ class MultiSigService extends AgentService {
           mHab,
           MultiSigRoute.EXN,
           { gid: gHab["prefix"] },
-          gembeds
+          gembeds,
+          exchangeMessage.exn.i
         );
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
-      const [admit, sigs, end] = await this.props.signifyClient
-        .ipex()
-        .admit(multisigSignifyName, "", grantSaid, time);
+      const [admit, sigs, end] = await this.props.signifyClient.ipex().admit({
+        senderName: multisigSignifyName,
+        message: "",
+        grantSaid,
+        datetime: time,
+        recipient: exchangeMessage.exn.i,
+      });
 
       const mstate = gHab["state"];
       const seal = [
@@ -1073,7 +1079,8 @@ class MultiSigService extends AgentService {
           mHab,
           MultiSigRoute.EXN,
           { gid: gHab["prefix"] },
-          gembeds
+          gembeds,
+          exchangeMessage.exn.i
         );
     }
 

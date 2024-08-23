@@ -5,7 +5,7 @@ import {
   CardDetailsAttributes,
   CardDetailsBlock,
   CardDetailsItem,
-} from "../../../components/CardDetails";
+} from "../../CardDetails";
 import { CredentialContentProps } from "./CredentialContent.types";
 
 const CredentialContent = ({ cardData }: CredentialContentProps) => {

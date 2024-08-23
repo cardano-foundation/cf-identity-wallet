@@ -1,4 +1,4 @@
-import { mockIonicReact } from "@ionic/react-test-utils";
+import { ionFireEvent, mockIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { createMemoryHistory } from "history";
@@ -12,12 +12,12 @@ import { connectionsForNotifications } from "../../../../__fixtures__/connection
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { ChooseCredential } from "./ChooseCredential";
 import { formatShortDate, formatTimeToSec } from "../../../../utils/formatters";
-import { setNotificationDetailCache } from "../../../../../store/reducers/notificationsCache";
 import { KeriaNotification } from "../../../../../core/agent/agent.types";
 import { ACDC } from "./CredentialRequest.types";
 import { credRequestFix } from "../../../../__fixtures__/credRequestFix";
 import { KeyStoreKeys } from "../../../../../core/storage";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
+import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
 
 mockIonicReact();
 
@@ -58,6 +58,11 @@ jest.mock("../../../../../core/agent/agent", () => ({
         offerAcdcFromApply: (detail: KeriaNotification, acdc: ACDC) =>
           offerAcdcFromApplyMock(detail, acdc),
       },
+      credentials: {
+        getCredentialDetailsById: jest.fn(() =>
+          Promise.resolve(credsFixAcdc[0])
+        ),
+      },
     },
   },
 }));
@@ -80,6 +85,9 @@ const initialState = {
       time: Date.now(),
       passcodeIsSet: true,
     },
+  },
+  credsCache: {
+    creds: [],
   },
   connectionsCache: {
     connections: connectionsForNotifications,
@@ -108,6 +116,7 @@ describe("Credential request - choose request", () => {
             onClose={jest.fn()}
             notificationDetails={notificationsFix[4]}
             credentialRequest={credRequestFix}
+            reloadData={jest.fn}
           />
         </IonReactMemoryRouter>
       </Provider>
@@ -167,6 +176,7 @@ describe("Credential request - choose request", () => {
             onClose={jest.fn()}
             notificationDetails={notificationsFix[4]}
             credentialRequest={credRequestFix}
+            reloadData={jest.fn}
           />
         </IonReactMemoryRouter>
       </Provider>
@@ -188,18 +198,11 @@ describe("Credential request - choose request", () => {
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setNotificationDetailCache({
-          notificationId: notificationsFix[4].id,
-          viewCred: credRequestFix.credentials[0].acdc.d,
-          step: 1,
-          checked: false,
-        })
-      );
+      expect(getByTestId("request-cred-detail-modal")).toBeVisible();
     });
   });
 
-  test("Update cred after nav from cred detail page - check new", async () => {
+  test("Update cred after close cred detail page - check and uncheck cred", async () => {
     const initialState = {
       stateCache: {
         routes: [TabsRoutePath.NOTIFICATIONS],
@@ -208,18 +211,18 @@ describe("Credential request - choose request", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
+        isOnline: true,
       },
       connectionsCache: {
         connections: connectionsForNotifications,
       },
       notificationsCache: {
         notifications: notificationsFix,
-        notificationDetailCache: {
-          notificationId: notificationsFix[4].id,
-          viewCred: credRequestFix.credentials[0].acdc.d,
-          step: 1,
-          checked: true,
-        },
+      },
+      credsCache: {
+        creds: [
+          { ...credsFixAcdc[0], id: credRequestFix.credentials[0].acdc.d },
+        ],
       },
     };
 
@@ -245,71 +248,7 @@ describe("Credential request - choose request", () => {
             onClose={jest.fn()}
             notificationDetails={notificationsFix[4]}
             credentialRequest={credRequestFix}
-          />
-        </IonReactMemoryRouter>
-      </Provider>
-    );
-
-    await waitFor(() => {
-      expect(
-        getByText(
-          EN_TRANSLATIONS.notifications.details.credential.request
-            .choosecredential.title
-        )
-      ).toBeVisible();
-    });
-
-    await waitFor(() => {
-      expect(
-        getByTestId(
-          `cred-select-${credRequestFix.credentials[0].acdc.d}`
-        ).classList.contains("checkbox-checked")
-      ).toBe(true);
-      expect(dispatchMock).toBeCalledWith(setNotificationDetailCache(null));
-    });
-  });
-
-  test("Update cred after nav from cred detail page - uncheck", async () => {
-    const initialState = {
-      stateCache: {
-        routes: [TabsRoutePath.NOTIFICATIONS],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-        },
-      },
-      connectionsCache: {
-        connections: connectionsForNotifications,
-      },
-      notificationsCache: {
-        notifications: notificationsFix,
-        notificationDetailCache: null,
-      },
-    };
-
-    const storeMocked = {
-      ...mockStore(initialState),
-      dispatch: dispatchMock,
-    };
-
-    const path = `${TabsRoutePath.NOTIFICATIONS}/${notificationsFix[4].id}`;
-    const history = createMemoryHistory();
-    history.push(path);
-
-    const { getByText, getByTestId, rerender } = render(
-      <Provider store={storeMocked}>
-        <IonReactMemoryRouter
-          initialEntries={[path]}
-          history={history}
-        >
-          <ChooseCredential
-            pageId="multi-sign"
-            activeStatus
-            onBack={jest.fn()}
-            onClose={jest.fn()}
-            notificationDetails={notificationsFix[4]}
-            credentialRequest={credRequestFix}
+            reloadData={jest.fn}
           />
         </IonReactMemoryRouter>
       </Provider>
@@ -326,71 +265,80 @@ describe("Credential request - choose request", () => {
 
     act(() => {
       fireEvent.click(
-        getByTestId(`cred-select-${credRequestFix.credentials[0].acdc.d}`)
+        getByTestId(`cred-detail-${credRequestFix.credentials[0].acdc.d}`)
       );
     });
 
     await waitFor(() => {
-      expect(
-        getByTestId(
-          `cred-select-${credRequestFix.credentials[0].acdc.d}`
-        ).classList.contains("checkbox-checked")
-      ).toBe(true);
+      expect(getByTestId("notification-selected")).toBeVisible();
     });
 
-    const updateState = {
-      stateCache: {
-        routes: [TabsRoutePath.NOTIFICATIONS],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-        },
-      },
-      connectionsCache: {
-        connections: connectionsForNotifications,
-      },
-      notificationsCache: {
-        notifications: notificationsFix,
-        notificationDetailCache: {
-          notificationId: notificationsFix[4].id,
-          viewCred: credRequestFix.credentials[0].acdc.d,
-          step: 1,
-          checked: false,
-        },
-      },
-    };
+    act(() => {
+      fireEvent(
+        getByTestId("notification-selected"),
+        new CustomEvent("ionChange", {
+          detail: {
+            checked: true,
+          },
+        })
+      );
+    });
 
-    const newStore = {
-      ...mockStore(updateState),
-      dispatch: dispatchMock,
-    };
+    await waitFor(() => {
+      expect(getByTestId("notification-selected").getAttribute("checked")).toBe(
+        "true"
+      );
+    });
 
-    rerender(
-      <Provider store={newStore}>
-        <IonReactMemoryRouter
-          initialEntries={[path]}
-          history={history}
-        >
-          <ChooseCredential
-            pageId="multi-sign"
-            activeStatus
-            onBack={jest.fn()}
-            onClose={jest.fn()}
-            notificationDetails={notificationsFix[4]}
-            credentialRequest={credRequestFix}
-          />
-        </IonReactMemoryRouter>
-      </Provider>
-    );
+    act(() => {
+      fireEvent.click(getByText(EN_TRANSLATIONS.credentials.details.done));
+    });
 
     await waitFor(() => {
       expect(
         getByTestId(
           `cred-select-${credRequestFix.credentials[0].acdc.d}`
-        ).classList.contains("checkbox-checked")
-      ).toBe(false);
-      expect(dispatchMock).toBeCalledWith(setNotificationDetailCache(null));
+        ).getAttribute("checked")
+      ).toBe("true");
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId(`cred-detail-${credRequestFix.credentials[0].acdc.d}`)
+      );
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("notification-selected")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent(
+        getByTestId("notification-selected"),
+        new CustomEvent("ionChange", {
+          detail: {
+            checked: false,
+          },
+        })
+      );
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("notification-selected").getAttribute("checked")).toBe(
+        "false"
+      );
+    });
+
+    act(() => {
+      fireEvent.click(getByText(EN_TRANSLATIONS.credentials.details.done));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByTestId(
+          `cred-select-${credRequestFix.credentials[0].acdc.d}`
+        ).getAttribute("checked")
+      ).toBe("false");
     });
   });
 
@@ -437,6 +385,7 @@ describe("Credential request - choose request", () => {
             onClose={jest.fn()}
             notificationDetails={notificationsFix[4]}
             credentialRequest={credRequestFix}
+            reloadData={jest.fn}
           />
         </IonReactMemoryRouter>
       </Provider>

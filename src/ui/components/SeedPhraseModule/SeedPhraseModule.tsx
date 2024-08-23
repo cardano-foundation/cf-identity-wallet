@@ -8,6 +8,7 @@ import {
   SeedPhraseModuleProps,
   SeedPhraseModuleRef,
 } from "./SeedPhraseModule.types";
+import { usePrivacyScreen } from "../../hooks/privacyScreenHook";
 
 const SeedPhraseModule = forwardRef<SeedPhraseModuleRef, SeedPhraseModuleProps>(
   (
@@ -31,6 +32,7 @@ const SeedPhraseModule = forwardRef<SeedPhraseModuleRef, SeedPhraseModuleProps>(
     ref
   ) => {
     const seedInputs = useRef<(HTMLElement | null)[]>([]);
+    usePrivacyScreen();
 
     useImperativeHandle(ref, () => ({
       focusInputByIndex: (index) => {

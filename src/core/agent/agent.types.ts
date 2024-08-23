@@ -82,12 +82,6 @@ type IpexMessage = {
   };
 };
 
-type IpexMessageDetails = {
-  id: string;
-  content: IpexMessage;
-  createdAt: Date;
-};
-
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 
 interface ConnectionDetails extends ConnectionShortDetails {
@@ -269,7 +263,6 @@ export type {
   AgentUrls,
   BranAndMnemonic,
   IpexMessage,
-  IpexMessageDetails,
   NotificationRpy,
   AuthorizationRequestExn,
 };

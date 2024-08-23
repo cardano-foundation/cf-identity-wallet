@@ -237,7 +237,13 @@ class SignifyNotificationService extends AgentService {
         const dt = new Date().toISOString().replace("Z", "000+00:00");
         const [admit, sigs, aend] = await this.props.signifyClient
           .ipex()
-          .admit(ourIdentifier.signifyName, "", notif.a.d, dt);
+          .admit({
+            senderName: ourIdentifier.signifyName,
+            message: "",
+            grantSaid: notif.a.d,
+            datetime: dt,
+            recipient: exchange.exn.i,
+          });
         const op = await this.props.signifyClient
           .ipex()
           .submitAdmit(ourIdentifier.signifyName, admit, sigs, aend, [
@@ -678,6 +684,7 @@ class SignifyNotificationService extends AgentService {
                     id: uuidv4(),
                     a: {
                       r: NotificationRoute.LocalAcdcRevoked,
+                      credentialId,
                       credentialTitle: credential.schema.title,
                     },
                     read: false,

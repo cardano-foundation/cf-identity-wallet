@@ -218,7 +218,7 @@ class ConnectionService extends AgentService {
 
   @OnlineOnly
   async deleteConnectionById(id: string): Promise<void> {
-    // await this.signifyApi.deleteContactById(id); @TODO - foconnor: Uncomment when KERIA endpoint fixed
+    await this.props.signifyClient.contacts().delete(id);
     await this.connectionStorage.deleteById(id);
     const notes = await this.getConnectNotesByConnectionId(id);
     for (const note of notes) {

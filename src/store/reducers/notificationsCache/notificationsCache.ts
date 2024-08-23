@@ -8,7 +8,6 @@ import {
 
 const initialState: NotificationCacheState = {
   notifications: [],
-  notificationDetailCache: null,
 };
 
 const notificationsCacheSlice = createSlice({
@@ -42,12 +41,6 @@ const notificationsCacheSlice = createSlice({
     ) => {
       state.notifications = action.payload;
     },
-    setNotificationDetailCache: (
-      state,
-      action: PayloadAction<NotificationDetailCacheState | null>
-    ) => {
-      state.notificationDetailCache = action.payload;
-    },
   },
 });
 
@@ -57,13 +50,9 @@ export const {
   setNotificationsCache,
   setReadedNotification,
   deleteNotification,
-  setNotificationDetailCache,
 } = notificationsCacheSlice.actions;
 
 const getNotificationsCache = (state: RootState) =>
   state.notificationsCache.notifications;
 
-const getNotificationDetailCache = (state: RootState) =>
-  state.notificationsCache.notificationDetailCache;
-
-export { getNotificationsCache, getNotificationDetailCache };
+export { getNotificationsCache };
