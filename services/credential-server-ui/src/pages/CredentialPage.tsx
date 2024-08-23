@@ -68,7 +68,6 @@ const CredentialPage: React.FC = () => {
   };
 
   const handleRequestCredential = async (values: any) => {
-    console.log({ values })
     const schemaSaid = SCHEMA_SAID[values.credential_type as CredentialType];
     let objAttributes = {};
     let attribute: IAttributes = {};
@@ -121,7 +120,7 @@ const CredentialPage: React.FC = () => {
                       })}
                       getOptionLabel={(option) => UUID_REGEX.test(option.alias) ? option.id : `${option.alias} (${option.id})` }
                       options={contacts || []}
-                      renderInput={(params) => <TextField {...params} label="Established Connections" />}
+                      renderInput={(params) => <TextField {...params} label="Search by connection name or ID" />}
                       onChange={(_event, data) => field.onChange(data?.id || null)}
                     />
                   )}

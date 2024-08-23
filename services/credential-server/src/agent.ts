@@ -3,7 +3,9 @@ import { config } from "./config";
 import { SignifyApi } from "./modules/signify/signifyApi";
 import { NotificationRoute } from "./modules/signify/signifyApi.type";
 import { readFile, writeFile } from "fs/promises";
-import { existsSync } from "fs";
+import { existsSync, mkdir, mkdirSync } from "fs";
+import path from "path";
+
 class Agent {
   static readonly ISSUER_AID_NAME = "issuer";
   static readonly HOLDER_AID_NAME = "holder";
@@ -42,12 +44,16 @@ class Agent {
     await signifyReady();
     let bran;
     let issuerBran;
-    const bransFilePath = "../brans.json";
+    const bransFilePath = "../../brans-data/brans.json";
+    const dirPath = path.dirname(bransFilePath);
+    if (!existsSync(dirPath)) {
+      mkdirSync(dirPath, { recursive: true })
+    }
     if (!existsSync(bransFilePath)) {
       // Create new file if the file doesn't exist
       await writeFile(bransFilePath, "");
     }
-    const bransFileContent = await readFile("../brans.json", "utf8");
+    const bransFileContent = await readFile(bransFilePath, "utf8");
     if (!bransFileContent.includes("bran") && !bransFileContent.includes("issuerBran")) {
       // Write file content if it's empty
       bran = randomPasscode();
@@ -63,7 +69,6 @@ class Agent {
     if (bran && issuerBran) {
       await this.signifyApi.start(bran);
       await this.signifyApiIssuer.start(issuerBran);
-      console.log({ bran, issuerBran });  
     }
   }
 

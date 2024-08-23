@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import GetQRButton from "../components/GetQRButton";
 import { config } from "../config";
-import { Box, Button, Container, Divider, Grid, Typography } from "@mui/material";
+import { Button, Divider, Grid, Typography } from "@mui/material";
 import GetInputButton from "../components/inputOOBI/GetInputButton";
 import GetScannerButton from "../components/inputOOBI/GetScannerButton";
 import axios from "axios";
@@ -18,22 +18,15 @@ const ConnectionPage: React.FC = () => {
   }, []);
 
   const handleGetContacts = async () => {
-    try {
-      setContacts(
-        (await axios.get(`${config.endpoint}${config.path.contacts}`)).data.data
-      );
-    } catch (e) {
-      console.log(e);
-    }
+    console.log("get")
+    setContacts(
+      (await axios.get(`${config.endpoint}${config.path.contacts}`)).data.data
+    );
   };
 
   const handleDeleteContact = async (id: string) => {
-    try {
-      await axios.delete(`${config.endpoint}${config.path.deleteContact}?id=${id}`)
-      await handleGetContacts();
-    } catch (error) {
-
-    }
+    await axios.delete(`${config.endpoint}${config.path.deleteContact}?id=${id}`)
+    await handleGetContacts();
   }
 
   return (
@@ -52,31 +45,34 @@ const ConnectionPage: React.FC = () => {
           <Divider />
           <GetScannerButton />
           <Divider />
-          <GetInputButton />
+          <GetInputButton handleGetContacts={()=> handleGetContacts()}/>
           <Divider />
-          <Divider>
-            <Grid xs={12}>
-              <b>Mange connections</b><Button
-                startIcon={<RefreshIcon />}
-                onClick={handleGetContacts}
+        </Grid>
+      </Grid>
+
+      <Typography component="h1" variant="h4" align="center">
+        Mange connections
+        <Button
+          startIcon={<RefreshIcon />}
+          onClick={handleGetContacts}
+        ></Button>
+      </Typography>
+      <br></br>
+      <Grid container spacing={2} justifyContent="center">
+        {contacts.map(contact => (
+          <Grid container xs={10} spacing={2}>
+            <Grid item xs={10} textAlign={"left"}>
+              {UUID_REGEX.test(contact.alias) ? "" : contact.alias} ({contact.id.slice(0, 4)}...{contact.id.slice(-4)})
+            </Grid>
+            <Grid item xs={2}>
+              <Button
+                startIcon={<DeleteOutline />}
+                onClick={() => handleDeleteContact(contact.id)}
+                style={{ height: "100%" }}
               ></Button>
             </Grid>
-            {contacts.map(contact => (
-              <Grid container spacing={2} maxWidth={"xl"}>
-                <Grid item xs={10} textAlign={"left"}>
-                  {UUID_REGEX.test(contact.alias) ? "" : contact.alias} ({contact.id.slice(0, 4)}...{contact.id.slice(-4)})
-                </Grid>
-                <Grid item xs={2}>
-                  <Button
-                    startIcon={<DeleteOutline />}
-                    onClick={() => handleDeleteContact(contact.id)}
-                    style={{ height: "100%" }}
-                  ></Button>
-                </Grid>
-              </Grid>
-            ))}
-          </Divider>
-        </Grid>
+          </Grid>
+        ))}
       </Grid>
     </>
   );

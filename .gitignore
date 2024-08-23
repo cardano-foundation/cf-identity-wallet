@@ -34,4 +34,4 @@ yarn-error.log*
 resources/android
 resources/ios
 
-services/brans.json
+brans-data/brans.json
