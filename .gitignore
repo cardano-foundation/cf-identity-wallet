@@ -33,3 +33,5 @@ yarn-error.log*
 /.idea
 resources/android
 resources/ios
+
+services/brans.json

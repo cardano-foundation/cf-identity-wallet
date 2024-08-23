@@ -12,6 +12,7 @@ import {
   Select,
   TextField,
   Typography,
+  Autocomplete
 } from "@mui/material";
 import axios from "axios";
 import { Contact } from "../types.types";
@@ -67,6 +68,7 @@ const CredentialPage: React.FC = () => {
   };
 
   const handleRequestCredential = async (values: any) => {
+    console.log({ values })
     const schemaSaid = SCHEMA_SAID[values.credential_type as CredentialType];
     let objAttributes = {};
     let attribute: IAttributes = {};
@@ -108,30 +110,20 @@ const CredentialPage: React.FC = () => {
           <Grid container spacing={2} justifyContent="center">
             <Grid item xs={10}>
               <FormControl fullWidth>
-                <InputLabel id="selectedContact">
-                  Established Connections
-                </InputLabel>
-
                 <Controller
                   name="selectedContact"
                   control={control}
                   render={({ field }) => (
-                    <Select
-                      labelId="selectedContact"
-                      label="Established Connections"
+                    <Autocomplete
                       {...field}
                       {...register(`selectedContact`, {
                         required: true,
                       })}
-                    >
-                      {contacts.map((contact: any, index) => (
-                        <MenuItem key={index} value={contact.id}>
-                          {UUID_REGEX.test(contact.alias)
-                            ? contact.id
-                            : `${contact.alias} (${contact.id})`}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                      getOptionLabel={(option) => UUID_REGEX.test(option.alias) ? option.id : `${option.alias} (${option.id})` }
+                      options={contacts || []}
+                      renderInput={(params) => <TextField {...params} label="Established Connections" />}
+                      onChange={(_event, data) => field.onChange(data?.id || null)}
+                    />
                   )}
                 />
               </FormControl>

@@ -13,8 +13,8 @@ import { RequestCredential } from "./pages/RequestCredential";
 export const MENU_ITEMS = [
   {
     key: "connections",
-    label: "Connection",
-    path: "/connection",
+    label: "Connections",
+    path: "/connections",
     component: <ConnectionPage />,
   },
   {

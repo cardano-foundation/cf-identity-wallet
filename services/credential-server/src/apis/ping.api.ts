@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
 

@@ -1,7 +1,9 @@
+import { randomPasscode, ready as signifyReady} from "signify-ts";
 import { config } from "./config";
 import { SignifyApi } from "./modules/signify/signifyApi";
 import { NotificationRoute } from "./modules/signify/signifyApi.type";
-
+import { readFile, writeFile } from "fs/promises";
+import { existsSync } from "fs";
 class Agent {
   static readonly ISSUER_AID_NAME = "issuer";
   static readonly HOLDER_AID_NAME = "holder";
@@ -37,8 +39,32 @@ class Agent {
   }
 
   async start(): Promise<void> {
-    await this.signifyApi.start();
-    await this.signifyApiIssuer.start();
+    await signifyReady();
+    let bran;
+    let issuerBran;
+    const bransFilePath = "../brans.json";
+    if (!existsSync(bransFilePath)) {
+      // Create new file if the file doesn't exist
+      await writeFile(bransFilePath, "");
+    }
+    const bransFileContent = await readFile("../brans.json", "utf8");
+    if (!bransFileContent.includes("bran") && !bransFileContent.includes("issuerBran")) {
+      // Write file content if it's empty
+      bran = randomPasscode();
+      issuerBran = randomPasscode();
+      await writeFile(bransFilePath, JSON.stringify({
+        bran, issuerBran
+      }));
+    } else {
+      const bransData = JSON.parse(bransFileContent);
+      bran = bransData.bran;
+      issuerBran = bransData.issuerBran;
+    }
+    if (bran && issuerBran) {
+      await this.signifyApi.start(bran);
+      await this.signifyApiIssuer.start(issuerBran);
+      console.log({ bran, issuerBran });  
+    }
   }
 
   async createKeriOobi() {
@@ -83,6 +109,10 @@ class Agent {
   async contacts() {
     return this.signifyApi.contacts();
   }
+
+  async deleteContact(id: string) {
+    return this.signifyApi.deleteContact(id);
+  };
 
   async revokeCredential(credentialId: string, holder: string) {
     return this.signifyApi.revokeCredential(Agent.HOLDER_AID_NAME, holder, credentialId);
