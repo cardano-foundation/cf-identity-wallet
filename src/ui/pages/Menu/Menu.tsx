@@ -39,6 +39,7 @@ import { RecoverySeedPhrase } from "./components/Settings/components/RecoverySee
 import { OperationType } from "../../globals/types";
 import { Profile } from "./components/Profile";
 import { Settings } from "./components/Settings";
+import { ProfileOptionRef } from "./components/Profile/Profile.types";
 
 const emptySubMenu = {
   Component: () => <></>,
@@ -102,13 +103,17 @@ const Menu = () => {
   }, [currentOperation]);
 
   const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
-
+  const profileRef = useRef<ProfileOptionRef>(null);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const toggleEditProfile = () => {
     setIsEditingProfile((prev) => {
       const newState = !prev;
       return newState;
     });
+  };
+  const saveChanges = () => {
+    profileRef.current?.saveChanges();
+    toggleEditProfile();
   };
 
   const submenuMapData: [SubMenuKey, SubMenuData][] = [
@@ -130,7 +135,12 @@ const Menu = () => {
     [
       SubMenuKey.Profile,
       {
-        Component: () => <Profile />,
+        Component: () => (
+          <Profile
+            ref={profileRef}
+            isEditing={isEditingProfile}
+          />
+        ),
         closeButtonLabel: isEditingProfile
           ? `${i18n.t("menu.tab.items.profile.actioncancel")}`
           : undefined,
@@ -142,7 +152,7 @@ const Menu = () => {
         additionalButtons: <></>,
         nestedMenu: false,
         actionButton: true,
-        actionButtonAction: toggleEditProfile,
+        actionButtonAction: isEditingProfile ? saveChanges : toggleEditProfile,
         actionButtonLabel: isEditingProfile
           ? `${i18n.t("menu.tab.items.profile.actionconfirm")}`
           : `${i18n.t("menu.tab.items.profile.actionedit")}`,
