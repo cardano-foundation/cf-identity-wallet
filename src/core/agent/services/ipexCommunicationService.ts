@@ -157,7 +157,7 @@ class IpexCommunicationService extends AgentService {
       senderName: holderSignifyName,
       recipient: msg.exn.i,
       acdc: new Serder(acdc),
-      apply: msg.exn.d,
+      applySaid: msg.exn.d,
     });
     await this.props.signifyClient
       .ipex()
@@ -319,9 +319,13 @@ class IpexCommunicationService extends AgentService {
     }
 
     const dt = new Date().toISOString().replace("Z", "000+00:00");
-    const [admit, sigs, aend] = await this.props.signifyClient
-      .ipex()
-      .admit(holderAidName, "", notificationD, dt);
+    const [admit, sigs, aend] = await this.props.signifyClient.ipex().admit({
+      senderName: holderAidName,
+      message: "",
+      grantSaid: notificationD,
+      recipient: issuerAid,
+      datetime: dt,
+    });
     const op = await this.props.signifyClient
       .ipex()
       .submitAdmit(holderAidName, admit, sigs, aend, [issuerAid]);

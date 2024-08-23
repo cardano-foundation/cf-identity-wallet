@@ -1,16 +1,14 @@
 import { IonSpinner } from "@ionic/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
 import { CredentialsMatchingApply } from "../../../../../core/agent/services/ipexCommunicationService.types";
-import { useAppSelector } from "../../../../../store/hooks";
-import { getNotificationDetailCache } from "../../../../../store/reducers/notificationsCache";
+import { i18n } from "../../../../../i18n";
+import { Alert } from "../../../../components/Alert";
+import { useOnlineStatusEffect } from "../../../../hooks";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import { ChooseCredential } from "./ChooseCredential";
 import "./CredentialRequest.scss";
 import { CredentialRequestInformation } from "./CredentialRequestInformation";
-import { useOnlineStatusEffect } from "../../../../hooks";
-import { Alert } from "../../../../components/Alert";
-import { i18n } from "../../../../../i18n";
 
 const CredentialRequest = ({
   pageId,
@@ -18,22 +16,11 @@ const CredentialRequest = ({
   notificationDetails,
   handleBack,
 }: NotificationDetailsProps) => {
-  const notificationDetailCache = useAppSelector(getNotificationDetailCache);
-  const [requestStage, setRequestStage] = useState(
-    notificationDetailCache?.step || 0
-  );
+  const [requestStage, setRequestStage] = useState(0);
   const [credentialRequest, setCredentialRequest] =
     useState<CredentialsMatchingApply | null>();
 
   const [isOpenAlert, setIsOpenAlert] = useState(false);
-
-  useEffect(() => {
-    if (!notificationDetailCache) {
-      return;
-    }
-
-    setRequestStage(notificationDetailCache.step || 0);
-  }, [notificationDetailCache]);
 
   const getCrendetialRequest = useCallback(async () => {
     try {
@@ -96,6 +83,7 @@ const CredentialRequest = ({
           notificationDetails={notificationDetails}
           onBack={backToStageOne}
           onClose={handleBack}
+          reloadData={getCrendetialRequest}
         />
       )}
       <Alert

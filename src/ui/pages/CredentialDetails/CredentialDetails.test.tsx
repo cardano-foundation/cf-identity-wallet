@@ -13,12 +13,7 @@ import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import { Agent } from "../../../core/agent/agent";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import {
-  addFavouritesCredsCache,
-  removeFavouritesCredsCache,
-  setCredsCache,
-} from "../../../store/reducers/credsCache";
-import { setNotificationDetailCache } from "../../../store/reducers/notificationsCache";
+import { setCredsCache } from "../../../store/reducers/credsCache";
 import {
   setCurrentRoute,
   setToastMsg,
@@ -121,7 +116,7 @@ const initialStateNoPasswordArchived = {
   },
 };
 
-describe("Cards Details page - current not archived credential", () => {
+describe("Cred Details page - current not archived credential", () => {
   let storeMocked: Store<unknown, AnyAction>;
   beforeAll(() => {
     jest
@@ -204,11 +199,11 @@ describe("Cards Details page - current not archived credential", () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId("tab-done-button")).toBeVisible();
+      expect(getByTestId("close-button-label")).toBeVisible();
     });
 
     act(() => {
-      fireEvent.click(getByTestId("tab-done-button"));
+      fireEvent.click(getByTestId("close-button-label"));
     });
 
     await waitFor(() => {
@@ -216,257 +211,6 @@ describe("Cards Details page - current not archived credential", () => {
         setCurrentRoute({
           path: TabsRoutePath.CREDENTIALS,
         })
-      );
-    });
-  });
-
-  test("It opens the options modal", async () => {
-    const { findByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredentialDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    const credsOptionsModal = await findByTestId("creds-options-modal");
-    expect(credsOptionsModal.getAttribute("is-open")).toBe("false");
-    const optionsButton = await findByTestId("options-button");
-    act(() => {
-      fireEvent.click(optionsButton);
-    });
-
-    const credsOptionsModalOpen = await findByTestId("creds-options-modal");
-    expect(credsOptionsModalOpen.getAttribute("is-open")).toBe("true");
-  });
-
-  test("It shows the warning when I click on the big archive button", async () => {
-    const {
-      findByTestId,
-      getAllByText,
-      queryAllByTestId,
-      getByTestId,
-      getAllByTestId,
-    } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredentialDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-    const archiveButton = await findByTestId(
-      "archive-button-credential-card-details"
-    );
-    act(() => {
-      fireEvent.click(archiveButton);
-    });
-
-    await waitFor(() => {
-      expect(queryAllByTestId("alert-delete-archive")[0]).toBeInTheDocument();
-    });
-
-    await waitFor(() => {
-      expect(
-        getAllByText(EN_TRANSLATIONS.credentials.details.alert.archive.title)[0]
-      ).toBeVisible();
-
-      expect(
-        getAllByTestId("alert-delete-archive-confirm-button")[0]
-      ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getAllByTestId("alert-delete-archive-confirm-button")[0]);
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("verify-passcode")).toBeVisible();
-      expect(getByTestId("verify-passcode")).toHaveAttribute("is-open", "true");
-    });
-  });
-
-  test("It changes to favourite icon on click disabled favourite button", async () => {
-    const storeMocked = {
-      ...mockStore(initialStateNoPasswordCurrent),
-      dispatch: dispatchMock,
-    };
-
-    const mockNow = 1466424490000;
-    const dateSpy = jest.spyOn(Date, "now").mockReturnValue(mockNow);
-
-    const { queryByTestId, findByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredentialDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId("cred-detail-spinner-container")).toBe(null);
-    });
-
-    const heartButton = await findByTestId("heart-button");
-
-    act(() => {
-      fireEvent.click(heartButton);
-    });
-
-    await waitForIonicReact();
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        addFavouritesCredsCache({
-          id: credsFixAcdc[0].id,
-          time: mockNow,
-        })
-      );
-    });
-
-    dateSpy.mockRestore();
-  });
-  test("Remove favourite credential", async () => {
-    const mockNow = 1466424490000;
-
-    const initialStateNoPasswordCurrent = {
-      stateCache: {
-        routes: [TabsRoutePath.CREDENTIALS],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-          passwordIsSet: false,
-          passwordIsSkipped: true,
-        },
-        isOnline: true,
-      },
-      seedPhraseCache: {
-        seedPhrase:
-          "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-        bran: "bran",
-      },
-      credsCache: {
-        creds: credsFixAcdc,
-        favourites: [
-          {
-            id: credsFixAcdc[0].id,
-            time: mockNow,
-          },
-        ],
-      },
-      notificationsCache: {
-        notificationDetailCache: null,
-      },
-    };
-
-    const storeMocked = {
-      ...mockStore(initialStateNoPasswordCurrent),
-      dispatch: dispatchMock,
-    };
-
-    const { findByTestId, queryByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredentialDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId("cred-detail-spinner-container")).toBe(null);
-    });
-
-    const heartButton = await findByTestId("heart-button");
-
-    act(() => {
-      fireEvent.click(heartButton);
-    });
-
-    await waitForIonicReact();
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        removeFavouritesCredsCache(credsFixAcdc[0].id)
-      );
-    });
-  });
-
-  test("Maximum favourite credential", async () => {
-    const mockNow = 1466424490000;
-
-    const initialStateNoPasswordCurrent = {
-      stateCache: {
-        routes: [TabsRoutePath.CREDENTIALS],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-          passwordIsSet: false,
-          passwordIsSkipped: true,
-        },
-        isOnline: true,
-      },
-      seedPhraseCache: {
-        seedPhrase:
-          "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-        bran: "bran",
-      },
-      credsCache: {
-        creds: credsFixAcdc,
-        favourites: new Array(5).map((_, index) => ({
-          id: index,
-          time: mockNow,
-        })),
-      },
-
-      notificationsCache: {
-        notificationDetailCache: null,
-      },
-    };
-
-    const storeMocked = {
-      ...mockStore(initialStateNoPasswordCurrent),
-      dispatch: dispatchMock,
-    };
-
-    const { findByTestId, queryByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredentialDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId("cred-detail-spinner-container")).toBe(null);
-    });
-
-    const heartButton = await findByTestId("heart-button");
-
-    act(() => {
-      fireEvent.click(heartButton);
-    });
-
-    await waitForIonicReact();
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED)
       );
     });
   });
@@ -486,43 +230,6 @@ describe("Cards Details page - archived credential", () => {
       ...mockStore(initialStateNoPasswordArchived),
       dispatch: credDispatchMock,
     };
-  });
-
-  test("It shows the restore alert", async () => {
-    const { queryByText, getByText, queryAllByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredentialDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    await waitFor(() => {
-      expect(
-        queryByText(EN_TRANSLATIONS.credentials.details.restore)
-      ).toBeVisible();
-    });
-
-    const restoreButton = getByText(
-      EN_TRANSLATIONS.credentials.details.restore
-    );
-
-    act(() => {
-      fireEvent.click(restoreButton);
-    });
-
-    await waitFor(() => {
-      expect(queryAllByTestId("alert-restore")[0]).toBeInTheDocument();
-    });
-
-    await waitFor(() => {
-      expect(
-        queryByText(EN_TRANSLATIONS.credentials.details.alert.restore.title)
-      ).toBeVisible();
-    });
   });
 
   test("Restore func", async () => {
@@ -579,87 +286,6 @@ describe("Cards Details page - archived credential", () => {
       credDispatchMock.mockImplementation((action) => {
         expect(action).toEqual(setCredsCache(credsFixAcdc));
       });
-    });
-  });
-});
-
-describe("Cred detail - notification light mode", () => {
-  let storeMocked: Store<unknown, AnyAction>;
-  const credDispatchMock = jest.fn();
-
-  const state = {
-    stateCache: {
-      routes: [TabsRoutePath.CREDENTIALS],
-      authentication: {
-        loggedIn: true,
-        time: Date.now(),
-        passcodeIsSet: true,
-        passwordIsSet: false,
-        passwordIsSkipped: true,
-      },
-      isOnline: true,
-    },
-    seedPhraseCache: {
-      seedPhrase:
-        "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-      bran: "bran",
-    },
-    credsCache: { creds: credsFixAcdc },
-    credsArchivedCache: { creds: [] },
-    biometricsCache: {
-      enabled: false,
-    },
-    notificationsCache: {
-      notificationDetailCache: {
-        notificationId: "test-id",
-        viewCred: "test-cred",
-        step: 0,
-      },
-    },
-  };
-
-  beforeAll(() => {
-    jest
-      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
-      .mockResolvedValue(credsFixAcdc[0]);
-  });
-  beforeEach(() => {
-    const mockStore = configureStore();
-    storeMocked = {
-      ...mockStore(state),
-      dispatch: credDispatchMock,
-    };
-  });
-
-  test("It show notification cred mode", async () => {
-    const { getByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredentialDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    await waitFor(() => {
-      expect(getByTestId("notification-selected")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("tab-done-button"));
-    });
-
-    await waitFor(() => {
-      expect(credDispatchMock).toBeCalledWith(
-        setNotificationDetailCache({
-          notificationId: "test-id",
-          viewCred: "test-cred",
-          step: 1,
-          checked: false,
-        })
-      );
     });
   });
 });

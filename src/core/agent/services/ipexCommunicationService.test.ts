@@ -466,7 +466,7 @@ describe("Ipex communication service of agent", () => {
       senderName: "abc123",
       recipient: "i",
       acdc: expect.anything(),
-      apply: "d",
+      applySaid: "d",
     });
     expect(deleteNotificationMock).toBeCalledWith(id);
   });

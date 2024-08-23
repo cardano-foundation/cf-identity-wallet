@@ -27,13 +27,13 @@ interface IdentifierDetails extends IdentifierShortDetails {
   signifyOpName?: string;
   s: string;
   dt: string;
-  kt: number;
+  kt: string | string[];
   k: string[];
-  nt: number;
+  nt: string | string[];
   n: string[];
-  bt: number;
+  bt: string;
   b: string[];
-  di: string;
+  di?: string;
 }
 
 interface MultiSigIcpRequestDetails {
