@@ -12,6 +12,7 @@ import { ForgotType } from "../ForgotAuthInfo/ForgotAuthInfo.types";
 import { OptionModal } from "../OptionsModal";
 import "./VerifyPassword.scss";
 import { VerifyPasswordProps } from "./VerifyPassword.types";
+import { showError as showErrorMessage } from "../../utils/error";
 
 const VerifyPassword = ({
   isOpen,
@@ -63,7 +64,7 @@ const VerifyPassword = ({
             `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_OP_PASSWORD}`
         )
       ) {
-        // @TODO - sdisalvo: handle error
+        showErrorMessage("Unable to get password", e);
         throw e;
       }
     }
@@ -74,7 +75,7 @@ const VerifyPassword = ({
         await Agent.agent.basicStorage.findById(MiscRecordId.OP_PASS_HINT)
       )?.content?.value;
     } catch (error) {
-      // TODO: @bao-sotatek handle error for this
+      showErrorMessage("Unable to find password hint", error);
     }
 
     setStoredHint(`${hint || ""}`);
@@ -113,10 +114,6 @@ const VerifyPassword = ({
     }
   }, [attempts]);
 
-  const handleReset = () => {
-    resetModal();
-  };
-
   const handleRecoveryPassword = () => {
     setOpenRecoveryAuth(true);
   };
@@ -132,7 +129,7 @@ const VerifyPassword = ({
       actionButtonAction: () => setAttempts(attempts - 1),
       actionButtonLabel: `${i18n.t("verifypassword.confirm")}`,
     }),
-    [verifyPasswordValue.length]
+    [attempts, setIsOpen, verifyPasswordValue.length]
   );
 
   const handleDissmissShowHint = () => {

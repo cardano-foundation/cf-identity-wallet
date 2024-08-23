@@ -1581,7 +1581,8 @@
     "archivedcrederror": "Unable to archive credential",
     "signsuccessful": "Sign successful",
     "savepasswordhinterror": "Unable to delete password hint",
-    "editidentifiererror": "Unable to update identifier"
+    "editidentifiererror": "Unable to update identifier",
+    "failedupdateconnectionerror": "Failed to update connection"
   },
   "request": {
     "sign": {

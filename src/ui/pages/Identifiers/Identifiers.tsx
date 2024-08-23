@@ -33,6 +33,7 @@ import "./Identifiers.scss";
 import { StartAnimationSource } from "./Identifiers.type";
 import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 import { Agent } from "../../../core/agent/agent";
+import { showError } from "../../utils/error";
 
 const CLEAR_STATE_DELAY = 1000;
 interface AdditionalButtonsProps {
@@ -219,9 +220,12 @@ const Identifiers = () => {
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
       dispatch(setIdentifiersCache(updatedIdentifiers));
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to delete identifier", e);
-      dispatch(setToastMsg(ToastMsgType.DELETE_IDENTIFIER_FAIL));
+      showError(
+        "Unable to delete identifier",
+        e,
+        dispatch,
+        ToastMsgType.DELETE_IDENTIFIER_FAIL
+      );
     }
   };
 

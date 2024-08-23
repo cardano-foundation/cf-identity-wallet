@@ -5,6 +5,13 @@ import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { i18n } from "../../../i18n";
+import { useAppDispatch } from "../../../store/hooks";
+import {
+  getStateCache,
+  setAuthentication,
+} from "../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../globals/types";
+import { showError } from "../../utils/error";
 import { passwordStrengthChecker } from "../../utils/passwordStrengthChecker";
 import { Alert as AlertCancel, Alert as AlertExisting } from "../Alert";
 import { CustomInput } from "../CustomInput";
@@ -13,13 +20,6 @@ import { PageFooter } from "../PageFooter";
 import { PasswordValidation } from "../PasswordValidation";
 import "./PasswordModule.scss";
 import { PasswordModuleProps, PasswordModuleRef } from "./PasswordModule.types";
-import {
-  getStateCache,
-  setAuthentication,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
-import { useAppDispatch } from "../../../store/hooks";
-import { ToastMsgType } from "../../globals/types";
 
 const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
   ({ title, isOnboarding, description, testId, onCreateSuccess }, ref) => {
@@ -132,9 +132,12 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
               );
             }
           } catch (e) {
-            // eslint-disable-next-line no-console
-            console.error("Unable to delete password hint", e);
-            dispatch(setToastMsg(ToastMsgType.UNABLE_DELETE_PASSWORD_HINT));
+            showError(
+              "Unable to delete password hint",
+              e,
+              dispatch,
+              ToastMsgType.UNABLE_DELETE_PASSWORD_HINT
+            );
           }
         }
       }

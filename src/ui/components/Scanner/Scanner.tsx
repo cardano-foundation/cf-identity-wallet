@@ -13,12 +13,10 @@ import {
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
-import {
-  ConnectionShortDetails,
-  KeriConnectionType,
-} from "../../../core/agent/agent.types";
+import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { updateOrAddMultisigConnectionCache } from "../../../store/reducers/connectionsCache";
 import {
   getMultiSigGroupCache,
   setMultiSigGroupCache,
@@ -33,6 +31,7 @@ import {
 } from "../../../store/reducers/stateCache";
 import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
+import { showError } from "../../utils/error";
 import { CreateIdentifier } from "../CreateIdentifier";
 import { CustomInput } from "../CustomInput";
 import { TabsRoutePath } from "../navigation/TabsMenu";
@@ -40,7 +39,6 @@ import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
 import { ScannerProps } from "./Scanner.types";
-import { updateOrAddMultisigConnectionCache } from "../../../store/reducers/connectionsCache";
 
 const Scanner = forwardRef(
   ({ routePath, setIsValueCaptured, handleReset }: ScannerProps, ref) => {
@@ -162,9 +160,7 @@ const Scanner = forwardRef(
           dispatch(setToastMsg(ToastMsgType.NEW_MULTI_SIGN_MEMBER));
         }
       } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error("Scanner Error:", e);
-        dispatch(setToastMsg(ToastMsgType.SCANNER_ERROR));
+        showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
         initScan();
       }
     };

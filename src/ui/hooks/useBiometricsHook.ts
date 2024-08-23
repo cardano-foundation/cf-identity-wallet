@@ -11,6 +11,7 @@ import { PluginListenerHandle } from "@capacitor/core";
 import i18n from "i18next";
 import { useEffect, useState } from "react";
 import { useActivityTimer } from "../components/AppWrapper/hooks/useActivityTimer";
+import { showError } from "../utils/error";
 
 const useBiometricAuth = () => {
   const [biometricInfo, setBiometricInfo] = useState<CheckBiometryResult>();
@@ -20,15 +21,16 @@ const useBiometricAuth = () => {
     checkBiometrics();
   }, []);
 
-  let appListener: PluginListenerHandle;
   useEffect(() => {
+    let appListener: PluginListenerHandle;
+
     const updateBiometrics = async () => {
       appListener = await BiometricAuth.addResumeListener(setBiometricInfo);
       try {
         appListener = await BiometricAuth.addResumeListener(setBiometricInfo);
       } catch (error) {
         if (error instanceof Error) {
-          // TODO: handle error
+          showError("Unable to add biometric event", error);
         }
       }
     };

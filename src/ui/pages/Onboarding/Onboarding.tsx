@@ -105,7 +105,6 @@ const Onboarding = () => {
         tertiaryButtonText={`${i18n.t(
           "onboarding.alreadywallet.button.label"
         )}`}
-        // TODO: set restore route when available
         tertiaryButtonAction={() => handleNavigation("#")}
       />
     </ResponsivePageLayout>
