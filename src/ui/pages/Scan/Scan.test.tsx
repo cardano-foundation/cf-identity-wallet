@@ -122,10 +122,12 @@ describe("Scan Tab", () => {
 
     await waitFor(() => {
       expect(historyPushMock).toBeCalledWith({
-        pathname: undefined,
+        pathname: "",
         state: {
           currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
+          toastMsg: undefined,
           openConnections: false,
+          nextRoute: "",
         },
       });
     });
