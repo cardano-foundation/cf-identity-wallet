@@ -38,8 +38,6 @@ const IdentifierStage4 = ({
 
   const createMultisigIdentifier = async () => {
     if (!ourIdentifier) {
-      // @TODO - sdisalvo: Leaving this until we have a story to add a proper
-      // logger to the project so we can adjust the log level and timestamp it.
       // eslint-disable-next-line no-console
       console.warn(
         "Attempting to create multi-sig without a corresponding normal AID to manage local keys"
