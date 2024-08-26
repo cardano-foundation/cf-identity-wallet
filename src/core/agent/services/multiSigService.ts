@@ -1147,7 +1147,8 @@ class MultiSigService extends AgentService {
           mHab,
           "/multisig/exn",
           { gid: gHab["prefix"] },
-          gembeds
+          gembeds,
+          recp[0]
         );
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
@@ -1183,7 +1184,8 @@ class MultiSigService extends AgentService {
           mHab,
           "/multisig/exn",
           { gid: gHab["prefix"] },
-          gembeds
+          gembeds,
+          recp[0]
         );
     }
 
@@ -1192,6 +1194,17 @@ class MultiSigService extends AgentService {
       .submitGrant(multisigSignifyName, exn, sigsMes, dtime, recp);
 
     return op;
+  }
+
+  async getMembersByIdentifierId(id: string) {
+    const signifyName = (await this.identifierStorage.getIdentifierMetadata(id))
+      .signifyName;
+    const members = await this.props.signifyClient
+      .identifiers()
+      .members(signifyName);
+    const multisigMembers = members["signing"];
+
+    return multisigMembers;
   }
 }
 

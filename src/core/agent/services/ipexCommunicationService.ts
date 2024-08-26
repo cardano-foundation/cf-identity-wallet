@@ -447,9 +447,9 @@ class IpexCommunicationService extends AgentService {
     await this.saveAcdcMetadataRecord(
       previousExnGrantMsg.exn.e.acdc.d,
       previousExnGrantMsg.exn.e.acdc.a.dt,
-      connectionId,
       schema.title,
-      connectionId
+      connectionId,
+      schemaSaid
     );
 
     this.props.eventService.emit<AcdcStateChangedEvent>({
@@ -487,10 +487,18 @@ class IpexCommunicationService extends AgentService {
       await this.identifierStorage.getIdentifierMetadata(pickedCred.sad.a.i)
     ).signifyName;
 
-    await Agent.agent.multiSigs.grantPresentMultisigAcdc(
+    const op = await Agent.agent.multiSigs.grantPresentMultisigAcdc(
       holderSignifyName,
       pickedCred.sad?.i,
       pickedCred
+    );
+
+    const pendingOperation = await this.operationPendingStorage.save({
+      id: op.name,
+      recordType: OperationPendingRecordType.ExchangePresentCredential,
+    });
+    Agent.agent.signifyNotifications.addPendingOperationToQueue(
+      pendingOperation
     );
   }
 
