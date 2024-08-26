@@ -57,9 +57,7 @@ const CredentialItem = ({
               data-testid={`credential-name-${credential.id}`}
               className="credential-name"
             >
-              {credential.credentialType
-                .replace(/([A-Z][a-z])/g, " $1")
-                .replace(/(\d)/g, " $1")}
+              {credential.credentialType}
             </div>
             <div className="credential-expiration">
               {!isRevoked ? (
