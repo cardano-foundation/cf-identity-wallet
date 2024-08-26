@@ -34,6 +34,10 @@ class IpexMessageStorage {
     );
     return records;
   }
+
+  async deleteIpexMessageMetadata(id: string) {
+    return this.storageService.deleteById(id);
+  }
 }
 
 export { IpexMessageStorage };
