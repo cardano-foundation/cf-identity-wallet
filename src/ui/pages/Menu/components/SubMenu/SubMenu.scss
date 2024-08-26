@@ -12,8 +12,10 @@
     transition-duration: 0.5s;
   }
 
-  ion-header ion-toolbar {
+  ion-header.page-header ion-toolbar {
     margin-top: 0.625rem;
+    padding-right: 0;
+    padding-left: 0;
     --background: var(--ion-color-light-grey);
 
     ion-title.md {

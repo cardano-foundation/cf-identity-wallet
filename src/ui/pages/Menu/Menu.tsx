@@ -148,7 +148,7 @@ const Menu = () => {
         title: isEditingProfile
           ? "menu.tab.items.profile.tabedit"
           : "menu.tab.items.profile.tabheader",
-        pageId: "profile",
+        pageId: isEditingProfile ? "edit-profile" : "view-profile",
         additionalButtons: <></>,
         nestedMenu: false,
         actionButton: true,

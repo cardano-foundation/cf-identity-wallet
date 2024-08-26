@@ -1068,7 +1068,7 @@
       },
       "identifier": {
         "title": "Identifier request",
-        "subtitle": "Review this group identifier request",
+        "subtitle": "You have received a request to join a group identifier",
         "requestfrom": "Request from",
         "othermembers": "Other members",
         "pending": "Pending",
@@ -1106,7 +1106,8 @@
           "tabedit": "Edit profile",
           "actionedit": "Edit",
           "actionconfirm": "Confirm",
-          "actioncancel": "Cancel"
+          "actioncancel": "Cancel",
+          "name": "Name"
         },
         "crypto": {
           "title": "Crypto"

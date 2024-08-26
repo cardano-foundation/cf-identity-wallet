@@ -1,17 +1,61 @@
-.profile-container {
-  .profile-title {
-    font-size: 1.25rem;
-    line-height: 1.5rem;
-    margin-bottom: 1rem;
-    margin-top: 1.75rem;
+.profile-content,
+.edit-profile-content {
+  .profile-item-title-placeholder {
+    margin-top: 2.2rem;
+  }
+
+  .profile-item-title {
+    margin: 0.625rem 0;
+  }
+
+  ion-card {
+    margin: 0;
+    display: flex;
+    background: white;
+    border-radius: 1rem;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 0.5rem 1.25rem;
+    box-shadow: none;
+    --inner-border-width: 0;
+    margin-bottom: 1.5rem;
+
+    ion-item {
+      padding: 0;
+      --padding-start: 0;
+      --padding-end: 0;
+      --inner-border-width: 0;
+      --inner-padding-end: 0;
+
+      .profile-item {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        span:last-of-type {
+          color: rgba(var(--ion-color-secondary-rgb), 0.5);
+        }
+      }
+    }
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
-    .profile-title {
-      font-size: 1rem;
-      line-height: 1.25rem;
-      margin-bottom: 0.75rem;
-      margin-top: 1.25rem;
+    //
+  }
+}
+
+.edit-profile {
+  .action-button-label p {
+    color: var(--ion-color-action-blue) !important;
+  }
+
+  .edit-profile-content {
+    ion-item.custom-input {
+      --background: transparent;
+      div {
+        font-weight: 400;
+      }
     }
   }
 }
