@@ -188,6 +188,9 @@ const Scanner = forwardRef(
 
     const processValue = async (content: string) => {
       stopScan();
+      // @TODO - foconnor: instead of setting the optype to idle we should
+      // have a loading screen with "waiting for server..." etc,
+      // and it can update to an error if the QR is invalid with a re-scan btn
       dispatch(setCurrentOperation(OperationType.IDLE));
 
       if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
@@ -205,6 +208,7 @@ const Scanner = forwardRef(
         return;
       }
 
+      // @TODO - foconnor: when above loading screen in place, handle invalid QR code
       handleResolveOobi(content);
     };
 
