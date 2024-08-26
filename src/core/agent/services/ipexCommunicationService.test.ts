@@ -890,6 +890,15 @@ describe("Ipex communication service of agent", () => {
 
     await ipexCommunicationService.acceptAcdcFromMultisigExn(id);
     expect(Agent.agent.multiSigs.multisigAdmit).toBeCalledTimes(1);
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
+      id: "EJvvnAZruVSfvPZjzGwyTR3RQApoK7228du0c8flDcaF",
+      isArchived: false,
+      credentialType: "title",
+      issuanceDate: new Date("2024-07-31T02:45:16.860000+00:00").toISOString(),
+      connectionId: "EKhebhdg6jOqK7ZgY-cFpx6rozpUave8llE2B15ioNHi",
+      schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      status: CredentialStatus.PENDING,
+    });
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
