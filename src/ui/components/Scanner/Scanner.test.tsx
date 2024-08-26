@@ -6,7 +6,9 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import EN_Translation from "../../../locales/en/en.json";
+import { setMultisigLinkContactsCache } from "../../../store/reducers/connectionsCache";
 import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
+import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
   setCurrentOperation,
   setToastMsg,
@@ -94,6 +96,9 @@ describe("Scanner", () => {
         passwordIsSet: false,
       },
       currentOperation: OperationType.SCAN_WALLET_CONNECTION,
+    },
+    connectionsCache: {
+      multisigLinkContactsCache: {},
     },
   };
 
@@ -241,6 +246,9 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        multisigLinkContactsCache: {},
+      },
     };
 
     getMultisigLinkedContactsMock.mockReturnValue(connectionsFix);
@@ -315,6 +323,9 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        multisigLinkContactsCache: {},
+      },
     };
 
     const storeMocked = {
@@ -364,6 +375,11 @@ describe("Scanner", () => {
       expect(handleReset).toBeCalled();
       expect(getMultisigLinkedContactsMock).toBeCalledWith("72e2f089cef6");
       expect(dispatchMock).toBeCalledWith(
+        setMultisigLinkContactsCache({
+          "72e2f089cef6": [connectionsFix[0]],
+        })
+      );
+      expect(dispatchMock).toBeCalledWith(
         setMultiSigGroupCache({
           groupId: "72e2f089cef6",
           connections: [connectionsFix[0]],
@@ -387,6 +403,9 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
+      connectionsCache: {
+        multisigLinkContactsCache: {},
+      },
     };
 
     const storeMocked = {
@@ -403,6 +422,208 @@ describe("Scanner", () => {
       expect(
         getByText(EN_Translation.createidentifier.scan.pastecontents)
       ).toBeVisible();
+    });
+  });
+
+  test("Scan SSI boot url", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_SSI_BOOT_URL,
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+      connectionsCache: {
+        multisigLinkContactsCache: {},
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      return {
+        type: KeriConnectionType.NORMAL,
+      };
+    });
+
+    startScan.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              hasContent: true,
+              content:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            });
+          }, 100);
+        })
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setBootUrl(
+          "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6"
+        )
+      );
+    });
+  });
+
+  test("Scan SSI connect url", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_SSI_CONNECT_URL,
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+      connectionsCache: {
+        multisigLinkContactsCache: {},
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      return {
+        type: KeriConnectionType.NORMAL,
+      };
+    });
+
+    startScan.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              hasContent: true,
+              content:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            });
+          }, 100);
+        })
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setConnectUrl(
+          "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6"
+        )
+      );
+    });
+  });
+
+  test("Get multisig linked contact connections from cache", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+      connectionsCache: {
+        multisigLinkContactsCache: {
+          "72e2f089cef6": connectionsFix,
+        },
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      return {
+        type: KeriConnectionType.NORMAL,
+      };
+    });
+
+    startScan.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              hasContent: true,
+              content:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            });
+          }, 100);
+        })
+    );
+
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_Translation.createidentifier.scan.pasteoobi)
+      ).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setMultiSigGroupCache({
+          groupId: "72e2f089cef6",
+          connections: connectionsFix,
+        })
+      );
+      expect(getMultisigLinkedContactsMock).not.toBeCalled();
     });
   });
 });

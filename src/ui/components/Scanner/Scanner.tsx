@@ -16,7 +16,11 @@ import { Agent } from "../../../core/agent/agent";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { updateOrAddMultisigConnectionCache } from "../../../store/reducers/connectionsCache";
+import {
+  getMultisigLinkContactsCache,
+  setMultisigLinkContactsCache,
+  updateOrAddMultisigConnectionCache,
+} from "../../../store/reducers/connectionsCache";
 import {
   getMultiSigGroupCache,
   setMultiSigGroupCache,
@@ -47,6 +51,9 @@ const Scanner = forwardRef(
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
     const currentOperation = useAppSelector(getCurrentOperation);
     const currentToastMsg = useAppSelector(getToastMsg);
+    const multisigLinkContactsCache = useAppSelector(
+      getMultisigLinkContactsCache
+    );
     const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
       useState(false);
     const [pasteModalIsOpen, setPasteModalIsOpen] = useState(false);
@@ -109,16 +116,30 @@ const Scanner = forwardRef(
     };
 
     const updateConnections = async (groupId: string) => {
-      // TODO: We should avoid calling getMultisigLinkedContacts every time we scan a QR code,
-      // ideally once the OOBI is resolved we can insert the connection details into Redux -
-      // should change when we do scanner error handling
+      if (multisigLinkContactsCache?.[groupId]) {
+        dispatch(
+          setMultiSigGroupCache({
+            groupId,
+            connections: multisigLinkContactsCache[groupId],
+          })
+        );
+        return;
+      }
 
       const connections =
         await Agent.agent.connections.getMultisigLinkedContacts(groupId);
+
       const newMultiSigGroup: MultiSigGroup = {
         groupId,
         connections,
       };
+
+      const newMultisigLinkContactsCache = {
+        ...multisigLinkContactsCache,
+        [groupId]: connections,
+      };
+
+      dispatch(setMultisigLinkContactsCache(newMultisigLinkContactsCache));
       dispatch(setMultiSigGroupCache(newMultiSigGroup));
     };
 
@@ -167,9 +188,6 @@ const Scanner = forwardRef(
 
     const processValue = async (content: string) => {
       stopScan();
-      // @TODO - foconnor: instead of setting the optype to idle we should
-      // have a loading screen with "waiting for server..." etc,
-      // and it can update to an error if the QR is invalid with a re-scan btn
       dispatch(setCurrentOperation(OperationType.IDLE));
 
       if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
@@ -187,7 +205,6 @@ const Scanner = forwardRef(
         return;
       }
 
-      // @TODO - foconnor: when above loading screen in place, handle invalid QR code
       handleResolveOobi(content);
     };
 
@@ -239,13 +256,15 @@ const Scanner = forwardRef(
       setPastedValue("");
     };
 
+    const openPasteModal = () => setPasteModalIsOpen(true);
+
     const RenderPageFooter = () => {
       switch (currentOperation) {
       case OperationType.SCAN_WALLET_CONNECTION:
         return (
           <PageFooter
             customClass="actions-button"
-            secondaryButtonAction={() => setPasteModalIsOpen(true)}
+            secondaryButtonAction={openPasteModal}
             secondaryButtonText={`${i18n.t("scan.pastemeerkatid")}`}
           />
         );
@@ -259,7 +278,7 @@ const Scanner = forwardRef(
             secondaryButtonText={`${i18n.t(
               "createidentifier.scan.pasteoobi"
             )}`}
-            secondaryButtonAction={() => setPasteModalIsOpen(true)}
+            secondaryButtonAction={openPasteModal}
           />
         );
       case OperationType.MULTI_SIG_RECEIVER_SCAN:
@@ -269,7 +288,7 @@ const Scanner = forwardRef(
             secondaryButtonText={`${i18n.t(
               "createidentifier.scan.pasteoobi"
             )}`}
-            secondaryButtonAction={() => setPasteModalIsOpen(true)}
+            secondaryButtonAction={openPasteModal}
           />
         );
       case OperationType.SCAN_SSI_BOOT_URL:
@@ -282,7 +301,7 @@ const Scanner = forwardRef(
             secondaryButtonText={`${i18n.t(
               "createidentifier.scan.pastecontents"
             )}`}
-            secondaryButtonAction={() => setPasteModalIsOpen(true)}
+            secondaryButtonAction={openPasteModal}
           />
         );
       }
