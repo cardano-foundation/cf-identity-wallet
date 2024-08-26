@@ -21,6 +21,10 @@ const config: CapacitorConfig = {
       launchFadeOutDuration: 1000,
       backgroundColor: "#92FFC0"
     },
+    PrivacyScreen: {
+      enable: false,
+      imageName: "Splashscreen",
+    }
   }
 };
 

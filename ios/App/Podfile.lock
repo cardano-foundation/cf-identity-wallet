@@ -14,6 +14,8 @@ PODS:
     - Capacitor
   - CapacitorCommunityBarcodeScanner (4.0.1):
     - Capacitor
+  - CapacitorCommunityPrivacyScreen (4.2.4):
+    - Capacitor
   - CapacitorCommunitySqlite (5.7.1):
     - Capacitor
     - SQLCipher
@@ -49,6 +51,7 @@ DEPENDENCIES:
   - "CapacitorBrowser (from `../../node_modules/@capacitor/browser`)"
   - "CapacitorClipboard (from `../../node_modules/@capacitor/clipboard`)"
   - "CapacitorCommunityBarcodeScanner (from `../../node_modules/@capacitor-community/barcode-scanner`)"
+  - "CapacitorCommunityPrivacyScreen (from `../../node_modules/@capacitor-community/privacy-screen`)"
   - "CapacitorCommunitySqlite (from `../../node_modules/@capacitor-community/sqlite`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
@@ -80,6 +83,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/clipboard"
   CapacitorCommunityBarcodeScanner:
     :path: "../../node_modules/@capacitor-community/barcode-scanner"
+  CapacitorCommunityPrivacyScreen:
+    :path: "../../node_modules/@capacitor-community/privacy-screen"
   CapacitorCommunitySqlite:
     :path: "../../node_modules/@capacitor-community/sqlite"
   CapacitorCordova:
@@ -107,6 +112,7 @@ SPEC CHECKSUMS:
   CapacitorBrowser: 53c2279785c2f67059439445647c8ad90150e1ae
   CapacitorClipboard: 45e5e25f2271f98712985d422776cdc5a779cca1
   CapacitorCommunityBarcodeScanner: 7feb206489c8555a8ca0c74c57ddf49ead774eb8
+  CapacitorCommunityPrivacyScreen: c41be3be02d46881131a4d66ac2aeb48f287f41f
   CapacitorCommunitySqlite: 6e2754dde799d618a8e75e409ccc67ec9c189460
   CapacitorCordova: a6e87fccc0307dee7aec1560ec9398485f2b0ce7
   CapacitorKeyboard: aec619a578235c6ce279075009a2689c2cf5c42c
@@ -120,6 +126,6 @@ SPEC CHECKSUMS:
   SQLCipher: f2e96b3822e3006b379181a0e4fd145f6de29b56
   ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 
-PODFILE CHECKSUM: d5b050af5bcdbe71a0d8afcc492444499451cd91
+PODFILE CHECKSUM: 27d4918c25a2a97ee52a92d9ba0fd28a9469539c
 
 COCOAPODS: 1.15.2
