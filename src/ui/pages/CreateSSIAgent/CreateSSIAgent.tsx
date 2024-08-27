@@ -113,7 +113,7 @@ const CreateSSIAgent = () => {
     ssiAgent.connectUrl &&
     !isValidHttpUrl(ssiAgent.connectUrl);
 
-  const validated = validBootUrl && validConnectUrl && !hasMismatchError;
+  const validated = validBootUrl && validConnectUrl;
 
   const handleClearState = () => {
     dispatch(clearSSIAgent());
