@@ -41,7 +41,11 @@
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
-    //
+    ion-item {
+      font-size: 0.8rem;
+      line-height: 1.375rem;
+      --min-height: 2rem;
+    }
   }
 }
 
@@ -53,6 +57,11 @@
   .edit-profile-content {
     ion-item.custom-input {
       --background: transparent;
+
+      ion-label {
+        font-weight: 500;
+      }
+
       div {
         font-weight: 400;
       }
