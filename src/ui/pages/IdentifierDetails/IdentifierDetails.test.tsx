@@ -1,4 +1,11 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  getDefaultNormalizer,
+  render,
+  waitFor,
+} from "@testing-library/react";
+import { createMemoryHistory } from "history";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
@@ -50,6 +57,8 @@ const rotateIdentifierMock = jest.fn((id: string) => Promise.resolve());
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
+    MISSING_DATA_ON_KERIA:
+      "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.",
     agent: {
       identifiers: {
         getIdentifier: () => combineMock(),
@@ -106,7 +115,7 @@ describe("Cards Details page (not multi-sig)", () => {
   });
 
   test("It opens the sharing modal", async () => {
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId, queryAllByTestId } = render(
       <Provider store={storeMockedAidKeri}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -124,14 +133,14 @@ describe("Cards Details page (not multi-sig)", () => {
       );
     });
 
-    expect(queryByTestId("share-identifier-modal")).not.toBeVisible();
+    expect(queryAllByTestId("share-connection-modal")[0]).not.toBeVisible();
 
     act(() => {
       fireEvent.click(getByTestId("share-button"));
     });
 
     await waitFor(() => {
-      expect(getByTestId("share-identifier-modal")).toBeVisible();
+      expect(queryAllByTestId("share-connection-modal")[0]).toBeVisible();
     });
   });
 
@@ -398,7 +407,7 @@ describe("Cards Details page (not multi-sig)", () => {
   test("Show loading when indetifier data is null", async () => {
     Agent.agent.identifiers.getIdentifiers = jest.fn().mockResolvedValue(null);
 
-    const { getByTestId, unmount } = render(
+    const { getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -599,5 +608,44 @@ describe("Cards Details page (multi-sig)", () => {
     await waitFor(() =>
       expect(queryByTestId("signing-key-0-action-icon")).toBe(null)
     );
+  });
+});
+
+describe("Checking the Identifier Details Page when information is missing from the cloud", () => {
+  beforeEach(() => {
+    combineMock.mockImplementation(() => {
+      throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`);
+    });
+  });
+
+  test("Identifier exists in the database but not on Signify", async () => {
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.IDENTIFIER_DETAILS, {
+      ...identifierFix[0],
+    });
+
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMockedAidKeri}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={IdentifierDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(
+        getByTestId("identifier-card-details-cloud-error-page")
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.identifiers.details.clouderror, {
+          normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
+        })
+      ).toBeVisible();
+    });
   });
 });

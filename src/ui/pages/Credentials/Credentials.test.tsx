@@ -1,25 +1,53 @@
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { pendingCredFixs } from "../../__fixtures__/credsFix";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { formatShortDate } from "../../utils/formatters";
-import { Creds } from "./Credentials";
+import { Credentials } from "./Credentials";
+import { passcodeFiller } from "../../utils/passcodeFiller";
+import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
+
+const deleteIdentifierMock = jest.fn();
+const archiveIdentifierMock = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       credentials: {
         getCredentialDetailsById: jest.fn(),
+        deleteCredential: () => deleteIdentifierMock(),
+        archiveCredential: () => archiveIdentifierMock(),
       },
     },
   },
 }));
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div {...props}>{children}</div> : null,
+}));
+
+jest.mock("../../../core/storage", () => ({
+  ...jest.requireActual("../../../core/storage"),
+  SecureStorage: {
+    get: () => "111111",
+  },
+}));
+
 const initialStateEmpty = {
   stateCache: {
     routes: [TabsRoutePath.CREDENTIALS],
@@ -75,6 +103,42 @@ const initialStateFull = {
   },
 };
 
+const archivedAndRevokedState = {
+  stateCache: {
+    routes: [TabsRoutePath.CREDENTIALS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+    },
+  },
+  seedPhraseCache: {},
+  credsCache: {
+    creds: [
+      filteredCredsFix[0],
+      {
+        ...filteredCredsFix[1],
+        status: CredentialStatus.REVOKED,
+      },
+    ],
+    favourites: [
+      {
+        id: filteredCredsFix[0].id,
+        time: 1,
+      },
+    ],
+  },
+  credsArchivedCache: {
+    creds: filteredCredsFix,
+  },
+  connectionsCache: {
+    connections: connectionsFix,
+  },
+  identifiersCache: {
+    identifiers: filteredIdentifierFix,
+  },
+};
+
 let mockedStore: Store<unknown, AnyAction>;
 describe("Creds Tab", () => {
   const mockStore = configureStore();
@@ -95,7 +159,7 @@ describe("Creds Tab", () => {
     const { getByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={mockedStore}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -113,7 +177,7 @@ describe("Creds Tab", () => {
     const { getByText, getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -130,7 +194,7 @@ describe("Creds Tab", () => {
     const { getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -148,7 +212,7 @@ describe("Creds Tab", () => {
     const { getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -164,7 +228,7 @@ describe("Creds Tab", () => {
     const { getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -198,7 +262,7 @@ describe("Creds Tab", () => {
     const { getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -222,7 +286,7 @@ describe("Creds Tab", () => {
     const { getByTestId, queryByTestId, getByText, getAllByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -250,7 +314,7 @@ describe("Creds Tab", () => {
     const { getByTestId, queryByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
-          <Creds />
+          <Credentials />
         </Provider>
       </MemoryRouter>
     );
@@ -269,5 +333,117 @@ describe("Creds Tab", () => {
         "true"
       );
     });
+  });
+  test("Remove pending cred alert", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.CREDENTIALS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      credsCache: {
+        creds: pendingCredFixs,
+        favourites: [],
+      },
+      seedPhraseCache: {},
+      identifiersCache: {
+        identifiers: filteredIdentifierFix,
+      },
+
+      credsArchivedCache: {
+        creds: [],
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      connectionsCache: {
+        connections: connectionsFix,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, getByText } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Credentials />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId(`card-item-${pendingCredFixs[0].id}`)).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId(`card-item-${pendingCredFixs[0].id}`));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.credentials.tab.detelepending.title)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.credentials.tab.detelepending.description)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.credentials.tab.detelepending.button)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.credentials.tab.detelepending.button)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.credentials.tab.detelepending.secondchecktitle
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("credentials-tab-delete-pending-modal-confirm-button")
+      );
+    });
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    passcodeFiller(getByText, getByTestId, "1", 6);
+
+    await waitFor(() => {
+      expect(deleteIdentifierMock).toBeCalled();
+      expect(archiveIdentifierMock).toBeCalled();
+    });
+  });
+
+  test("Show archived & revoked credentials", async () => {
+    const storeMocked = {
+      ...mockStore(archivedAndRevokedState),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Credentials />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(getByTestId("cred-archived-revoked-button")).toBeVisible();
   });
 });

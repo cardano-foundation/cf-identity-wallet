@@ -90,11 +90,6 @@ const EarlierNotification = forwardRef<
           {i18n.t("notifications.tab.sections.earlier.buttons.showealier")}
         </IonButton>
       )}
-      {data.length === displayNotificationsEarlier.length && (
-        <p className="end-message">
-          {i18n.t("notifications.tab.sections.earlier.end")}
-        </p>
-      )}
     </div>
   );
 });

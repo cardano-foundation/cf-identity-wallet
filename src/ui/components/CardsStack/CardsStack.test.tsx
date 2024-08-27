@@ -8,9 +8,9 @@ import { store } from "../../../store";
 import { IdentifierDetails } from "../../pages/IdentifierDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
-import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
 import { CardType } from "../../globals/types";
 import { CredentialDetails } from "../../pages/CredentialDetails";
+import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -29,7 +29,7 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       credentials: {
         getCredentialDetailsById: jest.fn().mockResolvedValue({
-          id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
+          id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
           issuanceDate: "2024-01-22T16:03:44.643Z",
           credentialType: "Qualified vLEI Issuer Credential",
           status: "confirmed",
@@ -87,13 +87,13 @@ describe("Cards Stack Component", () => {
           cardsData={[
             {
               ...credsFixAcdc[0],
-              status: CredentialMetadataRecordStatus.PENDING,
+              status: CredentialStatus.PENDING,
             },
           ]}
         />
       </Provider>
     );
-    const labelPending = getByText(CredentialMetadataRecordStatus.PENDING);
+    const labelPending = getByText(CredentialStatus.PENDING);
     expect(labelPending).toBeInTheDocument();
   });
 
@@ -127,7 +127,7 @@ describe("Cards Stack Component", () => {
 
     await waitFor(() => expect(firstCard).toHaveClass("active"));
 
-    const doneButton = await findByTestId("close-button");
+    const doneButton = await findByTestId("tab-done-label");
     act(() => {
       fireEvent.click(doneButton);
       jest.advanceTimersByTime(CLEAR_STATE_DELAY);

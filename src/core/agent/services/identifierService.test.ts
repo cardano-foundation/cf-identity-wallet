@@ -98,6 +98,7 @@ const identifierStorage = jest.mocked({
   updateIdentifierMetadata: jest.fn(),
   createIdentifierMetadataRecord: jest.fn(),
   getIdentifierMetadataByGroupId: jest.fn(),
+  deleteIdentifierMetadata: jest.fn(),
 });
 
 const operationPendingStorage = jest.mocked({
@@ -218,12 +219,26 @@ describe("Single sig service of agent", () => {
     identifiersGetMock.mockRejectedValue(
       new Error("request - 404 - SignifyClient message")
     );
-    expect(await identifierService.getIdentifier(keriMetadataRecord.id)).toBe(
-      undefined
+    await expect(
+      identifierService.getIdentifier(keriMetadataRecord.id)
+    ).rejects.toThrow(
+      new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${keriMetadataRecord.id}`)
     );
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
       keriMetadataRecord.id
     );
+  });
+
+  test("Should throw error if the identifier is pending", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...keriMetadataRecord,
+      isPending: true,
+      signifyOpName: "signifyOpName",
+    });
+    await expect(
+      identifierService.getIdentifier(keriMetadataRecord.id)
+    ).rejects.toThrow(new Error(IdentifierService.IDENTIFIER_IS_PENDING));
   });
 
   test("can get a keri identifier in detailed view", async () => {
@@ -239,6 +254,8 @@ describe("Single sig service of agent", () => {
       displayName: keriMetadataRecordProps.displayName,
       createdAtUTC: nowISO,
       theme: 0,
+      groupMetadata: keriMetadataRecord.groupMetadata,
+      multisigManageAid: keriMetadataRecord.multisigManageAid,
       ...aidReturnedBySignify.state,
       signifyOpName: undefined,
       signifyName: "uuid-here",
@@ -552,6 +569,30 @@ describe("Single sig service of agent", () => {
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     await expect(identifierService.rotateIdentifier("id")).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
+    );
+  });
+
+  test("Can delete stale local identifier", async () => {
+    const identifierId = "identifier-id";
+    PeerConnection.peerConnection.getConnectedDAppAddress = jest
+      .fn()
+      .mockReturnValueOnce("")
+      .mockReturnValueOnce("dapp-address");
+    PeerConnection.peerConnection.getConnectingIdentifier = jest
+      .fn()
+      .mockResolvedValue({
+        id: identifierId,
+      });
+
+    await identifierService.deleteStaleLocalIdentifier(identifierId);
+    expect(identifierStorage.deleteIdentifierMetadata).toBeCalledWith(
+      identifierId
+    );
+
+    await identifierService.deleteStaleLocalIdentifier(identifierId);
+    expect(PeerConnection.peerConnection.disconnectDApp).toBeCalledTimes(1);
+    expect(identifierStorage.deleteIdentifierMetadata).toBeCalledWith(
+      identifierId
     );
   });
 });

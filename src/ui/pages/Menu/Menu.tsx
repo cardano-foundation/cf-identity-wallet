@@ -16,10 +16,14 @@ import {
   linkOutline,
   addOutline,
 } from "ionicons/icons";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
-import { useAppDispatch } from "../../../store/hooks";
-import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getCurrentOperation,
+  setCurrentOperation,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import "./Menu.scss";
 import { i18n } from "../../../i18n";
@@ -33,6 +37,7 @@ import {
 import { ManagePassword } from "./components/Settings/components/ManagePassword";
 import { TermAndPrivacy } from "./components/Settings/components/TermAndPrivacy";
 import { RecoverySeedPhrase } from "./components/Settings/components/RecoverySeedPhrase";
+import { OperationType } from "../../globals/types";
 
 const emptySubMenu = {
   Component: () => <></>,
@@ -73,6 +78,7 @@ const MenuItem = ({
 const Menu = () => {
   const pageId = "menu-tab";
   const dispatch = useAppDispatch();
+  const currentOperation = useAppSelector(getCurrentOperation);
   const [showSubMenu, setShowSubMenu] = useState(false);
   const [selectedOption, setSelectedOption] = useState<
     SubMenuKey | undefined
@@ -81,6 +87,13 @@ const Menu = () => {
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
   });
+
+  useEffect(() => {
+    if (currentOperation === OperationType.BACK_TO_CONNECT_WALLET) {
+      showSelectedOption(SubMenuKey.ConnectWallet);
+      dispatch(setCurrentOperation(OperationType.IDLE));
+    }
+  }, [currentOperation]);
 
   const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
 
@@ -160,7 +173,6 @@ const Menu = () => {
 
   const showSelectedOption = (key: SubMenuKey) => {
     if (!submenuMap.has(key)) return;
-
     setShowSubMenu(true);
     setSelectedOption(key);
   };

@@ -46,11 +46,10 @@ const connectionsFix: ConnectionShortDetails[] = [
     status: ConnectionStatus.ACCEPTED,
   },
   {
-    id: "ebfeb1ebc6f1c276ef71212ec26",
-    label: "YMCA",
-    connectionDate: "2020-07-06T19:23:24Z",
-    logo: CardanoLogo,
+    label: "The Pentagon",
+    id: "EBvcao4Ub-Q7Wwkm0zJzwigvPTrthP4uH5mQ4efRv9aU",
     status: ConnectionStatus.CONFIRMED,
+    connectionDate: "2024-08-07T15:30:42.952Z",
   },
 ];
 

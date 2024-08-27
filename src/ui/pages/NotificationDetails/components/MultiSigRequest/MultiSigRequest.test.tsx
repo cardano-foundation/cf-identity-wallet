@@ -14,8 +14,19 @@ import { MultiSigRequest } from "./MultiSigRequest";
 import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { setNotificationsCache } from "../../../../../store/reducers/notificationsCache";
 import { MultiSigService } from "../../../../../core/agent/services/multiSigService";
+import { KeyStoreKeys } from "../../../../../core/storage";
+import { passcodeFiller } from "../../../../utils/passcodeFiller";
 
 mockIonicReact();
+
+const mockGet = jest.fn((arg: unknown) => Promise.resolve("111111"));
+
+jest.mock("@aparajita/capacitor-secure-storage", () => ({
+  SecureStorage: {
+    get: (key: string) => mockGet(key),
+    set: jest.fn(),
+  },
+}));
 
 const multisigIcpDetails = {
   sender: {
@@ -36,6 +47,13 @@ const joinMultisignMock = jest.fn((...params: unknown[]) =>
     signifyName: params,
   })
 );
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  isPlatform: () => true,
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div {...props}>{children}</div> : null,
+}));
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -152,8 +170,23 @@ describe("Multisign request", () => {
     });
 
     await waitFor(() => {
+      expect(getByTestId("verify-passcode")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("passcode-button-1")).toBeVisible();
+    });
+
+    passcodeFiller(getByText, getByTestId, "1", 6);
+
+    await waitFor(() => {
+      expect(mockGet).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
+    });
+
+    await waitFor(() => {
       expect(joinMultisignMock).toBeCalledWith(
         notificationsFix[3].id,
+        notificationsFix[3].a.r,
         notificationsFix[3].a.d,
         {
           theme: multisigIcpDetails.ourIdentifier.theme,

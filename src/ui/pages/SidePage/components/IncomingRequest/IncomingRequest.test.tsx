@@ -11,9 +11,27 @@ import {
   signTransactionFix,
 } from "../../../../__fixtures__/signTransactionFix";
 import { IncomingRequest } from "./IncomingRequest";
+import { KeyStoreKeys } from "../../../../../core/storage";
+import { passcodeFiller } from "../../../../utils/passcodeFiller";
 mockIonicReact();
 
 const mockApprovalCallback = jest.fn((status: boolean) => status);
+
+const mockGet = jest.fn((arg: unknown) => Promise.resolve("111111"));
+
+jest.mock("@aparajita/capacitor-secure-storage", () => ({
+  SecureStorage: {
+    get: (key: string) => mockGet(key),
+    set: jest.fn(),
+  },
+}));
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  isPlatform: () => true,
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div {...props}>{children}</div> : null,
+}));
 
 const requestData = {
   id: "abc123456",
@@ -147,7 +165,7 @@ describe("Sign request", () => {
   });
 
   test("Accept request", async () => {
-    const { getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <IncomingRequest
           open={true}
@@ -160,6 +178,22 @@ describe("Sign request", () => {
 
     act(() => {
       fireEvent.click(getByTestId("primary-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("verify-passcode")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("passcode-button-1")).toBeVisible();
+    });
+
+    act(() => {
+      passcodeFiller(getByText, getByTestId, "1", 6);
+    });
+
+    await waitFor(() => {
+      expect(mockGet).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
     });
 
     await waitFor(() => {

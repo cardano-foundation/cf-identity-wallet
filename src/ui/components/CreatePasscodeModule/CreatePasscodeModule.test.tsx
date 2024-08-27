@@ -21,6 +21,7 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { CreatePasscodeModule } from "./CreatePasscodeModule";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 
@@ -137,7 +138,7 @@ describe("SetPasscode Page", () => {
 
   test("Entering a wrong passcode at the passcode confirmation returns an error", async () => {
     require("@ionic/react");
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getByTestId } = render(
       <Provider store={store}>
         <CreatePasscodeModule
           title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
@@ -149,22 +150,12 @@ describe("SetPasscode Page", () => {
     );
     await waitForIonicReact();
 
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/2/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/3/));
-    fireEvent.click(getByText(/4/));
-    fireEvent.click(getByText(/5/));
+    passcodeFiller(getByText, getByTestId, "2", 6);
 
     const labelElement = getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode);
     expect(labelElement).toBeInTheDocument();
 
-    fireEvent.click(getByText(/6/));
-    fireEvent.click(getByText(/7/));
-    fireEvent.click(getByText(/8/));
-    fireEvent.click(getByText(/9/));
-    fireEvent.click(getByText(/0/));
-    fireEvent.click(getByText(/1/));
+    passcodeFiller(getByText, getByTestId, "2", 6);
 
     await waitFor(
       () =>
@@ -175,7 +166,7 @@ describe("SetPasscode Page", () => {
 
   test("Entering an existing passcode returns an error", async () => {
     require("@ionic/react");
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <CreatePasscodeModule
           title={EN_TRANSLATIONS.setpasscode.reenterpasscode}
@@ -187,12 +178,7 @@ describe("SetPasscode Page", () => {
     );
     await waitForIonicReact();
 
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/2/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/3/));
-    fireEvent.click(getByText(/4/));
-    fireEvent.click(getByText(/5/));
+    passcodeFiller(getByText, getByTestId, "2", 6);
 
     await waitFor(
       () =>
@@ -226,7 +212,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
@@ -238,7 +224,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -263,7 +249,12 @@ describe("SetPasscode Page", () => {
       );
     });
 
-    expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
+    await waitFor(() => {
+      expect(setKeyStoreSpy).toBeCalledWith(
+        KeyStoreKeys.APP_PASSCODE,
+        "111111"
+      );
+    });
   });
 
   test("Setup passcode and cancel Android biometrics", async () => {
@@ -291,7 +282,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
@@ -303,7 +294,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -347,7 +338,7 @@ describe("SetPasscode Page", () => {
     });
     require("@ionic/react");
 
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <IonReactRouter>
         <IonRouterOutlet animated={false}>
           <Provider store={store}>
@@ -362,7 +353,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
@@ -374,7 +365,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() => {
       expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalledWith(
@@ -418,7 +409,7 @@ describe("SetPasscode Page", () => {
     });
     require("@ionic/react");
 
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getByTestId } = render(
       <IonReactRouter>
         <IonRouterOutlet animated={false}>
           <Provider store={store}>
@@ -433,7 +424,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     expect(
       getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode)
@@ -445,7 +436,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -454,13 +445,3 @@ describe("SetPasscode Page", () => {
     );
   });
 });
-
-const clickButtonRepeatedly = (
-  getByText: RenderResult["getByText"],
-  buttonLabel: string,
-  times: number
-) => {
-  for (let i = 0; i < times; i++) {
-    fireEvent.click(getByText(buttonLabel));
-  }
-};

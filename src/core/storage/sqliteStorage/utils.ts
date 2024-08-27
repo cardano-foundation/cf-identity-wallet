@@ -1,35 +1,13 @@
 import { BasicRecord } from "../../agent/records";
 import { Query } from "../storage.types";
-import { MIGRATIONS } from "./migrations";
-
-function getUnMigrationSqls(
-  currentVersion: string
-): { sqls: string[]; latestVersion: string } | null {
-  const versionArr: string[] = [];
-  MIGRATIONS.forEach((migration) => {
-    versionArr.push(migration.version);
-  });
-  versionArr.sort((a, b) => versionCompare(a, b));
-  const latestVersion = versionArr[versionArr.length - 1];
-  if (versionCompare(latestVersion, currentVersion) == 0) {
-    return null;
-  }
-  const sqlUnMigrations: string[] = [];
-  MIGRATIONS.forEach((migration) => {
-    if (versionCompare(currentVersion, migration.version) == -1) {
-      sqlUnMigrations.push(...migration.sql);
-    }
-  });
-  return { sqls: sqlUnMigrations, latestVersion };
-}
 
 function isValidPart(x: string): boolean {
   return /^\d+$/.test(x);
 }
 
 function versionCompare(v1: string, v2: string) {
-  const v1parts = v1.split("."),
-    v2parts = v2.split(".");
+  const v1parts = v1?.split("."),
+    v2parts = v2?.split(".");
 
   if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {
     throw new Error("Invalid version format");
@@ -113,7 +91,6 @@ function convertDbQuery(params: Query<BasicRecord>): Record<string, unknown> {
 }
 
 export {
-  getUnMigrationSqls,
   versionCompare,
   convertDbQuery,
   resolveTagsFromDb,

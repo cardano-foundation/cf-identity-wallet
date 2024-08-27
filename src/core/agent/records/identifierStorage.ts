@@ -94,6 +94,10 @@ class IdentifierStorage {
     }
     return null;
   }
+
+  async deleteIdentifierMetadata(id: string): Promise<void> {
+    await this.storageService.deleteById(id);
+  }
 }
 
 export { IdentifierStorage };

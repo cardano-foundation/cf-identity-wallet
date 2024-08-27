@@ -1,12 +1,7 @@
 import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
 import { IonRouterOutlet } from "@ionic/react";
 import { IonReactMemoryRouter, IonReactRouter } from "@ionic/react-router";
-import {
-  RenderResult,
-  fireEvent,
-  render,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 import { Redirect, Route } from "react-router-dom";
@@ -17,6 +12,7 @@ import { RoutePath } from "../../../routes";
 import { store } from "../../../store";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { SetPasscode } from "./SetPasscode";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 
@@ -61,12 +57,12 @@ describe("SetPasscode Page", () => {
 
   test("Renders Re-enter Passcode title and start over button when passcode is set", async () => {
     require("@ionic/react");
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getByTestId } = render(
       <Provider store={store}>
         <SetPasscode />
       </Provider>
     );
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -81,12 +77,12 @@ describe("SetPasscode Page", () => {
 
   test("renders enter passcode restarting the process when start over button is clicked", async () => {
     require("@ionic/react");
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getByTestId } = render(
       <Provider store={store}>
         <SetPasscode />
       </Provider>
     );
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -113,12 +109,7 @@ describe("SetPasscode Page", () => {
         <SetPasscode />
       </Provider>
     );
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/2/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/3/));
-    fireEvent.click(getByText(/4/));
-    fireEvent.click(getByText(/5/));
+    passcodeFiller(getByText, getByTestId, "2", 6);
 
     await waitFor(() =>
       expect(
@@ -137,7 +128,7 @@ describe("SetPasscode Page", () => {
 
   test("Redirects to next page when passcode is entered correctly", async () => {
     require("@ionic/react");
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getByTestId } = render(
       <IonReactRouter>
         <IonRouterOutlet animated={false}>
           <Provider store={store}>
@@ -160,7 +151,7 @@ describe("SetPasscode Page", () => {
       </IonReactRouter>
     );
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -168,7 +159,7 @@ describe("SetPasscode Page", () => {
       ).toBeInTheDocument()
     );
 
-    clickButtonRepeatedly(getByText, "1", 6);
+    passcodeFiller(getByText, getByTestId, "1", 6);
 
     await waitFor(() =>
       expect(
@@ -226,13 +217,3 @@ describe("SetPasscode Page", () => {
     );
   });
 });
-
-const clickButtonRepeatedly = (
-  getByText: RenderResult["getByText"],
-  buttonLabel: string,
-  times: number
-) => {
-  for (let i = 0; i < times; i++) {
-    fireEvent.click(getByText(buttonLabel));
-  }
-};

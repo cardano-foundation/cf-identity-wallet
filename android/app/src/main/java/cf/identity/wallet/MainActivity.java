@@ -1,4 +1,4 @@
-package cf.identity.wallet;
+package org.cardanofoundation.idw;
 
 import com.getcapacitor.BridgeActivity;
 

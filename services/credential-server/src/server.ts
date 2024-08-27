@@ -5,6 +5,7 @@ import { config } from "./config";
 import { Agent } from "./agent";
 import router from "./routes";
 import { log } from "./log";
+
 async function startServer() {
   const app = express();
   app.use("/static", express.static("static"));

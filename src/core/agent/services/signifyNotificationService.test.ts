@@ -1,6 +1,8 @@
 import { Agent } from "../agent";
+import { ExchangeRoute, NotificationRoute } from "../agent.types";
 import { IpexMessageStorage } from "../records";
 import { ConnectionHistoryType } from "./connection.types";
+import { CredentialStatus } from "./credentialService.types";
 import { EventService } from "./eventService";
 import { SignifyNotificationService } from "./signifyNotificationService";
 
@@ -19,7 +21,73 @@ const markNotificationMock = jest.fn();
 const getCredentialMock = jest.fn();
 const admitMock = jest.fn();
 const submitAdmitMock = jest.fn();
+const operationsGetMock = jest.fn().mockImplementation((id: string) => {
+  return {
+    done: true,
+    response: {
+      i: id,
+    },
+  };
+});
 
+const ipexMessageMock = {
+  exn: {
+    v: "KERI10JSON000516_",
+    t: "exn",
+    d: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
+    i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+    p: "",
+    dt: "2024-07-30T04:19:55.801000+00:00",
+    r: "/ipex/grant",
+    q: {},
+    a: {
+      m: "",
+      i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+    },
+    e: {
+      acdc: {
+        d: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
+        i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+        s: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+        a: {
+          d: "ELHCh_X2aw7C-aYesOM4La23a5lsoNuJDuCsJuxwO2nq",
+          i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+          dt: "2024-07-30T04:19:55.348000+00:00",
+          attendeeName: "ccc",
+        },
+      },
+      iss: {
+        t: "iss",
+        d: "EHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
+        i: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
+        s: "0",
+        dt: "2024-07-30T04:19:55.348000+00:00",
+      },
+      d: "EKBPPnWxYw2I5CtQSyhyn5VUdSTJ61qF_-h-NwmFRkIF",
+    },
+  },
+  pathed: {
+    acdc: "-IABEEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn0AAAAAAAAAAAAAAAAAAAAAAAEHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
+    iss: "-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAEEO0xKzC8FOAXV-JgFZGgb0aIT2A3cPXPt9_0l_qcGM9",
+    anc: "-AABAACBlQqbI_qNpKYkzIog6tauSgt0XufBvGtrumfbnhSInFjSwnaIqZi353QT-c1W_gE9KIz3rgX5QNNWLcqA7bcM",
+  },
+};
+
+const credentialMetadataMock = {
+  type: "CredentialMetadataRecord",
+  id: "EJuFvMGiT3uhEXtd7UQlkAm4N_MymeHfhkgnOgPhK0cJ",
+  isArchived: false,
+  isDeleted: false,
+  createdAt: "2024-08-09T04:21:18.311Z",
+  issuanceDate: "2024-08-09T04:21:12.575Z",
+  credentialType: "Qualified vLEI Issuer Credential",
+  status: CredentialStatus.CONFIRMED,
+  connectionId: "EP0fEaRWZDR7caQbdserTOWlC_4trvqB1tzbr2xVo3a4",
+  schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+  updatedAt: "2024-08-09T04:21:19.695Z",
+};
+
+const exchangesGetMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -33,14 +101,7 @@ const signifyClient = jest.mocked({
     members: identifiersMemberMock,
   }),
   operations: () => ({
-    get: jest.fn().mockImplementation((id: string) => {
-      return {
-        done: true,
-        response: {
-          i: id,
-        },
-      };
-    }),
+    get: operationsGetMock,
   }),
   oobis: () => ({
     get: jest.fn(),
@@ -70,7 +131,7 @@ const signifyClient = jest.mocked({
     list: jest.fn(),
   }),
   exchanges: () => ({
-    get: jest.fn().mockResolvedValue(ipexMessageMock),
+    get: exchangesGetMock,
     send: jest.fn(),
   }),
   agent: {
@@ -127,6 +188,7 @@ const connectionStorage = jest.mocked({
 
 const identifierStorage = jest.mocked({
   getIdentifierMetadata: jest.fn(),
+  updateIdentifierMetadata: jest.fn(),
 });
 
 const getIpexMessageMetadataMock = jest.fn();
@@ -136,7 +198,25 @@ const ipexMessageStorage = jest.mocked({
   getIpexMessageMetadataByConnectionId: jest.fn(),
 });
 
-const operationPendingStorage = jest.mocked({});
+const operationPendingGetAllMock = jest.fn();
+const operationPendingStorage = jest.mocked({
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: operationPendingGetAllMock,
+});
+
+const credentialStorage = jest.mocked({
+  getAllCredentialMetadata: jest.fn(),
+  deleteCredentialMetadata: jest.fn(),
+  getCredentialMetadata: jest.fn(),
+  saveCredentialMetadataRecord: jest.fn(),
+  updateCredentialMetadata: jest.fn(),
+  getCredentialMetadatasById: jest.fn(),
+});
 
 const signifyNotificationService = new SignifyNotificationService(
   agentServicesProps,
@@ -144,64 +224,31 @@ const signifyNotificationService = new SignifyNotificationService(
   identifierStorage as any,
   operationPendingStorage as any,
   connectionStorage as any,
-  ipexMessageStorage as any
+  ipexMessageStorage as any,
+  credentialStorage as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       getKeriaOnlineStatus: jest.fn(),
-      multiSigs: { hasMultisig: jest.fn(), joinAuthorization: jest.fn() },
+      multiSigs: {
+        hasMultisig: jest.fn(),
+        joinAuthorization: jest.fn(),
+        endRoleAuthorization: jest.fn(),
+      },
       ipexCommunications: {
         grantAcdcFromAgree: jest.fn(),
         createLinkedIpexMessageRecord: jest.fn(),
+        markAcdc: jest.fn(),
+      },
+      signifyNotifications: {
+        addPendingOperationToQueue: jest.fn(),
+        markAcdcComplete: jest.fn(),
       },
     },
   },
 }));
-
-const ipexMessageMock = {
-  exn: {
-    v: "KERI10JSON000516_",
-    t: "exn",
-    d: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
-    i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-    p: "",
-    dt: "2024-07-30T04:19:55.801000+00:00",
-    r: "/ipex/grant",
-    q: {},
-    a: {
-      m: "",
-      i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
-    },
-    e: {
-      acdc: {
-        d: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
-        i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-        s: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
-        a: {
-          d: "ELHCh_X2aw7C-aYesOM4La23a5lsoNuJDuCsJuxwO2nq",
-          i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
-          dt: "2024-07-30T04:19:55.348000+00:00",
-          attendeeName: "ccc",
-        },
-      },
-      iss: {
-        t: "iss",
-        d: "EHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
-        i: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
-        s: "0",
-        dt: "2024-07-30T04:19:55.348000+00:00",
-      },
-      d: "EKBPPnWxYw2I5CtQSyhyn5VUdSTJ61qF_-h-NwmFRkIF",
-    },
-  },
-  pathed: {
-    acdc: "-IABEEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn0AAAAAAAAAAAAAAAAAAAAAAAEHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
-    iss: "-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAEEO0xKzC8FOAXV-JgFZGgb0aIT2A3cPXPt9_0l_qcGM9",
-    anc: "-AABAACBlQqbI_qNpKYkzIog6tauSgt0XufBvGtrumfbnhSInFjSwnaIqZi353QT-c1W_gE9KIz3rgX5QNNWLcqA7bcM",
-  },
-};
 
 const acdcMock = {
   sad: {
@@ -231,6 +278,7 @@ describe("Signify notification service of agent", () => {
 
   test("callback should be called when there are KERI notifications", async () => {
     const callback = jest.fn();
+    exchangesGetMock.mockResolvedValue(ipexMessageMock);
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [
@@ -265,7 +313,7 @@ describe("Signify notification service of agent", () => {
         },
       },
     ];
-    getCredentialMock.mockRejectedValue(new Error());
+    credentialStorage.getCredentialMetadata.mockResolvedValueOnce(null);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
     notificationStorage.save = jest
       .fn()
@@ -281,6 +329,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should admit if there is an existing credential", async () => {
     const callback = jest.fn();
+    exchangesGetMock.mockResolvedValue(ipexMessageMock);
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [
@@ -295,6 +344,9 @@ describe("Signify notification service of agent", () => {
         },
       },
     ];
+    credentialStorage.getCredentialMetadata.mockResolvedValue(
+      credentialMetadataMock
+    );
     getCredentialMock.mockResolvedValue(acdcMock);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "signifyName",
@@ -305,6 +357,10 @@ describe("Signify notification service of agent", () => {
     groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
     jest.useFakeTimers();
     admitMock.mockResolvedValue([{}, ["sigs"], "end"]);
+    submitAdmitMock.mockResolvedValueOnce({
+      name: "name",
+      done: true,
+    });
     for (const notif of notes) {
       await signifyNotificationService.processNotification(notif, callback);
     }
@@ -332,9 +388,22 @@ describe("Signify notification service of agent", () => {
 
   test("can delete keri notification by ID", async () => {
     const id = "uuid";
-    await signifyNotificationService.deleteNotificationRecordById(id);
+    await signifyNotificationService.deleteNotificationRecordById(
+      id,
+      NotificationRoute.ExnIpexGrant
+    );
     expect(notificationStorage.deleteById).toBeCalled();
     expect(markNotificationMock).toBeCalled();
+  });
+
+  test("Should not mark local notification when we delete notification", async () => {
+    const id = "uuid";
+    await signifyNotificationService.deleteNotificationRecordById(
+      id,
+      NotificationRoute.LocalAcdcRevoked
+    );
+    expect(notificationStorage.deleteById).toBeCalled();
+    expect(markNotificationMock).not.toBeCalled();
   });
 
   test("Should skip if there is no valid multi-sig notification", async () => {
@@ -545,6 +614,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT", async () => {
     const callback = jest.fn();
+    exchangesGetMock.mockResolvedValue(ipexMessageMock);
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -574,40 +644,9 @@ describe("Signify notification service of agent", () => {
     );
   });
 
-  test("Should call createLinkedIpexMessageRecord with CREDENTIAL_ISSUANCE", async () => {
+  test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REVOKED", async () => {
     const callback = jest.fn();
-    notificationStorage.save = jest
-      .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
-    const notification = {
-      i: "string",
-      dt: "string",
-      r: false,
-      a: {
-        r: "/exn/ipex/grant",
-        d: "string",
-        m: "",
-      },
-    };
-    getCredentialMock.mockRejectedValueOnce(new Error());
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "signifyName",
-    });
-
-    await signifyNotificationService.processNotification(
-      notification,
-      callback
-    );
-    expect(
-      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
-    ).toHaveBeenCalledWith(
-      ipexMessageMock,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
-    );
-  });
-
-  test("Should call createLinkedIpexMessageRecord with CREDENTIAL_UPDATE", async () => {
-    const callback = jest.fn();
+    exchangesGetMock.mockResolvedValue(ipexMessageMock);
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -621,26 +660,30 @@ describe("Signify notification service of agent", () => {
         m: "",
       },
     };
+    credentialStorage.getCredentialMetadata.mockResolvedValue(
+      credentialMetadataMock
+    );
     admitMock.mockResolvedValue([{}, ["sigs"], "end"]);
     getCredentialMock.mockResolvedValue(acdcMock);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "signifyName",
     });
-
+    submitAdmitMock.mockResolvedValueOnce({
+      name: "name",
+      done: true,
+    });
     await signifyNotificationService.processNotification(
       notification,
       callback
     );
     expect(
-      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
-    ).toHaveBeenCalledWith(
-      ipexMessageMock,
-      ConnectionHistoryType.CREDENTIAL_UPDATE
-    );
+      Agent.agent.signifyNotifications.addPendingOperationToQueue
+    ).toBeCalledTimes(1);
   });
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT_AGREE", async () => {
     const callback = jest.fn();
+    exchangesGetMock.mockResolvedValue(ipexMessageMock);
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -668,5 +711,510 @@ describe("Signify notification service of agent", () => {
       ipexMessageMock,
       ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
     );
+  });
+
+  test("Should skip if notification route is /multisig/exn and `e.exn.r` is not ipex/admit", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/exn",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(markNotificationMock).toBeCalledTimes(1);
+  });
+
+  test("Should skip if notification route is /multisig/exn and the identifier is missing ", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(identifierMetadataRecordProps);
+
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/exn",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
+
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(markNotificationMock).toBeCalledTimes(1);
+  });
+
+  test("Should skip if notification route is /multisig/exn and the credential exists ", async () => {
+    const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/multisig/exn",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
+
+    const acdc = {
+      sad: {
+        a: { LEI: "5493001KJTIIGC8Y1R17" },
+        d: "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli",
+        i: "EIpeOFh268oRJTM4vNNoQvMWw-NBUPDv1NqYbx6Lc1Mk",
+        ri: "EOIj7V-rqu_Q9aGSmPfviBceEtRk1UZBN5H2P_L-Hhx5",
+        s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        v: "ACDC10JSON000197_",
+      },
+      schema: {
+        title: "Qualified vLEI Issuer Credential",
+        description: "vLEI Issuer Description",
+        version: "1.0.0",
+        credentialType: "QualifiedvLEIIssuervLEICredential",
+      },
+      status: {
+        s: "0",
+        dt: new Date().toISOString(),
+      },
+    };
+
+    getCredentialMock.mockResolvedValue(acdc);
+
+    for (const notif of notes) {
+      await signifyNotificationService.processNotification(notif, callback);
+    }
+    expect(markNotificationMock).toBeCalledTimes(1);
+  });
+});
+
+describe("Long running operation tracker", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    // We mock the setTimeout here so we can exit the while(true) loop
+    jest.spyOn(global, "setTimeout").mockImplementation(() => {
+      throw new Error("Force Exit");
+    });
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const operationMock = {
+      metadata: {
+        said: "said",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+  });
+
+  test("Should handle long operations with type group", async () => {
+    const callback = jest.fn();
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "group.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "group",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    identifierStorage.getIdentifierMetadata.mockResolvedValueOnce({
+      signifyName: "signifyName",
+    });
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(Agent.agent.multiSigs.endRoleAuthorization).toBeCalledWith(
+      "signifyName"
+    );
+    expect(callback).toBeCalledTimes(1);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should handle long operations with type witness", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const callback = jest.fn();
+    const operationMock = {
+      metadata: {
+        said: "said",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "witness.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "witness",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      {
+        isPending: false,
+      }
+    );
+    expect(callback).toBeCalledTimes(1);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should handle long operations with type oobi", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const callback = jest.fn();
+    const operationMock = {
+      metadata: {
+        said: "said",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    const connectionMock = {
+      id: "id",
+      pending: true,
+      createdAt: new Date(),
+    };
+    connectionStorage.findById.mockResolvedValueOnce(connectionMock);
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "oobi",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(connectionStorage.update).toBeCalledWith({
+      id: connectionMock.id,
+      pending: false,
+      createdAt: operationMock.response.dt,
+    });
+    expect(callback).toBeCalledTimes(1);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should handle long operations with type exchange.receivecredential", async () => {
+    const callback = jest.fn();
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "exchange.receivecredential",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    const credentialIdMock = "credentialId";
+    signifyClient
+      .exchanges()
+      .get.mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexAdmit,
+          p: "p",
+        },
+      })
+      .mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexGrant,
+          e: {
+            acdc: {
+              d: credentialIdMock,
+            },
+          },
+        },
+      });
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
+      credentialIdMock,
+      CredentialStatus.CONFIRMED
+    );
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should handle long operations with type exchange.revokecredential", async () => {
+    const callback = jest.fn();
+    const credentialIdMock = "credentialId";
+    operationPendingGetAllMock.mockResolvedValue([
+      {
+        type: "OperationPendingRecord",
+        id: "exchange.revokecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "exchange.revokecredential",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    getCredentialMock.mockResolvedValue({
+      id: "id",
+      schema: {
+        title: "title",
+      },
+      status: {
+        s: "1",
+      },
+    });
+    credentialStorage.getCredentialMetadata.mockResolvedValueOnce(
+      credentialMetadataMock
+    );
+    const grantExchange = {
+      exn: {
+        r: ExchangeRoute.IpexGrant,
+        e: {
+          acdc: {
+            d: credentialIdMock,
+          },
+        },
+      },
+    };
+    signifyClient
+      .exchanges()
+      .get.mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexAdmit,
+          p: "p",
+        },
+      })
+      .mockResolvedValueOnce(grantExchange);
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
+      credentialIdMock,
+      CredentialStatus.REVOKED
+    );
+    expect(
+      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
+    ).toBeCalledWith(grantExchange, ConnectionHistoryType.CREDENTIAL_REVOKED);
+    expect(notificationStorage.save).toBeCalledTimes(1);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should not markAcdc if the credentialMetadata's status is revoked", async () => {
+    const callback = jest.fn();
+    const credentialIdMock = "credentialId";
+    operationPendingGetAllMock.mockResolvedValue([
+      {
+        type: "OperationPendingRecord",
+        id: "exchange.revokecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "exchange.revokecredential",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    getCredentialMock.mockResolvedValue({
+      id: "id",
+      schema: {
+        title: "title",
+      },
+      status: {
+        s: "1",
+      },
+    });
+    credentialStorage.getCredentialMetadata.mockResolvedValueOnce({
+      ...credentialMetadataMock,
+      status: CredentialStatus.REVOKED,
+    });
+    signifyClient
+      .exchanges()
+      .get.mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexAdmit,
+          p: "p",
+        },
+      })
+      .mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexGrant,
+          e: {
+            acdc: {
+              d: credentialIdMock,
+            },
+          },
+        },
+      });
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(Agent.agent.ipexCommunications.markAcdc).not.toBeCalled();
+    expect(
+      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
+    ).not.toBeCalled();
+    expect(notificationStorage.save).not.toBeCalled();
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should not markAcdc if the credential.status.s status is not 1", async () => {
+    const callback = jest.fn();
+    const credentialIdMock = "credentialId";
+    operationPendingGetAllMock.mockResolvedValue([
+      {
+        type: "OperationPendingRecord",
+        id: "exchange.revokecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "exchange.revokecredential",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    getCredentialMock.mockResolvedValue({
+      id: "id",
+      schema: {
+        title: "title",
+      },
+      status: {
+        s: "0",
+      },
+    });
+    credentialStorage.getCredentialMetadata.mockResolvedValueOnce(
+      credentialMetadataMock
+    );
+    signifyClient
+      .exchanges()
+      .get.mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexAdmit,
+          p: "p",
+        },
+      })
+      .mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexGrant,
+          e: {
+            acdc: {
+              d: credentialIdMock,
+            },
+          },
+        },
+      });
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(Agent.agent.ipexCommunications.markAcdc).not.toBeCalled();
+    expect(
+      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
+    ).not.toBeCalled();
+    expect(notificationStorage.save).not.toBeCalled();
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("ExchangeReceiveCredential operations must have an exchange route of /ipex/admit", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const callback = jest.fn();
+    const operationMock = {
+      metadata: {
+        said: "said",
+      },
+      done: true,
+      response: {
+        i: "id",
+        dt: new Date(),
+      },
+    };
+    operationsGetMock.mockResolvedValue(operationMock);
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "exchange.receivecredential",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    const credentialIdMock = "credentialId";
+    signifyClient.exchanges().get.mockResolvedValueOnce({
+      exn: {
+        r: ExchangeRoute.IpexGrant,
+        e: {
+          acdc: {
+            d: credentialIdMock,
+          },
+        },
+      },
+    });
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(operationsGetMock).toBeCalledTimes(1);
+    expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledTimes(0);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should call setTimeout listening for pending operations if Keria is offline", async () => {
+    const callback = jest.fn();
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    operationPendingGetAllMock.mockResolvedValueOnce([
+      {
+        type: "OperationPendingRecord",
+        id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
+        recordType: "exchange.receivecredential",
+        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+      },
+    ]);
+    try {
+      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Force Exit");
+    }
+    expect(setTimeout).toBeCalledTimes(1);
+    expect(operationsGetMock).not.toBeCalled();
   });
 });

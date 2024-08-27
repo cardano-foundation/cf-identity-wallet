@@ -223,6 +223,7 @@ const CreatePasscodeModule = forwardRef<
               timeout={true}
             />
           }
+          hasError={!!errorMessage()}
           passcode={passcode}
           handlePinChange={handlePinChange}
           handleRemove={handleRemove}

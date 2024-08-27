@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "cf.identity.wallet"
+    namespace "org.cardanofoundation.idw"
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "cf.identity.wallet"
+        applicationId "org.cardanofoundation.idw"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

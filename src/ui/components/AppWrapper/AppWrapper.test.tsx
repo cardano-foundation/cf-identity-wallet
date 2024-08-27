@@ -4,7 +4,6 @@ import {
   acdcChangeHandler,
   AppWrapper,
   connectionStateChangedHandler,
-  keriaNotificationsChangeHandler,
   peerConnectRequestSignChangeHandler,
   peerConnectedChangeHandler,
   peerConnectionBrokenChangeHandler,
@@ -27,8 +26,6 @@ import {
   ConnectionShortDetails,
   ConnectionStateChangedEvent,
   ConnectionStatus,
-  KeriaNotification,
-  NotificationRoute,
 } from "../../../core/agent/agent.types";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
@@ -48,11 +45,8 @@ import {
   setConnectedWallet,
   setWalletConnectionsCache,
 } from "../../../store/reducers/walletConnectionsCache";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
-import {
-  updateIsPending,
-  updateOrAddIdentifiersCache,
-} from "../../../store/reducers/identifiersCache";
+import { updateIsPending } from "../../../store/reducers/identifiersCache";
+import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -258,14 +252,11 @@ describe("AppWrapper handler", () => {
       } as AcdcStateChangedEvent;
       await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
       expect(dispatch).toBeCalledWith(
-        setCurrentOperation(OperationType.ADD_CREDENTIAL)
-      );
-      expect(dispatch).toBeCalledWith(
         setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING)
       );
     });
 
-    test("handles credential state pending", async () => {
+    test("handles credential state confirmed", async () => {
       const credentialMock = {} as CredentialShortDetails;
       const credentialStateChangedEventMock = {
         type: AcdcEventTypes.AcdcStateChanged,
@@ -276,10 +267,22 @@ describe("AppWrapper handler", () => {
       } as AcdcStateChangedEvent;
       await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
       expect(dispatch).toBeCalledWith(updateOrAddCredsCache(credentialMock));
-      expect(dispatch).toBeCalledWith(setCurrentOperation(OperationType.IDLE));
       expect(dispatch).toBeCalledWith(
         setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED)
       );
+    });
+
+    test("handles credential state revoked", async () => {
+      const credentialMock = {} as CredentialShortDetails;
+      const credentialStateChangedEventMock = {
+        type: AcdcEventTypes.AcdcStateChanged,
+        payload: {
+          status: CredentialStatus.REVOKED,
+          credential: credentialMock,
+        },
+      } as AcdcStateChangedEvent;
+      await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
+      expect(dispatch).toBeCalledWith(updateOrAddCredsCache(credentialMock));
     });
   });
 
@@ -343,30 +346,56 @@ describe("AppWrapper handler", () => {
     });
   });
 });
+
 describe("Signify operation state changed handler", () => {
-  test("handles operation updated", async () => {
-    const aid = {
-      id: "id",
-      displayName: "string",
-      createdAtUTC: "string",
-      signifyName: "string",
-      theme: 0,
-      isPending: false,
-      delegated: {},
-    } as IdentifierShortDetails;
+  test("handles completed witness operation", async () => {
+    const id = "id";
     await signifyOperationStateChangeHandler(
-      { opType: OperationPendingRecordType.Witness, oid: aid.id },
-      dispatch
-    );
-    await signifyOperationStateChangeHandler(
-      { opType: OperationPendingRecordType.Group, oid: aid.id },
+      { opType: OperationPendingRecordType.Witness, oid: id },
       dispatch
     );
     expect(dispatch).toBeCalledWith(
-      updateIsPending({ id: aid.id, isPending: false })
+      updateIsPending({ id: id, isPending: false })
     );
     expect(dispatch).toBeCalledWith(
       setToastMsg(ToastMsgType.IDENTIFIER_UPDATED)
     );
+  });
+
+  test("handles completed group operation", async () => {
+    const id = "id";
+    await signifyOperationStateChangeHandler(
+      { opType: OperationPendingRecordType.Group, oid: id },
+      dispatch
+    );
+    expect(dispatch).toBeCalledWith(
+      updateIsPending({ id: id, isPending: false })
+    );
+    expect(dispatch).toBeCalledWith(
+      setToastMsg(ToastMsgType.IDENTIFIER_UPDATED)
+    );
+  });
+
+  test("handles completed admit on revoked credential operation", async () => {
+    const notifications = [
+      {
+        id: "id",
+        createdAt: new Date().toISOString(),
+        a: {},
+        connectionId: "connection",
+        read: false,
+      },
+    ];
+    Agent.agent.signifyNotifications.getAllNotifications = jest
+      .fn()
+      .mockResolvedValue(notifications);
+    await signifyOperationStateChangeHandler(
+      {
+        opType: OperationPendingRecordType.ExchangeRevokeCredential,
+        oid: "id",
+      },
+      dispatch
+    );
+    expect(dispatch).toBeCalledWith(setNotificationsCache(notifications));
   });
 });

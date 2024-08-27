@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">ID Wallet</string>
     <string name="title_activity_main">ID Wallet</string>
-    <string name="package_name">cf.identity.wallet</string>
-    <string name="custom_url_scheme">cf.identity.wallet</string>
+    <string name="package_name">org.cardanofoundation.idw</string>
+    <string name="custom_url_scheme">org.cardanofoundation.idw</string>
 </resources>

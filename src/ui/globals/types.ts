@@ -18,6 +18,7 @@ import BackgroundKERI40 from "../assets/images/keri-40.svg";
 import BackgroundKERI41 from "../assets/images/keri-41.svg";
 import BackgroundKERI42 from "../assets/images/keri-42.svg";
 import BackgroundKERI43 from "../assets/images/keri-43.svg";
+import BackgroundRAREVO from "../assets/images/rare-evo-bg.jpg";
 
 enum CardType {
   CREDENTIALS = "credentials",
@@ -38,16 +39,20 @@ enum OperationType {
   ARCHIVE_CREDENTIAL = "archiveCredential",
   DELETE_CREDENTIAL = "deleteCredential",
   SCAN_CONNECTION = "scanConnection",
-  ADD_CREDENTIAL = "addCredential",
   RECEIVE_CONNECTION = "receiveConnection",
   MULTI_SIG_INITIATOR_SCAN = "multiSigInitiatorScan",
   MULTI_SIG_RECEIVER_SCAN = "multiSigReceiverScan",
   MULTI_SIG_INITIATOR_INIT = "multiSigInitiatorInit",
   CREATE_IDENTIFIER_CONNECT_WALLET = "createIdentifierConnectWallet",
+  CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS = "createIdentifierShareConnectionFromIdentifiers",
+  CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS = "createIdentifierShareConnectionFromCredentials",
+  BACK_TO_CONNECT_WALLET = "backToConnectWallet",
+  BACK_TO_SHARE_CONNECTION = "backToShareConnection",
   SCAN_WALLET_CONNECTION = "scanWalletConnection",
   SCAN_SSI_BOOT_URL = "scanSSIBootUrl",
   SCAN_SSI_CONNECT_URL = "scanSSIConnectUrl",
   OPEN_WALLET_CONNECTION_DETAIL = "openWalletConnection",
+  OPEN_MULTISIG_IDENTIFIER = "openMultisignIdentifier",
 }
 
 enum ToastMsgType {
@@ -92,6 +97,13 @@ enum ToastMsgType {
   PASSWORD_CREATED = "passwordcreated",
   SHARE_CRED_SUCCESS = "sharecredsuccess",
   SHARE_CRED_FAIL = "sharecrederror",
+  DELETE_CONNECTION_FAIL = "deleteconnectionerror",
+  DELETE_CRED_FAIL = "deletecrederror",
+  DELETE_IDENTIFIER_FAIL = "deleteidentifiererror",
+  ARCHIVED_CRED_FAIL = "archivedcrederror",
+  SIGN_SUCCESSFUL = "signsuccessful",
+  UNABLE_DELETE_PASSWORD_HINT = "deletepasswordhinterror",
+  UNABLE_EDIT_IDENTIFIER = "editidentifiererror",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {
@@ -115,6 +127,11 @@ const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {
   41: BackgroundKERI41,
   42: BackgroundKERI42,
   43: BackgroundKERI43,
+};
+
+const CREDENTIAL_BG = {
+  KERI: BackgroundKERI0,
+  RARE: BackgroundRAREVO,
 };
 
 const PASSCODE_MAPPING = {
@@ -150,4 +167,5 @@ export {
   BackEventPriorityType,
   IDENTIFIER_BG_MAPPING,
   PASSCODE_MAPPING,
+  CREDENTIAL_BG,
 };

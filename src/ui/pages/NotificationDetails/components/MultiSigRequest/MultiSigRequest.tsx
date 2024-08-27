@@ -29,7 +29,10 @@ import { PageHeader } from "../../../../components/PageHeader";
 import { i18n } from "../../../../../i18n";
 import { PageFooter } from "../../../../components/PageFooter";
 import "./MultiSigRequest.scss";
-import { CreateIdentifierResult } from "../../../../../core/agent/agent.types";
+import {
+  CreateIdentifierResult,
+  NotificationRoute,
+} from "../../../../../core/agent/agent.types";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import {
   getNotificationsCache,
@@ -41,6 +44,7 @@ import {
 } from "../../../../hooks";
 import { MultiSigService } from "../../../../../core/agent/services/multiSigService";
 import { ErrorPage } from "./ErrorPage";
+import { Verification } from "../../../../components/Verification";
 
 const MultiSigRequest = ({
   pageId,
@@ -57,6 +61,7 @@ const MultiSigRequest = ({
   const [multisigIcpDetails, setMultisigIcpDetails] =
     useState<MultiSigIcpRequestDetails | null>(null);
   const [showErrorPage, setShowErrorPage] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
 
   useIonHardwareBackButton(
     BackEventPriorityType.Page,
@@ -101,6 +106,7 @@ const MultiSigRequest = ({
       const { identifier, signifyName, isPending } =
         (await Agent.agent.multiSigs.joinMultisig(
           notificationDetails.id,
+          notificationDetails.a.r as NotificationRoute,
           notificationDetails.a.d as string,
           {
             theme: multisigIcpDetails.ourIdentifier.theme,
@@ -137,7 +143,8 @@ const MultiSigRequest = ({
   const actionDecline = async () => {
     setAlertDeclineIsOpen(false);
     await Agent.agent.signifyNotifications.deleteNotificationRecordById(
-      notificationDetails.id
+      notificationDetails.id,
+      notificationDetails.a.r as NotificationRoute
     );
     handleNotificationUpdate();
     handleBack();
@@ -291,7 +298,7 @@ const MultiSigRequest = ({
         pageId={pageId}
         customClass="multisig-request-footer"
         primaryButtonText={`${i18n.t("notifications.details.buttons.accept")}`}
-        primaryButtonAction={() => actionAccept()}
+        primaryButtonAction={() => setVerifyIsOpen(true)}
         secondaryButtonText={`${i18n.t(
           "notifications.details.buttons.decline"
         )}`}
@@ -318,6 +325,11 @@ const MultiSigRequest = ({
           <IonSpinner name="circular" />
         </div>
       )}
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
+        onVerify={() => actionAccept()}
+      />
     </>
   );
 };

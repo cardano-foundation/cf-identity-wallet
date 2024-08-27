@@ -4,11 +4,12 @@ import {
   AgentServicesProps,
 } from "../agent.types";
 import { AgentService } from "./agentService";
+import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import {
-  CredentialMetadataRecordProps,
-  CredentialMetadataRecordStatus,
-} from "../records/credentialMetadataRecord.types";
-import { CredentialShortDetails, ACDCDetails } from "./credentialService.types";
+  CredentialShortDetails,
+  ACDCDetails,
+  CredentialStatus,
+} from "./credentialService.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { OnlineOnly } from "./utils";
 import { CredentialStorage, NotificationStorage } from "../records";
@@ -78,9 +79,7 @@ class CredentialService extends AgentService {
   @OnlineOnly
   async getCredentialDetailsById(id: string): Promise<ACDCDetails> {
     const metadata = await this.getMetadataById(id);
-    const acdc = await this.props.signifyClient
-      .credentials()
-      .get(metadata.id.replace("metadata:", ""));
+    const acdc = await this.props.signifyClient.credentials().get(metadata.id);
     if (!acdc) {
       throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
     }
@@ -123,6 +122,10 @@ class CredentialService extends AgentService {
     });
   }
 
+  async deleteStaleLocalCredential(id: string): Promise<void> {
+    await this.credentialStorage.deleteCredentialMetadata(id);
+  }
+
   async restoreCredential(id: string): Promise<void> {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
@@ -155,11 +158,11 @@ class CredentialService extends AgentService {
     schema: string
   ): Promise<void> {
     const credentialDetails: CredentialMetadataRecordProps = {
-      id: `metadata:${credentialId}`,
+      id: credentialId,
       isArchived: false,
       credentialType: schemaTitle,
       issuanceDate: new Date(dateTime).toISOString(),
-      status: CredentialMetadataRecordStatus.PENDING,
+      status: CredentialStatus.PENDING,
       connectionId,
       schema,
     };
@@ -176,9 +179,7 @@ class CredentialService extends AgentService {
       await this.credentialStorage.getAllCredentialMetadata();
     const unSyncedData = signifyCredentials.filter(
       (credential: any) =>
-        !storedCredentials.find(
-          (item) => credential.sad.d === item.id.replace("metadata:", "")
-        )
+        !storedCredentials.find((item) => credential.sad.d === item.id)
     );
     if (unSyncedData.length) {
       //sync the storage with the signify data

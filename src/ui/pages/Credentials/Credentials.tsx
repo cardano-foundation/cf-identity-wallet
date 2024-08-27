@@ -5,7 +5,7 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import { addOutline, peopleOutline } from "ionicons/icons";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -17,20 +17,29 @@ import {
 import {
   getCredsCache,
   getFavouritesCredsCache,
+  setCredsCache,
 } from "../../../store/reducers/credsCache";
 import {
   setCurrentOperation,
   setCurrentRoute,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { TabLayout } from "../../components/layout/TabLayout";
-import { CardType, OperationType } from "../../globals/types";
+import { CardType, OperationType, ToastMsgType } from "../../globals/types";
 import { useOnlineStatusEffect, useToggleConnections } from "../../hooks";
 import { Connections } from "../Connections";
 import { StartAnimationSource } from "../Identifiers/Identifiers.type";
 import "./Credentials.scss";
+import { ListHeader } from "../../components/ListHeader";
+import { CardList as CredentialCardList } from "../../components/SwitchCardView";
+import {
+  CredentialShortDetails,
+  CredentialStatus,
+} from "../../../core/agent/services/credentialService.types";
+import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -73,7 +82,7 @@ const AdditionalButtons = ({
   );
 };
 
-const Creds = () => {
+const Credentials = () => {
   const pageId = "credentials-tab";
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
@@ -90,18 +99,38 @@ const Creds = () => {
     TabsRoutePath.CREDENTIALS
   );
 
+  const [deletedPendingItem, setDeletePendingItem] =
+    useState<CredentialShortDetails | null>(null);
+  const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
+
+  const revokedCreds = useMemo(
+    () => credsCache.filter((item) => item.status === CredentialStatus.REVOKED),
+    [credsCache]
+  );
+
+  const pendingCreds = useMemo(
+    () => credsCache.filter((item) => item.status === CredentialStatus.PENDING),
+    [credsCache]
+  );
+  const confirmedCreds = useMemo(
+    () =>
+      credsCache.filter((item) => item.status === CredentialStatus.CONFIRMED),
+    [credsCache]
+  );
+
   const fetchArchivedCreds = useCallback(async () => {
     try {
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
-      // @TODO - duke: handle error
+      // eslint-disable-next-line no-console
+      console.error("Unable to get archived credential", e);
     }
   }, [dispatch]);
 
   useEffect(() => {
-    setShowPlaceholder(credsCache.length === 0);
-  }, [credsCache]);
+    setShowPlaceholder(credsCache.length === 0 && revokedCreds.length === 0);
+  }, [credsCache.length, revokedCreds.length]);
 
   useOnlineStatusEffect(fetchArchivedCreds);
 
@@ -133,7 +162,7 @@ const Creds = () => {
     return timeA - timeB;
   });
 
-  const allCreds = credsCache.filter(
+  const allCreds = confirmedCreds.filter(
     (cred) => !favCredsCache?.some((fav) => fav.id === cred.id)
   );
 
@@ -173,6 +202,7 @@ const Creds = () => {
         <IonButton
           fill="outline"
           className="secondary-button"
+          data-testid="cred-archived-revoked-button"
           onClick={() => setArchivedCredentialsIsOpen(true)}
         >
           <IonLabel color="secondary">
@@ -181,6 +211,34 @@ const Creds = () => {
         </IonButton>
       </div>
     );
+  };
+
+  const deletePendingCheck = useMemo(
+    () => ({
+      title: i18n.t("credentials.tab.detelepending.title"),
+      description: i18n.t("credentials.tab.detelepending.description"),
+      button: i18n.t("credentials.tab.detelepending.button"),
+    }),
+    []
+  );
+
+  const deletePendingCred = async () => {
+    if (!deletedPendingItem) return;
+    setDeletePendingItem(null);
+
+    try {
+      await Agent.agent.credentials.archiveCredential(deletedPendingItem.id);
+      await Agent.agent.credentials.deleteCredential(deletedPendingItem.id);
+
+      dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
+
+      const creds = await Agent.agent.credentials.getCredentials();
+      dispatch(setCredsCache(creds));
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Unable to delete credential", e);
+      dispatch(setToastMsg(ToastMsgType.DELETE_CRED_FAIL));
+    }
   };
 
   return (
@@ -243,11 +301,40 @@ const Creds = () => {
                 />
               </div>
             )}
-            {!!archivedCreds.length && <ArchivedCredentialsButton />}
+            {!!pendingCreds.length && (
+              <div className="credetial-tab-content-block">
+                <ListHeader
+                  title={`${i18n.t("credentials.tab.pendingcred")}`}
+                />
+                <CredentialCardList
+                  cardsData={pendingCreds}
+                  cardTypes={CardType.CREDENTIALS}
+                  testId="pending-creds-list"
+                  onCardClick={(cred) => {
+                    setDeletePendingItem(cred as CredentialShortDetails);
+                    setOpenDeletePendingAlert(true);
+                  }}
+                />
+              </div>
+            )}
+            {(!!archivedCreds.length || revokedCreds.length > 0) && (
+              <ArchivedCredentialsButton />
+            )}
           </>
         )}
       </TabLayout>
+      <RemovePendingAlert
+        pageId={pageId}
+        openFirstCheck={openDeletePendingAlert}
+        firstCheckProps={deletePendingCheck}
+        onClose={() => setOpenDeletePendingAlert(false)}
+        secondCheckTitle={`${i18n.t(
+          "credentials.tab.detelepending.secondchecktitle"
+        )}`}
+        onDeletePendingItem={deletePendingCred}
+      />
       <ArchivedCredentials
+        revokedCreds={revokedCreds}
         archivedCreds={archivedCreds}
         archivedCredentialsIsOpen={archivedCredentialsIsOpen}
         setArchivedCredentialsIsOpen={handleArchivedCredentialsDisplayChange}
@@ -256,4 +343,4 @@ const Creds = () => {
   );
 };
 
-export { Creds };
+export { Credentials };

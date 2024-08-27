@@ -94,9 +94,9 @@ describe("Cards Details page", () => {
       ).toBeInTheDocument()
     );
     expect(getByText(filteredIdentifierFix[0].displayName)).toBeInTheDocument();
-    expect(getByTestId("share-identifier-modal").getAttribute("is-open")).toBe(
-      "false"
-    );
+    expect(
+      getAllByTestId("share-connection-modal")[0].getAttribute("is-open")
+    ).toBe("false");
     expect(
       getByTestId("identifier-options-modal").getAttribute("is-open")
     ).toBe("false");
@@ -168,10 +168,10 @@ describe("Cards Details page", () => {
       ).toBeInTheDocument()
     );
     await waitFor(() =>
-      expect(getByText(identifierFix[0].kt)).toBeInTheDocument()
+      expect(getByText(identifierFix[0].kt as string)).toBeInTheDocument()
     );
     await waitFor(() =>
-      expect(getByText(identifierFix[0].nt)).toBeInTheDocument()
+      expect(getByText(identifierFix[0].nt as string)).toBeInTheDocument()
     );
     await waitFor(() =>
       expect(

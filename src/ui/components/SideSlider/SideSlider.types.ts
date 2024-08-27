@@ -10,6 +10,6 @@ interface SideSliderProps {
   onCloseAnimationEnd?: () => void;
 }
 
-export const ANIMATION_DURATION = 500;
+export const ANIMATION_DURATION = 300;
 
 export type { SideSliderProps };

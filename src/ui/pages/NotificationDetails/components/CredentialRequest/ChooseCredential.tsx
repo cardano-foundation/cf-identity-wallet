@@ -2,34 +2,62 @@ import { IonCheckbox, IonIcon, IonSpinner } from "@ionic/react";
 import { informationCircleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { Agent } from "../../../../../core/agent/agent";
 import { i18n } from "../../../../../i18n";
-import { TabsRoutePath } from "../../../../../routes/paths";
 import { useAppSelector } from "../../../../../store/hooks";
+import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
 import {
-  getNotificationDetailCache,
   getNotificationsCache,
   setNotificationsCache,
-  setNotificationDetailCache,
 } from "../../../../../store/reducers/notificationsCache";
+import { setToastMsg } from "../../../../../store/reducers/stateCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { CardItem, CardList } from "../../../../components/CardList";
+import { CredentialDetailModal } from "../../../../components/CredentialDetailModule";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
+import { Verification } from "../../../../components/Verification";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
+import { ToastMsgType } from "../../../../globals/types";
 import { formatShortDate, formatTimeToSec } from "../../../../utils/formatters";
-import { NotificationDetailState } from "../../NotificationDetails.types";
 import "./ChooseCredential.scss";
 import {
   ChooseCredentialProps,
+  LightCredentialDetailModalProps,
   RequestCredential,
 } from "./CredentialRequest.types";
-import { Agent } from "../../../../../core/agent/agent";
-import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
-import { setToastMsg } from "../../../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../../../globals/types";
+import { BackReason } from "../../../../components/CredentialDetailModule/CredentialDetailModule.types";
 
 const CRED_EMPTY = "Credential is empty";
+
+const LightCredentialDetailModal = ({
+  credId,
+  isOpen,
+  defaultSelected,
+  setIsOpen,
+  onClose,
+}: LightCredentialDetailModalProps) => {
+  const [isSelected, setSelected] = useState(defaultSelected);
+
+  useEffect(() => {
+    setSelected(defaultSelected);
+  }, [defaultSelected]);
+
+  return (
+    <CredentialDetailModal
+      pageId="request-cred-detail"
+      id={credId || ""}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      onClose={(reason) => {
+        onClose(reason, isSelected, credId);
+      }}
+      isLightMode
+      selected={isSelected}
+      setSelected={setSelected}
+    />
+  );
+};
 
 const ChooseCredential = ({
   pageId,
@@ -38,16 +66,18 @@ const ChooseCredential = ({
   notificationDetails,
   onBack,
   onClose,
+  reloadData,
 }: ChooseCredentialProps) => {
-  const history = useHistory<NotificationDetailState>();
   const connections = useAppSelector(getConnectionsCache);
   const notifications = useAppSelector(getNotificationsCache);
-  const notificationDetailCache = useAppSelector(getNotificationDetailCache);
   const dispatch = useDispatch();
   const [selectedCred, setSelectedCred] = useState<RequestCredential | null>(
     null
   );
   const [loading, setLoading] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
+  const [viewCredDetail, setViewCredDetail] =
+    useState<RequestCredential | null>(null);
 
   const displayIdentifiers = credentialRequest.credentials.map(
     (cred): CardItem<RequestCredential> => {
@@ -71,35 +101,24 @@ const ChooseCredential = ({
     );
   }, []);
 
-  useEffect(() => {
-    if (
-      !notificationDetailCache ||
-      !history.location.pathname.includes(TabsRoutePath.NOTIFICATIONS)
-    ) {
+  const handleSelectCredOnModal = (reason: BackReason, selected: boolean) => {
+    if (reason === BackReason.ARCHIVED) {
+      reloadData();
       return;
     }
 
-    if (notificationDetailCache.checked) {
-      const updatedCred = credentialRequest.credentials.find(
-        (cred) => cred.acdc.d === notificationDetailCache.viewCred
-      );
+    const isShowSelectedCred = viewCredDetail?.acdc.d === selectedCred?.acdc.d;
 
-      if (updatedCred) {
-        setSelectedCred(updatedCred as RequestCredential);
-      }
-    } else if (selectedCred?.acdc.d === notificationDetailCache.viewCred) {
+    if (selected && !isShowSelectedCred) {
+      setSelectedCred(viewCredDetail);
+    }
+
+    if (!selected && isShowSelectedCred) {
       setSelectedCred(null);
     }
 
-    dispatch(setNotificationDetailCache(null));
-  }, [
-    credentialRequest.credentials,
-    dispatch,
-    handleSelectCred,
-    history.location.pathname,
-    notificationDetailCache,
-    selectedCred,
-  ]);
+    setViewCredDetail(null);
+  };
 
   const handleNotificationUpdate = async () => {
     const updatedNotifications = notifications.filter(
@@ -122,7 +141,6 @@ const ChooseCredential = ({
       );
       handleNotificationUpdate();
       dispatch(setToastMsg(ToastMsgType.SHARE_CRED_SUCCESS));
-      dispatch(setNotificationDetailCache(null));
       onClose();
     } catch (e) {
       dispatch(setToastMsg(ToastMsgType.SHARE_CRED_FAIL));
@@ -131,22 +149,8 @@ const ChooseCredential = ({
     }
   };
 
-  const showCredDetail = (data: RequestCredential) => {
-    const pathname = `${TabsRoutePath.CREDENTIALS}/metadata:${data.acdc.d}`;
-    dispatch(
-      setNotificationDetailCache({
-        notificationId: notificationDetails.id,
-        viewCred: data.acdc.d,
-        step: 1,
-        checked: selectedCred?.acdc.d === data.acdc.d,
-      })
-    );
-    history.push(pathname);
-  };
-
   const handleBack = () => {
     onBack();
-    dispatch(setNotificationDetailCache(null));
   };
 
   return (
@@ -175,7 +179,7 @@ const ChooseCredential = ({
             primaryButtonText={`${i18n.t(
               "notifications.details.buttons.providecredential"
             )}`}
-            primaryButtonAction={handleRequestCredential}
+            primaryButtonAction={() => setVerifyIsOpen(true)}
             primaryButtonDisabled={!selectedCred}
           />
         }
@@ -201,7 +205,7 @@ const ChooseCredential = ({
                 data-testid={`cred-detail-${data.acdc.d}`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  showCredDetail(data);
+                  setViewCredDetail(data);
                 }}
               />
             );
@@ -230,6 +234,18 @@ const ChooseCredential = ({
           <IonSpinner name="circular" />
         </div>
       )}
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
+        onVerify={handleRequestCredential}
+      />
+      <LightCredentialDetailModal
+        defaultSelected={viewCredDetail?.acdc.d === selectedCred?.acdc.d}
+        credId={viewCredDetail?.acdc.d || ""}
+        isOpen={!!viewCredDetail}
+        setIsOpen={() => setViewCredDetail(null)}
+        onClose={handleSelectCredOnModal}
+      />
     </>
   );
 };

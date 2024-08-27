@@ -9,6 +9,7 @@
         "start:dev": "npx nodemon",
         "cli:keri-oobi": "npx ts-node ./src/cli/keriOobi.ts",
         "cli:multi-sig-incept": "npx ts-node ./src/cli/multiSigIncept.ts",
+        "cli:revoke": "npx ts-node ./src/cli/revokeCredential.ts",
         "build": "rimraf ./build && tsc"
     },
     "author": "",
@@ -21,7 +22,7 @@
         "net": "^1.0.2",
         "node-cache": "^5.1.2",
         "qrcode-terminal": "^0.12.0",
-        "signify-ts": "github:cardano-foundation/signify-ts#c1422b041d2ff53b3d4456a29443722b95f35fb5",
+        "signify-ts": "github:WebOfTrust/signify-ts#1212b54bfeaf085ad2217278e1e0fcaf4181621a",
         "uuid": "^9.0.1",
         "ws": "^8.13.0"
     },

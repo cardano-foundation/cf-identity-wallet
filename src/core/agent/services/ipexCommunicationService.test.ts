@@ -5,6 +5,7 @@ import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./connection.types";
+import { CredentialStatus } from "./credentialService.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -51,6 +52,7 @@ const ipexMessageRecordStorage = jest.mocked({
   getIpexMessageMetadataByConnectionId: jest.fn(),
   createIpexMessageRecord: jest.fn(),
 });
+
 const operationPendingStorage = jest.mocked({
   save: jest.fn(),
   delete: jest.fn(),
@@ -64,6 +66,7 @@ const operationPendingStorage = jest.mocked({
 let credentialListMock = jest.fn();
 let credentialGetMock = jest.fn();
 const identifierListMock = jest.fn();
+
 let getExchangeMock = jest.fn().mockImplementation((id: string) => {
   if (id == "saidForUuid") {
     return {
@@ -87,6 +90,7 @@ let getExchangeMock = jest.fn().mockImplementation((id: string) => {
   }
   return;
 });
+
 const ipexOfferMock = jest.fn();
 const ipexGrantMock = jest.fn();
 const schemaGetMock = jest.fn();
@@ -95,6 +99,7 @@ const submitAdmitMock = jest.fn().mockResolvedValue({
   name: "opName",
   done: true,
 });
+
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -196,6 +201,9 @@ jest.mock("../../../core/agent/agent", () => ({
           deleteNotificationMock(id),
         addPendingOperationToQueue: jest.fn(),
       },
+      multiSigs: {
+        multisigAdmit: jest.fn().mockResolvedValue({ name: "opName" }),
+      },
     },
   },
 }));
@@ -256,6 +264,7 @@ describe("Ipex communication service of agent", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
+
   test("can accept ACDC", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "uuid";
@@ -287,6 +296,11 @@ describe("Ipex communication service of agent", () => {
     expect(
       Agent.agent.signifyNotifications.addPendingOperationToQueue
     ).toBeCalledTimes(1);
+    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith(
+      expect.objectContaining({
+        historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+      })
+    );
     expect(deleteNotificationMock).toBeCalledWith(id);
   });
 
@@ -334,11 +348,79 @@ describe("Ipex communication service of agent", () => {
     ]);
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
     await expect(
-      ipexCommunicationService.markAcdcComplete(id)
+      ipexCommunicationService.markAcdc(id, CredentialStatus.CONFIRMED)
     ).rejects.toThrowError(
       IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
     );
     expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
+  });
+
+  test("Can mark credential as confirmed", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    const pendingCredentialMock = {
+      id: "id",
+      createdAt: new Date(),
+      issuanceDate: "",
+      credentialType: "",
+      status: CredentialStatus.PENDING,
+      connectionId: "connection-id",
+    };
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(pendingCredentialMock);
+    await ipexCommunicationService.markAcdc(id, CredentialStatus.CONFIRMED);
+    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(
+      pendingCredentialMock.id,
+      {
+        ...pendingCredentialMock,
+        status: CredentialStatus.CONFIRMED,
+      }
+    );
+  });
+
+  test("Can mark credential as revoked", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    const pendingCredentialMock = {
+      id: "id",
+      createdAt: new Date(),
+      issuanceDate: "",
+      credentialType: "",
+      status: CredentialStatus.PENDING,
+      connectionId: "connection-id",
+    };
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(pendingCredentialMock);
+    await ipexCommunicationService.markAcdc(id, CredentialStatus.REVOKED);
+    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(
+      pendingCredentialMock.id,
+      {
+        ...pendingCredentialMock,
+        status: CredentialStatus.REVOKED,
+      }
+    );
   });
 
   test("Should throw an error when KERIA is offline", async () => {
@@ -347,6 +429,7 @@ describe("Ipex communication service of agent", () => {
       ipexCommunicationService.acceptAcdc("id")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
+
   test("can offer Keri Acdc when received the ipex apply", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "uuid";
@@ -380,7 +463,7 @@ describe("Ipex communication service of agent", () => {
       senderName: "abc123",
       recipient: "i",
       acdc: expect.anything(),
-      apply: "d",
+      applySaid: "d",
     });
     expect(deleteNotificationMock).toBeCalledWith(id);
   });
@@ -586,7 +669,7 @@ describe("Ipex communication service of agent", () => {
     });
     credentialStorage.getCredentialMetadatasById.mockResolvedValue([
       {
-        id: "metadata:d",
+        id: "d",
         status: "confirmed",
         connectionId: "connectionId",
         isArchived: false,
@@ -650,40 +733,7 @@ describe("Ipex communication service of agent", () => {
       connectionId: grantIpexMessageMock.exn.i,
       historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE,
     });
-
-    schemaGetMock.mockRejectedValueOnce(
-      new Error("request - 404 - SignifyClient message")
-    );
-    resolveOobiMock.mockResolvedValueOnce({ done: false });
-    await ipexCommunicationService.createLinkedIpexMessageRecord(
-      grantIpexMessageMock,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
-    );
-    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
-      id: grantIpexMessageMock.exn.d,
-      credentialType: undefined,
-      content: grantIpexMessageMock,
-      connectionId: grantIpexMessageMock.exn.i,
-      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-    });
-
-    schemaGetMock.mockRejectedValueOnce(
-      new Error("request - 404 - SignifyClient message")
-    );
-    resolveOobiMock.mockResolvedValueOnce({ done: true });
-    schemaGetMock.mockResolvedValueOnce(schemaMock);
-    await ipexCommunicationService.createLinkedIpexMessageRecord(
-      grantIpexMessageMock,
-      ConnectionHistoryType.CREDENTIAL_ISSUANCE
-    );
-    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
-      id: grantIpexMessageMock.exn.d,
-      credentialType: schemaMock.title,
-      content: grantIpexMessageMock,
-      connectionId: grantIpexMessageMock.exn.i,
-      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-    });
-    expect(schemaGetMock).toBeCalledTimes(5);
+    expect(schemaGetMock).toBeCalledTimes(2);
     expect(resolveOobiMock).toBeCalledTimes(2);
   });
 
@@ -749,5 +799,214 @@ describe("Ipex communication service of agent", () => {
     await expect(
       ipexCommunicationService.getIpexApplyDetails(noti)
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+  });
+
+  test("can accept ACDC from multisig exn", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    const id = "uuid";
+
+    signifyClient.exchanges = jest.fn().mockReturnValue({
+      get: jest
+        .fn()
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            exn: {
+              d: "ECWyfhUctyCCoxZG-PU7MFPWkw5H2--TMC9v_tbZjjBv",
+              i: "ECa8C3YyqT9khmn0MnLUJKQTCNmiB6tr74uNUX_Y-r2y",
+              p: "",
+              dt: "2024-07-31T02:45:28.535000+00:00",
+              r: "/multisig/exn",
+              a: {
+                gid: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+              },
+              e: {
+                exn: {
+                  d: "EPcCdp9JRd5wgCVs7hmzB0JsbuqHhYU3ggShqR2QDpbH",
+                  i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+                  p: "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw",
+                  dt: "2024-07-31T02:45:25.998000+00:00",
+                  r: "/ipex/admit",
+                  a: {
+                    m: "",
+                  },
+                  e: {},
+                },
+                d: "EFHb7hpsDWdBdZyMVhQR6kJN6j9DddAAS-_pQQhq-yZ6",
+              },
+            },
+          })
+        )
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            exn: {
+              v: "KERI10JSON000514_",
+              t: "exn",
+              d: "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw",
+              i: "EKhebhdg6jOqK7ZgY-cFpx6rozpUave8llE2B15ioNHi",
+              p: "",
+              dt: "2024-07-31T02:45:17.288000+00:00",
+              r: "/ipex/grant",
+              q: {},
+              a: {
+                m: "",
+                i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+              },
+              e: {
+                acdc: {
+                  v: "ACDC10JSON00018d_",
+                  d: "EJvvnAZruVSfvPZjzGwyTR3RQApoK7228du0c8flDcaF",
+                  i: "EKhebhdg6jOqK7ZgY-cFpx6rozpUave8llE2B15ioNHi",
+                  ri: "EDXcY9Jsg32LgZ8S5QuHNi3ZF5U01_kU3FakVUMCbGG3",
+                  s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+                  a: {
+                    d: "EKoEogKtVuRAkoFs43CLPTwSAUuo3TQsmnKI86ef2Usb",
+                    i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+                    dt: "2024-07-31T02:45:16.860000+00:00",
+                    LEI: "New 310724",
+                  },
+                },
+                d: "EK3-ZPPv8JYVAIK8pq1SfQxvHlsKmwdpqxqO1kcP_ajv",
+              },
+            },
+          })
+        ),
+    });
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+
+    schemaGetMock.mockResolvedValue({ title: "title" });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
+      id: "id",
+    });
+
+    await ipexCommunicationService.acceptAcdcFromMultisigExn(id);
+    expect(Agent.agent.multiSigs.multisigAdmit).toBeCalledTimes(1);
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
+      id: "EJvvnAZruVSfvPZjzGwyTR3RQApoK7228du0c8flDcaF",
+      isArchived: false,
+      credentialType: "title",
+      issuanceDate: new Date("2024-07-31T02:45:16.860000+00:00").toISOString(),
+      connectionId: "EKhebhdg6jOqK7ZgY-cFpx6rozpUave8llE2B15ioNHi",
+      schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      status: CredentialStatus.PENDING,
+    });
+    expect(operationPendingStorage.save).toBeCalledWith({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+    expect(
+      Agent.agent.signifyNotifications.addPendingOperationToQueue
+    ).toBeCalledTimes(1);
+    expect(deleteNotificationMock).toBeCalledWith(id);
+  });
+
+  test("cannot accept ACDC from multisig exn if the notification is missing in the DB", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "not-found-id";
+    notificationStorage.findById.mockResolvedValueOnce(null);
+
+    await expect(
+      ipexCommunicationService.acceptAcdcFromMultisigExn(id)
+    ).rejects.toThrowError(
+      `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+    );
+  });
+
+  test("cannot accept ACDC from multisig exn if identifier is not locally stored", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+
+    notificationStorage.findById = jest.fn().mockResolvedValue({
+      id,
+      createdAt: new Date("2024-04-29T11:01:04.903Z"),
+      a: {
+        d: "saidForUuid",
+      },
+    });
+
+    signifyClient.exchanges = jest.fn().mockReturnValue({
+      get: jest
+        .fn()
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            exn: {
+              d: "ECWyfhUctyCCoxZG-PU7MFPWkw5H2--TMC9v_tbZjjBv",
+              i: "ECa8C3YyqT9khmn0MnLUJKQTCNmiB6tr74uNUX_Y-r2y",
+              p: "",
+              dt: "2024-07-31T02:45:28.535000+00:00",
+              r: "/multisig/exn",
+              a: {
+                gid: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+              },
+              e: {
+                exn: {
+                  d: "EPcCdp9JRd5wgCVs7hmzB0JsbuqHhYU3ggShqR2QDpbH",
+                  i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+                  p: "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw",
+                  dt: "2024-07-31T02:45:25.998000+00:00",
+                  r: "/ipex/admit",
+                  a: {
+                    m: "",
+                  },
+                  e: {},
+                },
+                d: "EFHb7hpsDWdBdZyMVhQR6kJN6j9DddAAS-_pQQhq-yZ6",
+              },
+            },
+          })
+        )
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            exn: {
+              v: "KERI10JSON000514_",
+              t: "exn",
+              d: "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw",
+              i: "EKhebhdg6jOqK7ZgY-cFpx6rozpUave8llE2B15ioNHi",
+              p: "",
+              dt: "2024-07-31T02:45:17.288000+00:00",
+              r: "/ipex/grant",
+              q: {},
+              a: {
+                m: "",
+                i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+              },
+              e: {
+                acdc: {
+                  v: "ACDC10JSON00018d_",
+                  d: "EJvvnAZruVSfvPZjzGwyTR3RQApoK7228du0c8flDcaF",
+                  i: "EKhebhdg6jOqK7ZgY-cFpx6rozpUave8llE2B15ioNHi",
+                  ri: "EDXcY9Jsg32LgZ8S5QuHNi3ZF5U01_kU3FakVUMCbGG3",
+                  s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+                  a: {
+                    d: "EKoEogKtVuRAkoFs43CLPTwSAUuo3TQsmnKI86ef2Usb",
+                    i: "EJgTVgwvxuY2pGAcuAcE_-77SA0wGRsvWGlaH8z_YP2f",
+                    dt: "2024-07-31T02:45:16.860000+00:00",
+                    LEI: "New 310724",
+                  },
+                },
+                d: "EK3-ZPPv8JYVAIK8pq1SfQxvHlsKmwdpqxqO1kcP_ajv",
+              },
+            },
+          })
+        ),
+    });
+
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(undefined);
+
+    await expect(
+      ipexCommunicationService.acceptAcdcFromMultisigExn(id)
+    ).rejects.toThrowError(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+    expect(deleteNotificationMock).not.toBeCalledWith(id);
   });
 });

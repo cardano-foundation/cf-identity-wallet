@@ -46,6 +46,14 @@ const NotificationItem = ({
         return t("notifications.tab.labels.exnipexapply", {
           connection: connectionsCache?.[item.connectionId]?.label,
         });
+      case NotificationRoute.LocalAcdcRevoked:
+        return t("notifications.tab.labels.exnipexgrantrevoke", {
+          credential: item.a.credentialTitle,
+        });
+      case NotificationRoute.MultiSigExn:
+        return t("notifications.tab.labels.multisigexn", {
+          connection: connectionsCache?.[item.connectionId]?.label,
+        });
       default:
         return "";
       }

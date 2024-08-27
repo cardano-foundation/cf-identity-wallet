@@ -31,8 +31,6 @@ import {
 import { Alert } from "../../../../components/Alert";
 import { CardItem, CardList } from "../../../../components/CardList";
 import { CardsPlaceholder } from "../../../../components/CardsPlaceholder";
-import { VerifyPasscode } from "../../../../components/VerifyPasscode";
-import { VerifyPassword } from "../../../../components/VerifyPassword";
 import { OperationType, ToastMsgType } from "../../../../globals/types";
 import { ConfirmConnectModal } from "../ConfirmConnectModal";
 import "./ConnectWallet.scss";
@@ -44,12 +42,12 @@ import {
 import { Agent } from "../../../../../core/agent/agent";
 import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
 import { ANIMATION_DURATION } from "../../../../components/SideSlider/SideSlider.types";
+import { Verification } from "../../../../components/Verification";
 
 const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
   (props, ref) => {
     const history = useHistory();
     const dispatch = useAppDispatch();
-
     const toastMsg = useAppSelector(getToastMsg);
     const pendingConnection = useAppSelector(getPendingConnection);
     const defaultIdentifierCache = useAppSelector(getIdentifiersCache).filter(
@@ -59,11 +57,9 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     const connectedWallet = useAppSelector(getConnectedWallet);
     const currentOperation = useAppSelector(getCurrentOperation);
     const pageId = "connect-wallet-placeholder";
-    const stateCache = useAppSelector(getStateCache);
     const [actionInfo, setActionInfo] = useState<ActionInfo>({
       type: ActionType.None,
     });
-
     const [openExistConenctedWalletAlert, setOpenExistConnectedWalletAlert] =
       useState<boolean>(false);
     const [openDeleteAlert, setOpenDeleteAlert] = useState<boolean>(false);
@@ -71,14 +67,11 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       useState<boolean>(false);
     const [openIdentifierMissingAlert, setOpenIdentifierMissingAlert] =
       useState<boolean>(false);
-
-    const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-    const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+    const [verifyIsOpen, setVerifyIsOpen] = useState(false);
 
     const displayConnection = useMemo((): CardItem<ConnectionData>[] => {
       return connections.map((connection) => {
         const dAppName = connection.name ? connection.name : connection.id;
-
         return {
           id: connection.id,
           title: dAppName,
@@ -95,14 +88,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     }));
 
     const handleOpenVerify = () => {
-      if (
-        !stateCache?.authentication.passwordIsSkipped &&
-        stateCache?.authentication.passwordIsSet
-      ) {
-        setVerifyPasswordIsOpen(true);
-      } else {
-        setVerifyPasscodeIsOpen(true);
-      }
+      setVerifyIsOpen(true);
     };
 
     const handleOpenDeleteAlert = (data: ConnectionData) => {
@@ -188,8 +174,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     };
 
     const handleAfterVerify = () => {
-      setVerifyPasscodeIsOpen(false);
-      setVerifyPasswordIsOpen(false);
+      setVerifyIsOpen(false);
 
       if (actionInfo.type === ActionType.Delete && actionInfo.data) {
         handleDeleteConnection(actionInfo.data);
@@ -391,14 +376,9 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           actionCancel={closeIdentifierMissingAlert}
           actionDismiss={closeIdentifierMissingAlert}
         />
-        <VerifyPassword
-          isOpen={verifyPasswordIsOpen}
-          setIsOpen={setVerifyPasswordIsOpen}
-          onVerify={handleAfterVerify}
-        />
-        <VerifyPasscode
-          isOpen={verifyPasscodeIsOpen}
-          setIsOpen={setVerifyPasscodeIsOpen}
+        <Verification
+          verifyIsOpen={verifyIsOpen}
+          setVerifyIsOpen={setVerifyIsOpen}
           onVerify={handleAfterVerify}
         />
       </>

@@ -13,12 +13,10 @@ import {
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
-import {
-  ConnectionShortDetails,
-  KeriConnectionType,
-} from "../../../core/agent/agent.types";
+import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { updateOrAddMultisigConnectionCache } from "../../../store/reducers/connectionsCache";
 import {
   getMultiSigGroupCache,
   setMultiSigGroupCache,
@@ -40,7 +38,6 @@ import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
 import { ScannerProps } from "./Scanner.types";
-import { updateOrAddMultisigConnectionCache } from "../../../store/reducers/connectionsCache";
 
 const Scanner = forwardRef(
   ({ routePath, setIsValueCaptured, handleReset }: ScannerProps, ref) => {
@@ -136,6 +133,11 @@ const Scanner = forwardRef(
       handleReset && handleReset();
     };
 
+    const handleAfterScanMultisig = () => {
+      dispatch(setCurrentOperation(OperationType.OPEN_MULTISIG_IDENTIFIER));
+      handleReset?.();
+    };
+
     const handleResolveOobi = async (content: string) => {
       try {
         const invitation = await Agent.agent.connections.connectByOobiUrl(
@@ -145,13 +147,23 @@ const Scanner = forwardRef(
         if (invitation.type === KeriConnectionType.NORMAL) {
           handleReset && handleReset();
           setIsValueCaptured && setIsValueCaptured(true);
+
+          const scanMultiSigByTab =
+            routePath === TabsRoutePath.SCAN && content.includes("groupId");
+
           if (
             currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
-            currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
+            currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN ||
+            // Initiator scan member qr by normal scanner (scan tab)
+            scanMultiSigByTab
           ) {
             const groupId = new URL(content).searchParams.get("groupId");
             groupId && updateConnections(groupId);
             dispatch(updateOrAddMultisigConnectionCache(invitation.connection));
+
+            if (scanMultiSigByTab) {
+              handleAfterScanMultisig();
+            }
           }
         }
 

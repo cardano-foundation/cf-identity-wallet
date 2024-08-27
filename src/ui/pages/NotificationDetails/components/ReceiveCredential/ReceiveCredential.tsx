@@ -22,12 +22,15 @@ import { useIonHardwareBackButton } from "../../../../hooks";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./ReceiveCredential.scss";
+import { NotificationRoute } from "../../../../../core/agent/agent.types";
+import { Verification } from "../../../../components/Verification";
 
 const ReceiveCredential = ({
   pageId,
   activeStatus,
   notificationDetails,
   handleBack,
+  multisigExn,
 }: NotificationDetailsProps) => {
   const dispatch = useAppDispatch();
   const notificationsCache = useAppSelector(getNotificationsCache);
@@ -35,6 +38,7 @@ const ReceiveCredential = ({
   const connectionsCache = useAppSelector(getConnectionsCache);
   const fallbackLogo = KeriLogo;
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const connection =
     connectionsCache?.[notificationDetails.connectionId]?.label;
@@ -56,7 +60,14 @@ const ReceiveCredential = ({
 
   const handleAccept = async () => {
     setInitiateAnimation(true);
-    await Agent.agent.ipexCommunications.acceptAcdc(notificationDetails.id);
+    if (multisigExn) {
+      await Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn(
+        notificationDetails.id
+      );
+    } else {
+      await Agent.agent.ipexCommunications.acceptAcdc(notificationDetails.id);
+    }
+    handleNotificationUpdate();
     setTimeout(() => {
       handleNotificationUpdate();
       handleBack();
@@ -65,7 +76,8 @@ const ReceiveCredential = ({
 
   const handleDecline = async () => {
     await Agent.agent.signifyNotifications.deleteNotificationRecordById(
-      notificationDetails.id
+      notificationDetails.id,
+      notificationDetails.a.r as NotificationRoute
     );
     handleNotificationUpdate();
     handleBack();
@@ -141,7 +153,7 @@ const ReceiveCredential = ({
           primaryButtonText={`${i18n.t(
             "notifications.details.buttons.accept"
           )}`}
-          primaryButtonAction={handleAccept}
+          primaryButtonAction={() => setVerifyIsOpen(true)}
           secondaryButtonText={`${i18n.t(
             "notifications.details.buttons.decline"
           )}`}
@@ -160,6 +172,11 @@ const ReceiveCredential = ({
         actionConfirm={() => handleDecline()}
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}
+      />
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
+        onVerify={handleAccept}
       />
     </>
   );

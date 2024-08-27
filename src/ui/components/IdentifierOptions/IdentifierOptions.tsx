@@ -1,5 +1,3 @@
-import { Share } from "@capacitor/share";
-import { IonButton } from "@ionic/react";
 import {
   pencilOutline,
   refreshOutline,
@@ -7,27 +5,16 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getIdentifiersCache,
-  setIdentifiersCache,
-} from "../../../store/reducers/identifiersCache";
-import {
-  setCurrentOperation,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
-import { DISPLAY_NAME_LENGTH } from "../../globals/constants";
-import { OperationType, ToastMsgType } from "../../globals/types";
-import { IdentifierColorSelector } from "../CreateIdentifier/components/IdentifierColorSelector";
-import { IdentifierThemeSelector } from "../CreateIdentifier/components/IdentifierThemeSelector";
-import { CustomInput } from "../CustomInput";
-import { ErrorMessage } from "../ErrorMessage";
+import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { OperationType } from "../../globals/types";
+import { EditIdentifier } from "../EditIdentifier";
 import { OptionItem, OptionModal } from "../OptionsModal";
+import { ShareConnection } from "../ShareConnection";
 import "./IdentifierOptions.scss";
 import { IdentifierOptionsProps } from "./IdentifierOptions.types";
-import { getTheme } from "../../utils/theme";
 
 const IdentifierOptions = ({
   optionsIsOpen,
@@ -36,14 +23,13 @@ const IdentifierOptions = ({
   setCardData,
   handleDeleteIdentifier,
   handleRotateKey,
+  oobi,
 }: IdentifierOptionsProps) => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const [editorOptionsIsOpen, setEditorIsOpen] = useState(false);
-  const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
-  const [newSelectedTheme, setNewSelectedTheme] = useState(0);
-  const [newSelectedColor, setNewSelectedColor] = useState(0);
   const [isMultiSig, setIsMultiSig] = useState(false);
+  const [shareIsOpen, setShareIsOpen] = useState(false);
 
   useEffect(() => {
     const identifier = identifiersData.find((data) => data.id === cardData.id);
@@ -52,57 +38,9 @@ const IdentifierOptions = ({
     }
   }, [identifiersData, cardData.id]);
 
-  const verifyDisplayName =
-    newDisplayName.length > 0 &&
-    newDisplayName.length <= DISPLAY_NAME_LENGTH &&
-    (newDisplayName !== cardData.displayName ||
-      newSelectedTheme !== cardData.theme);
-
-  useEffect(() => {
-    setNewDisplayName(cardData.displayName);
-  }, [cardData.displayName]);
-
-  useEffect(() => {
-    const theme = getTheme(cardData.theme);
-
-    setNewSelectedColor(Number(theme.color));
-    setNewSelectedTheme(Number(theme.layout));
-  }, [cardData.theme, editorOptionsIsOpen]);
-
-  const handleClose = () => {
-    setEditorIsOpen(false);
-    setOptionsIsOpen(false);
-  };
-
   const handleDelete = () => {
     handleDeleteIdentifier();
     setOptionsIsOpen(false);
-  };
-
-  const handleSubmit = async () => {
-    setEditorIsOpen(false);
-    setOptionsIsOpen(false);
-    const updatedIdentifiers = [...identifiersData];
-    const index = updatedIdentifiers.findIndex(
-      (identifier) => identifier.id === cardData.id
-    );
-    const theme = Number(`${newSelectedColor}${newSelectedTheme}`);
-    updatedIdentifiers[index] = {
-      ...updatedIdentifiers[index],
-      displayName: newDisplayName,
-      theme,
-    };
-    await Agent.agent.identifiers.updateIdentifier(cardData.id, {
-      displayName: newDisplayName,
-      theme,
-    });
-    setCardData({
-      ...cardData,
-      displayName: newDisplayName,
-      theme,
-    });
-    dispatch(setIdentifiersCache(updatedIdentifiers));
-    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
   };
 
   const rotateKey = () => {
@@ -112,32 +50,14 @@ const IdentifierOptions = ({
 
   const updateIdentifier = () => {
     dispatch(setCurrentOperation(OperationType.UPDATE_IDENTIFIER));
-    setNewDisplayName(cardData.displayName);
     setOptionsIsOpen(false);
     setEditorIsOpen(true);
-  };
-
-  const share = async () => {
-    await Share.share({
-      text: cardData.displayName + " " + cardData.id,
-    });
   };
 
   const deleteIdentifier = () => {
     setOptionsIsOpen(false);
     handleDelete();
     dispatch(setCurrentOperation(OperationType.DELETE_IDENTIFIER));
-  };
-
-  const dismissModal = () => {
-    setEditorIsOpen(false);
-    setNewDisplayName(cardData.displayName);
-    setNewSelectedTheme(cardData.theme);
-  };
-
-  const closeModal = () => {
-    handleClose();
-    dispatch(setCurrentOperation(OperationType.IDLE));
   };
 
   const optionsRotate: OptionItem[] = [
@@ -156,7 +76,7 @@ const IdentifierOptions = ({
     {
       icon: shareOutline,
       label: i18n.t("identifiers.details.options.share"),
-      onClick: share,
+      onClick: () => setShareIsOpen(true),
       testId: "share-identifier-option",
     },
     {
@@ -182,68 +102,17 @@ const IdentifierOptions = ({
         }}
         items={isMultiSig ? optionsNoRotate : optionsRotate}
       />
-      <OptionModal
+      <EditIdentifier
         modalIsOpen={editorOptionsIsOpen}
-        customClasses="edit-identifier"
-        onDismiss={dismissModal}
-        componentId="edit-identifier-modal"
-        header={{
-          closeButton: true,
-          closeButtonLabel: `${i18n.t("identifiers.details.options.cancel")}`,
-          closeButtonAction: closeModal,
-          title: `${i18n.t("identifiers.details.options.edit")}`,
-        }}
-      >
-        <div
-          className={`indentifier-input${
-            newDisplayName.length > DISPLAY_NAME_LENGTH ? " has-error" : ""
-          }`}
-        >
-          <CustomInput
-            dataTestId="edit-name-input"
-            title={`${i18n.t("identifiers.details.options.inner.label")}`}
-            hiddenInput={false}
-            autofocus={true}
-            onChangeInput={setNewDisplayName}
-            value={newDisplayName}
-          />
-          {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
-            <ErrorMessage
-              message={`${i18n.t("identifiers.details.options.inner.error")}`}
-              timeout={false}
-            />
-          ) : null}
-        </div>
-        <span className="theme-input-title">{`${i18n.t(
-          "identifiers.details.options.inner.color"
-        )}`}</span>
-        <div className="card-theme">
-          <IdentifierColorSelector
-            value={newSelectedColor}
-            onColorChange={setNewSelectedColor}
-          />
-        </div>
-        <span className="theme-input-title">{`${i18n.t(
-          "identifiers.details.options.inner.theme"
-        )}`}</span>
-        <div className="card-theme">
-          <IdentifierThemeSelector
-            color={newSelectedColor}
-            selectedTheme={newSelectedTheme}
-            setSelectedTheme={setNewSelectedTheme}
-          />
-        </div>
-        <IonButton
-          shape="round"
-          expand="block"
-          className="primary-button confirm-edit-button"
-          data-testid="continue-button"
-          onClick={handleSubmit}
-          disabled={!verifyDisplayName}
-        >
-          {i18n.t("identifiers.details.options.inner.confirm")}
-        </IonButton>
-      </OptionModal>
+        setModalIsOpen={setEditorIsOpen}
+        setCardData={setCardData}
+        cardData={cardData}
+      />
+      <ShareConnection
+        isOpen={shareIsOpen}
+        setIsOpen={setShareIsOpen}
+        oobi={oobi}
+      />
     </>
   );
 };

@@ -21,6 +21,7 @@ import { RoutePath } from "../../../routes";
 import { OperationType } from "../../globals/types";
 import { SetPasscode } from "../SetPasscode";
 import { LockPage } from "./LockPage";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 
 const incrementLoginAttemptMock = jest.fn();
 const resetLoginAttemptsMock = jest.fn();
@@ -43,6 +44,26 @@ jest.mock("../../../core/agent/agent", () => ({
     },
   },
 }));
+
+const isNativeMock = jest.fn();
+jest.mock("@capacitor/core", () => {
+  return {
+    ...jest.requireActual("@capacitor/core"),
+    Capacitor: {
+      isNativePlatform: () => isNativeMock(),
+    },
+  };
+});
+
+const hideMock = jest.fn();
+jest.mock("@capacitor/keyboard", () => {
+  return {
+    ...jest.requireActual("@capacitor/keyboard"),
+    Keyboard: {
+      hide: () => hideMock(),
+    },
+  };
+});
 
 jest.mock("../../hooks/useBiometricsHook", () => ({
   useBiometricAuth: jest.fn(() => ({
@@ -127,6 +148,7 @@ describe("Lock Page", () => {
         getPlatforms: () => ["ios"],
       };
     });
+    isNativeMock.mockImplementation(() => false);
   });
 
   test("Renders Lock modal with title and description", () => {
@@ -155,8 +177,22 @@ describe("Lock Page", () => {
     );
   });
 
+  test("Hide keyboard when display lock page", async () => {
+    isNativeMock.mockImplementation(() => true);
+
+    render(
+      <Provider store={storeMocked(initialState)}>
+        <LockPage />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(hideMock).toBeCalled();
+    });
+  });
+
   test("I click on I forgot my passcode, I can start over", async () => {
-    const { getByText, findByText } = render(
+    const { getByText, findByText, getByTestId } = render(
       <Provider store={storeMocked(initialState)}>
         <MemoryRouter initialEntries={[RoutePath.ROOT]}>
           <IonReactRouter>
@@ -169,12 +205,7 @@ describe("Lock Page", () => {
         </MemoryRouter>
       </Provider>
     );
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/2/));
-    fireEvent.click(getByText(/3/));
-    fireEvent.click(getByText(/4/));
-    fireEvent.click(getByText(/5/));
-    fireEvent.click(getByText(/6/));
+    passcodeFiller(getByText, getByTestId, "2", 6);
     expect(await findByText(EN_TRANSLATIONS.lockpage.error)).toBeVisible();
     fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.forgotten.button));
     expect(
@@ -360,9 +391,8 @@ describe("Lock Page: Max login attempt", () => {
     expect(getByText(EN_TRANSLATIONS.lockpage.title)).toBeInTheDocument();
     expect(getByText(EN_TRANSLATIONS.lockpage.description)).toBeInTheDocument();
 
-    act(() => {
-      clickButtonRepeatedly(getByText, getByTestId, "2", 6);
-    });
+    passcodeFiller(getByText, getByTestId, "2", 6);
+
     await waitFor(() => {
       expect(getByText("3 attempt remaining")).toBeInTheDocument();
       expect(incrementLoginAttemptMock).toBeCalled();
@@ -407,32 +437,12 @@ describe("Lock Page: Max login attempt", () => {
     expect(getByText(EN_TRANSLATIONS.lockpage.title)).toBeInTheDocument();
     expect(getByText(EN_TRANSLATIONS.lockpage.description)).toBeInTheDocument();
 
-    act(() => {
-      clickButtonRepeatedly(getByText, getByTestId, "1", 6);
-    });
+    passcodeFiller(getByText, getByTestId, "1", 6);
+
     await waitFor(() => {
       expect(resetLoginAttemptsMock).toBeCalled();
     });
   });
 });
-
-const clickButtonRepeatedly = async (
-  getByText: RenderResult["getByText"],
-  getByTestId: RenderResult["getByTestId"],
-  buttonLabel: string,
-  times: number
-) => {
-  for (let i = 0; i < times; i++) {
-    fireEvent.click(getByText(buttonLabel));
-
-    await waitFor(() => {
-      expect(
-        getByTestId("circle-" + i).classList.contains(
-          "passcode-module-circle-fill"
-        )
-      ).toBe(true);
-    });
-  }
-};
 
 export type { StoreMockedProps };

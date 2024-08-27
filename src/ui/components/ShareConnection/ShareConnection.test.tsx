@@ -5,7 +5,6 @@ import configureStore from "redux-mock-store";
 import ENG_trans from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { setToastMsg } from "../../../store/reducers/stateCache";
-import { identifierFix } from "../../__fixtures__/identifierFix";
 import { ToastMsgType } from "../../globals/types";
 import { ShareConnection } from "./ShareConnection";
 import { ShareConnectionProps, ShareType } from "./ShareConnection.types";
@@ -15,13 +14,13 @@ const setIsOpen = jest.fn();
 const props: ShareConnectionProps = {
   isOpen: true,
   setIsOpen,
-  signifyName: identifierFix[0].signifyName,
+  oobi: "http://keria:3902/oobi/EIEm2e5njbFZMUBPOtfRKdOUJ2EEN2e6NDnAMgBfdc3x/agent/ENjGAcU_Zq95OP_BIyTLgTahVd4xh-cVkecse6kaJqYv?name=Frank",
 };
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children }: never) => (
-    <div data-testid="share-identifier-modal">{children}</div>
+    <div data-testid="share-connection-modal">{children}</div>
   ),
 }));
 
@@ -49,7 +48,7 @@ describe("Share Indentifier", () => {
         <ShareConnection
           isOpen={props.isOpen}
           setIsOpen={props.setIsOpen}
-          signifyName={props.signifyName}
+          oobi={props.oobi}
         />
       </Provider>
     );
@@ -58,7 +57,7 @@ describe("Share Indentifier", () => {
       expect(
         getByText(ENG_trans.shareidentifier.subtitle.identifier)
       ).toBeVisible();
-      expect(getByTestId("share-identifier-modal")).toBeInTheDocument();
+      expect(getByTestId("share-connection-modal")).toBeInTheDocument();
       expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
     });
 
@@ -79,7 +78,7 @@ describe("Share Indentifier", () => {
         <ShareConnection
           isOpen={props.isOpen}
           setIsOpen={props.setIsOpen}
-          signifyName={props.signifyName}
+          oobi={props.oobi}
         />
       </Provider>
     );
@@ -88,7 +87,7 @@ describe("Share Indentifier", () => {
       expect(
         getByText(ENG_trans.shareidentifier.subtitle.identifier)
       ).toBeVisible();
-      expect(getByTestId("share-identifier-modal")).toBeInTheDocument();
+      expect(getByTestId("share-connection-modal")).toBeInTheDocument();
       expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
     });
   });
@@ -100,7 +99,7 @@ describe("Share Indentifier", () => {
           isOpen={props.isOpen}
           setIsOpen={props.setIsOpen}
           shareType={ShareType.Connection}
-          signifyName={props.signifyName}
+          oobi={props.oobi}
         />
       </Provider>
     );
@@ -109,7 +108,7 @@ describe("Share Indentifier", () => {
       expect(
         getByText(ENG_trans.shareidentifier.subtitle.connection)
       ).toBeVisible();
-      expect(getByTestId("share-identifier-modal")).toBeInTheDocument();
+      expect(getByTestId("share-connection-modal")).toBeInTheDocument();
       expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
     });
   });

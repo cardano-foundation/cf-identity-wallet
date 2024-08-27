@@ -17,6 +17,8 @@ export class SignifyApi {
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
   static readonly UNKNOW_SCHEMA_ID = "Unknow Schema ID: ";
+  static readonly CREDENTIAL_NOT_FOUND = "Not found credential with ID: ";
+  static readonly CREDENTIAL_REVOKED_ALREADY = "The credential has been revoked already";
   private signifyClient!: SignifyClient;
   private opTimeout: number;
   private opRetryInterval: number;
@@ -114,7 +116,14 @@ export class SignifyApi {
 
     const result = await this.signifyClient
       .credentials()
-      .issue({ issuerName, registryId, schemaId, recipient, data: vcdata });
+      .issue(issuerName, {
+        ri: registryId, 
+        s: schemaId,
+        a: {
+          i: recipient, 
+          ...vcdata,
+        }
+      });
     await waitAndGetDoneOp(
       this.signifyClient,
       result.op,
@@ -139,26 +148,20 @@ export class SignifyApi {
   async issueQVICredential(
     issuerName: string,
     registryId: string,
-    schemaId: string,
     recipientPrefix: string
   ) {
-    await this.resolveOobi(`${config.oobiEndpoint}/oobi/${schemaId}`);
+    await this.resolveOobi(`${config.oobiEndpoint}/oobi/${Agent.QVI_SCHEMA_SAID}`);
 
-    let vcdata = {};
-    if (schemaId === Agent.QVI_SCHEMA_SAID) {
-      vcdata = {
-        LEI: "5493001KJTIIGC8Y1R17",
+    const vcdata = {
+      LEI: "5493001KJTIIGC8Y1R17",
+    };
+    const result = await this.signifyClient.credentials().issue(issuerName, {
+      ri: registryId,
+      s: Agent.QVI_SCHEMA_SAID,
+      a: {
         i: recipientPrefix,
-      };
-    } else {
-      throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);
-    }
-    const result = await this.signifyClient.credentials().issue({
-      issuerName,
-      registryId,
-      schemaId,
-      recipient: recipientPrefix,
-      data: vcdata,
+        ...vcdata,
+      }
     });
     await waitAndGetDoneOp(
       this.signifyClient,
@@ -197,13 +200,14 @@ export class SignifyApi {
     issuerAidPrefix: string
   ) {
     const [admit, sigs, aend] = await this.signifyClient
-      .ipex()
-      .admit(
-        holderAidName,
-        "",
-        d,
-        new Date().toISOString().replace("Z", "000+00:00")
-      );
+    .ipex()
+    .admit({
+      senderName: holderAidName,
+      message: "",
+      grantSaid: d,
+      recipient: issuerAidPrefix,
+      datetime: new Date().toISOString().replace("Z", "000+00:00")
+    });
     const op = await this.signifyClient
       .ipex()
       .submitAdmit(holderAidName, admit, sigs, aend, [issuerAidPrefix]);
@@ -231,15 +235,15 @@ export class SignifyApi {
     const qviCredential = await this.signifyClient
       .credentials()
       .get(qviCredentialId);
-    const result = await this.signifyClient.credentials().issue({
-      issuerName: holderAidName,
-      data: {
+    
+    const result = await this.signifyClient.credentials().issue(holderAidName, {
+      ri: registryId,
+      s: Agent.LE_SCHEMA_SAID,
+      a: {
         i: legalEntityAidPrefix,
         ...attribute,
       },
-      registryId: registryId,
-      schemaId: Agent.LE_SCHEMA_SAID,
-      rules: Saider.saidify({
+      r: Saider.saidify({
         d: "",
         usageDisclaimer: {
           l: "Usage of a valid, unexpired, and non-revoked vLEI Credential, as defined in the associated Ecosystem Governance Framework, does not assert that the Legal Entity is trustworthy, honest, reputable in its business dealings, safe to do business with, or compliant with any laws or that an implied or expressly intended purpose will be fulfilled.",
@@ -248,8 +252,7 @@ export class SignifyApi {
           l: "All information in a valid, unexpired, and non-revoked vLEI Credential, as defined in the associated Ecosystem Governance Framework, is accurate as of the date the validation process was complete. The vLEI Credential has been issued to the legal entity or person named in the vLEI Credential as the subject; and the qualified vLEI Issuer exercised reasonable care to perform the validation process set forth in the vLEI Ecosystem Governance Framework.",
         },
       })[1],
-      recipient: legalEntityAidPrefix,
-      source: Saider.saidify({
+      e: Saider.saidify({
         d: "",
         qvi: {
           n: qviCredential.sad.d,
@@ -293,7 +296,7 @@ export class SignifyApi {
     const [apply, sigs] = await this.signifyClient.ipex().apply({
       senderName,
       recipient,
-      schema: schemaSaid,
+      schemaSaid,
       attributes,
     });
     await this.signifyClient
@@ -313,7 +316,7 @@ export class SignifyApi {
     const [apply, sigs] = await this.signifyClient.ipex().agree({
       senderName,
       recipient,
-      offer: offerSaid,
+      offerSaid,
     });
     await this.signifyClient
       .ipex()
@@ -333,6 +336,14 @@ export class SignifyApi {
   }
 
   async revokeCredential(issuerName: string, holder: string, credentialId: string) {
+    // TODO: If the credential does not exist, this will throw 500 at the moment. Will change this later
+    const credential = await this.signifyClient.credentials().get(credentialId).catch(() => undefined);
+    if (!credential) {
+      throw new Error(`${SignifyApi.CREDENTIAL_NOT_FOUND} ${credentialId}`);
+    }
+    if (credential.status.s === "1") {
+      throw new Error(SignifyApi.CREDENTIAL_REVOKED_ALREADY);
+    }
     const result = await this.signifyClient.credentials().revoke(issuerName, credentialId);
     await waitAndGetDoneOp(
       this.signifyClient,
@@ -340,7 +351,6 @@ export class SignifyApi {
       this.opTimeout,
       this.opRetryInterval
     );
-    const credential = await this.signifyClient.credentials().get(credentialId);
     const datetime = new Date().toISOString().replace("Z", "000+00:00");
     const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
       senderName: issuerName,

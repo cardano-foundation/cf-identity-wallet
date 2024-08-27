@@ -1,7 +1,7 @@
 import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "cf.identity.wallet",
+  appId: "org.cardanofoundation.idw",
   appName: "ID Wallet",
   webDir: "build",
   bundledWebRuntime: false,
@@ -21,6 +21,10 @@ const config: CapacitorConfig = {
       launchFadeOutDuration: 1000,
       backgroundColor: "#92FFC0"
     },
+    PrivacyScreen: {
+      enable: false,
+      imageName: "Splashscreen",
+    }
   }
 };
 

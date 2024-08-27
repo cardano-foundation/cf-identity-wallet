@@ -1,11 +1,6 @@
+import { config } from "./config";
 import { SignifyApi } from "./modules/signify/signifyApi";
 import { NotificationRoute } from "./modules/signify/signifyApi.type";
-
-interface Aid {
-  name: string;
-  prefix: string;
-  oobi: string;
-}
 
 class Agent {
   static readonly ISSUER_AID_NAME = "issuer";
@@ -92,6 +87,7 @@ class Agent {
   async revokeCredential(credentialId: string, holder: string) {
     return this.signifyApi.revokeCredential(Agent.HOLDER_AID_NAME, holder, credentialId);
   }
+
   async onNotificationKeriStateChanged() {
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -130,6 +126,7 @@ class Agent {
       await this.signifyApi.deleteNotification(notif.i);
     }
   }
+  
   async initKeri(): Promise<void> {
     this.onNotificationKeriStateChanged();
     /* eslint-disable no-console */
@@ -169,7 +166,6 @@ class Agent {
     const qviCredentialId = await this.signifyApiIssuer.issueQVICredential(
       this.issuerAid.name,
       this.keriIssuerRegistryRegk,
-      Agent.QVI_SCHEMA_SAID,
       this.holderAid.prefix
     );
 
@@ -188,6 +184,9 @@ class Agent {
     };
 
     const grantNotification = (await getHolderNotifications()).notes[0];
+
+    // resolve schema
+    await this.signifyApi.resolveOobi(`${config.oobiEndpoint}/oobi/${Agent.QVI_SCHEMA_SAID}`);
 
     // holder IPEX admit
     await this.signifyApi.admitCredential(

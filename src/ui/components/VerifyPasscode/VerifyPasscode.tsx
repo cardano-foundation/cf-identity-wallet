@@ -92,6 +92,7 @@ const VerifyPasscode = ({
       onDidDismiss={() => handleClearState()}
     >
       <ResponsivePageLayout
+        activeStatus={isOpen}
         header={
           <PageHeader
             closeButton={true}
@@ -124,6 +125,7 @@ const VerifyPasscode = ({
               timeout={true}
             />
           }
+          hasError={passcode.length === 6 && passcodeIncorrect}
           passcode={passcode}
           handlePinChange={handlePinChange}
           handleRemove={handleRemove}

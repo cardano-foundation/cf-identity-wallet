@@ -193,7 +193,17 @@ class ConnectionService extends AgentService {
 
   @OnlineOnly
   async getConnectionById(id: string): Promise<ConnectionDetails> {
-    const connection = await this.props.signifyClient.contacts().get(id);
+    const connection = await this.props.signifyClient
+      .contacts()
+      .get(id)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${id}`);
+        } else {
+          throw error;
+        }
+      });
     return {
       label: connection?.alias,
       id: connection.id,
@@ -208,12 +218,16 @@ class ConnectionService extends AgentService {
 
   @OnlineOnly
   async deleteConnectionById(id: string): Promise<void> {
-    // await this.signifyApi.deleteContactById(id); @TODO - foconnor: Uncomment when KERIA endpoint fixed
+    await this.props.signifyClient.contacts().delete(id);
     await this.connectionStorage.deleteById(id);
     const notes = await this.getConnectNotesByConnectionId(id);
     for (const note of notes) {
       this.connectionNoteStorage.deleteById(note.id);
     }
+  }
+
+  async deleteStaleLocalConnectionById(id: string): Promise<void> {
+    await this.connectionStorage.deleteById(id);
   }
 
   async getConnectionShortDetailById(

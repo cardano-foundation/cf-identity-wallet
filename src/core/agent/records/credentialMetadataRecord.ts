@@ -1,15 +1,13 @@
-import {
-  CredentialMetadataRecordProps,
-  CredentialMetadataRecordStatus,
-} from "./credentialMetadataRecord.types";
+import { CredentialMetadataRecordProps } from "./credentialMetadataRecord.types";
 import { BaseRecord } from "../../storage/storage.types";
+import { CredentialStatus } from "../services/credentialService.types";
 
 class CredentialMetadataRecord extends BaseRecord {
   isArchived?: boolean;
   isDeleted?: boolean;
   issuanceDate!: string;
   credentialType!: string;
-  status!: CredentialMetadataRecordStatus;
+  status!: CredentialStatus;
   connectionId!: string;
   schema!: string;
 
