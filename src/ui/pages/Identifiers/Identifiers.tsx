@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getFavouritesIdentifiersCache,
   getIdentifiersCache,
+  getMultiSigGroupCache,
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import {
@@ -77,8 +78,10 @@ const Identifiers = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
+  const multisignGroupCache = useAppSelector(getMultiSigGroupCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const currentOperation = useAppSelector(getCurrentOperation);
+
   const [favIdentifiers, setFavIdentifiers] = useState<
     IdentifierShortDetails[]
   >([]);
@@ -112,15 +115,46 @@ const Identifiers = () => {
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
   });
+
+  const handleMultiSigClick = async (identifier: IdentifierShortDetails) => {
+    setResumeMultiSig(identifier);
+    setCreateIdentifierModalIsOpen(true);
+  };
+
   useEffect(() => {
-    (currentOperation === OperationType.CREATE_IDENTIFIER_CONNECT_WALLET ||
-      currentOperation ===
-        OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS ||
-      currentOperation ===
-        OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS) &&
-      history.location.pathname === TabsRoutePath.IDENTIFIERS &&
+    if (
+      [
+        OperationType.CREATE_IDENTIFIER_CONNECT_WALLET,
+        OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS,
+        OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS,
+      ].includes(currentOperation) &&
+      history.location.pathname === TabsRoutePath.IDENTIFIERS
+    ) {
       setCreateIdentifierModalIsOpen(true);
-  }, [currentOperation, history.location.pathname]);
+    }
+
+    if (
+      OperationType.OPEN_MULTISIG_IDENTIFIER === currentOperation &&
+      multisignGroupCache
+    ) {
+      const groupId = multisignGroupCache?.groupId;
+      const identifier = identifiersData.find(
+        (item) => item.groupMetadata?.groupId === groupId
+      );
+
+      if (identifier) {
+        handleMultiSigClick(identifier);
+        dispatch(setCurrentOperation(OperationType.IDLE));
+      }
+    }
+  }, [
+    currentOperation,
+    dispatch,
+    history.location.pathname,
+    identifiersData,
+    multisignGroupCache,
+  ]);
+
   useEffect(() => {
     setShowPlaceholder(identifiersData.length === 0);
     const tmpPendingIdentifiers = [];
@@ -147,10 +181,12 @@ const Identifiers = () => {
     setPendingIdentifiers(tmpPendingIdentifiers);
     setMultiSigIdentifiers(tmpMultisigIdentifiers);
   }, [favouritesIdentifiers, identifiersData]);
+
   const findTimeById = (id: string) => {
     const found = favouritesIdentifiers?.find((item) => item.id === id);
     return found ? found.time : null;
   };
+
   const sortedFavIdentifiers = favIdentifiers.sort((a, b) => {
     const timeA = findTimeById(a.id);
     const timeB = findTimeById(b.id);
@@ -159,10 +195,7 @@ const Identifiers = () => {
     if (timeB === null) return -1;
     return timeA - timeB;
   });
-  const handleMultiSigClick = async (identifier: IdentifierShortDetails) => {
-    setResumeMultiSig(identifier);
-    setCreateIdentifierModalIsOpen(true);
-  };
+
   const handleShowNavAnimation = (source: StartAnimationSource) => {
     if (favouriteContainerElement.current && source !== "favourite") {
       favouriteContainerElement.current.style.height =

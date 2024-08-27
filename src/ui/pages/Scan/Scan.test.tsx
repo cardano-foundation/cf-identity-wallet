@@ -7,6 +7,7 @@ import { store } from "../../../store";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { OperationType } from "../../globals/types";
 import { Scan } from "./Scan";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
 
 const startScan = jest.fn(
   (args: unknown) =>
@@ -195,6 +196,47 @@ describe("Scan Tab", () => {
           openConnections: true,
         },
       });
+    });
+  });
+
+  test("Nav to identifier after scan multisig", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN, TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.IDLE,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      return {
+        type: KeriConnectionType.NORMAL,
+      };
+    });
+
+    getMultisigLinkedContactsMock.mockReturnValue([connectionsFix[0]]);
+
+    render(
+      <Provider store={storeMocked}>
+        <Scan />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(historyPushMock).toBeCalledWith(TabsRoutePath.IDENTIFIERS);
+      expect(dispatchMock).toBeCalledWith(
+        setCurrentOperation(OperationType.OPEN_MULTISIG_IDENTIFIER)
+      );
     });
   });
 });
