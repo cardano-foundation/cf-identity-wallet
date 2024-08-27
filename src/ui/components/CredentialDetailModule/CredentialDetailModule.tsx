@@ -227,8 +227,8 @@ const CredentialDetailModule = ({
         .then(() => {
           dispatch(removeFavouritesCredsCache(id));
         })
-        .catch(() => {
-          /*TODO: handle error*/
+        .catch((e) => {
+          showError("Unable to remove favourite cred", e);
         });
     } else {
       if (favouritesCredsCache.length >= MAX_FAVOURITES) {
@@ -248,8 +248,8 @@ const CredentialDetailModule = ({
         .then(() => {
           dispatch(addFavouritesCredsCache({ id, time: Date.now() }));
         })
-        .catch(() => {
-          /*TODO: handle error*/
+        .catch((e) => {
+          showError("Unable to add favourite credential", e);
         });
     }
   };

@@ -281,6 +281,7 @@ const Identifiers = () => {
                   name="favs"
                   cardType={CardType.IDENTIFIERS}
                   cardsData={sortedFavIdentifiers}
+                  onShowCardDetails={() => handleShowNavAnimation("favourite")}
                 />
               </div>
             )}
@@ -295,7 +296,7 @@ const Identifiers = () => {
               />
             )}
             {!!multiSigIdentifiers.length && (
-              <div className="identifiers-tab-content-block">
+              <div className="identifiers-tab-content-block multisig-container">
                 <h3>{i18n.t("identifiers.tab.multisigidentifiers")}</h3>
                 <IdentifierCardList
                   cardTypes={CardType.IDENTIFIERS}
@@ -308,7 +309,7 @@ const Identifiers = () => {
               </div>
             )}
             {!!pendingIdentifiers.length && (
-              <div className="identifiers-tab-content-block">
+              <div className="identifiers-tab-content-block pending-container">
                 <ListHeader
                   title={`${i18n.t("identifiers.tab.pendingidentifiers")}`}
                 />
