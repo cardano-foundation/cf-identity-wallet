@@ -63,6 +63,11 @@ const operationPendingStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
+const multisigService = jest.mocked({
+  multisigAdmit: jest.fn(),
+  grantPresentMultisigAcdc: jest.fn(),
+});
+
 let credentialListMock = jest.fn();
 let credentialGetMock = jest.fn();
 const identifierListMock = jest.fn();
@@ -217,7 +222,8 @@ const ipexCommunicationService = new IpexCommunicationService(
   credentialStorage as any,
   notificationStorage as any,
   ipexMessageRecordStorage as any,
-  operationPendingStorage as any
+  operationPendingStorage as any,
+  multisigService as any
 );
 
 const grantIpexMessageMock = {
@@ -890,9 +896,10 @@ describe("Ipex communication service of agent", () => {
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
       id: "id",
     });
+    multisigService.multisigAdmit.mockResolvedValueOnce({ name: "opName" });
 
     await ipexCommunicationService.acceptAcdcFromMultisigExn(id);
-    expect(Agent.agent.multiSigs.multisigAdmit).toBeCalledTimes(1);
+    expect(multisigService.multisigAdmit).toBeCalledTimes(1);
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
@@ -1064,9 +1071,12 @@ describe("Ipex communication service of agent", () => {
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
       id: "id",
     });
+    multisigService.grantPresentMultisigAcdc.mockResolvedValueOnce({
+      name: "opName",
+    });
 
     await ipexCommunicationService.acceptPresentAcdcFromMultisigExn(id);
-    expect(Agent.agent.multiSigs.grantPresentMultisigAcdc).toBeCalledTimes(1);
+    expect(multisigService.grantPresentMultisigAcdc).toBeCalledTimes(1);
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangePresentCredential,
@@ -1169,9 +1179,12 @@ describe("Ipex communication service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "holder",
     });
+    multisigService.grantPresentMultisigAcdc.mockResolvedValueOnce({
+      name: "opName",
+    });
 
     await ipexCommunicationService.admitGrantAcdcById(id);
-    expect(Agent.agent.multiSigs.grantPresentMultisigAcdc).toBeCalledTimes(1);
+    expect(multisigService.grantPresentMultisigAcdc).toBeCalledTimes(1);
   });
 
   test("cannot grant present ACDC with id if the ACDC is missing in the DB", async () => {

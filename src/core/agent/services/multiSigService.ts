@@ -37,6 +37,7 @@ import {
   MultiSigExnMessage,
   CreateMultisigExnPayload,
   AuthorizationExnPayload,
+  GrantToJoinMultisigExnPayload,
 } from "./multiSig.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
@@ -1095,8 +1096,7 @@ class MultiSigService extends AgentService {
     multisigSignifyName: string,
     issuerPrefix: string,
     acdcDetail: any,
-    admitExnToGrant?: any,
-    previousAtc?: string
+    grantToJoin?: GrantToJoinMultisigExnPayload
   ) {
     let exn: Serder;
     let sigsMes: string[];
@@ -1115,11 +1115,13 @@ class MultiSigService extends AgentService {
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
 
-    if (admitExnToGrant) {
-      const [, ked] = Saider.saidify(admitExnToGrant);
+    if (grantToJoin) {
+      const { grantExn, atc } = grantToJoin;
+      const previousAtc = atc.exn;
+      const [, ked] = Saider.saidify(grantExn);
       const admit = new Serder(ked);
       const keeper = await this.props.signifyClient.manager!.get(gHab);
-      const sigs = await keeper.sign(b(new Serder(admitExnToGrant).raw));
+      const sigs = await keeper.sign(b(new Serder(grantExn).raw));
       const mstateNew = gHab["state"];
       const seal = [
         "SealEvent",
@@ -1132,13 +1134,13 @@ class MultiSigService extends AgentService {
 
       const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
       const ims = d(messagize(admit, sigers, seal));
-      let atc = ims.substring(admit.size);
+      let newAtc = ims.substring(admit.size);
 
-      const previousEnd = previousAtc ? previousAtc.slice(atc.length) : "";
-      atc += previousEnd;
+      const previousEnd = previousAtc ? previousAtc.slice(newAtc.length) : "";
+      newAtc += previousEnd;
 
       const gembeds = {
-        exn: [admit, atc],
+        exn: [admit, newAtc],
       };
 
       [exn, sigsMes, dtime] = await this.props.signifyClient
@@ -1155,7 +1157,7 @@ class MultiSigService extends AgentService {
       const [admit, sigs, end] = await this.props.signifyClient.ipex().grant({
         senderName: multisigSignifyName,
         recipient: issuerPrefix,
-        message: "grant/present",
+        message: "",
         acdc: new Serder(acdcDetail.sad),
         iss: new Serder(acdcDetail.iss),
         anc: new Serder(acdcDetail.anc),
@@ -1182,7 +1184,7 @@ class MultiSigService extends AgentService {
         .exchanges()
         .createExchangeMessage(
           mHab,
-          "/multisig/exn",
+          NotificationRoute.MultiSigExn,
           { gid: gHab["prefix"] },
           gembeds,
           recp[0]

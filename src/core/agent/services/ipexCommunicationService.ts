@@ -24,6 +24,7 @@ import { OnlineOnly, getCredentialShortDetails } from "./utils";
 import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./connection.types";
+import { MultiSigService } from "./multiSigService";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -48,6 +49,7 @@ class IpexCommunicationService extends AgentService {
   protected readonly notificationStorage: NotificationStorage;
   protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
+  protected readonly multisigService: MultiSigService;
 
   constructor(
     agentServiceProps: AgentServicesProps,
@@ -55,7 +57,8 @@ class IpexCommunicationService extends AgentService {
     credentialStorage: CredentialStorage,
     notificationStorage: NotificationStorage,
     ipexMessageStorage: IpexMessageStorage,
-    operationPendingStorage: OperationPendingStorage
+    operationPendingStorage: OperationPendingStorage,
+    multisigService: MultiSigService
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
@@ -63,6 +66,7 @@ class IpexCommunicationService extends AgentService {
     this.notificationStorage = notificationStorage;
     this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
+    this.multisigService = multisigService;
   }
 
   @OnlineOnly
@@ -112,7 +116,7 @@ class IpexCommunicationService extends AgentService {
 
     let op: Operation;
     if (holder.multisigManageAid) {
-      op = await Agent.agent.multiSigs.multisigAdmit(
+      op = await this.multisigService.multisigAdmit(
         holder.signifyName,
         grantNoteRecord.a.d as string,
         allSchemaSaids
@@ -436,7 +440,7 @@ class IpexCommunicationService extends AgentService {
     ).map((key) => previousExnGrantMsg.exn.e.acdc.e?.[key]?.s);
     allSchemaSaids.push(schemaSaid);
 
-    const op = await Agent.agent.multiSigs.multisigAdmit(
+    const op = await this.multisigService.multisigAdmit(
       holder.signifyName,
       previousExnGrantMsg.exn.d as string,
       allSchemaSaids,
@@ -475,19 +479,23 @@ class IpexCommunicationService extends AgentService {
 
   @OnlineOnly
   async admitGrantAcdcById(credentialId: string) {
+    // TODO: If the credential does not exist, this will throw 500 at the moment. Will change this later
     const pickedCred = await this.props.signifyClient
       .credentials()
       .get(credentialId);
 
     if (!pickedCred) {
-      throw new Error(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
+      throw new Error(
+        `${IpexCommunicationService.CREDENTIAL_NOT_FOUND} ${credentialId}`
+      );
     }
 
     const holderSignifyName = (
       await this.identifierStorage.getIdentifierMetadata(pickedCred.sad.a.i)
     ).signifyName;
 
-    const op = await Agent.agent.multiSigs.grantPresentMultisigAcdc(
+    // const op = await this.props.multisigService.grantPresentMultisigAcdc(
+    const op = await this.multisigService.grantPresentMultisigAcdc(
       holderSignifyName,
       pickedCred.sad?.i,
       pickedCred
@@ -509,9 +517,8 @@ class IpexCommunicationService extends AgentService {
       .exchanges()
       .get(notifRecord.a.d as string);
 
-    const admitExnToGrant = exn?.exn?.e?.exn;
-    const credential = admitExnToGrant?.e?.acdc;
-    const previousAtc = exn?.pathed?.exn;
+    const grantExn = exn?.exn?.e?.exn;
+    const credential = grantExn?.e?.acdc;
     const holder = await this.identifierStorage.getIdentifierMetadata(
       exn.exn.e.exn.i
     );
@@ -520,12 +527,15 @@ class IpexCommunicationService extends AgentService {
       throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     }
 
-    const op = await Agent.agent.multiSigs.grantPresentMultisigAcdc(
+    // const op = await this.props.multisigService.grantPresentMultisigAcdc(
+    const op = await this.multisigService.grantPresentMultisigAcdc(
       holder.signifyName,
       credential?.i,
       credential,
-      admitExnToGrant,
-      previousAtc
+      {
+        grantExn,
+        atc: exn.pathed,
+      }
     );
 
     const pendingOperation = await this.operationPendingStorage.save({

@@ -23,6 +23,7 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { IonicStorage } from "../../storage/ionicStorage";
 import { ConnectionHistoryType } from "./connection.types";
+import { MultiSigService } from "./multiSigService";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -35,6 +36,7 @@ class SignifyNotificationService extends AgentService {
   protected readonly connectionStorage: ConnectionStorage;
   protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly credentialStorage: CredentialStorage;
+  protected readonly multisigService: MultiSigService;
 
   protected pendingOperations: OperationPendingRecord[] = [];
   private loggedIn = true;
@@ -46,7 +48,8 @@ class SignifyNotificationService extends AgentService {
     operationPendingStorage: OperationPendingStorage,
     connectionStorage: ConnectionStorage,
     ipexMessageStorage: IpexMessageStorage,
-    credentialStorage: CredentialStorage
+    credentialStorage: CredentialStorage,
+    multisigService: MultiSigService
   ) {
     super(agentServiceProps);
     this.notificationStorage = notificationStorage;
@@ -55,6 +58,7 @@ class SignifyNotificationService extends AgentService {
     this.connectionStorage = connectionStorage;
     this.ipexMessageStorage = ipexMessageStorage;
     this.credentialStorage = credentialStorage;
+    this.multisigService = multisigService;
   }
 
   async onNotificationStateChanged(
@@ -299,7 +303,7 @@ class SignifyNotificationService extends AgentService {
       }
       const rpyRoute = multisigNotification[0].exn.e.rpy.r;
       if (rpyRoute === "/end/role/add") {
-        await Agent.agent.multiSigs.joinAuthorization(
+        await this.multisigService.joinAuthorization(
           multisigNotification[0].exn
         );
         await this.markNotification(notif.i);
@@ -327,7 +331,7 @@ class SignifyNotificationService extends AgentService {
         await this.markNotification(notif.i);
         return;
       }
-      const hasMultisig = await Agent.agent.multiSigs.hasMultisig(multisigId);
+      const hasMultisig = await this.multisigService.hasMultisig(multisigId);
       const notificationsForThisMultisig =
         await this.findNotificationsByMultisigId(multisigId);
       if (hasMultisig || notificationsForThisMultisig.length) {
@@ -554,7 +558,7 @@ class SignifyNotificationService extends AgentService {
               // Trigger add end role authorization for multi-sigs
               const multisigIdentifier =
                   await this.identifierStorage.getIdentifierMetadata(recordId);
-              await Agent.agent.multiSigs.endRoleAuthorization(
+              await this.multisigService.endRoleAuthorization(
                 multisigIdentifier.signifyName
               );
               callback({
@@ -669,7 +673,7 @@ class SignifyNotificationService extends AgentService {
                     .get(credentialId);
 
                   const members =
-                      await Agent.agent.multiSigs.getMembersByIdentifierId(
+                      await this.multisigService.getMembersByIdentifierId(
                         acdc.sad.a.i
                       );
 

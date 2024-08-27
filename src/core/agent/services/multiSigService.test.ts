@@ -2376,7 +2376,7 @@ describe("Multisig sig service of agent", () => {
         anc: {},
         d: "EIkdd8Twe0JNOZHEVZ9_LV1xJy1uy_hfiuGNHjqVLsJv",
       },
-    };
+    } as any;
 
     const ked = {
       v: "KERI10JSON0004b1_",
@@ -2402,7 +2402,9 @@ describe("Multisig sig service of agent", () => {
     const mockSaider = [{} as Saider, ked] as [Saider, Dict<any>];
 
     identifiersMemberMock = jest.fn().mockResolvedValueOnce({
-      signing: [{ ends: { agent: { [keriMetadataRecord.id]: "" } } }],
+      signing: [
+        { ends: { agent: { [keriMetadataRecord.id]: "" } }, aid: "aid" },
+      ],
     });
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce(
       new IdentifierMetadataRecord({
@@ -2439,8 +2441,10 @@ describe("Multisig sig service of agent", () => {
       multisigSignifyName,
       issuerPrefix,
       acdcDetail,
-      multisigExn,
-      atc
+      {
+        grantExn: multisigExn,
+        atc: { exn: atc },
+      }
     );
 
     expect(ipexGrantMock).toBeCalledTimes(0);
@@ -2452,7 +2456,8 @@ describe("Multisig sig service of agent", () => {
       },
       {
         exn: [admit, atc],
-      }
+      },
+      "aid"
     );
 
     expect(ipexSubmitGrantMock).toBeCalledWith(
@@ -2460,7 +2465,7 @@ describe("Multisig sig service of agent", () => {
       mockExn,
       mockSigsMes,
       mockDtime,
-      []
+      ["aid"]
     );
   });
 });

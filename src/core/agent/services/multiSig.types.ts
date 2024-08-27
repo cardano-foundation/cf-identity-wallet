@@ -60,8 +60,59 @@ enum MultiSigRoute {
 
 export { MultiSigRoute };
 
+interface GrantMultiSigExnMessage {
+  exn: {
+    v: string;
+    t: string;
+    d: string;
+    i: string;
+    rp: string;
+    p: string;
+    dt: string;
+    r: string;
+    q: any;
+    a: {
+      gid: string;
+      i: string;
+    };
+    e: {
+      exn: {
+        v: string;
+        t: string;
+        d: string;
+        i: string;
+        rp: string;
+        p: string;
+        dt: string;
+        r: string;
+        q: any;
+        a: {
+          i: string;
+          m: string;
+        };
+        e: {
+          acdc: any;
+          iss: any;
+          anc: any;
+          d: string;
+        };
+      };
+      d: string;
+    };
+  };
+}
+
+interface GrantToJoinMultisigExnPayload {
+  grantExn: GrantMultiSigExnMessage;
+  atc: {
+    exn: string;
+  };
+}
+
 export type {
   MultiSigExnMessage,
   CreateMultisigExnPayload,
   AuthorizationExnPayload,
+  GrantMultiSigExnMessage,
+  GrantToJoinMultisigExnPayload,
 };

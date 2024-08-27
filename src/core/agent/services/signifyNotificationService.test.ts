@@ -219,6 +219,15 @@ const credentialStorage = jest.mocked({
   getCredentialMetadatasById: jest.fn(),
 });
 
+const multisigService = jest.mocked({
+  multisigAdmit: jest.fn(),
+  grantPresentMultisigAcdc: jest.fn(),
+  joinAuthorization: jest.fn(),
+  hasMultisig: jest.fn(),
+  endRoleAuthorization: jest.fn(),
+  getMembersByIdentifierId: jest.fn(),
+});
+
 const signifyNotificationService = new SignifyNotificationService(
   agentServicesProps,
   notificationStorage as any,
@@ -226,7 +235,8 @@ const signifyNotificationService = new SignifyNotificationService(
   operationPendingStorage as any,
   connectionStorage as any,
   ipexMessageStorage as any,
-  credentialStorage as any
+  credentialStorage as any,
+  multisigService as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -283,7 +293,7 @@ describe("Signify notification service of agent", () => {
   test("callback should be called when there are KERI notifications", async () => {
     const callback = jest.fn();
     exchangesGetMock.mockResolvedValue(ipexMessageMock);
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    multisigService.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [
       {
@@ -327,14 +337,14 @@ describe("Signify notification service of agent", () => {
     for (const notif of notes) {
       await signifyNotificationService.processNotification(notif, callback);
     }
-    expect(notificationStorage.save).toBeCalledTimes(2);
-    expect(callback).toBeCalledTimes(2);
+    expect(notificationStorage.save).toBeCalledTimes(1);
+    expect(callback).toBeCalledTimes(1);
   });
 
   test("Should admit if there is an existing credential", async () => {
     const callback = jest.fn();
     exchangesGetMock.mockResolvedValue(ipexMessageMock);
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    multisigService.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [
       {
@@ -443,7 +453,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should skip if there is a existed multi-sig", async () => {
     const callback = jest.fn();
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
+    multisigService.hasMultisig = jest.fn().mockResolvedValue(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
     const notes = [
@@ -466,7 +476,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should skip if there is a missing gid multi-sig notification", async () => {
     const callback = jest.fn();
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
+    multisigService.hasMultisig = jest.fn().mockResolvedValue(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     groupGetRequestMock.mockResolvedValue([{ exn: { a: {} } }]);
     const notes = [
@@ -540,7 +550,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should skip if notification route is /multisig/rpy", async () => {
     const callback = jest.fn();
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    multisigService.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -586,7 +596,7 @@ describe("Signify notification service of agent", () => {
       await signifyNotificationService.processNotification(notif, callback);
     }
     expect(markNotificationMock).toBeCalledWith(notes[0].i);
-    expect(Agent.agent.multiSigs.joinAuthorization).toBeCalledTimes(1);
+    expect(multisigService.joinAuthorization).toBeCalledTimes(1);
   });
 
   test("Should call grantAcdcFromAgree if notification route is /exn/ipex/agree", async () => {
@@ -719,7 +729,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should skip if notification route is /multisig/exn and the identifier is missing ", async () => {
     const callback = jest.fn();
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    multisigService.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -759,7 +769,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should skip if notification route is /multisig/exn and the credential exists ", async () => {
     const callback = jest.fn();
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    multisigService.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
     const notes = [
@@ -856,9 +866,7 @@ describe("Long running operation tracker", () => {
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
-    expect(Agent.agent.multiSigs.endRoleAuthorization).toBeCalledWith(
-      "signifyName"
-    );
+    expect(multisigService.endRoleAuthorization).toBeCalledWith("signifyName");
     expect(callback).toBeCalledTimes(1);
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
