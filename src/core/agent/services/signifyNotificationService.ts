@@ -23,6 +23,7 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { IonicStorage } from "../../storage/ionicStorage";
 import { ConnectionHistoryType } from "./connection.types";
+import { IpexCommunicationService } from "./ipexCommunicationService";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -363,32 +364,34 @@ class SignifyNotificationService extends AgentService {
         .get(previousExnGrantMsg.exn.e.acdc.d)
         .catch(() => undefined);
 
+      if (existingCredential) {
+        await this.markNotification(notif.i);
+        return;
+      }
       const notifications = await this.notificationStorage.findAllByQuery({
-        grantSaid: previousExnGrantMsg.exn.d,
+        exnSaid: previousExnGrantMsg.exn.d,
       });
 
       if (notifications.length) {
         const notificationRecord = notifications[0];
         if (
-          !notificationRecord.multisigLinks ||
-          !Object.keys(notificationRecord.multisigLinks).length
+          !notificationRecord.linkedGroupRequests ||
+          !Object.values(notificationRecord.linkedGroupRequests).includes(true)
         ) {
-          notificationRecord.multisigLinks = {
-            [exchange?.exn.e.exn.d]: [exchange.exn.i],
+          notificationRecord.linkedGroupRequests = {
+            ...notificationRecord.linkedGroupRequests,
+            [exchange.exn.d]: false,
           };
         } else {
-          notificationRecord.multisigLinks = {
-            [exchange?.exn.e.exn.d]: [
-              ...notificationRecord.multisigLinks[exchange?.exn.e.exn.d],
-              exchange.exn.i,
-            ],
+          await Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn(
+            exchange.exn.d
+          );
+          notificationRecord.linkedGroupRequests = {
+            ...notificationRecord.linkedGroupRequests,
+            [exchange.exn.d]: true,
           };
         }
         await this.notificationStorage.update(notificationRecord);
-      }
-
-      if (existingCredential) {
-        await this.markNotification(notif.i);
         return;
       }
     }
@@ -473,8 +476,7 @@ class SignifyNotificationService extends AgentService {
       }
     }
     if (event.a.r === NotificationRoute.ExnIpexGrant) {
-      metadata.multisigLinks = {};
-      metadata.grantSaid = event.a.d;
+      metadata.linkedGroupRequests = {};
     }
 
     const result = await this.notificationStorage.save(metadata);
@@ -635,7 +637,7 @@ class SignifyNotificationService extends AgentService {
                 if (credentialId) {
                   const notifications =
                       await this.notificationStorage.findAllByQuery({
-                        grantSaid: grantExchange.exn.d,
+                        exnSaid: grantExchange.exn.d,
                       });
                   for (const notification of notifications) {
                     Agent.agent.signifyNotifications.deleteNotificationRecordById(
@@ -684,7 +686,6 @@ class SignifyNotificationService extends AgentService {
                     id: uuidv4(),
                     a: {
                       r: NotificationRoute.LocalAcdcRevoked,
-                      credentialId,
                       credentialTitle: credential.schema.title,
                     },
                     read: false,

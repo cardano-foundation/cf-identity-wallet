@@ -994,11 +994,8 @@ describe("Long running operation tracker", () => {
         route: "/exn/ipex/grant",
         read: false,
         connectionId: "EBRg2Ur0JYi92jP0r0ZEO385sWr_8KNMqRIsv9s2JUFI",
-        multisigLinks: {
-          "EIzCD7k_SlEWubN5RL_Xxg1FucTYiOKpCE-OAlQm8VkT": [
-            "EP_DgYAq7TCCyH9FohNjniJsEJTq7LjrNr_6M5zXbu91",
-            "EM54J4cqI__WeaKJqr4zHlpKOIykZp1OwU5Cdl--S2Ji",
-          ],
+        linkedGroupRequests: {
+          "EIzCD7k_SlEWubN5RL_Xxg1FucTYiOKpCE-OAlQm8VkT": true,
         },
         grantSaid: "EC5N3brbT8U0mMlWemYpRBnSYVpX00QPfK2ugYx-0isg",
         updatedAt: "2024-08-16T03:21:57.455Z",

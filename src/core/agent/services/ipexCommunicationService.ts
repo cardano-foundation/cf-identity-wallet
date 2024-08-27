@@ -68,6 +68,29 @@ class IpexCommunicationService extends AgentService {
   @OnlineOnly
   async acceptAcdc(id: string): Promise<void> {
     const grantNoteRecord = await this.getNotificationRecordById(id);
+    const notificationRecord = await this.notificationStorage.findById(
+      grantNoteRecord.id
+    );
+
+    if (!notificationRecord) {
+      throw new Error(
+        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+      );
+    }
+
+    if (
+      notificationRecord?.id &&
+      notificationRecord?.linkedGroupRequests &&
+      Object.keys(notificationRecord.linkedGroupRequests).length
+    ) {
+      for (const said of Object.keys(notificationRecord.linkedGroupRequests)) {
+        if (!notificationRecord.linkedGroupRequests[said]) {
+          await this.acceptAcdcFromMultisigExn(said as string);
+        }
+      }
+      return;
+    }
+
     const grantExn = await this.props.signifyClient
       .exchanges()
       .get(grantNoteRecord.a.d as string);
@@ -112,11 +135,17 @@ class IpexCommunicationService extends AgentService {
 
     let op: Operation;
     if (holder.multisigManageAid) {
-      op = await Agent.agent.multiSigs.multisigAdmit(
-        holder.signifyName,
-        grantNoteRecord.a.d as string,
-        allSchemaSaids
-      );
+      const { op: opMultisigAdmit, exnSaid } =
+        await Agent.agent.multiSigs.multisigAdmit(
+          holder.signifyName,
+          grantNoteRecord.a.d as string,
+          allSchemaSaids
+        );
+      op = opMultisigAdmit;
+      notificationRecord.linkedGroupRequests = {
+        [exnSaid]: true,
+      };
+      await this.notificationStorage.update(notificationRecord);
     } else {
       op = await this.admitIpex(
         grantNoteRecord.a.d as string,
@@ -138,31 +167,6 @@ class IpexCommunicationService extends AgentService {
     Agent.agent.signifyNotifications.addPendingOperationToQueue(
       pendingOperation
     );
-
-    const notificationRecord = await this.notificationStorage.findById(id);
-    if (!notificationRecord) {
-      throw new Error(
-        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
-      );
-    }
-    if (holder.multisigManageAid && op.metadata?.said) {
-      if (
-        !notificationRecord.multisigLinks ||
-        !Object.keys(notificationRecord.multisigLinks).length
-      ) {
-        notificationRecord.multisigLinks = {
-          [op.metadata.said]: [holder.multisigManageAid],
-        };
-      } else {
-        notificationRecord.multisigLinks = {
-          [op.metadata.said]: [
-            ...notificationRecord.multisigLinks[op.metadata.said],
-            holder.multisigManageAid,
-          ],
-        };
-      }
-    }
-    await this.notificationStorage.update(notificationRecord);
 
     if (!holder.multisigManageAid) {
       Agent.agent.signifyNotifications.deleteNotificationRecordById(
@@ -416,11 +420,8 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async acceptAcdcFromMultisigExn(id: string): Promise<void> {
-    const notifRecord = await this.getNotificationRecordById(id);
-    const exn = await this.props.signifyClient
-      .exchanges()
-      .get(notifRecord.a.d as string);
+  async acceptAcdcFromMultisigExn(said: string): Promise<void> {
+    const exn = await this.props.signifyClient.exchanges().get(said);
 
     const multisigExn = exn?.exn?.e?.exn;
     const previousExnGrantMsg = await this.props.signifyClient
@@ -444,7 +445,7 @@ class IpexCommunicationService extends AgentService {
     ).map((key) => previousExnGrantMsg.exn.e.acdc.e?.[key]?.s);
     allSchemaSaids.push(schemaSaid);
 
-    const op = await Agent.agent.multiSigs.multisigAdmit(
+    const { op } = await Agent.agent.multiSigs.multisigAdmit(
       holder.signifyName,
       previousExnGrantMsg.exn.d as string,
       allSchemaSaids,
@@ -452,54 +453,55 @@ class IpexCommunicationService extends AgentService {
     );
 
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
-    await this.saveAcdcMetadataRecord(
-      previousExnGrantMsg.exn.e.acdc.d,
-      previousExnGrantMsg.exn.e.acdc.a.dt,
-      connectionId,
-      schema.title,
-      connectionId
-    );
+    const credentialPending =
+      await this.credentialStorage.getCredentialMetadata(
+        previousExnGrantMsg.exn.e.acdc.d
+      );
 
-    this.props.eventService.emit<AcdcStateChangedEvent>({
-      type: AcdcEventTypes.AcdcStateChanged,
-      payload: {
-        credentialId,
-        status: CredentialStatus.PENDING,
-      },
-    });
+    if (!credentialPending) {
+      await this.saveAcdcMetadataRecord(
+        previousExnGrantMsg.exn.e.acdc.d,
+        previousExnGrantMsg.exn.e.acdc.a.dt,
+        schema.title,
+        connectionId,
+        schemaSaid
+      );
 
-    const pendingOperation = await this.operationPendingStorage.save({
-      id: op.name,
-      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
-    });
-    Agent.agent.signifyNotifications.addPendingOperationToQueue(
-      pendingOperation
-    );
+      this.props.eventService.emit<AcdcStateChangedEvent>({
+        type: AcdcEventTypes.AcdcStateChanged,
+        payload: {
+          credentialId,
+          status: CredentialStatus.PENDING,
+        },
+      });
+
+      const pendingOperation = await this.operationPendingStorage.save({
+        id: op.name,
+        recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+      });
+      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+        pendingOperation
+      );
+    }
 
     const notifications = await this.notificationStorage.findAllByQuery({
-      grantSaid: exn?.exn.e.exn.p,
+      exnSaid: exn?.exn.e.exn.p,
     });
 
-    if (notifications.length && holder.multisigManageAid && op.metadata?.said) {
+    if (notifications.length) {
       const notificationRecord = notifications[0];
       if (
-        notificationRecord.multisigLinks &&
-        Object.keys(notificationRecord.multisigLinks).length
+        notificationRecord.linkedGroupRequests &&
+        Object.keys(notificationRecord.linkedGroupRequests).length
       ) {
-        notificationRecord.multisigLinks = {
-          [op.metadata.said]: [
-            ...notificationRecord.multisigLinks[op.metadata.said],
-            holder.multisigManageAid,
-          ],
+        notificationRecord.linkedGroupRequests = {
+          ...notificationRecord.linkedGroupRequests,
+          [said]: true,
         };
 
         await this.notificationStorage.update(notificationRecord);
       }
     }
-    Agent.agent.signifyNotifications.deleteNotificationRecordById(
-      id,
-      notifRecord.a.r as NotificationRoute
-    );
   }
 }
 

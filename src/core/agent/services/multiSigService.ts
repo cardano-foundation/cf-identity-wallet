@@ -1088,7 +1088,7 @@ class MultiSigService extends AgentService {
       .ipex()
       .submitAdmit(multisigSignifyName, exn, sigsMes, dtime, recp);
 
-    return op;
+    return { op, exnSaid: exn.ked.d };
   }
 }
 
