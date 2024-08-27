@@ -427,9 +427,9 @@ class IpexCommunicationService extends AgentService {
     await this.saveAcdcMetadataRecord(
       previousExnGrantMsg.exn.e.acdc.d,
       previousExnGrantMsg.exn.e.acdc.a.dt,
-      connectionId,
       schema.title,
-      connectionId
+      connectionId,
+      schemaSaid
     );
 
     this.props.eventService.emit<AcdcStateChangedEvent>({
