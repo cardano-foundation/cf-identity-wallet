@@ -57,9 +57,7 @@ class SignifyNotificationService extends AgentService {
     this.credentialStorage = credentialStorage;
   }
 
-  async onNotificationStateChanged(
-    callback: (event: KeriaNotification) => void
-  ) {
+  async pollNotificationsWithCb(callback: (event: KeriaNotification) => void) {
     let notificationQuery = {
       nextIndex: 0,
       lastNotificationId: "",
@@ -72,9 +70,10 @@ class SignifyNotificationService extends AgentService {
         id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
         content: notificationQuery,
       });
-    } else
+    } else {
       notificationQuery =
         notificationQueryRecord.content as unknown as KeriaNotificationMarker;
+    }
     // eslint-disable-next-line no-constant-condition
     while (true) {
       if (!this.loggedIn) {
@@ -103,6 +102,7 @@ class SignifyNotificationService extends AgentService {
         // Possible that bootAndConnect is called from @OnlineOnly in between loops,
         // so check if its gone down to avoid having 2 bootAndConnect loops
         if (Agent.agent.getKeriaOnlineStatus()) {
+          Agent.agent.markAgentStatus(false);
           // This will hang the loop until the connection is secured again
           await Agent.agent.connect();
         }
@@ -505,7 +505,7 @@ class SignifyNotificationService extends AgentService {
     return notificationRecord;
   }
 
-  async onSignifyOperationStateChanged(
+  async pollLongOperationsWithCb(
     callback: ({
       oid,
       opType,
@@ -535,6 +535,7 @@ class SignifyNotificationService extends AgentService {
             // Possible that bootAndConnect is called from @OnlineOnly in between loops,
             // so check if its gone down to avoid having 2 bootAndConnect loops
             if (Agent.agent.getKeriaOnlineStatus()) {
+              Agent.agent.markAgentStatus(false);
               // This will hang the loop until the connection is secured again
               await Agent.agent.connect();
             }

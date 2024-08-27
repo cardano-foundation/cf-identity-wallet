@@ -849,7 +849,7 @@ describe("Long running operation tracker", () => {
       signifyName: "signifyName",
     });
     try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+      await signifyNotificationService.pollLongOperationsWithCb(callback);
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
@@ -884,7 +884,7 @@ describe("Long running operation tracker", () => {
       },
     ]);
     try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+      await signifyNotificationService.pollLongOperationsWithCb(callback);
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
@@ -928,7 +928,7 @@ describe("Long running operation tracker", () => {
       },
     ]);
     try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+      await signifyNotificationService.pollLongOperationsWithCb(callback);
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
@@ -972,7 +972,7 @@ describe("Long running operation tracker", () => {
         },
       });
     try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+      await signifyNotificationService.pollLongOperationsWithCb(callback);
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
@@ -1027,7 +1027,7 @@ describe("Long running operation tracker", () => {
       })
       .mockResolvedValueOnce(grantExchange);
     try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+      await signifyNotificationService.pollLongOperationsWithCb(callback);
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
@@ -1086,7 +1086,7 @@ describe("Long running operation tracker", () => {
         },
       });
     try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+      await signifyNotificationService.pollLongOperationsWithCb(callback);
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
@@ -1141,7 +1141,7 @@ describe("Long running operation tracker", () => {
         },
       });
     try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+      await signifyNotificationService.pollLongOperationsWithCb(callback);
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
@@ -1188,7 +1188,7 @@ describe("Long running operation tracker", () => {
       },
     });
     try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+      await signifyNotificationService.pollLongOperationsWithCb(callback);
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
@@ -1210,7 +1210,7 @@ describe("Long running operation tracker", () => {
       },
     ]);
     try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+      await signifyNotificationService.pollLongOperationsWithCb(callback);
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }

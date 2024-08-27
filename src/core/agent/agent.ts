@@ -217,15 +217,9 @@ class Agent {
       await signifyReady();
       const bran = await this.getBran();
       this.signifyClient = new SignifyClient(keriaConnectUrl, bran, Tier.low);
-      await this.signifyClient.connect();
-      Agent.isOnline = true;
       this.agentServicesProps.signifyClient = this.signifyClient;
-      this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
-        type: KeriaStatusEventTypes.KeriaStatusChanged,
-        payload: {
-          isOnline: Agent.isOnline,
-        },
-      });
+      await this.signifyClient.connect();
+      this.markAgentStatus(true);
     }
   }
 
@@ -239,6 +233,7 @@ class Agent {
         Tier.low,
         agentUrls.bootUrl
       );
+      this.agentServicesProps.signifyClient = this.signifyClient;
       const bootResult = await this.signifyClient.boot().catch((e) => {
         /* eslint-disable no-console */
         console.error(e);
@@ -266,7 +261,7 @@ class Agent {
         throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
       }
       await this.saveAgentUrls(agentUrls);
-      this.markAgentOnline();
+      this.markAgentStatus(true);
     }
   }
 
@@ -286,6 +281,7 @@ class Agent {
       bran = branBuffer.toString("utf-8");
 
       this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
+      this.agentServicesProps.signifyClient = this.signifyClient;
 
       await this.signifyClient.connect();
     } catch (error) {
@@ -306,16 +302,15 @@ class Agent {
       bootUrl: "",
     });
 
-    this.markAgentOnline();
+    this.markAgentStatus(true);
   }
 
-  private markAgentOnline() {
+  markAgentStatus(online: boolean) {
     Agent.isOnline = true;
-    this.agentServicesProps.signifyClient = this.signifyClient;
     this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
       type: KeriaStatusEventTypes.KeriaStatusChanged,
       payload: {
-        isOnline: Agent.isOnline,
+        isOnline: online,
       },
     });
   }
