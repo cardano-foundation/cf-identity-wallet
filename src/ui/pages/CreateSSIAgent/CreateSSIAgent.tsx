@@ -377,7 +377,7 @@ const CreateSSIAgent = () => {
             pageId={pageId}
             primaryButtonText={`${i18n.t("ssiagent.button.validate")}`}
             primaryButtonAction={() => handleValidate()}
-            primaryButtonDisabled={!validated}
+            primaryButtonDisabled={!validated || loading}
           />
         </div>
       </ScrollablePageLayout>
