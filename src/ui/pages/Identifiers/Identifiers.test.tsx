@@ -14,17 +14,26 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import {
   filteredIdentifierFix,
+  multisignIdentifierFix,
   pendingMultisignIdentifierFix,
 } from "../../__fixtures__/filteredIdentifierFix";
 import {
   CLEAR_STATE_DELAY,
   NAVIGATION_DELAY,
 } from "../../components/CardsStack";
+import { OperationType } from "../../globals/types";
 import { IdentifierDetails } from "../IdentifierDetails";
 import { Identifiers } from "./Identifiers";
 
 const deleteIdentifierMock = jest.fn();
 const archiveIdentifierMock = jest.fn();
+
+jest.mock("react-qrcode-logo", () => {
+  return {
+    ...jest.requireActual("react-qrcode-logo"),
+    QRCode: () => <div></div>,
+  };
+});
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -203,6 +212,57 @@ describe("Identifiers Tab", () => {
       fireEvent.click(doneButton);
     });
     expect(queryByText(EN_TRANSLATIONS.identifiers.tab.title)).toBeVisible();
+  });
+
+  test("Open multisig", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+        currentOperation: OperationType.OPEN_MULTISIG_IDENTIFIER,
+      },
+      seedPhraseCache: {},
+      identifiersCache: {
+        identifiers: multisignIdentifierFix,
+        multiSigGroup: {
+          groupId: multisignIdentifierFix[0].groupMetadata?.groupId,
+        },
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      connectionsCache: {
+        connections: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={storeMocked}>
+          <Route
+            path={TabsRoutePath.IDENTIFIERS}
+            component={Identifiers}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.share.title)
+      ).toBeVisible();
+    });
   });
 
   test("Open Connections tab", async () => {

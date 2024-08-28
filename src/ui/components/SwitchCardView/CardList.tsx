@@ -25,9 +25,7 @@ const CardList = ({
 
           return {
             id: item.id,
-            title: identifier.displayName
-              .replace(/([A-Z][a-z])/g, " $1")
-              .replace(/(\d)/g, " $1"),
+            title: identifier.displayName,
             subtitle: formatShortDate(identifier.createdAtUTC),
             data: identifier,
             image: IDENTIFIER_BG_MAPPING[identifier.theme] as string,

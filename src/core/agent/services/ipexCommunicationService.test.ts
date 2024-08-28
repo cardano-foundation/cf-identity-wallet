@@ -640,7 +640,7 @@ describe("Ipex communication service of agent", () => {
   test("can get matching credential for apply", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const notiId = "notiId";
-    getExchangeMock = jest.fn().mockResolvedValue({
+    const mockExchange = {
       exn: {
         a: {
           i: "uuid",
@@ -651,9 +651,11 @@ describe("Ipex communication service of agent", () => {
           s: "schemaSaid",
         },
         i: "i",
+        rp: "id",
         e: {},
       },
-    });
+    };
+    getExchangeMock = jest.fn().mockResolvedValue(mockExchange);
     const noti = {
       id: notiId,
       createdAt: new Date("2024-04-29T11:01:04.903Z").toISOString(),
@@ -693,6 +695,12 @@ describe("Ipex communication service of agent", () => {
         fullName: "Mr. John Lucas Smith",
         licenseNumber: "SMITH01192OP",
       },
+    });
+    expect(credentialListMock).toBeCalledWith({
+      filter: expect.objectContaining({
+        "-s": { $eq: mockExchange.exn.a.s },
+        "-a-i": mockExchange.exn.rp,
+      }),
     });
   });
 
@@ -890,6 +898,15 @@ describe("Ipex communication service of agent", () => {
 
     await ipexCommunicationService.acceptAcdcFromMultisigExn(id);
     expect(Agent.agent.multiSigs.multisigAdmit).toBeCalledTimes(1);
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
+      id: "EJvvnAZruVSfvPZjzGwyTR3RQApoK7228du0c8flDcaF",
+      isArchived: false,
+      credentialType: "title",
+      issuanceDate: new Date("2024-07-31T02:45:16.860000+00:00").toISOString(),
+      connectionId: "EKhebhdg6jOqK7ZgY-cFpx6rozpUave8llE2B15ioNHi",
+      schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      status: CredentialStatus.PENDING,
+    });
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,

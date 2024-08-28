@@ -99,8 +99,8 @@ jest.mock("../../../core/agent/agent", () => ({
         pickupMessagesFromMediator: jest.fn(),
       },
       signifyNotifications: {
-        onNotificationStateChanged: jest.fn(),
-        onSignifyOperationStateChanged: jest.fn(),
+        pollNotificationsWithCb: jest.fn(),
+        pollLongOperationsWithCb: jest.fn(),
         getAllNotifications: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),

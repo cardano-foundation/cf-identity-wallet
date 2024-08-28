@@ -94,4 +94,10 @@ describe("ipexMessage Storage", () => {
       );
     expect(result).toEqual([ipexMessageRecordA, ipexMessageRecordB]);
   });
+
+  test("Should delete ipexMessage record by ID", async () => {
+    storageService.deleteById.mockResolvedValue();
+    await ipexMessageStorage.deleteIpexMessageMetadata(id1);
+    expect(storageService.deleteById).toBeCalledWith(id1);
+  });
 });

@@ -221,9 +221,16 @@ class ConnectionService extends AgentService {
     await this.props.signifyClient.contacts().delete(id);
     await this.connectionStorage.deleteById(id);
     const notes = await this.getConnectNotesByConnectionId(id);
-    for (const note of notes) {
-      this.connectionNoteStorage.deleteById(note.id);
-    }
+    await Promise.all(
+      notes.map((note) => this.connectionNoteStorage.deleteById(note.id))
+    );
+    const historyItems =
+      await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(id);
+    await Promise.all(
+      historyItems.map((historyItem) =>
+        this.ipexMessageStorage.deleteIpexMessageMetadata(historyItem.id)
+      )
+    );
   }
 
   async deleteStaleLocalConnectionById(id: string): Promise<void> {

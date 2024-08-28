@@ -208,6 +208,7 @@ class IpexCommunicationService extends AgentService {
     const msg = await this.props.signifyClient.exchanges().get(msgSaid);
     const schemaSaid = msg.exn.a.s;
     const attributes = msg.exn.a.a;
+    const recipient = msg.exn.rp;
     const schemaKeri = await this.props.signifyClient
       .schemas()
       .get(schemaSaid)
@@ -225,6 +226,7 @@ class IpexCommunicationService extends AgentService {
 
     const filter = {
       "-s": { $eq: schemaSaid },
+      "-a-i": recipient,
       ...(Object.keys(attributes).length > 0
         ? {
           ...Object.fromEntries(
@@ -427,9 +429,9 @@ class IpexCommunicationService extends AgentService {
     await this.saveAcdcMetadataRecord(
       previousExnGrantMsg.exn.e.acdc.d,
       previousExnGrantMsg.exn.e.acdc.a.dt,
-      connectionId,
       schema.title,
-      connectionId
+      connectionId,
+      schemaSaid
     );
 
     this.props.eventService.emit<AcdcStateChangedEvent>({

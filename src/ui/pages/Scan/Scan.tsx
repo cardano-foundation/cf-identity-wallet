@@ -60,6 +60,10 @@ const Scan = () => {
     }
   }, [currentToastMsg, currentOperation, isValueCaptured]);
 
+  const handleAfterScan = () => {
+    history.push(TabsRoutePath.IDENTIFIERS);
+  };
+
   return (
     <TabLayout
       pageId={pageId}
@@ -68,6 +72,7 @@ const Scan = () => {
       <Scanner
         routePath={history.location.pathname}
         setIsValueCaptured={setIsValueCaptured}
+        handleReset={handleAfterScan}
       />
     </TabLayout>
   );
