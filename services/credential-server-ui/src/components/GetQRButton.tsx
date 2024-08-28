@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import {
   Alert,
   Box,
@@ -37,7 +37,11 @@ const GetQRButton: React.FC<GetQRButtonProps> = ({
   const [showCustomCredential, setShowCustomCredential] = useState(false);
   const [errorOnRequest, setErrorOnRequest] = useState(false);
 
-  const handleClick = async () => {
+  useEffect(() => {
+    handleShowQr();
+  }, []);
+
+  const handleShowQr = async () => {
     try {
       setShowQR(false);
       setShowCircularProgress(true);
@@ -97,7 +101,7 @@ const GetQRButton: React.FC<GetQRButtonProps> = ({
           onCustomCredentialChange: setCustomCredential,
         })}
       <Box sx={{ display: "flex", justifyContent: "right" }}>
-        <Button variant="contained" color="primary" onClick={handleClick}>
+        <Button variant="contained" color="primary" onClick={handleShowQr}>
           Request OOBI
         </Button>
       </Box>
