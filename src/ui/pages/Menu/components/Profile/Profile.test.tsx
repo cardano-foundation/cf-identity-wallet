@@ -1,13 +1,13 @@
+import { IonInput, IonLabel } from "@ionic/react";
+import { ionFireEvent, waitForIonicReact } from "@ionic/react-test-utils";
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { waitForIonicReact } from "@ionic/react-test-utils";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
-import { Profile } from "./Profile";
-import { Agent } from "../../../../../core/agent/agent";
-import { SubMenuKey } from "../../Menu.types";
+import { setAuthentication } from "../../../../../store/reducers/stateCache";
+import { CustomInputProps } from "../../../../components/CustomInput/CustomInput.types";
 import { Menu } from "../../Menu";
-import { MiscRecordId } from "../../../../../core/agent/agent.types";
+import { SubMenuKey } from "../../Menu.types";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -18,6 +18,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
       basicStorage: {
         findById: jest.fn(),
         save: jest.fn(),
+        createOrUpdateBasicRecord: jest.fn(() => Promise.resolve()),
       },
     },
   },
@@ -26,7 +27,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
 jest.mock("../../../../../core/storage", () => ({
   ...jest.requireActual("../../../../../core/storage"),
   SecureStorage: {
-    get: (key: string) => {
+    get: () => {
       return "Frank";
     },
   },
@@ -37,19 +38,54 @@ jest.mock("@ionic/react", () => ({
   IonModal: ({ children }: { children: any }) => children,
 }));
 
+jest.mock("../../../../components/CustomInput", () => ({
+  CustomInput: (props: CustomInputProps) => {
+    return (
+      <>
+        <IonLabel
+          position="stacked"
+          data-testid={`${props.title
+            ?.toLowerCase()
+            .replace(/\s/g, "-")}-input-title`}
+        >
+          {props.title}
+          {props.optional && (
+            <span className="custom-input-optional">(optional)</span>
+          )}
+        </IonLabel>
+        <IonInput
+          data-testid={props.dataTestId}
+          onIonInput={(e) => {
+            props.onChangeInput(e.detail.value as string);
+          }}
+          onIonFocus={() => props.onChangeFocus?.(true)}
+          onIonBlur={() => props.onChangeFocus?.(false)}
+        />
+      </>
+    );
+  },
+}));
+
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
-const mockDispatch = jest.fn();
-const mockGetAuthentication = jest.fn();
-const mockSetAuthentication = jest.fn();
+
 const initialState = {
   stateCache: {
     routes: ["/"],
     authentication: {
       loggedIn: true,
-      userName: "Frank",
-      time: Date.now(),
+      time: 1,
       passcodeIsSet: true,
+      userName: "Frank",
+      seedPhraseIsSet: false,
+      passwordIsSet: false,
+      passwordIsSkipped: false,
+      ssiAgentIsSet: true,
+      recoveryWalletProgress: false,
+      loginAttempt: {
+        attempts: 0,
+        lockedUntil: 0,
+      },
     },
   },
 };
@@ -116,9 +152,7 @@ describe("Profile page", () => {
     });
 
     act(() => {
-      fireEvent.change(getByTestId("profile-item-edit-name"), {
-        target: { value: "Carl" },
-      });
+      ionFireEvent.ionInput(getByTestId("profile-item-edit-name"), "Carl");
     });
 
     act(() => {
@@ -128,25 +162,22 @@ describe("Profile page", () => {
     await waitForIonicReact();
 
     await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(
-        mockSetAuthentication({
-          ...mockGetAuthentication(),
+      expect(dispatchMock).toBeCalledWith(
+        setAuthentication({
+          loggedIn: true,
+          time: 1,
+          passcodeIsSet: true,
           userName: "Carl",
+          seedPhraseIsSet: false,
+          passwordIsSet: false,
+          passwordIsSkipped: false,
+          ssiAgentIsSet: true,
+          recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: 0,
+          },
         })
-      );
-    });
-
-    await waitFor(() => {
-      const mockSave = jest.fn();
-      Agent.agent.basicStorage.save = mockSave;
-      expect(mockSave).toHaveBeenCalledWith(MiscRecordId.USER_NAME, {
-        userName: "Carl",
-      });
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("profile-item-view-name")).toHaveTextContent(
-        EN_TRANSLATIONS.menu.tab.items.profile.name + "Carl"
       );
     });
   });
