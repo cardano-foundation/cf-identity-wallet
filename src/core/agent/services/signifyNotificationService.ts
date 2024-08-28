@@ -23,7 +23,7 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { IonicStorage } from "../../storage/ionicStorage";
 import { ConnectionHistoryType } from "./connection.types";
-import { IpexCommunicationService } from "./ipexCommunicationService";
+import { MultiSigService } from "./multiSigService";
 
 class SignifyNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -348,7 +348,16 @@ class SignifyNotificationService extends AgentService {
 
       const existMultisig = await Agent.agent.identifiers
         .getIdentifier(exchange?.exn?.e?.exn?.i)
-        .catch(() => undefined);
+        .catch((error) => {
+          if (
+            error.message ===
+            IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
 
       if (!existMultisig) {
         await this.markNotification(notif.i);
@@ -635,15 +644,21 @@ class SignifyNotificationService extends AgentService {
                   .get(admitExchange.exn.p);
                 const credentialId = grantExchange.exn.e.acdc.d;
                 if (credentialId) {
-                  const notifications =
-                      await this.notificationStorage.findAllByQuery({
-                        exnSaid: grantExchange.exn.d,
-                      });
-                  for (const notification of notifications) {
-                    Agent.agent.signifyNotifications.deleteNotificationRecordById(
-                      notification.id,
-                        notification.a.r as NotificationRoute
-                    );
+                  const holder =
+                      await this.identifierStorage.getIdentifierMetadata(
+                        admitExchange.exn.i
+                      );
+                  if (holder.multisigManageAid) {
+                    const notifications =
+                        await this.notificationStorage.findAllByQuery({
+                          exnSaid: grantExchange.exn.d,
+                        });
+                    for (const notification of notifications) {
+                      this.deleteNotificationRecordById(
+                        notification.id,
+                          notification.a.r as NotificationRoute
+                      );
+                    }
                   }
                   await Agent.agent.ipexCommunications.markAcdc(
                     credentialId,
