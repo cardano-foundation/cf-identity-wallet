@@ -52,6 +52,7 @@ export const OnlineOnly = (
         /Failed to fetch/gi.test(errorMessage) ||
         /Load failed/gi.test(errorMessage)
       ) {
+        Agent.agent.markAgentStatus(false);
         Agent.agent.connect(1000);
         throw new Error(Agent.KERIA_CONNECTION_BROKEN);
       } else {

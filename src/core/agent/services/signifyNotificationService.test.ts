@@ -1058,7 +1058,7 @@ describe("Long running operation tracker", () => {
           },
         },
       });
-    const opreationRecord = {
+    const operationRecord = {
       type: "OperationPendingRecord",
       id: "exchange.revokecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
       createdAt: new Date("2024-08-01T10:36:17.814Z"),
@@ -1066,7 +1066,7 @@ describe("Long running operation tracker", () => {
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
     await signifyNotificationService.processOperation(
-      opreationRecord,
+      operationRecord,
       callback
     );
     expect(Agent.agent.ipexCommunications.markAcdc).not.toBeCalled();
@@ -1110,7 +1110,7 @@ describe("Long running operation tracker", () => {
           },
         },
       });
-    const opreationRecord = {
+    const operationRecord = {
       type: "OperationPendingRecord",
       id: "exchange.revokecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
       createdAt: new Date("2024-08-01T10:36:17.814Z"),
@@ -1118,7 +1118,7 @@ describe("Long running operation tracker", () => {
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
     await signifyNotificationService.processOperation(
-      opreationRecord,
+      operationRecord,
       callback
     );
     expect(Agent.agent.ipexCommunications.markAcdc).not.toBeCalled();
@@ -1154,7 +1154,7 @@ describe("Long running operation tracker", () => {
         },
       },
     });
-    const opreationRecord = {
+    const operationRecord = {
       type: "OperationPendingRecord",
       id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
       createdAt: new Date("2024-08-01T10:36:17.814Z"),
@@ -1162,7 +1162,7 @@ describe("Long running operation tracker", () => {
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
     await signifyNotificationService.processOperation(
-      opreationRecord,
+      operationRecord,
       callback
     );
     expect(operationsGetMock).toBeCalledTimes(1);
@@ -1187,7 +1187,7 @@ describe("Long running operation tracker", () => {
       },
     ]);
     try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+      await signifyNotificationService.pollLongOperationsWithCb(callback);
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
