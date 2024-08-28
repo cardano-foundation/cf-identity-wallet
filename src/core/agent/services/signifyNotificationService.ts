@@ -7,7 +7,7 @@ import {
   KeriaNotificationMarker,
   MiscRecordId,
   NotificationRoute,
-  operationCallback,
+  OperationCallback,
 } from "../agent.types";
 import { CredentialStatus, Notification } from "./credentialService.types";
 import {
@@ -506,7 +506,7 @@ class SignifyNotificationService extends AgentService {
     return notificationRecord;
   }
 
-  async onSignifyOperationStateChanged(callback: operationCallback) {
+  async onSignifyOperationStateChanged(callback: OperationCallback) {
     this.pendingOperations = await this.operationPendingStorage.getAll();
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -532,7 +532,7 @@ class SignifyNotificationService extends AgentService {
 
   async processOperation(
     operationRecord: OperationPendingRecord,
-    callback: operationCallback
+    callback: OperationCallback
   ) {
     let operation;
     try {

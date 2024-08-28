@@ -232,7 +232,7 @@ interface BranAndMnemonic {
   mnemonic: string;
 }
 
-type operationCallback = ({
+type OperationCallback = ({
   oid,
   opType,
 }: {
@@ -272,5 +272,5 @@ export type {
   IpexMessage,
   NotificationRpy,
   AuthorizationRequestExn,
-  operationCallback,
+  OperationCallback,
 };
