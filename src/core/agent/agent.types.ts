@@ -5,6 +5,7 @@ import {
 } from "./services/credentialService.types";
 import { EventService } from "./services/eventService";
 import { ConnectionHistoryType } from "./services/connection.types";
+import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
 
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
@@ -231,6 +232,14 @@ interface BranAndMnemonic {
   mnemonic: string;
 }
 
+type OperationCallback = ({
+  oid,
+  opType,
+}: {
+  oid: string;
+  opType: OperationPendingRecordType;
+}) => void;
+
 export {
   ConnectionStatus,
   MiscRecordId,
@@ -263,4 +272,5 @@ export type {
   IpexMessage,
   NotificationRpy,
   AuthorizationRequestExn,
+  OperationCallback,
 };
