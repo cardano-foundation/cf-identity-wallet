@@ -11,25 +11,23 @@ import { DeleteOutline } from "@mui/icons-material";
 import { UUID_REGEX } from "../constants";
 
 const ConnectionPage: React.FC = () => {
+  const [allContacts, setAllContacts] = useState<Contact[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
-  const [keyword, setKeyword] = useState<string>("");
+  const [connectionsFilter, setConnectionsFilter] = useState<string>("");
 
   useEffect(() => {
     handleGetContacts();
   }, []);
 
   useEffect(() => {
-    handleGetContacts();
-  }, [keyword]);
+    const regex = new RegExp(connectionsFilter, "gi");
+    setContacts(allContacts.filter((contact: { alias: string; id: string }) => regex.test(contact.alias) || regex.test(contact.id)));
+  }, [connectionsFilter]);
 
   const handleGetContacts = async () => {
-    const contacts = (await axios.get(`${config.endpoint}${config.path.contacts}`)).data.data;
-    if (keyword) {
-      const regex = new RegExp(keyword, "gi");
-      setContacts(contacts.filter((contact: { alias: string; id: string }) => regex.test(contact.alias) || regex.test(contact.id)));
-    } else {
-      setContacts(contacts);
-    }
+    const contactsList = (await axios.get(`${config.endpoint}${config.path.contacts}`)).data.data;
+    setContacts(contactsList);
+    setAllContacts(contactsList);
   };
 
   const handleDeleteContact = async (id: string) => {
@@ -70,7 +68,7 @@ const ConnectionPage: React.FC = () => {
             onClick={handleGetContacts}
           ></Button>
           <br></br>
-          <Input onChange={(event) => setKeyword(event.target.value)} placeholder="Search for connections"/>
+          <Input onChange={(event) => setConnectionsFilter(event.target.value)} placeholder="Search for connections"/>
           <br></br>
           <Divider />
         </Typography>
