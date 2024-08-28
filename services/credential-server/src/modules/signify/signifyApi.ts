@@ -2,7 +2,6 @@ import {
   SignifyClient,
   ready as signifyReady,
   Tier,
-  randomPasscode,
   Operation,
   Saider,
   Serder,
@@ -31,11 +30,11 @@ export class SignifyApi {
   /**
    * Must be called first.
    */
-  async start(): Promise<void> {
+  async start(bran: string): Promise<void> {
     await signifyReady();
     this.signifyClient = new SignifyClient(
       config.keria.url,
-      randomPasscode(), // Different on every restart but this is OK for our purposes.
+      bran,
       Tier.low,
       config.keria.bootUrl
     );
@@ -306,6 +305,10 @@ export class SignifyApi {
 
   async contacts(): Promise<any> {
     return this.signifyClient.contacts().list();
+  }
+
+  async deleteContact(id: string): Promise<any> {
+    return this.signifyClient.contacts().delete(id);
   }
 
   async agreeToAcdcFromOffer(

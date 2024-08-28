@@ -12,7 +12,7 @@ import { LoginAttempts } from "../../../core/agent/services/auth.types";
 
 const initialState: StateCacheProps = {
   initialized: false,
-  isOnline: true,
+  isOnline: false,
   routes: [],
   authentication: {
     loggedIn: false,

@@ -8,6 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { CopyAll } from "@mui/icons-material";
 import axios from "axios";
 import QRCode from "qrcode.react";
 
@@ -106,9 +107,14 @@ const GetQRButton: React.FC<GetQRButtonProps> = ({
         </Box>
       )}
       {showQR && (
-        <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
-          <QRCode value={responseLink} size={256} />
-        </Box>
+        <div>
+          <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
+            <QRCode value={responseLink} size={256} />
+          </Box>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Button onClick={() => navigator.clipboard.writeText(responseLink)}>Copy OOBI URL<CopyAll/></Button>  
+          </div>      
+        </div>
       )}
       {showCustomCredential && (
         <TextField

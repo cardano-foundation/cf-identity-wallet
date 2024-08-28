@@ -67,7 +67,7 @@ const ReceiveCredential = ({
     } else {
       await Agent.agent.ipexCommunications.acceptAcdc(notificationDetails.id);
     }
-    handleNotificationUpdate();
+
     setTimeout(() => {
       handleNotificationUpdate();
       handleBack();

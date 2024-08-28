@@ -649,7 +649,7 @@ describe("Ipex communication service of agent", () => {
   test("can get matching credential for apply", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const notiId = "notiId";
-    getExchangeMock = jest.fn().mockResolvedValue({
+    const mockExchange = {
       exn: {
         a: {
           i: "uuid",
@@ -660,9 +660,11 @@ describe("Ipex communication service of agent", () => {
           s: "schemaSaid",
         },
         i: "i",
+        rp: "id",
         e: {},
       },
-    });
+    };
+    getExchangeMock = jest.fn().mockResolvedValue(mockExchange);
     const noti = {
       id: notiId,
       createdAt: new Date("2024-04-29T11:01:04.903Z").toISOString(),
@@ -702,6 +704,12 @@ describe("Ipex communication service of agent", () => {
         fullName: "Mr. John Lucas Smith",
         licenseNumber: "SMITH01192OP",
       },
+    });
+    expect(credentialListMock).toBeCalledWith({
+      filter: expect.objectContaining({
+        "-s": { $eq: mockExchange.exn.a.s },
+        "-a-i": mockExchange.exn.rp,
+      }),
     });
   });
 

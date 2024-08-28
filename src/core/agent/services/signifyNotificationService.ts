@@ -7,6 +7,7 @@ import {
   KeriaNotificationMarker,
   MiscRecordId,
   NotificationRoute,
+  OperationCallback,
 } from "../agent.types";
 import { CredentialStatus, Notification } from "./credentialService.types";
 import {
@@ -61,9 +62,7 @@ class SignifyNotificationService extends AgentService {
     this.multisigService = multisigService;
   }
 
-  async onNotificationStateChanged(
-    callback: (event: KeriaNotification) => void
-  ) {
+  async pollNotificationsWithCb(callback: (event: KeriaNotification) => void) {
     let notificationQuery = {
       nextIndex: 0,
       lastNotificationId: "",
@@ -76,9 +75,10 @@ class SignifyNotificationService extends AgentService {
         id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
         content: notificationQuery,
       });
-    } else
+    } else {
       notificationQuery =
         notificationQueryRecord.content as unknown as KeriaNotificationMarker;
+    }
     // eslint-disable-next-line no-constant-condition
     while (true) {
       if (!this.loggedIn) {
@@ -107,6 +107,7 @@ class SignifyNotificationService extends AgentService {
         // Possible that bootAndConnect is called from @OnlineOnly in between loops,
         // so check if its gone down to avoid having 2 bootAndConnect loops
         if (Agent.agent.getKeriaOnlineStatus()) {
+          Agent.agent.markAgentStatus(false);
           // This will hang the loop until the connection is secured again
           await Agent.agent.connect();
         }
@@ -507,15 +508,7 @@ class SignifyNotificationService extends AgentService {
     return notificationRecord;
   }
 
-  async onSignifyOperationStateChanged(
-    callback: ({
-      oid,
-      opType,
-    }: {
-      oid: string;
-      opType: OperationPendingRecordType;
-    }) => void
-  ) {
+  async pollLongOperationsWithCb(callback: OperationCallback) {
     this.pendingOperations = await this.operationPendingStorage.getAll();
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -528,152 +521,7 @@ class SignifyNotificationService extends AgentService {
 
       if (this.pendingOperations.length > 0) {
         for (const pendingOperation of this.pendingOperations) {
-          let operation;
-          try {
-            operation = await this.props.signifyClient
-              .operations()
-              .get(pendingOperation.id);
-          } catch (error) {
-            // Possible that bootAndConnect is called from @OnlineOnly in between loops,
-            // so check if its gone down to avoid having 2 bootAndConnect loops
-            if (Agent.agent.getKeriaOnlineStatus()) {
-              // This will hang the loop until the connection is secured again
-              await Agent.agent.connect();
-            }
-          }
-
-          if (operation && operation.done) {
-            const recordId = pendingOperation.id.replace(
-              `${pendingOperation.recordType}.`,
-              ""
-            );
-            switch (pendingOperation.recordType) {
-            case OperationPendingRecordType.Group: {
-              await this.identifierStorage.updateIdentifierMetadata(
-                recordId,
-                {
-                  isPending: false,
-                }
-              );
-              // Trigger add end role authorization for multi-sigs
-              const multisigIdentifier =
-                  await this.identifierStorage.getIdentifierMetadata(recordId);
-              await this.multisigService.endRoleAuthorization(
-                multisigIdentifier.signifyName
-              );
-              callback({
-                opType: pendingOperation.recordType,
-                oid: recordId,
-              });
-              break;
-            }
-            case OperationPendingRecordType.Witness: {
-              await this.identifierStorage.updateIdentifierMetadata(
-                recordId,
-                {
-                  isPending: false,
-                }
-              );
-              callback({
-                opType: pendingOperation.recordType,
-                oid: recordId,
-              });
-              break;
-            }
-            case OperationPendingRecordType.Oobi: {
-              const connectionRecord = await this.connectionStorage.findById(
-                (operation.response as any).i
-              );
-              if (connectionRecord) {
-                connectionRecord.pending = false;
-                connectionRecord.createdAt = (operation.response as any).dt;
-                await this.connectionStorage.update(connectionRecord);
-              }
-              callback({
-                opType: pendingOperation.recordType,
-                oid: recordId,
-              });
-              break;
-            }
-            case OperationPendingRecordType.ExchangeReceiveCredential: {
-              const admitExchange = await this.props.signifyClient
-                .exchanges()
-                .get(operation.metadata?.said);
-              if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
-                const grantExchange = await this.props.signifyClient
-                  .exchanges()
-                  .get(admitExchange.exn.p);
-                const credentialId = grantExchange.exn.e.acdc.d;
-                if (credentialId) {
-                  await Agent.agent.ipexCommunications.markAcdc(
-                    credentialId,
-                    CredentialStatus.CONFIRMED
-                  );
-                }
-              }
-              break;
-            }
-            case OperationPendingRecordType.ExchangeRevokeCredential: {
-              const admitExchange = await this.props.signifyClient
-                .exchanges()
-                .get(operation.metadata?.said);
-              if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
-                const grantExchange = await this.props.signifyClient
-                  .exchanges()
-                  .get(admitExchange.exn.p);
-                const credentialId = grantExchange?.exn?.e?.acdc?.d;
-                const credentialMetadata =
-                    await this.credentialStorage.getCredentialMetadata(
-                      credentialId
-                    );
-                const credential = await this.props.signifyClient
-                  .credentials()
-                  .get(credentialId);
-                if (
-                  credential &&
-                    credential.status.s === "1" &&
-                    credentialMetadata?.status !== CredentialStatus.REVOKED
-                ) {
-                  await Agent.agent.ipexCommunications.markAcdc(
-                    credentialId,
-                    CredentialStatus.REVOKED
-                  );
-                  await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
-                    grantExchange,
-                    ConnectionHistoryType.CREDENTIAL_REVOKED
-                  );
-                  const metadata: any = {
-                    id: uuidv4(),
-                    a: {
-                      r: NotificationRoute.LocalAcdcRevoked,
-                      credentialId,
-                      credentialTitle: credential.schema.title,
-                    },
-                    read: false,
-                    route: NotificationRoute.LocalAcdcRevoked,
-                  };
-                  await this.notificationStorage.save(metadata);
-                  callback({
-                    opType: pendingOperation.recordType,
-                    oid: recordId,
-                  });
-                }
-              }
-              break;
-            }
-            case OperationPendingRecordType.ExchangePresentCredential: {
-              // TODO: handle logic with exchange present ACDC
-              break;
-            }
-            default:
-              break;
-            }
-            await this.operationPendingStorage.deleteById(pendingOperation.id);
-            this.pendingOperations.splice(
-              this.pendingOperations.indexOf(pendingOperation),
-              1
-            );
-          }
+          await this.processOperation(pendingOperation, callback);
         }
       }
       await new Promise((rs) => {
@@ -681,6 +529,151 @@ class SignifyNotificationService extends AgentService {
           rs(true);
         }, 250);
       });
+    }
+  }
+
+  async processOperation(
+    operationRecord: OperationPendingRecord,
+    callback: OperationCallback
+  ) {
+    let operation;
+    try {
+      operation = await this.props.signifyClient
+        .operations()
+        .get(operationRecord.id);
+    } catch (error) {
+      // Possible that bootAndConnect is called from @OnlineOnly in between loops,
+      // so check if its gone down to avoid having 2 bootAndConnect loops
+      if (Agent.agent.getKeriaOnlineStatus()) {
+        Agent.agent.markAgentStatus(false);
+        // This will hang the loop until the connection is secured again
+        await Agent.agent.connect();
+      }
+    }
+
+    if (operation && operation.done) {
+      const recordId = operationRecord.id.replace(
+        `${operationRecord.recordType}.`,
+        ""
+      );
+      switch (operationRecord.recordType) {
+      case OperationPendingRecordType.Group: {
+        await this.identifierStorage.updateIdentifierMetadata(recordId, {
+          isPending: false,
+        });
+        // Trigger add end role authorization for multi-sigs
+        const multisigIdentifier =
+            await this.identifierStorage.getIdentifierMetadata(recordId);
+        await Agent.agent.multiSigs.endRoleAuthorization(
+          multisigIdentifier.signifyName
+        );
+        callback({
+          opType: operationRecord.recordType,
+          oid: recordId,
+        });
+        break;
+      }
+      case OperationPendingRecordType.Witness: {
+        await this.identifierStorage.updateIdentifierMetadata(recordId, {
+          isPending: false,
+        });
+        callback({
+          opType: operationRecord.recordType,
+          oid: recordId,
+        });
+        break;
+      }
+      case OperationPendingRecordType.Oobi: {
+        const connectionRecord = await this.connectionStorage.findById(
+          (operation.response as any).i
+        );
+        if (connectionRecord) {
+          connectionRecord.pending = false;
+          connectionRecord.createdAt = (operation.response as any).dt;
+          await this.connectionStorage.update(connectionRecord);
+        }
+        callback({
+          opType: operationRecord.recordType,
+          oid: recordId,
+        });
+        break;
+      }
+      case OperationPendingRecordType.ExchangeReceiveCredential: {
+        const admitExchange = await this.props.signifyClient
+          .exchanges()
+          .get(operation.metadata?.said);
+        if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
+          const grantExchange = await this.props.signifyClient
+            .exchanges()
+            .get(admitExchange.exn.p);
+          const credentialId = grantExchange.exn.e.acdc.d;
+          if (credentialId) {
+            await Agent.agent.ipexCommunications.markAcdc(
+              credentialId,
+              CredentialStatus.CONFIRMED
+            );
+          }
+        }
+        break;
+      }
+      case OperationPendingRecordType.ExchangeRevokeCredential: {
+        const admitExchange = await this.props.signifyClient
+          .exchanges()
+          .get(operation.metadata?.said);
+        if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
+          const grantExchange = await this.props.signifyClient
+            .exchanges()
+            .get(admitExchange.exn.p);
+          const credentialId = grantExchange?.exn?.e?.acdc?.d;
+          const credentialMetadata =
+              await this.credentialStorage.getCredentialMetadata(credentialId);
+          const credential = await this.props.signifyClient
+            .credentials()
+            .get(credentialId);
+          if (
+            credential &&
+              credential.status.s === "1" &&
+              credentialMetadata?.status !== CredentialStatus.REVOKED
+          ) {
+            await Agent.agent.ipexCommunications.markAcdc(
+              credentialId,
+              CredentialStatus.REVOKED
+            );
+            await Agent.agent.ipexCommunications.createLinkedIpexMessageRecord(
+              grantExchange,
+              ConnectionHistoryType.CREDENTIAL_REVOKED
+            );
+            const metadata: any = {
+              id: uuidv4(),
+              a: {
+                r: NotificationRoute.LocalAcdcRevoked,
+                credentialId,
+                credentialTitle: credential.schema.title,
+              },
+              read: false,
+              route: NotificationRoute.LocalAcdcRevoked,
+            };
+            await this.notificationStorage.save(metadata);
+            callback({
+              opType: operationRecord.recordType,
+              oid: recordId,
+            });
+          }
+        }
+        break;
+      }
+      case OperationPendingRecordType.ExchangePresentCredential: {
+        // TODO: handle logic with exchange present ACDC
+        break;
+      }
+      default:
+        break;
+      }
+      await this.operationPendingStorage.deleteById(operationRecord.id);
+      this.pendingOperations.splice(
+        this.pendingOperations.indexOf(operationRecord),
+        1
+      );
     }
   }
 
