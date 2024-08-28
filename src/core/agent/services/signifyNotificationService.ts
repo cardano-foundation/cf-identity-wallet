@@ -230,7 +230,7 @@ class SignifyNotificationService extends AgentService {
             throw error;
           }
         });
-      if (!ourIdentifier || !ourIdentifier.signifyName) {
+      if (!ourIdentifier) {
         await this.markNotification(notif.i);
         return;
       }
@@ -662,27 +662,7 @@ class SignifyNotificationService extends AgentService {
               break;
             }
             case OperationPendingRecordType.ExchangePresentCredential: {
-              const grantExchange = await this.props.signifyClient
-                .exchanges()
-                .get(operation.metadata?.said);
-              if (grantExchange.exn.r === ExchangeRoute.IpexGrant) {
-                const credentialId = grantExchange.exn.e.acdc.d;
-                if (credentialId) {
-                  const acdc = await this.props.signifyClient
-                    .credentials()
-                    .get(credentialId);
-
-                  const members =
-                      await this.multisigService.getMembersByIdentifierId(
-                        acdc.sad.a.i
-                      );
-
-                  /* eslint-disable no-console */
-                  console.log("Members multisig: ", members ? members : []);
-                }
-              }
-              /* eslint-disable no-console */
-              console.log("All members have joined");
+              // TODO: handle logic with exchange present ACDC
               break;
             }
             default:

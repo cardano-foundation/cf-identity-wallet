@@ -478,11 +478,19 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async admitGrantAcdcById(credentialId: string) {
-    // TODO: If the credential does not exist, this will throw 500 at the moment. Will change this later
+  async grantAcdcById(credentialId: string) {
     const pickedCred = await this.props.signifyClient
       .credentials()
-      .get(credentialId);
+      .get(credentialId)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/500/gi.test(status)) {
+          // TODO: Should change to 404 once KERIA fixed
+          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${credentialId}`);
+        } else {
+          throw error;
+        }
+      });
 
     if (!pickedCred) {
       throw new Error(
@@ -494,7 +502,6 @@ class IpexCommunicationService extends AgentService {
       await this.identifierStorage.getIdentifierMetadata(pickedCred.sad.a.i)
     ).signifyName;
 
-    // const op = await this.props.multisigService.grantPresentMultisigAcdc(
     const op = await this.multisigService.grantPresentMultisigAcdc(
       holderSignifyName,
       pickedCred.sad?.i,
@@ -527,14 +534,13 @@ class IpexCommunicationService extends AgentService {
       throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     }
 
-    // const op = await this.props.multisigService.grantPresentMultisigAcdc(
     const op = await this.multisigService.grantPresentMultisigAcdc(
       holder.signifyName,
       credential?.i,
       credential,
       {
         grantExn,
-        atc: exn.pathed,
+        atc: exn.pathed.exn,
       }
     );
 

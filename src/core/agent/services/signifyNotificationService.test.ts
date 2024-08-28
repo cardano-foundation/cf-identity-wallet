@@ -337,8 +337,8 @@ describe("Signify notification service of agent", () => {
     for (const notif of notes) {
       await signifyNotificationService.processNotification(notif, callback);
     }
-    expect(notificationStorage.save).toBeCalledTimes(1);
-    expect(callback).toBeCalledTimes(1);
+    expect(notificationStorage.save).toBeCalledTimes(2);
+    expect(callback).toBeCalledTimes(2);
   });
 
   test("Should admit if there is an existing credential", async () => {

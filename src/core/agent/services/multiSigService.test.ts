@@ -2443,7 +2443,7 @@ describe("Multisig sig service of agent", () => {
       acdcDetail,
       {
         grantExn: multisigExn,
-        atc: { exn: atc },
+        atc,
       }
     );
 

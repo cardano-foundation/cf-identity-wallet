@@ -1192,7 +1192,7 @@ describe("Ipex communication service of agent", () => {
       name: "opName",
     });
 
-    await ipexCommunicationService.admitGrantAcdcById(id);
+    await ipexCommunicationService.grantAcdcById(id);
     expect(multisigService.grantPresentMultisigAcdc).toBeCalledTimes(1);
   });
 
@@ -1202,7 +1202,7 @@ describe("Ipex communication service of agent", () => {
     credentialGetMock.mockResolvedValueOnce(null);
 
     await expect(
-      ipexCommunicationService.admitGrantAcdcById(id)
+      ipexCommunicationService.grantAcdcById(id)
     ).rejects.toThrowError(`${IpexCommunicationService.CREDENTIAL_NOT_FOUND}`);
   });
 });
