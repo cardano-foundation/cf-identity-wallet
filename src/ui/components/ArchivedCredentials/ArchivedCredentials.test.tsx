@@ -93,8 +93,6 @@ describe("Archived and revoked credentials", () => {
     credsFixAcdc.forEach((cred) => {
       expect(getByTestId(`credential-name-${cred.id}`).innerHTML).toBe(
         cred.credentialType
-          .replace(/([A-Z][a-z])/g, " $1")
-          .replace(/(\d)/g, " $1")
       );
     });
 

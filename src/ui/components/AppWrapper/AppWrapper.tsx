@@ -54,7 +54,7 @@ import {
   setAuthentication,
   setCurrentOperation,
   setInitialized,
-  setIsOnline as setOnlineStatus,
+  setIsOnline,
   setPauseQueueIncomingRequest,
   setQueueIncomingRequest,
   setToastMsg,
@@ -198,9 +198,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
   useActivityTimer();
 
-  const setIsOnline = useCallback(
+  const setOnlineStatus = useCallback(
     (value: boolean) => {
-      dispatch(setOnlineStatus(value));
+      dispatch(setIsOnline(value));
     },
     [dispatch]
   );
@@ -386,51 +386,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
     };
   };
 
-  const initApp = async () => {
-    await new ConfigurationService().start();
-    await Agent.agent.initDatabaseConnection();
-    // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
-    // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
-    try {
-      // @TODO - foconnor: This should use our normal DB - keeping Preferences temporarily to not break existing mobile builds.
-      // Will remove preferences again once we have better handling on APP_ALREADY_INIT with user input.
-      await PreferencesStorage.get(PreferencesKeys.APP_ALREADY_INIT);
-    } catch (e) {
-      await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
-      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
-      await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
-    }
-    await loadDatabase();
-    const { keriaConnectUrlRecord } = await loadCacheBasicStorage();
-
-    if (keriaConnectUrlRecord) {
-      try {
-        await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
-        setIsOnline(true);
-      } catch (e) {
-        const errorMessage = (e as Error).message;
-        // If the error is failed to fetch with signify, we retry until the connection is secured
-        if (
-          /Failed to fetch/gi.test(errorMessage) ||
-          /Load failed/gi.test(errorMessage)
-        ) {
-          Agent.agent.connect().then(() => {
-            setIsOnline(Agent.agent.getKeriaOnlineStatus());
-          });
-        } else {
-          throw e;
-        }
-      }
-    }
-
+  const setupEventServiceCallbacks = () => {
     Agent.agent.onKeriaStatusStateChanged((event) => {
-      setIsOnline(event.payload.isOnline);
+      setOnlineStatus(event.payload.isOnline);
     });
     Agent.agent.connections.onConnectionStateChanged((event) => {
       return connectionStateChangedHandler(event, dispatch);
-    });
-    Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
-      return keriaNotificationsChangeHandler(event, dispatch);
     });
     Agent.agent.credentials.onAcdcStateChanged((event) => {
       return acdcChangeHandler(event, dispatch);
@@ -449,7 +410,50 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return peerConnectionBrokenChangeHandler(event, dispatch);
       }
     );
-    Agent.agent.signifyNotifications.onSignifyOperationStateChanged((event) => {
+  };
+
+  const initApp = async () => {
+    await new ConfigurationService().start();
+    await Agent.agent.initDatabaseConnection();
+    // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
+    // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
+    try {
+      // @TODO - foconnor: This should use our normal DB - keeping Preferences temporarily to not break existing mobile builds.
+      // Will remove preferences again once we have better handling on APP_ALREADY_INIT with user input.
+      await PreferencesStorage.get(PreferencesKeys.APP_ALREADY_INIT);
+    } catch (e) {
+      await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
+      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
+      await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
+    }
+    await loadDatabase();
+    const { keriaConnectUrlRecord } = await loadCacheBasicStorage();
+
+    // Ensure online/offline callback setup before connecting to KERIA
+    setupEventServiceCallbacks();
+
+    if (keriaConnectUrlRecord) {
+      try {
+        await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
+      } catch (e) {
+        const errorMessage = (e as Error).message;
+        // If the error is failed to fetch with signify, we retry until the connection is secured
+        if (
+          /Failed to fetch/gi.test(errorMessage) ||
+          /Load failed/gi.test(errorMessage)
+        ) {
+          Agent.agent.connect(); // No await, background this task and continue initializing
+        } else {
+          throw e;
+        }
+      }
+    }
+
+    // Begin background polling of KERIA or local DB items
+    Agent.agent.signifyNotifications.pollNotificationsWithCb((event) => {
+      return keriaNotificationsChangeHandler(event, dispatch);
+    });
+    Agent.agent.signifyNotifications.pollLongOperationsWithCb((event) => {
       return signifyOperationStateChangeHandler(event, dispatch);
     });
     dispatch(setInitialized(true));

@@ -1,6 +1,7 @@
 import { Agent } from "../agent";
 import { ExchangeRoute, NotificationRoute } from "../agent.types";
 import { IpexMessageStorage } from "../records";
+import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
 import { EventService } from "./eventService";
@@ -819,10 +820,6 @@ describe("Signify notification service of agent", () => {
 describe("Long running operation tracker", () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    // We mock the setTimeout here so we can exit the while(true) loop
-    jest.spyOn(global, "setTimeout").mockImplementation(() => {
-      throw new Error("Force Exit");
-    });
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const operationMock = {
       metadata: {
@@ -839,23 +836,20 @@ describe("Long running operation tracker", () => {
 
   test("Should handle long operations with type group", async () => {
     const callback = jest.fn();
-    operationPendingGetAllMock.mockResolvedValueOnce([
-      {
-        type: "OperationPendingRecord",
-        id: "group.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-        createdAt: new Date("2024-08-01T10:36:17.814Z"),
-        recordType: "group",
-        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
-      },
-    ]);
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "group.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "group",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
     identifierStorage.getIdentifierMetadata.mockResolvedValueOnce({
       signifyName: "signifyName",
     });
-    try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
-    } catch (error) {
-      expect((error as Error).message).toBe("Force Exit");
-    }
+    await signifyNotificationService.processOperation(
+      operationRecord,
+      callback
+    );
     expect(Agent.agent.multiSigs.endRoleAuthorization).toBeCalledWith(
       "signifyName"
     );
@@ -877,20 +871,17 @@ describe("Long running operation tracker", () => {
       },
     };
     operationsGetMock.mockResolvedValue(operationMock);
-    operationPendingGetAllMock.mockResolvedValueOnce([
-      {
-        type: "OperationPendingRecord",
-        id: "witness.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-        createdAt: new Date("2024-08-01T10:36:17.814Z"),
-        recordType: "witness",
-        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
-      },
-    ]);
-    try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
-    } catch (error) {
-      expect((error as Error).message).toBe("Force Exit");
-    }
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "witness.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "witness",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+    await signifyNotificationService.processOperation(
+      operationRecord,
+      callback
+    );
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
       "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
       {
@@ -921,20 +912,17 @@ describe("Long running operation tracker", () => {
       createdAt: new Date(),
     };
     connectionStorage.findById.mockResolvedValueOnce(connectionMock);
-    operationPendingGetAllMock.mockResolvedValueOnce([
-      {
-        type: "OperationPendingRecord",
-        id: "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-        createdAt: new Date("2024-08-01T10:36:17.814Z"),
-        recordType: "oobi",
-        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
-      },
-    ]);
-    try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
-    } catch (error) {
-      expect((error as Error).message).toBe("Force Exit");
-    }
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "oobi.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "oobi",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+    await signifyNotificationService.processOperation(
+      operationRecord,
+      callback
+    );
     expect(connectionStorage.update).toBeCalledWith({
       id: connectionMock.id,
       pending: false,
@@ -946,15 +934,6 @@ describe("Long running operation tracker", () => {
 
   test("Should handle long operations with type exchange.receivecredential", async () => {
     const callback = jest.fn();
-    operationPendingGetAllMock.mockResolvedValueOnce([
-      {
-        type: "OperationPendingRecord",
-        id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-        createdAt: new Date("2024-08-01T10:36:17.814Z"),
-        recordType: "exchange.receivecredential",
-        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
-      },
-    ]);
     const credentialIdMock = "credentialId";
     signifyClient
       .exchanges()
@@ -975,53 +954,17 @@ describe("Long running operation tracker", () => {
           },
         },
       });
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      type: "IdentifierMetadataRecord",
-      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
-      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
-      {
-        _tags: {
-          route: "/exn/ipex/grant",
-          read: false,
-          grantSaid: "EC5N3brbT8U0mMlWemYpRBnSYVpX00QPfK2ugYx-0isg",
-        },
-        type: "NotificationRecord",
-        id: "AAVU53pb7_zTiRP9VHro0qr52cJC_S_bXCZ8GXUXok-n",
-        createdAt: "2024-08-16T03:21:44.387Z",
-        a: {
-          r: "/exn/ipex/grant",
-          d: "EC5N3brbT8U0mMlWemYpRBnSYVpX00QPfK2ugYx-0isg",
-          m: "",
-        },
-        route: "/exn/ipex/grant",
-        read: false,
-        connectionId: "EBRg2Ur0JYi92jP0r0ZEO385sWr_8KNMqRIsv9s2JUFI",
-        linkedGroupRequests: {
-          "EIzCD7k_SlEWubN5RL_Xxg1FucTYiOKpCE-OAlQm8VkT": true,
-        },
-        grantSaid: "EC5N3brbT8U0mMlWemYpRBnSYVpX00QPfK2ugYx-0isg",
-        updatedAt: "2024-08-16T03:21:57.455Z",
-      },
-    ]);
-
-    await signifyNotificationService.deleteNotificationRecordById(
-      "AAVU53pb7_zTiRP9VHro0qr52cJC_S_bXCZ8GXUXok-n",
-      NotificationRoute.ExnIpexGrant
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "exchange.receivecredential",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+    await signifyNotificationService.processOperation(
+      operationRecord,
+      callback
     );
-
-    try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
-    } catch (error) {
-      expect((error as Error).message).toBe("Force Exit");
-    }
     expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
       credentialIdMock,
       CredentialStatus.CONFIRMED
@@ -1032,15 +975,6 @@ describe("Long running operation tracker", () => {
   test("Should handle long operations with type exchange.revokecredential", async () => {
     const callback = jest.fn();
     const credentialIdMock = "credentialId";
-    operationPendingGetAllMock.mockResolvedValue([
-      {
-        type: "OperationPendingRecord",
-        id: "exchange.revokecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-        createdAt: new Date("2024-08-01T10:36:17.814Z"),
-        recordType: "exchange.revokecredential",
-        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
-      },
-    ]);
     getCredentialMock.mockResolvedValue({
       id: "id",
       schema: {
@@ -1072,11 +1006,17 @@ describe("Long running operation tracker", () => {
         },
       })
       .mockResolvedValueOnce(grantExchange);
-    try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
-    } catch (error) {
-      expect((error as Error).message).toBe("Force Exit");
-    }
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "exchange.revokecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "exchange.revokecredential",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+    await signifyNotificationService.processOperation(
+      operationRecord,
+      callback
+    );
     expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
       credentialIdMock,
       CredentialStatus.REVOKED
@@ -1091,15 +1031,6 @@ describe("Long running operation tracker", () => {
   test("Should not markAcdc if the credentialMetadata's status is revoked", async () => {
     const callback = jest.fn();
     const credentialIdMock = "credentialId";
-    operationPendingGetAllMock.mockResolvedValue([
-      {
-        type: "OperationPendingRecord",
-        id: "exchange.revokecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-        createdAt: new Date("2024-08-01T10:36:17.814Z"),
-        recordType: "exchange.revokecredential",
-        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
-      },
-    ]);
     getCredentialMock.mockResolvedValue({
       id: "id",
       schema: {
@@ -1131,11 +1062,17 @@ describe("Long running operation tracker", () => {
           },
         },
       });
-    try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
-    } catch (error) {
-      expect((error as Error).message).toBe("Force Exit");
-    }
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "exchange.revokecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "exchange.revokecredential",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+    await signifyNotificationService.processOperation(
+      operationRecord,
+      callback
+    );
     expect(Agent.agent.ipexCommunications.markAcdc).not.toBeCalled();
     expect(
       Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
@@ -1147,15 +1084,6 @@ describe("Long running operation tracker", () => {
   test("Should not markAcdc if the credential.status.s status is not 1", async () => {
     const callback = jest.fn();
     const credentialIdMock = "credentialId";
-    operationPendingGetAllMock.mockResolvedValue([
-      {
-        type: "OperationPendingRecord",
-        id: "exchange.revokecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-        createdAt: new Date("2024-08-01T10:36:17.814Z"),
-        recordType: "exchange.revokecredential",
-        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
-      },
-    ]);
     getCredentialMock.mockResolvedValue({
       id: "id",
       schema: {
@@ -1186,11 +1114,17 @@ describe("Long running operation tracker", () => {
           },
         },
       });
-    try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
-    } catch (error) {
-      expect((error as Error).message).toBe("Force Exit");
-    }
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "exchange.revokecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "exchange.revokecredential",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+    await signifyNotificationService.processOperation(
+      operationRecord,
+      callback
+    );
     expect(Agent.agent.ipexCommunications.markAcdc).not.toBeCalled();
     expect(
       Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
@@ -1213,15 +1147,6 @@ describe("Long running operation tracker", () => {
       },
     };
     operationsGetMock.mockResolvedValue(operationMock);
-    operationPendingGetAllMock.mockResolvedValueOnce([
-      {
-        type: "OperationPendingRecord",
-        id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
-        createdAt: new Date("2024-08-01T10:36:17.814Z"),
-        recordType: "exchange.receivecredential",
-        updatedAt: new Date("2024-08-01T10:36:17.814Z"),
-      },
-    ]);
     const credentialIdMock = "credentialId";
     signifyClient.exchanges().get.mockResolvedValueOnce({
       exn: {
@@ -1233,17 +1158,27 @@ describe("Long running operation tracker", () => {
         },
       },
     });
-    try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
-    } catch (error) {
-      expect((error as Error).message).toBe("Force Exit");
-    }
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "exchange.receivecredential",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+    await signifyNotificationService.processOperation(
+      operationRecord,
+      callback
+    );
     expect(operationsGetMock).toBeCalledTimes(1);
     expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledTimes(0);
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 
   test("Should call setTimeout listening for pending operations if Keria is offline", async () => {
+    // We mock the setTimeout here so we can exit the while(true) loop
+    jest.spyOn(global, "setTimeout").mockImplementation(() => {
+      throw new Error("Force Exit");
+    });
     const callback = jest.fn();
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
     operationPendingGetAllMock.mockResolvedValueOnce([
@@ -1256,7 +1191,7 @@ describe("Long running operation tracker", () => {
       },
     ]);
     try {
-      await signifyNotificationService.onSignifyOperationStateChanged(callback);
+      await signifyNotificationService.pollLongOperationsWithCb(callback);
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }

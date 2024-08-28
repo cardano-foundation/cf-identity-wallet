@@ -307,17 +307,15 @@ describe("Ipex communication service of agent", () => {
 
     await ipexCommunicationService.acceptAcdc(id);
 
-    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
-      expect.objectContaining({
-        connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-        credentialType: "title",
-        id: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
-        isArchived: false,
-        issuanceDate: "2024-07-30T04:19:55.348Z",
-        schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
-        status: "pending",
-      })
-    );
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
+      connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      credentialType: "title",
+      id: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+      isArchived: false,
+      issuanceDate: "2024-07-30T04:19:55.348Z",
+      schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+      status: "pending",
+    });
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
@@ -674,7 +672,7 @@ describe("Ipex communication service of agent", () => {
   test("can get matching credential for apply", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const notiId = "notiId";
-    getExchangeMock = jest.fn().mockResolvedValue({
+    const mockExchange = {
       exn: {
         a: {
           i: "uuid",
@@ -685,9 +683,11 @@ describe("Ipex communication service of agent", () => {
           s: "schemaSaid",
         },
         i: "i",
+        rp: "id",
         e: {},
       },
-    });
+    };
+    getExchangeMock = jest.fn().mockResolvedValue(mockExchange);
     const noti = {
       id: notiId,
       createdAt: new Date("2024-04-29T11:01:04.903Z").toISOString(),
@@ -727,6 +727,12 @@ describe("Ipex communication service of agent", () => {
         fullName: "Mr. John Lucas Smith",
         licenseNumber: "SMITH01192OP",
       },
+    });
+    expect(credentialListMock).toBeCalledWith({
+      filter: expect.objectContaining({
+        "-s": { $eq: mockExchange.exn.a.s },
+        "-a-i": mockExchange.exn.rp,
+      }),
     });
   });
 

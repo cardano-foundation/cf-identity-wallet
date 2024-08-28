@@ -151,6 +151,7 @@ const ipexMessageStorage = jest.mocked({
   createIpexMessageRecord: jest.fn(),
   getIpexMessageMetadataByConnectionId:
     getIpexMessageMetadataByConnectionIdMock,
+  deleteIpexMessageMetadata: jest.fn(),
 });
 
 const connectionService = new ConnectionService(
@@ -371,23 +372,43 @@ describe("Connection service of agent", () => {
   test("can delete conenction by id", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([]);
+    getIpexMessageMetadataByConnectionIdMock.mockResolvedValueOnce([]);
     const connectionId = "connectionId";
     await connectionService.deleteConnectionById(connectionId);
     expect(connectionStorage.deleteById).toBeCalledWith(connectionId);
     // expect(deleteContactMock).toBeCalledWith(connectionId); // it should be uncommented later when deleting on KERIA is re-enabled
   });
 
-  test("Should delete connection's notes when deleting that connection", async () => {
+  test("Should delete connection's notes & history when deleting that connection", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([
-      {
-        id: "uuid",
-        title: "title",
-      },
+    const mockConnectionNote = {
+      id: "uuid",
+      title: "title",
+    };
+    connectionNoteStorage.findAllByQuery = jest
+      .fn()
+      .mockReturnValue([mockConnectionNote]);
+    const mockIpexMessage = {
+      id: "id",
+      credentialType: "rare evo",
+      content: {},
+      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+      createdAt: new Date(),
+      connectionId: "connectionId",
+    };
+    getIpexMessageMetadataByConnectionIdMock.mockResolvedValueOnce([
+      mockIpexMessage,
     ]);
     const connectionId = "connectionId";
     await connectionService.deleteConnectionById(connectionId);
+    expect(connectionNoteStorage.deleteById).toBeCalledWith(
+      mockConnectionNote.id
+    );
     expect(connectionNoteStorage.deleteById).toBeCalledTimes(1);
+    expect(ipexMessageStorage.deleteIpexMessageMetadata).toBeCalledWith(
+      mockIpexMessage.id
+    );
+    expect(ipexMessageStorage.deleteIpexMessageMetadata).toBeCalledTimes(1);
   });
 
   test("can receive keri oobi", async () => {

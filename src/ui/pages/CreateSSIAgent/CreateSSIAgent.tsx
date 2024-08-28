@@ -113,7 +113,7 @@ const CreateSSIAgent = () => {
     ssiAgent.connectUrl &&
     !isValidHttpUrl(ssiAgent.connectUrl);
 
-  const validated = validBootUrl && validConnectUrl && !hasMismatchError;
+  const validated = validBootUrl && validConnectUrl;
 
   const handleClearState = () => {
     dispatch(clearSSIAgent());
@@ -377,7 +377,7 @@ const CreateSSIAgent = () => {
             pageId={pageId}
             primaryButtonText={`${i18n.t("ssiagent.button.validate")}`}
             primaryButtonAction={() => handleValidate()}
-            primaryButtonDisabled={!validated}
+            primaryButtonDisabled={!validated || loading}
           />
         </div>
       </ScrollablePageLayout>
