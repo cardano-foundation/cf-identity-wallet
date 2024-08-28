@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { IonCard, IonItem, IonLabel } from "@ionic/react";
+import { IonCard, IonItem } from "@ionic/react";
 import { ProfileOptionRef, ProfileProps } from "./Profile.types";
 import "./Profile.scss";
 import { i18n } from "../../../../../i18n";
