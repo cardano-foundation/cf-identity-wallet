@@ -208,7 +208,7 @@ class IpexCommunicationService extends AgentService {
     const msg = await this.props.signifyClient.exchanges().get(msgSaid);
     const schemaSaid = msg.exn.a.s;
     const attributes = msg.exn.a.a;
-    const recipient = msg.exn.a.i;
+    const recipient = msg.exn.rp;
     const schemaKeri = await this.props.signifyClient
       .schemas()
       .get(schemaSaid)

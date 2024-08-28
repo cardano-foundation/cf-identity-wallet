@@ -651,6 +651,7 @@ describe("Ipex communication service of agent", () => {
           s: "schemaSaid",
         },
         i: "i",
+        rp: "id",
         e: {},
       },
     };
@@ -698,7 +699,7 @@ describe("Ipex communication service of agent", () => {
     expect(credentialListMock).toBeCalledWith({
       filter: expect.objectContaining({
         "-s": { $eq: mockExchange.exn.a.s },
-        "-a-i": mockExchange.exn.a.i,
+        "-a-i": mockExchange.exn.rp,
       }),
     });
   });
