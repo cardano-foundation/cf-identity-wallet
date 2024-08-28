@@ -44,7 +44,7 @@ class Agent {
     await signifyReady();
     let bran;
     let issuerBran;
-    const bransFilePath = "../../brans-data/brans.json";
+    const bransFilePath = "./data/brans.json";
     const dirPath = path.dirname(bransFilePath);
     if (!existsSync(dirPath)) {
       mkdirSync(dirPath, { recursive: true })
