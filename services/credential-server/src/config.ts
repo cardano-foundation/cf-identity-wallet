@@ -24,6 +24,7 @@ const config = {
     resolveOobi: "/resolveOobi",
     requestDisclosure: "/requestDisclosure",
     revokeCredential: "/revokeCredential",
+    deleteContact: "/deleteContact",
   },
 };
 

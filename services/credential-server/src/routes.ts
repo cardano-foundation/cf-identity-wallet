@@ -5,7 +5,7 @@ import { keriOobiApi } from "./apis/invitation.api";
 import { requestDisclosure, issueAcdcCredential, revokeCredential } from "./apis/credential.api";
 import { createShortenUrl, getFullUrl } from "./apis/shorten.api";
 import { schemaApi } from "./apis/schema.api";
-import { contactList } from "./apis/contact.api";
+import { contactList, deleteContact } from "./apis/contact.api";
 import { resolveOobi } from "./apis/oobi.api";
 
 const router = express.Router();
@@ -19,5 +19,6 @@ router.post(config.path.resolveOobi, resolveOobi);
 router.get(config.path.contacts, contactList);
 router.post(config.path.requestDisclosure, requestDisclosure);
 router.post(config.path.revokeCredential, revokeCredential);
+router.delete(config.path.deleteContact, deleteContact);
 
 export default router;

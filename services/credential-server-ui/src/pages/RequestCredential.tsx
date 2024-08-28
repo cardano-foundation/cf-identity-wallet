@@ -1,5 +1,6 @@
 import {
   Alert,
+  Autocomplete,
   Box,
   Button,
   FormControl,
@@ -118,22 +119,16 @@ function RequestCredential() {
                 name="selectedContact"
                 control={control}
                 render={({ field }) => (
-                  <Select
-                    labelId="selectedContact"
-                    label="Established Connections"
+                  <Autocomplete
                     {...field}
                     {...register(`selectedContact`, {
                       required: true,
                     })}
-                  >
-                    {contacts.map((contact: any, index) => (
-                      <MenuItem key={index} value={contact.id}>
-                        {UUID_REGEX.test(contact.alias)
-                          ? contact.id
-                          : `${contact.alias} (${contact.id})`}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                    getOptionLabel={(option) => UUID_REGEX.test(option.alias) ? option.id : `${option.alias} (${option.id})` }
+                    options={contacts || []}
+                    renderInput={(params) => <TextField {...params} label="Search by connection name or ID" />}
+                    onChange={(_event, data) => field.onChange(data?.id || null)}
+                  />
                 )}
               />
             </FormControl>

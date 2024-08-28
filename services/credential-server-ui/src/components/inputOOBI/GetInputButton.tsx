@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Alert, Box, Button, Container, Grid, TextField } from "@mui/material";
 import { resolveOobi } from "../../services/resolve-oobi";
 
-interface GetInputButtonProps {}
+interface GetInputButtonProps {
+  handleGetContacts: Function
+}
 
-const GetInputButton: React.FC<GetInputButtonProps> = () => {
+const GetInputButton: React.FC<GetInputButtonProps> = ({...props}) => {
   const [showInput, setShowInput] = useState(false);
   const [oobi, setOobi] = useState("");
   const [isAtendeeOobiEmptyVisible, setIsAtendeeOobiEmptyVisible] =
@@ -20,6 +22,7 @@ const GetInputButton: React.FC<GetInputButtonProps> = () => {
       setIsAtendeeOobiEmptyVisible(false);
     }
     await resolveOobi(oobi);
+    await props.handleGetContacts();
     setSubmitSuccess(true);
   };
 
