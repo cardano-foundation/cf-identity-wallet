@@ -1,9 +1,9 @@
 keri:
   keria:
-    url: "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org"
-    bootUrl: "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org"
+    url: "https://keria.dev.cf-summit-2024.eu-west-1.metadata.dev.cf-deployments.org"
+    bootUrl: "https://keria-boot.dev.cf-summit-2024.eu-west-1.metadata.dev.cf-deployments.org"
   credentials:
     testServer:
-      urlInt: "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org"
+      urlInt: "https://cred-issuance.dev.cf-summit-2024.eu-west-1.metadata.dev.cf-deployments.org"
   backing:
     mode: direct
