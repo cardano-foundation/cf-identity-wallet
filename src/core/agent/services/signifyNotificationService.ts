@@ -485,9 +485,8 @@ class SignifyNotificationService extends AgentService {
         metadata.multisigId = multisigNotification[0].exn?.a?.gid;
       }
     }
-    if (event.a.r === NotificationRoute.ExnIpexGrant) {
-      metadata.linkedGroupRequests = {};
-    }
+
+    metadata.linkedGroupRequests = undefined;
 
     const result = await this.notificationStorage.save(metadata);
     return {

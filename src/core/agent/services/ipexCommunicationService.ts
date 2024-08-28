@@ -84,7 +84,6 @@ class IpexCommunicationService extends AgentService {
     }
 
     if (
-      grantNoteRecord &&
       grantNoteRecord.linkedGroupRequests &&
       Object.keys(grantNoteRecord.linkedGroupRequests).length
     ) {

@@ -159,7 +159,7 @@ interface KeriaNotification {
   a: Record<string, unknown>;
   multisigId?: string;
   connectionId: string;
-  linkedGroupRequests?: Record<string, boolean> | undefined;
+  linkedGroupRequests?: Record<string, boolean>;
   read: boolean;
 }
 
