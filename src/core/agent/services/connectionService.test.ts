@@ -381,25 +381,33 @@ describe("Connection service of agent", () => {
 
   test("Should delete connection's notes & history when deleting that connection", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([
-      {
-        id: "uuid",
-        title: "title",
-      },
-    ]);
+    const mockConnectionNote = {
+      id: "uuid",
+      title: "title",
+    };
+    connectionNoteStorage.findAllByQuery = jest
+      .fn()
+      .mockReturnValue([mockConnectionNote]);
+    const mockIpexMessage = {
+      id: "id",
+      credentialType: "rare evo",
+      content: {},
+      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+      createdAt: new Date(),
+      connectionId: "connectionId",
+    };
     getIpexMessageMetadataByConnectionIdMock.mockResolvedValueOnce([
-      {
-        id: "id",
-        credentialType: "rare evo",
-        content: {},
-        historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-        createdAt: new Date(),
-        connectionId: "connectionId",
-      },
+      mockIpexMessage,
     ]);
     const connectionId = "connectionId";
     await connectionService.deleteConnectionById(connectionId);
+    expect(connectionNoteStorage.deleteById).toBeCalledWith(
+      mockConnectionNote.id
+    );
     expect(connectionNoteStorage.deleteById).toBeCalledTimes(1);
+    expect(ipexMessageStorage.deleteIpexMessageMetadata).toBeCalledWith(
+      mockIpexMessage.id
+    );
     expect(ipexMessageStorage.deleteIpexMessageMetadata).toBeCalledTimes(1);
   });
 
