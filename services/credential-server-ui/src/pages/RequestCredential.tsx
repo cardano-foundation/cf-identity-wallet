@@ -112,9 +112,6 @@ function RequestCredential() {
         <Grid container spacing={2} justifyContent="center">
           <Grid item xs={10}>
             <FormControl fullWidth>
-              <InputLabel id="selectedContact">
-                Established Connections
-              </InputLabel>
               <Controller
                 name="selectedContact"
                 control={control}

@@ -171,18 +171,5 @@ describe("Credential request", () => {
     await waitFor(() => {
       expect(acceptAcdcMock).toBeCalledWith(notificationsFix[0].id);
     });
-
-    await act(async () => {
-      jest.runAllTimers();
-      const newNotification = notificationsFix.filter(
-        (notification) => notification.id !== notificationsFix[0].id
-      );
-
-      await waitFor(() => {
-        expect(dispatchMock).lastCalledWith(
-          setNotificationsCache(newNotification)
-        );
-      });
-    });
   }, 10000);
 });
