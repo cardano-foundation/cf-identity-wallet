@@ -96,9 +96,6 @@ describe("Scan Tab", () => {
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
       },
-      connectionsCache: {
-        multisigLinkContactsCache: {},
-      },
     };
 
     const storeMocked = {
@@ -145,9 +142,6 @@ describe("Scan Tab", () => {
         },
         currentOperation: OperationType.SCAN_CONNECTION,
       },
-      connectionsCache: {
-        multisigLinkContactsCache: {},
-      },
     };
 
     const storeMocked = {
@@ -179,9 +173,6 @@ describe("Scan Tab", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.RECEIVE_CONNECTION,
-      },
-      connectionsCache: {
-        multisigLinkContactsCache: {},
       },
     };
 

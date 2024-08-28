@@ -72,9 +72,6 @@ describe("Full page scanner", () => {
       },
       currentOperation: OperationType.SCAN_WALLET_CONNECTION,
     },
-    connectionsCache: {
-      multisigLinkContactsCache: {},
-    },
   };
 
   const dispatchMock = jest.fn();
@@ -113,9 +110,6 @@ describe("Full page scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
-      },
-      connectionsCache: {
-        multisigLinkContactsCache: {},
       },
     };
 
@@ -159,9 +153,6 @@ describe("Full page scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
-      },
-      connectionsCache: {
-        multisigLinkContactsCache: {},
       },
     };
 

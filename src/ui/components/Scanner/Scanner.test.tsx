@@ -6,7 +6,6 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import EN_Translation from "../../../locales/en/en.json";
-import { setMultisigLinkContactsCache } from "../../../store/reducers/connectionsCache";
 import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
@@ -96,9 +95,6 @@ describe("Scanner", () => {
         passwordIsSet: false,
       },
       currentOperation: OperationType.SCAN_WALLET_CONNECTION,
-    },
-    connectionsCache: {
-      multisigLinkContactsCache: {},
     },
   };
 
@@ -246,9 +242,6 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
-      connectionsCache: {
-        multisigLinkContactsCache: {},
-      },
     };
 
     getMultisigLinkedContactsMock.mockReturnValue(connectionsFix);
@@ -323,9 +316,6 @@ describe("Scanner", () => {
       identifiersCache: {
         identifiers: [],
       },
-      connectionsCache: {
-        multisigLinkContactsCache: {},
-      },
     };
 
     const storeMocked = {
@@ -375,11 +365,6 @@ describe("Scanner", () => {
       expect(handleReset).toBeCalled();
       expect(getMultisigLinkedContactsMock).toBeCalledWith("72e2f089cef6");
       expect(dispatchMock).toBeCalledWith(
-        setMultisigLinkContactsCache({
-          "72e2f089cef6": [connectionsFix[0]],
-        })
-      );
-      expect(dispatchMock).toBeCalledWith(
         setMultiSigGroupCache({
           groupId: "72e2f089cef6",
           connections: [connectionsFix[0]],
@@ -402,9 +387,6 @@ describe("Scanner", () => {
       },
       identifiersCache: {
         identifiers: [],
-      },
-      connectionsCache: {
-        multisigLinkContactsCache: {},
       },
     };
 
@@ -439,9 +421,6 @@ describe("Scanner", () => {
       },
       identifiersCache: {
         identifiers: [],
-      },
-      connectionsCache: {
-        multisigLinkContactsCache: {},
       },
     };
 
@@ -503,9 +482,6 @@ describe("Scanner", () => {
       },
       identifiersCache: {
         identifiers: [],
-      },
-      connectionsCache: {
-        multisigLinkContactsCache: {},
       },
     };
 

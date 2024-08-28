@@ -139,7 +139,6 @@ describe("Notifications cache", () => {
       connectionsCache: {
         connections: {},
         multisigConnections: {},
-        multisigLinkContactsCache: {},
       },
       walletConnectionsCache: {
         walletConnections: [],

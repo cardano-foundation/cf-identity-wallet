@@ -65,7 +65,6 @@ describe("getBackRoute", () => {
       connectionsCache: {
         connections: {},
         multisigConnections: {},
-        multisigLinkContactsCache: {},
       },
       walletConnectionsCache: {
         walletConnections: [],
@@ -204,7 +203,6 @@ describe("getPreviousRoute", () => {
       connectionsCache: {
         connections: {},
         multisigConnections: {},
-        multisigLinkContactsCache: {},
       },
       walletConnectionsCache: {
         walletConnections: [],

@@ -3,11 +3,9 @@ import {
   connectionsCacheSlice,
   getConnectionsCache,
   getMultisigConnectionsCache,
-  getMultisigLinkContactsCache,
   removeConnectionCache,
   setConnectionsCache,
   setMultisigConnectionsCache,
-  setMultisigLinkContactsCache,
   updateOrAddConnectionCache,
 } from "./connectionsCache";
 import { RootState } from "../../index";
@@ -17,7 +15,6 @@ import { ConnectionStatus } from "../../../core/agent/agent.types";
 const initialState = {
   connections: {},
   multisigConnections: {},
-  multisigLinkContactsCache: {},
 };
 
 const multisigConnection: ConnectionShortDetails = {
@@ -73,15 +70,6 @@ describe("connectionsCacheSlice", () => {
 
     expect(newState.connections).toEqual({});
   });
-
-  it("should handle setMultisigLinkContactsCache", () => {
-    const newState = connectionsCacheSlice.reducer(
-      initialState,
-      setMultisigLinkContactsCache({ testGroupId: [] })
-    );
-
-    expect(newState.multisigLinkContactsCache).toEqual({ testGroupId: [] });
-  });
 });
 
 describe("getConnectionsCache", () => {
@@ -109,28 +97,6 @@ describe("getConnectionsCache", () => {
     const connectionsCache = getConnectionsCache(state);
     expect(connectionsCache).toEqual(state.connectionsCache.connections);
   });
-});
-
-it("should return the connections cache from RootState", () => {
-  const state = {
-    connectionsCache: {
-      multisigLinkContactsCache: {
-        testGroupId: [
-          {
-            id: "did:example:ebfeb1ebc6f1c276ef71212ec22",
-            label: "Passport Office",
-            connectionDate: "2017-08-13T19:23:24Z",
-            logo: "logo.png",
-            status: "confirmed",
-          },
-        ],
-      },
-    },
-  } as unknown as RootState;
-  const connectionsCache = getMultisigLinkContactsCache(state);
-  expect(connectionsCache).toEqual(
-    state.connectionsCache.multisigLinkContactsCache
-  );
 });
 
 describe("multisigConnectionsCacheSlice", () => {

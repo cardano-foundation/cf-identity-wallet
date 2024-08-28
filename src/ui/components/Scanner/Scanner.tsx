@@ -16,11 +16,7 @@ import { Agent } from "../../../core/agent/agent";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getMultisigLinkContactsCache,
-  setMultisigLinkContactsCache,
-  updateOrAddMultisigConnectionCache,
-} from "../../../store/reducers/connectionsCache";
+import { updateOrAddMultisigConnectionCache } from "../../../store/reducers/connectionsCache";
 import {
   getMultiSigGroupCache,
   setMultiSigGroupCache,
@@ -51,9 +47,6 @@ const Scanner = forwardRef(
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
     const currentOperation = useAppSelector(getCurrentOperation);
     const currentToastMsg = useAppSelector(getToastMsg);
-    const multisigLinkContactsCache = useAppSelector(
-      getMultisigLinkContactsCache
-    );
     const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
       useState(false);
     const [pasteModalIsOpen, setPasteModalIsOpen] = useState(false);
@@ -116,16 +109,9 @@ const Scanner = forwardRef(
     };
 
     const updateConnections = async (groupId: string) => {
-      if (multisigLinkContactsCache?.[groupId]) {
-        dispatch(
-          setMultiSigGroupCache({
-            groupId,
-            connections: multisigLinkContactsCache[groupId],
-          })
-        );
-        return;
-      }
-
+      // TODO: We should avoid calling getMultisigLinkedContacts every time we scan a QR code,
+      // ideally once the OOBI is resolved we can insert the connection details into Redux -
+      // should change when we do scanner error handling
       const connections =
         await Agent.agent.connections.getMultisigLinkedContacts(groupId);
 
@@ -134,12 +120,6 @@ const Scanner = forwardRef(
         connections,
       };
 
-      const newMultisigLinkContactsCache = {
-        ...multisigLinkContactsCache,
-        [groupId]: connections,
-      };
-
-      dispatch(setMultisigLinkContactsCache(newMultisigLinkContactsCache));
       dispatch(setMultiSigGroupCache(newMultiSigGroup));
     };
 
