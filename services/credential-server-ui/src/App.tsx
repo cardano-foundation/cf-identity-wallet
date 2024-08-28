@@ -13,8 +13,8 @@ import { RequestCredential } from "./pages/RequestCredential";
 export const MENU_ITEMS = [
   {
     key: "connections",
-    label: "Connection",
-    path: "/connection",
+    label: "Connections",
+    path: "/connections",
     component: <ConnectionPage />,
   },
   {
@@ -38,25 +38,30 @@ function App() {
         <CssBaseline />
         <NavBar />
         <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
-          <Paper
-            variant="outlined"
-            sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
-          >
-            <Routes>
-              <Route path="/" element={<ConnectionPage />} />
-              <Route
-                path="/connections-issuer"
-                element={<ConnectionsIssuer />}
-              />
-              {MENU_ITEMS.map((item) => (
+          <Routes>
+            <Route path="/" element={
+              <ConnectionPage />} />
+            <Route
+              path="/connections-issuer"
+              element={<ConnectionsIssuer />}
+            />
+            {MENU_ITEMS.map((item) => (
+              item.path === "/connections" ?
                 <Route
                   key={item.key}
                   path={item.path}
-                  element={item.component}
+                  element={ item.component }
+                /> : <Route
+                  key={item.key}
+                  path={item.path}
+                  element={<Paper
+                    variant="outlined"
+                    sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
+                  >{item.component}</Paper>}
                 />
-              ))}
-            </Routes>
-          </Paper>
+            ))}
+          </Routes>
+
         </Container>
       </LocalizationProvider>
     </div>

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Agent } from "../agent";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
@@ -6,7 +6,7 @@ import { SCHEMA_ACDC } from "../utils/schemas/schemaAcdc";
 import { log } from "../log";
 import { SignifyApi } from "../modules/signify";
 
-async function issueAcdcCredential(req: Request, res: Response): Promise<void> {
+async function issueAcdcCredential(req: Request, res: Response, next: NextFunction): Promise<void> {
   const { schemaSaid, aid, attribute } = req.body;
   if (!SCHEMA_ACDC[schemaSaid]) {
     const response: ResponseData<string> = {
@@ -25,7 +25,7 @@ async function issueAcdcCredential(req: Request, res: Response): Promise<void> {
   httpResponse(res, response);
 }
 
-async function requestDisclosure(req: Request, res: Response): Promise<void> {
+async function requestDisclosure(req: Request, res: Response, next: NextFunction): Promise<void> {
   const { schemaSaid, aid, attributes } = req.body;
   await Agent.agent.requestDisclosure(schemaSaid, aid, attributes);
   const response: ResponseData<string> = {
