@@ -83,10 +83,7 @@ class IpexCommunicationService extends AgentService {
       );
     }
 
-    if (
-      grantNoteRecord.linkedGroupRequests &&
-      Object.keys(grantNoteRecord.linkedGroupRequests).length
-    ) {
+    if (Object.keys(grantNoteRecord.linkedGroupRequests).length) {
       for (const said of Object.keys(grantNoteRecord.linkedGroupRequests)) {
         if (!grantNoteRecord.linkedGroupRequests[said]) {
           await this.acceptAcdcFromMultisigExn(said as string);

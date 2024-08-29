@@ -248,8 +248,7 @@ const operationPendingGetAllMock = jest.fn();
 const operationPendingStorage = jest.mocked({
   save: jest.fn(),
   delete: jest.fn(),
-  deleteById: jest.fn(),
-  update: jest.fn(),
+  deleteById: jest.fn((id: string) => Promise.resolve(id)),
   findById: jest.fn(),
   findAllByQuery: jest.fn(),
   getAll: operationPendingGetAllMock,
@@ -862,24 +861,23 @@ describe("Signify notification service of agent", () => {
     }
     expect(markNotificationMock).toBeCalledTimes(1);
   });
-  test("Should skip if notification route is /multisig/exn when haven't accepted", async () => {
+
+  test("Original grant is linked to first received /multisig/exn admit message, and no notification record is created", async () => {
     const callback = jest.fn();
     Agent.agent.identifiers.getIdentifier = jest
       .fn()
       .mockResolvedValueOnce(identifierMetadataRecordProps);
 
-    const notes = [
-      {
-        i: "string",
-        dt: "string",
-        r: false,
-        a: {
-          r: "/multisig/exn",
-          d: "string",
-          m: "",
-        },
+    const notif = {
+      i: "string",
+      dt: "string",
+      r: false,
+      a: {
+        r: "/multisig/exn",
+        d: "string",
+        m: "",
       },
-    ];
+    };
 
     exchangesGetMock
       .mockResolvedValueOnce({
@@ -933,35 +931,50 @@ describe("Signify notification service of agent", () => {
         },
         route: "/exn/ipex/grant",
         read: true,
+        linkedGroupRequests: {},
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
         updatedAt: new Date(),
       },
     ]);
 
-    for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
-    }
-    expect(notificationStorage.update).toBeCalledTimes(1);
+    await signifyNotificationService.processNotification(notif, callback);
+
+    expect(notificationStorage.update).toBeCalledWith({
+      type: "NotificationRecord",
+      id: "id",
+      createdAt: new Date(),
+      a: {
+        r: "/exn/ipex/grant",
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: "/exn/ipex/grant",
+      read: true,
+      linkedGroupRequests: {
+        "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO": false,
+      },
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+      updatedAt: new Date(),
+    });
     expect(markNotificationMock).toBeCalledTimes(1);
+    expect(notificationStorage.save).toBeCalledTimes(0);
   });
-  test("Should skip if notification route is /multisig/exn when already admit previous ones", async () => {
+
+  test("Auto-joins /multisig/exn admit message and links to grant if we have joined a previous admit message, and no notification record is created", async () => {
     const callback = jest.fn();
     Agent.agent.identifiers.getIdentifier = jest
       .fn()
       .mockResolvedValueOnce(identifierMetadataRecordProps);
 
-    const notes = [
-      {
-        i: "string",
-        dt: "string",
-        r: false,
-        a: {
-          r: "/multisig/exn",
-          d: "string",
-          m: "",
-        },
+    const noti = {
+      i: "string",
+      dt: "string",
+      r: false,
+      a: {
+        r: "/multisig/exn",
+        d: "string",
+        m: "",
       },
-    ];
+    };
 
     exchangesGetMock
       .mockResolvedValueOnce({
@@ -1023,14 +1036,30 @@ describe("Signify notification service of agent", () => {
       },
     ]);
 
-    for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
-    }
+    await signifyNotificationService.processNotification(noti, callback);
+
     expect(
       Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn
-    ).toBeCalledTimes(1);
-    expect(notificationStorage.update).toBeCalledTimes(1);
+    ).toBeCalledWith("ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO");
+    expect(notificationStorage.update).toBeCalledWith({
+      type: "NotificationRecord",
+      id: "id",
+      createdAt: new Date(),
+      a: {
+        r: "/exn/ipex/grant",
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: "/exn/ipex/grant",
+      read: true,
+      linkedGroupRequests: {
+        "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO": true,
+        "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": true,
+      },
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+      updatedAt: new Date(),
+    });
     expect(markNotificationMock).toBeCalledTimes(1);
+    expect(notificationStorage.save).toBeCalledTimes(0);
   });
 });
 
@@ -1201,7 +1230,7 @@ describe("Long running operation tracker", () => {
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 
-  test("Should handle delete multisig notification with type exchange.receivecredential", async () => {
+  test("Should delete original grant notification when multi-sig admit operation completes", async () => {
     const callback = jest.fn();
     const credentialIdMock = "credentialId";
     signifyClient
@@ -1269,7 +1298,7 @@ describe("Long running operation tracker", () => {
       credentialIdMock,
       CredentialStatus.CONFIRMED
     );
-    expect(notificationStorage.deleteById).toBeCalledTimes(1);
+    expect(notificationStorage.deleteById).toBeCalledWith("id");
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 

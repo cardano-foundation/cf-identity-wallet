@@ -384,7 +384,6 @@ class SignifyNotificationService extends AgentService {
       if (notifications.length) {
         const notificationRecord = notifications[0];
         if (
-          !notificationRecord.linkedGroupRequests ||
           !Object.values(notificationRecord.linkedGroupRequests).includes(true)
         ) {
           notificationRecord.linkedGroupRequests = {
@@ -400,9 +399,9 @@ class SignifyNotificationService extends AgentService {
             [exchange.exn.d]: true,
           };
         }
-        await this.markNotification(notif.i);
         await this.notificationStorage.update(notificationRecord);
       }
+      await this.markNotification(notif.i);
       return;
     }
 
@@ -653,7 +652,8 @@ class SignifyNotificationService extends AgentService {
                     exnSaid: grantExchange.exn.d,
                   });
               for (const notification of notifications) {
-                this.deleteNotificationRecordById(
+                // @TODO: Delete other long running operations in linkedGroupRequests
+                await this.deleteNotificationRecordById(
                   notification.id,
                     notification.a.r as NotificationRoute
                 );
