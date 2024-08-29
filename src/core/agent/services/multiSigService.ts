@@ -1051,7 +1051,7 @@ class MultiSigService extends AgentService {
           "/multisig/exn",
           { gid: gHab["prefix"] },
           gembeds,
-          exchangeMessage.exn.i
+          recp[0]
         );
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
@@ -1083,7 +1083,7 @@ class MultiSigService extends AgentService {
           "/multisig/exn",
           { gid: gHab["prefix"] },
           gembeds,
-          exchangeMessage.exn.i
+          recp[0]
         );
     }
 
