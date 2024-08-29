@@ -225,7 +225,7 @@ describe("App", () => {
           loggedIn: false,
           userName: "",
           time: 0,
-          ssiAgentIsSet: false,
+          ssiAgentIsSet: true,
           recoveryWalletProgress: false,
           loginAttempt: {
             attempts: 0,
