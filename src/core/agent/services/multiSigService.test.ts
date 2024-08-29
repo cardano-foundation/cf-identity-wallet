@@ -2224,7 +2224,9 @@ describe("Multisig sig service of agent", () => {
     };
     getExchangesMock.mockResolvedValueOnce(exchangeMock);
     identifiersMemberMock = jest.fn().mockResolvedValueOnce({
-      signing: [{ ends: { agent: { [keriMetadataRecord.id]: "" } } }],
+      signing: [
+        { ends: { agent: { [keriMetadataRecord.id]: "" } }, aid: "aid" },
+      ],
     });
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce(
       new IdentifierMetadataRecord({
@@ -2274,7 +2276,7 @@ describe("Multisig sig service of agent", () => {
       {
         exn: [admit, atc],
       },
-      exchangeMock.exn.i
+      "aid"
     );
 
     expect(ipexSubmitAdmitMock).toBeCalledWith(
@@ -2282,7 +2284,7 @@ describe("Multisig sig service of agent", () => {
       mockExn,
       mockSigsMes,
       mockDtime,
-      []
+      ["aid"]
     );
   });
 
