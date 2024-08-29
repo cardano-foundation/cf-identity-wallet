@@ -34,6 +34,7 @@ import "./Identifiers.scss";
 import { StartAnimationSource } from "./Identifiers.type";
 import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 import { Agent } from "../../../core/agent/agent";
+import { showError } from "../../utils/error";
 
 const CLEAR_STATE_DELAY = 1000;
 interface AdditionalButtonsProps {
@@ -252,9 +253,12 @@ const Identifiers = () => {
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
       dispatch(setIdentifiersCache(updatedIdentifiers));
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to delete identifier", e);
-      dispatch(setToastMsg(ToastMsgType.DELETE_IDENTIFIER_FAIL));
+      showError(
+        "Unable to delete identifier",
+        e,
+        dispatch,
+        ToastMsgType.DELETE_IDENTIFIER_FAIL
+      );
     }
   };
 
@@ -310,6 +314,7 @@ const Identifiers = () => {
                   name="favs"
                   cardType={CardType.IDENTIFIERS}
                   cardsData={sortedFavIdentifiers}
+                  onShowCardDetails={() => handleShowNavAnimation("favourite")}
                 />
               </div>
             )}
@@ -324,7 +329,7 @@ const Identifiers = () => {
               />
             )}
             {!!multiSigIdentifiers.length && (
-              <div className="identifiers-tab-content-block">
+              <div className="identifiers-tab-content-block multisig-container">
                 <h3>{i18n.t("identifiers.tab.multisigidentifiers")}</h3>
                 <IdentifierCardList
                   cardTypes={CardType.IDENTIFIERS}
@@ -337,7 +342,7 @@ const Identifiers = () => {
               </div>
             )}
             {!!pendingIdentifiers.length && (
-              <div className="identifiers-tab-content-block">
+              <div className="identifiers-tab-content-block pending-container">
                 <ListHeader
                   title={`${i18n.t("identifiers.tab.pendingidentifiers")}`}
                 />

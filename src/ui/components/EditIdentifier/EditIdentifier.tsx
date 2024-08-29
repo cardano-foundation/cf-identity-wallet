@@ -22,6 +22,7 @@ import { PageFooter } from "../PageFooter";
 import { PageHeader } from "../PageHeader";
 import "./EditIdentifier.scss";
 import { EditIdentifierProps } from "./EditIdentifier.types";
+import { showError } from "../../utils/error";
 
 const EditIdentifier = ({
   modalIsOpen,
@@ -100,9 +101,12 @@ const EditIdentifier = ({
       dispatch(setIdentifiersCache(updatedIdentifiers));
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to edit identifier", e);
-      dispatch(setToastMsg(ToastMsgType.UNABLE_EDIT_IDENTIFIER));
+      showError(
+        "Unable to edit identifier",
+        e,
+        dispatch,
+        ToastMsgType.UNABLE_EDIT_IDENTIFIER
+      );
     } finally {
       setLoading(false);
     }

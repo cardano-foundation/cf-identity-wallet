@@ -8,7 +8,7 @@ import {
   clearSeedPhraseCache,
   setSeedPhraseCache,
 } from "../../store/reducers/seedPhraseCache";
-import { DataProps, StoreState } from "./nextRoute.types";
+import { DataProps, NextRoute, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
 import { OperationType } from "../../ui/globals/types";
 
@@ -61,7 +61,6 @@ const getNextCredentialsRoute = () => {
 };
 
 const getNextCredentialDetailsRoute = () => {
-  // @TODO - foconnor: if we close an archived credential, it should return to the archived view.
   const path = TabsRoutePath.CREDENTIALS;
   return { pathname: path };
 };
@@ -184,7 +183,7 @@ const getNextScanRoute = (data: DataProps) => {
     path = previousPath as TabsRoutePath;
   }
 
-  return { pathname: path };
+  return { pathname: path || "" };
 };
 
 const getNextRoute = (
@@ -204,7 +203,7 @@ const getNextRoute = (
   };
 };
 
-const nextRoute: Record<string, any> = {
+const nextRoute: Record<string, NextRoute> = {
   [RoutePath.ROOT]: {
     nextPath: (data: DataProps) => getNextRootRoute(data),
     updateRedux: [],
