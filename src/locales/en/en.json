@@ -646,7 +646,7 @@
   },
   "tabsmenu": {
     "label": {
-      "identifiers": "Identity",
+      "identifiers": "Identifiers",
       "creds": "Credentials",
       "scan": "Scan",
       "notifications": "Notifications",
@@ -769,7 +769,7 @@
   },
   "identifiers": {
     "tab": {
-      "title": "Identity",
+      "title": "Identifiers",
       "create": "Add an identifier",
       "favourites": "Favourites",
       "allidentifiers": "All identifiers",
@@ -1040,8 +1040,8 @@
       "credential": {
         "request": {
           "alert": {
-              "text": "You don’t have any credentials available that match this request. In order to offer this credential you will need to acquire one first.",
-              "confirm": "OK"
+            "text": "You don’t have any credentials available that match this request. In order to offer this credential you will need to acquire one first.",
+            "confirm": "OK"
           },
           "information": {
             "title": "Credential request",
@@ -1068,7 +1068,7 @@
       },
       "identifier": {
         "title": "Identifier request",
-        "subtitle": "Review this group identifier request",
+        "subtitle": "You have received a request to join a group identifier",
         "requestfrom": "Request from",
         "othermembers": "Other members",
         "pending": "Pending",
@@ -1101,7 +1101,13 @@
       "header": "Menu",
       "items": {
         "profile": {
-          "title": "Profile"
+          "title": "Profile",
+          "tabheader": "Profile",
+          "tabedit": "Edit profile",
+          "actionedit": "Edit",
+          "actionconfirm": "Confirm",
+          "actioncancel": "Cancel",
+          "name": "Name"
         },
         "crypto": {
           "title": "Crypto"
