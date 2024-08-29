@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import ConnectionQR from "../components/ConnectionQR";
 import { config } from "../config";
 import { Button, Divider, Grid, Input, Paper, Typography } from "@mui/material";
-import InputOobi from "../components/inputOOBI/InputOobi";
-import GetScannerButton from "../components/inputOOBI/GetScannerButton";
+import { InputOobi } from "../components/inputOOBI/InputOobi";
 import axios from "axios";
 import { Contact } from "../types.types";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -52,18 +51,17 @@ const ConnectionPage: React.FC = () => {
                 <ConnectionQR
                   name=""
                   url={`${config.endpoint}${config.path.keriOobi}`}
-                  onNextStep={() => setStep(1) }
+                  onNextStep={() => setStep(1)}
                 />
               </>
             }
             {
-              step !== 0 &&
+              step === 1 &&
               <>
                 <Divider />
-                <GetScannerButton onBack={ () => setStep(0) }/>
-                <Divider />
-                <InputOobi handleGetContacts={() => handleGetContacts()} />
-                <Divider />
+                <InputOobi
+                  backToFirstStep={() => setStep(0)}
+                  handleGetContacts={() => handleGetContacts()} />
               </>
             }
           </Grid>
