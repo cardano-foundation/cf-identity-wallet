@@ -65,23 +65,22 @@ const Onboarding = () => {
     },
   ];
 
-  // @TODO - foconnor: This should be op: OperationType when available (non optional)
-  const handleNavigation = (op?: string) => {
+  const handleNavigation = (isRecoveryMode: boolean) => {
     const data: DataProps = {
       store: { stateCache },
       state: {
-        recoveryWalletProgress: !!op,
+        recoveryWalletProgress: isRecoveryMode,
       },
     };
     const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
 
-    if (op) {
+    if (isRecoveryMode) {
       Agent.agent.basicStorage.createOrUpdateBasicRecord(
         new BasicRecord({
           id: MiscRecordId.APP_RECOVERY_WALLET,
           content: {
-            value: String(!!op),
+            value: String(isRecoveryMode),
           },
         })
       );
@@ -101,12 +100,11 @@ const Onboarding = () => {
       <PageFooter
         pageId={pageId}
         primaryButtonText={`${i18n.t("onboarding.getstarted.button.label")}`}
-        primaryButtonAction={() => handleNavigation()}
+        primaryButtonAction={() => handleNavigation(false)}
         tertiaryButtonText={`${i18n.t(
           "onboarding.alreadywallet.button.label"
         )}`}
-        // TODO: set restore route when available
-        tertiaryButtonAction={() => handleNavigation("#")}
+        tertiaryButtonAction={() => handleNavigation(true)}
       />
     </ResponsivePageLayout>
   );

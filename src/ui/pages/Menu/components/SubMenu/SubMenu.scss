@@ -12,13 +12,10 @@
     transition-duration: 0.5s;
   }
 
-  ion-header ion-toolbar {
+  ion-header.page-header ion-toolbar {
     margin-top: 0.625rem;
-    --background: var(--ion-color-light-grey);
-
-    ion-title.md {
-      margin-left: -3rem;
-    }
+    padding-right: 0;
+    padding-left: 0;
   }
 
   ion-toolbar ion-buttons ion-button.close-button {
@@ -31,10 +28,6 @@
   @media screen and (min-width: 250px) and (max-width: 370px) {
     ion-header ion-toolbar {
       margin-top: 0.531rem;
-
-      ion-title.md {
-        margin-left: -2rem;
-      }
     }
   }
 }

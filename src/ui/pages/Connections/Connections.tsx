@@ -52,6 +52,7 @@ import {
   MappedConnections,
 } from "./Connections.types";
 import { useOnlineStatusEffect } from "../../hooks";
+import { showError } from "../../utils/error";
 
 const Connections = ({
   showConnections,
@@ -118,7 +119,7 @@ const Connections = ({
       setShowConnections(true);
       dispatch(setCurrentOperation(OperationType.IDLE));
     }
-  }, [currentOperation, setShowConnections]);
+  }, [currentOperation, dispatch, setShowConnections]);
 
   const handleNavToCreateKeri = () => {
     setOpenIdentifierMissingAlert(false);
@@ -249,9 +250,12 @@ const Connections = ({
       dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
       dispatch(removeConnectionCache(deletePendingItem.id));
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to delete connection", error);
-      dispatch(setToastMsg(ToastMsgType.DELETE_CONNECTION_FAIL));
+      showError(
+        "Unable to delete connection",
+        error,
+        dispatch,
+        ToastMsgType.DELETE_CONNECTION_FAIL
+      );
     }
   };
 

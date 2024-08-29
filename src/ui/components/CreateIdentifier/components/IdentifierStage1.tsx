@@ -18,6 +18,7 @@ import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { IdentifierStage1BodyInit } from "./IdentifierStage1BodyInit";
 import { IdentifierStage1BodyResume } from "./IdentifierStage1BodyResume";
+import { showError } from "../../../utils/error";
 
 const IdentifierStage1 = ({
   state,
@@ -59,7 +60,7 @@ const IdentifierStage1 = ({
         setOobi(oobiValue);
       }
     } catch (e) {
-      // @TODO - Error handling.
+      showError("Unable to fetch Oobi", e);
     }
   }, [groupId, signifyName, userName]);
 

@@ -23,6 +23,34 @@
     }
   }
 
+  &.favorite-identifier-nav {
+    .identifier-favourite-cards {
+      .card-slider-header {
+        animation: indentifierFavouriteCardHeaderResize 0.25s ease;
+        animation-fill-mode: forwards;
+
+        @keyframes indentifierFavouriteCardHeaderResize {
+          from {
+            opacity: 0;
+            overflow: hidden;
+            height: 1.25rem;
+          }
+          to {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+          }
+        }
+      }
+    }
+
+    .identifier-cards,
+    .multisig-container,
+    .pending-container {
+      display: none;
+    }
+  }
+
   &.cards-identifier-nav {
     .identifier-favourite-cards {
       animation: indentifierFavouriteCardResize 0.25s ease;
@@ -44,18 +72,6 @@
     }
 
     .identifier-cards {
-      .list-header {
-        display: none;
-      }
-    }
-  }
-
-  &.favorite-identifier-nav {
-    .identifier-cards {
-      display: none;
-    }
-
-    .identifier-favourite-cards {
       .list-header {
         animation: indentifierFavouriteCardHeaderResize 0.25s ease;
         animation-fill-mode: forwards;

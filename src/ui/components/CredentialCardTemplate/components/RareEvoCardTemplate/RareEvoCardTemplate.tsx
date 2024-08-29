@@ -9,6 +9,7 @@ import RareEvoBackground from "../../../../../ui/assets/images/rare-evo-bg.jpg";
 import "./RareEvoCardTemplate.scss";
 import { formatShortDate } from "../../../../utils/formatters";
 import { CredentialStatus } from "../../../../../core/agent/services/credentialService.types";
+import { useCardOffsetTop } from "../../../IdentifierCardTemplate";
 
 const RareEvoCardTemplate = ({
   name = "default",
@@ -18,12 +19,16 @@ const RareEvoCardTemplate = ({
   onHandleShowCardDetails,
   pickedCard,
 }: CredentialCardTemplateProps) => {
+  const { getCardOffsetTop, cardRef } = useCardOffsetTop();
   const [alertIsOpen, setAlertIsOpen] = useState(false);
 
   const CredentialCardTemplateStyles = {
     zIndex: index,
     backgroundImage: `url(${RareEvoBackground})`,
     backgroundSize: "cover",
+    transform: pickedCard
+      ? `translateY(${-getCardOffsetTop() * index}px)`
+      : undefined,
   };
 
   const handleCardClick = () => {
@@ -36,6 +41,7 @@ const RareEvoCardTemplate = ({
 
   return (
     <div
+      ref={cardRef}
       key={index}
       data-testid={`rare-card-template${
         index !== undefined ? `-${name}-index-${index}` : ""

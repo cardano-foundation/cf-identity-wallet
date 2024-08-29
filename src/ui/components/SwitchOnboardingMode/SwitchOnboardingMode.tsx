@@ -25,6 +25,8 @@ import {
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { showError } from "../../utils/error";
+import { ToastMsgType } from "../../globals/types";
 
 const SwitchOnboardingMode = ({ mode }: SwitchOnboardingModeProps) => {
   const dispatch = useAppDispatch();
@@ -77,7 +79,7 @@ const SwitchOnboardingMode = ({ mode }: SwitchOnboardingModeProps) => {
       dispatch(setCurrentRoute({ path: nextPath }));
       ionRouter.push(nextPath);
     } catch (e) {
-      //TODO: handle error
+      showError("Unable to switch onboarding mode", e);
     }
   };
 

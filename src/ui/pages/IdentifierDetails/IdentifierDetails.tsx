@@ -1,4 +1,3 @@
-import { useHistory, useParams } from "react-router-dom";
 import {
   IonButton,
   IonIcon,
@@ -6,25 +5,21 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import {
-  shareOutline,
   ellipsisVertical,
-  heartOutline,
   heart,
+  heartOutline,
+  shareOutline,
 } from "ionicons/icons";
 import { useCallback, useState } from "react";
-import { TabsRoutePath } from "../../../routes/paths";
+import { useHistory, useParams } from "react-router-dom";
+import { Agent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
+import { IdentifierDetails as IdentifierDetailsCore } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { getBackRoute } from "../../../routes/backRoute";
-import { updateReduxState } from "../../../store/utils";
+import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getStateCache,
-  setCurrentOperation,
-  setCurrentRoute,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
-import { ShareConnection } from "../../components/ShareConnection";
-import { Alert } from "../../components/Alert";
 import {
   addFavouriteIdentifierCache,
   getFavouritesIdentifiersCache,
@@ -32,26 +27,31 @@ import {
   removeFavouriteIdentifierCache,
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
-import { Agent } from "../../../core/agent/agent";
-import { IdentifierContent } from "./components/IdentifierContent";
+import {
+  getStateCache,
+  setCurrentOperation,
+  setCurrentRoute,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
+import { updateReduxState } from "../../../store/utils";
+import { Alert } from "../../components/Alert";
+import "../../components/CardDetails/CardDetails.scss";
+import { CloudError } from "../../components/CloudError";
+import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
+import { IdentifierOptions } from "../../components/IdentifierOptions";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { PageFooter } from "../../components/PageFooter";
+import { PageHeader } from "../../components/PageHeader";
+import { ShareConnection } from "../../components/ShareConnection";
+import { Verification } from "../../components/Verification";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
-import { IdentifierOptions } from "../../components/IdentifierOptions";
-import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
-import { PageFooter } from "../../components/PageFooter";
-import "../../components/CardDetails/CardDetails.scss";
-import "./IdentifierDetails.scss";
-import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import { PageHeader } from "../../components/PageHeader";
-import { combineClassNames } from "../../utils/style";
-import { IdentifierDetails as IdentifierDetailsCore } from "../../../core/agent/services/identifier.types";
 import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
-import { MiscRecordId } from "../../../core/agent/agent.types";
-import { BasicRecord } from "../../../core/agent/records";
+import { showError } from "../../utils/error";
+import { combineClassNames } from "../../utils/style";
+import { IdentifierContent } from "./components/IdentifierContent";
 import { RotateKeyModal } from "./components/RotateKeyModal";
-import { Verification } from "../../components/Verification";
-import { CloudError } from "../../components/CloudError";
-import { TabLayout } from "../../components/layout/TabLayout";
+import "./IdentifierDetails.scss";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -107,8 +107,7 @@ const IdentifierDetails = () => {
       ) {
         setCloudError(true);
       } else {
-        // eslint-disable-next-line no-console
-        console.error("Unable to get connection details", error);
+        showError("Unable to get connection details", error);
       }
     }
   }, [params.id]);
@@ -158,9 +157,12 @@ const IdentifierDetails = () => {
       }
       handleDone();
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to delete identifier", e);
-      dispatch(setToastMsg(ToastMsgType.DELETE_IDENTIFIER_FAIL));
+      showError(
+        "Unable to delete identifier",
+        e,
+        dispatch,
+        ToastMsgType.DELETE_IDENTIFIER_FAIL
+      );
     }
   };
 
@@ -192,8 +194,7 @@ const IdentifierDetails = () => {
           dispatch(removeFavouriteIdentifierCache(id));
         })
         .catch((e) => {
-          // eslint-disable-next-line no-console
-          console.error("Unable to remove favourite identifier", e);
+          showError("Unable to remove favourite identifier", e);
         });
     } else {
       if (favouritesIdentifiersData.length >= MAX_FAVOURITES) {
@@ -216,8 +217,7 @@ const IdentifierDetails = () => {
           dispatch(addFavouriteIdentifierCache({ id, time: Date.now() }));
         })
         .catch((e) => {
-          // eslint-disable-next-line no-console
-          console.error("Unable to add favourite identifier", e);
+          showError("Unable to add favourite identifier", e);
         });
     }
   };

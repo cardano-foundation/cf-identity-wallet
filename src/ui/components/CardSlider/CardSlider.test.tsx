@@ -1,12 +1,12 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import configureStore from "redux-mock-store";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
 import { identifierFix } from "../../__fixtures__/identifierFix";
+import { shortCredsFix } from "../../__fixtures__/shortCredsFix";
 import { CardType } from "../../globals/types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CardSlider } from "./CardSlider";
-import { shortCredsFix } from "../../__fixtures__/shortCredsFix";
 
 const historyPushMock = jest.fn();
 const createOrUpdateBasicRecordMock = jest.fn();
@@ -26,7 +26,7 @@ jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useHistory: () => ({
     ...jest.requireActual("react-router-dom").useHistory,
-    push: (params: any) => historyPushMock(params),
+    push: (params: unknown) => historyPushMock(params),
   }),
 }));
 
@@ -87,7 +87,9 @@ describe("Card slider", () => {
       );
     });
 
-    expect(historyPushMock).toBeCalled();
+    await waitFor(() => {
+      expect(historyPushMock).toBeCalled();
+    });
   });
 
   test("Click to pagination", async () => {
@@ -120,6 +122,8 @@ describe("Card slider", () => {
       fireEvent.click(getByTestId("keri-card-template-creds-index-1"));
     });
 
-    expect(historyPushMock).toBeCalled();
+    await waitFor(() => {
+      expect(historyPushMock).toBeCalled();
+    });
   });
 });

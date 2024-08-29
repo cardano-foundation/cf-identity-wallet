@@ -9,6 +9,7 @@ import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import { ChooseCredential } from "./ChooseCredential";
 import "./CredentialRequest.scss";
 import { CredentialRequestInformation } from "./CredentialRequestInformation";
+import { showError } from "../../../../utils/error";
 
 const CredentialRequest = ({
   pageId,
@@ -30,7 +31,7 @@ const CredentialRequest = ({
 
       setCredentialRequest(request);
     } catch (e) {
-      // TODO: handle error
+      showError("Unable to get credential request detail", e);
     }
   }, [notificationDetails]);
 
