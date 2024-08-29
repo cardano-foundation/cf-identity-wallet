@@ -2,14 +2,14 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import ENG_trans from "../../../../../../../locales/en/en.json";
-import { TermAndPrivacy } from "./TermAndPrivacy";
+import { TermsAndPrivacy } from "./TermsAndPrivacy";
 import { store } from "../../../../../../../store";
 
 describe("Term and Privacy", () => {
   test("Render and open term modal", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={store}>
-        <TermAndPrivacy />
+        <TermsAndPrivacy />
       </Provider>
     );
 
@@ -20,7 +20,7 @@ describe("Term and Privacy", () => {
     ).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByTestId("term-modal-btn"));
+      fireEvent.click(getByTestId("terms-modal-btn"));
     });
 
     await waitFor(() => {
@@ -31,7 +31,7 @@ describe("Term and Privacy", () => {
   test("Render and open privacy modal", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={store}>
-        <TermAndPrivacy />
+        <TermsAndPrivacy />
       </Provider>
     );
 

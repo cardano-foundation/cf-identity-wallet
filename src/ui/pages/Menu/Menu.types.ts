@@ -44,7 +44,7 @@ enum SubMenuKey {
   Connections,
   ConnectWallet,
   ManagePassword,
-  TermAndPrivacy,
+  TermsAndPrivacy,
   RecoverySeedPhrase,
 }
 

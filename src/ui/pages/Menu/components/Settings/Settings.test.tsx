@@ -397,7 +397,7 @@ describe("Settings page", () => {
     });
 
     await waitFor(() => {
-      expect(switchViewMock).toBeCalledWith(SubMenuKey.TermAndPrivacy);
+      expect(switchViewMock).toBeCalledWith(SubMenuKey.TermsAndPrivacy);
     });
 
     expect(

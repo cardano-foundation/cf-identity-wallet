@@ -57,6 +57,7 @@ import { showError } from "../../utils/error";
 const Connections = ({
   showConnections,
   setShowConnections,
+  selfPaginated,
 }: ConnectionsComponentProps) => {
   const pageId = "connections-tab";
   const history = useHistory();
@@ -259,61 +260,69 @@ const Connections = ({
     }
   };
 
+  const ConnectionsBody = () => {
+    return (
+      <div className="connections-tab-center">
+        <IonContent className="connections-container">
+          <IonGrid>
+            <IonRow>
+              <IonCol size="12">
+                {mappedConnections.map((alphabeticGroup, index) => {
+                  return (
+                    <IonItemGroup
+                      className="connections-list"
+                      key={index}
+                    >
+                      <IonItemDivider id={alphabeticGroup.key}>
+                        <IonLabel>{alphabeticGroup.key}</IonLabel>
+                      </IonItemDivider>
+                      <AlphabeticList
+                        items={Array.from(alphabeticGroup.value)}
+                        handleShowConnectionDetails={
+                          handleShowConnectionDetails
+                        }
+                      />
+                    </IonItemGroup>
+                  );
+                })}
+              </IonCol>
+            </IonRow>
+          </IonGrid>
+        </IonContent>
+        <AlphabetSelector />
+      </div>
+    );
+  };
+
   return (
     <>
-      <SideSlider isOpen={showConnections}>
-        <TabLayout
-          hardwareBackButtonConfig={backHardwareConfig}
-          pageId={pageId}
-          header={true}
-          backButton={true}
-          customClass={showConnections ? "show" : "hide"}
-          backButtonAction={() => setShowConnections(false)}
-          title={`${i18n.t("connections.tab.title")}`}
-          additionalButtons={<AdditionalButtons />}
-          placeholder={
-            showPlaceholder && (
-              <CardsPlaceholder
-                buttonLabel={i18n.t("connections.tab.create")}
-                buttonAction={handleConnectModal}
-                testId={pageId}
-              />
-            )
-          }
-        >
-          {!showPlaceholder && (
-            <div className="connections-tab-center">
-              <IonContent className="connections-container">
-                <IonGrid>
-                  <IonRow>
-                    <IonCol size="12">
-                      {mappedConnections.map((alphabeticGroup, index) => {
-                        return (
-                          <IonItemGroup
-                            className="connections-list"
-                            key={index}
-                          >
-                            <IonItemDivider id={alphabeticGroup.key}>
-                              <IonLabel>{alphabeticGroup.key}</IonLabel>
-                            </IonItemDivider>
-                            <AlphabeticList
-                              items={Array.from(alphabeticGroup.value)}
-                              handleShowConnectionDetails={
-                                handleShowConnectionDetails
-                              }
-                            />
-                          </IonItemGroup>
-                        );
-                      })}
-                    </IonCol>
-                  </IonRow>
-                </IonGrid>
-              </IonContent>
-              <AlphabetSelector />
-            </div>
-          )}
-        </TabLayout>
-      </SideSlider>
+      {selfPaginated ? (
+        <SideSlider isOpen={showConnections}>
+          <TabLayout
+            hardwareBackButtonConfig={backHardwareConfig}
+            pageId={pageId}
+            header={true}
+            backButton={true}
+            customClass={showConnections ? "show" : "hide"}
+            backButtonAction={() => setShowConnections(false)}
+            title={`${i18n.t("connections.tab.title")}`}
+            additionalButtons={<AdditionalButtons />}
+            placeholder={
+              showPlaceholder && (
+                <CardsPlaceholder
+                  buttonLabel={i18n.t("connections.tab.create")}
+                  buttonAction={handleConnectModal}
+                  testId={pageId}
+                />
+              )
+            }
+          >
+            {!showPlaceholder && <ConnectionsBody />}
+          </TabLayout>
+        </SideSlider>
+      ) : (
+        <ConnectionsBody />
+      )}
       <ConnectionsOptionModal
         type={RequestType.CONNECTION}
         connectModalIsOpen={connectModalIsOpen}

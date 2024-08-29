@@ -164,6 +164,7 @@ describe("Connections page", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
+            selfPaginated={true}
           />
         </Provider>
       </MemoryRouter>
@@ -197,6 +198,7 @@ describe("Connections page", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
+            selfPaginated={true}
           />
         </Provider>
       </MemoryRouter>
@@ -218,6 +220,7 @@ describe("Connections page", () => {
         <Connections
           setShowConnections={mockSetShowConnections}
           showConnections={true}
+          selfPaginated={true}
         />
       </Provider>
     );
@@ -276,6 +279,7 @@ describe("Connections page", () => {
         <Connections
           setShowConnections={mockSetShowConnections}
           showConnections={true}
+          selfPaginated={true}
         />
       </Provider>
     );
@@ -534,6 +538,7 @@ describe("Connections page from Credentials tab", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
+            selfPaginated={true}
           />
         </Provider>
       </IonReactMemoryRouter>
@@ -588,6 +593,7 @@ describe("Connections page from Credentials tab", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
+            selfPaginated={true}
           />
         </Provider>
       </MemoryRouter>
