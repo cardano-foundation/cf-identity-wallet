@@ -140,7 +140,9 @@ const App = () => {
             <>
               {renderApp()}
               {!isPublicPage && !authentication.loggedIn ? <LockPage /> : null}
-              {!isOnline ? <AppOffline /> : null}
+              {authentication.ssiAgentIsSet && !isOnline ? (
+                <AppOffline />
+              ) : null}
             </>
           ) : (
             <LoadingPage />

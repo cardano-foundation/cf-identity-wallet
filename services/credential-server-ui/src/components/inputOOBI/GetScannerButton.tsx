@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Container } from "@mui/material";
+import { Box, Button, Container, Typography } from "@mui/material";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import "./qrscanner.css";
 import { resolveOobi } from "../../services/resolve-oobi";
 
-interface GetScannerButtonProps {}
+interface GetScannerButtonProps {
+  onBack: () => void;
+}
 enum ContentType {
   SCANNER = "scanner",
   RESOLVING = "resolving",
   RESOLVED = "resolved",
 }
-const GetScannerButton: React.FC<GetScannerButtonProps> = () => {
+const GetScannerButton: React.FC<GetScannerButtonProps> = ({ onBack }) => {
   const [showInput, setShowInput] = useState(false);
   const [restartCamera, setRestartCamera] = useState(false);
   const [contentType, setContentType] = useState<ContentType>(
     ContentType.SCANNER,
   );
+  const [showScannerBtn, setshowScannerBtn] = useState(true);
 
   useEffect(() => {
     if (showInput) {
@@ -36,8 +39,9 @@ const GetScannerButton: React.FC<GetScannerButtonProps> = () => {
         handleResolveOObi(result);
       };
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      const error = (_: any) => {};
+      const error = (_: any) => { };
       scanner.render(success, error);
+      setshowScannerBtn(false);
     }
   }, [restartCamera, showInput]);
 
@@ -83,15 +87,28 @@ const GetScannerButton: React.FC<GetScannerButtonProps> = () => {
 
   return (
     <Container sx={{ py: 2 }}>
-      <Box sx={{ display: "flex", justifyContent: "right" }} mb={2}>
+      <Box sx={{ display: "flex", justifyContent: "left" }} mb={1}>
         <Button
-          variant="contained"
-          color="primary"
-          onClick={() => setShowInput(true)}
+          variant="text"
+          onClick={() => onBack()}
         >
-          Get Scanner
+          Back
         </Button>
       </Box>
+      <Typography align="center" mb={2}>
+        Now, to connect the server to your identity wallet, please share an identifier connection QR code. This can be accessed directly in the identifier itself (share button), or in the Connections page by clicking the + icon and “Provide a QR Code"
+      </Typography>
+      {showScannerBtn &&
+        <Box sx={{ display: "flex", justifyContent: "center" }} mb={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setShowInput(true)}
+          >
+            Show scanner
+          </Button>
+        </Box>
+      }
       {showInput && (
         <>
           <div className="scannerPage">
