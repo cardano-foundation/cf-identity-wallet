@@ -1,5 +1,6 @@
 import {
   BarcodeScanner,
+  CameraDirection,
   SupportedFormat,
 } from "@capacitor-community/barcode-scanner";
 import {
@@ -40,7 +41,15 @@ import "./Scanner.scss";
 import { ScannerProps } from "./Scanner.types";
 
 const Scanner = forwardRef(
-  ({ routePath, setIsValueCaptured, handleReset }: ScannerProps, ref) => {
+  (
+    {
+      routePath,
+      setIsValueCaptured,
+      handleReset,
+      cameraDirection = CameraDirection.BACK,
+    }: ScannerProps,
+    ref
+  ) => {
     const componentId = "scanner";
     const dispatch = useAppDispatch();
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
@@ -76,6 +85,7 @@ const Scanner = forwardRef(
         ?.classList.remove("hide");
       const result = await BarcodeScanner.startScan({
         targetedFormats: [SupportedFormat.QR_CODE],
+        cameraDirection: cameraDirection,
       });
       return result;
     };
@@ -241,7 +251,7 @@ const Scanner = forwardRef(
       } else {
         stopScan();
       }
-    }, [currentOperation, currentToastMsg, routePath]);
+    }, [currentOperation, currentToastMsg, routePath, cameraDirection]);
 
     const handlePrimaryButtonAction = () => {
       stopScan();
