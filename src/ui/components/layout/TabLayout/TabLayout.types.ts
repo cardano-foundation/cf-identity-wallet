@@ -5,7 +5,6 @@ interface TabLayoutProps {
   pageId?: string;
   customClass?: string;
   header?: boolean;
-  avatar?: ReactNode;
   backButton?: boolean;
   backButtonAction?: () => void;
   title?: string;
