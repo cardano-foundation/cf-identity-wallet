@@ -301,24 +301,6 @@ class IpexCommunicationService extends AgentService {
     };
   }
 
-  private async getNotificationRecordById(
-    id: string
-  ): Promise<KeriaNotification> {
-    const result = await this.notificationStorage.findById(id);
-    if (!result) {
-      throw new Error(
-        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
-      );
-    }
-    return {
-      id: result.id,
-      createdAt: result.createdAt.toISOString(),
-      a: result.a,
-      connectionId: result.connectionId,
-      read: result.read,
-    };
-  }
-
   private async saveAcdcMetadataRecord(
     credentialId: string,
     dateTime: string,
@@ -479,15 +461,15 @@ class IpexCommunicationService extends AgentService {
           status: CredentialStatus.PENDING,
         },
       });
-
-      const pendingOperation = await this.operationPendingStorage.save({
-        id: op.name,
-        recordType: OperationPendingRecordType.ExchangeReceiveCredential,
-      });
-      this.signifyNotificationService.addPendingOperationToQueue(
-        pendingOperation
-      );
     }
+
+    const pendingOperation = await this.operationPendingStorage.save({
+      id: op.name,
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+    this.signifyNotificationService.addPendingOperationToQueue(
+      pendingOperation
+    );
 
     const notifications = await this.notificationStorage.findAllByQuery({
       exnSaid: exn?.exn.e.exn.p,
@@ -495,17 +477,12 @@ class IpexCommunicationService extends AgentService {
 
     if (notifications.length) {
       const notificationRecord = notifications[0];
-      if (
-        notificationRecord.linkedGroupRequests &&
-        Object.keys(notificationRecord.linkedGroupRequests).length
-      ) {
-        notificationRecord.linkedGroupRequests = {
-          ...notificationRecord.linkedGroupRequests,
-          [said]: true,
-        };
+      notificationRecord.linkedGroupRequests = {
+        ...notificationRecord.linkedGroupRequests,
+        [said]: true,
+      };
 
-        await this.notificationStorage.update(notificationRecord);
-      }
+      await this.notificationStorage.update(notificationRecord);
     }
   }
 }

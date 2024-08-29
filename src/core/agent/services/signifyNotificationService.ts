@@ -364,7 +364,6 @@ class SignifyNotificationService extends AgentService {
         await this.markNotification(notif.i);
         return;
       }
-
       const previousExnGrantMsg = await this.props.signifyClient
         .exchanges()
         .get(exchange?.exn.e.exn.p);
@@ -401,9 +400,10 @@ class SignifyNotificationService extends AgentService {
             [exchange.exn.d]: true,
           };
         }
+        await this.markNotification(notif.i);
         await this.notificationStorage.update(notificationRecord);
-        return;
       }
+      return;
     }
 
     if (notif.a.r === NotificationRoute.ExnIpexAgree) {
@@ -485,8 +485,6 @@ class SignifyNotificationService extends AgentService {
         metadata.multisigId = multisigNotification[0].exn?.a?.gid;
       }
     }
-
-    metadata.linkedGroupRequests = undefined;
 
     const result = await this.notificationStorage.save(metadata);
     return {
@@ -646,6 +644,21 @@ class SignifyNotificationService extends AgentService {
             .get(admitExchange.exn.p);
           const credentialId = grantExchange.exn.e.acdc.d;
           if (credentialId) {
+            const holder = await this.identifierStorage.getIdentifierMetadata(
+              admitExchange.exn.i
+            );
+            if (holder.multisigManageAid) {
+              const notifications =
+                  await this.notificationStorage.findAllByQuery({
+                    exnSaid: grantExchange.exn.d,
+                  });
+              for (const notification of notifications) {
+                this.deleteNotificationRecordById(
+                  notification.id,
+                    notification.a.r as NotificationRoute
+                );
+              }
+            }
             await Agent.agent.ipexCommunications.markAcdc(
               credentialId,
               CredentialStatus.CONFIRMED
