@@ -52,6 +52,7 @@ import {
   getIsInitialized,
   getIsOnline,
   setAuthentication,
+  setCameraDirection,
   setCurrentOperation,
   setInitialized,
   setIsOnline,
@@ -71,6 +72,7 @@ import { Alert } from "../Alert";
 import { CardListViewType } from "../SwitchCardView";
 import "./AppWrapper.scss";
 import { useActivityTimer } from "./hooks/useActivityTimer";
+import { CameraDirection } from "@capacitor-community/barcode-scanner";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -357,6 +359,16 @@ const AppWrapper = (props: { children: ReactNode }) => {
     if (favouriteIndex) {
       dispatch(
         setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
+      );
+    }
+
+    const cameraDirection = await Agent.agent.basicStorage.findById(
+      MiscRecordId.CAMERA_DIRECTION
+    );
+
+    if (cameraDirection) {
+      dispatch(
+        setCameraDirection(cameraDirection.content.value as CameraDirection)
       );
     }
 

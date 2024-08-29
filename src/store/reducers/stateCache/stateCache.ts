@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { CameraDirection } from "@capacitor-community/barcode-scanner";
 import { RootState } from "../../index";
 import {
   StateCacheProps,
@@ -134,6 +135,12 @@ const stateCacheSlice = createSlice({
       state.queueIncomingRequest.queues =
         state.queueIncomingRequest.queues.concat(action.payload);
     },
+    setCameraDirection: (
+      state,
+      action: PayloadAction<CameraDirection | undefined>
+    ) => {
+      state.cameraDirection = action.payload;
+    },
   },
 });
 
@@ -154,6 +161,7 @@ const {
   enqueueIncomingRequest,
   setIsOnline,
   setLoginAttempt,
+  setCameraDirection,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -170,6 +178,8 @@ const getQueueIncomingRequest = (state: RootState) =>
 const getIsOnline = (state: RootState) => state.stateCache.isOnline;
 const getLoginAttempt = (state: RootState) =>
   state.stateCache.authentication.loginAttempt;
+const getCameraDirection = (state: RootState) =>
+  state.stateCache.cameraDirection;
 
 export type {
   CurrentRouteCacheProps,
@@ -206,4 +216,6 @@ export {
   setQueueIncomingRequest,
   dequeueIncomingRequest,
   enqueueIncomingRequest,
+  getCameraDirection,
+  setCameraDirection,
 };

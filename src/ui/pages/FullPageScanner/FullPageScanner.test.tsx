@@ -1,13 +1,17 @@
+import { CameraDirection } from "@capacitor-community/barcode-scanner";
 import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { act } from "react-dom/test-utils";
+import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { TabsRoutePath } from "../../../routes/paths";
+import {
+  setCameraDirection,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { OperationType } from "../../globals/types";
 import { FullPageScanner } from "./FullPageScanner";
-import { KeriConnectionType } from "../../../core/agent/agent.types";
-import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
 
 const startScan = jest.fn(
   (args: any) =>
@@ -38,6 +42,16 @@ jest.mock("@capacitor-community/barcode-scanner", () => {
   };
 });
 
+const isNativeMock = jest.fn();
+jest.mock("@capacitor/core", () => {
+  return {
+    ...jest.requireActual("@capacitor/core"),
+    Capacitor: {
+      isNativePlatform: () => isNativeMock(),
+    },
+  };
+});
+
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
@@ -45,7 +59,7 @@ jest.mock("@ionic/react", () => ({
 
 const connectByOobiUrlMock = jest.fn();
 const getMultisigLinkedContactsMock = jest.fn();
-
+const createOrUpdateBasicRecordMock = jest.fn(() => Promise.resolve());
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -54,11 +68,29 @@ jest.mock("../../../core/agent/agent", () => ({
         getMultisigLinkedContacts: (args: any) =>
           getMultisigLinkedContactsMock(args),
       },
+      basicStorage: {
+        createOrUpdateBasicRecord: () => createOrUpdateBasicRecordMock(),
+      },
     },
   },
 }));
 
 describe("Full page scanner", () => {
+  beforeEach(() => {
+    isNativeMock.mockImplementation(() => false);
+    startScan.mockImplementation(() => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            hasContent: true,
+            content:
+              "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+          });
+        }, 100);
+      });
+    });
+  });
+
   const mockStore = configureStore();
 
   const initialState = {
@@ -139,6 +171,62 @@ describe("Full page scanner", () => {
 
     await waitFor(() => {
       expect(setShowScanMock).toBeCalled();
+    });
+  });
+
+  test("Change direction", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    startScan.mockImplementation(() => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            hasContent: true,
+            content:
+              "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+          });
+        }, 10000000);
+      });
+    });
+
+    isNativeMock.mockImplementation(() => true);
+
+    const setShowScanMock = jest.fn();
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <FullPageScanner
+          showScan={true}
+          setShowScan={setShowScanMock}
+        />
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("action-button"));
+    });
+
+    await waitFor(() => {
+      expect(createOrUpdateBasicRecordMock).toBeCalled();
+      expect(dispatchMock).toBeCalledWith(
+        setCameraDirection(CameraDirection.FRONT)
+      );
     });
   });
 
