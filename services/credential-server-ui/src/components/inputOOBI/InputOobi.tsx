@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Button, Container, Grid, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Container, Grid, TextField, Typography } from "@mui/material";
 import { resolveOobi } from "../../services/resolve-oobi";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import "./qrscanner.css";
@@ -147,6 +147,9 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
             fullWidth
             onChange={(e) => setOobi(e.target.value)}
           />
+          {isAtendeeOobiEmptyVisible && (
+            <Alert severity="error">Please, input valid OOBI link</Alert>
+          )}
         </Grid>
       </Grid>}
 
