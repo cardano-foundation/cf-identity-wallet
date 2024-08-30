@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Container, Grid, TextField, Typography } from "@mui/material";
+import { Box, Button, Container, Grid, TextField, Typography } from "@mui/material";
 import { resolveOobi } from "../../services/resolve-oobi";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import "./qrscanner.css";
@@ -19,17 +19,17 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
   const [oobi, setOobi] = useState("");
   const [isAtendeeOobiEmptyVisible, setIsAtendeeOobiEmptyVisible] =
     useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
   const [restartCamera, setRestartCamera] = useState(false);
   const [contentType, setContentType] = useState<ContentType>(
     ContentType.SCANNER,
   );
   const [canReset, setCanReset] = useState(false);
+  const [showInput, setShowInput] = useState(false);
   let isCameraRendered = false;
 
   const elementRef = useRef(null);
   useEffect(() => {
-    if (elementRef.current && !isCameraRendered) {
+    if (elementRef.current && !isCameraRendered && showInput) {
       isCameraRendered = true;
       const scanner = new Html5QrcodeScanner(
         "reader",
@@ -51,10 +51,9 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
       const error = (_: any) => { };
       scanner.render(success, error);
     }
-  }, [restartCamera, elementRef.current]);
+  }, [restartCamera, elementRef.current, showInput]);
 
   const handleSubmit = async () => {
-    setSubmitSuccess(false);
     if (oobi === "" || !oobi.includes("oobi")) {
       setIsAtendeeOobiEmptyVisible(true);
       return;
@@ -65,11 +64,11 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
     setContentType(ContentType.RESOLVED);
     setCanReset(true);
     await handleGetContacts();
-    setSubmitSuccess(true);
   };
 
   const restartScanner = async () => {
     isCameraRendered = false;
+    setShowInput(false);
     setRestartCamera(!restartCamera);
     setContentType(ContentType.SCANNER);
   };
@@ -116,18 +115,28 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
 
   return (
     <Container sx={{ py: 2 }}>
-
       <Typography align="center" mb={2}>
         Now, to connect the server to your identity wallet, please share an identifier connection QR code. This can be accessed directly in the identifier itself (share button), or in the Connections page by clicking the + icon and “Provide a QR Code"
       </Typography>
-      <>
-        <div className="scannerPage">
-          <div>
-            <h3 className="">{content?.title}</h3>
+      <div className="scannerPage">
+        <div>
+          <h3 className="">{content?.title}</h3>
+          {!showInput &&
+            <Box sx={{ display: "flex", justifyContent: "center" }} mb={2}>
+              <Button
+                sx={{ minHeight: '200px', minWidth: '230px' }}
+                variant="outlined"
+                color="primary"
+                onClick={() => setShowInput(true)}
+              >
+                Start Scanner
+              </Button>
+            </Box>}
+          {showInput && (<>
             {content?.component}
-          </div>
+          </>)}
         </div>
-      </>
+      </div>
 
       {!canReset && <Grid container xs={12} justifyContent={"center"}>
         <Grid item xs={12} md={6} mb={2} sx={{ my: 2 }}>
