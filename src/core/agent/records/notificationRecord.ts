@@ -11,7 +11,7 @@ interface NotificationRecordStorageProps {
   read: boolean;
   multisigId?: string;
   connectionId: string;
-  linkedGroupRequests: Record<string, boolean>;
+  linkedGroupRequests?: Record<string, boolean>;
 }
 
 class NotificationRecord extends BaseRecord {

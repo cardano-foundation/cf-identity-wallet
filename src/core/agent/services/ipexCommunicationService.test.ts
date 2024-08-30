@@ -1027,6 +1027,15 @@ describe("Ipex communication service of agent", () => {
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     });
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
+      connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      credentialType: "title",
+      id: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+      isArchived: false,
+      issuanceDate: "2024-07-30T04:19:55.348Z",
+      schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+      status: "pending",
+    });
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
@@ -1118,6 +1127,7 @@ describe("Ipex communication service of agent", () => {
 
     await ipexCommunicationService.acceptAcdc("id");
 
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(0);
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
@@ -1181,6 +1191,9 @@ describe("Ipex communication service of agent", () => {
         pathed: {},
       })
       .mockReturnValueOnce(grantIpexMessageMock);
+    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
+      id: "id",
+    });
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {
         type: "NotificationRecord",
@@ -1201,6 +1214,7 @@ describe("Ipex communication service of agent", () => {
     ]);
 
     await ipexCommunicationService.acceptAcdc(id);
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(0);
   });
 
   test("cannot accept ACDC from multisig exn if the notification is missing in the DB", async () => {
