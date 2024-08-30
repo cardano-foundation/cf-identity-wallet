@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, Button, Container, Grid, TextField, Typography } from "@mui/material";
+import { Button, Container, Grid, TextField, Typography } from "@mui/material";
 import { resolveOobi } from "../../services/resolve-oobi";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import "./qrscanner.css";
@@ -109,6 +109,11 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
   };
   const content = renderContent();
 
+  const handleReset = () => {
+    setCanReset(false);
+    restartScanner();
+  }
+
   return (
     <Container sx={{ py: 2 }}>
 
@@ -134,12 +139,6 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
             fullWidth
             onChange={(e) => setOobi(e.target.value)}
           />
-          {isAtendeeOobiEmptyVisible && (
-            <Alert severity="error">Please, input valid connection link</Alert>
-          )}
-          {submitSuccess && (
-            <Alert severity="info">Resolve connection successfully</Alert>
-          )}
         </Grid>
       </Grid>}
 
@@ -155,7 +154,7 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
           canReset ? <Button
             variant="contained"
             color="primary"
-            onClick={() => backToFirstStep()}
+            onClick={() => handleReset()}
             sx={{ mx: { xs: 1, md: 1 } }}
           >
             Reset
