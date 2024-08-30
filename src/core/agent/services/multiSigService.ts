@@ -1048,7 +1048,7 @@ class MultiSigService extends AgentService {
         .exchanges()
         .createExchangeMessage(
           mHab,
-          "/multisig/exn",
+          MultiSigRoute.EXN,
           { gid: gHab["prefix"] },
           gembeds,
           recp[0]
@@ -1080,7 +1080,7 @@ class MultiSigService extends AgentService {
         .exchanges()
         .createExchangeMessage(
           mHab,
-          "/multisig/exn",
+          MultiSigRoute.EXN,
           { gid: gHab["prefix"] },
           gembeds,
           recp[0]
@@ -1096,7 +1096,7 @@ class MultiSigService extends AgentService {
 
   async grantPresentMultisigAcdc(
     multisigSignifyName: string,
-    issuerPrefix: string,
+    recipient: string,
     acdcDetail: any,
     grantToJoin?: GrantToJoinMultisigExnPayload
   ) {
@@ -1148,7 +1148,7 @@ class MultiSigService extends AgentService {
         .exchanges()
         .createExchangeMessage(
           mHab,
-          "/multisig/exn",
+          MultiSigRoute.EXN,
           { gid: gHab["prefix"] },
           gembeds,
           recp[0]
@@ -1157,7 +1157,7 @@ class MultiSigService extends AgentService {
       const time = new Date().toISOString().replace("Z", "000+00:00");
       const [admit, sigs, end] = await this.props.signifyClient.ipex().grant({
         senderName: multisigSignifyName,
-        recipient: issuerPrefix,
+        recipient,
         message: "",
         acdc: new Serder(acdcDetail.sad),
         iss: new Serder(acdcDetail.iss),

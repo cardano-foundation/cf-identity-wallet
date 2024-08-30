@@ -16,7 +16,6 @@ interface InceptMultiSigExnMessage {
       rmids: string[];
       rstates: HabState["state"][];
       name: string;
-      i: string;
     };
     e: {
       icp: {
@@ -33,27 +32,6 @@ interface InceptMultiSigExnMessage {
         b: string[];
         c: any[];
         a: any[];
-      };
-      exn: {
-        v: string;
-        t: string;
-        d: string;
-        i: string;
-        rp: string;
-        p: string;
-        dt: string;
-        r: string;
-        q: any;
-        a: {
-          i: string;
-          m: string;
-        };
-        e: {
-          acdc: any;
-          iss: any;
-          anc: any;
-          d: string;
-        };
       };
       d: string;
     };
@@ -80,8 +58,49 @@ enum MultiSigRoute {
   ROT = "/multisig/rot",
 }
 
+interface IpexGrantMultiSigExn {
+  exn: {
+    v: string;
+    t: string;
+    d: string;
+    i: string;
+    p: string;
+    dt: string;
+    r: string;
+    q: any;
+    a: {
+      gid: string;
+      i: string;
+    };
+    e: {
+      exn: {
+        v: string;
+        t: string;
+        d: string;
+        i: string;
+        rp: string;
+        p: string;
+        dt: string;
+        r: string;
+        q: any;
+        a: {
+          i: string;
+          m: string;
+        };
+        e: {
+          acdc: any;
+          iss: any;
+          anc: any;
+          d: string;
+        };
+      };
+      d: string;
+    };
+  };
+}
+
 interface GrantToJoinMultisigExnPayload {
-  grantExn: InceptMultiSigExnMessage;
+  grantExn: IpexGrantMultiSigExn;
   atc: string;
 }
 
@@ -92,4 +111,5 @@ export type {
   CreateMultisigExnPayload,
   AuthorizationExnPayload,
   GrantToJoinMultisigExnPayload,
+  IpexGrantMultiSigExn,
 };

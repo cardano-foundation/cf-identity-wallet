@@ -25,6 +25,7 @@ import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
+import { SignifyNotificationService } from "./signifyNotificationService";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -50,6 +51,7 @@ class IpexCommunicationService extends AgentService {
   protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly multisigService: MultiSigService;
+  protected readonly signifyNotifications: SignifyNotificationService;
 
   constructor(
     agentServiceProps: AgentServicesProps,
@@ -58,7 +60,8 @@ class IpexCommunicationService extends AgentService {
     notificationStorage: NotificationStorage,
     ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage,
-    multisigService: MultiSigService
+    multisigService: MultiSigService,
+    signifyNotifications: SignifyNotificationService
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
@@ -67,6 +70,7 @@ class IpexCommunicationService extends AgentService {
     this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.multisigService = multisigService;
+    this.signifyNotifications = signifyNotifications;
   }
 
   @OnlineOnly
@@ -139,10 +143,8 @@ class IpexCommunicationService extends AgentService {
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    Agent.agent.signifyNotifications.addPendingOperationToQueue(
-      pendingOperation
-    );
-    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+    this.signifyNotifications.addPendingOperationToQueue(pendingOperation);
+    this.signifyNotifications.deleteNotificationRecordById(
       id,
       grantNoteRecord.a.r as NotificationRoute
     );
@@ -166,7 +168,7 @@ class IpexCommunicationService extends AgentService {
     await this.props.signifyClient
       .ipex()
       .submitOffer(holderSignifyName, offer, sigs, end, [msg.exn.i]);
-    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+    this.signifyNotifications.deleteNotificationRecordById(
       notification.id,
       notification.a.r as NotificationRoute
     );
@@ -470,10 +472,8 @@ class IpexCommunicationService extends AgentService {
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    Agent.agent.signifyNotifications.addPendingOperationToQueue(
-      pendingOperation
-    );
-    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+    this.signifyNotifications.addPendingOperationToQueue(pendingOperation);
+    this.signifyNotifications.deleteNotificationRecordById(
       id,
       notifRecord.a.r as NotificationRoute
     );
@@ -488,17 +488,13 @@ class IpexCommunicationService extends AgentService {
         const status = error.message.split(" - ")[1];
         if (/500/gi.test(status)) {
           // TODO: Should change to 404 once KERIA fixed
-          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${credentialId}`);
+          throw new Error(
+            `${IpexCommunicationService.CREDENTIAL_NOT_FOUND} ${credentialId}`
+          );
         } else {
           throw error;
         }
       });
-
-    if (!pickedCred) {
-      throw new Error(
-        `${IpexCommunicationService.CREDENTIAL_NOT_FOUND} ${credentialId}`
-      );
-    }
 
     const holderSignifyName = (
       await this.identifierStorage.getIdentifierMetadata(pickedCred.sad.a.i)
@@ -514,9 +510,7 @@ class IpexCommunicationService extends AgentService {
       id: op.name,
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
-    Agent.agent.signifyNotifications.addPendingOperationToQueue(
-      pendingOperation
-    );
+    this.signifyNotifications.addPendingOperationToQueue(pendingOperation);
   }
 
   @OnlineOnly
@@ -550,10 +544,8 @@ class IpexCommunicationService extends AgentService {
       id: op.name,
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
-    Agent.agent.signifyNotifications.addPendingOperationToQueue(
-      pendingOperation
-    );
-    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+    this.signifyNotifications.addPendingOperationToQueue(pendingOperation);
+    this.signifyNotifications.deleteNotificationRecordById(
       id,
       notifRecord.a.r as NotificationRoute
     );

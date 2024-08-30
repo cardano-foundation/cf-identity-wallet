@@ -128,7 +128,8 @@ class Agent {
         this.notificationStorage,
         this.ipexMessageStorage,
         this.operationPendingStorage,
-        this.multiSigs
+        this.multiSigs,
+        this.signifyNotifications
       );
     }
     return this.ipexCommunicationService;

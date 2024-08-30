@@ -221,12 +221,8 @@ const credentialStorage = jest.mocked({
 });
 
 const multisigService = jest.mocked({
-  multisigAdmit: jest.fn(),
-  grantPresentMultisigAcdc: jest.fn(),
   joinAuthorization: jest.fn(),
   hasMultisig: jest.fn(),
-  endRoleAuthorization: jest.fn(),
-  getMembersByIdentifierId: jest.fn(),
 });
 
 const signifyNotificationService = new SignifyNotificationService(

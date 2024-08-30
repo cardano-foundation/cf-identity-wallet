@@ -6,6 +6,7 @@ import { ConfigurationService } from "../../configuration";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
+import { SignifyNotificationService } from "./signifyNotificationService";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -66,6 +67,11 @@ const operationPendingStorage = jest.mocked({
 const multisigService = jest.mocked({
   multisigAdmit: jest.fn(),
   grantPresentMultisigAcdc: jest.fn(),
+});
+
+const signifyNotificationService = jest.mocked({
+  deleteNotificationRecordById: (id: string) => deleteNotificationMock(id),
+  addPendingOperationToQueue: jest.fn(),
 });
 
 let credentialListMock = jest.fn();
@@ -201,11 +207,11 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         resolveOobi: () => resolveOobiMock(),
       },
-      signifyNotifications: {
-        deleteNotificationRecordById: (id: string) =>
-          deleteNotificationMock(id),
-        addPendingOperationToQueue: jest.fn(),
-      },
+      // signifyNotifications: {
+      //   deleteNotificationRecordById: (id: string) =>
+      //     deleteNotificationMock(id),
+      //   addPendingOperationToQueue: jest.fn(),
+      // },
       multiSigs: {
         multisigAdmit: jest.fn().mockResolvedValue({ name: "opName" }),
         grantPresentMultisigAcdc: jest
@@ -223,7 +229,8 @@ const ipexCommunicationService = new IpexCommunicationService(
   notificationStorage as any,
   ipexMessageRecordStorage as any,
   operationPendingStorage as any,
-  multisigService as any
+  multisigService as any,
+  signifyNotificationService as any
 );
 
 const grantIpexMessageMock = {
@@ -303,7 +310,7 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
     expect(
-      Agent.agent.signifyNotifications.addPendingOperationToQueue
+      signifyNotificationService.addPendingOperationToQueue
     ).toBeCalledTimes(1);
     expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith(
       expect.objectContaining({
@@ -922,7 +929,7 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
     expect(
-      Agent.agent.signifyNotifications.addPendingOperationToQueue
+      signifyNotificationService.addPendingOperationToQueue
     ).toBeCalledTimes(1);
     expect(deleteNotificationMock).toBeCalledWith(id);
   });
@@ -1099,7 +1106,7 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
     expect(
-      Agent.agent.signifyNotifications.addPendingOperationToQueue
+      signifyNotificationService.addPendingOperationToQueue
     ).toBeCalledTimes(1);
     expect(deleteNotificationMock).toBeCalledWith(id);
   });
@@ -1207,7 +1214,9 @@ describe("Ipex communication service of agent", () => {
   test("cannot grant present ACDC with id if the ACDC is missing in the DB", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "not-found-id";
-    credentialGetMock.mockResolvedValueOnce(null);
+    credentialGetMock.mockRejectedValue(
+      new Error("request - 500 - SignifyClient message")
+    );
 
     await expect(
       ipexCommunicationService.grantAcdcById(id)
