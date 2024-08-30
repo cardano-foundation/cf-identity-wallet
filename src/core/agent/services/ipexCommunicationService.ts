@@ -169,7 +169,7 @@ class IpexCommunicationService extends AgentService {
       pendingOperation
     );
     if (!holder.multisigManageAid) {
-      this.signifyNotificationService.deleteNotificationRecordById(
+      await this.signifyNotificationService.deleteNotificationRecordById(
         id,
         grantNoteRecord.a.r as NotificationRoute
       );
@@ -194,7 +194,7 @@ class IpexCommunicationService extends AgentService {
     await this.props.signifyClient
       .ipex()
       .submitOffer(holderSignifyName, offer, sigs, end, [msg.exn.i]);
-    this.signifyNotificationService.deleteNotificationRecordById(
+    await this.signifyNotificationService.deleteNotificationRecordById(
       notification.id,
       notification.a.r as NotificationRoute
     );
