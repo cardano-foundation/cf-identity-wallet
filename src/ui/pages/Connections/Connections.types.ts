@@ -3,6 +3,10 @@ import {
   ConnectionShortDetails,
 } from "../../../core/agent/agent.types";
 
+interface ConnectionsOptionRef {
+  handleConnectModalButton: () => void;
+}
+
 interface ConnectionItemProps {
   key: number;
   item: ConnectionShortDetails;
@@ -40,6 +44,7 @@ interface ConnectionRequestData {
 }
 
 export type {
+  ConnectionsOptionRef,
   ConnectionShortDetails,
   ConnectionDetails,
   ConnectionItemProps,

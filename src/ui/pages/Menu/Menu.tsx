@@ -41,6 +41,7 @@ import { Profile } from "./components/Profile";
 import { Settings } from "./components/Settings";
 import { ProfileOptionRef } from "./components/Profile/Profile.types";
 import { Connections } from "../Connections";
+import { ConnectionsOptionRef } from "../Connections/Connections.types";
 
 const emptySubMenu = {
   Component: () => <></>,
@@ -87,12 +88,24 @@ const Menu = () => {
   const pageId = "menu-tab";
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
+  const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
+  const profileRef = useRef<ProfileOptionRef>(null);
+  const connectionsRef = useRef<ConnectionsOptionRef>(null);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [showConnections, setShowConnections] = useState(false);
   const [showSubMenu, setShowSubMenu] = useState(false);
   const [selectedOption, setSelectedOption] = useState<
     SubMenuKey | undefined
   >();
 
+  const resetMenu = () => {
+    setShowConnections(false);
+    setShowSubMenu(false);
+    setSelectedOption(undefined);
+  };
+
   useIonViewWillEnter(() => {
+    resetMenu();
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
   });
 
@@ -109,11 +122,6 @@ const Menu = () => {
       dispatch(setCurrentOperation(OperationType.IDLE));
     }
   }, [currentOperation]);
-
-  const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
-  const profileRef = useRef<ProfileOptionRef>(null);
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [showConnections, setShowConnections] = useState(false);
 
   const toggleEditProfile = () => {
     setIsEditingProfile((prev) => {
@@ -166,11 +174,25 @@ const Menu = () => {
             showConnections={showConnections}
             setShowConnections={setShowConnections}
             selfPaginated={false}
+            ref={connectionsRef}
           />
         ),
         title: "connections.tab.title",
         pageId: "connections",
-        additionalButtons: <></>,
+        additionalButtons: (
+          <IonButton
+            shape="round"
+            className="add-button"
+            data-testid="add-connection-button"
+            onClick={() => connectionsRef.current?.handleConnectModalButton()}
+          >
+            <IonIcon
+              slot="icon-only"
+              icon={addOutline}
+              color="primary"
+            />
+          </IonButton>
+        ),
         nestedMenu: false,
         renderAsModal: false,
       },

@@ -1280,7 +1280,7 @@
       },
       "detelepending": {
         "title": "Connection options",
-        "description": "This connection is pending you’ll be notified once they accept. If you no longer require this connection, tap “Delete connection” to remove.",
+        "description": "This connection is pending. You’ll be notified once they accept. If you no longer require this connection, tap “Delete connection” to remove.",
         "button": "Delete connection",
         "secondchecktitle": "Are you sure you want to delete this connection?"
       }

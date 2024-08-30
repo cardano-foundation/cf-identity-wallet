@@ -10,7 +10,14 @@ import {
   IonRow,
 } from "@ionic/react";
 import { addOutline } from "ionicons/icons";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from "react";
 import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
 import { ConnectionStatus } from "../../../core/agent/agent.types";
@@ -49,320 +56,328 @@ import "./Connections.scss";
 import {
   ConnectionsComponentProps,
   ConnectionShortDetails,
+  ConnectionsOptionRef,
   MappedConnections,
 } from "./Connections.types";
 import { useOnlineStatusEffect } from "../../hooks";
 import { showError } from "../../utils/error";
 
-const Connections = ({
-  showConnections,
-  setShowConnections,
-  selfPaginated,
-}: ConnectionsComponentProps) => {
-  const pageId = "connections-tab";
-  const history = useHistory();
-  const dispatch = useAppDispatch();
-  const stateCache = useAppSelector(getStateCache);
-  const currentOperation = useAppSelector(getCurrentOperation);
-  const connectionsCache = useAppSelector(getConnectionsCache);
-  const identifierCache = useAppSelector(getIdentifiersCache);
-  const availableIdentifiers = identifierCache.filter(
-    (item) => !item.isPending
-  );
-  const [mappedConnections, setMappedConnections] = useState<
-    MappedConnections[]
-  >([]);
-  const [connectModalIsOpen, setConnectModalIsOpen] = useState(false);
-  const [openIdentifierSelector, setOpenIdentifierSelector] = useState(false);
-  const [selectedIdentifier, setSelectedIdentifier] =
-    useState<IdentifierShortDetails | null>(null);
-  const [showPlaceholder, setShowPlaceholder] = useState(
-    Object.keys(connectionsCache)?.length === 0
-  );
-  const [openIdentifierMissingAlert, setOpenIdentifierMissingAlert] =
-    useState<boolean>(false);
-  const [deletePendingItem, setDeletePendingItem] =
-    useState<ConnectionShortDetails | null>(null);
-  const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
-  const userName = stateCache.authentication.userName;
-  const [oobi, setOobi] = useState("");
-
-  const fetchOobi = useCallback(async () => {
-    if (!selectedIdentifier?.signifyName) return;
-
-    const oobiValue = await Agent.agent.connections.getOobi(
-      `${selectedIdentifier.signifyName}`,
-      userName
+const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
+  ({ showConnections, setShowConnections, selfPaginated }, ref) => {
+    const pageId = "connections-tab";
+    const history = useHistory();
+    const dispatch = useAppDispatch();
+    const stateCache = useAppSelector(getStateCache);
+    const currentOperation = useAppSelector(getCurrentOperation);
+    const connectionsCache = useAppSelector(getConnectionsCache);
+    const identifierCache = useAppSelector(getIdentifiersCache);
+    const availableIdentifiers = identifierCache.filter(
+      (item) => !item.isPending
     );
-    if (oobiValue) {
-      setOobi(oobiValue);
-    }
-  }, [selectedIdentifier?.signifyName, userName]);
+    const [mappedConnections, setMappedConnections] = useState<
+      MappedConnections[]
+    >([]);
+    const [connectModalIsOpen, setConnectModalIsOpen] = useState(false);
+    const [openIdentifierSelector, setOpenIdentifierSelector] = useState(false);
+    const [selectedIdentifier, setSelectedIdentifier] =
+      useState<IdentifierShortDetails | null>(null);
+    const [showPlaceholder, setShowPlaceholder] = useState(
+      Object.keys(connectionsCache)?.length === 0
+    );
+    const [openIdentifierMissingAlert, setOpenIdentifierMissingAlert] =
+      useState<boolean>(false);
+    const [deletePendingItem, setDeletePendingItem] =
+      useState<ConnectionShortDetails | null>(null);
+    const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
+    const userName = stateCache.authentication.userName;
+    const [oobi, setOobi] = useState("");
 
-  useOnlineStatusEffect(fetchOobi);
+    const fetchOobi = useCallback(async () => {
+      if (!selectedIdentifier?.signifyName) return;
 
-  useEffect(() => {
-    const openConnections = (history.location.state as Record<string, unknown>)
-      ?.openConnections;
-
-    if (openConnections) {
-      setShowConnections(true);
-      history.replace(history.location.pathname, {});
-    }
-  }, [history, history.location.state, setShowConnections]);
-
-  useEffect(() => {
-    setShowPlaceholder(Object.keys(connectionsCache).length === 0);
-  }, [connectionsCache]);
-
-  useEffect(() => {
-    if (currentOperation === OperationType.BACK_TO_SHARE_CONNECTION) {
-      setShowConnections(true);
-      dispatch(setCurrentOperation(OperationType.IDLE));
-    }
-  }, [currentOperation, dispatch, setShowConnections]);
-
-  const handleNavToCreateKeri = () => {
-    setOpenIdentifierMissingAlert(false);
-    history.location.pathname === TabsRoutePath.IDENTIFIERS &&
-      dispatch(
-        setCurrentOperation(
-          OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS
-        )
+      const oobiValue = await Agent.agent.connections.getOobi(
+        `${selectedIdentifier.signifyName}`,
+        userName
       );
-    history.location.pathname === TabsRoutePath.CREDENTIALS &&
-      dispatch(
-        setCurrentOperation(
-          OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS
-        )
-      ) &&
-      history.push(TabsRoutePath.IDENTIFIERS);
-  };
+      if (oobiValue) {
+        setOobi(oobiValue);
+      }
+    }, [selectedIdentifier?.signifyName, userName]);
 
-  const handleProvideQr = () => {
-    availableIdentifiers.length
-      ? setOpenIdentifierSelector(true)
-      : setOpenIdentifierMissingAlert(true);
-  };
+    useOnlineStatusEffect(fetchOobi);
 
-  const handleConnectModal = () => {
-    setConnectModalIsOpen(true);
-  };
+    useEffect(() => {
+      const openConnections = (
+        history.location.state as Record<string, unknown>
+      )?.openConnections;
 
-  const handleCloseAlert = () => {
-    setOpenIdentifierMissingAlert(false);
-  };
+      if (openConnections) {
+        setShowConnections(true);
+        history.replace(history.location.pathname, {});
+      }
+    }, [history, history.location.state, setShowConnections]);
 
-  const handleShowConnectionDetails = async (item: ConnectionShortDetails) => {
-    if (item.status === ConnectionStatus.PENDING) {
-      setDeletePendingItem(item);
-      setOpenDeletePendingAlert(true);
-      return;
-    }
+    useEffect(() => {
+      setShowPlaceholder(Object.keys(connectionsCache).length === 0);
+    }, [connectionsCache]);
 
-    const data: DataProps = {
-      store: { stateCache },
+    useEffect(() => {
+      if (currentOperation === OperationType.BACK_TO_SHARE_CONNECTION) {
+        setShowConnections(true);
+        dispatch(setCurrentOperation(OperationType.IDLE));
+      }
+    }, [currentOperation, dispatch, setShowConnections]);
+
+    const handleNavToCreateKeri = () => {
+      setOpenIdentifierMissingAlert(false);
+      history.location.pathname === TabsRoutePath.IDENTIFIERS &&
+        dispatch(
+          setCurrentOperation(
+            OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS
+          )
+        );
+      history.location.pathname === TabsRoutePath.CREDENTIALS &&
+        dispatch(
+          setCurrentOperation(
+            OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS
+          )
+        ) &&
+        history.push(TabsRoutePath.IDENTIFIERS);
     };
-    const { nextPath, updateRedux } = getNextRoute(
-      TabsRoutePath.CREDENTIALS,
-      data
-    );
-    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    history.push({
-      pathname: nextPath.pathname,
-      state: item,
-    });
-  };
 
-  const AdditionalButtons = () => {
-    return (
-      <IonButton
-        shape="round"
-        className="add-button"
-        data-testid="add-connection-button"
-        onClick={handleConnectModal}
-      >
-        <IonIcon
-          slot="icon-only"
-          icon={addOutline}
-          color="primary"
-        />
-      </IonButton>
-    );
-  };
+    const handleProvideQr = () => {
+      availableIdentifiers.length
+        ? setOpenIdentifierSelector(true)
+        : setOpenIdentifierMissingAlert(true);
+    };
 
-  useEffect(() => {
-    const connections = Object.values(connectionsCache);
-    if (connections.length) {
-      const sortedConnections = [...connections].sort(function (a, b) {
-        const textA = a.label.toUpperCase();
-        const textB = b.label.toUpperCase();
-        return textA < textB ? -1 : textA > textB ? 1 : 0;
-      });
+    const handleConnectModal = () => {
+      setConnectModalIsOpen(true);
+    };
 
-      const mapConnections = ((m, a) => (
-        a.forEach((s) => {
-          const a = m.get(s.label[0]) || [];
-          m.set(s.label[0], (a.push(s), a));
-        }),
-        m
-      ))(new Map(), sortedConnections);
+    useImperativeHandle(ref, () => ({
+      handleConnectModalButton: handleConnectModal,
+    }));
 
-      const mapToArray = Array.from(mapConnections, ([key, value]) => ({
-        key,
-        value,
-      }));
-      setMappedConnections(mapToArray);
-    }
-  }, [connectionsCache]);
+    const handleCloseAlert = () => {
+      setOpenIdentifierMissingAlert(false);
+    };
 
-  const backHardwareConfig = useMemo(
-    () => ({
-      prevent: !showConnections,
-    }),
-    [showConnections]
-  );
+    const handleShowConnectionDetails = async (
+      item: ConnectionShortDetails
+    ) => {
+      if (item.status === ConnectionStatus.PENDING) {
+        setDeletePendingItem(item);
+        setOpenDeletePendingAlert(true);
+        return;
+      }
 
-  const getConnectionsTab = useCallback(() => {
-    return document.getElementById(pageId);
-  }, []);
-
-  const canStart = useCallback(() => {
-    return showConnections;
-  }, [showConnections]);
-
-  useSwipeBack(getConnectionsTab, canStart, () => setShowConnections(false));
-
-  const deletePendingCheckProps = useMemo(
-    () => ({
-      title: i18n.t("connections.tab.detelepending.title"),
-      description: i18n.t("connections.tab.detelepending.description"),
-      button: i18n.t("connections.tab.detelepending.button"),
-    }),
-    []
-  );
-
-  const deleteConnection = async () => {
-    if (!deletePendingItem) return;
-
-    try {
-      setDeletePendingItem(null);
-      await Agent.agent.connections.deleteConnectionById(deletePendingItem.id);
-      dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
-      dispatch(removeConnectionCache(deletePendingItem.id));
-    } catch (error) {
-      showError(
-        "Unable to delete connection",
-        error,
-        dispatch,
-        ToastMsgType.DELETE_CONNECTION_FAIL
+      const data: DataProps = {
+        store: { stateCache },
+      };
+      const { nextPath, updateRedux } = getNextRoute(
+        TabsRoutePath.CREDENTIALS,
+        data
       );
-    }
-  };
+      updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+      history.push({
+        pathname: nextPath.pathname,
+        state: item,
+      });
+    };
 
-  const ConnectionsBody = () => {
-    return (
-      <div className="connections-tab-center">
-        <IonContent className="connections-container">
-          <IonGrid>
-            <IonRow>
-              <IonCol size="12">
-                {mappedConnections.map((alphabeticGroup, index) => {
-                  return (
-                    <IonItemGroup
-                      className="connections-list"
-                      key={index}
-                    >
-                      <IonItemDivider id={alphabeticGroup.key}>
-                        <IonLabel>{alphabeticGroup.key}</IonLabel>
-                      </IonItemDivider>
-                      <AlphabeticList
-                        items={Array.from(alphabeticGroup.value)}
-                        handleShowConnectionDetails={
-                          handleShowConnectionDetails
-                        }
-                      />
-                    </IonItemGroup>
-                  );
-                })}
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        </IonContent>
-        <AlphabetSelector />
-      </div>
+    const AdditionalButtons = () => {
+      return (
+        <IonButton
+          shape="round"
+          className="add-button"
+          data-testid="add-connection-button"
+          onClick={handleConnectModal}
+        >
+          <IonIcon
+            slot="icon-only"
+            icon={addOutline}
+            color="primary"
+          />
+        </IonButton>
+      );
+    };
+
+    useEffect(() => {
+      const connections = Object.values(connectionsCache);
+      if (connections.length) {
+        const sortedConnections = [...connections].sort(function (a, b) {
+          const textA = a.label.toUpperCase();
+          const textB = b.label.toUpperCase();
+          return textA < textB ? -1 : textA > textB ? 1 : 0;
+        });
+
+        const mapConnections = ((m, a) => (
+          a.forEach((s) => {
+            const a = m.get(s.label[0]) || [];
+            m.set(s.label[0], (a.push(s), a));
+          }),
+          m
+        ))(new Map(), sortedConnections);
+
+        const mapToArray = Array.from(mapConnections, ([key, value]) => ({
+          key,
+          value,
+        }));
+        setMappedConnections(mapToArray);
+      }
+    }, [connectionsCache]);
+
+    const backHardwareConfig = useMemo(
+      () => ({
+        prevent: !showConnections,
+      }),
+      [showConnections]
     );
-  };
 
-  return (
-    <>
-      {selfPaginated ? (
-        <SideSlider isOpen={showConnections}>
-          <TabLayout
-            hardwareBackButtonConfig={backHardwareConfig}
-            pageId={pageId}
-            header={true}
-            backButton={true}
-            customClass={showConnections ? "show" : "hide"}
-            backButtonAction={() => setShowConnections(false)}
-            title={`${i18n.t("connections.tab.title")}`}
-            additionalButtons={<AdditionalButtons />}
-            placeholder={
-              showPlaceholder && (
-                <CardsPlaceholder
-                  buttonLabel={i18n.t("connections.tab.create")}
-                  buttonAction={handleConnectModal}
-                  testId={pageId}
-                />
-              )
-            }
-          >
-            {!showPlaceholder && <ConnectionsBody />}
-          </TabLayout>
-        </SideSlider>
-      ) : (
-        <ConnectionsBody />
-      )}
-      <ConnectionsOptionModal
-        type={RequestType.CONNECTION}
-        connectModalIsOpen={connectModalIsOpen}
-        setConnectModalIsOpen={setConnectModalIsOpen}
-        handleProvideQr={handleProvideQr}
-      />
-      <IdentifierSelectorModal
-        open={openIdentifierSelector}
-        setOpen={setOpenIdentifierSelector}
-        onSubmit={setSelectedIdentifier}
-      />
-      <ShareConnection
-        isOpen={!!selectedIdentifier}
-        setIsOpen={() => setSelectedIdentifier(null)}
-        oobi={oobi}
-        shareType={ShareType.Connection}
-      />
-      <Alert
-        isOpen={openIdentifierMissingAlert}
-        setIsOpen={setOpenIdentifierMissingAlert}
-        dataTestId="alert-create-keri"
-        headerText={i18n.t("connections.tab.alert.message")}
-        confirmButtonText={`${i18n.t("connections.tab.alert.confirm")}`}
-        cancelButtonText={`${i18n.t("connections.tab.alert.cancel")}`}
-        actionConfirm={handleNavToCreateKeri}
-        actionCancel={handleCloseAlert}
-        actionDismiss={handleCloseAlert}
-      />
-      <RemovePendingAlert
-        pageId={pageId}
-        openFirstCheck={openDeletePendingAlert}
-        firstCheckProps={deletePendingCheckProps}
-        onClose={() => setOpenDeletePendingAlert(false)}
-        secondCheckTitle={`${i18n.t(
-          "connections.tab.detelepending.secondchecktitle"
-        )}`}
-        onDeletePendingItem={deleteConnection}
-      />
-    </>
-  );
-};
+    const getConnectionsTab = useCallback(() => {
+      return document.getElementById(pageId);
+    }, []);
+
+    const canStart = useCallback(() => {
+      return showConnections;
+    }, [showConnections]);
+
+    useSwipeBack(getConnectionsTab, canStart, () => setShowConnections(false));
+
+    const deletePendingCheckProps = useMemo(
+      () => ({
+        title: i18n.t("connections.tab.detelepending.title"),
+        description: i18n.t("connections.tab.detelepending.description"),
+        button: i18n.t("connections.tab.detelepending.button"),
+      }),
+      []
+    );
+
+    const deleteConnection = async () => {
+      if (!deletePendingItem) return;
+
+      try {
+        setDeletePendingItem(null);
+        await Agent.agent.connections.deleteConnectionById(
+          deletePendingItem.id
+        );
+        dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
+        dispatch(removeConnectionCache(deletePendingItem.id));
+      } catch (error) {
+        showError(
+          "Unable to delete connection",
+          error,
+          dispatch,
+          ToastMsgType.DELETE_CONNECTION_FAIL
+        );
+      }
+    };
+
+    const ConnectionsBody = () => {
+      return (
+        <div className="connections-tab-center">
+          <IonContent className="connections-container">
+            <IonGrid>
+              <IonRow>
+                <IonCol size="12">
+                  {mappedConnections.map((alphabeticGroup, index) => {
+                    return (
+                      <IonItemGroup
+                        className="connections-list"
+                        key={index}
+                      >
+                        <IonItemDivider id={alphabeticGroup.key}>
+                          <IonLabel>{alphabeticGroup.key}</IonLabel>
+                        </IonItemDivider>
+                        <AlphabeticList
+                          items={Array.from(alphabeticGroup.value)}
+                          handleShowConnectionDetails={
+                            handleShowConnectionDetails
+                          }
+                        />
+                      </IonItemGroup>
+                    );
+                  })}
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+          </IonContent>
+          <AlphabetSelector />
+        </div>
+      );
+    };
+
+    return (
+      <>
+        {selfPaginated ? (
+          <SideSlider isOpen={showConnections}>
+            <TabLayout
+              hardwareBackButtonConfig={backHardwareConfig}
+              pageId={pageId}
+              header={true}
+              backButton={true}
+              customClass={showConnections ? "show" : "hide"}
+              backButtonAction={() => setShowConnections(false)}
+              title={`${i18n.t("connections.tab.title")}`}
+              additionalButtons={<AdditionalButtons />}
+              placeholder={
+                showPlaceholder && (
+                  <CardsPlaceholder
+                    buttonLabel={i18n.t("connections.tab.create")}
+                    buttonAction={handleConnectModal}
+                    testId={pageId}
+                  />
+                )
+              }
+            >
+              {!showPlaceholder && <ConnectionsBody />}
+            </TabLayout>
+          </SideSlider>
+        ) : (
+          <ConnectionsBody />
+        )}
+        <ConnectionsOptionModal
+          type={RequestType.CONNECTION}
+          connectModalIsOpen={connectModalIsOpen}
+          setConnectModalIsOpen={setConnectModalIsOpen}
+          handleProvideQr={handleProvideQr}
+        />
+        <IdentifierSelectorModal
+          open={openIdentifierSelector}
+          setOpen={setOpenIdentifierSelector}
+          onSubmit={setSelectedIdentifier}
+        />
+        <ShareConnection
+          isOpen={!!selectedIdentifier}
+          setIsOpen={() => setSelectedIdentifier(null)}
+          oobi={oobi}
+          shareType={ShareType.Connection}
+        />
+        <Alert
+          isOpen={openIdentifierMissingAlert}
+          setIsOpen={setOpenIdentifierMissingAlert}
+          dataTestId="alert-create-keri"
+          headerText={i18n.t("connections.tab.alert.message")}
+          confirmButtonText={`${i18n.t("connections.tab.alert.confirm")}`}
+          cancelButtonText={`${i18n.t("connections.tab.alert.cancel")}`}
+          actionConfirm={handleNavToCreateKeri}
+          actionCancel={handleCloseAlert}
+          actionDismiss={handleCloseAlert}
+        />
+        <RemovePendingAlert
+          pageId={pageId}
+          openFirstCheck={openDeletePendingAlert}
+          firstCheckProps={deletePendingCheckProps}
+          onClose={() => setOpenDeletePendingAlert(false)}
+          secondCheckTitle={`${i18n.t(
+            "connections.tab.detelepending.secondchecktitle"
+          )}`}
+          onDeletePendingItem={deleteConnection}
+        />
+      </>
+    );
+  }
+);
 
 export { Connections };
