@@ -352,7 +352,7 @@ class MultiSigService extends AgentService {
       aid,
       multiSig.signifyName
     );
-    Agent.agent.signifyNotifications.deleteNotificationRecordById(
+    await Agent.agent.signifyNotifications.deleteNotificationRecordById(
       notification.id,
       notification.a.r as NotificationRoute
     );
@@ -456,7 +456,7 @@ class MultiSigService extends AgentService {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {
-      Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      await Agent.agent.signifyNotifications.deleteNotificationRecordById(
         notificationId,
         notificationRoute
       );
@@ -1045,10 +1045,10 @@ class MultiSigService extends AgentService {
         .exchanges()
         .createExchangeMessage(
           mHab,
-          "/multisig/exn",
+          MultiSigRoute.EXN,
           { gid: gHab["prefix"] },
           gembeds,
-          exchangeMessage.exn.i
+          recp[0]
         );
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
@@ -1077,10 +1077,10 @@ class MultiSigService extends AgentService {
         .exchanges()
         .createExchangeMessage(
           mHab,
-          "/multisig/exn",
+          MultiSigRoute.EXN,
           { gid: gHab["prefix"] },
           gembeds,
-          exchangeMessage.exn.i
+          recp[0]
         );
     }
 
@@ -1088,7 +1088,7 @@ class MultiSigService extends AgentService {
       .ipex()
       .submitAdmit(multisigSignifyName, exn, sigsMes, dtime, recp);
 
-    return op;
+    return { op, exnSaid: exn.ked.d };
   }
 }
 

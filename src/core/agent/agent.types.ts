@@ -158,7 +158,7 @@ interface KeriaNotification {
   id: string;
   createdAt: string;
   a: Record<string, unknown>;
-  multisigId?: string | undefined;
+  multisigId?: string;
   connectionId: string;
   read: boolean;
 }
