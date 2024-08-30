@@ -124,9 +124,8 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
           {!showInput &&
             <Box sx={{ display: "flex", justifyContent: "center" }} mb={2}>
               <Button
-                sx={{ minHeight: '200px', minWidth: '230px' }}
+                sx={{ minHeight: '200px', minWidth: '230px', color: "gray", borderColor: "gray" }}
                 variant="outlined"
-                color="primary"
                 onClick={() => setShowInput(true)}
               >
                 Start Scanner
