@@ -1,28 +1,22 @@
+import { IonReactMemoryRouter } from "@ionic/react-router";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  waitFor,
-} from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
-import { IonReactMemoryRouter } from "@ionic/react-router";
-import { createMemoryHistory } from "history";
-import { TabsRoutePath } from "../../../routes/paths";
-import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
-import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { formatShortDate } from "../../utils/formatters";
-import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { TabsRoutePath } from "../../../routes/paths";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { OperationType } from "../../globals/types";
+import { formatShortDate } from "../../utils/formatters";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 import { Credentials } from "../Credentials/Credentials";
 import { Identifiers } from "../Identifiers";
 import { Connections } from "./Connections";
-import { passcodeFiller } from "../../utils/passcodeFiller";
 
 const combineMock = jest.fn(() => TabsRoutePath.IDENTIFIERS);
 
@@ -34,7 +28,7 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         createMediatorInvitation: jest.fn(),
         getShortenUrl: jest.fn(),
-        deleteConnectionById: () => deleteConnectionByIdMock(),
+        deleteStaleLocalConnectionById: () => deleteConnectionByIdMock(),
       },
     },
   },

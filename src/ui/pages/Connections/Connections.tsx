@@ -246,7 +246,9 @@ const Connections = ({
 
     try {
       setDeletePendingItem(null);
-      await Agent.agent.connections.deleteConnectionById(deletePendingItem.id);
+      await Agent.agent.connections.deleteStaleLocalConnectionById(
+        deletePendingItem.id
+      );
       dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
       dispatch(removeConnectionCache(deletePendingItem.id));
     } catch (error) {
