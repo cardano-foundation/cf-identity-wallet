@@ -1,4 +1,4 @@
-import { Dict, Saider, Serder } from "signify-ts";
+import { Dict, Diger, Saider, Serder, Verfer } from "signify-ts";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -2247,5 +2247,146 @@ describe("Multisig sig service of agent", () => {
       mockDtime,
       ["aid"]
     );
+  });
+
+  test("should throw an error if the identifier is not a multisig when checking the rotation ability", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "",
+      theme: 0,
+    } as IdentifierMetadataRecord;
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(metadata);
+    await expect(
+      multiSigService.checkMultiSigRotationAbility("some-id")
+    ).rejects.toThrow(MultiSigService.AID_IS_NOT_MULTI_SIG);
+  });
+
+  test("should throw an error if the multisig is not found when checking the rotation ability", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "",
+      theme: 0,
+      multisigManageAid: "multisigManageAid",
+    } as IdentifierMetadataRecord;
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(metadata);
+    identifiersGetMock.mockRejectedValueOnce(new Error("error - 404"));
+    await expect(
+      multiSigService.checkMultiSigRotationAbility("some-id")
+    ).rejects.toThrow(MultiSigService.MULTI_SIG_NOT_FOUND);
+  });
+
+  test("should return true if all members have rotated", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "",
+      theme: 0,
+      multisigManageAid: "multisigManageAid",
+    } as IdentifierMetadataRecord;
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(metadata);
+    identifiersGetMock.mockResolvedValueOnce({
+      state: {
+        s: "0",
+        n: [
+          "DN8ltCjamk0CKLbitCbn9zrH36hi-G425jAzk1cPHkoL",
+          "DIcbsSlDv7VLiJC59psCbImaAVM5vbgnuYDUwNjx0O0R",
+        ],
+        nt: "2",
+      },
+    });
+    identifiersMemberMock.mockResolvedValueOnce({
+      rotation: [{ aid: "aid-1" }, { aid: "aid-2" }],
+    });
+    queryKeyStateMock
+      .mockResolvedValueOnce({
+        done: true,
+        response: { k: ["DN8ltCjamk0CKLbitCbn9zrH36hi-G425jAzk1cPHkoL"] },
+      })
+      .mockResolvedValueOnce({
+        done: true,
+        response: { k: ["DIcbsSlDv7VLiJC59psCbImaAVM5vbgnuYDUwNjx0O0R"] },
+      });
+
+    jest
+      .spyOn(Verfer.prototype, "qb64b", "get")
+      .mockReturnValueOnce(new Uint8Array());
+    jest
+      .spyOn(Diger.prototype, "qb64", "get")
+      .mockReturnValueOnce("DN8ltCjamk0CKLbitCbn9zrH36hi-G425jAzk1cPHkoL")
+      .mockReturnValueOnce("DIcbsSlDv7VLiJC59psCbImaAVM5vbgnuYDUwNjx0O0R");
+
+    const result = await multiSigService.checkMultiSigRotationAbility(
+      metadata.id
+    );
+
+    expect(result).toBe(true);
+  });
+
+  test("should return false if not all members have rotated", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "",
+      theme: 0,
+      multisigManageAid: "multisigManageAid",
+    } as IdentifierMetadataRecord;
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(metadata);
+    identifiersGetMock.mockResolvedValueOnce({
+      state: {
+        s: "0",
+        n: [
+          "DN8ltCjamk0CKLbitCbn9zrH36hi-G425jAzk1cPHkoL",
+          "DIcbsSlDv7VLiJC59psCbImaAVM5vbgnuYDUwNjx0O0R",
+        ],
+        nt: "2",
+      },
+    });
+    identifiersMemberMock.mockResolvedValueOnce({
+      rotation: [{ aid: "aid-1" }, { aid: "aid-2" }],
+    });
+    queryKeyStateMock
+      .mockResolvedValueOnce({
+        done: true,
+        response: { k: ["DN8ltCjamk0CKLbitCbn9zrH36hi-G425jAzk1cPHkoL"] },
+      })
+      .mockResolvedValueOnce({
+        done: false,
+        response: { k: ["DIcbsSlDv7VLiJC59psCbImaAVM5vbgnuYDUwNjx0O0R"] },
+      });
+
+    jest
+      .spyOn(Verfer.prototype, "qb64b", "get")
+      .mockReturnValueOnce(new Uint8Array());
+    jest
+      .spyOn(Diger.prototype, "qb64", "get")
+      .mockReturnValueOnce("DN8ltCjamk0CKLbitCbn9zrH36hi-G425jAzk1cPHkoL");
+
+    const result = await multiSigService.checkMultiSigRotationAbility(
+      metadata.id
+    );
+
+    expect(result).toBe(false);
   });
 });

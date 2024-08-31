@@ -2,13 +2,16 @@ import {
   Algos,
   b,
   d,
+  Diger,
   EventResult,
   HabState,
   messagize,
+  MtrDex,
   Saider,
   Serder,
   Siger,
   State,
+  Verfer,
 } from "signify-ts";
 import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../agent";
@@ -1089,6 +1092,54 @@ class MultiSigService extends AgentService {
       .submitAdmit(multisigSignifyName, exn, sigsMes, dtime, recp);
 
     return { op, exnSaid: exn.ked.d };
+  }
+
+  @OnlineOnly
+  async checkMultiSigRotationAbility(multiSigId: string): Promise<boolean> {
+    const metadata = await this.identifierStorage.getIdentifierMetadata(
+      multiSigId
+    );
+    if (!metadata.multisigManageAid) {
+      throw new Error(MultiSigService.AID_IS_NOT_MULTI_SIG);
+    }
+    const multiSig = await this.props.signifyClient
+      .identifiers()
+      .get(metadata.signifyName)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
+    if (!multiSig) {
+      throw new Error(MultiSigService.MULTI_SIG_NOT_FOUND);
+    }
+    const nextSequence = (Number(multiSig.state.s) + 1).toString();
+    const members = await this.props.signifyClient
+      .identifiers()
+      .members(metadata.signifyName);
+    const rmids = members.rotation;
+
+    let rotatedMembers = 0;
+    for (const rotation of rmids) {
+      const op = await this.props.signifyClient
+        .keyStates()
+        .query(rotation.aid, nextSequence);
+      if (op.done) {
+        const rotatedKey = op.response.k[0];
+        const verfer = new Verfer({ code: MtrDex.Ed25519, qb64: rotatedKey });
+        const diger = new Diger({ code: MtrDex.Blake3_256 }, verfer.qb64b).qb64;
+        if (multiSig.state.n.includes(diger)) {
+          rotatedMembers++;
+        }
+      }
+    }
+    if (rotatedMembers === Number(multiSig.state.nt)) {
+      return true;
+    }
+    return false;
   }
 }
 
