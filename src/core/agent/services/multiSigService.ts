@@ -162,7 +162,7 @@ class MultiSigService extends AgentService {
         id: op.name,
         recordType: OperationPendingRecordType.Group,
       });
-      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+      Agent.agent.keriaNotifications.addPendingOperationToQueue(
         pendingOperation
       );
     } else {
@@ -352,7 +352,7 @@ class MultiSigService extends AgentService {
       aid,
       multiSig.signifyName
     );
-    await Agent.agent.signifyNotifications.deleteNotificationRecordById(
+    await Agent.agent.keriaNotifications.deleteNotificationRecordById(
       notification.id,
       notification.a.r as NotificationRoute
     );
@@ -456,7 +456,7 @@ class MultiSigService extends AgentService {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {
-      await Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
         notificationId,
         notificationRoute
       );
@@ -524,7 +524,7 @@ class MultiSigService extends AgentService {
         id: op.name,
         recordType: OperationPendingRecordType.Group,
       });
-      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+      Agent.agent.keriaNotifications.addPendingOperationToQueue(
         pendingOperation
       );
     } else {

@@ -99,7 +99,7 @@ const keriaNotificationsChangeHandler = async (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   const notifications =
-    await Agent.agent.signifyNotifications.getAllNotifications();
+    await Agent.agent.keriaNotifications.getAllNotifications();
   dispatch(setNotificationsCache(notifications));
 };
 
@@ -184,7 +184,7 @@ const signifyOperationStateChangeHandler = async (
     break;
   case OperationPendingRecordType.ExchangeRevokeCredential: {
     const notifications =
-        await Agent.agent.signifyNotifications.getAllNotifications();
+        await Agent.agent.keriaNotifications.getAllNotifications();
     dispatch(setNotificationsCache(notifications));
     break;
   }
@@ -241,9 +241,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
   useEffect(() => {
     if (initAppSuccess) {
       if (authentication.loggedIn) {
-        Agent.agent.signifyNotifications.startNotification();
+        Agent.agent.keriaNotifications.startNotification();
       } else {
-        Agent.agent.signifyNotifications.stopNotification();
+        Agent.agent.keriaNotifications.stopNotification();
       }
     }
   }, [authentication.loggedIn, initAppSuccess]);
@@ -285,7 +285,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const storedPeerConnections =
       await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
     const notifications =
-      await Agent.agent.signifyNotifications.getAllNotifications();
+      await Agent.agent.keriaNotifications.getAllNotifications();
 
     dispatch(setIdentifiersCache(storedIdentifiers));
     dispatch(setCredsCache(credsCache));
@@ -462,10 +462,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
 
     // Begin background polling of KERIA or local DB items
-    Agent.agent.signifyNotifications.pollNotificationsWithCb((event) => {
+    Agent.agent.keriaNotifications.pollNotificationsWithCb((event) => {
       return keriaNotificationsChangeHandler(event, dispatch);
     });
-    Agent.agent.signifyNotifications.pollLongOperationsWithCb((event) => {
+    Agent.agent.keriaNotifications.pollLongOperationsWithCb((event) => {
       return signifyOperationStateChangeHandler(event, dispatch);
     });
     dispatch(setInitialized(true));

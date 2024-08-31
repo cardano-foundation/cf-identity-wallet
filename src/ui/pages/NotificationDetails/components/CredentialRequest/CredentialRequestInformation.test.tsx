@@ -17,7 +17,7 @@ const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
-      signifyNotifications: {
+      keriaNotifications: {
         deleteNotificationRecordById: (id: string) =>
           deleteNotificationMock(id),
       },

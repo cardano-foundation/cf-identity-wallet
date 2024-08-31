@@ -166,7 +166,7 @@ class IdentifierService extends AgentService {
           id: op.name,
           recordType: OperationPendingRecordType.Witness,
         });
-        Agent.agent.signifyNotifications.addPendingOperationToQueue(
+        Agent.agent.keriaNotifications.addPendingOperationToQueue(
           pendingOperation
         );
       }

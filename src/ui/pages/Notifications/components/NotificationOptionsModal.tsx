@@ -35,13 +35,11 @@ const NotificationOptionsModal = ({
   const toggleReadNotification = async () => {
     try {
       if (notification.read) {
-        await Agent.agent.signifyNotifications.unreadNotification(
+        await Agent.agent.keriaNotifications.unreadNotification(
           notification.id
         );
       } else {
-        await Agent.agent.signifyNotifications.readNotification(
-          notification.id
-        );
+        await Agent.agent.keriaNotifications.readNotification(notification.id);
       }
 
       dispatch(
@@ -58,7 +56,7 @@ const NotificationOptionsModal = ({
 
   const removeNotification = async () => {
     try {
-      await Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
         notification.id,
         notification.a.r as NotificationRoute
       );

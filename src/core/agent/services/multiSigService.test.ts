@@ -148,7 +148,7 @@ jest.mock("../../../core/agent/agent", () => ({
         rotateIdentifier: () => jest.fn(),
         updateIdentifier: jest.fn(),
       },
-      signifyNotifications: {
+      keriaNotifications: {
         addPendingOperationToQueue: jest.fn(),
         markNotification: (id: string) => markNotificationMock(id),
         deleteNotificationRecordById: (id: string) =>

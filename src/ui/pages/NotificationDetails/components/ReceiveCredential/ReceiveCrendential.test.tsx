@@ -40,7 +40,7 @@ const acceptAcdcMock = jest.fn(
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
-      signifyNotifications: {
+      keriaNotifications: {
         deleteNotificationRecordById: (id: string) =>
           deleteNotificationMock(id),
       },

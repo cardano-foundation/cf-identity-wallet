@@ -22,7 +22,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getCredentials: jest.fn().mockResolvedValue([]),
         archiveCredential: jest.fn(),
       },
-      signifyNotifications: {
+      keriaNotifications: {
         deleteNotificationRecordById: () => deleteNotificationMock(),
       },
     },

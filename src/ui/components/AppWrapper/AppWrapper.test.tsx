@@ -98,7 +98,7 @@ jest.mock("../../../core/agent/agent", () => ({
         onBasicMessageStateChanged: jest.fn(),
         pickupMessagesFromMediator: jest.fn(),
       },
-      signifyNotifications: {
+      keriaNotifications: {
         pollNotificationsWithCb: jest.fn(),
         pollLongOperationsWithCb: jest.fn(),
         getAllNotifications: jest.fn(),
@@ -386,7 +386,7 @@ describe("Signify operation state changed handler", () => {
         read: false,
       },
     ];
-    Agent.agent.signifyNotifications.getAllNotifications = jest
+    Agent.agent.keriaNotifications.getAllNotifications = jest
       .fn()
       .mockResolvedValue(notifications);
     await signifyOperationStateChangeHandler(

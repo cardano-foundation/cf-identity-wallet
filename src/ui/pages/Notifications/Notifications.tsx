@@ -90,7 +90,7 @@ const Notifications = () => {
     if (notification.read) return;
 
     try {
-      await Agent.agent.signifyNotifications.readNotification(notification.id);
+      await Agent.agent.keriaNotifications.readNotification(notification.id);
 
       dispatch(
         setReadedNotification({

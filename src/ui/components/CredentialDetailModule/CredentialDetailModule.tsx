@@ -113,7 +113,7 @@ const CredentialDetailModule = ({
 
     if (!notification) return;
 
-    await Agent.agent.signifyNotifications.deleteNotificationRecordById(
+    await Agent.agent.keriaNotifications.deleteNotificationRecordById(
       notification.id,
       notification.a.r as NotificationRoute
     );

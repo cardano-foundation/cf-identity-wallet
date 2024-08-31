@@ -12,7 +12,7 @@ import {
   CredentialService,
   IdentifierService,
 } from "./services";
-import { SignifyNotificationService } from "./services/signifyNotificationService";
+import { KeriaNotificationService } from "./services/keriaNotificationService";
 import {
   AgentServicesProps,
   BranAndMnemonic,
@@ -92,7 +92,7 @@ class Agent {
 
   private connectionService!: ConnectionService;
   private credentialService!: CredentialService;
-  private signifyNotificationService!: SignifyNotificationService;
+  private keriaNotificationService!: KeriaNotificationService;
   private authService!: AuthService;
   static isOnline = false;
 
@@ -129,7 +129,7 @@ class Agent {
         this.ipexMessageStorage,
         this.operationPendingStorage,
         this.multiSigs,
-        this.signifyNotifications
+        this.keriaNotificationService
       );
     }
     return this.ipexCommunicationService;
@@ -168,19 +168,26 @@ class Agent {
     return this.basicStorageService;
   }
 
-  get signifyNotifications() {
-    if (!this.signifyNotificationService) {
-      this.signifyNotificationService = new SignifyNotificationService(
+  get keriaNotifications() {
+    if (!this.keriaNotificationService) {
+      this.keriaNotificationService = new KeriaNotificationService(
         this.agentServicesProps,
         this.notificationStorage,
         this.identifierStorage,
         this.operationPendingStorage,
         this.connectionStorage,
         this.ipexMessageStorage,
-        this.credentialStorage
+        this.credentialStorage,
+        this.basicStorage,
+        this.multiSigs,
+        this.ipexCommunications,
+        this.identifiers,
+        this.getKeriaOnlineStatus,
+        this.markAgentStatus,
+        this.connect
       );
     }
-    return this.signifyNotificationService;
+    return this.keriaNotificationService;
   }
 
   get auth() {
