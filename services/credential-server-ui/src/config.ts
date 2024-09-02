@@ -7,7 +7,6 @@ const endpoint = `${url}:${port}`;
 
 const config = {
   endpoint: endpoint,
-  endpoints: [endpoint],
   port,
   path: {
     ping: "/ping",
