@@ -61,8 +61,8 @@
     "segment": "{{length}} words",
     "privacy": {
       "overlay": {
-        "text": "Press the ‘view’ button when you’re ready to see your seed phrase. Remember to make sure nobody is looking!",
-        "button": "View Seed Phrase"
+        "text": "Press the ‘view’ button when you’re ready to see your recovery phrase. Remember to make sure nobody is looking!",
+        "button": "View Recovery Phrase"
       }
     },
     "alert": {
@@ -88,7 +88,7 @@
         }
       },
       "verify": {
-        "text": "Your seed phrase couldn’t be verified. Please, try again or choose an alternative method",
+        "text": "Your recovery phrase couldn’t be verified. Please, try again or choose an alternative method",
         "button": {
           "confirm": "Try again",
           "cancel": "Cancel"
@@ -562,11 +562,11 @@
     },
     "alert": {
       "text": {
-        "verify": "If you've forgotten your passcode, please verify your seed phrase to gain access to your wallet",
-        "restart": "You currently haven't generated a seed phrase, would you like to start your onboarding again?"
+        "verify": "If you've forgotten your passcode, please verify your recovery phrase to gain access to your wallet",
+        "restart": "You currently haven't generated a recovery phrase, would you like to start your onboarding again?"
       },
       "button": {
-        "verify": "Verify your Seed Phrase",
+        "verify": "Verify your Recovery Phrase",
         "restart": "Start again",
         "cancel": "Cancel"
       }
@@ -586,7 +586,7 @@
     },
     "alert": {
       "fail": {
-        "text": "Sorry, the seed phrase you have entered is incorrect!",
+        "text": "Sorry, the recovery phrase you have entered is incorrect!",
         "button": {
           "confirm": "Try again"
         }
@@ -1371,11 +1371,11 @@
     },
     "alert": {
       "text": {
-        "verify": "If you've forgotten your passcode, please verify your seed phrase to gain access to your wallet",
-        "restart": "You currently haven't generated a seed phrase, would you like to start your onboarding again?"
+        "verify": "If you've forgotten your passcode, please verify your recovery phrase to gain access to your wallet",
+        "restart": "You currently haven't generated a recovery phrase, would you like to start your onboarding again?"
       },
       "button": {
-        "verify": "Verify your Seed Phrase",
+        "verify": "Verify your Recovery Phrase",
         "restart": "Start again",
         "cancel": "Cancel"
       }
@@ -1385,11 +1385,11 @@
     "cancel": "Cancel",
     "passcode": {
       "title": "Forgot passcode",
-      "description": "Please verify your seed phrase to reset your passcode. To start typing click on the first option."
+      "description": "Please verify your recovery phrase to reset your passcode. To start typing click on the first option."
     },
     "password": {
       "title": "Forgot password",
-      "description": "Please verify your seed phrase to reset your password. To start typing click on the first option."
+      "description": "Please verify your recovery phrase to reset your password. To start typing click on the first option."
     },
     "newpasscode": {
       "title": "New passcode",
