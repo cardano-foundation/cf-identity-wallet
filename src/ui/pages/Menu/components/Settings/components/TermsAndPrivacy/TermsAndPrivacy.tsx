@@ -4,8 +4,8 @@ import { useState } from "react";
 import { i18n } from "../../../../../../../i18n";
 import { TermsModal } from "../../../../../../components/TermsModal";
 
-const TermAndPrivacy = () => {
-  const [openTerm, setOpenTerm] = useState(false);
+const TermsAndPrivacy = () => {
+  const [openTerms, setOpenTerms] = useState(false);
   const [openPrivacy, setOpenPrivacy] = useState(false);
 
   return (
@@ -17,9 +17,9 @@ const TermAndPrivacy = () => {
           data-testid="settings-security-items"
         >
           <IonItem
-            onClick={() => setOpenTerm(true)}
+            onClick={() => setOpenTerms(true)}
             className="settings-item"
-            data-testid="term-modal-btn"
+            data-testid="terms-modal-btn"
           >
             <IonLabel>
               {i18n.t(
@@ -50,8 +50,8 @@ const TermAndPrivacy = () => {
       </IonCard>
       <TermsModal
         name="terms-of-use"
-        isOpen={openTerm}
-        setIsOpen={setOpenTerm}
+        isOpen={openTerms}
+        setIsOpen={setOpenTerms}
       />
       <TermsModal
         name="privacy-policy"
@@ -62,4 +62,4 @@ const TermAndPrivacy = () => {
   );
 };
 
-export { TermAndPrivacy };
+export { TermsAndPrivacy };

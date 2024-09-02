@@ -1,4 +1,5 @@
-.connections-tab {
+.connections-tab,
+.connections {
   background: var(--ion-color-light);
   z-index: 102 !important;
   padding-inline: 0;
@@ -187,5 +188,14 @@
         }
       }
     }
+  }
+}
+
+.connections .connections-container {
+  ion-item,
+  ion-item-divider,
+  ion-item-group.connections-list {
+    --background: var(--ion-color-light-grey);
+    background: var(--ion-color-light-grey);
   }
 }
