@@ -43,6 +43,7 @@ enum SubMenuKey {
   Crypto,
   Connections,
   ConnectWallet,
+  Chat,
   ManagePassword,
   TermsAndPrivacy,
   RecoverySeedPhrase,

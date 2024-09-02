@@ -33,8 +33,16 @@
         flex-direction: row;
         justify-content: space-between;
 
-        span:last-of-type {
+        * {
+          align-self: center;
+        }
+
+        *:last-child {
           color: rgba(var(--ion-color-secondary-rgb), 0.5);
+        }
+
+        ion-icon {
+          font-size: 1.5rem;
         }
       }
     }
@@ -45,6 +53,10 @@
       font-size: 0.8rem;
       line-height: 1.375rem;
       --min-height: 2rem;
+
+      ion-icon {
+        font-size: 1.2rem;
+      }
     }
   }
 }

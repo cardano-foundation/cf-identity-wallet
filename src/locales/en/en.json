@@ -1107,10 +1107,12 @@
           "actionedit": "Edit",
           "actionconfirm": "Confirm",
           "actioncancel": "Cancel",
-          "name": "Name"
+          "name": "Name",
+          "watchvideo": "Watch the video"
         },
         "crypto": {
-          "title": "Crypto"
+          "title": "Crypto",
+          "sublabel": "Watch the video"
         },
         "connections": {
           "title": "Connections",
@@ -1118,7 +1120,7 @@
         },
         "connectwallet": {
           "title": "Cardano connect",
-          "cip": "CIP-45",
+          "sublabel": "CIP-45",
           "tabheader": "Cardano Connect",
           "connectbtn": "Connect with Cardano",
           "disconnectbeforecreatealert": {
@@ -1180,6 +1182,11 @@
               "decline": "Decline"
             }
           }
+        },
+        "chat": {
+          "title": "Chat",
+          "tabheader": "Chat",
+          "sublabel": "Watch the video"
         }
       }
     }
