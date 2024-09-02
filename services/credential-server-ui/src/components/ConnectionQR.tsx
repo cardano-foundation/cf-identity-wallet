@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import {
   Alert,
   Box,
@@ -12,22 +12,22 @@ import { CopyAll } from "@mui/icons-material";
 import axios from "axios";
 import QRCode from "qrcode.react";
 
-interface GetQRButtonProps {
+interface ConnectionQRProps {
   name: string;
   url: string;
   customCredentialForm?: ReactNode;
   jsonFilePath?: string;
   icon?: ReactNode;
-  onQRGenerated?: (generated: boolean) => void;
+  onNextStep?: () => void;
 }
 
-const GetQRButton: React.FC<GetQRButtonProps> = ({
+const ConnectionQR: React.FC<ConnectionQRProps> = ({
   name,
   url,
   customCredentialForm,
   jsonFilePath,
   icon,
-  onQRGenerated,
+  onNextStep,
 }) => {
   const [responseLink, setResponseLink] = useState("");
   const [showQR, setShowQR] = useState(false);
@@ -37,7 +37,11 @@ const GetQRButton: React.FC<GetQRButtonProps> = ({
   const [showCustomCredential, setShowCustomCredential] = useState(false);
   const [errorOnRequest, setErrorOnRequest] = useState(false);
 
-  const handleClick = async () => {
+  useEffect(() => {
+    handleShowQr();
+  }, []);
+
+  const handleShowQr = async () => {
     try {
       setShowQR(false);
       setShowCircularProgress(true);
@@ -75,10 +79,6 @@ const GetQRButton: React.FC<GetQRButtonProps> = ({
         return;
       }
 
-      if (onQRGenerated) {
-        onQRGenerated(true);
-      }
-
       setShowCircularProgress(false);
       setShowQR(true);
     } catch (error) {
@@ -92,15 +92,14 @@ const GetQRButton: React.FC<GetQRButtonProps> = ({
         {icon}
         {name}
       </Typography>
+      <Typography align="center">
+        To connect, scan this QR code with the scanner of your identity wallet. If you wish to receive credentials to a group identifier, each member or device in the group should individually scan this QR code.
+      </Typography>
       {customCredentialForm &&
         React.cloneElement(customCredentialForm as React.ReactElement<any>, {
           onCustomCredentialChange: setCustomCredential,
         })}
-      <Box sx={{ display: "flex", justifyContent: "right" }}>
-        <Button variant="contained" color="primary" onClick={handleClick}>
-          Request OOBI
-        </Button>
-      </Box>
+
       {showCircularProgress && (
         <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
           <CircularProgress />
@@ -112,8 +111,8 @@ const GetQRButton: React.FC<GetQRButtonProps> = ({
             <QRCode value={responseLink} size={256} />
           </Box>
           <div style={{ display: "flex", justifyContent: "center" }}>
-            <Button onClick={() => navigator.clipboard.writeText(responseLink)}>Copy OOBI URL<CopyAll/></Button>  
-          </div>      
+            <Button onClick={() => navigator.clipboard.writeText(responseLink)}>Copy connection URL<CopyAll /></Button>
+          </div>
         </div>
       )}
       {showCustomCredential && (
@@ -131,8 +130,16 @@ const GetQRButton: React.FC<GetQRButtonProps> = ({
           It was not possible to connect to the server. Try again
         </Alert>
       )}
+      {onNextStep &&
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Button variant="contained" color="primary" onClick={() => onNextStep()}>
+            Next step
+          </Button>
+        </Box>
+      }
+
     </Container>
   );
 };
 
-export default GetQRButton;
+export default ConnectionQR;

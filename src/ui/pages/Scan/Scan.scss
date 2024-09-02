@@ -1,6 +1,11 @@
 .scan-tab {
   padding: 0;
 
+  ion-header {
+    position: absolute;
+    padding-right: 1.25rem;
+  }
+
   ion-grid {
     padding-top: 10vh;
     padding-bottom: 10vh;

@@ -127,7 +127,9 @@ class Agent {
         this.credentialStorage,
         this.notificationStorage,
         this.ipexMessageStorage,
-        this.operationPendingStorage
+        this.operationPendingStorage,
+        this.multiSigs,
+        this.signifyNotifications
       );
     }
     return this.ipexCommunicationService;

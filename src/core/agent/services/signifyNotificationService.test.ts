@@ -19,6 +19,7 @@ const groupGetRequestMock = jest.fn();
 const oobiResolveMock = jest.fn();
 const queryKeyStateMock = jest.fn();
 const markNotificationMock = jest.fn();
+const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const getCredentialMock = jest.fn();
 const admitMock = jest.fn();
 const submitAdmitMock = jest.fn();
@@ -88,6 +89,49 @@ const credentialMetadataMock = {
   updatedAt: "2024-08-09T04:21:19.695Z",
 };
 
+const grantIpexMessageMock = {
+  exn: {
+    v: "KERI10JSON000516_",
+    t: "exn",
+    d: "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL",
+    i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+    p: "",
+    dt: "2024-07-30T04:19:55.801000+00:00",
+    r: "/ipex/grant",
+    q: {},
+    a: {
+      m: "",
+      i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+    },
+    e: {
+      acdc: {
+        d: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+        i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+        s: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+        a: {
+          d: "ELHCh_X2aw7C-aYesOM4La23a5lsoNuJDuCsJuxwO2nq",
+          i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+          dt: "2024-07-30T04:19:55.348000+00:00",
+          attendeeName: "ccc",
+        },
+      },
+      iss: {
+        t: "iss",
+        d: "EHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
+        i: "EEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn",
+        s: "0",
+        dt: "2024-07-30T04:19:55.348000+00:00",
+      },
+      d: "EKBPPnWxYw2I5CtQSyhyn5VUdSTJ61qF_-h-NwmFRkIF",
+    },
+  },
+  pathed: {
+    acdc: "-IABEEqfWy-6jx_FG0RNuNxZBh_jq6Lq1OPuvX5m3v1Bzxdn0AAAAAAAAAAAAAAAAAAAAAAAEHStOgwJku_Ln-YN2ohgWUH-CI07SyJnFppSbF8kG4PO",
+    iss: "-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAEEO0xKzC8FOAXV-JgFZGgb0aIT2A3cPXPt9_0l_qcGM9",
+    anc: "-AABAACBlQqbI_qNpKYkzIog6tauSgt0XufBvGtrumfbnhSInFjSwnaIqZi353QT-c1W_gE9KIz3rgX5QNNWLcqA7bcM",
+  },
+};
+
 const exchangesGetMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -122,6 +166,7 @@ const signifyClient = jest.mocked({
   notifications: () => ({
     list: jest.fn(),
     mark: markNotificationMock,
+    deleteById: deleteNotificationMock,
   }),
   ipex: () => ({
     admit: admitMock,
@@ -203,8 +248,7 @@ const operationPendingGetAllMock = jest.fn();
 const operationPendingStorage = jest.mocked({
   save: jest.fn(),
   delete: jest.fn(),
-  deleteById: jest.fn(),
-  update: jest.fn(),
+  deleteById: jest.fn((id: string) => Promise.resolve(id)),
   findById: jest.fn(),
   findAllByQuery: jest.fn(),
   getAll: operationPendingGetAllMock,
@@ -241,11 +285,17 @@ jest.mock("../../../core/agent/agent", () => ({
       ipexCommunications: {
         grantAcdcFromAgree: jest.fn(),
         createLinkedIpexMessageRecord: jest.fn(),
+        acceptAcdcFromMultisigExn: jest.fn(),
         markAcdc: jest.fn(),
       },
       signifyNotifications: {
+        deleteNotificationRecordById: (id: string) =>
+          deleteNotificationMock(id),
         addPendingOperationToQueue: jest.fn(),
         markAcdcComplete: jest.fn(),
+      },
+      identifiers: {
+        getIdentifier: jest.fn(),
       },
     },
   },
@@ -739,7 +789,6 @@ describe("Signify notification service of agent", () => {
 
   test("Should skip if notification route is /multisig/exn and the identifier is missing ", async () => {
     const callback = jest.fn();
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -811,6 +860,206 @@ describe("Signify notification service of agent", () => {
       await signifyNotificationService.processNotification(notif, callback);
     }
     expect(markNotificationMock).toBeCalledTimes(1);
+  });
+
+  test("Original grant is linked to first received /multisig/exn admit message, and no notification record is created", async () => {
+    const callback = jest.fn();
+    Agent.agent.identifiers.getIdentifier = jest
+      .fn()
+      .mockResolvedValueOnce(identifierMetadataRecordProps);
+
+    const notif = {
+      i: "string",
+      dt: "string",
+      r: false,
+      a: {
+        r: "/multisig/exn",
+        d: "string",
+        m: "",
+      },
+    };
+
+    exchangesGetMock
+      .mockResolvedValueOnce({
+        exn: {
+          v: "KERI10JSON00032d_",
+          t: "exn",
+          d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
+          i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
+          rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+          p: "",
+          dt: "2024-08-28T06:39:55.501000+00:00",
+          r: "/multisig/exn",
+          q: {},
+          a: {
+            i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+            gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+          },
+          e: {
+            exn: {
+              v: "KERI10JSON000178_",
+              t: "exn",
+              d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
+              i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+              rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+              p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+              dt: "2024-08-28T06:39:51.416000+00:00",
+              r: "/ipex/admit",
+              q: {},
+              a: {
+                i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+                m: "",
+              },
+              e: {},
+            },
+            d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
+          },
+        },
+        pathed: {},
+      })
+      .mockResolvedValueOnce(grantIpexMessageMock);
+
+    getCredentialMock.mockResolvedValue(undefined);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
+      {
+        type: "NotificationRecord",
+        id: "id",
+        createdAt: new Date(),
+        a: {
+          r: "/exn/ipex/grant",
+          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+        },
+        route: "/exn/ipex/grant",
+        read: true,
+        linkedGroupRequests: {},
+        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+        updatedAt: new Date(),
+      },
+    ]);
+
+    await signifyNotificationService.processNotification(notif, callback);
+
+    expect(notificationStorage.update).toBeCalledWith({
+      type: "NotificationRecord",
+      id: "id",
+      createdAt: new Date(),
+      a: {
+        r: "/exn/ipex/grant",
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: "/exn/ipex/grant",
+      read: true,
+      linkedGroupRequests: {
+        "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO": false,
+      },
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+      updatedAt: new Date(),
+    });
+    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(notificationStorage.save).toBeCalledTimes(0);
+  });
+
+  test("Auto-joins /multisig/exn admit message and links to grant if we have joined a previous admit message, and no notification record is created", async () => {
+    const callback = jest.fn();
+    Agent.agent.identifiers.getIdentifier = jest
+      .fn()
+      .mockResolvedValueOnce(identifierMetadataRecordProps);
+
+    const noti = {
+      i: "string",
+      dt: "string",
+      r: false,
+      a: {
+        r: "/multisig/exn",
+        d: "string",
+        m: "",
+      },
+    };
+
+    exchangesGetMock
+      .mockResolvedValueOnce({
+        exn: {
+          v: "KERI10JSON00032d_",
+          t: "exn",
+          d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
+          i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
+          rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+          p: "",
+          dt: "2024-08-28T06:39:55.501000+00:00",
+          r: "/multisig/exn",
+          q: {},
+          a: {
+            i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+            gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+          },
+          e: {
+            exn: {
+              v: "KERI10JSON000178_",
+              t: "exn",
+              d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
+              i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+              rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+              p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+              dt: "2024-08-28T06:39:51.416000+00:00",
+              r: "/ipex/admit",
+              q: {},
+              a: {
+                i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+                m: "",
+              },
+              e: {},
+            },
+            d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
+          },
+        },
+        pathed: {},
+      })
+      .mockResolvedValueOnce(grantIpexMessageMock);
+
+    getCredentialMock.mockResolvedValue(undefined);
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
+      {
+        type: "NotificationRecord",
+        id: "id",
+        createdAt: new Date(),
+        a: {
+          r: "/exn/ipex/grant",
+          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+        },
+        route: "/exn/ipex/grant",
+        read: true,
+        linkedGroupRequests: {
+          "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": true,
+        },
+        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+        updatedAt: new Date(),
+      },
+    ]);
+
+    await signifyNotificationService.processNotification(noti, callback);
+
+    expect(
+      Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn
+    ).toBeCalledWith("ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO");
+    expect(notificationStorage.update).toBeCalledWith({
+      type: "NotificationRecord",
+      id: "id",
+      createdAt: new Date(),
+      a: {
+        r: "/exn/ipex/grant",
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: "/exn/ipex/grant",
+      read: true,
+      linkedGroupRequests: {
+        "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO": true,
+        "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": true,
+      },
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+      updatedAt: new Date(),
+    });
+    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(notificationStorage.save).toBeCalledTimes(0);
   });
 });
 
@@ -943,6 +1192,7 @@ describe("Long running operation tracker", () => {
       .mockResolvedValueOnce({
         exn: {
           r: ExchangeRoute.IpexGrant,
+          d: "d",
           e: {
             acdc: {
               d: credentialIdMock,
@@ -957,6 +1207,17 @@ describe("Long running operation tracker", () => {
       recordType: "exchange.receivecredential",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      type: "IdentifierMetadataRecord",
+      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      displayName: "holder",
+      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
+      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
     await signifyNotificationService.processOperation(
       operationRecord,
       callback
@@ -965,6 +1226,79 @@ describe("Long running operation tracker", () => {
       credentialIdMock,
       CredentialStatus.CONFIRMED
     );
+    expect(notificationStorage.save).not.toBeCalled();
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should delete original grant notification when multi-sig admit operation completes", async () => {
+    const callback = jest.fn();
+    const credentialIdMock = "credentialId";
+    signifyClient
+      .exchanges()
+      .get.mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexAdmit,
+          p: "p",
+        },
+      })
+      .mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexGrant,
+          d: "d",
+          e: {
+            acdc: {
+              d: credentialIdMock,
+            },
+          },
+        },
+      });
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "exchange.receivecredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "exchange.receivecredential",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      type: "IdentifierMetadataRecord",
+      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      displayName: "holder",
+      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
+      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
+      {
+        type: "NotificationRecord",
+        id: "id",
+        createdAt: new Date(),
+        a: {
+          r: "/exn/ipex/grant",
+          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+        },
+        route: "/exn/ipex/grant",
+        read: true,
+        linkedGroupRequests: {
+          "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
+        },
+        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+        updatedAt: new Date(),
+      },
+    ]);
+
+    await signifyNotificationService.processOperation(
+      operationRecord,
+      callback
+    );
+    expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
+      credentialIdMock,
+      CredentialStatus.CONFIRMED
+    );
+    expect(notificationStorage.deleteById).toBeCalledWith("id");
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 

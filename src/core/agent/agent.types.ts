@@ -36,6 +36,7 @@ enum MiscRecordId {
   APP_PASSWORD_SKIPPED = "app-password-skipped",
   APP_RECOVERY_WALLET = "recovery-wallet",
   LOGIN_METADATA = "login-metadata",
+  CAMERA_DIRECTION = "camera-direction",
 }
 
 interface ConnectionShortDetails {
@@ -157,7 +158,7 @@ interface KeriaNotification {
   id: string;
   createdAt: string;
   a: Record<string, unknown>;
-  multisigId?: string | undefined;
+  multisigId?: string;
   connectionId: string;
   read: boolean;
 }
