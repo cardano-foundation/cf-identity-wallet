@@ -98,14 +98,7 @@ const Menu = () => {
     SubMenuKey | undefined
   >();
 
-  const resetMenu = () => {
-    setShowConnections(false);
-    setShowSubMenu(false);
-    setSelectedOption(undefined);
-  };
-
   useIonViewWillEnter(() => {
-    resetMenu();
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
   });
 
