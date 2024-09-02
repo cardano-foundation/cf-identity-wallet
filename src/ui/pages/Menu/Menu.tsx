@@ -177,7 +177,7 @@ const Menu = () => {
             ref={connectionsRef}
           />
         ),
-        title: "menu.tab.items.connections.tabheader",
+        title: "connections.tab.title",
         pageId: "connections",
         additionalButtons: (
           <IonButton

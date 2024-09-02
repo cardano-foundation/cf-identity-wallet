@@ -335,7 +335,13 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
             </TabLayout>
           </SideSlider>
         ) : (
-          <ConnectionsBody />
+          (showPlaceholder && (
+            <CardsPlaceholder
+              buttonLabel={i18n.t("connections.tab.create")}
+              buttonAction={handleConnectModal}
+              testId={pageId}
+            />
+          )) || <ConnectionsBody />
         )}
         <ConnectionsOptionModal
           type={RequestType.CONNECTION}
