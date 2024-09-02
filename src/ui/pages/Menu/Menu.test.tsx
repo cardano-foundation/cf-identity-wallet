@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import configureStore from "redux-mock-store";
@@ -7,6 +7,23 @@ import { Menu } from "./Menu";
 import { store } from "../../../store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { SubMenuKey } from "./Menu.types";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import { TabsRoutePath } from "../../../routes/paths";
+
+const combineMock = jest.fn(() => TabsRoutePath.MENU);
+const historyPushMock = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useHistory: () => ({
+    push: (args: unknown) => {
+      historyPushMock(args);
+    },
+    location: {
+      pathname: combineMock(),
+    },
+  }),
+}));
 
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
@@ -19,6 +36,15 @@ const initialState = {
       time: Date.now(),
       passcodeIsSet: true,
     },
+    connectionsCache: {
+      connections: connectionsFix,
+    },
+  },
+  connectionsCache: {
+    connections: connectionsFix,
+  },
+  identifiersCache: {
+    identifiers: filteredIdentifierFix,
   },
 };
 
@@ -51,7 +77,7 @@ describe("Menu Tab", () => {
     ).toBeInTheDocument();
   });
 
-  test("Open connect wallet tab", async () => {
+  test("Open Cardano connect sub-menu", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={store}>
         <Menu />
@@ -77,7 +103,7 @@ describe("Menu Tab", () => {
     ).toBeVisible();
   });
 
-  test("Open Profile tab", async () => {
+  test("Open Profile sub-menu", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <Menu />
@@ -98,6 +124,32 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("profile-title")).toHaveTextContent(
       EN_TRANSLATIONS.menu.tab.items.profile.tabheader
+    );
+  });
+
+  test("Open Connections sub-menu", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <Menu />
+      </Provider>
+    );
+
+    expect(getByTestId("menu-tab")).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.connections.title)
+    ).toBeInTheDocument();
+    const connectionsButton = getByTestId(
+      `menu-input-item-${SubMenuKey.Connections}`
+    );
+
+    act(() => {
+      fireEvent.click(connectionsButton);
+    });
+
+    await waitForIonicReact();
+
+    expect(getByTestId("connections-title")).toHaveTextContent(
+      EN_TRANSLATIONS.menu.tab.items.connections.tabheader
     );
   });
 });

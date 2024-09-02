@@ -1113,7 +1113,8 @@
           "title": "Crypto"
         },
         "connections": {
-          "title": "Connections"
+          "title": "Connections",
+          "tabheader": "Connections"
         },
         "connectwallet": {
           "title": "Cardano connect",
