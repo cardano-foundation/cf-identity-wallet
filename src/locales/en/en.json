@@ -1147,7 +1147,7 @@
               "cancel": "Cancel"
             },
             "missingidentifieralert": {
-              "message": "To connect with Cardano, you need to create a KERI AID identifier. Would you like to create one now?",
+              "message": "To connect with Cardano, you need to create an individual identifier. Would you like to create one now?",
               "confirm": "Create identifier",
               "cancel": "Cancel"
             },
@@ -1171,7 +1171,7 @@
             },
             "stagetwo": {
               "title": "Choose identifier",
-              "message": "Which KERI AID identifier would you like to make the connection with?",
+              "message": "Which individual identifier would you like to make the connection with?",
               "confirm": "Confirm"
             },
             "button": {
@@ -1268,14 +1268,14 @@
       "create": "Add a connection",
       "indentifierselector": {
         "title": "Choose identifier",
-        "message": "Which KERI AID identifier would you like to make the connection with?",
+        "message": "Which identifier would you like to make the connection with?",
         "button": {
           "cancel": "Cancel",
           "confirm": "Confirm"
         }
       },
       "alert": {
-        "message": "To create a connection, you need to create an individual KERI AID identifier. Would you like to create one now?",
+        "message": "To create a connection, you need to create an identifier. Would you like to create one now?",
         "confirm": "Create identifier",
         "cancel": "Cancel"
       },
@@ -1466,7 +1466,7 @@
     },
     "confirm": {
       "title": "Confirm",
-      "subtitle": "Confirm all details for your Keri AID group identifier are accurate",
+      "subtitle": "Confirm all details for your group identifier are accurate",
       "displayname": "Display Name",
       "selectedmembers": "Selected Members",
       "treshold": "Threshold",
@@ -1482,32 +1482,24 @@
       "title": "Display name",
       "placeholder": "Create a name for this identifier"
     },
-    "identifiertype": {
-      "title": "Identifier type",
-      "didkey": "did:key",
-      "keri": "KERI AID"
-    },
     "color": {
       "title": "Choose card colour"
     },
     "aidtype": {
-      "title": "AID type",
+      "title": "Identifier type",
       "default": {
-        "label": "Individual",
-        "tooltip": "Lorem ipsum dolor sit amet"
+        "label": "Individual"
       },
       "multisig": {
-        "label": "Group",
-        "tooltip": "Lorem ipsum dolor sit amet"
+        "label": "Group"
       },
       "delegated": {
-        "label": "Delegated",
-        "tooltip": "Lorem ipsum dolor sit amet"
+        "label": "Delegated"
       }
     },
     "aidinfo": {
-      "title": "AID types",
-      "text": "A description of each KERI AID type you can create identifiers for.",
+      "title": "Identifier types",
+      "text": "A description of each type you can create identifiers for.",
       "individual": {
         "label": "Individual",
         "text": "Use these identifiers to represent all your individual personas. Currently, a single key pair is used to sign statements with these identifiers, and it can be updated. In the future, these identifiers might become more robust with multi-device support and social recovery options."
