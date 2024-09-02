@@ -1,4 +1,4 @@
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import configureStore from "redux-mock-store";
@@ -10,6 +10,7 @@ import { SubMenuKey } from "./Menu.types";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { TabsRoutePath } from "../../../routes/paths";
+import { CHAT_LINK, CRYPTO_LINK } from "../../globals/constants";
 
 const combineMock = jest.fn(() => TabsRoutePath.MENU);
 const historyPushMock = jest.fn();
@@ -23,6 +24,16 @@ jest.mock("react-router-dom", () => ({
       pathname: combineMock(),
     },
   }),
+}));
+
+const browserMock = jest.fn(({ link }: { link: string }) =>
+  Promise.resolve(link)
+);
+jest.mock("@capacitor/browser", () => ({
+  ...jest.requireActual("@capacitor/browser"),
+  Browser: {
+    open: (params: never) => browserMock(params),
+  },
 }));
 
 const mockStore = configureStore();
@@ -75,6 +86,83 @@ describe("Menu Tab", () => {
     expect(
       getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.title)
     ).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.chat.title)
+    ).toBeInTheDocument();
+  });
+
+  test("Open Profile sub-menu", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <Menu />
+      </Provider>
+    );
+
+    expect(getByTestId("menu-tab")).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.profile.title)
+    ).toBeInTheDocument();
+    const profileButton = getByTestId(`menu-input-item-${SubMenuKey.Profile}`);
+
+    act(() => {
+      fireEvent.click(profileButton);
+    });
+
+    await waitForIonicReact();
+
+    expect(getByTestId("profile-title")).toHaveTextContent(
+      EN_TRANSLATIONS.menu.tab.items.profile.tabheader
+    );
+  });
+
+  test("Open Crypto link", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <Menu />
+      </Provider>
+    );
+
+    expect(getByTestId("menu-tab")).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.crypto.title)
+    ).toBeInTheDocument();
+    const cryptoButton = getByTestId(`menu-input-item-${SubMenuKey.Crypto}`);
+
+    act(() => {
+      fireEvent.click(cryptoButton);
+    });
+
+    await waitFor(() => {
+      expect(browserMock).toBeCalledWith({
+        url: CRYPTO_LINK,
+      });
+    });
+  });
+
+  test("Open Connections sub-menu", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <Menu />
+      </Provider>
+    );
+
+    expect(getByTestId("menu-tab")).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.connections.title)
+    ).toBeInTheDocument();
+    const connectionsButton = getByTestId(
+      `menu-input-item-${SubMenuKey.Connections}`
+    );
+
+    act(() => {
+      fireEvent.click(connectionsButton);
+    });
+
+    await waitForIonicReact();
+
+    expect(getByTestId("connections-title")).toHaveTextContent(
+      EN_TRANSLATIONS.menu.tab.items.connections.tabheader
+    );
   });
 
   test("Open Cardano connect sub-menu", async () => {
@@ -103,7 +191,7 @@ describe("Menu Tab", () => {
     ).toBeVisible();
   });
 
-  test("Open Profile sub-menu", async () => {
+  test("Open Chat link", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <Menu />
@@ -112,44 +200,18 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.profile.title)
+      getByText(EN_TRANSLATIONS.menu.tab.items.chat.title)
     ).toBeInTheDocument();
-    const profileButton = getByTestId(`menu-input-item-${SubMenuKey.Profile}`);
+    const chatButton = getByTestId(`menu-input-item-${SubMenuKey.Chat}`);
 
     act(() => {
-      fireEvent.click(profileButton);
+      fireEvent.click(chatButton);
     });
 
-    await waitForIonicReact();
-
-    expect(getByTestId("profile-title")).toHaveTextContent(
-      EN_TRANSLATIONS.menu.tab.items.profile.tabheader
-    );
-  });
-
-  test("Open Connections sub-menu", async () => {
-    const { getByTestId, getByText } = render(
-      <Provider store={storeMocked}>
-        <Menu />
-      </Provider>
-    );
-
-    expect(getByTestId("menu-tab")).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.connections.title)
-    ).toBeInTheDocument();
-    const connectionsButton = getByTestId(
-      `menu-input-item-${SubMenuKey.Connections}`
-    );
-
-    act(() => {
-      fireEvent.click(connectionsButton);
+    await waitFor(() => {
+      expect(browserMock).toBeCalledWith({
+        url: CHAT_LINK,
+      });
     });
-
-    await waitForIonicReact();
-
-    expect(getByTestId("connections-title")).toHaveTextContent(
-      EN_TRANSLATIONS.menu.tab.items.connections.tabheader
-    );
   });
 });
