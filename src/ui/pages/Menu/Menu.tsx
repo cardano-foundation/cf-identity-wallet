@@ -14,9 +14,11 @@ import {
   walletOutline,
   peopleOutline,
   linkOutline,
+  chatbubbleOutline,
   addOutline,
 } from "ionicons/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Browser } from "@capacitor/browser";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -42,6 +44,7 @@ import { Settings } from "./components/Settings";
 import { ProfileOptionRef } from "./components/Profile/Profile.types";
 import { Connections } from "../Connections";
 import { ConnectionsOptionRef } from "../Connections/Connections.types";
+import { CHAT_LINK, CRYPTO_LINK } from "../../globals/constants";
 
 const emptySubMenu = {
   Component: () => <></>,
@@ -130,6 +133,21 @@ const Menu = () => {
   useEffect(() => {
     setShowConnections(selectedOption === SubMenuKey.Connections);
   }, [selectedOption]);
+
+  const handleOpenUrl = (key: SubMenuKey.Crypto | SubMenuKey.Chat) => {
+    switch (key) {
+    case SubMenuKey.Crypto: {
+      Browser.open({ url: CRYPTO_LINK });
+      break;
+    }
+    case SubMenuKey.Chat: {
+      Browser.open({ url: CHAT_LINK });
+      break;
+    }
+    default:
+      return;
+    }
+  };
 
   const submenuMapData: [SubMenuKey, SubMenuData][] = [
     [
@@ -268,6 +286,9 @@ const Menu = () => {
   const submenuMap = useMemo(() => new Map(submenuMapData), [isEditingProfile]);
 
   const showSelectedOption = (key: SubMenuKey) => {
+    if (key === SubMenuKey.Crypto || key === SubMenuKey.Chat) {
+      handleOpenUrl(key);
+    }
     if (!submenuMap.has(key)) return;
     setShowSubMenu(true);
     setSelectedOption(key);
@@ -300,6 +321,7 @@ const Menu = () => {
       itemKey: SubMenuKey.Crypto,
       icon: walletOutline,
       label: `${i18n.t("menu.tab.items.crypto.title")}`,
+      subLabel: `${i18n.t("menu.tab.items.crypto.sublabel")}`,
     },
     {
       itemKey: SubMenuKey.Connections,
@@ -310,7 +332,13 @@ const Menu = () => {
       itemKey: SubMenuKey.ConnectWallet,
       icon: linkOutline,
       label: `${i18n.t("menu.tab.items.connectwallet.title")}`,
-      subLabel: `${i18n.t("menu.tab.items.connectwallet.cip")}`,
+      subLabel: `${i18n.t("menu.tab.items.connectwallet.sublabel")}`,
+    },
+    {
+      itemKey: SubMenuKey.Chat,
+      icon: chatbubbleOutline,
+      label: `${i18n.t("menu.tab.items.chat.title")}`,
+      subLabel: `${i18n.t("menu.tab.items.chat.sublabel")}`,
     },
   ];
 
