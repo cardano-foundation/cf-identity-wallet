@@ -134,7 +134,7 @@ const Menu = () => {
     setShowConnections(selectedOption === SubMenuKey.Connections);
   }, [selectedOption]);
 
-  const handleOpenUrl = (key: SubMenuKey) => {
+  const handleOpenUrl = (key: SubMenuKey.Crypto | SubMenuKey.Chat) => {
     switch (key) {
     case SubMenuKey.Crypto: {
       Browser.open({ url: CRYPTO_LINK });
