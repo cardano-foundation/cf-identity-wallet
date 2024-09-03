@@ -15,7 +15,6 @@ const IdentifierStage1BodyInit = ({
   handleDone,
   oobi,
   handleScanButton,
-  groupMetadata,
 }: IdentifierStage1BodyProps) => {
   const dispatch = useAppDispatch();
   const copyToClipboard = () => {
@@ -39,11 +38,7 @@ const IdentifierStage1BodyInit = ({
         className="multisig-share-note"
         data-testid="multisig-share-note-top"
       >
-        {i18n.t(
-          groupMetadata?.groupInitiator
-            ? "createidentifier.share.notes.top"
-            : "createidentifier.receive.notes.top"
-        )}
+        {i18n.t("createidentifier.share.notes.top")}
       </p>
       <div
         className={`multisig-share-qr-code${oobi.length ? " reveal" : " blur"}`}
@@ -90,11 +85,7 @@ const IdentifierStage1BodyInit = ({
         className="multisig-share-note"
         data-testid="multisig-share-note-middle"
       >
-        {i18n.t(
-          groupMetadata?.groupInitiator
-            ? "createidentifier.share.notes.middle"
-            : "createidentifier.receive.notes.middle"
-        )}
+        {i18n.t("createidentifier.share.notes.middle")}
       </p>
       <div
         className="share-identifier-scan-button"

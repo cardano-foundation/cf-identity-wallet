@@ -24,6 +24,7 @@ const Scan = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+  const [tabIsOpen, setTabIsOpen] = useState(false);
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentToastMsg = useAppSelector(getToastMsg);
   const [isValueCaptured, setIsValueCaptured] = useState(false);
@@ -33,6 +34,10 @@ const Scan = () => {
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.SCAN }));
   });
+
+  useEffect(() => {
+    setTabIsOpen(history.location.pathname === TabsRoutePath.SCAN);
+  }, [history.location.pathname]);
 
   useEffect(() => {
     if (isValueCaptured) {
@@ -72,6 +77,7 @@ const Scan = () => {
     <TabLayout
       pageId={pageId}
       header={supportMultiCamera}
+      customClass={tabIsOpen ? "visible" : "hidden"}
       additionalButtons={
         <IonButton
           shape="round"

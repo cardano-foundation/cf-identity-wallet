@@ -23,7 +23,6 @@ import { EarlierNotification } from "./components";
 import { EarlierNotificationRef } from "./components/EarlierNotification.types";
 import { NotificationOptionsModal } from "./components/NotificationOptionsModal";
 import { showError } from "../../utils/error";
-import { ToastMsgType } from "../../globals/types";
 
 const Chip = ({ filter, label, isActive, onClick }: FilterChipProps) => (
   <span>
@@ -42,6 +41,7 @@ const Notifications = () => {
   const dispatch = useAppDispatch();
   const history = useHistory();
   const notifications = useAppSelector(getNotificationsCache);
+  const [tabIsOpen, setTabIsOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(NotificationFilter.All);
   const earlierNotificationRef = useRef<EarlierNotificationRef>(null);
   const [selectedItem, setSelectedItem] = useState<KeriaNotification | null>(
@@ -85,6 +85,13 @@ const Notifications = () => {
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.NOTIFICATIONS }));
   });
+
+  useEffect(() => {
+    if (history.location.pathname !== TabsRoutePath.NOTIFICATIONS) {
+      earlierNotificationRef.current?.reset();
+    }
+    setTabIsOpen(history.location.pathname === TabsRoutePath.NOTIFICATIONS);
+  }, [history.location.pathname]);
 
   const maskAsReaded = async (notification: KeriaNotification) => {
     if (notification.read) return;
@@ -140,16 +147,12 @@ const Notifications = () => {
     setSelectedItem(item);
   };
 
-  useEffect(() => {
-    if (history.location.pathname !== TabsRoutePath.NOTIFICATIONS)
-      earlierNotificationRef.current?.reset();
-  }, [history.location.pathname]);
-
   return (
     <TabLayout
       pageId={pageId}
       header={true}
       title={`${i18n.t("notifications.tab.header")}`}
+      customClass={tabIsOpen ? "visible" : "hidden"}
     >
       <div className="notifications-tab-chips">
         {filterOptions.map((option) => (

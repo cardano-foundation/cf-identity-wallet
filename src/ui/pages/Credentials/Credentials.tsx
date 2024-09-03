@@ -6,6 +6,7 @@ import {
 } from "@ionic/react";
 import { addOutline, peopleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -86,10 +87,11 @@ const AdditionalButtons = ({
 const Credentials = () => {
   const pageId = "credentials-tab";
   const dispatch = useAppDispatch();
+  const history = useHistory();
   const credsCache = useAppSelector(getCredsCache);
   const archivedCreds = useAppSelector(getCredsArchivedCache);
   const favCredsCache = useAppSelector(getFavouritesCredsCache);
-
+  const [tabIsOpen, setTabIsOpen] = useState(false);
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
@@ -142,6 +144,10 @@ const Credentials = () => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDENTIALS }));
   });
 
+  useEffect(() => {
+    setTabIsOpen(history.location.pathname === TabsRoutePath.CREDENTIALS);
+  }, [history.location.pathname]);
+
   const findTimeById = (id: string) => {
     const found = favCredsCache.find((item) => item.id === id);
     return found ? found.time : null;
@@ -188,7 +194,7 @@ const Credentials = () => {
       : navAnimation === "favourite"
         ? "favorite-credential-nav"
         : ""
-  }`;
+  } ${tabIsOpen ? "visible" : "hidden"}`;
 
   const handleArchivedCredentialsDisplayChange = (value: boolean) => {
     if (value === archivedCredentialsIsOpen) return;

@@ -19,6 +19,7 @@ import {
 } from "ionicons/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Browser } from "@capacitor/browser";
+import { useHistory } from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -89,7 +90,9 @@ const MenuItem = ({
 
 const Menu = () => {
   const pageId = "menu-tab";
+  const history = useHistory();
   const dispatch = useAppDispatch();
+  const [tabIsOpen, setTabIsOpen] = useState(false);
   const currentOperation = useAppSelector(getCurrentOperation);
   const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
   const profileRef = useRef<ProfileOptionRef>(null);
@@ -104,6 +107,10 @@ const Menu = () => {
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
   });
+
+  useEffect(() => {
+    setTabIsOpen(history.location.pathname === TabsRoutePath.MENU);
+  }, [history.location.pathname]);
 
   const backHardwareConfig = useMemo(
     () => ({
@@ -356,6 +363,7 @@ const Menu = () => {
         pageId={pageId}
         hardwareBackButtonConfig={backHardwareConfig}
         header={true}
+        customClass={tabIsOpen ? "visible" : "hidden"}
         title={`${i18n.t("menu.tab.header")}`}
         additionalButtons={<AdditionalButtons />}
       >

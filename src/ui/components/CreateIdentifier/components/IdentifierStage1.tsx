@@ -120,26 +120,28 @@ const IdentifierStage1 = ({
 
   return (
     <>
-      {resumeMultiSig?.signifyName.length || initiated ? (
-        <IdentifierStage1BodyResume
-          componentId={componentId}
-          handleDone={handleDone}
-          handleInitiateMultiSig={handleInitiateMultiSig}
-          oobi={oobi}
-          groupMetadata={groupMetadata}
-          handleScanButton={handleScanButton}
-          scannedConections={scannedConections}
-        />
-      ) : (
-        <IdentifierStage1BodyInit
-          componentId={componentId}
-          handleDone={handleDone}
-          oobi={oobi}
-          groupMetadata={groupMetadata}
-          handleScanButton={handleScanButton}
-          scannedConections={scannedConections}
-        />
-      )}
+      {resumeMultiSig?.signifyName.length ||
+      initiated ||
+      scannedConections?.length ? (
+          <IdentifierStage1BodyResume
+            componentId={componentId}
+            handleDone={handleDone}
+            handleInitiateMultiSig={handleInitiateMultiSig}
+            oobi={oobi}
+            groupMetadata={groupMetadata}
+            handleScanButton={handleScanButton}
+            scannedConections={scannedConections}
+          />
+        ) : (
+          <IdentifierStage1BodyInit
+            componentId={componentId}
+            handleDone={handleDone}
+            oobi={oobi}
+            groupMetadata={groupMetadata}
+            handleScanButton={handleScanButton}
+            scannedConections={scannedConections}
+          />
+        )}
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
