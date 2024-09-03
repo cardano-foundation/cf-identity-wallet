@@ -300,10 +300,10 @@ describe("Identifier Stage 1", () => {
       );
 
       expect(
-        getByText(EN_TRANSLATIONS.createidentifier.receive.notes.top)
+        getByText(EN_TRANSLATIONS.createidentifier.share.notes.top)
       ).toBeInTheDocument();
       expect(
-        getByText(EN_TRANSLATIONS.createidentifier.receive.notes.middle)
+        getByText(EN_TRANSLATIONS.createidentifier.share.notes.middle)
       ).toBeInTheDocument();
 
       act(() => {
