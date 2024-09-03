@@ -36,6 +36,18 @@ async function requestDisclosure(req: Request, res: Response): Promise<void> {
   httpResponse(res, response);
 }
 
+async function contactCredentials(req: Request, res: Response): Promise<void> {
+  const { contactId } = req.body;
+
+  const data = Agent.agent.contactCredentials(contactId);
+  
+  let response: ResponseData<any> = {
+    statusCode: 200,
+    success: true,
+    data: data,
+  };
+}
+
 async function revokeCredential(req: Request, res: Response): Promise<void> {
   const { credentialId, holder } = req.body;
   let response: ResponseData<string> = {
@@ -65,4 +77,4 @@ async function revokeCredential(req: Request, res: Response): Promise<void> {
   httpResponse(res, response);
 }
 
-export { issueAcdcCredential, requestDisclosure, revokeCredential };
+export { issueAcdcCredential, requestDisclosure, revokeCredential, contactCredentials };

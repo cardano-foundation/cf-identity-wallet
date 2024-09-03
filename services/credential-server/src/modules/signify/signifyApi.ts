@@ -308,6 +308,10 @@ export class SignifyApi {
     return this.signifyClient.contacts().list();
   }
 
+  async contactCredentials(connectionId : string): Promise<any> {
+    return this.signifyClient.credentials().list({ filter: { '-a-i': connectionId } });
+  }
+
   async agreeToAcdcFromOffer(
     senderName: string,
     offerSaid: string,

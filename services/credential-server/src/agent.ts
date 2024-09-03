@@ -84,6 +84,10 @@ class Agent {
     return this.signifyApi.contacts();
   }
 
+  async contactCredentials(contactId: string) {
+    return this.signifyApi.contactCredentials(contactId);
+  }
+
   async revokeCredential(credentialId: string, holder: string) {
     return this.signifyApi.revokeCredential(Agent.HOLDER_AID_NAME, holder, credentialId);
   }

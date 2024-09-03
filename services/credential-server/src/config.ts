@@ -21,6 +21,7 @@ const config = {
     issueAcdcCredential: "/issueAcdcCredential",
     schemaOobi: "/oobi/:id",
     contacts: "/contacts",
+    contactCredentials: "/contactCredentials",
     resolveOobi: "/resolveOobi",
     requestDisclosure: "/requestDisclosure",
     revokeCredential: "/revokeCredential",
