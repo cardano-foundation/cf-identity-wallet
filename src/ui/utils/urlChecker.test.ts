@@ -1,6 +1,7 @@
 import { isValidHttpUrl } from "./urlChecker";
 
 const validUrl = [
+  "http://domain:1120/params/dasdadada?name=any",
   "https://a.long.sub-domain.example.com/foo/bar?foo=bar&boo=far#a%20b",
   "www.police.academy",
   "https://x.com/?twitter?",

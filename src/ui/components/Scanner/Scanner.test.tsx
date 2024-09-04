@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import EN_Translation from "../../../locales/en/en.json";
+import { setOpenConnectionDetail } from "../../../store/reducers/connectionsCache";
 import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
@@ -25,8 +26,15 @@ jest.mock("@ionic/react", () => ({
     isOpen ? <div {...props}>{children}</div> : null,
 }));
 
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useHistory: () => ({
+    push: jest.fn(),
+  }),
+}));
+
 const startScan = jest.fn(
-  (args: any) =>
+  (args: unknown) =>
     new Promise((resolve) => {
       setTimeout(() => {
         resolve({
@@ -47,7 +55,7 @@ jest.mock("@capacitor-community/barcode-scanner", () => {
           granted: true,
         }),
       hideBackground: jest.fn(),
-      startScan: (args: any) => startScan(args),
+      startScan: (args: unknown) => startScan(args),
       stopScan: jest.fn(),
       showBackground: jest.fn(),
     },
@@ -525,6 +533,114 @@ describe("Scanner", () => {
         setConnectUrl(
           "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6"
         )
+      );
+    });
+  });
+
+  test("Duplicate connection error handle", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_CONNECTION,
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      throw new Error("Record already exists with id connectionId");
+    });
+
+    startScan.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              hasContent: true,
+              content: "http://kerid:3000/agent",
+            });
+          }, 100);
+        })
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setOpenConnectionDetail("connectionId")
+      );
+    });
+  });
+
+  test("Invalid connection url handle", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_CONNECTION,
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    startScan.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              hasContent: true,
+              content: "Invalid URL",
+            });
+          }, 100);
+        })
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.SCANNER_ERROR)
       );
     });
   });

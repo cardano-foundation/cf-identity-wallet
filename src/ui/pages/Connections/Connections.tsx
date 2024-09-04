@@ -28,7 +28,9 @@ import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getConnectionsCache,
+  getOpenConnectionId,
   removeConnectionCache,
+  setOpenConnectionDetail,
 } from "../../../store/reducers/connectionsCache";
 import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
 import {
@@ -71,6 +73,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     const currentOperation = useAppSelector(getCurrentOperation);
     const connectionsCache = useAppSelector(getConnectionsCache);
     const identifierCache = useAppSelector(getIdentifiersCache);
+    const openDetailId = useAppSelector(getOpenConnectionId);
     const availableIdentifiers = identifierCache.filter(
       (item) => !item.isPending
     );
@@ -163,7 +166,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       setOpenIdentifierMissingAlert(false);
     };
 
-    const handleShowConnectionDetails = async (
+    const handleShowConnectionDetails = useCallback(async (
       item: ConnectionShortDetails
     ) => {
       if (item.status === ConnectionStatus.PENDING) {
@@ -184,7 +187,28 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
         pathname: nextPath.pathname,
         state: item,
       });
-    };
+    }, [dispatch, history, stateCache]);
+
+    useEffect(() => {
+      if (!openDetailId) return;
+      const connection = connectionsCache[openDetailId];
+  
+      if (!connection) return;
+  
+      setShowConnections(true);
+      dispatch(setOpenConnectionDetail(undefined));
+  
+      setTimeout(() => {
+        handleShowConnectionDetails(connection);
+      }, 250);
+    }, [
+      connectionsCache,
+      dispatch,
+      handleShowConnectionDetails,
+      openDetailId,
+      setShowConnections,
+      showConnections,
+    ]);
 
     const AdditionalButtons = () => {
       return (

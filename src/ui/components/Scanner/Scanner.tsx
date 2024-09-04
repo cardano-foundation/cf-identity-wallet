@@ -13,11 +13,15 @@ import {
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { updateOrAddMultisigConnectionCache } from "../../../store/reducers/connectionsCache";
+import {
+  setOpenConnectionDetail,
+  updateOrAddMultisigConnectionCache,
+} from "../../../store/reducers/connectionsCache";
 import {
   getMultiSigGroupCache,
   setMultiSigGroupCache,
@@ -33,6 +37,7 @@ import {
 import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
+import { isValidHttpUrl } from "../../utils/urlChecker";
 import { CreateIdentifier } from "../CreateIdentifier";
 import { CustomInput } from "../CustomInput";
 import { TabsRoutePath } from "../navigation/TabsMenu";
@@ -40,6 +45,10 @@ import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
 import { ScannerProps } from "./Scanner.types";
+
+const RECORD_ALREADY_EXISTS_ERROR_MSG = "Record already exists with id";
+
+const INVALID_CONNECTION_URL = "Invalid connection url";
 
 const Scanner = forwardRef(
   (
@@ -52,6 +61,7 @@ const Scanner = forwardRef(
     ref
   ) => {
     const componentId = "scanner";
+    const history = useHistory();
     const dispatch = useAppDispatch();
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
     const currentOperation = useAppSelector(getCurrentOperation);
@@ -150,8 +160,32 @@ const Scanner = forwardRef(
       handleReset?.();
     };
 
+    const handleConnectionError = (e: Error) => {
+      if (e.message.includes(RECORD_ALREADY_EXISTS_ERROR_MSG)) {
+        showError(
+          "Scanner Error:",
+          e,
+          dispatch,
+          ToastMsgType.DUPLICATE_CONNECTION
+        );
+        const connectionId = e.message
+          .replace(RECORD_ALREADY_EXISTS_ERROR_MSG, "")
+          .trim();
+        dispatch(setOpenConnectionDetail(connectionId));
+        history.push(TabsRoutePath.IDENTIFIERS);
+        return;
+      }
+
+      showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
+      initScan();
+    };
+
     const handleResolveOobi = async (content: string) => {
       try {
+        if (!isValidHttpUrl(content)) {
+          throw new Error(INVALID_CONNECTION_URL);
+        }
+
         const invitation = await Agent.agent.connections.connectByOobiUrl(
           content
         );
@@ -186,8 +220,12 @@ const Scanner = forwardRef(
           dispatch(setToastMsg(ToastMsgType.NEW_MULTI_SIGN_MEMBER));
         }
       } catch (e) {
-        showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
-        initScan();
+        if (!content.includes("groupId")) {
+          handleConnectionError(e as Error);
+        } else {
+          showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
+          initScan();
+        }
       }
     };
 
