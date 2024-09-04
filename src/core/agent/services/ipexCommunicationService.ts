@@ -96,7 +96,6 @@ class IpexCommunicationService extends AgentService {
       .exchanges()
       .get(grantNoteRecord.a.d as string);
 
-    const credentialId = grantExn.exn.e.acdc.d;
     const connectionId = grantExn.exn.i;
 
     const holder = await this.identifierStorage.getIdentifierMetadata(

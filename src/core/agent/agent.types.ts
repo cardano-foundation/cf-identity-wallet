@@ -114,19 +114,10 @@ interface ConnectionStateChangedEvent extends BaseEventEmitter {
 
 interface AcdcStateChangedEvent extends BaseEventEmitter {
   type: typeof AcdcEventTypes.AcdcStateChanged;
-  payload:
-    | {
-        status: CredentialStatus.PENDING;
-        credential: CredentialShortDetails;
-      }
-    | {
-        status: CredentialStatus.CONFIRMED;
-        credential: CredentialShortDetails;
-      }
-    | {
-        status: CredentialStatus.REVOKED;
-        credential: CredentialShortDetails;
-      };
+  payload: {
+    status: CredentialStatus;
+    credential: CredentialShortDetails;
+  };
 }
 
 interface KeriaStatusChangedEvent extends BaseEventEmitter {
