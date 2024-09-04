@@ -413,7 +413,7 @@ class IpexCommunicationService extends AgentService {
 
     switch (route) {
     case ExchangeRoute.IpexAdmit:
-      await this.acceptAcdcFromMultisigExn(id);
+      await this.acceptAcdc(id);
       break;
     case ExchangeRoute.IpexGrant:
       await this.acceptPresentAcdcFromMultisigExn(id);
@@ -573,7 +573,7 @@ class IpexCommunicationService extends AgentService {
     this.signifyNotificationService.addPendingOperationToQueue(
       pendingOperation
     );
-    this.signifyNotificationService.deleteNotificationRecordById(
+    await this.signifyNotificationService.deleteNotificationRecordById(
       id,
       notifRecord.a.r as NotificationRoute
     );

@@ -1,15 +1,30 @@
 import { HabState, State } from "signify-ts";
 
+interface CommonExn {
+  v: string;
+  t: string;
+  d: string;
+  i: string;
+  p: string;
+  dt: string;
+  r: string;
+  q: any;
+}
+
+interface IcpExn extends CommonExn {
+  s: string;
+  kt: string;
+  k: string[];
+  nt: string;
+  n: string[];
+  bt: string;
+  b: string[];
+  c: any[];
+  a: any[];
+}
+
 interface InceptMultiSigExnMessage {
-  exn: {
-    v: string;
-    t: string;
-    d: string;
-    i: string;
-    p: string;
-    dt: string;
-    r: string;
-    q: any;
+  exn: CommonExn & {
     a: {
       gid: string;
       smids: string[];
@@ -18,21 +33,7 @@ interface InceptMultiSigExnMessage {
       name: string;
     };
     e: {
-      icp: {
-        v: string;
-        t: string;
-        d: string;
-        i: string;
-        s: string;
-        kt: string;
-        k: string[];
-        nt: string;
-        n: string[];
-        bt: string;
-        b: string[];
-        c: any[];
-        a: any[];
-      };
+      icp: IcpExn;
       d: string;
     };
   };
@@ -59,30 +60,13 @@ enum MultiSigRoute {
 }
 
 interface IpexGrantMultiSigExn {
-  exn: {
-    v: string;
-    t: string;
-    d: string;
-    i: string;
-    p: string;
-    dt: string;
-    r: string;
-    q: any;
+  exn: CommonExn & {
     a: {
       gid: string;
       i: string;
     };
     e: {
-      exn: {
-        v: string;
-        t: string;
-        d: string;
-        i: string;
-        rp: string;
-        p: string;
-        dt: string;
-        r: string;
-        q: any;
+      exn: CommonExn & {
         a: {
           i: string;
           m: string;
