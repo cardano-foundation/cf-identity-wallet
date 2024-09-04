@@ -43,11 +43,7 @@ import { TabsRoutePath } from "../navigation/TabsMenu";
 import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
-import { ScannerProps } from "./Scanner.types";
-
-const RECORD_ALREADY_EXISTS_ERROR_MSG = "Record already exists with id";
-
-const INVALID_CONNECTION_URL = "Invalid connection url";
+import { ErrorMessage, ScannerProps } from "./Scanner.types";
 
 const Scanner = forwardRef(
   (
@@ -161,7 +157,7 @@ const Scanner = forwardRef(
     };
 
     const handleConnectionError = (e: Error) => {
-      if (e.message.includes(RECORD_ALREADY_EXISTS_ERROR_MSG)) {
+      if (e.message.includes(ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG)) {
         showError(
           "Scanner Error:",
           e,
@@ -169,7 +165,7 @@ const Scanner = forwardRef(
           ToastMsgType.DUPLICATE_CONNECTION
         );
         const connectionId = e.message
-          .replace(RECORD_ALREADY_EXISTS_ERROR_MSG, "")
+          .replace(ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG, "")
           .trim();
         dispatch(setOpenConnectionDetail(connectionId));
         handleReset?.();
@@ -183,7 +179,7 @@ const Scanner = forwardRef(
     const handleResolveOobi = async (content: string) => {
       try {
         if (!isValidHttpUrl(content)) {
-          throw new Error(INVALID_CONNECTION_URL);
+          throw new Error(ErrorMessage.INVALID_CONNECTION_URL);
         }
 
         const invitation = await Agent.agent.connections.connectByOobiUrl(
