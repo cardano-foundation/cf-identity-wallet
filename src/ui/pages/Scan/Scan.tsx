@@ -24,6 +24,7 @@ const Scan = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentToastMsg = useAppSelector(getToastMsg);
   const [isValueCaptured, setIsValueCaptured] = useState(false);

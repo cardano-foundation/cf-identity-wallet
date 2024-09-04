@@ -1,6 +1,14 @@
 .tab-layout {
   padding-inline: 1.25rem;
 
+  &.hidden {
+    visibility: hidden;
+  }
+
+  &.visible {
+    visibility: visible;
+  }
+
   ion-toolbar,
   .toolbar-container,
   ion-grid,

@@ -78,9 +78,9 @@ const TabLayout = ({
 
   return (
     <IonPage
-      className={`tab-layout ${pageId} ${!isActive ? " " + "ion-hide" : ""} ${
-        customClass ? " " + customClass : ""
-      }`}
+      className={`tab-layout ${pageId} ${
+        !isActive ? " " + "ion-hide hidden" : "visible"
+      } ${customClass ? " " + customClass : ""}`}
       data-testid={pageId}
       id={pageId}
     >
