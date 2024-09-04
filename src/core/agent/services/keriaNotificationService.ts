@@ -17,6 +17,7 @@ import {
   CredentialStorage,
   IdentifierStorage,
   IpexMessageStorage,
+  NotificationRecordStorageProps,
   NotificationStorage,
   OperationPendingStorage,
 } from "../records";
@@ -85,108 +86,7 @@ class KeriaNotificationService extends AgentService {
 
   async pollNotificationsWithCb(callback: (event: KeriaNotification) => void) {
     try {
-      let notificationQuery = {
-        nextIndex: 0,
-        lastNotificationId: "",
-      };
-      const notificationQueryRecord = await this.basicStorage.findById(
-        MiscRecordId.KERIA_NOTIFICATION_MARKER
-      );
-      if (!notificationQueryRecord) {
-        await this.basicStorage.save({
-          id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
-          content: notificationQuery,
-        });
-      } else {
-        notificationQuery =
-          notificationQueryRecord.content as unknown as KeriaNotificationMarker;
-      }
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        if (!this.loggedIn || !this.getKeriaOnlineStatus()) {
-          await new Promise((rs) =>
-            setTimeout(rs, KeriaNotificationService.CHECK_READINESS_INTERNAL)
-          );
-          continue;
-        }
-
-        const startFetchingIndex =
-          notificationQuery.nextIndex > 0 ? notificationQuery.nextIndex - 1 : 0;
-
-        let notifications;
-        try {
-          notifications = await this.props.signifyClient
-            .notifications()
-            .list(startFetchingIndex, startFetchingIndex + 24);
-        } catch (error) {
-          const errorMessage = (error as Error).message;
-          /** If the error is failed to fetch with signify,
-           * we retry until the connection is secured*/
-          if (
-            (/Failed to fetch/gi.test(errorMessage) ||
-              /Load failed/gi.test(errorMessage)) &&
-            this.getKeriaOnlineStatus()
-          ) {
-            // Possible that bootAndConnect is called from @OnlineOnly in between loops,
-            // so check if its gone down to avoid having 2 bootAndConnect loops
-            this.markAgentStatus(false);
-            // This will hang the loop until the connection is secured again
-            await this.connect();
-          } else {
-            throw error;
-          }
-        }
-        if (!notifications) {
-          // KERIA went down while querying, now back online
-          continue;
-        }
-        if (
-          notificationQuery.nextIndex > 0 &&
-          (notifications.notes.length == 0 ||
-            notifications.notes[0].i !== notificationQuery.lastNotificationId)
-        ) {
-          // This is to verify no notifications were deleted for some reason (which affects the batch range)
-          notificationQuery = {
-            nextIndex: 0,
-            lastNotificationId: "",
-          };
-          await this.basicStorage.createOrUpdateBasicRecord(
-            new BasicRecord({
-              id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
-              content: notificationQuery,
-            })
-          );
-          continue;
-        }
-        if (notificationQuery.nextIndex > 0) {
-          // Since the first item is the (next index - 1), we can ignore it
-          notifications.notes.shift();
-        }
-        for (const notif of notifications.notes) {
-          try {
-            await this.processNotification(notif, callback);
-            const nextNotificationIndex = notificationQuery.nextIndex + 1;
-            notificationQuery = {
-              nextIndex: nextNotificationIndex,
-              lastNotificationId: notif.i,
-            };
-            await this.basicStorage.createOrUpdateBasicRecord(
-              new BasicRecord({
-                id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
-                content: notificationQuery,
-              })
-            );
-          } catch (error) {
-            /* eslint-disable no-console */
-            console.error("Error when process a notification", error);
-          }
-        }
-        if (!notifications.notes.length) {
-          await new Promise((rs) =>
-            setTimeout(rs, KeriaNotificationService.POLL_KERIA_INTERVAL)
-          );
-        }
-      }
+      this.pollNotifications(callback);
     } catch (error) {
       /* eslint-disable no-console */
       console.error("Error at pollNotificationsWithCb", error);
@@ -195,6 +95,114 @@ class KeriaNotificationService extends AgentService {
         KeriaNotificationService.POLL_KERIA_INTERVAL,
         callback
       );
+    }
+  }
+
+  private async pollNotifications(
+    callback: (event: KeriaNotification) => void
+  ) {
+    let notificationQuery = {
+      nextIndex: 0,
+      lastNotificationId: "",
+    };
+    const notificationQueryRecord = await this.basicStorage.findById(
+      MiscRecordId.KERIA_NOTIFICATION_MARKER
+    );
+    if (!notificationQueryRecord) {
+      await this.basicStorage.save({
+        id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
+        content: notificationQuery,
+      });
+    } else {
+      notificationQuery =
+        notificationQueryRecord.content as unknown as KeriaNotificationMarker;
+    }
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      if (!this.loggedIn || !this.getKeriaOnlineStatus()) {
+        await new Promise((rs) =>
+          setTimeout(rs, KeriaNotificationService.CHECK_READINESS_INTERNAL)
+        );
+        continue;
+      }
+
+      const startFetchingIndex =
+        notificationQuery.nextIndex > 0 ? notificationQuery.nextIndex - 1 : 0;
+
+      let notifications;
+      try {
+        notifications = await this.props.signifyClient
+          .notifications()
+          .list(startFetchingIndex, startFetchingIndex + 24);
+      } catch (error) {
+        const errorMessage = (error as Error).message;
+        /** If the error is failed to fetch with signify,
+         * we retry until the connection is secured*/
+        if (
+          (/Failed to fetch/gi.test(errorMessage) ||
+            /Load failed/gi.test(errorMessage)) &&
+          this.getKeriaOnlineStatus()
+        ) {
+          // Possible that bootAndConnect is called from @OnlineOnly in between loops,
+          // so check if its gone down to avoid having 2 bootAndConnect loops
+          this.markAgentStatus(false);
+          // This will hang the loop until the connection is secured again
+          await this.connect();
+        } else {
+          throw error;
+        }
+      }
+      if (!notifications) {
+        // KERIA went down while querying, now back online
+        continue;
+      }
+      if (
+        notificationQuery.nextIndex > 0 &&
+        (notifications.notes.length == 0 ||
+          notifications.notes[0].i !== notificationQuery.lastNotificationId)
+      ) {
+        // This is to verify no notifications were deleted for some reason (which affects the batch range)
+        notificationQuery = {
+          nextIndex: 0,
+          lastNotificationId: "",
+        };
+        await this.basicStorage.createOrUpdateBasicRecord(
+          new BasicRecord({
+            id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
+            content: notificationQuery,
+          })
+        );
+        continue;
+      }
+      if (notificationQuery.nextIndex > 0) {
+        // Since the first item is the (next index - 1), we can ignore it
+        notifications.notes.shift();
+      }
+      for (const notif of notifications.notes) {
+        try {
+          await this.processNotification(notif, callback);
+          const nextNotificationIndex = notificationQuery.nextIndex + 1;
+          notificationQuery = {
+            nextIndex: nextNotificationIndex,
+            lastNotificationId: notif.i,
+          };
+          await this.basicStorage.createOrUpdateBasicRecord(
+            new BasicRecord({
+              id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
+              content: notificationQuery,
+            })
+          );
+        } catch (error) {
+          // @TODO - Consider how to track/retry old notifications we couldn't process
+          /* eslint-disable no-console */
+          console.error("Error when process a notification", error);
+        }
+      }
+      if (!notifications.notes.length) {
+        await new Promise((rs) =>
+          setTimeout(rs, KeriaNotificationService.POLL_KERIA_INTERVAL)
+        );
+      }
     }
   }
 
@@ -220,12 +228,17 @@ class KeriaNotificationService extends AgentService {
     notif: Notification,
     callback: (event: KeriaNotification) => void
   ) {
-    if (notif.r) {
+    if (
+      notif.r ||
+      !Object.values(NotificationRoute).includes(notif.a.r as NotificationRoute)
+    ) {
       return;
     }
     let shouldCreateRecord = true;
     if (notif.a.r === NotificationRoute.ExnIpexApply) {
       shouldCreateRecord = await this.processExnIpexApplyNotification(notif);
+    } else if (notif.a.r === NotificationRoute.ExnIpexAgree) {
+      shouldCreateRecord = await this.processExnIpexAgreeNotification(notif);
     } else if (notif.a.r === NotificationRoute.ExnIpexGrant) {
       shouldCreateRecord = await this.processExnIpexGrantNotification(notif);
     } else if (notif.a.r === NotificationRoute.MultiSigRpy) {
@@ -234,31 +247,24 @@ class KeriaNotificationService extends AgentService {
       shouldCreateRecord = await this.processMultiSigIcpNotification(notif);
     } else if (notif.a.r === NotificationRoute.MultiSigExn) {
       shouldCreateRecord = await this.processMultiSigExnNotification(notif);
-    } else if (notif.a.r === NotificationRoute.ExnIpexAgree) {
-      shouldCreateRecord = await this.processExnIpexAgreeNotification(notif);
     }
     if (!shouldCreateRecord) {
       return;
     }
-    if (
-      Object.values(NotificationRoute).includes(notif.a.r as NotificationRoute)
-    ) {
-      try {
-        const keriaNotif = await this.createNotificationRecord(notif);
-        callback(keriaNotif);
-      } catch (error) {
-        if (
-          (error as Error).message ===
-          `${IonicStorage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${notif.i}`
-        ) {
-          return;
-        } else {
-          throw error;
-        }
+
+    try {
+      const keriaNotif = await this.createNotificationRecord(notif);
+      callback(keriaNotif);
+    } catch (error) {
+      if (
+        (error as Error).message ===
+        `${IonicStorage.RECORD_ALREADY_EXISTS_ERROR_MSG} ${notif.i}`
+      ) {
+        return;
+      } else {
+        throw error;
       }
     }
-
-    return;
   }
 
   private async processExnIpexApplyNotification(
@@ -408,7 +414,7 @@ class KeriaNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return false;
     }
-    const hasMultisig = await this.multiSigs.hasMultisig(multisigId);
+    const hasMultisig = await Agent.agent.multiSigs.hasMultisig(multisigId);
     const notificationsForThisMultisig =
       await this.findNotificationsByMultisigId(multisigId);
     if (hasMultisig || notificationsForThisMultisig.length) {
@@ -428,14 +434,22 @@ class KeriaNotificationService extends AgentService {
       return false;
     }
 
-    const existMultisig = await this.identifiers.getIdentifier(
-      exchange?.exn?.e?.exn?.i
-    );
+    const existMultisig = await Agent.agent.identifiers
+      .getIdentifier(exchange?.exn?.e?.exn?.i)
+      .catch((error) => {
+        if (
+          error.message === IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+        ) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
+
     if (!existMultisig) {
       await this.markNotification(notif.i);
       return false;
     }
-
     const previousExnGrantMsg = await this.props.signifyClient
       .exchanges()
       .get(exchange?.exn.e.exn.p);
@@ -449,7 +463,32 @@ class KeriaNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return false;
     }
-    return true;
+    const notifications = await this.notificationStorage.findAllByQuery({
+      exnSaid: previousExnGrantMsg.exn.d,
+    });
+
+    if (notifications.length) {
+      const notificationRecord = notifications[0];
+      if (
+        !Object.values(notificationRecord.linkedGroupRequests).includes(true)
+      ) {
+        notificationRecord.linkedGroupRequests = {
+          ...notificationRecord.linkedGroupRequests,
+          [exchange.exn.d]: false,
+        };
+      } else {
+        await Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn(
+          exchange.exn.d
+        );
+        notificationRecord.linkedGroupRequests = {
+          ...notificationRecord.linkedGroupRequests,
+          [exchange.exn.d]: true,
+        };
+      }
+      await this.notificationStorage.update(notificationRecord);
+    }
+    await this.markNotification(notif.i);
+    return false;
   }
 
   private async processExnIpexAgreeNotification(
@@ -486,13 +525,14 @@ class KeriaNotificationService extends AgentService {
   ): Promise<KeriaNotification> {
     const exchange = await this.props.signifyClient.exchanges().get(event.a.d);
 
-    const metadata: any = {
+    const metadata: NotificationRecordStorageProps = {
       id: event.i,
       a: event.a,
       read: false,
-      route: event.a.r,
+      route: event.a.r as NotificationRoute,
       connectionId: exchange.exn.i,
     };
+
     if (
       event.a.r === NotificationRoute.MultiSigIcp ||
       event.a.r === NotificationRoute.MultiSigRpy
@@ -512,6 +552,7 @@ class KeriaNotificationService extends AgentService {
         metadata.multisigId = multisigNotification[0].exn?.a?.gid;
       }
     }
+
     const result = await this.notificationStorage.save(metadata);
     return {
       id: result.id,
@@ -670,7 +711,23 @@ class KeriaNotificationService extends AgentService {
             .get(admitExchange.exn.p);
           const credentialId = grantExchange.exn.e.acdc.d;
           if (credentialId) {
-            await this.ipexCommunications.markAcdc(
+            const holder = await this.identifierStorage.getIdentifierMetadata(
+              admitExchange.exn.i
+            );
+            if (holder.multisigManageAid) {
+              const notifications =
+                  await this.notificationStorage.findAllByQuery({
+                    exnSaid: grantExchange.exn.d,
+                  });
+              for (const notification of notifications) {
+                // @TODO: Delete other long running operations in linkedGroupRequests
+                await this.deleteNotificationRecordById(
+                  notification.id,
+                    notification.a.r as NotificationRoute
+                );
+              }
+            }
+            await Agent.agent.ipexCommunications.markAcdc(
               credentialId,
               CredentialStatus.CONFIRMED
             );
