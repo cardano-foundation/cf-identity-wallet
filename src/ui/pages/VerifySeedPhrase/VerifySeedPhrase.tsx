@@ -21,6 +21,7 @@ import { OnboardingMode } from "../../components/SwitchOnboardingMode/SwitchOnbo
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { useAppIonRouter } from "../../hooks";
 import "./VerifySeedPhrase.scss";
+import { showError } from "../../utils/error";
 
 const VerifySeedPhrase = () => {
   const pageId = "verify-seed-phrase";
@@ -89,8 +90,12 @@ const VerifySeedPhrase = () => {
   };
 
   const storeIdentitySeedPhrase = async () => {
-    await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, seedPhraseStore.bran);
-    handleNavigate();
+    try {
+      await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, seedPhraseStore.bran);
+      handleNavigate();
+    } catch (e) {
+      showError("Unable to save seedphrase", e, dispatch);
+    }
   };
 
   const handleContinue = async () => {

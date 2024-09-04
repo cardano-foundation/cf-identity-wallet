@@ -30,6 +30,7 @@ import { SidePage } from "./pages/SidePage";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";
+import { AppCommonErrorAlert, ErrorBoundary } from "./components/Error";
 
 setupIonicReact();
 
@@ -112,31 +113,36 @@ const App = () => {
 
   return (
     <IonApp>
-      <AppWrapper>
-        <StrictMode>
-          {initialized ? (
-            <>
-              {renderApp()}
-              {!isPublicPage && !authentication.loggedIn ? <LockPage /> : null}
-              {authentication.ssiAgentIsSet && !isOnline ? (
-                <AppOffline />
-              ) : null}
-            </>
-          ) : (
-            <LoadingPage />
-          )}
-          <SetUserName
-            isOpen={showSetUserName}
-            setIsOpen={setShowSetUserName}
-          />
-          <CustomToast
-            toastMsg={toastMsg}
-            showToast={showToast}
-            setShowToast={setShowToast}
-          />
-          <SidePage />
-        </StrictMode>
-      </AppWrapper>
+      <ErrorBoundary>
+        <AppWrapper>
+          <StrictMode>
+            {initialized ? (
+              <>
+                {renderApp()}
+                {!isPublicPage && !authentication.loggedIn ? (
+                  <LockPage />
+                ) : null}
+                {authentication.ssiAgentIsSet && !isOnline ? (
+                  <AppOffline />
+                ) : null}
+              </>
+            ) : (
+              <LoadingPage />
+            )}
+            <SetUserName
+              isOpen={showSetUserName}
+              setIsOpen={setShowSetUserName}
+            />
+            <CustomToast
+              toastMsg={toastMsg}
+              showToast={showToast}
+              setShowToast={setShowToast}
+            />
+            <SidePage />
+            <AppCommonErrorAlert />
+          </StrictMode>
+        </AppWrapper>
+      </ErrorBoundary>
     </IonApp>
   );
 };

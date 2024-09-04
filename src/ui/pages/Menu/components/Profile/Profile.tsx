@@ -15,6 +15,7 @@ import {
 } from "../../../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import { PROFILE_LINK } from "../../../../globals/constants";
+import { showError } from "../../../../utils/error";
 
 const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
   ({ isEditing }, ref) => {
@@ -47,8 +48,7 @@ const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
             );
           })
           .catch((error) => {
-            // eslint-disable-next-line no-console
-            console.error("Unable to update user name: ", error);
+            showError("Unable to update user name: ", error, dispatch);
           });
     };
 

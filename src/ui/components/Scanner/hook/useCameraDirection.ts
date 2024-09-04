@@ -9,6 +9,7 @@ import {
   getCameraDirection,
   setCameraDirection,
 } from "../../../../store/reducers/stateCache";
+import { showError } from "../../../utils/error";
 
 const useCameraDirection = () => {
   const dispatch = useAppDispatch();
@@ -34,8 +35,7 @@ const useCameraDirection = () => {
         })
       )
       .catch((e) => {
-        // eslint-disable-next-line no-console
-        console.error("Unable to save camera direction", e);
+        showError("Unable to save camera direction", e, dispatch);
       });
   };
 

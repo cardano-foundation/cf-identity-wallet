@@ -12,7 +12,7 @@ describe("Show error", () => {
   });
 
   it("Show error log only", () => {
-    showError("class1", {});
+    showError("class1", {}, jest.fn);
     expect(errorLogMock).toBeCalled();
   });
 

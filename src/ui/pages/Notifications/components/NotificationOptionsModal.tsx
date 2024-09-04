@@ -50,7 +50,7 @@ const NotificationOptionsModal = ({
       );
       closeModal();
     } catch (e) {
-      showError("Unable to change notification status", e);
+      showError("Unable to change notification status", e, dispatch);
     }
   };
 
@@ -63,7 +63,7 @@ const NotificationOptionsModal = ({
       dispatch(deleteNotification(notification));
       closeModal();
     } catch (e) {
-      showError("Unable to remove notification", e);
+      showError("Unable to remove notification", e, dispatch);
     }
   };
 

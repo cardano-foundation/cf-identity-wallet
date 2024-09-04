@@ -79,16 +79,20 @@ const IdentifierDetails = () => {
   const [cloudError, setCloudError] = useState(false);
 
   const fetchOobi = useCallback(async () => {
-    if (!cardData?.signifyName) return;
+    try {
+      if (!cardData?.signifyName) return;
 
-    const oobiValue = await Agent.agent.connections.getOobi(
-      `${cardData.signifyName}`,
-      userName
-    );
-    if (oobiValue) {
-      setOobi(oobiValue);
+      const oobiValue = await Agent.agent.connections.getOobi(
+        `${cardData.signifyName}`,
+        userName
+      );
+      if (oobiValue) {
+        setOobi(oobiValue);
+      }
+    } catch (e) {
+      showError("Unable to fetch oobi", e, dispatch);
     }
-  }, [cardData?.signifyName, userName]);
+  }, [cardData?.signifyName, userName, dispatch]);
 
   const isFavourite = favouritesIdentifiersData?.some(
     (fav) => fav.id === params.id
@@ -107,10 +111,10 @@ const IdentifierDetails = () => {
       ) {
         setCloudError(true);
       } else {
-        showError("Unable to get connection details", error);
+        showError("Unable to get connection details", error, dispatch);
       }
     }
-  }, [params.id]);
+  }, [params.id, dispatch]);
 
   useOnlineStatusEffect(getDetails);
   useOnlineStatusEffect(fetchOobi);
@@ -208,7 +212,7 @@ const IdentifierDetails = () => {
           dispatch(removeFavouriteIdentifierCache(id));
         })
         .catch((e) => {
-          showError("Unable to remove favourite identifier", e);
+          showError("Unable to remove favourite identifier", e, dispatch);
         });
     } else {
       if (favouritesIdentifiersData.length >= MAX_FAVOURITES) {
@@ -231,7 +235,7 @@ const IdentifierDetails = () => {
           dispatch(addFavouriteIdentifierCache({ id, time: Date.now() }));
         })
         .catch((e) => {
-          showError("Unable to add favourite identifier", e);
+          showError("Unable to add favourite identifier", e, dispatch);
         });
     }
   };

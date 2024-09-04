@@ -10,9 +10,11 @@ import { ConfirmModal } from "./ConfirmModal";
 import { Agent } from "../../../../../../../core/agent/agent";
 import { useOnlineStatusEffect } from "../../../../../../hooks";
 import { showError } from "../../../../../../utils/error";
+import { useAppDispatch } from "../../../../../../../store/hooks";
 
 const RecoverySeedPhrase = () => {
   const componentId = "recovery-seed-phrase";
+  const dispatch = useAppDispatch();
   const [seedPhrase, setSeedPhrase] = useState<string[]>(Array(18).fill(""));
   const [hideSeedPhrase, setHideSeedPhrase] = useState(true);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
@@ -26,9 +28,9 @@ const RecoverySeedPhrase = () => {
       const data = await Agent.agent.getMnemonic();
       setSeedPhrase(data.split(" "));
     } catch (e) {
-      showError("Unable to generate recovery seed phrase", e);
+      showError("Unable to generate recovery seed phrase", e, dispatch);
     }
-  }, []);
+  }, [dispatch]);
 
   useOnlineStatusEffect(loadSeedPhrase);
 

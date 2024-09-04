@@ -95,7 +95,6 @@ const Scanner = forwardRef(
       ) {
         return (await BarcodeScanner.requestPermissions()).camera === "granted";
       }
-      return false;
     };
 
     const stopScan = async () => {
@@ -332,8 +331,8 @@ const Scanner = forwardRef(
     const initScan = async () => {
       if (isPlatform("ios") || isPlatform("android")) {
         const allowed = await checkPermission();
-        setPermisson(allowed);
-        onCheckPermissionFinish?.(allowed);
+        setPermisson(!!allowed);
+        onCheckPermissionFinish?.(!!allowed);
 
         if (allowed) {
           const listener = await BarcodeScanner.addListener(
@@ -350,7 +349,7 @@ const Scanner = forwardRef(
               lensFacing: cameraDirection,
             });
           } catch (error) {
-            showError("Error starting barcode scan:", error);
+            showError("Error starting barcode scan:", error, dispatch);
             setScanUnavailable(true);
             stopScan();
           }
