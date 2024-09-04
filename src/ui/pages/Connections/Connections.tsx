@@ -64,6 +64,8 @@ import {
 import { useOnlineStatusEffect } from "../../hooks";
 import { showError } from "../../utils/error";
 
+const ANIMATION_TIMEOUT = 350;
+
 const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
   ({ showConnections, setShowConnections, selfPaginated }, ref) => {
     const pageId = "connections-tab";
@@ -166,41 +168,42 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       setOpenIdentifierMissingAlert(false);
     };
 
-    const handleShowConnectionDetails = useCallback(async (
-      item: ConnectionShortDetails
-    ) => {
-      if (item.status === ConnectionStatus.PENDING) {
-        setDeletePendingItem(item);
-        setOpenDeletePendingAlert(true);
-        return;
-      }
+    const handleShowConnectionDetails = useCallback(
+      async (item: ConnectionShortDetails) => {
+        if (item.status === ConnectionStatus.PENDING) {
+          setDeletePendingItem(item);
+          setOpenDeletePendingAlert(true);
+          return;
+        }
 
-      const data: DataProps = {
-        store: { stateCache },
-      };
-      const { nextPath, updateRedux } = getNextRoute(
-        TabsRoutePath.CREDENTIALS,
-        data
-      );
-      updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-      history.push({
-        pathname: nextPath.pathname,
-        state: item,
-      });
-    }, [dispatch, history, stateCache]);
+        const data: DataProps = {
+          store: { stateCache },
+        };
+        const { nextPath, updateRedux } = getNextRoute(
+          TabsRoutePath.CREDENTIALS,
+          data
+        );
+        updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+        history.push({
+          pathname: nextPath.pathname,
+          state: item,
+        });
+      },
+      [dispatch, history, stateCache]
+    );
 
     useEffect(() => {
       if (!openDetailId) return;
       const connection = connectionsCache[openDetailId];
-  
+
       if (!connection) return;
-  
+
       setShowConnections(true);
       dispatch(setOpenConnectionDetail(undefined));
-  
+
       setTimeout(() => {
         handleShowConnectionDetails(connection);
-      }, 250);
+      }, ANIMATION_TIMEOUT);
     }, [
       connectionsCache,
       dispatch,

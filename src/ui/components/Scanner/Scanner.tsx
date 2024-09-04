@@ -13,7 +13,6 @@ import {
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
@@ -61,7 +60,6 @@ const Scanner = forwardRef(
     ref
   ) => {
     const componentId = "scanner";
-    const history = useHistory();
     const dispatch = useAppDispatch();
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
     const currentOperation = useAppSelector(getCurrentOperation);
@@ -126,6 +124,7 @@ const Scanner = forwardRef(
         dispatch(setToastMsg(ToastMsgType.PEER_ID_ERROR));
         handleReset && handleReset();
       }
+      dispatch(setCurrentOperation(OperationType.IDLE));
     };
 
     const updateConnections = async (groupId: string) => {
@@ -152,6 +151,7 @@ const Scanner = forwardRef(
         dispatch(setConnectUrl(content));
       }
 
+      dispatch(setCurrentOperation(OperationType.IDLE));
       handleReset && handleReset();
     };
 
@@ -172,7 +172,7 @@ const Scanner = forwardRef(
           .replace(RECORD_ALREADY_EXISTS_ERROR_MSG, "")
           .trim();
         dispatch(setOpenConnectionDetail(connectionId));
-        history.push(TabsRoutePath.IDENTIFIERS);
+        handleReset?.();
         return;
       }
 
@@ -219,6 +219,8 @@ const Scanner = forwardRef(
           setCreateIdentifierModalIsOpen(true);
           dispatch(setToastMsg(ToastMsgType.NEW_MULTI_SIGN_MEMBER));
         }
+
+        dispatch(setCurrentOperation(OperationType.IDLE));
       } catch (e) {
         if (!content.includes("groupId")) {
           handleConnectionError(e as Error);
@@ -230,11 +232,7 @@ const Scanner = forwardRef(
     };
 
     const processValue = async (content: string) => {
-      stopScan();
-      // @TODO - foconnor: instead of setting the optype to idle we should
-      // have a loading screen with "waiting for server..." etc,
-      // and it can update to an error if the QR is invalid with a re-scan btn
-      dispatch(setCurrentOperation(OperationType.IDLE));
+      await stopScan();
 
       if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
         handleConnectWallet(content);
@@ -251,7 +249,6 @@ const Scanner = forwardRef(
         return;
       }
 
-      // @TODO - foconnor: when above loading screen in place, handle invalid QR code
       handleResolveOobi(content);
     };
 
@@ -353,6 +350,7 @@ const Scanner = forwardRef(
         );
       }
     };
+
     return (
       <>
         <IonGrid
