@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import React, { useEffect, useState } from "react";
 import { Contact } from "../types.types";
@@ -22,6 +22,8 @@ const RevocationPage: React.FC = () => {
   const [attributes, setAttributes] = useState<IAttributeObj[]>([]);
   const [isIssueCredentialSuccess, setIsIssueCredentialSuccess] =
     useState(false);
+  const [selectedContact, setSelectedContact] = useState();
+
   useEffect(() => {
     handleGetContacts();
   }, []);
@@ -39,6 +41,14 @@ const RevocationPage: React.FC = () => {
     setAttributes(newAttributes);
   }, [watch("credential_type")]);
 
+  useEffect(() => {
+    if (selectedContact) {
+      handleGetContacCredentials((selectedContact as any).id);
+    } else {
+      setCredentials([]);
+    }
+  }, [selectedContact]);
+
   const handleGetContacts = async () => {
     try {
       setContacts(
@@ -50,19 +60,27 @@ const RevocationPage: React.FC = () => {
     }
   };
 
-  const handleGetContacCredentials = async () => {
+  const handleGetContacCredentials = async (contactId: string) => {
     try {
-      setCredentials(
-        (await axios.get(`${config.endpoint}${config.path.contactCredentials}`), { params: { contactId : selec}}).data
-          .data,
-      );
+      const credentialsData = (await axios.get(`${config.endpoint}${config.path.contactCredentials}`, { params: { contactId }})).data.data;
+      if (credentialsData.length) {
+        setCredentials(
+          credentialsData
+        );
+      } else {
+        setCredentials([])
+      }
     } catch (e) {
       console.log(e);
     }
   };
 
   const handleRevokeCredential = async (values: any) => {
-    
+    await axios.post(`${config.endpoint}${config.path.revokeCredential}`, {
+      credentialId: values.selectedCredential,
+      holder: values.selectedContact
+    });
+    await handleGetContacCredentials(values.selectedContact);
   };
 
   return (
@@ -74,34 +92,24 @@ const RevocationPage: React.FC = () => {
         <form onSubmit={handleSubmit(handleRevokeCredential)}>
           <Grid container spacing={2} justifyContent="center">
             <Grid item xs={10}>
-              <FormControl fullWidth>
-                <InputLabel id="selectedContact">
-                  Established Connections
-                </InputLabel>
-
-                <Controller
-                  name="selectedContact"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      labelId="selectedContact"
-                      label="Established Connections"
-                      {...field}
-                      {...register(`selectedContact`, {
-                        required: true,
-                      })}
-                    >
-                      {contacts.map((contact: any, index) => (
-                        <MenuItem key={index} value={contact.id}>
-                          {UUID_REGEX.test(contact.alias)
-                            ? contact.id
-                            : `${contact.alias} (${contact.id})`}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  )}
-                />
-              </FormControl>
+            <FormControl fullWidth>
+              <Controller
+                name="selectedContact"
+                control={control}
+                render={({ field }) => (
+                  <Autocomplete
+                    {...field}
+                    {...register(`selectedContact`, {
+                      required: true,
+                    })}
+                    getOptionLabel={(option) => UUID_REGEX.test(option.alias) ? option.id : `${option.alias} (${option.id})` }
+                    options={contacts || []}
+                    renderInput={(params) => <TextField {...params} label="Search by connection name or ID" />}
+                    onChange={(_event, data) => { field.onChange(data?.id || null); setSelectedContact(data) }}
+                  />
+                )}
+              />
+            </FormControl>
             </Grid>
             <Grid item xs={1}>
               <Button
@@ -112,7 +120,7 @@ const RevocationPage: React.FC = () => {
             </Grid>
             <Grid item xs={10}>
               <FormControl fullWidth>
-                <InputLabel id="selectedCrential">
+                <InputLabel id="selectedCredential">
                   Asociated credentials
                 </InputLabel>
                 <Controller
@@ -128,8 +136,8 @@ const RevocationPage: React.FC = () => {
                       })}
                     >
                       {credentials.map((credential: any, index) => (
-                        <MenuItem key={index} value={credential.id}>
-                          {credential.id}
+                        <MenuItem key={index} value={credential.sad.d}>
+                          {credential.sad.d}
                         </MenuItem>
                       ))}
                     </Select>

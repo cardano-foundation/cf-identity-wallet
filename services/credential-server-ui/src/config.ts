@@ -33,6 +33,7 @@ const config = {
     contactCredentials: "/contactCredentials",
     resolveOobi: "/resolveOobi",
     requestDisclosure: "/requestDisclosure",
+    revokeCredential: "/revokeCredential",
   },
 };
 

@@ -120,7 +120,8 @@ class Agent {
   };
   
   async contactCredentials(contactId: string) {
-    return this.signifyApi.contactCredentials(contactId);
+    const issuer = await this.signifyApi.getIdentifierByName(Agent.HOLDER_AID_NAME);
+    return this.signifyApi.contactCredentials(issuer.prefix, contactId);
   }
 
   async revokeCredential(credentialId: string, holder: string) {
