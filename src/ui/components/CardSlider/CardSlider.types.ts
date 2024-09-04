@@ -7,6 +7,7 @@ interface CardSliderProps {
   name: string;
   cardType: CardType;
   cardsData: IdentifierShortDetails[] | CredentialShortDetails[];
+  onShowCardDetails?: () => void;
 }
 
 export type { CardSliderProps };

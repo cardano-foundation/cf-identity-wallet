@@ -296,9 +296,9 @@ const mHab = {
 };
 
 const mockExn = {
-  _kind: "JSON",
-  _raw: "{\"v\":\"KERI10JSON00025f_\",\"t\":\"exn\",\"d\":\"EFnDzHLeULKSm_jbQSIN427yWWFr82OBkkxg3iUf2FUW\",\"i\":\"EGUORQAs0r1mup1OmX1H23PITDV7td-o2XGdMVL6lmmk\",\"p\":\"\",\"dt\":\"2024-08-02T03:53:30.133000+00:00\",\"r\":\"/multisig/exn\",\"q\":{},\"a\":{\"gid\":\"EPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC\"},\"e\":{\"exn\":{\"v\":\"KERI10JSON000111_\",\"t\":\"exn\",\"d\":\"EMTArfbjevIfB-fbxzsepKO35RWHN2gQxTTU5Lov2Dld\",\"i\":\"EPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC\",\"p\":\"EH-_9IgodejkwXi2Hw--A53rVYcO6bDYnBrbpCId8LOu\",\"dt\":\"2024-08-02T03:53:29.400000+00:00\",\"r\":\"/ipex/admit\",\"q\":{},\"a\":{\"m\":\"\"},\"e\":{}},\"d\":\"ECxCLDUf8A1y62wf7YkWAcj5RN-KVzNaxRefzgE7oIjq\"}}",
-  _ked: {
+  kind: "JSON",
+  raw: "{\"v\":\"KERI10JSON00025f_\",\"t\":\"exn\",\"d\":\"EFnDzHLeULKSm_jbQSIN427yWWFr82OBkkxg3iUf2FUW\",\"i\":\"EGUORQAs0r1mup1OmX1H23PITDV7td-o2XGdMVL6lmmk\",\"p\":\"\",\"dt\":\"2024-08-02T03:53:30.133000+00:00\",\"r\":\"/multisig/exn\",\"q\":{},\"a\":{\"gid\":\"EPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC\"},\"e\":{\"exn\":{\"v\":\"KERI10JSON000111_\",\"t\":\"exn\",\"d\":\"EMTArfbjevIfB-fbxzsepKO35RWHN2gQxTTU5Lov2Dld\",\"i\":\"EPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC\",\"p\":\"EH-_9IgodejkwXi2Hw--A53rVYcO6bDYnBrbpCId8LOu\",\"dt\":\"2024-08-02T03:53:29.400000+00:00\",\"r\":\"/ipex/admit\",\"q\":{},\"a\":{\"m\":\"\"},\"e\":{}},\"d\":\"ECxCLDUf8A1y62wf7YkWAcj5RN-KVzNaxRefzgE7oIjq\"}}",
+  ked: {
     v: "KERI10JSON00025f_",
     t: "exn",
     d: "EFnDzHLeULKSm_jbQSIN427yWWFr82OBkkxg3iUf2FUW",
@@ -313,7 +313,7 @@ const mockExn = {
       d: "ECxCLDUf8A1y62wf7YkWAcj5RN-KVzNaxRefzgE7oIjq",
     },
   },
-  _size: 607,
+  size: 607,
 };
 const mockSigsMes = [
   "AACg6Kqwa1s2RJ7b4NjnpRIBLuyAOefqQ71pYFtdKhZpSferzSGleCNWmMOfLAvEAEfw2y1m0Zh-uXbnEwkkSy4B",
@@ -2185,7 +2185,9 @@ describe("Multisig sig service of agent", () => {
     };
     getExchangesMock.mockResolvedValueOnce(exchangeMock);
     identifiersMemberMock = jest.fn().mockResolvedValueOnce({
-      signing: [{ ends: { agent: { [keriMetadataRecord.id]: "" } } }],
+      signing: [
+        { ends: { agent: { [keriMetadataRecord.id]: "" } }, aid: "aid" },
+      ],
     });
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce(
       new IdentifierMetadataRecord({
@@ -2235,7 +2237,7 @@ describe("Multisig sig service of agent", () => {
       {
         exn: [admit, atc],
       },
-      exchangeMock.exn.i
+      "aid"
     );
 
     expect(ipexSubmitAdmitMock).toBeCalledWith(
@@ -2243,7 +2245,7 @@ describe("Multisig sig service of agent", () => {
       mockExn,
       mockSigsMes,
       mockDtime,
-      []
+      ["aid"]
     );
   });
 });

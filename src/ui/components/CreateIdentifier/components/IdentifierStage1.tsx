@@ -18,6 +18,7 @@ import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { IdentifierStage1BodyInit } from "./IdentifierStage1BodyInit";
 import { IdentifierStage1BodyResume } from "./IdentifierStage1BodyResume";
+import { showError } from "../../../utils/error";
 
 const IdentifierStage1 = ({
   state,
@@ -59,7 +60,7 @@ const IdentifierStage1 = ({
         setOobi(oobiValue);
       }
     } catch (e) {
-      // @TODO - Error handling.
+      showError("Unable to fetch Oobi", e);
     }
   }, [groupId, signifyName, userName]);
 
@@ -119,26 +120,28 @@ const IdentifierStage1 = ({
 
   return (
     <>
-      {resumeMultiSig?.signifyName.length || initiated ? (
-        <IdentifierStage1BodyResume
-          componentId={componentId}
-          handleDone={handleDone}
-          handleInitiateMultiSig={handleInitiateMultiSig}
-          oobi={oobi}
-          groupMetadata={groupMetadata}
-          handleScanButton={handleScanButton}
-          scannedConections={scannedConections}
-        />
-      ) : (
-        <IdentifierStage1BodyInit
-          componentId={componentId}
-          handleDone={handleDone}
-          oobi={oobi}
-          groupMetadata={groupMetadata}
-          handleScanButton={handleScanButton}
-          scannedConections={scannedConections}
-        />
-      )}
+      {resumeMultiSig?.signifyName.length ||
+      initiated ||
+      scannedConections?.length ? (
+          <IdentifierStage1BodyResume
+            componentId={componentId}
+            handleDone={handleDone}
+            handleInitiateMultiSig={handleInitiateMultiSig}
+            oobi={oobi}
+            groupMetadata={groupMetadata}
+            handleScanButton={handleScanButton}
+            scannedConections={scannedConections}
+          />
+        ) : (
+          <IdentifierStage1BodyInit
+            componentId={componentId}
+            handleDone={handleDone}
+            oobi={oobi}
+            groupMetadata={groupMetadata}
+            handleScanButton={handleScanButton}
+            scannedConections={scannedConections}
+          />
+        )}
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}

@@ -21,7 +21,6 @@ const TabLayout = ({
   pageId,
   customClass,
   header,
-  avatar,
   backButton,
   backButtonAction,
   title,
@@ -79,9 +78,9 @@ const TabLayout = ({
 
   return (
     <IonPage
-      className={`tab-layout ${pageId} ${!isActive ? " " + "ion-hide" : ""} ${
-        customClass ? " " + customClass : ""
-      }`}
+      className={`tab-layout ${pageId} ${
+        !isActive ? " " + "ion-hide hidden" : "visible"
+      } ${customClass ? " " + customClass : ""}`}
       data-testid={pageId}
       id={pageId}
     >
@@ -91,8 +90,6 @@ const TabLayout = ({
             color="transparent"
             className={`${backButton ? "has-back-button" : ""}`}
           >
-            {avatar && <IonButtons slot="start">{avatar}</IonButtons>}
-
             {backButton && backButtonAction && (
               <IonButtons
                 slot="start"

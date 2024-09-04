@@ -16,6 +16,7 @@ import { Alert } from "../../../components/Alert";
 import { PageHeader } from "../../../components/PageHeader";
 import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../components/PageFooter";
+import { showError } from "../../../utils/error";
 
 export const EditConnectionsContainer = ({
   notes,
@@ -35,7 +36,7 @@ export const EditConnectionsContainer = ({
 
   useEffect(() => {
     if (modalIsOpen) setUpdatedNotes([...notes]);
-  }, [modalIsOpen]);
+  }, [modalIsOpen, notes]);
 
   const confirm = () => {
     try {
@@ -81,7 +82,12 @@ export const EditConnectionsContainer = ({
         update = false;
       }
     } catch (e) {
-      // TODO: handle error
+      showError(
+        "Failed to update connection",
+        e,
+        dispatch,
+        ToastMsgType.FAILED_UPDATE_CONNECTION
+      );
     } finally {
       setModalIsOpen(false);
     }

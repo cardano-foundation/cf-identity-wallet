@@ -48,6 +48,7 @@ import {
   ArchivedCredentialsProps,
 } from "./ArchivedCredentials.types";
 import { CredentialItem } from "./CredentialItem";
+import { showError } from "../../utils/error";
 
 const ArchivedCredentialsContainer = forwardRef<
   ArchivedCredentialsContainerRef,
@@ -189,9 +190,12 @@ const ArchivedCredentialsContainer = forwardRef<
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to delete creds:", e);
-      dispatch(setToastMsg(ToastMsgType.DELETE_CRED_FAIL));
+      showError(
+        "Unable to delete creds",
+        e,
+        dispatch,
+        ToastMsgType.DELETE_CRED_FAIL
+      );
     }
   };
 
@@ -226,7 +230,7 @@ const ArchivedCredentialsContainer = forwardRef<
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
-      // TODO: Handle error
+      showError("Unable to restore credentials", e);
     }
   };
 

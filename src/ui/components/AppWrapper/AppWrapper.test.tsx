@@ -243,11 +243,12 @@ describe("AppWrapper handler", () => {
 
   describe("Credential state changed handler", () => {
     test("handles credential state pending", async () => {
+      const credentialMock = {} as CredentialShortDetails;
       const credentialStateChangedEventMock = {
         type: AcdcEventTypes.AcdcStateChanged,
         payload: {
           status: CredentialStatus.PENDING,
-          credentialId: "credentialId",
+          credential: credentialMock,
         },
       } as AcdcStateChangedEvent;
       await acdcChangeHandler(credentialStateChangedEventMock, dispatch);

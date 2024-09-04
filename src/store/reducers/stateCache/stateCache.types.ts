@@ -1,3 +1,4 @@
+import { CameraDirection } from "@capacitor-community/barcode-scanner";
 import { LoginAttempts } from "../../../core/agent/services/auth.types";
 import { PeerConnectSigningEvent } from "../../../core/cardano/walletConnect/peerConnection.types";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
@@ -49,6 +50,7 @@ interface StateCacheProps {
   currentOperation: OperationType;
   toastMsg?: ToastMsgType;
   queueIncomingRequest: QueueProps<IncomingRequestProps>;
+  cameraDirection?: CameraDirection;
 }
 
 export { IncomingRequestType };

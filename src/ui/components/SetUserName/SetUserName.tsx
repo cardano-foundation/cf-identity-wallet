@@ -15,6 +15,7 @@ import { PageFooter } from "../PageFooter";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
+import { showError } from "../../utils/error";
 
 const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
   const dispatch = useAppDispatch();
@@ -43,8 +44,12 @@ const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
         setIsOpen(false);
       })
       .catch((error) => {
-        /*TODO: handle error*/
-        dispatch(setToastMsg(ToastMsgType.USERNAME_CREATION_ERROR));
+        showError(
+          "Unable to create user name",
+          error,
+          dispatch,
+          ToastMsgType.USERNAME_CREATION_ERROR
+        );
       });
   };
 

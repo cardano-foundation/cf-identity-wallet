@@ -40,6 +40,7 @@ import {
   CredentialStatus,
 } from "../../../core/agent/services/credentialService.types";
 import { RemovePendingAlert } from "../../components/RemovePendingAlert";
+import { showError } from "../../utils/error";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -88,7 +89,6 @@ const Credentials = () => {
   const credsCache = useAppSelector(getCredsCache);
   const archivedCreds = useAppSelector(getCredsArchivedCache);
   const favCredsCache = useAppSelector(getFavouritesCredsCache);
-
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
@@ -123,8 +123,7 @@ const Credentials = () => {
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to get archived credential", e);
+      showError("Unable to get archived credential", e);
     }
   }, [dispatch]);
 
@@ -235,9 +234,12 @@ const Credentials = () => {
       const creds = await Agent.agent.credentials.getCredentials();
       dispatch(setCredsCache(creds));
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to delete credential", e);
-      dispatch(setToastMsg(ToastMsgType.DELETE_CRED_FAIL));
+      showError(
+        "Unable to delete credential",
+        e,
+        dispatch,
+        ToastMsgType.DELETE_CRED_FAIL
+      );
     }
   };
 
@@ -246,6 +248,7 @@ const Credentials = () => {
       <Connections
         showConnections={showConnections}
         setShowConnections={setShowConnections}
+        selfPaginated={true}
       />
       <TabLayout
         pageId={pageId}
