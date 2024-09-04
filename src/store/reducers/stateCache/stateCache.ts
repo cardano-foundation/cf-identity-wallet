@@ -141,6 +141,9 @@ const stateCacheSlice = createSlice({
     ) => {
       state.cameraDirection = action.payload;
     },
+    showCommonError: (state, action: PayloadAction<boolean | undefined>) => {
+      state.showCommonError = action.payload;
+    },
   },
 });
 
@@ -162,6 +165,7 @@ const {
   setIsOnline,
   setLoginAttempt,
   setCameraDirection,
+  showCommonError,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -180,6 +184,8 @@ const getLoginAttempt = (state: RootState) =>
   state.stateCache.authentication.loginAttempt;
 const getCameraDirection = (state: RootState) =>
   state.stateCache.cameraDirection;
+const getShowCommonError = (state: RootState) =>
+  state.stateCache.showCommonError;
 
 export type {
   CurrentRouteCacheProps,
@@ -218,4 +224,6 @@ export {
   enqueueIncomingRequest,
   getCameraDirection,
   setCameraDirection,
+  getShowCommonError,
+  showCommonError,
 };
