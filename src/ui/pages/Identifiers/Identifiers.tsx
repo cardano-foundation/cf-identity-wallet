@@ -82,7 +82,6 @@ const Identifiers = () => {
   const multisignGroupCache = useAppSelector(getMultiSigGroupCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const currentOperation = useAppSelector(getCurrentOperation);
-  const [tabIsOpen, setTabIsOpen] = useState(false);
   const [favIdentifiers, setFavIdentifiers] = useState<
     IdentifierShortDetails[]
   >([]);
@@ -145,8 +144,6 @@ const Identifiers = () => {
         dispatch(setCurrentOperation(OperationType.IDLE));
       }
     }
-
-    setTabIsOpen(history.location.pathname === TabsRoutePath.IDENTIFIERS);
   }, [
     currentOperation,
     dispatch,
@@ -215,7 +212,7 @@ const Identifiers = () => {
       : navAnimation === "favourite"
         ? "favorite-identifier-nav"
         : ""
-  } ${tabIsOpen ? "visible" : "hidden"}`;
+  }`;
   const handleCloseCreateIdentifier = () => {
     switch (currentOperation) {
     case OperationType.CREATE_IDENTIFIER_CONNECT_WALLET:
