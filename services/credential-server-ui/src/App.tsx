@@ -9,6 +9,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import ConnectionPage from "./pages/ConnectionPage";
 import CredentialPage from "./pages/CredentialPage";
 import { RequestCredential } from "./pages/RequestCredential";
+import RevocationPage  from "./pages/RevocationPage";
 
 export const MENU_ITEMS = [
   {
@@ -29,6 +30,12 @@ export const MENU_ITEMS = [
     path: "/request-credential",
     component: <RequestCredential />,
   },
+  {
+    key: "revocation",
+    label: "Revoke Credential",
+    path: "/revocation",
+    component: <RevocationPage />,
+  }
 ];
 
 function App() {

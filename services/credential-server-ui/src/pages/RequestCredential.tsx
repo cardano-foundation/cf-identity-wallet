@@ -65,7 +65,8 @@ function RequestCredential() {
   const handleGetContacts = async () => {
     try {
       setContacts(
-        (await axios.get(`${config.endpoint}${config.path.contacts}`)).data.data
+        (await axios.get(`${config.endpoint}${config.path.contacts}`)).data
+          .data,
       );
     } catch (e) {
       console.log(e);

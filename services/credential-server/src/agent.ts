@@ -118,6 +118,10 @@ class Agent {
   async deleteContact(id: string) {
     return this.signifyApi.deleteContact(id);
   };
+  
+  async contactCredentials(contactId: string) {
+    return this.signifyApi.contactCredentials(contactId);
+  }
 
   async revokeCredential(credentialId: string, holder: string) {
     return this.signifyApi.revokeCredential(Agent.HOLDER_AID_NAME, holder, credentialId);
