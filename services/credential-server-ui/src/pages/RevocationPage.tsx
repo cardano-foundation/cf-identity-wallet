@@ -120,7 +120,7 @@ const RevocationPage: React.FC = () => {
             <Grid item xs={1}>
               <Button
                 startIcon={<RefreshIcon />}
-                onClick={handleGetContacts}
+                onClick={() => handleGetContactCredentials(selectedContact?.id)}
                 style={{ height: "100%" }}
               ></Button>
             </Grid>
