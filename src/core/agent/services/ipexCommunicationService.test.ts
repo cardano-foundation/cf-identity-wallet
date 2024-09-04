@@ -6,6 +6,7 @@ import { ConfigurationService } from "../../configuration";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
+import { AcdcEventTypes } from "../agent.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -320,10 +321,11 @@ describe("Ipex communication service of agent", () => {
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
       id: "id",
     });
+    eventService.emit = jest.fn();
 
     await ipexCommunicationService.acceptAcdc(id);
 
-    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
+    const credentialMock = {
       connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
       credentialType: "title",
       id: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
@@ -331,6 +333,16 @@ describe("Ipex communication service of agent", () => {
       issuanceDate: "2024-07-30T04:19:55.348Z",
       schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
       status: "pending",
+    };
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
+      credentialMock
+    );
+    expect(eventService.emit).toHaveBeenCalledWith({
+      type: AcdcEventTypes.AcdcStateChanged,
+      payload: {
+        credential: credentialMock,
+        status: CredentialStatus.PENDING,
+      },
     });
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
@@ -1011,6 +1023,8 @@ describe("Ipex communication service of agent", () => {
       exnSaid: "exnSaid",
     });
 
+    eventService.emit = jest.fn();
+
     await ipexCommunicationService.acceptAcdc("id");
 
     expect(notificationStorage.update).toBeCalledWith({
@@ -1027,7 +1041,8 @@ describe("Ipex communication service of agent", () => {
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     });
-    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
+
+    const credentialMock = {
       connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
       credentialType: "title",
       id: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
@@ -1035,6 +1050,17 @@ describe("Ipex communication service of agent", () => {
       issuanceDate: "2024-07-30T04:19:55.348Z",
       schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
       status: "pending",
+    };
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
+      credentialMock
+    );
+
+    expect(eventService.emit).toHaveBeenCalledWith({
+      type: AcdcEventTypes.AcdcStateChanged,
+      payload: {
+        credential: credentialMock,
+        status: CredentialStatus.PENDING,
+      },
     });
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",

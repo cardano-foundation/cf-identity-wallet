@@ -96,7 +96,6 @@ class IpexCommunicationService extends AgentService {
       .exchanges()
       .get(grantNoteRecord.a.d as string);
 
-    const credentialId = grantExn.exn.e.acdc.d;
     const connectionId = grantExn.exn.i;
 
     const holder = await this.identifierStorage.getIdentifierMetadata(
@@ -118,7 +117,7 @@ class IpexCommunicationService extends AgentService {
     allSchemaSaids.push(schemaSaid);
 
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
-    await this.saveAcdcMetadataRecord(
+    const credential = await this.saveAcdcMetadataRecord(
       grantExn.exn.e.acdc.d,
       grantExn.exn.e.acdc.a.dt,
       schema.title,
@@ -129,7 +128,7 @@ class IpexCommunicationService extends AgentService {
     this.props.eventService.emit<AcdcStateChangedEvent>({
       type: AcdcEventTypes.AcdcStateChanged,
       payload: {
-        credentialId,
+        credential,
         status: CredentialStatus.PENDING,
       },
     });
@@ -302,7 +301,7 @@ class IpexCommunicationService extends AgentService {
     schemaTitle: string,
     connectionId: string,
     schema: string
-  ): Promise<void> {
+  ): Promise<CredentialMetadataRecordProps> {
     const credentialDetails: CredentialMetadataRecordProps = {
       id: credentialId,
       isArchived: false,
@@ -315,6 +314,7 @@ class IpexCommunicationService extends AgentService {
     await this.credentialStorage.saveCredentialMetadataRecord(
       credentialDetails
     );
+    return credentialDetails;
   }
 
   private async admitIpex(
@@ -441,7 +441,7 @@ class IpexCommunicationService extends AgentService {
       );
 
     if (!credentialPending) {
-      await this.saveAcdcMetadataRecord(
+      const credential = await this.saveAcdcMetadataRecord(
         previousExnGrantMsg.exn.e.acdc.d,
         previousExnGrantMsg.exn.e.acdc.a.dt,
         schema.title,
@@ -452,7 +452,7 @@ class IpexCommunicationService extends AgentService {
       this.props.eventService.emit<AcdcStateChangedEvent>({
         type: AcdcEventTypes.AcdcStateChanged,
         payload: {
-          credentialId,
+          credential,
           status: CredentialStatus.PENDING,
         },
       });

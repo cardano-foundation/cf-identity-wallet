@@ -14,9 +14,11 @@ import {
   walletOutline,
   peopleOutline,
   linkOutline,
+  chatbubbleOutline,
   addOutline,
 } from "ionicons/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Browser } from "@capacitor/browser";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -34,12 +36,15 @@ import {
   ConnectWalletOptionRef,
 } from "./components/ConnectWallet";
 import { ManagePassword } from "./components/Settings/components/ManagePassword";
-import { TermAndPrivacy } from "./components/Settings/components/TermAndPrivacy";
+import { TermsAndPrivacy } from "./components/Settings/components/TermsAndPrivacy";
 import { RecoverySeedPhrase } from "./components/Settings/components/RecoverySeedPhrase";
 import { OperationType } from "../../globals/types";
 import { Profile } from "./components/Profile";
 import { Settings } from "./components/Settings";
 import { ProfileOptionRef } from "./components/Profile/Profile.types";
+import { Connections } from "../Connections";
+import { ConnectionsOptionRef } from "../Connections/Connections.types";
+import { CHAT_LINK, CRYPTO_LINK } from "../../globals/constants";
 
 const emptySubMenu = {
   Component: () => <></>,
@@ -86,6 +91,11 @@ const Menu = () => {
   const pageId = "menu-tab";
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
+  const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
+  const profileRef = useRef<ProfileOptionRef>(null);
+  const connectionsRef = useRef<ConnectionsOptionRef>(null);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [showConnections, setShowConnections] = useState(false);
   const [showSubMenu, setShowSubMenu] = useState(false);
   const [selectedOption, setSelectedOption] = useState<
     SubMenuKey | undefined
@@ -95,6 +105,13 @@ const Menu = () => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
   });
 
+  const backHardwareConfig = useMemo(
+    () => ({
+      prevent: !showSubMenu,
+    }),
+    [showSubMenu]
+  );
+
   useEffect(() => {
     if (currentOperation === OperationType.BACK_TO_CONNECT_WALLET) {
       showSelectedOption(SubMenuKey.ConnectWallet);
@@ -102,9 +119,6 @@ const Menu = () => {
     }
   }, [currentOperation]);
 
-  const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
-  const profileRef = useRef<ProfileOptionRef>(null);
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
   const toggleEditProfile = () => {
     setIsEditingProfile((prev) => {
       const newState = !prev;
@@ -116,22 +130,26 @@ const Menu = () => {
     toggleEditProfile();
   };
 
+  useEffect(() => {
+    setShowConnections(selectedOption === SubMenuKey.Connections);
+  }, [selectedOption]);
+
+  const handleOpenUrl = (key: SubMenuKey.Crypto | SubMenuKey.Chat) => {
+    switch (key) {
+    case SubMenuKey.Crypto: {
+      Browser.open({ url: CRYPTO_LINK });
+      break;
+    }
+    case SubMenuKey.Chat: {
+      Browser.open({ url: CHAT_LINK });
+      break;
+    }
+    default:
+      return;
+    }
+  };
+
   const submenuMapData: [SubMenuKey, SubMenuData][] = [
-    [
-      SubMenuKey.Settings,
-      {
-        Component: (props?: { switchView: (key: SubMenuKey) => void }) => (
-          <Settings
-            {...props}
-            switchView={showSelectedOption}
-          />
-        ),
-        title: "settings.sections.header",
-        additionalButtons: <></>,
-        pageId: "menu-setting",
-        nestedMenu: false,
-      },
-    ],
     [
       SubMenuKey.Profile,
       {
@@ -156,16 +174,38 @@ const Menu = () => {
         actionButtonLabel: isEditingProfile
           ? `${i18n.t("menu.tab.items.profile.actionconfirm")}`
           : `${i18n.t("menu.tab.items.profile.actionedit")}`,
+        renderAsModal: false,
       },
     ],
     [
-      SubMenuKey.ManagePassword,
+      SubMenuKey.Connections,
       {
-        Component: ManagePassword,
-        title: "settings.sections.security.managepassword.page.title",
-        additionalButtons: <></>,
-        pageId: "manage-password",
-        nestedMenu: true,
+        Component: () => (
+          <Connections
+            showConnections={showConnections}
+            setShowConnections={setShowConnections}
+            selfPaginated={false}
+            ref={connectionsRef}
+          />
+        ),
+        title: "connections.tab.title",
+        pageId: "connections",
+        additionalButtons: (
+          <IonButton
+            shape="round"
+            className="add-button"
+            data-testid="add-connection-button"
+            onClick={() => connectionsRef.current?.handleConnectModalButton()}
+          >
+            <IonIcon
+              slot="icon-only"
+              icon={addOutline}
+              color="primary"
+            />
+          </IonButton>
+        ),
+        nestedMenu: false,
+        renderAsModal: false,
       },
     ],
     [
@@ -193,13 +233,30 @@ const Menu = () => {
       },
     ],
     [
-      SubMenuKey.TermAndPrivacy,
+      SubMenuKey.Settings,
       {
-        Component: TermAndPrivacy,
-        title: "settings.sections.support.terms.submenu.title",
-        pageId: "term-and-privacy",
-        nestedMenu: true,
+        Component: (props?: { switchView: (key: SubMenuKey) => void }) => (
+          <Settings
+            {...props}
+            switchView={showSelectedOption}
+          />
+        ),
+        title: "settings.sections.header",
         additionalButtons: <></>,
+        pageId: "menu-setting",
+        nestedMenu: false,
+        renderAsModal: false,
+      },
+    ],
+    [
+      SubMenuKey.ManagePassword,
+      {
+        Component: ManagePassword,
+        title: "settings.sections.security.managepassword.page.title",
+        additionalButtons: <></>,
+        pageId: "manage-password",
+        nestedMenu: true,
+        renderAsModal: false,
       },
     ],
     [
@@ -210,6 +267,18 @@ const Menu = () => {
         pageId: "recovery-seed-phrase",
         nestedMenu: true,
         additionalButtons: <></>,
+        renderAsModal: false,
+      },
+    ],
+    [
+      SubMenuKey.TermsAndPrivacy,
+      {
+        Component: TermsAndPrivacy,
+        title: "settings.sections.support.terms.submenu.title",
+        pageId: "term-and-privacy",
+        nestedMenu: true,
+        additionalButtons: <></>,
+        renderAsModal: false,
       },
     ],
   ];
@@ -217,6 +286,9 @@ const Menu = () => {
   const submenuMap = useMemo(() => new Map(submenuMapData), [isEditingProfile]);
 
   const showSelectedOption = (key: SubMenuKey) => {
+    if (key === SubMenuKey.Crypto || key === SubMenuKey.Chat) {
+      handleOpenUrl(key);
+    }
     if (!submenuMap.has(key)) return;
     setShowSubMenu(true);
     setSelectedOption(key);
@@ -249,6 +321,7 @@ const Menu = () => {
       itemKey: SubMenuKey.Crypto,
       icon: walletOutline,
       label: `${i18n.t("menu.tab.items.crypto.title")}`,
+      subLabel: `${i18n.t("menu.tab.items.crypto.sublabel")}`,
     },
     {
       itemKey: SubMenuKey.Connections,
@@ -259,7 +332,13 @@ const Menu = () => {
       itemKey: SubMenuKey.ConnectWallet,
       icon: linkOutline,
       label: `${i18n.t("menu.tab.items.connectwallet.title")}`,
-      subLabel: `${i18n.t("menu.tab.items.connectwallet.cip")}`,
+      subLabel: `${i18n.t("menu.tab.items.connectwallet.sublabel")}`,
+    },
+    {
+      itemKey: SubMenuKey.Chat,
+      icon: chatbubbleOutline,
+      label: `${i18n.t("menu.tab.items.chat.title")}`,
+      subLabel: `${i18n.t("menu.tab.items.chat.sublabel")}`,
     },
   ];
 
@@ -275,6 +354,7 @@ const Menu = () => {
     <>
       <TabLayout
         pageId={pageId}
+        hardwareBackButtonConfig={backHardwareConfig}
         header={true}
         title={`${i18n.t("menu.tab.header")}`}
         additionalButtons={<AdditionalButtons />}

@@ -18,24 +18,71 @@
     padding-left: 0;
   }
 
-  ion-toolbar ion-buttons ion-button.close-button {
+  ion-toolbar ion-buttons ion-button.button-has-icon-only {
     --background-activated: var(--ion-color-light);
     --background-focused: var(--ion-color-light);
     --background-hover: var(--ion-color-light);
     background: var(--ion-color-light);
   }
 
+  &.connections .cards-placeholder-container {
+    height: 86vh;
+  }
+
+  &.recovery-seed-phrase .recovery-phrase-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: calc(100vh - (4.5rem + var(--ion-safe-area-top)));
+    margin-bottom: 0 !important;
+  }
+
+  &.connect-wallet {
+    background: var(--ion-color-light);
+
+    ion-header ion-toolbar {
+      --background: transparent;
+
+      ion-title.md {
+        margin-left: 0;
+      }
+    }
+
+    ion-toolbar ion-buttons ion-button.close-button {
+      --background-activated: var(--ion-color-light-grey);
+      --background-focused: var(--ion-color-light-grey);
+      --background-hover: var(--ion-color-light-grey);
+      background: var(--ion-color-light-grey);
+    }
+
+    ion-toolbar ion-buttons ion-button.connect-wallet-button {
+      --padding-start: 0.5rem;
+      --padding-end: 0.5rem;
+      --background-activated: var(--ion-color-light-grey);
+      --background-focused: var(--ion-color-light-grey);
+      --background-hover: var(--ion-color-light-grey);
+      background: var(--ion-color-light-grey);
+
+      width: 2.81rem;
+      height: 2.81rem;
+      border-radius: 1.5rem;
+    }
+  }
+
   @media screen and (min-width: 250px) and (max-width: 370px) {
     ion-header ion-toolbar {
       margin-top: 0.531rem;
     }
-  }
-}
 
-.recovery-phrase-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: calc(100vh - (4.5rem + var(--ion-safe-area-top)));
-  margin-bottom: 0 !important;
+    &.connections .cards-placeholder-container {
+      height: 78vh;
+    }
+
+    ion-toolbar ion-buttons ion-button.connect-wallet-button {
+      width: 2.3rem;
+      height: 2.3rem;
+      --padding-start: 0.425rem;
+      --padding-end: 0.425rem;
+    }
+  }
 }

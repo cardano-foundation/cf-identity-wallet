@@ -117,7 +117,7 @@ describe("Connections page", () => {
     combineMock.mockReturnValue(TabsRoutePath.IDENTIFIERS);
   });
 
-  test("Render connections page empty", async () => {
+  test("Render connections page empty (self paginated)", async () => {
     const initialStateFull = {
       stateCache: {
         routes: [TabsRoutePath.CREDENTIALS],
@@ -158,6 +158,7 @@ describe("Connections page", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
+            selfPaginated={true}
           />
         </Provider>
       </MemoryRouter>
@@ -184,6 +185,59 @@ describe("Connections page", () => {
     });
   });
 
+  test("Render connections page empty (no self pagination)", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.MENU],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      credsCache: {
+        creds: [],
+        favourites: [],
+      },
+      connectionsCache: {
+        connections: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+
+    const mockedStore = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={mockedStore}>
+          <Connections
+            setShowConnections={mockSetShowConnections}
+            showConnections={true}
+            selfPaginated={false}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(getByTestId("connections-tab-cards-placeholder")).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-connections-tab"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("add-a-connection-title")).toBeVisible();
+    });
+  });
+
   test("It renders connections page successfully", async () => {
     const { getByTestId, getByText, getAllByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
@@ -191,6 +245,7 @@ describe("Connections page", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
+            selfPaginated={true}
           />
         </Provider>
       </MemoryRouter>
@@ -212,6 +267,7 @@ describe("Connections page", () => {
         <Connections
           setShowConnections={mockSetShowConnections}
           showConnections={true}
+          selfPaginated={true}
         />
       </Provider>
     );
@@ -270,6 +326,7 @@ describe("Connections page", () => {
         <Connections
           setShowConnections={mockSetShowConnections}
           showConnections={true}
+          selfPaginated={true}
         />
       </Provider>
     );
@@ -528,6 +585,7 @@ describe("Connections page from Credentials tab", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
+            selfPaginated={true}
           />
         </Provider>
       </IonReactMemoryRouter>
@@ -582,6 +640,7 @@ describe("Connections page from Credentials tab", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
+            selfPaginated={true}
           />
         </Provider>
       </MemoryRouter>

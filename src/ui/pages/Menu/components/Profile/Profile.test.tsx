@@ -8,6 +8,7 @@ import { setAuthentication } from "../../../../../store/reducers/stateCache";
 import { CustomInputProps } from "../../../../components/CustomInput/CustomInput.types";
 import { Menu } from "../../Menu";
 import { SubMenuKey } from "../../Menu.types";
+import { PROFILE_LINK } from "../../../../globals/constants";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -63,6 +64,16 @@ jest.mock("../../../../components/CustomInput", () => ({
         />
       </>
     );
+  },
+}));
+
+const browserMock = jest.fn(({ link }: { link: string }) =>
+  Promise.resolve(link)
+);
+jest.mock("@capacitor/browser", () => ({
+  ...jest.requireActual("@capacitor/browser"),
+  Browser: {
+    open: (params: never) => browserMock(params),
   },
 }));
 
@@ -179,6 +190,36 @@ describe("Profile page", () => {
           },
         })
       );
+    });
+  });
+
+  test("Open Profile link", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <Menu />
+      </Provider>
+    );
+
+    expect(getByTestId("menu-tab")).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.profile.title)
+    ).toBeInTheDocument();
+    const profileButton = getByTestId(`menu-input-item-${SubMenuKey.Profile}`);
+
+    act(() => {
+      fireEvent.click(profileButton);
+    });
+
+    const profileLink = getByTestId("profile-item-profile-link");
+
+    act(() => {
+      fireEvent.click(profileLink);
+    });
+
+    await waitFor(() => {
+      expect(browserMock).toBeCalledWith({
+        url: PROFILE_LINK,
+      });
     });
   });
 });

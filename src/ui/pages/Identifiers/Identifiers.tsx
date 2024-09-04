@@ -280,6 +280,7 @@ const Identifiers = () => {
       <Connections
         showConnections={showConnections}
         setShowConnections={setShowConnections}
+        selfPaginated={true}
       />
       <TabLayout
         pageId={pageId}

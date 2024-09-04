@@ -42,9 +42,7 @@
 
       color: var(--ion-color-secondary);
 
-      &.back-button,
-      &.close-button,
-      &.action-button {
+      &.button-has-icon-only {
         width: 2.81rem;
         height: 2.81rem;
         border-radius: 1.5rem;
@@ -104,9 +102,7 @@
   @media screen and (min-width: 250px) and (max-width: 370px) {
     ion-toolbar {
       ion-buttons ion-button {
-        &.back-button,
-        &.close-button,
-        &.action-button {
+        &.button-has-icon-only {
           width: 2.3rem !important;
           height: 2.3rem !important;
 
