@@ -117,7 +117,7 @@ interface AcdcStateChangedEvent extends BaseEventEmitter {
   payload:
     | {
         status: CredentialStatus.PENDING;
-        credentialId: string;
+        credential: CredentialShortDetails;
       }
     | {
         status: CredentialStatus.CONFIRMED;
