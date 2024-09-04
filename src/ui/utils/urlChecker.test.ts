@@ -1,6 +1,9 @@
 import { isValidHttpUrl } from "./urlChecker";
 
 const validUrl = [
+  "http://a.co",
+  "http://a",
+  "http://a?",
   "http://localhost",
   "http://localhost:1120/params/dasdadada?name=any",
   "https://a.long.sub-domain.example.com/foo/bar?foo=bar&boo=far#a%20b",
@@ -11,7 +14,13 @@ const validUrl = [
   "www.12.32.44.22:9323",
 ];
 
-const inValidUrl = ["//x.com/?twitter?", "dsadasda", "3213.323.321.333"];
+const inValidUrl = [
+  "//x.com/?twitter?",
+  "dsadasda",
+  "3213.323.321.333",
+  "http://",
+  "https://-",
+];
 
 describe("Url checker", () => {
   test("Valid format", () => {
