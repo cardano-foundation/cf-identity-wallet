@@ -1,77 +1,49 @@
 import { Autocomplete, Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import React, { useEffect, useState } from "react";
-import { Contact } from "../types.types";
+import { Contact } from "../types";
 import { Controller, useForm } from "react-hook-form";
 import { config } from "../config";
-import { Attributes, CredentialType, SCHEMA_SAID, UUID_REGEX } from "../constants";
+import { UUID_REGEX } from "../constants";
 import axios from "axios";
-import { IAttributes, IAttributeObj } from "../constants/type";
 
 const RevocationPage: React.FC = () => {
   const {
     control,
     register,
     handleSubmit,
-    setValue,
-    watch,
   } = useForm();
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [credentials, setCredentials] = useState<Credential[]>([]);
-  const [attributes, setAttributes] = useState<IAttributeObj[]>([]);
-  const [isIssueCredentialSuccess, setIsIssueCredentialSuccess] =
-    useState(false);
-  const [selectedContact, setSelectedContact] = useState();
+  const [selectedContact, setSelectedContact] = useState<Contact | undefined>();
 
   useEffect(() => {
     handleGetContacts();
   }, []);
 
   useEffect(() => {
-    const type = watch("credential_type") as CredentialType;
-    if (!type) return;
-
-    const newAttributes = Attributes[type];
-    newAttributes.forEach((att, index) => {
-      setValue(`attributes.${index}.key`, att.key);
-      setValue(`attributes.${index}.label`, att.label);
-    });
-
-    setAttributes(newAttributes);
-  }, [watch("credential_type")]);
-
-  useEffect(() => {
-    if (selectedContact) {
-      handleGetContacCredentials((selectedContact as any).id);
-    } else {
-      setCredentials([]);
-    }
+    handleGetContactCredentials(selectedContact?.id);
   }, [selectedContact]);
 
   const handleGetContacts = async () => {
-    try {
-      setContacts(
-        (await axios.get(`${config.endpoint}${config.path.contacts}`)).data
-          .data,
-      );
-    } catch (e) {
-      console.log(e);
-    }
+    setContacts(
+      (await axios.get(`${config.endpoint}${config.path.contacts}`)).data
+        .data,
+    );
   };
 
-  const handleGetContacCredentials = async (contactId: string) => {
-    try {
-      const credentialsData = (await axios.get(`${config.endpoint}${config.path.contactCredentials}`, { params: { contactId }})).data.data;
-      if (credentialsData.length) {
-        setCredentials(
-          credentialsData
-        );
-      } else {
-        setCredentials([])
-      }
-    } catch (e) {
-      console.log(e);
+  const handleGetContactCredentials = async (contactId?: string) => {
+    if (!contactId) {
+      return setCredentials([]);
+    }
+    const credentialsData = (await axios.get(`${config.endpoint}${config.path.contactCredentials}`, { params: { contactId }})).data.data;
+    if (credentialsData.length) {
+      setCredentials(
+        credentialsData
+      );
+    } else {
+      setCredentials([])
     }
   };
 
@@ -80,7 +52,7 @@ const RevocationPage: React.FC = () => {
       credentialId: values.selectedCredential,
       holder: values.selectedContact
     });
-    await handleGetContacCredentials(values.selectedContact);
+    await handleGetContactCredentials(values.selectedContact);
   };
 
   return (
@@ -137,7 +109,7 @@ const RevocationPage: React.FC = () => {
                     >
                       {credentials.map((credential: any, index) => (
                         <MenuItem key={index} value={credential.sad.d}>
-                          {credential.sad.d}
+                          {credential.schema.title} ({credential.sad.d})
                         </MenuItem>
                       ))}
                     </Select>
@@ -166,4 +138,4 @@ const RevocationPage: React.FC = () => {
   );
 };
 
-export default RevocationPage;
+export { RevocationPage };

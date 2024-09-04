@@ -6,10 +6,10 @@ import ConnectionsIssuer from "./pages/ConnectionsIssuerPage";
 import { Container, CssBaseline, Paper } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import ConnectionPage from "./pages/ConnectionPage";
-import CredentialPage from "./pages/CredentialPage";
+import { ConnectionPage } from "./pages/ConnectionPage";
+import { CredentialPage } from "./pages/CredentialPage";
 import { RequestCredential } from "./pages/RequestCredential";
-import RevocationPage  from "./pages/RevocationPage";
+import { RevocationPage }  from "./pages/RevocationPage";
 
 export const MENU_ITEMS = [
   {

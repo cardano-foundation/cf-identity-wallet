@@ -15,7 +15,7 @@ import {
   Autocomplete
 } from "@mui/material";
 import axios from "axios";
-import { Contact } from "../types.types";
+import { Contact } from "../types";
 import {
   Attributes,
   CredentialType,
@@ -227,4 +227,4 @@ const CredentialPage: React.FC = () => {
   );
 };
 
-export default CredentialPage;
+export { CredentialPage };
