@@ -2,13 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import { Agent } from "../agent";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
-import { SCHEMA_ACDC } from "../utils/schemas/schemaAcdc";
+import { ACDC_SCHEMAS } from "../utils/schemas";
 import { log } from "../log";
 import { SignifyApi } from "../modules/signify";
 
 async function issueAcdcCredential(req: Request, res: Response, next: NextFunction): Promise<void> {
   const { schemaSaid, aid, attribute } = req.body;
-  if (!SCHEMA_ACDC[schemaSaid]) {
+  if (!ACDC_SCHEMAS[schemaSaid]) {
     const response: ResponseData<string> = {
       statusCode: 409,
       success: false,

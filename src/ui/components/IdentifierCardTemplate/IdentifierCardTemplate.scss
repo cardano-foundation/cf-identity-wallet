@@ -7,12 +7,8 @@
   line-height: 1.375rem;
 
   &.active:not(:first-child).picked-card {
-    // @TODO - foconnor: We should avoid this - animating with top.
-    position: absolute;
-    top: 0rem !important;
-    margin-top: 0;
-    transition: top 0.25s;
     box-shadow: none;
+    transition: transform 0.25s;
   }
 
   &.active.not-picked {
@@ -128,7 +124,7 @@
     line-height: 1.169rem;
 
     &:not(:first-child) {
-      margin-top: -8.8rem;
+      margin-top: -7.5rem;
     }
 
     .identifier-card-template-inner {

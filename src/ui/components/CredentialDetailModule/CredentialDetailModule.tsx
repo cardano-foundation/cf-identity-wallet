@@ -48,6 +48,7 @@ import {
   getNotificationsCache,
   setNotificationsCache,
 } from "../../../store/reducers/notificationsCache";
+import { showError } from "../../utils/error";
 
 const CredentialDetailModule = ({
   pageId,
@@ -86,7 +87,7 @@ const CredentialDetailModule = ({
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error("Unable to get archived credential", e);
+      showError("Unable to get archived credential", e);
     }
   }, [dispatch]);
 
@@ -99,8 +100,7 @@ const CredentialDetailModule = ({
       setCardData(cardDetails);
     } catch (error) {
       setCloudError(true);
-      // eslint-disable-next-line no-console
-      console.error(error);
+      showError("Unable to get credential detail", error);
     }
   }, [id]);
 
@@ -139,9 +139,12 @@ const CredentialDetailModule = ({
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
       await deleteRevokedNotification();
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to archive credential", e);
-      dispatch(setToastMsg(ToastMsgType.ARCHIVED_CRED_FAIL));
+      showError(
+        "Unable to archive credential",
+        e,
+        dispatch,
+        ToastMsgType.DELETE_CRED_FAIL
+      );
     }
   };
 
@@ -157,8 +160,12 @@ const CredentialDetailModule = ({
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error("Unable to archive credential", e);
-      dispatch(setToastMsg(ToastMsgType.ARCHIVED_CRED_FAIL));
+      showError(
+        "Unable to archive credential",
+        e,
+        dispatch,
+        ToastMsgType.ARCHIVED_CRED_FAIL
+      );
     }
   };
 
@@ -168,23 +175,29 @@ const CredentialDetailModule = ({
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
       await fetchArchivedCreds();
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to delete credential", e);
-      dispatch(setToastMsg(ToastMsgType.DELETE_CRED_FAIL));
+      showError(
+        "Unable to delete credential",
+        e,
+        dispatch,
+        ToastMsgType.DELETE_CRED_FAIL
+      );
     }
   };
 
   const handleRestoreCredential = async () => {
-    await Agent.agent.credentials.restoreCredential(id);
-    // @TODO - sdisalvo: handle error
-    const creds = await Agent.agent.credentials.getCredentialShortDetailsById(
-      id
-    );
-    await fetchArchivedCreds();
-    dispatch(setCredsCache([...credsCache, creds]));
+    try {
+      await Agent.agent.credentials.restoreCredential(id);
+      const creds = await Agent.agent.credentials.getCredentialShortDetailsById(
+        id
+      );
+      await fetchArchivedCreds();
+      dispatch(setCredsCache([...credsCache, creds]));
 
-    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
-    onClose?.(BackReason.RESTORE);
+      dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
+      onClose?.(BackReason.RESTORE);
+    } catch (e) {
+      showError("Unable to restore credential", e);
+    }
   };
 
   const onVerify = async () => {
@@ -214,8 +227,8 @@ const CredentialDetailModule = ({
         .then(() => {
           dispatch(removeFavouritesCredsCache(id));
         })
-        .catch(() => {
-          /*TODO: handle error*/
+        .catch((e) => {
+          showError("Unable to remove favourite cred", e);
         });
     } else {
       if (favouritesCredsCache.length >= MAX_FAVOURITES) {
@@ -235,8 +248,8 @@ const CredentialDetailModule = ({
         .then(() => {
           dispatch(addFavouritesCredsCache({ id, time: Date.now() }));
         })
-        .catch(() => {
-          /*TODO: handle error*/
+        .catch((e) => {
+          showError("Unable to add favourite credential", e);
         });
     }
   };

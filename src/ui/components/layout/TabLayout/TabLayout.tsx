@@ -21,7 +21,6 @@ const TabLayout = ({
   pageId,
   customClass,
   header,
-  avatar,
   backButton,
   backButtonAction,
   title,
@@ -91,8 +90,6 @@ const TabLayout = ({
             color="transparent"
             className={`${backButton ? "has-back-button" : ""}`}
           >
-            {avatar && <IonButtons slot="start">{avatar}</IonButtons>}
-
             {backButton && backButtonAction && (
               <IonButtons
                 slot="start"

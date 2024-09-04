@@ -14,7 +14,6 @@ import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
-  getStateCache,
   getToastMsg,
   setCurrentOperation,
   setToastMsg,

@@ -6,8 +6,13 @@ interface SubMenuProps {
   setShowSubMenu: (value: boolean) => void;
   switchView: (key: SubMenuKey) => void;
   nestedMenu: boolean;
+  closeButtonLabel?: string;
+  closeButtonAction?: () => void;
   title: string;
   additionalButtons?: ReactNode;
+  actionButton?: boolean;
+  actionButtonAction?: () => void;
+  actionButtonLabel?: string;
   children: ReactNode;
   pageId: string;
   renderAsModal?: boolean;

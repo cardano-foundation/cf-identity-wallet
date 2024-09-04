@@ -9,6 +9,7 @@ import { CardDetailsBlock } from "../../../../../../components/CardDetails";
 import { ConfirmModal } from "./ConfirmModal";
 import { Agent } from "../../../../../../../core/agent/agent";
 import { useOnlineStatusEffect } from "../../../../../../hooks";
+import { showError } from "../../../../../../utils/error";
 
 const RecoverySeedPhrase = () => {
   const componentId = "recovery-seed-phrase";
@@ -25,7 +26,7 @@ const RecoverySeedPhrase = () => {
       const data = await Agent.agent.getMnemonic();
       setSeedPhrase(data.split(" "));
     } catch (e) {
-      // TODO: Handle error
+      showError("Unable to generate recovery seed phrase", e);
     }
   }, []);
 

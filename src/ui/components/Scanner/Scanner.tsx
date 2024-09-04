@@ -1,5 +1,6 @@
 import {
   BarcodeScanner,
+  CameraDirection,
   SupportedFormat,
 } from "@capacitor-community/barcode-scanner";
 import {
@@ -31,6 +32,7 @@ import {
 } from "../../../store/reducers/stateCache";
 import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
+import { showError } from "../../utils/error";
 import { CreateIdentifier } from "../CreateIdentifier";
 import { CustomInput } from "../CustomInput";
 import { TabsRoutePath } from "../navigation/TabsMenu";
@@ -40,7 +42,15 @@ import "./Scanner.scss";
 import { ScannerProps } from "./Scanner.types";
 
 const Scanner = forwardRef(
-  ({ routePath, setIsValueCaptured, handleReset }: ScannerProps, ref) => {
+  (
+    {
+      routePath,
+      setIsValueCaptured,
+      handleReset,
+      cameraDirection = CameraDirection.BACK,
+    }: ScannerProps,
+    ref
+  ) => {
     const componentId = "scanner";
     const dispatch = useAppDispatch();
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
@@ -76,6 +86,7 @@ const Scanner = forwardRef(
         ?.classList.remove("hide");
       const result = await BarcodeScanner.startScan({
         targetedFormats: [SupportedFormat.QR_CODE],
+        cameraDirection: cameraDirection,
       });
       return result;
     };
@@ -111,13 +122,14 @@ const Scanner = forwardRef(
       // TODO: We should avoid calling getMultisigLinkedContacts every time we scan a QR code,
       // ideally once the OOBI is resolved we can insert the connection details into Redux -
       // should change when we do scanner error handling
-
       const connections =
         await Agent.agent.connections.getMultisigLinkedContacts(groupId);
+
       const newMultiSigGroup: MultiSigGroup = {
         groupId,
         connections,
       };
+
       dispatch(setMultiSigGroupCache(newMultiSigGroup));
     };
 
@@ -174,9 +186,7 @@ const Scanner = forwardRef(
           dispatch(setToastMsg(ToastMsgType.NEW_MULTI_SIGN_MEMBER));
         }
       } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error("Scanner Error:", e);
-        dispatch(setToastMsg(ToastMsgType.SCANNER_ERROR));
+        showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
         initScan();
       }
     };
@@ -241,7 +251,7 @@ const Scanner = forwardRef(
       } else {
         stopScan();
       }
-    }, [currentOperation, currentToastMsg, routePath]);
+    }, [currentOperation, currentToastMsg, routePath, cameraDirection]);
 
     const handlePrimaryButtonAction = () => {
       stopScan();
@@ -255,13 +265,15 @@ const Scanner = forwardRef(
       setPastedValue("");
     };
 
+    const openPasteModal = () => setPasteModalIsOpen(true);
+
     const RenderPageFooter = () => {
       switch (currentOperation) {
       case OperationType.SCAN_WALLET_CONNECTION:
         return (
           <PageFooter
             customClass="actions-button"
-            secondaryButtonAction={() => setPasteModalIsOpen(true)}
+            secondaryButtonAction={openPasteModal}
             secondaryButtonText={`${i18n.t("scan.pastemeerkatid")}`}
           />
         );
@@ -275,7 +287,7 @@ const Scanner = forwardRef(
             secondaryButtonText={`${i18n.t(
               "createidentifier.scan.pasteoobi"
             )}`}
-            secondaryButtonAction={() => setPasteModalIsOpen(true)}
+            secondaryButtonAction={openPasteModal}
           />
         );
       case OperationType.MULTI_SIG_RECEIVER_SCAN:
@@ -285,7 +297,7 @@ const Scanner = forwardRef(
             secondaryButtonText={`${i18n.t(
               "createidentifier.scan.pasteoobi"
             )}`}
-            secondaryButtonAction={() => setPasteModalIsOpen(true)}
+            secondaryButtonAction={openPasteModal}
           />
         );
       case OperationType.SCAN_SSI_BOOT_URL:
@@ -298,7 +310,7 @@ const Scanner = forwardRef(
             secondaryButtonText={`${i18n.t(
               "createidentifier.scan.pastecontents"
             )}`}
-            secondaryButtonAction={() => setPasteModalIsOpen(true)}
+            secondaryButtonAction={openPasteModal}
           />
         );
       }

@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Agent } from "../../../../core/agent/agent";
+import { LoginAttempts } from "../../../../core/agent/services/auth.types";
 import { i18n } from "../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
   getLoginAttempt,
   setLoginAttempt as setStoreLoginAttempt,
 } from "../../../../store/reducers/stateCache";
-import { LoginAttempts } from "../../../../core/agent/services/auth.types";
+import { showError } from "../../../utils/error";
 
 const MAX_LOGIN_ATTEMP = 5;
 
@@ -55,7 +56,7 @@ const useLoginAttempt = () => {
       const loginAttempt = await Agent.agent.auth.incrementLoginAttempts();
       setLoginAttempt(loginAttempt);
     } catch (e) {
-      //TODO: handle error
+      showError("Unable to increment login attemp", e);
     }
   }, [setLoginAttempt]);
 
@@ -67,7 +68,7 @@ const useLoginAttempt = () => {
         attempts: 0,
       });
     } catch (e) {
-      //TODO: handle error
+      showError("Unable to reset login attemp", e);
     }
   }, [setLoginAttempt]);
 

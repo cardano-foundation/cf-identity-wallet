@@ -16,6 +16,8 @@ import { Alert } from "../../../components/Alert";
 import { OptionItem, OptionModal } from "../../../components/OptionsModal";
 import { NotificationOptionModalProps } from "./NotificationOptionsModal.types";
 import { NotificationRoute } from "../../../../core/agent/agent.types";
+import { showError } from "../../../utils/error";
+import { ToastMsgType } from "../../../globals/types";
 
 const NotificationOptionsModal = ({
   optionsIsOpen,
@@ -50,7 +52,7 @@ const NotificationOptionsModal = ({
       );
       closeModal();
     } catch (e) {
-      // TODO: Handle error
+      showError("Unable to change notification status", e);
     }
   };
 
@@ -63,7 +65,7 @@ const NotificationOptionsModal = ({
       dispatch(deleteNotification(notification));
       closeModal();
     } catch (e) {
-      // TODO: Handle error
+      showError("Unable to remove notification", e);
     }
   };
 

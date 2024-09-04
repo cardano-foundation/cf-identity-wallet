@@ -7,6 +7,7 @@ import configureStore from "redux-mock-store";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import EN_Translation from "../../../locales/en/en.json";
 import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
+import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
   setCurrentOperation,
   setToastMsg,
@@ -403,6 +404,128 @@ describe("Scanner", () => {
       expect(
         getByText(EN_Translation.createidentifier.scan.pastecontents)
       ).toBeVisible();
+    });
+  });
+
+  test("Scan SSI boot url", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_SSI_BOOT_URL,
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      return {
+        type: KeriConnectionType.NORMAL,
+      };
+    });
+
+    startScan.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              hasContent: true,
+              content:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            });
+          }, 100);
+        })
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setBootUrl(
+          "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6"
+        )
+      );
+    });
+  });
+
+  test("Scan SSI connect url", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_SSI_CONNECT_URL,
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      return {
+        type: KeriConnectionType.NORMAL,
+      };
+    });
+
+    startScan.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              hasContent: true,
+              content:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            });
+          }, 100);
+        })
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setConnectUrl(
+          "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6"
+        )
+      );
     });
   });
 });

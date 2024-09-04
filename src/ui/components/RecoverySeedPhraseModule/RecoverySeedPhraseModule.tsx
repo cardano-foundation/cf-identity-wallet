@@ -18,6 +18,8 @@ import {
 } from "./RecoverySeedPhraseModule.types";
 import { SwitchOnboardingMode } from "../SwitchOnboardingMode";
 import { OnboardingMode } from "../SwitchOnboardingMode/SwitchOnboardingMode.types";
+import { showError } from "../../utils/error";
+import { ToastMsgType } from "../../globals/types";
 
 const SEED_PHRASE_LENGTH = 18;
 const SUGGEST_SEED_PHRASE_LENGTH = 4;
@@ -185,7 +187,7 @@ const RecoverySeedPhraseModule = forwardRef<
         onVerifySuccess();
       } catch (e) {
         setAlertIsOpen(true);
-        // TODO: handle failed attemp
+        showError("Unable to verify recovery seed phrase", e);
       }
     };
 

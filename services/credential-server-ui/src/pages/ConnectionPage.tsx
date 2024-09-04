@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import GetQRButton from "../components/GetQRButton";
+import ConnectionQR from "../components/ConnectionQR";
 import { config } from "../config";
 import { Button, Divider, Grid, Input, Paper, Typography } from "@mui/material";
-import GetInputButton from "../components/inputOOBI/GetInputButton";
-import GetScannerButton from "../components/inputOOBI/GetScannerButton";
+import { InputOobi } from "../components/inputOOBI/InputOobi";
 import axios from "axios";
 import { Contact } from "../types.types";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -14,6 +13,7 @@ const ConnectionPage: React.FC = () => {
   const [allContacts, setAllContacts] = useState<Contact[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [connectionsFilter, setConnectionsFilter] = useState<string>("");
+  const [step, setStep] = useState<number>(0);
 
   useEffect(() => {
     handleGetContacts();
@@ -38,44 +38,56 @@ const ConnectionPage: React.FC = () => {
   return (
     <>
       <Paper variant="outlined"
-            sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
+        sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
         <Typography component="h1" variant="h4" align="center">
           Connect
         </Typography>
         <Grid container justifyContent="center">
           <Grid item xs={12} md={12}>
-            <Divider />
-            <GetQRButton
-              name=""
-              url={`${config.endpoint}${config.path.keriOobi}`}
-              onQRGenerated={() => { }}
-            />
-            <Divider />
-            <GetScannerButton />
-            <Divider />
-            <GetInputButton handleGetContacts={()=> handleGetContacts()}/>
-            <Divider />
+            {
+              step === 0 &&
+              <>
+                <Divider />
+                <ConnectionQR
+                  name=""
+                  url={`${config.endpoint}${config.path.keriOobi}`}
+                  onNextStep={() => setStep(1)}
+                />
+              </>
+            }
+            {
+              step === 1 &&
+              <>
+                <Divider />
+                <InputOobi
+                  backToFirstStep={() => setStep(0)}
+                  handleGetContacts={() => handleGetContacts()} />
+              </>
+            }
           </Grid>
         </Grid>
       </Paper>
-      
+
       <Paper variant="outlined"
-            sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
+        sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
         <Typography component="h1" variant="h4" align="center">
           Manage connections
           <Button
             startIcon={<RefreshIcon />}
             onClick={handleGetContacts}
           ></Button>
-          <br></br>
-          <Input onChange={(event) => setConnectionsFilter(event.target.value)} placeholder="Search for connections"/>
-          <br></br>
-          <Divider />
         </Typography>
-        <br></br>
+        <Divider />
+
+        <Grid container justifyContent={"center"}>
+          <Grid item xs={10} sx={{ display: "flex", justifyContent: "left", my: { md: 1 } }}>
+            <Input fullWidth onChange={(event) => setConnectionsFilter(event.target.value)} placeholder="Search for connections" />
+            <br></br>
+          </Grid>
+        </Grid>
         <Grid container justifyContent="center">
           {contacts.map(contact => (
-            <Grid container xs={10}>
+            <Grid container xs={10} sx={{ my: { md: 1 } }}>
               <Grid item xs={10} textAlign={"left"}>
                 {UUID_REGEX.test(contact.alias) ? "" : contact.alias} ({contact.id.slice(0, 4)}...{contact.id.slice(-4)})
               </Grid>
