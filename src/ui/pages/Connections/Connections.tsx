@@ -193,13 +193,13 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     );
 
     useEffect(() => {
-      if (!openDetailId) return;
-      const connection = connectionsCache[openDetailId];
-
-      if (!connection) return;
+      if (openDetailId === undefined) return;
 
       setShowConnections(true);
+      const connection = connectionsCache[openDetailId];
       dispatch(setOpenConnectionDetail(undefined));
+
+      if (!connection || connection.status === ConnectionStatus.PENDING) return;
 
       setTimeout(() => {
         handleShowConnectionDetails(connection);
