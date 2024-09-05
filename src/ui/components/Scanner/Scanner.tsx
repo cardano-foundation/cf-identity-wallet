@@ -36,7 +36,7 @@ import {
 import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
-import { isValidHttpUrl } from "../../utils/urlChecker";
+import { isValidConnectionUrl } from "../../utils/urlChecker";
 import { CreateIdentifier } from "../CreateIdentifier";
 import { CustomInput } from "../CustomInput";
 import { TabsRoutePath } from "../navigation/TabsMenu";
@@ -158,29 +158,40 @@ const Scanner = forwardRef(
 
     const handleConnectionError = (e: Error) => {
       if (e.message.includes(ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG)) {
-        showError(
-          "Scanner Error:",
-          e,
-          dispatch,
-          ToastMsgType.DUPLICATE_CONNECTION
-        );
         const connectionId = e.message
           .replace(ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG, "")
           .trim();
-        dispatch(setOpenConnectionDetail(connectionId));
-        handleReset?.();
-        return;
+
+        if (connectionId) {
+          showError(
+            "Scanner Error:",
+            e,
+            dispatch,
+            ToastMsgType.DUPLICATE_CONNECTION
+          );
+          dispatch(setOpenConnectionDetail(connectionId));
+          handleReset?.();
+          return;
+        }
       }
 
       showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
       initScan();
     };
 
+    const checkUrl = (url: string) => {
+      const isMultiSigUrl = url.includes("groupId");
+
+      if (!isMultiSigUrl && !isValidConnectionUrl(url)) {
+        throw new Error(ErrorMessage.INVALID_CONNECTION_URL);
+      }
+
+      return true;
+    };
+
     const handleResolveOobi = async (content: string) => {
       try {
-        if (!isValidHttpUrl(content)) {
-          throw new Error(ErrorMessage.INVALID_CONNECTION_URL);
-        }
+        checkUrl(content);
 
         const invitation = await Agent.agent.connections.connectByOobiUrl(
           content

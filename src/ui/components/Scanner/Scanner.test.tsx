@@ -571,7 +571,8 @@ describe("Scanner", () => {
           setTimeout(() => {
             resolve({
               hasContent: true,
-              content: "http://kerid:3000/agent",
+              content:
+                "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
             });
           }, 100);
         })

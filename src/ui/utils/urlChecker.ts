@@ -13,4 +13,12 @@ const isValidHttpUrl = (urlString: string) => {
   );
 };
 
-export { isValidHttpUrl };
+const isValidConnectionUrl = (url: string) => {
+  // Pattern: http://domain/oobi/:connectionId/agent/:agentId?param
+  const pattern =
+    /https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+([\w])?(\.|(:\d*))?([^\s]{0,})\/oobi\/[\w-]*\/agent\/([^\s]{1,})/;
+
+  return pattern.test(url);
+};
+
+export { isValidHttpUrl, isValidConnectionUrl };
