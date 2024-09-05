@@ -10,15 +10,21 @@ import { MultiSigService } from "./multiSigService";
 import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
 
-const notificationStorage = jest.mocked({
-  open: jest.fn(),
-  save: jest.fn(),
-  delete: jest.fn(),
-  deleteById: jest.fn(),
-  update: jest.fn(),
-  findById: jest.fn(),
-  findAllByQuery: jest.fn(),
-  getAll: jest.fn(),
+const signifyNotificationService = jest.mocked({
+  pollNotificationsWithCb: jest.fn(),
+  startNotification: jest.fn(),
+  stopNotification: jest.fn(),
+  deleteNotificationRecordById: jest.fn(),
+  processNotification: jest.fn(),
+  createNotificationRecord: jest.fn(),
+  readNotification: jest.fn(),
+  unreadNotification: jest.fn(),
+  getAllNotifications: jest.fn(),
+  markNotification: jest.fn(),
+  findNotificationsByMultisigId: jest.fn(),
+  pollLongOperationsWithCb: jest.fn(),
+  processOperation: jest.fn(),
+  addPendingOperationToQueue: jest.fn(),
 });
 
 const identifiersListMock = jest.fn();
@@ -128,8 +134,8 @@ const agentServicesProps = {
 const multiSigService = new MultiSigService(
   agentServicesProps,
   identifierStorage as any,
-  notificationStorage as any,
-  operationPendingStorage as any
+  operationPendingStorage as any,
+  signifyNotificationService as any
 );
 
 let mockResolveOobi = jest.fn();
@@ -620,11 +626,6 @@ describe("Multisig sig service of agent", () => {
   test("can join the multisig inception", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const multisigIdentifier = "newMultisigIdentifierAid";
-    notificationStorage.findById = jest.fn().mockResolvedValue({
-      content: {
-        d: "d",
-      },
-    });
     groupGetRequestMock = jest.fn().mockResolvedValue([
       {
         exn: {
@@ -1198,11 +1199,6 @@ describe("Multisig sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(metadata);
-    notificationStorage.findById = jest.fn().mockResolvedValue({
-      content: {
-        d: "d",
-      },
-    });
     groupGetRequestMock = jest.fn().mockResolvedValue([
       {
         exn: {
@@ -1245,11 +1241,6 @@ describe("Multisig sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(metadata);
-    notificationStorage.findById = jest.fn().mockResolvedValue({
-      content: {
-        d: "d",
-      },
-    });
     groupGetRequestMock = jest.fn().mockResolvedValue([
       {
         exn: {
