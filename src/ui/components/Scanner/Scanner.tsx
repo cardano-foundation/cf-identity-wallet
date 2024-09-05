@@ -80,7 +80,6 @@ const Scanner = forwardRef(
     const stopScan = async () => {
       setScanning(false);
       await BarcodeScanner.stopScan();
-      // await BarcodeScanner.showBackground();
       document?.querySelector("body")?.classList.remove("scanner-active");
       setGroupId("");
     };
@@ -173,12 +172,15 @@ const Scanner = forwardRef(
         }
       } catch (e) {
         showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
-        initScan();
+        await new Promise((resolve) => setTimeout(resolve, 500)); // Otherwise spam scans
+        await initScan();
       }
     };
 
     const processValue = async (content: string) => {
-      stopScan();
+      // @TODO - foconnor: We can processValue first and only stop if it's a good scan.
+      // Instead of our legacy method of restarting the scanner.
+      await stopScan();
       // @TODO - foconnor: instead of setting the optype to idle we should
       // have a loading screen with "waiting for server..." etc,
       // and it can update to an error if the QR is invalid with a re-scan btn
@@ -225,31 +227,41 @@ const Scanner = forwardRef(
             ?.classList.remove("hide");
           await BarcodeScanner.startScan({
             formats: [BarcodeFormat.QrCode],
-            lensFacing: cameraDirection ?? LensFacing.Back,
+            lensFacing: cameraDirection,
           });
         }
       }
     };
 
     useEffect(() => {
-      if (
-        ((routePath === TabsRoutePath.SCAN ||
-          [
-            OperationType.SCAN_CONNECTION,
-            OperationType.SCAN_WALLET_CONNECTION,
-            OperationType.SCAN_SSI_BOOT_URL,
-            OperationType.SCAN_SSI_CONNECT_URL,
-          ].includes(currentOperation)) &&
-          currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
-          currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING) ||
-        currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
-        currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
-      ) {
-        initScan();
-      } else {
-        stopScan();
-      }
+      const onLoad = async () => {
+        if (
+          ((routePath === TabsRoutePath.SCAN ||
+            [
+              OperationType.SCAN_CONNECTION,
+              OperationType.SCAN_WALLET_CONNECTION,
+              OperationType.SCAN_SSI_BOOT_URL,
+              OperationType.SCAN_SSI_CONNECT_URL,
+            ].includes(currentOperation)) &&
+            currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
+            currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING) ||
+          currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
+          currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
+        ) {
+          await stopScan(); // In case already running
+          await initScan();
+        } else {
+          await stopScan();
+        }
+      };
+      onLoad();
     }, [currentOperation, currentToastMsg, routePath, cameraDirection]);
+
+    useEffect(() => {
+      return () => {
+        stopScan();
+      };
+    }, []);
 
     const handlePrimaryButtonAction = () => {
       stopScan();
