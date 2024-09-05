@@ -25,6 +25,10 @@
 
   > ion-content {
     overflow: initial;
+
+    ion-list {
+      background: transparent;
+    }
   }
 
   .connections-tab-center {
