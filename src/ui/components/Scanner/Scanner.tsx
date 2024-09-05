@@ -219,14 +219,13 @@ const Scanner = forwardRef(
           );
 
           setScanning(true);
-          // await BarcodeScanner.hideBackground();
           document?.querySelector("body")?.classList.add("scanner-active");
           document
             ?.querySelector("body.scanner-active > div:last-child")
             ?.classList.remove("hide");
           await BarcodeScanner.startScan({
             formats: [BarcodeFormat.QrCode],
-            lensFacing: cameraDirection,
+            lensFacing: cameraDirection ?? LensFacing.Back,
           });
         }
       }
