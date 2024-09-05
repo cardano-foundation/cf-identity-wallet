@@ -156,27 +156,28 @@ const Scanner = forwardRef(
       handleReset?.();
     };
 
-    const handleConnectionError = (e: Error) => {
-      if (e.message.includes(ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG)) {
-        const connectionId = e.message
-          .replace(ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG, "")
-          .trim();
+    const handleDuplicateConnectionError = (e: Error, isMultisig: boolean) => {
+      const connectionId = e.message
+        .replace(ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG, "")
+        .trim();
 
-        if (connectionId) {
-          showError(
-            "Scanner Error:",
-            e,
-            dispatch,
-            ToastMsgType.DUPLICATE_CONNECTION
-          );
-          dispatch(setOpenConnectionDetail(connectionId));
-          handleReset?.();
-          return;
-        }
+      if (!connectionId) {
+        showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
+        initScan();
       }
 
-      showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
-      initScan();
+      showError(
+        "Scanner Error:",
+        e,
+        dispatch,
+        ToastMsgType.DUPLICATE_CONNECTION
+      );
+
+      if (!isMultisig) {
+        dispatch(setOpenConnectionDetail(connectionId));
+      }
+
+      handleReset?.();
     };
 
     const checkUrl = (url: string) => {
@@ -190,6 +191,8 @@ const Scanner = forwardRef(
     };
 
     const handleResolveOobi = async (content: string) => {
+      const isMultisigUrl = content.includes("groupId");
+
       try {
         checkUrl(content);
 
@@ -202,7 +205,7 @@ const Scanner = forwardRef(
           setIsValueCaptured && setIsValueCaptured(true);
 
           const scanMultiSigByTab =
-            routePath === TabsRoutePath.SCAN && content.includes("groupId");
+            routePath === TabsRoutePath.SCAN && isMultisigUrl;
 
           if (
             currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
@@ -229,8 +232,11 @@ const Scanner = forwardRef(
 
         dispatch(setCurrentOperation(OperationType.IDLE));
       } catch (e) {
-        if (!content.includes("groupId")) {
-          handleConnectionError(e as Error);
+        const isDuplicateError = (e as Error).message.includes(
+          ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG
+        );
+        if (isDuplicateError) {
+          handleDuplicateConnectionError(e as Error, isMultisigUrl);
         } else {
           showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
           initScan();
