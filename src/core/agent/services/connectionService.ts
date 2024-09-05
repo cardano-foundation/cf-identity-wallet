@@ -26,6 +26,7 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import { AgentService } from "./agentService";
 import { KeriaContact } from "./connection.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
+import { StorageMessage } from "../../storage/storage.types";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
@@ -123,7 +124,7 @@ class ConnectionService extends AgentService {
           if (
             !(error instanceof Error) ||
             !error.message.includes(
-              SqliteStorage.RECORD_ALREADY_EXISTS_ERROR_MSG
+              StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG
             )
           ) {
             throw error;
