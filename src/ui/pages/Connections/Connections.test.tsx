@@ -17,6 +17,7 @@ import { passcodeFiller } from "../../utils/passcodeFiller";
 import { Credentials } from "../Credentials/Credentials";
 import { Identifiers } from "../Identifiers";
 import { Connections } from "./Connections";
+import { setOpenConnectionDetail } from "../../../store/reducers/connectionsCache";
 
 const combineMock = jest.fn(() => TabsRoutePath.IDENTIFIERS);
 
@@ -694,6 +695,57 @@ describe("Connections page from Credentials tab", () => {
 
     await waitFor(() => {
       expect(deleteConnectionByIdMock).toBeCalled();
+    });
+  });
+
+  test("Show connection detail", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const connection = connectionsFix[1];
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIER_DETAILS, TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      identifiersCache: {
+        identifiers: filteredIdentifierFix,
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      connectionsCache: {
+        openConnectionId: connection.id,
+        connections: {
+          [connection.id]: connection,
+        },
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={storeMocked}>
+          <Connections
+            setShowConnections={mockSetShowConnections}
+            showConnections={true}
+            selfPaginated={true}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(setOpenConnectionDetail(undefined));
+      expect(historyPushMock).toBeCalled();
     });
   });
 });

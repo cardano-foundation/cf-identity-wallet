@@ -105,6 +105,7 @@ enum ToastMsgType {
   UNABLE_DELETE_PASSWORD_HINT = "deletepasswordhinterror",
   UNABLE_EDIT_IDENTIFIER = "editidentifiererror",
   FAILED_UPDATE_CONNECTION = "failedupdateconnectionerror",
+  DUPLICATE_CONNECTION = "duplicateconnectionerror",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {

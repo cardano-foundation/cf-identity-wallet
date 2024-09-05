@@ -70,5 +70,16 @@ ion-grid.qr-code-scanner {
         }
       }
     }
+
+    .custom-input,
+    .error-message,
+    .scan-error-placeholder {
+      margin-bottom: 0;
+      text-align: left;
+    }
+
+    .scan-error-placeholder {
+      height: 2.375rem;
+    }
   }
 }
