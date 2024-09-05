@@ -68,11 +68,6 @@ const multisigService = jest.mocked({
   multisigAdmit: jest.fn().mockResolvedValue({ name: "opName", done: true }),
 });
 
-const keriaNotificationService = jest.mocked({
-  addPendingOperationToQueue: jest.fn(),
-  deleteNotificationRecordById: jest.fn((id: string) => Promise.resolve(id)),
-});
-
 let credentialListMock = jest.fn();
 let credentialGetMock = jest.fn();
 const identifierListMock = jest.fn();
@@ -207,8 +202,7 @@ jest.mock("../../../core/agent/agent", () => ({
         resolveOobi: () => resolveOobiMock(),
       },
       keriaNotifications: {
-        deleteNotificationRecordById: (id: string) =>
-          deleteNotificationMock(id),
+        deleteNotificationRecordById: jest.fn(),
         addPendingOperationToQueue: jest.fn(),
       },
       ipexCommunications: {
@@ -228,8 +222,7 @@ const ipexCommunicationService = new IpexCommunicationService(
   notificationStorage as any,
   ipexMessageRecordStorage as any,
   operationPendingStorage as any,
-  multisigService as any,
-  keriaNotificationService as any
+  multisigService as any
 );
 
 const grantIpexMessageMock = {
@@ -348,16 +341,16 @@ describe("Ipex communication service of agent", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    expect(keriaNotificationService.addPendingOperationToQueue).toBeCalledTimes(
-      1
-    );
+    expect(
+      Agent.agent.keriaNotifications.addPendingOperationToQueue
+    ).toBeCalledTimes(1);
     expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith(
       expect.objectContaining({
         historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
       })
     );
     expect(
-      keriaNotificationService.deleteNotificationRecordById
+      Agent.agent.keriaNotifications.deleteNotificationRecordById
     ).toBeCalledWith(id, "/exn/ipex/grant");
   });
 
@@ -525,7 +518,7 @@ describe("Ipex communication service of agent", () => {
       applySaid: "d",
     });
     expect(
-      keriaNotificationService.deleteNotificationRecordById
+      Agent.agent.keriaNotifications.deleteNotificationRecordById
     ).toBeCalledWith(id, undefined);
   });
 
@@ -981,9 +974,9 @@ describe("Ipex communication service of agent", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    expect(keriaNotificationService.addPendingOperationToQueue).toBeCalledTimes(
-      1
-    );
+    expect(
+      Agent.agent.keriaNotifications.addPendingOperationToQueue
+    ).toBeCalledTimes(1);
   });
 
   test("can accept ACDC and update linkedGroupRequests when FIRST of multisig joins", async () => {
@@ -1066,9 +1059,9 @@ describe("Ipex communication service of agent", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    expect(keriaNotificationService.addPendingOperationToQueue).toBeCalledTimes(
-      1
-    );
+    expect(
+      Agent.agent.keriaNotifications.addPendingOperationToQueue
+    ).toBeCalledTimes(1);
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
   });
 
@@ -1340,7 +1333,7 @@ describe("Ipex communication service of agent", () => {
       ipexCommunicationService.acceptAcdcFromMultisigExn(id)
     ).rejects.toThrowError(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     expect(
-      keriaNotificationService.deleteNotificationRecordById
+      Agent.agent.keriaNotifications.deleteNotificationRecordById
     ).not.toBeCalledWith(id);
   });
 });

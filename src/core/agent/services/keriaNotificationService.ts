@@ -86,7 +86,7 @@ class KeriaNotificationService extends AgentService {
 
   async pollNotificationsWithCb(callback: (event: KeriaNotification) => void) {
     try {
-      this.pollNotifications(callback);
+      await this.pollNotifications(callback);
     } catch (error) {
       /* eslint-disable no-console */
       console.error("Error at pollNotificationsWithCb", error);
@@ -414,7 +414,7 @@ class KeriaNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return false;
     }
-    const hasMultisig = await Agent.agent.multiSigs.hasMultisig(multisigId);
+    const hasMultisig = await this.multiSigs.hasMultisig(multisigId);
     const notificationsForThisMultisig =
       await this.findNotificationsByMultisigId(multisigId);
     if (hasMultisig || notificationsForThisMultisig.length) {
@@ -434,7 +434,7 @@ class KeriaNotificationService extends AgentService {
       return false;
     }
 
-    const existMultisig = await Agent.agent.identifiers
+    const existMultisig = await this.identifiers
       .getIdentifier(exchange?.exn?.e?.exn?.i)
       .catch((error) => {
         if (
@@ -477,9 +477,7 @@ class KeriaNotificationService extends AgentService {
           [exchange.exn.d]: false,
         };
       } else {
-        await Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn(
-          exchange.exn.d
-        );
+        await this.ipexCommunications.acceptAcdcFromMultisigExn(exchange.exn.d);
         notificationRecord.linkedGroupRequests = {
           ...notificationRecord.linkedGroupRequests,
           [exchange.exn.d]: true,
@@ -727,7 +725,7 @@ class KeriaNotificationService extends AgentService {
                 );
               }
             }
-            await Agent.agent.ipexCommunications.markAcdc(
+            await this.ipexCommunications.markAcdc(
               credentialId,
               CredentialStatus.CONFIRMED
             );

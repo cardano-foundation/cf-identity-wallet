@@ -1,5 +1,5 @@
 import { Agent } from "../agent";
-import { ExchangeRoute, NotificationRoute } from "../agent.types";
+import { ExchangeRoute, MiscRecordId, NotificationRoute } from "../agent.types";
 import { IpexMessageStorage } from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { ConnectionHistoryType } from "./connection.types";
@@ -22,6 +22,7 @@ const markNotificationMock = jest.fn();
 const getCredentialMock = jest.fn();
 const admitMock = jest.fn();
 const submitAdmitMock = jest.fn();
+const listNotificationsMock = jest.fn();
 const operationsGetMock = jest.fn().mockImplementation((id: string) => {
   return {
     done: true,
@@ -163,7 +164,7 @@ const signifyClient = jest.mocked({
     delete: jest.fn(),
   }),
   notifications: () => ({
-    list: jest.fn(),
+    list: listNotificationsMock,
     mark: markNotificationMock,
   }),
   ipex: () => ({
@@ -262,6 +263,12 @@ const credentialStorage = jest.mocked({
   getCredentialMetadatasById: jest.fn(),
 });
 
+const basicStorage = jest.mocked({
+  findById: jest.fn(),
+  save: jest.fn(),
+  createOrUpdateBasicRecord: jest.fn(),
+});
+
 const keriaNotificationService = new KeriaNotificationService(
   agentServicesProps,
   notificationStorage as any,
@@ -270,7 +277,7 @@ const keriaNotificationService = new KeriaNotificationService(
   connectionStorage as any,
   ipexMessageStorage as any,
   credentialStorage as any,
-  Agent.agent.basicStorage,
+  basicStorage as any,
   Agent.agent.multiSigs,
   Agent.agent.ipexCommunications,
   Agent.agent.identifiers,
@@ -1499,5 +1506,66 @@ describe("Long running operation tracker", () => {
     }
     expect(setTimeout).toBeCalledTimes(1);
     expect(operationsGetMock).not.toBeCalled();
+  });
+
+  test("Should update notification marker after the notification is processed", async () => {
+    const callback = jest.fn();
+    jest
+      .spyOn(keriaNotificationService as any, "getKeriaOnlineStatus")
+      .mockReturnValue(true);
+    jest.spyOn(console, "error").mockReturnValueOnce();
+    basicStorage.findById.mockResolvedValueOnce({
+      id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
+      content: {
+        nextIndex: 0,
+        lastNotificationId: "",
+      },
+    });
+    let firstTry = true;
+    listNotificationsMock.mockImplementation(async () => {
+      if (firstTry) {
+        firstTry = false;
+        return {
+          start: 0,
+          end: 2,
+          total: 2,
+          notes: [
+            {
+              i: "string",
+              dt: "string",
+              r: true,
+              a: {
+                r: NotificationRoute.ExnIpexApply,
+                d: "string",
+                m: "",
+              },
+            },
+            {
+              i: "string",
+              dt: "string",
+              r: true,
+              a: {
+                r: NotificationRoute.MultiSigExn,
+                d: "string",
+                m: "",
+              },
+            },
+          ],
+        };
+      } else {
+        throw new Error("Break the while loop");
+      }
+    });
+    try {
+      await keriaNotificationService.pollNotificationsWithCb(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Break the while loop");
+    }
+    expect(basicStorage.createOrUpdateBasicRecord).toBeCalledTimes(2);
+    expect(setTimeout).toHaveBeenCalledWith(
+      keriaNotificationService.pollNotificationsWithCb,
+      KeriaNotificationService.POLL_KERIA_INTERVAL,
+      callback
+    );
   });
 });

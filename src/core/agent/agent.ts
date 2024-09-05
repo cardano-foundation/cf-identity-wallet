@@ -128,8 +128,7 @@ class Agent {
         this.notificationStorage,
         this.ipexMessageStorage,
         this.operationPendingStorage,
-        this.multiSigs,
-        this.keriaNotificationService
+        this.multiSigs
       );
     }
     return this.ipexCommunicationService;
