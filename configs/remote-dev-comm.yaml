@@ -1,7 +1,4 @@
 keri:
-  keria:
-    url: "https://keria.dev.cf-summit-2024.eu-west-1.metadata.dev.cf-deployments.org"
-    bootUrl: "https://keria-boot.dev.cf-summit-2024.eu-west-1.metadata.dev.cf-deployments.org"
   credentials:
     testServer:
       urlInt: "https://cred-issuance.dev.cf-summit-2024.eu-west-1.metadata.dev.cf-deployments.org"
