@@ -5,3 +5,7 @@ export interface Contact {
   oobi: string;
   wellKnowns: string[];
 }
+
+export interface Credential {
+  id: string;
+}

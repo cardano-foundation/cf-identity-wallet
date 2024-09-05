@@ -9,6 +9,7 @@ import { CustomInputProps } from "../../../../components/CustomInput/CustomInput
 import { Menu } from "../../Menu";
 import { SubMenuKey } from "../../Menu.types";
 import { PROFILE_LINK } from "../../../../globals/constants";
+import { TabsRoutePath } from "../../../../../routes/paths";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -65,6 +66,15 @@ jest.mock("../../../../components/CustomInput", () => ({
       </>
     );
   },
+}));
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useHistory: () => ({
+    location: {
+      pathname: TabsRoutePath.MENU,
+    },
+  }),
 }));
 
 const browserMock = jest.fn(({ link }: { link: string }) =>

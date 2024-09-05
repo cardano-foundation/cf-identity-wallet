@@ -89,7 +89,6 @@ const Credentials = () => {
   const credsCache = useAppSelector(getCredsCache);
   const archivedCreds = useAppSelector(getCredsArchivedCache);
   const favCredsCache = useAppSelector(getFavouritesCredsCache);
-
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
