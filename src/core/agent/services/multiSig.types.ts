@@ -13,13 +13,13 @@ interface CommonExn {
 
 interface IcpExn extends CommonExn {
   s: string;
-  kt: string;
+  kt: string | string[];
   k: string[];
-  nt: string;
+  nt: string | string[];
   n: string[];
   bt: string;
   b: string[];
-  c: any[];
+  c: string[];
   a: any[];
 }
 
