@@ -121,7 +121,7 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
       <div className="scannerPage">
         <div>
           <h3 className="">{content?.title}</h3>
-          {!showInput &&
+          {(!showInput && !canReset) &&
             <Box sx={{ display: "flex", justifyContent: "center" }} mb={2}>
               <Button
                 sx={{ minHeight: '200px', minWidth: '230px', color: "gray", borderColor: "gray" }}
@@ -131,7 +131,7 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
                 Start Scanner
               </Button>
             </Box>}
-          {showInput && (<>
+          {(showInput && !canReset) && (<>
             {content?.component}
           </>)}
         </div>

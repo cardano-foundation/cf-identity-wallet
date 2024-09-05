@@ -23,7 +23,6 @@ import { EarlierNotification } from "./components";
 import { EarlierNotificationRef } from "./components/EarlierNotification.types";
 import { NotificationOptionsModal } from "./components/NotificationOptionsModal";
 import { showError } from "../../utils/error";
-import { ToastMsgType } from "../../globals/types";
 
 const Chip = ({ filter, label, isActive, onClick }: FilterChipProps) => (
   <span>
