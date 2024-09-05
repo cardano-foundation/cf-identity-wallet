@@ -10,7 +10,9 @@ import {
   getFavouritesIdentifiersCache,
   getIdentifiersCache,
   getMultiSigGroupCache,
+  getOpenMultiSig,
   setIdentifiersCache,
+  setOpenMultiSigId,
 } from "../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
@@ -82,6 +84,8 @@ const Identifiers = () => {
   const multisignGroupCache = useAppSelector(getMultiSigGroupCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const currentOperation = useAppSelector(getCurrentOperation);
+  const openMultiSigId = useAppSelector(getOpenMultiSig);
+
   const [favIdentifiers, setFavIdentifiers] = useState<
     IdentifierShortDetails[]
   >([]);
@@ -129,27 +133,40 @@ const Identifiers = () => {
     ) {
       setCreateIdentifierModalIsOpen(true);
     }
-
-    if (
-      OperationType.OPEN_MULTISIG_IDENTIFIER === currentOperation &&
-      multisignGroupCache
-    ) {
-      const groupId = multisignGroupCache?.groupId;
-      const identifier = identifiersData.find(
-        (item) => item.groupMetadata?.groupId === groupId
-      );
-
-      if (identifier) {
-        handleMultiSigClick(identifier);
-        dispatch(setCurrentOperation(OperationType.IDLE));
-      }
-    }
   }, [
     currentOperation,
     dispatch,
     history.location.pathname,
     identifiersData,
     multisignGroupCache,
+  ]);
+
+  useEffect(() => {
+    const multisigId =
+      OperationType.OPEN_MULTISIG_IDENTIFIER === currentOperation &&
+      multisignGroupCache
+        ? multisignGroupCache?.groupId
+        : openMultiSigId;
+
+    if (!multisigId) {
+      return;
+    }
+
+    const identifier = identifiersData.find(
+      (item) => item.groupMetadata?.groupId === multisigId
+    );
+
+    if (identifier) {
+      handleMultiSigClick(identifier);
+      dispatch(setOpenMultiSigId(undefined));
+      dispatch(setCurrentOperation(OperationType.IDLE));
+    }
+  }, [
+    currentOperation,
+    dispatch,
+    identifiersData,
+    multisignGroupCache,
+    openMultiSigId,
   ]);
 
   useEffect(() => {

@@ -24,6 +24,7 @@ import {
 import {
   getMultiSigGroupCache,
   setMultiSigGroupCache,
+  setOpenMultiSigId,
 } from "../../../store/reducers/identifiersCache";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
@@ -156,14 +157,24 @@ const Scanner = forwardRef(
       handleReset?.();
     };
 
-    const handleDuplicateConnectionError = (e: Error, isMultisig: boolean) => {
-      const connectionId = e.message
-        .replace(ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG, "")
-        .trim();
+    const handleDuplicateConnectionError = (
+      e: Error,
+      url: string,
+      isMultisig: boolean
+    ) => {
+      let urlId: string | null = null;
+      if (isMultisig) {
+        urlId = new URL(url).searchParams.get("groupId");
+      } else {
+        urlId = e.message
+          .replace(ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG, "")
+          .trim();
+      }
 
-      if (!connectionId) {
+      if (!urlId) {
         showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
         initScan();
+        return;
       }
 
       showError(
@@ -173,8 +184,10 @@ const Scanner = forwardRef(
         ToastMsgType.DUPLICATE_CONNECTION
       );
 
-      if (!isMultisig) {
-        dispatch(setOpenConnectionDetail(connectionId));
+      if (isMultisig) {
+        dispatch(setOpenMultiSigId(urlId));
+      } else {
+        dispatch(setOpenConnectionDetail(urlId));
       }
 
       handleReset?.();
@@ -236,7 +249,7 @@ const Scanner = forwardRef(
           ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG
         );
         if (isDuplicateError) {
-          handleDuplicateConnectionError(e as Error, isMultisigUrl);
+          handleDuplicateConnectionError(e as Error, content, isMultisigUrl);
         } else {
           showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
           initScan();
