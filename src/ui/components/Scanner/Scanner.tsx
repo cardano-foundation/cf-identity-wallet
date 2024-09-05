@@ -1,8 +1,8 @@
 import {
   BarcodeScanner,
-  CameraDirection,
-  SupportedFormat,
-} from "@capacitor-community/barcode-scanner";
+  BarcodeFormat,
+  LensFacing,
+} from "@capacitor-mlkit/barcode-scanning";
 import {
   IonCol,
   IonGrid,
@@ -47,7 +47,7 @@ const Scanner = forwardRef(
       routePath,
       setIsValueCaptured,
       handleReset,
-      cameraDirection = CameraDirection.BACK,
+      cameraDirection = LensFacing.Back,
     }: ScannerProps,
     ref
   ) => {
@@ -64,37 +64,23 @@ const Scanner = forwardRef(
     const [scanning, setScanning] = useState(false);
 
     const checkPermission = async () => {
-      const status = await BarcodeScanner.checkPermission({ force: true });
-      if (status.granted) {
+      const status = await BarcodeScanner.checkPermissions();
+      if (status.camera === "granted") {
         return true;
       }
-      if (status.neverAsked) {
-        const allow = confirm(`${i18n.t("scan.alert.title")}`);
-        if (allow) {
-          return true;
-        }
+      if (
+        status.camera === "prompt" ||
+        status.camera == "prompt-with-rationale"
+      ) {
+        return (await BarcodeScanner.requestPermissions()).camera === "granted";
       }
       return false;
-    };
-
-    const startScan = async () => {
-      setScanning(true);
-      await BarcodeScanner.hideBackground();
-      document?.querySelector("body")?.classList.add("scanner-active");
-      document
-        ?.querySelector("body.scanner-active > div:last-child")
-        ?.classList.remove("hide");
-      const result = await BarcodeScanner.startScan({
-        targetedFormats: [SupportedFormat.QR_CODE],
-        cameraDirection: cameraDirection,
-      });
-      return result;
     };
 
     const stopScan = async () => {
       setScanning(false);
       await BarcodeScanner.stopScan();
-      await BarcodeScanner.showBackground();
+      // await BarcodeScanner.showBackground();
       document?.querySelector("body")?.classList.remove("scanner-active");
       setGroupId("");
     };
@@ -223,12 +209,25 @@ const Scanner = forwardRef(
 
         if (allowed) {
           document?.querySelector("body")?.classList.add("scanner-active");
-          BarcodeScanner.hideBackground();
-          const result = await startScan();
 
-          if (result.hasContent) {
-            processValue(result.content);
-          }
+          const listener = await BarcodeScanner.addListener(
+            "barcodeScanned",
+            async (result) => {
+              await listener.remove();
+              await processValue(result.barcode.rawValue);
+            }
+          );
+
+          setScanning(true);
+          // await BarcodeScanner.hideBackground();
+          document?.querySelector("body")?.classList.add("scanner-active");
+          document
+            ?.querySelector("body.scanner-active > div:last-child")
+            ?.classList.remove("hide");
+          await BarcodeScanner.startScan({
+            formats: [BarcodeFormat.QrCode],
+            lensFacing: cameraDirection,
+          });
         }
       }
     };

@@ -72,7 +72,7 @@ import { Alert } from "../Alert";
 import { CardListViewType } from "../SwitchCardView";
 import "./AppWrapper.scss";
 import { useActivityTimer } from "./hooks/useActivityTimer";
-import { CameraDirection } from "@capacitor-community/barcode-scanner";
+import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -368,9 +368,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
 
     if (cameraDirection) {
-      dispatch(
-        setCameraDirection(cameraDirection.content.value as CameraDirection)
-      );
+      dispatch(setCameraDirection(cameraDirection.content.value as LensFacing));
     }
 
     const passwordSkipped = await Agent.agent.basicStorage.findById(

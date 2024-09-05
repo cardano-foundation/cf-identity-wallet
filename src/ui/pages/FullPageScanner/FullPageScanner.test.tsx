@@ -1,4 +1,4 @@
-import { CameraDirection } from "@capacitor-community/barcode-scanner";
+import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
@@ -224,9 +224,7 @@ describe("Full page scanner", () => {
 
     await waitFor(() => {
       expect(createOrUpdateBasicRecordMock).toBeCalled();
-      expect(dispatchMock).toBeCalledWith(
-        setCameraDirection(CameraDirection.FRONT)
-      );
+      expect(dispatchMock).toBeCalledWith(setCameraDirection(LensFacing.Front));
     });
   });
 
