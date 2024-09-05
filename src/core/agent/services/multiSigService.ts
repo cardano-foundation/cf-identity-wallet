@@ -445,7 +445,7 @@ class MultiSigService extends AgentService {
       ourIdentifier,
       sender: senderContact,
       otherConnections,
-      threshold: parseInt(icpMsg[0].exn.e.icp.kt),
+      threshold: parseInt(icpMsg[0].exn.e.icp.kt as string),
     };
   }
 
