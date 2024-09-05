@@ -17,7 +17,10 @@ import { Agent } from "../../../core/agent/agent";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { updateOrAddMultisigConnectionCache } from "../../../store/reducers/connectionsCache";
+import {
+  setOpenConnectionDetail,
+  updateOrAddMultisigConnectionCache,
+} from "../../../store/reducers/connectionsCache";
 import {
   getMultiSigGroupCache,
   setMultiSigGroupCache,
@@ -33,13 +36,14 @@ import {
 import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
+import { isValidConnectionUrl } from "../../utils/urlChecker";
 import { CreateIdentifier } from "../CreateIdentifier";
 import { CustomInput } from "../CustomInput";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
-import { ScannerProps } from "./Scanner.types";
+import { ErrorMessage, ScannerProps } from "./Scanner.types";
 
 const Scanner = forwardRef(
   (
@@ -116,6 +120,7 @@ const Scanner = forwardRef(
         dispatch(setToastMsg(ToastMsgType.PEER_ID_ERROR));
         handleReset && handleReset();
       }
+      dispatch(setCurrentOperation(OperationType.IDLE));
     };
 
     const updateConnections = async (groupId: string) => {
@@ -142,6 +147,7 @@ const Scanner = forwardRef(
         dispatch(setConnectUrl(content));
       }
 
+      dispatch(setCurrentOperation(OperationType.IDLE));
       handleReset && handleReset();
     };
 
@@ -150,8 +156,46 @@ const Scanner = forwardRef(
       handleReset?.();
     };
 
+    const handleDuplicateConnectionError = (e: Error, isMultisig: boolean) => {
+      const connectionId = e.message
+        .replace(ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG, "")
+        .trim();
+
+      if (!connectionId) {
+        showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
+        initScan();
+      }
+
+      showError(
+        "Scanner Error:",
+        e,
+        dispatch,
+        ToastMsgType.DUPLICATE_CONNECTION
+      );
+
+      if (!isMultisig) {
+        dispatch(setOpenConnectionDetail(connectionId));
+      }
+
+      handleReset?.();
+    };
+
+    const checkUrl = (url: string) => {
+      const isMultiSigUrl = url.includes("groupId");
+
+      if (!isMultiSigUrl && !isValidConnectionUrl(url)) {
+        throw new Error(ErrorMessage.INVALID_CONNECTION_URL);
+      }
+
+      return true;
+    };
+
     const handleResolveOobi = async (content: string) => {
+      const isMultisigUrl = content.includes("groupId");
+
       try {
+        checkUrl(content);
+
         const invitation = await Agent.agent.connections.connectByOobiUrl(
           content
         );
@@ -161,7 +205,7 @@ const Scanner = forwardRef(
           setIsValueCaptured && setIsValueCaptured(true);
 
           const scanMultiSigByTab =
-            routePath === TabsRoutePath.SCAN && content.includes("groupId");
+            routePath === TabsRoutePath.SCAN && isMultisigUrl;
 
           if (
             currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
@@ -185,18 +229,23 @@ const Scanner = forwardRef(
           setCreateIdentifierModalIsOpen(true);
           dispatch(setToastMsg(ToastMsgType.NEW_MULTI_SIGN_MEMBER));
         }
+
+        dispatch(setCurrentOperation(OperationType.IDLE));
       } catch (e) {
-        showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
-        initScan();
+        const isDuplicateError = (e as Error).message.includes(
+          ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG
+        );
+        if (isDuplicateError) {
+          handleDuplicateConnectionError(e as Error, isMultisigUrl);
+        } else {
+          showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
+          initScan();
+        }
       }
     };
 
     const processValue = async (content: string) => {
-      stopScan();
-      // @TODO - foconnor: instead of setting the optype to idle we should
-      // have a loading screen with "waiting for server..." etc,
-      // and it can update to an error if the QR is invalid with a re-scan btn
-      dispatch(setCurrentOperation(OperationType.IDLE));
+      await stopScan();
 
       if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
         handleConnectWallet(content);
@@ -213,7 +262,6 @@ const Scanner = forwardRef(
         return;
       }
 
-      // @TODO - foconnor: when above loading screen in place, handle invalid QR code
       handleResolveOobi(content);
     };
 
@@ -315,6 +363,7 @@ const Scanner = forwardRef(
         );
       }
     };
+
     return (
       <>
         <IonGrid

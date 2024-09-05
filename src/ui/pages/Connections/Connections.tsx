@@ -28,7 +28,9 @@ import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getConnectionsCache,
+  getOpenConnectionId,
   removeConnectionCache,
+  setOpenConnectionDetail,
 } from "../../../store/reducers/connectionsCache";
 import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
 import {
@@ -62,6 +64,8 @@ import {
 import { useOnlineStatusEffect } from "../../hooks";
 import { showError } from "../../utils/error";
 
+const ANIMATION_TIMEOUT = 350;
+
 const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
   ({ showConnections, setShowConnections, selfPaginated }, ref) => {
     const pageId = "connections-tab";
@@ -71,6 +75,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     const currentOperation = useAppSelector(getCurrentOperation);
     const connectionsCache = useAppSelector(getConnectionsCache);
     const identifierCache = useAppSelector(getIdentifiersCache);
+    const openDetailId = useAppSelector(getOpenConnectionId);
     const availableIdentifiers = identifierCache.filter(
       (item) => !item.isPending
     );
@@ -163,28 +168,50 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       setOpenIdentifierMissingAlert(false);
     };
 
-    const handleShowConnectionDetails = async (
-      item: ConnectionShortDetails
-    ) => {
-      if (item.status === ConnectionStatus.PENDING) {
-        setDeletePendingItem(item);
-        setOpenDeletePendingAlert(true);
-        return;
-      }
+    const handleShowConnectionDetails = useCallback(
+      async (item: ConnectionShortDetails) => {
+        if (item.status === ConnectionStatus.PENDING) {
+          setDeletePendingItem(item);
+          setOpenDeletePendingAlert(true);
+          return;
+        }
 
-      const data: DataProps = {
-        store: { stateCache },
-      };
-      const { nextPath, updateRedux } = getNextRoute(
-        TabsRoutePath.CREDENTIALS,
-        data
-      );
-      updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-      history.push({
-        pathname: nextPath.pathname,
-        state: item,
-      });
-    };
+        const data: DataProps = {
+          store: { stateCache },
+        };
+        const { nextPath, updateRedux } = getNextRoute(
+          TabsRoutePath.CREDENTIALS,
+          data
+        );
+        updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+        history.push({
+          pathname: nextPath.pathname,
+          state: item,
+        });
+      },
+      [dispatch, history, stateCache]
+    );
+
+    useEffect(() => {
+      if (openDetailId === undefined) return;
+
+      setShowConnections(true);
+      const connection = connectionsCache[openDetailId];
+      dispatch(setOpenConnectionDetail(undefined));
+
+      if (!connection || connection.status === ConnectionStatus.PENDING) return;
+
+      setTimeout(() => {
+        handleShowConnectionDetails(connection);
+      }, ANIMATION_TIMEOUT);
+    }, [
+      connectionsCache,
+      dispatch,
+      handleShowConnectionDetails,
+      openDetailId,
+      setShowConnections,
+      showConnections,
+    ]);
 
     const AdditionalButtons = () => {
       return (

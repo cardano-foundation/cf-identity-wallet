@@ -4,6 +4,7 @@ import { ConnectionShortDetails } from "../../../core/agent/agent.types";
 const initialState: {
   connections: { [key: string]: ConnectionShortDetails };
   multisigConnections: { [key: string]: ConnectionShortDetails };
+  openConnectionId?: string;
 } = {
   connections: {},
   multisigConnections: {},
@@ -65,6 +66,13 @@ const connectionsCacheSlice = createSlice({
         [action.payload.id]: action.payload,
       };
     },
+
+    setOpenConnectionDetail: (
+      state,
+      action: PayloadAction<string | undefined>
+    ) => {
+      state.openConnectionId = action.payload;
+    },
   },
 });
 
@@ -76,6 +84,7 @@ export const {
   updateOrAddConnectionCache,
   removeConnectionCache,
   updateOrAddMultisigConnectionCache,
+  setOpenConnectionDetail,
 } = connectionsCacheSlice.actions;
 
 const getConnectionsCache = (state: RootState) =>
@@ -84,4 +93,11 @@ const getConnectionsCache = (state: RootState) =>
 const getMultisigConnectionsCache = (state: RootState) =>
   state.connectionsCache.multisigConnections;
 
-export { getConnectionsCache, getMultisigConnectionsCache };
+const getOpenConnectionId = (state: RootState) =>
+  state.connectionsCache.openConnectionId;
+
+export {
+  getConnectionsCache,
+  getMultisigConnectionsCache,
+  getOpenConnectionId,
+};

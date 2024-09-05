@@ -27,7 +27,6 @@ import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
   IdentifierStorage,
-  NotificationStorage,
   OperationPendingStorage,
 } from "../records";
 import { AgentService } from "./agentService";
@@ -69,18 +68,15 @@ class MultiSigService extends AgentService {
     "We do not control any member AID of the multi-sig";
 
   protected readonly identifierStorage: IdentifierStorage;
-  protected readonly notificationStorage!: NotificationStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
-    notificationStorage: NotificationStorage,
     operationPendingStorage: OperationPendingStorage
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
-    this.notificationStorage = notificationStorage;
     this.operationPendingStorage = operationPendingStorage;
   }
 
@@ -499,7 +495,6 @@ class MultiSigService extends AgentService {
       .get(identifier?.signifyName);
     const signifyName = uuidv4();
     const res = await this.joinMultisigKeri(exn, aid, signifyName);
-    await this.notificationStorage.deleteById(notificationId);
     const op = res.op;
     const multisigId = op.name.split(".")[1];
     const isPending = !op.done;
@@ -531,7 +526,10 @@ class MultiSigService extends AgentService {
       // Trigger the end role authorization if the operation is done
       await this.endRoleAuthorization(signifyName);
     }
-
+    await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+      notificationId,
+      notificationRoute
+    );
     return { identifier: multisigId, signifyName, isPending };
   }
 
