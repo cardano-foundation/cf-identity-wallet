@@ -1,5 +1,5 @@
 import { Provider } from "react-redux";
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, getByText, render, waitFor } from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { IonButton, IonIcon, IonInput, IonLabel } from "@ionic/react";
 import { act } from "react-dom/test-utils";
@@ -7,13 +7,17 @@ import { ionFireEvent } from "@ionic/react-test-utils";
 import { IonReactMemoryRouter } from "@ionic/react-router";
 import { createMemoryHistory } from "history";
 import { CreateSSIAgent } from "./CreateSSIAgent";
-import ENG_Trans from "../../../locales/en/en.json";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { CustomInputProps } from "../../components/CustomInput/CustomInput.types";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { OperationType } from "../../globals/types";
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import { RoutePath } from "../../../routes";
 import { MiscRecordId } from "../../../core/agent/agent.types";
+import {
+  ONBOARDING_DOCUMENTATION_LINK,
+  RECOVERY_DOCUMENTATION_LINK,
+} from "../../globals/constants";
 
 const bootAndConnectMock = jest.fn((...args: any) => Promise.resolve());
 const recoverKeriaAgentMock = jest.fn();
@@ -29,6 +33,21 @@ jest.mock("../../../core/agent/agent", () => ({
         deleteById: (...args: any) => basicStorageDeleteMock(...args),
       },
     },
+  },
+}));
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children }: { children: any }) => children,
+}));
+
+const browserMock = jest.fn(({ link }: { link: string }) =>
+  Promise.resolve(link)
+);
+jest.mock("@capacitor/browser", () => ({
+  ...jest.requireActual("@capacitor/browser"),
+  Browser: {
+    open: (params: never) => browserMock(params),
   },
 }));
 
@@ -112,12 +131,14 @@ describe("SSI agent page", () => {
       </Provider>
     );
 
-    expect(getByText(ENG_Trans.ssiagent.title)).toBeVisible();
-    expect(getByText(ENG_Trans.ssiagent.description)).toBeVisible();
-    expect(getByText(ENG_Trans.ssiagent.button.info)).toBeVisible();
-    expect(getByText(ENG_Trans.ssiagent.button.validate)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.ssiagent.title)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.ssiagent.description)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.ssiagent.button.info)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.ssiagent.button.validate)).toBeVisible();
     expect(
-      getByText(ENG_Trans.ssiagent.button.validate).getAttribute("disabled")
+      getByText(EN_TRANSLATIONS.ssiagent.button.validate).getAttribute(
+        "disabled"
+      )
     ).toBe("true");
 
     expect(getByTestId("boot-url-input")).toBeVisible();
@@ -205,7 +226,9 @@ describe("SSI agent page", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(ENG_Trans.ssiagent.error.invalidbooturl)).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.ssiagent.error.invalidbooturl)
+      ).toBeVisible();
     });
   });
 
@@ -243,7 +266,7 @@ describe("SSI agent page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(ENG_Trans.ssiagent.error.invalidconnecturl)
+        getByText(EN_TRANSLATIONS.ssiagent.error.invalidconnecturl)
       ).toBeVisible();
     });
   });
@@ -321,7 +344,9 @@ describe("SSI agent page", () => {
     });
 
     await waitFor(() => {
-      expect(getAllByText(ENG_Trans.ssiagent.error.invalidurl).length).toBe(2);
+      expect(
+        getAllByText(EN_TRANSLATIONS.ssiagent.error.invalidurl).length
+      ).toBe(2);
     });
   });
 
@@ -374,6 +399,35 @@ describe("SSI agent page", () => {
       url: "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org",
     });
   });
+
+  test("Open SSI Agent info modal (Onboarding)", async () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CreateSSIAgent />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.aboutssiagentcreate.intro.title)
+    ).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.aboutssiagentcreate.sections[0].content[0].text)
+    ).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.aboutssiagentcreate.sections[0].content[1].text)
+    ).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.ssiagent.button.onboardingdocumentation)
+    ).toBeVisible();
+    act(() => {
+      fireEvent.click(getByTestId("open-ssi-documentation-button"));
+    });
+    await waitFor(() => {
+      expect(browserMock).toBeCalledWith({
+        url: ONBOARDING_DOCUMENTATION_LINK,
+      });
+    });
+  });
 });
 
 describe("SSI agent page: recovery mode", () => {
@@ -406,12 +460,14 @@ describe("SSI agent page: recovery mode", () => {
       </Provider>
     );
 
-    expect(getByText(ENG_Trans.ssiagent.title)).toBeVisible();
-    expect(getByText(ENG_Trans.ssiagent.verifydescription)).toBeVisible();
-    expect(getByText(ENG_Trans.ssiagent.button.info)).toBeVisible();
-    expect(getByText(ENG_Trans.ssiagent.button.validate)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.ssiagent.title)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.ssiagent.verifydescription)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.ssiagent.button.info)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.ssiagent.button.validate)).toBeVisible();
     expect(
-      getByText(ENG_Trans.ssiagent.button.validate).getAttribute("disabled")
+      getByText(EN_TRANSLATIONS.ssiagent.button.validate).getAttribute(
+        "disabled"
+      )
     ).toBe("true");
 
     expect(queryByTestId("boot-url-input")).toBe(null);
@@ -469,6 +525,39 @@ describe("SSI agent page: recovery mode", () => {
       expect(basicStorageDeleteMock).toBeCalledWith(
         MiscRecordId.APP_RECOVERY_WALLET
       );
+    });
+  });
+
+  test("Open SSI Agent info modal (Recovery)", async () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CreateSSIAgent />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.aboutssiagentrecovery.intro.title)
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.aboutssiagentrecovery.sections[0].content[0].text
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        EN_TRANSLATIONS.aboutssiagentrecovery.sections[0].content[1].text
+      )
+    ).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.ssiagent.button.recoverydocumentation)
+    ).toBeVisible();
+    act(() => {
+      fireEvent.click(getByTestId("open-ssi-documentation-button"));
+    });
+    await waitFor(() => {
+      expect(browserMock).toBeCalledWith({
+        url: RECOVERY_DOCUMENTATION_LINK,
+      });
     });
   });
 });

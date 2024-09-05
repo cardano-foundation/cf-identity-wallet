@@ -6,12 +6,13 @@ import "./TermsModal.scss";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
 
-const TermsModal = ({ name, isOpen, setIsOpen }: TermsModalProps) => {
+const TermsModal = ({ name, isOpen, setIsOpen, children }: TermsModalProps) => {
   const nameNoDash = name.replace(/-/g, "");
   const componentId = name + "-modal";
   const termsObject: TermsObject = i18next.t(nameNoDash, {
     returnObjects: true,
   });
+  const introText = `${i18n.t(`${nameNoDash}.intro.text`)}`;
   const sections = termsObject.sections;
   const Section = ({ title, content }: TermsSection) => (
     <div>
@@ -24,7 +25,7 @@ const TermsModal = ({ name, isOpen, setIsOpen }: TermsModalProps) => {
       </h3>
       {content.map((item: any, index: number) => (
         <p key={index}>
-          {item.subtitle && (
+          {!!item.subtitle.length && (
             <b
               data-testid={`${componentId}-section-${title
                 .replace(/[^aA-zZ]/gim, "")
@@ -33,7 +34,7 @@ const TermsModal = ({ name, isOpen, setIsOpen }: TermsModalProps) => {
               {item.subtitle}
             </b>
           )}
-          {item.text && (
+          {!!item.text.length && (
             <span
               data-testid={`${componentId}-section-${title
                 .replace(/[^aA-zZ]/gim, "")
@@ -64,11 +65,11 @@ const TermsModal = ({ name, isOpen, setIsOpen }: TermsModalProps) => {
           />
         }
       >
-        <p>
-          <b data-testid={`${componentId}-intro-text`}>{`${i18n.t(
-            `${nameNoDash}.intro.text`
-          )}`}</b>
-        </p>
+        {!!introText.length && (
+          <p>
+            <b data-testid={`${componentId}-intro-text`}>{introText}</b>
+          </p>
+        )}
         {sections.map((section: TermsSection, index: number) => (
           <Section
             key={index}
@@ -76,6 +77,7 @@ const TermsModal = ({ name, isOpen, setIsOpen }: TermsModalProps) => {
             content={section.content}
           />
         ))}
+        {children}
       </ScrollablePageLayout>
     </IonModal>
   );

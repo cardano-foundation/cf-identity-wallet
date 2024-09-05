@@ -1,7 +1,10 @@
+import { ReactNode } from "react";
+
 interface TermsModalProps {
   name: string;
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
+  children?: ReactNode;
 }
 
 interface TermsSection {
