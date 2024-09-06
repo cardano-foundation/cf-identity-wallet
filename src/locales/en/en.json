@@ -105,7 +105,7 @@
     "done": "Done",
     "intro": {
       "title": "Terms of Use",
-      "text": ""
+      "text": "Please read these terms of use (“Terms of Use” or “Terms”) carefully before using the services offered by Cardano Foundation (together with our subsidiaries and affiliates, referred to as “Foundation,” “We,“, “Us“ or “Our” in these Terms of Use). These Terms of Use set forth the legally binding terms and conditions for your use of the Identity Wallet developed by the Cardano Foundation (the “Identity Wallet”) and the website http://identity.cardanofoundation.org/ (collectively, the “Products“). By using the Products in any manner, you agree to be bound by these Terms of Use.\n\nThis Identity Wallet is currently provided as an 'Alpha Release'. By using this Alpha Release, you acknowledge and accept that it is experimental and may contain bugs, incomplete features, or other issues. The primary purpose of this Alpha Release is for testing and gathering feedback. The software is provided 'as is' without warranties of any kind."
     },
     "sections": [
       {
@@ -124,19 +124,15 @@
             "text": "In addition, some Products may be subject to additional terms and conditions promulgated by the Foundation from time to time; your use of such Products is subject to those additional terms and conditions, which are incorporated into these Terms of Use by this reference. If there are any inconsistencies between these Terms of Use and the additional terms, the additional terms will take precedence."
           },
           {
-            "subtitle": "d. Download and use of Android Package Kit (“APK”) Products:",
-            "text": "The use of APK Products is subject to these Terms of Use, and by downloading and using APK Products, you agree to comply with these terms and any additional terms we may provide you concerning the use of APK Products. You acknowledge that downloading and installing APK Products requires manual installation on your device and that you are solely responsible for the process and any issues that may arise from installation and use. We ensure that the APK Products we provide are secure, but you must take necessary precautions to protect your device. We may offer limited support for APK Products, and you agree to seek support through the channels we designate. APK Products might not receive automatic updates and It is your responsibility to monitor and install any updates we provide."
-          },
-          {
-            "subtitle": "e. Privacy Policy:",
+            "subtitle": "d. Privacy Policy:",
             "text": "By using the Products in any way, you understand and acknowledge that the terms of the Privacy Policy apply to you."
           },
           {
-            "subtitle": "f. Feedback:",
+            "subtitle": "e. Feedback:",
             "text": "We appreciate any feedback or suggestions you might have regarding Our Products. You can share your thoughts at https://cardanofoundation.org/en/contact-us/. When you provide feedback in any form, you give Us permission to use, share, and build upon your input as We see fit, without owing you anything in return."
           },
           {
-            "subtitle": "g. Dispute Resolution:",
+            "subtitle": "f. Dispute Resolution:",
             "text": "If you have a dispute with the Foundation or a claim to raise in relation to the Products, you agree to contact Us using the form at https://cardanofoundation.org/en/contact-us/ to attempt to resolve the issue informally first."
           }
         ]
@@ -145,8 +141,8 @@
         "title": "2. YOUR CONTENT",
         "content": [
           {
-            "subtitle": "a. Definition of 'Your Content':",
-            "text": "For the purposes of these Terms of Use, 'Your Content' refers to all materials you submit or transmit to, through, or in connection with Our Products, including but not limited to photographs, profile pictures, messages, comments, testimonials, and any other text, graphics, videos, or audio content."
+            "subtitle": "a. Definition of “Your Content“:",
+            "text": "For the purposes of these Terms of Use, “Your Content“ refers to all materials you submit or transmit to, through, or in connection with Our Products, including but not limited to photographs, profile pictures, messages, comments, testimonials, and any other text, graphics, videos, or audio content."
           },
           {
             "subtitle": "b. License Grant:",
@@ -158,7 +154,19 @@
           },
           {
             "subtitle": "d. Representations and Warranties:",
-            "text": "You represent and warrant that:\n\n- You either own Your Content or have the necessary licenses, rights, consents, and permissions to grant the rights and licenses as provided herein;\n- Your Content does not and will not infringe or violate any third party's intellectual property rights, proprietary rights, privacy rights, confidentiality, rights of publicity or otherwise violate these Terms of Use or applicable law; and\n- You have obtained all required permissions from any individual whose personal data is part of Your Content, allowing Us to use and disclose the data as set out in these Terms of Use."
+            "text": "You represent and warrant that:"
+          },
+          {
+            "subtitle": "-",
+            "text": "You either own Your Content or have the necessary licenses, rights, consents, and permissions to grant the rights and licenses as provided herein;"
+          },
+          {
+            "subtitle": "-",
+            "text": "Your Content does not and will not infringe or violate any third party's intellectual property rights, proprietary rights, privacy rights, confidentiality, rights of publicity or otherwise violate these Terms of Use or applicable law; and"
+          },
+          {
+            "subtitle": "-",
+            "text": "You have obtained all required permissions from any individual whose personal data is part of Your Content, allowing Us to use and disclose the data as set out in these Terms of Use. "
           },
           {
             "subtitle": "e. Your Responsibility:",
@@ -171,7 +179,7 @@
         "content": [
           {
             "subtitle": "a. Ownership:",
-            "text": "All intellectual property in or related to the Products, including but not limited to the software, 'Cardano' and 'ADA' marks, logos and the names and logos of the Products ('Our Intellectual Property'), is the property of the Foundation."
+            "text": "All intellectual property in or related to the Products, including but not limited to the software, “Cardano” and “ADA” marks, logos and the names and logos of the Products (“Our Intellectual Property”), is the property of the Foundation."
           },
           {
             "subtitle": "b. Grant of Licence:",
@@ -191,8 +199,12 @@
         "title": "4. DISCLAIMERS; LIMITATION OF LIABILITY",
         "content": [
           {
+            "subtitle": "",
+            "text": "“FOUNDATION ENTITIES“ REFERS TO CARDANO FOUNDATION ALONG WITH ITS SUBSIDIARIES, AFFILIATED FIRMS, ASSOCIATED COMPANIES, SUPPLIERS, LICENSORS, AND PARTNERS. THIS DEFINITION ALSO INCLUDES THE OFFICERS, DIRECTORS, EMPLOYEES, AGENTS, AND REPRESENTATIVES OF THESE ENTITIES. EACH OF THE FOLLOWING PROVISIONS IS ENFORCEABLE TO THE FULLEST EXTENT ALLOWED BY THE RELEVANT LAW:"
+          },
+          {
             "subtitle": "a. Disclaimer of Warranties:",
-            "text": "YOU UNDERSTAND AND ACKNOWLEDGE THAT WE ARE PROVIDING THE PRODUCTS, SERVICES, INCLUDING RELATED INFORMATION AND CONTENT, ON AN 'AS IS' AND 'AS AVAILABLE' BASIS, WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED. THIS MAY INCLUDE PRODUCTS OFFERED IN 'BETA' VERSIONS, INTENDED TO PROVIDE THE FOUNDATION WITH FEEDBACK ON THE QUALITY AND USABILITY OF THE PRODUCTS AND APPLICATION PROGRAMMING INTERFACES (APIs). THE FOUNDATION ENTITIES MAKE NO REPRESENTATIONS AND EXPRESSLY DISCLAIM ALL WARRANTIES ABOUT THE SUITABILITY, MERCHANTABILITY, FITNESS FOR PURPOSE, RELIABILITY, AVAILABILITY, TIMELINESS, SECURITY, TITLE AND NON-INFRINGEMENT, ACCURACY OR COMPLETENESS, DATA SYNCHED TO OR MADE AVAILABLE FROM THE PRODUCTS, PRODUCT CONTENT, OR ANY CONSULTING SERVICES WE PROVIDE FOR ANY ASSOCIATED PURPOSE."
+            "text": "YOU UNDERSTAND AND ACKNOWLEDGE THAT WE ARE PROVIDING THE PRODUCTS, SERVICES, INCLUDING RELATED INFORMATION AND CONTENT, ON AN “AS IS” AND “AS AVAILABLE” BASIS, WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED. THIS MAY INCLUDE PRODUCTS OFFERED IN ‘ALPHA RELEASE’ or ‘BETA’ VERSIONS, INTENDED TO PROVIDE THE FOUNDATION WITH FEEDBACK ON THE QUALITY AND USABILITY OF THE PRODUCTS AND APPLICATION PROGRAMMING INTERFACES (APIs). THE FOUNDATION ENTITIES MAKE NO REPRESENTATIONS AND EXPRESSLY DISCLAIM ALL WARRANTIES ABOUT THE SUITABILITY, MERCHANTABILITY, FITNESS FOR PURPOSE, RELIABILITY, AVAILABILITY, TIMELINESS, SECURITY, TITLE AND NON-INFRINGEMENT, ACCURACY OR COMPLETENESS, DATA SYNCHED TO OR MADE AVAILABLE FROM THE PRODUCTS, PRODUCT CONTENT, OR ANY CONSULTING SERVICES WE PROVIDE FOR ANY ASSOCIATED PURPOSE."
           },
           {
             "subtitle": "No Indirect Damages:",
@@ -200,11 +212,11 @@
           },
           {
             "subtitle": "b. Third Party Products:",
-            "text": "THE FOUNDATION ENTITIES MAKE NO PROMISES WITH RESPECT TO, AND EXPRESSLY DISCLAIM ALL LIABILITY, TO THE MAXIMUM EXTENT PERMITTED BY LAW, FOR: (i) CONTENT POSTED BY ANY THIRD-PARTY ON THE PRODUCTS, (ii) THE PRODUCT DESCRIPTIONS OR PRODUCTS, (iii) THIRD-PARTY SITES AND ANY THIRD-PARTY PRODUCT OR SERVICE LISTED ON OR ACCESSIBLE TO YOU THROUGH THE PRODUCTS, AND (iv) THE QUALITY OR CONDUCT OF ANY THIRD PARTY YOU ENCOUNTER IN CONNECTION WITH YOUR USE OF ANY PRODUCT OR WEBSITE ('Third Party Products)."
+            "text": "THE FOUNDATION ENTITIES MAKE NO PROMISES WITH RESPECT TO, AND EXPRESSLY DISCLAIM ALL LIABILITY, TO THE MAXIMUM EXTENT PERMITTED BY LAW, FOR: (i) CONTENT POSTED BY ANY THIRD-PARTY ON THE PRODUCTS, (ii) THE PRODUCT DESCRIPTIONS OR PRODUCTS, (iii) THIRD-PARTY SITES AND ANY THIRD-PARTY PRODUCT OR SERVICE LISTED ON OR ACCESSIBLE TO YOU THROUGH THE PRODUCTS, AND (iv) THE QUALITY OR CONDUCT OF ANY THIRD PARTY YOU ENCOUNTER IN CONNECTION WITH YOUR USE OF ANY PRODUCT OR WEBSITE (“Third Party Products)."
           },
           {
             "subtitle": "c. Limitation of Liability:",
-            "text": "ANY LIABILITY OF THE FOUNDATION ENTITIES IS HEREBY LIMITED TO THE MAXIMUM EXTENT ALLOWED BY APPLICABLE LAW. THE AGGREGATE LIABILITY OF FOUNDATION ENTITIES WILL IN ANY EVENT BE LIMITED TO A SUM EQUAL TO THE TOTAL AMOUNTS PAID OR PAYABLE FOR THE PRODUCTS IN THE TWELVE MONTH PERIOD PRECEDING THE EVENT GIVING RISE TO A CLAIM; PROVIDED HOWEVER, THIS LIMITATION WILL NOT APPLY TO YOU IF NO SUCH FEES ARE PAYABLE, AND IN THIS CASE, IF WE ARE DETERMINED TO HAVE ANY LIABILITY TO YOU OR ANY THIRD PARTY ARISING FROM YOUR USE OF THE PRODUCTS, THEN OUR AGGREGATE LIABILITY WILL BE LIMITED TO ONE HUNDRED U.S. DOLLARS."
+            "text": "ANY LIABILITY OF THE FOUNDATION ENTITIES IS HEREBY LIMITED TO THE MAXIMUM EXTENT ALLOWED BY APPLICABLE LAW.THE AGGREGATE LIABILITY OF FOUNDATION ENTITIES WILL IN ANY EVENT BE LIMITED TO A SUM EQUAL TO THE TOTAL AMOUNTS PAID OR PAYABLE FOR THE PRODUCTS IN THE TWELVE MONTH PERIOD PRECEDING THE EVENT GIVING RISE TO A CLAIM; PROVIDED HOWEVER, THIS LIMITATION WILL NOT APPLY TO YOU IF NO SUCH FEES ARE PAYABLE, AND IN THIS CASE, IF WE ARE DETERMINED TO HAVE ANY LIABILITY TO YOU OR ANY THIRD PARTY ARISING FROM YOUR USE OF THE PRODUCTS, THEN OUR AGGREGATE LIABILITY WILL BE LIMITED TO ONE HUNDRED U.S. DOLLARS."
           },
           {
             "subtitle": "d. Agreement to Liability Limit:",
@@ -234,7 +246,7 @@
           },
           {
             "subtitle": "c. Governing Law and Jurisdiction:",
-            "text": "These Terms of Use will be interpreted in accordance with the laws of Switzerland. You agree that any disputes arising out of or in connection with these Terms of Use, not otherwise resolved in accordance with dispute resolution provision set forth in section 1(f) shall be subject to the exclusive jurisdiction of the courts located in Zug, Switzerland."
+            "text": "These Terms of Use will be interpreted in accordance with the laws of Switzerland. You agree that any disputes arising out of or in connection with these Terms of Use, not otherwise resolved in accordance with dispute resolution provision set forth in section 1(g) shall be subject to the exclusive jurisdiction of the courts located in Zug, Switzerland."
           },
           {
             "subtitle": "d. Languages:",
@@ -268,7 +280,7 @@
     "done": "Done",
     "intro": {
       "title": "Privacy Policy",
-      "text": "Cardano Foundation (referred to as \"Foundation\", \"We\", \"Our\", or \"Us\") is committed to innovating in digital identity management while prioritising user privacy and data protection. This Privacy Policy specifically applies to the Identity Wallet developed by the Cardano Foundation (the \"Identity Wallet\") and the website http://identity.cardanofoundation.org (the \"Products\"). The Identity Wallet is a product designed to facilitate the creation and management of digital identities using Key Event Receipt Infrastructure (KERI) and Decentralized Identifiers (DIDs), operating without linking to any real-world names or personal identifiable information (PII). The Identity Wallet does not require users to submit emails, names, phone numbers, or any documents. Instead, it provides a framework for users to manage their own digital identities autonomously. This is achieved by securely storing private key material on the user's device for identification purposes, enabling users to control their own identity information and securely communicate with other users and entities. This policy outlines our practices regarding the collection, use, disclosure, and protection of any data associated with the Identity Wallet. Note that this policy may differ from other privacy policies pertaining to different CF products or services. Please read this Privacy Policy carefully."
+      "text": "Cardano Foundation (referred to as “Foundation” “We” “Our” or “Us”) is committed to innovating in digital identity management while prioritising user privacy and data protection. This Privacy Policy specifically applies to the Identity Wallet developed by the Cardano Foundation (the “Identity Wallet”) and the website http://identity.cardanofoundation.org/ (the “Products”). The Identity Wallet is a product designed to facilitate the creation and management of digital identities using Key Event Receipt Infrastructure (KERI) and Decentralized Identifiers (DIDs), operating without linking to any real-world names or personal identifiable information (PII). The Identity Wallet does not require users to submit emails, names, phone numbers, or any documents. Instead, it provides a framework for users to manage their own digital identities autonomously. This is achieved by securely storing private key material on the user's device for identification purposes, enabling users to control their own identity information and securely communicate with other users and entities. This policy outlines our practices regarding the collection, use, disclosure, and protection of any data associated with the Identity Wallet. Note that this policy may differ from other privacy policies pertaining to different CF products or services.\n\nPlease read this Privacy Policy carefully."
     },
     "sections": [
       {
@@ -285,7 +297,7 @@
         "content": [
           {
             "subtitle": "",
-            "text": "For the Identity Wallet, We collect and manage data differently, aligning with our commitment to user privacy and secure identity management. We do not collect typical personal data like names, addresses, or contact information. When using the Products, the Foundation may ask you to provide certain information that can be used to identify or contact you 'Personal Data'. The types of Personal Data that We collect from you depend on the circumstances of collection, the nature of the Product used or the transaction undertaken. Data We collect may include, but is not limited to:"
+            "text": "For the Identity Wallet, We collect and manage data differently, aligning with our commitment to user privacy and secure identity management. We do not collect typical personal data like names, addresses, or contact information.\n\nWhen using the Products, the Foundation may ask you to provide certain information that can be used to identify or contact you (“Personal Data”). The types of Personal Data that We collect from you depend on the circumstances of collection, the nature of the Product used or the transaction undertaken.\n\nData We collect may include, but is not limited to:"
           },
           {
             "subtitle": "a. Device/ Network Data:",
@@ -351,15 +363,11 @@
           },
           {
             "subtitle": "c.",
-            "text": "for business development purposes such as statistical and marketing analysis, systems testing, maintenance and development, customer surveys or to help Us in any future dealings with you, for example by identifying your requirements and preference; for all other purposes ancillary to any of the purposes stated above (\"Ancillary Purposes\");"
+            "text": "for business development purposes such as statistical and marketing analysis, systems testing, maintenance and development, customer surveys or to help Us in any future dealings with you, for example by identifying your requirements and preference; for all other purposes ancillary to any of the purposes stated above (“Ancillary Purposes“);"
           },
           {
             "subtitle": "d.",
-            "text": "based on your consent: If you have given us consent to process your personal data for certain purposes, we process your personal data within the scope of and based on this consent, unless we have another legal basis and we require such a basis. Consent given can be revoked at any time, but this has no effect on data processing that has already taken place."
-          },
-          {
-            "subtitle": "",
-            "text": "(collectively, \"Purposes\")"
+            "text": "based on your consent: If you have given us consent to process your personal data for certain purposes, we process your personal data within the scope of and based on this consent, unless we have another legal basis and we require such a basis. Consent given can be revoked at any time, but this has no effect on data processing that has already taken place.\n\n(collectively, “Purposes“)"
           }
         ]
       },
@@ -368,19 +376,7 @@
         "content": [
           {
             "subtitle": "",
-            "text": "While no system is absolutely secure, We use reasonable technical and organisational precautions to protect your data and to respect your privacy."
-          },
-          {
-            "subtitle": "",
-            "text": "We employ measures like encryption, secure physical storage, limited access zones, confidentiality agreements, and routine assessments for timely data deletion to safeguard your information."
-          },
-          {
-            "subtitle": "",
-            "text": "The Identity Wallet is designed to store Digital Identity Data and Private Key Material directly on the user's device. As such, no transfer of this data occurs to Cardano Foundation servers or external entities, providing an additional layer of privacy and security."
-          },
-          {
-            "subtitle": "",
-            "text": "Personal Data may be transferred to, and stored at a destination outside the European Economic Area (\"EEA\") where there are appropriate safeguards in place pursuant to Article 46 of the GDPR. This data might be handled by Our staff or Our suppliers outside the EEA for various tasks, including service provision. By providing your personal data, you consent to such transfers, storage, or processing."
+            "text": "While no system is absolutely secure, We use reasonable technical and organisational precautions to protect your data and to respect your privacy.\n\nWe employ measures like encryption, secure physical storage, limited access zones, confidentiality agreements, and routine assessments for timely data deletion to safeguard your information. \n\nThe Identity Wallet is designed to store Digital Identity Data and Private Key Material directly on the user’s device. As such, no transfer of this data occurs to Cardano Foundation servers or external entities, providing an additional layer of privacy and security.\n\nPersonal Data may be transferred to, and stored at a destination outside the European Economic Area (“EEA“) where there are appropriate safeguards in place pursuant to Article 46 of the GDPR. This data might be handled by Our staff or Our suppliers outside the EEA for various tasks, including service provision. By providing your personal data, you consent to such transfers, storage, or processing."
           }
         ]
       },
@@ -389,19 +385,7 @@
         "content": [
           {
             "subtitle": "",
-            "text": "The Foundation will hold onto your Personal Data only as long as needed based on the reasons outlined in this Privacy Policy."
-          },
-          {
-            "subtitle": "",
-            "text": "Digital Identity Data and Private Key Material will be retained on the user's device and will not be stored on Cardano Foundation servers. Users have full control over this data, including its deletion."
-          },
-          {
-            "subtitle": "",
-            "text": "Device/Network Data will be retained only as long as necessary for operational and security purposes. This data will be subject to regular review and deletion as per our data minimization principles."
-          },
-          {
-            "subtitle": "",
-            "text": "We will store and utilize your Personal Data as long as it's required to meet legal obligations, address disagreements, and uphold Our legal agreements and policies. Additionally, We will keep usage data for Our internal analysis purposes. Typically, usage data is kept for a shorter duration unless it aids in enhancing product security or functionality, or when legal requirements necessitate longer retention."
+            "text": "The Foundation will hold onto your Personal Data only as long as needed based on the reasons outlined in this Privacy Policy.\n\nDigital Identity Data and Private Key Material will be retained on the user's device and will not be stored on Cardano Foundation servers. Users have full control over this data, including its deletion.\n\nDevice/Network Data will be retained only as long as necessary for operational and security purposes. This data will be subject to regular review and deletion as per our data minimization principles.\n\nWe will store and utilize your Personal Data as long as it's required to meet legal obligations, address disagreements, and uphold Our legal agreements and policies. Additionally, We will keep usage data for Our internal analysis purposes. Typically, usage data is kept for a shorter duration unless it aids in enhancing product security or functionality, or when legal requirements necessitate longer retention."
           }
         ]
       },
@@ -410,15 +394,7 @@
         "content": [
           {
             "subtitle": "",
-            "text": "We will not trade or sell your Personal Data to third parties."
-          },
-          {
-            "subtitle": "",
-            "text": "We will not disclose any Digital Identity Data or Private Key Information to third parties, as this data is stored solely on the user's device."
-          },
-          {
-            "subtitle": "",
-            "text": "Your other Personal Data, if any, shall only be disclosed or transferred to the following third parties appointed or authorised by the Foundation for the fulfilment of the Purposes described herein, in accordance with GDPR principles such as consent, contractual necessity, legal obligation, vital interests, public task, and legitimate interests. This may include third party processors, such as:"
+            "text": "We will not trade or sell your Personal Data to third parties.\n\nWe will not disclose any Digital Identity Data or Private Key Information to third parties, as this data is stored solely on the user's device.\n\nYour other Personal Data, if any, shall only be disclosed or transferred to the following third parties appointed or authorised by the Foundation for the fulfilment of the Purposes described herein, in accordance with GDPR principles such as consent, contractual necessity, legal obligation, vital interests, public task, and legitimate interests. This may include third party processors, such as:"
           },
           {
             "subtitle": "a.",
@@ -442,15 +418,7 @@
           },
           {
             "subtitle": "",
-            "text": "We shall take practical steps to ensure that their employees, officers, agents, consultants, contractors and such other third parties mentioned above who are involved in the collection or processing of your Personal Data will observe and adhere to the terms of this Privacy Policy and GDPR requirements."
-          },
-          {
-            "subtitle": "",
-            "text": "The Foundation may disclose your Personal Data in good faith belief that such disclosure is necessary for one of the following reasons: complying with a legal obligation; protecting and defending the rights or property of the Foundation; preventing or investigating possible wrongdoing in connection with the Products; protecting the personal safety of users of Products or the public; protecting against legal liability; or responding to legal bodies as permitted or required by law such as in compliance with a warrant or subpoena issued by a court of competent jurisdiction; and/or responding to regulatory authorities."
-          },
-          {
-            "subtitle": "",
-            "text": "In addition to the above, your Personal Data may also be disclosed or transferred to Our affiliates and subsidiaries."
+            "text": "We shall take practical steps to ensure that their employees, officers, agents, consultants, contractors and such other third parties mentioned above who are involved in the collection or processing of your Personal Data will observe and adhere to the terms of this Privacy Policy and GDPR requirements.\n\nThe Foundation may disclose your Personal Data in good faith belief that such disclosure is necessary for one of the following reasons: complying with a legal obligation; protecting and defending the rights or property of the Foundation; preventing or investigating possible wrongdoing in connection with the Products; protecting the personal safety of users of Products or the public; protecting against legal liability; or responding to legal bodies as permitted or required by law such as in compliance with a warrant or subpoena issued by a court of competent jurisdiction; and/or responding to regulatory authorities.\n\nIn addition to the above, your Personal Data may also be disclosed or transferred to Our affiliates and subsidiaries."
           }
         ]
       },
@@ -459,15 +427,7 @@
         "content": [
           {
             "subtitle": "",
-            "text": "Users can access, manage, and delete their Digital Identity Data within the wallet at any time. Any Private Key Material or other data securely stored within your device (as described in section 2) must be removed manually by the user."
-          },
-          {
-            "subtitle": "",
-            "text": "If you want to know what Personal Data the Foundation holds about you or wish for it to be deleted, please reach out to Us at gdpr@cardanofoundation.org."
-          },
-          {
-            "subtitle": "",
-            "text": "In certain circumstances, you possess these data protection rights:"
+            "text": "Users can access, manage, and delete their Digital Identity Data within the wallet at any time. Any Private Key Material or other data securely stored within your device (as described in section 2) must be removed manually by the user.\n\nIf you want to know what Personal Data the Foundation holds about you or wish for it to be deleted, please reach out to Us at privacy@cardanofoundation.org.\n\nIn certain circumstances, you possess these data protection rights:"
           },
           {
             "subtitle": "a.",
@@ -504,11 +464,7 @@
         "content": [
           {
             "subtitle": "",
-            "text": "Products may contain links to other companies, organizations or websites (collectively, 'Third Party Links'). This Privacy Notice does not apply to such Third Party Links. If you access Third Party Links using the links provided, the operators may collect your personal information."
-          },
-          {
-            "subtitle": "",
-            "text": "The Foundation has no control over and assumes no responsibility for the content, privacy policies or practices of any third-party product or service."
+            "text": "Products may contain links to other companies, organizations or websites (collectively, “Third Party Links”). This Privacy Notice does not apply to such Third Party Links. If you access Third Party Links using the links provided, the operators may collect your personal information.\n\nThe Foundation has no control over and assumes no responsibility for the content, privacy policies or practices of any third-party product or service."
           }
         ]
       },
@@ -517,11 +473,7 @@
         "content": [
           {
             "subtitle": "",
-            "text": "We may revise or update this Privacy Policy from time to time."
-          },
-          {
-            "subtitle": "",
-            "text": "Any modifications will be reflected on this page. We'll notify you of updates either through email or a notable alert on the Product, while also adjusting the 'effective date' at this Policy's beginning. Regularly reviewing this Policy ensures you stay informed of any alterations, which take effect once displayed on this page."
+            "text": "We may revise or update this Privacy Policy from time to time.\n\nAny modifications will be reflected on this page. We'll notify you of updates either through email or a notable alert on the Product, while also adjusting the “effective date“ at this Policy's beginning. Regularly reviewing this Policy ensures you stay informed of any alterations, which take effect once displayed on this page."
           }
         ]
       },
@@ -530,7 +482,7 @@
         "content": [
           {
             "subtitle": "",
-            "text": "For further inquiries or requests in relation to Our handling of your Personal Data or this Privacy Policy please contact Us at gdpr@cardanofoundation.org"
+            "text": "For further inquiries or requests in relation to Our handling of your Personal Data or this Privacy Policy please contact Us at privacy@cardanofoundation.org"
           }
         ]
       }
@@ -1299,7 +1251,7 @@
           "title": "Terms and Privacy Policy",
           "submenu": {
             "title": "Terms & privacy",
-            "termandcondition": "Terms & conditions",
+            "termsofuse": "Terms of use",
             "privacy": "Privacy policy"
           }
         },
@@ -1337,11 +1289,11 @@
       "date": "Date Created",
       "endpoints": "Service Endpoints",
       "history": "Connection History",
-      "connectedwith": "Connected with \"{{ issuer }}\"",
-      "issuance": "Received a \"{{ credential }}\"",
-      "present": "\"{{ issuer }}\" has requested a credential presentation",
+      "connectedwith": "Connected with “{{ issuer }}“",
+      "issuance": "Received a “{{ credential }}“",
+      "present": "“{{ issuer }}“ has requested a credential presentation",
       "agree": "Presentation offer agreed",
-      "update": "\"{{ credential }}\" has been revoked",
+      "update": "“{{ credential }}“ has been revoked",
       "notavailable": "N/A",
       "details": "Details",
       "notes": "Notes",
@@ -1611,8 +1563,8 @@
     "rotatekeysuccess": "Keys rotated successfully",
     "rotatekeyerror": "Unable to rotate keys",
     "newmultisignmember": "New member added to group",
-    "multisignidentifiercreated": "Identifier added to \"For groups\"",
-    "delegatedidentifiercreated": "Identifier added to \"For delegates\"",
+    "multisignidentifiercreated": "Identifier added to “For groups“",
+    "delegatedidentifiercreated": "Identifier added to “For delegates“",
     "passcodeupdated": "Passcode updated successfully",
     "passwordupdated": "Password updated successfully",
     "passworddisabled": "Password turned off",
