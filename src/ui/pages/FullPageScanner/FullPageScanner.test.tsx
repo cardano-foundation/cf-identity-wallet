@@ -31,11 +31,11 @@ const addListener = jest.fn(
           valueType: BarcodeValueType.Url,
         },
       });
-
-      return {
-        remove: jest.fn(),
-      };
     }, 100);
+
+    return {
+      remove: jest.fn(),
+    };
   }
 );
 

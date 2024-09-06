@@ -11,7 +11,10 @@ import {
 } from "@capacitor-mlkit/barcode-scanning";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import EN_Translation from "../../../locales/en/en.json";
-import { setMultiSigGroupCache, setOpenMultiSigId } from "../../../store/reducers/identifiersCache";
+import {
+  setMultiSigGroupCache,
+  setOpenMultiSigId,
+} from "../../../store/reducers/identifiersCache";
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
   setCurrentOperation,
@@ -51,11 +54,11 @@ const addListener = jest.fn(
           valueType: BarcodeValueType.Url,
         },
       });
-
-      return {
-        remove: jest.fn(),
-      };
     }, 100);
+
+    return {
+      remove: jest.fn(),
+    };
   }
 );
 
@@ -308,7 +311,10 @@ describe("Scanner", () => {
     });
 
     addListener.mockImplementation(
-      (eventName: string, listenerFunc: (result: BarcodeScannedEvent) => void) => {
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
         setTimeout(() => {
           listenerFunc({
             barcode: {
@@ -321,7 +327,7 @@ describe("Scanner", () => {
             },
           });
         }, 100);
-    
+
         return {
           remove: jest.fn(),
         };
@@ -694,7 +700,6 @@ describe("Scanner", () => {
     });
   });
 
-
   test("Duplicate connection error handle", async () => {
     const initialState = {
       stateCache: {
@@ -724,7 +729,10 @@ describe("Scanner", () => {
     });
 
     addListener.mockImplementation(
-      (eventName: string, listenerFunc: (result: BarcodeScannedEvent) => void) => {
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
         setTimeout(() => {
           listenerFunc({
             barcode: {
@@ -737,7 +745,7 @@ describe("Scanner", () => {
             },
           });
         }, 100);
-    
+
         return {
           remove: jest.fn(),
         };
@@ -861,8 +869,7 @@ describe("Scanner", () => {
               displayValue:
                 "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
               format: BarcodeFormat.QrCode,
-              rawValue:
-                "Invalid URL",
+              rawValue: "Invalid URL",
               valueType: BarcodeValueType.Url,
             },
           });
