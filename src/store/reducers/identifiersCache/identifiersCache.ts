@@ -7,10 +7,13 @@ const initialState: {
   identifiers: IdentifierShortDetails[];
   favourites: FavouriteIdentifier[];
   multiSigGroup: MultiSigGroup | undefined;
+  openMultiSigId?: string;
+  scanGroupId?: string;
 } = {
   identifiers: [],
   favourites: [],
   multiSigGroup: undefined,
+  openMultiSigId: undefined,
 };
 const identifiersCacheSlice = createSlice({
   name: "identifiersCache",
@@ -70,6 +73,12 @@ const identifiersCacheSlice = createSlice({
     ) => {
       state.multiSigGroup = action.payload;
     },
+    setOpenMultiSigId: (state, action: PayloadAction<string | undefined>) => {
+      state.openMultiSigId = action.payload;
+    },
+    setScanGroupId: (state, action: PayloadAction<string | undefined>) => {
+      state.scanGroupId = action.payload;
+    },
   },
 });
 
@@ -83,6 +92,8 @@ export const {
   addFavouriteIdentifierCache,
   removeFavouriteIdentifierCache,
   setMultiSigGroupCache,
+  setOpenMultiSigId,
+  setScanGroupId,
 } = identifiersCacheSlice.actions;
 
 const getIdentifiersCache = (state: RootState) =>
@@ -94,8 +105,16 @@ const getFavouritesIdentifiersCache = (state: RootState) =>
 const getMultiSigGroupCache = (state: RootState) =>
   state.identifiersCache?.multiSigGroup;
 
+const getOpenMultiSig = (state: RootState) =>
+  state.identifiersCache?.openMultiSigId;
+
+const getScanGroupId = (state: RootState) =>
+  state.identifiersCache?.scanGroupId;
+
 export {
   getIdentifiersCache,
   getFavouritesIdentifiersCache,
   getMultiSigGroupCache,
+  getOpenMultiSig,
+  getScanGroupId,
 };

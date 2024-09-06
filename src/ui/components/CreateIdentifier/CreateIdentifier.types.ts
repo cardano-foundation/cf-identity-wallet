@@ -55,6 +55,7 @@ interface IdentifierStageProps {
   multiSigGroup?: MultiSigGroup;
   setMultiSigGroup?: (value: MultiSigGroup) => void;
   preventRedirect?: boolean;
+  isModalOpen?: boolean;
 }
 
 interface IdentifierStage1BodyProps {

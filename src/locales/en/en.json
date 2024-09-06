@@ -536,13 +536,49 @@
       }
     ]
   },
-  "aboutssiagent": {
+  "aboutssiagentcreate": {
     "done": "Done",
     "intro": {
       "title": "About SSI agent",
       "text": ""
     },
-    "sections": []
+    "sections": [
+      {
+        "title": "",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "The Cardano Foundation Identity Wallet requires connecting to a Cloud Agent, securely controlled by the keys on your mobile device."
+          },
+          {
+            "subtitle": "",
+            "text": "As part of the Identity Wallet onboarding process a Boot URL and a Connect URL must be provided to establish the secure connection between the edge and the cloud."
+          }
+        ]
+      }
+    ]
+  },
+  "aboutssiagentrecovery": {
+    "done": "Done",
+    "intro": {
+      "title": "About SSI agent",
+      "text": ""
+    },
+    "sections": [
+      {
+        "title": "",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "Recovering your Identity Wallet requires re-establishing an existing connection to your Cloud Agent using the Connect URL."
+          },
+          {
+            "subtitle": "",
+            "text": "Upon successful reconnecting the Identity Wallet will begin re-syncing with the cloud agent to complete recovery of identifiers and credentials."
+          }
+        ]
+      }
+    ]
   },
   "lockpage": {
     "title": "Welcome back",
@@ -739,7 +775,9 @@
     "verifydescription": "To continue, please enter the SSI agent connect URL (in your email or from your command line).",
     "button": {
       "info": "Get more information",
-      "validate": "Validate"
+      "validate": "Validate",
+      "onboardingdocumentation": "Onboarding documentation",
+      "recoverydocumentation": "Recovery documentation"
     },
     "input": {
       "boot": {
@@ -1585,7 +1623,9 @@
     "signsuccessful": "Sign successful",
     "savepasswordhinterror": "Unable to delete password hint",
     "editidentifiererror": "Unable to update identifier",
-    "failedupdateconnectionerror": "Failed to update connection"
+    "failedupdateconnectionerror": "Failed to update connection",
+    "duplicateconnectionerror": "Connection already established",
+    "groupidnotmatcherror": "Connection not part of this group"
   },
   "request": {
     "sign": {

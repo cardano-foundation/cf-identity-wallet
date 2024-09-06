@@ -26,7 +26,6 @@ import {
 } from "../../../store/reducers/stateCache";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { showError } from "../../utils/error";
-import { ToastMsgType } from "../../globals/types";
 
 const SwitchOnboardingMode = ({ mode }: SwitchOnboardingModeProps) => {
   const dispatch = useAppDispatch();

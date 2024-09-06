@@ -97,6 +97,10 @@ describe("Scan Tab", () => {
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
       },
+      identifiersCache: {
+        identifiers: [],
+        scanGroupId: "72e2f089cef6",
+      },
     };
 
     const storeMocked = {

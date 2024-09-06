@@ -3,9 +3,11 @@ import {
   connectionsCacheSlice,
   getConnectionsCache,
   getMultisigConnectionsCache,
+  getOpenConnectionId,
   removeConnectionCache,
   setConnectionsCache,
   setMultisigConnectionsCache,
+  setOpenConnectionDetail,
   updateOrAddConnectionCache,
 } from "./connectionsCache";
 import { RootState } from "../../index";
@@ -60,6 +62,15 @@ describe("connectionsCacheSlice", () => {
     expect(
       newState.connections["did:example:ebfeb1ebc6f1c276ef71212ec21"]
     ).toMatchObject(connection);
+  });
+
+  it("should handle setOpenConnectionDetail", () => {
+    const newState = connectionsCacheSlice.reducer(
+      initialState,
+      setOpenConnectionDetail(connection.id)
+    );
+
+    expect(newState.openConnectionId).toEqual(connection.id);
   });
 
   it("should handle removeConnectionCache", () => {
@@ -135,5 +146,15 @@ describe("getMultisigConnectionsCache", () => {
     expect(multisigConnectionsCache).toEqual(
       state.connectionsCache.multisigConnections
     );
+  });
+
+  it("should return the open connection detail", () => {
+    const state = {
+      connectionsCache: {
+        openConnectionId: "mock-connect-id",
+      },
+    } as unknown as RootState;
+    const openConnectionId = getOpenConnectionId(state);
+    expect(openConnectionId).toEqual(state.connectionsCache.openConnectionId);
   });
 });
