@@ -14,7 +14,7 @@ ion-modal.terms-modal {
     height: 100%;
   }
 
-  p *:nth-child(2) {
+  p *:nth-child(2):not(.terms-modal-link) {
     margin-left: 0.5rem;
   }
 

@@ -5,8 +5,7 @@ const DOUBLE_TAP_DELAY = 300;
 
 // Links
 const DISCORD_LINK = "https://discord.com/invite/9yNneV8Ktv";
-const DOCUMENTATION_LINK =
-  "https://github.com/cardano-foundation/cf-identity-wallet";
+const DOCUMENTATION_LINK = "https://docs.idw.cardanofoundation.org/";
 const PROFILE_LINK = "https://youtu.be/82oJLhwWFk8";
 const CRYPTO_LINK = "https://youtu.be/ORBHbGUwrn8";
 const CHAT_LINK = "https://youtu.be/SqYbDCmNwpE";
@@ -19,6 +18,14 @@ enum TermsOfUseLinks {
   "https://summit.cardano.org",
   "https://voting.summit.cardano.org",
   "https://cardanofoundation.org/en/trademark-policy",
+}
+
+enum PrivacyPolicyLinks {
+  "https://summit.cardano.org",
+  "https://voting.summit.cardano.org",
+  "mailto:privacy@cardanofoundation.org",
+  "http://www.edoeb.admin.ch",
+  "https://ec.europa.eu/justice/article-29/structure/data-protection-authorities/index_en.htm",
 }
 
 export {
@@ -34,4 +41,5 @@ export {
   ONBOARDING_DOCUMENTATION_LINK,
   RECOVERY_DOCUMENTATION_LINK,
   TermsOfUseLinks,
+  PrivacyPolicyLinks,
 };

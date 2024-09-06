@@ -7,7 +7,7 @@ import { TermsModalProps, TermsObject, TermsSection } from "./TermsModal.types";
 import "./TermsModal.scss";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
-import { TermsOfUseLinks } from "../../globals/constants";
+import { PrivacyPolicyLinks, TermsOfUseLinks } from "../../globals/constants";
 
 const TermsModal = ({ name, isOpen, setIsOpen, children }: TermsModalProps) => {
   const nameNoDash = name.replace(/-/g, "");
@@ -25,8 +25,15 @@ const TermsModal = ({ name, isOpen, setIsOpen, children }: TermsModalProps) => {
   const DynamicLink = ({ text, index }: { text: string; index: number }) => {
     return (
       <u
+        className="terms-modal-link"
         data-testid={`${componentId}-link-${index}`}
-        onClick={() => handleOpenUrl(TermsOfUseLinks[index])}
+        onClick={() =>
+          handleOpenUrl(
+            name === "terms-of-use"
+              ? TermsOfUseLinks[index]
+              : PrivacyPolicyLinks[index]
+          )
+        }
       >
         {text}
       </u>
@@ -44,6 +51,15 @@ const TermsModal = ({ name, isOpen, setIsOpen, children }: TermsModalProps) => {
       </h3>
       {content.map((item: any, index: number) => (
         <p key={index}>
+          {!!item.subtitle.length && (
+            <b
+              data-testid={`${componentId}-section-${title
+                .replace(/[^aA-zZ]/gim, "")
+                .toLowerCase()}-subtitle-${index + 1}`}
+            >
+              {item.subtitle}
+            </b>
+          )}
           {!!item.text.length && (
             <span
               data-testid={`${componentId}-section-${title
