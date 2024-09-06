@@ -85,11 +85,17 @@ export class SignifyApi {
     return operation;
   }
 
-  async createRegistry(name: string): Promise<void> {
+  async createRegistry(name: string) {
     const result = await this.signifyClient
       .registries()
       .create({ name, registryName: "vLEI" });
     await result.op();
+    const registries = await this.signifyClient.registries().list(name);
+    return registries[0].regk;
+  }
+
+  async getRegistry(name: string) {
+    console.log({ name })
     const registries = await this.signifyClient.registries().list(name);
     return registries[0].regk;
   }
