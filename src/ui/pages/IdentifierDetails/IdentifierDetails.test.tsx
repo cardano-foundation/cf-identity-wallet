@@ -324,6 +324,7 @@ describe("Cards Details page (not multi-sig)", () => {
         )
       ).toBeInTheDocument()
     );
+
     act(() => {
       fireEvent.click(getByTestId("delete-button-identifier-card-details"));
     });
@@ -332,6 +333,18 @@ describe("Cards Details page (not multi-sig)", () => {
       expect(
         getByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)
       ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("alert-confirm-identifier-delete-details-cancel-button")
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)
+      ).not.toBeVisible();
     });
   });
 
