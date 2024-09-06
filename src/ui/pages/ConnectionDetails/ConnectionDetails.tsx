@@ -149,9 +149,15 @@ const ConnectionDetails = () => {
   const verifyAction = () => {
     async function deleteConnection() {
       try {
-        await Agent.agent.connections.deleteConnectionById(
-          connectionShortDetails.id
-        );
+        if (cloudError) {
+          await Agent.agent.connections.deleteStaleLocalConnectionById(
+            connectionShortDetails.id
+          );
+        } else {
+          await Agent.agent.connections.deleteConnectionById(
+            connectionShortDetails.id
+          );
+        }
         dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
         dispatch(removeConnectionCache(connectionShortDetails.id));
         handleDone();
