@@ -81,7 +81,7 @@ const Identifiers = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
-  const multisignGroupCache = useAppSelector(getMultiSigGroupCache);
+  const multisigGroupCache = useAppSelector(getMultiSigGroupCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const currentOperation = useAppSelector(getCurrentOperation);
   const openMultiSigId = useAppSelector(getOpenMultiSig);
@@ -138,14 +138,14 @@ const Identifiers = () => {
     dispatch,
     history.location.pathname,
     identifiersData,
-    multisignGroupCache,
+    multisigGroupCache,
   ]);
 
   useEffect(() => {
     const multisigId =
       OperationType.OPEN_MULTISIG_IDENTIFIER === currentOperation &&
-      multisignGroupCache
-        ? multisignGroupCache?.groupId
+      multisigGroupCache
+        ? multisigGroupCache?.groupId
         : openMultiSigId;
 
     if (!multisigId) {
@@ -165,7 +165,7 @@ const Identifiers = () => {
     currentOperation,
     dispatch,
     identifiersData,
-    multisignGroupCache,
+    multisigGroupCache,
     openMultiSigId,
   ]);
 

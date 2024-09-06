@@ -160,7 +160,7 @@ const Scanner = forwardRef(
       handleReset?.();
     };
 
-    const handleDuplicateConnectionError = (
+    const handleDuplicateConnectionError = async (
       e: Error,
       url: string,
       isMultisig: boolean
@@ -176,6 +176,7 @@ const Scanner = forwardRef(
 
       if (!urlId) {
         showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
+        await new Promise((resolve) => setTimeout(resolve, 500));
         initScan();
         return;
       }
@@ -276,7 +277,11 @@ const Scanner = forwardRef(
         if (
           errorMessage.includes(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG)
         ) {
-          handleDuplicateConnectionError(e as Error, content, isMultisigUrl);
+          await handleDuplicateConnectionError(
+            e as Error,
+            content,
+            isMultisigUrl
+          );
           return;
         }
 
@@ -292,6 +297,7 @@ const Scanner = forwardRef(
         }
 
         showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
+        await new Promise((resolve) => setTimeout(resolve, 500));
         initScan();
       }
     };
