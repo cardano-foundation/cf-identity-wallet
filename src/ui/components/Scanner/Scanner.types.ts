@@ -5,6 +5,7 @@ interface ScannerProps {
   cameraDirection?: LensFacing;
   setIsValueCaptured?: (value: boolean) => void;
   handleReset?: () => void;
+  onCheckPermissionFinish?: (permission: boolean) => void;
 }
 
 enum ErrorMessage {

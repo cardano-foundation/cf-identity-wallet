@@ -30,6 +30,7 @@ const Scan = () => {
   const [isValueCaptured, setIsValueCaptured] = useState(false);
   const { cameraDirection, changeCameraDirection, supportMultiCamera } =
     useCameraDirection();
+  const [enableCameraDirection, setEnableCameraDirection] = useState(false);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.SCAN }));
@@ -79,6 +80,7 @@ const Scan = () => {
           className="action-button"
           onClick={changeCameraDirection}
           data-testid="action-button"
+          disabled={!enableCameraDirection}
         >
           <IonIcon
             slot="icon-only"
@@ -93,6 +95,7 @@ const Scan = () => {
         setIsValueCaptured={setIsValueCaptured}
         handleReset={handleAfterScan}
         cameraDirection={cameraDirection}
+        onCheckPermissionFinish={setEnableCameraDirection}
       />
     </TabLayout>
   );
