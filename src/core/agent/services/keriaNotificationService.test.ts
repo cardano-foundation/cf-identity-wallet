@@ -1,11 +1,11 @@
 import { Agent } from "../agent";
-import { ExchangeRoute, NotificationRoute } from "../agent.types";
+import { ExchangeRoute, MiscRecordId, NotificationRoute } from "../agent.types";
 import { IpexMessageStorage } from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
 import { EventService } from "./eventService";
-import { SignifyNotificationService } from "./signifyNotificationService";
+import { KeriaNotificationService } from "./keriaNotificationService";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -19,10 +19,10 @@ const groupGetRequestMock = jest.fn();
 const oobiResolveMock = jest.fn();
 const queryKeyStateMock = jest.fn();
 const markNotificationMock = jest.fn();
-const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const getCredentialMock = jest.fn();
 const admitMock = jest.fn();
 const submitAdmitMock = jest.fn();
+const listNotificationsMock = jest.fn();
 const operationsGetMock = jest.fn().mockImplementation((id: string) => {
   return {
     done: true,
@@ -164,9 +164,8 @@ const signifyClient = jest.mocked({
     delete: jest.fn(),
   }),
   notifications: () => ({
-    list: jest.fn(),
+    list: listNotificationsMock,
     mark: markNotificationMock,
-    deleteById: deleteNotificationMock,
   }),
   ipex: () => ({
     admit: admitMock,
@@ -248,7 +247,8 @@ const operationPendingGetAllMock = jest.fn();
 const operationPendingStorage = jest.mocked({
   save: jest.fn(),
   delete: jest.fn(),
-  deleteById: jest.fn((id: string) => Promise.resolve(id)),
+  deleteById: jest.fn(),
+  update: jest.fn(),
   findById: jest.fn(),
   findAllByQuery: jest.fn(),
   getAll: operationPendingGetAllMock,
@@ -263,14 +263,27 @@ const credentialStorage = jest.mocked({
   getCredentialMetadatasById: jest.fn(),
 });
 
-const signifyNotificationService = new SignifyNotificationService(
+const basicStorage = jest.mocked({
+  findById: jest.fn(),
+  save: jest.fn(),
+  createOrUpdateBasicRecord: jest.fn(),
+});
+
+const keriaNotificationService = new KeriaNotificationService(
   agentServicesProps,
   notificationStorage as any,
   identifierStorage as any,
   operationPendingStorage as any,
   connectionStorage as any,
   ipexMessageStorage as any,
-  credentialStorage as any
+  credentialStorage as any,
+  basicStorage as any,
+  Agent.agent.multiSigs,
+  Agent.agent.ipexCommunications,
+  Agent.agent.identifiers,
+  Agent.agent.getKeriaOnlineStatus,
+  Agent.agent.markAgentStatus,
+  Agent.agent.connect
 );
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -288,9 +301,7 @@ jest.mock("../../../core/agent/agent", () => ({
         acceptAcdcFromMultisigExn: jest.fn(),
         markAcdc: jest.fn(),
       },
-      signifyNotifications: {
-        deleteNotificationRecordById: (id: string) =>
-          deleteNotificationMock(id),
+      keriaNotifications: {
         addPendingOperationToQueue: jest.fn(),
         markAcdcComplete: jest.fn(),
       },
@@ -372,7 +383,7 @@ describe("Signify notification service of agent", () => {
     groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
     jest.useFakeTimers();
     for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif, callback);
     }
     expect(notificationStorage.save).toBeCalledTimes(2);
     expect(callback).toBeCalledTimes(2);
@@ -413,7 +424,7 @@ describe("Signify notification service of agent", () => {
       done: true,
     });
     for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif, callback);
     }
     expect(admitMock).toBeCalledTimes(1);
     expect(submitAdmitMock).toBeCalledTimes(1);
@@ -426,20 +437,20 @@ describe("Signify notification service of agent", () => {
     };
 
     notificationStorage.findById = jest.fn().mockResolvedValue(notification);
-    await signifyNotificationService.readNotification(notification.id);
+    await keriaNotificationService.readNotification(notification.id);
     expect(notificationStorage.update).toBeCalledTimes(1);
   });
 
   test("Should throw error when read an invalid notification", async () => {
     notificationStorage.findById = jest.fn().mockResolvedValue(null);
     await expect(
-      signifyNotificationService.readNotification("not-exist-noti-id")
-    ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
+      keriaNotificationService.readNotification("not-exist-noti-id")
+    ).rejects.toThrowError(KeriaNotificationService.NOTIFICATION_NOT_FOUND);
   });
 
   test("can delete keri notification by ID", async () => {
     const id = "uuid";
-    await signifyNotificationService.deleteNotificationRecordById(
+    await keriaNotificationService.deleteNotificationRecordById(
       id,
       NotificationRoute.ExnIpexGrant
     );
@@ -449,7 +460,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should not mark local notification when we delete notification", async () => {
     const id = "uuid";
-    await signifyNotificationService.deleteNotificationRecordById(
+    await keriaNotificationService.deleteNotificationRecordById(
       id,
       NotificationRoute.LocalAcdcRevoked
     );
@@ -483,7 +494,7 @@ describe("Signify notification service of agent", () => {
       },
     ];
     for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif, callback);
     }
     expect(callback).toBeCalledTimes(0);
   });
@@ -506,7 +517,7 @@ describe("Signify notification service of agent", () => {
       },
     ];
     for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif, callback);
     }
     expect(callback).toBeCalledTimes(0);
   });
@@ -539,7 +550,7 @@ describe("Signify notification service of agent", () => {
       },
     ];
     for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif, callback);
     }
     expect(callback).toBeCalledTimes(0);
   });
@@ -551,15 +562,15 @@ describe("Signify notification service of agent", () => {
     };
 
     notificationStorage.findById = jest.fn().mockResolvedValue(notification);
-    await signifyNotificationService.unreadNotification(notification.id);
+    await keriaNotificationService.unreadNotification(notification.id);
     expect(notificationStorage.update).toBeCalledTimes(1);
   });
 
   test("Should throw error when unread an invalid notification", async () => {
     notificationStorage.findById = jest.fn().mockResolvedValue(null);
     await expect(
-      signifyNotificationService.unreadNotification("not-exist-noti-id")
-    ).rejects.toThrowError(SignifyNotificationService.NOTIFICATION_NOT_FOUND);
+      keriaNotificationService.unreadNotification("not-exist-noti-id")
+    ).rejects.toThrowError(KeriaNotificationService.NOTIFICATION_NOT_FOUND);
   });
 
   test("Should skip if there is a missing multi-sig identifier", async () => {
@@ -580,7 +591,7 @@ describe("Signify notification service of agent", () => {
       },
     ];
     for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif, callback);
     }
     expect(callback).toBeCalledTimes(0);
   });
@@ -630,7 +641,7 @@ describe("Signify notification service of agent", () => {
     };
     groupGetRequestMock.mockResolvedValue([multisigNotificationExn]);
     for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif, callback);
     }
     expect(markNotificationMock).toBeCalledWith(notes[0].i);
     expect(Agent.agent.multiSigs.joinAuthorization).toBeCalledTimes(1);
@@ -651,7 +662,7 @@ describe("Signify notification service of agent", () => {
       },
     ];
     getIpexMessageMetadataMock.mockResolvedValueOnce({});
-    await signifyNotificationService.processNotification(
+    await keriaNotificationService.processNotification(
       notification[0],
       callback
     );
@@ -683,10 +694,7 @@ describe("Signify notification service of agent", () => {
       new Error(IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING)
     );
 
-    await signifyNotificationService.processNotification(
-      notification,
-      callback
-    );
+    await keriaNotificationService.processNotification(notification, callback);
     expect(
       Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
     ).toHaveBeenCalledWith(
@@ -723,13 +731,13 @@ describe("Signify notification service of agent", () => {
       name: "name",
       done: true,
     });
-    await signifyNotificationService.processNotification(
-      notification,
-      callback
+    const addPendingOperationToQueueSpy = jest.spyOn(
+      keriaNotificationService,
+      "addPendingOperationToQueue"
     );
-    expect(
-      Agent.agent.signifyNotifications.addPendingOperationToQueue
-    ).toBeCalledTimes(1);
+    await keriaNotificationService.processNotification(notification, callback);
+    expect(addPendingOperationToQueueSpy).toBeCalledTimes(1);
+    addPendingOperationToQueueSpy.mockRestore();
   });
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT_AGREE", async () => {
@@ -752,10 +760,7 @@ describe("Signify notification service of agent", () => {
       new Error(IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING)
     );
 
-    await signifyNotificationService.processNotification(
-      notification,
-      callback
-    );
+    await keriaNotificationService.processNotification(notification, callback);
     expect(
       Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
     ).toHaveBeenCalledWith(
@@ -782,13 +787,14 @@ describe("Signify notification service of agent", () => {
     ];
 
     for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif, callback);
     }
     expect(markNotificationMock).toBeCalledTimes(1);
   });
 
   test("Should skip if notification route is /multisig/exn and the identifier is missing ", async () => {
     const callback = jest.fn();
+    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -810,7 +816,7 @@ describe("Signify notification service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
 
     for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif, callback);
     }
     expect(markNotificationMock).toBeCalledTimes(1);
   });
@@ -857,7 +863,7 @@ describe("Signify notification service of agent", () => {
     getCredentialMock.mockResolvedValue(acdc);
 
     for (const notif of notes) {
-      await signifyNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif, callback);
     }
     expect(markNotificationMock).toBeCalledTimes(1);
   });
@@ -937,7 +943,7 @@ describe("Signify notification service of agent", () => {
       },
     ]);
 
-    await signifyNotificationService.processNotification(notif, callback);
+    await keriaNotificationService.processNotification(notif, callback);
 
     expect(notificationStorage.update).toBeCalledWith({
       type: "NotificationRecord",
@@ -1036,7 +1042,7 @@ describe("Signify notification service of agent", () => {
       },
     ]);
 
-    await signifyNotificationService.processNotification(noti, callback);
+    await keriaNotificationService.processNotification(noti, callback);
 
     expect(
       Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn
@@ -1092,10 +1098,7 @@ describe("Long running operation tracker", () => {
     identifierStorage.getIdentifierMetadata.mockResolvedValueOnce({
       signifyName: "signifyName",
     });
-    await signifyNotificationService.processOperation(
-      operationRecord,
-      callback
-    );
+    await keriaNotificationService.processOperation(operationRecord, callback);
     expect(Agent.agent.multiSigs.endRoleAuthorization).toBeCalledWith(
       "signifyName"
     );
@@ -1124,10 +1127,7 @@ describe("Long running operation tracker", () => {
       recordType: "witness",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
-    await signifyNotificationService.processOperation(
-      operationRecord,
-      callback
-    );
+    await keriaNotificationService.processOperation(operationRecord, callback);
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
       "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
       {
@@ -1165,10 +1165,7 @@ describe("Long running operation tracker", () => {
       recordType: "oobi",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
-    await signifyNotificationService.processOperation(
-      operationRecord,
-      callback
-    );
+    await keriaNotificationService.processOperation(operationRecord, callback);
     expect(connectionStorage.update).toBeCalledWith({
       id: connectionMock.id,
       pending: false,
@@ -1218,10 +1215,7 @@ describe("Long running operation tracker", () => {
       updatedAt: new Date(),
     });
 
-    await signifyNotificationService.processOperation(
-      operationRecord,
-      callback
-    );
+    await keriaNotificationService.processOperation(operationRecord, callback);
     expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
       credentialIdMock,
       CredentialStatus.CONFIRMED
@@ -1290,10 +1284,7 @@ describe("Long running operation tracker", () => {
       },
     ]);
 
-    await signifyNotificationService.processOperation(
-      operationRecord,
-      callback
-    );
+    await keriaNotificationService.processOperation(operationRecord, callback);
     expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
       credentialIdMock,
       CredentialStatus.CONFIRMED
@@ -1343,10 +1334,7 @@ describe("Long running operation tracker", () => {
       recordType: "exchange.revokecredential",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
-    await signifyNotificationService.processOperation(
-      operationRecord,
-      callback
-    );
+    await keriaNotificationService.processOperation(operationRecord, callback);
     expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
       credentialIdMock,
       CredentialStatus.REVOKED
@@ -1399,10 +1387,7 @@ describe("Long running operation tracker", () => {
       recordType: "exchange.revokecredential",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
-    await signifyNotificationService.processOperation(
-      operationRecord,
-      callback
-    );
+    await keriaNotificationService.processOperation(operationRecord, callback);
     expect(Agent.agent.ipexCommunications.markAcdc).not.toBeCalled();
     expect(
       Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
@@ -1451,10 +1436,7 @@ describe("Long running operation tracker", () => {
       recordType: "exchange.revokecredential",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
-    await signifyNotificationService.processOperation(
-      operationRecord,
-      callback
-    );
+    await keriaNotificationService.processOperation(operationRecord, callback);
     expect(Agent.agent.ipexCommunications.markAcdc).not.toBeCalled();
     expect(
       Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
@@ -1495,10 +1477,7 @@ describe("Long running operation tracker", () => {
       recordType: "exchange.receivecredential",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
-    await signifyNotificationService.processOperation(
-      operationRecord,
-      callback
-    );
+    await keriaNotificationService.processOperation(operationRecord, callback);
     expect(operationsGetMock).toBeCalledTimes(1);
     expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledTimes(0);
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
@@ -1521,11 +1500,72 @@ describe("Long running operation tracker", () => {
       },
     ]);
     try {
-      await signifyNotificationService.pollLongOperationsWithCb(callback);
+      await keriaNotificationService.pollLongOperationsWithCb(callback);
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
     expect(setTimeout).toBeCalledTimes(1);
     expect(operationsGetMock).not.toBeCalled();
+  });
+
+  test("Should update notification marker after the notification is processed", async () => {
+    const callback = jest.fn();
+    jest
+      .spyOn(keriaNotificationService as any, "getKeriaOnlineStatus")
+      .mockReturnValue(true);
+    jest.spyOn(console, "error").mockReturnValueOnce();
+    basicStorage.findById.mockResolvedValueOnce({
+      id: MiscRecordId.KERIA_NOTIFICATION_MARKER,
+      content: {
+        nextIndex: 0,
+        lastNotificationId: "",
+      },
+    });
+    let firstTry = true;
+    listNotificationsMock.mockImplementation(async () => {
+      if (firstTry) {
+        firstTry = false;
+        return {
+          start: 0,
+          end: 2,
+          total: 2,
+          notes: [
+            {
+              i: "string",
+              dt: "string",
+              r: true,
+              a: {
+                r: NotificationRoute.ExnIpexApply,
+                d: "string",
+                m: "",
+              },
+            },
+            {
+              i: "string",
+              dt: "string",
+              r: true,
+              a: {
+                r: NotificationRoute.MultiSigExn,
+                d: "string",
+                m: "",
+              },
+            },
+          ],
+        };
+      } else {
+        throw new Error("Break the while loop");
+      }
+    });
+    try {
+      await keriaNotificationService.pollNotificationsWithCb(callback);
+    } catch (error) {
+      expect((error as Error).message).toBe("Break the while loop");
+    }
+    expect(basicStorage.createOrUpdateBasicRecord).toBeCalledTimes(2);
+    expect(setTimeout).toHaveBeenCalledWith(
+      keriaNotificationService.pollNotificationsWithCb,
+      KeriaNotificationService.POLL_KERIA_INTERVAL,
+      callback
+    );
   });
 });

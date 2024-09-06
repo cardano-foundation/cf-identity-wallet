@@ -69,6 +69,7 @@ const CredentialPage: React.FC = () => {
   };
 
   const handleRequestCredential = async (values: any) => {
+    setIsIssueCredentialSuccess(false);
     const schemaSaid = SCHEMA_SAID[values.credential_type as CredentialType];
     let objAttributes = {};
     let attribute: IAttributes = {};

@@ -68,11 +68,6 @@ const multisigService = jest.mocked({
   multisigAdmit: jest.fn().mockResolvedValue({ name: "opName", done: true }),
 });
 
-const signifyNotificationService = jest.mocked({
-  addPendingOperationToQueue: jest.fn(),
-  deleteNotificationRecordById: jest.fn((id: string) => Promise.resolve(id)),
-});
-
 let credentialListMock = jest.fn();
 let credentialGetMock = jest.fn();
 const identifierListMock = jest.fn();
@@ -206,9 +201,8 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         resolveOobi: () => resolveOobiMock(),
       },
-      signifyNotifications: {
-        deleteNotificationRecordById: (id: string) =>
-          deleteNotificationMock(id),
+      keriaNotifications: {
+        deleteNotificationRecordById: jest.fn(),
         addPendingOperationToQueue: jest.fn(),
       },
       ipexCommunications: {
@@ -228,8 +222,7 @@ const ipexCommunicationService = new IpexCommunicationService(
   notificationStorage as any,
   ipexMessageRecordStorage as any,
   operationPendingStorage as any,
-  multisigService as any,
-  signifyNotificationService as any
+  multisigService as any
 );
 
 const grantIpexMessageMock = {
@@ -349,7 +342,7 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
     expect(
-      signifyNotificationService.addPendingOperationToQueue
+      Agent.agent.keriaNotifications.addPendingOperationToQueue
     ).toBeCalledTimes(1);
     expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith(
       expect.objectContaining({
@@ -357,7 +350,7 @@ describe("Ipex communication service of agent", () => {
       })
     );
     expect(
-      signifyNotificationService.deleteNotificationRecordById
+      Agent.agent.keriaNotifications.deleteNotificationRecordById
     ).toBeCalledWith(id, "/exn/ipex/grant");
   });
 
@@ -525,7 +518,7 @@ describe("Ipex communication service of agent", () => {
       applySaid: "d",
     });
     expect(
-      signifyNotificationService.deleteNotificationRecordById
+      Agent.agent.keriaNotifications.deleteNotificationRecordById
     ).toBeCalledWith(id, undefined);
   });
 
@@ -982,7 +975,7 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
     expect(
-      signifyNotificationService.addPendingOperationToQueue
+      Agent.agent.keriaNotifications.addPendingOperationToQueue
     ).toBeCalledTimes(1);
   });
 
@@ -1067,7 +1060,7 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
     expect(
-      signifyNotificationService.addPendingOperationToQueue
+      Agent.agent.keriaNotifications.addPendingOperationToQueue
     ).toBeCalledTimes(1);
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
   });
@@ -1340,7 +1333,7 @@ describe("Ipex communication service of agent", () => {
       ipexCommunicationService.acceptAcdcFromMultisigExn(id)
     ).rejects.toThrowError(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     expect(
-      signifyNotificationService.deleteNotificationRecordById
+      Agent.agent.keriaNotifications.deleteNotificationRecordById
     ).not.toBeCalledWith(id);
   });
 });

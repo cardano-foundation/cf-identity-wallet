@@ -134,8 +134,7 @@ const agentServicesProps = {
 const multiSigService = new MultiSigService(
   agentServicesProps,
   identifierStorage as any,
-  operationPendingStorage as any,
-  signifyNotificationService as any
+  operationPendingStorage as any
 );
 
 let mockResolveOobi = jest.fn();
@@ -154,7 +153,7 @@ jest.mock("../../../core/agent/agent", () => ({
         rotateIdentifier: () => jest.fn(),
         updateIdentifier: jest.fn(),
       },
-      signifyNotifications: {
+      keriaNotifications: {
         addPendingOperationToQueue: jest.fn(),
         markNotification: (id: string) => markNotificationMock(id),
         deleteNotificationRecordById: (id: string) =>

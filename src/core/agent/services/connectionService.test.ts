@@ -168,7 +168,7 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       getKeriaOnlineStatus: jest.fn(),
       identifiers: { getKeriIdentifierByGroupId: jest.fn() },
-      signifyNotifications: {
+      keriaNotifications: {
         addPendingOperationToQueue: jest.fn(),
       },
     },
@@ -657,7 +657,7 @@ describe("Connection service of agent", () => {
       recordType: OperationPendingRecordType.Oobi,
     });
     expect(
-      Agent.agent.signifyNotifications.addPendingOperationToQueue
+      Agent.agent.keriaNotifications.addPendingOperationToQueue
     ).toBeCalledTimes(1);
   });
 

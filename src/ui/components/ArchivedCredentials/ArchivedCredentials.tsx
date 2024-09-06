@@ -124,7 +124,7 @@ const ArchivedCredentialsContainer = forwardRef<
 
         if (!notification) return Promise.reject();
 
-        return Agent.agent.signifyNotifications.deleteNotificationRecordById(
+        return Agent.agent.keriaNotifications.deleteNotificationRecordById(
           notification.id,
           notification.a.r as NotificationRoute
         );

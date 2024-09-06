@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { Alert, Autocomplete, Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import React, { useEffect, useState } from "react";
 import { Contact } from "../types";
@@ -12,11 +12,14 @@ const RevocationPage: React.FC = () => {
     control,
     register,
     handleSubmit,
+    formState: { errors },
   } = useForm();
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [selectedContact, setSelectedContact] = useState<Contact | undefined>();
+  const [isRevokeCredentialSuccess, setIsRevokeCredentialSuccess] =
+    useState(false);
 
   useEffect(() => {
     handleGetContacts();
@@ -48,10 +51,14 @@ const RevocationPage: React.FC = () => {
   };
 
   const handleRevokeCredential = async (values: any) => {
-    await axios.post(`${config.endpoint}${config.path.revokeCredential}`, {
+    setIsRevokeCredentialSuccess(false);
+    const response = await axios.post(`${config.endpoint}${config.path.revokeCredential}`, {
       credentialId: values.selectedCredential,
       holder: values.selectedContact
     });
+    if (response.status === 200) {
+      setIsRevokeCredentialSuccess(true);
+    }
     await handleGetContactCredentials(values.selectedContact);
   };
 
@@ -126,6 +133,19 @@ const RevocationPage: React.FC = () => {
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ display: "flex", justifyContent: "right" }}>
+                {errors.selectedContact && (
+                  <Alert severity="error">
+                    Please, select a contact from the list of connections
+                  </Alert>
+                )}
+                {errors.selectedCredential && (
+                  <Alert severity="error">Please, select a credential</Alert>
+                )}
+                {isRevokeCredentialSuccess && (
+                  <Alert severity="success">
+                    Revoke credential successfully sent
+                  </Alert>
+                )}
                 <Button variant="contained" color="primary" type="submit">
                   Revoke Credential
                 </Button>

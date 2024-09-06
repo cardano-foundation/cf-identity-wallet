@@ -404,7 +404,7 @@ class ConnectionService extends AgentService {
         id: operation.name,
         recordType: OperationPendingRecordType.Oobi,
       });
-      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+      Agent.agent.keriaNotifications.addPendingOperationToQueue(
         pendingOperation
       );
     } else if (!operation.done) {

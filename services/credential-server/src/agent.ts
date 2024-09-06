@@ -170,21 +170,31 @@ class Agent {
   async initKeri(): Promise<void> {
     this.onNotificationKeriStateChanged();
     /* eslint-disable no-console */
+    const existingKeriIssuerRegistryRegk = await this.signifyApiIssuer.getRegistry(Agent.ISSUER_AID_NAME).catch((e) => {console.error(e); return undefined});
+    const existingKeriRegistryRegk = await this.signifyApi.getRegistry(Agent.HOLDER_AID_NAME).catch((e) => {console.error(e); return undefined});
     // Issuer
-    await this.signifyApiIssuer
-      .createIdentifier(Agent.ISSUER_AID_NAME)
-      .catch((e) => console.error(e));
-    this.keriIssuerRegistryRegk = await this.signifyApiIssuer
-      .createRegistry(Agent.ISSUER_AID_NAME)
-      .catch((e) => console.error(e));
+    if (existingKeriIssuerRegistryRegk) {
+      this.keriIssuerRegistryRegk = existingKeriIssuerRegistryRegk;
+    } else {
+      await this.signifyApiIssuer
+        .createIdentifier(Agent.ISSUER_AID_NAME)
+        .catch((e) => console.error(e));
+      this.keriIssuerRegistryRegk = await this.signifyApiIssuer
+        .createRegistry(Agent.ISSUER_AID_NAME)
+        .catch((e) => console.error(e));
+    }
 
     // Holder
-    await this.signifyApi
-      .createIdentifier(Agent.HOLDER_AID_NAME)
-      .catch((e) => console.error(e));
-    this.keriRegistryRegk = await this.signifyApi
-      .createRegistry(Agent.HOLDER_AID_NAME)
-      .catch((e) => console.error(e));
+    if (existingKeriRegistryRegk) {
+      this.keriRegistryRegk = existingKeriRegistryRegk;
+    } else {
+      await this.signifyApi
+        .createIdentifier(Agent.HOLDER_AID_NAME)
+        .catch((e) => console.error(e));
+      this.keriRegistryRegk = await this.signifyApi
+        .createRegistry(Agent.HOLDER_AID_NAME)
+        .catch((e) => console.error(e));     
+    }
 
     await this.createQVICredential().catch((e) => console.error(e));
   }

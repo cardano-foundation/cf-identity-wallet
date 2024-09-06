@@ -26,7 +26,7 @@ jest.mock("../../../core/agent/agent", () => ({
           },
         }),
       },
-      signifyNotifications: {
+      keriaNotifications: {
         readNotification: (id: string) => readNotificationMock(id),
       },
       basicStorage: {

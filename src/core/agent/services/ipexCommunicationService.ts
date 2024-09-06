@@ -25,7 +25,7 @@ import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
-import { SignifyNotificationService } from "./signifyNotificationService";
+import { KeriaNotificationService } from "./keriaNotificationService";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -51,7 +51,6 @@ class IpexCommunicationService extends AgentService {
   protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly multisigService: MultiSigService;
-  protected readonly signifyNotificationService: SignifyNotificationService;
 
   constructor(
     agentServiceProps: AgentServicesProps,
@@ -60,8 +59,7 @@ class IpexCommunicationService extends AgentService {
     notificationStorage: NotificationStorage,
     ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage,
-    multisigService: MultiSigService,
-    signifyNotificationService: SignifyNotificationService
+    multisigService: MultiSigService
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
@@ -70,7 +68,6 @@ class IpexCommunicationService extends AgentService {
     this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.multisigService = multisigService;
-    this.signifyNotificationService = signifyNotificationService;
   }
 
   @OnlineOnly
@@ -164,11 +161,9 @@ class IpexCommunicationService extends AgentService {
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
 
-    this.signifyNotificationService.addPendingOperationToQueue(
-      pendingOperation
-    );
+    Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
     if (!holder.multisigManageAid) {
-      await this.signifyNotificationService.deleteNotificationRecordById(
+      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
         id,
         grantNoteRecord.a.r as NotificationRoute
       );
@@ -193,7 +188,7 @@ class IpexCommunicationService extends AgentService {
     await this.props.signifyClient
       .ipex()
       .submitOffer(holderSignifyName, offer, sigs, end, [msg.exn.i]);
-    await this.signifyNotificationService.deleteNotificationRecordById(
+    await Agent.agent.keriaNotifications.deleteNotificationRecordById(
       notification.id,
       notification.a.r as NotificationRoute
     );
@@ -464,9 +459,7 @@ class IpexCommunicationService extends AgentService {
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    this.signifyNotificationService.addPendingOperationToQueue(
-      pendingOperation
-    );
+    Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
 
     const notifications = await this.notificationStorage.findAllByQuery({
       exnSaid: exn?.exn.e.exn.p,

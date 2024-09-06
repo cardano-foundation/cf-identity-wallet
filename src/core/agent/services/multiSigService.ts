@@ -40,7 +40,6 @@ import {
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConfigurationService } from "../../configuration";
-import { SignifyNotificationService } from "./signifyNotificationService";
 
 class MultiSigService extends AgentService {
   static readonly INVALID_THRESHOLD = "Invalid threshold";
@@ -70,18 +69,15 @@ class MultiSigService extends AgentService {
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
-  protected readonly signifyNotifications: SignifyNotificationService;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
-    operationPendingStorage: OperationPendingStorage,
-    signifyNotificationService: SignifyNotificationService
+    operationPendingStorage: OperationPendingStorage
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
-    this.signifyNotifications = signifyNotificationService;
   }
 
   @OnlineOnly
@@ -162,7 +158,9 @@ class MultiSigService extends AgentService {
         id: op.name,
         recordType: OperationPendingRecordType.Group,
       });
-      this.signifyNotifications.addPendingOperationToQueue(pendingOperation);
+      Agent.agent.keriaNotifications.addPendingOperationToQueue(
+        pendingOperation
+      );
     } else {
       // Trigger the end role authorization if the operation is done
       await this.endRoleAuthorization(signifyName);
@@ -350,7 +348,7 @@ class MultiSigService extends AgentService {
       aid,
       multiSig.signifyName
     );
-    await this.signifyNotifications.deleteNotificationRecordById(
+    await Agent.agent.keriaNotifications.deleteNotificationRecordById(
       notification.id,
       notification.a.r as NotificationRoute
     );
@@ -454,7 +452,7 @@ class MultiSigService extends AgentService {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {
-      await this.signifyNotifications.deleteNotificationRecordById(
+      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
         notificationId,
         notificationRoute
       );
@@ -521,12 +519,14 @@ class MultiSigService extends AgentService {
         id: op.name,
         recordType: OperationPendingRecordType.Group,
       });
-      this.signifyNotifications.addPendingOperationToQueue(pendingOperation);
+      Agent.agent.keriaNotifications.addPendingOperationToQueue(
+        pendingOperation
+      );
     } else {
       // Trigger the end role authorization if the operation is done
       await this.endRoleAuthorization(signifyName);
     }
-    await this.signifyNotifications.deleteNotificationRecordById(
+    await Agent.agent.keriaNotifications.deleteNotificationRecordById(
       notificationId,
       notificationRoute
     );

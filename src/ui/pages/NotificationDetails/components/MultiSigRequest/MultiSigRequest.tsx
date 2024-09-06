@@ -142,7 +142,7 @@ const MultiSigRequest = ({
 
   const actionDecline = async () => {
     setAlertDeclineIsOpen(false);
-    await Agent.agent.signifyNotifications.deleteNotificationRecordById(
+    await Agent.agent.keriaNotifications.deleteNotificationRecordById(
       notificationDetails.id,
       notificationDetails.a.r as NotificationRoute
     );
