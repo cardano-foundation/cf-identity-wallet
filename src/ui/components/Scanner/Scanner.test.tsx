@@ -7,7 +7,10 @@ import configureStore from "redux-mock-store";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import EN_Translation from "../../../locales/en/en.json";
 import { setOpenConnectionDetail } from "../../../store/reducers/connectionsCache";
-import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
+import {
+  setMultiSigGroupCache,
+  setOpenMultiSigId,
+} from "../../../store/reducers/identifiersCache";
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
   setCurrentOperation,
@@ -235,6 +238,69 @@ describe("Scanner", () => {
     });
   });
 
+  test("Multisign initiator scan - groupId not match", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.MULTI_SIG_INITIATOR_SCAN,
+      },
+      identifiersCache: {
+        identifiers: [],
+        scanGroupId: "mock",
+      },
+    };
+
+    getMultisigLinkedContactsMock.mockReturnValue(connectionsFix);
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      return {
+        type: KeriConnectionType.MULTI_SIG_INITIATOR,
+      };
+    });
+
+    startScan.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              hasContent: true,
+              content:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            });
+          }, 100);
+        })
+    );
+
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <Scanner setIsValueCaptured={setIsValueCaptured} />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_Translation.createidentifier.scan.initiate)
+      ).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).not.toBeCalledWith(
+        setToastMsg(ToastMsgType.GROUP_ID_NOT_MATCH_ERROR)
+      );
+    });
+  });
+
   test("Multisign initiator scan", async () => {
     const initialState = {
       stateCache: {
@@ -249,6 +315,7 @@ describe("Scanner", () => {
       },
       identifiersCache: {
         identifiers: [],
+        scanGroupId: "72e2f089cef6",
       },
     };
 
@@ -323,6 +390,7 @@ describe("Scanner", () => {
       },
       identifiersCache: {
         identifiers: [],
+        scanGroupId: "72e2f089cef6",
       },
     };
 
@@ -591,6 +659,61 @@ describe("Scanner", () => {
       expect(dispatchMock).toBeCalledWith(
         setOpenConnectionDetail("connectionId")
       );
+    });
+  });
+
+  test("Duplicate multisig connection error handle", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_CONNECTION,
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      throw new Error("Record already exists with id connectionId");
+    });
+
+    startScan.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              hasContent: true,
+              content:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            });
+          }, 100);
+        })
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(setOpenMultiSigId("72e2f089cef6"));
     });
   });
 

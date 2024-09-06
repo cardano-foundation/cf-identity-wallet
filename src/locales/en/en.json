@@ -1627,7 +1627,8 @@
     "savepasswordhinterror": "Unable to delete password hint",
     "editidentifiererror": "Unable to update identifier",
     "failedupdateconnectionerror": "Failed to update connection",
-    "duplicateconnectionerror": "Connection already established"
+    "duplicateconnectionerror": "Connection already established",
+    "groupidnotmatcherror": "Connection not part of this group"
   },
   "request": {
     "sign": {

@@ -124,6 +124,7 @@ const CreateIdentifier = ({
           multiSigGroup={multiSigGroup}
           setMultiSigGroup={setMultiSigGroup}
           preventRedirect={preventRedirect}
+          isModalOpen={modalIsOpen}
         />
       )}
     </IonModal>

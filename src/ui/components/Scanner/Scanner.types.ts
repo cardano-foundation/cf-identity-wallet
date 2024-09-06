@@ -8,8 +8,8 @@ interface ScannerProps {
 }
 
 enum ErrorMessage {
-  RECORD_ALREADY_EXISTS_ERROR_MSG = "Record already exists with id",
   INVALID_CONNECTION_URL = "Invalid connection url",
+  GROUP_ID_NOT_MATCH = "Multisig group id not match",
 }
 
 export type { ScannerProps };

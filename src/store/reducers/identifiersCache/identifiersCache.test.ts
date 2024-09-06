@@ -11,6 +11,10 @@ import {
   getMultiSigGroupCache,
   updateOrAddIdentifiersCache,
   updateIsPending,
+  setOpenMultiSigId,
+  getOpenMultiSig,
+  getScanGroupId,
+  setScanGroupId,
 } from "./identifiersCache";
 import { RootState } from "../../index";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
@@ -22,6 +26,7 @@ describe("identifiersCacheSlice", () => {
     identifiers: [],
     favourites: [],
     multiSigGroup: undefined,
+    openMultiSigId: undefined,
   };
   it("should return the initial state", () => {
     expect(
@@ -167,6 +172,22 @@ describe("identifiersCacheSlice", () => {
     );
     expect(newState.identifiers).toEqual([identifier]);
   });
+
+  it("should handle setOpenMultiSigId", () => {
+    const newState = identifiersCacheSlice.reducer(
+      initialState,
+      setOpenMultiSigId("id")
+    );
+    expect(newState.openMultiSigId).toEqual("id");
+  });
+
+  it("should handle setScanGroupId", () => {
+    const newState = identifiersCacheSlice.reducer(
+      initialState,
+      setScanGroupId("id")
+    );
+    expect(newState.scanGroupId).toEqual("id");
+  });
 });
 
 describe("get identifier Cache", () => {
@@ -227,5 +248,23 @@ describe("get identifier Cache", () => {
     } as RootState;
     const identifiersCache = getMultiSigGroupCache(state);
     expect(identifiersCache).toEqual(state.identifiersCache.multiSigGroup);
+  });
+  it("should return the openMultiSigId from RootState", () => {
+    const state = {
+      identifiersCache: {
+        openMultiSigId: "groupId",
+      },
+    } as RootState;
+    const openMultiSigId = getOpenMultiSig(state);
+    expect(openMultiSigId).toEqual(state.identifiersCache.openMultiSigId);
+  });
+  it("should return the scanGroupId from RootState", () => {
+    const state = {
+      identifiersCache: {
+        scanGroupId: "groupId",
+      },
+    } as RootState;
+    const scanGroupId = getScanGroupId(state);
+    expect(scanGroupId).toEqual(state.identifiersCache.scanGroupId);
   });
 });
