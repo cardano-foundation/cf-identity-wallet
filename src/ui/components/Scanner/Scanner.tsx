@@ -72,7 +72,7 @@ const Scanner = forwardRef(
     const [groupId, setGroupId] = useState("");
     const [pastedValue, setPastedValue] = useState("");
     const [scanning, setScanning] = useState(false);
-    const [permission, setPermisson] = useState(true);
+    const [permission, setPermisson] = useState(false);
 
     const checkPermission = async () => {
       const status = await BarcodeScanner.checkPermissions();
