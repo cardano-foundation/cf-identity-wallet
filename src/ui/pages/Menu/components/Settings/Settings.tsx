@@ -180,7 +180,7 @@ const Settings = ({ switchView }: SettingsProps) => {
       break;
     }
     case OptionIndex.Term: {
-      switchView && switchView(SubMenuKey.TermAndPrivacy);
+      switchView && switchView(SubMenuKey.TermsAndPrivacy);
       break;
     }
     case OptionIndex.RecoverySeedPhrase: {

@@ -82,7 +82,6 @@ const Identifiers = () => {
   const multisignGroupCache = useAppSelector(getMultiSigGroupCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const currentOperation = useAppSelector(getCurrentOperation);
-
   const [favIdentifiers, setFavIdentifiers] = useState<
     IdentifierShortDetails[]
   >([]);
@@ -102,13 +101,10 @@ const Identifiers = () => {
     useState<IdentifierShortDetails | null>(null);
   const [navAnimation, setNavAnimation] =
     useState<StartAnimationSource>("none");
-
   const [deletedPendingItem, setDeletePendingItem] =
     useState<IdentifierShortDetails | null>(null);
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
-
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
-
   const { showConnections, setShowConnections } = useToggleConnections(
     TabsRoutePath.IDENTIFIERS
   );
@@ -280,6 +276,7 @@ const Identifiers = () => {
       <Connections
         showConnections={showConnections}
         setShowConnections={setShowConnections}
+        selfPaginated={true}
       />
       <TabLayout
         pageId={pageId}

@@ -4,7 +4,7 @@ import { config } from "../config";
 import { Button, Divider, Grid, Input, Paper, Typography } from "@mui/material";
 import { InputOobi } from "../components/inputOOBI/InputOobi";
 import axios from "axios";
-import { Contact } from "../types.types";
+import { Contact } from "../types";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { DeleteOutline } from "@mui/icons-material";
 import { UUID_REGEX } from "../constants";
@@ -107,4 +107,4 @@ const ConnectionPage: React.FC = () => {
   );
 };
 
-export default ConnectionPage;
+export { ConnectionPage };

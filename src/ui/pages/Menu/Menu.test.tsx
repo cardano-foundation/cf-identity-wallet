@@ -7,6 +7,34 @@ import { Menu } from "./Menu";
 import { store } from "../../../store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { SubMenuKey } from "./Menu.types";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import { TabsRoutePath } from "../../../routes/paths";
+import { CHAT_LINK, CRYPTO_LINK } from "../../globals/constants";
+
+const combineMock = jest.fn(() => TabsRoutePath.MENU);
+const historyPushMock = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useHistory: () => ({
+    push: (args: unknown) => {
+      historyPushMock(args);
+    },
+    location: {
+      pathname: combineMock(),
+    },
+  }),
+}));
+
+const browserMock = jest.fn(({ link }: { link: string }) =>
+  Promise.resolve(link)
+);
+jest.mock("@capacitor/browser", () => ({
+  ...jest.requireActual("@capacitor/browser"),
+  Browser: {
+    open: (params: never) => browserMock(params),
+  },
+}));
 
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
@@ -19,6 +47,15 @@ const initialState = {
       time: Date.now(),
       passcodeIsSet: true,
     },
+    connectionsCache: {
+      connections: connectionsFix,
+    },
+  },
+  connectionsCache: {
+    connections: connectionsFix,
+  },
+  identifiersCache: {
+    identifiers: filteredIdentifierFix,
   },
 };
 
@@ -49,9 +86,86 @@ describe("Menu Tab", () => {
     expect(
       getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.title)
     ).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.chat.title)
+    ).toBeInTheDocument();
   });
 
-  test("Open connect wallet tab", async () => {
+  test("Open Profile sub-menu", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <Menu />
+      </Provider>
+    );
+
+    expect(getByTestId("menu-tab")).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.profile.title)
+    ).toBeInTheDocument();
+    const profileButton = getByTestId(`menu-input-item-${SubMenuKey.Profile}`);
+
+    act(() => {
+      fireEvent.click(profileButton);
+    });
+
+    await waitForIonicReact();
+
+    expect(getByTestId("profile-title")).toHaveTextContent(
+      EN_TRANSLATIONS.menu.tab.items.profile.tabheader
+    );
+  });
+
+  test("Open Crypto link", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <Menu />
+      </Provider>
+    );
+
+    expect(getByTestId("menu-tab")).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.crypto.title)
+    ).toBeInTheDocument();
+    const cryptoButton = getByTestId(`menu-input-item-${SubMenuKey.Crypto}`);
+
+    act(() => {
+      fireEvent.click(cryptoButton);
+    });
+
+    await waitFor(() => {
+      expect(browserMock).toBeCalledWith({
+        url: CRYPTO_LINK,
+      });
+    });
+  });
+
+  test("Open Connections sub-menu", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <Menu />
+      </Provider>
+    );
+
+    expect(getByTestId("menu-tab")).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.connections.title)
+    ).toBeInTheDocument();
+    const connectionsButton = getByTestId(
+      `menu-input-item-${SubMenuKey.Connections}`
+    );
+
+    act(() => {
+      fireEvent.click(connectionsButton);
+    });
+
+    await waitForIonicReact();
+
+    expect(getByTestId("connections-title")).toHaveTextContent(
+      EN_TRANSLATIONS.menu.tab.items.connections.tabheader
+    );
+  });
+
+  test("Open Cardano connect sub-menu", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={store}>
         <Menu />
@@ -77,7 +191,7 @@ describe("Menu Tab", () => {
     ).toBeVisible();
   });
 
-  test("Open Profile tab", async () => {
+  test("Open Chat link", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <Menu />
@@ -86,18 +200,18 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.profile.title)
+      getByText(EN_TRANSLATIONS.menu.tab.items.chat.title)
     ).toBeInTheDocument();
-    const profileButton = getByTestId(`menu-input-item-${SubMenuKey.Profile}`);
+    const chatButton = getByTestId(`menu-input-item-${SubMenuKey.Chat}`);
 
     act(() => {
-      fireEvent.click(profileButton);
+      fireEvent.click(chatButton);
     });
 
-    await waitForIonicReact();
-
-    expect(getByTestId("profile-title")).toHaveTextContent(
-      EN_TRANSLATIONS.menu.tab.items.profile.tabheader
-    );
+    await waitFor(() => {
+      expect(browserMock).toBeCalledWith({
+        url: CHAT_LINK,
+      });
+    });
   });
 });

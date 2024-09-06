@@ -1,11 +1,16 @@
 import { IonButton, IonIcon, IonSpinner } from "@ionic/react";
-import { informationCircleOutline, scanOutline } from "ionicons/icons";
+import {
+  informationCircleOutline,
+  scanOutline,
+  openOutline,
+} from "ionicons/icons";
 import {
   MouseEvent as ReactMouseEvent,
   useEffect,
   useMemo,
   useState,
 } from "react";
+import { Browser } from "@capacitor/browser";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { ConfigurationService } from "../../../core/configuration";
@@ -37,6 +42,10 @@ import { isValidHttpUrl } from "../../utils/urlChecker";
 import "./CreateSSIAgent.scss";
 import { SwitchOnboardingMode } from "../../components/SwitchOnboardingMode";
 import { OnboardingMode } from "../../components/SwitchOnboardingMode/SwitchOnboardingMode.types";
+import {
+  RECOVERY_DOCUMENTATION_LINK,
+  ONBOARDING_DOCUMENTATION_LINK,
+} from "../../globals/constants";
 
 const SSI_URLS_EMPTY = "SSI url is empty";
 const SEED_PHRASE_EMPTY = "Invalid seed phrase";
@@ -254,6 +263,13 @@ const CreateSSIAgent = () => {
     dispatch(setBootUrl(bootUrl));
   };
 
+  const handleOpenUrl = () => {
+    Browser.open({
+      url: isRecoveryMode
+        ? RECOVERY_DOCUMENTATION_LINK
+        : ONBOARDING_DOCUMENTATION_LINK,
+    });
+  };
   return (
     <>
       <ScrollablePageLayout
@@ -390,10 +406,27 @@ const CreateSSIAgent = () => {
         </div>
       )}
       <TermsModal
-        name="about-ssi-agent"
+        name={`about-ssi-agent-${
+          isRecoveryMode ? OnboardingMode.Recovery : OnboardingMode.Create
+        }`}
         isOpen={openInfo}
         setIsOpen={setOpenInfo}
-      />
+      >
+        <IonButton
+          onClick={handleOpenUrl}
+          fill="outline"
+          data-testid="open-ssi-documentation-button"
+          className="open-ssi-documentation-button secondary-button"
+        >
+          <IonIcon
+            slot="end"
+            icon={openOutline}
+          />
+          {isRecoveryMode
+            ? `${i18n.t("ssiagent.button.recoverydocumentation")}`
+            : `${i18n.t("ssiagent.button.onboardingdocumentation")}`}
+        </IonButton>
+      </TermsModal>
     </>
   );
 };

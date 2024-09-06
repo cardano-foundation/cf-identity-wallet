@@ -1,5 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { IonCard, IonItem } from "@ionic/react";
+import { IonCard, IonIcon, IonItem } from "@ionic/react";
+import { chevronForward } from "ionicons/icons";
+import { Browser } from "@capacitor/browser";
 import { ProfileOptionRef, ProfileProps } from "./Profile.types";
 import "./Profile.scss";
 import { i18n } from "../../../../../i18n";
@@ -12,6 +14,7 @@ import {
   setAuthentication,
 } from "../../../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
+import { PROFILE_LINK } from "../../../../globals/constants";
 
 const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
   ({ isEditing }, ref) => {
@@ -79,6 +82,21 @@ const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
             </IonCard>
           </>
         )}
+        <IonCard>
+          <IonItem onClick={() => Browser.open({ url: PROFILE_LINK })}>
+            <div
+              className="profile-item"
+              data-testid="profile-item-profile-link"
+            >
+              <span>{i18n.t("menu.tab.items.profile.watchvideo")}</span>
+              <IonIcon
+                aria-hidden="true"
+                icon={chevronForward}
+                slot="end"
+              />
+            </div>
+          </IonItem>
+        </IonCard>
       </>
     );
   }

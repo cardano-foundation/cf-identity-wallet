@@ -30,7 +30,6 @@ import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
   IdentifierStorage,
-  NotificationStorage,
   OperationPendingStorage,
 } from "../records";
 import { AgentService } from "./agentService";
@@ -44,6 +43,7 @@ import {
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConfigurationService } from "../../configuration";
+import { SignifyNotificationService } from "./signifyNotificationService";
 
 class MultiSigService extends AgentService {
   static readonly INVALID_THRESHOLD = "Invalid threshold";
@@ -72,19 +72,19 @@ class MultiSigService extends AgentService {
     "We do not control any member AID of the multi-sig";
 
   protected readonly identifierStorage: IdentifierStorage;
-  protected readonly notificationStorage!: NotificationStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
+  protected readonly signifyNotifications: SignifyNotificationService;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
-    notificationStorage: NotificationStorage,
-    operationPendingStorage: OperationPendingStorage
+    operationPendingStorage: OperationPendingStorage,
+    signifyNotificationService: SignifyNotificationService
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
-    this.notificationStorage = notificationStorage;
     this.operationPendingStorage = operationPendingStorage;
+    this.signifyNotifications = signifyNotificationService;
   }
 
   @OnlineOnly
@@ -165,9 +165,7 @@ class MultiSigService extends AgentService {
         id: op.name,
         recordType: OperationPendingRecordType.Group,
       });
-      Agent.agent.signifyNotifications.addPendingOperationToQueue(
-        pendingOperation
-      );
+      this.signifyNotifications.addPendingOperationToQueue(pendingOperation);
     } else {
       // Trigger the end role authorization if the operation is done
       await this.endRoleAuthorization(signifyName);
@@ -355,7 +353,7 @@ class MultiSigService extends AgentService {
       aid,
       multiSig.signifyName
     );
-    await Agent.agent.signifyNotifications.deleteNotificationRecordById(
+    await this.signifyNotifications.deleteNotificationRecordById(
       notification.id,
       notification.a.r as NotificationRoute
     );
@@ -459,7 +457,7 @@ class MultiSigService extends AgentService {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {
-      await Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      await this.signifyNotifications.deleteNotificationRecordById(
         notificationId,
         notificationRoute
       );
@@ -502,7 +500,6 @@ class MultiSigService extends AgentService {
       .get(identifier?.signifyName);
     const signifyName = uuidv4();
     const res = await this.joinMultisigKeri(exn, aid, signifyName);
-    await this.notificationStorage.deleteById(notificationId);
     const op = res.op;
     const multisigId = op.name.split(".")[1];
     const isPending = !op.done;
@@ -527,14 +524,15 @@ class MultiSigService extends AgentService {
         id: op.name,
         recordType: OperationPendingRecordType.Group,
       });
-      Agent.agent.signifyNotifications.addPendingOperationToQueue(
-        pendingOperation
-      );
+      this.signifyNotifications.addPendingOperationToQueue(pendingOperation);
     } else {
       // Trigger the end role authorization if the operation is done
       await this.endRoleAuthorization(signifyName);
     }
-
+    await this.signifyNotifications.deleteNotificationRecordById(
+      notificationId,
+      notificationRoute
+    );
     return { identifier: multisigId, signifyName, isPending };
   }
 

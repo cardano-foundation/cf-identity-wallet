@@ -310,6 +310,15 @@ export class SignifyApi {
   async deleteContact(id: string): Promise<any> {
     return this.signifyClient.contacts().delete(id);
   }
+  
+  async contactCredentials(issuerPrefix: string, connectionId : string): Promise<any> {
+    return this.signifyClient.credentials().list({ 
+      filter: {
+        '-i': issuerPrefix, 
+        '-a-i': connectionId,
+      } 
+    });
+  }
 
   async agreeToAcdcFromOffer(
     senderName: string,

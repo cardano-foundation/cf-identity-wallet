@@ -18,7 +18,7 @@ import { Controller, useForm } from "react-hook-form";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import axios from "axios";
 import { config } from "../config";
-import { Contact } from "../types.types";
+import { Contact } from "../types";
 import {
   Attributes,
   CredentialType,
@@ -65,7 +65,8 @@ function RequestCredential() {
   const handleGetContacts = async () => {
     try {
       setContacts(
-        (await axios.get(`${config.endpoint}${config.path.contacts}`)).data.data
+        (await axios.get(`${config.endpoint}${config.path.contacts}`)).data
+          .data,
       );
     } catch (e) {
       console.log(e);

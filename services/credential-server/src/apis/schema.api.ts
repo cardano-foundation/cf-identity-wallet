@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { SCHEMA_ACDC } from "../utils/schemas/schemaAcdc";
+import { ACDC_SCHEMAS } from "../utils/schemas";
 
 async function schemaApi(req: Request, res: Response) {
   const { id } = req.params;
-  const data = SCHEMA_ACDC[id];
+  const data = ACDC_SCHEMAS[id];
   if (!data) {
     return res.status(404).send("Schema for given SAID not found");
   }
