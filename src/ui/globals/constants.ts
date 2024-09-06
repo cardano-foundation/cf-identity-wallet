@@ -14,6 +14,13 @@ const ONBOARDING_DOCUMENTATION_LINK =
   "https://docs.idw.cardanofoundation.org/ballot/onboarding";
 const RECOVERY_DOCUMENTATION_LINK =
   "https://docs.idw.cardanofoundation.org/more/recovery";
+
+enum TermsOfUseLinks {
+  "https://summit.cardano.org",
+  "https://voting.summit.cardano.org",
+  "https://cardanofoundation.org/en/trademark-policy",
+}
+
 export {
   DISPLAY_NAME_LENGTH,
   SEED_PHRASE_SUGGESTIONS,
@@ -26,4 +33,5 @@ export {
   CHAT_LINK,
   ONBOARDING_DOCUMENTATION_LINK,
   RECOVERY_DOCUMENTATION_LINK,
+  TermsOfUseLinks,
 };
