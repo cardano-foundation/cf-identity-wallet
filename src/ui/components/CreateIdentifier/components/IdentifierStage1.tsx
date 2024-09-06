@@ -3,7 +3,10 @@ import { useHistory } from "react-router-dom";
 import { Agent } from "../../../../core/agent/agent";
 import { i18n } from "../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
-import { getMultiSigGroupCache } from "../../../../store/reducers/identifiersCache";
+import {
+  getMultiSigGroupCache,
+  setScanGroupId,
+} from "../../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
   getStateCache,
@@ -28,6 +31,7 @@ const IdentifierStage1 = ({
   resumeMultiSig,
   multiSigGroup,
   preventRedirect,
+  isModalOpen,
 }: IdentifierStageProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -48,6 +52,14 @@ const IdentifierStage1 = ({
   const [scannedConections, setScannedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      dispatch(setScanGroupId(groupId));
+    } else {
+      dispatch(setScanGroupId(undefined));
+    }
+  }, [isModalOpen, groupId, dispatch]);
 
   const fetchOobi = useCallback(async () => {
     try {
@@ -81,6 +93,7 @@ const IdentifierStage1 = ({
 
   const handleDone = () => {
     resetModal && resetModal();
+    dispatch(setScanGroupId(undefined));
     if (multiSigGroup?.groupId && !preventRedirect) {
       history.push({
         pathname: TabsRoutePath.IDENTIFIERS,

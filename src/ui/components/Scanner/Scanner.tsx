@@ -23,6 +23,7 @@ import {
 } from "../../../store/reducers/connectionsCache";
 import {
   getMultiSigGroupCache,
+  getScanGroupId,
   setMultiSigGroupCache,
   setOpenMultiSigId,
 } from "../../../store/reducers/identifiersCache";
@@ -37,7 +38,7 @@ import {
 import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
-import { isValidConnectionUrl } from "../../utils/urlChecker";
+import { isValidConnectionUrl, isValidHttpUrl } from "../../utils/urlChecker";
 import { CreateIdentifier } from "../CreateIdentifier";
 import { CustomInput } from "../CustomInput";
 import { TabsRoutePath } from "../navigation/TabsMenu";
@@ -45,6 +46,7 @@ import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
 import { ErrorMessage, ScannerProps } from "./Scanner.types";
+import { StorageMessage } from "../../../core/storage/storage.types";
 
 const Scanner = forwardRef(
   (
@@ -60,6 +62,7 @@ const Scanner = forwardRef(
     const dispatch = useAppDispatch();
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
     const currentOperation = useAppSelector(getCurrentOperation);
+    const scanGroupId = useAppSelector(getScanGroupId);
     const currentToastMsg = useAppSelector(getToastMsg);
     const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
       useState(false);
@@ -167,7 +170,7 @@ const Scanner = forwardRef(
         urlId = new URL(url).searchParams.get("groupId");
       } else {
         urlId = e.message
-          .replace(ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG, "")
+          .replace(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG, "")
           .trim();
       }
 
@@ -185,6 +188,13 @@ const Scanner = forwardRef(
       );
 
       if (isMultisig) {
+        // NOTE: Scan duplicate multisig on multisign page
+        if (scanGroupId) {
+          handleReset?.();
+          dispatch(setCurrentOperation(OperationType.IDLE));
+          return;
+        }
+
         dispatch(setOpenMultiSigId(urlId));
       } else {
         dispatch(setOpenConnectionDetail(urlId));
@@ -195,8 +205,24 @@ const Scanner = forwardRef(
 
     const checkUrl = (url: string) => {
       const isMultiSigUrl = url.includes("groupId");
+      const urlGroupId = new URL(url).searchParams.get("groupId");
+      const openScanFromMultiSig = [
+        OperationType.MULTI_SIG_INITIATOR_SCAN,
+        OperationType.MULTI_SIG_RECEIVER_SCAN,
+      ].includes(currentOperation);
 
-      if (!isMultiSigUrl && !isValidConnectionUrl(url)) {
+      // NOTE: When user scan multisig connection on multisig page and group id of url not match with current connection page
+      if (
+        openScanFromMultiSig &&
+        (!isMultiSigUrl || urlGroupId !== scanGroupId)
+      ) {
+        throw new Error(ErrorMessage.GROUP_ID_NOT_MATCH);
+      }
+
+      if (
+        (!isMultiSigUrl && !isValidConnectionUrl(url)) ||
+        (isMultiSigUrl && !isValidHttpUrl(url))
+      ) {
         throw new Error(ErrorMessage.INVALID_CONNECTION_URL);
       }
 
@@ -245,15 +271,28 @@ const Scanner = forwardRef(
 
         dispatch(setCurrentOperation(OperationType.IDLE));
       } catch (e) {
-        const isDuplicateError = (e as Error).message.includes(
-          ErrorMessage.RECORD_ALREADY_EXISTS_ERROR_MSG
-        );
-        if (isDuplicateError) {
+        const errorMessage = (e as Error).message;
+
+        if (
+          errorMessage.includes(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG)
+        ) {
           handleDuplicateConnectionError(e as Error, content, isMultisigUrl);
-        } else {
-          showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
-          initScan();
+          return;
         }
+
+        if (errorMessage.includes(ErrorMessage.GROUP_ID_NOT_MATCH)) {
+          showError(
+            "Scanner Error:",
+            e,
+            dispatch,
+            ToastMsgType.GROUP_ID_NOT_MATCH_ERROR
+          );
+          handleReset?.();
+          return;
+        }
+
+        showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
+        initScan();
       }
     };
 
@@ -303,10 +342,15 @@ const Scanner = forwardRef(
             OperationType.SCAN_SSI_BOOT_URL,
             OperationType.SCAN_SSI_CONNECT_URL,
           ].includes(currentOperation)) &&
-          currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
-          currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING) ||
-        currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
-        currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
+          ![
+            ToastMsgType.CONNECTION_REQUEST_PENDING,
+            ToastMsgType.CREDENTIAL_REQUEST_PENDING,
+          ].includes(currentToastMsg as ToastMsgType)) ||
+        ([
+          OperationType.MULTI_SIG_INITIATOR_SCAN,
+          OperationType.MULTI_SIG_RECEIVER_SCAN,
+        ].includes(currentOperation) &&
+          currentToastMsg !== ToastMsgType.DUPLICATE_CONNECTION)
       ) {
         initScan();
       } else {
