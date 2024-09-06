@@ -24,6 +24,15 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { Agent } from "../../../core/agent/agent";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import { passcodeFiller } from "../../utils/passcodeFiller";
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
+}));
+
+const deleteStaleLocalConnectionByIdMock = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -33,6 +42,8 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         getConnectionById: jest.fn(),
         getConnectionHistoryById: jest.fn(),
+        deleteStaleLocalConnectionById: () =>
+          deleteStaleLocalConnectionByIdMock(),
       },
       credentials: {
         getCredentialDetailsById: jest.fn(),
@@ -44,9 +55,11 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
+const getMock = jest.fn();
+
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
-    get: jest.fn(),
+    get: () => getMock(),
     remove: jest.fn(),
   },
 }));
@@ -254,7 +267,6 @@ describe("ConnectionDetails Page", () => {
 
     await waitFor(() => {
       expect(getByTestId("verify-passcode")).toBeVisible();
-      expect(getByTestId("verify-passcode")).toHaveAttribute("is-open", "true");
     });
   });
 
@@ -844,6 +856,8 @@ describe("Checking the Connection Details Page when connection is missing from t
       ...connectionsFix[0],
     });
 
+    getMock.mockImplementation(() => Promise.resolve("111111"));
+
     const { getByTestId, getByText } = render(
       <IonReactMemoryRouter
         history={history}
@@ -867,6 +881,32 @@ describe("Checking the Connection Details Page when connection is missing from t
           normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
         })
       ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("delete-button-connection-details"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("alert-confirm-delete-connection")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("alert-confirm-delete-connection-confirm-button")
+      );
+    });
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    act(() => {
+      passcodeFiller(getByText, getByTestId, "1", 6);
+    });
+
+    await waitFor(() => {
+      expect(deleteStaleLocalConnectionByIdMock).toBeCalled();
     });
   });
 });

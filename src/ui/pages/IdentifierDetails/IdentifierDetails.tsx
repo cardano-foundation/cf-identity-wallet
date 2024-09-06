@@ -147,14 +147,20 @@ const IdentifierDetails = () => {
   const handleDelete = async () => {
     try {
       setVerifyIsOpen(false);
+      let updatedIdentifiers = identifierData;
       if (cardData) {
-        const updatedIdentifiers = identifierData.filter(
+        updatedIdentifiers = identifierData.filter(
           (item) => item.id !== cardData.id
         );
-        await deleteIdentifier();
-        dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
-        dispatch(setIdentifiersCache(updatedIdentifiers));
+      } else if (cloudError) {
+        updatedIdentifiers = identifierData.filter(
+          (item) => item.id !== params.id
+        );
       }
+
+      await deleteIdentifier();
+      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
+      dispatch(setIdentifiersCache(updatedIdentifiers));
       handleDone();
     } catch (e) {
       showError(
@@ -167,6 +173,14 @@ const IdentifierDetails = () => {
   };
 
   const deleteIdentifier = async () => {
+    if (params.id && cloudError) {
+      await Agent.agent.identifiers.deleteStaleLocalIdentifier(params.id);
+
+      if (isFavourite) {
+        handleSetFavourite(params.id);
+      }
+    }
+
     if (cardData) {
       // For now there is no archiving in the UI so does both.
       await Agent.agent.identifiers.archiveIdentifier(cardData.id);
