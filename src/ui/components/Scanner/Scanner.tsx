@@ -1,6 +1,6 @@
 import {
-  BarcodeScanner,
   BarcodeFormat,
+  BarcodeScanner,
   LensFacing,
 } from "@capacitor-mlkit/barcode-scanning";
 import {
@@ -15,6 +15,7 @@ import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
+import { StorageMessage } from "../../../core/storage/storage.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -38,6 +39,7 @@ import {
 import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
+import { combineClassNames } from "../../utils/style";
 import { isValidConnectionUrl, isValidHttpUrl } from "../../utils/urlChecker";
 import { CreateIdentifier } from "../CreateIdentifier";
 import { CustomInput } from "../CustomInput";
@@ -46,7 +48,6 @@ import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
 import { ErrorMessage, ScannerProps } from "./Scanner.types";
-import { StorageMessage } from "../../../core/storage/storage.types";
 
 const Scanner = forwardRef(
   (
@@ -54,6 +55,7 @@ const Scanner = forwardRef(
       routePath,
       setIsValueCaptured,
       handleReset,
+      onCheckPermissionFinish,
       cameraDirection = LensFacing.Back,
     }: ScannerProps,
     ref
@@ -70,6 +72,7 @@ const Scanner = forwardRef(
     const [groupId, setGroupId] = useState("");
     const [pastedValue, setPastedValue] = useState("");
     const [scanning, setScanning] = useState(false);
+    const [permission, setPermisson] = useState(false);
 
     const checkPermission = async () => {
       const status = await BarcodeScanner.checkPermissions();
@@ -86,8 +89,11 @@ const Scanner = forwardRef(
     };
 
     const stopScan = async () => {
+      if (permission) {
+        await BarcodeScanner.stopScan();
+      }
+
       setScanning(false);
-      await BarcodeScanner.stopScan();
       document?.querySelector("body")?.classList.remove("scanner-active");
       setGroupId("");
     };
@@ -311,10 +317,10 @@ const Scanner = forwardRef(
     const initScan = async () => {
       if (isPlatform("ios") || isPlatform("android")) {
         const allowed = await checkPermission();
+        setPermisson(allowed);
+        onCheckPermissionFinish?.(allowed);
 
         if (allowed) {
-          document?.querySelector("body")?.classList.add("scanner-active");
-
           const listener = await BarcodeScanner.addListener(
             "barcodeScanned",
             async (result) => {
@@ -323,16 +329,18 @@ const Scanner = forwardRef(
             }
           );
 
-          setScanning(true);
-          document?.querySelector("body")?.classList.add("scanner-active");
-          document
-            ?.querySelector("body.scanner-active > div:last-child")
-            ?.classList.remove("hide");
           await BarcodeScanner.startScan({
             formats: [BarcodeFormat.QrCode],
             lensFacing: cameraDirection,
           });
         }
+
+        document?.querySelector("body")?.classList.add("scanner-active");
+        setScanning(true);
+        document?.querySelector("body")?.classList.add("scanner-active");
+        document
+          ?.querySelector("body.scanner-active > div:last-child")
+          ?.classList.remove("hide");
       }
     };
 
@@ -434,10 +442,14 @@ const Scanner = forwardRef(
       }
     };
 
+    const containerClass = combineClassNames("qr-code-scanner", {
+      "no-permission": !permission,
+    });
+
     return (
       <>
         <IonGrid
-          className="qr-code-scanner"
+          className={containerClass}
           data-testid="qr-code-scanner"
         >
           {scanning ? (
@@ -449,12 +461,15 @@ const Scanner = forwardRef(
                   </span>
                 </IonCol>
               </IonRow>
-              <IonRow>
+              <IonRow className="scan-icon">
                 <IonIcon
                   icon={scanOutline}
                   color="light"
                   className="qr-code-scanner-icon"
                 />
+                <span className="qr-code-scanner-permission-text">
+                  {i18n.t("scan.tab.permissionalert")}
+                </span>
               </IonRow>
               <RenderPageFooter />
             </>

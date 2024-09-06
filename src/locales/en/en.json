@@ -1019,7 +1019,8 @@
   },
   "scan": {
     "tab": {
-      "title": "Align the QR code within the frame to scan"
+      "title": "Align the QR code within the frame to scan",
+      "permissionalert": "Enable the camera in your device settings to start scanning"
     },
     "pastemeerkatid": "Paste Meerkat ID"
   },

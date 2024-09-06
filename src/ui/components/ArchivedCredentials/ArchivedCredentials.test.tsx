@@ -181,7 +181,7 @@ describe("Archived and revoked credentials", () => {
       );
 
       await waitFor(() => {
-        expect(dispatchMock).toBeCalledTimes(2);
+        expect(dispatchMock).toBeCalledTimes(3);
       });
     });
 
