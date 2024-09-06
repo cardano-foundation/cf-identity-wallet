@@ -51,18 +51,15 @@ const RevocationPage: React.FC = () => {
   };
 
   const handleRevokeCredential = async (values: any) => {
-    try {
-      const response = await axios.post(`${config.endpoint}${config.path.revokeCredential}`, {
-        credentialId: values.selectedCredential,
-        holder: values.selectedContact
-      });
-      if (response.status === 200) {
-        setIsRevokeCredentialSuccess(true);
-      }
-      await handleGetContactCredentials(values.selectedContact);
-    } catch (error) {
-      console.error(error);
-    }  
+    setIsRevokeCredentialSuccess(false);
+    const response = await axios.post(`${config.endpoint}${config.path.revokeCredential}`, {
+      credentialId: values.selectedCredential,
+      holder: values.selectedContact
+    });
+    if (response.status === 200) {
+      setIsRevokeCredentialSuccess(true);
+    }
+    await handleGetContactCredentials(values.selectedContact);
   };
 
   return (

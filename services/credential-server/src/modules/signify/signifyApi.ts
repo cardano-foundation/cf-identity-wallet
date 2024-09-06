@@ -95,7 +95,6 @@ export class SignifyApi {
   }
 
   async getRegistry(name: string) {
-    console.log({ name })
     const registries = await this.signifyClient.registries().list(name);
     return registries[0].regk;
   }
