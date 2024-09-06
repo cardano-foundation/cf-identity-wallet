@@ -1,43 +1,57 @@
+import {
+  BarcodeFormat,
+  BarcodeScannedEvent,
+  BarcodeValueType,
+} from "@capacitor-mlkit/barcode-scanning";
 import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { TabsRoutePath } from "../../../routes/paths";
 import { store } from "../../../store";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { OperationType } from "../../globals/types";
 import { Scan } from "./Scan";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
 
-const startScan = jest.fn(
-  (args: unknown) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          hasContent: true,
-          content:
+const addListener = jest.fn(
+  (eventName: string, listenerFunc: (result: BarcodeScannedEvent) => void) => {
+    setTimeout(() => {
+      listenerFunc({
+        barcode: {
+          displayValue:
             "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-        });
-      }, 100);
-    })
+          format: BarcodeFormat.QrCode,
+          rawValue:
+            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+          valueType: BarcodeValueType.Url,
+        },
+      });
+
+      return {
+        remove: jest.fn(),
+      };
+    }, 100);
+  }
 );
 
-jest.mock("@capacitor-community/barcode-scanner", () => {
+jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
-    ...jest.requireActual("@capacitor-community/barcode-scanner"),
+    ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
     BarcodeScanner: {
-      checkPermission: () =>
+      checkPermissions: () =>
         Promise.resolve({
-          granted: true,
+          camera: "granted",
         }),
-      hideBackground: jest.fn(),
-      startScan: (args: unknown) => startScan(args),
+      addListener: (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => addListener(eventName, listenerFunc),
+      startScan: jest.fn(),
       stopScan: jest.fn(),
-      showBackground: jest.fn(),
     },
   };
 });
-
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
