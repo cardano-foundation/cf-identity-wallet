@@ -87,6 +87,8 @@ const MenuItem = ({
   );
 };
 
+const RENDER_SETTING_AS_MODAL = false;
+
 const Menu = () => {
   const pageId = "menu-tab";
   const dispatch = useAppDispatch();
@@ -245,7 +247,7 @@ const Menu = () => {
         additionalButtons: <></>,
         pageId: "menu-setting",
         nestedMenu: false,
-        renderAsModal: false,
+        renderAsModal: RENDER_SETTING_AS_MODAL,
       },
     ],
     [
@@ -256,7 +258,7 @@ const Menu = () => {
         additionalButtons: <></>,
         pageId: "manage-password",
         nestedMenu: true,
-        renderAsModal: false,
+        renderAsModal: RENDER_SETTING_AS_MODAL,
       },
     ],
     [
@@ -267,7 +269,7 @@ const Menu = () => {
         pageId: "recovery-seed-phrase",
         nestedMenu: true,
         additionalButtons: <></>,
-        renderAsModal: false,
+        renderAsModal: RENDER_SETTING_AS_MODAL,
       },
     ],
     [
@@ -278,7 +280,7 @@ const Menu = () => {
         pageId: "term-and-privacy",
         nestedMenu: true,
         additionalButtons: <></>,
-        renderAsModal: false,
+        renderAsModal: RENDER_SETTING_AS_MODAL,
       },
     ],
   ];
