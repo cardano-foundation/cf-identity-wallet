@@ -77,6 +77,12 @@ ion-content {
   }
 }
 
+ion-list {
+  &.md {
+    padding: 0;
+  }
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;

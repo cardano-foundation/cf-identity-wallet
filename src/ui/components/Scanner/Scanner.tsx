@@ -4,6 +4,7 @@ import {
   LensFacing,
 } from "@capacitor-mlkit/barcode-scanning";
 import {
+  getPlatforms,
   IonCol,
   IonGrid,
   IonIcon,
@@ -61,6 +62,7 @@ const Scanner = forwardRef(
     ref
   ) => {
     const componentId = "scanner";
+    const platforms = getPlatforms();
     const dispatch = useAppDispatch();
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
     const currentOperation = useAppSelector(getCurrentOperation);
@@ -73,6 +75,13 @@ const Scanner = forwardRef(
     const [pastedValue, setPastedValue] = useState("");
     const [scanning, setScanning] = useState(false);
     const [permission, setPermisson] = useState(false);
+    const [mobileweb, setMobileweb] = useState(false);
+
+    useEffect(() => {
+      if (platforms.includes("mobileweb")) {
+        setMobileweb(true);
+      }
+    }, [platforms]);
 
     const checkPermission = async () => {
       const status = await BarcodeScanner.checkPermissions();
@@ -442,7 +451,7 @@ const Scanner = forwardRef(
     };
 
     const containerClass = combineClassNames("qr-code-scanner", {
-      "no-permission": !permission,
+      "no-permission": !permission || mobileweb,
     });
 
     return (
@@ -451,7 +460,7 @@ const Scanner = forwardRef(
           className={containerClass}
           data-testid="qr-code-scanner"
         >
-          {scanning ? (
+          {scanning || mobileweb ? (
             <>
               <IonRow>
                 <IonCol size="12">

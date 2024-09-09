@@ -197,7 +197,13 @@ const Credentials = () => {
 
   const ArchivedCredentialsButton = () => {
     return (
-      <div className="archived-credentials-button-container">
+      <div
+        className={`archived-credentials-button-container${
+          archivedCreds.length > 0 || revokedCreds.length > 0
+            ? " visible"
+            : " hidden"
+        }`}
+      >
         <IonButton
           fill="outline"
           className="secondary-button"
@@ -268,7 +274,7 @@ const Credentials = () => {
               buttonAction={handleCreateCred}
               testId={pageId}
             >
-              {!!archivedCreds.length && <ArchivedCredentialsButton />}
+              <ArchivedCredentialsButton />
             </CardsPlaceholder>
           )
         }
@@ -320,9 +326,7 @@ const Credentials = () => {
                 />
               </div>
             )}
-            {(!!archivedCreds.length || revokedCreds.length > 0) && (
-              <ArchivedCredentialsButton />
-            )}
+            <ArchivedCredentialsButton />
           </>
         )}
       </TabLayout>
