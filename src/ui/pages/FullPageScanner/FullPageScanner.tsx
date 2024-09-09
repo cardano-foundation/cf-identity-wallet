@@ -27,7 +27,6 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
 
   const handleReset = () => {
     setShowScan(false);
-    scannerRef.current?.stopScan();
     document?.querySelector("body")?.classList.remove("full-page-scanner");
     document
       ?.querySelector("body.scanner-active > div:last-child")

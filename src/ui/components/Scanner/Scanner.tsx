@@ -364,7 +364,6 @@ const Scanner = forwardRef(
           ].includes(currentOperation) &&
             currentToastMsg !== ToastMsgType.DUPLICATE_CONNECTION)
         ) {
-          await stopScan(); // In case already running
           await initScan();
         } else {
           await stopScan();
