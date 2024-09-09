@@ -1,8 +1,8 @@
 import {
+  BarcodeFormat,
   BarcodeScanner,
-  CameraDirection,
-  SupportedFormat,
-} from "@capacitor-community/barcode-scanner";
+  LensFacing,
+} from "@capacitor-mlkit/barcode-scanning";
 import {
   IonCol,
   IonGrid,
@@ -15,6 +15,7 @@ import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
+import { StorageMessage } from "../../../core/storage/storage.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -38,6 +39,7 @@ import {
 import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
+import { combineClassNames } from "../../utils/style";
 import { isValidConnectionUrl, isValidHttpUrl } from "../../utils/urlChecker";
 import { CreateIdentifier } from "../CreateIdentifier";
 import { CustomInput } from "../CustomInput";
@@ -46,7 +48,6 @@ import { OptionModal } from "../OptionsModal";
 import { PageFooter } from "../PageFooter";
 import "./Scanner.scss";
 import { ErrorMessage, ScannerProps } from "./Scanner.types";
-import { StorageMessage } from "../../../core/storage/storage.types";
 
 const Scanner = forwardRef(
   (
@@ -54,7 +55,8 @@ const Scanner = forwardRef(
       routePath,
       setIsValueCaptured,
       handleReset,
-      cameraDirection = CameraDirection.BACK,
+      onCheckPermissionFinish,
+      cameraDirection = LensFacing.Back,
     }: ScannerProps,
     ref
   ) => {
@@ -70,39 +72,28 @@ const Scanner = forwardRef(
     const [groupId, setGroupId] = useState("");
     const [pastedValue, setPastedValue] = useState("");
     const [scanning, setScanning] = useState(false);
+    const [permission, setPermisson] = useState(false);
 
     const checkPermission = async () => {
-      const status = await BarcodeScanner.checkPermission({ force: true });
-      if (status.granted) {
+      const status = await BarcodeScanner.checkPermissions();
+      if (status.camera === "granted") {
         return true;
       }
-      if (status.neverAsked) {
-        const allow = confirm(`${i18n.t("scan.alert.title")}`);
-        if (allow) {
-          return true;
-        }
+      if (
+        status.camera === "prompt" ||
+        status.camera == "prompt-with-rationale"
+      ) {
+        return (await BarcodeScanner.requestPermissions()).camera === "granted";
       }
       return false;
     };
 
-    const startScan = async () => {
-      setScanning(true);
-      await BarcodeScanner.hideBackground();
-      document?.querySelector("body")?.classList.add("scanner-active");
-      document
-        ?.querySelector("body.scanner-active > div:last-child")
-        ?.classList.remove("hide");
-      const result = await BarcodeScanner.startScan({
-        targetedFormats: [SupportedFormat.QR_CODE],
-        cameraDirection: cameraDirection,
-      });
-      return result;
-    };
-
     const stopScan = async () => {
+      if (permission) {
+        await BarcodeScanner.stopScan();
+      }
+
       setScanning(false);
-      await BarcodeScanner.stopScan();
-      await BarcodeScanner.showBackground();
       document?.querySelector("body")?.classList.remove("scanner-active");
       setGroupId("");
     };
@@ -326,43 +317,66 @@ const Scanner = forwardRef(
     const initScan = async () => {
       if (isPlatform("ios") || isPlatform("android")) {
         const allowed = await checkPermission();
+        setPermisson(allowed);
+        onCheckPermissionFinish?.(allowed);
 
         if (allowed) {
-          document?.querySelector("body")?.classList.add("scanner-active");
-          BarcodeScanner.hideBackground();
-          const result = await startScan();
+          const listener = await BarcodeScanner.addListener(
+            "barcodeScanned",
+            async (result) => {
+              await listener.remove();
+              await processValue(result.barcode.rawValue);
+            }
+          );
 
-          if (result.hasContent) {
-            processValue(result.content);
-          }
+          await BarcodeScanner.startScan({
+            formats: [BarcodeFormat.QrCode],
+            lensFacing: cameraDirection,
+          });
         }
+
+        document?.querySelector("body")?.classList.add("scanner-active");
+        setScanning(true);
+        document?.querySelector("body")?.classList.add("scanner-active");
+        document
+          ?.querySelector("body.scanner-active > div:last-child")
+          ?.classList.remove("hide");
       }
     };
 
     useEffect(() => {
-      if (
-        ((routePath === TabsRoutePath.SCAN ||
-          [
-            OperationType.SCAN_CONNECTION,
-            OperationType.SCAN_WALLET_CONNECTION,
-            OperationType.SCAN_SSI_BOOT_URL,
-            OperationType.SCAN_SSI_CONNECT_URL,
-          ].includes(currentOperation)) &&
-          ![
-            ToastMsgType.CONNECTION_REQUEST_PENDING,
-            ToastMsgType.CREDENTIAL_REQUEST_PENDING,
-          ].includes(currentToastMsg as ToastMsgType)) ||
-        ([
-          OperationType.MULTI_SIG_INITIATOR_SCAN,
-          OperationType.MULTI_SIG_RECEIVER_SCAN,
-        ].includes(currentOperation) &&
-          currentToastMsg !== ToastMsgType.DUPLICATE_CONNECTION)
-      ) {
-        initScan();
-      } else {
-        stopScan();
-      }
+      const onLoad = async () => {
+        if (
+          ((routePath === TabsRoutePath.SCAN ||
+            [
+              OperationType.SCAN_CONNECTION,
+              OperationType.SCAN_WALLET_CONNECTION,
+              OperationType.SCAN_SSI_BOOT_URL,
+              OperationType.SCAN_SSI_CONNECT_URL,
+            ].includes(currentOperation)) &&
+            ![
+              ToastMsgType.CONNECTION_REQUEST_PENDING,
+              ToastMsgType.CREDENTIAL_REQUEST_PENDING,
+            ].includes(currentToastMsg as ToastMsgType)) ||
+          ([
+            OperationType.MULTI_SIG_INITIATOR_SCAN,
+            OperationType.MULTI_SIG_RECEIVER_SCAN,
+          ].includes(currentOperation) &&
+            currentToastMsg !== ToastMsgType.DUPLICATE_CONNECTION)
+        ) {
+          await initScan();
+        } else {
+          await stopScan();
+        }
+      };
+      onLoad();
     }, [currentOperation, currentToastMsg, routePath, cameraDirection]);
+
+    useEffect(() => {
+      return () => {
+        stopScan();
+      };
+    }, []);
 
     const handlePrimaryButtonAction = () => {
       stopScan();
@@ -427,10 +441,14 @@ const Scanner = forwardRef(
       }
     };
 
+    const containerClass = combineClassNames("qr-code-scanner", {
+      "no-permission": !permission,
+    });
+
     return (
       <>
         <IonGrid
-          className="qr-code-scanner"
+          className={containerClass}
           data-testid="qr-code-scanner"
         >
           {scanning ? (
@@ -442,12 +460,15 @@ const Scanner = forwardRef(
                   </span>
                 </IonCol>
               </IonRow>
-              <IonRow>
+              <IonRow className="scan-icon">
                 <IonIcon
                   icon={scanOutline}
                   color="light"
                   className="qr-code-scanner-icon"
                 />
+                <span className="qr-code-scanner-permission-text">
+                  {i18n.t("scan.tab.permissionalert")}
+                </span>
               </IonRow>
               <RenderPageFooter />
             </>

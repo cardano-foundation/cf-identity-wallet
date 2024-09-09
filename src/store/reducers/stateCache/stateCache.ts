@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CameraDirection } from "@capacitor-community/barcode-scanner";
+import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
 import { RootState } from "../../index";
 import {
   StateCacheProps,
@@ -137,7 +137,7 @@ const stateCacheSlice = createSlice({
     },
     setCameraDirection: (
       state,
-      action: PayloadAction<CameraDirection | undefined>
+      action: PayloadAction<LensFacing | undefined>
     ) => {
       state.cameraDirection = action.payload;
     },

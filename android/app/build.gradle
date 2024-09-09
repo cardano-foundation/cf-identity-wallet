@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     namespace "org.cardanofoundation.idw"
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "org.cardanofoundation.idw"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -51,8 +51,4 @@ try {
     }
 } catch(Exception e) {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
-}
-
-task prepareKotlinBuildScriptModel {
-
 }

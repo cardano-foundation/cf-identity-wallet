@@ -1,5 +1,5 @@
 import { arrowBackOutline, repeatOutline } from "ionicons/icons";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
@@ -16,6 +16,7 @@ import {
 const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
   const { cameraDirection, changeCameraDirection, supportMultiCamera } =
     useCameraDirection();
+  const [enableCameraDirection, setEnableCameraDirection] = useState(false);
   const pageId = "qr-code-scanner-full-page";
   const dispatch = useAppDispatch();
   const scannerRef = useRef<ScannerRefComponent>(null);
@@ -26,7 +27,6 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
 
   const handleReset = () => {
     setShowScan(false);
-    scannerRef.current?.stopScan();
     document?.querySelector("body")?.classList.remove("full-page-scanner");
     document
       ?.querySelector("body.scanner-active > div:last-child")
@@ -55,6 +55,7 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
           actionButton={supportMultiCamera}
           actionButtonIcon={repeatOutline}
           actionButtonAction={changeCameraDirection}
+          actionButtonDisabled={!enableCameraDirection}
         />
       }
     >
@@ -62,6 +63,7 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
         ref={scannerRef}
         handleReset={handleReset}
         cameraDirection={cameraDirection}
+        onCheckPermissionFinish={setEnableCameraDirection}
       />
     </ResponsivePageLayout>
   );

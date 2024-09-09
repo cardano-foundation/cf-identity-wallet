@@ -1,4 +1,9 @@
-import { CameraDirection } from "@capacitor-community/barcode-scanner";
+import {
+  BarcodeFormat,
+  BarcodeScannedEvent,
+  BarcodeValueType,
+  LensFacing,
+} from "@capacitor-mlkit/barcode-scanning";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
@@ -13,31 +18,41 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { OperationType } from "../../globals/types";
 import { FullPageScanner } from "./FullPageScanner";
 
-const startScan = jest.fn(
-  (args: any) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          hasContent: true,
-          content:
+const addListener = jest.fn(
+  (eventName: string, listenerFunc: (result: BarcodeScannedEvent) => void) => {
+    setTimeout(() => {
+      listenerFunc({
+        barcode: {
+          displayValue:
             "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-        });
-      }, 100);
-    })
+          format: BarcodeFormat.QrCode,
+          rawValue:
+            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+          valueType: BarcodeValueType.Url,
+        },
+      });
+    }, 100);
+
+    return {
+      remove: jest.fn(),
+    };
+  }
 );
 
-jest.mock("@capacitor-community/barcode-scanner", () => {
+jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
-    ...jest.requireActual("@capacitor-community/barcode-scanner"),
+    ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
     BarcodeScanner: {
-      checkPermission: () =>
+      checkPermissions: () =>
         Promise.resolve({
-          granted: true,
+          camera: "granted",
         }),
-      hideBackground: jest.fn(),
-      startScan: (args: any) => startScan(args),
+      addListener: (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => addListener(eventName, listenerFunc),
+      startScan: jest.fn(),
       stopScan: jest.fn(),
-      showBackground: jest.fn(),
     },
   };
 });
@@ -78,17 +93,29 @@ jest.mock("../../../core/agent/agent", () => ({
 describe("Full page scanner", () => {
   beforeEach(() => {
     isNativeMock.mockImplementation(() => false);
-    startScan.mockImplementation(() => {
-      return new Promise((resolve) => {
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
         setTimeout(() => {
-          resolve({
-            hasContent: true,
-            content:
-              "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+          listenerFunc({
+            barcode: {
+              displayValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              format: BarcodeFormat.QrCode,
+              rawValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              valueType: BarcodeValueType.Url,
+            },
           });
         }, 100);
-      });
-    });
+
+        return {
+          remove: jest.fn(),
+        };
+      }
+    );
   });
 
   const mockStore = configureStore();
@@ -193,17 +220,29 @@ describe("Full page scanner", () => {
       dispatch: dispatchMock,
     };
 
-    startScan.mockImplementation(() => {
-      return new Promise((resolve) => {
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
         setTimeout(() => {
-          resolve({
-            hasContent: true,
-            content:
-              "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+          listenerFunc({
+            barcode: {
+              displayValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              format: BarcodeFormat.QrCode,
+              rawValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              valueType: BarcodeValueType.Url,
+            },
           });
         }, 10000000);
-      });
-    });
+
+        return {
+          remove: jest.fn(),
+        };
+      }
+    );
 
     isNativeMock.mockImplementation(() => true);
 
@@ -224,9 +263,7 @@ describe("Full page scanner", () => {
 
     await waitFor(() => {
       expect(createOrUpdateBasicRecordMock).toBeCalled();
-      expect(dispatchMock).toBeCalledWith(
-        setCameraDirection(CameraDirection.FRONT)
-      );
+      expect(dispatchMock).toBeCalledWith(setCameraDirection(LensFacing.Front));
     });
   });
 

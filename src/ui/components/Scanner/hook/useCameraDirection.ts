@@ -1,4 +1,4 @@
-import { CameraDirection } from "@capacitor-community/barcode-scanner";
+import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
 import { Capacitor } from "@capacitor/core";
 import { useMemo } from "react";
 import { Agent } from "../../../../core/agent/agent";
@@ -18,9 +18,9 @@ const useCameraDirection = () => {
 
   const changeCameraDirection = () => {
     const newDirection =
-      !cameraDirection || cameraDirection === CameraDirection.BACK
-        ? CameraDirection.FRONT
-        : CameraDirection.BACK;
+      !cameraDirection || cameraDirection === LensFacing.Back
+        ? LensFacing.Front
+        : LensFacing.Back;
 
     dispatch(setCameraDirection(newDirection));
 

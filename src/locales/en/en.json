@@ -971,10 +971,8 @@
   },
   "scan": {
     "tab": {
-      "title": "Align the QR code within the frame to scan"
-    },
-    "alert": {
-      "title": "Would you like to grant permission for using your camera?"
+      "title": "Align the QR code within the frame to scan",
+      "permissionalert": "Enable the camera in your device settings to start scanning"
     },
     "pastemeerkatid": "Paste Meerkat ID"
   },
