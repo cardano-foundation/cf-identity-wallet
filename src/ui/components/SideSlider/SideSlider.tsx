@@ -1,5 +1,5 @@
 import { IonModal } from "@ionic/react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { combineClassNames } from "../../utils/style";
 import "./SideSlider.scss";
 import { SideSliderProps } from "./SideSlider.types";
@@ -11,14 +11,13 @@ const DELAY_TIME = 100;
 const SideSlider = ({
   isOpen,
   children,
-  onCloseAnimationEnd,
-  onOpenAnimationEnd,
   renderAsModal = false,
   zIndex = SIDE_SLIDER_Z_INDEX,
 }: SideSliderProps) => {
-  const [cssClass, setCssClass] = useState<string | undefined>(
-    "side-slider-container"
-  );
+  const baseClass = renderAsModal
+    ? "side-slider-modal"
+    : "side-slider-container";
+  const [cssClass, setCssClass] = useState<string | undefined>(baseClass);
   const [innerOpen, setInnerOpen] = useState(false);
 
   useEffect(() => {
@@ -32,7 +31,7 @@ const SideSlider = ({
 
     const timer = setTimeout(() => {
       setCssClass(() =>
-        combineClassNames("side-slider-container", {
+        combineClassNames(baseClass, {
           "slide-in-left": isOpen,
         })
       );
@@ -41,15 +40,7 @@ const SideSlider = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [isOpen]);
-
-  const registerEvent = useCallback(() => {
-    if (isOpen) {
-      onOpenAnimationEnd?.();
-    } else {
-      onCloseAnimationEnd?.();
-    }
-  }, [isOpen, onCloseAnimationEnd, onOpenAnimationEnd]);
+  }, [isOpen, baseClass]);
 
   if (renderAsModal) {
     return (
@@ -58,7 +49,6 @@ const SideSlider = ({
         data-testid="side-slider"
         className={cssClass}
         animated={false}
-        onTransitionEnd={registerEvent}
       >
         {children}
       </IonModal>
@@ -72,7 +62,6 @@ const SideSlider = ({
       }}
       data-testid="side-slider"
       className={cssClass}
-      onTransitionEnd={registerEvent}
     >
       {children}
     </div>
