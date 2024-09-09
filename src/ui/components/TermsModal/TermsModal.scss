@@ -3,6 +3,7 @@ ion-modal.terms-modal {
   flex-direction: column;
   justify-content: end;
   --height: auto;
+  white-space: pre-line;
 
   .page-header {
     ion-toolbar {

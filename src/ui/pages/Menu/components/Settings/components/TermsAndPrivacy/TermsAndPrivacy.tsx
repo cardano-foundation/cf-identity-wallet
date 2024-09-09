@@ -22,9 +22,7 @@ const TermsAndPrivacy = () => {
             data-testid="terms-modal-btn"
           >
             <IonLabel>
-              {i18n.t(
-                "settings.sections.support.terms.submenu.termandcondition"
-              )}
+              {i18n.t("settings.sections.support.terms.submenu.termsofuse")}
             </IonLabel>
             <IonIcon
               aria-hidden="true"

@@ -14,9 +14,7 @@ describe("Term and Privacy", () => {
     );
 
     expect(
-      getByText(
-        ENG_trans.settings.sections.support.terms.submenu.termandcondition
-      )
+      getByText(ENG_trans.settings.sections.support.terms.submenu.termsofuse)
     ).toBeVisible();
 
     act(() => {
@@ -36,9 +34,7 @@ describe("Term and Privacy", () => {
     );
 
     expect(
-      getByText(
-        ENG_trans.settings.sections.support.terms.submenu.termandcondition
-      )
+      getByText(ENG_trans.settings.sections.support.terms.submenu.termsofuse)
     ).toBeVisible();
 
     act(() => {
