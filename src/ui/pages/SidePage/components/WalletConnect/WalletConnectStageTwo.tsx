@@ -8,6 +8,7 @@ import { useAppSelector } from "../../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import { setCurrentOperation } from "../../../../../store/reducers/stateCache";
 import {
+  getIsConnecting,
   getWalletConnectionsCache,
   setIsConnecting,
   setWalletConnectionsCache,
@@ -33,6 +34,7 @@ const WalletConnectStageTwo = ({
   const dispatch = useDispatch();
   const identifierCache = useAppSelector(getIdentifiersCache);
   const existingConnections = useAppSelector(getWalletConnectionsCache);
+  const isConnecting = useAppSelector(getIsConnecting);
 
   const [selectedIdentifier, setSelectedIdentifier] =
     useState<IdentifierShortDetails | null>(null);
@@ -60,6 +62,8 @@ const WalletConnectStageTwo = ({
   const handleConnectWallet = async () => {
     try {
       if (selectedIdentifier && pendingDAppMeerkat) {
+        dispatch(setIsConnecting(true));
+
         await PeerConnection.peerConnection.start(selectedIdentifier.id);
         await PeerConnection.peerConnection.connectWithDApp(pendingDAppMeerkat);
         const existingConnection = existingConnections.find(
@@ -87,7 +91,6 @@ const WalletConnectStageTwo = ({
           );
         }
 
-        dispatch(setIsConnecting(true));
         dispatch(
           setCurrentOperation(OperationType.OPEN_WALLET_CONNECTION_DETAIL)
         );
@@ -100,6 +103,8 @@ const WalletConnectStageTwo = ({
         dispatch,
         ToastMsgType.UNABLE_CONNECT_WALLET
       );
+    } finally {
+      dispatch(setIsConnecting(false));
     }
   };
 
@@ -154,7 +159,7 @@ const WalletConnectStageTwo = ({
           "menu.tab.items.connectwallet.request.stagetwo.confirm"
         )}`}
         primaryButtonAction={handleConnectWallet}
-        primaryButtonDisabled={!selectedIdentifier}
+        primaryButtonDisabled={!selectedIdentifier || isConnecting}
       />
     </ResponsivePageLayout>
   );
