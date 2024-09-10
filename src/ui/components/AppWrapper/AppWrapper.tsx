@@ -1,4 +1,5 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
+import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
 import { Agent } from "../../../core/agent/agent";
 import {
   AcdcStateChangedEvent,
@@ -72,7 +73,6 @@ import { Alert } from "../Alert";
 import { CardListViewType } from "../SwitchCardView";
 import "./AppWrapper.scss";
 import { useActivityTimer } from "./hooks/useActivityTimer";
-import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
