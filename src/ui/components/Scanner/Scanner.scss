@@ -1,6 +1,6 @@
 ion-grid.qr-code-scanner {
   --scale-scan: 1;
-  height: calc(var(--scale-h) * 100);
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -47,7 +47,7 @@ ion-grid.qr-code-scanner {
       text-align: center;
       width: 100%;
       color: var(--ion-color-light);
-      padding-inline: calc(var(--scale-w) * 20);
+      padding-inline: 20vw;
     }
 
     .qr-code-scanner-icon {

@@ -5,7 +5,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: calc(var(--scale-h) * 100);
+    height: 100vh;
   }
 
   @keyframes fadein {
