@@ -39,7 +39,7 @@ const VerifyRecoverySeedPhrase = () => {
     ref.current?.clearState();
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
 
-    ionRouter.push(nextPath.pathname, "root", "replace");
+    ionRouter.push(nextPath.pathname);
   };
 
   return (
