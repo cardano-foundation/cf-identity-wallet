@@ -67,6 +67,8 @@
     }
 
     ion-list {
+      margin-bottom: 1.25rem;
+
       .condition-item {
         --min-height: 4.75rem;
         --ion-safe-area-right: 0;
@@ -98,8 +100,6 @@
           }
         }
       }
-
-      margin-bottom: 1.25rem;
     }
 
     @media screen and (min-width: 250px) and (max-width: 370px) {

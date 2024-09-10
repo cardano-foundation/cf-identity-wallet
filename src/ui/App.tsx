@@ -18,7 +18,6 @@ import {
   getIsOnline,
   getToastMsg,
 } from "../store/reducers/stateCache";
-import "./App.scss";
 import { AppOffline } from "./components/AppOffline";
 import { AppWrapper } from "./components/AppWrapper";
 import { CustomToast } from "./components/CustomToast/CustomToast";
@@ -30,6 +29,7 @@ import { LockPage } from "./pages/LockPage/LockPage";
 import { SidePage } from "./pages/SidePage";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
+import "./App.scss";
 
 setupIonicReact();
 

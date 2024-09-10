@@ -115,13 +115,12 @@
     ion-item,
     ion-item-divider {
       --inner-padding-end: 0;
+      --background: var(--ion-color-light);
+      border-bottom: 1px solid rgba(var(--ion-color-dark-grey-rgb), 0.5);
 
       &::part(native) {
         padding: 0;
       }
-
-      --background: var(--ion-color-light);
-      border-bottom: 1px solid rgba(var(--ion-color-dark-grey-rgb), 0.5);
     }
 
     ion-item-divider {
