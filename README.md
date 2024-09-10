@@ -75,20 +75,6 @@
 - [Verifiable Credential Testing Tool](https://dev.credentials-ui.cf-keripy.metadata.dev.cf-deployments.org/)
 - [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer)
 
-# Preview in your Browser
-
-**Disclaimer: This preview version is <ins>not intended</ins> to be used for any purposes other than previewing the application.**
-
-To experience the mobile application within the browser, please select one of the following links below, depending on whether you are accessing the preview version on your desktop or mobile device.
-<br>
-<div align="center"> 
-<p><u>🔗  Preview the latest version of the Identity Wallet on your browser 🔗 </u></p>
-<br>
-<p><a href="https://cf-identity-wallet.vercel.app/?browserPreview" target="_blank">* On a desktop computer</a></p>
-<br>
-<p><a href="https://cf-identity-wallet.vercel.app">* On a mobile phone</a></p>
-</div>
-
 # Architecture
 <div align="center"> 
   <p>
