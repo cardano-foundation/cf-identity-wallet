@@ -645,7 +645,7 @@ class KeriaNotificationService extends AgentService {
           try {
             await this.processOperation(pendingOperation, callback);
           } catch (error) {
-            console.log("Error when process a operation", error);
+            console.error("Error when process a operation", error);
           }
         }
       }
