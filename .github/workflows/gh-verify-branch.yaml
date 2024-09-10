@@ -1,6 +1,6 @@
-# Workflow to build and deploy site to Vercel using static files
+# Workflow to build and verify branch
 # Name of Workflow
-name: vercel-deploy-branch-deploys
+name: verify-branch
 
 # Controls when the action will run. Triggers the workflow on push
 # events but only for specified branches
@@ -62,40 +62,3 @@ jobs:
 
     - name: 🔨 Build project
       run: npm run build
-
-    - name: Configure vercel.json
-      run: |
-        cat > build/vercel.json <<EOF
-        {
-          "rewrites": [
-            {
-              "source": "/((?!^/$).*)",
-              "destination": "/index.html"
-            }
-          ]
-        }
-        EOF
-
-    # Push our generated site to Vercel
-    - name: Deploy to Vercel
-      uses: amondnet/vercel-action@v20
-      id: vercel-action
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-        #github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}  #Required
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} # Required
-        github-comment: false
-        vercel-args: ${{ steps.metadata.outputs.VERCEL_ARGS }}
-        working-directory: build
-
-    # Update GH deployment status
-    - name: Update Deployment Status
-      uses: bobheadxi/deployments@v0.6.2
-      if: always()
-      with:
-        step: finish
-        token: ${{ secrets.GITHUB_TOKEN }}
-        status: ${{ job.status }}
-        deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-        env_url: ${{ steps.vercel-action.outputs.preview-url }}

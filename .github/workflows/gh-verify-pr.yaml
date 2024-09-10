@@ -1,8 +1,8 @@
 # deploy-preview.yaml
 
-# Workflow to build and deploy site to Vercel using static files
+# Workflow to build and verify pr
 # Name of Workflow
-name: vercel-deploy-pr
+name: verify-pr
 
 # Controls when the action will run. Triggers the workflow on push
 # events but only for the develop branch
@@ -50,36 +50,3 @@ jobs:
 
     - name: 🔨 Build project
       run: npm run build
-
-    - name: Configure vercel.json
-      run: |
-        cat > build/vercel.json <<EOF
-        {
-          "rewrites": [
-            {
-              "source": "/((?!^/$).*)",
-              "destination": "/"
-            }
-          ]
-        }
-        EOF
-
-    # Push our generated Hugo site to Vercel
-    - name: Deploy to Vercel
-      uses: amondnet/vercel-action@v20
-      id: vercel-action
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-        #github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}  #Required
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} #Required
-        github-comment: false
-        #vercel-args: '--prod' #Optional
-        working-directory: build
-
-    - name: Comment PR
-      uses: thollander/actions-comment-pull-request@v1
-      if: ${{ github.event_name == 'pull_request' }}
-      with:
-        message: 'Vercel PR (merge commit) deploy URL: ${{ steps.vercel-action.outputs.preview-url }}'
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

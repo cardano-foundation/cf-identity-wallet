@@ -65,7 +65,7 @@
           .card-footer-column-label,
           .card-footer-column-value {
             text-align: left;
-            width: calc(var(--scale-w) * 40);
+            width: 40vw;
           }
         }
 
@@ -73,7 +73,7 @@
           .card-footer-column-label,
           .card-footer-column-value {
             text-align: right;
-            width: calc(var(--scale-w) * 30);
+            width: 30vw;
           }
         }
 

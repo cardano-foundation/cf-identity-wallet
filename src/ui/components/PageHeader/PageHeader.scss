@@ -36,11 +36,11 @@
     }
 
     ion-buttons ion-button {
+      color: var(--ion-color-secondary);
+
       &.md {
         --ripple-color: transparent;
       }
-
-      color: var(--ion-color-secondary);
 
       &.button-has-icon-only {
         width: 2.81rem;
