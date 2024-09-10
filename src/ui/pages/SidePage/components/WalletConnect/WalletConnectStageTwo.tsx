@@ -36,6 +36,7 @@ const WalletConnectStageTwo = ({
 
   const [selectedIdentifier, setSelectedIdentifier] =
     useState<IdentifierShortDetails | null>(null);
+  const [startingMeerkat, setStartingMeerkat] = useState<boolean>(false);
 
   const displayIdentifiers = identifierCache
     .filter((item) => !item.multisigManageAid && !item.groupMetadata)
@@ -59,7 +60,8 @@ const WalletConnectStageTwo = ({
 
   const handleConnectWallet = async () => {
     try {
-      if (selectedIdentifier && pendingDAppMeerkat) {
+      if (selectedIdentifier && pendingDAppMeerkat && !startingMeerkat) {
+        setStartingMeerkat(true);
         await PeerConnection.peerConnection.start(selectedIdentifier.id);
         await PeerConnection.peerConnection.connectWithDApp(pendingDAppMeerkat);
         const existingConnection = existingConnections.find(
@@ -100,6 +102,8 @@ const WalletConnectStageTwo = ({
         dispatch,
         ToastMsgType.UNABLE_CONNECT_WALLET
       );
+    } finally {
+      setStartingMeerkat(false);
     }
   };
 
@@ -154,7 +158,7 @@ const WalletConnectStageTwo = ({
           "menu.tab.items.connectwallet.request.stagetwo.confirm"
         )}`}
         primaryButtonAction={handleConnectWallet}
-        primaryButtonDisabled={!selectedIdentifier}
+        primaryButtonDisabled={!selectedIdentifier || startingMeerkat}
       />
     </ResponsivePageLayout>
   );
