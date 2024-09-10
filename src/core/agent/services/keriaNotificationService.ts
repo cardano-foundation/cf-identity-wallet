@@ -633,7 +633,7 @@ class KeriaNotificationService extends AgentService {
     this.pendingOperations = await this.operationPendingStorage.getAll();
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      if (this.loggedIn || !this.getKeriaOnlineStatus()) {
+      if (!this.loggedIn || !this.getKeriaOnlineStatus()) {
         await new Promise((rs) =>
           setTimeout(rs, KeriaNotificationService.CHECK_READINESS_INTERNAL)
         );
