@@ -1504,8 +1504,12 @@ describe("Long running operation tracker", () => {
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
-    expect(setTimeout).toBeCalledTimes(1);
     expect(operationsGetMock).not.toBeCalled();
+    expect(setTimeout).toHaveBeenCalledWith(
+      keriaNotificationService.pollLongOperationsWithCb,
+      KeriaNotificationService.POLL_KERIA_INTERVAL,
+      callback
+    );
   });
 
   test("Should update notification marker after the notification is processed", async () => {
