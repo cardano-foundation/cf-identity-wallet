@@ -12,7 +12,6 @@ import { walletConnectionsFix } from "../../../../__fixtures__/walletConnections
 import { WalletConnect } from "./WalletConnect";
 import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
-import { setIsConnecting } from "../../../../../store/reducers/walletConnectionsCache";
 setupIonicReact();
 mockIonicReact();
 
@@ -197,7 +196,6 @@ describe("Wallet Connect Stage Two", () => {
     },
     walletConnectionsCache: {
       walletConnections: [],
-      isConnecting: false,
     },
     identifiersCache: {
       identifiers: identifierCache,
@@ -277,7 +275,6 @@ describe("Wallet Connect Stage Two", () => {
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(setIsConnecting(true));
       expect(dispatchMock).toBeCalled();
     });
   });
@@ -298,7 +295,6 @@ describe("Wallet Connect Request", () => {
     },
     walletConnectionsCache: {
       walletConnections: [],
-      isConnecting: false,
       pendingConnection: walletConnectionsFix[0],
     },
     identifiersCache: {
@@ -359,7 +355,6 @@ describe("Wallet Connect Request", () => {
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(setIsConnecting(true));
       expect(dispatchMock).toBeCalled();
     });
   });
