@@ -21,7 +21,6 @@ import {
   NotificationStorage,
   OperationPendingStorage,
 } from "../records";
-import { Agent } from "../agent";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { IonicStorage } from "../../storage/ionicStorage";
@@ -610,19 +609,44 @@ class KeriaNotificationService extends AgentService {
   }
 
   async pollLongOperationsWithCb(callback: OperationCallback) {
+    try {
+      await this.pollLongOperations(callback);
+    } catch (error) {
+      console.error("Error at pollLongOperationsWithCb", error);
+      setTimeout(
+        this.pollLongOperationsWithCb,
+        KeriaNotificationService.POLL_KERIA_INTERVAL,
+        callback
+      );
+    }
+  }
+
+  async pollLongOperations(
+    callback: ({
+      oid,
+      opType,
+    }: {
+      oid: string;
+      opType: OperationPendingRecordType;
+    }) => void
+  ) {
     this.pendingOperations = await this.operationPendingStorage.getAll();
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      if (!this.getKeriaOnlineStatus()) {
+      if (this.loggedIn || !this.getKeriaOnlineStatus()) {
         await new Promise((rs) =>
-          setTimeout(rs, KeriaNotificationService.POLL_KERIA_INTERVAL)
+          setTimeout(rs, KeriaNotificationService.CHECK_READINESS_INTERNAL)
         );
         continue;
       }
 
       if (this.pendingOperations.length > 0) {
         for (const pendingOperation of this.pendingOperations) {
-          await this.processOperation(pendingOperation, callback);
+          try {
+            await this.processOperation(pendingOperation, callback);
+          } catch (error) {
+            console.log("Error when process a operation", error);
+          }
         }
       }
       await new Promise((rs) => {
@@ -643,12 +667,19 @@ class KeriaNotificationService extends AgentService {
         .operations()
         .get(operationRecord.id);
     } catch (error) {
-      // Possible that bootAndConnect is called from @OnlineOnly in between loops,
-      // so check if its gone down to avoid having 2 bootAndConnect loops
-      if (this.getKeriaOnlineStatus()) {
+      const errorMessage = (error as Error).message;
+      /** If the error is failed to fetch with signify,
+       * we retry until the connection is secured*/
+      if (
+        (/Failed to fetch/gi.test(errorMessage) ||
+          /Load failed/gi.test(errorMessage)) &&
+        this.getKeriaOnlineStatus()
+      ) {
         this.markAgentStatus(false);
         // This will hang the loop until the connection is secured again
         await this.connect();
+      } else {
+        throw error;
       }
     }
 
