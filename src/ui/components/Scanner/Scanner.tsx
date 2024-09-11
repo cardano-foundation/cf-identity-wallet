@@ -459,6 +459,7 @@ const Scanner = forwardRef(
 
     const containerClass = combineClassNames("qr-code-scanner", {
       "no-permission": !permission || mobileweb,
+      "scan-unavaible": scanUnavailable,
     });
 
     return (

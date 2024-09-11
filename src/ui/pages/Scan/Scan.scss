@@ -15,8 +15,17 @@
       margin: 0;
     }
 
+    &.ios {
+      background: #000;
+      height: calc(100vh - 5.3rem);
+    }
+
     @media screen and (min-width: 250px) and (max-width: 370px) {
       height: calc(100vh - (3.5rem + var(--ion-safe-area-top)));
+
+      &.ios {
+        height: calc(100vh - 4.3rem);
+      }
     }
   }
 }

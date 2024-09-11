@@ -9,6 +9,10 @@ ion-grid.qr-code-scanner {
     display: none;
   }
 
+  &.scan-unavaible {
+    background: var(--ion-color-secondary);
+  }
+
   &.no-permission {
     background: var(--ion-color-secondary);
 
