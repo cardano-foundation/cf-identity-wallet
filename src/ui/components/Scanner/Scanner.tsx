@@ -76,6 +76,7 @@ const Scanner = forwardRef(
     const [scanning, setScanning] = useState(false);
     const [permission, setPermisson] = useState(false);
     const [mobileweb, setMobileweb] = useState(false);
+    const [scanUnavailable, setScanUnavailable] = useState(false);
 
     useEffect(() => {
       if (platforms.includes("mobileweb")) {
@@ -344,7 +345,8 @@ const Scanner = forwardRef(
               lensFacing: cameraDirection,
             });
           } catch (error) {
-            console.error("Error starting barcode scan:", error);
+            showError("Error starting barcode scan:", error);
+            setScanUnavailable(true);
             stopScan();
           }
         }
@@ -408,50 +410,50 @@ const Scanner = forwardRef(
 
     const RenderPageFooter = () => {
       switch (currentOperation) {
-        case OperationType.SCAN_WALLET_CONNECTION:
-          return (
-            <PageFooter
-              customClass="actions-button"
-              secondaryButtonAction={openPasteModal}
-              secondaryButtonText={`${i18n.t("scan.pastemeerkatid")}`}
-            />
-          );
-        case OperationType.MULTI_SIG_INITIATOR_SCAN:
-          return (
-            <PageFooter
-              pageId={componentId}
-              primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
-              primaryButtonAction={handlePrimaryButtonAction}
-              primaryButtonDisabled={!multiSigGroupCache?.connections.length}
-              secondaryButtonText={`${i18n.t(
-                "createidentifier.scan.pasteoobi"
-              )}`}
-              secondaryButtonAction={openPasteModal}
-            />
-          );
-        case OperationType.MULTI_SIG_RECEIVER_SCAN:
-          return (
-            <PageFooter
-              pageId={componentId}
-              secondaryButtonText={`${i18n.t(
-                "createidentifier.scan.pasteoobi"
-              )}`}
-              secondaryButtonAction={openPasteModal}
-            />
-          );
-        case OperationType.SCAN_SSI_BOOT_URL:
-        case OperationType.SCAN_SSI_CONNECT_URL:
-          return <div></div>;
-        default:
-          return (
-            <PageFooter
-              pageId={componentId}
-              secondaryButtonText={`${i18n.t(
-                "createidentifier.scan.pastecontents"
-              )}`}
-              secondaryButtonAction={openPasteModal}
-            />
-          );
+      case OperationType.SCAN_WALLET_CONNECTION:
+        return (
+          <PageFooter
+            customClass="actions-button"
+            secondaryButtonAction={openPasteModal}
+            secondaryButtonText={`${i18n.t("scan.pastemeerkatid")}`}
+          />
+        );
+      case OperationType.MULTI_SIG_INITIATOR_SCAN:
+        return (
+          <PageFooter
+            pageId={componentId}
+            primaryButtonText={`${i18n.t("createidentifier.scan.initiate")}`}
+            primaryButtonAction={handlePrimaryButtonAction}
+            primaryButtonDisabled={!multiSigGroupCache?.connections.length}
+            secondaryButtonText={`${i18n.t(
+              "createidentifier.scan.pasteoobi"
+            )}`}
+            secondaryButtonAction={openPasteModal}
+          />
+        );
+      case OperationType.MULTI_SIG_RECEIVER_SCAN:
+        return (
+          <PageFooter
+            pageId={componentId}
+            secondaryButtonText={`${i18n.t(
+              "createidentifier.scan.pasteoobi"
+            )}`}
+            secondaryButtonAction={openPasteModal}
+          />
+        );
+      case OperationType.SCAN_SSI_BOOT_URL:
+      case OperationType.SCAN_SSI_CONNECT_URL:
+        return <div></div>;
+      default:
+        return (
+          <PageFooter
+            pageId={componentId}
+            secondaryButtonText={`${i18n.t(
+              "createidentifier.scan.pastecontents"
+            )}`}
+            secondaryButtonAction={openPasteModal}
+          />
+        );
       }
     };
 
@@ -514,8 +516,8 @@ const Scanner = forwardRef(
               currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
                 ? `${i18n.t("createidentifier.scan.pasteoobi")}`
                 : currentOperation === OperationType.SCAN_WALLET_CONNECTION
-                ? i18n.t("menu.tab.items.connectwallet.inputpidmodal.header")
-                : `${i18n.t("createidentifier.scan.pastecontents")}`
+                  ? i18n.t("menu.tab.items.connectwallet.inputpidmodal.header")
+                  : `${i18n.t("createidentifier.scan.pastecontents")}`
             }`,
             actionButton: true,
             actionButtonDisabled: !pastedValue,
