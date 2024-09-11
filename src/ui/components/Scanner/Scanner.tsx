@@ -76,6 +76,7 @@ const Scanner = forwardRef(
     const [scanning, setScanning] = useState(false);
     const [permission, setPermisson] = useState(false);
     const [mobileweb, setMobileweb] = useState(false);
+    const [scanUnavailable, setScanUnavailable] = useState(false);
 
     useEffect(() => {
       if (platforms.includes("mobileweb")) {
@@ -338,10 +339,16 @@ const Scanner = forwardRef(
             }
           );
 
-          await BarcodeScanner.startScan({
-            formats: [BarcodeFormat.QrCode],
-            lensFacing: cameraDirection,
-          });
+          try {
+            await BarcodeScanner.startScan({
+              formats: [BarcodeFormat.QrCode],
+              lensFacing: cameraDirection,
+            });
+          } catch (error) {
+            showError("Error starting barcode scan:", error);
+            setScanUnavailable(true);
+            stopScan();
+          }
         }
 
         document?.querySelector("body")?.classList.add("scanner-active");
