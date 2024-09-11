@@ -298,6 +298,12 @@ const Scanner = forwardRef(
           return;
         }
 
+        if (OperationType.SCAN_WALLET_CONNECTION === currentOperation) {
+          dispatch(setToastMsg(ToastMsgType.PEER_ID_ERROR));
+          handleReset?.();
+          return;
+        }
+
         showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
         await new Promise((resolve) => setTimeout(resolve, 500));
         await initScan();
