@@ -14,6 +14,7 @@ import {
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { StorageMessage } from "../../../core/storage/storage.types";
@@ -62,6 +63,7 @@ const Scanner = forwardRef(
     ref
   ) => {
     const componentId = "scanner";
+    const history = useHistory();
     const platforms = getPlatforms();
     const dispatch = useAppDispatch();
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
@@ -120,12 +122,11 @@ const Scanner = forwardRef(
             id,
           })
         );
-        handleReset && handleReset();
       } else {
         dispatch(setToastMsg(ToastMsgType.PEER_ID_ERROR));
-        handleReset && handleReset();
       }
-      dispatch(setCurrentOperation(OperationType.IDLE));
+      dispatch(setCurrentOperation(OperationType.BACK_TO_CONNECT_WALLET));
+      handleReset?.();
     };
 
     const updateConnections = async (groupId: string) => {
@@ -306,7 +307,7 @@ const Scanner = forwardRef(
     const processValue = async (content: string) => {
       await stopScan();
 
-      if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
+      if (/^b[1-9A-HJ-NP-Za-km-z]{33}/.test(content)) {
         handleConnectWallet(content);
         return;
       }
