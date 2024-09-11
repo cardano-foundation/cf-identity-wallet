@@ -1,6 +1,6 @@
 ion-grid.qr-code-scanner {
   --scale-scan: 1;
-  height: calc(100vh - (5.3rem + var(--ion-safe-area-top)));
+  height: calc(100vh - (4.5rem + var(--ion-safe-area-top)));
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -83,6 +83,7 @@ ion-grid.qr-code-scanner {
   @media screen and (min-width: 250px) and (max-width: 370px) {
     --scale-scan: 0.7;
     padding-inline: 0.9rem;
+    height: calc(100vh - (3.5rem + var(--ion-safe-area-top)));
 
     ion-row.no-footer {
       margin-bottom: calc(var(--scale-scan) * 5rem);
