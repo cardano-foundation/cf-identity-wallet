@@ -1,6 +1,6 @@
 .lock-page {
   display: flex !important;
-  z-index: 2147483647; // max value
+  z-index: 2147483647 !important; // max value
 
   &.hide {
     .responsive-page-content,

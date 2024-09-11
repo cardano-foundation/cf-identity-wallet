@@ -459,6 +459,7 @@ const Scanner = forwardRef(
 
     const containerClass = combineClassNames("qr-code-scanner", {
       "no-permission": !permission || mobileweb,
+      "scan-unavaible": scanUnavailable,
     });
 
     return (
@@ -467,7 +468,7 @@ const Scanner = forwardRef(
           className={containerClass}
           data-testid="qr-code-scanner"
         >
-          {scanning || mobileweb ? (
+          {scanning || mobileweb || scanUnavailable ? (
             <>
               <IonRow>
                 <IonCol size="12">
