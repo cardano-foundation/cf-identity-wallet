@@ -428,64 +428,141 @@ class KeriaNotificationService extends AgentService {
   ): Promise<boolean> {
     const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
 
-    if (exchange?.exn?.e?.exn?.r !== ExchangeRoute.IpexAdmit) {
-      await this.markNotification(notif.i);
-      return false;
-    }
+    switch (exchange?.exn?.e?.exn?.r) {
+    case ExchangeRoute.IpexAdmit: {
+      const previousExnMsg = await this.props.signifyClient
+        .exchanges()
+        .get(exchange?.exn.e.exn.p);
 
-    const existMultisig = await this.identifiers
-      .getIdentifier(exchange?.exn?.e?.exn?.i)
-      .catch((error) => {
-        if (
-          error.message === IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
-        ) {
-          return undefined;
-        } else {
-          throw error;
-        }
-      });
+      const notificationsGrant =
+          await this.notificationStorage.findAllByQuery({
+            exnSaid: previousExnMsg.exn.d,
+          });
 
-    if (!existMultisig) {
-      await this.markNotification(notif.i);
-      return false;
-    }
-    const previousExnGrantMsg = await this.props.signifyClient
-      .exchanges()
-      .get(exchange?.exn.e.exn.p);
+      const existMultisig = await this.identifiers
+        .getIdentifier(exchange?.exn?.e?.exn?.i)
+        .catch((error) => {
+          if (
+            error.message ===
+              IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
 
-    const existingCredential = await this.props.signifyClient
-      .credentials()
-      .get(previousExnGrantMsg.exn.e.acdc.d)
-      .catch(() => undefined);
-
-    if (existingCredential) {
-      await this.markNotification(notif.i);
-      return false;
-    }
-    const notifications = await this.notificationStorage.findAllByQuery({
-      exnSaid: previousExnGrantMsg.exn.d,
-    });
-
-    if (notifications.length) {
-      const notificationRecord = notifications[0];
-      if (
-        !Object.values(notificationRecord.linkedGroupRequests).includes(true)
-      ) {
-        notificationRecord.linkedGroupRequests = {
-          ...notificationRecord.linkedGroupRequests,
-          [exchange.exn.d]: false,
-        };
-      } else {
-        await this.ipexCommunications.acceptAcdcFromMultisigExn(exchange.exn.d);
-        notificationRecord.linkedGroupRequests = {
-          ...notificationRecord.linkedGroupRequests,
-          [exchange.exn.d]: true,
-        };
+      if (!existMultisig) {
+        await this.markNotification(notif.i);
+        return false;
       }
-      await this.notificationStorage.update(notificationRecord);
+
+      const existingCredential = await this.props.signifyClient
+        .credentials()
+        .get(previousExnMsg.exn.e.acdc.d)
+        .catch(() => undefined);
+
+      if (existingCredential) {
+        await this.markNotification(notif.i);
+        return false;
+      }
+
+      if (notificationsGrant.length) {
+        const notificationRecord = notificationsGrant[0];
+        if (
+          !Object.values(notificationRecord.linkedGroupRequests).includes(
+            true
+          )
+        ) {
+          notificationRecord.linkedGroupRequests = {
+            ...notificationRecord.linkedGroupRequests,
+            [exchange.exn.d]: false,
+          };
+        } else {
+          await this.ipexCommunications.acceptAcdcFromMultisigExn(
+            exchange.exn.d
+          );
+          notificationRecord.linkedGroupRequests = {
+            ...notificationRecord.linkedGroupRequests,
+            [exchange.exn.d]: true,
+          };
+        }
+        await this.notificationStorage.update(notificationRecord);
+      }
+      await this.markNotification(notif.i);
+      return false;
     }
-    await this.markNotification(notif.i);
-    return false;
+    case ExchangeRoute.IpexOffer: {
+      const previousExnMsgApply = await this.props.signifyClient
+        .exchanges()
+        .get(exchange?.exn.e.exn.p);
+
+      const notificationsApply =
+          await this.notificationStorage.findAllByQuery({
+            exnSaid: previousExnMsgApply.exn.d,
+          });
+      if (notificationsApply.length) {
+        const notificationRecord = notificationsApply[0];
+
+        if (
+          !Object.values(notificationRecord.linkedGroupRequests).includes(
+            true
+          )
+        ) {
+          notificationRecord.linkedGroupRequests = {
+            ...notificationRecord.linkedGroupRequests,
+            [exchange.exn.d]: false,
+          };
+        } else {
+          await this.ipexCommunications.offerAcdcFromApply(exchange.exn.d);
+          notificationRecord.linkedGroupRequests = {
+            ...notificationRecord.linkedGroupRequests,
+            [exchange.exn.d]: true,
+          };
+        }
+        await this.notificationStorage.update(notificationRecord);
+      }
+      await this.markNotification(notif.i);
+      return false;
+    }
+    // TODO: Update after handle ipex/agree
+    case ExchangeRoute.IpexAgree: {
+      const previousExnMsgAgree = await this.props.signifyClient
+        .exchanges()
+        .get(exchange?.exn.e.exn.p);
+
+      const notificationsAgree =
+          await this.notificationStorage.findAllByQuery({
+            exnSaid: previousExnMsgAgree.exn.d,
+          });
+      if (notificationsAgree.length) {
+        const notificationRecord = notificationsAgree[0];
+
+        if (
+          !Object.values(notificationRecord.linkedGroupRequests).includes(
+            true
+          )
+        ) {
+          notificationRecord.linkedGroupRequests = {
+            ...notificationRecord.linkedGroupRequests,
+            [exchange.exn.d]: false,
+          };
+        } else {
+          await this.ipexCommunications.grantAcdcFromAgree(exchange.exn.d);
+          notificationRecord.linkedGroupRequests = {
+            ...notificationRecord.linkedGroupRequests,
+            [exchange.exn.d]: true,
+          };
+        }
+        await this.notificationStorage.update(notificationRecord);
+      }
+      await this.markNotification(notif.i);
+      return false;
+    }
+    default:
+      await this.markNotification(notif.i);
+      return false;
+    }
   }
 
   private async processExnIpexAgreeNotification(
@@ -512,8 +589,6 @@ class KeriaNotificationService extends AgentService {
         ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
       );
     }
-    await this.ipexCommunications.grantAcdcFromAgree(notif.a.d);
-    await this.markNotification(notif.i);
     return false;
   }
 
@@ -806,6 +881,65 @@ class KeriaNotificationService extends AgentService {
               opType: operationRecord.recordType,
               oid: recordId,
             });
+          }
+        }
+        break;
+      }
+      case OperationPendingRecordType.ExchangeOfferPresentCredential: {
+        const offerExchange = await this.props.signifyClient
+          .exchanges()
+          .get(operation.metadata?.said);
+
+        if (offerExchange.exn.r === ExchangeRoute.IpexOffer) {
+          const applyExchange = await this.props.signifyClient
+            .exchanges()
+            .get(offerExchange.exn.p);
+
+          const holder = await this.identifierStorage.getIdentifierMetadata(
+            offerExchange.exn.i
+          );
+          if (holder.multisigManageAid) {
+            const notifications =
+                await this.notificationStorage.findAllByQuery({
+                  exnSaid: applyExchange.exn.d,
+                });
+            for (const notification of notifications) {
+              // @TODO: Delete other long running operations in linkedGroupRequests
+              await this.deleteNotificationRecordById(
+                notification.id,
+                  notification.a.r as NotificationRoute
+              );
+            }
+          }
+        }
+        break;
+      }
+      case OperationPendingRecordType.ExchangePresentCredential: {
+        const grantExchange = await this.props.signifyClient
+          .exchanges()
+          .get(operation.metadata?.said);
+        if (grantExchange.exn.r === ExchangeRoute.IpexAgree) {
+          const agreeExchange = await this.props.signifyClient
+            .exchanges()
+            .get(grantExchange.exn.p);
+          const credentialId = agreeExchange.exn.e.acdc.d;
+          if (credentialId) {
+            const holder = await this.identifierStorage.getIdentifierMetadata(
+              grantExchange.exn.i
+            );
+            if (holder.multisigManageAid) {
+              const notifications =
+                  await this.notificationStorage.findAllByQuery({
+                    exnSaid: agreeExchange.exn.d,
+                  });
+              for (const notification of notifications) {
+                // @TODO: Delete other long running operations in linkedGroupRequests
+                await this.deleteNotificationRecordById(
+                  notification.id,
+                    notification.a.r as NotificationRoute
+                );
+              }
+            }
           }
         }
         break;

@@ -136,7 +136,7 @@ const ChooseCredential = ({
 
       setLoading(true);
       await Agent.agent.ipexCommunications.offerAcdcFromApply(
-        notificationDetails,
+        notificationDetails.id,
         selectedCred.acdc
       );
       handleNotificationUpdate();

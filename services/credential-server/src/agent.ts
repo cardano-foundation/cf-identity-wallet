@@ -111,6 +111,14 @@ class Agent {
     );
   }
 
+  async agreeOffer(offerSaid, aid) {
+    return this.signifyApi.agreeToAcdcFromOffer(
+      Agent.HOLDER_AID_NAME,
+      offerSaid,
+      aid,
+    );
+  }
+
   async contacts() {
     return this.signifyApi.contacts();
   }

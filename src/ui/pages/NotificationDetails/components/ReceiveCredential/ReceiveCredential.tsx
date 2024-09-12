@@ -30,7 +30,6 @@ const ReceiveCredential = ({
   activeStatus,
   notificationDetails,
   handleBack,
-  multisigExn,
 }: NotificationDetailsProps) => {
   const dispatch = useAppDispatch();
   const notificationsCache = useAppSelector(getNotificationsCache);

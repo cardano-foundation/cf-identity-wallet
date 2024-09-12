@@ -437,7 +437,7 @@ describe("Credential request - choose request", () => {
     });
 
     expect(offerAcdcFromApplyMock).toBeCalledWith(
-      notificationsFix[4],
+      notificationsFix[4].id,
       credRequestFix.credentials[0].acdc
     );
   });

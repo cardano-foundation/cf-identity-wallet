@@ -25,7 +25,6 @@ import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
-import { KeriaNotificationService } from "./keriaNotificationService";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -171,35 +170,97 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async offerAcdcFromApply(notification: KeriaNotification, acdc: any) {
-    const msgSaid = notification.a.d as string;
-    const msg = await this.props.signifyClient.exchanges().get(msgSaid);
+  async offerAcdcFromApply(id: string, acdc?: any) {
+    const applyNoteRecord = await this.notificationStorage.findById(id);
 
+    if (!applyNoteRecord) {
+      throw new Error(
+        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+      );
+    }
+
+    if (Object.keys(applyNoteRecord.linkedGroupRequests).length) {
+      for (const said of Object.keys(applyNoteRecord.linkedGroupRequests)) {
+        if (!applyNoteRecord.linkedGroupRequests[said]) {
+          await this.offerAcdcFromMultisigExn(said as string);
+        }
+      }
+      return;
+    }
+
+    const msgSaid = applyNoteRecord.a.d as string;
+    const applyExn = await this.props.signifyClient.exchanges().get(msgSaid);
+    const holder = await this.identifierStorage.getIdentifierMetadata(
+      applyExn.exn.a.i
+    );
     const holderSignifyName = (
-      await this.identifierStorage.getIdentifierMetadata(msg.exn.a.i)
+      await this.identifierStorage.getIdentifierMetadata(applyExn.exn.a.i)
     ).signifyName;
 
-    const [offer, sigs, end] = await this.props.signifyClient.ipex().offer({
-      senderName: holderSignifyName,
-      recipient: msg.exn.i,
-      acdc: new Serder(acdc),
-      applySaid: msg.exn.d,
+    let op: Operation;
+    if (holder.multisigManageAid) {
+      const { op: opMultisigOffer, exnSaid } =
+        await this.multisigService.offerPresentMultisigACDC(
+          holderSignifyName,
+          msgSaid,
+          acdc,
+          applyExn.exn.i
+        );
+      op = opMultisigOffer;
+      applyNoteRecord.linkedGroupRequests = {
+        [exnSaid]: true,
+      };
+      await this.notificationStorage.update(applyNoteRecord);
+    } else {
+      const [offer, sigs, end] = await this.props.signifyClient.ipex().offer({
+        senderName: holderSignifyName,
+        recipient: applyExn.exn.i,
+        acdc: new Serder(acdc),
+        applySaid: applyExn.exn.d,
+      });
+      op = await this.props.signifyClient
+        .ipex()
+        .submitOffer(holderSignifyName, offer, sigs, end, [applyExn.exn.i]);
+    }
+
+    const pendingOperation = await this.operationPendingStorage.save({
+      id: op.name,
+      recordType: OperationPendingRecordType.ExchangeOfferPresentCredential,
     });
-    await this.props.signifyClient
-      .ipex()
-      .submitOffer(holderSignifyName, offer, sigs, end, [msg.exn.i]);
-    await Agent.agent.keriaNotifications.deleteNotificationRecordById(
-      notification.id,
-      notification.a.r as NotificationRoute
-    );
+
+    Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
+    if (!holder.multisigManageAid) {
+      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+        id,
+        applyNoteRecord.a.r as NotificationRoute
+      );
+    }
   }
 
   @OnlineOnly
-  async grantAcdcFromAgree(msgSaid: string) {
-    const msgAgree = await this.props.signifyClient.exchanges().get(msgSaid);
+  async grantAcdcFromAgree(id: string) {
+    const agreeNoteRecord = await this.notificationStorage.findById(id);
+    if (!agreeNoteRecord) {
+      throw new Error(
+        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+      );
+    }
+
+    if (Object.keys(agreeNoteRecord.linkedGroupRequests).length) {
+      for (const said of Object.keys(agreeNoteRecord.linkedGroupRequests)) {
+        if (!agreeNoteRecord.linkedGroupRequests[said]) {
+          await this.grantAcdcFromMultisigExn(said as string);
+        }
+      }
+      return;
+    }
+
+    const msgSaid = agreeNoteRecord.a.d as string;
+    const agreeExn = await this.props.signifyClient.exchanges().get(msgSaid);
     const msgOffer = await this.props.signifyClient
       .exchanges()
-      .get(msgAgree.exn.p);
+      .get(agreeExn.exn.p);
+
     //TODO: this might throw 500 internal server error, might not run to the next line at the moment
     const pickedCred = await this.props.signifyClient
       .credentials()
@@ -207,23 +268,55 @@ class IpexCommunicationService extends AgentService {
     if (!pickedCred) {
       throw new Error(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
     }
+
+    const holder = await this.identifierStorage.getIdentifierMetadata(
+      agreeExn.exn.a.i
+    );
     const holderSignifyName = (
       await this.identifierStorage.getIdentifierMetadata(msgOffer.exn.i)
     ).signifyName;
 
-    const [grant, sigs, end] = await this.props.signifyClient.ipex().grant({
-      senderName: holderSignifyName,
-      recipient: msgAgree.exn.i,
-      acdc: new Serder(pickedCred.sad),
-      anc: new Serder(pickedCred.anc),
-      iss: new Serder(pickedCred.iss),
-      acdcAttachment: pickedCred.atc,
-      ancAttachment: pickedCred.ancatc,
-      issAttachment: pickedCred.issAtc,
+    let op: Operation;
+    if (holder.multisigManageAid) {
+      const { op: opMultisigGrant, exnSaid } =
+        await this.multisigService.grantPresentMultisigAcdc(
+          holderSignifyName,
+          agreeExn.exn.i,
+          pickedCred
+        );
+      op = opMultisigGrant;
+      agreeNoteRecord.linkedGroupRequests = {
+        [exnSaid]: true,
+      };
+      await this.notificationStorage.update(agreeNoteRecord);
+    } else {
+      const [grant, sigs, end] = await this.props.signifyClient.ipex().grant({
+        senderName: holderSignifyName,
+        recipient: agreeExn.exn.i,
+        acdc: new Serder(pickedCred.sad),
+        anc: new Serder(pickedCred.anc),
+        iss: new Serder(pickedCred.iss),
+        acdcAttachment: pickedCred.atc,
+        ancAttachment: pickedCred.ancatc,
+        issAttachment: pickedCred.issAtc,
+      });
+      op = await this.props.signifyClient
+        .ipex()
+        .submitGrant(holderSignifyName, grant, sigs, end, [agreeExn.exn.i]);
+    }
+
+    const pendingOperation = await this.operationPendingStorage.save({
+      id: op.name,
+      recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
-    await this.props.signifyClient
-      .ipex()
-      .submitGrant(holderSignifyName, grant, sigs, end, [msgAgree.exn.i]);
+
+    Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
+    if (!holder.multisigManageAid) {
+      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+        id,
+        agreeNoteRecord.a.r as NotificationRoute
+      );
+    }
   }
 
   @OnlineOnly
@@ -458,6 +551,96 @@ class IpexCommunicationService extends AgentService {
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+    Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
+
+    const notifications = await this.notificationStorage.findAllByQuery({
+      exnSaid: exn?.exn.e.exn.p,
+    });
+
+    if (notifications.length) {
+      const notificationRecord = notifications[0];
+      notificationRecord.linkedGroupRequests = {
+        ...notificationRecord.linkedGroupRequests,
+        [said]: true,
+      };
+
+      await this.notificationStorage.update(notificationRecord);
+    }
+  }
+
+  @OnlineOnly
+  async offerAcdcFromMultisigExn(said: string): Promise<void> {
+    const exn = await this.props.signifyClient.exchanges().get(said);
+    const multisigExn = exn?.exn?.e?.exn;
+    const holder = await this.identifierStorage.getIdentifierMetadata(
+      exn.exn.e.exn.i
+    );
+
+    const issuerAidPrefix = multisigExn.a.i;
+    const credential = multisigExn.e.acdc;
+    const applySaid = multisigExn.p;
+
+    if (!holder) {
+      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+    }
+
+    const { op } = await this.multisigService.offerPresentMultisigACDC(
+      holder.signifyName,
+      applySaid as string,
+      credential,
+      issuerAidPrefix,
+      multisigExn
+    );
+
+    const pendingOperation = await this.operationPendingStorage.save({
+      id: op.name,
+      recordType: OperationPendingRecordType.ExchangeOfferPresentCredential,
+    });
+    Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
+
+    const notifications = await this.notificationStorage.findAllByQuery({
+      exnSaid: exn?.exn.e.exn.p,
+    });
+
+    if (notifications.length) {
+      const notificationRecord = notifications[0];
+      notificationRecord.linkedGroupRequests = {
+        ...notificationRecord.linkedGroupRequests,
+        [said]: true,
+      };
+
+      await this.notificationStorage.update(notificationRecord);
+    }
+  }
+
+  @OnlineOnly
+  async grantAcdcFromMultisigExn(said: string): Promise<void> {
+    const exn = await this.props.signifyClient.exchanges().get(said);
+
+    const grantExn = exn?.exn?.e?.exn;
+    const credential = grantExn?.e?.acdc;
+    const holder = await this.identifierStorage.getIdentifierMetadata(
+      exn.exn.e.exn.i
+    );
+
+    if (!holder) {
+      throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
+    }
+
+    const { op } = await this.multisigService.grantPresentMultisigAcdc(
+      holder.signifyName,
+      credential?.i,
+      credential,
+      {
+        grantExn,
+        atc: exn.pathed.exn,
+      }
+    );
+
+    const pendingOperation = await this.operationPendingStorage.save({
+      id: op.name,
+      recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
     Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
 

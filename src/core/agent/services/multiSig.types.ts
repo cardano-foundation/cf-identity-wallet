@@ -1,15 +1,30 @@
 import { HabState, State } from "signify-ts";
 
-interface MultiSigExnMessage {
-  exn: {
-    v: string;
-    t: string;
-    d: string;
-    i: string;
-    p: string;
-    dt: string;
-    r: string;
-    q: any;
+interface CommonExn {
+  v: string;
+  t: string;
+  d: string;
+  i: string;
+  p: string;
+  dt: string;
+  r: string;
+  q: any;
+}
+
+interface IcpExn extends CommonExn {
+  s: string;
+  kt: string | string[];
+  k: string[];
+  nt: string | string[];
+  n: string[];
+  bt: string;
+  b: string[];
+  c: string[];
+  a: any[];
+}
+
+interface InceptMultiSigExnMessage {
+  exn: CommonExn & {
     a: {
       gid: string;
       smids: string[];
@@ -18,21 +33,7 @@ interface MultiSigExnMessage {
       name: string;
     };
     e: {
-      icp: {
-        v: string;
-        t: string;
-        d: string;
-        i: string;
-        s: string;
-        kt: string;
-        k: string[];
-        nt: string;
-        n: string[];
-        bt: string;
-        b: string[];
-        c: any[];
-        a: any[];
-      };
+      icp: IcpExn;
       d: string;
     };
   };
@@ -58,10 +59,41 @@ enum MultiSigRoute {
   ROT = "/multisig/rot",
 }
 
+interface IpexGrantMultiSigExn {
+  exn: CommonExn & {
+    a: {
+      gid: string;
+      i: string;
+    };
+    e: {
+      exn: CommonExn & {
+        a: {
+          i: string;
+          m: string;
+        };
+        e: {
+          acdc: any;
+          iss: any;
+          anc: any;
+          d: string;
+        };
+      };
+      d: string;
+    };
+  };
+}
+
+interface GrantToJoinMultisigExnPayload {
+  grantExn: IpexGrantMultiSigExn;
+  atc: string;
+}
+
 export { MultiSigRoute };
 
 export type {
-  MultiSigExnMessage,
+  InceptMultiSigExnMessage,
   CreateMultisigExnPayload,
   AuthorizationExnPayload,
+  GrantToJoinMultisigExnPayload,
+  IpexGrantMultiSigExn,
 };

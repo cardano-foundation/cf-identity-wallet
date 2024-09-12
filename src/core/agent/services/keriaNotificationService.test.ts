@@ -647,33 +647,6 @@ describe("Signify notification service of agent", () => {
     expect(Agent.agent.multiSigs.joinAuthorization).toBeCalledTimes(1);
   });
 
-  test("Should call grantAcdcFromAgree if notification route is /exn/ipex/agree", async () => {
-    const callback = jest.fn();
-    const notification = [
-      {
-        i: "string",
-        dt: "string",
-        r: false,
-        a: {
-          r: "/exn/ipex/agree",
-          d: "string",
-          m: "",
-        },
-      },
-    ];
-    getIpexMessageMetadataMock.mockResolvedValueOnce({});
-    await keriaNotificationService.processNotification(
-      notification[0],
-      callback
-    );
-
-    expect(callback).toBeCalledTimes(0);
-    expect(Agent.agent.ipexCommunications.grantAcdcFromAgree).toBeCalledWith(
-      notification[0].a.d
-    );
-    expect(markNotificationMock).toBeCalledWith(notification[0].i);
-  });
-
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT", async () => {
     const callback = jest.fn();
     exchangesGetMock.mockResolvedValue(ipexMessageMock);
@@ -769,7 +742,7 @@ describe("Signify notification service of agent", () => {
     );
   });
 
-  test("Should skip if notification route is /multisig/exn and `e.exn.r` is not ipex/admit", async () => {
+  test("Should skip if notification route is /multisig/exn and `e.exn.r` is not ipex/admit, ipex/offer, ipex/grant", async () => {
     const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
@@ -785,6 +758,21 @@ describe("Signify notification service of agent", () => {
         },
       },
     ];
+
+    exchangesGetMock
+      .mockResolvedValueOnce({
+        exn: {
+          e: {
+            exn: {
+              p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+              r: "/ipex/apply",
+            },
+            d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPsvx",
+          },
+        },
+        pathed: {},
+      })
+      .mockResolvedValueOnce({ exn: { d: "d" } });
 
     for (const notif of notes) {
       await keriaNotificationService.processNotification(notif, callback);
@@ -812,6 +800,21 @@ describe("Signify notification service of agent", () => {
         },
       },
     ];
+
+    exchangesGetMock
+      .mockResolvedValueOnce({
+        exn: {
+          e: {
+            exn: {
+              p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+              r: "/ipex/apply",
+            },
+            d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPsvx",
+          },
+        },
+        pathed: {},
+      })
+      .mockResolvedValueOnce({ exn: { d: "d" } });
 
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
 
@@ -861,6 +864,21 @@ describe("Signify notification service of agent", () => {
     };
 
     getCredentialMock.mockResolvedValue(acdc);
+
+    exchangesGetMock
+      .mockResolvedValueOnce({
+        exn: {
+          e: {
+            exn: {
+              p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+              r: "/ipex/apply",
+            },
+            d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPsvx",
+          },
+        },
+        pathed: {},
+      })
+      .mockResolvedValueOnce({ exn: { d: "d" } });
 
     for (const notif of notes) {
       await keriaNotificationService.processNotification(notif, callback);
@@ -1220,6 +1238,96 @@ describe("Long running operation tracker", () => {
       credentialIdMock,
       CredentialStatus.CONFIRMED
     );
+    expect(notificationStorage.save).not.toBeCalled();
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should handle long operations with type exchange.offerpresentcredential", async () => {
+    const callback = jest.fn();
+    const credentialIdMock = "credentialId";
+    signifyClient
+      .exchanges()
+      .get.mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexApply,
+          p: "p",
+        },
+      })
+      .mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexOffer,
+          d: "d",
+          e: {
+            acdc: {
+              d: credentialIdMock,
+            },
+          },
+        },
+      });
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "exchange.offerpresentcredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "exchange.offerpresentcredential",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      type: "IdentifierMetadataRecord",
+      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      displayName: "holder",
+      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
+      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    await keriaNotificationService.processOperation(operationRecord, callback);
+    expect(notificationStorage.save).not.toBeCalled();
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+  });
+
+  test("Should handle long operations with type exchange.presentcredential", async () => {
+    const callback = jest.fn();
+    const credentialIdMock = "credentialId";
+    signifyClient
+      .exchanges()
+      .get.mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexAgree,
+          p: "p",
+        },
+      })
+      .mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexGrant,
+          d: "d",
+          e: {
+            acdc: {
+              d: credentialIdMock,
+            },
+          },
+        },
+      });
+    const operationRecord = {
+      type: "OperationPendingRecord",
+      id: "exchange.presentcredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
+      recordType: "exchange.presentcredential",
+      updatedAt: new Date("2024-08-01T10:36:17.814Z"),
+    } as OperationPendingRecord;
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      type: "IdentifierMetadataRecord",
+      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      displayName: "holder",
+      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
+      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    await keriaNotificationService.processOperation(operationRecord, callback);
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
