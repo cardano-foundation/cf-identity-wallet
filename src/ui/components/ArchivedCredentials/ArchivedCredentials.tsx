@@ -58,20 +58,16 @@ const ArchivedCredentialsContainer = forwardRef<
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const notifications = useAppSelector(getNotificationsCache);
-
   const [activeList, setActiveList] = useState(false);
   const [selectedCredentials, setSelectedCredentials] = useState<string[]>([]);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [alertDeleteIsOpen, setAlertDeleteIsOpen] = useState(false);
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
   const [alertRestoreRevoked, setAlertRestoreRevoked] = useState(false);
-
   const [viewCred, setViewCred] = useState("");
   const [isOpenCredModal, setIsOpenCredModal] = useState(false);
-
   const haveRevokedCreds = revokedCreds.length > 0;
   const haveArchivedCreds = archivedCreds.length > 0;
-
   const hasData = haveArchivedCreds || haveRevokedCreds;
 
   useEffect(() => {
@@ -91,6 +87,9 @@ const ArchivedCredentialsContainer = forwardRef<
     const data = [];
     for (const i in archivedCreds) {
       data.push(archivedCreds[i].id);
+    }
+    for (const i in revokedCreds) {
+      data.push(revokedCreds[i].id);
     }
     return data;
   };

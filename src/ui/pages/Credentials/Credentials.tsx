@@ -128,8 +128,8 @@ const Credentials = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    setShowPlaceholder(credsCache.length === 0 && revokedCreds.length === 0);
-  }, [credsCache.length, revokedCreds.length]);
+    setShowPlaceholder(confirmedCreds.length + pendingCreds.length === 0);
+  }, [credsCache]);
 
   useOnlineStatusEffect(fetchArchivedCreds);
 

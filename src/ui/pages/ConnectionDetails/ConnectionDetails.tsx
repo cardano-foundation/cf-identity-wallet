@@ -170,6 +170,7 @@ const ConnectionDetails = () => {
           ToastMsgType.DELETE_CONNECTION_FAIL
         );
       }
+      dispatch(setCurrentOperation(OperationType.IDLE));
     }
     deleteConnection();
   };
