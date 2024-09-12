@@ -14,6 +14,7 @@ import {
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { StorageMessage } from "../../../core/storage/storage.types";
@@ -62,6 +63,7 @@ const Scanner = forwardRef(
     ref
   ) => {
     const componentId = "scanner";
+    const history = useHistory();
     const platforms = getPlatforms();
     const dispatch = useAppDispatch();
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
@@ -76,6 +78,7 @@ const Scanner = forwardRef(
     const [scanning, setScanning] = useState(false);
     const [permission, setPermisson] = useState(false);
     const [mobileweb, setMobileweb] = useState(false);
+    const [scanUnavailable, setScanUnavailable] = useState(false);
 
     useEffect(() => {
       if (platforms.includes("mobileweb")) {
@@ -119,12 +122,11 @@ const Scanner = forwardRef(
             id,
           })
         );
-        handleReset && handleReset();
       } else {
         dispatch(setToastMsg(ToastMsgType.PEER_ID_ERROR));
-        handleReset && handleReset();
       }
-      dispatch(setCurrentOperation(OperationType.IDLE));
+      dispatch(setCurrentOperation(OperationType.BACK_TO_CONNECT_WALLET));
+      handleReset?.();
     };
 
     const updateConnections = async (groupId: string) => {
@@ -296,6 +298,12 @@ const Scanner = forwardRef(
           return;
         }
 
+        if (OperationType.SCAN_WALLET_CONNECTION === currentOperation) {
+          dispatch(setToastMsg(ToastMsgType.PEER_ID_ERROR));
+          handleReset?.();
+          return;
+        }
+
         showError("Scanner Error:", e, dispatch, ToastMsgType.SCANNER_ERROR);
         await new Promise((resolve) => setTimeout(resolve, 500));
         await initScan();
@@ -305,7 +313,7 @@ const Scanner = forwardRef(
     const processValue = async (content: string) => {
       await stopScan();
 
-      if (currentOperation === OperationType.SCAN_WALLET_CONNECTION) {
+      if (/^b[1-9A-HJ-NP-Za-km-z]{33}/.test(content)) {
         handleConnectWallet(content);
         return;
       }
@@ -338,10 +346,16 @@ const Scanner = forwardRef(
             }
           );
 
-          await BarcodeScanner.startScan({
-            formats: [BarcodeFormat.QrCode],
-            lensFacing: cameraDirection,
-          });
+          try {
+            await BarcodeScanner.startScan({
+              formats: [BarcodeFormat.QrCode],
+              lensFacing: cameraDirection,
+            });
+          } catch (error) {
+            showError("Error starting barcode scan:", error);
+            setScanUnavailable(true);
+            stopScan();
+          }
         }
 
         document?.querySelector("body")?.classList.add("scanner-active");
@@ -452,6 +466,7 @@ const Scanner = forwardRef(
 
     const containerClass = combineClassNames("qr-code-scanner", {
       "no-permission": !permission || mobileweb,
+      "scan-unavaible": scanUnavailable,
     });
 
     return (
@@ -460,7 +475,7 @@ const Scanner = forwardRef(
           className={containerClass}
           data-testid="qr-code-scanner"
         >
-          {scanning || mobileweb ? (
+          {scanning || mobileweb || scanUnavailable ? (
             <>
               <IonRow>
                 <IonCol size="12">

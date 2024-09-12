@@ -24,7 +24,6 @@ const Scan = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentToastMsg = useAppSelector(getToastMsg);
   const [isValueCaptured, setIsValueCaptured] = useState(false);
@@ -67,7 +66,9 @@ const Scan = () => {
   }, [currentToastMsg, currentOperation, isValueCaptured]);
 
   const handleAfterScan = () => {
-    history.push(TabsRoutePath.IDENTIFIERS);
+    currentOperation === OperationType.BACK_TO_CONNECT_WALLET
+      ? history.push(TabsRoutePath.MENU)
+      : history.push(TabsRoutePath.IDENTIFIERS);
   };
 
   return (

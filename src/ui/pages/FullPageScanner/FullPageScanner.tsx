@@ -1,7 +1,11 @@
 import { arrowBackOutline, repeatOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
-import { useAppDispatch } from "../../../store/hooks";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { useHistory } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getCurrentOperation,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { PageHeader } from "../../components/PageHeader";
 import { Scanner } from "../../components/Scanner";
@@ -12,14 +16,17 @@ import {
   FullPageScannerProps,
   ScannerRefComponent,
 } from "./FullPageScanner.types";
+import { TabsRoutePath } from "../../../routes/paths";
 
 const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
+  const pageId = "qr-code-scanner-full-page";
+  const history = useHistory();
+  const dispatch = useAppDispatch();
+  const currentOperation = useAppSelector(getCurrentOperation);
+  const scannerRef = useRef<ScannerRefComponent>(null);
   const { cameraDirection, changeCameraDirection, supportMultiCamera } =
     useCameraDirection();
   const [enableCameraDirection, setEnableCameraDirection] = useState(false);
-  const pageId = "qr-code-scanner-full-page";
-  const dispatch = useAppDispatch();
-  const scannerRef = useRef<ScannerRefComponent>(null);
 
   useEffect(() => {
     document?.querySelector("body")?.classList.add("full-page-scanner");
@@ -31,6 +38,8 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
     document
       ?.querySelector("body.scanner-active > div:last-child")
       ?.classList.add("hide");
+    currentOperation === OperationType.BACK_TO_CONNECT_WALLET &&
+      history.push(TabsRoutePath.MENU);
   };
 
   const handleCloseButton = () => {
