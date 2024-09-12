@@ -20,6 +20,7 @@ const IdentifierStage1BodyResume = ({
   groupMetadata,
   handleScanButton,
   scannedConections,
+  handleDelete,
 }: IdentifierStage1BodyProps) => {
   const dispatch = useAppDispatch();
   const copyToClipboard = () => {
@@ -140,16 +141,21 @@ const IdentifierStage1BodyResume = ({
           </IonList>
         )}
       </ScrollablePageLayout>
-      {groupMetadata?.groupInitiator && (
-        <PageFooter
-          pageId="initiate-multi-sig"
-          primaryButtonText={`${i18n.t(
-            "createidentifier.share.initiatebutton"
-          )}`}
-          primaryButtonAction={handleInitiateMultiSig}
-          primaryButtonDisabled={!scannedConections?.length}
-        />
-      )}
+      <PageFooter
+        pageId="initiate-multi-sig"
+        customClass={
+          groupMetadata?.groupInitiator ? "stage-1-footer" : undefined
+        }
+        primaryButtonText={
+          groupMetadata?.groupInitiator
+            ? `${i18n.t("createidentifier.share.initiatebutton")}`
+            : undefined
+        }
+        primaryButtonAction={handleInitiateMultiSig}
+        primaryButtonDisabled={!scannedConections?.length}
+        deleteButtonAction={handleDelete}
+        deleteButtonText={`${i18n.t("createidentifier.share.delete")}`}
+      />
     </>
   );
 };

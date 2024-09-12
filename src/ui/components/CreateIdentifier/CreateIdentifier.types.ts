@@ -70,6 +70,7 @@ interface IdentifierStage1BodyProps {
   };
   scannedConections?: ConnectionShortDetails[];
   handleScanButton: () => void;
+  handleDelete?: () => void;
 }
 
 export type {

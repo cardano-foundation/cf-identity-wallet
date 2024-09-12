@@ -1430,7 +1430,8 @@
         "text": "Have all the individuals you want to include as members scanned your QR code?",
         "confirm": "Confirm and scan",
         "cancel": "Cancel"
-      }
+      },
+      "delete": "Delete identifier"
     },
     "receive": {
       "title": "Setup identifier",
