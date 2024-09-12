@@ -432,14 +432,9 @@ describe("Connection service of agent", () => {
     signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
       return `${oobiPrefix}${name}`;
     });
-    const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getOobi(
-      signifyName,
-      "alias with spaces"
-    );
-    expect(KeriOobi).toEqual(
-      `${oobiPrefix}${signifyName}?name=alias+with+spaces`
-    );
+    const id = "keriuuid";
+    const KeriOobi = await connectionService.getOobi(id, "alias with spaces");
+    expect(KeriOobi).toEqual(`${oobiPrefix}${id}?name=alias+with+spaces`);
   });
 
   test("can get KERI OOBI with alias and groupId", async () => {
@@ -450,15 +445,9 @@ describe("Connection service of agent", () => {
         done: true,
       };
     });
-    const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getOobi(
-      signifyName,
-      "alias",
-      "123"
-    );
-    expect(KeriOobi).toEqual(
-      `${oobiPrefix}${signifyName}?name=alias&groupId=123`
-    );
+    const id = "id";
+    const KeriOobi = await connectionService.getOobi(id, "alias", "123");
+    expect(KeriOobi).toEqual(`${oobiPrefix}${id}?name=alias&groupId=123`);
   });
 
   test("can get connection keri (short detail view) by id", async () => {
@@ -487,9 +476,9 @@ describe("Connection service of agent", () => {
         done: true,
       };
     });
-    const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getOobi(signifyName);
-    expect(KeriOobi).toEqual(oobiPrefix + signifyName);
+    const id = "id";
+    const KeriOobi = await connectionService.getOobi(id);
+    expect(KeriOobi).toEqual(oobiPrefix + id);
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
@@ -594,7 +583,7 @@ describe("Connection service of agent", () => {
     await expect(
       connectionService.resolveOobi("oobi-url")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
-    await expect(connectionService.getOobi("name")).rejects.toThrowError(
+    await expect(connectionService.getOobi("id")).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
     );
   });
@@ -618,8 +607,8 @@ describe("Connection service of agent", () => {
       oobis: [],
       done: true,
     });
-    const signifyName = "keriuuid";
-    await expect(connectionService.getOobi(signifyName)).rejects.toThrow(
+    const id = "id";
+    await expect(connectionService.getOobi(id)).rejects.toThrow(
       new Error(ConnectionService.CANNOT_GET_OOBI)
     );
   });
@@ -637,8 +626,8 @@ describe("Connection service of agent", () => {
       states: {},
       group: {},
     });
-    const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getOobi(signifyName);
+    const id = "id";
+    const KeriOobi = await connectionService.getOobi(id);
     expect(KeriOobi).toEqual(
       `${oobiPrefix}oobi/EEGLKCqm1pENLuh9BW9EsbBxGnP0Pk8NMJ7_48Y_C3-6?name=t1`
     );

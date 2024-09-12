@@ -142,7 +142,11 @@ class IdentifierService extends AgentService {
     >
   ): Promise<CreateIdentifierResult> {
     const startTime = Date.now();
-    this.validIdentifierMetadata(metadata);
+
+    if (!identifierTypeThemes.includes(metadata.theme)) {
+      throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
+    }
+
     const signifyName = uuidv4();
     const operation = await this.props.signifyClient
       .identifiers()
@@ -238,10 +242,6 @@ class IdentifierService extends AgentService {
       "theme" | "displayName" | "groupMetadata"
     >
   ): Promise<void> {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(
-      identifier
-    );
-    this.validIdentifierMetadata(metadata);
     return this.identifierStorage.updateIdentifierMetadata(identifier, {
       theme: data.theme,
       displayName: data.displayName,
@@ -289,14 +289,6 @@ class IdentifierService extends AgentService {
       throw new Error(
         `${IdentifierService.IDENTIFIER_NOT_ARCHIVED} ${metadata.id}`
       );
-    }
-  }
-
-  validIdentifierMetadata(
-    metadata: Pick<IdentifierMetadataRecordProps, "theme">
-  ): void {
-    if (metadata.theme && !identifierTypeThemes.includes(metadata.theme)) {
-      throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
     }
   }
 

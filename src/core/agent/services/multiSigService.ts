@@ -1035,7 +1035,7 @@ class MultiSigService extends AgentService {
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
       const [admit, sigs, end] = await this.props.signifyClient.ipex().admit({
-        senderName: gHab.name,
+        senderName: multisigId,
         message: "",
         grantSaid,
         datetime: time,
@@ -1068,7 +1068,7 @@ class MultiSigService extends AgentService {
 
     const op = await this.props.signifyClient
       .ipex()
-      .submitAdmit(gHab.name, exn, sigsMes, dtime, recp);
+      .submitAdmit(multisigId, exn, sigsMes, dtime, recp);
 
     return { op, exnSaid: exn.ked.d };
   }

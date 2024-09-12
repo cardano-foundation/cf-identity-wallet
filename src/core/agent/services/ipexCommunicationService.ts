@@ -146,7 +146,7 @@ class IpexCommunicationService extends AgentService {
     } else {
       op = await this.admitIpex(
         grantNoteRecord.a.d as string,
-        holder.signifyName,
+        holder.id,
         grantExn.exn.i,
         allSchemaSaids
       );
@@ -175,23 +175,21 @@ class IpexCommunicationService extends AgentService {
     const msgSaid = notification.a.d as string;
     const msg = await this.props.signifyClient.exchanges().get(msgSaid);
 
-    const holderSignifyName = (
-      await this.identifierStorage.getIdentifierMetadata(msg.exn.a.i)
-    ).signifyName;
-
     const [offer, sigs, end] = await this.props.signifyClient.ipex().offer({
-      senderName: holderSignifyName,
+      senderName: msg.exn.a.i,
       recipient: msg.exn.i,
       acdc: new Serder(acdc),
       applySaid: msg.exn.d,
     });
-    await this.props.signifyClient
+    const op = await this.props.signifyClient
       .ipex()
-      .submitOffer(holderSignifyName, offer, sigs, end, [msg.exn.i]);
+      .submitOffer(msg.exn.a.i, offer, sigs, end, [msg.exn.i]);
+
     await Agent.agent.keriaNotifications.deleteNotificationRecordById(
       notification.id,
       notification.a.r as NotificationRoute
     );
+    this.grantAcdcFromAgree(op.metadata.said);
   }
 
   @OnlineOnly
@@ -207,12 +205,9 @@ class IpexCommunicationService extends AgentService {
     if (!pickedCred) {
       throw new Error(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
     }
-    const holderSignifyName = (
-      await this.identifierStorage.getIdentifierMetadata(msgOffer.exn.i)
-    ).signifyName;
 
     const [grant, sigs, end] = await this.props.signifyClient.ipex().grant({
-      senderName: holderSignifyName,
+      senderName: msgOffer.exn.i,
       recipient: msgAgree.exn.i,
       acdc: new Serder(pickedCred.sad),
       anc: new Serder(pickedCred.anc),
@@ -223,7 +218,7 @@ class IpexCommunicationService extends AgentService {
     });
     await this.props.signifyClient
       .ipex()
-      .submitGrant(holderSignifyName, grant, sigs, end, [msgAgree.exn.i]);
+      .submitGrant(msgOffer.exn.i, grant, sigs, end, [msgAgree.exn.i]);
   }
 
   @OnlineOnly
@@ -316,7 +311,7 @@ class IpexCommunicationService extends AgentService {
 
   private async admitIpex(
     notificationD: string,
-    holderAidName: string,
+    holderAid: string,
     issuerAid: string,
     schemaSaids: string[]
   ): Promise<Operation> {
@@ -331,7 +326,7 @@ class IpexCommunicationService extends AgentService {
 
     const dt = new Date().toISOString().replace("Z", "000+00:00");
     const [admit, sigs, aend] = await this.props.signifyClient.ipex().admit({
-      senderName: holderAidName,
+      senderName: holderAid,
       message: "",
       grantSaid: notificationD,
       recipient: issuerAid,
@@ -339,7 +334,7 @@ class IpexCommunicationService extends AgentService {
     });
     const op = await this.props.signifyClient
       .ipex()
-      .submitAdmit(holderAidName, admit, sigs, aend, [issuerAid]);
+      .submitAdmit(holderAid, admit, sigs, aend, [issuerAid]);
     return op;
   }
 
