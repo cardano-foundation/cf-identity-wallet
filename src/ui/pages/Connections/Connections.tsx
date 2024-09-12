@@ -98,16 +98,16 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     const [oobi, setOobi] = useState("");
 
     const fetchOobi = useCallback(async () => {
-      if (!selectedIdentifier?.signifyName) return;
+      if (!selectedIdentifier?.id) return;
 
       const oobiValue = await Agent.agent.connections.getOobi(
-        `${selectedIdentifier.signifyName}`,
+        `${selectedIdentifier.id}`,
         userName
       );
       if (oobiValue) {
         setOobi(oobiValue);
       }
-    }, [selectedIdentifier?.signifyName, userName]);
+    }, [selectedIdentifier?.id, userName]);
 
     useOnlineStatusEffect(fetchOobi);
 

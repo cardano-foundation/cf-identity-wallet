@@ -473,22 +473,14 @@ describe("Single sig service of agent", () => {
 
   test("should call signify.rotateIdentifier with correct params", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-      isPending: false,
-      signifyOpName: "op123",
-      signifyName: "john_doe",
-      theme: 0,
-    } as IdentifierMetadataRecord;
-    identifierStorage.getIdentifierMetadata.mockResolvedValue(metadata);
+    const identifierId = "identifierId";
     identifiersRotateMock.mockResolvedValue({
       op: jest.fn().mockResolvedValue({
         done: true,
       }),
     });
-    await identifierService.rotateIdentifier(metadata.id);
-    expect(identifiersRotateMock).toHaveBeenCalledWith(metadata.signifyName);
+    await identifierService.rotateIdentifier(identifierId);
+    expect(identifiersRotateMock).toHaveBeenCalledWith(identifierId);
   });
 
   test("Can get KERI identifier by group id", async () => {
@@ -543,24 +535,15 @@ describe("Single sig service of agent", () => {
 
   test("getIdentifier should throw an error when KERIA is offline", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-      isPending: false,
-      signifyOpName: "op123",
-      signifyName: "john_doe",
-      theme: 0,
-    } as IdentifierMetadataRecord;
-    identifierStorage.getIdentifierMetadata.mockResolvedValue(metadata);
     await expect(identifierService.getIdentifier("id")).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
     );
     await expect(identifierService.syncKeriaIdentifiers()).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
     );
-    await expect(
-      identifierService.getSigner("identifier")
-    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(identifierService.getSigner("id")).rejects.toThrowError(
+      Agent.KERIA_CONNECTION_BROKEN
+    );
     await expect(
       identifierService.createIdentifier({
         displayName: "name",

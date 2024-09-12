@@ -110,7 +110,7 @@ class MultiSigService extends AgentService {
     }
     const ourAid: HabState = await this.props.signifyClient
       .identifiers()
-      .get(ourMetadata.signifyName as string);
+      .get(ourMetadata.id as string);
     const otherAids = await Promise.all(
       otherIdentifierContacts.map(async (contact) => {
         const aid = await Agent.agent.connections.resolveOobi(
@@ -163,7 +163,7 @@ class MultiSigService extends AgentService {
       );
     } else {
       // Trigger the end role authorization if the operation is done
-      await this.endRoleAuthorization(signifyName);
+      await this.endRoleAuthorization(multisigId);
     }
     return { identifier: multisigId, signifyName, isPending };
   }
@@ -236,14 +236,10 @@ class MultiSigService extends AgentService {
     if (!metadata.multisigManageAid) {
       throw new Error(MultiSigService.AID_IS_NOT_MULTI_SIG);
     }
-    const identifierManageAid =
-      await this.identifierStorage.getIdentifierMetadata(
-        metadata.multisigManageAid
-      );
 
     const multiSig = await this.props.signifyClient
       .identifiers()
-      .get(metadata.signifyName)
+      .get(metadata.id)
       .catch((error) => {
         const status = error.message.split(" - ")[1];
         if (/404/gi.test(status)) {
@@ -259,7 +255,7 @@ class MultiSigService extends AgentService {
 
     const members = await this.props.signifyClient
       .identifiers()
-      .members(metadata.signifyName);
+      .members(metadata.id);
     const smids = members?.signing;
     const rmids = members?.rotation;
 
@@ -293,7 +289,7 @@ class MultiSigService extends AgentService {
     }
     const aid = await this.props.signifyClient
       .identifiers()
-      .get(identifierManageAid?.signifyName);
+      .get(metadata.multisigManageAid);
 
     const result = await this.rotateMultisigAid(
       aid,
@@ -335,14 +331,10 @@ class MultiSigService extends AgentService {
     if (!multiSig.multisigManageAid) {
       throw new Error(MultiSigService.AID_IS_NOT_MULTI_SIG);
     }
-    const identifierManageAid =
-      await this.identifierStorage.getIdentifierMetadata(
-        multiSig.multisigManageAid
-      );
 
     const aid = await this.props.signifyClient
       .identifiers()
-      .get(identifierManageAid.signifyName);
+      .get(multiSig.multisigManageAid);
     const res = await this.joinMultisigRotationKeri(
       exn,
       aid,
@@ -492,7 +484,7 @@ class MultiSigService extends AgentService {
 
     const aid = await this.props.signifyClient
       .identifiers()
-      .get(identifier?.signifyName);
+      .get(identifier?.id);
     const signifyName = uuidv4();
     const res = await this.joinMultisigKeri(exn, aid, signifyName);
     const op = res.op;
@@ -524,7 +516,7 @@ class MultiSigService extends AgentService {
       );
     } else {
       // Trigger the end role authorization if the operation is done
-      await this.endRoleAuthorization(signifyName);
+      await this.endRoleAuthorization(multisigId);
     }
     await Agent.agent.keriaNotifications.deleteNotificationRecordById(
       notificationId,
@@ -624,17 +616,13 @@ class MultiSigService extends AgentService {
   }
 
   async membersReadyToRotate(identifierId: string): Promise<string[]> {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(
-      identifierId
-    );
-
     const multiSig = await this.props.signifyClient
       .identifiers()
-      .get(metadata.signifyName);
+      .get(identifierId);
 
     const members = await this.props.signifyClient
       .identifiers()
-      .members(metadata?.signifyName);
+      .members(identifierId);
 
     const nextSequence = (Number(multiSig.state.s) + 1).toString();
     const smids = members.signing;
@@ -846,10 +834,10 @@ class MultiSigService extends AgentService {
     return true;
   }
 
-  private async getMultisigParticipants(multisigSignifyName: string) {
+  private async getMultisigParticipants(multisigId: string) {
     const members = await this.props.signifyClient
       .identifiers()
-      .members(multisigSignifyName);
+      .members(multisigId);
     const multisigMembers = members["signing"];
     let ourIdentifier;
     for (const member of multisigMembers) {
@@ -879,26 +867,24 @@ class MultiSigService extends AgentService {
     };
   }
 
-  async endRoleAuthorization(multisigSignifyName: string): Promise<void> {
+  async endRoleAuthorization(multisigId: string): Promise<void> {
     const { ourIdentifier, multisigMembers } =
-      await this.getMultisigParticipants(multisigSignifyName);
-    const hab = await this.props.signifyClient
-      .identifiers()
-      .get(multisigSignifyName);
+      await this.getMultisigParticipants(multisigId);
+    const hab = await this.props.signifyClient.identifiers().get(multisigId);
     const aid = hab["prefix"];
     const recp = multisigMembers
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
     const ourAid = await this.props.signifyClient
       .identifiers()
-      .get(ourIdentifier.signifyName as string);
+      .get(ourIdentifier.id as string);
     for (const member of multisigMembers) {
       const eid = Object.keys(member.ends.agent)[0]; //agent of member
       const stamp = new Date().toISOString().replace("Z", "000+00:00");
 
       const endRoleRes = await this.props.signifyClient
         .identifiers()
-        .addEndRole(multisigSignifyName, "agent", eid, stamp);
+        .addEndRole(multisigId, "agent", eid, stamp);
       await endRoleRes.op();
       const rpy = endRoleRes.serder;
       const sigs = endRoleRes.sigs;
@@ -931,21 +917,21 @@ class MultiSigService extends AgentService {
     const multisigAid = requestExn.a.gid;
     const multisigMetadataRecord =
       await this.identifierStorage.getIdentifierMetadata(multisigAid);
-    const multisigSignifyName = multisigMetadataRecord.signifyName;
+
+    const multisigId = multisigMetadataRecord.id;
     // stamp, eid and role are provided in the exn message
     const rpystamp = requestExn.e.rpy.dt;
     const rpyrole = requestExn.e.rpy.a.role;
     const rpyeid = requestExn.e.rpy.a.eid;
     const endRoleRes = await this.props.signifyClient
       .identifiers()
-      .addEndRole(multisigSignifyName, rpyrole, rpyeid, rpystamp);
+      .addEndRole(multisigId, rpyrole, rpyeid, rpystamp);
+
     await endRoleRes.op();
     const rpy = endRoleRes.serder;
     const sigs = endRoleRes.sigs;
 
-    const hab = await this.props.signifyClient
-      .identifiers()
-      .get(multisigSignifyName);
+    const hab = await this.props.signifyClient.identifiers().get(multisigId);
     const mstate = hab["state"];
     const seal = [
       "SealEvent",
@@ -960,13 +946,13 @@ class MultiSigService extends AgentService {
       rpy: [rpy, atc],
     };
     const { ourIdentifier, multisigMembers } =
-      await this.getMultisigParticipants(multisigSignifyName);
+      await this.getMultisigParticipants(multisigId);
     const recp = multisigMembers
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
       .map((member: any) => member.aid);
     const ourAid = await this.props.signifyClient
       .identifiers()
-      .get(ourIdentifier.signifyName as string);
+      .get(ourIdentifier.id as string);
 
     await this.sendMultisigExn(
       ourIdentifier.signifyName,
@@ -979,7 +965,7 @@ class MultiSigService extends AgentService {
   }
 
   async multisigAdmit(
-    multisigSignifyName: string,
+    multisigId: string,
     notificationSaid: string,
     schemaSaids: string[],
     admitExnToJoin?: any
@@ -1003,13 +989,11 @@ class MultiSigService extends AgentService {
       .get(notificationSaid);
     const grantSaid = exchangeMessage.exn.d;
     const { ourIdentifier, multisigMembers } =
-      await this.getMultisigParticipants(multisigSignifyName);
-    const gHab = await this.props.signifyClient
-      .identifiers()
-      .get(multisigSignifyName);
+      await this.getMultisigParticipants(multisigId);
+    const gHab = await this.props.signifyClient.identifiers().get(multisigId);
     const mHab = await this.props.signifyClient
       .identifiers()
-      .get(ourIdentifier.signifyName);
+      .get(ourIdentifier.id);
 
     const recp = multisigMembers
       .filter((signing: any) => signing.aid !== ourIdentifier.id)
@@ -1051,7 +1035,7 @@ class MultiSigService extends AgentService {
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
       const [admit, sigs, end] = await this.props.signifyClient.ipex().admit({
-        senderName: multisigSignifyName,
+        senderName: gHab.name,
         message: "",
         grantSaid,
         datetime: time,
@@ -1084,7 +1068,7 @@ class MultiSigService extends AgentService {
 
     const op = await this.props.signifyClient
       .ipex()
-      .submitAdmit(multisigSignifyName, exn, sigsMes, dtime, recp);
+      .submitAdmit(gHab.name, exn, sigsMes, dtime, recp);
 
     return { op, exnSaid: exn.ked.d };
   }

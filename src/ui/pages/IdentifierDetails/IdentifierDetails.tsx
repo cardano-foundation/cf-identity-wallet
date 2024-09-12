@@ -79,16 +79,16 @@ const IdentifierDetails = () => {
   const [cloudError, setCloudError] = useState(false);
 
   const fetchOobi = useCallback(async () => {
-    if (!cardData?.signifyName) return;
+    if (!cardData?.id) return;
 
     const oobiValue = await Agent.agent.connections.getOobi(
-      `${cardData.signifyName}`,
+      `${cardData.id}`,
       userName
     );
     if (oobiValue) {
       setOobi(oobiValue);
     }
-  }, [cardData?.signifyName, userName]);
+  }, [cardData?.id, userName]);
 
   const isFavourite = favouritesIdentifiersData?.some(
     (fav) => fav.id === params.id

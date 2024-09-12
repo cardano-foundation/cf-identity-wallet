@@ -135,7 +135,7 @@ describe("Identifier Stage 1", () => {
 
     await waitFor(() => {
       expect(getOobiMock).toBeCalledWith(
-        stage1State.newIdentifier.signifyName,
+        stage1State.newIdentifier.id,
         initialState.stateCache.authentication.userName,
         stage1State.newIdentifier.groupMetadata.groupId
       );

@@ -1502,9 +1502,6 @@ describe("Multisig sig service of agent", () => {
   test("Throw error if cannot query the key state of an identifier", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     identifiersGetMock = jest.fn().mockResolvedValue(aidMultisigBySignify);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(keriMetadataRecord);
 
     identifiersMemberMock = jest.fn().mockResolvedValue({
       signing: [
@@ -1552,10 +1549,6 @@ describe("Multisig sig service of agent", () => {
   test("Should return member identifiers that have rotated ahead of multisig", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     identifiersGetMock = jest.fn().mockResolvedValue(aidMultisigBySignify);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(keriMetadataRecord);
-
     identifiersMemberMock = jest.fn().mockResolvedValue({
       signing: [
         {
@@ -1947,7 +1940,7 @@ describe("Multisig sig service of agent", () => {
       sigs: [],
     });
     await expect(
-      multiSigService.endRoleAuthorization("multi-sig")
+      multiSigService.endRoleAuthorization("prefix")
     ).rejects.toThrow(new Error(MultiSigService.MEMBER_AID_NOT_FOUND));
   });
 
@@ -1971,7 +1964,7 @@ describe("Multisig sig service of agent", () => {
       serder: { size: 1 },
       sigs: [],
     });
-    await multiSigService.endRoleAuthorization("multi-sig");
+    await multiSigService.endRoleAuthorization("prefix");
     expect(sendExchangesMock).toBeCalledTimes(
       multisigMockMembers["signing"].length
     );
@@ -2043,7 +2036,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("can initiate accepting an ACDC to a multi-sig identifier", async () => {
-    const multisigSignifyName = "multisigSignifyName";
+    const multisigId = "multisigId";
     const notificationSaid = "ELykd_2bX6yvuVEgLQqnCgZ7QLdxpUBze-RzHVwfCUfW";
     const schemaSaids = ["schemaSaid"];
     const mockAdmit = {
@@ -2113,7 +2106,7 @@ describe("Multisig sig service of agent", () => {
     ]);
 
     await multiSigService.multisigAdmit(
-      multisigSignifyName,
+      multisigId,
       notificationSaid,
       schemaSaids
     );
@@ -2123,7 +2116,7 @@ describe("Multisig sig service of agent", () => {
   });
 
   test("can agree to admit a credential with a multi-sig identifier", async () => {
-    const multisigSignifyName = "multisigSignifyName";
+    const multisigId = gHab.name;
     const notificationSaid = "ELykd_2bX6yvuVEgLQqnCgZ7QLdxpUBze-RzHVwfCUfW";
     const schemaSaids = ["schemaSaid"];
     const multisigExn = {
@@ -2211,7 +2204,7 @@ describe("Multisig sig service of agent", () => {
     ]);
 
     await multiSigService.multisigAdmit(
-      multisigSignifyName,
+      multisigId,
       notificationSaid,
       schemaSaids,
       multisigExn
@@ -2231,7 +2224,7 @@ describe("Multisig sig service of agent", () => {
     );
 
     expect(ipexSubmitAdmitMock).toBeCalledWith(
-      multisigSignifyName,
+      multisigId,
       mockExn,
       mockSigsMes,
       mockDtime,

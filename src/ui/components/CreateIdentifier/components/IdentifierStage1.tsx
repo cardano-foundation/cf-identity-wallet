@@ -40,8 +40,7 @@ const IdentifierStage1 = ({
   const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
-  const signifyName =
-    resumeMultiSig?.signifyName || state.newIdentifier.signifyName;
+  const identifierId = resumeMultiSig?.id || state.newIdentifier.id;
   const groupId =
     resumeMultiSig?.groupMetadata?.groupId ||
     state.newIdentifier.groupMetadata?.groupId;
@@ -64,7 +63,7 @@ const IdentifierStage1 = ({
   const fetchOobi = useCallback(async () => {
     try {
       const oobiValue = await Agent.agent.connections.getOobi(
-        signifyName,
+        identifierId,
         userName,
         groupId
       );
@@ -74,7 +73,7 @@ const IdentifierStage1 = ({
     } catch (e) {
       showError("Unable to fetch Oobi", e);
     }
-  }, [groupId, signifyName, userName]);
+  }, [groupId, identifierId, userName]);
 
   useOnlineStatusEffect(fetchOobi);
 

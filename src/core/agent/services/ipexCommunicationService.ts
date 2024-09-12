@@ -134,7 +134,7 @@ class IpexCommunicationService extends AgentService {
     if (holder.multisigManageAid) {
       const { op: opMultisigAdmit, exnSaid } =
         await this.multisigService.multisigAdmit(
-          holder.signifyName,
+          holder.id,
           grantNoteRecord.a.d as string,
           allSchemaSaids
         );
@@ -425,7 +425,7 @@ class IpexCommunicationService extends AgentService {
     allSchemaSaids.push(schemaSaid);
 
     const { op } = await this.multisigService.multisigAdmit(
-      holder.signifyName,
+      holder.id,
       previousExnGrantMsg.exn.d as string,
       allSchemaSaids,
       multisigExn

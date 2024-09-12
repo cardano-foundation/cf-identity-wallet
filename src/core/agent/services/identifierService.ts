@@ -84,7 +84,7 @@ class IdentifierService extends AgentService {
     }
     const aid = await this.props.signifyClient
       .identifiers()
-      .get(metadata.signifyName)
+      .get(identifier)
       .catch((error) => {
         const status = error.message.split(" - ")[1];
         if (/404/gi.test(status)) {
@@ -149,11 +149,13 @@ class IdentifierService extends AgentService {
       .create(signifyName); //, this.getCreateAidOptions());
     let op = await operation.op();
     const signifyOpName = op.name;
+    const identifier = operation.serder.ked.i;
+
     const addRoleOperation = await this.props.signifyClient
       .identifiers()
-      .addEndRole(signifyName, "agent", this.props.signifyClient.agent!.pre);
+      .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
     await addRoleOperation.op();
-    const identifier = operation.serder.ked.i;
+
     const isPending = !op.done;
     if (isPending) {
       op = await waitAndGetDoneOp(
@@ -248,14 +250,7 @@ class IdentifierService extends AgentService {
 
   @OnlineOnly
   async getSigner(identifier: string): Promise<Signer> {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(
-      identifier
-    );
-    this.validIdentifierMetadata(metadata);
-
-    const aid = await this.props.signifyClient
-      .identifiers()
-      .get(metadata.signifyName);
+    const aid = await this.props.signifyClient.identifiers().get(identifier);
 
     const manager = this.props.signifyClient.manager;
     if (manager) {
@@ -307,12 +302,9 @@ class IdentifierService extends AgentService {
 
   @OnlineOnly
   async rotateIdentifier(identifier: string) {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(
-      identifier
-    );
     const rotateResult = await this.props.signifyClient
       .identifiers()
-      .rotate(metadata.signifyName);
+      .rotate(identifier);
     const operation = await waitAndGetDoneOp(
       this.props.signifyClient,
       await rotateResult.op()
