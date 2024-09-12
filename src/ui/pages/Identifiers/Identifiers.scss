@@ -4,7 +4,7 @@
   }
 
   .placeholder-spacer {
-    height: 2.5rem;
+    height: 3.5rem;
   }
 
   .identifiers-tab-content-block {
@@ -101,6 +101,10 @@
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
+    .placeholder-spacer {
+      height: 2.5rem;
+    }
+
     .identifiers-tab-content-block {
       margin-bottom: 1.6rem;
 
