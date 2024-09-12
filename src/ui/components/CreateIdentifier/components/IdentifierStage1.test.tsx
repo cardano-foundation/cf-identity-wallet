@@ -283,7 +283,6 @@ describe("Identifier Stage 1", () => {
               ...stage1State,
               newIdentifier: {
                 ...stage1State.newIdentifier,
-                signifyName: "",
                 groupMetadata: {
                   ...stage1State.newIdentifier.groupMetadata,
                   groupInitiator: false,

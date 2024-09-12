@@ -60,7 +60,6 @@ class IdentifierService extends AgentService {
       const identifier: IdentifierShortDetails = {
         displayName: metadata.displayName,
         id: metadata.id,
-        signifyName: metadata.signifyName,
         createdAtUTC: metadata.createdAt.toISOString(),
         theme: metadata.theme,
         isPending: metadata.isPending ?? false,
@@ -98,7 +97,6 @@ class IdentifierService extends AgentService {
       id: aid.prefix,
       displayName: metadata.displayName,
       createdAtUTC: metadata.createdAt.toISOString(),
-      signifyName: metadata.signifyName,
       theme: metadata.theme,
       signifyOpName: metadata.signifyOpName,
       multisigManageAid: metadata.multisigManageAid,
@@ -127,7 +125,6 @@ class IdentifierService extends AgentService {
     return {
       displayName: metadata.displayName,
       id: metadata.id,
-      signifyName: metadata.signifyName,
       createdAtUTC: metadata.createdAt.toISOString(),
       theme: metadata.theme,
       isPending: metadata.isPending ?? false,

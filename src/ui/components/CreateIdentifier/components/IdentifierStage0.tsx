@@ -104,7 +104,7 @@ const IdentifierStage0 = ({
       };
     }
     metadata.groupMetadata = groupMetadata;
-    const { identifier, signifyName, isPending } =
+    const { identifier, isPending } =
       await Agent.agent.identifiers.createIdentifier(metadata);
     if (identifier) {
       const newIdentifier: IdentifierShortDetails = {
@@ -113,7 +113,6 @@ const IdentifierStage0 = ({
         createdAtUTC: new Date().toISOString(),
         theme: selectedTheme,
         isPending: isPending,
-        signifyName,
       };
       if (groupMetadata) {
         newIdentifier.groupMetadata = groupMetadata;

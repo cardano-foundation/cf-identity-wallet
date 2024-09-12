@@ -103,7 +103,7 @@ const MultiSigRequest = ({
         "Cannot accept a multi-sig inception event before details are loaded from core"
       );
     } else {
-      const { identifier, signifyName, isPending } =
+      const { identifier, isPending } =
         (await Agent.agent.multiSigs.joinMultisig(
           notificationDetails.id,
           notificationDetails.a.r as NotificationRoute,
@@ -121,7 +121,6 @@ const MultiSigRequest = ({
           createdAtUTC: `${notificationDetails?.createdAt}`,
           theme: multisigIcpDetails.ourIdentifier.theme,
           isPending: !!isPending,
-          signifyName,
         };
         const filteredIdentifiersData = identifiersData.filter(
           (item) => item.id !== multisigIcpDetails?.ourIdentifier.id
