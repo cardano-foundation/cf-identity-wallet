@@ -708,6 +708,7 @@ describe("Multisig sig service of agent", () => {
     ).toEqual({
       identifier: multisigIdentifier,
       isPending: true,
+      multisigManageAid: "id",
       signifyName: expect.any(String),
     });
 

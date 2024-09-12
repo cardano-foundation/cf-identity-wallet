@@ -185,6 +185,7 @@ interface AgentServicesProps {
 interface CreateIdentifierResult {
   signifyName: string;
   identifier: string;
+  multisigManageAid?: string;
   isPending?: boolean;
 }
 
