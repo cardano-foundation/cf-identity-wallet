@@ -181,7 +181,7 @@ class IpexCommunicationService extends AgentService {
       acdc: new Serder(acdc),
       applySaid: msg.exn.d,
     });
-    const op = await this.props.signifyClient
+    await this.props.signifyClient
       .ipex()
       .submitOffer(msg.exn.a.i, offer, sigs, end, [msg.exn.i]);
 
@@ -189,7 +189,6 @@ class IpexCommunicationService extends AgentService {
       notification.id,
       notification.a.r as NotificationRoute
     );
-    this.grantAcdcFromAgree(op.metadata.said);
   }
 
   @OnlineOnly

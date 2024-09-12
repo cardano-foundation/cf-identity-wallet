@@ -522,7 +522,12 @@ class MultiSigService extends AgentService {
       notificationId,
       notificationRoute
     );
-    return { identifier: multisigId, signifyName, isPending };
+    return {
+      identifier: multisigId,
+      multisigManageAid: identifier.id,
+      signifyName,
+      isPending,
+    };
   }
 
   @OnlineOnly

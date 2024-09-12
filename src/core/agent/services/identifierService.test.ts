@@ -195,7 +195,6 @@ describe("Single sig service of agent", () => {
       {
         id: keriMetadataRecord.id,
         displayName: "Identifier 2",
-        signifyName: "uuid-here",
         createdAtUTC: nowISO,
         theme: 0,
         isPending: false,
@@ -258,7 +257,6 @@ describe("Single sig service of agent", () => {
       multisigManageAid: keriMetadataRecord.multisigManageAid,
       ...aidReturnedBySignify.state,
       signifyOpName: undefined,
-      signifyName: "uuid-here",
       isPending: false,
     });
   });
@@ -494,7 +492,6 @@ describe("Single sig service of agent", () => {
     ).toStrictEqual({
       displayName: keriMetadataRecord.displayName,
       id: keriMetadataRecord.id,
-      signifyName: keriMetadataRecord.signifyName,
       createdAtUTC: keriMetadataRecord.createdAt.toISOString(),
       theme: keriMetadataRecord.theme,
       isPending: keriMetadataRecord.isPending ?? false,
