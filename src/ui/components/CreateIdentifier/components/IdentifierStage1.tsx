@@ -143,16 +143,17 @@ const IdentifierStage1 = ({
   };
 
   const handleDelete = async () => {
-    if (!resumeMultiSig) return;
+    const identifierId = state.newIdentifier.id || resumeMultiSig?.id;
+    if (!identifierId) return;
 
     try {
       setVerifyIsOpen(false);
       const updatedIdentifiers = identifierData.filter(
-        (item) => item.id !== resumeMultiSig.id
+        (item) => item.id !== identifierId
       );
 
-      await Agent.agent.identifiers.archiveIdentifier(resumeMultiSig.id);
-      await Agent.agent.identifiers.deleteIdentifier(resumeMultiSig.id);
+      await Agent.agent.identifiers.archiveIdentifier(identifierId);
+      await Agent.agent.identifiers.deleteIdentifier(identifierId);
 
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
       dispatch(setIdentifiersCache(updatedIdentifiers));
