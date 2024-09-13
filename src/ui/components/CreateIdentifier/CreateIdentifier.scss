@@ -25,7 +25,9 @@ ion-modal.create-identifier-modal {
     background: rgba(3, 3, 33, 0.2);
   }
 
-  .identifier-init-body {
+  .responsive-page-content {
+    justify-content: space-evenly;
+
     .share-identifier-scan-button {
       text-align: center;
 
@@ -47,18 +49,10 @@ ion-modal.create-identifier-modal {
     }
   }
 
-  .responsive-page-content {
-    justify-content: space-evenly;
-  }
-
   .scrollable-page-layout {
     &:not(.keyboard-is-open) {
       &.initiator-view {
         padding-bottom: 4rem;
-      }
-
-      &.identifier-init-body {
-        padding-bottom: 0;
       }
     }
 
@@ -558,10 +552,6 @@ ion-modal.create-identifier-modal {
     .scrollable-page-layout {
       &:not(.keyboard-is-open) {
         padding-bottom: 3rem;
-
-        &.identifier-init-body {
-          padding-bottom: 0;
-        }
 
         &.receiver-view {
           padding-bottom: 0;
