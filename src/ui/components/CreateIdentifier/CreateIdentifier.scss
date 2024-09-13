@@ -54,10 +54,12 @@ ion-modal.create-identifier-modal {
   .scrollable-page-layout {
     &:not(.keyboard-is-open) {
       &.initiator-view {
-        padding-bottom: 9.5rem;
+        padding-bottom: 4rem;
       }
 
-      padding-bottom: 4rem;
+      &.identifier-init-body {
+        padding-bottom: 0;
+      }
     }
 
     &.keyboard-is-open ion-content.scrollable-page-content {
@@ -151,19 +153,6 @@ ion-modal.create-identifier-modal {
       z-index: 1000;
       bottom: calc(-100vh + 4.5rem);
       padding-inline: 0.9rem;
-
-      &.stage-1-footer {
-        bottom: calc(-100vh + 9rem);
-
-        .page-footer-content {
-          display: flex;
-          flex-direction: column-reverse;
-
-          .primary-button {
-            margin: 1rem 0;
-          }
-        }
-      }
 
       &.identifier-stage-3 {
         bottom: calc(-100vh + 8.5rem);
@@ -570,8 +559,12 @@ ion-modal.create-identifier-modal {
       &:not(.keyboard-is-open) {
         padding-bottom: 3rem;
 
-        &.initiator-view {
-          padding-bottom: 6rem;
+        &.identifier-init-body {
+          padding-bottom: 0;
+        }
+
+        &.receiver-view {
+          padding-bottom: 0;
         }
       }
     }
@@ -601,15 +594,6 @@ ion-modal.create-identifier-modal {
 
     ion-toolbar.page-footer {
       bottom: calc(-100vh + 3.5rem);
-
-      &.stage-1-footer {
-        bottom: calc(-100vh + 6.25rem);
-        .page-footer-content {
-          .primary-button {
-            margin: 0.5rem 0;
-          }
-        }
-      }
 
       &.identifier-stage-3 {
         bottom: calc(-100vh + 6.25rem);

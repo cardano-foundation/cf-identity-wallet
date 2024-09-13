@@ -1,15 +1,19 @@
-import { IonIcon, IonButton } from "@ionic/react";
-import { scanOutline, qrCodeOutline, copyOutline } from "ionicons/icons";
+import { IonButton, IonIcon } from "@ionic/react";
+import {
+  copyOutline,
+  qrCodeOutline,
+  scanOutline,
+  trashOutline,
+} from "ionicons/icons";
 import { QRCode } from "react-qrcode-logo";
 import { i18n } from "../../../../i18n";
-import { PageHeader } from "../../PageHeader";
-import { IdentifierStage1BodyProps } from "../CreateIdentifier.types";
 import { useAppDispatch } from "../../../../store/hooks";
-import { writeToClipboard } from "../../../utils/clipboard";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../globals/types";
-import { PageFooter } from "../../PageFooter";
+import { writeToClipboard } from "../../../utils/clipboard";
+import { PageHeader } from "../../PageHeader";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
+import { IdentifierStage1BodyProps } from "../CreateIdentifier.types";
 
 const IdentifierStage1BodyInit = ({
   componentId,
@@ -108,12 +112,23 @@ const IdentifierStage1BodyInit = ({
             />
           </IonButton>
         </div>
+        <IonButton
+          shape="round"
+          expand="block"
+          fill="clear"
+          className="delete-button"
+          data-testid="delete-button-initiate-multi-sig"
+          onClick={handleDelete}
+        >
+          <IonIcon
+            slot="icon-only"
+            size="small"
+            icon={trashOutline}
+            color="primary"
+          />
+          {i18n.t("createidentifier.share.delete")}
+        </IonButton>
       </ScrollablePageLayout>
-      <PageFooter
-        pageId="initiate-multi-sig"
-        deleteButtonAction={handleDelete}
-        deleteButtonText={`${i18n.t("createidentifier.share.delete")}`}
-      />
     </>
   );
 };

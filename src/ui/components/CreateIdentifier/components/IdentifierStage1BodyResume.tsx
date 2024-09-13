@@ -1,5 +1,5 @@
 import { IonIcon, IonButton, IonItem, IonLabel, IonList } from "@ionic/react";
-import { qrCodeOutline, copyOutline } from "ionicons/icons";
+import { qrCodeOutline, copyOutline, trashOutline } from "ionicons/icons";
 import { QRCode } from "react-qrcode-logo";
 import { i18n } from "../../../../i18n";
 import { PageHeader } from "../../PageHeader";
@@ -140,22 +140,33 @@ const IdentifierStage1BodyResume = ({
             })}
           </IonList>
         )}
+        <IonButton
+          shape="round"
+          expand="block"
+          fill="clear"
+          className="delete-button"
+          data-testid="delete-button-initiate-multi-sig"
+          onClick={handleDelete}
+        >
+          <IonIcon
+            slot="icon-only"
+            size="small"
+            icon={trashOutline}
+            color="primary"
+          />
+          {i18n.t("createidentifier.share.delete")}
+        </IonButton>
       </ScrollablePageLayout>
-      <PageFooter
-        pageId="initiate-multi-sig"
-        customClass={
-          groupMetadata?.groupInitiator ? "stage-1-footer" : undefined
-        }
-        primaryButtonText={
-          groupMetadata?.groupInitiator
-            ? `${i18n.t("createidentifier.share.initiatebutton")}`
-            : undefined
-        }
-        primaryButtonAction={handleInitiateMultiSig}
-        primaryButtonDisabled={!scannedConections?.length}
-        deleteButtonAction={handleDelete}
-        deleteButtonText={`${i18n.t("createidentifier.share.delete")}`}
-      />
+      {groupMetadata?.groupInitiator && (
+        <PageFooter
+          pageId="initiate-multi-sig"
+          primaryButtonText={`${i18n.t(
+            "createidentifier.share.initiatebutton"
+          )}`}
+          primaryButtonAction={handleInitiateMultiSig}
+          primaryButtonDisabled={!scannedConections?.length}
+        />
+      )}
     </>
   );
 };
