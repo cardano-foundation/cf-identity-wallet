@@ -1,14 +1,14 @@
-import { IonIcon, IonButton } from "@ionic/react";
-import { scanOutline, qrCodeOutline, copyOutline } from "ionicons/icons";
+import { IonButton, IonIcon } from "@ionic/react";
+import { copyOutline, qrCodeOutline, scanOutline } from "ionicons/icons";
 import { QRCode } from "react-qrcode-logo";
 import { i18n } from "../../../../i18n";
+import { useAppDispatch } from "../../../../store/hooks";
+import { setToastMsg } from "../../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../../globals/types";
+import { writeToClipboard } from "../../../utils/clipboard";
 import { PageHeader } from "../../PageHeader";
 import { ResponsivePageLayout } from "../../layout/ResponsivePageLayout";
 import { IdentifierStage1BodyProps } from "../CreateIdentifier.types";
-import { useAppDispatch } from "../../../../store/hooks";
-import { writeToClipboard } from "../../../utils/clipboard";
-import { setToastMsg } from "../../../../store/reducers/stateCache";
-import { ToastMsgType } from "../../../globals/types";
 
 const IdentifierStage1BodyInit = ({
   componentId,

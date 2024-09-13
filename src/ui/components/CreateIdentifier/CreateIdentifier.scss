@@ -552,6 +552,10 @@ ion-modal.create-identifier-modal {
     .scrollable-page-layout {
       &:not(.keyboard-is-open) {
         padding-bottom: 3rem;
+
+        &.receiver-view {
+          padding-bottom: 0;
+        }
       }
     }
 
