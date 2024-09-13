@@ -35,19 +35,17 @@
   .alphabet-selector {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding-top: 5.5rem;
-    height: 20rem;
+    justify-content: center;
 
     ion-button {
       width: 1.2rem;
       height: 1rem;
       min-height: 1rem;
       margin: 0;
-      font-size: 0.5rem;
+      font-size: 0.625rem;
       font-style: normal;
       font-weight: 500;
-      line-height: 0.875rem;
+      line-height: 1rem;
       color: var(--ion-color-action-blue);
       --background: transparent;
       --background-activated: transparent;
@@ -59,23 +57,13 @@
       }
     }
 
-    @media screen and (min-width: 375px) and (max-width: 389px) {
-      padding-top: 4rem;
-
-      ion-button {
-        height: 0.725rem;
-        font-size: 0.425rem;
-        min-height: 0.725rem;
-      }
-    }
-
-    @media screen and (min-width: 250px) and (max-width: 374px) {
-      padding-top: 3rem;
-
+    @media screen and (min-width: 250px) and (max-width: 370px) {
       ion-button {
         height: 0.65rem;
-        font-size: 0.325rem;
-        min-height: 0.65rem;
+        width: 1rem;
+        font-size: 0.5rem;
+        min-height: 0.8rem;
+        line-height: 0.8rem;
       }
     }
   }
