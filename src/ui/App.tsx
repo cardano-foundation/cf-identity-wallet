@@ -30,7 +30,7 @@ import { SidePage } from "./pages/SidePage";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";
-import { AppCommonErrorAlert, ErrorBoundary } from "./components/Error";
+import { AppCommonErrorAlert } from "./components/Error";
 
 setupIonicReact();
 
@@ -113,36 +113,32 @@ const App = () => {
 
   return (
     <IonApp>
-      <ErrorBoundary>
-        <AppWrapper>
-          <StrictMode>
-            {initialized ? (
-              <>
-                {renderApp()}
-                {!isPublicPage && !authentication.loggedIn ? (
-                  <LockPage />
-                ) : null}
-                {authentication.ssiAgentIsSet && !isOnline ? (
-                  <AppOffline />
-                ) : null}
-              </>
-            ) : (
-              <LoadingPage />
-            )}
-            <SetUserName
-              isOpen={showSetUserName}
-              setIsOpen={setShowSetUserName}
-            />
-            <CustomToast
-              toastMsg={toastMsg}
-              showToast={showToast}
-              setShowToast={setShowToast}
-            />
-            <SidePage />
-            <AppCommonErrorAlert />
-          </StrictMode>
-        </AppWrapper>
-      </ErrorBoundary>
+      <AppWrapper>
+        <StrictMode>
+          {initialized ? (
+            <>
+              {renderApp()}
+              {!isPublicPage && !authentication.loggedIn ? <LockPage /> : null}
+              {authentication.ssiAgentIsSet && !isOnline ? (
+                <AppOffline />
+              ) : null}
+            </>
+          ) : (
+            <LoadingPage />
+          )}
+          <SetUserName
+            isOpen={showSetUserName}
+            setIsOpen={setShowSetUserName}
+          />
+          <CustomToast
+            toastMsg={toastMsg}
+            showToast={showToast}
+            setShowToast={setShowToast}
+          />
+          <SidePage />
+          <AppCommonErrorAlert />
+        </StrictMode>
+      </AppWrapper>
     </IonApp>
   );
 };

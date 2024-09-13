@@ -12,16 +12,17 @@ const CommonErrorAlert = ({
   isOpen,
   setIsOpen,
   actionConfirm,
+  dataTestId,
 }: CommonErrorAlertProps) => {
   return (
     <Alert
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      dataTestId="alert-error-boundary"
+      dataTestId={dataTestId}
       headerText={i18n.t("error.text")}
       confirmButtonText={`${i18n.t("error.button")}`}
       actionConfirm={actionConfirm}
-      className="alert-error-boundary"
+      className="app-error-alert"
     />
   );
 };
@@ -46,6 +47,7 @@ const AppCommonErrorAlert = () => {
       isOpen={!!isShowCommonError}
       setIsOpen={showError}
       actionConfirm={closeError}
+      dataTestId="app-error-alert"
     />
   );
 };
