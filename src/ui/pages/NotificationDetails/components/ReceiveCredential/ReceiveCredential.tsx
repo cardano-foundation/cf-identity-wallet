@@ -68,6 +68,7 @@ const ReceiveCredential = ({
         handleBack();
       }, ANIMATION_DELAY);
     } catch (e) {
+      setInitiateAnimation(false);
       showError("Unable to accept acdc", e, dispatch);
     }
   };
@@ -76,7 +77,7 @@ const ReceiveCredential = ({
     try {
       await Agent.agent.keriaNotifications.deleteNotificationRecordById(
         notificationDetails.id,
-      notificationDetails.a.r as NotificationRoute
+        notificationDetails.a.r as NotificationRoute
       );
       handleNotificationUpdate();
       handleBack();

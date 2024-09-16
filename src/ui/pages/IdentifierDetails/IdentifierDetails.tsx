@@ -111,6 +111,7 @@ const IdentifierDetails = () => {
       ) {
         setCloudError(true);
       } else {
+        handleDone(false);
         showError("Unable to get connection details", error, dispatch);
       }
     }
@@ -123,8 +124,8 @@ const IdentifierDetails = () => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
   });
 
-  const handleDone = () => {
-    setNavAnimation(true);
+  const handleDone = (animation = true) => {
+    setNavAnimation(animation);
     const { backPath, updateRedux } = getBackRoute(
       TabsRoutePath.IDENTIFIER_DETAILS,
       {
@@ -139,9 +140,13 @@ const IdentifierDetails = () => {
       updateRedux
     );
 
-    setTimeout(() => {
+    if (animation) {
+      setTimeout(() => {
+        ionRouter.push(backPath.pathname, "back", "pop");
+      }, NAVIGATION_DELAY);
+    } else {
       ionRouter.push(backPath.pathname, "back", "pop");
-    }, NAVIGATION_DELAY);
+    }
 
     setTimeout(() => {
       setNavAnimation(false);

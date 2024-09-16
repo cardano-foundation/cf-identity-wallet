@@ -33,9 +33,10 @@ const CredentialRequest = ({
 
       setCredentialRequest(request);
     } catch (e) {
+      handleBack();
       showError("Unable to get credential request detail", e, dispatch);
     }
-  }, [notificationDetails, dispatch]);
+  }, [notificationDetails, dispatch, handleBack]);
 
   useOnlineStatusEffect(getCrendetialRequest);
 

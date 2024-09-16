@@ -91,6 +91,7 @@ const ConnectionDetails = () => {
       ) {
         setCloudError(true);
       } else {
+        handleDone();
         showError("Unable to get connection details", error, dispatch);
       }
     } finally {
@@ -108,6 +109,7 @@ const ConnectionDetails = () => {
         );
       setConnectionHistory(connectionHistory);
     } catch (e) {
+      handleDone();
       showError("Unable to get connection history", e, dispatch);
     } finally {
       setLoading((value) => ({ ...value, history: false }));
