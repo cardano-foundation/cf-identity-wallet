@@ -1,20 +1,15 @@
 import { BiometryType } from "@aparajita/capacitor-biometric-auth/dist/esm/definitions";
-import {
-  fireEvent,
-  render,
-  RenderResult,
-  waitFor,
-} from "@testing-library/react";
+import { waitForIonicReact } from "@ionic/react-test-utils";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { act } from "react-dom/test-utils";
-import { waitForIonicReact } from "@ionic/react-test-utils";
+import { KeyStoreKeys } from "../../../../../../../core/storage";
+import ENG_trans from "../../../../../../../locales/en/en.json";
 import { RoutePath } from "../../../../../../../routes";
 import { OperationType } from "../../../../../../globals/types";
-import { RecoverySeedPhrase } from "./RecoverySeedPhrase";
-import ENG_trans from "../../../../../../../locales/en/en.json";
-import { KeyStoreKeys } from "../../../../../../../core/storage";
 import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
+import { RecoverySeedPhrase } from "./RecoverySeedPhrase";
 
 jest.mock("../../../../../../../core/storage", () => ({
   ...jest.requireActual("../../../../../../../core/storage"),
@@ -83,7 +78,7 @@ describe("Recovery Phrase", () => {
   test("Render", async () => {
     const { getByTestId, getByText, queryByText } = render(
       <Provider store={storeMocked}>
-        <RecoverySeedPhrase />
+        <RecoverySeedPhrase onClose={jest.fn} />
       </Provider>
     );
 
@@ -114,7 +109,7 @@ describe("Recovery Phrase", () => {
   test("Show phrase", async () => {
     const { queryByTestId, getByTestId, getByText, queryByText } = render(
       <Provider store={storeMocked}>
-        <RecoverySeedPhrase />
+        <RecoverySeedPhrase onClose={jest.fn} />
       </Provider>
     );
 

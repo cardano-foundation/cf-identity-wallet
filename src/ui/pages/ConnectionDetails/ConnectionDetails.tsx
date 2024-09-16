@@ -91,12 +91,13 @@ const ConnectionDetails = () => {
       ) {
         setCloudError(true);
       } else {
-        showError("Unable to get connection details", error);
+        handleDone();
+        showError("Unable to get connection details", error, dispatch);
       }
     } finally {
       setLoading((value) => ({ ...value, details: false }));
     }
-  }, [connectionShortDetails?.id]);
+  }, [connectionShortDetails?.id, dispatch]);
 
   const getHistory = useCallback(async () => {
     if (!connectionShortDetails?.id) return;
@@ -108,11 +109,12 @@ const ConnectionDetails = () => {
         );
       setConnectionHistory(connectionHistory);
     } catch (e) {
-      showError("Unable to get connection history", e);
+      handleDone();
+      showError("Unable to get connection history", e, dispatch);
     } finally {
       setLoading((value) => ({ ...value, history: false }));
     }
-  }, [connectionShortDetails?.id]);
+  }, [connectionShortDetails?.id, dispatch]);
 
   const getData = useCallback(() => {
     if (!connectionShortDetails?.id) return;

@@ -56,9 +56,9 @@ const useLoginAttempt = () => {
       const loginAttempt = await Agent.agent.auth.incrementLoginAttempts();
       setLoginAttempt(loginAttempt);
     } catch (e) {
-      showError("Unable to increment login attemp", e);
+      showError("Unable to increment login attemp", e, dispatch);
     }
-  }, [setLoginAttempt]);
+  }, [setLoginAttempt, dispatch]);
 
   const resetLoginAttempt = useCallback(async () => {
     try {
@@ -68,9 +68,9 @@ const useLoginAttempt = () => {
         attempts: 0,
       });
     } catch (e) {
-      showError("Unable to reset login attemp", e);
+      showError("Unable to reset login attemp", e, dispatch);
     }
-  }, [setLoginAttempt]);
+  }, [setLoginAttempt, dispatch]);
 
   useEffect(() => {
     if (lockDuration <= 0) {

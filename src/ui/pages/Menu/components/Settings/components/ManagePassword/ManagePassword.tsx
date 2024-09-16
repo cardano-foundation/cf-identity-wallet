@@ -26,6 +26,7 @@ import { CreatePassword } from "../../../../../CreatePassword";
 import { KeyStoreKeys, SecureStorage } from "../../../../../../../core/storage";
 import { useAppDispatch } from "../../../../../../../store/hooks";
 import { ToastMsgType } from "../../../../../../globals/types";
+import { showError } from "../../../../../../utils/error";
 
 const ManagePassword = () => {
   const dispatch = useAppDispatch();
@@ -61,16 +62,20 @@ const ManagePassword = () => {
 
   const onVerify = async () => {
     if (passwordIsSet && userAction.current === "disable") {
-      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
-      setPasswordIsSet(false);
-      userAction.current = "";
-      dispatch(
-        setAuthentication({
-          ...authentication,
-          passwordIsSet: false,
-        })
-      );
-      dispatch(setToastMsg(ToastMsgType.PASSWORD_DISABLED));
+      try {
+        await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
+        setPasswordIsSet(false);
+        userAction.current = "";
+        dispatch(
+          setAuthentication({
+            ...authentication,
+            passwordIsSet: false,
+          })
+        );
+        dispatch(setToastMsg(ToastMsgType.PASSWORD_DISABLED));
+      } catch (e) {
+        showError("Unable to delete password", e, dispatch);
+      }
     } else {
       setCreatePasswordModalIsOpen(true);
     }

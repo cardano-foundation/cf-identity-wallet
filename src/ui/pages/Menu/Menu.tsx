@@ -17,7 +17,7 @@ import {
   chatbubbleOutline,
   addOutline,
 } from "ionicons/icons";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Browser } from "@capacitor/browser";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -151,6 +151,10 @@ const Menu = () => {
     }
   };
 
+  const backToParentMenu = useCallback(() => {
+    showSelectedOption(SubMenuKey.Settings);
+  }, []);
+
   const submenuMapData: [SubMenuKey, SubMenuData][] = [
     [
       SubMenuKey.Profile,
@@ -264,7 +268,7 @@ const Menu = () => {
     [
       SubMenuKey.RecoverySeedPhrase,
       {
-        Component: RecoverySeedPhrase,
+        Component: () => <RecoverySeedPhrase onClose={backToParentMenu} />,
         title: "settings.sections.security.seedphrase.page.title",
         pageId: "recovery-seed-phrase",
         nestedMenu: true,

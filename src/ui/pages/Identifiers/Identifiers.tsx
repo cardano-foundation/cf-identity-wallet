@@ -38,7 +38,7 @@ import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 import { Agent } from "../../../core/agent/agent";
 import { showError } from "../../utils/error";
 
-const CLEAR_STATE_DELAY = 1000;
+const CLEAR_STATE_DELAY = 500;
 interface AdditionalButtonsProps {
   handleCreateIdentifier: () => void;
   handleConnections: () => void;

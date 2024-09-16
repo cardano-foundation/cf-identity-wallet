@@ -19,6 +19,7 @@ import {
 import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { createThemeValue } from "../../../utils/theme";
+import { showError } from "../../../utils/error";
 
 const IdentifierStage4 = ({
   state,
@@ -45,36 +46,40 @@ const IdentifierStage4 = ({
       return;
     } else {
       const selectedTheme = createThemeValue(state.color, state.selectedTheme);
-      const { identifier, signifyName, isPending } =
-        await Agent.agent.multiSigs.createMultisig(
-          ourIdentifier,
-          otherIdentifierContacts,
-          state.threshold
-        );
-      if (identifier) {
-        const newIdentifier: IdentifierShortDetails = {
-          id: identifier,
-          displayName: state.displayNameValue,
-          createdAtUTC: new Date().toISOString(),
-          theme: selectedTheme,
-          isPending: !!isPending,
-          signifyName,
-          multisigManageAid: ourIdentifier,
-        };
-        const filteredIdentifiersData = identifiersData.filter(
-          (item) => item.id !== ourIdentifier
-        );
-        dispatch(
-          setIdentifiersCache([...filteredIdentifiersData, newIdentifier])
-        );
-        dispatch(
-          setToastMsg(
-            state.threshold === 1
-              ? ToastMsgType.IDENTIFIER_CREATED
-              : ToastMsgType.IDENTIFIER_REQUESTED
-          )
-        );
-        resetModal && resetModal();
+      try {
+        const { identifier, signifyName, isPending } =
+          await Agent.agent.multiSigs.createMultisig(
+            ourIdentifier,
+            otherIdentifierContacts,
+            state.threshold
+          );
+        if (identifier) {
+          const newIdentifier: IdentifierShortDetails = {
+            id: identifier,
+            displayName: state.displayNameValue,
+            createdAtUTC: new Date().toISOString(),
+            theme: selectedTheme,
+            isPending: !!isPending,
+            signifyName,
+            multisigManageAid: ourIdentifier,
+          };
+          const filteredIdentifiersData = identifiersData.filter(
+            (item) => item.id !== ourIdentifier
+          );
+          dispatch(
+            setIdentifiersCache([...filteredIdentifiersData, newIdentifier])
+          );
+          dispatch(
+            setToastMsg(
+              state.threshold === 1
+                ? ToastMsgType.IDENTIFIER_CREATED
+                : ToastMsgType.IDENTIFIER_REQUESTED
+            )
+          );
+          resetModal && resetModal();
+        }
+      } catch (e) {
+        showError("Unable to create multi-sig", e, dispatch);
       }
     }
   };
