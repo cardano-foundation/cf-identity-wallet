@@ -32,17 +32,6 @@
 </div>
 
 <br>
-<p align="center">
-  <kbd>
-    <a href="https://www.youtube.com/watch?v=YmEJHQksFyE">
-    <img src="docs/images/readme/Introduction-Video-Thumbnail.jpg" alt="Identity Wallet Introduction Video Thumbnail">
-    </a>
-  </kbd>
-</p>
-
-<div align="center">   
- <b>  Click the image to watch the overview video </b>
-</div>
 
 # Features
 
