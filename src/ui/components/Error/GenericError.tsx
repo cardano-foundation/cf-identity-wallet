@@ -3,7 +3,7 @@ import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getShowCommonError,
-  showCommonError,
+  showGenericError,
 } from "../../../store/reducers/stateCache";
 import { Alert } from "../Alert";
 import { CommonErrorAlertProps } from "./Error.types";
@@ -19,21 +19,21 @@ const CommonErrorAlert = ({
       isOpen={isOpen}
       setIsOpen={setIsOpen}
       dataTestId={dataTestId}
-      headerText={i18n.t("error.text")}
-      confirmButtonText={`${i18n.t("error.button")}`}
+      headerText={i18n.t("genericerror.text")}
+      confirmButtonText={`${i18n.t("genericerror.button")}`}
       actionConfirm={actionConfirm}
       className="app-error-alert"
     />
   );
 };
 
-const AppCommonErrorAlert = () => {
+const GenericError = () => {
   const dispatch = useAppDispatch();
   const isShowCommonError = useAppSelector(getShowCommonError);
 
   const showError = useCallback(
     (value: boolean) => {
-      dispatch(showCommonError(value));
+      dispatch(showGenericError(value));
     },
     [dispatch]
   );
@@ -52,4 +52,4 @@ const AppCommonErrorAlert = () => {
   );
 };
 
-export { CommonErrorAlert, AppCommonErrorAlert };
+export { CommonErrorAlert, GenericError };

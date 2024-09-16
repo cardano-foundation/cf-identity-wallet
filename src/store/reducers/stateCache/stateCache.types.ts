@@ -51,7 +51,7 @@ interface StateCacheProps {
   toastMsg?: ToastMsgType;
   queueIncomingRequest: QueueProps<IncomingRequestProps>;
   cameraDirection?: LensFacing;
-  showCommonError?: boolean;
+  showGenericError?: boolean;
 }
 
 export { IncomingRequestType };

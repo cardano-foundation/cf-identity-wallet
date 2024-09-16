@@ -1,1 +1,1 @@
-export * from "./CommonErrorAlert";
+export * from "./GenericError";

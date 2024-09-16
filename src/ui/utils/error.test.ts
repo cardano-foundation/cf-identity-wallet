@@ -1,4 +1,4 @@
-import { setToastMsg, showCommonError } from "../../store/reducers/stateCache";
+import { setToastMsg, showGenericError } from "../../store/reducers/stateCache";
 import { ToastMsgType } from "../globals/types";
 import { showError } from "./error";
 
@@ -15,7 +15,7 @@ describe("Show error", () => {
   it("Show common error", () => {
     showError("class1", {}, dispatch);
     expect(errorLogMock).toBeCalled();
-    expect(dispatch).toBeCalledWith(showCommonError(true));
+    expect(dispatch).toBeCalledWith(showGenericError(true));
   });
 
   it("Show error log and toast message", () => {

@@ -19,7 +19,7 @@ import {
   stateCacheSlice,
   login,
   setIsOnline,
-  showCommonError,
+  showGenericError,
 } from "./stateCache";
 import { RootState } from "../../index";
 import { RoutePath } from "../../../routes";
@@ -58,11 +58,11 @@ describe("State Cache", () => {
     );
   });
 
-  test("should set showCommonError", () => {
-    const action = showCommonError(true);
+  test("should set showGenericError", () => {
+    const action = showGenericError(true);
     const nextState = stateCacheSlice.reducer(initialState, action);
 
-    expect(nextState.showCommonError).toEqual(true);
+    expect(nextState.showGenericError).toEqual(true);
   });
 
   test("should set the current route cache", () => {

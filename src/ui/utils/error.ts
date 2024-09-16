@@ -1,6 +1,6 @@
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
-import { setToastMsg, showCommonError } from "../../store/reducers/stateCache";
+import { setToastMsg, showGenericError } from "../../store/reducers/stateCache";
 import { ToastMsgType } from "../globals/types";
 
 const showError = (
@@ -15,7 +15,7 @@ const showError = (
   if (toastMessage) {
     dispatch(setToastMsg(toastMessage));
   } else {
-    dispatch(showCommonError(true));
+    dispatch(showGenericError(true));
   }
 };
 

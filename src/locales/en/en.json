@@ -1628,7 +1628,7 @@
     "setupandroidbiometrycancel": "Don't allow",
     "cancelbiometryheader": "You canceled Biometrics. You can set this up later via the settings page."
   },
-  "error": {
+  "genericerror": {
     "text": "Something went wrong. Please try again.",
     "button": "OK"
   }

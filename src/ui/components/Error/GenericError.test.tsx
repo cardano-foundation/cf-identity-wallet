@@ -3,9 +3,9 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { act } from "react";
-import { AppCommonErrorAlert } from "./CommonErrorAlert";
+import { GenericError } from "./GenericError";
 import ENG_TRANS from "../../../locales/en/en.json";
-import { showCommonError } from "../../../store/reducers/stateCache";
+import { showGenericError } from "../../../store/reducers/stateCache";
 
 const dispatchMock = jest.fn();
 describe("Common error alert", () => {
@@ -16,7 +16,7 @@ describe("Common error alert", () => {
     const mockStore = configureStore();
     const initialState = {
       stateCache: {
-        showCommonError: true,
+        showGenericError: true,
       },
     };
     mockedStore = {
@@ -28,20 +28,20 @@ describe("Common error alert", () => {
   test("Register keyboard event when render app", async () => {
     const { getByText } = render(
       <Provider store={mockedStore}>
-        <AppCommonErrorAlert />
+        <GenericError />
       </Provider>
     );
 
     await waitFor(() => {
-      getByText(ENG_TRANS.error.text);
+      getByText(ENG_TRANS.genericerror.text);
     });
 
     act(() => {
-      fireEvent.click(getByText(ENG_TRANS.error.button));
+      fireEvent.click(getByText(ENG_TRANS.genericerror.button));
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(showCommonError(false));
+      expect(dispatchMock).toBeCalledWith(showGenericError(false));
     });
   });
 });
