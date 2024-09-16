@@ -9,7 +9,7 @@ Ensure you have the latest version of the following programs installed on your M
 ### Android Build
  - Android Studio: Make sure you have the latest version of Android Studio.
 
-For more information, check the [Capacitor Environment Setup guide](https://capacitorjs.com/docs/getting-started/environment-setup#android-requirements).
+For more information, check the [Capacitor Environment Setup guide](https://capacitorjs.com/docs/getting-started/environment-setup).
 
 ## Build the app
 ```bash
