@@ -4,15 +4,18 @@ import { Agent } from "../../../../core/agent/agent";
 import { i18n } from "../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
+  getIdentifiersCache,
   getMultiSigGroupCache,
+  setIdentifiersCache,
   setScanGroupId,
 } from "../../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
   getStateCache,
   setCurrentOperation,
+  setToastMsg,
 } from "../../../../store/reducers/stateCache";
-import { OperationType } from "../../../globals/types";
+import { OperationType, ToastMsgType } from "../../../globals/types";
 import { useOnlineStatusEffect } from "../../../hooks";
 import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
 import { getTheme } from "../../../utils/theme";
@@ -22,6 +25,7 @@ import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { IdentifierStage1BodyInit } from "./IdentifierStage1BodyInit";
 import { IdentifierStage1BodyResume } from "./IdentifierStage1BodyResume";
 import { showError } from "../../../utils/error";
+import { Verification } from "../../Verification";
 
 const IdentifierStage1 = ({
   state,
@@ -33,6 +37,7 @@ const IdentifierStage1 = ({
   preventRedirect,
   isModalOpen,
 }: IdentifierStageProps) => {
+  const identifierData = useAppSelector(getIdentifiersCache);
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -49,6 +54,8 @@ const IdentifierStage1 = ({
     resumeMultiSig?.groupMetadata || state.newIdentifier.groupMetadata;
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [initiated, setInitiated] = useState(false);
+  const [verifyIsOpen, setVerifyIsOpen] = useState(false);
+  const [alertDeleteOpen, setAlertDeleteOpen] = useState(false);
   const [scannedConections, setScannedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
@@ -131,6 +138,40 @@ const IdentifierStage1 = ({
     }));
   };
 
+  const openDeleteConfirm = () => {
+    setAlertDeleteOpen(true);
+  };
+
+  const handleDelete = async () => {
+    const identifierId = state.newIdentifier.id || resumeMultiSig?.id;
+    if (!identifierId) return;
+
+    try {
+      setVerifyIsOpen(false);
+      const updatedIdentifiers = identifierData.filter(
+        (item) => item.id !== identifierId
+      );
+
+      await Agent.agent.identifiers.archiveIdentifier(identifierId);
+      await Agent.agent.identifiers.deleteIdentifier(identifierId);
+
+      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
+      dispatch(setIdentifiersCache(updatedIdentifiers));
+      handleDone();
+    } catch (e) {
+      showError(
+        "Unable to delete identifier",
+        e,
+        dispatch,
+        ToastMsgType.DELETE_IDENTIFIER_FAIL
+      );
+    }
+  };
+
+  const handleAuthentication = () => {
+    setVerifyIsOpen(true);
+  };
+
   return (
     <>
       {resumeMultiSig?.signifyName.length ||
@@ -144,6 +185,7 @@ const IdentifierStage1 = ({
             groupMetadata={groupMetadata}
             handleScanButton={handleScanButton}
             scannedConections={scannedConections}
+            handleDelete={openDeleteConfirm}
           />
         ) : (
           <IdentifierStage1BodyInit
@@ -153,6 +195,7 @@ const IdentifierStage1 = ({
             groupMetadata={groupMetadata}
             handleScanButton={handleScanButton}
             scannedConections={scannedConections}
+            handleDelete={openDeleteConfirm}
           />
         )}
       <Alert
@@ -169,6 +212,26 @@ const IdentifierStage1 = ({
         actionConfirm={handleInitiateScan}
         actionCancel={() => setAlertIsOpen(false)}
         actionDismiss={() => setAlertIsOpen(false)}
+      />
+      <Alert
+        isOpen={alertDeleteOpen}
+        setIsOpen={setAlertDeleteOpen}
+        dataTestId="alert-confirm-identifier-delete-details"
+        headerText={i18n.t("identifiers.details.delete.alert.title")}
+        confirmButtonText={`${i18n.t(
+          "identifiers.details.delete.alert.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "identifiers.details.delete.alert.cancel"
+        )}`}
+        actionConfirm={() => handleAuthentication()}
+        actionCancel={() => setAlertDeleteOpen(false)}
+        actionDismiss={() => setAlertDeleteOpen(false)}
+      />
+      <Verification
+        verifyIsOpen={verifyIsOpen}
+        setVerifyIsOpen={setVerifyIsOpen}
+        onVerify={handleDelete}
       />
     </>
   );

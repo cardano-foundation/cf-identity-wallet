@@ -14,7 +14,6 @@ import {
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { StorageMessage } from "../../../core/storage/storage.types";
@@ -63,7 +62,6 @@ const Scanner = forwardRef(
     ref
   ) => {
     const componentId = "scanner";
-    const history = useHistory();
     const platforms = getPlatforms();
     const dispatch = useAppDispatch();
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);

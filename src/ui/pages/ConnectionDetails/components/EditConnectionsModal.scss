@@ -1,7 +1,7 @@
 .edit-connections-modal {
-  margin-top: constant(safe-area-inset-top);
-  margin-top: env(safe-area-inset-top);
-  --safe-area-inset-top: env(safe-area-inset-top);
+  .scrollable-page-layout {
+    background: var(--ion-color-light-grey);
+  }
 
   .page-header {
     ion-toolbar {
