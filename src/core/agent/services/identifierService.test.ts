@@ -1,5 +1,6 @@
 import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { Agent } from "../agent";
+import { ConnectionStatus } from "../agent.types";
 import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
 import { EventService } from "./eventService";
 import { IdentifierService } from "./identifierService";
@@ -110,10 +111,16 @@ const agentServicesProps = {
   eventService: new EventService(),
 };
 
+const connections = jest.mocked({
+  getMultisigLinkedContacts: jest.fn(),
+  deleteConnectionById: jest.fn(),
+});
+
 const identifierService = new IdentifierService(
   agentServicesProps,
   identifierStorage as any,
-  operationPendingStorage as any
+  operationPendingStorage as any,
+  connections as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -350,10 +357,33 @@ describe("Single sig service of agent", () => {
   });
 
   // For archive/delete/restore tests
-  test("can delete an archived identifier (identifier and metadata record)", async () => {
-    identifierStorage.getIdentifierMetadata = jest
+  test("should delete all associated linked connections if the identifier is a multi-sig", async () => {
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...keriMetadataRecord,
+      isPending: true,
+      signifyOpName: "signifyOpName",
+    });
+    connections.getMultisigLinkedContacts = jest.fn().mockResolvedValue([
+      {
+        id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.PENDING,
+      },
+    ]);
+    PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
-      .mockResolvedValue(archivedMetadataRecord);
+      .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
+    await identifierService.deleteIdentifier(archivedMetadataRecord.id);
+    expect(connections.deleteConnectionById).toBeCalledTimes(1);
+  });
+
+  test("can delete an archived identifier (identifier and metadata record)", async () => {
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...archivedMetadataRecord,
+      groupMetadata: undefined,
+    });
     PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
       .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
@@ -372,9 +402,10 @@ describe("Single sig service of agent", () => {
   });
 
   test("can delete an archived identifier and disconnect DApp", async () => {
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(archivedMetadataRecord);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...archivedMetadataRecord,
+      groupMetadata: undefined,
+    });
     identifierStorage.updateIdentifierMetadata = jest.fn();
     PeerConnection.peerConnection.getConnectedDAppAddress = jest
       .fn()
@@ -399,9 +430,10 @@ describe("Single sig service of agent", () => {
   });
 
   test("cannot delete a non-archived credential", async () => {
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(keriMetadataRecord);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...keriMetadataRecord,
+      groupMetadata: undefined,
+    });
     identifierStorage.updateIdentifierMetadata = jest.fn();
     await expect(
       identifierService.deleteIdentifier(keriMetadataRecord.id)
@@ -584,6 +616,20 @@ describe("Single sig service of agent", () => {
         id: identifierId,
       });
 
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+
+    connections.getMultisigLinkedContacts = jest.fn().mockResolvedValue([
+      {
+        id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.PENDING,
+      },
+    ]);
+
     await identifierService.deleteStaleLocalIdentifier(identifierId);
     expect(identifierStorage.deleteIdentifierMetadata).toBeCalledWith(
       identifierId
@@ -594,5 +640,7 @@ describe("Single sig service of agent", () => {
     expect(identifierStorage.deleteIdentifierMetadata).toBeCalledWith(
       identifierId
     );
+
+    expect(connections.deleteConnectionById).toBeCalledTimes(2);
   });
 });
