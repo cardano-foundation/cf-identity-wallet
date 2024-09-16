@@ -299,6 +299,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
           ToastMsgType.DELETE_CONNECTION_FAIL
         );
       }
+      dispatch(setCurrentOperation(OperationType.IDLE));
     };
 
     const ConnectionsBody = () => {
