@@ -195,22 +195,30 @@ class IdentifierService extends AgentService {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
     );
-
     if (metadata.groupMetadata) {
-      await this.identifierStorage.deleteIdentifierMetadata(identifier);
-
-      const connections = await this.connections.getMultisigLinkedContacts(
-        metadata.groupMetadata.groupId
-      );
-      for (const connection of connections) {
-        await this.connections.deleteConnectionById(connection.id);
-      }
-    } else {
-      this.validArchivedIdentifier(metadata);
-      await this.identifierStorage.updateIdentifierMetadata(identifier, {
-        isDeleted: true,
-      });
+      await this.deleteConnections(metadata.groupMetadata.groupId);
     }
+
+    if (metadata.multisigManageAid) {
+      const localMember = await this.identifierStorage.getIdentifierMetadata(
+        metadata.multisigManageAid
+      );
+      await this.identifierStorage.updateIdentifierMetadata(
+        metadata.multisigManageAid,
+        {
+          isDeleted: true,
+        }
+      );
+      if (localMember.groupMetadata) {
+        await this.deleteConnections(localMember.groupMetadata.groupId);
+      }
+    }
+
+    this.validArchivedIdentifier(metadata);
+    await this.identifierStorage.updateIdentifierMetadata(identifier, {
+      isDeleted: true,
+    });
+
     const connectedDApp =
       PeerConnection.peerConnection.getConnectedDAppAddress();
     if (
@@ -222,20 +230,16 @@ class IdentifierService extends AgentService {
     }
   }
 
-  async deleteStaleLocalIdentifier(identifier: string): Promise<void> {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(
-      identifier
+  private async deleteConnections(groupId: string) {
+    const connections = await this.connections.getMultisigLinkedContacts(
+      groupId
     );
-
-    if (metadata.groupMetadata) {
-      const connections = await this.connections.getMultisigLinkedContacts(
-        metadata.groupMetadata.groupId
-      );
-      for (const connection of connections) {
-        await this.connections.deleteConnectionById(connection.id);
-      }
+    for (const connection of connections) {
+      await this.connections.deleteConnectionById(connection.id);
     }
+  }
 
+  async deleteStaleLocalIdentifier(identifier: string): Promise<void> {
     const connectedDApp =
       PeerConnection.peerConnection.getConnectedDAppAddress();
     if (

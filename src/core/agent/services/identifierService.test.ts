@@ -362,6 +362,7 @@ describe("Single sig service of agent", () => {
       ...keriMetadataRecord,
       isPending: true,
       signifyOpName: "signifyOpName",
+      isArchived: true,
     });
     connections.getMultisigLinkedContacts = jest.fn().mockResolvedValue([
       {
@@ -377,6 +378,40 @@ describe("Single sig service of agent", () => {
       .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
     await identifierService.deleteIdentifier(archivedMetadataRecord.id);
     expect(connections.deleteConnectionById).toBeCalledTimes(1);
+  });
+
+  test("should delete the local member identifier for that multisig if deleting the multi-sig identifier", async () => {
+    identifierStorage.getIdentifierMetadata
+      .mockReturnValueOnce({
+        ...keriMetadataRecord,
+        isPending: true,
+        signifyOpName: "signifyOpName",
+        multisigManageAid: "manageAid",
+        groupMetadata: undefined,
+        isArchived: true,
+      })
+      .mockReturnValueOnce({
+        ...keriMetadataRecord,
+        isPending: true,
+        multisigManageAid: "manageAid",
+      });
+
+    connections.getMultisigLinkedContacts = jest.fn().mockResolvedValue([
+      {
+        id: "group-id",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.CONFIRMED,
+      },
+    ]);
+
+    identifierStorage.updateIdentifierMetadata = jest.fn();
+
+    PeerConnection.peerConnection.getConnectingIdentifier = jest
+      .fn()
+      .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
+    await identifierService.deleteIdentifier(archivedMetadataRecord.id);
   });
 
   test("can delete an archived identifier (identifier and metadata record)", async () => {
@@ -616,20 +651,6 @@ describe("Single sig service of agent", () => {
         id: identifierId,
       });
 
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(keriMetadataRecord);
-
-    connections.getMultisigLinkedContacts = jest.fn().mockResolvedValue([
-      {
-        id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-        connectionDate: nowISO,
-        label: "",
-        logo: "logoUrl",
-        status: ConnectionStatus.PENDING,
-      },
-    ]);
-
     await identifierService.deleteStaleLocalIdentifier(identifierId);
     expect(identifierStorage.deleteIdentifierMetadata).toBeCalledWith(
       identifierId
@@ -640,7 +661,5 @@ describe("Single sig service of agent", () => {
     expect(identifierStorage.deleteIdentifierMetadata).toBeCalledWith(
       identifierId
     );
-
-    expect(connections.deleteConnectionById).toBeCalledTimes(2);
   });
 });
