@@ -1231,7 +1231,7 @@ class MultiSigService extends AgentService {
     if (grantToJoin) {
       const { grantExn, atc } = grantToJoin;
       const [, ked] = Saider.saidify(grantExn);
-      const admit = new Serder(ked);
+      const grant = new Serder(ked);
       const keeper = await this.props.signifyClient.manager!.get(gHab);
       const sigs = await keeper.sign(b(new Serder(grantExn).raw));
       const mstateNew = gHab["state"];
@@ -1245,14 +1245,14 @@ class MultiSigService extends AgentService {
       ];
 
       const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
-      const ims = d(messagize(admit, sigers, seal));
-      let newAtc = ims.substring(admit.size);
+      const ims = d(messagize(grant, sigers, seal));
+      let newAtc = ims.substring(grant.size);
 
       const previousEnd = atc ? atc.slice(newAtc.length) : "";
       newAtc += previousEnd;
 
       const gembeds = {
-        exn: [admit, newAtc],
+        exn: [grant, newAtc],
       };
 
       [exn, sigsMes, dtime] = await this.props.signifyClient
@@ -1266,11 +1266,11 @@ class MultiSigService extends AgentService {
         );
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
-      const [admit, sigs, end] = await this.props.signifyClient.ipex().grant({
+      const [grant, sigs, end] = await this.props.signifyClient.ipex().grant({
         senderName: multisigSignifyName,
         recipient,
         message: "",
-        acdc: new Serder(acdcDetail.acdc),
+        acdc: new Serder(acdcDetail.sad),
         iss: new Serder(acdcDetail.iss),
         anc: new Serder(acdcDetail.anc),
         acdcAttachment: acdcDetail?.atc,
@@ -1285,11 +1285,11 @@ class MultiSigService extends AgentService {
         { i: gHab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
       ];
       const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
-      const ims = d(messagize(admit, sigers, seal));
-      let atc = ims.substring(admit.size);
+      const ims = d(messagize(grant, sigers, seal));
+      let atc = ims.substring(grant.size);
       atc += end;
       const gembeds = {
-        exn: [admit, atc],
+        exn: [grant, atc],
       };
 
       [exn, sigsMes, dtime] = await this.props.signifyClient

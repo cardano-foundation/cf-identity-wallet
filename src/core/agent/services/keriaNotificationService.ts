@@ -589,7 +589,7 @@ class KeriaNotificationService extends AgentService {
         ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
       );
     }
-    return false;
+    return true;
   }
 
   private async createNotificationRecord(
