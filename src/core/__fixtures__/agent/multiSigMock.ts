@@ -6,7 +6,7 @@ import {
 
 const now = new Date();
 
-const keriMetadataRecordProps: IdentifierMetadataRecordProps = {
+const memberMetadataRecordProps: IdentifierMetadataRecordProps = {
   id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
   displayName: "Identifier 2",
   signifyName: "uuid-here",
@@ -19,12 +19,25 @@ const keriMetadataRecordProps: IdentifierMetadataRecordProps = {
   },
 };
 
-const keriMetadataRecord = new IdentifierMetadataRecord(
-  keriMetadataRecordProps
+const memberMetadataRecord = new IdentifierMetadataRecord(
+  memberMetadataRecordProps
 );
 
-const aidReturnedBySignify = {
-  prefix: keriMetadataRecord.id,
+const multisigMetadataRecord = {
+  type: "IdentifierMetadataRecord",
+  id: "EMkbq07RZoANCxluzl3zb8WfBkqDl-HMb0osYZckDWXg",
+  displayName: "identifier",
+  signifyName: "d8055a29-de5e-49c0-b986-b9e9f1fb6c2e",
+  isArchived: false,
+  isDeleted: false,
+  isPending: false,
+  signifyOpName: "group.EMkbq07RZoANCxluzl3zb8WfBkqDl-HMb0osYZckDWXg",
+  multisigManageAid: "EP_DgYAq7TCCyH9FohNjniJsEJTq7LjrNr_6M5zXbu91",
+  theme: 1,
+} as IdentifierMetadataRecord;
+
+const getMemberIdentifierResponse = {
+  prefix: memberMetadataRecord.id,
   state: {
     vn: [1, 0],
     i: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
@@ -51,7 +64,7 @@ const aidReturnedBySignify = {
   },
 };
 
-const aidMultisigBySignify = {
+const getMultisigIdentifierResponse = {
   prefix: "ELWFo-DV4GujnvcwwIbzTzjc-nIf0ijv6W1ecajvQYBY",
   state: {
     vn: [1, 0],
@@ -85,7 +98,7 @@ const aidMultisigBySignify = {
   },
 };
 
-const multisigMockMemberMetadata = {
+const memberIdentifierRecord = {
   _tags: {
     signifyName: "357cd92a-f349-4f5d-be3d-1ff0ff9969c5",
     groupId: "08f22dee-8cb0-4d65-8600-a82bbc3f6fd7",
@@ -112,7 +125,7 @@ const multisigMockMemberMetadata = {
   updatedAt: "2024-06-28T03:55:04.260Z",
 };
 
-const multisigMockMembers = {
+const getMultisigMembersResponse = {
   signing: [
     {
       aid: "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
@@ -357,7 +370,7 @@ const mHab = {
   windexes: [0, 1, 2],
 };
 
-const mockExn = {
+const multisigExnIpexGrantSerder = {
   kind: "JSON",
   raw: "{\"v\":\"KERI10JSON00025f_\",\"t\":\"exn\",\"d\":\"EFnDzHLeULKSm_jbQSIN427yWWFr82OBkkxg3iUf2FUW\",\"i\":\"EGUORQAs0r1mup1OmX1H23PITDV7td-o2XGdMVL6lmmk\",\"p\":\"\",\"dt\":\"2024-08-02T03:53:30.133000+00:00\",\"r\":\"/multisig/exn\",\"q\":{},\"a\":{\"gid\":\"EPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC\"},\"e\":{\"exn\":{\"v\":\"KERI10JSON000111_\",\"t\":\"exn\",\"d\":\"EMTArfbjevIfB-fbxzsepKO35RWHN2gQxTTU5Lov2Dld\",\"i\":\"EPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC\",\"p\":\"EH-_9IgodejkwXi2Hw--A53rVYcO6bDYnBrbpCId8LOu\",\"dt\":\"2024-08-02T03:53:29.400000+00:00\",\"r\":\"/ipex/admit\",\"q\":{},\"a\":{\"m\":\"\"},\"e\":{}},\"d\":\"ECxCLDUf8A1y62wf7YkWAcj5RN-KVzNaxRefzgE7oIjq\"}}",
   ked: {
@@ -428,14 +441,14 @@ const mockExn = {
   size: 607,
 };
 
-const mockSigsMes = [
+const multisigExnIpexGrantSig = [
   "ABB5MNMwQNwDxo4hhNYdF2hjzJQfZe6nfjdO_WfjvnxJwkRMrkrbapdjW8BStprjhxASVKWHmWOEFVpGWwmDpyIP",
 ];
 
-const mockDtime =
+const multisigExnIpexGrantEnd =
   "-LA35AACAA-e-exn-FABEPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC0AAAAAAAAAAAAAAAAAAAAAAAEPIKswKD9AiVxIqU4QLn14qpNuiAfgVGzoK-HVU0znjC-AABAABTAefC5IBObzL5ZteOa6me6iLQXV1v1rTcsBOrJDfk6uwRfR1nxm2DKWxehRMHEdq6YlqxysCdWfVBIvd4t3gH";
 
-const mockResolvedValue = {
+const resolvedOobiOpResponse = {
   name: "oobi.ABi0yV6LhFudjaGT4wkCNpVChyHOSFii_idAIAEhyfot",
   metadata: {
     oobi: "http://keria:3902/oobi/EH_rgokxkQE886aZf7ZRBgqN2y6aALPAmUvI5haK4yr7/agent/EFv5qAoixFv0WwsekWSqS5ypXQUl2f_N4j8GGURs3QUT",
@@ -472,7 +485,7 @@ const mockResolvedValue = {
   },
 };
 
-const mockConnectionShortDetail = {
+const initiatorConnectionShortDetails = {
   id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
   label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
   oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
@@ -488,6 +501,14 @@ const mockNotification = {
     r: "/exn/ipex/grant",
     m: "",
   },
+  connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+  read: true,
+};
+
+const mockRotation = {
+  id: "id",
+  createdAt: new Date().toISOString(),
+  a: { d: "d" },
   connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
   read: true,
 };
@@ -594,33 +615,90 @@ const mockGetRequest = {
   },
 };
 
-const mockMultisigIdentifier = {
-  type: "IdentifierMetadataRecord",
-  id: "EMkbq07RZoANCxluzl3zb8WfBkqDl-HMb0osYZckDWXg",
-  displayName: "identifier",
-  signifyName: "d8055a29-de5e-49c0-b986-b9e9f1fb6c2e",
-  isArchived: false,
-  isDeleted: false,
-  isPending: false,
-  signifyOpName: "group.EMkbq07RZoANCxluzl3zb8WfBkqDl-HMb0osYZckDWXg",
-  multisigManageAid: "EP_DgYAq7TCCyH9FohNjniJsEJTq7LjrNr_6M5zXbu91",
-  theme: 1,
-} as IdentifierMetadataRecord;
+const memberKeyStateIcp = {
+  name: "query.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+  metadata: {
+    sn: "1",
+  },
+  done: true,
+  error: null,
+  response: {
+    vn: [1, 0],
+    i: "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL",
+    s: "0",
+    p: "",
+    d: "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL",
+    f: "0",
+    dt: "2024-07-23T08:58:23.530757+00:00",
+    et: "icp",
+    kt: "1",
+    k: ["DI3bh31vfuGyV14LvtBxHHljnDnSqbKQ7DZ9iiB_51Oh"],
+    nt: "1",
+    n: ["EEhLvnvKE4eTV17ts4ngXOmri7gJA9Gs0593MCAMQjTu"],
+    bt: "0",
+    b: [],
+    c: [],
+    ee: {
+      s: "0",
+      d: "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL",
+      br: [],
+      ba: [],
+    },
+    di: "",
+  },
+};
+
+const rotatedMemberAid = "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL";
+const memberKeyStateRot = {
+  name: "query.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+  metadata: {
+    sn: "1",
+  },
+  done: true,
+  error: null,
+  response: {
+    vn: [1, 0],
+    i: rotatedMemberAid,
+    s: "1",
+    p: rotatedMemberAid,
+    d: "ELxPbNybLoBLM0EPmI9oHb6Yp40UcT-lN1JAST3sD3b9",
+    f: "0",
+    dt: "2024-07-23T08:59:16.747281+00:00",
+    et: "rot",
+    kt: "1",
+    k: ["DIH7-xjcUC-xPS9I32b0ftZAT6gHJvfHiBR4UwxtWuEO"],
+    nt: "1",
+    n: ["EKIctKY0IGPbd7njANV6P-ANncFr1kRUZgKGGzCfzNnG"],
+    bt: "0",
+    b: [],
+    c: [],
+    ee: {
+      s: "0",
+      d: "EGvWn-Zv7DXa8-Te6nTBb2vWUOsDQHPdaKshNUMjJssB",
+      br: [],
+      ba: [],
+    },
+    di: "",
+  },
+};
 
 export {
-  keriMetadataRecord,
-  aidReturnedBySignify,
-  aidMultisigBySignify,
-  multisigMockMemberMetadata,
-  multisigMockMembers,
+  memberMetadataRecord,
+  getMemberIdentifierResponse,
+  getMultisigIdentifierResponse,
+  memberIdentifierRecord,
+  getMultisigMembersResponse,
   gHab,
   mHab,
-  mockExn,
-  mockSigsMes,
-  mockDtime,
-  mockResolvedValue,
-  mockConnectionShortDetail,
+  multisigExnIpexGrantSerder,
+  multisigExnIpexGrantSig,
+  multisigExnIpexGrantEnd,
+  resolvedOobiOpResponse,
+  initiatorConnectionShortDetails,
   mockNotification,
   mockGetRequest,
-  mockMultisigIdentifier,
+  multisigMetadataRecord,
+  memberKeyStateIcp,
+  memberKeyStateRot,
+  mockRotation,
 };
