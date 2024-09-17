@@ -196,7 +196,7 @@ class IdentifierService extends AgentService {
       identifier
     );
     if (metadata.groupMetadata) {
-      await this.deleteConnections(metadata.groupMetadata.groupId);
+      await this.deleteGroupLinkedConnections(metadata.groupMetadata.groupId);
     }
 
     if (metadata.multisigManageAid) {
@@ -209,8 +209,10 @@ class IdentifierService extends AgentService {
           isDeleted: true,
         }
       );
-      if (localMember.groupMetadata) {
-        await this.deleteConnections(localMember.groupMetadata.groupId);
+      if (localMember.groupMetadata?.groupId) {
+        await this.deleteGroupLinkedConnections(
+          localMember.groupMetadata.groupId
+        );
       }
     }
 
@@ -230,7 +232,7 @@ class IdentifierService extends AgentService {
     }
   }
 
-  private async deleteConnections(groupId: string) {
+  private async deleteGroupLinkedConnections(groupId: string) {
     const connections = await this.connections.getMultisigLinkedContacts(
       groupId
     );

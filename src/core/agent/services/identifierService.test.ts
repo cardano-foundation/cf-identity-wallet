@@ -377,10 +377,12 @@ describe("Single sig service of agent", () => {
       .fn()
       .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
     await identifierService.deleteIdentifier(archivedMetadataRecord.id);
-    expect(connections.deleteConnectionById).toBeCalledTimes(1);
+    expect(connections.deleteConnectionById).toBeCalledWith(
+      "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
+    );
   });
 
-  test("should delete the local member identifier for that multisig if deleting the multi-sig identifier", async () => {
+  test("should delete the local member identifier for that multisig if the identifier is a group member identifier", async () => {
     identifierStorage.getIdentifierMetadata
       .mockReturnValueOnce({
         ...keriMetadataRecord,
@@ -412,6 +414,13 @@ describe("Single sig service of agent", () => {
       .fn()
       .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
     await identifierService.deleteIdentifier(archivedMetadataRecord.id);
+    expect(connections.deleteConnectionById).toBeCalledWith("group-id");
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      archivedMetadataRecord.id,
+      {
+        isDeleted: true,
+      }
+    );
   });
 
   test("can delete an archived identifier (identifier and metadata record)", async () => {
