@@ -101,7 +101,8 @@ class Agent {
       this.identifierService = new IdentifierService(
         this.agentServicesProps,
         this.identifierStorage,
-        this.operationPendingStorage
+        this.operationPendingStorage,
+        this.connections
       );
     }
     return this.identifierService;

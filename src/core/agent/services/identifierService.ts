@@ -19,6 +19,7 @@ import { OperationPendingStorage } from "../records/operationPendingStorage";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { Agent } from "../agent";
 import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
+import { ConnectionService } from "./connectionService";
 
 const identifierTypeThemes = [
   0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23, 30, 31, 32, 33, 40, 41, 42, 43,
@@ -39,15 +40,18 @@ class IdentifierService extends AgentService {
     "Cannot fetch identifier details as the identifier is still pending";
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
+  protected readonly connections: ConnectionService;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
-    operationPendingStorage: OperationPendingStorage
+    operationPendingStorage: OperationPendingStorage,
+    connections: ConnectionService
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
+    this.connections = connections;
   }
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
@@ -191,10 +195,30 @@ class IdentifierService extends AgentService {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
     );
+    if (metadata.groupMetadata) {
+      await this.deleteGroupLinkedConnections(metadata.groupMetadata.groupId);
+    }
+
+    if (metadata.multisigManageAid) {
+      const localMember = await this.identifierStorage.getIdentifierMetadata(
+        metadata.multisigManageAid
+      );
+      await this.identifierStorage.updateIdentifierMetadata(
+        metadata.multisigManageAid,
+        {
+          isDeleted: true,
+        }
+      );
+      await this.deleteGroupLinkedConnections(
+        localMember.groupMetadata!.groupId
+      );
+    }
+
     this.validArchivedIdentifier(metadata);
     await this.identifierStorage.updateIdentifierMetadata(identifier, {
       isDeleted: true,
     });
+
     const connectedDApp =
       PeerConnection.peerConnection.getConnectedDAppAddress();
     if (
@@ -203,6 +227,15 @@ class IdentifierService extends AgentService {
         (await PeerConnection.peerConnection.getConnectingIdentifier()).id
     ) {
       PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
+    }
+  }
+
+  private async deleteGroupLinkedConnections(groupId: string) {
+    const connections = await this.connections.getMultisigLinkedContacts(
+      groupId
+    );
+    for (const connection of connections) {
+      await this.connections.deleteConnectionById(connection.id);
     }
   }
 
