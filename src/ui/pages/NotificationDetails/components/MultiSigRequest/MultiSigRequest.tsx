@@ -45,6 +45,7 @@ import {
 import { MultiSigService } from "../../../../../core/agent/services/multiSigService";
 import { ErrorPage } from "./ErrorPage";
 import { Verification } from "../../../../components/Verification";
+import { showError } from "../../../../utils/error";
 
 const MultiSigRequest = ({
   pageId,
@@ -98,11 +99,13 @@ const MultiSigRequest = ({
   const actionAccept = async () => {
     document?.querySelector("ion-router-outlet")?.classList.add("blur");
     setSpinner(true);
-    if (!multisigIcpDetails) {
-      throw new Error(
-        "Cannot accept a multi-sig inception event before details are loaded from core"
-      );
-    } else {
+    try {
+      if (!multisigIcpDetails) {
+        throw new Error(
+          "Cannot accept a multi-sig inception event before details are loaded from core"
+        );
+      }
+
       const { identifier, multisigManageAid, isPending } =
         (await Agent.agent.multiSigs.joinMultisig(
           notificationDetails.id,
@@ -133,21 +136,27 @@ const MultiSigRequest = ({
           ? ToastMsgType.IDENTIFIER_CREATED
           : ToastMsgType.IDENTIFIER_REQUESTED;
       }
+      handleNotificationUpdate();
+      document?.querySelector("ion-router-outlet")?.classList.remove("blur");
+      setSpinner(false);
+      handleBack();
+    } catch (e) {
+      showError("Unable to join multi-sig", e, dispatch);
     }
-    handleNotificationUpdate();
-    document?.querySelector("ion-router-outlet")?.classList.remove("blur");
-    setSpinner(false);
-    handleBack();
   };
 
   const actionDecline = async () => {
-    setAlertDeclineIsOpen(false);
-    await Agent.agent.keriaNotifications.deleteNotificationRecordById(
-      notificationDetails.id,
-      notificationDetails.a.r as NotificationRoute
-    );
-    handleNotificationUpdate();
-    handleBack();
+    try {
+      setAlertDeclineIsOpen(false);
+      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+        notificationDetails.id,
+        notificationDetails.a.r as NotificationRoute
+      );
+      handleNotificationUpdate();
+      handleBack();
+    } catch (e) {
+      showError("Unable to accept acdc", e, dispatch);
+    }
   };
 
   const handleDeclineClick = useCallback(() => setAlertDeclineIsOpen(true), []);

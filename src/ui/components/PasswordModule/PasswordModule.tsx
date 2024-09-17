@@ -67,12 +67,16 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
 
     const handleContinue = async (skipped: boolean) => {
       if (skipped) {
-        await Agent.agent.basicStorage.createOrUpdateBasicRecord(
-          new BasicRecord({
-            id: MiscRecordId.APP_PASSWORD_SKIPPED,
-            content: { value: skipped },
-          })
-        );
+        await Agent.agent.basicStorage
+          .createOrUpdateBasicRecord(
+            new BasicRecord({
+              id: MiscRecordId.APP_PASSWORD_SKIPPED,
+              content: { value: skipped },
+            })
+          )
+          .catch((e) => {
+            showError("Unable to skip set password", e, dispatch);
+          });
       } else {
         if (authentication.passwordIsSet) {
           const currentPassword = await SecureStorage.get(
@@ -85,7 +89,8 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
             ) {
               return undefined;
             }
-            throw e;
+
+            showError("Unable to get current password", e, dispatch);
           });
           if (
             currentPassword !== undefined &&

@@ -1,6 +1,6 @@
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
-import { setToastMsg } from "../../store/reducers/stateCache";
+import { setToastMsg, showGenericError } from "../../store/reducers/stateCache";
 import { ToastMsgType } from "../globals/types";
 
 const showError = (
@@ -11,8 +11,13 @@ const showError = (
 ) => {
   // eslint-disable-next-line no-console
   console.error(`${message}:`, error);
-  if (dispatch) {
+
+  if (!dispatch) return;
+
+  if (toastMessage) {
     dispatch(setToastMsg(toastMessage));
+  } else {
+    dispatch(showGenericError(true));
   }
 };
 

@@ -79,16 +79,20 @@ const IdentifierDetails = () => {
   const [cloudError, setCloudError] = useState(false);
 
   const fetchOobi = useCallback(async () => {
-    if (!cardData?.id) return;
+    try {
+      if (!cardData?.id) return;
 
-    const oobiValue = await Agent.agent.connections.getOobi(
-      `${cardData.id}`,
-      userName
-    );
-    if (oobiValue) {
-      setOobi(oobiValue);
+      const oobiValue = await Agent.agent.connections.getOobi(
+        `${cardData.id}`,
+        userName
+      );
+      if (oobiValue) {
+        setOobi(oobiValue);
+      }
+    } catch (e) {
+      showError("Unable to fetch oobi", e, dispatch);
     }
-  }, [cardData?.id, userName]);
+  }, [cardData?.id, userName, dispatch]);
 
   const isFavourite = favouritesIdentifiersData?.some(
     (fav) => fav.id === params.id
@@ -107,10 +111,11 @@ const IdentifierDetails = () => {
       ) {
         setCloudError(true);
       } else {
-        showError("Unable to get connection details", error);
+        handleDone(false);
+        showError("Unable to get connection details", error, dispatch);
       }
     }
-  }, [params.id]);
+  }, [params.id, dispatch]);
 
   useOnlineStatusEffect(getDetails);
   useOnlineStatusEffect(fetchOobi);
@@ -119,8 +124,8 @@ const IdentifierDetails = () => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
   });
 
-  const handleDone = () => {
-    setNavAnimation(true);
+  const handleDone = (animation = true) => {
+    setNavAnimation(animation);
     const { backPath, updateRedux } = getBackRoute(
       TabsRoutePath.IDENTIFIER_DETAILS,
       {
@@ -135,9 +140,13 @@ const IdentifierDetails = () => {
       updateRedux
     );
 
-    setTimeout(() => {
+    if (animation) {
+      setTimeout(() => {
+        ionRouter.push(backPath.pathname, "back", "pop");
+      }, NAVIGATION_DELAY);
+    } else {
       ionRouter.push(backPath.pathname, "back", "pop");
-    }, NAVIGATION_DELAY);
+    }
 
     setTimeout(() => {
       setNavAnimation(false);
@@ -208,7 +217,7 @@ const IdentifierDetails = () => {
           dispatch(removeFavouriteIdentifierCache(id));
         })
         .catch((e) => {
-          showError("Unable to remove favourite identifier", e);
+          showError("Unable to remove favourite identifier", e, dispatch);
         });
     } else {
       if (favouritesIdentifiersData.length >= MAX_FAVOURITES) {
@@ -231,7 +240,7 @@ const IdentifierDetails = () => {
           dispatch(addFavouriteIdentifierCache({ id, time: Date.now() }));
         })
         .catch((e) => {
-          showError("Unable to add favourite identifier", e);
+          showError("Unable to add favourite identifier", e, dispatch);
         });
     }
   };

@@ -78,9 +78,9 @@ const IdentifierStage1 = ({
         setOobi(oobiValue);
       }
     } catch (e) {
-      showError("Unable to fetch Oobi", e);
+      showError("Unable to fetch Oobi", e, dispatch);
     }
-  }, [groupId, identifierId, userName]);
+  }, [groupId, userName, dispatch]);
 
   useOnlineStatusEffect(fetchOobi);
 

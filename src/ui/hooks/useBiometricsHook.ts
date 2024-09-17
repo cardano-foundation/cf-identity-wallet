@@ -12,8 +12,10 @@ import i18n from "i18next";
 import { useEffect, useState } from "react";
 import { useActivityTimer } from "../components/AppWrapper/hooks/useActivityTimer";
 import { showError } from "../utils/error";
+import { useAppDispatch } from "../../store/hooks";
 
 const useBiometricAuth = () => {
+  const dispatch = useAppDispatch();
   const [biometricInfo, setBiometricInfo] = useState<CheckBiometryResult>();
   const { setPauseTimestamp } = useActivityTimer();
 
@@ -30,7 +32,7 @@ const useBiometricAuth = () => {
         appListener = await BiometricAuth.addResumeListener(setBiometricInfo);
       } catch (error) {
         if (error instanceof Error) {
-          showError("Unable to add biometric event", error);
+          showError("Unable to add biometric event", error, dispatch);
         }
       }
     };

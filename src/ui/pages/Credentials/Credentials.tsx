@@ -123,7 +123,7 @@ const Credentials = () => {
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
-      showError("Unable to get archived credential", e);
+      showError("Unable to get archived credential", e, dispatch);
     }
   }, [dispatch]);
 
