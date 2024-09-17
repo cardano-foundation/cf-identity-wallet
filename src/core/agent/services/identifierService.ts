@@ -209,11 +209,9 @@ class IdentifierService extends AgentService {
           isDeleted: true,
         }
       );
-      if (localMember.groupMetadata?.groupId) {
-        await this.deleteGroupLinkedConnections(
-          localMember.groupMetadata.groupId
-        );
-      }
+      await this.deleteGroupLinkedConnections(
+        localMember.groupMetadata!.groupId
+      );
     }
 
     this.validArchivedIdentifier(metadata);

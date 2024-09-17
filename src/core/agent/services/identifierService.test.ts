@@ -357,7 +357,7 @@ describe("Single sig service of agent", () => {
   });
 
   // For archive/delete/restore tests
-  test("should delete all associated linked connections if the identifier is a multi-sig", async () => {
+  test("should delete all associated linked connections if the identifier is a group member identifier", async () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       ...keriMetadataRecord,
       isPending: true,
@@ -382,7 +382,7 @@ describe("Single sig service of agent", () => {
     );
   });
 
-  test("should delete the local member identifier for that multisig if the identifier is a group member identifier", async () => {
+  test("should delete the local member identifier for that multisig if deleting the multi-sig identifier", async () => {
     identifierStorage.getIdentifierMetadata
       .mockReturnValueOnce({
         ...keriMetadataRecord,
