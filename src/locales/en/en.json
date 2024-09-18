@@ -1041,7 +1041,7 @@
             }
           },
           "choosecredential": {
-            "description": "Select the most appropriate {{requestCred}} to provide the required information",
+            "description": "Below is a list of all '{{requestCred}}' credentials, ordered by the name of the issuer",
             "title": "Choose credential"
           }
         },
