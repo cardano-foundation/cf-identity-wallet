@@ -247,10 +247,6 @@ class IdentifierService extends AgentService {
     await this.identifierStorage.deleteIdentifierMetadata(identifier);
   }
 
-  async restoreIdentifier(identifier: string): Promise<void> {
-    await this.identifierStorage.updateIdentifierMetadata(identifier, {});
-  }
-
   async updateIdentifier(
     identifier: string,
     data: Pick<
@@ -297,14 +293,6 @@ class IdentifierService extends AgentService {
           signifyName: identifier.name,
         });
       }
-    }
-  }
-
-  validIdentifierMetadata(
-    metadata: Pick<IdentifierMetadataRecordProps, "theme">
-  ): void {
-    if (metadata.theme && !identifierTypeThemes.includes(metadata.theme)) {
-      throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
     }
   }
 

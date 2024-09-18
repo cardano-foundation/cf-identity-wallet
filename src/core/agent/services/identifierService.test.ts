@@ -353,7 +353,6 @@ describe("Single sig service of agent", () => {
     ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
   });
 
-  // For delete/restore tests
   test("should delete all associated linked connections if the identifier is a group member identifier", async () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       ...keriMetadataRecord,
@@ -418,7 +417,7 @@ describe("Single sig service of agent", () => {
     );
   });
 
-  test("can delete an identifier (identifier and metadata record)", async () => {
+  test("can delete an identifier and disconnect DApp", async () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       ...identifierMetadataRecord,
       groupMetadata: undefined,
