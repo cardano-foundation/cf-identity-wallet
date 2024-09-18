@@ -505,15 +505,19 @@ const mockNotification = {
   read: true,
 };
 
-const mockRotation = {
-  id: "id",
+const mockNotificationMultisigExnRotation = {
+  id: "EBRg2Ur0JYi92jP0r0ZEO385sWr_8KNMqRIsv9s2JUFI",
   createdAt: new Date().toISOString(),
-  a: { d: "d" },
+  a: {
+    d: "EKE4luv7mA_z5Tg4ZCHnWLPTKcEPcyDuPL_ql_ChwwZx",
+    r: "/multisig/exn",
+    m: "",
+  },
   connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
   read: true,
 };
 
-const mockGetRequest = {
+const mockGetRequestMultisigIcp = {
   exn: {
     v: "KERI10JSON000735_",
     t: "exn",
@@ -615,6 +619,69 @@ const mockGetRequest = {
   },
 };
 
+const mockGetExchangeGrantMessage = {
+  exn: {
+    v: "KERI10JSON00054a_",
+    t: "exn",
+    d: "ENWC07JjS0R1NYHDd2ZFGayMA42r7ow9QxKRiD37DUs7",
+    i: "EA1r4XIfyob03nijT7jOsJ6gXLjCcaD_ReZxoWzU2p9h",
+    rp: "EPy-YsdV2wcohLkL9RdCboet2o6EFxSUP1MJ4bgNPw7G",
+    p: "",
+    dt: "2024-09-18T03:51:55.780000+00:00",
+    r: "/ipex/grant",
+    q: {},
+    a: {
+      i: "EPy-YsdV2wcohLkL9RdCboet2o6EFxSUP1MJ4bgNPw7G",
+      m: "",
+    },
+    e: {
+      acdc: {
+        v: "ACDC10JSON00018f_",
+        d: "EErIOmrF9QwX5zg7ksVqDht4jHj-UTPJ1gMz6EctqiTh",
+        i: "EA1r4XIfyob03nijT7jOsJ6gXLjCcaD_ReZxoWzU2p9h",
+        ri: "EJBrpuX4E3Gpm-ost9ikpwCOZgBOgDeRaScuuRl_jhJE",
+        s: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
+        a: {
+          d: "EJWnd0z2l0vvAs_y9jZ_cX5LrWWyOzHqXc2fqE3IK40U",
+          i: "EPy-YsdV2wcohLkL9RdCboet2o6EFxSUP1MJ4bgNPw7G",
+          attendeeName: "123",
+          dt: "2024-09-18T03:51:55.258000+00:00",
+        },
+      },
+      iss: {
+        v: "KERI10JSON0000ed_",
+        t: "iss",
+        d: "EHZJEklSifPdSy1t9HcgGER8NxzTZu_qBsM5zV2vXARe",
+        i: "EErIOmrF9QwX5zg7ksVqDht4jHj-UTPJ1gMz6EctqiTh",
+        s: "0",
+        ri: "EJBrpuX4E3Gpm-ost9ikpwCOZgBOgDeRaScuuRl_jhJE",
+        dt: "2024-09-18T03:51:55.258000+00:00",
+      },
+      anc: {
+        v: "KERI10JSON00013a_",
+        t: "ixn",
+        d: "ENWczSEc4XFdqMMldRVBQylDDXdoK5QJ9aatC4Q-jEpH",
+        i: "EA1r4XIfyob03nijT7jOsJ6gXLjCcaD_ReZxoWzU2p9h",
+        s: "9",
+        p: "EMw0YuNgl_g-KTNVEZja7oiYUA54Bmq8xdVGjcZtzrgb",
+        a: [
+          {
+            i: "EErIOmrF9QwX5zg7ksVqDht4jHj-UTPJ1gMz6EctqiTh",
+            s: "0",
+            d: "EHZJEklSifPdSy1t9HcgGER8NxzTZu_qBsM5zV2vXARe",
+          },
+        ],
+      },
+      d: "ECwwzX4gP2CYV1i4o_iYQ7oLAvDoGK3q1EhnK58Jrpsh",
+    },
+  },
+  pathed: {
+    acdc: "-IABEErIOmrF9QwX5zg7ksVqDht4jHj-UTPJ1gMz6EctqiTh0AAAAAAAAAAAAAAAAAAAAAAAEHZJEklSifPdSy1t9HcgGER8NxzTZu_qBsM5zV2vXARe",
+    iss: "-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAENWczSEc4XFdqMMldRVBQylDDXdoK5QJ9aatC4Q-jEpH",
+    anc: "-AABAABQ2IulOkf_ExRjgm83rVpUvWYaiY3W0gCWZ4oCh0fdM_pHXyMYf40gihUpN8Uzs4OzUXb6o-F-Uf8VKgw-CVkO",
+  },
+};
+
 const memberKeyStateIcp = {
   name: "query.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
   metadata: {
@@ -696,9 +763,10 @@ export {
   resolvedOobiOpResponse,
   initiatorConnectionShortDetails,
   mockNotification,
-  mockGetRequest,
   multisigMetadataRecord,
   memberKeyStateIcp,
   memberKeyStateRot,
-  mockRotation,
+  mockNotificationMultisigExnRotation,
+  mockGetRequestMultisigIcp,
+  mockGetExchangeGrantMessage,
 };
