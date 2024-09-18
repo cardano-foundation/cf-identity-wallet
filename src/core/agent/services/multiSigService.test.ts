@@ -558,6 +558,74 @@ describe("Usage of multi-sig", () => {
       error
     );
   });
+
+  test("Can get multisig icp details of 2 persons multi-sig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    groupGetRequestMock = jest
+      .fn()
+      .mockResolvedValue([mockGetRequestMultisigIcp]);
+    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
+    Agent.agent.connections.getConnectionShortDetailById = jest
+      .fn()
+      .mockResolvedValue(initiatorConnectionShortDetails);
+    Agent.agent.connections.getMultisigLinkedContacts = jest
+      .fn()
+      .mockResolvedValue([]);
+    const result = await multiSigService.getMultisigIcpDetails(
+      "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
+    );
+
+    expect(result.ourIdentifier.id).toBe(memberIdentifierRecord.id);
+    expect(result.sender.id).toBe(initiatorConnectionShortDetails.id);
+    expect(result.otherConnections.length).toBe(0);
+    expect(result.threshold).toBe(2);
+  });
+
+  test("Can get multisig icp details of 3 persons multi-sig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    groupGetRequestMock = jest.fn().mockResolvedValue([
+      {
+        ...mockGetRequestMultisigIcp,
+        exn: {
+          ...mockGetRequestMultisigIcp.exn,
+          a: {
+            ...mockGetRequestMultisigIcp.exn.a,
+            smids: [
+              "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+              "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
+              "EKlUo3CAqjPfFt0Wr2vvSc7MqT9WiL2EGadRsAP3V1IJ",
+            ],
+          },
+          e: { icp: { kt: 3 } },
+        },
+      },
+    ]);
+    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
+    Agent.agent.connections.getConnectionShortDetailById = jest
+      .fn()
+      .mockResolvedValue(initiatorConnectionShortDetails);
+    Agent.agent.connections.getMultisigLinkedContacts = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.PENDING,
+        },
+      ]);
+    const result = await multiSigService.getMultisigIcpDetails(
+      "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
+    );
+    expect(result.ourIdentifier.id).toBe(memberIdentifierRecord.id);
+    expect(result.sender.id).toBe(initiatorConnectionShortDetails.id);
+    expect(result.otherConnections.length).toBe(1);
+    expect(result.otherConnections[0].id).toBe(
+      "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
+    );
+    expect(result.threshold).toBe(3);
+  });
 });
 
 describe("Creation of multi-sig", () => {
@@ -1202,28 +1270,6 @@ describe("Creation of multi-sig", () => {
     );
   });
 
-  test("Can get multisig icp details of 2 persons multi-sig", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
-    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
-    Agent.agent.connections.getConnectionShortDetailById = jest
-      .fn()
-      .mockResolvedValue(initiatorConnectionShortDetails);
-    Agent.agent.connections.getMultisigLinkedContacts = jest
-      .fn()
-      .mockResolvedValue([]);
-    const result = await multiSigService.getMultisigIcpDetails(
-      "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
-    );
-
-    expect(result.ourIdentifier.id).toBe(memberIdentifierRecord.id);
-    expect(result.sender.id).toBe(initiatorConnectionShortDetails.id);
-    expect(result.otherConnections.length).toBe(0);
-    expect(result.threshold).toBe(2);
-  });
-
   test("Throw error if the Multi-sig join request contains unknown AIDs", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     groupGetRequestMock = jest
@@ -1256,52 +1302,6 @@ describe("Creation of multi-sig", () => {
         "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
       )
     ).rejects.toThrowError(MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP);
-  });
-
-  test("Can get multisig icp details of 3 persons multi-sig", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest.fn().mockResolvedValue([
-      {
-        ...mockGetRequestMultisigIcp,
-        exn: {
-          ...mockGetRequestMultisigIcp.exn,
-          a: {
-            ...mockGetRequestMultisigIcp.exn.a,
-            smids: [
-              "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-              "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
-              "EKlUo3CAqjPfFt0Wr2vvSc7MqT9WiL2EGadRsAP3V1IJ",
-            ],
-          },
-          e: { icp: { kt: 3 } },
-        },
-      },
-    ]);
-    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
-    Agent.agent.connections.getConnectionShortDetailById = jest
-      .fn()
-      .mockResolvedValue(initiatorConnectionShortDetails);
-    Agent.agent.connections.getMultisigLinkedContacts = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-          connectionDate: nowISO,
-          label: "",
-          logo: "logoUrl",
-          status: ConnectionStatus.PENDING,
-        },
-      ]);
-    const result = await multiSigService.getMultisigIcpDetails(
-      "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
-    );
-    expect(result.ourIdentifier.id).toBe(memberIdentifierRecord.id);
-    expect(result.sender.id).toBe(initiatorConnectionShortDetails.id);
-    expect(result.otherConnections.length).toBe(1);
-    expect(result.otherConnections[0].id).toBe(
-      "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
-    );
-    expect(result.threshold).toBe(3);
   });
 
   test("Throw error if we do not control any member AID of the multi-sig", async () => {
