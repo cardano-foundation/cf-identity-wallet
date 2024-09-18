@@ -525,137 +525,6 @@ describe("Rotation of multi-sig", () => {
 });
 
 describe("Usage of multi-sig", () => {
-  test("Throw error if the Multi-sig join request contains unknown AIDs", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
-    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
-    Agent.agent.connections.getConnectionShortDetailById = jest
-      .fn()
-      .mockResolvedValue(initiatorConnectionShortDetails);
-    Agent.agent.connections.getMultisigLinkedContacts = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-          connectionDate: nowISO,
-          label: "",
-          logo: "logoUrl",
-          status: ConnectionStatus.PENDING,
-        },
-        {
-          id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
-          connectionDate: nowISO,
-          label: "",
-          logo: "logoUrl",
-          status: ConnectionStatus.CONFIRMED,
-        },
-      ]);
-    await expect(
-      multiSigService.getMultisigIcpDetails(
-        "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
-      )
-    ).rejects.toThrowError(MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP);
-  });
-
-  test("Can get multisig icp details of 3 persons multi-sig", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest.fn().mockResolvedValue([
-      {
-        ...mockGetRequestMultisigIcp,
-        exn: {
-          ...mockGetRequestMultisigIcp.exn,
-          a: {
-            ...mockGetRequestMultisigIcp.exn.a,
-            smids: [
-              "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-              "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
-              "EKlUo3CAqjPfFt0Wr2vvSc7MqT9WiL2EGadRsAP3V1IJ",
-            ],
-          },
-          e: { icp: { kt: 3 } },
-        },
-      },
-    ]);
-    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
-    Agent.agent.connections.getConnectionShortDetailById = jest
-      .fn()
-      .mockResolvedValue(initiatorConnectionShortDetails);
-    Agent.agent.connections.getMultisigLinkedContacts = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-          connectionDate: nowISO,
-          label: "",
-          logo: "logoUrl",
-          status: ConnectionStatus.PENDING,
-        },
-      ]);
-    const result = await multiSigService.getMultisigIcpDetails(
-      "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
-    );
-    expect(result.ourIdentifier.id).toBe(memberIdentifierRecord.id);
-    expect(result.sender.id).toBe(initiatorConnectionShortDetails.id);
-    expect(result.otherConnections.length).toBe(1);
-    expect(result.otherConnections[0].id).toBe(
-      "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
-    );
-    expect(result.threshold).toBe(3);
-  });
-
-  test("Throw error if we do not control any member AID of the multi-sig", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
-    mockGetIdentifiers = jest
-      .fn()
-      .mockResolvedValue([
-        { ...memberIdentifierRecord, groupMetadata: undefined },
-      ]);
-    jest
-      .spyOn(Agent.agent.connections, "getConnectionShortDetailById")
-      .mockResolvedValue(initiatorConnectionShortDetails);
-    await expect(
-      multiSigService.getMultisigIcpDetails(
-        "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
-      )
-    ).rejects.toThrowError(MultiSigService.MEMBER_AID_NOT_FOUND);
-  });
-
-  test("Cannot get multi-sig details from an unknown sender (missing metadata)", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
-    // @TODO - foconnor: This is not ideal as our identifier service is getting tightly coupled with the connection service.
-    // Re-work this later.
-    Agent.agent.connections.getConnectionShortDetailById = jest
-      .fn()
-      .mockImplementation(() => {
-        throw new Error("Some error from connection service");
-      });
-    await expect(
-      multiSigService.getMultisigIcpDetails(
-        "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
-      )
-    ).rejects.toThrowError("Some error from connection service");
-  });
-
-  test("Cannot get multi-sig details from a notification with no matching exn message", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest.fn().mockResolvedValue([]);
-    await expect(
-      multiSigService.getMultisigIcpDetails(
-        "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW"
-      )
-    ).rejects.toThrowError(
-      `${MultiSigService.EXN_MESSAGE_NOT_FOUND} EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW`
-    );
-  });
-
   test("Should return true if there is a multisig with the provided multisigId", async () => {
     const multisigId = "multisig-id";
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
@@ -1353,5 +1222,136 @@ describe("Creation of multi-sig", () => {
     expect(result.sender.id).toBe(initiatorConnectionShortDetails.id);
     expect(result.otherConnections.length).toBe(0);
     expect(result.threshold).toBe(2);
+  });
+
+  test("Throw error if the Multi-sig join request contains unknown AIDs", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    groupGetRequestMock = jest
+      .fn()
+      .mockResolvedValue([mockGetRequestMultisigIcp]);
+    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
+    Agent.agent.connections.getConnectionShortDetailById = jest
+      .fn()
+      .mockResolvedValue(initiatorConnectionShortDetails);
+    Agent.agent.connections.getMultisigLinkedContacts = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.PENDING,
+        },
+        {
+          id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.CONFIRMED,
+        },
+      ]);
+    await expect(
+      multiSigService.getMultisigIcpDetails(
+        "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
+      )
+    ).rejects.toThrowError(MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP);
+  });
+
+  test("Can get multisig icp details of 3 persons multi-sig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    groupGetRequestMock = jest.fn().mockResolvedValue([
+      {
+        ...mockGetRequestMultisigIcp,
+        exn: {
+          ...mockGetRequestMultisigIcp.exn,
+          a: {
+            ...mockGetRequestMultisigIcp.exn.a,
+            smids: [
+              "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+              "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
+              "EKlUo3CAqjPfFt0Wr2vvSc7MqT9WiL2EGadRsAP3V1IJ",
+            ],
+          },
+          e: { icp: { kt: 3 } },
+        },
+      },
+    ]);
+    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
+    Agent.agent.connections.getConnectionShortDetailById = jest
+      .fn()
+      .mockResolvedValue(initiatorConnectionShortDetails);
+    Agent.agent.connections.getMultisigLinkedContacts = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.PENDING,
+        },
+      ]);
+    const result = await multiSigService.getMultisigIcpDetails(
+      "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
+    );
+    expect(result.ourIdentifier.id).toBe(memberIdentifierRecord.id);
+    expect(result.sender.id).toBe(initiatorConnectionShortDetails.id);
+    expect(result.otherConnections.length).toBe(1);
+    expect(result.otherConnections[0].id).toBe(
+      "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
+    );
+    expect(result.threshold).toBe(3);
+  });
+
+  test("Throw error if we do not control any member AID of the multi-sig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    groupGetRequestMock = jest
+      .fn()
+      .mockResolvedValue([mockGetRequestMultisigIcp]);
+    mockGetIdentifiers = jest
+      .fn()
+      .mockResolvedValue([
+        { ...memberIdentifierRecord, groupMetadata: undefined },
+      ]);
+    jest
+      .spyOn(Agent.agent.connections, "getConnectionShortDetailById")
+      .mockResolvedValue(initiatorConnectionShortDetails);
+    await expect(
+      multiSigService.getMultisigIcpDetails(
+        "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
+      )
+    ).rejects.toThrowError(MultiSigService.MEMBER_AID_NOT_FOUND);
+  });
+
+  test("Cannot get multi-sig details from an unknown sender (missing metadata)", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    groupGetRequestMock = jest
+      .fn()
+      .mockResolvedValue([mockGetRequestMultisigIcp]);
+    // @TODO - foconnor: This is not ideal as our identifier service is getting tightly coupled with the connection service.
+    // Re-work this later.
+    Agent.agent.connections.getConnectionShortDetailById = jest
+      .fn()
+      .mockImplementation(() => {
+        throw new Error("Some error from connection service");
+      });
+    await expect(
+      multiSigService.getMultisigIcpDetails(
+        "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
+      )
+    ).rejects.toThrowError("Some error from connection service");
+  });
+
+  test("Cannot get multi-sig details from a notification with no matching exn message", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    groupGetRequestMock = jest.fn().mockResolvedValue([]);
+    await expect(
+      multiSigService.getMultisigIcpDetails(
+        "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW"
+      )
+    ).rejects.toThrowError(
+      `${MultiSigService.EXN_MESSAGE_NOT_FOUND} EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW`
+    );
   });
 });
