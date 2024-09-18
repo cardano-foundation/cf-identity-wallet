@@ -11,7 +11,6 @@ interface IdentifierMetadataRecordProps {
   displayName: string;
   signifyName: string;
   createdAt?: Date;
-  isArchived?: boolean;
   isDeleted?: boolean;
   isPending?: boolean;
   theme: number;
@@ -22,7 +21,6 @@ interface IdentifierMetadataRecordProps {
 
 class IdentifierMetadataRecord extends BaseRecord {
   displayName!: string;
-  isArchived?: boolean;
   isDeleted?: boolean;
   isPending?: boolean;
   signifyOpName?: string;
@@ -41,7 +39,6 @@ class IdentifierMetadataRecord extends BaseRecord {
       this.id = props.id;
       this.displayName = props.displayName;
       this.signifyName = props.signifyName;
-      this.isArchived = props.isArchived ?? false;
       this.isDeleted = props.isDeleted ?? false;
       this.isPending = props.isPending ?? false;
       this.signifyOpName = props.signifyOpName;
@@ -57,7 +54,6 @@ class IdentifierMetadataRecord extends BaseRecord {
       ...this._tags,
       signifyName: this.signifyName,
       groupId: this.groupMetadata?.groupId,
-      isArchived: this.isArchived,
       isDeleted: this.isDeleted,
       isPending: this.isPending,
       groupCreated: this.groupMetadata?.groupCreated,

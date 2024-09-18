@@ -28,7 +28,6 @@ const identifierTypeThemes = [
 class IdentifierService extends AgentService {
   static readonly IDENTIFIER_METADATA_RECORD_MISSING =
     "Identifier metadata record does not exist";
-  static readonly IDENTIFIER_NOT_ARCHIVED = "Identifier was not archived";
   static readonly THEME_WAS_NOT_VALID = "Identifier theme was not valid";
   static readonly EXN_MESSAGE_NOT_FOUND =
     "There's no exchange message for the given SAID";
@@ -54,10 +53,10 @@ class IdentifierService extends AgentService {
     this.connections = connections;
   }
 
-  async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
+  async getIdentifiers(): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
     const listMetadata: IdentifierMetadataRecord[] =
-      await this.identifierStorage.getAllIdentifierMetadata(getArchived);
+      await this.identifierStorage.getAllIdentifierMetadata();
 
     for (let i = 0; i < listMetadata.length; i++) {
       const metadata = listMetadata[i];
@@ -139,7 +138,7 @@ class IdentifierService extends AgentService {
   async createIdentifier(
     metadata: Omit<
       IdentifierMetadataRecordProps,
-      "id" | "createdAt" | "isArchived" | "signifyName"
+      "id" | "createdAt" | "signifyName"
     >
   ): Promise<CreateIdentifierResult> {
     const startTime = Date.now();
@@ -188,12 +187,6 @@ class IdentifierService extends AgentService {
     return { identifier, signifyName, isPending: !op.done };
   }
 
-  async archiveIdentifier(identifier: string): Promise<void> {
-    return this.identifierStorage.updateIdentifierMetadata(identifier, {
-      isArchived: true,
-    });
-  }
-
   async deleteIdentifier(identifier: string): Promise<void> {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
@@ -217,7 +210,6 @@ class IdentifierService extends AgentService {
       );
     }
 
-    this.validArchivedIdentifier(metadata);
     await this.identifierStorage.updateIdentifierMetadata(identifier, {
       isDeleted: true,
     });
@@ -256,13 +248,7 @@ class IdentifierService extends AgentService {
   }
 
   async restoreIdentifier(identifier: string): Promise<void> {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(
-      identifier
-    );
-    this.validArchivedIdentifier(metadata);
-    await this.identifierStorage.updateIdentifierMetadata(identifier, {
-      isArchived: false,
-    });
+    await this.identifierStorage.updateIdentifierMetadata(identifier, {});
   }
 
   async updateIdentifier(
@@ -314,11 +300,11 @@ class IdentifierService extends AgentService {
     }
   }
 
-  private validArchivedIdentifier(metadata: IdentifierMetadataRecord): void {
-    if (!metadata.isArchived) {
-      throw new Error(
-        `${IdentifierService.IDENTIFIER_NOT_ARCHIVED} ${metadata.id}`
-      );
+  validIdentifierMetadata(
+    metadata: Pick<IdentifierMetadataRecordProps, "theme">
+  ): void {
+    if (metadata.theme && !identifierTypeThemes.includes(metadata.theme)) {
+      throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
     }
   }
 

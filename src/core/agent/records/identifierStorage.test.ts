@@ -40,7 +40,7 @@ describe("Identifier storage test", () => {
       identifierMetadataRecord,
       identifierMetadataRecord2,
     ]);
-    expect(await identifierStorage.getAllIdentifierMetadata(false)).toEqual([
+    expect(await identifierStorage.getAllIdentifierMetadata()).toEqual([
       identifierMetadataRecord,
       identifierMetadataRecord2,
     ]);

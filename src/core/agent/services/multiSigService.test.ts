@@ -241,7 +241,6 @@ const multisigMockMemberMetadata = {
   _tags: {
     signifyName: "357cd92a-f349-4f5d-be3d-1ff0ff9969c5",
     groupId: "08f22dee-8cb0-4d65-8600-a82bbc3f6fd7",
-    isArchived: false,
     isDeleted: false,
     isPending: false,
     groupCreated: true,
@@ -250,7 +249,6 @@ const multisigMockMemberMetadata = {
   id: "aid-1",
   displayName: "multi-sig",
   signifyName: "357cd92a-f349-4f5d-be3d-1ff0ff9969c5",
-  isArchived: false,
   isDeleted: false,
   isPending: false,
   signifyOpName: "done.aid-1",

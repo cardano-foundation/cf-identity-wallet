@@ -165,9 +165,8 @@ const keriMetadataRecordProps = {
   theme: 0,
   groupMetadata,
 };
-const archivedMetadataRecord = new IdentifierMetadataRecord({
+const identifierMetadataRecord = new IdentifierMetadataRecord({
   ...keriMetadataRecordProps,
-  isArchived: true,
   theme: 0,
 });
 
@@ -354,13 +353,12 @@ describe("Single sig service of agent", () => {
     ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
   });
 
-  // For archive/delete/restore tests
+  // For delete/restore tests
   test("should delete all associated linked connections if the identifier is a group member identifier", async () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       ...keriMetadataRecord,
       isPending: true,
       signifyOpName: "signifyOpName",
-      isArchived: true,
     });
     connections.getMultisigLinkedContacts = jest.fn().mockResolvedValue([
       {
@@ -373,8 +371,8 @@ describe("Single sig service of agent", () => {
     ]);
     PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
-      .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
-    await identifierService.deleteIdentifier(archivedMetadataRecord.id);
+      .mockReturnValue({ id: identifierMetadataRecord.id, oobi: "oobi" });
+    await identifierService.deleteIdentifier(identifierMetadataRecord.id);
     expect(connections.deleteConnectionById).toBeCalledWith(
       "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
     );
@@ -388,7 +386,6 @@ describe("Single sig service of agent", () => {
         signifyOpName: "signifyOpName",
         multisigManageAid: "manageAid",
         groupMetadata: undefined,
-        isArchived: true,
       })
       .mockReturnValueOnce({
         ...keriMetadataRecord,
@@ -410,42 +407,42 @@ describe("Single sig service of agent", () => {
 
     PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
-      .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
-    await identifierService.deleteIdentifier(archivedMetadataRecord.id);
+      .mockReturnValue({ id: identifierMetadataRecord.id, oobi: "oobi" });
+    await identifierService.deleteIdentifier(identifierMetadataRecord.id);
     expect(connections.deleteConnectionById).toBeCalledWith("group-id");
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
-      archivedMetadataRecord.id,
+      identifierMetadataRecord.id,
       {
         isDeleted: true,
       }
     );
   });
 
-  test("can delete an archived identifier (identifier and metadata record)", async () => {
+  test("can delete an identifier (identifier and metadata record)", async () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      ...archivedMetadataRecord,
+      ...identifierMetadataRecord,
       groupMetadata: undefined,
     });
     PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
-      .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
+      .mockReturnValue({ id: identifierMetadataRecord.id, oobi: "oobi" });
 
     identifierStorage.updateIdentifierMetadata = jest.fn();
-    await identifierService.deleteIdentifier(archivedMetadataRecord.id);
+    await identifierService.deleteIdentifier(identifierMetadataRecord.id);
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
-      archivedMetadataRecord.id
+      identifierMetadataRecord.id
     );
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
-      archivedMetadataRecord.id,
+      identifierMetadataRecord.id,
       {
         isDeleted: true,
       }
     );
   });
 
-  test("can delete an archived identifier and disconnect DApp", async () => {
+  test("can delete an identifier and disconnect DApp", async () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      ...archivedMetadataRecord,
+      ...identifierMetadataRecord,
       groupMetadata: undefined,
     });
     identifierStorage.updateIdentifierMetadata = jest.fn();
@@ -454,13 +451,13 @@ describe("Single sig service of agent", () => {
       .mockReturnValue("dApp-address");
     PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
-      .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
-    await identifierService.deleteIdentifier(archivedMetadataRecord.id);
+      .mockReturnValue({ id: identifierMetadataRecord.id, oobi: "oobi" });
+    await identifierService.deleteIdentifier(identifierMetadataRecord.id);
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
-      archivedMetadataRecord.id
+      identifierMetadataRecord.id
     );
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
-      archivedMetadataRecord.id,
+      identifierMetadataRecord.id,
       {
         isDeleted: true,
       }
@@ -469,49 +466,6 @@ describe("Single sig service of agent", () => {
       "dApp-address",
       true
     );
-  });
-
-  test("cannot delete a non-archived credential", async () => {
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      ...keriMetadataRecord,
-      groupMetadata: undefined,
-    });
-    identifierStorage.updateIdentifierMetadata = jest.fn();
-    await expect(
-      identifierService.deleteIdentifier(keriMetadataRecord.id)
-    ).rejects.toThrowError(IdentifierService.IDENTIFIER_NOT_ARCHIVED);
-    expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
-      keriMetadataRecord.id
-    );
-    expect(identifierStorage.updateIdentifierMetadata).not.toBeCalled();
-  });
-
-  test("can restore an archived credential", async () => {
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(archivedMetadataRecord);
-    identifierStorage.updateIdentifierMetadata = jest.fn();
-    await identifierService.restoreIdentifier(archivedMetadataRecord.id);
-    expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
-      archivedMetadataRecord.id
-    );
-    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
-      archivedMetadataRecord.id,
-      { isArchived: false }
-    );
-  });
-
-  test("cannot restore a non-archived credential", async () => {
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(keriMetadataRecord);
-    await expect(
-      identifierService.restoreIdentifier(keriMetadataRecord.id)
-    ).rejects.toThrowError(IdentifierService.IDENTIFIER_NOT_ARCHIVED);
-    expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
-      keriMetadataRecord.id
-    );
-    expect(identifierStorage.updateIdentifierMetadata).not.toBeCalled();
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI identifiers", async () => {
