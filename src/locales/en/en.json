@@ -1554,7 +1554,7 @@
     "walletconnectiondeleted": "Delete successfully",
     "connectwalletsuccess": "Connected successfully",
     "disconnectwallet": "Disconnected successfully",
-    "unableconnectwallet": "Unable to connect",
+    "unableconnectwalleterror": "Unable to connect",
     "peeridsuccess": "Peer ID successful",
     "peeriderror": "Peer ID not recognised",
     "peeridnotrecognised": "Peer ID not recognised",

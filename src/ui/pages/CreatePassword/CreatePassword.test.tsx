@@ -1,7 +1,6 @@
 import { IonButton, IonIcon, IonInput, IonLabel } from "@ionic/react";
 import { IonReactMemoryRouter } from "@ionic/react-router";
 import { ionFireEvent } from "@ionic/react-test-utils";
-import { AnyAction, Store } from "@reduxjs/toolkit";
 import { act, render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
@@ -102,6 +101,7 @@ describe("Create Password Page", () => {
           passwordIsSet: false,
           passwordIsSkipped: false,
         },
+        toastMsgs: [],
       },
     };
 

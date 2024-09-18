@@ -32,6 +32,7 @@ const initialState = {
       passcodeIsSet: true,
       passwordIsSet: true,
     },
+    toastMsgs: [],
   },
   identifiersCache: {
     identifiers: [...identifierFix],

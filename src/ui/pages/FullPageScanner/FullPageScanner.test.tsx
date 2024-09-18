@@ -80,7 +80,7 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       connections: {
         connectByOobiUrl: () => connectByOobiUrlMock(),
-        getMultisigLinkedContacts: (args: any) =>
+        getMultisigLinkedContacts: (args: never) =>
           getMultisigLinkedContactsMock(args),
       },
       basicStorage: {
@@ -130,6 +130,7 @@ describe("Full page scanner", () => {
         passwordIsSet: false,
       },
       currentOperation: OperationType.SCAN_WALLET_CONNECTION,
+      toastMsgs: [],
     },
   };
 
@@ -169,6 +170,7 @@ describe("Full page scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
+        toastMsgs: [],
       },
     };
 
@@ -212,6 +214,7 @@ describe("Full page scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
+        toastMsgs: [],
       },
     };
 
@@ -278,6 +281,7 @@ describe("Full page scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
+        toastMsgs: [],
       },
     };
 

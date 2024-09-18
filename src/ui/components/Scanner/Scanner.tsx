@@ -33,7 +33,7 @@ import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifi
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
   getCurrentOperation,
-  getToastMsg,
+  getToastMsgs,
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
@@ -67,7 +67,7 @@ const Scanner = forwardRef(
     const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
     const currentOperation = useAppSelector(getCurrentOperation);
     const scanGroupId = useAppSelector(getScanGroupId);
-    const currentToastMsg = useAppSelector(getToastMsg);
+    const currentToastMsgs = useAppSelector(getToastMsgs);
     const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
       useState(false);
     const [pasteModalIsOpen, setPasteModalIsOpen] = useState(false);
@@ -366,6 +366,16 @@ const Scanner = forwardRef(
 
     useEffect(() => {
       const onLoad = async () => {
+        const isDuplicateConnectionToast = currentToastMsgs.some(
+          (item) => ToastMsgType.DUPLICATE_CONNECTION === item.message
+        );
+        const isRequestPending = currentToastMsgs.some((item) =>
+          [
+            ToastMsgType.CONNECTION_REQUEST_PENDING,
+            ToastMsgType.CREDENTIAL_REQUEST_PENDING,
+          ].includes(item.message)
+        );
+
         if (
           ((routePath === TabsRoutePath.SCAN ||
             [
@@ -374,15 +384,12 @@ const Scanner = forwardRef(
               OperationType.SCAN_SSI_BOOT_URL,
               OperationType.SCAN_SSI_CONNECT_URL,
             ].includes(currentOperation)) &&
-            ![
-              ToastMsgType.CONNECTION_REQUEST_PENDING,
-              ToastMsgType.CREDENTIAL_REQUEST_PENDING,
-            ].includes(currentToastMsg as ToastMsgType)) ||
+            !isRequestPending) ||
           ([
             OperationType.MULTI_SIG_INITIATOR_SCAN,
             OperationType.MULTI_SIG_RECEIVER_SCAN,
           ].includes(currentOperation) &&
-            currentToastMsg !== ToastMsgType.DUPLICATE_CONNECTION)
+            !isDuplicateConnectionToast)
         ) {
           await initScan();
         } else {
@@ -390,7 +397,7 @@ const Scanner = forwardRef(
         }
       };
       onLoad();
-    }, [currentOperation, currentToastMsg, routePath, cameraDirection]);
+    }, [currentOperation, currentToastMsgs, routePath, cameraDirection]);
 
     useEffect(() => {
       return () => {

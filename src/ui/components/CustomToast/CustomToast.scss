@@ -1,0 +1,16 @@
+.custom-toast {
+  transition: transform 200ms;
+
+  &::part(button cancel) {
+    min-height: auto;
+    border-left: 1px solid rgba(246, 246, 246, 0.5);
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+
+  &.md {
+    &::part(button cancel) {
+      border-radius: unset;
+    }
+  }
+}

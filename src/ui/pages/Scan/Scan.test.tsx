@@ -110,6 +110,7 @@ describe("Scan Tab", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],
@@ -160,6 +161,7 @@ describe("Scan Tab", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
       },
     };
 
@@ -192,6 +194,7 @@ describe("Scan Tab", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.RECEIVE_CONNECTION,
+        toastMsgs: [],
       },
     };
 
@@ -230,6 +233,7 @@ describe("Scan Tab", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.IDLE,
+        toastMsgs: [],
       },
     };
 

@@ -68,6 +68,7 @@ const initialState = {
       passcodeIsSet: true,
       passwordIsSet: false,
     },
+    toastMsgs: [],
   },
   walletConnectionsCache: {
     walletConnections: [...walletConnectionsFix],
@@ -97,6 +98,7 @@ describe("Wallet connect: empty history", () => {
           passcodeIsSet: true,
           passwordIsSet: true,
         },
+        toastMsgs: [],
       },
       walletConnectionsCache: {
         walletConnections: [],
@@ -139,6 +141,7 @@ describe("Wallet connect: empty history", () => {
           passcodeIsSet: true,
           passwordIsSet: true,
         },
+        toastMsgs: [],
       },
       walletConnectionsCache: {
         walletConnections: [],
@@ -195,6 +198,7 @@ describe("Wallet connect: empty history", () => {
           passcodeIsSet: true,
           passwordIsSet: true,
         },
+        toastMsgs: [],
       },
       walletConnectionsCache: {
         walletConnections: [],
@@ -252,6 +256,7 @@ describe("Wallet connect: empty history", () => {
           passcodeIsSet: true,
           passwordIsSet: true,
         },
+        toastMsgs: [],
       },
       walletConnectionsCache: {
         walletConnections: [],
@@ -551,6 +556,7 @@ describe("Wallet connect", () => {
           passcodeIsSet: true,
           passwordIsSet: true,
         },
+        toastMsgs: [],
       },
       walletConnectionsCache: {
         walletConnections: [...walletConnectionsFix],
@@ -625,6 +631,7 @@ describe("Wallet connect", () => {
           passwordIsSet: true,
         },
         currentOperation: OperationType.OPEN_WALLET_CONNECTION_DETAIL,
+        toastMsgs: [],
       },
       walletConnectionsCache: {
         walletConnections: [
@@ -695,6 +702,7 @@ describe("Wallet connect", () => {
         },
         currentOperation: OperationType.IDLE,
         toastMsg: ToastMsgType.CONNECT_WALLET_SUCCESS,
+        toastMsgs: [],
       },
       walletConnectionsCache: {
         walletConnections: [
