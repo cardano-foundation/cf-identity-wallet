@@ -84,8 +84,7 @@ class MultiSigService extends AgentService {
   async createMultisig(
     ourIdentifier: string,
     otherIdentifierContacts: ConnectionShortDetails[],
-    threshold: number,
-    delegateContact?: ConnectionShortDetails
+    threshold: number
   ): Promise<CreateIdentifierResult> {
     if (threshold < 1 || threshold > otherIdentifierContacts.length + 1) {
       throw new Error(MultiSigService.INVALID_THRESHOLD);
@@ -119,21 +118,12 @@ class MultiSigService extends AgentService {
         return { state: aid.response };
       })
     );
-    let delegateAid;
-    if (delegateContact) {
-      const delegator = await Agent.agent.connections.resolveOobi(
-        delegateContact.oobi as string
-      );
-      delegateAid = { state: delegator.response } as HabState;
-    }
-
     const signifyName = uuidv4();
     const result = await this.createAidMultisig(
       ourAid,
       otherAids,
       signifyName,
-      threshold,
-      delegateAid
+      threshold
     );
     const op = result.op;
     const multisigId = op.name.split(".")[1];
@@ -172,8 +162,7 @@ class MultiSigService extends AgentService {
     aid: HabState,
     otherAids: Pick<HabState, "state">[],
     name: string,
-    threshold: number,
-    delegate?: HabState
+    threshold: number
   ): Promise<{
     op: any;
     icpResult: EventResult;
@@ -189,7 +178,6 @@ class MultiSigService extends AgentService {
       wits: aid.state.b,
       states: states,
       rstates: states,
-      delpre: delegate?.prefix,
     });
     const op = await icp.op();
     const serder = icp.serder;
