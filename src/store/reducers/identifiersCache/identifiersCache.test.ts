@@ -42,7 +42,6 @@ describe("identifiersCacheSlice", () => {
         createdAtUTC: "example-date",
         theme: 0,
         isPending: false,
-        signifyName: "Test",
       },
     ];
     const newState = identifiersCacheSlice.reducer(
@@ -121,7 +120,6 @@ describe("identifiersCacheSlice", () => {
         createdAtUTC: "example-date",
         theme: 0,
         isPending: false,
-        signifyName: "Test",
       },
     ];
     const currentState = identifiersCacheSlice.reducer(
@@ -134,7 +132,6 @@ describe("identifiersCacheSlice", () => {
       createdAtUTC: "example-date",
       theme: 0,
       isPending: false,
-      signifyName: "Test",
     };
     const newState = identifiersCacheSlice.reducer(
       currentState,
@@ -151,7 +148,6 @@ describe("identifiersCacheSlice", () => {
         createdAtUTC: "example-date",
         theme: 0,
         isPending: true,
-        signifyName: "Test",
       },
     ];
     const currentState = identifiersCacheSlice.reducer(
@@ -164,7 +160,6 @@ describe("identifiersCacheSlice", () => {
       createdAtUTC: "example-date",
       theme: 0,
       isPending: false,
-      signifyName: "Test",
     };
     const newState = identifiersCacheSlice.reducer(
       currentState,

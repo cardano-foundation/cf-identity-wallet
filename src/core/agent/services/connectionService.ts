@@ -289,19 +289,14 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async getOobi(
-    signifyName: string,
-    alias?: string,
-    groupId?: string
-  ): Promise<string> {
-    const result = await this.props.signifyClient.oobis().get(signifyName);
+  async getOobi(id: string, alias?: string, groupId?: string): Promise<string> {
+    const result = await this.props.signifyClient.oobis().get(id);
+
     if (!result.oobis[0]) {
       throw new Error(ConnectionService.CANNOT_GET_OOBI);
     }
     const oobi = new URL(result.oobis[0]);
-    const identifier = await this.props.signifyClient
-      .identifiers()
-      .get(signifyName);
+    const identifier = await this.props.signifyClient.identifiers().get(id);
     //This condition is used for multi-sig oobi
     if (identifier && identifier.group) {
       const pathName = oobi.pathname;

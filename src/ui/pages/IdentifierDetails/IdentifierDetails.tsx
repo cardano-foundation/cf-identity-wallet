@@ -80,10 +80,10 @@ const IdentifierDetails = () => {
 
   const fetchOobi = useCallback(async () => {
     try {
-      if (!cardData?.signifyName) return;
+      if (!cardData?.id) return;
 
       const oobiValue = await Agent.agent.connections.getOobi(
-        `${cardData.signifyName}`,
+        `${cardData.id}`,
         userName
       );
       if (oobiValue) {
@@ -92,7 +92,7 @@ const IdentifierDetails = () => {
     } catch (e) {
       showError("Unable to fetch oobi", e, dispatch);
     }
-  }, [cardData?.signifyName, userName, dispatch]);
+  }, [cardData?.id, userName, dispatch]);
 
   const isFavourite = favouritesIdentifiersData?.some(
     (fav) => fav.id === params.id

@@ -104,18 +104,18 @@ const MultiSigRequest = ({
         throw new Error(
           "Cannot accept a multi-sig inception event before details are loaded from core"
         );
-      } 
+      }
 
-      const { identifier, multisigManageAid, signifyName, isPending } =
-          (await Agent.agent.multiSigs.joinMultisig(
-            notificationDetails.id,
-            notificationDetails.a.r as NotificationRoute,
-            notificationDetails.a.d as string,
-            {
-              theme: multisigIcpDetails.ourIdentifier.theme,
-              displayName: multisigIcpDetails.ourIdentifier.displayName,
-            }
-          )) as CreateIdentifierResult;
+      const { identifier, multisigManageAid, isPending } =
+        (await Agent.agent.multiSigs.joinMultisig(
+          notificationDetails.id,
+          notificationDetails.a.r as NotificationRoute,
+          notificationDetails.a.d as string,
+          {
+            theme: multisigIcpDetails.ourIdentifier.theme,
+            displayName: multisigIcpDetails.ourIdentifier.displayName,
+          }
+        )) as CreateIdentifierResult;
 
       if (identifier) {
         const newIdentifier: IdentifierShortDetails = {
@@ -125,7 +125,6 @@ const MultiSigRequest = ({
           theme: multisigIcpDetails.ourIdentifier.theme,
           isPending: !!isPending,
           multisigManageAid,
-          signifyName,
         };
         const filteredIdentifiersData = identifiersData.filter(
           (item) => item.id !== multisigIcpDetails?.ourIdentifier.id
@@ -151,7 +150,7 @@ const MultiSigRequest = ({
       setAlertDeclineIsOpen(false);
       await Agent.agent.keriaNotifications.deleteNotificationRecordById(
         notificationDetails.id,
-      notificationDetails.a.r as NotificationRoute
+        notificationDetails.a.r as NotificationRoute
       );
       handleNotificationUpdate();
       handleBack();

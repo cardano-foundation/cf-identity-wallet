@@ -52,7 +52,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       );
       return {
         id: this.selectedAid,
-        oobi: await Agent.agent.connections.getOobi(identifier.signifyName),
+        oobi: await Agent.agent.connections.getOobi(identifier.id),
       };
     };
 

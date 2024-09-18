@@ -45,8 +45,7 @@ const IdentifierStage1 = ({
   const multiSigGroupCache = useAppSelector(getMultiSigGroupCache);
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
-  const signifyName =
-    resumeMultiSig?.signifyName || state.newIdentifier.signifyName;
+  const identifierId = resumeMultiSig?.id || state.newIdentifier.id;
   const groupId =
     resumeMultiSig?.groupMetadata?.groupId ||
     state.newIdentifier.groupMetadata?.groupId;
@@ -71,7 +70,7 @@ const IdentifierStage1 = ({
   const fetchOobi = useCallback(async () => {
     try {
       const oobiValue = await Agent.agent.connections.getOobi(
-        signifyName,
+        identifierId,
         userName,
         groupId
       );
@@ -81,7 +80,7 @@ const IdentifierStage1 = ({
     } catch (e) {
       showError("Unable to fetch Oobi", e, dispatch);
     }
-  }, [groupId, signifyName, userName, dispatch]);
+  }, [groupId, userName, dispatch]);
 
   useOnlineStatusEffect(fetchOobi);
 
@@ -174,30 +173,28 @@ const IdentifierStage1 = ({
 
   return (
     <>
-      {resumeMultiSig?.signifyName.length ||
-      initiated ||
-      scannedConections?.length ? (
-          <IdentifierStage1BodyResume
-            componentId={componentId}
-            handleDone={handleDone}
-            handleInitiateMultiSig={handleInitiateMultiSig}
-            oobi={oobi}
-            groupMetadata={groupMetadata}
-            handleScanButton={handleScanButton}
-            scannedConections={scannedConections}
-            handleDelete={openDeleteConfirm}
-          />
-        ) : (
-          <IdentifierStage1BodyInit
-            componentId={componentId}
-            handleDone={handleDone}
-            oobi={oobi}
-            groupMetadata={groupMetadata}
-            handleScanButton={handleScanButton}
-            scannedConections={scannedConections}
-            handleDelete={openDeleteConfirm}
-          />
-        )}
+      {resumeMultiSig || initiated || scannedConections?.length ? (
+        <IdentifierStage1BodyResume
+          componentId={componentId}
+          handleDone={handleDone}
+          handleInitiateMultiSig={handleInitiateMultiSig}
+          oobi={oobi}
+          groupMetadata={groupMetadata}
+          handleScanButton={handleScanButton}
+          scannedConections={scannedConections}
+          handleDelete={openDeleteConfirm}
+        />
+      ) : (
+        <IdentifierStage1BodyInit
+          componentId={componentId}
+          handleDone={handleDone}
+          oobi={oobi}
+          groupMetadata={groupMetadata}
+          handleScanButton={handleScanButton}
+          scannedConections={scannedConections}
+          handleDelete={openDeleteConfirm}
+        />
+      )}
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
