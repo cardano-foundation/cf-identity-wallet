@@ -1,15 +1,15 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { LoginAttempts } from "../../../core/agent/services/auth.types";
+import { RoutePath } from "../../../routes";
+import { OperationType, ToastMsgType } from "../../../ui/globals/types";
 import { RootState } from "../../index";
 import {
-  StateCacheProps,
   AuthenticationCacheProps,
   CurrentRouteCacheProps,
   IncomingRequestProps,
+  StateCacheProps,
 } from "./stateCache.types";
-import { RoutePath } from "../../../routes";
-import { OperationType, ToastMsgType } from "../../../ui/globals/types";
-import { LoginAttempts } from "../../../core/agent/services/auth.types";
 
 const initialState: StateCacheProps = {
   initialized: false,
@@ -36,6 +36,7 @@ const initialState: StateCacheProps = {
     queues: [],
     isPaused: false,
   },
+  toastMsgs: [],
 };
 
 const stateCacheSlice = createSlice({
@@ -91,8 +92,19 @@ const stateCacheSlice = createSlice({
     setCurrentOperation: (state, action: PayloadAction<OperationType>) => {
       state.currentOperation = action.payload;
     },
-    setToastMsg: (state, action: PayloadAction<ToastMsgType | undefined>) => {
-      state.toastMsg = action.payload;
+    setToastMsg: (state, action: PayloadAction<ToastMsgType>) => {
+      state.toastMsgs = [
+        {
+          id: crypto.randomUUID(),
+          message: action.payload,
+        },
+        ...(state.toastMsgs || []),
+      ];
+    },
+    removeToastMessage: (state, action: PayloadAction<string>) => {
+      state.toastMsgs = state.toastMsgs.filter(
+        (item) => item.id !== action.payload
+      );
     },
     setPauseQueueIncomingRequest: (state, action: PayloadAction<boolean>) => {
       state.queueIncomingRequest = {
@@ -166,6 +178,7 @@ const {
   setLoginAttempt,
   setCameraDirection,
   showGenericError,
+  removeToastMessage,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -176,7 +189,7 @@ const getCurrentRoute = (state: RootState) =>
 const getAuthentication = (state: RootState) => state.stateCache.authentication;
 const getCurrentOperation = (state: RootState) =>
   state.stateCache.currentOperation;
-const getToastMsg = (state: RootState) => state.stateCache.toastMsg;
+const getToastMsgs = (state: RootState) => state.stateCache.toastMsgs;
 const getQueueIncomingRequest = (state: RootState) =>
   state.stateCache.queueIncomingRequest;
 const getIsOnline = (state: RootState) => state.stateCache.isOnline;
@@ -186,44 +199,47 @@ const getCameraDirection = (state: RootState) =>
   state.stateCache.cameraDirection;
 const getShowCommonError = (state: RootState) =>
   state.stateCache.showGenericError;
+const getToastMgs = (state: RootState) => state.stateCache.toastMsgs;
 
 export type {
-  CurrentRouteCacheProps,
   AuthenticationCacheProps,
+  CurrentRouteCacheProps,
   StateCacheProps,
 };
 
 export {
-  setLoginAttempt,
-  getLoginAttempt,
-  setIsOnline,
-  initialState,
-  setInitialized,
-  getIsInitialized,
-  getStateCache,
-  stateCacheSlice,
-  getRoutes,
-  removeRoute,
-  getCurrentRoute,
-  getIsOnline,
-  setCurrentRoute,
-  removeCurrentRoute,
-  removeSetPasscodeRoute,
-  login,
-  logout,
-  getAuthentication,
-  setAuthentication,
-  getCurrentOperation,
-  setCurrentOperation,
-  getToastMsg,
-  setToastMsg,
-  getQueueIncomingRequest,
-  setPauseQueueIncomingRequest,
-  setQueueIncomingRequest,
   dequeueIncomingRequest,
   enqueueIncomingRequest,
+  getAuthentication,
   getCameraDirection,
-  setCameraDirection,
+  getCurrentOperation,
+  getCurrentRoute,
+  getIsInitialized,
+  getIsOnline,
+  getLoginAttempt,
+  getQueueIncomingRequest,
+  getRoutes,
   getShowCommonError,
+  getStateCache,
+  getToastMgs,
+  getToastMsgs,
+  initialState,
+  login,
+  logout,
+  removeCurrentRoute,
+  removeRoute,
+  removeSetPasscodeRoute,
+  removeToastMessage,
+  setAuthentication,
+  setCameraDirection,
+  setCurrentOperation,
+  setCurrentRoute,
+  setInitialized,
+  setIsOnline,
+  setLoginAttempt,
+  setPauseQueueIncomingRequest,
+  setQueueIncomingRequest,
+  setToastMsg,
   showGenericError,
+  stateCacheSlice,
 };

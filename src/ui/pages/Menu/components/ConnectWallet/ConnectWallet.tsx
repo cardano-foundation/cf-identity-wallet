@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
-  getToastMsg,
+  getToastMsgs,
   setCurrentOperation,
   setToastMsg,
 } from "../../../../../store/reducers/stateCache";
@@ -48,7 +48,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
   (props, ref) => {
     const history = useHistory();
     const dispatch = useAppDispatch();
-    const toastMsg = useAppSelector(getToastMsg);
+    const toastMsgs = useAppSelector(getToastMsgs);
     const pendingConnection = useAppSelector(getPendingConnection);
     const defaultIdentifierCache = useAppSelector(getIdentifiersCache).filter(
       (identifier) => !identifier.multisigManageAid && !identifier.groupMetadata
@@ -234,7 +234,9 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     // NOTE: Reload connection data after connect success
     useEffect(() => {
       if (
-        toastMsg === ToastMsgType.CONNECT_WALLET_SUCCESS &&
+        toastMsgs.some(
+          (item) => item.message === ToastMsgType.CONNECT_WALLET_SUCCESS
+        ) &&
         !pendingConnection &&
         connectedWallet &&
         openConfirmConnectModal
@@ -244,7 +246,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           data: connectedWallet,
         });
       }
-    }, [connectedWallet, toastMsg, pendingConnection]);
+    }, [connectedWallet, toastMsgs, pendingConnection]);
 
     useEffect(() => {
       if (!pendingConnection) return;
