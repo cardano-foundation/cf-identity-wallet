@@ -1,4 +1,3 @@
-import { KeyboardResize } from "@capacitor/keyboard";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { fireEvent, render, waitFor } from "@testing-library/react";

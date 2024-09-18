@@ -1,3 +1,7 @@
+interface RecoverySeedPhraseProps {
+  onClose: () => void;
+}
+
 interface ConfirmModalProps {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
@@ -11,4 +15,4 @@ interface ConditionItemProps {
   onClick: (index: number) => void;
 }
 
-export type { ConfirmModalProps, ConditionItemProps };
+export type { ConfirmModalProps, ConditionItemProps, RecoverySeedPhraseProps };

@@ -756,4 +756,5 @@ export {
   mockNotificationMultisigExnRotation,
   mockGetRequestMultisigIcp,
   mockGetExchangeGrantMessage,
+  memberMetadataRecordProps,
 };

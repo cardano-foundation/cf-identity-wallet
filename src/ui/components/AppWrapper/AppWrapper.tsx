@@ -73,6 +73,7 @@ import { Alert } from "../Alert";
 import { CardListViewType } from "../SwitchCardView";
 import "./AppWrapper.scss";
 import { useActivityTimer } from "./hooks/useActivityTimer";
+import { showError } from "../../utils/error";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -274,127 +275,142 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
 
   const loadDatabase = async () => {
-    const connectionsDetails = await Agent.agent.connections.getConnections();
-    const multisigConnectionsDetails =
-      await Agent.agent.connections.getMultisigConnections();
+    try {
+      const connectionsDetails = await Agent.agent.connections.getConnections();
+      const multisigConnectionsDetails =
+        await Agent.agent.connections.getMultisigConnections();
 
-    const credsCache = await Agent.agent.credentials.getCredentials();
-    const credsArchivedCache = await Agent.agent.credentials.getCredentials(
-      true
-    );
-    const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
-    const storedPeerConnections =
-      await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
-    const notifications =
-      await Agent.agent.keriaNotifications.getAllNotifications();
+      const credsCache = await Agent.agent.credentials.getCredentials();
+      const credsArchivedCache = await Agent.agent.credentials.getCredentials(
+        true
+      );
+      const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
+      const storedPeerConnections =
+        await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
+      const notifications =
+        await Agent.agent.keriaNotifications.getAllNotifications();
 
-    dispatch(setIdentifiersCache(storedIdentifiers));
-    dispatch(setCredsCache(credsCache));
-    dispatch(setCredsArchivedCache(credsArchivedCache));
-    dispatch(setConnectionsCache(connectionsDetails));
-    dispatch(setMultisigConnectionsCache(multisigConnectionsDetails));
-    dispatch(setWalletConnectionsCache(storedPeerConnections));
-    dispatch(setNotificationsCache(notifications));
+      dispatch(setIdentifiersCache(storedIdentifiers));
+      dispatch(setCredsCache(credsCache));
+      dispatch(setCredsArchivedCache(credsArchivedCache));
+      dispatch(setConnectionsCache(connectionsDetails));
+      dispatch(setMultisigConnectionsCache(multisigConnectionsDetails));
+      dispatch(setWalletConnectionsCache(storedPeerConnections));
+      dispatch(setNotificationsCache(notifications));
+    } catch (e) {
+      showError("Failed to load database data", e, dispatch);
+    }
   };
 
   const loadCacheBasicStorage = async () => {
-    let userName: { userName: string } = { userName: "" };
-    const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
-    const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
+    try {
+      let userName: { userName: string } = { userName: "" };
+      const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
+      const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
 
-    const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
-    const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
-      MiscRecordId.KERIA_CONNECT_URL
-    );
-
-    const recoveryWalletProgress = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_RECOVERY_WALLET
-    );
-
-    const identifiersFavourites = await Agent.agent.basicStorage.findById(
-      MiscRecordId.IDENTIFIERS_FAVOURITES
-    );
-    if (identifiersFavourites)
-      dispatch(
-        setFavouritesIdentifiersCache(
-          identifiersFavourites.content.favourites as FavouriteIdentifier[]
-        )
+      const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
+      const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
+        MiscRecordId.KERIA_CONNECT_URL
       );
 
-    const credsFavourites = await Agent.agent.basicStorage.findById(
-      MiscRecordId.CREDS_FAVOURITES
-    );
-    if (credsFavourites) {
-      dispatch(
-        setFavouritesCredsCache(
-          credsFavourites.content.favourites as FavouriteIdentifier[]
-        )
+      const recoveryWalletProgress = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_RECOVERY_WALLET
       );
-    }
-    const viewType = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_IDENTIFIER_VIEW_TYPE
-    );
-    if (viewType) {
-      dispatch(setViewTypeCache(viewType.content.viewType as CardListViewType));
-    }
-    const appBiometrics = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_BIOMETRY
-    );
-    if (appBiometrics) {
-      dispatch(
-        setEnableBiometricsCache(appBiometrics.content.enabled as boolean)
+
+      const identifiersFavourites = await Agent.agent.basicStorage.findById(
+        MiscRecordId.IDENTIFIERS_FAVOURITES
       );
-    }
+      if (identifiersFavourites)
+        dispatch(
+          setFavouritesIdentifiersCache(
+            identifiersFavourites.content.favourites as FavouriteIdentifier[]
+          )
+        );
 
-    const appUserNameRecord = await Agent.agent.basicStorage.findById(
-      MiscRecordId.USER_NAME
-    );
-    if (appUserNameRecord) {
-      userName = appUserNameRecord.content as { userName: string };
-    }
-
-    const favouriteIndex = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
-    );
-
-    if (favouriteIndex) {
-      dispatch(
-        setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
+      const credsFavourites = await Agent.agent.basicStorage.findById(
+        MiscRecordId.CREDS_FAVOURITES
       );
+      if (credsFavourites) {
+        dispatch(
+          setFavouritesCredsCache(
+            credsFavourites.content.favourites as FavouriteIdentifier[]
+          )
+        );
+      }
+      const viewType = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_IDENTIFIER_VIEW_TYPE
+      );
+      if (viewType) {
+        dispatch(
+          setViewTypeCache(viewType.content.viewType as CardListViewType)
+        );
+      }
+      const appBiometrics = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_BIOMETRY
+      );
+      if (appBiometrics) {
+        dispatch(
+          setEnableBiometricsCache(appBiometrics.content.enabled as boolean)
+        );
+      }
+
+      const appUserNameRecord = await Agent.agent.basicStorage.findById(
+        MiscRecordId.USER_NAME
+      );
+      if (appUserNameRecord) {
+        userName = appUserNameRecord.content as { userName: string };
+      }
+
+      const favouriteIndex = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
+      );
+
+      if (favouriteIndex) {
+        dispatch(
+          setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
+        );
+      }
+
+      const cameraDirection = await Agent.agent.basicStorage.findById(
+        MiscRecordId.CAMERA_DIRECTION
+      );
+
+      if (cameraDirection) {
+        dispatch(
+          setCameraDirection(cameraDirection.content.value as LensFacing)
+        );
+      }
+
+      const passwordSkipped = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_PASSWORD_SKIPPED
+      );
+
+      const loginAttempt = await Agent.agent.auth.getLoginAttempts();
+
+      dispatch(
+        setAuthentication({
+          ...authentication,
+          userName: userName.userName as string,
+          passcodeIsSet,
+          seedPhraseIsSet,
+          passwordIsSet,
+          passwordIsSkipped: !!passwordSkipped?.content.value,
+          ssiAgentIsSet:
+            !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
+          recoveryWalletProgress: !!recoveryWalletProgress?.content.value,
+          loginAttempt,
+        })
+      );
+
+      return {
+        keriaConnectUrlRecord,
+      };
+    } catch (e) {
+      showError("Failed to load cache data", e, dispatch);
+      return {
+        keriaConnectUrlRecord: null,
+      };
     }
-
-    const cameraDirection = await Agent.agent.basicStorage.findById(
-      MiscRecordId.CAMERA_DIRECTION
-    );
-
-    if (cameraDirection) {
-      dispatch(setCameraDirection(cameraDirection.content.value as LensFacing));
-    }
-
-    const passwordSkipped = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_PASSWORD_SKIPPED
-    );
-
-    const loginAttempt = await Agent.agent.auth.getLoginAttempts();
-
-    dispatch(
-      setAuthentication({
-        ...authentication,
-        userName: userName.userName as string,
-        passcodeIsSet,
-        seedPhraseIsSet,
-        passwordIsSet,
-        passwordIsSkipped: !!passwordSkipped?.content.value,
-        ssiAgentIsSet:
-          !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
-        recoveryWalletProgress: !!recoveryWalletProgress?.content.value,
-        loginAttempt,
-      })
-    );
-
-    return {
-      keriaConnectUrlRecord,
-    };
   };
 
   const setupEventServiceCallbacks = () => {

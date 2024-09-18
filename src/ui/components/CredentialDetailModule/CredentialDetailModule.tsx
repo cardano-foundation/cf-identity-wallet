@@ -86,8 +86,7 @@ const CredentialDetailModule = ({
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
-      // eslint-disable-next-line no-console
-      showError("Unable to get archived credential", e);
+      showError("Unable to get archived credential", e, dispatch);
     }
   }, [dispatch]);
 
@@ -100,9 +99,9 @@ const CredentialDetailModule = ({
       setCardData(cardDetails);
     } catch (error) {
       setCloudError(true);
-      showError("Unable to get credential detail", error);
+      showError("Unable to get credential detail", error, dispatch);
     }
-  }, [id]);
+  }, [id, dispatch]);
 
   useOnlineStatusEffect(getCredDetails);
 
@@ -159,7 +158,6 @@ const CredentialDetailModule = ({
       dispatch(setCredsCache(creds));
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
     } catch (e) {
-      // eslint-disable-next-line no-console
       showError(
         "Unable to archive credential",
         e,
@@ -196,7 +194,7 @@ const CredentialDetailModule = ({
       dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
       onClose?.(BackReason.RESTORE);
     } catch (e) {
-      showError("Unable to restore credential", e);
+      showError("Unable to restore credential", e, dispatch);
     }
   };
 
@@ -228,7 +226,7 @@ const CredentialDetailModule = ({
           dispatch(removeFavouritesCredsCache(id));
         })
         .catch((e) => {
-          showError("Unable to remove favourite cred", e);
+          showError("Unable to remove favourite cred", e, dispatch);
         });
     } else {
       if (favouritesCredsCache.length >= MAX_FAVOURITES) {
@@ -249,7 +247,7 @@ const CredentialDetailModule = ({
           dispatch(addFavouritesCredsCache({ id, time: Date.now() }));
         })
         .catch((e) => {
-          showError("Unable to add favourite credential", e);
+          showError("Unable to add favourite credential", e, dispatch);
         });
     }
   };

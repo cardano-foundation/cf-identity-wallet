@@ -30,6 +30,7 @@ import { SidePage } from "./pages/SidePage";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";
+import { GenericError } from "./components/Error";
 
 setupIonicReact();
 
@@ -135,6 +136,7 @@ const App = () => {
             setShowToast={setShowToast}
           />
           <SidePage />
+          <GenericError />
         </StrictMode>
       </AppWrapper>
     </IonApp>

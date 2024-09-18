@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { NotificationRoute } from "../../../core/agent/agent.types";
 import { useAppSelector } from "../../../store/hooks";
@@ -19,9 +19,9 @@ const NotificationDetails = () => {
     return notificationCache.find((notification) => notification.id === id);
   }, [id, notificationCache]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     ionicRouter.push(TabsRoutePath.NOTIFICATIONS, "back", "pop");
-  };
+  }, [ionicRouter]);
 
   switch (notificationDetails?.a?.r) {
   case NotificationRoute.MultiSigIcp:

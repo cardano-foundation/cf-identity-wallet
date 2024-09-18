@@ -25,6 +25,7 @@ import {
   mockGetRequestMultisigIcp,
   mockGetExchangeGrantMessage,
   mockNotificationMultisigExnRotation,
+  memberMetadataRecordProps,
 } from "../../__fixtures__/agent/multiSigMock";
 
 const notificationStorage = jest.mocked({
@@ -148,7 +149,7 @@ const multiSigService = new MultiSigService(
   operationPendingStorage as any
 );
 
-let mockResolveOobi = jest.fn();
+const mockResolveOobi = jest.fn();
 let mockGetIdentifiers = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -246,7 +247,7 @@ describe("Oobi/endrole", () => {
       serder: { size: 1 },
       sigs: [],
     });
-    await multiSigService.endRoleAuthorization("multi-sig");
+    await multiSigService.endRoleAuthorization("prefix");
     expect(sendExchangesMock).toBeCalledTimes(
       getMultisigMembersResponse["signing"].length
     );
@@ -468,7 +469,7 @@ describe("Rotation of multi-sig", () => {
       sigs: [],
     });
     await expect(
-      multiSigService.endRoleAuthorization("multi-sig")
+      multiSigService.endRoleAuthorization("prefix")
     ).rejects.toThrow(new Error(MultiSigService.MEMBER_AID_NOT_FOUND));
   });
 
@@ -477,9 +478,6 @@ describe("Rotation of multi-sig", () => {
     identifiersGetMock = jest
       .fn()
       .mockResolvedValue(getMultisigIdentifierResponse);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(memberMetadataRecord);
 
     identifiersMemberMock = jest
       .fn()
@@ -507,9 +505,6 @@ describe("Rotation of multi-sig", () => {
     identifiersGetMock = jest
       .fn()
       .mockResolvedValue(getMultisigIdentifierResponse);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(memberMetadataRecord);
 
     identifiersMemberMock = jest
       .fn()
@@ -849,64 +844,6 @@ describe("Creation of multi-sig", () => {
     ).rejects.toThrowError(MultiSigService.INVALID_THRESHOLD);
   });
 
-  test("Can create a keri delegated multisig with KERI contacts", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const signifyName = "newUuidHere";
-    identifiersGetMock = jest
-      .fn()
-      .mockResolvedValue(getMemberIdentifierResponse);
-    identifiersCreateMock = jest.fn().mockResolvedValue({
-      identifier: multisigIdentifier,
-      signifyName,
-    });
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(memberMetadataRecord);
-    mockResolveOobi = jest.fn().mockResolvedValue(resolvedOobiOpResponse);
-    identifiersCreateMock.mockImplementation((name, _config) => {
-      return {
-        op: () => {
-          return { name: `group.${multisigIdentifier}`, done: false };
-        },
-        serder: {
-          ked: { i: name },
-        },
-        sigs: [
-          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
-        ],
-      };
-    });
-    const otherIdentifiers = [
-      {
-        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
-        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
-        oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
-        status: ConnectionStatus.CONFIRMED,
-        connectionDate: new Date().toISOString(),
-        groupId: "group-id",
-      },
-    ];
-    const delegatorContact = {
-      id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyA",
-      label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
-      oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
-      status: ConnectionStatus.CONFIRMED,
-      connectionDate: new Date().toISOString(),
-    };
-    expect(
-      await multiSigService.createMultisig(
-        creatorIdentifier,
-        otherIdentifiers,
-        otherIdentifiers.length + 1,
-        delegatorContact
-      )
-    ).toEqual({
-      identifier: multisigIdentifier,
-      isPending: true,
-      signifyName: expect.any(String),
-    });
-  });
-
   test("Can join the multisig inception", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     groupGetRequestMock = jest
@@ -983,9 +920,13 @@ describe("Creation of multi-sig", () => {
       serder: { size: 1 },
       sigs: [],
     });
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(memberMetadataRecord);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce({
+      ...memberMetadataRecordProps,
+      groupMetadata: {
+        ...memberMetadataRecordProps.groupMetadata,
+        groupCreated: true,
+      },
+    });
     await multiSigService.joinMultisig(
       "id",
       NotificationRoute.MultiSigIcp,
@@ -1216,7 +1157,7 @@ describe("Creation of multi-sig", () => {
   });
 
   test("Can initiate accepting an ACDC to a multi-sig identifier", async () => {
-    const multisigSignifyName = "multisigSignifyName";
+    const multisigId = "multisigId";
     const notificationSaid = "ELykd_2bX6yvuVEgLQqnCgZ7QLdxpUBze-RzHVwfCUfW";
     const schemaSaids = ["schemaSaid"];
     const mockAdmit = {
@@ -1247,9 +1188,13 @@ describe("Creation of multi-sig", () => {
     identifiersMemberMock = jest
       .fn()
       .mockResolvedValueOnce(getMultisigMembersResponse);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValueOnce(memberMetadataRecord);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...memberIdentifierRecord,
+      groupMetadata: {
+        ...memberMetadataRecordProps.groupMetadata,
+        groupCreated: true,
+      },
+    });
     identifiersGetMock = jest
       .fn()
       .mockResolvedValueOnce(gHab)
@@ -1262,7 +1207,7 @@ describe("Creation of multi-sig", () => {
     ]);
 
     await multiSigService.multisigAdmit(
-      multisigSignifyName,
+      multisigId,
       notificationSaid,
       schemaSaids
     );
@@ -1272,7 +1217,7 @@ describe("Creation of multi-sig", () => {
   });
 
   test("Can agree to admit a credential with a multi-sig identifier", async () => {
-    const multisigSignifyName = "multisigSignifyName";
+    const multisigId = gHab.name;
     const notificationSaid = "ELykd_2bX6yvuVEgLQqnCgZ7QLdxpUBze-RzHVwfCUfW";
     const schemaSaids = ["schemaSaid"];
     const multisigExn = {
@@ -1360,7 +1305,7 @@ describe("Creation of multi-sig", () => {
     ]);
 
     await multiSigService.multisigAdmit(
-      multisigSignifyName,
+      multisigId,
       notificationSaid,
       schemaSaids,
       multisigExn
@@ -1380,7 +1325,7 @@ describe("Creation of multi-sig", () => {
     );
 
     expect(ipexSubmitAdmitMock).toBeCalledWith(
-      multisigSignifyName,
+      multisigId,
       multisigExnIpexGrantSerder,
       multisigExnIpexGrantSig,
       multisigExnIpexGrantEnd,

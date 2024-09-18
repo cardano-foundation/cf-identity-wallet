@@ -78,7 +78,7 @@ const SwitchOnboardingMode = ({ mode }: SwitchOnboardingModeProps) => {
       dispatch(setCurrentRoute({ path: nextPath }));
       ionRouter.push(nextPath);
     } catch (e) {
-      showError("Unable to switch onboarding mode", e);
+      showError("Unable to switch onboarding mode", e, dispatch);
     }
   };
 

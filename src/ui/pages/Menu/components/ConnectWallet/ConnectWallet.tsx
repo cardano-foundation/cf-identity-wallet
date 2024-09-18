@@ -42,6 +42,7 @@ import { Agent } from "../../../../../core/agent/agent";
 import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
 import { ANIMATION_DURATION } from "../../../../components/SideSlider/SideSlider.types";
 import { Verification } from "../../../../components/Verification";
+import { showError } from "../../../../utils/error";
 
 const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
   (props, ref) => {
@@ -121,28 +122,32 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     };
 
     const handleDeleteConnection = async (data: ConnectionData) => {
-      setActionInfo({
-        type: ActionType.None,
-      });
-      if (connectedWallet) {
-        PeerConnection.peerConnection.disconnectDApp(connectedWallet?.id);
-        dispatch(setConnectedWallet(null));
+      try {
+        setActionInfo({
+          type: ActionType.None,
+        });
+        if (connectedWallet) {
+          PeerConnection.peerConnection.disconnectDApp(connectedWallet?.id);
+          dispatch(setConnectedWallet(null));
+        }
+        await Agent.agent.peerConnectionMetadataStorage.deletePeerConnectionMetadataRecord(
+          data.id
+        );
+
+        dispatch(
+          setWalletConnectionsCache(
+            connections.filter((connection) => connection.id !== data.id)
+          )
+        );
+
+        if (data.id === pendingConnection?.id) {
+          dispatch(setPendingConnection(null));
+        }
+
+        dispatch(setToastMsg(ToastMsgType.WALLET_CONNECTION_DELETED));
+      } catch (e) {
+        showError("Unable to delete peer connection", e, dispatch);
       }
-      await Agent.agent.peerConnectionMetadataStorage.deletePeerConnectionMetadataRecord(
-        data.id
-      );
-
-      dispatch(
-        setWalletConnectionsCache(
-          connections.filter((connection) => connection.id !== data.id)
-        )
-      );
-
-      if (data.id === pendingConnection?.id) {
-        dispatch(setPendingConnection(null));
-      }
-
-      dispatch(setToastMsg(ToastMsgType.WALLET_CONNECTION_DELETED));
     };
 
     const disconnectWallet = () => {

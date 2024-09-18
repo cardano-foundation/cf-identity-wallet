@@ -1,5 +1,6 @@
 import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { Agent } from "../agent";
+import { ConnectionStatus } from "../agent.types";
 import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
 import { EventService } from "./eventService";
 import { IdentifierService } from "./identifierService";
@@ -110,10 +111,16 @@ const agentServicesProps = {
   eventService: new EventService(),
 };
 
+const connections = jest.mocked({
+  getMultisigLinkedContacts: jest.fn(),
+  deleteConnectionById: jest.fn(),
+});
+
 const identifierService = new IdentifierService(
   agentServicesProps,
   identifierStorage as any,
-  operationPendingStorage as any
+  operationPendingStorage as any,
+  connections as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -195,7 +202,6 @@ describe("Single sig service of agent", () => {
       {
         id: keriMetadataRecord.id,
         displayName: "Identifier 2",
-        signifyName: "uuid-here",
         createdAtUTC: nowISO,
         theme: 0,
         isPending: false,
@@ -258,7 +264,6 @@ describe("Single sig service of agent", () => {
       multisigManageAid: keriMetadataRecord.multisigManageAid,
       ...aidReturnedBySignify.state,
       signifyOpName: undefined,
-      signifyName: "uuid-here",
       isPending: false,
     });
   });
@@ -350,10 +355,77 @@ describe("Single sig service of agent", () => {
   });
 
   // For archive/delete/restore tests
-  test("can delete an archived identifier (identifier and metadata record)", async () => {
-    identifierStorage.getIdentifierMetadata = jest
+  test("should delete all associated linked connections if the identifier is a group member identifier", async () => {
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...keriMetadataRecord,
+      isPending: true,
+      signifyOpName: "signifyOpName",
+      isArchived: true,
+    });
+    connections.getMultisigLinkedContacts = jest.fn().mockResolvedValue([
+      {
+        id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.PENDING,
+      },
+    ]);
+    PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
-      .mockResolvedValue(archivedMetadataRecord);
+      .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
+    await identifierService.deleteIdentifier(archivedMetadataRecord.id);
+    expect(connections.deleteConnectionById).toBeCalledWith(
+      "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
+    );
+  });
+
+  test("should delete the local member identifier for that multisig if deleting the multi-sig identifier", async () => {
+    identifierStorage.getIdentifierMetadata
+      .mockReturnValueOnce({
+        ...keriMetadataRecord,
+        isPending: true,
+        signifyOpName: "signifyOpName",
+        multisigManageAid: "manageAid",
+        groupMetadata: undefined,
+        isArchived: true,
+      })
+      .mockReturnValueOnce({
+        ...keriMetadataRecord,
+        isPending: true,
+        multisigManageAid: "manageAid",
+      });
+
+    connections.getMultisigLinkedContacts = jest.fn().mockResolvedValue([
+      {
+        id: "group-id",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.CONFIRMED,
+      },
+    ]);
+
+    identifierStorage.updateIdentifierMetadata = jest.fn();
+
+    PeerConnection.peerConnection.getConnectingIdentifier = jest
+      .fn()
+      .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
+    await identifierService.deleteIdentifier(archivedMetadataRecord.id);
+    expect(connections.deleteConnectionById).toBeCalledWith("group-id");
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      archivedMetadataRecord.id,
+      {
+        isDeleted: true,
+      }
+    );
+  });
+
+  test("can delete an archived identifier (identifier and metadata record)", async () => {
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...archivedMetadataRecord,
+      groupMetadata: undefined,
+    });
     PeerConnection.peerConnection.getConnectingIdentifier = jest
       .fn()
       .mockReturnValue({ id: archivedMetadataRecord.id, oobi: "oobi" });
@@ -372,9 +444,10 @@ describe("Single sig service of agent", () => {
   });
 
   test("can delete an archived identifier and disconnect DApp", async () => {
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(archivedMetadataRecord);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...archivedMetadataRecord,
+      groupMetadata: undefined,
+    });
     identifierStorage.updateIdentifierMetadata = jest.fn();
     PeerConnection.peerConnection.getConnectedDAppAddress = jest
       .fn()
@@ -399,9 +472,10 @@ describe("Single sig service of agent", () => {
   });
 
   test("cannot delete a non-archived credential", async () => {
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(keriMetadataRecord);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...keriMetadataRecord,
+      groupMetadata: undefined,
+    });
     identifierStorage.updateIdentifierMetadata = jest.fn();
     await expect(
       identifierService.deleteIdentifier(keriMetadataRecord.id)
@@ -473,22 +547,14 @@ describe("Single sig service of agent", () => {
 
   test("should call signify.rotateIdentifier with correct params", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-      isPending: false,
-      signifyOpName: "op123",
-      signifyName: "john_doe",
-      theme: 0,
-    } as IdentifierMetadataRecord;
-    identifierStorage.getIdentifierMetadata.mockResolvedValue(metadata);
+    const identifierId = "identifierId";
     identifiersRotateMock.mockResolvedValue({
       op: jest.fn().mockResolvedValue({
         done: true,
       }),
     });
-    await identifierService.rotateIdentifier(metadata.id);
-    expect(identifiersRotateMock).toHaveBeenCalledWith(metadata.signifyName);
+    await identifierService.rotateIdentifier(identifierId);
+    expect(identifiersRotateMock).toHaveBeenCalledWith(identifierId);
   });
 
   test("Can get KERI identifier by group id", async () => {
@@ -502,7 +568,6 @@ describe("Single sig service of agent", () => {
     ).toStrictEqual({
       displayName: keriMetadataRecord.displayName,
       id: keriMetadataRecord.id,
-      signifyName: keriMetadataRecord.signifyName,
       createdAtUTC: keriMetadataRecord.createdAt.toISOString(),
       theme: keriMetadataRecord.theme,
       isPending: keriMetadataRecord.isPending ?? false,
@@ -543,24 +608,15 @@ describe("Single sig service of agent", () => {
 
   test("getIdentifier should throw an error when KERIA is offline", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-      isPending: false,
-      signifyOpName: "op123",
-      signifyName: "john_doe",
-      theme: 0,
-    } as IdentifierMetadataRecord;
-    identifierStorage.getIdentifierMetadata.mockResolvedValue(metadata);
     await expect(identifierService.getIdentifier("id")).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
     );
     await expect(identifierService.syncKeriaIdentifiers()).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
     );
-    await expect(
-      identifierService.getSigner("identifier")
-    ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(identifierService.getSigner("id")).rejects.toThrowError(
+      Agent.KERIA_CONNECTION_BROKEN
+    );
     await expect(
       identifierService.createIdentifier({
         displayName: "name",

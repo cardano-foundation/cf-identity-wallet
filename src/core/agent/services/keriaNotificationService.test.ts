@@ -1096,12 +1096,10 @@ describe("Long running operation tracker", () => {
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
     identifierStorage.getIdentifierMetadata.mockResolvedValueOnce({
-      signifyName: "signifyName",
+      id: "id",
     });
     await keriaNotificationService.processOperation(operationRecord, callback);
-    expect(Agent.agent.multiSigs.endRoleAuthorization).toBeCalledWith(
-      "signifyName"
-    );
+    expect(Agent.agent.multiSigs.endRoleAuthorization).toBeCalledWith("id");
     expect(callback).toBeCalledTimes(1);
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
