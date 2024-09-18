@@ -493,18 +493,6 @@ const initiatorConnectionShortDetails = {
   connectionDate: new Date().toISOString(),
 };
 
-const mockNotification = {
-  id: "EBRg2Ur0JYi92jP0r0ZEO385sWr_8KNMqRIsv9s2JUFI",
-  createdAt: new Date().toISOString(),
-  a: {
-    d: "EKE4luv7mA_z5Tg4ZCHnWLPTKcEPcyDuPL_ql_ChwwZx",
-    r: "/exn/ipex/grant",
-    m: "",
-  },
-  connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
-  read: true,
-};
-
 const mockNotificationMultisigExnRotation = {
   id: "EBRg2Ur0JYi92jP0r0ZEO385sWr_8KNMqRIsv9s2JUFI",
   createdAt: new Date().toISOString(),
@@ -762,7 +750,6 @@ export {
   multisigExnIpexGrantEnd,
   resolvedOobiOpResponse,
   initiatorConnectionShortDetails,
-  mockNotification,
   multisigMetadataRecord,
   memberKeyStateIcp,
   memberKeyStateRot,

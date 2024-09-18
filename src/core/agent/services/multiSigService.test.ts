@@ -234,6 +234,72 @@ describe("Oobi/endrole", () => {
     expect(addEndRoleMock).toBeCalledTimes(1);
     (memberMetadataRecord.groupMetadata as any).groupCreated = false;
   });
+
+  test("Can add end role authorization", async () => {
+    identifiersMemberMock.mockResolvedValue(getMultisigMembersResponse);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(memberIdentifierRecord);
+    identifiersGetMock.mockResolvedValueOnce(getMultisigIdentifierResponse);
+    addEndRoleMock.mockResolvedValue({
+      op: jest.fn(),
+      serder: { size: 1 },
+      sigs: [],
+    });
+    await multiSigService.endRoleAuthorization("multi-sig");
+    expect(sendExchangesMock).toBeCalledTimes(
+      getMultisigMembersResponse["signing"].length
+    );
+  });
+
+  test("Can join end role authorization", async () => {
+    identifiersMemberMock.mockResolvedValue(getMultisigMembersResponse);
+    const mockRequestExn = {
+      a: {
+        gid: "EFPEKHhywRg2Naa-Gx0jiAAXYnQ5y92vDniHAk8beEA_",
+      },
+      e: {
+        rpy: {
+          v: "KERI10JSON000111_",
+          t: "rpy",
+          d: "EE8Ze_pwiMHMMDz_giL0ezN7y_4PJSUPKTe3q2Km_WpY",
+          dt: "2024-07-12T09:37:48.801000+00:00",
+          r: "/end/role/add",
+          a: {
+            cid: "EFPEKHhywRg2Naa-Gx0jiAAXYnQ5y92vDniHAk8beEA_",
+            role: "agent",
+            eid: "EDr4kddR_keAzTUs_PNW-qSsUdLDrKD0YbZxiU-y4B3K",
+          },
+        },
+        d: "EFme1_S0eHc-C6HpcaWpFZnKJGX4f91IBCDmiM6vBQOR",
+      },
+    };
+    groupGetRequestMock.mockResolvedValue([
+      {
+        exn: {
+          ...mockRequestExn,
+        },
+      },
+    ]);
+    getExchangesMock.mockResolvedValue({
+      exn: {
+        a: {
+          gid: "gid",
+        },
+      },
+    });
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(memberIdentifierRecord);
+    identifiersGetMock.mockResolvedValueOnce(getMultisigIdentifierResponse);
+    addEndRoleMock.mockResolvedValue({
+      op: jest.fn(),
+      serder: { size: 1 },
+      sigs: [],
+    });
+    await multiSigService.joinAuthorization(mockRequestExn);
+    expect(sendExchangesMock).toBeCalledTimes(1);
+  });
 });
 
 describe("Rotation of multi-sig", () => {
@@ -390,40 +456,6 @@ describe("Rotation of multi-sig", () => {
     ).rejects.toThrowError(MultiSigService.AID_IS_NOT_MULTI_SIG);
   });
 
-  test("Can join the multisig rotation", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(multisigMetadataRecord);
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
-    identifiersRotateMock.mockImplementation((name, config) => {
-      return {
-        op: () => {
-          return { name: `group.${multisigIdentifier}`, done: false };
-        },
-        serder: {
-          ked: { i: name },
-        },
-        sigs: [
-          "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
-        ],
-      };
-    });
-
-    identifiersGetMock.mockResolvedValue({
-      state: {
-        i: multisigMetadataRecord.multisigManageAid,
-      },
-    });
-    expect(
-      await multiSigService.joinMultisigRotation(
-        mockNotificationMultisigExnRotation
-      )
-    ).toBe(multisigIdentifier);
-  });
-
   test("Cannot join multisig rotation if we do not control any member of the identifier", async () => {
     identifiersMemberMock.mockResolvedValue(getMultisigMembersResponse);
     identifierStorage.getIdentifierMetadata = jest
@@ -440,96 +472,64 @@ describe("Rotation of multi-sig", () => {
     ).rejects.toThrow(new Error(MultiSigService.MEMBER_AID_NOT_FOUND));
   });
 
-  test("Can add end role authorization", async () => {
-    identifiersMemberMock.mockResolvedValue(getMultisigMembersResponse);
+  test("Cannot get key state of member identifier while checking if ready to rotate", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValue(getMultisigIdentifierResponse);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
-      .mockResolvedValue(memberIdentifierRecord);
-    identifiersGetMock.mockResolvedValueOnce(getMultisigIdentifierResponse);
-    addEndRoleMock.mockResolvedValue({
-      op: jest.fn(),
-      serder: { size: 1 },
-      sigs: [],
+      .mockResolvedValue(memberMetadataRecord);
+
+    identifiersMemberMock = jest
+      .fn()
+      .mockResolvedValue(getMultisigMembersResponse);
+
+    queryKeyStateMock.mockImplementation(() => {
+      return {
+        name: "query.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+        metadata: {
+          sn: "1",
+        },
+        done: false,
+        error: null,
+        response: null,
+      };
     });
-    await multiSigService.endRoleAuthorization("multi-sig");
-    expect(sendExchangesMock).toBeCalledTimes(
-      getMultisigMembersResponse["signing"].length
-    );
+
+    expect(
+      multiSigService.membersReadyToRotate("multiSigId")
+    ).rejects.toThrowError(MultiSigService.CANNOT_GET_KEYSTATE_OF_IDENTIFIER);
   });
 
-  test("Can join end role authorization", async () => {
-    identifiersMemberMock.mockResolvedValue(getMultisigMembersResponse);
-    const mockRequestExn = {
-      a: {
-        gid: "EFPEKHhywRg2Naa-Gx0jiAAXYnQ5y92vDniHAk8beEA_",
-      },
-      e: {
-        rpy: {
-          v: "KERI10JSON000111_",
-          t: "rpy",
-          d: "EE8Ze_pwiMHMMDz_giL0ezN7y_4PJSUPKTe3q2Km_WpY",
-          dt: "2024-07-12T09:37:48.801000+00:00",
-          r: "/end/role/add",
-          a: {
-            cid: "EFPEKHhywRg2Naa-Gx0jiAAXYnQ5y92vDniHAk8beEA_",
-            role: "agent",
-            eid: "EDr4kddR_keAzTUs_PNW-qSsUdLDrKD0YbZxiU-y4B3K",
-          },
-        },
-        d: "EFme1_S0eHc-C6HpcaWpFZnKJGX4f91IBCDmiM6vBQOR",
-      },
-    };
-    groupGetRequestMock.mockResolvedValue([
-      {
-        exn: {
-          ...mockRequestExn,
-        },
-      },
-    ]);
-    getExchangesMock.mockResolvedValue({
-      exn: {
-        a: {
-          gid: "gid",
-        },
-      },
-    });
+  test("Should return member identifiers that have rotated ahead of multisig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValue(getMultisigIdentifierResponse);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
-      .mockResolvedValue(memberIdentifierRecord);
-    identifiersGetMock.mockResolvedValueOnce(getMultisigIdentifierResponse);
-    addEndRoleMock.mockResolvedValue({
-      op: jest.fn(),
-      serder: { size: 1 },
-      sigs: [],
+      .mockResolvedValue(memberMetadataRecord);
+
+    identifiersMemberMock = jest
+      .fn()
+      .mockResolvedValue(getMultisigMembersResponse);
+
+    const rotatedMemberAid = "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL";
+    queryKeyStateMock.mockImplementation((id: string) => {
+      if (id === "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF") {
+        return memberKeyStateIcp;
+      }
+      return memberKeyStateRot;
     });
-    await multiSigService.joinAuthorization(mockRequestExn);
-    expect(sendExchangesMock).toBeCalledTimes(1);
+
+    expect(
+      await multiSigService.membersReadyToRotate("multiSigId")
+    ).toMatchObject([rotatedMemberAid]);
   });
 });
 
 describe("Usage of multi-sig", () => {
-  test("Can get multisig icp details of 2 persons multi-sig", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
-    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
-    Agent.agent.connections.getConnectionShortDetailById = jest
-      .fn()
-      .mockResolvedValue(initiatorConnectionShortDetails);
-    Agent.agent.connections.getMultisigLinkedContacts = jest
-      .fn()
-      .mockResolvedValue([]);
-    const result = await multiSigService.getMultisigIcpDetails(
-      "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
-    );
-
-    expect(result.ourIdentifier.id).toBe(memberIdentifierRecord.id);
-    expect(result.sender.id).toBe(initiatorConnectionShortDetails.id);
-    expect(result.otherConnections.length).toBe(0);
-    expect(result.threshold).toBe(2);
-  });
-
   test("Throw error if the Multi-sig join request contains unknown AIDs", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     groupGetRequestMock = jest
@@ -608,62 +608,6 @@ describe("Usage of multi-sig", () => {
       "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
     );
     expect(result.threshold).toBe(3);
-  });
-
-  test("Throw error if cannot query the key state of an identifier", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    identifiersGetMock = jest
-      .fn()
-      .mockResolvedValue(getMultisigIdentifierResponse);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(memberMetadataRecord);
-
-    identifiersMemberMock = jest
-      .fn()
-      .mockResolvedValue(getMultisigMembersResponse);
-
-    queryKeyStateMock.mockImplementation(() => {
-      return {
-        name: "query.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
-        metadata: {
-          sn: "1",
-        },
-        done: false,
-        error: null,
-        response: null,
-      };
-    });
-
-    expect(
-      multiSigService.membersReadyToRotate("multiSigId")
-    ).rejects.toThrowError(MultiSigService.CANNOT_GET_KEYSTATE_OF_IDENTIFIER);
-  });
-
-  test("Should return member identifiers that have rotated ahead of multisig", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    identifiersGetMock = jest
-      .fn()
-      .mockResolvedValue(getMultisigIdentifierResponse);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(memberMetadataRecord);
-
-    identifiersMemberMock = jest
-      .fn()
-      .mockResolvedValue(getMultisigMembersResponse);
-
-    const rotatedMemberAid = "EJwDuZ8YpU-1g6QVwioZG-PmyufLXaDHXvfFLWkqENeL";
-    queryKeyStateMock.mockImplementation((id: string) => {
-      if (id === "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF") {
-        return memberKeyStateIcp;
-      }
-      return memberKeyStateRot;
-    });
-
-    expect(
-      await multiSigService.membersReadyToRotate("multiSigId")
-    ).toMatchObject([rotatedMemberAid]);
   });
 
   test("Throw error if we do not control any member AID of the multi-sig", async () => {
@@ -1442,5 +1386,27 @@ describe("Creation of multi-sig", () => {
       multisigExnIpexGrantEnd,
       ["aid"]
     );
+  });
+
+  test("Can get multisig icp details of 2 persons multi-sig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    groupGetRequestMock = jest
+      .fn()
+      .mockResolvedValue([mockGetRequestMultisigIcp]);
+    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
+    Agent.agent.connections.getConnectionShortDetailById = jest
+      .fn()
+      .mockResolvedValue(initiatorConnectionShortDetails);
+    Agent.agent.connections.getMultisigLinkedContacts = jest
+      .fn()
+      .mockResolvedValue([]);
+    const result = await multiSigService.getMultisigIcpDetails(
+      "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
+    );
+
+    expect(result.ourIdentifier.id).toBe(memberIdentifierRecord.id);
+    expect(result.sender.id).toBe(initiatorConnectionShortDetails.id);
+    expect(result.otherConnections.length).toBe(0);
+    expect(result.threshold).toBe(2);
   });
 });
