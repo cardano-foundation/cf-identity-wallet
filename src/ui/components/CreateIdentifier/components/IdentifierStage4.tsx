@@ -47,7 +47,7 @@ const IdentifierStage4 = ({
     } else {
       const selectedTheme = createThemeValue(state.color, state.selectedTheme);
       try {
-        const { identifier, signifyName, isPending } =
+        const { identifier, isPending } =
           await Agent.agent.multiSigs.createMultisig(
             ourIdentifier,
             otherIdentifierContacts,
@@ -60,7 +60,6 @@ const IdentifierStage4 = ({
             createdAtUTC: new Date().toISOString(),
             theme: selectedTheme,
             isPending: !!isPending,
-            signifyName,
             multisigManageAid: ourIdentifier,
           };
           const filteredIdentifiersData = identifiersData.filter(

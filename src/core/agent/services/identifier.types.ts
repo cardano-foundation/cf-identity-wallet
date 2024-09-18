@@ -16,7 +16,6 @@ interface IdentifierShortDetails {
   id: string;
   displayName: string;
   createdAtUTC: string;
-  signifyName: string;
   theme: number;
   isPending: boolean;
   groupMetadata?: GroupMetadata;

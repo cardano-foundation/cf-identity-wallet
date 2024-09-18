@@ -99,6 +99,7 @@ let getExchangeMock = jest.fn().mockImplementation((id: string) => {
 const ipexOfferMock = jest.fn();
 const ipexGrantMock = jest.fn();
 const schemaGetMock = jest.fn();
+const submitOfferMock = jest.fn();
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const submitAdmitMock = jest.fn().mockResolvedValue({
   name: "opName",
@@ -157,7 +158,7 @@ const signifyClient = jest.mocked({
     admit: jest.fn().mockResolvedValue(["admit", "sigs", "aend"]),
     submitAdmit: submitAdmitMock,
     offer: ipexOfferMock,
-    submitOffer: jest.fn(),
+    submitOffer: submitOfferMock,
     grant: ipexGrantMock,
     submitGrant: jest.fn(),
   }),
@@ -500,6 +501,7 @@ describe("Ipex communication service of agent", () => {
       exn: {
         a: {
           s: "schemaSaid",
+          i: "id",
         },
         i: "i",
         d: "d",
@@ -507,12 +509,12 @@ describe("Ipex communication service of agent", () => {
     });
     credentialListMock = jest.fn().mockReturnValue({});
     identifierStorage.getIdentifierMetadata = jest.fn().mockReturnValue({
-      signifyName: "abc123",
+      id: "id",
     });
     ipexOfferMock.mockResolvedValue(["offer", "sigs", "gend"]);
     await ipexCommunicationService.offerAcdcFromApply(noti, {});
     expect(ipexOfferMock).toBeCalledWith({
-      senderName: "abc123",
+      senderName: "id",
       recipient: "i",
       acdc: expect.anything(),
       applySaid: "d",
@@ -520,41 +522,6 @@ describe("Ipex communication service of agent", () => {
     expect(
       Agent.agent.keriaNotifications.deleteNotificationRecordById
     ).toBeCalledWith(id, undefined);
-  });
-
-  test("can not offer Keri Acdc if aid is not existed", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const id = "uuid";
-    const date = new Date().toISOString();
-    const noti = {
-      id,
-      createdAt: date,
-      a: {
-        d: "keri",
-      },
-      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
-      read: true,
-    };
-    getExchangeMock = jest.fn().mockReturnValue({
-      exn: {
-        a: {
-          s: "schemaSaid",
-          i: "ai",
-        },
-        i: "i",
-      },
-    });
-    credentialListMock = jest.fn().mockReturnValue([{}]);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockRejectedValue(
-        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-      );
-    await expect(
-      ipexCommunicationService.offerAcdcFromApply(noti, {})
-    ).rejects.toThrowError(
-      IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
-    );
   });
 
   test("can grant Keri Acdc when received the ipex agree", async () => {
@@ -586,13 +553,11 @@ describe("Ipex communication service of agent", () => {
               d: "d",
             },
           },
+          i: "id",
         },
       };
     });
     credentialGetMock = jest.fn().mockReturnValue({});
-    identifierStorage.getIdentifierMetadata = jest.fn().mockReturnValue({
-      signifyName: "abc123",
-    });
     ipexGrantMock.mockResolvedValue(["offer", "sigs", "gend"]);
     await ipexCommunicationService.grantAcdcFromAgree(noti.a.d);
     expect(ipexGrantMock).toBeCalledWith({
@@ -603,54 +568,8 @@ describe("Ipex communication service of agent", () => {
       iss: {},
       issAttachment: undefined,
       recipient: "i",
-      senderName: "abc123",
+      senderName: "id",
     });
-  });
-
-  test("can not grant Keri Acdc if aid is not existed", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const id = "uuid";
-    const date = new Date().toISOString();
-    const noti = {
-      id,
-      createdAt: date,
-      a: {
-        d: "agreeD",
-      },
-      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
-      read: true,
-    };
-    getExchangeMock = jest.fn().mockImplementation((id) => {
-      if (id === "agreeD") {
-        return {
-          exn: {
-            p: "offderD",
-            i: "i",
-          },
-        };
-      }
-      return {
-        exn: {
-          e: {
-            acdc: {
-              d: "d",
-            },
-          },
-        },
-      };
-    });
-    credentialGetMock = jest.fn().mockReturnValue({});
-    identifierStorage.getIdentifierMetadata =
-      identifierStorage.getIdentifierMetadata = jest
-        .fn()
-        .mockRejectedValue(
-          new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-        );
-    await expect(
-      ipexCommunicationService.grantAcdcFromAgree(noti.a.d)
-    ).rejects.toThrowError(
-      IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
-    );
   });
 
   test("can not grant Keri Acdc if acdc is not existed", async () => {
