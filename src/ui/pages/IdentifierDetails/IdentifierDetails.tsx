@@ -191,7 +191,6 @@ const IdentifierDetails = () => {
     }
 
     if (cardData) {
-      // For now there is no archiving in the UI so does both.
       await Agent.agent.identifiers.deleteIdentifier(cardData.id);
       if (isFavourite) {
         handleSetFavourite(cardData.id);

@@ -40,7 +40,6 @@ jest.mock("../../../../core/agent/agent", () => ({
         getOobi: (...args: any) => getOobiMock(...args),
       },
       identifiers: {
-        archiveIdentifier: jest.fn(),
         deleteIdentifier: () => deleteIdentifier(),
       },
     },

@@ -262,7 +262,6 @@ const Identifiers = () => {
         (item) => item.id !== deletedPendingItem.id
       );
 
-      // For now there is no archiving in the UI so does both.
       await Agent.agent.identifiers.deleteIdentifier(deletedPendingItem.id);
 
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
