@@ -26,7 +26,6 @@ import { IdentifierDetails } from "../IdentifierDetails";
 import { Identifiers } from "./Identifiers";
 
 const deleteIdentifierMock = jest.fn();
-const archiveIdentifierMock = jest.fn();
 
 jest.mock("react-qrcode-logo", () => {
   return {
@@ -41,7 +40,6 @@ jest.mock("../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifier: jest.fn().mockResolvedValue({}),
         deleteIdentifier: () => deleteIdentifierMock(),
-        archiveIdentifier: () => archiveIdentifierMock(),
       },
       basicStorage: {
         deleteById: jest.fn(() => Promise.resolve()),
@@ -451,7 +449,6 @@ describe("Identifiers Tab", () => {
 
     await waitFor(() => {
       expect(deleteIdentifierMock).toBeCalled();
-      expect(archiveIdentifierMock).toBeCalled();
     });
   });
 

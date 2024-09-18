@@ -28,7 +28,6 @@ const multisigMetadataRecord = {
   id: "EMkbq07RZoANCxluzl3zb8WfBkqDl-HMb0osYZckDWXg",
   displayName: "identifier",
   signifyName: "d8055a29-de5e-49c0-b986-b9e9f1fb6c2e",
-  isArchived: false,
   isDeleted: false,
   isPending: false,
   signifyOpName: "group.EMkbq07RZoANCxluzl3zb8WfBkqDl-HMb0osYZckDWXg",
@@ -102,7 +101,6 @@ const memberIdentifierRecord = {
   _tags: {
     signifyName: "357cd92a-f349-4f5d-be3d-1ff0ff9969c5",
     groupId: "08f22dee-8cb0-4d65-8600-a82bbc3f6fd7",
-    isArchived: false,
     isDeleted: false,
     isPending: false,
     groupCreated: true,
@@ -111,7 +109,6 @@ const memberIdentifierRecord = {
   id: "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
   displayName: "multi-sig",
   signifyName: "357cd92a-f349-4f5d-be3d-1ff0ff9969c5",
-  isArchived: false,
   isDeleted: false,
   isPending: false,
   signifyOpName: "done.ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",

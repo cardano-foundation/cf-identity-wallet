@@ -151,7 +151,6 @@ const IdentifierStage1 = ({
         (item) => item.id !== identifierId
       );
 
-      await Agent.agent.identifiers.archiveIdentifier(identifierId);
       await Agent.agent.identifiers.deleteIdentifier(identifierId);
 
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
