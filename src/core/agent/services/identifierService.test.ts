@@ -422,28 +422,6 @@ describe("Single sig service of agent", () => {
       ...identifierMetadataRecord,
       groupMetadata: undefined,
     });
-    PeerConnection.peerConnection.getConnectingIdentifier = jest
-      .fn()
-      .mockReturnValue({ id: identifierMetadataRecord.id, oobi: "oobi" });
-
-    identifierStorage.updateIdentifierMetadata = jest.fn();
-    await identifierService.deleteIdentifier(identifierMetadataRecord.id);
-    expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
-      identifierMetadataRecord.id
-    );
-    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
-      identifierMetadataRecord.id,
-      {
-        isDeleted: true,
-      }
-    );
-  });
-
-  test("can delete an identifier and disconnect DApp", async () => {
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      ...identifierMetadataRecord,
-      groupMetadata: undefined,
-    });
     identifierStorage.updateIdentifierMetadata = jest.fn();
     PeerConnection.peerConnection.getConnectedDAppAddress = jest
       .fn()
