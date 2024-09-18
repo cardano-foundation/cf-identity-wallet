@@ -950,9 +950,18 @@ describe("Multisig sig service of agent", () => {
       identifier: multisigIdentifier,
       signifyName,
     });
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      isPending: false,
+      signifyOpName: "op123",
+      signifyName: "john_doe",
+      theme: 0,
+      multisigManageAid: "123",
+    } as IdentifierMetadataRecord;
     identifierStorage.getIdentifierMetadata = jest
       .fn()
-      .mockResolvedValue(keriMetadataRecord);
+      .mockResolvedValue(metadata);
     queryKeyStateMock = jest.fn().mockResolvedValue({
       name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
       metadata: {
@@ -987,18 +996,7 @@ describe("Multisig sig service of agent", () => {
         ],
       };
     });
-    const metadata = {
-      id: "123456",
-      displayName: "John Doe",
-      isPending: false,
-      signifyOpName: "op123",
-      signifyName: "john_doe",
-      theme: 0,
-      multisigManageAid: "123",
-    } as IdentifierMetadataRecord;
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(metadata);
+
     identifiersMemberMock = jest.fn().mockResolvedValue({
       signing: [
         {
@@ -1209,16 +1207,7 @@ describe("Multisig sig service of agent", () => {
         ],
       };
     });
-    identifierStorage.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
-      {
-        displayName: "displayName",
-        id: "id",
-        signifyName: "signifyName",
-        createdAt: new Date(),
-        theme: 0,
-        multisigManageAid: "123",
-      },
-    ]);
+
     identifiersGetMock.mockResolvedValue({
       state: {
         i: metadata.id,
