@@ -559,72 +559,181 @@ describe("Usage of multi-sig", () => {
     );
   });
 
-  test("Can get multisig icp details of 2 persons multi-sig", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
-    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
-    Agent.agent.connections.getConnectionShortDetailById = jest
-      .fn()
-      .mockResolvedValue(initiatorConnectionShortDetails);
-    Agent.agent.connections.getMultisigLinkedContacts = jest
-      .fn()
-      .mockResolvedValue([]);
-    const result = await multiSigService.getMultisigIcpDetails(
-      "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
-    );
+  test("Can initiate accepting an ACDC to a multi-sig identifier", async () => {
+    const multisigId = "multisigId";
+    const notificationSaid = "ELykd_2bX6yvuVEgLQqnCgZ7QLdxpUBze-RzHVwfCUfW";
+    const schemaSaids = ["schemaSaid"];
+    const mockAdmit = {
+      kind: "JSON",
+      raw: "{\"v\":\"KERI10JSON000111_\",\"t\":\"exn\",\"d\":\"EKlXGS9FrnHFWvo1HB2KsyXbXDRVts42nKg7qmzKas0j\",\"i\":\"EFKiC-cDUpBauOHMLRRKGaDBZue2FCqTrJJU8nn8qv_A\",\"p\":\"EGBtDLn59jI97a_Y0Poztc4wM3SZdTyjW8gRcBiMNuEy\",\"dt\":\"2024-08-02T02:47:15.250000+00:00\",\"r\":\"/ipex/admit\",\"q\":{},\"a\":{\"m\":\"\"},\"e\":{}}",
+      ked: {
+        v: "KERI10JSON000111_",
+        t: "exn",
+        d: "EKlXGS9FrnHFWvo1HB2KsyXbXDRVts42nKg7qmzKas0j",
+        i: "EFKiC-cDUpBauOHMLRRKGaDBZue2FCqTrJJU8nn8qv_A",
+        p: "EGBtDLn59jI97a_Y0Poztc4wM3SZdTyjW8gRcBiMNuEy",
+        dt: "2024-08-02T02:47:15.250000+00:00",
+        r: "/ipex/admit",
+        q: {},
+        a: { m: "" },
+        e: {},
+      },
+      size: 273,
+    };
+    const mockSigs = [
+      "AAAWesHyXn8p_ZeQYxD52OXhYkZiDNNmNBq8Bat_n7wk0KZ1LXKpfpeOd9s3A2huVibe1J18AgI-NOH9lfnvEOAM",
+    ];
+    const mockEnd = "";
 
-    expect(result.ourIdentifier.id).toBe(memberIdentifierRecord.id);
-    expect(result.sender.id).toBe(initiatorConnectionShortDetails.id);
-    expect(result.otherConnections.length).toBe(0);
-    expect(result.threshold).toBe(2);
+    mockResolveOobi.mockResolvedValueOnce(resolvedOobiOpResponse);
+
+    getExchangesMock.mockResolvedValueOnce(mockGetExchangeGrantMessage);
+    identifiersMemberMock = jest
+      .fn()
+      .mockResolvedValueOnce(getMultisigMembersResponse);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...memberIdentifierRecord,
+      groupMetadata: {
+        ...memberMetadataRecordProps.groupMetadata,
+        groupCreated: true,
+      },
+    });
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+    ipexAdmitMock.mockResolvedValue([mockAdmit, mockSigs, mockEnd]);
+    createExchangeMessageMock.mockResolvedValue([
+      multisigExnIpexGrantSerder,
+      multisigExnIpexGrantSig,
+      multisigExnIpexGrantEnd,
+    ]);
+
+    await multiSigService.multisigAdmit(
+      multisigId,
+      notificationSaid,
+      schemaSaids
+    );
+    expect(ipexAdmitMock).toBeCalledTimes(1);
+    expect(createExchangeMessageMock).toBeCalledTimes(1);
+    expect(ipexSubmitAdmitMock).toBeCalledTimes(1);
   });
 
-  test("Can get multisig icp details of 3 persons multi-sig", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest.fn().mockResolvedValue([
-      {
-        ...mockGetRequestMultisigIcp,
-        exn: {
-          ...mockGetRequestMultisigIcp.exn,
-          a: {
-            ...mockGetRequestMultisigIcp.exn.a,
-            smids: [
-              "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-              "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
-              "EKlUo3CAqjPfFt0Wr2vvSc7MqT9WiL2EGadRsAP3V1IJ",
-            ],
-          },
-          e: { icp: { kt: 3 } },
-        },
+  test("Can agree to admit a credential with a multi-sig identifier", async () => {
+    const multisigId = gHab.name;
+    const notificationSaid = "ELykd_2bX6yvuVEgLQqnCgZ7QLdxpUBze-RzHVwfCUfW";
+    const schemaSaids = ["schemaSaid"];
+    const multisigExn = {
+      v: "KERI10JSON000111_",
+      t: "exn",
+      d: "EO6rXPzJVLNEOjs3puI5Kn4L2UsiB-iJJJKpXi26F73X",
+      i: "EHQDKkV40qP65N8yHaOJFlVS1CUvsYTvGlHPfcy2tFUb",
+      p: "EKWG4i9hT8vjwRPHsW7vqWrPq0utZHVgdu24fAf0j2Cb",
+      dt: "2024-08-02T07:06:24.884000+00:00",
+      r: "/ipex/admit",
+      q: {},
+      a: { m: "" },
+      e: {},
+    };
+
+    const ked = {
+      v: "KERI10JSON000111_",
+      t: "exn",
+      d: "EKm404jyX0iquIOu0BtZ6xR04opEQYoClKeSTuuS4fwn",
+      i: "EL3BEUfwxS1_mCWqKUrH5nGPkikoiHskhVhGenV2lcAZ",
+      p: "EBXi4JFZqjsKMzaMAz-gJWxJj992R988JcdN8EfzL4Po",
+      dt: "2024-08-02T07:11:59.510000+00:00",
+      r: "/ipex/admit",
+      q: {},
+      a: { m: "" },
+      e: {},
+    };
+    const admit = new Serder(ked);
+    const atc =
+      "-FABEFr4DyYerYKgdUq3Nw5wbq7OjEZT6cn45omHCiIZ0elD0AAAAAAAAAAAAAAAAAAAAAAAEMoyFLuJpu0B79yPM7QKFE_R_D4CTq7H7GLsKxIpukXX-AABABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB";
+
+    const mockSaider = [{} as Saider, ked] as [Saider, Dict<any>];
+
+    mockResolveOobi.mockResolvedValueOnce({
+      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+      metadata: {
+        oobi: "testOobi",
       },
-    ]);
-    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
-    Agent.agent.connections.getConnectionShortDetailById = jest
-      .fn()
-      .mockResolvedValue(initiatorConnectionShortDetails);
-    Agent.agent.connections.getMultisigLinkedContacts = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-          connectionDate: nowISO,
-          label: "",
-          logo: "logoUrl",
-          status: ConnectionStatus.PENDING,
+      done: true,
+      error: null,
+      response: {},
+      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+    });
+    const exchangeMock = {
+      exn: {
+        i: "ELWFo-DV4GujnvcwwIbzTzjc-nIf0ijv6W1ecajvQYBY",
+        d: "EO65SZOen5Qm26gYeAZZ_J_p8_Uy_6jB3cUpv0DzgDA4",
+      },
+    };
+    getExchangesMock.mockResolvedValueOnce(exchangeMock);
+    identifiersMemberMock = jest.fn().mockResolvedValueOnce({
+      signing: [
+        { ends: { agent: { [memberMetadataRecord.id]: "" } }, aid: "aid" },
+      ],
+    });
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce(
+      new IdentifierMetadataRecord({
+        id: "aidHere",
+        displayName: "Identifier 2",
+        signifyName: "uuid-here",
+        createdAt: now,
+        theme: 0,
+        groupMetadata: {
+          groupId: "group-id",
+          groupInitiator: true,
+          groupCreated: true,
         },
-      ]);
-    const result = await multiSigService.getMultisigIcpDetails(
-      "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
+      })
     );
-    expect(result.ourIdentifier.id).toBe(memberIdentifierRecord.id);
-    expect(result.sender.id).toBe(initiatorConnectionShortDetails.id);
-    expect(result.otherConnections.length).toBe(1);
-    expect(result.otherConnections[0].id).toBe(
-      "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+
+    jest.spyOn(Saider, "saidify").mockReturnValueOnce(mockSaider);
+    getMemberMock.mockResolvedValue({
+      sign: () => [
+        "ABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB",
+      ],
+    });
+    createExchangeMessageMock.mockResolvedValue([
+      multisigExnIpexGrantSerder,
+      multisigExnIpexGrantSig,
+      multisigExnIpexGrantEnd,
+    ]);
+
+    await multiSigService.multisigAdmit(
+      multisigId,
+      notificationSaid,
+      schemaSaids,
+      multisigExn
     );
-    expect(result.threshold).toBe(3);
+
+    expect(ipexAdmitMock).toBeCalledTimes(0);
+    expect(createExchangeMessageMock).toBeCalledWith(
+      mHab,
+      "/multisig/exn",
+      {
+        gid: gHab["prefix"],
+      },
+      {
+        exn: [admit, atc],
+      },
+      "aid"
+    );
+
+    expect(ipexSubmitAdmitMock).toBeCalledWith(
+      multisigId,
+      multisigExnIpexGrantSerder,
+      multisigExnIpexGrantSig,
+      multisigExnIpexGrantEnd,
+      ["aid"]
+    );
   });
 });
 
@@ -1093,181 +1202,26 @@ describe("Creation of multi-sig", () => {
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 
-  test("Can initiate accepting an ACDC to a multi-sig identifier", async () => {
-    const multisigId = "multisigId";
-    const notificationSaid = "ELykd_2bX6yvuVEgLQqnCgZ7QLdxpUBze-RzHVwfCUfW";
-    const schemaSaids = ["schemaSaid"];
-    const mockAdmit = {
-      kind: "JSON",
-      raw: "{\"v\":\"KERI10JSON000111_\",\"t\":\"exn\",\"d\":\"EKlXGS9FrnHFWvo1HB2KsyXbXDRVts42nKg7qmzKas0j\",\"i\":\"EFKiC-cDUpBauOHMLRRKGaDBZue2FCqTrJJU8nn8qv_A\",\"p\":\"EGBtDLn59jI97a_Y0Poztc4wM3SZdTyjW8gRcBiMNuEy\",\"dt\":\"2024-08-02T02:47:15.250000+00:00\",\"r\":\"/ipex/admit\",\"q\":{},\"a\":{\"m\":\"\"},\"e\":{}}",
-      ked: {
-        v: "KERI10JSON000111_",
-        t: "exn",
-        d: "EKlXGS9FrnHFWvo1HB2KsyXbXDRVts42nKg7qmzKas0j",
-        i: "EFKiC-cDUpBauOHMLRRKGaDBZue2FCqTrJJU8nn8qv_A",
-        p: "EGBtDLn59jI97a_Y0Poztc4wM3SZdTyjW8gRcBiMNuEy",
-        dt: "2024-08-02T02:47:15.250000+00:00",
-        r: "/ipex/admit",
-        q: {},
-        a: { m: "" },
-        e: {},
-      },
-      size: 273,
-    };
-    const mockSigs = [
-      "AAAWesHyXn8p_ZeQYxD52OXhYkZiDNNmNBq8Bat_n7wk0KZ1LXKpfpeOd9s3A2huVibe1J18AgI-NOH9lfnvEOAM",
-    ];
-    const mockEnd = "";
-
-    mockResolveOobi.mockResolvedValueOnce(resolvedOobiOpResponse);
-
-    getExchangesMock.mockResolvedValueOnce(mockGetExchangeGrantMessage);
-    identifiersMemberMock = jest
+  test("Can get multisig icp details of 2 persons multi-sig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    groupGetRequestMock = jest
       .fn()
-      .mockResolvedValueOnce(getMultisigMembersResponse);
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      ...memberIdentifierRecord,
-      groupMetadata: {
-        ...memberMetadataRecordProps.groupMetadata,
-        groupCreated: true,
-      },
-    });
-    identifiersGetMock = jest
+      .mockResolvedValue([mockGetRequestMultisigIcp]);
+    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
+    Agent.agent.connections.getConnectionShortDetailById = jest
       .fn()
-      .mockResolvedValueOnce(gHab)
-      .mockResolvedValueOnce(mHab);
-    ipexAdmitMock.mockResolvedValue([mockAdmit, mockSigs, mockEnd]);
-    createExchangeMessageMock.mockResolvedValue([
-      multisigExnIpexGrantSerder,
-      multisigExnIpexGrantSig,
-      multisigExnIpexGrantEnd,
-    ]);
-
-    await multiSigService.multisigAdmit(
-      multisigId,
-      notificationSaid,
-      schemaSaids
-    );
-    expect(ipexAdmitMock).toBeCalledTimes(1);
-    expect(createExchangeMessageMock).toBeCalledTimes(1);
-    expect(ipexSubmitAdmitMock).toBeCalledTimes(1);
-  });
-
-  test("Can agree to admit a credential with a multi-sig identifier", async () => {
-    const multisigId = gHab.name;
-    const notificationSaid = "ELykd_2bX6yvuVEgLQqnCgZ7QLdxpUBze-RzHVwfCUfW";
-    const schemaSaids = ["schemaSaid"];
-    const multisigExn = {
-      v: "KERI10JSON000111_",
-      t: "exn",
-      d: "EO6rXPzJVLNEOjs3puI5Kn4L2UsiB-iJJJKpXi26F73X",
-      i: "EHQDKkV40qP65N8yHaOJFlVS1CUvsYTvGlHPfcy2tFUb",
-      p: "EKWG4i9hT8vjwRPHsW7vqWrPq0utZHVgdu24fAf0j2Cb",
-      dt: "2024-08-02T07:06:24.884000+00:00",
-      r: "/ipex/admit",
-      q: {},
-      a: { m: "" },
-      e: {},
-    };
-
-    const ked = {
-      v: "KERI10JSON000111_",
-      t: "exn",
-      d: "EKm404jyX0iquIOu0BtZ6xR04opEQYoClKeSTuuS4fwn",
-      i: "EL3BEUfwxS1_mCWqKUrH5nGPkikoiHskhVhGenV2lcAZ",
-      p: "EBXi4JFZqjsKMzaMAz-gJWxJj992R988JcdN8EfzL4Po",
-      dt: "2024-08-02T07:11:59.510000+00:00",
-      r: "/ipex/admit",
-      q: {},
-      a: { m: "" },
-      e: {},
-    };
-    const admit = new Serder(ked);
-    const atc =
-      "-FABEFr4DyYerYKgdUq3Nw5wbq7OjEZT6cn45omHCiIZ0elD0AAAAAAAAAAAAAAAAAAAAAAAEMoyFLuJpu0B79yPM7QKFE_R_D4CTq7H7GLsKxIpukXX-AABABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB";
-
-    const mockSaider = [{} as Saider, ked] as [Saider, Dict<any>];
-
-    mockResolveOobi.mockResolvedValueOnce({
-      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
-      metadata: {
-        oobi: "testOobi",
-      },
-      done: true,
-      error: null,
-      response: {},
-      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
-    });
-    const exchangeMock = {
-      exn: {
-        i: "ELWFo-DV4GujnvcwwIbzTzjc-nIf0ijv6W1ecajvQYBY",
-        d: "EO65SZOen5Qm26gYeAZZ_J_p8_Uy_6jB3cUpv0DzgDA4",
-      },
-    };
-    getExchangesMock.mockResolvedValueOnce(exchangeMock);
-    identifiersMemberMock = jest.fn().mockResolvedValueOnce({
-      signing: [
-        { ends: { agent: { [memberMetadataRecord.id]: "" } }, aid: "aid" },
-      ],
-    });
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce(
-      new IdentifierMetadataRecord({
-        id: "aidHere",
-        displayName: "Identifier 2",
-        signifyName: "uuid-here",
-        createdAt: now,
-        theme: 0,
-        groupMetadata: {
-          groupId: "group-id",
-          groupInitiator: true,
-          groupCreated: true,
-        },
-      })
-    );
-    identifiersGetMock = jest
+      .mockResolvedValue(initiatorConnectionShortDetails);
+    Agent.agent.connections.getMultisigLinkedContacts = jest
       .fn()
-      .mockResolvedValueOnce(gHab)
-      .mockResolvedValueOnce(mHab);
-
-    jest.spyOn(Saider, "saidify").mockReturnValueOnce(mockSaider);
-    getMemberMock.mockResolvedValue({
-      sign: () => [
-        "ABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB",
-      ],
-    });
-    createExchangeMessageMock.mockResolvedValue([
-      multisigExnIpexGrantSerder,
-      multisigExnIpexGrantSig,
-      multisigExnIpexGrantEnd,
-    ]);
-
-    await multiSigService.multisigAdmit(
-      multisigId,
-      notificationSaid,
-      schemaSaids,
-      multisigExn
+      .mockResolvedValue([]);
+    const result = await multiSigService.getMultisigIcpDetails(
+      "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
     );
 
-    expect(ipexAdmitMock).toBeCalledTimes(0);
-    expect(createExchangeMessageMock).toBeCalledWith(
-      mHab,
-      "/multisig/exn",
-      {
-        gid: gHab["prefix"],
-      },
-      {
-        exn: [admit, atc],
-      },
-      "aid"
-    );
-
-    expect(ipexSubmitAdmitMock).toBeCalledWith(
-      multisigId,
-      multisigExnIpexGrantSerder,
-      multisigExnIpexGrantSig,
-      multisigExnIpexGrantEnd,
-      ["aid"]
-    );
+    expect(result.ourIdentifier.id).toBe(memberIdentifierRecord.id);
+    expect(result.sender.id).toBe(initiatorConnectionShortDetails.id);
+    expect(result.otherConnections.length).toBe(0);
+    expect(result.threshold).toBe(2);
   });
 
   test("Throw error if the Multi-sig join request contains unknown AIDs", async () => {
@@ -1302,6 +1256,52 @@ describe("Creation of multi-sig", () => {
         "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
       )
     ).rejects.toThrowError(MultiSigService.UNKNOWN_AIDS_IN_MULTISIG_ICP);
+  });
+
+  test("Can get multisig icp details of 3 persons multi-sig", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    groupGetRequestMock = jest.fn().mockResolvedValue([
+      {
+        ...mockGetRequestMultisigIcp,
+        exn: {
+          ...mockGetRequestMultisigIcp.exn,
+          a: {
+            ...mockGetRequestMultisigIcp.exn.a,
+            smids: [
+              "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+              "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
+              "EKlUo3CAqjPfFt0Wr2vvSc7MqT9WiL2EGadRsAP3V1IJ",
+            ],
+          },
+          e: { icp: { kt: 3 } },
+        },
+      },
+    ]);
+    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
+    Agent.agent.connections.getConnectionShortDetailById = jest
+      .fn()
+      .mockResolvedValue(initiatorConnectionShortDetails);
+    Agent.agent.connections.getMultisigLinkedContacts = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.PENDING,
+        },
+      ]);
+    const result = await multiSigService.getMultisigIcpDetails(
+      "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
+    );
+    expect(result.ourIdentifier.id).toBe(memberIdentifierRecord.id);
+    expect(result.sender.id).toBe(initiatorConnectionShortDetails.id);
+    expect(result.otherConnections.length).toBe(1);
+    expect(result.otherConnections[0].id).toBe(
+      "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
+    );
+    expect(result.threshold).toBe(3);
   });
 
   test("Throw error if we do not control any member AID of the multi-sig", async () => {
