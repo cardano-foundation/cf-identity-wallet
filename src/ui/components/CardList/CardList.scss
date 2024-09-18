@@ -6,13 +6,10 @@
   }
 
   ion-item.card-item {
-    --inner-padding-top: 1rem;
-    --inner-padding-bottom: 1rem;
     --inner-padding-end: 0;
     --padding-start: 0;
     --background: var(--ion-color-light);
     --title-font-size: 1rem;
-    --title-margin-bottom: 0.25rem;
     --logo-border-radius: 0.25rem;
     --display-fallback: flex;
     --subtitle-font-size: 0.875rem;
@@ -27,7 +24,6 @@
       border-radius: var(--logo-border-radius);
       width: var(--card-width);
       height: var(--card-height);
-      margin-right: 1rem;
     }
 
     .card-fallback-logo {
@@ -45,20 +41,20 @@
     .card-info {
       flex: 1;
       overflow: hidden;
+      padding-left: 1rem;
 
       .card-title {
         font-size: var(--title-font-size);
         line-height: 1.17rem;
-        margin-bottom: var(--title-margin-bottom);
         font-weight: 500;
         color: var(--ion-color-primary);
-        margin-top: 0;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
+        margin: 2rem 0;
 
-        &.no-margin {
-          --title-margin-bottom: 0;
+        &.has-subtitle {
+          margin: 1rem 0 0 0;
         }
       }
 
@@ -67,7 +63,7 @@
         line-height: 1rem;
         font-weight: 400;
         color: var(--ion-color-primary);
-        margin: 0;
+        margin: 0 0 1rem 0;
       }
     }
   }
@@ -98,14 +94,28 @@
     }
 
     ion-item.card-item {
-      --inner-padding-top: 0.75rem;
-      --inner-padding-bottom: 0.75rem;
       --title-font-size: 0.875rem;
       --subtitle-font-size: 0.75rem;
 
-      .card-logo {
-        border-radius: var(--logo-border-radius);
-        margin-right: 0.5rem;
+      .card-info {
+        padding-left: 0.752rem;
+
+        .card-name,
+        .card-expiration {
+          font-size: 0.8rem;
+        }
+
+        .card-title {
+          margin: 2rem 0;
+
+          &.has-subtitle {
+            margin: 0.6rem 0 0 0;
+          }
+        }
+
+        .card-subtitle {
+          margin: 0 0 0.6rem 0;
+        }
       }
     }
 
@@ -114,15 +124,6 @@
         --size: 1.6rem;
         width: 1.6rem;
         margin: 0 0.8rem 0 0.3rem;
-      }
-
-      .card-info {
-        margin-left: 0.752rem;
-
-        .card-name,
-        .card-expiration {
-          font-size: 0.8rem;
-        }
       }
 
       img.card-miniature {

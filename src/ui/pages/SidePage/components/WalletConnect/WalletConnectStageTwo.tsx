@@ -136,6 +136,7 @@ const WalletConnectStageTwo = ({
           data={displayIdentifiers}
           onCardClick={(data, e) => {
             e.stopPropagation();
+            handleSelectIdentifier(data);
           }}
           onRenderEndSlot={(data) => {
             return (

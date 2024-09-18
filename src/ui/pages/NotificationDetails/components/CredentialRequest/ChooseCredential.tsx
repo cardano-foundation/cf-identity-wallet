@@ -1,10 +1,11 @@
 import { IonCheckbox, IonIcon, IonSpinner } from "@ionic/react";
 import { informationCircleOutline } from "ionicons/icons";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Agent } from "../../../../../core/agent/agent";
 import { i18n } from "../../../../../i18n";
 import { useAppSelector } from "../../../../../store/hooks";
+import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
 import {
   getNotificationsCache,
   setNotificationsCache,
@@ -26,8 +27,6 @@ import {
   RequestCredential,
 } from "./CredentialRequest.types";
 import { BackReason } from "../../../../components/CredentialDetailModule/CredentialDetailModule.types";
-import { getCredsCache } from "../../../../../store/reducers/credsCache";
-import { CredentialStatus } from "../../../../../core/agent/services/credentialService.types";
 
 const CRED_EMPTY = "Credential is empty";
 
@@ -69,7 +68,7 @@ const ChooseCredential = ({
   onClose,
   reloadData,
 }: ChooseCredentialProps) => {
-  const credsCache = useAppSelector(getCredsCache);
+  const connections = useAppSelector(getConnectionsCache);
   const notifications = useAppSelector(getNotificationsCache);
   const dispatch = useDispatch();
   const [selectedCred, setSelectedCred] = useState<RequestCredential | null>(
@@ -79,18 +78,14 @@ const ChooseCredential = ({
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [viewCredDetail, setViewCredDetail] =
     useState<RequestCredential | null>(null);
-  const confirmedCreds = useMemo(
-    () =>
-      credsCache.filter((item) => item.status === CredentialStatus.CONFIRMED),
-    [credsCache]
-  );
 
-  const credentials = credentialRequest.credentials.map(
+  const displayIdentifiers = credentialRequest.credentials.map(
     (cred): CardItem<RequestCredential> => {
+      const connection = connections?.[cred.connectionId]?.label || "";
+
       return {
         id: cred.acdc.d,
-        title: confirmedCreds.filter((item) => item.id === cred.acdc.d)[0]
-          .credentialType,
+        title: connection,
         subtitle: `${formatShortDate(cred.acdc.a.dt)} - ${formatTimeToSec(
           cred.acdc.a.dt
         )}`,
@@ -198,8 +193,9 @@ const ChooseCredential = ({
           )}
         </h2>
         <CardList
-          data={credentials}
-          onCardClick={(data) => {
+          data={displayIdentifiers}
+          onCardClick={(data, e) => {
+            e.stopPropagation();
             handleSelectCred(data);
           }}
           onRenderStartSlot={(data) => {

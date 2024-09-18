@@ -17,7 +17,7 @@ const CardInfo = <T extends object = object>({
   onRenderStartSlot: renderStartSlot,
 }: CardItemProps<T>) => {
   const titleClass = combineClassNames("card-title", {
-    "no-margin": !card.subtitle,
+    "has-subtitle": !!card.subtitle,
   });
 
   const cardImg = card.image ? (
