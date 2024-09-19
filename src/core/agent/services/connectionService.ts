@@ -60,8 +60,6 @@ class ConnectionService extends AgentService {
     "Failed to resolve OOBI, operation not completing...";
   static readonly CANNOT_GET_OOBI = "No OOBI available from KERIA";
 
-  static resolvedOobi: { [key: string]: any } = {};
-
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
   ) {
@@ -376,9 +374,6 @@ class ConnectionService extends AgentService {
   @OnlineOnly
   async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
     const startTime = Date.now();
-    if (ConnectionService.resolvedOobi[url]) {
-      return ConnectionService.resolvedOobi[url];
-    }
     const alias = new URL(url).searchParams.get("name") ?? uuidv4();
     let operation;
     if (waitForCompletion) {
@@ -406,7 +401,6 @@ class ConnectionService extends AgentService {
       throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
     }
     const oobi = { ...operation, alias };
-    ConnectionService.resolvedOobi[url] = oobi;
     return oobi;
   }
 
