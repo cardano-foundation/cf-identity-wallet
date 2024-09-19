@@ -20,6 +20,14 @@
     }
   }
 
+  .checkbox {
+    width: fit-content;
+    margin-right: 0.5rem;
+    --checkbox-background-checked: var(--ion-color-primary-gradient);
+    --checkmark-color: var(--ion-color-primary);
+    --border-width: 0;
+  }
+
   @media screen and (min-width: 250px) and (max-width: 370px) {
     .connect-wallet-title {
       font-size: 1rem;
@@ -27,12 +35,5 @@
       margin-bottom: 0.75rem;
       margin-top: 1.25rem;
     }
-  }
-
-  .checkbox {
-    width: fit-content;
-    --checkbox-background-checked: var(--ion-color-primary-gradient);
-    --checkmark-color: var(--ion-color-primary);
-    --border-width: 0;
   }
 }

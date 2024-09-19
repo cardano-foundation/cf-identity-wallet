@@ -46,6 +46,7 @@ import { getBackRoute } from "../../../routes/backRoute";
 import { ConnectionHistoryEvent } from "./components/ConnectionHistoryEvent";
 import { Verification } from "../../components/Verification";
 import { CloudError } from "../../components/CloudError";
+import { showError } from "../../utils/error";
 
 const ConnectionDetails = () => {
   const pageId = "connection-details";
@@ -90,13 +91,13 @@ const ConnectionDetails = () => {
       ) {
         setCloudError(true);
       } else {
-        // eslint-disable-next-line no-console
-        console.error("Unable to get connection details", error);
+        handleDone();
+        showError("Unable to get connection details", error, dispatch);
       }
     } finally {
       setLoading((value) => ({ ...value, details: false }));
     }
-  }, [connectionShortDetails?.id]);
+  }, [connectionShortDetails?.id, dispatch]);
 
   const getHistory = useCallback(async () => {
     if (!connectionShortDetails?.id) return;
@@ -108,12 +109,12 @@ const ConnectionDetails = () => {
         );
       setConnectionHistory(connectionHistory);
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to get connection history", e);
+      handleDone();
+      showError("Unable to get connection history", e, dispatch);
     } finally {
       setLoading((value) => ({ ...value, history: false }));
     }
-  }, [connectionShortDetails?.id]);
+  }, [connectionShortDetails?.id, dispatch]);
 
   const getData = useCallback(() => {
     if (!connectionShortDetails?.id) return;
@@ -150,18 +151,28 @@ const ConnectionDetails = () => {
   const verifyAction = () => {
     async function deleteConnection() {
       try {
-        await Agent.agent.connections.deleteConnectionById(
-          connectionShortDetails.id
-        );
+        if (cloudError) {
+          await Agent.agent.connections.deleteStaleLocalConnectionById(
+            connectionShortDetails.id
+          );
+        } else {
+          await Agent.agent.connections.deleteConnectionById(
+            connectionShortDetails.id
+          );
+        }
         dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
         dispatch(removeConnectionCache(connectionShortDetails.id));
         handleDone();
         setVerifyIsOpen(false);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Unable to delete connection", error);
-        dispatch(setToastMsg(ToastMsgType.DELETE_CONNECTION_FAIL));
+        showError(
+          "Unable to delete connection",
+          error,
+          dispatch,
+          ToastMsgType.DELETE_CONNECTION_FAIL
+        );
       }
+      dispatch(setCurrentOperation(OperationType.IDLE));
     }
     deleteConnection();
   };

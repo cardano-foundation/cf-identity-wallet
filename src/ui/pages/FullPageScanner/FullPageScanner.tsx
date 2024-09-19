@@ -1,21 +1,32 @@
-import { arrowBackOutline } from "ionicons/icons";
-import { useEffect, useRef } from "react";
+import { arrowBackOutline, repeatOutline } from "ionicons/icons";
+import { useEffect, useRef, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getCurrentOperation,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
+import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { PageHeader } from "../../components/PageHeader";
 import { Scanner } from "../../components/Scanner";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { useAppDispatch } from "../../../store/hooks";
+import { useCameraDirection } from "../../components/Scanner/hook/useCameraDirection";
+import { BackEventPriorityType, OperationType } from "../../globals/types";
+import "./FullPageScanner.scss";
 import {
   FullPageScannerProps,
   ScannerRefComponent,
 } from "./FullPageScanner.types";
-import { BackEventPriorityType, OperationType } from "../../globals/types";
-import "./FullPageScanner.scss";
-import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
-import { PageHeader } from "../../components/PageHeader";
+import { TabsRoutePath } from "../../../routes/paths";
 
 const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
   const pageId = "qr-code-scanner-full-page";
+  const history = useHistory();
   const dispatch = useAppDispatch();
+  const currentOperation = useAppSelector(getCurrentOperation);
   const scannerRef = useRef<ScannerRefComponent>(null);
+  const { cameraDirection, changeCameraDirection, supportMultiCamera } =
+    useCameraDirection();
+  const [enableCameraDirection, setEnableCameraDirection] = useState(false);
 
   useEffect(() => {
     document?.querySelector("body")?.classList.add("full-page-scanner");
@@ -23,11 +34,12 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
 
   const handleReset = () => {
     setShowScan(false);
-    scannerRef.current?.stopScan();
     document?.querySelector("body")?.classList.remove("full-page-scanner");
     document
       ?.querySelector("body.scanner-active > div:last-child")
       ?.classList.add("hide");
+    currentOperation === OperationType.BACK_TO_CONNECT_WALLET &&
+      history.push(TabsRoutePath.MENU);
   };
 
   const handleCloseButton = () => {
@@ -49,12 +61,18 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
             prevent: !showScan,
             priority: BackEventPriorityType.Scanner,
           }}
+          actionButton={supportMultiCamera}
+          actionButtonIcon={repeatOutline}
+          actionButtonAction={changeCameraDirection}
+          actionButtonDisabled={!enableCameraDirection}
         />
       }
     >
       <Scanner
         ref={scannerRef}
         handleReset={handleReset}
+        cameraDirection={cameraDirection}
+        onCheckPermissionFinish={setEnableCameraDirection}
       />
     </ResponsivePageLayout>
   );

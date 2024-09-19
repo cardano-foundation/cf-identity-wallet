@@ -1,9 +1,10 @@
 import { i18n } from "../../../i18n";
-import { formatShortDate } from "../../utils/formatters";
-import { IDENTIFIER_BG_MAPPING } from "../../globals/types";
-import { IdentifierCardTemplateProps } from "./IdentifierCardTemplate.types";
 import KERILogo from "../../../ui/assets/images/keri-aid.svg";
+import { IDENTIFIER_BG_MAPPING } from "../../globals/types";
+import { formatShortDate } from "../../utils/formatters";
 import "./IdentifierCardTemplate.scss";
+import { IdentifierCardTemplateProps } from "./IdentifierCardTemplate.types";
+import { useCardOffsetTop } from "./cardOffsetTopHook";
 
 const IdentifierCardTemplate = ({
   name = "default",
@@ -13,10 +14,15 @@ const IdentifierCardTemplate = ({
   onHandleShowCardDetails,
   pickedCard,
 }: IdentifierCardTemplateProps) => {
+  const { getCardOffsetTop, cardRef } = useCardOffsetTop();
+
   const identifierCardTemplateStyles = {
     backgroundImage: `url(${IDENTIFIER_BG_MAPPING[cardData.theme]})`,
     backgroundSize: "cover",
     zIndex: index,
+    transform: pickedCard
+      ? `translateY(${-getCardOffsetTop() * index}px)`
+      : undefined,
   };
 
   const handleCardClick = () => {
@@ -27,6 +33,7 @@ const IdentifierCardTemplate = ({
 
   return (
     <div
+      ref={cardRef}
       key={index}
       data-testid={`identifier-card-template${
         index !== undefined ? `-${name}-index-${index}` : ""

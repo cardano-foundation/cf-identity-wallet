@@ -1,4 +1,5 @@
-.connections-tab {
+.connections-tab,
+.connections {
   background: var(--ion-color-light);
   z-index: 102 !important;
   padding-inline: 0;
@@ -34,19 +35,17 @@
   .alphabet-selector {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding-top: 5.5rem;
-    height: 20rem;
+    justify-content: center;
 
     ion-button {
       width: 1.2rem;
       height: 1rem;
       min-height: 1rem;
       margin: 0;
-      font-size: 0.5rem;
+      font-size: 0.625rem;
       font-style: normal;
       font-weight: 500;
-      line-height: 0.875rem;
+      line-height: 1rem;
       color: var(--ion-color-action-blue);
       --background: transparent;
       --background-activated: transparent;
@@ -58,31 +57,19 @@
       }
     }
 
-    @media screen and (min-width: 375px) and (max-width: 389px) {
-      padding-top: 4rem;
-
-      ion-button {
-        height: 0.725rem;
-        font-size: 0.425rem;
-        min-height: 0.725rem;
-      }
-    }
-
-    @media screen and (min-width: 250px) and (max-width: 374px) {
-      padding-top: 3rem;
-
+    @media screen and (min-width: 250px) and (max-width: 370px) {
       ion-button {
         height: 0.65rem;
-        font-size: 0.325rem;
-        min-height: 0.65rem;
+        width: 1rem;
+        font-size: 0.5rem;
+        min-height: 0.8rem;
+        line-height: 0.8rem;
       }
     }
   }
 
   .connections-container {
-    height: calc(
-      calc(var(--scale-h) * 92) - (6.813rem + env(safe-area-inset-bottom))
-    );
+    height: calc(92vh - (6.813rem + env(safe-area-inset-bottom)));
 
     > ion-grid {
       padding: 0;
@@ -116,13 +103,12 @@
     ion-item,
     ion-item-divider {
       --inner-padding-end: 0;
+      --background: var(--ion-color-light);
+      border-bottom: 1px solid rgba(var(--ion-color-dark-grey-rgb), 0.5);
 
       &::part(native) {
         padding: 0;
       }
-
-      --background: var(--ion-color-light);
-      border-bottom: 1px solid rgba(var(--ion-color-dark-grey-rgb), 0.5);
     }
 
     ion-item-divider {
@@ -158,7 +144,7 @@
     }
 
     .connections-container {
-      height: calc(var(--scale-h) * 70);
+      height: 70vh;
     }
 
     .connections-list {
@@ -187,5 +173,14 @@
         }
       }
     }
+  }
+}
+
+.connections .connections-container {
+  ion-item,
+  ion-item-divider,
+  ion-item-group.connections-list {
+    --background: var(--ion-color-light-grey);
+    background: var(--ion-color-light-grey);
   }
 }

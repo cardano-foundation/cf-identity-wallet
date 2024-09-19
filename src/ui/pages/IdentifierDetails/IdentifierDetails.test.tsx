@@ -21,6 +21,7 @@ import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
 const combineMock = jest.fn(() => identifierFix[0]);
@@ -40,6 +41,8 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
     get: (key: string) => getMock(key),
   },
 }));
+
+const deleteStaleLocalIdentifierMock = jest.fn();
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -63,6 +66,7 @@ jest.mock("../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifier: () => combineMock(),
         rotateIdentifier: (id: string) => rotateIdentifierMock(id),
+        deleteStaleLocalIdentifier: () => deleteStaleLocalIdentifierMock(),
       },
       connections: {
         getOobi: jest.fn(),
@@ -320,6 +324,7 @@ describe("Cards Details page (not multi-sig)", () => {
         )
       ).toBeInTheDocument()
     );
+
     act(() => {
       fireEvent.click(getByTestId("delete-button-identifier-card-details"));
     });
@@ -328,6 +333,18 @@ describe("Cards Details page (not multi-sig)", () => {
       expect(
         getByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)
       ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("alert-confirm-identifier-delete-details-cancel-button")
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)
+      ).not.toBeVisible();
     });
   });
 
@@ -619,6 +636,33 @@ describe("Checking the Identifier Details Page when information is missing from 
   });
 
   test("Identifier exists in the database but not on Signify", async () => {
+    const initialStateKeri = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        isOnline: true,
+      },
+      seedPhraseCache: {
+        seedPhrase:
+          "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+        bran: "bran",
+      },
+      identifiersCache: {
+        identifiers: filteredIdentifierFix,
+        favourites: [],
+      },
+    };
+
+    const storeMockedAidKeri = {
+      ...mockStore(initialStateKeri),
+      dispatch: dispatchMock,
+    };
+
     const history = createMemoryHistory();
     history.push(TabsRoutePath.IDENTIFIER_DETAILS, {
       ...identifierFix[0],
@@ -646,6 +690,34 @@ describe("Checking the Identifier Details Page when information is missing from 
           normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
         })
       ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("delete-button-identifier-card-details"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByTestId("alert-confirm-identifier-delete-details")
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("alert-confirm-identifier-delete-details-confirm-button")
+      );
+    });
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    act(() => {
+      passcodeFiller(getByText, getByTestId, "1", 6);
+    });
+
+    await waitFor(() => {
+      expect(deleteStaleLocalIdentifierMock).toBeCalled();
     });
   });
 });

@@ -1,6 +1,10 @@
+import { randomPasscode, ready as signifyReady} from "signify-ts";
 import { config } from "./config";
 import { SignifyApi } from "./modules/signify/signifyApi";
 import { NotificationRoute } from "./modules/signify/signifyApi.type";
+import { readFile, writeFile } from "fs/promises";
+import { existsSync, mkdir, mkdirSync } from "fs";
+import path from "path";
 
 class Agent {
   static readonly ISSUER_AID_NAME = "issuer";
@@ -37,8 +41,35 @@ class Agent {
   }
 
   async start(): Promise<void> {
-    await this.signifyApi.start();
-    await this.signifyApiIssuer.start();
+    await signifyReady();
+    let bran;
+    let issuerBran;
+    const bransFilePath = "./data/brans.json";
+    const dirPath = path.dirname(bransFilePath);
+    if (!existsSync(dirPath)) {
+      mkdirSync(dirPath, { recursive: true })
+    }
+    if (!existsSync(bransFilePath)) {
+      // Create new file if the file doesn't exist
+      await writeFile(bransFilePath, "");
+    }
+    const bransFileContent = await readFile(bransFilePath, "utf8");
+    if (!bransFileContent.includes("bran") && !bransFileContent.includes("issuerBran")) {
+      // Write file content if it's empty
+      bran = randomPasscode();
+      issuerBran = randomPasscode();
+      await writeFile(bransFilePath, JSON.stringify({
+        bran, issuerBran
+      }));
+    } else {
+      const bransData = JSON.parse(bransFileContent);
+      bran = bransData.bran;
+      issuerBran = bransData.issuerBran;
+    }
+    if (bran && issuerBran) {
+      await this.signifyApi.start(bran);
+      await this.signifyApiIssuer.start(issuerBran);
+    }
   }
 
   async createKeriOobi() {
@@ -82,6 +113,15 @@ class Agent {
 
   async contacts() {
     return this.signifyApi.contacts();
+  }
+
+  async deleteContact(id: string) {
+    return this.signifyApi.deleteContact(id);
+  };
+  
+  async contactCredentials(contactId: string) {
+    const issuer = await this.signifyApi.getIdentifierByName(Agent.HOLDER_AID_NAME);
+    return this.signifyApi.contactCredentials(issuer.prefix, contactId);
   }
 
   async revokeCredential(credentialId: string, holder: string) {
@@ -130,21 +170,31 @@ class Agent {
   async initKeri(): Promise<void> {
     this.onNotificationKeriStateChanged();
     /* eslint-disable no-console */
+    const existingKeriIssuerRegistryRegk = await this.signifyApiIssuer.getRegistry(Agent.ISSUER_AID_NAME).catch((e) => {console.error(e); return undefined});
+    const existingKeriRegistryRegk = await this.signifyApi.getRegistry(Agent.HOLDER_AID_NAME).catch((e) => {console.error(e); return undefined});
     // Issuer
-    await this.signifyApiIssuer
-      .createIdentifier(Agent.ISSUER_AID_NAME)
-      .catch((e) => console.error(e));
-    this.keriIssuerRegistryRegk = await this.signifyApiIssuer
-      .createRegistry(Agent.ISSUER_AID_NAME)
-      .catch((e) => console.error(e));
+    if (existingKeriIssuerRegistryRegk) {
+      this.keriIssuerRegistryRegk = existingKeriIssuerRegistryRegk;
+    } else {
+      await this.signifyApiIssuer
+        .createIdentifier(Agent.ISSUER_AID_NAME)
+        .catch((e) => console.error(e));
+      this.keriIssuerRegistryRegk = await this.signifyApiIssuer
+        .createRegistry(Agent.ISSUER_AID_NAME)
+        .catch((e) => console.error(e));
+    }
 
     // Holder
-    await this.signifyApi
-      .createIdentifier(Agent.HOLDER_AID_NAME)
-      .catch((e) => console.error(e));
-    this.keriRegistryRegk = await this.signifyApi
-      .createRegistry(Agent.HOLDER_AID_NAME)
-      .catch((e) => console.error(e));
+    if (existingKeriRegistryRegk) {
+      this.keriRegistryRegk = existingKeriRegistryRegk;
+    } else {
+      await this.signifyApi
+        .createIdentifier(Agent.HOLDER_AID_NAME)
+        .catch((e) => console.error(e));
+      this.keriRegistryRegk = await this.signifyApi
+        .createRegistry(Agent.HOLDER_AID_NAME)
+        .catch((e) => console.error(e));     
+    }
 
     await this.createQVICredential().catch((e) => console.error(e));
   }

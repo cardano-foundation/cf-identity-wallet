@@ -6,15 +6,16 @@ import ConnectionsIssuer from "./pages/ConnectionsIssuerPage";
 import { Container, CssBaseline, Paper } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import ConnectionPage from "./pages/ConnectionPage";
-import CredentialPage from "./pages/CredentialPage";
+import { ConnectionPage } from "./pages/ConnectionPage";
+import { CredentialPage } from "./pages/CredentialPage";
 import { RequestCredential } from "./pages/RequestCredential";
+import { RevocationPage }  from "./pages/RevocationPage";
 
 export const MENU_ITEMS = [
   {
     key: "connections",
-    label: "Connection",
-    path: "/connection",
+    label: "Connections",
+    path: "/connections",
     component: <ConnectionPage />,
   },
   {
@@ -29,6 +30,12 @@ export const MENU_ITEMS = [
     path: "/request-credential",
     component: <RequestCredential />,
   },
+  {
+    key: "revocation",
+    label: "Revoke Credential",
+    path: "/revocation",
+    component: <RevocationPage />,
+  }
 ];
 
 function App() {
@@ -38,25 +45,30 @@ function App() {
         <CssBaseline />
         <NavBar />
         <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
-          <Paper
-            variant="outlined"
-            sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
-          >
-            <Routes>
-              <Route path="/" element={<ConnectionPage />} />
-              <Route
-                path="/connections-issuer"
-                element={<ConnectionsIssuer />}
-              />
-              {MENU_ITEMS.map((item) => (
+          <Routes>
+            <Route path="/" element={
+              <ConnectionPage />} />
+            <Route
+              path="/connections-issuer"
+              element={<ConnectionsIssuer />}
+            />
+            {MENU_ITEMS.map((item) => (
+              item.path === "/connections" ?
                 <Route
                   key={item.key}
                   path={item.path}
-                  element={item.component}
+                  element={ item.component }
+                /> : <Route
+                  key={item.key}
+                  path={item.path}
+                  element={<Paper
+                    variant="outlined"
+                    sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
+                  >{item.component}</Paper>}
                 />
-              ))}
-            </Routes>
-          </Paper>
+            ))}
+          </Routes>
+
         </Container>
       </LocalizationProvider>
     </div>

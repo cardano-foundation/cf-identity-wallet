@@ -1,8 +1,15 @@
-.side-slider-container {
+.side-slider-container,
+.side-slider-modal {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
   width: 100%;
   transform: translateX(100%);
+  transition: transform 0.35s;
+
+  &.slide-in-left {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
 }

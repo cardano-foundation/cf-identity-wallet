@@ -12,6 +12,12 @@ async function startServer() {
   app.use(cors());
   app.use(bodyParser.json());
   app.use(router);
+  app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        error: err.message,
+    });
+  });
   await Agent.agent.start();
   app.listen(config.port, async () => {
     await Agent.agent.initKeri();

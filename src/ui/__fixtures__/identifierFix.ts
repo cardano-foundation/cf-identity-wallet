@@ -7,7 +7,6 @@ const identifierFix: IdentifierDetails[] = [
     createdAtUTC: "2023-01-01T19:23:24Z",
     theme: 0,
     isPending: false,
-    signifyName: "Test",
     s: "4", // Sequence number, only show if s > 0
     dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
     kt: "2", // Keys signing threshold (only show if kt > 1)
@@ -30,7 +29,6 @@ const identifierFix: IdentifierDetails[] = [
     createdAtUTC: "2023-01-01T19:23:24Z",
     theme: 1,
     isPending: false,
-    signifyName: "Test",
     s: "4", // Sequence number, only show if s > 0
     dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
     kt: "2", // Keys signing threshold (only show if kt > 1)
@@ -53,7 +51,6 @@ const identifierFix: IdentifierDetails[] = [
     createdAtUTC: "2024-03-07T11:54:56.886Z",
     theme: 0,
     isPending: true,
-    signifyName: "Test",
     s: "4", // Sequence number, only show if s > 0
     dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
     kt: "2", // Keys signing threshold (only show if kt > 1)

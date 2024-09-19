@@ -48,6 +48,7 @@ import {
   ArchivedCredentialsProps,
 } from "./ArchivedCredentials.types";
 import { CredentialItem } from "./CredentialItem";
+import { showError } from "../../utils/error";
 
 const ArchivedCredentialsContainer = forwardRef<
   ArchivedCredentialsContainerRef,
@@ -57,20 +58,16 @@ const ArchivedCredentialsContainer = forwardRef<
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const notifications = useAppSelector(getNotificationsCache);
-
   const [activeList, setActiveList] = useState(false);
   const [selectedCredentials, setSelectedCredentials] = useState<string[]>([]);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [alertDeleteIsOpen, setAlertDeleteIsOpen] = useState(false);
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
   const [alertRestoreRevoked, setAlertRestoreRevoked] = useState(false);
-
   const [viewCred, setViewCred] = useState("");
   const [isOpenCredModal, setIsOpenCredModal] = useState(false);
-
   const haveRevokedCreds = revokedCreds.length > 0;
   const haveArchivedCreds = archivedCreds.length > 0;
-
   const hasData = haveArchivedCreds || haveRevokedCreds;
 
   useEffect(() => {
@@ -90,6 +87,9 @@ const ArchivedCredentialsContainer = forwardRef<
     const data = [];
     for (const i in archivedCreds) {
       data.push(archivedCreds[i].id);
+    }
+    for (const i in revokedCreds) {
+      data.push(revokedCreds[i].id);
     }
     return data;
   };
@@ -123,7 +123,7 @@ const ArchivedCredentialsContainer = forwardRef<
 
         if (!notification) return Promise.reject();
 
-        return Agent.agent.signifyNotifications.deleteNotificationRecordById(
+        return Agent.agent.keriaNotifications.deleteNotificationRecordById(
           notification.id,
           notification.a.r as NotificationRoute
         );
@@ -189,9 +189,12 @@ const ArchivedCredentialsContainer = forwardRef<
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to delete creds:", e);
-      dispatch(setToastMsg(ToastMsgType.DELETE_CRED_FAIL));
+      showError(
+        "Unable to delete creds",
+        e,
+        dispatch,
+        ToastMsgType.DELETE_CRED_FAIL
+      );
     }
   };
 
@@ -226,7 +229,7 @@ const ArchivedCredentialsContainer = forwardRef<
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
-      // TODO: Handle error
+      showError("Unable to restore credentials", e, dispatch);
     }
   };
 

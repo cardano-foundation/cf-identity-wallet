@@ -9,6 +9,8 @@ import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import { ChooseCredential } from "./ChooseCredential";
 import "./CredentialRequest.scss";
 import { CredentialRequestInformation } from "./CredentialRequestInformation";
+import { showError } from "../../../../utils/error";
+import { useAppDispatch } from "../../../../../store/hooks";
 
 const CredentialRequest = ({
   pageId,
@@ -16,6 +18,7 @@ const CredentialRequest = ({
   notificationDetails,
   handleBack,
 }: NotificationDetailsProps) => {
+  const dispatch = useAppDispatch();
   const [requestStage, setRequestStage] = useState(0);
   const [credentialRequest, setCredentialRequest] =
     useState<CredentialsMatchingApply | null>();
@@ -30,9 +33,10 @@ const CredentialRequest = ({
 
       setCredentialRequest(request);
     } catch (e) {
-      // TODO: handle error
+      handleBack();
+      showError("Unable to get credential request detail", e, dispatch);
     }
-  }, [notificationDetails]);
+  }, [notificationDetails, dispatch, handleBack]);
 
   useOnlineStatusEffect(getCrendetialRequest);
 

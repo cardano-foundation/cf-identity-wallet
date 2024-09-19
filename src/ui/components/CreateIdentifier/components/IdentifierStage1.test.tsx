@@ -1,7 +1,6 @@
 import { setupIonicReact } from "@ionic/react";
 import { mockIonicReact } from "@ionic/react-test-utils";
-import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
@@ -15,6 +14,7 @@ import { OperationType, ToastMsgType } from "../../../globals/types";
 import { TabsRoutePath } from "../../navigation/TabsMenu";
 import { IdentifierColor } from "./IdentifierColorSelector";
 import { IdentifierStage1 } from "./IdentifierStage1";
+import { passcodeFiller } from "../../../utils/passcodeFiller";
 
 setupIonicReact();
 mockIonicReact();
@@ -25,11 +25,22 @@ const getOobiMock = jest.fn((...args: any) =>
   )
 );
 
+const deleteIdentifier = jest.fn();
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
+}));
+
 jest.mock("../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
         getOobi: (...args: any) => getOobiMock(...args),
+      },
+      identifiers: {
+        deleteIdentifier: () => deleteIdentifier(),
       },
     },
   },
@@ -44,6 +55,13 @@ jest.mock("react-router-dom", () => ({
       historyPushMock(args);
     },
   }),
+}));
+
+jest.mock("../../../../core/storage", () => ({
+  ...jest.requireActual("../../../../core/storage"),
+  SecureStorage: {
+    get: () => "111111",
+  },
 }));
 
 describe("Identifier Stage 1", () => {
@@ -135,7 +153,7 @@ describe("Identifier Stage 1", () => {
 
     await waitFor(() => {
       expect(getOobiMock).toBeCalledWith(
-        stage1State.newIdentifier.signifyName,
+        stage1State.newIdentifier.id,
         initialState.stateCache.authentication.userName,
         stage1State.newIdentifier.groupMetadata.groupId
       );
@@ -200,7 +218,7 @@ describe("Identifier Stage 1", () => {
     const resetModal = jest.fn();
 
     test("Renders Initial Multi Sig", async () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText, getAllByText } = render(
         <Provider store={storeMocked}>
           <IdentifierStage1
             state={stage1State}
@@ -244,7 +262,9 @@ describe("Identifier Stage 1", () => {
       });
       await waitFor(() => {
         expect(
-          getByText(EN_TRANSLATIONS.createidentifier.share.scanalert.cancel)
+          getAllByText(
+            EN_TRANSLATIONS.createidentifier.share.scanalert.cancel
+          )[0]
         ).toBeInTheDocument();
       });
       act(() => {
@@ -266,6 +286,9 @@ describe("Identifier Stage 1", () => {
       expect(
         getByTestId("primary-button-initiate-multi-sig")
       ).toBeInTheDocument();
+      expect(
+        getByTestId("delete-button-initiate-multi-sig")
+      ).toBeInTheDocument();
       await waitFor(() => {
         expect(
           getByTestId("primary-button-initiate-multi-sig").getAttribute(
@@ -283,7 +306,6 @@ describe("Identifier Stage 1", () => {
               ...stage1State,
               newIdentifier: {
                 ...stage1State.newIdentifier,
-                signifyName: "",
                 groupMetadata: {
                   ...stage1State.newIdentifier.groupMetadata,
                   groupInitiator: false,
@@ -300,10 +322,10 @@ describe("Identifier Stage 1", () => {
       );
 
       expect(
-        getByText(EN_TRANSLATIONS.createidentifier.receive.notes.top)
+        getByText(EN_TRANSLATIONS.createidentifier.share.notes.top)
       ).toBeInTheDocument();
       expect(
-        getByText(EN_TRANSLATIONS.createidentifier.receive.notes.middle)
+        getByText(EN_TRANSLATIONS.createidentifier.share.notes.middle)
       ).toBeInTheDocument();
 
       act(() => {
@@ -414,6 +436,9 @@ describe("Identifier Stage 1", () => {
       expect(
         getByTestId("primary-button-initiate-multi-sig")
       ).toBeInTheDocument();
+      expect(
+        getByTestId("delete-button-initiate-multi-sig")
+      ).toBeInTheDocument();
       await waitFor(() => {
         expect(
           getByTestId("primary-button-initiate-multi-sig").getAttribute(
@@ -430,6 +455,32 @@ describe("Identifier Stage 1", () => {
         expect(dispatchMock).toBeCalledWith(
           setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD)
         );
+      });
+
+      act(() => {
+        fireEvent.click(getByTestId("delete-button-initiate-multi-sig"));
+      });
+
+      await waitFor(() => {
+        expect(
+          getByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)
+        ).toBeInTheDocument();
+      });
+
+      act(() => {
+        fireEvent.click(
+          getByText(EN_TRANSLATIONS.identifiers.details.delete.alert.confirm)
+        );
+      });
+
+      await waitFor(() => {
+        expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+      });
+
+      passcodeFiller(getByText, getByTestId, "1", 6);
+
+      await waitFor(() => {
+        expect(deleteIdentifier).toBeCalled();
       });
     });
 

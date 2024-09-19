@@ -22,6 +22,7 @@ import "./Notifications.scss";
 import { EarlierNotification } from "./components";
 import { EarlierNotificationRef } from "./components/EarlierNotification.types";
 import { NotificationOptionsModal } from "./components/NotificationOptionsModal";
+import { showError } from "../../utils/error";
 
 const Chip = ({ filter, label, isActive, onClick }: FilterChipProps) => (
   <span>
@@ -88,7 +89,7 @@ const Notifications = () => {
     if (notification.read) return;
 
     try {
-      await Agent.agent.signifyNotifications.readNotification(notification.id);
+      await Agent.agent.keriaNotifications.readNotification(notification.id);
 
       dispatch(
         setReadedNotification({
@@ -97,7 +98,7 @@ const Notifications = () => {
         })
       );
     } catch (e) {
-      // TODO: Handle error
+      showError("Unable to change notification status", e, dispatch);
     }
   };
 

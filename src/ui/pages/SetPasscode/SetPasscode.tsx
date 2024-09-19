@@ -17,6 +17,7 @@ import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayo
 import { useAppIonRouter } from "../../hooks";
 import "./SetPasscode.scss";
 import { getBackRoute } from "../../../routes/backRoute";
+import { showError } from "../../utils/error";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
@@ -41,8 +42,10 @@ const SetPasscode = () => {
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     ionRouter.push(nextPath.pathname, "forward", "push");
 
-    await PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
+    PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
       initialized: true,
+    }).catch((e) => {
+      showError("Unable to save app init state", e, dispatch);
     });
   };
 

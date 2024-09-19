@@ -26,8 +26,6 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     payload: string
   ) => Promise<string | { error: PeerConnectionError }>;
 
-  signerCache: Map<string, Signer>;
-
   constructor(
     walletInfo: IWalletInfo,
     seed: string | null,
@@ -43,7 +41,6 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       logLevel: "info",
     });
     this.selectedAid = selectedAid;
-    this.signerCache = new Map();
     this.eventService = eventService;
 
     this.getKeriIdentifier = async (): Promise<{
@@ -55,7 +52,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       );
       return {
         id: this.selectedAid,
-        oobi: await Agent.agent.connections.getOobi(identifier.signifyName),
+        oobi: await Agent.agent.connections.getOobi(identifier.id),
       };
     };
 
@@ -87,14 +84,9 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         }
       }
       if (approved) {
-        if (this.signerCache.get(identifier) === undefined) {
-          this.signerCache.set(
-            identifier,
-            await Agent.agent.identifiers.getSigner(identifier)
-          );
-        }
-        return this.signerCache.get(identifier)!.sign(Buffer.from(payload))
-          .qb64;
+        return (await Agent.agent.identifiers.getSigner(identifier)).sign(
+          Buffer.from(payload)
+        ).qb64;
       } else {
         return { error: TxSignError.UserDeclined };
       }

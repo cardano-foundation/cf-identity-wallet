@@ -12,12 +12,15 @@ import { ForgotType } from "../ForgotAuthInfo/ForgotAuthInfo.types";
 import { OptionModal } from "../OptionsModal";
 import "./VerifyPassword.scss";
 import { VerifyPasswordProps } from "./VerifyPassword.types";
+import { showError as showErrorMessage } from "../../utils/error";
+import { useAppDispatch } from "../../../store/hooks";
 
 const VerifyPassword = ({
   isOpen,
   setIsOpen,
   onVerify,
 }: VerifyPasswordProps) => {
+  const dispatch = useAppDispatch();
   const [verifyPasswordValue, setVerifyPasswordValue] = useState("");
   const [attempts, setAttempts] = useState(6);
   const [alertChoiceIsOpen, setAlertChoiceIsOpen] = useState(false);
@@ -63,7 +66,7 @@ const VerifyPassword = ({
             `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_OP_PASSWORD}`
         )
       ) {
-        // @TODO - sdisalvo: handle error
+        showErrorMessage("Unable to get password", e, dispatch);
         throw e;
       }
     }
@@ -74,11 +77,11 @@ const VerifyPassword = ({
         await Agent.agent.basicStorage.findById(MiscRecordId.OP_PASS_HINT)
       )?.content?.value;
     } catch (error) {
-      // TODO: @bao-sotatek handle error for this
+      showErrorMessage("Unable to find password hint", error, dispatch);
     }
 
     setStoredHint(`${hint || ""}`);
-  }, [isOpen]);
+  }, [isOpen, dispatch]);
 
   const resetModal = () => {
     setIsOpen(false);
@@ -90,11 +93,6 @@ const VerifyPassword = ({
   }, [handleFetchStoredValues]);
 
   useEffect(() => {
-    // @TODO - sdisalvo: display the available attempts remaining.
-    // Display count down timer of 1 minute if available attempts is equal to 0.
-    // Count down timer must be persistent if the user navigates away from the page
-    // or closes the application.
-    // The UI will disable password input fields during count down timer.
     if (
       verifyPasswordValue.length > 0 &&
       verifyPasswordValue !== storedPassword
@@ -113,10 +111,6 @@ const VerifyPassword = ({
     }
   }, [attempts]);
 
-  const handleReset = () => {
-    resetModal();
-  };
-
   const handleRecoveryPassword = () => {
     setOpenRecoveryAuth(true);
   };
@@ -132,7 +126,7 @@ const VerifyPassword = ({
       actionButtonAction: () => setAttempts(attempts - 1),
       actionButtonLabel: `${i18n.t("verifypassword.confirm")}`,
     }),
-    [verifyPasswordValue.length]
+    [attempts, setIsOpen, verifyPasswordValue.length]
   );
 
   const handleDissmissShowHint = () => {

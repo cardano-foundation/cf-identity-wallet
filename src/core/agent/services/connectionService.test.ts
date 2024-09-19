@@ -151,6 +151,7 @@ const ipexMessageStorage = jest.mocked({
   createIpexMessageRecord: jest.fn(),
   getIpexMessageMetadataByConnectionId:
     getIpexMessageMetadataByConnectionIdMock,
+  deleteIpexMessageMetadata: jest.fn(),
 });
 
 const connectionService = new ConnectionService(
@@ -167,7 +168,7 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       getKeriaOnlineStatus: jest.fn(),
       identifiers: { getKeriIdentifierByGroupId: jest.fn() },
-      signifyNotifications: {
+      keriaNotifications: {
         addPendingOperationToQueue: jest.fn(),
       },
     },
@@ -371,23 +372,43 @@ describe("Connection service of agent", () => {
   test("can delete conenction by id", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([]);
+    getIpexMessageMetadataByConnectionIdMock.mockResolvedValueOnce([]);
     const connectionId = "connectionId";
     await connectionService.deleteConnectionById(connectionId);
     expect(connectionStorage.deleteById).toBeCalledWith(connectionId);
     // expect(deleteContactMock).toBeCalledWith(connectionId); // it should be uncommented later when deleting on KERIA is re-enabled
   });
 
-  test("Should delete connection's notes when deleting that connection", async () => {
+  test("Should delete connection's notes & history when deleting that connection", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([
-      {
-        id: "uuid",
-        title: "title",
-      },
+    const mockConnectionNote = {
+      id: "uuid",
+      title: "title",
+    };
+    connectionNoteStorage.findAllByQuery = jest
+      .fn()
+      .mockReturnValue([mockConnectionNote]);
+    const mockIpexMessage = {
+      id: "id",
+      credentialType: "rare evo",
+      content: {},
+      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+      createdAt: new Date(),
+      connectionId: "connectionId",
+    };
+    getIpexMessageMetadataByConnectionIdMock.mockResolvedValueOnce([
+      mockIpexMessage,
     ]);
     const connectionId = "connectionId";
     await connectionService.deleteConnectionById(connectionId);
+    expect(connectionNoteStorage.deleteById).toBeCalledWith(
+      mockConnectionNote.id
+    );
     expect(connectionNoteStorage.deleteById).toBeCalledTimes(1);
+    expect(ipexMessageStorage.deleteIpexMessageMetadata).toBeCalledWith(
+      mockIpexMessage.id
+    );
+    expect(ipexMessageStorage.deleteIpexMessageMetadata).toBeCalledTimes(1);
   });
 
   test("can receive keri oobi", async () => {
@@ -411,14 +432,9 @@ describe("Connection service of agent", () => {
     signifyClient.oobis().get = jest.fn().mockImplementation((name: string) => {
       return `${oobiPrefix}${name}`;
     });
-    const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getOobi(
-      signifyName,
-      "alias with spaces"
-    );
-    expect(KeriOobi).toEqual(
-      `${oobiPrefix}${signifyName}?name=alias+with+spaces`
-    );
+    const id = "keriuuid";
+    const KeriOobi = await connectionService.getOobi(id, "alias with spaces");
+    expect(KeriOobi).toEqual(`${oobiPrefix}${id}?name=alias+with+spaces`);
   });
 
   test("can get KERI OOBI with alias and groupId", async () => {
@@ -429,15 +445,9 @@ describe("Connection service of agent", () => {
         done: true,
       };
     });
-    const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getOobi(
-      signifyName,
-      "alias",
-      "123"
-    );
-    expect(KeriOobi).toEqual(
-      `${oobiPrefix}${signifyName}?name=alias&groupId=123`
-    );
+    const id = "id";
+    const KeriOobi = await connectionService.getOobi(id, "alias", "123");
+    expect(KeriOobi).toEqual(`${oobiPrefix}${id}?name=alias&groupId=123`);
   });
 
   test("can get connection keri (short detail view) by id", async () => {
@@ -466,9 +476,9 @@ describe("Connection service of agent", () => {
         done: true,
       };
     });
-    const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getOobi(signifyName);
-    expect(KeriOobi).toEqual(oobiPrefix + signifyName);
+    const id = "id";
+    const KeriOobi = await connectionService.getOobi(id);
+    expect(KeriOobi).toEqual(oobiPrefix + id);
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
@@ -573,7 +583,7 @@ describe("Connection service of agent", () => {
     await expect(
       connectionService.resolveOobi("oobi-url")
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
-    await expect(connectionService.getOobi("name")).rejects.toThrowError(
+    await expect(connectionService.getOobi("id")).rejects.toThrowError(
       Agent.KERIA_CONNECTION_BROKEN
     );
   });
@@ -597,8 +607,8 @@ describe("Connection service of agent", () => {
       oobis: [],
       done: true,
     });
-    const signifyName = "keriuuid";
-    await expect(connectionService.getOobi(signifyName)).rejects.toThrow(
+    const id = "id";
+    await expect(connectionService.getOobi(id)).rejects.toThrow(
       new Error(ConnectionService.CANNOT_GET_OOBI)
     );
   });
@@ -616,8 +626,8 @@ describe("Connection service of agent", () => {
       states: {},
       group: {},
     });
-    const signifyName = "keriuuid";
-    const KeriOobi = await connectionService.getOobi(signifyName);
+    const id = "id";
+    const KeriOobi = await connectionService.getOobi(id);
     expect(KeriOobi).toEqual(
       `${oobiPrefix}oobi/EEGLKCqm1pENLuh9BW9EsbBxGnP0Pk8NMJ7_48Y_C3-6?name=t1`
     );
@@ -636,7 +646,7 @@ describe("Connection service of agent", () => {
       recordType: OperationPendingRecordType.Oobi,
     });
     expect(
-      Agent.agent.signifyNotifications.addPendingOperationToQueue
+      Agent.agent.keriaNotifications.addPendingOperationToQueue
     ).toBeCalledTimes(1);
   });
 

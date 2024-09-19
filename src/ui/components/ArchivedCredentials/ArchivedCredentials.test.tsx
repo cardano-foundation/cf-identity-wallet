@@ -22,7 +22,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getCredentials: jest.fn().mockResolvedValue([]),
         archiveCredential: jest.fn(),
       },
-      signifyNotifications: {
+      keriaNotifications: {
         deleteNotificationRecordById: () => deleteNotificationMock(),
       },
     },
@@ -181,7 +181,7 @@ describe("Archived and revoked credentials", () => {
       );
 
       await waitFor(() => {
-        expect(dispatchMock).toBeCalledTimes(2);
+        expect(dispatchMock).toBeCalledTimes(3);
       });
     });
 
@@ -283,7 +283,7 @@ describe("Archived and revoked credentials", () => {
     };
 
     test("Delete multiple revoked credential", async () => {
-      const { getByText, getByTestId } = render(
+      const { getByText, getByTestId, getAllByTestId } = render(
         <Provider store={mockedStore}>
           <ArchivedCredentialsContainer
             revokedCreds={revokedCredsFix}
@@ -330,7 +330,7 @@ describe("Archived and revoked credentials", () => {
       });
 
       act(() => {
-        fireEvent.click(getByTestId("alert-delete-confirm-button"));
+        fireEvent.click(getAllByTestId("alert-delete-confirm-button")[0]);
       });
 
       await waitFor(() => {

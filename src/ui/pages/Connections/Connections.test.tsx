@@ -1,28 +1,23 @@
+import { IonReactMemoryRouter } from "@ionic/react-router";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  waitFor,
-} from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
-import { IonReactMemoryRouter } from "@ionic/react-router";
-import { createMemoryHistory } from "history";
-import { TabsRoutePath } from "../../../routes/paths";
-import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
-import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { formatShortDate } from "../../utils/formatters";
-import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { TabsRoutePath } from "../../../routes/paths";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { OperationType } from "../../globals/types";
+import { formatShortDate } from "../../utils/formatters";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 import { Credentials } from "../Credentials/Credentials";
 import { Identifiers } from "../Identifiers";
 import { Connections } from "./Connections";
-import { passcodeFiller } from "../../utils/passcodeFiller";
+import { setOpenConnectionDetail } from "../../../store/reducers/connectionsCache";
 
 const combineMock = jest.fn(() => TabsRoutePath.IDENTIFIERS);
 
@@ -34,7 +29,7 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         createMediatorInvitation: jest.fn(),
         getShortenUrl: jest.fn(),
-        deleteConnectionById: () => deleteConnectionByIdMock(),
+        deleteStaleLocalConnectionById: () => deleteConnectionByIdMock(),
       },
     },
   },
@@ -123,7 +118,7 @@ describe("Connections page", () => {
     combineMock.mockReturnValue(TabsRoutePath.IDENTIFIERS);
   });
 
-  test("Render connections page empty", async () => {
+  test("Render connections page empty (self paginated)", async () => {
     const initialStateFull = {
       stateCache: {
         routes: [TabsRoutePath.CREDENTIALS],
@@ -164,6 +159,7 @@ describe("Connections page", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
+            selfPaginated={true}
           />
         </Provider>
       </MemoryRouter>
@@ -190,6 +186,59 @@ describe("Connections page", () => {
     });
   });
 
+  test("Render connections page empty (no self pagination)", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.MENU],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      credsCache: {
+        creds: [],
+        favourites: [],
+      },
+      connectionsCache: {
+        connections: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+
+    const mockedStore = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={mockedStore}>
+          <Connections
+            setShowConnections={mockSetShowConnections}
+            showConnections={true}
+            selfPaginated={false}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(getByTestId("connections-tab-cards-placeholder")).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-connections-tab"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("add-a-connection-title")).toBeVisible();
+    });
+  });
+
   test("It renders connections page successfully", async () => {
     const { getByTestId, getByText, getAllByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
@@ -197,6 +246,7 @@ describe("Connections page", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
+            selfPaginated={true}
           />
         </Provider>
       </MemoryRouter>
@@ -218,6 +268,7 @@ describe("Connections page", () => {
         <Connections
           setShowConnections={mockSetShowConnections}
           showConnections={true}
+          selfPaginated={true}
         />
       </Provider>
     );
@@ -276,6 +327,7 @@ describe("Connections page", () => {
         <Connections
           setShowConnections={mockSetShowConnections}
           showConnections={true}
+          selfPaginated={true}
         />
       </Provider>
     );
@@ -534,6 +586,7 @@ describe("Connections page from Credentials tab", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
+            selfPaginated={true}
           />
         </Provider>
       </IonReactMemoryRouter>
@@ -588,6 +641,7 @@ describe("Connections page from Credentials tab", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
+            selfPaginated={true}
           />
         </Provider>
       </MemoryRouter>
@@ -641,6 +695,57 @@ describe("Connections page from Credentials tab", () => {
 
     await waitFor(() => {
       expect(deleteConnectionByIdMock).toBeCalled();
+    });
+  });
+
+  test("Show connection detail", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const connection = connectionsFix[1];
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIER_DETAILS, TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      identifiersCache: {
+        identifiers: filteredIdentifierFix,
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      connectionsCache: {
+        openConnectionId: connection.id,
+        connections: {
+          [connection.id]: connection,
+        },
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={storeMocked}>
+          <Connections
+            setShowConnections={mockSetShowConnections}
+            showConnections={true}
+            selfPaginated={true}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(setOpenConnectionDetail(undefined));
+      expect(historyPushMock).toBeCalled();
     });
   });
 });

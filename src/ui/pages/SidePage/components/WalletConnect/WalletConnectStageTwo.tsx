@@ -2,28 +2,26 @@ import { IonCheckbox, IonContent } from "@ionic/react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
+import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
 import { i18n } from "../../../../../i18n";
 import { useAppSelector } from "../../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
-import {
-  setCurrentOperation,
-  setToastMsg,
-} from "../../../../../store/reducers/stateCache";
-import { CardItem, CardList } from "../../../../components/CardList";
-import { PageFooter } from "../../../../components/PageFooter";
-import { PageHeader } from "../../../../components/PageHeader";
-import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
-import { OperationType, ToastMsgType } from "../../../../globals/types";
-import { combineClassNames } from "../../../../utils/style";
-import "./WalletConnect.scss";
-import { WalletConnectStageTwoProps } from "./WalletConnect.types";
-import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
+import { setCurrentOperation } from "../../../../../store/reducers/stateCache";
 import {
   getWalletConnectionsCache,
   setIsConnecting,
   setWalletConnectionsCache,
 } from "../../../../../store/reducers/walletConnectionsCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
+import { CardItem, CardList } from "../../../../components/CardList";
+import { PageFooter } from "../../../../components/PageFooter";
+import { PageHeader } from "../../../../components/PageHeader";
+import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
+import { OperationType, ToastMsgType } from "../../../../globals/types";
+import { showError } from "../../../../utils/error";
+import { combineClassNames } from "../../../../utils/style";
+import "./WalletConnect.scss";
+import { WalletConnectStageTwoProps } from "./WalletConnect.types";
 
 const WalletConnectStageTwo = ({
   isOpen,
@@ -38,6 +36,7 @@ const WalletConnectStageTwo = ({
 
   const [selectedIdentifier, setSelectedIdentifier] =
     useState<IdentifierShortDetails | null>(null);
+  const [startingMeerkat, setStartingMeerkat] = useState<boolean>(false);
 
   const displayIdentifiers = identifierCache
     .filter((item) => !item.multisigManageAid && !item.groupMetadata)
@@ -61,7 +60,8 @@ const WalletConnectStageTwo = ({
 
   const handleConnectWallet = async () => {
     try {
-      if (selectedIdentifier && pendingDAppMeerkat) {
+      if (selectedIdentifier && pendingDAppMeerkat && !startingMeerkat) {
+        setStartingMeerkat(true);
         await PeerConnection.peerConnection.start(selectedIdentifier.id);
         await PeerConnection.peerConnection.connectWithDApp(pendingDAppMeerkat);
         const existingConnection = existingConnections.find(
@@ -96,9 +96,14 @@ const WalletConnectStageTwo = ({
       }
       onClose();
     } catch (e) {
-      /* eslint-disable no-console */
-      console.error(e);
-      dispatch(setToastMsg(ToastMsgType.UNABLE_CONNECT_WALLET));
+      showError(
+        "Unable to connect wallet",
+        e,
+        dispatch,
+        ToastMsgType.UNABLE_CONNECT_WALLET
+      );
+    } finally {
+      setStartingMeerkat(false);
     }
   };
 
@@ -131,6 +136,7 @@ const WalletConnectStageTwo = ({
           data={displayIdentifiers}
           onCardClick={(data, e) => {
             e.stopPropagation();
+            handleSelectIdentifier(data);
           }}
           onRenderEndSlot={(data) => {
             return (
@@ -153,7 +159,7 @@ const WalletConnectStageTwo = ({
           "menu.tab.items.connectwallet.request.stagetwo.confirm"
         )}`}
         primaryButtonAction={handleConnectWallet}
-        primaryButtonDisabled={!selectedIdentifier}
+        primaryButtonDisabled={!selectedIdentifier || startingMeerkat}
       />
     </ResponsivePageLayout>
   );

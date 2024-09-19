@@ -21,6 +21,7 @@ import {
   CreatePasscodeModuleProps,
   CreatePasscodeModuleRef,
 } from "./CreatePasscodeModule.types";
+import { showError } from "../../utils/error";
 
 const CreatePasscodeModule = forwardRef<
   CreatePasscodeModuleRef,
@@ -131,8 +132,12 @@ const CreatePasscodeModule = forwardRef<
     };
 
     const handlePassAuth = async () => {
-      await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, originalPassCode);
-      onCreateSuccess();
+      try {
+        await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, originalPassCode);
+        onCreateSuccess();
+      } catch (e) {
+        showError("Unable to save app passcode", e, dispatch);
+      }
     };
 
     const handleSetupAndroidBiometrics = async () => {

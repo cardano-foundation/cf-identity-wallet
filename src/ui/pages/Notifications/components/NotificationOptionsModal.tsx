@@ -16,6 +16,8 @@ import { Alert } from "../../../components/Alert";
 import { OptionItem, OptionModal } from "../../../components/OptionsModal";
 import { NotificationOptionModalProps } from "./NotificationOptionsModal.types";
 import { NotificationRoute } from "../../../../core/agent/agent.types";
+import { showError } from "../../../utils/error";
+import { ToastMsgType } from "../../../globals/types";
 
 const NotificationOptionsModal = ({
   optionsIsOpen,
@@ -33,13 +35,11 @@ const NotificationOptionsModal = ({
   const toggleReadNotification = async () => {
     try {
       if (notification.read) {
-        await Agent.agent.signifyNotifications.unreadNotification(
+        await Agent.agent.keriaNotifications.unreadNotification(
           notification.id
         );
       } else {
-        await Agent.agent.signifyNotifications.readNotification(
-          notification.id
-        );
+        await Agent.agent.keriaNotifications.readNotification(notification.id);
       }
 
       dispatch(
@@ -50,20 +50,20 @@ const NotificationOptionsModal = ({
       );
       closeModal();
     } catch (e) {
-      // TODO: Handle error
+      showError("Unable to change notification status", e, dispatch);
     }
   };
 
   const removeNotification = async () => {
     try {
-      await Agent.agent.signifyNotifications.deleteNotificationRecordById(
+      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
         notification.id,
         notification.a.r as NotificationRoute
       );
       dispatch(deleteNotification(notification));
       closeModal();
     } catch (e) {
-      // TODO: Handle error
+      showError("Unable to remove notification", e, dispatch);
     }
   };
 

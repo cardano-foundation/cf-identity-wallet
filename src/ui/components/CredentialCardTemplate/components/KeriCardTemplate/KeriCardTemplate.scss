@@ -9,11 +9,7 @@
   text-shadow: 0px 2px 4px rgba(12, 64, 90, 0.5);
 
   &.active:not(:first-child).picked-card {
-    // @TODO - foconnor: We should avoid this - animating with top.
-    position: absolute;
-    top: 0rem !important;
-    margin-top: 0;
-    transition: top 0.25s;
+    transition: transform 0.25s;
     box-shadow: none;
   }
 
@@ -69,7 +65,7 @@
           .card-footer-column-label,
           .card-footer-column-value {
             text-align: left;
-            width: calc(var(--scale-w) * 40);
+            width: 40vw;
           }
         }
 
@@ -77,7 +73,7 @@
           .card-footer-column-label,
           .card-footer-column-value {
             text-align: right;
-            width: calc(var(--scale-w) * 30);
+            width: 30vw;
           }
         }
 
@@ -131,7 +127,7 @@
     line-height: 1.169rem;
 
     &:not(:first-child) {
-      margin-top: -8.8rem;
+      margin-top: -7.5rem;
     }
 
     .keri-card-template-inner {

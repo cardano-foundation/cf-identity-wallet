@@ -99,7 +99,11 @@ interface BaseRecordConstructor<T> extends Constructor<T> {
   type: string;
 }
 
-export { BaseRecord };
+enum StorageMessage {
+  RECORD_DOES_NOT_EXIST_ERROR_MSG = "Record already exists with id",
+}
+
+export { BaseRecord, StorageMessage };
 export type {
   StorageApi,
   Query,

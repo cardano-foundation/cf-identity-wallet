@@ -1,4 +1,12 @@
 .identifiers-tab {
+  .cards-placeholder-container {
+    margin-top: 2.5rem;
+  }
+
+  .placeholder-spacer {
+    height: 3.5rem;
+  }
+
   .identifiers-tab-content-block {
     margin: 1.5rem 0;
 
@@ -20,6 +28,34 @@
       ion-item.card-item {
         --card-height: calc(4.8125rem * 200 / 350);
       }
+    }
+  }
+
+  &.favorite-identifier-nav {
+    .identifier-favourite-cards {
+      .card-slider-header {
+        animation: indentifierFavouriteCardHeaderResize 0.25s ease;
+        animation-fill-mode: forwards;
+
+        @keyframes indentifierFavouriteCardHeaderResize {
+          from {
+            opacity: 0;
+            overflow: hidden;
+            height: 1.25rem;
+          }
+          to {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+          }
+        }
+      }
+    }
+
+    .identifier-cards,
+    .multisig-container,
+    .pending-container {
+      display: none;
     }
   }
 
@@ -45,18 +81,6 @@
 
     .identifier-cards {
       .list-header {
-        display: none;
-      }
-    }
-  }
-
-  &.favorite-identifier-nav {
-    .identifier-cards {
-      display: none;
-    }
-
-    .identifier-favourite-cards {
-      .list-header {
         animation: indentifierFavouriteCardHeaderResize 0.25s ease;
         animation-fill-mode: forwards;
 
@@ -77,6 +101,10 @@
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
+    .placeholder-spacer {
+      height: 2.5rem;
+    }
+
     .identifiers-tab-content-block {
       margin-bottom: 1.6rem;
 

@@ -1,31 +1,32 @@
 import { v4 as uuidv4 } from "uuid";
+import { SqliteStorage } from "../../storage/sqliteStorage";
+import { Agent } from "../agent";
 import {
+  AgentServicesProps,
   ConnectionDetails,
-  ConnectionHistoryItem,
   ConnectionEventTypes,
-  ConnectionStateChangedEvent,
+  ConnectionHistoryItem,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
+  ConnectionStateChangedEvent,
   ConnectionStatus,
-  AgentServicesProps,
-  OobiScan,
   KeriConnectionType,
-  ExchangeRoute,
+  OobiScan,
 } from "../agent.types";
-import { AgentService } from "./agentService";
-import { Agent } from "../agent";
 import {
   ConnectionNoteStorage,
   ConnectionRecord,
-  CredentialStorage,
   ConnectionStorage,
-  OperationPendingStorage,
+  CredentialStorage,
   IpexMessageStorage,
+  OperationPendingStorage,
 } from "../records";
-import { OnlineOnly, waitAndGetDoneOp } from "./utils";
-import { ConnectionHistoryType, KeriaContact } from "./connection.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { AgentService } from "./agentService";
+import { KeriaContact } from "./connection.types";
+import { OnlineOnly, waitAndGetDoneOp } from "./utils";
+import { StorageMessage } from "../../storage/storage.types";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
@@ -58,8 +59,6 @@ class ConnectionService extends AgentService {
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
   static readonly CANNOT_GET_OOBI = "No OOBI available from KERIA";
-
-  static resolvedOobi: { [key: string]: any } = {};
 
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
@@ -116,7 +115,19 @@ class ConnectionService extends AgentService {
       // This allows the calling function to create our smid/rmid member identifier.
       // We let the UI handle it as it requires some metadata from the user like display name.
       if (!identifierWithGroupId) {
-        await this.createConnectionMetadata(connectionId, connectionMetadata);
+        await this.createConnectionMetadata(
+          connectionId,
+          connectionMetadata
+        ).catch((error) => {
+          if (
+            !(error instanceof Error) ||
+            !error.message.includes(
+              StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG
+            )
+          ) {
+            throw error;
+          }
+        });
         return {
           type: KeriConnectionType.MULTI_SIG_INITIATOR,
           groupId,
@@ -221,9 +232,16 @@ class ConnectionService extends AgentService {
     await this.props.signifyClient.contacts().delete(id);
     await this.connectionStorage.deleteById(id);
     const notes = await this.getConnectNotesByConnectionId(id);
-    for (const note of notes) {
-      this.connectionNoteStorage.deleteById(note.id);
-    }
+    await Promise.all(
+      notes.map((note) => this.connectionNoteStorage.deleteById(note.id))
+    );
+    const historyItems =
+      await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(id);
+    await Promise.all(
+      historyItems.map((historyItem) =>
+        this.ipexMessageStorage.deleteIpexMessageMetadata(historyItem.id)
+      )
+    );
   }
 
   async deleteStaleLocalConnectionById(id: string): Promise<void> {
@@ -269,19 +287,14 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async getOobi(
-    signifyName: string,
-    alias?: string,
-    groupId?: string
-  ): Promise<string> {
-    const result = await this.props.signifyClient.oobis().get(signifyName);
+  async getOobi(id: string, alias?: string, groupId?: string): Promise<string> {
+    const result = await this.props.signifyClient.oobis().get(id);
+
     if (!result.oobis[0]) {
       throw new Error(ConnectionService.CANNOT_GET_OOBI);
     }
     const oobi = new URL(result.oobis[0]);
-    const identifier = await this.props.signifyClient
-      .identifiers()
-      .get(signifyName);
+    const identifier = await this.props.signifyClient.identifiers().get(id);
     //This condition is used for multi-sig oobi
     if (identifier && identifier.group) {
       const pathName = oobi.pathname;
@@ -361,15 +374,13 @@ class ConnectionService extends AgentService {
   @OnlineOnly
   async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
     const startTime = Date.now();
-    if (ConnectionService.resolvedOobi[url]) {
-      return ConnectionService.resolvedOobi[url];
-    }
     const alias = new URL(url).searchParams.get("name") ?? uuidv4();
     let operation;
     if (waitForCompletion) {
       operation = await waitAndGetDoneOp(
         this.props.signifyClient,
-        await this.props.signifyClient.oobis().resolve(url, alias)
+        await this.props.signifyClient.oobis().resolve(url, alias),
+        5000
       );
     } else {
       operation = await waitAndGetDoneOp(
@@ -383,14 +394,13 @@ class ConnectionService extends AgentService {
         id: operation.name,
         recordType: OperationPendingRecordType.Oobi,
       });
-      Agent.agent.signifyNotifications.addPendingOperationToQueue(
+      Agent.agent.keriaNotifications.addPendingOperationToQueue(
         pendingOperation
       );
     } else if (!operation.done) {
       throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
     }
     const oobi = { ...operation, alias };
-    ConnectionService.resolvedOobi[url] = oobi;
     return oobi;
   }
 

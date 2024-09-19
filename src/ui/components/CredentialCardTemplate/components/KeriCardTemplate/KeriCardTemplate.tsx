@@ -1,14 +1,15 @@
-import { useState } from "react";
 import { IonChip, IonIcon } from "@ionic/react";
 import { hourglassOutline } from "ionicons/icons";
-import { Alert } from "../../../Alert";
-import { CredentialCardTemplateProps } from "../../CredentialCardTemplate.types";
-import { i18n } from "../../../../../i18n";
-import ACDCLogo from "../../../../../ui/assets/images/keri-acdc.svg";
-import KeriBackground from "../../../../../ui/assets/images/keri-00.svg";
-import "./KeriCardTemplate.scss";
-import { formatShortDate } from "../../../../utils/formatters";
+import { useState } from "react";
 import { CredentialStatus } from "../../../../../core/agent/services/credentialService.types";
+import { i18n } from "../../../../../i18n";
+import KeriBackground from "../../../../../ui/assets/images/keri-00.svg";
+import ACDCLogo from "../../../../../ui/assets/images/keri-acdc.svg";
+import { formatShortDate } from "../../../../utils/formatters";
+import { Alert } from "../../../Alert";
+import { useCardOffsetTop } from "../../../IdentifierCardTemplate";
+import { CredentialCardTemplateProps } from "../../CredentialCardTemplate.types";
+import "./KeriCardTemplate.scss";
 
 const KeriCardTemplate = ({
   name = "default",
@@ -18,12 +19,17 @@ const KeriCardTemplate = ({
   onHandleShowCardDetails,
   pickedCard,
 }: CredentialCardTemplateProps) => {
+  const { getCardOffsetTop, cardRef } = useCardOffsetTop();
+
   const [alertIsOpen, setAlertIsOpen] = useState(false);
 
   const CredentialCardTemplateStyles = {
     zIndex: index,
     backgroundImage: `url(${KeriBackground})`,
     backgroundSize: "cover",
+    transform: pickedCard
+      ? `translateY(${-getCardOffsetTop() * index}px)`
+      : undefined,
   };
 
   const handleCardClick = () => {
@@ -36,6 +42,7 @@ const KeriCardTemplate = ({
 
   return (
     <div
+      ref={cardRef}
       key={index}
       data-testid={`keri-card-template${
         index !== undefined ? `-${name}-index-${index}` : ""

@@ -4,11 +4,6 @@
   font-family: "Roboto" !important;
 }
 
-:root {
-  --scale-w: 1vw;
-  --scale-h: 1vh;
-}
-
 body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
@@ -29,7 +24,7 @@ body {
       ion-app
       > *:not(.qr-code-scanner-full-page):not(.scanner-input-modal):not(
         .app-spinner-container
-      ):not(.input-pid-modal) {
+      ):not(.input-pid-modal):not(.confirmation-toast) {
       display: none;
     }
 
@@ -74,6 +69,12 @@ ion-content {
   overflow: auto;
   &::-webkit-scrollbar {
     display: none;
+  }
+}
+
+ion-list {
+  &.md {
+    padding: 0;
   }
 }
 
@@ -229,7 +230,8 @@ ion-toast {
   --box-shadow: 3px 3px 10px 0 rgba(0, 0, 0, 0.2);
 
   &::part(message) {
-    text-align: center;
+    text-align: left;
+    font-size: 1rem;
   }
 
   &.confirmation-toast {

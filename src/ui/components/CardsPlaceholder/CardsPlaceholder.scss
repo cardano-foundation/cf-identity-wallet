@@ -6,7 +6,7 @@
 
   .cards-placeholder-cards {
     position: relative;
-    height: calc(var(--scale-h) * 38);
+    height: 38vh;
     margin-bottom: 2rem;
 
     span {
@@ -47,7 +47,7 @@
 
       span {
         width: 7.44rem;
-        height: 13rem;
+        height: 12rem;
         border-radius: 0.85rem;
 
         &.back-card {

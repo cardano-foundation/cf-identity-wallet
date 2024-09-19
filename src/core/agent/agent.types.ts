@@ -5,6 +5,7 @@ import {
 } from "./services/credentialService.types";
 import { EventService } from "./services/eventService";
 import { ConnectionHistoryType } from "./services/connection.types";
+import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
 
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
@@ -35,6 +36,7 @@ enum MiscRecordId {
   APP_PASSWORD_SKIPPED = "app-password-skipped",
   APP_RECOVERY_WALLET = "recovery-wallet",
   LOGIN_METADATA = "login-metadata",
+  CAMERA_DIRECTION = "camera-direction",
 }
 
 interface ConnectionShortDetails {
@@ -112,19 +114,10 @@ interface ConnectionStateChangedEvent extends BaseEventEmitter {
 
 interface AcdcStateChangedEvent extends BaseEventEmitter {
   type: typeof AcdcEventTypes.AcdcStateChanged;
-  payload:
-    | {
-        status: CredentialStatus.PENDING;
-        credentialId: string;
-      }
-    | {
-        status: CredentialStatus.CONFIRMED;
-        credential: CredentialShortDetails;
-      }
-    | {
-        status: CredentialStatus.REVOKED;
-        credential: CredentialShortDetails;
-      };
+  payload: {
+    status: CredentialStatus;
+    credential: CredentialShortDetails;
+  };
 }
 
 interface KeriaStatusChangedEvent extends BaseEventEmitter {
@@ -156,7 +149,7 @@ interface KeriaNotification {
   id: string;
   createdAt: string;
   a: Record<string, unknown>;
-  multisigId?: string | undefined;
+  multisigId?: string;
   connectionId: string;
   read: boolean;
 }
@@ -192,6 +185,7 @@ interface AgentServicesProps {
 interface CreateIdentifierResult {
   signifyName: string;
   identifier: string;
+  multisigManageAid?: string;
   isPending?: boolean;
 }
 
@@ -231,6 +225,14 @@ interface BranAndMnemonic {
   mnemonic: string;
 }
 
+type OperationCallback = ({
+  oid,
+  opType,
+}: {
+  oid: string;
+  opType: OperationPendingRecordType;
+}) => void;
+
 export {
   ConnectionStatus,
   MiscRecordId,
@@ -263,4 +265,5 @@ export type {
   IpexMessage,
   NotificationRpy,
   AuthorizationRequestExn,
+  OperationCallback,
 };

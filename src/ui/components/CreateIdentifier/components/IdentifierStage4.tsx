@@ -19,6 +19,7 @@ import {
 import { IdentifierShortDetails } from "../../../../core/agent/services/identifier.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { createThemeValue } from "../../../utils/theme";
+import { showError } from "../../../utils/error";
 
 const IdentifierStage4 = ({
   state,
@@ -38,8 +39,6 @@ const IdentifierStage4 = ({
 
   const createMultisigIdentifier = async () => {
     if (!ourIdentifier) {
-      // @TODO - sdisalvo: Leaving this until we have a story to add a proper
-      // logger to the project so we can adjust the log level and timestamp it.
       // eslint-disable-next-line no-console
       console.warn(
         "Attempting to create multi-sig without a corresponding normal AID to manage local keys"
@@ -47,36 +46,39 @@ const IdentifierStage4 = ({
       return;
     } else {
       const selectedTheme = createThemeValue(state.color, state.selectedTheme);
-      const { identifier, signifyName, isPending } =
-        await Agent.agent.multiSigs.createMultisig(
-          ourIdentifier,
-          otherIdentifierContacts,
-          state.threshold
-        );
-      if (identifier) {
-        const newIdentifier: IdentifierShortDetails = {
-          id: identifier,
-          displayName: state.displayNameValue,
-          createdAtUTC: new Date().toISOString(),
-          theme: selectedTheme,
-          isPending: !!isPending,
-          signifyName,
-          multisigManageAid: ourIdentifier,
-        };
-        const filteredIdentifiersData = identifiersData.filter(
-          (item) => item.id !== ourIdentifier
-        );
-        dispatch(
-          setIdentifiersCache([...filteredIdentifiersData, newIdentifier])
-        );
-        dispatch(
-          setToastMsg(
-            state.threshold === 1
-              ? ToastMsgType.IDENTIFIER_CREATED
-              : ToastMsgType.IDENTIFIER_REQUESTED
-          )
-        );
-        resetModal && resetModal();
+      try {
+        const { identifier, isPending } =
+          await Agent.agent.multiSigs.createMultisig(
+            ourIdentifier,
+            otherIdentifierContacts,
+            state.threshold
+          );
+        if (identifier) {
+          const newIdentifier: IdentifierShortDetails = {
+            id: identifier,
+            displayName: state.displayNameValue,
+            createdAtUTC: new Date().toISOString(),
+            theme: selectedTheme,
+            isPending: !!isPending,
+            multisigManageAid: ourIdentifier,
+          };
+          const filteredIdentifiersData = identifiersData.filter(
+            (item) => item.id !== ourIdentifier
+          );
+          dispatch(
+            setIdentifiersCache([...filteredIdentifiersData, newIdentifier])
+          );
+          dispatch(
+            setToastMsg(
+              state.threshold === 1
+                ? ToastMsgType.IDENTIFIER_CREATED
+                : ToastMsgType.IDENTIFIER_REQUESTED
+            )
+          );
+          resetModal && resetModal();
+        }
+      } catch (e) {
+        showError("Unable to create multi-sig", e, dispatch);
       }
     }
   };

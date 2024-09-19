@@ -1,4 +1,5 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
+import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
 import { Agent } from "../../../core/agent/agent";
 import {
   AcdcStateChangedEvent,
@@ -52,9 +53,10 @@ import {
   getIsInitialized,
   getIsOnline,
   setAuthentication,
+  setCameraDirection,
   setCurrentOperation,
   setInitialized,
-  setIsOnline as setOnlineStatus,
+  setIsOnline,
   setPauseQueueIncomingRequest,
   setQueueIncomingRequest,
   setToastMsg,
@@ -71,6 +73,7 @@ import { Alert } from "../Alert";
 import { CardListViewType } from "../SwitchCardView";
 import "./AppWrapper.scss";
 import { useActivityTimer } from "./hooks/useActivityTimer";
+import { showError } from "../../utils/error";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -97,7 +100,7 @@ const keriaNotificationsChangeHandler = async (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   const notifications =
-    await Agent.agent.signifyNotifications.getAllNotifications();
+    await Agent.agent.keriaNotifications.getAllNotifications();
   dispatch(setNotificationsCache(notifications));
 };
 
@@ -107,6 +110,7 @@ const acdcChangeHandler = async (
 ) => {
   if (event.payload.status === CredentialStatus.PENDING) {
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING));
+    dispatch(updateOrAddCredsCache(event.payload.credential));
   } else if (event.payload.status === CredentialStatus.REVOKED) {
     dispatch(updateOrAddCredsCache(event.payload.credential));
   } else {
@@ -182,7 +186,7 @@ const signifyOperationStateChangeHandler = async (
     break;
   case OperationPendingRecordType.ExchangeRevokeCredential: {
     const notifications =
-        await Agent.agent.signifyNotifications.getAllNotifications();
+        await Agent.agent.keriaNotifications.getAllNotifications();
     dispatch(setNotificationsCache(notifications));
     break;
   }
@@ -198,9 +202,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const [isAlertPeerBrokenOpen, setIsAlertPeerBrokenOpen] = useState(false);
   useActivityTimer();
 
-  const setIsOnline = useCallback(
+  const setOnlineStatus = useCallback(
     (value: boolean) => {
-      dispatch(setOnlineStatus(value));
+      dispatch(setIsOnline(value));
     },
     [dispatch]
   );
@@ -239,9 +243,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
   useEffect(() => {
     if (initAppSuccess) {
       if (authentication.loggedIn) {
-        Agent.agent.signifyNotifications.startNotification();
+        Agent.agent.keriaNotifications.startNotification();
       } else {
-        Agent.agent.signifyNotifications.stopNotification();
+        Agent.agent.keriaNotifications.stopNotification();
       }
     }
   }, [authentication.loggedIn, initAppSuccess]);
@@ -271,119 +275,168 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
 
   const loadDatabase = async () => {
-    const connectionsDetails = await Agent.agent.connections.getConnections();
-    const multisigConnectionsDetails =
-      await Agent.agent.connections.getMultisigConnections();
+    try {
+      const connectionsDetails = await Agent.agent.connections.getConnections();
+      const multisigConnectionsDetails =
+        await Agent.agent.connections.getMultisigConnections();
 
-    const credsCache = await Agent.agent.credentials.getCredentials();
-    const credsArchivedCache = await Agent.agent.credentials.getCredentials(
-      true
-    );
-    const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
-    const storedPeerConnections =
-      await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
-    const notifications =
-      await Agent.agent.signifyNotifications.getAllNotifications();
+      const credsCache = await Agent.agent.credentials.getCredentials();
+      const credsArchivedCache = await Agent.agent.credentials.getCredentials(
+        true
+      );
+      const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
+      const storedPeerConnections =
+        await Agent.agent.peerConnectionMetadataStorage.getAllPeerConnectionMetadata();
+      const notifications =
+        await Agent.agent.keriaNotifications.getAllNotifications();
 
-    dispatch(setIdentifiersCache(storedIdentifiers));
-    dispatch(setCredsCache(credsCache));
-    dispatch(setCredsArchivedCache(credsArchivedCache));
-    dispatch(setConnectionsCache(connectionsDetails));
-    dispatch(setMultisigConnectionsCache(multisigConnectionsDetails));
-    dispatch(setWalletConnectionsCache(storedPeerConnections));
-    dispatch(setNotificationsCache(notifications));
+      dispatch(setIdentifiersCache(storedIdentifiers));
+      dispatch(setCredsCache(credsCache));
+      dispatch(setCredsArchivedCache(credsArchivedCache));
+      dispatch(setConnectionsCache(connectionsDetails));
+      dispatch(setMultisigConnectionsCache(multisigConnectionsDetails));
+      dispatch(setWalletConnectionsCache(storedPeerConnections));
+      dispatch(setNotificationsCache(notifications));
+    } catch (e) {
+      showError("Failed to load database data", e, dispatch);
+    }
   };
 
   const loadCacheBasicStorage = async () => {
-    let userName: { userName: string } = { userName: "" };
-    const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
-    const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
+    try {
+      let userName: { userName: string } = { userName: "" };
+      const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
+      const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.SIGNIFY_BRAN);
 
-    const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
-    const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
-      MiscRecordId.KERIA_CONNECT_URL
-    );
-
-    const recoveryWalletProgress = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_RECOVERY_WALLET
-    );
-
-    const identifiersFavourites = await Agent.agent.basicStorage.findById(
-      MiscRecordId.IDENTIFIERS_FAVOURITES
-    );
-    if (identifiersFavourites)
-      dispatch(
-        setFavouritesIdentifiersCache(
-          identifiersFavourites.content.favourites as FavouriteIdentifier[]
-        )
+      const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
+      const keriaConnectUrlRecord = await Agent.agent.basicStorage.findById(
+        MiscRecordId.KERIA_CONNECT_URL
       );
 
-    const credsFavourites = await Agent.agent.basicStorage.findById(
-      MiscRecordId.CREDS_FAVOURITES
-    );
-    if (credsFavourites) {
-      dispatch(
-        setFavouritesCredsCache(
-          credsFavourites.content.favourites as FavouriteIdentifier[]
-        )
+      const recoveryWalletProgress = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_RECOVERY_WALLET
       );
-    }
-    const viewType = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_IDENTIFIER_VIEW_TYPE
-    );
-    if (viewType) {
-      dispatch(setViewTypeCache(viewType.content.viewType as CardListViewType));
-    }
-    const appBiometrics = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_BIOMETRY
-    );
-    if (appBiometrics) {
-      dispatch(
-        setEnableBiometricsCache(appBiometrics.content.enabled as boolean)
+
+      const identifiersFavourites = await Agent.agent.basicStorage.findById(
+        MiscRecordId.IDENTIFIERS_FAVOURITES
       );
-    }
+      if (identifiersFavourites)
+        dispatch(
+          setFavouritesIdentifiersCache(
+            identifiersFavourites.content.favourites as FavouriteIdentifier[]
+          )
+        );
 
-    const appUserNameRecord = await Agent.agent.basicStorage.findById(
-      MiscRecordId.USER_NAME
-    );
-    if (appUserNameRecord) {
-      userName = appUserNameRecord.content as { userName: string };
-    }
-
-    const favouriteIndex = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
-    );
-
-    if (favouriteIndex) {
-      dispatch(
-        setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
+      const credsFavourites = await Agent.agent.basicStorage.findById(
+        MiscRecordId.CREDS_FAVOURITES
       );
+      if (credsFavourites) {
+        dispatch(
+          setFavouritesCredsCache(
+            credsFavourites.content.favourites as FavouriteIdentifier[]
+          )
+        );
+      }
+      const viewType = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_IDENTIFIER_VIEW_TYPE
+      );
+      if (viewType) {
+        dispatch(
+          setViewTypeCache(viewType.content.viewType as CardListViewType)
+        );
+      }
+      const appBiometrics = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_BIOMETRY
+      );
+      if (appBiometrics) {
+        dispatch(
+          setEnableBiometricsCache(appBiometrics.content.enabled as boolean)
+        );
+      }
+
+      const appUserNameRecord = await Agent.agent.basicStorage.findById(
+        MiscRecordId.USER_NAME
+      );
+      if (appUserNameRecord) {
+        userName = appUserNameRecord.content as { userName: string };
+      }
+
+      const favouriteIndex = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
+      );
+
+      if (favouriteIndex) {
+        dispatch(
+          setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
+        );
+      }
+
+      const cameraDirection = await Agent.agent.basicStorage.findById(
+        MiscRecordId.CAMERA_DIRECTION
+      );
+
+      if (cameraDirection) {
+        dispatch(
+          setCameraDirection(cameraDirection.content.value as LensFacing)
+        );
+      }
+
+      const passwordSkipped = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_PASSWORD_SKIPPED
+      );
+
+      const loginAttempt = await Agent.agent.auth.getLoginAttempts();
+
+      dispatch(
+        setAuthentication({
+          ...authentication,
+          userName: userName.userName as string,
+          passcodeIsSet,
+          seedPhraseIsSet,
+          passwordIsSet,
+          passwordIsSkipped: !!passwordSkipped?.content.value,
+          ssiAgentIsSet:
+            !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
+          recoveryWalletProgress: !!recoveryWalletProgress?.content.value,
+          loginAttempt,
+        })
+      );
+
+      return {
+        keriaConnectUrlRecord,
+      };
+    } catch (e) {
+      showError("Failed to load cache data", e, dispatch);
+      return {
+        keriaConnectUrlRecord: null,
+      };
     }
+  };
 
-    const passwordSkipped = await Agent.agent.basicStorage.findById(
-      MiscRecordId.APP_PASSWORD_SKIPPED
+  const setupEventServiceCallbacks = () => {
+    Agent.agent.onKeriaStatusStateChanged((event) => {
+      setOnlineStatus(event.payload.isOnline);
+    });
+    Agent.agent.connections.onConnectionStateChanged((event) => {
+      return connectionStateChangedHandler(event, dispatch);
+    });
+    Agent.agent.credentials.onAcdcStateChanged((event) => {
+      return acdcChangeHandler(event, dispatch);
+    });
+    PeerConnection.peerConnection.onPeerConnectRequestSignStateChanged(
+      async (event) => {
+        return peerConnectRequestSignChangeHandler(event, dispatch);
+      }
     );
-
-    const loginAttempt = await Agent.agent.auth.getLoginAttempts();
-
-    dispatch(
-      setAuthentication({
-        ...authentication,
-        userName: userName.userName as string,
-        passcodeIsSet,
-        seedPhraseIsSet,
-        passwordIsSet,
-        passwordIsSkipped: !!passwordSkipped?.content.value,
-        ssiAgentIsSet:
-          !!keriaConnectUrlRecord && !!keriaConnectUrlRecord.content.url,
-        recoveryWalletProgress: !!recoveryWalletProgress?.content.value,
-        loginAttempt,
-      })
+    PeerConnection.peerConnection.onPeerConnectedStateChanged(async (event) => {
+      return peerConnectedChangeHandler(event, dispatch);
+    });
+    PeerConnection.peerConnection.onPeerConnectionBrokenStateChanged(
+      async (event) => {
+        setIsAlertPeerBrokenOpen(true);
+        return peerConnectionBrokenChangeHandler(event, dispatch);
+      }
     );
-
-    return {
-      keriaConnectUrlRecord,
-    };
   };
 
   const initApp = async () => {
@@ -403,10 +456,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
     await loadDatabase();
     const { keriaConnectUrlRecord } = await loadCacheBasicStorage();
 
+    // Ensure online/offline callback setup before connecting to KERIA
+    setupEventServiceCallbacks();
+
     if (keriaConnectUrlRecord) {
       try {
         await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
-        setIsOnline(true);
       } catch (e) {
         const errorMessage = (e as Error).message;
         // If the error is failed to fetch with signify, we retry until the connection is secured
@@ -414,42 +469,18 @@ const AppWrapper = (props: { children: ReactNode }) => {
           /Failed to fetch/gi.test(errorMessage) ||
           /Load failed/gi.test(errorMessage)
         ) {
-          Agent.agent.connect().then(() => {
-            setIsOnline(Agent.agent.getKeriaOnlineStatus());
-          });
+          Agent.agent.connect(); // No await, background this task and continue initializing
         } else {
           throw e;
         }
       }
     }
 
-    Agent.agent.onKeriaStatusStateChanged((event) => {
-      setIsOnline(event.payload.isOnline);
-    });
-    Agent.agent.connections.onConnectionStateChanged((event) => {
-      return connectionStateChangedHandler(event, dispatch);
-    });
-    Agent.agent.signifyNotifications.onNotificationStateChanged((event) => {
+    // Begin background polling of KERIA or local DB items
+    Agent.agent.keriaNotifications.pollNotificationsWithCb((event) => {
       return keriaNotificationsChangeHandler(event, dispatch);
     });
-    Agent.agent.credentials.onAcdcStateChanged((event) => {
-      return acdcChangeHandler(event, dispatch);
-    });
-    PeerConnection.peerConnection.onPeerConnectRequestSignStateChanged(
-      async (event) => {
-        return peerConnectRequestSignChangeHandler(event, dispatch);
-      }
-    );
-    PeerConnection.peerConnection.onPeerConnectedStateChanged(async (event) => {
-      return peerConnectedChangeHandler(event, dispatch);
-    });
-    PeerConnection.peerConnection.onPeerConnectionBrokenStateChanged(
-      async (event) => {
-        setIsAlertPeerBrokenOpen(true);
-        return peerConnectionBrokenChangeHandler(event, dispatch);
-      }
-    );
-    Agent.agent.signifyNotifications.onSignifyOperationStateChanged((event) => {
+    Agent.agent.keriaNotifications.pollLongOperationsWithCb((event) => {
       return signifyOperationStateChangeHandler(event, dispatch);
     });
     dispatch(setInitialized(true));

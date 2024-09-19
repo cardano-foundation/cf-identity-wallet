@@ -12,9 +12,10 @@ import {
   Select,
   TextField,
   Typography,
+  Autocomplete
 } from "@mui/material";
 import axios from "axios";
-import { Contact } from "../types.types";
+import { Contact } from "../types";
 import {
   Attributes,
   CredentialType,
@@ -59,7 +60,8 @@ const CredentialPage: React.FC = () => {
   const handleGetContacts = async () => {
     try {
       setContacts(
-        (await axios.get(`${config.endpoint}${config.path.contacts}`)).data.data
+        (await axios.get(`${config.endpoint}${config.path.contacts}`)).data
+          .data,
       );
     } catch (e) {
       console.log(e);
@@ -67,6 +69,7 @@ const CredentialPage: React.FC = () => {
   };
 
   const handleRequestCredential = async (values: any) => {
+    setIsIssueCredentialSuccess(false);
     const schemaSaid = SCHEMA_SAID[values.credential_type as CredentialType];
     let objAttributes = {};
     let attribute: IAttributes = {};
@@ -108,30 +111,20 @@ const CredentialPage: React.FC = () => {
           <Grid container spacing={2} justifyContent="center">
             <Grid item xs={10}>
               <FormControl fullWidth>
-                <InputLabel id="selectedContact">
-                  Established Connections
-                </InputLabel>
-
                 <Controller
                   name="selectedContact"
                   control={control}
                   render={({ field }) => (
-                    <Select
-                      labelId="selectedContact"
-                      label="Established Connections"
+                    <Autocomplete
                       {...field}
                       {...register(`selectedContact`, {
                         required: true,
                       })}
-                    >
-                      {contacts.map((contact: any, index) => (
-                        <MenuItem key={index} value={contact.id}>
-                          {UUID_REGEX.test(contact.alias)
-                            ? contact.id
-                            : `${contact.alias} (${contact.id})`}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                      getOptionLabel={(option) => UUID_REGEX.test(option.alias) ? option.id : `${option.alias} (${option.id})` }
+                      options={contacts || []}
+                      renderInput={(params) => <TextField {...params} label="Search by connection name or ID" />}
+                      onChange={(_event, data) => field.onChange(data?.id || null)}
+                    />
                   )}
                 />
               </FormControl>
@@ -235,4 +228,4 @@ const CredentialPage: React.FC = () => {
   );
 };
 
-export default CredentialPage;
+export { CredentialPage };

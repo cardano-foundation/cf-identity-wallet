@@ -12,7 +12,7 @@ import {
   CredentialService,
   IdentifierService,
 } from "./services";
-import { SignifyNotificationService } from "./services/signifyNotificationService";
+import { KeriaNotificationService } from "./services/keriaNotificationService";
 import {
   AgentServicesProps,
   BranAndMnemonic,
@@ -92,7 +92,7 @@ class Agent {
 
   private connectionService!: ConnectionService;
   private credentialService!: CredentialService;
-  private signifyNotificationService!: SignifyNotificationService;
+  private keriaNotificationService!: KeriaNotificationService;
   private authService!: AuthService;
   static isOnline = false;
 
@@ -101,7 +101,8 @@ class Agent {
       this.identifierService = new IdentifierService(
         this.agentServicesProps,
         this.identifierStorage,
-        this.operationPendingStorage
+        this.operationPendingStorage,
+        this.connections
       );
     }
     return this.identifierService;
@@ -112,7 +113,6 @@ class Agent {
       this.multiSigService = new MultiSigService(
         this.agentServicesProps,
         this.identifierStorage,
-        this.notificationStorage,
         this.operationPendingStorage
       );
     }
@@ -127,7 +127,8 @@ class Agent {
         this.credentialStorage,
         this.notificationStorage,
         this.ipexMessageStorage,
-        this.operationPendingStorage
+        this.operationPendingStorage,
+        this.multiSigs
       );
     }
     return this.ipexCommunicationService;
@@ -166,19 +167,26 @@ class Agent {
     return this.basicStorageService;
   }
 
-  get signifyNotifications() {
-    if (!this.signifyNotificationService) {
-      this.signifyNotificationService = new SignifyNotificationService(
+  get keriaNotifications() {
+    if (!this.keriaNotificationService) {
+      this.keriaNotificationService = new KeriaNotificationService(
         this.agentServicesProps,
         this.notificationStorage,
         this.identifierStorage,
         this.operationPendingStorage,
         this.connectionStorage,
         this.ipexMessageStorage,
-        this.credentialStorage
+        this.credentialStorage,
+        this.basicStorage,
+        this.multiSigs,
+        this.ipexCommunications,
+        this.identifiers,
+        this.getKeriaOnlineStatus,
+        this.markAgentStatus,
+        this.connect
       );
     }
-    return this.signifyNotificationService;
+    return this.keriaNotificationService;
   }
 
   get auth() {
@@ -217,15 +225,9 @@ class Agent {
       await signifyReady();
       const bran = await this.getBran();
       this.signifyClient = new SignifyClient(keriaConnectUrl, bran, Tier.low);
-      await this.signifyClient.connect();
-      Agent.isOnline = true;
       this.agentServicesProps.signifyClient = this.signifyClient;
-      this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
-        type: KeriaStatusEventTypes.KeriaStatusChanged,
-        payload: {
-          isOnline: Agent.isOnline,
-        },
-      });
+      await this.signifyClient.connect();
+      this.markAgentStatus(true);
     }
   }
 
@@ -239,6 +241,7 @@ class Agent {
         Tier.low,
         agentUrls.bootUrl
       );
+      this.agentServicesProps.signifyClient = this.signifyClient;
       const bootResult = await this.signifyClient.boot().catch((e) => {
         /* eslint-disable no-console */
         console.error(e);
@@ -266,7 +269,7 @@ class Agent {
         throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
       }
       await this.saveAgentUrls(agentUrls);
-      this.markAgentOnline();
+      this.markAgentStatus(true);
     }
   }
 
@@ -286,6 +289,7 @@ class Agent {
       bran = branBuffer.toString("utf-8");
 
       this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
+      this.agentServicesProps.signifyClient = this.signifyClient;
 
       await this.signifyClient.connect();
     } catch (error) {
@@ -306,16 +310,15 @@ class Agent {
       bootUrl: "",
     });
 
-    this.markAgentOnline();
+    this.markAgentStatus(true);
   }
 
-  private markAgentOnline() {
+  markAgentStatus(online: boolean) {
     Agent.isOnline = true;
-    this.agentServicesProps.signifyClient = this.signifyClient;
     this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
       type: KeriaStatusEventTypes.KeriaStatusChanged,
       payload: {
-        isOnline: Agent.isOnline,
+        isOnline: online,
       },
     });
   }

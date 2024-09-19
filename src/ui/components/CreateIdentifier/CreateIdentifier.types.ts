@@ -55,6 +55,7 @@ interface IdentifierStageProps {
   multiSigGroup?: MultiSigGroup;
   setMultiSigGroup?: (value: MultiSigGroup) => void;
   preventRedirect?: boolean;
+  isModalOpen?: boolean;
 }
 
 interface IdentifierStage1BodyProps {
@@ -69,6 +70,7 @@ interface IdentifierStage1BodyProps {
   };
   scannedConections?: ConnectionShortDetails[];
   handleScanButton: () => void;
+  handleDelete?: () => void;
 }
 
 export type {

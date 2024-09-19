@@ -20,6 +20,7 @@ import "./CredentialRequestInformation.scss";
 import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { NotificationRoute } from "../../../../../core/agent/agent.types";
+import { showError } from "../../../../utils/error";
 
 const CredentialRequestInformation = ({
   pageId,
@@ -46,12 +47,16 @@ const CredentialRequestInformation = ({
   };
 
   const handleDecline = async () => {
-    await Agent.agent.signifyNotifications.deleteNotificationRecordById(
-      notificationDetails.id,
-      notificationDetails.a.r as NotificationRoute
-    );
-    handleNotificationUpdate();
-    onBack();
+    try {
+      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+        notificationDetails.id,
+        notificationDetails.a.r as NotificationRoute
+      );
+      handleNotificationUpdate();
+      onBack();
+    } catch (e) {
+      showError("Unable to decline credential request", e, dispatch);
+    }
   };
 
   return (

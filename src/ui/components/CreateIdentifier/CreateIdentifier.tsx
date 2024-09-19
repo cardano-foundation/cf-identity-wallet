@@ -16,6 +16,7 @@ import { IdentifierStage3 } from "./components/IdentifierStage3";
 import { IdentifierStage4 } from "./components/IdentifierStage4";
 import { IdentifierColor } from "./components/IdentifierColorSelector";
 import { useOnlineStatusEffect } from "../../hooks";
+import { showError } from "../../utils/error";
 
 const stages = [
   IdentifierStage0,
@@ -70,17 +71,20 @@ const CreateIdentifier = ({
   }, [blur]);
 
   const updateMultiSigGroup = useCallback(async () => {
-    if (!groupId) return;
+    try {
+      if (!groupId) return;
 
-    const connections = await Agent.agent.connections.getMultisigLinkedContacts(
-      groupId
-    );
-    const multiSigGroup: MultiSigGroup = {
-      groupId,
-      connections,
-    };
-    setMultiSigGroup(multiSigGroup);
-    dispatch(setMultiSigGroupCache(multiSigGroup));
+      const connections =
+        await Agent.agent.connections.getMultisigLinkedContacts(groupId);
+      const multiSigGroup: MultiSigGroup = {
+        groupId,
+        connections,
+      };
+      setMultiSigGroup(multiSigGroup);
+      dispatch(setMultiSigGroupCache(multiSigGroup));
+    } catch (e) {
+      showError("Unable to update multisig", e, dispatch);
+    }
   }, [dispatch, groupId]);
 
   useOnlineStatusEffect(updateMultiSigGroup);
@@ -124,6 +128,7 @@ const CreateIdentifier = ({
           multiSigGroup={multiSigGroup}
           setMultiSigGroup={setMultiSigGroup}
           preventRedirect={preventRedirect}
+          isModalOpen={modalIsOpen}
         />
       )}
     </IonModal>

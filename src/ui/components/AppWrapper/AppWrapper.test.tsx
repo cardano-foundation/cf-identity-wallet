@@ -98,9 +98,9 @@ jest.mock("../../../core/agent/agent", () => ({
         onBasicMessageStateChanged: jest.fn(),
         pickupMessagesFromMediator: jest.fn(),
       },
-      signifyNotifications: {
-        onNotificationStateChanged: jest.fn(),
-        onSignifyOperationStateChanged: jest.fn(),
+      keriaNotifications: {
+        pollNotificationsWithCb: jest.fn(),
+        pollLongOperationsWithCb: jest.fn(),
         getAllNotifications: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
@@ -243,11 +243,12 @@ describe("AppWrapper handler", () => {
 
   describe("Credential state changed handler", () => {
     test("handles credential state pending", async () => {
+      const credentialMock = {} as CredentialShortDetails;
       const credentialStateChangedEventMock = {
         type: AcdcEventTypes.AcdcStateChanged,
         payload: {
           status: CredentialStatus.PENDING,
-          credentialId: "credentialId",
+          credential: credentialMock,
         },
       } as AcdcStateChangedEvent;
       await acdcChangeHandler(credentialStateChangedEventMock, dispatch);
@@ -386,7 +387,7 @@ describe("Signify operation state changed handler", () => {
         read: false,
       },
     ];
-    Agent.agent.signifyNotifications.getAllNotifications = jest
+    Agent.agent.keriaNotifications.getAllNotifications = jest
       .fn()
       .mockResolvedValue(notifications);
     await signifyOperationStateChangeHandler(

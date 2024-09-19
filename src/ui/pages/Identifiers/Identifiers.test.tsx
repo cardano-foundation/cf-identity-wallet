@@ -26,7 +26,6 @@ import { IdentifierDetails } from "../IdentifierDetails";
 import { Identifiers } from "./Identifiers";
 
 const deleteIdentifierMock = jest.fn();
-const archiveIdentifierMock = jest.fn();
 
 jest.mock("react-qrcode-logo", () => {
   return {
@@ -41,7 +40,6 @@ jest.mock("../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifier: jest.fn().mockResolvedValue({}),
         deleteIdentifier: () => deleteIdentifierMock(),
-        archiveIdentifier: () => archiveIdentifierMock(),
       },
       basicStorage: {
         deleteById: jest.fn(() => Promise.resolve()),
@@ -265,6 +263,55 @@ describe("Identifiers Tab", () => {
     });
   });
 
+  test("Open duplicate multisig", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+        currentOperation: OperationType.IDLE,
+      },
+      seedPhraseCache: {},
+      identifiersCache: {
+        identifiers: multisignIdentifierFix,
+        openMultiSigId: multisignIdentifierFix[0].groupMetadata?.groupId,
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      connectionsCache: {
+        connections: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={storeMocked}>
+          <Route
+            path={TabsRoutePath.IDENTIFIERS}
+            component={Identifiers}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.share.title)
+      ).toBeVisible();
+    });
+  });
+
   test("Open Connections tab", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
@@ -402,7 +449,6 @@ describe("Identifiers Tab", () => {
 
     await waitFor(() => {
       expect(deleteIdentifierMock).toBeCalled();
-      expect(archiveIdentifierMock).toBeCalled();
     });
   });
 

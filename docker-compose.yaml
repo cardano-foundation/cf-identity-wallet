@@ -47,7 +47,7 @@ services:
     ports:
       - 3001:3001
     volumes:
-      - issuer-server-data:/usr/local/var/keri
+      - issuer-server-data:/app/data
 
   cred-issuance-ui:
     container_name: cred-issuance-ui

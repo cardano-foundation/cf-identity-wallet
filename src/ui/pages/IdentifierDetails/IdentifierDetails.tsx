@@ -1,4 +1,3 @@
-import { useHistory, useParams } from "react-router-dom";
 import {
   IonButton,
   IonIcon,
@@ -6,25 +5,21 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import {
-  shareOutline,
   ellipsisVertical,
-  heartOutline,
   heart,
+  heartOutline,
+  shareOutline,
 } from "ionicons/icons";
 import { useCallback, useState } from "react";
-import { TabsRoutePath } from "../../../routes/paths";
+import { useHistory, useParams } from "react-router-dom";
+import { Agent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/agent.types";
+import { BasicRecord } from "../../../core/agent/records";
+import { IdentifierDetails as IdentifierDetailsCore } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { getBackRoute } from "../../../routes/backRoute";
-import { updateReduxState } from "../../../store/utils";
+import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getStateCache,
-  setCurrentOperation,
-  setCurrentRoute,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
-import { ShareConnection } from "../../components/ShareConnection";
-import { Alert } from "../../components/Alert";
 import {
   addFavouriteIdentifierCache,
   getFavouritesIdentifiersCache,
@@ -32,26 +27,31 @@ import {
   removeFavouriteIdentifierCache,
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
-import { Agent } from "../../../core/agent/agent";
-import { IdentifierContent } from "./components/IdentifierContent";
+import {
+  getStateCache,
+  setCurrentOperation,
+  setCurrentRoute,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
+import { updateReduxState } from "../../../store/utils";
+import { Alert } from "../../components/Alert";
+import "../../components/CardDetails/CardDetails.scss";
+import { CloudError } from "../../components/CloudError";
+import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
+import { IdentifierOptions } from "../../components/IdentifierOptions";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { PageFooter } from "../../components/PageFooter";
+import { PageHeader } from "../../components/PageHeader";
+import { ShareConnection } from "../../components/ShareConnection";
+import { Verification } from "../../components/Verification";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
-import { IdentifierOptions } from "../../components/IdentifierOptions";
-import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
-import { PageFooter } from "../../components/PageFooter";
-import "../../components/CardDetails/CardDetails.scss";
-import "./IdentifierDetails.scss";
-import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import { PageHeader } from "../../components/PageHeader";
-import { combineClassNames } from "../../utils/style";
-import { IdentifierDetails as IdentifierDetailsCore } from "../../../core/agent/services/identifier.types";
 import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
-import { MiscRecordId } from "../../../core/agent/agent.types";
-import { BasicRecord } from "../../../core/agent/records";
+import { showError } from "../../utils/error";
+import { combineClassNames } from "../../utils/style";
+import { IdentifierContent } from "./components/IdentifierContent";
 import { RotateKeyModal } from "./components/RotateKeyModal";
-import { Verification } from "../../components/Verification";
-import { CloudError } from "../../components/CloudError";
-import { TabLayout } from "../../components/layout/TabLayout";
+import "./IdentifierDetails.scss";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -79,16 +79,20 @@ const IdentifierDetails = () => {
   const [cloudError, setCloudError] = useState(false);
 
   const fetchOobi = useCallback(async () => {
-    if (!cardData?.signifyName) return;
+    try {
+      if (!cardData?.id) return;
 
-    const oobiValue = await Agent.agent.connections.getOobi(
-      `${cardData.signifyName}`,
-      userName
-    );
-    if (oobiValue) {
-      setOobi(oobiValue);
+      const oobiValue = await Agent.agent.connections.getOobi(
+        `${cardData.id}`,
+        userName
+      );
+      if (oobiValue) {
+        setOobi(oobiValue);
+      }
+    } catch (e) {
+      showError("Unable to fetch oobi", e, dispatch);
     }
-  }, [cardData?.signifyName, userName]);
+  }, [cardData?.id, userName, dispatch]);
 
   const isFavourite = favouritesIdentifiersData?.some(
     (fav) => fav.id === params.id
@@ -107,11 +111,11 @@ const IdentifierDetails = () => {
       ) {
         setCloudError(true);
       } else {
-        // eslint-disable-next-line no-console
-        console.error("Unable to get connection details", error);
+        handleDone(false);
+        showError("Unable to get connection details", error, dispatch);
       }
     }
-  }, [params.id]);
+  }, [params.id, dispatch]);
 
   useOnlineStatusEffect(getDetails);
   useOnlineStatusEffect(fetchOobi);
@@ -120,8 +124,8 @@ const IdentifierDetails = () => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
   });
 
-  const handleDone = () => {
-    setNavAnimation(true);
+  const handleDone = (animation = true) => {
+    setNavAnimation(animation);
     const { backPath, updateRedux } = getBackRoute(
       TabsRoutePath.IDENTIFIER_DETAILS,
       {
@@ -136,9 +140,13 @@ const IdentifierDetails = () => {
       updateRedux
     );
 
-    setTimeout(() => {
+    if (animation) {
+      setTimeout(() => {
+        ionRouter.push(backPath.pathname, "back", "pop");
+      }, NAVIGATION_DELAY);
+    } else {
       ionRouter.push(backPath.pathname, "back", "pop");
-    }, NAVIGATION_DELAY);
+    }
 
     setTimeout(() => {
       setNavAnimation(false);
@@ -148,26 +156,41 @@ const IdentifierDetails = () => {
   const handleDelete = async () => {
     try {
       setVerifyIsOpen(false);
+      let updatedIdentifiers = identifierData;
       if (cardData) {
-        const updatedIdentifiers = identifierData.filter(
+        updatedIdentifiers = identifierData.filter(
           (item) => item.id !== cardData.id
         );
-        await deleteIdentifier();
-        dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
-        dispatch(setIdentifiersCache(updatedIdentifiers));
+      } else if (cloudError) {
+        updatedIdentifiers = identifierData.filter(
+          (item) => item.id !== params.id
+        );
       }
+
+      await deleteIdentifier();
+      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
+      dispatch(setIdentifiersCache(updatedIdentifiers));
       handleDone();
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to delete identifier", e);
-      dispatch(setToastMsg(ToastMsgType.DELETE_IDENTIFIER_FAIL));
+      showError(
+        "Unable to delete identifier",
+        e,
+        dispatch,
+        ToastMsgType.DELETE_IDENTIFIER_FAIL
+      );
     }
   };
 
   const deleteIdentifier = async () => {
+    if (params.id && cloudError) {
+      await Agent.agent.identifiers.deleteStaleLocalIdentifier(params.id);
+
+      if (isFavourite) {
+        handleSetFavourite(params.id);
+      }
+    }
+
     if (cardData) {
-      // For now there is no archiving in the UI so does both.
-      await Agent.agent.identifiers.archiveIdentifier(cardData.id);
       await Agent.agent.identifiers.deleteIdentifier(cardData.id);
       if (isFavourite) {
         handleSetFavourite(cardData.id);
@@ -192,8 +215,7 @@ const IdentifierDetails = () => {
           dispatch(removeFavouriteIdentifierCache(id));
         })
         .catch((e) => {
-          // eslint-disable-next-line no-console
-          console.error("Unable to remove favourite identifier", e);
+          showError("Unable to remove favourite identifier", e, dispatch);
         });
     } else {
       if (favouritesIdentifiersData.length >= MAX_FAVOURITES) {
@@ -216,8 +238,7 @@ const IdentifierDetails = () => {
           dispatch(addFavouriteIdentifierCache({ id, time: Date.now() }));
         })
         .catch((e) => {
-          // eslint-disable-next-line no-console
-          console.error("Unable to add favourite identifier", e);
+          showError("Unable to add favourite identifier", e, dispatch);
         });
     }
   };

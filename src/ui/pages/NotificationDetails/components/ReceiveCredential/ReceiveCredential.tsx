@@ -24,13 +24,13 @@ import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./ReceiveCredential.scss";
 import { NotificationRoute } from "../../../../../core/agent/agent.types";
 import { Verification } from "../../../../components/Verification";
+import { showError } from "../../../../utils/error";
 
 const ReceiveCredential = ({
   pageId,
   activeStatus,
   notificationDetails,
   handleBack,
-  multisigExn,
 }: NotificationDetailsProps) => {
   const dispatch = useAppDispatch();
   const notificationsCache = useAppSelector(getNotificationsCache);
@@ -59,28 +59,31 @@ const ReceiveCredential = ({
   };
 
   const handleAccept = async () => {
-    setInitiateAnimation(true);
-    if (multisigExn) {
-      await Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn(
-        notificationDetails.id
-      );
-    } else {
+    try {
+      setInitiateAnimation(true);
       await Agent.agent.ipexCommunications.acceptAcdc(notificationDetails.id);
+
+      setTimeout(() => {
+        handleNotificationUpdate();
+        handleBack();
+      }, ANIMATION_DELAY);
+    } catch (e) {
+      setInitiateAnimation(false);
+      showError("Unable to accept acdc", e, dispatch);
     }
-    handleNotificationUpdate();
-    setTimeout(() => {
-      handleNotificationUpdate();
-      handleBack();
-    }, ANIMATION_DELAY);
   };
 
   const handleDecline = async () => {
-    await Agent.agent.signifyNotifications.deleteNotificationRecordById(
-      notificationDetails.id,
-      notificationDetails.a.r as NotificationRoute
-    );
-    handleNotificationUpdate();
-    handleBack();
+    try {
+      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+        notificationDetails.id,
+        notificationDetails.a.r as NotificationRoute
+      );
+      handleNotificationUpdate();
+      handleBack();
+    } catch (e) {
+      showError("Unable to decline acdc", e, dispatch);
+    }
   };
 
   return (

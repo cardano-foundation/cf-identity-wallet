@@ -53,9 +53,9 @@ jest.mock("../core/agent/agent", () => ({
         onBasicMessageStateChanged: jest.fn(),
         pickupMessagesFromMediator: jest.fn(),
       },
-      signifyNotifications: {
-        onNotificationStateChanged: jest.fn(),
-        onSignifyOperationStateChanged: jest.fn(),
+      keriaNotifications: {
+        pollNotificationsWithCb: jest.fn(),
+        pollLongOperationsWithCb: jest.fn(),
         getAllNotifications: jest.fn(),
         stopNotification: jest.fn(),
         startNotification: jest.fn(),
@@ -127,6 +127,7 @@ const initialState = {
         lockedUntil: Date.now(),
       },
     },
+    toastMsgs: [],
   },
   connectionsCache: {
     connections: [],
@@ -225,7 +226,7 @@ describe("App", () => {
           loggedIn: false,
           userName: "",
           time: 0,
-          ssiAgentIsSet: false,
+          ssiAgentIsSet: true,
           recoveryWalletProgress: false,
           loginAttempt: {
             attempts: 0,
@@ -238,6 +239,7 @@ describe("App", () => {
           queues: [],
           isPaused: false,
         },
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],

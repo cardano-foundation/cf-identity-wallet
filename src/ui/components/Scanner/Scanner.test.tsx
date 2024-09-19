@@ -4,9 +4,18 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import {
+  BarcodeFormat,
+  BarcodeScannedEvent,
+  BarcodeValueType,
+} from "@capacitor-mlkit/barcode-scanning";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import EN_Translation from "../../../locales/en/en.json";
-import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
+import {
+  setMultiSigGroupCache,
+  setOpenMultiSigId,
+} from "../../../store/reducers/identifiersCache";
+import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
   setCurrentOperation,
   setToastMsg,
@@ -16,6 +25,7 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { Scanner } from "./Scanner";
+import { setOpenConnectionDetail } from "../../../store/reducers/connectionsCache";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -24,31 +34,48 @@ jest.mock("@ionic/react", () => ({
     isOpen ? <div {...props}>{children}</div> : null,
 }));
 
-const startScan = jest.fn(
-  (args: any) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          hasContent: true,
-          content:
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useHistory: () => ({
+    push: jest.fn(),
+  }),
+}));
+
+const addListener = jest.fn(
+  (eventName: string, listenerFunc: (result: BarcodeScannedEvent) => void) => {
+    setTimeout(() => {
+      listenerFunc({
+        barcode: {
+          displayValue:
             "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-        });
-      }, 100);
-    })
+          format: BarcodeFormat.QrCode,
+          rawValue:
+            "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+          valueType: BarcodeValueType.Url,
+        },
+      });
+    }, 100);
+
+    return {
+      remove: jest.fn(),
+    };
+  }
 );
 
-jest.mock("@capacitor-community/barcode-scanner", () => {
+jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
-    ...jest.requireActual("@capacitor-community/barcode-scanner"),
+    ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
     BarcodeScanner: {
-      checkPermission: () =>
+      checkPermissions: () =>
         Promise.resolve({
-          granted: true,
+          camera: "granted",
         }),
-      hideBackground: jest.fn(),
-      startScan: (args: any) => startScan(args),
+      addListener: (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => addListener(eventName, listenerFunc),
+      startScan: jest.fn(),
       stopScan: jest.fn(),
-      showBackground: jest.fn(),
     },
   };
 });
@@ -74,7 +101,7 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       connections: {
         connectByOobiUrl: () => connectByOobiUrlMock(),
-        getMultisigLinkedContacts: (args: any) =>
+        getMultisigLinkedContacts: (args: unknown) =>
           getMultisigLinkedContactsMock(args),
       },
     },
@@ -94,6 +121,7 @@ describe("Scanner", () => {
         passwordIsSet: false,
       },
       currentOperation: OperationType.SCAN_WALLET_CONNECTION,
+      toastMsgs: [],
     },
   };
 
@@ -106,13 +134,28 @@ describe("Scanner", () => {
   const setIsValueCaptured = jest.fn();
 
   beforeEach(() => {
-    startScan.mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          setTimeout(() => {
-            resolve("");
-          }, 10000);
-        })
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
+        setTimeout(() => {
+          listenerFunc({
+            barcode: {
+              displayValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              format: BarcodeFormat.QrCode,
+              rawValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              valueType: BarcodeValueType.Url,
+            },
+          });
+        }, 10000);
+
+        return {
+          remove: jest.fn(),
+        };
+      }
     );
   });
 
@@ -128,17 +171,28 @@ describe("Scanner", () => {
     expect(getByTestId("scanner-spinner-container")).toBeVisible();
   });
 
-  startScan.mockImplementation(
-    () =>
-      new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            hasContent: true,
-            content:
+  addListener.mockImplementation(
+    (
+      eventName: string,
+      listenerFunc: (result: BarcodeScannedEvent) => void
+    ) => {
+      setTimeout(() => {
+        listenerFunc({
+          barcode: {
+            displayValue:
               "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-          });
-        }, 100);
-      })
+            format: BarcodeFormat.QrCode,
+            rawValue:
+              "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+            valueType: BarcodeValueType.Url,
+          },
+        });
+      }, 100);
+
+      return {
+        remove: jest.fn(),
+      };
+    }
   );
 
   test("Renders content and input wallet connection pid", async () => {
@@ -226,7 +280,7 @@ describe("Scanner", () => {
     });
   });
 
-  test("Multisign initiator scan", async () => {
+  test("Multisign initiator scan - groupId not match", async () => {
     const initialState = {
       stateCache: {
         routes: [TabsRoutePath.SCAN],
@@ -237,9 +291,11 @@ describe("Scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.MULTI_SIG_INITIATOR_SCAN,
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],
+        scanGroupId: "mock",
       },
     };
 
@@ -256,17 +312,103 @@ describe("Scanner", () => {
       };
     });
 
-    startScan.mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          setTimeout(() => {
-            resolve({
-              hasContent: true,
-              content:
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
+        setTimeout(() => {
+          listenerFunc({
+            barcode: {
+              displayValue:
                 "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-            });
-          }, 100);
-        })
+              format: BarcodeFormat.QrCode,
+              rawValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              valueType: BarcodeValueType.Url,
+            },
+          });
+        }, 100);
+
+        return {
+          remove: jest.fn(),
+        };
+      }
+    );
+
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <Scanner setIsValueCaptured={setIsValueCaptured} />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_Translation.createidentifier.scan.initiate)
+      ).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).not.toBeCalledWith(
+        setToastMsg(ToastMsgType.GROUP_ID_NOT_MATCH_ERROR)
+      );
+    });
+  });
+
+  test("Multisign initiator scan", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.MULTI_SIG_INITIATOR_SCAN,
+        toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+        scanGroupId: "72e2f089cef6",
+      },
+    };
+
+    getMultisigLinkedContactsMock.mockReturnValue(connectionsFix);
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      return {
+        type: KeriConnectionType.MULTI_SIG_INITIATOR,
+      };
+    });
+
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
+        setTimeout(() => {
+          listenerFunc({
+            barcode: {
+              displayValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              format: BarcodeFormat.QrCode,
+              rawValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              valueType: BarcodeValueType.Url,
+            },
+          });
+        }, 100);
+
+        return {
+          remove: jest.fn(),
+        };
+      }
     );
 
     const { getByText, getByTestId } = render(
@@ -311,9 +453,11 @@ describe("Scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],
+        scanGroupId: "72e2f089cef6",
       },
     };
 
@@ -329,18 +473,28 @@ describe("Scanner", () => {
         type: KeriConnectionType.NORMAL,
       };
     });
-
-    startScan.mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          setTimeout(() => {
-            resolve({
-              hasContent: true,
-              content:
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
+        setTimeout(() => {
+          listenerFunc({
+            barcode: {
+              displayValue:
                 "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
-            });
-          }, 100);
-        })
+              format: BarcodeFormat.QrCode,
+              rawValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              valueType: BarcodeValueType.Url,
+            },
+          });
+        }, 100);
+
+        return {
+          remove: jest.fn(),
+        };
+      }
     );
 
     const { getByText } = render(
@@ -383,6 +537,7 @@ describe("Scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],
@@ -403,6 +558,352 @@ describe("Scanner", () => {
       expect(
         getByText(EN_Translation.createidentifier.scan.pastecontents)
       ).toBeVisible();
+    });
+  });
+
+  test("Scan SSI boot url", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_SSI_BOOT_URL,
+        toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      return {
+        type: KeriConnectionType.NORMAL,
+      };
+    });
+
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
+        setTimeout(() => {
+          listenerFunc({
+            barcode: {
+              displayValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              format: BarcodeFormat.QrCode,
+              rawValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              valueType: BarcodeValueType.Url,
+            },
+          });
+        }, 100);
+
+        return {
+          remove: jest.fn(),
+        };
+      }
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setBootUrl(
+          "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6"
+        )
+      );
+    });
+  });
+
+  test("Scan SSI connect url", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_SSI_CONNECT_URL,
+        toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      return {
+        type: KeriConnectionType.NORMAL,
+      };
+    });
+
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
+        setTimeout(() => {
+          listenerFunc({
+            barcode: {
+              displayValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              format: BarcodeFormat.QrCode,
+              rawValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              valueType: BarcodeValueType.Url,
+            },
+          });
+        }, 100);
+
+        return {
+          remove: jest.fn(),
+        };
+      }
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setConnectUrl(
+          "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6"
+        )
+      );
+    });
+  });
+
+  test("Duplicate connection error handle", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      throw new Error("Record already exists with id connectionId");
+    });
+
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
+        setTimeout(() => {
+          listenerFunc({
+            barcode: {
+              displayValue:
+                "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
+              format: BarcodeFormat.QrCode,
+              rawValue:
+                "http://keria:3902/oobi/EL0xzJRb4Mf/agent/foicaqnwqklena?name=domain",
+              valueType: BarcodeValueType.Url,
+            },
+          });
+        }, 100);
+
+        return {
+          remove: jest.fn(),
+        };
+      }
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setOpenConnectionDetail("connectionId")
+      );
+    });
+  });
+
+  test("Duplicate multisig connection error handle", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    connectByOobiUrlMock.mockImplementation(() => {
+      throw new Error("Record already exists with id connectionId");
+    });
+
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
+        setTimeout(() => {
+          listenerFunc({
+            barcode: {
+              displayValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              format: BarcodeFormat.QrCode,
+              rawValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              valueType: BarcodeValueType.Url,
+            },
+          });
+        }, 100);
+
+        return {
+          remove: jest.fn(),
+        };
+      }
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(setOpenMultiSigId("72e2f089cef6"));
+    });
+  });
+
+  test("Invalid connection url handle", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
+        setTimeout(() => {
+          listenerFunc({
+            barcode: {
+              displayValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              format: BarcodeFormat.QrCode,
+              rawValue: "Invalid URL",
+              valueType: BarcodeValueType.Url,
+            },
+          });
+        }, 100);
+
+        return {
+          remove: jest.fn(),
+        };
+      }
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.SCANNER_ERROR)
+      );
     });
   });
 });

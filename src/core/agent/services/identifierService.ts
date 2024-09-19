@@ -19,6 +19,7 @@ import { OperationPendingStorage } from "../records/operationPendingStorage";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { Agent } from "../agent";
 import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
+import { ConnectionService } from "./connectionService";
 
 const identifierTypeThemes = [
   0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23, 30, 31, 32, 33, 40, 41, 42, 43,
@@ -27,7 +28,6 @@ const identifierTypeThemes = [
 class IdentifierService extends AgentService {
   static readonly IDENTIFIER_METADATA_RECORD_MISSING =
     "Identifier metadata record does not exist";
-  static readonly IDENTIFIER_NOT_ARCHIVED = "Identifier was not archived";
   static readonly THEME_WAS_NOT_VALID = "Identifier theme was not valid";
   static readonly EXN_MESSAGE_NOT_FOUND =
     "There's no exchange message for the given SAID";
@@ -39,28 +39,30 @@ class IdentifierService extends AgentService {
     "Cannot fetch identifier details as the identifier is still pending";
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
+  protected readonly connections: ConnectionService;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
-    operationPendingStorage: OperationPendingStorage
+    operationPendingStorage: OperationPendingStorage,
+    connections: ConnectionService
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
+    this.connections = connections;
   }
 
-  async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
+  async getIdentifiers(): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
     const listMetadata: IdentifierMetadataRecord[] =
-      await this.identifierStorage.getAllIdentifierMetadata(getArchived);
+      await this.identifierStorage.getAllIdentifierMetadata();
 
     for (let i = 0; i < listMetadata.length; i++) {
       const metadata = listMetadata[i];
       const identifier: IdentifierShortDetails = {
         displayName: metadata.displayName,
         id: metadata.id,
-        signifyName: metadata.signifyName,
         createdAtUTC: metadata.createdAt.toISOString(),
         theme: metadata.theme,
         isPending: metadata.isPending ?? false,
@@ -84,7 +86,7 @@ class IdentifierService extends AgentService {
     }
     const aid = await this.props.signifyClient
       .identifiers()
-      .get(metadata.signifyName)
+      .get(identifier)
       .catch((error) => {
         const status = error.message.split(" - ")[1];
         if (/404/gi.test(status)) {
@@ -98,7 +100,6 @@ class IdentifierService extends AgentService {
       id: aid.prefix,
       displayName: metadata.displayName,
       createdAtUTC: metadata.createdAt.toISOString(),
-      signifyName: metadata.signifyName,
       theme: metadata.theme,
       signifyOpName: metadata.signifyOpName,
       multisigManageAid: metadata.multisigManageAid,
@@ -127,7 +128,6 @@ class IdentifierService extends AgentService {
     return {
       displayName: metadata.displayName,
       id: metadata.id,
-      signifyName: metadata.signifyName,
       createdAtUTC: metadata.createdAt.toISOString(),
       theme: metadata.theme,
       isPending: metadata.isPending ?? false,
@@ -138,22 +138,28 @@ class IdentifierService extends AgentService {
   async createIdentifier(
     metadata: Omit<
       IdentifierMetadataRecordProps,
-      "id" | "createdAt" | "isArchived" | "signifyName"
+      "id" | "createdAt" | "signifyName"
     >
   ): Promise<CreateIdentifierResult> {
     const startTime = Date.now();
-    this.validIdentifierMetadata(metadata);
+
+    if (!identifierTypeThemes.includes(metadata.theme)) {
+      throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
+    }
+
     const signifyName = uuidv4();
     const operation = await this.props.signifyClient
       .identifiers()
       .create(signifyName); //, this.getCreateAidOptions());
     let op = await operation.op();
     const signifyOpName = op.name;
+    const identifier = operation.serder.ked.i;
+
     const addRoleOperation = await this.props.signifyClient
       .identifiers()
-      .addEndRole(signifyName, "agent", this.props.signifyClient.agent!.pre);
+      .addEndRole(identifier, "agent", this.props.signifyClient.agent!.pre);
     await addRoleOperation.op();
-    const identifier = operation.serder.ked.i;
+
     const isPending = !op.done;
     if (isPending) {
       op = await waitAndGetDoneOp(
@@ -166,7 +172,7 @@ class IdentifierService extends AgentService {
           id: op.name,
           recordType: OperationPendingRecordType.Witness,
         });
-        Agent.agent.signifyNotifications.addPendingOperationToQueue(
+        Agent.agent.keriaNotifications.addPendingOperationToQueue(
           pendingOperation
         );
       }
@@ -181,20 +187,33 @@ class IdentifierService extends AgentService {
     return { identifier, signifyName, isPending: !op.done };
   }
 
-  async archiveIdentifier(identifier: string): Promise<void> {
-    return this.identifierStorage.updateIdentifierMetadata(identifier, {
-      isArchived: true,
-    });
-  }
-
   async deleteIdentifier(identifier: string): Promise<void> {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
     );
-    this.validArchivedIdentifier(metadata);
+    if (metadata.groupMetadata) {
+      await this.deleteGroupLinkedConnections(metadata.groupMetadata.groupId);
+    }
+
+    if (metadata.multisigManageAid) {
+      const localMember = await this.identifierStorage.getIdentifierMetadata(
+        metadata.multisigManageAid
+      );
+      await this.identifierStorage.updateIdentifierMetadata(
+        metadata.multisigManageAid,
+        {
+          isDeleted: true,
+        }
+      );
+      await this.deleteGroupLinkedConnections(
+        localMember.groupMetadata!.groupId
+      );
+    }
+
     await this.identifierStorage.updateIdentifierMetadata(identifier, {
       isDeleted: true,
     });
+
     const connectedDApp =
       PeerConnection.peerConnection.getConnectedDAppAddress();
     if (
@@ -203,6 +222,15 @@ class IdentifierService extends AgentService {
         (await PeerConnection.peerConnection.getConnectingIdentifier()).id
     ) {
       PeerConnection.peerConnection.disconnectDApp(connectedDApp, true);
+    }
+  }
+
+  private async deleteGroupLinkedConnections(groupId: string) {
+    const connections = await this.connections.getMultisigLinkedContacts(
+      groupId
+    );
+    for (const connection of connections) {
+      await this.connections.deleteConnectionById(connection.id);
     }
   }
 
@@ -219,16 +247,6 @@ class IdentifierService extends AgentService {
     await this.identifierStorage.deleteIdentifierMetadata(identifier);
   }
 
-  async restoreIdentifier(identifier: string): Promise<void> {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(
-      identifier
-    );
-    this.validArchivedIdentifier(metadata);
-    await this.identifierStorage.updateIdentifierMetadata(identifier, {
-      isArchived: false,
-    });
-  }
-
   async updateIdentifier(
     identifier: string,
     data: Pick<
@@ -236,10 +254,6 @@ class IdentifierService extends AgentService {
       "theme" | "displayName" | "groupMetadata"
     >
   ): Promise<void> {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(
-      identifier
-    );
-    this.validIdentifierMetadata(metadata);
     return this.identifierStorage.updateIdentifierMetadata(identifier, {
       theme: data.theme,
       displayName: data.displayName,
@@ -248,14 +262,7 @@ class IdentifierService extends AgentService {
 
   @OnlineOnly
   async getSigner(identifier: string): Promise<Signer> {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(
-      identifier
-    );
-    this.validIdentifierMetadata(metadata);
-
-    const aid = await this.props.signifyClient
-      .identifiers()
-      .get(metadata.signifyName);
+    const aid = await this.props.signifyClient.identifiers().get(identifier);
 
     const manager = this.props.signifyClient.manager;
     if (manager) {
@@ -289,30 +296,11 @@ class IdentifierService extends AgentService {
     }
   }
 
-  private validArchivedIdentifier(metadata: IdentifierMetadataRecord): void {
-    if (!metadata.isArchived) {
-      throw new Error(
-        `${IdentifierService.IDENTIFIER_NOT_ARCHIVED} ${metadata.id}`
-      );
-    }
-  }
-
-  validIdentifierMetadata(
-    metadata: Pick<IdentifierMetadataRecordProps, "theme">
-  ): void {
-    if (metadata.theme && !identifierTypeThemes.includes(metadata.theme)) {
-      throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
-    }
-  }
-
   @OnlineOnly
   async rotateIdentifier(identifier: string) {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(
-      identifier
-    );
     const rotateResult = await this.props.signifyClient
       .identifiers()
-      .rotate(metadata.signifyName);
+      .rotate(identifier);
     const operation = await waitAndGetDoneOp(
       this.props.signifyClient,
       await rotateResult.op()

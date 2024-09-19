@@ -82,7 +82,7 @@ enum ToastMsgType {
   WALLET_CONNECTION_DELETED = "walletconnectiondeleted",
   CONNECT_WALLET_SUCCESS = "connectwalletsuccess",
   DISCONNECT_WALLET_SUCCESS = "disconnectwallet",
-  UNABLE_CONNECT_WALLET = "unableconnectwallet",
+  UNABLE_CONNECT_WALLET = "unableconnectwalleterror",
   PEER_ID_SUCCESS = "peeridsuccess",
   PEER_ID_ERROR = "peeriderror",
   PEER_ID_NOT_RECOGNISED = "peeridnotrecognised",
@@ -104,6 +104,9 @@ enum ToastMsgType {
   SIGN_SUCCESSFUL = "signsuccessful",
   UNABLE_DELETE_PASSWORD_HINT = "deletepasswordhinterror",
   UNABLE_EDIT_IDENTIFIER = "editidentifiererror",
+  FAILED_UPDATE_CONNECTION = "failedupdateconnectionerror",
+  DUPLICATE_CONNECTION = "duplicateconnectionerror",
+  GROUP_ID_NOT_MATCH_ERROR = "groupidnotmatcherror",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {

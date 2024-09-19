@@ -18,7 +18,15 @@ import { TabsRoutePath } from "../navigation/TabsMenu";
 import "./CardSlider.scss";
 import { CardSliderProps } from "./CardSlider.types";
 
-const CardSlider = ({ name, cardType, title, cardsData }: CardSliderProps) => {
+const NAVIGATION_DELAY = 250;
+
+const CardSlider = ({
+  name,
+  cardType,
+  title,
+  cardsData,
+  onShowCardDetails,
+}: CardSliderProps) => {
   const history = useHistory();
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -26,7 +34,7 @@ const CardSlider = ({ name, cardType, title, cardsData }: CardSliderProps) => {
 
   const handleShowCardDetails = async (index: number) => {
     let pathname = "";
-
+    onShowCardDetails?.();
     if (cardType === CardType.IDENTIFIERS) {
       const data = cardsData[index] as IdentifierDetails;
       pathname = `${TabsRoutePath.IDENTIFIERS}/${data.id}`;
@@ -35,7 +43,9 @@ const CardSlider = ({ name, cardType, title, cardsData }: CardSliderProps) => {
       pathname = `${TabsRoutePath.CREDENTIALS}/${data.id}`;
     }
 
-    history.push(pathname);
+    setTimeout(() => {
+      history.push({ pathname: pathname });
+    }, NAVIGATION_DELAY);
   };
 
   const saveFavouriteIndex = (index: number) => {
@@ -66,9 +76,8 @@ const CardSlider = ({ name, cardType, title, cardsData }: CardSliderProps) => {
         name={name}
         key={index}
         index={index}
+        isActive={false}
         cardData={cardData as IdentifierShortDetails}
-        isActive
-        pickedCard
         onHandleShowCardDetails={() => handleShowCardDetails(index)}
       />
     ) : (
@@ -76,9 +85,8 @@ const CardSlider = ({ name, cardType, title, cardsData }: CardSliderProps) => {
         name={name}
         key={index}
         index={index}
+        isActive={false}
         cardData={cardData as CredentialShortDetails}
-        isActive
-        pickedCard
         onHandleShowCardDetails={() => handleShowCardDetails(index)}
       />
     );

@@ -22,6 +22,7 @@ import { Agent } from "../../../core/agent/agent";
 import { BranAndMnemonic } from "../../../core/agent/agent.types";
 import { SwitchOnboardingMode } from "../../components/SwitchOnboardingMode";
 import { OnboardingMode } from "../../components/SwitchOnboardingMode/SwitchOnboardingMode.types";
+import { showError } from "../../utils/error";
 
 const GenerateSeedPhrase = () => {
   const pageId = "generate-seed-phrase";
@@ -47,9 +48,13 @@ const GenerateSeedPhrase = () => {
         bran: seedPhraseStore.bran,
       });
     } else {
-      const branAndMnemonic = await Agent.agent.getBranAndMnemonic();
-      setSeedPhrase(branAndMnemonic.mnemonic.split(" "));
-      setBrandNMnemonic(branAndMnemonic);
+      try {
+        const branAndMnemonic = await Agent.agent.getBranAndMnemonic();
+        setSeedPhrase(branAndMnemonic.mnemonic.split(" "));
+        setBrandNMnemonic(branAndMnemonic);
+      } catch (e) {
+        showError("Unable to get mnemonic", e, dispatch);
+      }
     }
   };
 

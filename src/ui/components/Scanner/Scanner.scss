@@ -1,10 +1,44 @@
 ion-grid.qr-code-scanner {
   --scale-scan: 1;
-  height: calc(var(--scale-h) * 100);
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   padding-inline: 1.25rem;
+
+  .qr-code-scanner-permission-text {
+    display: none;
+  }
+
+  &.scan-unavaible {
+    background: var(--ion-color-secondary);
+  }
+
+  &.no-permission {
+    background: var(--ion-color-secondary);
+
+    .qr-code-scanner-text {
+      opacity: 0.25;
+    }
+
+    .qr-code-scanner-icon {
+      opacity: 0.25;
+    }
+
+    .scan-icon {
+      position: relative;
+
+      .qr-code-scanner-permission-text {
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: var(--ion-color-light);
+        font-weight: 500;
+      }
+    }
+  }
 
   ion-row {
     display: flex;
@@ -16,7 +50,7 @@ ion-grid.qr-code-scanner {
       text-align: center;
       width: 100%;
       color: var(--ion-color-light);
-      padding-inline: calc(var(--scale-w) * 20);
+      padding-inline: 20vw;
     }
 
     .qr-code-scanner-icon {
@@ -69,6 +103,17 @@ ion-grid.qr-code-scanner {
           color: var(--ion-color-action-blue);
         }
       }
+    }
+
+    .custom-input,
+    .error-message,
+    .scan-error-placeholder {
+      margin-bottom: 0;
+      text-align: left;
+    }
+
+    .scan-error-placeholder {
+      height: 2.375rem;
     }
   }
 }

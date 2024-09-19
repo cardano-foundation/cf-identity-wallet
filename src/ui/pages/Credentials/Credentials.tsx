@@ -40,6 +40,7 @@ import {
   CredentialStatus,
 } from "../../../core/agent/services/credentialService.types";
 import { RemovePendingAlert } from "../../components/RemovePendingAlert";
+import { showError } from "../../utils/error";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -88,7 +89,6 @@ const Credentials = () => {
   const credsCache = useAppSelector(getCredsCache);
   const archivedCreds = useAppSelector(getCredsArchivedCache);
   const favCredsCache = useAppSelector(getFavouritesCredsCache);
-
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
@@ -123,14 +123,13 @@ const Credentials = () => {
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to get archived credential", e);
+      showError("Unable to get archived credential", e, dispatch);
     }
   }, [dispatch]);
 
   useEffect(() => {
-    setShowPlaceholder(credsCache.length === 0 && revokedCreds.length === 0);
-  }, [credsCache.length, revokedCreds.length]);
+    setShowPlaceholder(confirmedCreds.length + pendingCreds.length === 0);
+  }, [credsCache]);
 
   useOnlineStatusEffect(fetchArchivedCreds);
 
@@ -198,7 +197,13 @@ const Credentials = () => {
 
   const ArchivedCredentialsButton = () => {
     return (
-      <div className="archived-credentials-button-container">
+      <div
+        className={`archived-credentials-button-container${
+          archivedCreds.length > 0 || revokedCreds.length > 0
+            ? " visible"
+            : " hidden"
+        }`}
+      >
         <IonButton
           fill="outline"
           className="secondary-button"
@@ -235,9 +240,12 @@ const Credentials = () => {
       const creds = await Agent.agent.credentials.getCredentials();
       dispatch(setCredsCache(creds));
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to delete credential", e);
-      dispatch(setToastMsg(ToastMsgType.DELETE_CRED_FAIL));
+      showError(
+        "Unable to delete credential",
+        e,
+        dispatch,
+        ToastMsgType.DELETE_CRED_FAIL
+      );
     }
   };
 
@@ -246,6 +254,7 @@ const Credentials = () => {
       <Connections
         showConnections={showConnections}
         setShowConnections={setShowConnections}
+        selfPaginated={true}
       />
       <TabLayout
         pageId={pageId}
@@ -265,7 +274,7 @@ const Credentials = () => {
               buttonAction={handleCreateCred}
               testId={pageId}
             >
-              {!!archivedCreds.length && <ArchivedCredentialsButton />}
+              <ArchivedCredentialsButton />
             </CardsPlaceholder>
           )
         }
@@ -317,9 +326,7 @@ const Credentials = () => {
                 />
               </div>
             )}
-            {(!!archivedCreds.length || revokedCreds.length > 0) && (
-              <ArchivedCredentialsButton />
-            )}
+            <ArchivedCredentialsButton />
           </>
         )}
       </TabLayout>

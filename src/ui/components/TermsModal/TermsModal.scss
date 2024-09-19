@@ -3,6 +3,7 @@ ion-modal.terms-modal {
   flex-direction: column;
   justify-content: end;
   --height: auto;
+  white-space: pre-line;
 
   .page-header {
     ion-toolbar {
@@ -27,12 +28,27 @@ ion-modal.terms-modal {
 
     &.md {
       ion-buttons {
-        min-width: calc(var(--scale-w) * 14);
+        min-width: 14vw;
       }
 
       ion-title {
         width: auto;
       }
+    }
+  }
+
+  .open-ssi-documentation-button.secondary-button {
+    display: flex;
+    margin: 1.5rem 0.125rem;
+
+    &.ion-activated {
+      --ion-toolbar-color: var(--ion-color-light);
+      --ion-toolbar-background: var(--ion-color-primary);
+      --color-activated: var(--ion-color-primary);
+    }
+
+    @media screen and (min-width: 250px) and (max-width: 370px) {
+      margin: 0.8rem 0.125rem !important;
     }
   }
 }

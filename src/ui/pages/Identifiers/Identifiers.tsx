@@ -10,7 +10,9 @@ import {
   getFavouritesIdentifiersCache,
   getIdentifiersCache,
   getMultiSigGroupCache,
+  getOpenMultiSig,
   setIdentifiersCache,
+  setOpenMultiSigId,
 } from "../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
@@ -34,8 +36,9 @@ import "./Identifiers.scss";
 import { StartAnimationSource } from "./Identifiers.type";
 import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 import { Agent } from "../../../core/agent/agent";
+import { showError } from "../../utils/error";
 
-const CLEAR_STATE_DELAY = 1000;
+const CLEAR_STATE_DELAY = 500;
 interface AdditionalButtonsProps {
   handleCreateIdentifier: () => void;
   handleConnections: () => void;
@@ -78,9 +81,10 @@ const Identifiers = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
-  const multisignGroupCache = useAppSelector(getMultiSigGroupCache);
+  const multisigGroupCache = useAppSelector(getMultiSigGroupCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const currentOperation = useAppSelector(getCurrentOperation);
+  const openMultiSigId = useAppSelector(getOpenMultiSig);
 
   const [favIdentifiers, setFavIdentifiers] = useState<
     IdentifierShortDetails[]
@@ -101,13 +105,10 @@ const Identifiers = () => {
     useState<IdentifierShortDetails | null>(null);
   const [navAnimation, setNavAnimation] =
     useState<StartAnimationSource>("none");
-
   const [deletedPendingItem, setDeletePendingItem] =
     useState<IdentifierShortDetails | null>(null);
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
-
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
-
   const { showConnections, setShowConnections } = useToggleConnections(
     TabsRoutePath.IDENTIFIERS
   );
@@ -132,27 +133,43 @@ const Identifiers = () => {
     ) {
       setCreateIdentifierModalIsOpen(true);
     }
-
-    if (
-      OperationType.OPEN_MULTISIG_IDENTIFIER === currentOperation &&
-      multisignGroupCache
-    ) {
-      const groupId = multisignGroupCache?.groupId;
-      const identifier = identifiersData.find(
-        (item) => item.groupMetadata?.groupId === groupId
-      );
-
-      if (identifier) {
-        handleMultiSigClick(identifier);
-        dispatch(setCurrentOperation(OperationType.IDLE));
-      }
-    }
+    OperationType.RECEIVE_CONNECTION === currentOperation &&
+      setShowConnections(true);
   }, [
     currentOperation,
     dispatch,
     history.location.pathname,
     identifiersData,
-    multisignGroupCache,
+    multisigGroupCache,
+    setShowConnections,
+  ]);
+
+  useEffect(() => {
+    const multisigId =
+      OperationType.OPEN_MULTISIG_IDENTIFIER === currentOperation &&
+      multisigGroupCache
+        ? multisigGroupCache?.groupId
+        : openMultiSigId;
+
+    if (!multisigId) {
+      return;
+    }
+
+    const identifier = identifiersData.find(
+      (item) => item.groupMetadata?.groupId === multisigId
+    );
+
+    if (identifier) {
+      handleMultiSigClick(identifier);
+      dispatch(setOpenMultiSigId(undefined));
+      dispatch(setCurrentOperation(OperationType.IDLE));
+    }
+  }, [
+    currentOperation,
+    dispatch,
+    identifiersData,
+    multisigGroupCache,
+    openMultiSigId,
   ]);
 
   useEffect(() => {
@@ -245,16 +262,17 @@ const Identifiers = () => {
         (item) => item.id !== deletedPendingItem.id
       );
 
-      // For now there is no archiving in the UI so does both.
-      await Agent.agent.identifiers.archiveIdentifier(deletedPendingItem.id);
       await Agent.agent.identifiers.deleteIdentifier(deletedPendingItem.id);
 
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
       dispatch(setIdentifiersCache(updatedIdentifiers));
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Unable to delete identifier", e);
-      dispatch(setToastMsg(ToastMsgType.DELETE_IDENTIFIER_FAIL));
+      showError(
+        "Unable to delete identifier",
+        e,
+        dispatch,
+        ToastMsgType.DELETE_IDENTIFIER_FAIL
+      );
     }
   };
 
@@ -276,6 +294,7 @@ const Identifiers = () => {
       <Connections
         showConnections={showConnections}
         setShowConnections={setShowConnections}
+        selfPaginated={true}
       />
       <TabLayout
         pageId={pageId}
@@ -294,7 +313,9 @@ const Identifiers = () => {
               buttonLabel={i18n.t("identifiers.tab.create")}
               buttonAction={() => setCreateIdentifierModalIsOpen(true)}
               testId={pageId}
-            />
+            >
+              <span className="placeholder-spacer" />
+            </CardsPlaceholder>
           )
         }
       >
@@ -310,6 +331,7 @@ const Identifiers = () => {
                   name="favs"
                   cardType={CardType.IDENTIFIERS}
                   cardsData={sortedFavIdentifiers}
+                  onShowCardDetails={() => handleShowNavAnimation("favourite")}
                 />
               </div>
             )}
@@ -324,7 +346,7 @@ const Identifiers = () => {
               />
             )}
             {!!multiSigIdentifiers.length && (
-              <div className="identifiers-tab-content-block">
+              <div className="identifiers-tab-content-block multisig-container">
                 <h3>{i18n.t("identifiers.tab.multisigidentifiers")}</h3>
                 <IdentifierCardList
                   cardTypes={CardType.IDENTIFIERS}
@@ -337,7 +359,7 @@ const Identifiers = () => {
               </div>
             )}
             {!!pendingIdentifiers.length && (
-              <div className="identifiers-tab-content-block">
+              <div className="identifiers-tab-content-block pending-container">
                 <ListHeader
                   title={`${i18n.t("identifiers.tab.pendingidentifiers")}`}
                 />

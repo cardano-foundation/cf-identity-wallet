@@ -39,6 +39,7 @@ import {
   DOCUMENTATION_LINK,
 } from "../../../../globals/constants";
 import { Verification } from "../../../../components/Verification";
+import { showError } from "../../../../utils/error";
 
 const Settings = ({ switchView }: SettingsProps) => {
   const dispatch = useAppDispatch();
@@ -142,8 +143,12 @@ const Settings = ({ switchView }: SettingsProps) => {
   };
 
   const biometricAuth = async () => {
-    const result = await handleBiometricAuth();
-    if (result) handleToggleBiometricAuth();
+    try {
+      const result = await handleBiometricAuth();
+      if (result) handleToggleBiometricAuth();
+    } catch (e) {
+      showError("Unable to enable/disable biometric auth", e, dispatch);
+    }
   };
 
   useEffect(() => {
@@ -180,7 +185,7 @@ const Settings = ({ switchView }: SettingsProps) => {
       break;
     }
     case OptionIndex.Term: {
-      switchView && switchView(SubMenuKey.TermAndPrivacy);
+      switchView && switchView(SubMenuKey.TermsAndPrivacy);
       break;
     }
     case OptionIndex.RecoverySeedPhrase: {

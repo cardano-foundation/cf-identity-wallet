@@ -2,7 +2,6 @@ import {
   SignifyClient,
   ready as signifyReady,
   Tier,
-  randomPasscode,
   Operation,
   Saider,
   Serder,
@@ -31,11 +30,11 @@ export class SignifyApi {
   /**
    * Must be called first.
    */
-  async start(): Promise<void> {
+  async start(bran: string): Promise<void> {
     await signifyReady();
     this.signifyClient = new SignifyClient(
       config.keria.url,
-      randomPasscode(), // Different on every restart but this is OK for our purposes.
+      bran,
       Tier.low,
       config.keria.bootUrl
     );
@@ -86,11 +85,16 @@ export class SignifyApi {
     return operation;
   }
 
-  async createRegistry(name: string): Promise<void> {
+  async createRegistry(name: string) {
     const result = await this.signifyClient
       .registries()
       .create({ name, registryName: "vLEI" });
     await result.op();
+    const registries = await this.signifyClient.registries().list(name);
+    return registries[0].regk;
+  }
+
+  async getRegistry(name: string) {
     const registries = await this.signifyClient.registries().list(name);
     return registries[0].regk;
   }
@@ -306,6 +310,19 @@ export class SignifyApi {
 
   async contacts(): Promise<any> {
     return this.signifyClient.contacts().list();
+  }
+
+  async deleteContact(id: string): Promise<any> {
+    return this.signifyClient.contacts().delete(id);
+  }
+  
+  async contactCredentials(issuerPrefix: string, connectionId : string): Promise<any> {
+    return this.signifyClient.credentials().list({ 
+      filter: {
+        '-i': issuerPrefix, 
+        '-a-i': connectionId,
+      } 
+    });
   }
 
   async agreeToAcdcFromOffer(

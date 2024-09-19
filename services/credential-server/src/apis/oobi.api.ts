@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Agent } from "../agent";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
 
-async function resolveOobi(req: Request, res: Response) {
+async function resolveOobi(req: Request, res: Response, next: NextFunction) {
   const { oobi } = req.body;
   await Agent.agent.resolveOobi(oobi);
   const response: ResponseData<string> = {
@@ -11,7 +11,7 @@ async function resolveOobi(req: Request, res: Response) {
     success: true,
     data: "OOBI resolved successfully",
   };
-  httpResponse(res, response);
+  httpResponse(res, response);      
 }
 
 export { resolveOobi };
