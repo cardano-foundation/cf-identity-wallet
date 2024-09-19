@@ -92,6 +92,18 @@ const stateCacheSlice = createSlice({
     setCurrentOperation: (state, action: PayloadAction<OperationType>) => {
       state.currentOperation = action.payload;
     },
+    setUniqueToastMsg: (state, action: PayloadAction<ToastMsgType>) => {
+      if (state.toastMsgs.some((toast) => toast.message === action.payload))
+        return;
+
+      state.toastMsgs = [
+        {
+          id: crypto.randomUUID(),
+          message: action.payload,
+        },
+        ...(state.toastMsgs || []),
+      ];
+    },
     setToastMsg: (state, action: PayloadAction<ToastMsgType>) => {
       state.toastMsgs = [
         {
@@ -179,6 +191,7 @@ const {
   setCameraDirection,
   showGenericError,
   removeToastMessage,
+  setUniqueToastMsg,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -223,6 +236,7 @@ export {
   getStateCache,
   getToastMgs,
   getToastMsgs,
+  setUniqueToastMsg,
   initialState,
   login,
   logout,

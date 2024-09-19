@@ -60,6 +60,7 @@ import {
   setPauseQueueIncomingRequest,
   setQueueIncomingRequest,
   setToastMsg,
+  setUniqueToastMsg,
 } from "../../../store/reducers/stateCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import {
@@ -162,7 +163,8 @@ const peerDisconnectedChangeHandler = async (
 ) => {
   if (connectedMeerKat === event.payload.dAppAddress) {
     dispatch(setConnectedWallet(null));
-    dispatch(setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
+    // Sometime disconnect event fired twice and make UI display 2 toast message with same content
+    dispatch(setUniqueToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
   }
 };
 
