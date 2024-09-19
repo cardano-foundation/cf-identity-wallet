@@ -187,7 +187,7 @@ const RecoverySeedPhraseModule = forwardRef<
         onVerifySuccess();
       } catch (e) {
         setAlertIsOpen(true);
-        showError("Unable to verify recovery seed phrase", e);
+        showError("Unable to verify recovery seed phrase", e, dispatch);
       }
     };
 

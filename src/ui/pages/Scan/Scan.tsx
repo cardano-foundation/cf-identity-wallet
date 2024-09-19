@@ -9,7 +9,6 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCurrentOperation,
   getStateCache,
-  getToastMsg,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
@@ -25,7 +24,6 @@ const Scan = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const currentOperation = useAppSelector(getCurrentOperation);
-  const currentToastMsg = useAppSelector(getToastMsg);
   const [isValueCaptured, setIsValueCaptured] = useState(false);
   const { cameraDirection, changeCameraDirection, supportMultiCamera } =
     useCameraDirection();
@@ -41,7 +39,6 @@ const Scan = () => {
         store: { stateCache },
         state: {
           currentOperation: currentOperation,
-          toastMsg: currentToastMsg,
         },
       };
 
@@ -63,7 +60,7 @@ const Scan = () => {
       });
       setIsValueCaptured(false);
     }
-  }, [currentToastMsg, currentOperation, isValueCaptured]);
+  }, [currentOperation, isValueCaptured]);
 
   const handleAfterScan = () => {
     currentOperation === OperationType.BACK_TO_CONNECT_WALLET

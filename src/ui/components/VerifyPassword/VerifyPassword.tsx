@@ -13,12 +13,14 @@ import { OptionModal } from "../OptionsModal";
 import "./VerifyPassword.scss";
 import { VerifyPasswordProps } from "./VerifyPassword.types";
 import { showError as showErrorMessage } from "../../utils/error";
+import { useAppDispatch } from "../../../store/hooks";
 
 const VerifyPassword = ({
   isOpen,
   setIsOpen,
   onVerify,
 }: VerifyPasswordProps) => {
+  const dispatch = useAppDispatch();
   const [verifyPasswordValue, setVerifyPasswordValue] = useState("");
   const [attempts, setAttempts] = useState(6);
   const [alertChoiceIsOpen, setAlertChoiceIsOpen] = useState(false);
@@ -64,7 +66,7 @@ const VerifyPassword = ({
             `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_OP_PASSWORD}`
         )
       ) {
-        showErrorMessage("Unable to get password", e);
+        showErrorMessage("Unable to get password", e, dispatch);
         throw e;
       }
     }
@@ -75,11 +77,11 @@ const VerifyPassword = ({
         await Agent.agent.basicStorage.findById(MiscRecordId.OP_PASS_HINT)
       )?.content?.value;
     } catch (error) {
-      showErrorMessage("Unable to find password hint", error);
+      showErrorMessage("Unable to find password hint", error, dispatch);
     }
 
     setStoredHint(`${hint || ""}`);
-  }, [isOpen]);
+  }, [isOpen, dispatch]);
 
   const resetModal = () => {
     setIsOpen(false);

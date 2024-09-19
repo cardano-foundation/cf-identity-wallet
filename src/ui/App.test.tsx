@@ -127,6 +127,7 @@ const initialState = {
         lockedUntil: Date.now(),
       },
     },
+    toastMsgs: [],
   },
   connectionsCache: {
     connections: [],
@@ -238,6 +239,7 @@ describe("App", () => {
           queues: [],
           isPaused: false,
         },
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],

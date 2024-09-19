@@ -36,6 +36,7 @@ import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
 import { TypeItem } from "./TypeItem";
 import { createThemeValue } from "../../../utils/theme";
 import { IADTypeInfoModal } from "./AIDTypeInfoModal";
+import { showError } from "../../../utils/error";
 
 const IdentifierStage0 = ({
   state,
@@ -104,41 +105,44 @@ const IdentifierStage0 = ({
       };
     }
     metadata.groupMetadata = groupMetadata;
-    const { identifier, signifyName, isPending } =
-      await Agent.agent.identifiers.createIdentifier(metadata);
-    if (identifier) {
-      const newIdentifier: IdentifierShortDetails = {
-        id: identifier,
-        displayName: state.displayNameValue,
-        createdAtUTC: new Date().toISOString(),
-        theme: selectedTheme,
-        isPending: isPending,
-        signifyName,
-      };
-      if (groupMetadata) {
-        newIdentifier.groupMetadata = groupMetadata;
-      }
-      dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
-      if (multiSigGroup) {
-        const connections =
-          await Agent.agent.connections.getMultisigLinkedContacts(
-            multiSigGroup.groupId
-          );
-        const newMultiSigGroup: MultiSigGroup = {
-          groupId: multiSigGroup.groupId,
-          connections,
+    try {
+      const { identifier, isPending } =
+        await Agent.agent.identifiers.createIdentifier(metadata);
+      if (identifier) {
+        const newIdentifier: IdentifierShortDetails = {
+          id: identifier,
+          displayName: state.displayNameValue,
+          createdAtUTC: new Date().toISOString(),
+          theme: selectedTheme,
+          isPending: isPending,
         };
-        dispatch(setMultiSigGroupCache(newMultiSigGroup));
+        if (groupMetadata) {
+          newIdentifier.groupMetadata = groupMetadata;
+        }
+        dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
+        if (multiSigGroup) {
+          const connections =
+            await Agent.agent.connections.getMultisigLinkedContacts(
+              multiSigGroup.groupId
+            );
+          const newMultiSigGroup: MultiSigGroup = {
+            groupId: multiSigGroup.groupId,
+            connections,
+          };
+          dispatch(setMultiSigGroupCache(newMultiSigGroup));
+        }
+        if (state.selectedAidType !== 0 || multiSigGroup) {
+          setState((prevState: IdentifierStageProps) => ({
+            ...prevState,
+            ourIdentifier: identifier,
+            identifierCreationStage: 1,
+            newIdentifier,
+          }));
+          multiSigGroup && dispatch(setCurrentOperation(OperationType.IDLE));
+        }
       }
-      if (state.selectedAidType !== 0 || multiSigGroup) {
-        setState((prevState: IdentifierStageProps) => ({
-          ...prevState,
-          ourIdentifier: identifier,
-          identifierCreationStage: 1,
-          newIdentifier,
-        }));
-        multiSigGroup && dispatch(setCurrentOperation(OperationType.IDLE));
-      }
+    } catch (e) {
+      showError("Unable to create identifier", e, dispatch);
     }
   };
 

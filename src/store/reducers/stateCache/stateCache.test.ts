@@ -19,6 +19,7 @@ import {
   stateCacheSlice,
   login,
   setIsOnline,
+  showGenericError,
 } from "./stateCache";
 import { RootState } from "../../index";
 import { RoutePath } from "../../../routes";
@@ -55,6 +56,13 @@ describe("State Cache", () => {
     expect(stateCacheSlice.reducer(undefined, {} as PayloadAction)).toEqual(
       initialState
     );
+  });
+
+  test("should set showGenericError", () => {
+    const action = showGenericError(true);
+    const nextState = stateCacheSlice.reducer(initialState, action);
+
+    expect(nextState.showGenericError).toEqual(true);
   });
 
   test("should set the current route cache", () => {

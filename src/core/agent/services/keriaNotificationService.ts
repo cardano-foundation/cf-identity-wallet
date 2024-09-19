@@ -321,7 +321,7 @@ class KeriaNotificationService extends AgentService {
     ) {
       const dt = new Date().toISOString().replace("Z", "000+00:00");
       const [admit, sigs, aend] = await this.props.signifyClient.ipex().admit({
-        senderName: ourIdentifier.signifyName,
+        senderName: ourIdentifier.id,
         message: "",
         grantSaid: notif.a.d,
         datetime: dt,
@@ -329,9 +329,7 @@ class KeriaNotificationService extends AgentService {
       });
       const op = await this.props.signifyClient
         .ipex()
-        .submitAdmit(ourIdentifier.signifyName, admit, sigs, aend, [
-          exchange.exn.i,
-        ]);
+        .submitAdmit(ourIdentifier.id, admit, sigs, aend, [exchange.exn.i]);
       const pendingOperation = await this.operationPendingStorage.save({
         id: op.name,
         recordType: OperationPendingRecordType.ExchangeRevokeCredential,
@@ -771,9 +769,7 @@ class KeriaNotificationService extends AgentService {
         // Trigger add end role authorization for multi-sigs
         const multisigIdentifier =
             await this.identifierStorage.getIdentifierMetadata(recordId);
-        await this.multiSigs.endRoleAuthorization(
-          multisigIdentifier.signifyName
-        );
+        await this.multiSigs.endRoleAuthorization(multisigIdentifier.id);
         callback({
           opType: operationRecord.recordType,
           oid: recordId,

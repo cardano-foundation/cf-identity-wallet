@@ -98,7 +98,7 @@ const Notifications = () => {
         })
       );
     } catch (e) {
-      showError("Unable to change notification status", e);
+      showError("Unable to change notification status", e, dispatch);
     }
   };
 

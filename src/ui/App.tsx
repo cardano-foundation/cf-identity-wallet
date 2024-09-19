@@ -16,11 +16,9 @@ import {
   getCurrentRoute,
   getIsInitialized,
   getIsOnline,
-  getToastMsg,
 } from "../store/reducers/stateCache";
 import { AppOffline } from "./components/AppOffline";
 import { AppWrapper } from "./components/AppWrapper";
-import { CustomToast } from "./components/CustomToast/CustomToast";
 import { SetUserName } from "./components/SetUserName";
 import { OperationType } from "./globals/types";
 import { FullPageScanner } from "./pages/FullPageScanner";
@@ -30,6 +28,8 @@ import { SidePage } from "./pages/SidePage";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";
+import { GenericError } from "./components/Error";
+import { ToastStack } from "./components/CustomToast/ToastStack";
 
 setupIonicReact();
 
@@ -40,9 +40,7 @@ const App = () => {
   const currentRoute = useAppSelector(getCurrentRoute);
   const [showSetUserName, setShowSetUserName] = useState(false);
   const currentOperation = useAppSelector(getCurrentOperation);
-  const toastMsg = useAppSelector(getToastMsg);
   const [showScan, setShowScan] = useState(false);
-  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     setShowScan(
@@ -55,8 +53,7 @@ const App = () => {
         OperationType.SCAN_SSI_CONNECT_URL,
       ].includes(currentOperation)
     );
-    setShowToast(toastMsg !== undefined);
-  }, [currentOperation, toastMsg]);
+  }, [currentOperation]);
 
   useEffect(() => {
     if (
@@ -129,12 +126,9 @@ const App = () => {
             isOpen={showSetUserName}
             setIsOpen={setShowSetUserName}
           />
-          <CustomToast
-            toastMsg={toastMsg}
-            showToast={showToast}
-            setShowToast={setShowToast}
-          />
           <SidePage />
+          <GenericError />
+          <ToastStack />
         </StrictMode>
       </AppWrapper>
     </IonApp>

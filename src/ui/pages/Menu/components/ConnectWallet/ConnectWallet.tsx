@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
-  getToastMsg,
+  getToastMsgs,
   setCurrentOperation,
   setToastMsg,
 } from "../../../../../store/reducers/stateCache";
@@ -42,12 +42,13 @@ import { Agent } from "../../../../../core/agent/agent";
 import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
 import { ANIMATION_DURATION } from "../../../../components/SideSlider/SideSlider.types";
 import { Verification } from "../../../../components/Verification";
+import { showError } from "../../../../utils/error";
 
 const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
   (props, ref) => {
     const history = useHistory();
     const dispatch = useAppDispatch();
-    const toastMsg = useAppSelector(getToastMsg);
+    const toastMsgs = useAppSelector(getToastMsgs);
     const pendingConnection = useAppSelector(getPendingConnection);
     const defaultIdentifierCache = useAppSelector(getIdentifiersCache).filter(
       (identifier) => !identifier.multisigManageAid && !identifier.groupMetadata
@@ -121,28 +122,32 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     };
 
     const handleDeleteConnection = async (data: ConnectionData) => {
-      setActionInfo({
-        type: ActionType.None,
-      });
-      if (connectedWallet) {
-        PeerConnection.peerConnection.disconnectDApp(connectedWallet?.id);
-        dispatch(setConnectedWallet(null));
+      try {
+        setActionInfo({
+          type: ActionType.None,
+        });
+        if (connectedWallet) {
+          PeerConnection.peerConnection.disconnectDApp(connectedWallet?.id);
+          dispatch(setConnectedWallet(null));
+        }
+        await Agent.agent.peerConnectionMetadataStorage.deletePeerConnectionMetadataRecord(
+          data.id
+        );
+
+        dispatch(
+          setWalletConnectionsCache(
+            connections.filter((connection) => connection.id !== data.id)
+          )
+        );
+
+        if (data.id === pendingConnection?.id) {
+          dispatch(setPendingConnection(null));
+        }
+
+        dispatch(setToastMsg(ToastMsgType.WALLET_CONNECTION_DELETED));
+      } catch (e) {
+        showError("Unable to delete peer connection", e, dispatch);
       }
-      await Agent.agent.peerConnectionMetadataStorage.deletePeerConnectionMetadataRecord(
-        data.id
-      );
-
-      dispatch(
-        setWalletConnectionsCache(
-          connections.filter((connection) => connection.id !== data.id)
-        )
-      );
-
-      if (data.id === pendingConnection?.id) {
-        dispatch(setPendingConnection(null));
-      }
-
-      dispatch(setToastMsg(ToastMsgType.WALLET_CONNECTION_DELETED));
     };
 
     const disconnectWallet = () => {
@@ -229,7 +234,9 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     // NOTE: Reload connection data after connect success
     useEffect(() => {
       if (
-        toastMsg === ToastMsgType.CONNECT_WALLET_SUCCESS &&
+        toastMsgs.some(
+          (item) => item.message === ToastMsgType.CONNECT_WALLET_SUCCESS
+        ) &&
         !pendingConnection &&
         connectedWallet &&
         openConfirmConnectModal
@@ -239,7 +246,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           data: connectedWallet,
         });
       }
-    }, [connectedWallet, toastMsg, pendingConnection]);
+    }, [connectedWallet, toastMsgs, pendingConnection]);
 
     useEffect(() => {
       if (!pendingConnection) return;

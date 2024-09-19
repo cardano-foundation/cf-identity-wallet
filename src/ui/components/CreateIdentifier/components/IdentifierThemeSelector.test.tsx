@@ -86,7 +86,6 @@ describe("Render Identifier Stage", () => {
               createdAtUTC: "",
               theme: 0,
               isPending: false,
-              signifyName: "",
             },
             color: IdentifierColor.Green,
           }}
@@ -126,7 +125,6 @@ describe("Render Identifier Stage", () => {
               createdAtUTC: "",
               theme: 0,
               isPending: false,
-              signifyName: "",
             },
             color: IdentifierColor.Green,
           }}

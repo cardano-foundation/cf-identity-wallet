@@ -42,15 +42,21 @@ interface QueueProps<T> {
   queues: T[];
 }
 
+interface ToastStackItem {
+  id: string;
+  message: ToastMsgType;
+}
+
 interface StateCacheProps {
   initialized: boolean;
   isOnline: boolean;
   routes: CurrentRouteCacheProps[];
   authentication: AuthenticationCacheProps;
   currentOperation: OperationType;
-  toastMsg?: ToastMsgType;
   queueIncomingRequest: QueueProps<IncomingRequestProps>;
   cameraDirection?: LensFacing;
+  showGenericError?: boolean;
+  toastMsgs: ToastStackItem[];
 }
 
 export { IncomingRequestType };
@@ -63,4 +69,5 @@ export type {
   PeerConnectSigningEventRequest,
   QueueProps,
   StateCacheProps,
+  ToastStackItem,
 };

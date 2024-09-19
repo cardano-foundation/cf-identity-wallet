@@ -1430,7 +1430,8 @@
         "text": "Have all the individuals you want to include as members scanned your QR code?",
         "confirm": "Confirm and scan",
         "cancel": "Cancel"
-      }
+      },
+      "delete": "Delete identifier"
     },
     "receive": {
       "title": "Setup identifier",
@@ -1553,7 +1554,7 @@
     "walletconnectiondeleted": "Delete successfully",
     "connectwalletsuccess": "Connected successfully",
     "disconnectwallet": "Disconnected successfully",
-    "unableconnectwallet": "Unable to connect",
+    "unableconnectwalleterror": "Unable to connect",
     "peeridsuccess": "Peer ID successful",
     "peeriderror": "Peer ID not recognised",
     "peeridnotrecognised": "Peer ID not recognised",
@@ -1626,5 +1627,9 @@
     "setupandroidbiometryconfirm": "Ok",
     "setupandroidbiometrycancel": "Don't allow",
     "cancelbiometryheader": "You canceled Biometrics. You can set this up later via the settings page."
+  },
+  "genericerror": {
+    "text": "Something went wrong. Please try again.",
+    "button": "OK"
   }
 }

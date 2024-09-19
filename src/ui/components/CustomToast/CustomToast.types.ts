@@ -1,9 +1,10 @@
-import { ToastMsgType } from "../../globals/types";
+import { ToastStackItem } from "../../../store/reducers/stateCache/stateCache.types";
 
-interface CustomToastProps {
-  showToast: boolean;
-  setShowToast: (value: boolean) => void;
-  toastMsg: ToastMsgType | undefined;
+interface ToastMessageProps {
+  showToast?: boolean;
+  setShowToast?: (value: boolean) => void;
+  toastMsg: ToastStackItem;
+  index: number;
 }
 
-export type { CustomToastProps };
+export type { ToastMessageProps };

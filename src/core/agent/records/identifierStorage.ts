@@ -24,12 +24,9 @@ class IdentifierStorage {
     return metadata;
   }
 
-  async getAllIdentifierMetadata(
-    isArchived: boolean
-  ): Promise<IdentifierMetadataRecord[]> {
+  async getAllIdentifierMetadata(): Promise<IdentifierMetadataRecord[]> {
     const records = await this.storageService.findAllByQuery(
       {
-        isArchived,
         $not: {
           groupCreated: true,
         },
@@ -48,12 +45,7 @@ class IdentifierStorage {
     metadata: Partial<
       Pick<
         IdentifierMetadataRecord,
-        | "displayName"
-        | "theme"
-        | "isArchived"
-        | "isPending"
-        | "isDeleted"
-        | "groupMetadata"
+        "displayName" | "theme" | "isPending" | "isDeleted" | "groupMetadata"
       >
     >
   ): Promise<void> {
@@ -62,8 +54,6 @@ class IdentifierStorage {
       identifierMetadataRecord.displayName = metadata.displayName;
     if (metadata.theme !== undefined)
       identifierMetadataRecord.theme = metadata.theme;
-    if (metadata.isArchived !== undefined)
-      identifierMetadataRecord.isArchived = metadata.isArchived;
     if (metadata.isPending !== undefined)
       identifierMetadataRecord.isPending = metadata.isPending;
     if (metadata.isDeleted !== undefined)

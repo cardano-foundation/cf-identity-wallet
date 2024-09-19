@@ -229,7 +229,7 @@ const ArchivedCredentialsContainer = forwardRef<
       const creds = await Agent.agent.credentials.getCredentials(true);
       dispatch(setCredsArchivedCache(creds));
     } catch (e) {
-      showError("Unable to restore credentials", e);
+      showError("Unable to restore credentials", e, dispatch);
     }
   };
 

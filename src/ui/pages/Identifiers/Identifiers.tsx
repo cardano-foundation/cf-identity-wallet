@@ -38,7 +38,7 @@ import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 import { Agent } from "../../../core/agent/agent";
 import { showError } from "../../utils/error";
 
-const CLEAR_STATE_DELAY = 1000;
+const CLEAR_STATE_DELAY = 500;
 interface AdditionalButtonsProps {
   handleCreateIdentifier: () => void;
   handleConnections: () => void;
@@ -262,8 +262,6 @@ const Identifiers = () => {
         (item) => item.id !== deletedPendingItem.id
       );
 
-      // For now there is no archiving in the UI so does both.
-      await Agent.agent.identifiers.archiveIdentifier(deletedPendingItem.id);
       await Agent.agent.identifiers.deleteIdentifier(deletedPendingItem.id);
 
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));

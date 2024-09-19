@@ -133,7 +133,7 @@ class IpexCommunicationService extends AgentService {
     if (holder.multisigManageAid) {
       const { op: opMultisigAdmit, exnSaid } =
         await this.multisigService.multisigAdmit(
-          holder.signifyName,
+          holder.id,
           grantNoteRecord.a.d as string,
           allSchemaSaids
         );
@@ -145,7 +145,7 @@ class IpexCommunicationService extends AgentService {
     } else {
       op = await this.admitIpex(
         grantNoteRecord.a.d as string,
-        holder.signifyName,
+        holder.id,
         grantExn.exn.i,
         allSchemaSaids
       );
@@ -409,7 +409,7 @@ class IpexCommunicationService extends AgentService {
 
   private async admitIpex(
     notificationD: string,
-    holderAidName: string,
+    holderAid: string,
     issuerAid: string,
     schemaSaids: string[]
   ): Promise<Operation> {
@@ -424,7 +424,7 @@ class IpexCommunicationService extends AgentService {
 
     const dt = new Date().toISOString().replace("Z", "000+00:00");
     const [admit, sigs, aend] = await this.props.signifyClient.ipex().admit({
-      senderName: holderAidName,
+      senderName: holderAid,
       message: "",
       grantSaid: notificationD,
       recipient: issuerAid,
@@ -432,7 +432,7 @@ class IpexCommunicationService extends AgentService {
     });
     const op = await this.props.signifyClient
       .ipex()
-      .submitAdmit(holderAidName, admit, sigs, aend, [issuerAid]);
+      .submitAdmit(holderAid, admit, sigs, aend, [issuerAid]);
     return op;
   }
 
@@ -518,7 +518,7 @@ class IpexCommunicationService extends AgentService {
     allSchemaSaids.push(schemaSaid);
 
     const { op } = await this.multisigService.multisigAdmit(
-      holder.signifyName,
+      holder.id,
       previousExnGrantMsg.exn.d as string,
       allSchemaSaids,
       multisigExn

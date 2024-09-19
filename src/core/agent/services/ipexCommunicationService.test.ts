@@ -102,6 +102,7 @@ let getExchangeMock = jest.fn().mockImplementation((id: string) => {
 const ipexOfferMock = jest.fn();
 const ipexGrantMock = jest.fn();
 const schemaGetMock = jest.fn();
+const submitOfferMock = jest.fn();
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const submitAdmitMock = jest.fn().mockResolvedValue({
   name: "opName",

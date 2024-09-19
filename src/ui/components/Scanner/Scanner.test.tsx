@@ -121,6 +121,7 @@ describe("Scanner", () => {
         passwordIsSet: false,
       },
       currentOperation: OperationType.SCAN_WALLET_CONNECTION,
+      toastMsgs: [],
     },
   };
 
@@ -290,6 +291,7 @@ describe("Scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.MULTI_SIG_INITIATOR_SCAN,
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],
@@ -364,6 +366,7 @@ describe("Scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.MULTI_SIG_INITIATOR_SCAN,
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],
@@ -450,6 +453,7 @@ describe("Scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],
@@ -533,6 +537,7 @@ describe("Scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],
@@ -567,6 +572,7 @@ describe("Scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.SCAN_SSI_BOOT_URL,
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],
@@ -639,6 +645,7 @@ describe("Scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.SCAN_SSI_CONNECT_URL,
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],
@@ -711,6 +718,7 @@ describe("Scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],
@@ -779,6 +787,7 @@ describe("Scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],
@@ -845,6 +854,7 @@ describe("Scanner", () => {
           passwordIsSet: false,
         },
         currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
       },
       identifiersCache: {
         identifiers: [],

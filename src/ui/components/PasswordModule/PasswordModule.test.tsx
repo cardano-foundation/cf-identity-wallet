@@ -36,7 +36,9 @@ const initialState = {
   },
 };
 
-const createOrUpdateBasicRecordMock = jest.fn();
+const createOrUpdateBasicRecordMock = jest.fn((agr: unknown) =>
+  Promise.resolve(agr)
+);
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
