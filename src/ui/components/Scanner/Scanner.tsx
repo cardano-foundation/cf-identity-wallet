@@ -15,12 +15,17 @@ import {
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
-import { KeriConnectionType } from "../../../core/agent/agent.types";
+import {
+  ConnectionStatus,
+  KeriConnectionType,
+} from "../../../core/agent/agent.types";
 import { StorageMessage } from "../../../core/storage/storage.types";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
+  removeConnectionCache,
   setOpenConnectionDetail,
+  updateOrAddConnectionCache,
   updateOrAddMultisigConnectionCache,
 } from "../../../store/reducers/connectionsCache";
 import {
@@ -229,9 +234,7 @@ const Scanner = forwardRef(
       return true;
     };
 
-    const handleResolveOobi = async (content: string) => {
-      const isMultisigUrl = content.includes("groupId");
-
+    const resolveGroupOobi = async (content: string) => {
       try {
         checkUrl(content);
 
@@ -243,8 +246,7 @@ const Scanner = forwardRef(
           handleReset && handleReset();
           setIsValueCaptured && setIsValueCaptured(true);
 
-          const scanMultiSigByTab =
-            routePath === TabsRoutePath.SCAN && isMultisigUrl;
+          const scanMultiSigByTab = routePath === TabsRoutePath.SCAN;
 
           if (
             currentOperation === OperationType.MULTI_SIG_INITIATOR_SCAN ||
@@ -276,11 +278,7 @@ const Scanner = forwardRef(
         if (
           errorMessage.includes(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG)
         ) {
-          await handleDuplicateConnectionError(
-            e as Error,
-            content,
-            isMultisigUrl
-          );
+          await handleDuplicateConnectionError(e as Error, content, true);
           return;
         }
 
@@ -295,6 +293,53 @@ const Scanner = forwardRef(
           return;
         }
 
+        throw e;
+      }
+    };
+
+    const resolveConnectionOobi = async (content: string) => {
+      // Create pending connection item on UI. This will be remove after create connection process end.
+      const connectionName = new URL(content).searchParams.get("name");
+      const pendingId = crypto.randomUUID();
+      dispatch(
+        updateOrAddConnectionCache({
+          id: pendingId,
+          label: connectionName || pendingId,
+          status: ConnectionStatus.PENDING,
+          connectionDate: new Date().toString(),
+        })
+      );
+
+      try {
+        await Agent.agent.connections.connectByOobiUrl(content);
+      } catch (e) {
+        const errorMessage = (e as Error).message;
+
+        if (
+          errorMessage.includes(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG)
+        ) {
+          await handleDuplicateConnectionError(e as Error, content, false);
+          return;
+        }
+      } finally {
+        dispatch(removeConnectionCache(pendingId));
+      }
+    };
+
+    const handleResolveOobi = async (content: string) => {
+      const isMultisigUrl = content.includes("groupId");
+
+      try {
+        if (!isMultisigUrl) {
+          checkUrl(content);
+          resolveConnectionOobi(content);
+          handleReset?.();
+          setIsValueCaptured?.(true);
+          return;
+        }
+
+        await resolveGroupOobi(content);
+      } catch (e) {
         if (OperationType.SCAN_WALLET_CONNECTION === currentOperation) {
           dispatch(setToastMsg(ToastMsgType.PEER_ID_ERROR));
           handleReset?.();

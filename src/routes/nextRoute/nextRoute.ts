@@ -196,10 +196,10 @@ const getNextRoute = (
   ) => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
   const { nextPath, updateRedux } = nextRoute[currentPath];
-  updateRedux.push(updateStoreCurrentRoute);
+  const updateReduxFn = [...updateRedux, updateStoreCurrentRoute];
   return {
     nextPath: nextPath(data),
-    updateRedux,
+    updateRedux: updateReduxFn,
   };
 };
 
