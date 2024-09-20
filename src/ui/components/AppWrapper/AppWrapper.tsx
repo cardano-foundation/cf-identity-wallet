@@ -226,19 +226,22 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }, [authentication.loggedIn, initAppSuccess]);
 
   useEffect(() => {
-    PeerConnection.peerConnection.onPeerDisconnectedStateChanged(
-      async (event) => {
-        if (!connectedWallet) {
-          return;
-        }
-        return peerDisconnectedChangeHandler(
-          event,
-          connectedWallet.id,
-          dispatch
-        );
-      }
-    );
-  }, [connectedWallet, dispatch]);
+    if (!connectedWallet?.id) {
+      return;
+    }
+
+    const eventHandler = async (event: PeerDisconnectedEvent) => {
+      peerDisconnectedChangeHandler(event, connectedWallet.id, dispatch);
+    };
+
+    PeerConnection.peerConnection.onPeerDisconnectedStateChanged(eventHandler);
+
+    return () => {
+      PeerConnection.peerConnection.offPeerDisconnectedStateChanged(
+        eventHandler
+      );
+    };
+  }, [connectedWallet?.id, dispatch]);
 
   const checkKeyStore = async (key: string) => {
     try {
