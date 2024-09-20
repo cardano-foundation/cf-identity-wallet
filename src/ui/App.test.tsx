@@ -54,12 +54,14 @@ jest.mock("../core/agent/agent", () => ({
         pickupMessagesFromMediator: jest.fn(),
       },
       keriaNotifications: {
-        pollNotificationsWithCb: jest.fn(),
-        pollLongOperationsWithCb: jest.fn(),
+        pollNotifications: jest.fn(),
+        pollLongOperations: jest.fn(),
         getAllNotifications: jest.fn(),
         stopNotification: jest.fn(),
         startNotification: jest.fn(),
       },
+      onNotificatiStateChanged: jest.fn(),
+      onOperationPendingStateChanged: jest.fn(),
       onKeriaStatusStateChanged: jest.fn(),
       peerConnectionMetadataStorage: {
         getAllPeerConnectionMetadata: jest.fn(),
