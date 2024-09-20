@@ -1,4 +1,4 @@
-import { Operation, Serder } from "signify-ts";
+import { b, d, messagize, Operation, Saider, Serder, Siger } from "signify-ts";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import {
@@ -25,6 +25,7 @@ import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
+import { GrantToJoinMultisigExnPayload, MultiSigRoute } from "./multiSig.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -170,7 +171,7 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async offerAcdcFromApply(id: string, acdc?: any) {
+  async offerAcdcFromApply(id: string, acdc: any) {
     const applyNoteRecord = await this.notificationStorage.findById(id);
 
     if (!applyNoteRecord) {
@@ -182,7 +183,7 @@ class IpexCommunicationService extends AgentService {
     if (Object.keys(applyNoteRecord.linkedGroupRequests).length) {
       for (const said of Object.keys(applyNoteRecord.linkedGroupRequests)) {
         if (!applyNoteRecord.linkedGroupRequests[said]) {
-          await this.offerAcdcFromMultisigExn(said as string);
+          await this.joinMultisigOffer(said as string);
         }
       }
       return;
@@ -190,18 +191,15 @@ class IpexCommunicationService extends AgentService {
 
     const msgSaid = applyNoteRecord.a.d as string;
     const applyExn = await this.props.signifyClient.exchanges().get(msgSaid);
-    const holder = await this.identifierStorage.getIdentifierMetadata(
+    const discloser = await this.identifierStorage.getIdentifierMetadata(
       applyExn.exn.a.i
     );
-    const holderSignifyName = (
-      await this.identifierStorage.getIdentifierMetadata(applyExn.exn.a.i)
-    ).signifyName;
 
     let op: Operation;
-    if (holder.multisigManageAid) {
+    if (discloser.multisigManageAid) {
       const { op: opMultisigOffer, exnSaid } =
-        await this.multisigService.offerPresentMultisigACDC(
-          holderSignifyName,
+        await this.multisigOfferAcdcFromApply(
+          discloser.id,
           msgSaid,
           acdc,
           applyExn.exn.i
@@ -213,23 +211,23 @@ class IpexCommunicationService extends AgentService {
       await this.notificationStorage.update(applyNoteRecord);
     } else {
       const [offer, sigs, end] = await this.props.signifyClient.ipex().offer({
-        senderName: holderSignifyName,
+        senderName: discloser.id,
         recipient: applyExn.exn.i,
         acdc: new Serder(acdc),
         applySaid: applyExn.exn.d,
       });
       op = await this.props.signifyClient
         .ipex()
-        .submitOffer(holderSignifyName, offer, sigs, end, [applyExn.exn.i]);
+        .submitOffer(discloser.id, offer, sigs, end, [applyExn.exn.i]);
     }
 
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
-      recordType: OperationPendingRecordType.ExchangeOfferPresentCredential,
+      recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
 
     Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
-    if (!holder.multisigManageAid) {
+    if (!discloser.multisigManageAid) {
       await Agent.agent.keriaNotifications.deleteNotificationRecordById(
         id,
         applyNoteRecord.a.r as NotificationRoute
@@ -249,7 +247,7 @@ class IpexCommunicationService extends AgentService {
     if (Object.keys(agreeNoteRecord.linkedGroupRequests).length) {
       for (const said of Object.keys(agreeNoteRecord.linkedGroupRequests)) {
         if (!agreeNoteRecord.linkedGroupRequests[said]) {
-          await this.grantAcdcFromMultisigExn(said as string);
+          await this.joinMultisigGrant(said as string);
         }
       }
       return;
@@ -269,18 +267,14 @@ class IpexCommunicationService extends AgentService {
       throw new Error(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
     }
 
-    const holder = await this.identifierStorage.getIdentifierMetadata(
+    const discloser = await this.identifierStorage.getIdentifierMetadata(
       agreeExn.exn.a.i
     );
-    const holderSignifyName = (
-      await this.identifierStorage.getIdentifierMetadata(msgOffer.exn.i)
-    ).signifyName;
-
     let op: Operation;
-    if (holder.multisigManageAid) {
+    if (discloser.multisigManageAid) {
       const { op: opMultisigGrant, exnSaid } =
-        await this.multisigService.grantPresentMultisigAcdc(
-          holderSignifyName,
+        await this.multisigGrantAcdcFromAgree(
+          discloser.id,
           agreeExn.exn.i,
           pickedCred
         );
@@ -291,7 +285,7 @@ class IpexCommunicationService extends AgentService {
       await this.notificationStorage.update(agreeNoteRecord);
     } else {
       const [grant, sigs, end] = await this.props.signifyClient.ipex().grant({
-        senderName: holderSignifyName,
+        senderName: discloser.id,
         recipient: agreeExn.exn.i,
         acdc: new Serder(pickedCred.sad),
         anc: new Serder(pickedCred.anc),
@@ -302,7 +296,7 @@ class IpexCommunicationService extends AgentService {
       });
       op = await this.props.signifyClient
         .ipex()
-        .submitGrant(holderSignifyName, grant, sigs, end, [agreeExn.exn.i]);
+        .submitGrant(discloser.id, grant, sigs, end, [agreeExn.exn.i]);
     }
 
     const pendingOperation = await this.operationPendingStorage.save({
@@ -311,7 +305,7 @@ class IpexCommunicationService extends AgentService {
     });
 
     Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
-    if (!holder.multisigManageAid) {
+    if (!discloser.multisigManageAid) {
       await Agent.agent.keriaNotifications.deleteNotificationRecordById(
         id,
         agreeNoteRecord.a.r as NotificationRoute
@@ -570,7 +564,7 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async offerAcdcFromMultisigExn(said: string): Promise<void> {
+  async joinMultisigOffer(said: string): Promise<void> {
     const exn = await this.props.signifyClient.exchanges().get(said);
     const multisigExn = exn?.exn?.e?.exn;
     const holder = await this.identifierStorage.getIdentifierMetadata(
@@ -585,8 +579,8 @@ class IpexCommunicationService extends AgentService {
       throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     }
 
-    const { op } = await this.multisigService.offerPresentMultisigACDC(
-      holder.signifyName,
+    const { op } = await this.multisigOfferAcdcFromApply(
+      holder.id,
       applySaid as string,
       credential,
       issuerAidPrefix,
@@ -595,7 +589,7 @@ class IpexCommunicationService extends AgentService {
 
     const pendingOperation = await this.operationPendingStorage.save({
       id: op.name,
-      recordType: OperationPendingRecordType.ExchangeOfferPresentCredential,
+      recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
     Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
 
@@ -615,7 +609,7 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async grantAcdcFromMultisigExn(said: string): Promise<void> {
+  async joinMultisigGrant(said: string): Promise<void> {
     const exn = await this.props.signifyClient.exchanges().get(said);
 
     const grantExn = exn?.exn?.e?.exn;
@@ -628,8 +622,8 @@ class IpexCommunicationService extends AgentService {
       throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     }
 
-    const { op } = await this.multisigService.grantPresentMultisigAcdc(
-      holder.signifyName,
+    const { op } = await this.multisigGrantAcdcFromAgree(
+      holder.id,
       credential?.i,
       credential,
       {
@@ -657,6 +651,217 @@ class IpexCommunicationService extends AgentService {
 
       await this.notificationStorage.update(notificationRecord);
     }
+  }
+
+  async multisigOfferAcdcFromApply(
+    multisigId: string,
+    notificationSaid: string,
+    acdcDetail: any,
+    discloseePrefix: string,
+    offerExnToJoin?: any
+  ) {
+    let exn: Serder;
+    let sigsMes: string[];
+    let dtime: string;
+
+    const { ourIdentifier, multisigMembers } =
+      await this.multisigService.getMultisigParticipants(multisigId);
+
+    const gHab = await this.props.signifyClient.identifiers().get(multisigId);
+    const mHab = await this.props.signifyClient
+      .identifiers()
+      .get(ourIdentifier.id);
+
+    const recp = multisigMembers
+      .filter((signing: any) => signing.aid !== ourIdentifier.id)
+      .map((member: any) => member.aid);
+
+    const [_, acdc] = Saider.saidify(acdcDetail);
+
+    if (offerExnToJoin) {
+      const [, ked] = Saider.saidify(offerExnToJoin);
+      const offer = new Serder(ked);
+      const keeper = await this.props.signifyClient.manager!.get(gHab);
+      const sigs = await keeper.sign(b(new Serder(offerExnToJoin).raw));
+
+      const mstateNew = gHab["state"];
+      const seal = [
+        "SealEvent",
+        {
+          i: gHab["prefix"],
+          s: mstateNew["ee"]["s"],
+          d: mstateNew["ee"]["d"],
+        },
+      ];
+      const signer = sigs.map((sig: any) => new Siger({ qb64: sig }));
+      const ims = d(messagize(offer, signer, seal));
+      const atc = ims.substring(offer.size);
+
+      const gembeds = {
+        exn: [offer, atc],
+      };
+
+      [exn, sigsMes, dtime] = await this.props.signifyClient
+        .exchanges()
+        .createExchangeMessage(
+          mHab,
+          MultiSigRoute.EXN,
+          { gid: gHab["prefix"] },
+          gembeds,
+          discloseePrefix
+        );
+    } else {
+      const time = new Date().toISOString().replace("Z", "000+00:00");
+      const exchangeMessage = await this.props.signifyClient
+        .exchanges()
+        .get(notificationSaid);
+
+      const applySaid = exchangeMessage.exn.d;
+
+      const [offer, offerSigs, offerEnd] = await this.props.signifyClient
+        .ipex()
+        .offer({
+          senderName: multisigId,
+          recipient: discloseePrefix,
+          message: "",
+          acdc: new Serder(acdc),
+          datetime: time,
+          applySaid,
+        });
+
+      const mstate = gHab["state"];
+      const seal = [
+        "SealEvent",
+        { i: gHab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
+      ];
+      const sigers = offerSigs.map((sig: any) => new Siger({ qb64: sig }));
+      const ims = d(messagize(offer, sigers, seal));
+      let atc = ims.substring(offer.size);
+      atc += offerEnd;
+
+      const gembeds = {
+        exn: [offer, atc],
+      };
+
+      [exn, sigsMes, dtime] = await this.props.signifyClient
+        .exchanges()
+        .createExchangeMessage(
+          mHab,
+          MultiSigRoute.EXN,
+          { gid: gHab["prefix"] },
+          gembeds,
+          recp[0]
+        );
+    }
+
+    const op = await this.props.signifyClient
+      .ipex()
+      .submitOffer(multisigId, exn, sigsMes, dtime, recp);
+
+    return { op, exnSaid: exn.ked.d };
+  }
+
+  async multisigGrantAcdcFromAgree(
+    multisigId: string,
+    recipient: string,
+    acdcDetail: any,
+    grantToJoin?: GrantToJoinMultisigExnPayload
+  ) {
+    let exn: Serder;
+    let sigsMes: string[];
+    let dtime: string;
+
+    const { ourIdentifier, multisigMembers } =
+      await this.multisigService.getMultisigParticipants(multisigId);
+    const gHab = await this.props.signifyClient.identifiers().get(multisigId);
+    const mHab = await this.props.signifyClient
+      .identifiers()
+      .get(ourIdentifier.id);
+
+    const recp = multisigMembers
+      .filter((signing: any) => signing.aid !== ourIdentifier.id)
+      .map((member: any) => member.aid);
+
+    if (grantToJoin) {
+      const { grantExn, atc } = grantToJoin;
+      const [, ked] = Saider.saidify(grantExn);
+      const grant = new Serder(ked);
+      const keeper = await this.props.signifyClient.manager!.get(gHab);
+      const sigs = await keeper.sign(b(new Serder(grantExn).raw));
+      const mstateNew = gHab["state"];
+      const seal = [
+        "SealEvent",
+        {
+          i: gHab["prefix"],
+          s: mstateNew["ee"]["s"],
+          d: mstateNew["ee"]["d"],
+        },
+      ];
+
+      const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
+      const ims = d(messagize(grant, sigers, seal));
+      let newAtc = ims.substring(grant.size);
+
+      const previousEnd = atc ? atc.slice(newAtc.length) : "";
+      newAtc += previousEnd;
+
+      const gembeds = {
+        exn: [grant, newAtc],
+      };
+
+      [exn, sigsMes, dtime] = await this.props.signifyClient
+        .exchanges()
+        .createExchangeMessage(
+          mHab,
+          MultiSigRoute.EXN,
+          { gid: gHab["prefix"] },
+          gembeds,
+          recp[0]
+        );
+    } else {
+      const time = new Date().toISOString().replace("Z", "000+00:00");
+      const [grant, sigs, end] = await this.props.signifyClient.ipex().grant({
+        senderName: multisigId,
+        recipient,
+        message: "",
+        acdc: new Serder(acdcDetail.sad),
+        iss: new Serder(acdcDetail.iss),
+        anc: new Serder(acdcDetail.anc),
+        acdcAttachment: acdcDetail?.atc,
+        ancAttachment: acdcDetail?.ancatc,
+        issAttachment: acdcDetail?.issAtc,
+        datetime: time,
+      });
+
+      const mstate = gHab["state"];
+      const seal = [
+        "SealEvent",
+        { i: gHab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
+      ];
+      const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
+      const ims = d(messagize(grant, sigers, seal));
+      let atc = ims.substring(grant.size);
+      atc += end;
+      const gembeds = {
+        exn: [grant, atc],
+      };
+
+      [exn, sigsMes, dtime] = await this.props.signifyClient
+        .exchanges()
+        .createExchangeMessage(
+          mHab,
+          MultiSigRoute.EXN,
+          { gid: gHab["prefix"] },
+          gembeds,
+          recp[0]
+        );
+    }
+
+    const op = await this.props.signifyClient
+      .ipex()
+      .submitGrant(multisigId, exn, sigsMes, dtime, recp);
+
+    return { op, exnSaid: exn.ked.d };
   }
 }
 

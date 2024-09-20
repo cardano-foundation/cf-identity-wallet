@@ -33,10 +33,9 @@ import { AgentService } from "./agentService";
 import { MultiSigIcpRequestDetails } from "./identifier.types";
 import {
   MultiSigRoute,
-  InceptMultiSigExnMessage,
+  RotationMultiSigExnMessage,
   CreateMultisigExnPayload,
   AuthorizationExnPayload,
-  GrantToJoinMultisigExnPayload,
 } from "./multiSig.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
@@ -295,7 +294,7 @@ class MultiSigService extends AgentService {
   @OnlineOnly
   async joinMultisigRotation(notification: KeriaNotification): Promise<string> {
     const msgSaid = notification.a.d as string;
-    const notifications: InceptMultiSigExnMessage[] =
+    const notifications: RotationMultiSigExnMessage[] =
       await this.props.signifyClient
         .groups()
         .getRequest(msgSaid)
@@ -338,7 +337,7 @@ class MultiSigService extends AgentService {
   }
 
   private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
-    const notifications: InceptMultiSigExnMessage[] =
+    const notifications: RotationMultiSigExnMessage[] =
       await this.props.signifyClient
         .groups()
         .getRequest(msgSaid)
@@ -370,7 +369,7 @@ class MultiSigService extends AgentService {
   async getMultisigIcpDetails(
     notificationSaid: string
   ): Promise<MultiSigIcpRequestDetails> {
-    const icpMsg: InceptMultiSigExnMessage[] = await this.props.signifyClient
+    const icpMsg: RotationMultiSigExnMessage[] = await this.props.signifyClient
       .groups()
       .getRequest(notificationSaid)
       .catch((error) => {
@@ -441,7 +440,7 @@ class MultiSigService extends AgentService {
       );
       return;
     }
-    const icpMsg: InceptMultiSigExnMessage[] = await this.props.signifyClient
+    const icpMsg: RotationMultiSigExnMessage[] = await this.props.signifyClient
       .groups()
       .getRequest(notificationSaid)
       .catch((error) => {
@@ -650,7 +649,7 @@ class MultiSigService extends AgentService {
   }
 
   private async joinMultisigRotationKeri(
-    exn: InceptMultiSigExnMessage["exn"],
+    exn: RotationMultiSigExnMessage["exn"],
     aid: HabState,
     name: string
   ): Promise<{
@@ -710,7 +709,7 @@ class MultiSigService extends AgentService {
   }
 
   private async joinMultisigKeri(
-    exn: InceptMultiSigExnMessage["exn"],
+    exn: RotationMultiSigExnMessage["exn"],
     aid: HabState,
     name: string
   ): Promise<{
@@ -830,7 +829,7 @@ class MultiSigService extends AgentService {
     return true;
   }
 
-  private async getMultisigParticipants(multisigId: string) {
+  async getMultisigParticipants(multisigId: string) {
     const members = await this.props.signifyClient
       .identifiers()
       .members(multisigId);
@@ -854,6 +853,7 @@ class MultiSigService extends AgentService {
         break;
       }
     }
+
     if (!ourIdentifier) {
       throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
     }
@@ -1065,219 +1065,6 @@ class MultiSigService extends AgentService {
     const op = await this.props.signifyClient
       .ipex()
       .submitAdmit(multisigId, exn, sigsMes, dtime, recp);
-
-    return { op, exnSaid: exn.ked.d };
-  }
-
-  async offerPresentMultisigACDC(
-    multisigSignifyName: string,
-    notificationSaid: string,
-    acdcDetail: any,
-    issuerAidPrefix: string,
-    offerExnToJoin?: any
-  ) {
-    let exn: Serder;
-    let sigsMes: string[];
-    let dtime: string;
-
-    const exchangeMessage = await this.props.signifyClient
-      .exchanges()
-      .get(notificationSaid);
-
-    const applySaid = exchangeMessage.exn.d;
-    const { ourIdentifier, multisigMembers } =
-      await this.getMultisigParticipants(multisigSignifyName);
-    const gHab = await this.props.signifyClient
-      .identifiers()
-      .get(multisigSignifyName);
-    const mHab = await this.props.signifyClient
-      .identifiers()
-      .get(ourIdentifier.signifyName);
-
-    const recp = multisigMembers
-      .filter((signing: any) => signing.aid !== ourIdentifier.id)
-      .map((member: any) => member.aid);
-
-    const [_, acdc] = Saider.saidify(acdcDetail);
-
-    if (offerExnToJoin) {
-      const [, ked] = Saider.saidify(offerExnToJoin);
-      const offer = new Serder(ked);
-      const keeper = await this.props.signifyClient.manager!.get(gHab);
-      const sigs = await keeper.sign(b(new Serder(offerExnToJoin).raw));
-
-      const mstateNew = gHab["state"];
-      const seal = [
-        "SealEvent",
-        {
-          i: gHab["prefix"],
-          s: mstateNew["ee"]["s"],
-          d: mstateNew["ee"]["d"],
-        },
-      ];
-      const signer = sigs.map((sig: any) => new Siger({ qb64: sig }));
-      const ims = d(messagize(offer, signer, seal));
-      const atc = ims.substring(offer.size);
-
-      const gembeds = {
-        exn: [offer, atc],
-      };
-
-      [exn, sigsMes, dtime] = await this.props.signifyClient
-        .exchanges()
-        .createExchangeMessage(
-          mHab,
-          "/multisig/exn",
-          { gid: gHab["prefix"] },
-          gembeds,
-          issuerAidPrefix
-        );
-    } else {
-      const time = new Date().toISOString().replace("Z", "000+00:00");
-      const [offer, offerSigs, offerEnd] = await this.props.signifyClient
-        .ipex()
-        .offer({
-          senderName: multisigSignifyName,
-          recipient: issuerAidPrefix,
-          message: "",
-          acdc: new Serder(acdc),
-          datetime: time,
-          applySaid,
-        });
-
-      const mstate = gHab["state"];
-      const seal = [
-        "SealEvent",
-        { i: gHab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
-      ];
-      const sigers = offerSigs.map((sig: any) => new Siger({ qb64: sig }));
-      const ims = d(messagize(offer, sigers, seal));
-      let atc = ims.substring(offer.size);
-      atc += offerEnd;
-
-      const gembeds = {
-        exn: [offer, atc],
-      };
-
-      [exn, sigsMes, dtime] = await this.props.signifyClient
-        .exchanges()
-        .createExchangeMessage(
-          mHab,
-          MultiSigRoute.EXN,
-          { gid: gHab["prefix"] },
-          gembeds,
-          recp[0]
-        );
-    }
-
-    const op = await this.props.signifyClient
-      .ipex()
-      .submitOffer(multisigSignifyName, exn, sigsMes, dtime, recp);
-
-    return { op, exnSaid: exn.ked.d };
-  }
-
-  async grantPresentMultisigAcdc(
-    multisigSignifyName: string,
-    recipient: string,
-    acdcDetail: any,
-    grantToJoin?: GrantToJoinMultisigExnPayload
-  ) {
-    let exn: Serder;
-    let sigsMes: string[];
-    let dtime: string;
-
-    const { ourIdentifier, multisigMembers } =
-      await this.getMultisigParticipants(multisigSignifyName);
-    const gHab = await this.props.signifyClient
-      .identifiers()
-      .get(multisigSignifyName);
-    const mHab = await this.props.signifyClient
-      .identifiers()
-      .get(ourIdentifier.signifyName);
-
-    const recp = multisigMembers
-      .filter((signing: any) => signing.aid !== ourIdentifier.id)
-      .map((member: any) => member.aid);
-
-    if (grantToJoin) {
-      const { grantExn, atc } = grantToJoin;
-      const [, ked] = Saider.saidify(grantExn);
-      const grant = new Serder(ked);
-      const keeper = await this.props.signifyClient.manager!.get(gHab);
-      const sigs = await keeper.sign(b(new Serder(grantExn).raw));
-      const mstateNew = gHab["state"];
-      const seal = [
-        "SealEvent",
-        {
-          i: gHab["prefix"],
-          s: mstateNew["ee"]["s"],
-          d: mstateNew["ee"]["d"],
-        },
-      ];
-
-      const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
-      const ims = d(messagize(grant, sigers, seal));
-      let newAtc = ims.substring(grant.size);
-
-      const previousEnd = atc ? atc.slice(newAtc.length) : "";
-      newAtc += previousEnd;
-
-      const gembeds = {
-        exn: [grant, newAtc],
-      };
-
-      [exn, sigsMes, dtime] = await this.props.signifyClient
-        .exchanges()
-        .createExchangeMessage(
-          mHab,
-          MultiSigRoute.EXN,
-          { gid: gHab["prefix"] },
-          gembeds,
-          recp[0]
-        );
-    } else {
-      const time = new Date().toISOString().replace("Z", "000+00:00");
-      const [grant, sigs, end] = await this.props.signifyClient.ipex().grant({
-        senderName: multisigSignifyName,
-        recipient,
-        message: "",
-        acdc: new Serder(acdcDetail.sad),
-        iss: new Serder(acdcDetail.iss),
-        anc: new Serder(acdcDetail.anc),
-        acdcAttachment: acdcDetail?.atc,
-        ancAttachment: acdcDetail?.ancatc,
-        issAttachment: acdcDetail?.issAtc,
-        datetime: time,
-      });
-
-      const mstate = gHab["state"];
-      const seal = [
-        "SealEvent",
-        { i: gHab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
-      ];
-      const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
-      const ims = d(messagize(grant, sigers, seal));
-      let atc = ims.substring(grant.size);
-      atc += end;
-      const gembeds = {
-        exn: [grant, atc],
-      };
-
-      [exn, sigsMes, dtime] = await this.props.signifyClient
-        .exchanges()
-        .createExchangeMessage(
-          mHab,
-          MultiSigRoute.EXN,
-          { gid: gHab["prefix"] },
-          gembeds,
-          recp[0]
-        );
-    }
-
-    const op = await this.props.signifyClient
-      .ipex()
-      .submitGrant(multisigSignifyName, exn, sigsMes, dtime, recp);
 
     return { op, exnSaid: exn.ked.d };
   }

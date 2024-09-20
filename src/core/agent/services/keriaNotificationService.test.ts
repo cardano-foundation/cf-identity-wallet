@@ -1240,7 +1240,7 @@ describe("Long running operation tracker", () => {
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 
-  test("Should handle long operations with type exchange.offerpresentcredential", async () => {
+  test("Should handle long operations with type exchange.offercredential", async () => {
     const callback = jest.fn();
     const credentialIdMock = "credentialId";
     signifyClient
@@ -1264,9 +1264,9 @@ describe("Long running operation tracker", () => {
       });
     const operationRecord = {
       type: "OperationPendingRecord",
-      id: "exchange.offerpresentcredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      id: "exchange.offercredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
       createdAt: new Date("2024-08-01T10:36:17.814Z"),
-      recordType: "exchange.offerpresentcredential",
+      recordType: "exchange.offercredential",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
 

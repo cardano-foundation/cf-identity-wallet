@@ -23,7 +23,7 @@ interface IcpExn extends CommonExn {
   a: any[];
 }
 
-interface InceptMultiSigExnMessage {
+interface RotationMultiSigExnMessage {
   exn: CommonExn & {
     a: {
       gid: string;
@@ -91,7 +91,7 @@ interface GrantToJoinMultisigExnPayload {
 export { MultiSigRoute };
 
 export type {
-  InceptMultiSigExnMessage,
+  RotationMultiSigExnMessage,
   CreateMultisigExnPayload,
   AuthorizationExnPayload,
   GrantToJoinMultisigExnPayload,

@@ -1,12 +1,21 @@
+import { Dict, Saider, Serder } from "signify-ts";
 import { EventService } from "./eventService";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import { Agent } from "../agent";
-import { IdentifierStorage } from "../records";
+import { IdentifierMetadataRecord, IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
 import { AcdcEventTypes } from "../agent.types";
+import {
+  gHab,
+  memberMetadataRecord,
+  mHab,
+  multisigExnIpexGrantEnd,
+  multisigExnIpexGrantSerder,
+  multisigExnIpexGrantSig,
+} from "../../__fixtures__/agent/multiSigMock";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -69,11 +78,18 @@ const multisigService = jest.mocked({
   offerPresentMultisigACDC: jest
     .fn()
     .mockResolvedValue({ name: "opName", done: true }),
+  getMultisigParticipants: jest.fn(),
 });
 
 let credentialListMock = jest.fn();
 let credentialGetMock = jest.fn();
 const identifierListMock = jest.fn();
+const identifiersMemberMock = jest.fn();
+const identifiersGetMock = jest.fn();
+const getMemberMock = jest.fn();
+const createExchangeMessageMock = jest.fn();
+
+const now = new Date();
 
 let getExchangeMock = jest.fn().mockImplementation((id: string) => {
   if (id == "saidForUuid") {
@@ -102,7 +118,7 @@ let getExchangeMock = jest.fn().mockImplementation((id: string) => {
 const ipexOfferMock = jest.fn();
 const ipexGrantMock = jest.fn();
 const schemaGetMock = jest.fn();
-const submitOfferMock = jest.fn();
+const ipexSubmitOfferMock = jest.fn();
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const submitAdmitMock = jest.fn().mockResolvedValue({
   name: "opName",
@@ -114,12 +130,12 @@ const signifyClient = jest.mocked({
   boot: jest.fn(),
   identifiers: () => ({
     list: identifierListMock,
-    get: jest.fn(),
+    get: identifiersGetMock,
     create: jest.fn(),
     addEndRole: jest.fn(),
     interact: jest.fn(),
     rotate: jest.fn(),
-    members: jest.fn(),
+    members: identifiersMemberMock,
   }),
   operations: () => ({
     get: jest.fn().mockImplementation((id: string) => {
@@ -161,7 +177,7 @@ const signifyClient = jest.mocked({
     admit: jest.fn().mockResolvedValue(["admit", "sigs", "aend"]),
     submitAdmit: submitAdmitMock,
     offer: ipexOfferMock,
-    submitOffer: jest.fn().mockResolvedValue({ name: "opName", done: true }),
+    submitOffer: ipexSubmitOfferMock,
     grant: ipexGrantMock,
     submitGrant: jest.fn().mockResolvedValue({ name: "opName", done: true }),
   }),
@@ -172,6 +188,7 @@ const signifyClient = jest.mocked({
   exchanges: () => ({
     get: getExchangeMock,
     send: jest.fn(),
+    createExchangeMessage: createExchangeMessageMock,
   }),
   agent: {
     pre: "pre",
@@ -183,6 +200,9 @@ const signifyClient = jest.mocked({
   schemas: () => ({
     get: schemaGetMock,
   }),
+  manager: {
+    get: getMemberMock,
+  },
 });
 
 jest.mock("signify-ts", () => ({
@@ -525,6 +545,21 @@ describe("Ipex communication service of agent", () => {
       read: true,
     };
 
+    notificationStorage.findById = jest.fn().mockResolvedValue({
+      type: "NotificationRecord",
+      id: id,
+      createdAt: new Date(),
+      a: {
+        r: "/exn/ipex/grant",
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: "/exn/ipex/apply",
+      read: true,
+      linkedGroupRequests: {},
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+      updatedAt: new Date(),
+    });
+
     getExchangeMock = jest.fn().mockReturnValue({
       exn: {
         a: {
@@ -536,9 +571,10 @@ describe("Ipex communication service of agent", () => {
     });
     credentialListMock = jest.fn().mockReturnValue({});
     identifierStorage.getIdentifierMetadata = jest.fn().mockReturnValue({
-      signifyName: "abc123",
+      id: "abc123",
     });
     ipexOfferMock.mockResolvedValue(["offer", "sigs", "gend"]);
+    ipexSubmitOfferMock.mockResolvedValue({ name: "opName", done: true }),
     await ipexCommunicationService.offerAcdcFromApply(noti.id, {});
     expect(ipexOfferMock).toBeCalledWith({
       senderName: "abc123",
@@ -548,7 +584,7 @@ describe("Ipex communication service of agent", () => {
     });
     expect(
       Agent.agent.keriaNotifications.deleteNotificationRecordById
-    ).toBeCalledWith(id, undefined);
+    ).toBeCalledWith(id, "/exn/ipex/grant");
   });
 
   test("can not offer Keri Acdc if aid is not existed", async () => {
@@ -624,7 +660,7 @@ describe("Ipex communication service of agent", () => {
     });
     credentialGetMock = jest.fn().mockReturnValue({});
     identifierStorage.getIdentifierMetadata = jest.fn().mockReturnValue({
-      signifyName: "abc123",
+      id: "abc123",
     });
     ipexGrantMock.mockResolvedValue(["offer", "sigs", "gend"]);
     await ipexCommunicationService.grantAcdcFromAgree(noti.a.d);
@@ -900,7 +936,7 @@ describe("Ipex communication service of agent", () => {
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 
-  test("can accept ACDC from multisig exn", async () => {
+  test("can accept ACDC from multisig exn 123", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "uuid";
 
@@ -1273,283 +1309,6 @@ describe("Ipex communication service of agent", () => {
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(0);
   });
 
-  test("can offer ACDC from multisig exn", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    const id = "uuid";
-
-    notificationStorage.findById = jest.fn().mockResolvedValue({
-      type: "NotificationRecord",
-      id: id,
-      createdAt: new Date(),
-      a: {
-        r: "/exn/ipex/apply",
-        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-      },
-      route: "/exn/ipex/apply",
-      read: true,
-      linkedGroupRequests: {
-        "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
-      },
-      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-      updatedAt: new Date(),
-    });
-
-    getExchangeMock
-      .mockReturnValueOnce({
-        exn: {
-          v: "KERI10JSON00032d_",
-          t: "exn",
-          d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-          i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-          rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-          p: "",
-          dt: "2024-08-28T06:39:55.501000+00:00",
-          r: "/multisig/exn",
-          q: {},
-          a: {
-            i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-            gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-          },
-          e: {
-            exn: {
-              v: "KERI10JSON000178_",
-              t: "exn",
-              d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
-              i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-              rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-              p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-              dt: "2024-08-28T06:39:51.416000+00:00",
-              r: "/ipex/offer",
-              q: {},
-              a: {
-                i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-                m: "",
-              },
-              e: {},
-            },
-            d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
-          },
-        },
-        pathed: {},
-      })
-      .mockReturnValueOnce(offerIpexMessageMock);
-
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      type: "IdentifierMetadataRecord",
-      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
-      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-
-    credentialListMock.mockResolvedValue([
-      {
-        sad: {
-          d: "id",
-        },
-      },
-    ]);
-    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
-    multisigService.offerPresentMultisigACDC = jest
-      .fn()
-      .mockResolvedValue({ op: { name: "opName", done: true } });
-
-    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
-      {
-        type: "NotificationRecord",
-        id: id,
-        createdAt: new Date(),
-        a: {
-          r: "/exn/ipex/apply",
-          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-        },
-        route: "/exn/ipex/apply",
-        read: true,
-        linkedGroupRequests: {
-          "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
-        },
-        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-        updatedAt: new Date(),
-      },
-    ]);
-
-    await ipexCommunicationService.offerAcdcFromApply(id);
-
-    expect(notificationStorage.deleteById).toBeCalledTimes(0);
-    expect(operationPendingStorage.save).toBeCalledWith({
-      id: "opName",
-      recordType: OperationPendingRecordType.ExchangeOfferPresentCredential,
-    });
-    expect(
-      Agent.agent.keriaNotifications.addPendingOperationToQueue
-    ).toBeCalledTimes(1);
-  });
-
-  test("can offer ACDC and update linkedGroupRequests when FIRST of multisig joins", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    notificationStorage.findById = jest.fn().mockResolvedValue({
-      type: "NotificationRecord",
-      id: "id",
-      a: {
-        r: "/exn/ipex/apply",
-        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-      },
-      route: "/exn/ipex/apply",
-      read: true,
-      linkedGroupRequests: {},
-      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-    });
-    getExchangeMock.mockResolvedValue(offerIpexMessageMock);
-
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      type: "IdentifierMetadataRecord",
-      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
-      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-
-    multisigService.offerPresentMultisigACDC = jest.fn().mockResolvedValue({
-      op: { name: "opName", done: false },
-      exnSaid: "exnSaid",
-    });
-
-    await ipexCommunicationService.offerAcdcFromApply("id");
-
-    expect(notificationStorage.update).toBeCalledWith({
-      type: "NotificationRecord",
-      id: "id",
-      a: {
-        r: "/exn/ipex/apply",
-        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-      },
-      route: "/exn/ipex/apply",
-      read: true,
-      linkedGroupRequests: {
-        exnSaid: true,
-      },
-      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-    });
-
-    expect(operationPendingStorage.save).toBeCalledWith({
-      id: "opName",
-      recordType: OperationPendingRecordType.ExchangeOfferPresentCredential,
-    });
-    expect(
-      Agent.agent.keriaNotifications.addPendingOperationToQueue
-    ).toBeCalledTimes(1);
-    expect(notificationStorage.deleteById).toBeCalledTimes(0);
-  });
-
-  test("can offer ACDC from multisig exn and update linkedGroupRequests when SECOND of multisig joins", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    const notificationRecord = {
-      type: "NotificationRecord",
-      id: "id",
-      a: {
-        r: "/exn/ipex/apply",
-        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-      },
-      route: "/exn/ipex/apply",
-      read: true,
-      linkedGroupRequests: {
-        "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
-      },
-      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-    };
-    notificationStorage.findById = jest
-      .fn()
-      .mockResolvedValue(notificationRecord);
-
-    getExchangeMock
-      .mockReturnValueOnce({
-        exn: {
-          v: "KERI10JSON00032d_",
-          t: "exn",
-          d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-          i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-          rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-          p: "",
-          dt: "2024-08-28T06:39:55.501000+00:00",
-          r: "/multisig/exn",
-          q: {},
-          a: {
-            i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-            gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-          },
-          e: {
-            exn: {
-              v: "KERI10JSON000178_",
-              t: "exn",
-              d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
-              i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-              rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-              p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-              dt: "2024-08-28T06:39:51.416000+00:00",
-              r: "/ipex/offer",
-              q: {},
-              a: {
-                i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-                m: "",
-              },
-              e: {},
-            },
-            d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
-          },
-        },
-        pathed: {},
-      })
-      .mockReturnValueOnce(grantIpexMessageMock);
-
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      type: "IdentifierMetadataRecord",
-      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      displayName: "holder",
-      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
-      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-
-    notificationStorage.findAllByQuery = jest
-      .fn()
-      .mockResolvedValue([notificationRecord]);
-
-    multisigService.offerPresentMultisigACDC = jest.fn().mockResolvedValue({
-      op: { name: "opName", done: true },
-      exnSaid: "exnSaid",
-    });
-
-    await ipexCommunicationService.offerAcdcFromApply("id");
-
-    expect(operationPendingStorage.save).toBeCalledWith({
-      id: "opName",
-      recordType: OperationPendingRecordType.ExchangeOfferPresentCredential,
-    });
-
-    expect(notificationStorage.update).lastCalledWith({
-      type: "NotificationRecord",
-      id: "id",
-      a: {
-        r: "/exn/ipex/apply",
-        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
-      },
-      route: "/exn/ipex/apply",
-      read: true,
-      linkedGroupRequests: {
-        "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": true,
-      },
-      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-    });
-  });
-
   test("cannot accept ACDC from multisig exn if the notification is missing in the DB", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const id = "not-found-id";
@@ -1657,9 +1416,479 @@ describe("Ipex communication service of agent", () => {
     notificationStorage.findById.mockResolvedValueOnce(null);
 
     await expect(
-      ipexCommunicationService.offerAcdcFromApply(id)
+      ipexCommunicationService.offerAcdcFromApply(id, {})
     ).rejects.toThrowError(
       `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
     );
   });
+
+  // TOOO: Update after handle offer logic with different credentials
+  // test("can offer ACDC from multisig exn", async () => {
+  //   Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+  //   const id = "uuid";
+
+  //   notificationStorage.findById = jest.fn().mockResolvedValue({
+  //     type: "NotificationRecord",
+  //     id: id,
+  //     createdAt: new Date(),
+  //     a: {
+  //       r: "/exn/ipex/apply",
+  //       d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+  //     },
+  //     route: "/exn/ipex/apply",
+  //     read: true,
+  //     linkedGroupRequests: {
+  //       "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
+  //     },
+  //     connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+  //     updatedAt: new Date(),
+  //   });
+
+  //   const acdc = {
+  //     v: "ACDC10JSON00018d_",
+  //     d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT",
+  //     i: "EAzUd88Fcd1dHZg5LUEgz9zgHLX96V6y0cZoY6MkvnOP",
+  //     ri: "EGNm44ZxIYVO_ctkbIXoNTrkEdBhLi9k09doVKRdoixi",
+  //     s: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
+  //     a: {
+  //       d: "EDdyFnzf3dDOIHU7AF4tsQ-fqtFeHmg5LniT7QpJuFpw",
+  //       i: "EOAjGXrNHM-PuSFEEJ_x38gv5S1HNZtHOHSaVR9eZ1s7",
+  //       attendeeName: "4",
+  //       dt: "2024-09-20T02:54:03.259000+00:00",
+  //     },
+  //   };
+
+  //   getExchangeMock
+  //     .mockReturnValueOnce({
+  //       exn: {
+  //         v: "KERI10JSON00032d_",
+  //         t: "exn",
+  //         d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
+  //         i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
+  //         rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+  //         p: "",
+  //         dt: "2024-08-28T06:39:55.501000+00:00",
+  //         r: "/multisig/exn",
+  //         q: {},
+  //         a: {
+  //           i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+  //           gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+  //         },
+  //         e: {
+  //           exn: {
+  //             v: "KERI10JSON000178_",
+  //             t: "exn",
+  //             d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
+  //             i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+  //             rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+  //             p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+  //             dt: "2024-08-28T06:39:51.416000+00:00",
+  //             r: "/ipex/offer",
+  //             q: {},
+  //             a: {
+  //               i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+  //               m: "",
+  //             },
+  //             e: {},
+  //           },
+  //           d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
+  //         },
+  //       },
+  //       pathed: {},
+  //     })
+  //     .mockReturnValueOnce(offerIpexMessageMock);
+
+  //   identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+  //     type: "IdentifierMetadataRecord",
+  //     id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+  //     displayName: "holder",
+  //     signifyName: "764c965c-d997-4842-b940-aebd514fce42",
+  //     signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+  //     multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+  //     createdAt: new Date(),
+  //     updatedAt: new Date(),
+  //   });
+
+  //   credentialListMock.mockResolvedValue([
+  //     {
+  //       sad: {
+  //         d: "id",
+  //       },
+  //     },
+  //   ]);
+  //   credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
+  //   multisigService.offerPresentMultisigACDC = jest
+  //     .fn()
+  //     .mockResolvedValue({ op: { name: "opName", done: true } });
+
+  //   notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
+  //     {
+  //       type: "NotificationRecord",
+  //       id: id,
+  //       createdAt: new Date(),
+  //       a: {
+  //         r: "/exn/ipex/apply",
+  //         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+  //       },
+  //       route: "/exn/ipex/apply",
+  //       read: true,
+  //       linkedGroupRequests: {
+  //         "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
+  //       },
+  //       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+  //       updatedAt: new Date(),
+  //     },
+  //   ]);
+
+  //   await ipexCommunicationService.offerAcdcFromApply(id, acdc);
+
+  //   expect(notificationStorage.deleteById).toBeCalledTimes(0);
+  //   expect(operationPendingStorage.save).toBeCalledWith({
+  //     id: "opName",
+  //     recordType: OperationPendingRecordType.ExchangeOfferCredential,
+  //   });
+  //   expect(
+  //     Agent.agent.keriaNotifications.addPendingOperationToQueue
+  //   ).toBeCalledTimes(1);
+  // });
+
+  // test("can offer ACDC and update linkedGroupRequests when FIRST of multisig joins", async () => {
+  //   Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+  //   notificationStorage.findById = jest.fn().mockResolvedValue({
+  //     type: "NotificationRecord",
+  //     id: "id",
+  //     a: {
+  //       r: "/exn/ipex/apply",
+  //       d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+  //     },
+  //     route: "/exn/ipex/apply",
+  //     read: true,
+  //     linkedGroupRequests: {},
+  //     connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+  //   });
+
+  //   const acdc = {
+  //     v: "ACDC10JSON00018d_",
+  //     d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT",
+  //     i: "EAzUd88Fcd1dHZg5LUEgz9zgHLX96V6y0cZoY6MkvnOP",
+  //     ri: "EGNm44ZxIYVO_ctkbIXoNTrkEdBhLi9k09doVKRdoixi",
+  //     s: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
+  //     a: {
+  //       d: "EDdyFnzf3dDOIHU7AF4tsQ-fqtFeHmg5LniT7QpJuFpw",
+  //       i: "EOAjGXrNHM-PuSFEEJ_x38gv5S1HNZtHOHSaVR9eZ1s7",
+  //       attendeeName: "4",
+  //       dt: "2024-09-20T02:54:03.259000+00:00",
+  //     },
+  //   };
+
+  //   getExchangeMock.mockResolvedValue(offerIpexMessageMock);
+
+  //   identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+  //     type: "IdentifierMetadataRecord",
+  //     id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+  //     displayName: "holder",
+  //     signifyName: "764c965c-d997-4842-b940-aebd514fce42",
+  //     signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+  //     multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+  //     createdAt: new Date(),
+  //     updatedAt: new Date(),
+  //   });
+
+  //   multisigService.offerPresentMultisigACDC = jest.fn().mockResolvedValue({
+  //     op: { name: "opName", done: false },
+  //     exnSaid: "exnSaid",
+  //   });
+
+  //   await ipexCommunicationService.offerAcdcFromApply("id", acdc);
+
+  //   expect(notificationStorage.update).toBeCalledWith({
+  //     type: "NotificationRecord",
+  //     id: "id",
+  //     a: {
+  //       r: "/exn/ipex/apply",
+  //       d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+  //     },
+  //     route: "/exn/ipex/apply",
+  //     read: true,
+  //     linkedGroupRequests: {
+  //       exnSaid: true,
+  //     },
+  //     connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+  //   });
+
+  //   expect(operationPendingStorage.save).toBeCalledWith({
+  //     id: "opName",
+  //     recordType: OperationPendingRecordType.ExchangeOfferCredential,
+  //   });
+  //   expect(
+  //     Agent.agent.keriaNotifications.addPendingOperationToQueue
+  //   ).toBeCalledTimes(1);
+  //   expect(notificationStorage.deleteById).toBeCalledTimes(0);
+  // });
+
+  // test("can offer ACDC from multisig exn and update linkedGroupRequests when SECOND of multisig joins", async () => {
+  //   Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+  //   const notificationRecord = {
+  //     type: "NotificationRecord",
+  //     id: "id",
+  //     a: {
+  //       r: "/exn/ipex/apply",
+  //       d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+  //     },
+  //     route: "/exn/ipex/apply",
+  //     read: true,
+  //     linkedGroupRequests: {
+  //       "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
+  //     },
+  //     connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+  //   };
+
+  //   const acdc = {
+  //     v: "ACDC10JSON00018d_",
+  //     d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT",
+  //     i: "EAzUd88Fcd1dHZg5LUEgz9zgHLX96V6y0cZoY6MkvnOP",
+  //     ri: "EGNm44ZxIYVO_ctkbIXoNTrkEdBhLi9k09doVKRdoixi",
+  //     s: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
+  //     a: {
+  //       d: "EDdyFnzf3dDOIHU7AF4tsQ-fqtFeHmg5LniT7QpJuFpw",
+  //       i: "EOAjGXrNHM-PuSFEEJ_x38gv5S1HNZtHOHSaVR9eZ1s7",
+  //       attendeeName: "4",
+  //       dt: "2024-09-20T02:54:03.259000+00:00",
+  //     },
+  //   };
+
+  //   notificationStorage.findById = jest
+  //     .fn()
+  //     .mockResolvedValue(notificationRecord);
+
+  //   getExchangeMock
+  //     .mockReturnValueOnce({
+  //       exn: {
+  //         v: "KERI10JSON00032d_",
+  //         t: "exn",
+  //         d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
+  //         i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
+  //         rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+  //         p: "",
+  //         dt: "2024-08-28T06:39:55.501000+00:00",
+  //         r: "/multisig/exn",
+  //         q: {},
+  //         a: {
+  //           i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+  //           gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+  //         },
+  //         e: {
+  //           exn: {
+  //             v: "KERI10JSON000178_",
+  //             t: "exn",
+  //             d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
+  //             i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+  //             rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+  //             p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+  //             dt: "2024-08-28T06:39:51.416000+00:00",
+  //             r: "/ipex/offer",
+  //             q: {},
+  //             a: {
+  //               i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+  //               m: "",
+  //             },
+  //             e: {},
+  //           },
+  //           d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
+  //         },
+  //       },
+  //       pathed: {},
+  //     })
+  //     .mockReturnValueOnce(grantIpexMessageMock);
+
+  //   identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+  //     type: "IdentifierMetadataRecord",
+  //     id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+  //     displayName: "holder",
+  //     signifyName: "764c965c-d997-4842-b940-aebd514fce42",
+  //     signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+  //     multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+  //     createdAt: new Date(),
+  //     updatedAt: new Date(),
+  //   });
+
+  //   notificationStorage.findAllByQuery = jest
+  //     .fn()
+  //     .mockResolvedValue([notificationRecord]);
+
+  //   multisigService.offerPresentMultisigACDC = jest.fn().mockResolvedValue({
+  //     op: { name: "opName", done: true },
+  //     exnSaid: "exnSaid",
+  //   });
+
+  //   await ipexCommunicationService.offerAcdcFromApply("id", acdc);
+
+  //   expect(operationPendingStorage.save).toBeCalledWith({
+  //     id: "opName",
+  //     recordType: OperationPendingRecordType.ExchangeOfferCredential,
+  //   });
+
+  //   expect(notificationStorage.update).lastCalledWith({
+  //     type: "NotificationRecord",
+  //     id: "id",
+  //     a: {
+  //       r: "/exn/ipex/apply",
+  //       d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+  //     },
+  //     route: "/exn/ipex/apply",
+  //     read: true,
+  //     linkedGroupRequests: {
+  //       "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": true,
+  //     },
+  //     connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+  //   });
+  // });
+
+  // test("Can agree to offer present credential with a multi-sig identifier", async () => {
+  //   const multisigSignifyName = "multisigSignifyName";
+  //   const notificationSaid = "ELykd_2bX6yvuVEgLQqnCgZ7QLdxpUBze-RzHVwfCUfW";
+  //   const multisigExn = {
+  //     v: "KERI10JSON00033f_",
+  //     t: "exn",
+  //     d: "EDvuz9YHiYedCF4JXeSP3YDBuTmP3jlDGBsv4qMzqCC4",
+  //     i: "EFPQ7LAydMjiYYxPzvTcNs9rqzj5Khb8fNtAli9DraQK",
+  //     rp: "EB7p1BiY_BJKHqnYbZCnBA7R7gx5LN5RSw5lvxugNkTE",
+  //     p: "EFbd-N8VoWbHzpwPUKm4hPF6ZKCRNHfnYiKKYDT7N0KS",
+  //     dt: "2024-09-12T09:42:54.435000+00:00",
+  //     r: "/ipex/offer",
+  //     q: {},
+  //     a: {
+  //       i: "EB7p1BiY_BJKHqnYbZCnBA7R7gx5LN5RSw5lvxugNkTE",
+  //       m: "",
+  //     },
+  //     e: {
+  //       acdc: {
+  //         v: "ACDC10JSON00018d_",
+  //         d: "EDVpsD_xAcWw7uZc5qn4YW43GLuQhx35ZVILS2Gh1BCz",
+  //         i: "EB7p1BiY_BJKHqnYbZCnBA7R7gx5LN5RSw5lvxugNkTE",
+  //         ri: "EMLj0D48725W6zpVfthgHFzUVQ5ouGw1kZXuSy2pDz9R",
+  //         s: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
+  //         a: {
+  //           d: "EFGawgqnUcyyqM2vmSHjaeVXcRgkx1XXVvhomTz7CKa7",
+  //           i: "EFPQ7LAydMjiYYxPzvTcNs9rqzj5Khb8fNtAli9DraQK",
+  //           attendeeName: "4",
+  //           dt: "2024-09-12T09:12:25.280000+00:00",
+  //         },
+  //       },
+  //       d: "EIDr8XsLeoAFsvkQUUdiCns9aac5rUv3FjcDQFISiirZ",
+  //     },
+  //   };
+
+  //   const acdc = {
+  //     v: "ACDC10JSON00018d_",
+  //     d: "EDVpsD_xAcWw7uZc5qn4YW43GLuQhx35ZVILS2Gh1BCz",
+  //     i: "EB7p1BiY_BJKHqnYbZCnBA7R7gx5LN5RSw5lvxugNkTE",
+  //     ri: "EMLj0D48725W6zpVfthgHFzUVQ5ouGw1kZXuSy2pDz9R",
+  //     s: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
+  //     a: {
+  //       d: "EFGawgqnUcyyqM2vmSHjaeVXcRgkx1XXVvhomTz7CKa7",
+  //       i: "EFPQ7LAydMjiYYxPzvTcNs9rqzj5Khb8fNtAli9DraQK",
+  //       attendeeName: "4",
+  //       dt: "2024-09-12T09:12:25.280000+00:00",
+  //     },
+  //   };
+  //   const issuerAidPrefix = "aid";
+
+  //   const ked = {
+  //     v: "KERI10JSON00033f_",
+  //     t: "exn",
+  //     d: "EDvuz9YHiYedCF4JXeSP3YDBuTmP3jlDGBsv4qMzqCC4",
+  //     i: "EFPQ7LAydMjiYYxPzvTcNs9rqzj5Khb8fNtAli9DraQK",
+  //     rp: "EB7p1BiY_BJKHqnYbZCnBA7R7gx5LN5RSw5lvxugNkTE",
+  //     p: "EFbd-N8VoWbHzpwPUKm4hPF6ZKCRNHfnYiKKYDT7N0KS",
+  //     dt: "2024-09-12T09:42:54.435000+00:00",
+  //     r: "/ipex/offer",
+  //     q: {},
+  //     a: {
+  //       i: "EB7p1BiY_BJKHqnYbZCnBA7R7gx5LN5RSw5lvxugNkTE",
+  //       m: "",
+  //     },
+  //     e: {
+  //       acdc: acdc,
+  //       d: "EIDr8XsLeoAFsvkQUUdiCns9aac5rUv3FjcDQFISiirZ",
+  //     },
+  //   };
+
+  //   const offer = new Serder(ked);
+  //   const atc =
+  //     "-FABEFr4DyYerYKgdUq3Nw5wbq7OjEZT6cn45omHCiIZ0elD0AAAAAAAAAAAAAAAAAAAAAAAEMoyFLuJpu0B79yPM7QKFE_R_D4CTq7H7GLsKxIpukXX-AABABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB";
+
+  //   const mockSaider = [{} as Saider, ked] as [Saider, Dict<any>];
+  //   const exchangeMock = {
+  //     exn: {
+  //       i: "ELWFo-DV4GujnvcwwIbzTzjc-nIf0ijv6W1ecajvQYBY",
+  //       d: "EO65SZOen5Qm26gYeAZZ_J_p8_Uy_6jB3cUpv0DzgDA4",
+  //     },
+  //   };
+  //   getExchangeMock.mockResolvedValueOnce(exchangeMock);
+  //   identifiersMemberMock = jest.fn().mockResolvedValueOnce({
+  //     signing: [
+  //       { ends: { agent: { [memberMetadataRecord.id]: "" } }, aid: "aid" },
+  //     ],
+  //   });
+  //   identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce(
+  //     new IdentifierMetadataRecord({
+  //       id: "aidHere",
+  //       displayName: "Identifier 2",
+  //       signifyName: "uuid-here",
+  //       createdAt: now,
+  //       theme: 0,
+  //       groupMetadata: {
+  //         groupId: "group-id",
+  //         groupInitiator: true,
+  //         groupCreated: true,
+  //       },
+  //     })
+  //   );
+  //   identifiersGetMock = jest
+  //     .fn()
+  //     .mockResolvedValueOnce(gHab)
+  //     .mockResolvedValueOnce(mHab);
+
+  //   jest.spyOn(Saider, "saidify").mockReturnValueOnce(mockSaider);
+  //   getMemberMock.mockResolvedValue({
+  //     sign: () => [
+  //       "ABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB",
+  //     ],
+  //   });
+  //   createExchangeMessageMock.mockResolvedValue([
+  //     multisigExnIpexGrantSerder,
+  //     multisigExnIpexGrantSig,
+  //     multisigExnIpexGrantEnd,
+  //   ]);
+
+  //   await ipexCommunicationService.multisigOfferAcdcFromApply(
+  //     multisigSignifyName,
+  //     notificationSaid,
+  //     acdc,
+  //     issuerAidPrefix,
+  //     multisigExn
+  //   );
+
+  //   expect(ipexOfferMock).toBeCalledTimes(0);
+  //   expect(createExchangeMessageMock).toBeCalledWith(
+  //     mHab,
+  //     "/multisig/exn",
+  //     {
+  //       gid: gHab["prefix"],
+  //     },
+  //     {
+  //       exn: [offer, atc],
+  //     },
+  //     "aid"
+  //   );
+
+  //   expect(ipexSubmitOfferMock).toBeCalledWith(
+  //     multisigSignifyName,
+  //     multisigExnIpexGrantSerder,
+  //     multisigExnIpexGrantSig,
+  //     multisigExnIpexGrantEnd,
+  //     ["aid"]
+  //   );
+  // });
 });

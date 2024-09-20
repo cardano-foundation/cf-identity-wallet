@@ -512,7 +512,11 @@ class KeriaNotificationService extends AgentService {
             [exchange.exn.d]: false,
           };
         } else {
-          await this.ipexCommunications.offerAcdcFromApply(exchange.exn.d);
+          const acdc = exchange.exn.e.exn.e.acdc;
+          await this.ipexCommunications.offerAcdcFromApply(
+            exchange.exn.d,
+            acdc
+          );
           notificationRecord.linkedGroupRequests = {
             ...notificationRecord.linkedGroupRequests,
             [exchange.exn.d]: true,
@@ -523,7 +527,6 @@ class KeriaNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return false;
     }
-    // TODO: Update after handle ipex/agree
     case ExchangeRoute.IpexAgree: {
       const previousExnMsgAgree = await this.props.signifyClient
         .exchanges()
@@ -881,7 +884,7 @@ class KeriaNotificationService extends AgentService {
         }
         break;
       }
-      case OperationPendingRecordType.ExchangeOfferPresentCredential: {
+      case OperationPendingRecordType.ExchangeOfferCredential: {
         const offerExchange = await this.props.signifyClient
           .exchanges()
           .get(operation.metadata?.said);
