@@ -78,25 +78,18 @@
 
 # User Flows
 In this section, you'll find detailed PDF documents outlining the various user flows within our application. These user flows serve as comprehensive guides, illustrating the application's user journeys step-by-step. Please feel free to explore and gain insight into the following user flows:
-
-<div align="center"> 
-      <table border="0">
-       <tr>
-          <td><b style="font-size:30px" ><a href="https://drive.google.com/file/d/1_Oem0Wu_U8XPyfpzzKX8A0ZHJN0jztDx/view?usp=drive_link">Introduction</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1lMNwS30oq9X_rKVGvB3hHXDpcztPC7sy/view?usp=drive_link">Onboarding</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1JzgIY0SztyM-3mHstOZAu2Y6DtevrAyc/view?usp=drive_link">Recovery</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1dky8DUNRPDkzmplftRwA9VfK-puVU5SC/view?usp=drive_link">Login</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/15Shxt8B0bmZjs5465Z9w976Luc1ySkEX/view?usp=drive_link">Identifiers</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1k2LSycp24vbMosVBSducWGScNyMt0Ge9/view?usp=drive_link">Connections</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/17Ws8l5zyOZFYDrqw277nklERYw0I8Sn6/view?usp=drive_link">Credentials</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1ugZWy5pqakr6uJACWxTc6QqxZIU-JOeM/view?usp=drive_link">Scan</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1tdu46c1ioB5D3b_tFjNxPwcBd1ZuHviU/view?usp=drive_link">Notifications</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1UF98ttKIxaPqxrjDDDZwp9QNtwfVwtnZ/view?usp=drive_link">Menu & Settings</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1KNt8Fb8VGqnq_p6EY0nEog7WDR07BX3T/view?usp=drive_link">Cardano Connect</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1akOEf1GRGvVd4vNcWFNF4KOox5iuXOnv/view?usp=drive_link">Verify Options</a></b></td>
-       </tr>
-      </table>
-</div>
+- [Introduction](https://drive.google.com/file/d/1_Oem0Wu_U8XPyfpzzKX8A0ZHJN0jztDx/view?usp=drive_link)
+- [Onboarding](https://drive.google.com/file/d/1lMNwS30oq9X_rKVGvB3hHXDpcztPC7sy/view?usp=drive_link)
+- [Recovery](https://drive.google.com/file/d/1JzgIY0SztyM-3mHstOZAu2Y6DtevrAyc/view?usp=drive_link)
+- [Login](https://drive.google.com/file/d/1dky8DUNRPDkzmplftRwA9VfK-puVU5SC/view?usp=drive_link)
+- [Identifiers](https://drive.google.com/file/d/15Shxt8B0bmZjs5465Z9w976Luc1ySkEX/view?usp=drive_link)
+- [Connections](https://drive.google.com/file/d/1k2LSycp24vbMosVBSducWGScNyMt0Ge9/view?usp=drive_link)
+- [Credentials](https://drive.google.com/file/d/17Ws8l5zyOZFYDrqw277nklERYw0I8Sn6/view?usp=drive_link)
+- [Scan](https://drive.google.com/file/d/1ugZWy5pqakr6uJACWxTc6QqxZIU-JOeM/view?usp=drive_link)
+- [Notifications](https://drive.google.com/file/d/1tdu46c1ioB5D3b_tFjNxPwcBd1ZuHviU/view?usp=drive_link)
+- [Menu & Settings](https://drive.google.com/file/d/1UF98ttKIxaPqxrjDDDZwp9QNtwfVwtnZ/view?usp=drive_link)
+- [Cardano Connect](https://drive.google.com/file/d/1KNt8Fb8VGqnq_p6EY0nEog7WDR07BX3T/view?usp=drive_link)
+- [Verify Options](https://drive.google.com/file/d/1akOEf1GRGvVd4vNcWFNF4KOox5iuXOnv/view?usp=drive_link)
 
 <p align="center">
   <kbd> 
