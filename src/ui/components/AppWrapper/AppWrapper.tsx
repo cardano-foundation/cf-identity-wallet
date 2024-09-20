@@ -256,10 +256,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
 
     const eventHandler = async (event: PeerDisconnectedEvent) => {
-      if (!connectedWallet?.id) {
-        return;
-      }
-
       peerDisconnectedChangeHandler(event, connectedWallet.id, dispatch);
     };
 
