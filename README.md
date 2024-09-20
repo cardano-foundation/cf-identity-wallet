@@ -31,7 +31,13 @@
 <b> The Identity Wallet is an open source application developed by the Cardano Foundation. This project is the result of ongoing research and development pertaining to the principles of Self-Sovereign Identity (SSI), Self-Certifying Identifiers (SCIs), Verifiable Data Registries (VDRs), and the standards, frameworks, and implementations available within the Cardano ecosystem and externally. The first release of Identity Wallet provides an open source reference implementation demonstrating the Key Event Receipt Infrastructure (KERI) on Cardano. </b>
 </div>
 
+<p align="center">
+  <kbd> 
+      <img src="docs/images/readme/User-Flow-Preview.jpg" alt="User Flow Preview" width="720"/>
+  </kbd>
+</p>
 <br>
+
 
 # Features
 
@@ -75,7 +81,6 @@
 <br>
 
 
-
 # User Flows
 In this section, you'll find detailed PDF documents outlining the various user flows within our application. These user flows serve as comprehensive guides, illustrating the application's user journeys step-by-step. Please feel free to explore and gain insight into the following user flows:
 - [Introduction](https://drive.google.com/file/d/1_Oem0Wu_U8XPyfpzzKX8A0ZHJN0jztDx/view?usp=drive_link)
@@ -90,38 +95,6 @@ In this section, you'll find detailed PDF documents outlining the various user f
 - [Menu & Settings](https://drive.google.com/file/d/1UF98ttKIxaPqxrjDDDZwp9QNtwfVwtnZ/view?usp=drive_link)
 - [Cardano Connect](https://drive.google.com/file/d/1KNt8Fb8VGqnq_p6EY0nEog7WDR07BX3T/view?usp=drive_link)
 - [Verify Options](https://drive.google.com/file/d/1akOEf1GRGvVd4vNcWFNF4KOox5iuXOnv/view?usp=drive_link)
-
-<table>
-  <tr>
-    <td>
-      <ul>
-        <li><a href="https://drive.google.com/file/d/1_Oem0Wu_U8XPyfpzzKX8A0ZHJN0jztDx/view?usp=drive_link">Introduction</a></li>
-        <li><a href="https://drive.google.com/file/d/1lmnws30oq9x_rkvgvb3hhxdpcztpc7sy/view?usp=drive_link">Onboarding</a></li>
-        <li><a href="https://drive.google.com/file/d/1JzgIY0SztyM-3mHstOZAu2Y6DtevrAyc/view?usp=drive_link">Recovery</a></li>
-        <li><a href="https://drive.google.com/file/d/1dky8DUNRPDkzmplftRwA9VfK-puVU5SC/view?usp=drive_link">Login</a></li>
-        <li><a href="https://drive.google.com/file/d/15Shxt8B0bmZjs5465Z9w976Luc1ySkEX/view?usp=drive_link">Identifiers</a></li>
-        <li><a href="https://drive.google.com/file/d/1k2LSycp24vbMosVBSducWGScNyMt0Ge9/view?usp=drive_link">Connections</a></li>
-      </ul>
-    </td>
-    <td>
-      <ul>
-        <li><a href="https://drive.google.com/file/d/17Ws8l5zyOZFYDrqw277nklERYw0I8Sn6/view?usp=drive_link">Credentials</a></li>
-        <li><a href="https://drive.google.com/file/d/1ugZWy5pqakr6uJACWxTc6QqxZIU-JOeM/view?usp=drive_link">Scan</a></li>
-        <li><a href="https://drive.google.com/file/d/1tdu46c1ioB5D3b_tFjNxPwcBd1ZuHviU/view?usp=drive_link">Notifications</a></li>
-        <li><a href="https://drive.google.com/file/d/1UF98ttKIxaPqxrjDDDZwp9QNtwfVwtnZ/view?usp=drive_link">Menu & Settings</a></li>
-        <li><a href="https://drive.google.com/file/d/1KNt8Fb8VGqnq_p6EY0nEog7WDR07BX3T/view?usp=drive_link">Cardano Connect</a></li>
-        <li><a href="https://drive.google.com/file/d/1akOEf1GRGvVd4vNcWFNF4KOox5iuXOnv/view?usp=drive_link">Verify Options</a></li>
-      </ul>
-    </td>
-  </tr>
-</table>
-
-<p align="center">
-  <kbd> 
-      <img src="docs/images/readme/User-Flow-Preview.jpg" alt="User Flow Preview" width="720"/>
-  </kbd>
-</p>
-
 
 # Getting Started
 
