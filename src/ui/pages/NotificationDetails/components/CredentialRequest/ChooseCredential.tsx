@@ -79,7 +79,7 @@ const ChooseCredential = ({
   const [viewCredDetail, setViewCredDetail] =
     useState<RequestCredential | null>(null);
 
-  const displayIdentifiers = credentialRequest.credentials.map(
+  const mappedCredentials = credentialRequest.credentials.map(
     (cred): CardItem<RequestCredential> => {
       const connection = connections?.[cred.connectionId]?.label || "";
 
@@ -94,6 +94,18 @@ const ChooseCredential = ({
       };
     }
   );
+
+  const sortedCredentials = mappedCredentials.sort(function (a, b) {
+    if (a.title < b.title) {
+      return -1;
+    }
+    if (a.title > b.title) {
+      return 1;
+    }
+    const dateA = new Date(a.data.acdc.a.dt).getTime();
+    const dateB = new Date(b.data.acdc.a.dt).getTime();
+    return dateA - dateB;
+  });
 
   const handleSelectCred = useCallback((data: RequestCredential) => {
     setSelectedCred((selectedCred) =>
@@ -193,7 +205,7 @@ const ChooseCredential = ({
           )}
         </h2>
         <CardList
-          data={displayIdentifiers}
+          data={sortedCredentials}
           onCardClick={(data, e) => {
             e.stopPropagation();
             handleSelectCred(data);
