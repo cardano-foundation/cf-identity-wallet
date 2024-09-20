@@ -17,7 +17,6 @@ import {
   setCurrentOperation,
   setQueueIncomingRequest,
   setToastMsg,
-  setUniqueToastMsg,
 } from "../../../store/reducers/stateCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import {
@@ -315,7 +314,7 @@ describe("AppWrapper handler", () => {
       );
       expect(dispatch).toBeCalledWith(setConnectedWallet(null));
       expect(dispatch).toBeCalledWith(
-        setUniqueToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS)
+        setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS)
       );
     });
 

@@ -1,5 +1,5 @@
-import { ReactNode, useCallback, useEffect, useState } from "react";
 import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
   AcdcStateChangedEvent,
@@ -60,7 +60,6 @@ import {
   setPauseQueueIncomingRequest,
   setQueueIncomingRequest,
   setToastMsg,
-  setUniqueToastMsg,
 } from "../../../store/reducers/stateCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import {
@@ -70,11 +69,11 @@ import {
   setWalletConnectionsCache,
 } from "../../../store/reducers/walletConnectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
+import { showError } from "../../utils/error";
 import { Alert } from "../Alert";
 import { CardListViewType } from "../SwitchCardView";
 import "./AppWrapper.scss";
 import { useActivityTimer } from "./hooks/useActivityTimer";
-import { showError } from "../../utils/error";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -163,8 +162,7 @@ const peerDisconnectedChangeHandler = async (
 ) => {
   if (connectedMeerKat === event.payload.dAppAddress) {
     dispatch(setConnectedWallet(null));
-    // Sometime disconnect event fired twice and make UI display 2 toast message with same content
-    dispatch(setUniqueToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
+    dispatch(setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
   }
 };
 
