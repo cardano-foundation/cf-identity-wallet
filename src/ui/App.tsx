@@ -7,6 +7,7 @@ import {
   setupIonicReact,
 } from "@ionic/react";
 import { StrictMode, useEffect, useState } from "react";
+import { IonReactRouter } from "@ionic/react-router";
 import { RoutePath, Routes } from "../routes";
 import { PublicRoutes, TabsRoutePath } from "../routes/paths";
 import { useAppSelector } from "../store/hooks";
@@ -84,7 +85,7 @@ const App = () => {
 
   const renderApp = () => {
     return (
-      <>
+      <IonReactRouter>
         {showScan ? (
           <FullPageScanner
             showScan={showScan}
@@ -101,7 +102,7 @@ const App = () => {
         <div className={showScan ? "ion-hide" : ""}>
           <Routes />
         </div>
-      </>
+      </IonReactRouter>
     );
   };
 

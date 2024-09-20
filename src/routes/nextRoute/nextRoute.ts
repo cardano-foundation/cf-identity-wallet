@@ -166,7 +166,7 @@ const updateStoreAfterCreatePassword = (data: DataProps) => {
 
 const getNextScanRoute = (data: DataProps) => {
   const currentOperation = data?.state?.currentOperation;
-  let path;
+  let path = TabsRoutePath.IDENTIFIERS;
 
   if (currentOperation === OperationType.RECEIVE_CONNECTION) {
     let previousPath = data.store.stateCache.routes[1]?.path;
@@ -196,10 +196,10 @@ const getNextRoute = (
   ) => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
   const { nextPath, updateRedux } = nextRoute[currentPath];
-  updateRedux.push(updateStoreCurrentRoute);
+  const updateReduxFn = [...updateRedux, updateStoreCurrentRoute];
   return {
     nextPath: nextPath(data),
-    updateRedux,
+    updateRedux: updateReduxFn,
   };
 };
 
