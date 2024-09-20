@@ -191,7 +191,7 @@ const eventEmitter = new CoreEventEmitter();
 
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventService: eventEmitter,
+  eventEmitter: eventEmitter,
 };
 
 const resolveOobiMock = jest.fn();

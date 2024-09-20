@@ -62,7 +62,7 @@ class ConnectionService extends AgentService {
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
   ) {
-    this.props.eventService.on(EventTypes.ConnectionStateChanged, callback);
+    this.props.eventEmitter.on(EventTypes.ConnectionStateChanged, callback);
   }
 
   @OnlineOnly
@@ -71,7 +71,7 @@ class ConnectionService extends AgentService {
 
     // @TODO - foconnor: We shouldn't emit this if it's a multiSigInvite, but the routing will break if we don't.
     // To fix once we handle errors for the scanner in general.
-    this.props.eventService.emit<ConnectionStateChangedEvent>({
+    this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
       type: EventTypes.ConnectionStateChanged,
       payload: {
         isMultiSigInvite: multiSigInvite,
@@ -132,7 +132,7 @@ class ConnectionService extends AgentService {
     await this.createConnectionMetadata(connectionId, connectionMetadata);
 
     if (!multiSigInvite) {
-      this.props.eventService.emit<ConnectionStateChangedEvent>({
+      this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
         type: EventTypes.ConnectionStateChanged,
         payload: {
           connectionId,

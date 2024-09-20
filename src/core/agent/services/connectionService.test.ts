@@ -104,7 +104,7 @@ const signifyClient = jest.mocked({
 
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventService: new CoreEventEmitter(),
+  eventEmitter: new CoreEventEmitter(),
 };
 
 const connectionStorage = jest.mocked({

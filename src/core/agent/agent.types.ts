@@ -133,7 +133,7 @@ interface KeriaNotificationMarker {
 
 interface AgentServicesProps {
   signifyClient: SignifyClient;
-  eventService: CoreEventEmitter;
+  eventEmitter: CoreEventEmitter;
 }
 
 interface CreateIdentifierResult {

@@ -108,7 +108,7 @@ jest.mock("../../../core/agent/agent", () => ({
 
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventService: new CoreEventEmitter(),
+  eventEmitter: new CoreEventEmitter(),
 };
 
 const notificationStorage = jest.mocked({

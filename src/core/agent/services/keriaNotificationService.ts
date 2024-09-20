@@ -251,7 +251,7 @@ class KeriaNotificationService extends AgentService {
 
     try {
       const keriaNotif = await this.createNotificationRecord(notif);
-      this.props.eventService.emit<NotificationEvent>({
+      this.props.eventEmitter.emit<NotificationEvent>({
         type: EventTypes.Notification,
         payload: {
           keriaNotif,
@@ -686,7 +686,7 @@ class KeriaNotificationService extends AgentService {
         const multisigIdentifier =
             await this.identifierStorage.getIdentifierMetadata(recordId);
         await this.multiSigs.endRoleAuthorization(multisigIdentifier.id);
-        this.props.eventService.emit<OperationPendingEvent>({
+        this.props.eventEmitter.emit<OperationPendingEvent>({
           type: EventTypes.Operation,
           payload: {
             opType: operationRecord.recordType,
@@ -699,7 +699,7 @@ class KeriaNotificationService extends AgentService {
         await this.identifierStorage.updateIdentifierMetadata(recordId, {
           isPending: false,
         });
-        this.props.eventService.emit<OperationPendingEvent>({
+        this.props.eventEmitter.emit<OperationPendingEvent>({
           type: EventTypes.Operation,
           payload: {
             opType: operationRecord.recordType,
@@ -717,7 +717,7 @@ class KeriaNotificationService extends AgentService {
           connectionRecord.createdAt = (operation.response as any).dt;
           await this.connectionStorage.update(connectionRecord);
         }
-        this.props.eventService.emit<OperationPendingEvent>({
+        this.props.eventEmitter.emit<OperationPendingEvent>({
           type: EventTypes.Operation,
           payload: {
             opType: operationRecord.recordType,
@@ -798,7 +798,7 @@ class KeriaNotificationService extends AgentService {
               route: NotificationRoute.LocalAcdcRevoked,
             };
             await this.notificationStorage.save(metadata);
-            this.props.eventService.emit<OperationPendingEvent>({
+            this.props.eventEmitter.emit<OperationPendingEvent>({
               type: EventTypes.Operation,
               payload: {
                 opType: operationRecord.recordType,
@@ -825,11 +825,11 @@ class KeriaNotificationService extends AgentService {
   }
 
   onNewNotification(callback: (event: NotificationEvent) => void) {
-    this.props.eventService.on(EventTypes.Notification, callback);
+    this.props.eventEmitter.on(EventTypes.Notification, callback);
   }
 
   onLongOperationComplete(callback: (event: OperationPendingEvent) => void) {
-    this.props.eventService.on(EventTypes.Operation, callback);
+    this.props.eventEmitter.on(EventTypes.Operation, callback);
   }
 }
 

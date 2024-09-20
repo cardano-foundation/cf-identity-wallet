@@ -32,7 +32,7 @@ class CredentialService extends AgentService {
   }
 
   onAcdcStateChanged(callback: (event: AcdcStateChangedEvent) => void) {
-    this.props.eventService.on(EventTypes.AcdcStateChanged, callback);
+    this.props.eventEmitter.on(EventTypes.AcdcStateChanged, callback);
   }
 
   async getCredentials(

@@ -120,7 +120,7 @@ class IpexCommunicationService extends AgentService {
       schemaSaid
     );
 
-    this.props.eventService.emit<AcdcStateChangedEvent>({
+    this.props.eventEmitter.emit<AcdcStateChangedEvent>({
       type: EventTypes.AcdcStateChanged,
       payload: {
         credential,
@@ -352,7 +352,7 @@ class IpexCommunicationService extends AgentService {
       metadata.id,
       metadata
     );
-    this.props.eventService.emit<AcdcStateChangedEvent>({
+    this.props.eventEmitter.emit<AcdcStateChangedEvent>({
       type: EventTypes.AcdcStateChanged,
       payload: {
         status,
@@ -438,7 +438,7 @@ class IpexCommunicationService extends AgentService {
         schemaSaid
       );
 
-      this.props.eventService.emit<AcdcStateChangedEvent>({
+      this.props.eventEmitter.emit<AcdcStateChangedEvent>({
         type: EventTypes.AcdcStateChanged,
         payload: {
           credential,
