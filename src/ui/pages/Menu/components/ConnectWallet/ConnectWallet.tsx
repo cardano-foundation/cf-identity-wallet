@@ -153,7 +153,6 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     const disconnectWallet = () => {
       if (!connectedWallet) return;
       PeerConnection.peerConnection.disconnectDApp(connectedWallet?.id);
-      dispatch(setConnectedWallet(null));
     };
 
     const toggleConnected = () => {
@@ -246,7 +245,12 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           data: connectedWallet,
         });
       }
-    }, [connectedWallet, toastMsgs, pendingConnection]);
+    }, [
+      connectedWallet,
+      toastMsgs,
+      pendingConnection,
+      openConfirmConnectModal,
+    ]);
 
     useEffect(() => {
       if (!pendingConnection) return;
@@ -260,7 +264,7 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           handleOpenConfirmConnectModal(pendingConnection);
         }, ANIMATION_DURATION);
       }
-    }, [currentOperation, pendingConnection]);
+    }, [currentOperation, dispatch, pendingConnection]);
 
     return (
       <>

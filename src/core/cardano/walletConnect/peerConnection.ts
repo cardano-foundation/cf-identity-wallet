@@ -65,12 +65,13 @@ class PeerConnection {
   onPeerDisconnectedStateChanged(
     callback: (event: PeerDisconnectedEvent) => void
   ) {
-    this.eventService.on(
-      PeerConnectionEventTypes.PeerDisconnected,
-      async (event: PeerDisconnectedEvent) => {
-        callback(event);
-      }
-    );
+    this.eventService.on(PeerConnectionEventTypes.PeerDisconnected, callback);
+  }
+
+  offPeerDisconnectedStateChanged(
+    callback: (event: PeerDisconnectedEvent) => void
+  ) {
+    this.eventService.off(PeerConnectionEventTypes.PeerDisconnected, callback);
   }
 
   onPeerConnectionBrokenStateChanged(
