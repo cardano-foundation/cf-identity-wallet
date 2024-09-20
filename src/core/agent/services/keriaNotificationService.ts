@@ -825,21 +825,11 @@ class KeriaNotificationService extends AgentService {
   }
 
   onNewNotification(callback: (event: NotificationEvent) => void) {
-    this.props.eventService.on(
-      EventTypes.Notification,
-      async (event: NotificationEvent) => {
-        callback(event);
-      }
-    );
+    this.props.eventService.on(EventTypes.Notification, callback);
   }
 
   onLongOperationComplete(callback: (event: OperationPendingEvent) => void) {
-    this.props.eventService.on(
-      EventTypes.Operation,
-      async (event: OperationPendingEvent) => {
-        callback(event);
-      }
-    );
+    this.props.eventService.on(EventTypes.Operation, callback);
   }
 }
 

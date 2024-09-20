@@ -62,12 +62,7 @@ class ConnectionService extends AgentService {
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
   ) {
-    this.props.eventService.on(
-      EventTypes.ConnectionStateChanged,
-      async (event: ConnectionStateChangedEvent) => {
-        callback(event);
-      }
-    );
+    this.props.eventService.on(EventTypes.ConnectionStateChanged, callback);
   }
 
   @OnlineOnly

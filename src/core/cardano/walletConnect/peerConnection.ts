@@ -45,32 +45,17 @@ class PeerConnection {
   onPeerConnectRequestSignStateChanged(
     callback: (event: PeerConnectSigningEvent) => void
   ) {
-    this.eventEmitter.on(
-      PeerConnectionEventTypes.PeerConnectSign,
-      async (event: PeerConnectSigningEvent) => {
-        callback(event);
-      }
-    );
+    this.eventEmitter.on(PeerConnectionEventTypes.PeerConnectSign, callback);
   }
 
   onPeerConnectedStateChanged(callback: (event: PeerConnectedEvent) => void) {
-    this.eventEmitter.on(
-      PeerConnectionEventTypes.PeerConnected,
-      async (event: PeerConnectedEvent) => {
-        callback(event);
-      }
-    );
+    this.eventEmitter.on(PeerConnectionEventTypes.PeerConnected, callback);
   }
 
   onPeerDisconnectedStateChanged(
     callback: (event: PeerDisconnectedEvent) => void
   ) {
-    this.eventEmitter.on(
-      PeerConnectionEventTypes.PeerDisconnected,
-      async (event: PeerDisconnectedEvent) => {
-        callback(event);
-      }
-    );
+    this.eventEmitter.on(PeerConnectionEventTypes.PeerDisconnected, callback);
   }
 
   onPeerConnectionBrokenStateChanged(
@@ -78,9 +63,7 @@ class PeerConnection {
   ) {
     this.eventEmitter.on(
       PeerConnectionEventTypes.PeerConnectionBroken,
-      async (event: PeerConnectionBrokenEvent) => {
-        callback(event);
-      }
+      callback
     );
   }
 

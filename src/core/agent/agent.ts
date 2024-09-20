@@ -213,9 +213,7 @@ class Agent {
   ) {
     this.agentServicesProps.eventService.on(
       EventTypes.KeriaStatusChanged,
-      async (event: KeriaStatusChangedEvent) => {
-        callback(event);
-      }
+      callback
     );
   }
 
