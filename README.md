@@ -82,14 +82,18 @@ In this section, you'll find detailed PDF documents outlining the various user f
 <div align="center"> 
       <table border="0">
        <tr>
-          <td><b style="font-size:30px" ><a href="https://drive.google.com/file/d/1L7ZdQytjQq_BOXP1AZzHM0OhLxt1xbNA/view?usp=sharing">Introduction</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1vB9NoWJG2ok9HB89wlbS0fLbPjLavudl/view?usp=sharing">Onboarding</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1NCexApVn-njVFmN6wBPiDN1oX0DzcvSn/view?usp=sharing">Login</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1RxkB5zM-xXbh7WcSWu9u1xbBMRDg3q9i/view?usp=sharing">Identity</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1bVZPUgKmfPuIOraqDUyMMj_Dz3GGmLG2/view?usp=sharing">Connections</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/18TfwGaLXSLxuaHjJlbAmkRnFF-2ktrFT/view?usp=sharing">Credentials</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1akOEf1GRGvVd4vNcWFNF4KOox5iuXOnv/view?usp=sharing">Verify Options</a></b></td>
-          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1BDr2l8ptnsAdL2lAWf8x2-KwN48lqXVz/view?usp=sharing">Scan</a></b></td>
+          <td><b style="font-size:30px" ><a href="https://drive.google.com/file/d/1_Oem0Wu_U8XPyfpzzKX8A0ZHJN0jztDx/view?usp=drive_link">Introduction</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1lMNwS30oq9X_rKVGvB3hHXDpcztPC7sy/view?usp=drive_link">Onboarding</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1JzgIY0SztyM-3mHstOZAu2Y6DtevrAyc/view?usp=drive_link">Recovery</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1dky8DUNRPDkzmplftRwA9VfK-puVU5SC/view?usp=drive_link">Login</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/15Shxt8B0bmZjs5465Z9w976Luc1ySkEX/view?usp=drive_link">Identifiers</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1k2LSycp24vbMosVBSducWGScNyMt0Ge9/view?usp=drive_link">Connections</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/17Ws8l5zyOZFYDrqw277nklERYw0I8Sn6/view?usp=drive_link">Credentials</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1ugZWy5pqakr6uJACWxTc6QqxZIU-JOeM/view?usp=drive_link">Scan</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1tdu46c1ioB5D3b_tFjNxPwcBd1ZuHviU/view?usp=drive_link">Notifications</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1UF98ttKIxaPqxrjDDDZwp9QNtwfVwtnZ/view?usp=drive_link">Menu & Settings</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1KNt8Fb8VGqnq_p6EY0nEog7WDR07BX3T/view?usp=drive_link">Cardano Connect</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1akOEf1GRGvVd4vNcWFNF4KOox5iuXOnv/view?usp=drive_link">Verify Options</a></b></td>
        </tr>
       </table>
 </div>
