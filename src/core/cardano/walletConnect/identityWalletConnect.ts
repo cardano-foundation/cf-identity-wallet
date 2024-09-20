@@ -13,11 +13,11 @@ import {
   PeerConnectionError,
   TxSignError,
 } from "./peerConnection.types";
-import { EventService } from "../../agent/event";
+import { CoreEventEmitter } from "../../agent/event";
 
 class IdentityWalletConnect extends CardanoPeerConnect {
   private selectedAid: string;
-  private eventEmitter: EventService;
+  private eventEmitter: CoreEventEmitter;
   static readonly MAX_SIGN_TIME = 3600000;
   static readonly TIMEOUT_INTERVAL = 1000;
   getKeriIdentifier: () => Promise<{ id: string; oobi: string }>;
@@ -31,7 +31,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     seed: string | null,
     announce: string[],
     selectedAid: string,
-    eventService: EventService,
+    eventService: CoreEventEmitter,
     discoverySeed?: string | null
   ) {
     super(walletInfo, {

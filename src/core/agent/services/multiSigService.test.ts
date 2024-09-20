@@ -2,7 +2,7 @@ import { Dict, Saider, Serder } from "signify-ts";
 import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
 import { ConnectionStatus, NotificationRoute } from "../agent.types";
 import { Agent } from "../agent";
-import { EventService } from "../event";
+import { CoreEventEmitter } from "../event";
 import { MultiSigService } from "./multiSigService";
 import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
@@ -140,7 +140,7 @@ const operationPendingStorage = jest.mocked({
 
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventService: new EventService(),
+  eventService: new CoreEventEmitter(),
 };
 
 const multiSigService = new MultiSigService(

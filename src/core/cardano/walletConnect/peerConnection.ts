@@ -5,7 +5,7 @@ import { IdentityWalletConnect } from "./identityWalletConnect";
 import packageInfo from "../../../../package.json";
 import ICON_BASE64 from "../../../assets/icon-only";
 import { KeyStoreKeys } from "../../storage";
-import { EventService } from "../../agent/event";
+import { CoreEventEmitter } from "../../agent/event";
 import {
   ExperimentalAPIFunctions,
   PeerConnectSigningEvent,
@@ -39,7 +39,7 @@ class PeerConnection {
 
   private identityWalletConnect: IdentityWalletConnect | undefined;
   private connectedDAppAddress = "";
-  private eventEmitter = new EventService();
+  private eventEmitter = new CoreEventEmitter();
   private static instance: PeerConnection;
 
   onPeerConnectRequestSignStateChanged(

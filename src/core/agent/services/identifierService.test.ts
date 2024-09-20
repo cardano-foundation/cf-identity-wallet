@@ -2,7 +2,7 @@ import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { Agent } from "../agent";
 import { ConnectionStatus } from "../agent.types";
 import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
-import { EventService } from "../event";
+import { CoreEventEmitter } from "../event";
 import { IdentifierService } from "./identifierService";
 
 const identifiersListMock = jest.fn();
@@ -108,7 +108,7 @@ const operationPendingStorage = jest.mocked({
 
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventService: new EventService(),
+  eventService: new CoreEventEmitter(),
 };
 
 const connections = jest.mocked({

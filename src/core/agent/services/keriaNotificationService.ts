@@ -92,7 +92,7 @@ class KeriaNotificationService extends AgentService {
       await this._pollNotifications();
     } catch (error) {
       /* eslint-disable no-console */
-      console.error("Error at pollNotificationsWithCb", error);
+      console.error("Error at pollNotifications", error);
       setTimeout(
         this.pollNotifications,
         KeriaNotificationService.POLL_KERIA_INTERVAL
@@ -251,8 +251,6 @@ class KeriaNotificationService extends AgentService {
 
     try {
       const keriaNotif = await this.createNotificationRecord(notif);
-      console.log("keriaNotif: ", keriaNotif);
-
       this.props.eventService.emit<NotificationEvent>({
         type: EventTypes.Notification,
         payload: {
@@ -657,7 +655,6 @@ class KeriaNotificationService extends AgentService {
       operation = await this.props.signifyClient
         .operations()
         .get(operationRecord.id);
-      console.log("operation: ", operation);
     } catch (error) {
       const errorMessage = (error as Error).message;
       /** If the error is failed to fetch with signify,
@@ -676,14 +673,10 @@ class KeriaNotificationService extends AgentService {
     }
 
     if (operation && operation.done) {
-      console.log("operation: ", operation);
-
       const recordId = operationRecord.id.replace(
         `${operationRecord.recordType}.`,
         ""
       );
-      console.log("operationRecord: ", operationRecord);
-
       switch (operationRecord.recordType) {
       case OperationPendingRecordType.Group: {
         await this.identifierStorage.updateIdentifierMetadata(recordId, {
@@ -829,6 +822,24 @@ class KeriaNotificationService extends AgentService {
 
   addPendingOperationToQueue(pendingOperation: OperationPendingRecord) {
     this.pendingOperations.push(pendingOperation);
+  }
+
+  onNewNotification(callback: (event: NotificationEvent) => void) {
+    this.props.eventService.on(
+      EventTypes.Notification,
+      async (event: NotificationEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  onLongOperationComplete(callback: (event: OperationPendingEvent) => void) {
+    this.props.eventService.on(
+      EventTypes.Operation,
+      async (event: OperationPendingEvent) => {
+        callback(event);
+      }
+    );
   }
 }
 

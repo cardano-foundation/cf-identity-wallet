@@ -1,12 +1,11 @@
-import { EventService } from "../event";
+import { CoreEventEmitter } from "../event";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import { Agent } from "../agent";
-import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
-import { AcdcEventTypes } from "../agent.types";
+import { EventTypes } from "../event.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -188,7 +187,7 @@ jest.mock("signify-ts", () => ({
   }),
 }));
 
-const eventEmitter = new EventService();
+const eventEmitter = new CoreEventEmitter();
 
 const agentServicesProps = {
   signifyClient: signifyClient as any,
@@ -332,7 +331,7 @@ describe("Ipex communication service of agent", () => {
       credentialMock
     );
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: AcdcEventTypes.AcdcStateChanged,
+      type: EventTypes.AcdcStateChanged,
       payload: {
         credential: credentialMock,
         status: CredentialStatus.PENDING,
@@ -968,7 +967,7 @@ describe("Ipex communication service of agent", () => {
     );
 
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: AcdcEventTypes.AcdcStateChanged,
+      type: EventTypes.AcdcStateChanged,
       payload: {
         credential: credentialMock,
         status: CredentialStatus.PENDING,

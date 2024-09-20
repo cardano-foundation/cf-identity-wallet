@@ -4,7 +4,7 @@ import { IpexMessageStorage } from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
-import { EventService } from "../event";
+import { CoreEventEmitter } from "../event";
 import { KeriaNotificationService } from "./keriaNotificationService";
 import { EventTypes } from "../event.types";
 
@@ -197,7 +197,7 @@ const signifyClient = jest.mocked({
   }),
 });
 
-const eventEmitter = new EventService();
+const eventEmitter = new CoreEventEmitter();
 
 const agentServicesProps = {
   signifyClient: signifyClient as any,
@@ -1110,6 +1110,13 @@ describe("Long running operation tracker", () => {
     });
     await keriaNotificationService.processOperation(operationRecord);
     expect(Agent.agent.multiSigs.endRoleAuthorization).toBeCalledWith("id");
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.Operation,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      },
+    });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 

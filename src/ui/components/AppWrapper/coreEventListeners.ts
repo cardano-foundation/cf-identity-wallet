@@ -28,6 +28,7 @@ const signifyOperationStateChangeHandler = async (
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     break;
   case OperationPendingRecordType.ExchangeRevokeCredential: {
+    // @TODO: Inject with `addNotification` instead of fetching all notifications
     const notifications =
         await Agent.agent.keriaNotifications.getAllNotifications();
     dispatch(setNotificationsCache(notifications));

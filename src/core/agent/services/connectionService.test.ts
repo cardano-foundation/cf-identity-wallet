@@ -1,6 +1,6 @@
 import { ConnectionStatus, KeriConnectionType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
-import { EventService } from "../event";
+import { CoreEventEmitter } from "../event";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
@@ -104,7 +104,7 @@ const signifyClient = jest.mocked({
 
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventService: new EventService(),
+  eventService: new CoreEventEmitter(),
 };
 
 const connectionStorage = jest.mocked({
