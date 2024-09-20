@@ -3,7 +3,7 @@ import {
   CredentialShortDetails,
   CredentialStatus,
 } from "./services/credentialService.types";
-import { EventService } from "./services/eventService";
+import { EventService } from "./event";
 import { ConnectionHistoryType } from "./services/connection.types";
 import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
 

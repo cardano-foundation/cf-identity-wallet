@@ -40,7 +40,6 @@ import {
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
-  updateIsPending,
 } from "../../../store/reducers/identifiersCache";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
@@ -74,6 +73,10 @@ import { CardListViewType } from "../SwitchCardView";
 import "./AppWrapper.scss";
 import { useActivityTimer } from "./hooks/useActivityTimer";
 import { showError } from "../../utils/error";
+import {
+  notificatiStateChanged,
+  signifyOperationStateChangeHandler,
+} from "./coreEventListeners";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -172,25 +175,6 @@ const peerConnectionBrokenChangeHandler = async (
 ) => {
   dispatch(setConnectedWallet(null));
   dispatch(setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
-};
-
-const signifyOperationStateChangeHandler = async (
-  { oid, opType }: { oid: string; opType: OperationPendingRecordType },
-  dispatch: ReturnType<typeof useAppDispatch>
-) => {
-  switch (opType) {
-  case OperationPendingRecordType.Witness:
-  case OperationPendingRecordType.Group:
-    dispatch(updateIsPending({ id: oid, isPending: false }));
-    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
-    break;
-  case OperationPendingRecordType.ExchangeRevokeCredential: {
-    const notifications =
-        await Agent.agent.keriaNotifications.getAllNotifications();
-    dispatch(setNotificationsCache(notifications));
-    break;
-  }
-  }
 };
 
 const AppWrapper = (props: { children: ReactNode }) => {
@@ -437,6 +421,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return peerConnectionBrokenChangeHandler(event, dispatch);
       }
     );
+    Agent.agent.onNotificatiStateChanged((event) => {
+      notificatiStateChanged(event.payload.keriaNotif, dispatch);
+    });
+
+    Agent.agent.onOperationPendingStateChanged((event) => {
+      signifyOperationStateChangeHandler(event.payload, dispatch);
+    });
   };
 
   const initApp = async () => {
@@ -477,12 +468,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
 
     // Begin background polling of KERIA or local DB items
-    Agent.agent.keriaNotifications.pollNotificationsWithCb((event) => {
-      return keriaNotificationsChangeHandler(event, dispatch);
-    });
-    Agent.agent.keriaNotifications.pollLongOperationsWithCb((event) => {
-      return signifyOperationStateChangeHandler(event, dispatch);
-    });
+    Agent.agent.keriaNotifications.pollNotifications();
+    Agent.agent.keriaNotifications.pollLongOperations();
     dispatch(setInitialized(true));
   };
 
@@ -515,5 +502,4 @@ export {
   peerConnectedChangeHandler,
   peerConnectionBrokenChangeHandler,
   peerDisconnectedChangeHandler,
-  signifyOperationStateChangeHandler,
 };

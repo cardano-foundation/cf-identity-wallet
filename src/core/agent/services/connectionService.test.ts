@@ -1,6 +1,6 @@
 import { ConnectionStatus, KeriConnectionType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
-import { EventService } from "./eventService";
+import { EventService } from "../event";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";

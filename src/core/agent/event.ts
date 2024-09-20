@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import { BaseEventEmitter } from "../agent.types";
+import { BaseEventEmitter } from "./agent.types";
 
 type EmitEvent<T extends BaseEventEmitter> = Omit<T, "metadata">;
 

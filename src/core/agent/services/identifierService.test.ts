@@ -2,7 +2,7 @@ import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { Agent } from "../agent";
 import { ConnectionStatus } from "../agent.types";
 import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
-import { EventService } from "./eventService";
+import { EventService } from "../event";
 import { IdentifierService } from "./identifierService";
 
 const identifiersListMock = jest.fn();

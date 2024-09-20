@@ -21,7 +21,7 @@ import {
   AgentUrls,
   MiscRecordId,
 } from "./agent.types";
-import { EventService } from "./services/eventService";
+import { EventService } from "./event";
 import {
   BasicRecord,
   BasicStorage,
@@ -50,6 +50,11 @@ import { SqliteStorage } from "../storage/sqliteStorage";
 import { BaseRecord } from "../storage/storage.types";
 import { OperationPendingStorage } from "./records/operationPendingStorage";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
+import {
+  NotificationEvent,
+  EventTypes,
+  OperationPendingEvent,
+} from "./event.types";
 
 const walletId = "idw";
 class Agent {
@@ -215,6 +220,26 @@ class Agent {
     this.agentServicesProps.eventService.on(
       KeriaStatusEventTypes.KeriaStatusChanged,
       async (event: KeriaStatusChangedEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  onNotificatiStateChanged(callback: (event: NotificationEvent) => void) {
+    this.agentServicesProps.eventService.on(
+      EventTypes.Notification,
+      async (event: NotificationEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  onOperationPendingStateChanged(
+    callback: (event: OperationPendingEvent) => void
+  ) {
+    this.agentServicesProps.eventService.on(
+      EventTypes.Operation,
+      async (event: OperationPendingEvent) => {
         callback(event);
       }
     );

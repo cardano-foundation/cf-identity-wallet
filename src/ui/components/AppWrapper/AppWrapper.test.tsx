@@ -8,7 +8,6 @@ import {
   peerConnectedChangeHandler,
   peerConnectionBrokenChangeHandler,
   peerDisconnectedChangeHandler,
-  signifyOperationStateChangeHandler,
 } from "./AppWrapper";
 import { store } from "../../../store";
 import { Agent } from "../../../core/agent/agent";
@@ -48,6 +47,7 @@ import {
 import { updateIsPending } from "../../../store/reducers/identifiersCache";
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
+import { signifyOperationStateChangeHandler } from "./coreEventListeners";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -99,10 +99,12 @@ jest.mock("../../../core/agent/agent", () => ({
         pickupMessagesFromMediator: jest.fn(),
       },
       keriaNotifications: {
-        pollNotificationsWithCb: jest.fn(),
-        pollLongOperationsWithCb: jest.fn(),
+        pollNotifications: jest.fn(),
+        pollLongOperations: jest.fn(),
         getAllNotifications: jest.fn(),
       },
+      onNotificatiStateChanged: jest.fn(),
+      onOperationPendingStateChanged: jest.fn(),
       getKeriaOnlineStatus: jest.fn(),
       onKeriaStatusStateChanged: jest.fn(),
       peerConnectionMetadataStorage: {

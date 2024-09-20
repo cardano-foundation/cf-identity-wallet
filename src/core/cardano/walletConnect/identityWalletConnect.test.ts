@@ -4,7 +4,7 @@ import {
   PeerConnectionEventTypes,
   TxSignError,
 } from "./peerConnection.types";
-import { EventService } from "../../agent/services/eventService";
+import { EventService } from "../../agent/event";
 require("fake-indexeddb/auto");
 import { IdentityWalletConnect } from "./identityWalletConnect"; // Adjust the path accordingly
 

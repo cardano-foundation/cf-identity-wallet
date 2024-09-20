@@ -1,4 +1,4 @@
-import { EventService } from "./eventService";
+import { EventService } from "../event";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import { Agent } from "../agent";
 import { IdentifierStorage } from "../records";
@@ -188,11 +188,11 @@ jest.mock("signify-ts", () => ({
   }),
 }));
 
-const eventService = new EventService();
+const eventEmitter = new EventService();
 
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventService,
+  eventService: eventEmitter,
 };
 
 const resolveOobiMock = jest.fn();
@@ -315,7 +315,7 @@ describe("Ipex communication service of agent", () => {
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
       id: "id",
     });
-    eventService.emit = jest.fn();
+    eventEmitter.emit = jest.fn();
 
     await ipexCommunicationService.acceptAcdc(id);
 
@@ -331,7 +331,7 @@ describe("Ipex communication service of agent", () => {
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
       credentialMock
     );
-    expect(eventService.emit).toHaveBeenCalledWith({
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: AcdcEventTypes.AcdcStateChanged,
       payload: {
         credential: credentialMock,
@@ -935,7 +935,7 @@ describe("Ipex communication service of agent", () => {
       exnSaid: "exnSaid",
     });
 
-    eventService.emit = jest.fn();
+    eventEmitter.emit = jest.fn();
 
     await ipexCommunicationService.acceptAcdc("id");
 
@@ -967,7 +967,7 @@ describe("Ipex communication service of agent", () => {
       credentialMock
     );
 
-    expect(eventService.emit).toHaveBeenCalledWith({
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: AcdcEventTypes.AcdcStateChanged,
       payload: {
         credential: credentialMock,

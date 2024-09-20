@@ -2,7 +2,7 @@ import { Dict, Saider, Serder } from "signify-ts";
 import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
 import { ConnectionStatus, NotificationRoute } from "../agent.types";
 import { Agent } from "../agent";
-import { EventService } from "./eventService";
+import { EventService } from "../event";
 import { MultiSigService } from "./multiSigService";
 import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";

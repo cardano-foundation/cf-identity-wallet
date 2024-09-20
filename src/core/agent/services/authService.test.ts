@@ -1,4 +1,4 @@
-import { EventService } from "./eventService";
+import { EventService } from "../event";
 import { MiscRecordId } from "../agent.types";
 import { LoginAttempts } from "./auth.types";
 import { AuthService } from "./authService";

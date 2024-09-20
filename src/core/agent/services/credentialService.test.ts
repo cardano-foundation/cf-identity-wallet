@@ -1,7 +1,7 @@
 import { CredentialService } from "./credentialService";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
-import { EventService } from "./eventService";
+import { EventService } from "../event";
 import { NotificationRoute } from "../agent.types";
 import { Agent } from "../agent";
 import { CredentialStatus } from "./credentialService.types";
