@@ -27,6 +27,7 @@ class IdentifierStorage {
   async getAllIdentifierMetadata(): Promise<IdentifierMetadataRecord[]> {
     const records = await this.storageService.findAllByQuery(
       {
+        isDeleted: false,
         $not: {
           groupCreated: true,
         },
