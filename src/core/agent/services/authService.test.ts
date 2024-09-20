@@ -1,4 +1,4 @@
-import { EventService } from "./eventService";
+import { CoreEventEmitter } from "../event";
 import { MiscRecordId } from "../agent.types";
 import { LoginAttempts } from "./auth.types";
 import { AuthService } from "./authService";
@@ -83,7 +83,7 @@ const signifyClient = jest.mocked({
 
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventService: new EventService(),
+  eventEmitter: new CoreEventEmitter(),
 };
 
 const startTime = new Date();

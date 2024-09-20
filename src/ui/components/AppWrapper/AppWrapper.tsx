@@ -2,13 +2,9 @@ import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import {
-  AcdcStateChangedEvent,
-  ConnectionStateChangedEvent,
   ConnectionStatus,
-  KeriaNotification,
   MiscRecordId,
 } from "../../../core/agent/agent.types";
-import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
 import {
@@ -40,7 +36,6 @@ import {
 import {
   setFavouritesIdentifiersCache,
   setIdentifiersCache,
-  updateIsPending,
 } from "../../../store/reducers/identifiersCache";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
@@ -74,6 +69,14 @@ import { Alert } from "../Alert";
 import { CardListViewType } from "../SwitchCardView";
 import "./AppWrapper.scss";
 import { useActivityTimer } from "./hooks/useActivityTimer";
+import {
+  notificatiStateChanged,
+  signifyOperationStateChangeHandler,
+} from "./coreEventListeners";
+import {
+  AcdcStateChangedEvent,
+  ConnectionStateChangedEvent,
+} from "../../../core/agent/event.types";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -93,15 +96,6 @@ const connectionStateChangedHandler = async (
     dispatch(updateOrAddConnectionCache(connectionDetails));
     dispatch(setToastMsg(ToastMsgType.NEW_CONNECTION_ADDED));
   }
-};
-
-const keriaNotificationsChangeHandler = async (
-  event: KeriaNotification,
-  dispatch: ReturnType<typeof useAppDispatch>
-) => {
-  const notifications =
-    await Agent.agent.keriaNotifications.getAllNotifications();
-  dispatch(setNotificationsCache(notifications));
 };
 
 const acdcChangeHandler = async (
@@ -172,25 +166,6 @@ const peerConnectionBrokenChangeHandler = async (
 ) => {
   dispatch(setConnectedWallet(null));
   dispatch(setToastMsg(ToastMsgType.DISCONNECT_WALLET_SUCCESS));
-};
-
-const signifyOperationStateChangeHandler = async (
-  { oid, opType }: { oid: string; opType: OperationPendingRecordType },
-  dispatch: ReturnType<typeof useAppDispatch>
-) => {
-  switch (opType) {
-  case OperationPendingRecordType.Witness:
-  case OperationPendingRecordType.Group:
-    dispatch(updateIsPending({ id: oid, isPending: false }));
-    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
-    break;
-  case OperationPendingRecordType.ExchangeRevokeCredential: {
-    const notifications =
-        await Agent.agent.keriaNotifications.getAllNotifications();
-    dispatch(setNotificationsCache(notifications));
-    break;
-  }
-  }
 };
 
 const AppWrapper = (props: { children: ReactNode }) => {
@@ -440,6 +415,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return peerConnectionBrokenChangeHandler(event, dispatch);
       }
     );
+    Agent.agent.keriaNotifications.onNewNotification((event) => {
+      notificatiStateChanged(event.payload.keriaNotif, dispatch);
+    });
+
+    Agent.agent.keriaNotifications.onLongOperationComplete((event) => {
+      signifyOperationStateChangeHandler(event.payload, dispatch);
+    });
   };
 
   const initApp = async () => {
@@ -480,12 +462,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
 
     // Begin background polling of KERIA or local DB items
-    Agent.agent.keriaNotifications.pollNotificationsWithCb((event) => {
-      return keriaNotificationsChangeHandler(event, dispatch);
-    });
-    Agent.agent.keriaNotifications.pollLongOperationsWithCb((event) => {
-      return signifyOperationStateChangeHandler(event, dispatch);
-    });
+    Agent.agent.keriaNotifications.pollNotifications();
+    Agent.agent.keriaNotifications.pollLongOperations();
     dispatch(setInitialized(true));
   };
 
@@ -513,10 +491,8 @@ export {
   AppWrapper,
   acdcChangeHandler,
   connectionStateChangedHandler,
-  keriaNotificationsChangeHandler,
   peerConnectRequestSignChangeHandler,
   peerConnectedChangeHandler,
   peerConnectionBrokenChangeHandler,
   peerDisconnectedChangeHandler,
-  signifyOperationStateChangeHandler,
 };

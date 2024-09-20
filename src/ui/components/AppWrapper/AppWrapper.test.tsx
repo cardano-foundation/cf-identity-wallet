@@ -8,7 +8,6 @@ import {
   peerConnectedChangeHandler,
   peerConnectionBrokenChangeHandler,
   peerDisconnectedChangeHandler,
-  signifyOperationStateChangeHandler,
 } from "./AppWrapper";
 import { store } from "../../../store";
 import { Agent } from "../../../core/agent/agent";
@@ -20,11 +19,7 @@ import {
 } from "../../../store/reducers/stateCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import {
-  AcdcEventTypes,
-  AcdcStateChangedEvent,
-  ConnectionEventTypes,
   ConnectionShortDetails,
-  ConnectionStateChangedEvent,
   ConnectionStatus,
 } from "../../../core/agent/agent.types";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
@@ -48,6 +43,12 @@ import {
 import { updateIsPending } from "../../../store/reducers/identifiersCache";
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
+import { signifyOperationStateChangeHandler } from "./coreEventListeners";
+import {
+  AcdcStateChangedEvent,
+  ConnectionStateChangedEvent,
+  EventTypes,
+} from "../../../core/agent/event.types";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -99,9 +100,11 @@ jest.mock("../../../core/agent/agent", () => ({
         pickupMessagesFromMediator: jest.fn(),
       },
       keriaNotifications: {
-        pollNotificationsWithCb: jest.fn(),
-        pollLongOperationsWithCb: jest.fn(),
+        pollNotifications: jest.fn(),
+        pollLongOperations: jest.fn(),
         getAllNotifications: jest.fn(),
+        onNewNotification: jest.fn(),
+        onLongOperationComplete: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
       onKeriaStatusStateChanged: jest.fn(),
@@ -143,7 +146,7 @@ describe("App Wrapper", () => {
 });
 
 const connectionStateChangedEventMock = {
-  type: ConnectionEventTypes.ConnectionStateChanged,
+  type: EventTypes.ConnectionStateChanged,
   payload: {
     status: ConnectionStatus.PENDING,
   },
@@ -245,7 +248,7 @@ describe("AppWrapper handler", () => {
     test("handles credential state pending", async () => {
       const credentialMock = {} as CredentialShortDetails;
       const credentialStateChangedEventMock = {
-        type: AcdcEventTypes.AcdcStateChanged,
+        type: EventTypes.AcdcStateChanged,
         payload: {
           status: CredentialStatus.PENDING,
           credential: credentialMock,
@@ -260,7 +263,7 @@ describe("AppWrapper handler", () => {
     test("handles credential state confirmed", async () => {
       const credentialMock = {} as CredentialShortDetails;
       const credentialStateChangedEventMock = {
-        type: AcdcEventTypes.AcdcStateChanged,
+        type: EventTypes.AcdcStateChanged,
         payload: {
           status: CredentialStatus.CONFIRMED,
           credential: credentialMock,
@@ -276,7 +279,7 @@ describe("AppWrapper handler", () => {
     test("handles credential state revoked", async () => {
       const credentialMock = {} as CredentialShortDetails;
       const credentialStateChangedEventMock = {
-        type: AcdcEventTypes.AcdcStateChanged,
+        type: EventTypes.AcdcStateChanged,
         payload: {
           status: CredentialStatus.REVOKED,
           credential: credentialMock,

@@ -4,12 +4,10 @@ import { Agent } from "../agent";
 import {
   AgentServicesProps,
   ConnectionDetails,
-  ConnectionEventTypes,
   ConnectionHistoryItem,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
-  ConnectionStateChangedEvent,
   ConnectionStatus,
   KeriConnectionType,
   OobiScan,
@@ -27,6 +25,7 @@ import { AgentService } from "./agentService";
 import { KeriaContact } from "./connection.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { StorageMessage } from "../../storage/storage.types";
+import { ConnectionStateChangedEvent, EventTypes } from "../event.types";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
@@ -63,12 +62,7 @@ class ConnectionService extends AgentService {
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
   ) {
-    this.props.eventService.on(
-      ConnectionEventTypes.ConnectionStateChanged,
-      async (event: ConnectionStateChangedEvent) => {
-        callback(event);
-      }
-    );
+    this.props.eventEmitter.on(EventTypes.ConnectionStateChanged, callback);
   }
 
   @OnlineOnly
@@ -77,8 +71,8 @@ class ConnectionService extends AgentService {
 
     // @TODO - foconnor: We shouldn't emit this if it's a multiSigInvite, but the routing will break if we don't.
     // To fix once we handle errors for the scanner in general.
-    this.props.eventService.emit<ConnectionStateChangedEvent>({
-      type: ConnectionEventTypes.ConnectionStateChanged,
+    this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+      type: EventTypes.ConnectionStateChanged,
       payload: {
         isMultiSigInvite: multiSigInvite,
         connectionId: undefined,
@@ -138,8 +132,8 @@ class ConnectionService extends AgentService {
     await this.createConnectionMetadata(connectionId, connectionMetadata);
 
     if (!multiSigInvite) {
-      this.props.eventService.emit<ConnectionStateChangedEvent>({
-        type: ConnectionEventTypes.ConnectionStateChanged,
+      this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+        type: EventTypes.ConnectionStateChanged,
         payload: {
           connectionId,
           status: ConnectionStatus.CONFIRMED,

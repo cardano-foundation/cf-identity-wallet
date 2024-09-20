@@ -1,12 +1,11 @@
-import { EventService } from "./eventService";
+import { CoreEventEmitter } from "../event";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import { Agent } from "../agent";
-import { IdentifierStorage } from "../records";
 import { ConfigurationService } from "../../configuration";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
-import { AcdcEventTypes } from "../agent.types";
+import { EventTypes } from "../event.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -188,11 +187,11 @@ jest.mock("signify-ts", () => ({
   }),
 }));
 
-const eventService = new EventService();
+const eventEmitter = new CoreEventEmitter();
 
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventService,
+  eventEmitter: eventEmitter,
 };
 
 const resolveOobiMock = jest.fn();
@@ -315,7 +314,7 @@ describe("Ipex communication service of agent", () => {
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
       id: "id",
     });
-    eventService.emit = jest.fn();
+    eventEmitter.emit = jest.fn();
 
     await ipexCommunicationService.acceptAcdc(id);
 
@@ -331,8 +330,8 @@ describe("Ipex communication service of agent", () => {
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
       credentialMock
     );
-    expect(eventService.emit).toHaveBeenCalledWith({
-      type: AcdcEventTypes.AcdcStateChanged,
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.AcdcStateChanged,
       payload: {
         credential: credentialMock,
         status: CredentialStatus.PENDING,
@@ -935,7 +934,7 @@ describe("Ipex communication service of agent", () => {
       exnSaid: "exnSaid",
     });
 
-    eventService.emit = jest.fn();
+    eventEmitter.emit = jest.fn();
 
     await ipexCommunicationService.acceptAcdc("id");
 
@@ -967,8 +966,8 @@ describe("Ipex communication service of agent", () => {
       credentialMock
     );
 
-    expect(eventService.emit).toHaveBeenCalledWith({
-      type: AcdcEventTypes.AcdcStateChanged,
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.AcdcStateChanged,
       payload: {
         credential: credentialMock,
         status: CredentialStatus.PENDING,

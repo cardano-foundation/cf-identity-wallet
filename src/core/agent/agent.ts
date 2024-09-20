@@ -16,12 +16,10 @@ import { KeriaNotificationService } from "./services/keriaNotificationService";
 import {
   AgentServicesProps,
   BranAndMnemonic,
-  KeriaStatusChangedEvent,
-  KeriaStatusEventTypes,
   AgentUrls,
   MiscRecordId,
 } from "./agent.types";
-import { EventService } from "./services/eventService";
+import { CoreEventEmitter } from "./event";
 import {
   BasicRecord,
   BasicStorage,
@@ -50,6 +48,7 @@ import { SqliteStorage } from "../storage/sqliteStorage";
 import { BaseRecord } from "../storage/storage.types";
 import { OperationPendingStorage } from "./records/operationPendingStorage";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
+import { EventTypes, KeriaStatusChangedEvent } from "./event.types";
 
 const walletId = "idw";
 class Agent {
@@ -67,7 +66,7 @@ class Agent {
 
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {
-    eventService: undefined as any,
+    eventEmitter: undefined as any,
     signifyClient: undefined as any,
   };
 
@@ -212,11 +211,9 @@ class Agent {
   onKeriaStatusStateChanged(
     callback: (event: KeriaStatusChangedEvent) => void
   ) {
-    this.agentServicesProps.eventService.on(
-      KeriaStatusEventTypes.KeriaStatusChanged,
-      async (event: KeriaStatusChangedEvent) => {
-        callback(event);
-      }
+    this.agentServicesProps.eventEmitter.on(
+      EventTypes.KeriaStatusChanged,
+      callback
     );
   }
 
@@ -315,8 +312,8 @@ class Agent {
 
   markAgentStatus(online: boolean) {
     Agent.isOnline = true;
-    this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
-      type: KeriaStatusEventTypes.KeriaStatusChanged,
+    this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
+      type: EventTypes.KeriaStatusChanged,
       payload: {
         isOnline: online,
       },
@@ -373,7 +370,7 @@ class Agent {
     );
     this.agentServicesProps = {
       signifyClient: this.signifyClient,
-      eventService: new EventService(),
+      eventEmitter: new CoreEventEmitter(),
     };
   }
 
@@ -381,8 +378,8 @@ class Agent {
     try {
       if (Agent.isOnline) {
         Agent.isOnline = false;
-        this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
-          type: KeriaStatusEventTypes.KeriaStatusChanged,
+        this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
+          type: EventTypes.KeriaStatusChanged,
           payload: {
             isOnline: false,
           },
@@ -390,8 +387,8 @@ class Agent {
       }
       await this.signifyClient.connect();
       Agent.isOnline = true;
-      this.agentServicesProps.eventService.emit<KeriaStatusChangedEvent>({
-        type: KeriaStatusEventTypes.KeriaStatusChanged,
+      this.agentServicesProps.eventEmitter.emit<KeriaStatusChangedEvent>({
+        type: EventTypes.KeriaStatusChanged,
         payload: {
           isOnline: true,
         },
