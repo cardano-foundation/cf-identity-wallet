@@ -31,13 +31,15 @@
 <b> The Identity Wallet is an open source application developed by the Cardano Foundation. This project is the result of ongoing research and development pertaining to the principles of Self-Sovereign Identity (SSI), Self-Certifying Identifiers (SCIs), Verifiable Data Registries (VDRs), and the standards, frameworks, and implementations available within the Cardano ecosystem and externally. The first release of Identity Wallet provides an open source reference implementation demonstrating the Key Event Receipt Infrastructure (KERI) on Cardano. </b>
 </div>
 
+<br>
+
 <p align="center">
   <kbd> 
       <img src="docs/images/readme/User-Flow-Preview.jpg" alt="User Flow Preview" width="720"/>
   </kbd>
 </p>
-<br>
 
+<br>
 
 # Features
 
