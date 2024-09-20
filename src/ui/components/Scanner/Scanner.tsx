@@ -298,7 +298,8 @@ const Scanner = forwardRef(
     };
 
     const resolveConnectionOobi = async (content: string) => {
-      // Create pending connection item on UI. This will be remove after create connection process end.
+      // Adding a pending connection item to the UI.
+      // This will be removed when the create connection process ends.
       const connectionName = new URL(content).searchParams.get("name");
       const pendingId = crypto.randomUUID();
       dispatch(
