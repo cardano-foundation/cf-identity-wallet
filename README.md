@@ -91,16 +91,21 @@ In this section, you'll find detailed PDF documents outlining the various user f
 - [Cardano Connect](https://drive.google.com/file/d/1KNt8Fb8VGqnq_p6EY0nEog7WDR07BX3T/view?usp=drive_link)
 - [Verify Options](https://drive.google.com/file/d/1akOEf1GRGvVd4vNcWFNF4KOox5iuXOnv/view?usp=drive_link)
 
-<div style="display: flex">
-  <ul style="flex: 1">
-    <li><a href="https://drive.google.com/file/d/1_Oem0Wu_U8XPyfpzzKX8A0ZHJN0jztDx/view?usp=drive_link">Introduction</a></li>
-    <li><a href="https://drive.google.com/file/d/1lMNwS30oq9X_rKVGvB3hHXDpcztPC7sy/view?usp=drive_link">Onboarding</a></li>
-  </ul>
-  <ul style="flex: 1">
-    <li><a href="https://drive.google.com/file/d/17Ws8l5zyOZFYDrqw277nklERYw0I8Sn6/view?usp=drive_link">Credentials</a></li>
-    <li><a href="https://drive.google.com/file/d/1ugZWy5pqakr6uJACWxTc6QqxZIU-JOeM/view?usp=drive_link">Scan</a></li>
-  </ul>
-</div>
+<table border="0">
+  <tr>
+    <td>
+      <ul>
+        <li><a href="https://drive.google.com/file/d/1_Oem0Wu_U8XPyfpzzKX8A0ZHJN0jztDx/view?usp=drive_link">Introduction</a></li>
+        <li><a href="https://drive.google.com/file/d/1lMNwS30oq9X_rKVGvB3hHXDpcztPC7sy/view?usp=drive_link">Onboarding</a></li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li><a href="https://drive.google.com/file/d/17Ws8l5zyOZFYDrqw277nklERYw0I8Sn6/view?usp=drive_link">Credentials</a></li>
+        <li><a href="https://drive.google.com/file/d/1ugZWy5pqakr6uJACWxTc6QqxZIU-JOeM/view?usp=drive_link">Scan</a></li>
+      </ul>
+    </td>
+  </tr>
 
 <p align="center">
   <kbd> 
