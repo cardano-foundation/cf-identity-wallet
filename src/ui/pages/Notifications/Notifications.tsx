@@ -40,7 +40,10 @@ const Notifications = () => {
   const pageId = "notifications-tab";
   const dispatch = useAppDispatch();
   const history = useHistory();
-  const notifications = useAppSelector(getNotificationsCache);
+  const notificationsCache = useAppSelector(getNotificationsCache);
+  const notifications = [...notificationsCache].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
   const [selectedFilter, setSelectedFilter] = useState(NotificationFilter.All);
   const earlierNotificationRef = useRef<EarlierNotificationRef>(null);
   const [selectedItem, setSelectedItem] = useState<KeriaNotification | null>(
