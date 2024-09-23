@@ -80,8 +80,6 @@
     </a>  
   </p>     
 </div>
-<br>
-
 
 # User Flows
 In this section, you'll find detailed PDF documents outlining the various user flows within our application. These user flows serve as comprehensive guides, illustrating the application's user journeys step-by-step. Please feel free to explore and gain insight into the following user flows:
