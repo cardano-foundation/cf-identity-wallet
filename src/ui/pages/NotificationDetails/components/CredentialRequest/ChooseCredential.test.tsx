@@ -51,8 +51,6 @@ const offerAcdcFromApplyMock = jest.fn(
     })
 );
 
-const combineMock = jest.fn(() => credsFixAcdc);
-
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -68,7 +66,6 @@ jest.mock("../../../../../core/agent/agent", () => ({
         getCredentialDetailsById: jest.fn(() =>
           Promise.resolve(credsFixAcdc[0])
         ),
-        getCredsCache: () => combineMock(),
       },
     },
   },
@@ -105,9 +102,6 @@ const initialState = {
 };
 
 describe("Credential request - choose request", () => {
-  beforeEach(() => {
-    combineMock.mockReturnValue(credsFixAcdc);
-  });
   test("Render full active credentials & empty revoked tab", async () => {
     const storeMocked = {
       ...mockStore(initialState),
@@ -475,21 +469,45 @@ describe("Credential request - choose request", () => {
 });
 
 describe("Credential request - choose request", () => {
-  const updatedCredsFixAcdc = [
-    {
-      ...credsFixAcdc[0],
-      status: CredentialStatus.REVOKED,
-    },
-    ...credsFixAcdc.slice(1),
-  ];
+  const credsCacheMock = credsFixAcdc.map((item) => ({
+    ...item,
+    status: CredentialStatus.REVOKED,
+  }));
 
-  beforeEach(() => {
-    combineMock.mockReturnValue(updatedCredsFixAcdc);
-  });
-  test.skip("Render empty active credentials & full revoked tab", async () => {
+  const initialState = {
+    stateCache: {
+      routes: [TabsRoutePath.NOTIFICATIONS],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+      },
+    },
+    credsCache: {
+      creds: credsCacheMock,
+    },
+    connectionsCache: {
+      connections: connectionsForNotifications,
+    },
+    notificationsCache: {
+      notifications: notificationsFix,
+    },
+  };
+
+  test("Render empty active credentials & full revoked tab", async () => {
     const storeMocked = {
       ...mockStore(initialState),
       dispatch: dispatchMock,
+    };
+
+    const credMock = {
+      ...credRequestFix,
+      credentials: [
+        {
+          ...credRequestFix.credentials[0],
+          status: CredentialStatus.REVOKED,
+        },
+      ],
     };
 
     const history = createMemoryHistory();
@@ -503,7 +521,7 @@ describe("Credential request - choose request", () => {
             onBack={jest.fn()}
             onClose={jest.fn()}
             notificationDetails={notificationsFix[4]}
-            credentialRequest={credRequestFix}
+            credentialRequest={credMock}
             reloadData={jest.fn}
           />
         </IonReactMemoryRouter>
