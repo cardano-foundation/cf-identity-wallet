@@ -268,6 +268,30 @@ const ChooseCredential = ({
             </div>
           </CardDetailsBlock>
         )}
+        {segmentValue === "active" && activeCredentials.length === 0 && (
+          <h2 className="title">
+            <i>
+              {i18n.t(
+                "notifications.details.credential.request.choosecredential.noactive",
+                {
+                  requestCred: credentialRequest.schema.name,
+                }
+              )}
+            </i>
+          </h2>
+        )}
+        {segmentValue === "revoked" && revokedCredentials.length === 0 && (
+          <h2 className="title">
+            <i>
+              {i18n.t(
+                "notifications.details.credential.request.choosecredential.norevoked",
+                {
+                  requestCred: credentialRequest.schema.name,
+                }
+              )}
+            </i>
+          </h2>
+        )}
         <CardList
           data={
             segmentValue === "active" ? activeCredentials : revokedCredentials
