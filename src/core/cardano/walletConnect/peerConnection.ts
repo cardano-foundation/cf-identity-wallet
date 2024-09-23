@@ -5,7 +5,7 @@ import { IdentityWalletConnect } from "./identityWalletConnect";
 import packageInfo from "../../../../package.json";
 import ICON_BASE64 from "../../../assets/icon-only";
 import { KeyStoreKeys } from "../../storage";
-import { EventService } from "../../agent/services/eventService";
+import { CoreEventEmitter } from "../../agent/event";
 import {
   ExperimentalAPIFunctions,
   PeerConnectSigningEvent,
@@ -39,48 +39,37 @@ class PeerConnection {
 
   private identityWalletConnect: IdentityWalletConnect | undefined;
   private connectedDAppAddress = "";
-  private eventService = new EventService();
+  private eventEmitter = new CoreEventEmitter();
   private static instance: PeerConnection;
 
   onPeerConnectRequestSignStateChanged(
     callback: (event: PeerConnectSigningEvent) => void
   ) {
-    this.eventService.on(
-      PeerConnectionEventTypes.PeerConnectSign,
-      async (event: PeerConnectSigningEvent) => {
-        callback(event);
-      }
-    );
+    this.eventEmitter.on(PeerConnectionEventTypes.PeerConnectSign, callback);
   }
 
   onPeerConnectedStateChanged(callback: (event: PeerConnectedEvent) => void) {
-    this.eventService.on(
-      PeerConnectionEventTypes.PeerConnected,
-      async (event: PeerConnectedEvent) => {
-        callback(event);
-      }
-    );
+    this.eventEmitter.on(PeerConnectionEventTypes.PeerConnected, callback);
   }
 
   onPeerDisconnectedStateChanged(
     callback: (event: PeerDisconnectedEvent) => void
   ) {
-    this.eventService.on(
-      PeerConnectionEventTypes.PeerDisconnected,
-      async (event: PeerDisconnectedEvent) => {
-        callback(event);
-      }
-    );
+    this.eventEmitter.on(PeerConnectionEventTypes.PeerDisconnected, callback);
+  }
+
+  offPeerDisconnectedStateChanged(
+    callback: (event: PeerDisconnectedEvent) => void
+  ) {
+    this.eventEmitter.off(PeerConnectionEventTypes.PeerDisconnected, callback);
   }
 
   onPeerConnectionBrokenStateChanged(
     callback: (event: PeerConnectionBrokenEvent) => void
   ) {
-    this.eventService.on(
+    this.eventEmitter.on(
       PeerConnectionEventTypes.PeerConnectionBroken,
-      async (event: PeerConnectionBrokenEvent) => {
-        callback(event);
-      }
+      callback
     );
   }
 
@@ -112,7 +101,7 @@ class PeerConnection {
       meerkatSeed,
       this.announce,
       selectedAid,
-      this.eventService
+      this.eventEmitter
     );
     this.identityWalletConnect.setOnConnect(
       async (connectMessage: IConnectMessage) => {
@@ -138,7 +127,7 @@ class PeerConnection {
               iconB64: iconB64,
             }
           );
-          this.eventService.emit<PeerConnectedEvent>({
+          this.eventEmitter.emit<PeerConnectedEvent>({
             type: PeerConnectionEventTypes.PeerConnected,
             payload: {
               identifier: selectedAid,
@@ -152,7 +141,7 @@ class PeerConnection {
     this.identityWalletConnect.setOnDisconnect(
       (disConnectMessage: IConnectMessage) => {
         this.connectedDAppAddress = "";
-        this.eventService.emit<PeerDisconnectedEvent>({
+        this.eventEmitter.emit<PeerDisconnectedEvent>({
           type: PeerConnectionEventTypes.PeerDisconnected,
           payload: {
             dAppAddress: disConnectMessage.dApp.address as string,
@@ -209,7 +198,7 @@ class PeerConnection {
     this.identityWalletConnect.disconnect(dAppIdentifier);
 
     if (isBroken) {
-      this.eventService.emit<PeerConnectionBrokenEvent>({
+      this.eventEmitter.emit<PeerConnectionBrokenEvent>({
         type: PeerConnectionEventTypes.PeerConnectionBroken,
         payload: {},
       });

@@ -18,6 +18,7 @@ import {
   setViewTypeCache,
 } from "../../../store/reducers/identifierViewTypeCache";
 import { Agent } from "../../../core/agent/agent";
+import { setCurrentRoute } from "../../../store/reducers/stateCache";
 
 const SwitchCardView = ({
   title,
@@ -32,6 +33,7 @@ const SwitchCardView = ({
   const dispatch = useAppDispatch();
   const [type, setType] = useState<CardListViewType>(CardListViewType.Stack);
   const viewTypeCache = useAppSelector(getIdentifierViewTypeCacheCache);
+
   useEffect(() => {
     if (!viewTypeCache.viewType) {
       setType(CardListViewType.Stack);
@@ -49,6 +51,12 @@ const SwitchCardView = ({
     } else {
       pathname = `${TabsRoutePath.CREDENTIALS}/${data.id}`;
     }
+
+    dispatch(
+      setCurrentRoute({
+        path: pathname,
+      })
+    );
 
     history.push({ pathname: pathname });
   };

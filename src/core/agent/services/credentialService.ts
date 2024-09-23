@@ -1,8 +1,4 @@
-import {
-  AcdcStateChangedEvent,
-  AcdcEventTypes,
-  AgentServicesProps,
-} from "../agent.types";
+import { AgentServicesProps } from "../agent.types";
 import { AgentService } from "./agentService";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import {
@@ -13,6 +9,7 @@ import {
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { OnlineOnly } from "./utils";
 import { CredentialStorage, NotificationStorage } from "../records";
+import { AcdcStateChangedEvent, EventTypes } from "../event.types";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -35,12 +32,7 @@ class CredentialService extends AgentService {
   }
 
   onAcdcStateChanged(callback: (event: AcdcStateChangedEvent) => void) {
-    this.props.eventService.on(
-      AcdcEventTypes.AcdcStateChanged,
-      async (event: AcdcStateChangedEvent) => {
-        callback(event);
-      }
-    );
+    this.props.eventEmitter.on(EventTypes.AcdcStateChanged, callback);
   }
 
   async getCredentials(

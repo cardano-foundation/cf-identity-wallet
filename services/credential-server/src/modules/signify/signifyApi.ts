@@ -354,20 +354,24 @@ export class SignifyApi {
 
   async revokeCredential(issuerName: string, holder: string, credentialId: string) {
     // TODO: If the credential does not exist, this will throw 500 at the moment. Will change this later
-    const credential = await this.signifyClient.credentials().get(credentialId).catch(() => undefined);
+    let credential = await this.signifyClient.credentials().get(credentialId).catch(() => undefined);
     if (!credential) {
       throw new Error(`${SignifyApi.CREDENTIAL_NOT_FOUND} ${credentialId}`);
     }
     if (credential.status.s === "1") {
       throw new Error(SignifyApi.CREDENTIAL_REVOKED_ALREADY);
     }
-    const result = await this.signifyClient.credentials().revoke(issuerName, credentialId);
-    await waitAndGetDoneOp(
-      this.signifyClient,
-      result.op,
-      this.opTimeout,
-      this.opRetryInterval
-    );
+
+    await this.signifyClient.credentials().revoke(issuerName, credentialId);
+
+    while (credential.status.s !== "1") {
+      credential = await this.signifyClient
+        .credentials()
+        .get(credentialId)
+        .catch(() => undefined);
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+
     const datetime = new Date().toISOString().replace("Z", "000+00:00");
     const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
       senderName: issuerName,

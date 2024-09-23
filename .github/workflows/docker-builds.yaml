@@ -7,6 +7,7 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+*'
   pull_request:
     types: [ opened, synchronize ]
+    branches-ignore: [ main ]
     paths:
     - 'Earthfile'
     - '.github/workflows/docker-builds.yaml'

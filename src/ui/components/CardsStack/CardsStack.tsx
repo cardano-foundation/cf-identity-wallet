@@ -11,6 +11,8 @@ import { CredentialCardTemplate } from "../CredentialCardTemplate";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { CardsStackProps } from "./CardsStack.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
+import { useAppDispatch } from "../../../store/hooks";
+import { setCurrentRoute } from "../../../store/reducers/stateCache";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -24,6 +26,7 @@ const CardsStack = ({
   const history = useHistory();
   const [pickedCardIndex, setPickedCardIndex] = useState<number | null>(null);
   const inShowCardProgress = useRef(false);
+  const dispatch = useAppDispatch();
 
   const renderCards = (
     cardsData: IdentifierShortDetails[] | CredentialShortDetails[]
@@ -71,6 +74,12 @@ const CardsStack = ({
       const data = cardsData[index] as CredentialShortDetails;
       pathname = `${TabsRoutePath.CREDENTIALS}/${data.id}`;
     }
+
+    dispatch(
+      setCurrentRoute({
+        path: pathname,
+      })
+    );
 
     setTimeout(() => {
       history.push({ pathname: pathname });

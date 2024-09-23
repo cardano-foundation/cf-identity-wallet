@@ -1,21 +1,9 @@
 import { CredentialService } from "./credentialService";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
-import { EventService } from "./eventService";
-import { NotificationRoute } from "../agent.types";
+import { CoreEventEmitter } from "../event";
 import { Agent } from "../agent";
 import { CredentialStatus } from "./credentialService.types";
-
-const basicStorage = jest.mocked({
-  open: jest.fn(),
-  save: jest.fn(),
-  delete: jest.fn(),
-  deleteById: jest.fn(),
-  update: jest.fn(),
-  findById: jest.fn(),
-  findAllByQuery: jest.fn(),
-  getAll: jest.fn(),
-});
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -120,7 +108,7 @@ jest.mock("../../../core/agent/agent", () => ({
 
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventService: new EventService(),
+  eventEmitter: new CoreEventEmitter(),
 };
 
 const notificationStorage = jest.mocked({

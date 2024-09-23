@@ -62,8 +62,8 @@ const Scan = () => {
     }
   }, [currentOperation, isValueCaptured]);
 
-  const handleAfterScan = () => {
-    currentOperation === OperationType.BACK_TO_CONNECT_WALLET
+  const handleAfterScan = (operation?: OperationType) => {
+    operation === OperationType.BACK_TO_CONNECT_WALLET
       ? history.push(TabsRoutePath.MENU)
       : history.push(TabsRoutePath.IDENTIFIERS);
   };
