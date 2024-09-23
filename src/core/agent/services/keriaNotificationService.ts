@@ -775,6 +775,7 @@ class KeriaNotificationService extends AgentService {
             .credentials()
             .get(credentialId);
           if (credential.status.s === "0") {
+            // Wait for admit operations to fully complete on KERIA - return early to not block other operations.
             return;
           }
           if (
