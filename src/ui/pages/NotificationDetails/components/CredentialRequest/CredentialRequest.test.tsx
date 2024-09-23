@@ -118,7 +118,7 @@ describe("Credential request", () => {
       <Provider store={storeMocked}>
         <IonReactMemoryRouter history={history}>
           <CredentialRequest
-            pageId="multi-sign"
+            pageId="notification-details"
             activeStatus
             handleBack={jest.fn()}
             notificationDetails={notificationsFix[4]}
@@ -141,7 +141,7 @@ describe("Credential request", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("primary-button-multi-sign"));
+      fireEvent.click(getByTestId("primary-button-notification-details"));
     });
 
     await waitFor(() => {
