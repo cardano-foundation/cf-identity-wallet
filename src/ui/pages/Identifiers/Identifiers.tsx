@@ -133,8 +133,11 @@ const Identifiers = () => {
     ) {
       setCreateIdentifierModalIsOpen(true);
     }
-    OperationType.RECEIVE_CONNECTION === currentOperation &&
+
+    if (OperationType.RECEIVE_CONNECTION === currentOperation) {
+      dispatch(setCurrentOperation(OperationType.IDLE));
       setShowConnections(true);
+    }
   }, [
     currentOperation,
     dispatch,

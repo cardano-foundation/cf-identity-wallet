@@ -4,8 +4,9 @@ import { IpexMessageStorage } from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
-import { EventService } from "./eventService";
+import { CoreEventEmitter } from "../event";
 import { KeriaNotificationService } from "./keriaNotificationService";
+import { EventTypes } from "../event.types";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -196,9 +197,11 @@ const signifyClient = jest.mocked({
   }),
 });
 
+const eventEmitter = new CoreEventEmitter();
+
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventService: new EventService(),
+  eventEmitter: eventEmitter,
 };
 
 const identifierMetadataRecordProps = {
@@ -333,13 +336,14 @@ const acdcMock = {
   },
 };
 
+eventEmitter.emit = jest.fn();
+
 describe("Signify notification service of agent", () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  test("callback should be called when there are KERI notifications", async () => {
-    const callback = jest.fn();
+  test("Emitting an event when there are KERI notifications", async () => {
     exchangesGetMock.mockResolvedValue(ipexMessageMock);
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
@@ -377,20 +381,44 @@ describe("Signify notification service of agent", () => {
     ];
     credentialStorage.getCredentialMetadata.mockResolvedValueOnce(null);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
-    notificationStorage.save = jest
-      .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
+    notificationStorage.save = jest.fn().mockReturnValue({
+      id: "0AC0W27tnnd2WyHWUh-368EI",
+      createdAt: new Date("2024-09-20T02:51:24.930Z"),
+      a: {
+        r: "/exn/ipex/grant",
+        d: "EBcuMc13wJx0wbmxdWqqjoD5V_c532dg2sO-fvISrrMH",
+        m: "",
+      },
+      connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
+      read: false,
+    });
+
     groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
     jest.useFakeTimers();
     for (const notif of notes) {
-      await keriaNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif);
     }
     expect(notificationStorage.save).toBeCalledTimes(2);
-    expect(callback).toBeCalledTimes(2);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.Notification,
+      payload: {
+        keriaNotif: {
+          a: {
+            d: "EBcuMc13wJx0wbmxdWqqjoD5V_c532dg2sO-fvISrrMH",
+            m: "",
+            r: "/exn/ipex/grant",
+          },
+          connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
+          createdAt: "2024-09-20T02:51:24.930Z",
+          id: "0AC0W27tnnd2WyHWUh-368EI",
+          multisigId: undefined,
+          read: false,
+        },
+      },
+    });
   });
 
   test("Should admit if there is an existing credential", async () => {
-    const callback = jest.fn();
     exchangesGetMock.mockResolvedValue(ipexMessageMock);
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
@@ -424,7 +452,7 @@ describe("Signify notification service of agent", () => {
       done: true,
     });
     for (const notif of notes) {
-      await keriaNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif);
     }
     expect(admitMock).toBeCalledTimes(1);
     expect(submitAdmitMock).toBeCalledTimes(1);
@@ -469,7 +497,6 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if there is no valid multi-sig notification", async () => {
-    const callback = jest.fn();
     groupGetRequestMock.mockResolvedValue([]);
     const notes = [
       {
@@ -494,13 +521,12 @@ describe("Signify notification service of agent", () => {
       },
     ];
     for (const notif of notes) {
-      await keriaNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif);
     }
-    expect(callback).toBeCalledTimes(0);
+    expect(eventEmitter.emit).toBeCalledTimes(0);
   });
 
   test("Should skip if there is a existed multi-sig", async () => {
-    const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
@@ -517,13 +543,12 @@ describe("Signify notification service of agent", () => {
       },
     ];
     for (const notif of notes) {
-      await keriaNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif);
     }
-    expect(callback).toBeCalledTimes(0);
+    expect(eventEmitter.emit).toBeCalledTimes(0);
   });
 
   test("Should skip if there is a missing gid multi-sig notification", async () => {
-    const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     groupGetRequestMock.mockResolvedValue([{ exn: { a: {} } }]);
@@ -550,9 +575,9 @@ describe("Signify notification service of agent", () => {
       },
     ];
     for (const notif of notes) {
-      await keriaNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif);
     }
-    expect(callback).toBeCalledTimes(0);
+    expect(eventEmitter.emit).toBeCalledTimes(0);
   });
 
   test("Should call update when unread a notification", async () => {
@@ -574,7 +599,6 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if there is a missing multi-sig identifier", async () => {
-    const callback = jest.fn();
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     groupGetRequestMock.mockResolvedValue([{ exn: { a: {} } }]);
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
@@ -591,13 +615,12 @@ describe("Signify notification service of agent", () => {
       },
     ];
     for (const notif of notes) {
-      await keriaNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif);
     }
-    expect(callback).toBeCalledTimes(0);
+    expect(eventEmitter.emit).toBeCalledTimes(0);
   });
 
   test("Should skip if notification route is /multisig/rpy", async () => {
-    const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     identifierStorage.getIdentifierMetadata = jest
@@ -641,14 +664,13 @@ describe("Signify notification service of agent", () => {
     };
     groupGetRequestMock.mockResolvedValue([multisigNotificationExn]);
     for (const notif of notes) {
-      await keriaNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif);
     }
     expect(markNotificationMock).toBeCalledWith(notes[0].i);
     expect(Agent.agent.multiSigs.joinAuthorization).toBeCalledTimes(1);
   });
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT", async () => {
-    const callback = jest.fn();
     exchangesGetMock.mockResolvedValue(ipexMessageMock);
     notificationStorage.save = jest
       .fn()
@@ -667,7 +689,7 @@ describe("Signify notification service of agent", () => {
       new Error(IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING)
     );
 
-    await keriaNotificationService.processNotification(notification, callback);
+    await keriaNotificationService.processNotification(notification);
     expect(
       Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
     ).toHaveBeenCalledWith(
@@ -677,7 +699,6 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REVOKED", async () => {
-    const callback = jest.fn();
     exchangesGetMock.mockResolvedValue(ipexMessageMock);
     notificationStorage.save = jest
       .fn()
@@ -708,13 +729,12 @@ describe("Signify notification service of agent", () => {
       keriaNotificationService,
       "addPendingOperationToQueue"
     );
-    await keriaNotificationService.processNotification(notification, callback);
+    await keriaNotificationService.processNotification(notification);
     expect(addPendingOperationToQueueSpy).toBeCalledTimes(1);
     addPendingOperationToQueueSpy.mockRestore();
   });
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT_AGREE", async () => {
-    const callback = jest.fn();
     exchangesGetMock.mockResolvedValue(ipexMessageMock);
     notificationStorage.save = jest
       .fn()
@@ -733,7 +753,7 @@ describe("Signify notification service of agent", () => {
       new Error(IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING)
     );
 
-    await keriaNotificationService.processNotification(notification, callback);
+    await keriaNotificationService.processNotification(notification);
     expect(
       Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
     ).toHaveBeenCalledWith(
@@ -743,7 +763,6 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if notification route is /multisig/exn and `e.exn.r` is not ipex/admit, ipex/offer, ipex/grant", async () => {
-    const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [
@@ -775,13 +794,12 @@ describe("Signify notification service of agent", () => {
       .mockResolvedValueOnce({ exn: { d: "d" } });
 
     for (const notif of notes) {
-      await keriaNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif);
     }
     expect(markNotificationMock).toBeCalledTimes(1);
   });
 
   test("Should skip if notification route is /multisig/exn and the identifier is missing ", async () => {
-    const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     identifierStorage.getIdentifierMetadata = jest
@@ -819,13 +837,12 @@ describe("Signify notification service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
 
     for (const notif of notes) {
-      await keriaNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif);
     }
     expect(markNotificationMock).toBeCalledTimes(1);
   });
 
   test("Should skip if notification route is /multisig/exn and the credential exists ", async () => {
-    const callback = jest.fn();
     Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
@@ -881,13 +898,12 @@ describe("Signify notification service of agent", () => {
       .mockResolvedValueOnce({ exn: { d: "d" } });
 
     for (const notif of notes) {
-      await keriaNotificationService.processNotification(notif, callback);
+      await keriaNotificationService.processNotification(notif);
     }
     expect(markNotificationMock).toBeCalledTimes(1);
   });
 
   test("Original grant is linked to first received /multisig/exn admit message, and no notification record is created", async () => {
-    const callback = jest.fn();
     Agent.agent.identifiers.getIdentifier = jest
       .fn()
       .mockResolvedValueOnce(identifierMetadataRecordProps);
@@ -961,7 +977,7 @@ describe("Signify notification service of agent", () => {
       },
     ]);
 
-    await keriaNotificationService.processNotification(notif, callback);
+    await keriaNotificationService.processNotification(notif);
 
     expect(notificationStorage.update).toBeCalledWith({
       type: "NotificationRecord",
@@ -984,7 +1000,6 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Auto-joins /multisig/exn admit message and links to grant if we have joined a previous admit message, and no notification record is created", async () => {
-    const callback = jest.fn();
     Agent.agent.identifiers.getIdentifier = jest
       .fn()
       .mockResolvedValueOnce(identifierMetadataRecordProps);
@@ -1060,7 +1075,7 @@ describe("Signify notification service of agent", () => {
       },
     ]);
 
-    await keriaNotificationService.processNotification(noti, callback);
+    await keriaNotificationService.processNotification(noti);
 
     expect(
       Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn
@@ -1105,7 +1120,6 @@ describe("Long running operation tracker", () => {
   });
 
   test("Should handle long operations with type group", async () => {
-    const callback = jest.fn();
     const operationRecord = {
       type: "OperationPendingRecord",
       id: "group.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
@@ -1116,15 +1130,20 @@ describe("Long running operation tracker", () => {
     identifierStorage.getIdentifierMetadata.mockResolvedValueOnce({
       id: "id",
     });
-    await keriaNotificationService.processOperation(operationRecord, callback);
+    await keriaNotificationService.processOperation(operationRecord);
     expect(Agent.agent.multiSigs.endRoleAuthorization).toBeCalledWith("id");
-    expect(callback).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.Operation,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      },
+    });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 
   test("Should handle long operations with type witness", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    const callback = jest.fn();
     const operationMock = {
       metadata: {
         said: "said",
@@ -1143,20 +1162,25 @@ describe("Long running operation tracker", () => {
       recordType: "witness",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
-    await keriaNotificationService.processOperation(operationRecord, callback);
+    await keriaNotificationService.processOperation(operationRecord);
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
       "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
       {
         isPending: false,
       }
     );
-    expect(callback).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.Operation,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      },
+    });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 
   test("Should handle long operations with type oobi", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    const callback = jest.fn();
     const operationMock = {
       metadata: {
         said: "said",
@@ -1181,18 +1205,23 @@ describe("Long running operation tracker", () => {
       recordType: "oobi",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
-    await keriaNotificationService.processOperation(operationRecord, callback);
+    await keriaNotificationService.processOperation(operationRecord);
     expect(connectionStorage.update).toBeCalledWith({
       id: connectionMock.id,
       pending: false,
       createdAt: operationMock.response.dt,
     });
-    expect(callback).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.Operation,
+      payload: {
+        opType: operationRecord.recordType,
+        oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
+      },
+    });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 
   test("Should handle long operations with type exchange.receivecredential", async () => {
-    const callback = jest.fn();
     const credentialIdMock = "credentialId";
     signifyClient
       .exchanges()
@@ -1231,7 +1260,7 @@ describe("Long running operation tracker", () => {
       updatedAt: new Date(),
     });
 
-    await keriaNotificationService.processOperation(operationRecord, callback);
+    await keriaNotificationService.processOperation(operationRecord);
     expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
       credentialIdMock,
       CredentialStatus.CONFIRMED
@@ -1280,7 +1309,7 @@ describe("Long running operation tracker", () => {
       updatedAt: new Date(),
     });
 
-    await keriaNotificationService.processOperation(operationRecord, callback);
+    await keriaNotificationService.processOperation(operationRecord);
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
@@ -1325,13 +1354,12 @@ describe("Long running operation tracker", () => {
       updatedAt: new Date(),
     });
 
-    await keriaNotificationService.processOperation(operationRecord, callback);
+    await keriaNotificationService.processOperation(operationRecord);
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 
   test("Should delete original grant notification when multi-sig admit operation completes", async () => {
-    const callback = jest.fn();
     const credentialIdMock = "credentialId";
     signifyClient
       .exchanges()
@@ -1390,7 +1418,7 @@ describe("Long running operation tracker", () => {
       },
     ]);
 
-    await keriaNotificationService.processOperation(operationRecord, callback);
+    await keriaNotificationService.processOperation(operationRecord);
     expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
       credentialIdMock,
       CredentialStatus.CONFIRMED
@@ -1400,7 +1428,6 @@ describe("Long running operation tracker", () => {
   });
 
   test("Should handle long operations with type exchange.revokecredential", async () => {
-    const callback = jest.fn();
     const credentialIdMock = "credentialId";
     getCredentialMock.mockResolvedValue({
       id: "id",
@@ -1440,7 +1467,7 @@ describe("Long running operation tracker", () => {
       recordType: "exchange.revokecredential",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
-    await keriaNotificationService.processOperation(operationRecord, callback);
+    await keriaNotificationService.processOperation(operationRecord);
     expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
       credentialIdMock,
       CredentialStatus.REVOKED
@@ -1453,7 +1480,6 @@ describe("Long running operation tracker", () => {
   });
 
   test("Should not markAcdc if the credentialMetadata's status is revoked", async () => {
-    const callback = jest.fn();
     const credentialIdMock = "credentialId";
     getCredentialMock.mockResolvedValue({
       id: "id",
@@ -1493,7 +1519,7 @@ describe("Long running operation tracker", () => {
       recordType: "exchange.revokecredential",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
-    await keriaNotificationService.processOperation(operationRecord, callback);
+    await keriaNotificationService.processOperation(operationRecord);
     expect(Agent.agent.ipexCommunications.markAcdc).not.toBeCalled();
     expect(
       Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
@@ -1503,7 +1529,6 @@ describe("Long running operation tracker", () => {
   });
 
   test("Should not markAcdc if the credential.status.s status is not 1", async () => {
-    const callback = jest.fn();
     const credentialIdMock = "credentialId";
     getCredentialMock.mockResolvedValue({
       id: "id",
@@ -1542,7 +1567,7 @@ describe("Long running operation tracker", () => {
       recordType: "exchange.revokecredential",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
-    await keriaNotificationService.processOperation(operationRecord, callback);
+    await keriaNotificationService.processOperation(operationRecord);
     expect(Agent.agent.ipexCommunications.markAcdc).not.toBeCalled();
     expect(
       Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
@@ -1553,7 +1578,6 @@ describe("Long running operation tracker", () => {
 
   test("ExchangeReceiveCredential operations must have an exchange route of /ipex/admit", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    const callback = jest.fn();
     const operationMock = {
       metadata: {
         said: "said",
@@ -1583,7 +1607,7 @@ describe("Long running operation tracker", () => {
       recordType: "exchange.receivecredential",
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
-    await keriaNotificationService.processOperation(operationRecord, callback);
+    await keriaNotificationService.processOperation(operationRecord);
     expect(operationsGetMock).toBeCalledTimes(1);
     expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledTimes(0);
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
@@ -1594,7 +1618,6 @@ describe("Long running operation tracker", () => {
     jest.spyOn(global, "setTimeout").mockImplementation(() => {
       throw new Error("Force Exit");
     });
-    const callback = jest.fn();
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
     operationPendingGetAllMock.mockResolvedValueOnce([
       {
@@ -1606,20 +1629,18 @@ describe("Long running operation tracker", () => {
       },
     ]);
     try {
-      await keriaNotificationService.pollLongOperationsWithCb(callback);
+      await keriaNotificationService.pollLongOperations();
     } catch (error) {
       expect((error as Error).message).toBe("Force Exit");
     }
     expect(operationsGetMock).not.toBeCalled();
     expect(setTimeout).toHaveBeenCalledWith(
-      keriaNotificationService.pollLongOperationsWithCb,
-      KeriaNotificationService.POLL_KERIA_INTERVAL,
-      callback
+      keriaNotificationService.pollLongOperations,
+      KeriaNotificationService.POLL_KERIA_INTERVAL
     );
   });
 
   test("Should update notification marker after the notification is processed", async () => {
-    const callback = jest.fn();
     jest
       .spyOn(keriaNotificationService as any, "getKeriaOnlineStatus")
       .mockReturnValue(true);
@@ -1667,15 +1688,14 @@ describe("Long running operation tracker", () => {
       }
     });
     try {
-      await keriaNotificationService.pollNotificationsWithCb(callback);
+      await keriaNotificationService.pollNotifications();
     } catch (error) {
       expect((error as Error).message).toBe("Break the while loop");
     }
     expect(basicStorage.createOrUpdateBasicRecord).toBeCalledTimes(2);
     expect(setTimeout).toHaveBeenCalledWith(
-      keriaNotificationService.pollNotificationsWithCb,
-      KeriaNotificationService.POLL_KERIA_INTERVAL,
-      callback
+      keriaNotificationService.pollNotifications,
+      KeriaNotificationService.POLL_KERIA_INTERVAL
     );
   });
 });

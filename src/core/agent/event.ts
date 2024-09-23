@@ -1,9 +1,9 @@
 import EventEmitter from "events";
-import { BaseEventEmitter } from "../agent.types";
+import { BaseEventEmitter } from "./event.types";
 
 type EmitEvent<T extends BaseEventEmitter> = Omit<T, "metadata">;
 
-class EventService {
+class CoreEventEmitter {
   private eventEmitter: EventEmitter;
   constructor() {
     this.eventEmitter = new EventEmitter();
@@ -25,4 +25,4 @@ class EventService {
   }
 }
 
-export { EventService };
+export { CoreEventEmitter };

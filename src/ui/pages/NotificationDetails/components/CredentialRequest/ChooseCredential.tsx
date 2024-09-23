@@ -196,6 +196,7 @@ const ChooseCredential = ({
           data={displayIdentifiers}
           onCardClick={(data, e) => {
             e.stopPropagation();
+            handleSelectCred(data);
           }}
           onRenderStartSlot={(data) => {
             return (

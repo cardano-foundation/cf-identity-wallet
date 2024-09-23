@@ -4,7 +4,7 @@ import {
   PeerConnectionEventTypes,
   TxSignError,
 } from "./peerConnection.types";
-import { EventService } from "../../agent/services/eventService";
+import { CoreEventEmitter } from "../../agent/event";
 require("fake-indexeddb/auto");
 import { IdentityWalletConnect } from "./identityWalletConnect"; // Adjust the path accordingly
 
@@ -32,7 +32,7 @@ const walletInfo = {
 const selectedAid = "ELToRvQwhQ299vCk9GFMhggSdLHAAarm6LG8tyemik9G";
 const seed = "test-seed";
 const announce = ["announce-1", "announce-2"];
-const eventServiceMock = new EventService();
+const eventServiceMock = new CoreEventEmitter();
 const identityWalletConnect = new IdentityWalletConnect(
   walletInfo,
   seed,

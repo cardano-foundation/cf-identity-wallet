@@ -7,7 +7,6 @@ import {
   KeriaNotificationMarker,
   MiscRecordId,
   NotificationRoute,
-  OperationCallback,
 } from "../agent.types";
 import { CredentialStatus, Notification } from "./credentialService.types";
 import {
@@ -28,6 +27,11 @@ import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import { IdentifierService } from "./identifierService";
+import {
+  NotificationEvent,
+  EventTypes,
+  OperationPendingEvent,
+} from "../event.types";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -83,23 +87,20 @@ class KeriaNotificationService extends AgentService {
     this.connect = connect;
   }
 
-  async pollNotificationsWithCb(callback: (event: KeriaNotification) => void) {
+  async pollNotifications() {
     try {
-      await this.pollNotifications(callback);
+      await this._pollNotifications();
     } catch (error) {
       /* eslint-disable no-console */
-      console.error("Error at pollNotificationsWithCb", error);
+      console.error("Error at pollNotifications", error);
       setTimeout(
-        this.pollNotificationsWithCb,
-        KeriaNotificationService.POLL_KERIA_INTERVAL,
-        callback
+        this.pollNotifications,
+        KeriaNotificationService.POLL_KERIA_INTERVAL
       );
     }
   }
 
-  private async pollNotifications(
-    callback: (event: KeriaNotification) => void
-  ) {
+  private async _pollNotifications() {
     let notificationQuery = {
       nextIndex: 0,
       lastNotificationId: "",
@@ -179,7 +180,7 @@ class KeriaNotificationService extends AgentService {
       }
       for (const notif of notifications.notes) {
         try {
-          await this.processNotification(notif, callback);
+          await this.processNotification(notif);
           const nextNotificationIndex = notificationQuery.nextIndex + 1;
           notificationQuery = {
             nextIndex: nextNotificationIndex,
@@ -223,10 +224,7 @@ class KeriaNotificationService extends AgentService {
     await this.notificationStorage.deleteById(id);
   }
 
-  async processNotification(
-    notif: Notification,
-    callback: (event: KeriaNotification) => void
-  ) {
+  async processNotification(notif: Notification) {
     if (
       notif.r ||
       !Object.values(NotificationRoute).includes(notif.a.r as NotificationRoute)
@@ -253,7 +251,12 @@ class KeriaNotificationService extends AgentService {
 
     try {
       const keriaNotif = await this.createNotificationRecord(notif);
-      callback(keriaNotif);
+      this.props.eventEmitter.emit<NotificationEvent>({
+        type: EventTypes.Notification,
+        payload: {
+          keriaNotif,
+        },
+      });
     } catch (error) {
       if (
         (error as Error).message ===
@@ -684,28 +687,19 @@ class KeriaNotificationService extends AgentService {
     return notificationRecord;
   }
 
-  async pollLongOperationsWithCb(callback: OperationCallback) {
+  async pollLongOperations() {
     try {
-      await this.pollLongOperations(callback);
+      await this._pollLongOperations();
     } catch (error) {
-      console.error("Error at pollLongOperationsWithCb", error);
+      console.error("Error at pollLongOperations", error);
       setTimeout(
-        this.pollLongOperationsWithCb,
-        KeriaNotificationService.POLL_KERIA_INTERVAL,
-        callback
+        this.pollLongOperations,
+        KeriaNotificationService.POLL_KERIA_INTERVAL
       );
     }
   }
 
-  async pollLongOperations(
-    callback: ({
-      oid,
-      opType,
-    }: {
-      oid: string;
-      opType: OperationPendingRecordType;
-    }) => void
-  ) {
+  async _pollLongOperations() {
     this.pendingOperations = await this.operationPendingStorage.getAll();
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -719,7 +713,7 @@ class KeriaNotificationService extends AgentService {
       if (this.pendingOperations.length > 0) {
         for (const pendingOperation of this.pendingOperations) {
           try {
-            await this.processOperation(pendingOperation, callback);
+            await this.processOperation(pendingOperation);
           } catch (error) {
             console.error("Error when process a operation", error);
           }
@@ -733,10 +727,7 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  async processOperation(
-    operationRecord: OperationPendingRecord,
-    callback: OperationCallback
-  ) {
+  async processOperation(operationRecord: OperationPendingRecord) {
     let operation;
     try {
       operation = await this.props.signifyClient
@@ -773,9 +764,12 @@ class KeriaNotificationService extends AgentService {
         const multisigIdentifier =
             await this.identifierStorage.getIdentifierMetadata(recordId);
         await this.multiSigs.endRoleAuthorization(multisigIdentifier.id);
-        callback({
-          opType: operationRecord.recordType,
-          oid: recordId,
+        this.props.eventEmitter.emit<OperationPendingEvent>({
+          type: EventTypes.Operation,
+          payload: {
+            opType: operationRecord.recordType,
+            oid: recordId,
+          },
         });
         break;
       }
@@ -783,9 +777,12 @@ class KeriaNotificationService extends AgentService {
         await this.identifierStorage.updateIdentifierMetadata(recordId, {
           isPending: false,
         });
-        callback({
-          opType: operationRecord.recordType,
-          oid: recordId,
+        this.props.eventEmitter.emit<OperationPendingEvent>({
+          type: EventTypes.Operation,
+          payload: {
+            opType: operationRecord.recordType,
+            oid: recordId,
+          },
         });
         break;
       }
@@ -798,9 +795,12 @@ class KeriaNotificationService extends AgentService {
           connectionRecord.createdAt = (operation.response as any).dt;
           await this.connectionStorage.update(connectionRecord);
         }
-        callback({
-          opType: operationRecord.recordType,
-          oid: recordId,
+        this.props.eventEmitter.emit<OperationPendingEvent>({
+          type: EventTypes.Operation,
+          payload: {
+            opType: operationRecord.recordType,
+            oid: recordId,
+          },
         });
         break;
       }
@@ -876,9 +876,12 @@ class KeriaNotificationService extends AgentService {
               route: NotificationRoute.LocalAcdcRevoked,
             };
             await this.notificationStorage.save(metadata);
-            callback({
-              opType: operationRecord.recordType,
-              oid: recordId,
+            this.props.eventEmitter.emit<OperationPendingEvent>({
+              type: EventTypes.Operation,
+              payload: {
+                opType: operationRecord.recordType,
+                oid: recordId,
+              },
             });
           }
         }
@@ -956,6 +959,14 @@ class KeriaNotificationService extends AgentService {
 
   addPendingOperationToQueue(pendingOperation: OperationPendingRecord) {
     this.pendingOperations.push(pendingOperation);
+  }
+
+  onNewNotification(callback: (event: NotificationEvent) => void) {
+    this.props.eventEmitter.on(EventTypes.Notification, callback);
+  }
+
+  onLongOperationComplete(callback: (event: OperationPendingEvent) => void) {
+    this.props.eventEmitter.on(EventTypes.Operation, callback);
   }
 }
 

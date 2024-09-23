@@ -4,12 +4,10 @@ import { Agent } from "../agent";
 import {
   AgentServicesProps,
   ConnectionDetails,
-  ConnectionEventTypes,
   ConnectionHistoryItem,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
-  ConnectionStateChangedEvent,
   ConnectionStatus,
   KeriConnectionType,
   OobiScan,
@@ -27,6 +25,7 @@ import { AgentService } from "./agentService";
 import { KeriaContact } from "./connection.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { StorageMessage } from "../../storage/storage.types";
+import { ConnectionStateChangedEvent, EventTypes } from "../event.types";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
@@ -60,17 +59,10 @@ class ConnectionService extends AgentService {
     "Failed to resolve OOBI, operation not completing...";
   static readonly CANNOT_GET_OOBI = "No OOBI available from KERIA";
 
-  static resolvedOobi: { [key: string]: any } = {};
-
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
   ) {
-    this.props.eventService.on(
-      ConnectionEventTypes.ConnectionStateChanged,
-      async (event: ConnectionStateChangedEvent) => {
-        callback(event);
-      }
-    );
+    this.props.eventEmitter.on(EventTypes.ConnectionStateChanged, callback);
   }
 
   @OnlineOnly
@@ -79,8 +71,8 @@ class ConnectionService extends AgentService {
 
     // @TODO - foconnor: We shouldn't emit this if it's a multiSigInvite, but the routing will break if we don't.
     // To fix once we handle errors for the scanner in general.
-    this.props.eventService.emit<ConnectionStateChangedEvent>({
-      type: ConnectionEventTypes.ConnectionStateChanged,
+    this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+      type: EventTypes.ConnectionStateChanged,
       payload: {
         isMultiSigInvite: multiSigInvite,
         connectionId: undefined,
@@ -140,8 +132,8 @@ class ConnectionService extends AgentService {
     await this.createConnectionMetadata(connectionId, connectionMetadata);
 
     if (!multiSigInvite) {
-      this.props.eventService.emit<ConnectionStateChangedEvent>({
-        type: ConnectionEventTypes.ConnectionStateChanged,
+      this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+        type: EventTypes.ConnectionStateChanged,
         payload: {
           connectionId,
           status: ConnectionStatus.CONFIRMED,
@@ -376,9 +368,6 @@ class ConnectionService extends AgentService {
   @OnlineOnly
   async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
     const startTime = Date.now();
-    if (ConnectionService.resolvedOobi[url]) {
-      return ConnectionService.resolvedOobi[url];
-    }
     const alias = new URL(url).searchParams.get("name") ?? uuidv4();
     let operation;
     if (waitForCompletion) {
@@ -406,7 +395,6 @@ class ConnectionService extends AgentService {
       throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
     }
     const oobi = { ...operation, alias };
-    ConnectionService.resolvedOobi[url] = oobi;
     return oobi;
   }
 

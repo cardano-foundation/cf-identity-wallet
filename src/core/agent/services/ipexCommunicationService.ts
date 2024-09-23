@@ -2,11 +2,9 @@ import { b, d, messagize, Operation, Saider, Serder, Siger } from "signify-ts";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import {
-  AcdcEventTypes,
   ExchangeRoute,
   IpexMessage,
   NotificationRoute,
-  type AcdcStateChangedEvent,
   type AgentServicesProps,
   type KeriaNotification,
 } from "../agent.types";
@@ -26,6 +24,7 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
 import { GrantToJoinMultisigExnPayload, MultiSigRoute } from "./multiSig.types";
+import { AcdcStateChangedEvent, EventTypes } from "../event.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -122,8 +121,8 @@ class IpexCommunicationService extends AgentService {
       schemaSaid
     );
 
-    this.props.eventService.emit<AcdcStateChangedEvent>({
-      type: AcdcEventTypes.AcdcStateChanged,
+    this.props.eventEmitter.emit<AcdcStateChangedEvent>({
+      type: EventTypes.AcdcStateChanged,
       payload: {
         credential,
         status: CredentialStatus.PENDING,
@@ -447,8 +446,8 @@ class IpexCommunicationService extends AgentService {
       metadata.id,
       metadata
     );
-    this.props.eventService.emit<AcdcStateChangedEvent>({
-      type: AcdcEventTypes.AcdcStateChanged,
+    this.props.eventEmitter.emit<AcdcStateChangedEvent>({
+      type: EventTypes.AcdcStateChanged,
       payload: {
         status,
         credential: getCredentialShortDetails(metadata),
@@ -533,8 +532,8 @@ class IpexCommunicationService extends AgentService {
         schemaSaid
       );
 
-      this.props.eventService.emit<AcdcStateChangedEvent>({
-        type: AcdcEventTypes.AcdcStateChanged,
+      this.props.eventEmitter.emit<AcdcStateChangedEvent>({
+        type: EventTypes.AcdcStateChanged,
         payload: {
           credential,
           status: CredentialStatus.PENDING,

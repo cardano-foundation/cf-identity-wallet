@@ -1,9 +1,5 @@
 import { SignifyClient } from "signify-ts";
-import {
-  CredentialShortDetails,
-  CredentialStatus,
-} from "./services/credentialService.types";
-import { EventService } from "./services/eventService";
+import { CoreEventEmitter } from "./event";
 import { ConnectionHistoryType } from "./services/connection.types";
 import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
 
@@ -90,43 +86,6 @@ interface ConnectionDetails extends ConnectionShortDetails {
   serviceEndpoints?: string[];
   notes?: ConnectionNoteDetails[];
 }
-
-enum ConnectionEventTypes {
-  ConnectionStateChanged = "ConnectionStateChanged",
-}
-
-enum AcdcEventTypes {
-  AcdcStateChanged = "AcdcStateChanged",
-}
-
-enum KeriaStatusEventTypes {
-  KeriaStatusChanged = "KeriaStatusChanged",
-}
-
-interface ConnectionStateChangedEvent extends BaseEventEmitter {
-  type: typeof ConnectionEventTypes.ConnectionStateChanged;
-  payload: {
-    isMultiSigInvite?: boolean;
-    connectionId?: string;
-    status: ConnectionStatus;
-  };
-}
-
-interface AcdcStateChangedEvent extends BaseEventEmitter {
-  type: typeof AcdcEventTypes.AcdcStateChanged;
-  payload: {
-    status: CredentialStatus;
-    credential: CredentialShortDetails;
-  };
-}
-
-interface KeriaStatusChangedEvent extends BaseEventEmitter {
-  type: typeof KeriaStatusEventTypes.KeriaStatusChanged;
-  payload: {
-    isOnline: boolean;
-  };
-}
-
 interface NotificationRpy {
   a: {
     cid: string;
@@ -168,11 +127,6 @@ type OobiScan =
       connection: ConnectionShortDetails;
     };
 
-interface BaseEventEmitter {
-  type: string;
-  payload: Record<string, unknown>;
-}
-
 interface KeriaNotificationMarker {
   nextIndex: number;
   lastNotificationId: string;
@@ -180,7 +134,7 @@ interface KeriaNotificationMarker {
 
 interface AgentServicesProps {
   signifyClient: SignifyClient;
-  eventService: EventService;
+  eventEmitter: CoreEventEmitter;
 }
 
 interface CreateIdentifierResult {
@@ -238,12 +192,9 @@ type OperationCallback = ({
 export {
   ConnectionStatus,
   MiscRecordId,
-  ConnectionEventTypes,
-  AcdcEventTypes,
   NotificationRoute,
   ExchangeRoute,
   KeriConnectionType,
-  KeriaStatusEventTypes,
 };
 
 export type {
@@ -252,16 +203,12 @@ export type {
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionHistoryItem,
-  ConnectionStateChangedEvent,
   KeriaNotification,
-  AcdcStateChangedEvent,
   OobiScan,
-  BaseEventEmitter,
   KeriaNotificationMarker,
   AgentServicesProps,
   CreateIdentifierResult,
   IdentifierResult,
-  KeriaStatusChangedEvent,
   AgentUrls,
   BranAndMnemonic,
   IpexMessage,
