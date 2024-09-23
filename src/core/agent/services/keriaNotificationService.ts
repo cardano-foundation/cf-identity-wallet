@@ -774,6 +774,9 @@ class KeriaNotificationService extends AgentService {
           const credential = await this.props.signifyClient
             .credentials()
             .get(credentialId);
+          if (credential.status.s === "0") {
+            return;
+          }
           if (
             credential &&
               credential.status.s === "1" &&
