@@ -180,9 +180,14 @@ class IpexCommunicationService extends AgentService {
     }
 
     if (Object.keys(applyNoteRecord.linkedGroupRequests).length) {
-      for (const said of Object.keys(applyNoteRecord.linkedGroupRequests)) {
-        if (!applyNoteRecord.linkedGroupRequests[said]) {
-          await this.joinMultisigOffer(said as string);
+      for (const acdcSaid of Object.keys(applyNoteRecord.linkedGroupRequests)) {
+        if (acdcSaid === acdc.a.d) {
+          if (!applyNoteRecord.linkedGroupRequests[acdc.a.d].accepted) {
+            for (const said of applyNoteRecord.linkedGroupRequests[acdc.a.d]
+              .saids) {
+              await this.joinMultisigOffer(said as string);
+            }
+          }
         }
       }
       return;
@@ -196,6 +201,7 @@ class IpexCommunicationService extends AgentService {
 
     let op: Operation;
     if (discloser.multisigManageAid) {
+      const acdcSaid = acdc.a.d as string;
       const { op: opMultisigOffer, exnSaid } =
         await this.multisigOfferAcdcFromApply(
           discloser.id,
@@ -205,7 +211,10 @@ class IpexCommunicationService extends AgentService {
         );
       op = opMultisigOffer;
       applyNoteRecord.linkedGroupRequests = {
-        [exnSaid]: true,
+        [acdcSaid]: {
+          accepted: true,
+          saids: [exnSaid],
+        },
       };
       await this.notificationStorage.update(applyNoteRecord);
     } else {
@@ -562,8 +571,7 @@ class IpexCommunicationService extends AgentService {
     }
   }
 
-  @OnlineOnly
-  async joinMultisigOffer(said: string): Promise<void> {
+  private async joinMultisigOffer(said: string): Promise<void> {
     const exn = await this.props.signifyClient.exchanges().get(said);
     const multisigExn = exn?.exn?.e?.exn;
     const holder = await this.identifierStorage.getIdentifierMetadata(
@@ -607,8 +615,7 @@ class IpexCommunicationService extends AgentService {
     }
   }
 
-  @OnlineOnly
-  async joinMultisigGrant(said: string): Promise<void> {
+  private async joinMultisigGrant(said: string): Promise<void> {
     const exn = await this.props.signifyClient.exchanges().get(said);
 
     const grantExn = exn?.exn?.e?.exn;
@@ -642,10 +649,11 @@ class IpexCommunicationService extends AgentService {
     });
 
     if (notifications.length) {
+      const acdcSaid = credential.a.d as string;
       const notificationRecord = notifications[0];
-      notificationRecord.linkedGroupRequests = {
-        ...notificationRecord.linkedGroupRequests,
-        [said]: true,
+      notificationRecord.linkedGroupRequests[acdcSaid] = {
+        ...notificationRecord.linkedGroupRequests[acdcSaid],
+        accepted: true,
       };
 
       await this.notificationStorage.update(notificationRecord);
@@ -711,11 +719,7 @@ class IpexCommunicationService extends AgentService {
         );
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
-      const exchangeMessage = await this.props.signifyClient
-        .exchanges()
-        .get(notificationSaid);
-
-      const applySaid = exchangeMessage.exn.d;
+      const applySaid = notificationSaid;
 
       const [offer, offerSigs, offerEnd] = await this.props.signifyClient
         .ipex()
@@ -762,7 +766,7 @@ class IpexCommunicationService extends AgentService {
 
   async multisigGrantAcdcFromAgree(
     multisigId: string,
-    recipient: string,
+    discloseePrefix: string,
     acdcDetail: any,
     grantToJoin?: GrantToJoinMultisigExnPayload
   ) {
@@ -821,7 +825,7 @@ class IpexCommunicationService extends AgentService {
       const time = new Date().toISOString().replace("Z", "000+00:00");
       const [grant, sigs, end] = await this.props.signifyClient.ipex().grant({
         senderName: multisigId,
-        recipient,
+        recipient: discloseePrefix,
         message: "",
         acdc: new Serder(acdcDetail.sad),
         iss: new Serder(acdcDetail.iss),

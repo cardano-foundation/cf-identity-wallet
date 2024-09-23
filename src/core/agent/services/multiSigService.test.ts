@@ -743,6 +743,39 @@ describe("Usage of multi-sig", () => {
       ["aid"]
     );
   });
+
+  test("Can get participants with a multi-sig identifier", async () => {
+    identifiersMemberMock = jest
+      .fn()
+      .mockResolvedValue(getMultisigMembersResponse);
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce({
+      ...memberMetadataRecordProps,
+      groupMetadata: {
+        ...memberMetadataRecordProps.groupMetadata,
+        groupCreated: true,
+      },
+    });
+
+    await multiSigService.getMultisigParticipants("id");
+
+    expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
+      getMultisigMembersResponse.signing[0].aid
+    );
+  });
+
+  test("Can not get participants with a multi-sig identifier if not exist our identifier", async () => {
+    identifiersMemberMock = jest
+      .fn()
+      .mockResolvedValue(getMultisigMembersResponse);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(memberMetadataRecord);
+
+    await expect(
+      multiSigService.getMultisigParticipants("id")
+    ).rejects.toThrowError(MultiSigService.MEMBER_AID_NOT_FOUND);
+  });
 });
 
 describe("Creation of multi-sig", () => {

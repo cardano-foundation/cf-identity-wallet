@@ -502,30 +502,23 @@ class KeriaNotificationService extends AgentService {
           await this.notificationStorage.findAllByQuery({
             exnSaid: previousExnMsgApply.exn.d,
           });
+
       if (notificationsApply.length) {
         const notificationRecord = notificationsApply[0];
+        const acdcSaid = exchange.exn.e.exn?.e?.acdc?.a?.d;
 
         if (
-          !Object.values(notificationRecord.linkedGroupRequests).includes(
-            true
-          )
+          !notificationRecord.linkedGroupRequests ||
+            Object.keys(notificationRecord.linkedGroupRequests).length === 0 ||
+            notificationRecord.linkedGroupRequests.acdcSaid?.accepted === false
         ) {
           notificationRecord.linkedGroupRequests = {
-            ...notificationRecord.linkedGroupRequests,
-            [exchange.exn.d]: false,
-          };
-        } else {
-          const acdc = exchange.exn.e.exn.e.acdc;
-          await this.ipexCommunications.offerAcdcFromApply(
-            exchange.exn.d,
-            acdc
-          );
-          notificationRecord.linkedGroupRequests = {
-            ...notificationRecord.linkedGroupRequests,
-            [exchange.exn.d]: true,
+            [acdcSaid]: {
+              accepted: false,
+              saids: [exchange.exn.d],
+            },
           };
         }
-        await this.notificationStorage.update(notificationRecord);
       }
       await this.markNotification(notif.i);
       return false;

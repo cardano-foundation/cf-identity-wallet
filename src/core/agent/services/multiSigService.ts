@@ -36,6 +36,7 @@ import {
   RotationMultiSigExnMessage,
   CreateMultisigExnPayload,
   AuthorizationExnPayload,
+  InceptMultiSigExnMessage,
 } from "./multiSig.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
@@ -337,7 +338,7 @@ class MultiSigService extends AgentService {
   }
 
   private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
-    const notifications: RotationMultiSigExnMessage[] =
+    const notifications: InceptMultiSigExnMessage[] =
       await this.props.signifyClient
         .groups()
         .getRequest(msgSaid)
@@ -369,7 +370,7 @@ class MultiSigService extends AgentService {
   async getMultisigIcpDetails(
     notificationSaid: string
   ): Promise<MultiSigIcpRequestDetails> {
-    const icpMsg: RotationMultiSigExnMessage[] = await this.props.signifyClient
+    const icpMsg: InceptMultiSigExnMessage[] = await this.props.signifyClient
       .groups()
       .getRequest(notificationSaid)
       .catch((error) => {
@@ -440,7 +441,7 @@ class MultiSigService extends AgentService {
       );
       return;
     }
-    const icpMsg: RotationMultiSigExnMessage[] = await this.props.signifyClient
+    const icpMsg: InceptMultiSigExnMessage[] = await this.props.signifyClient
       .groups()
       .getRequest(notificationSaid)
       .catch((error) => {
@@ -709,7 +710,7 @@ class MultiSigService extends AgentService {
   }
 
   private async joinMultisigKeri(
-    exn: RotationMultiSigExnMessage["exn"],
+    exn: InceptMultiSigExnMessage["exn"],
     aid: HabState,
     name: string
   ): Promise<{

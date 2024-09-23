@@ -20,7 +20,7 @@ class NotificationRecord extends BaseRecord {
   read!: boolean;
   multisigId?: string;
   connectionId!: string;
-  linkedGroupRequests!: Record<string, boolean>;
+  linkedGroupRequests!: Record<string, any>;
   static readonly type = "NotificationRecord";
   readonly type = NotificationRecord.type;
 

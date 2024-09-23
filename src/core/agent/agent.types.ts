@@ -111,7 +111,6 @@ interface KeriaNotification {
   multisigId?: string;
   connectionId: string;
   read: boolean;
-  linkedGroupRequests?: Record<string, boolean>;
 }
 
 enum KeriConnectionType {

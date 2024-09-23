@@ -39,6 +39,8 @@ interface RotationMultiSigExnMessage {
   };
 }
 
+type InceptMultiSigExnMessage = RotationMultiSigExnMessage
+
 interface CreateMultisigExnPayload {
   gid: string;
   smids: string[];
@@ -96,4 +98,5 @@ export type {
   AuthorizationExnPayload,
   GrantToJoinMultisigExnPayload,
   IpexGrantMultiSigExn,
+  InceptMultiSigExnMessage,
 };
