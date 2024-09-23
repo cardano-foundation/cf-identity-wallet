@@ -1461,7 +1461,7 @@ describe("Long running operation tracker", () => {
       Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
     ).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
-    expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+    expect(operationPendingStorage.deleteById).toBeCalledTimes(0);
   });
 
   test("ExchangeReceiveCredential operations must have an exchange route of /ipex/admit", async () => {
