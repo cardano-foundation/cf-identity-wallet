@@ -468,9 +468,30 @@ class IpexCommunicationService extends AgentService {
     }
   }
 
-  async getAcdcFromIpexGrant(said: string): Promise<ACDCDetails> {
+  async getAcdcFromIpexGrant(
+    said: string
+  ): Promise<Omit<ACDCDetails, "status">> {
     const exchange = await this.props.signifyClient.exchanges().get(said);
-    return exchange.exn.e.acdc;
+    const schemaSaid = exchange.exn.e.acdc.s;
+    const schema = await this.props.signifyClient.schemas().get(schemaSaid);
+
+    return {
+      id: exchange.exn.e.acdc.d,
+      credentialType: schema.title,
+      issuanceDate: exchange.exn.e.acdc.a.dt,
+      schema: exchange.exn.e.acdc.s,
+      i: exchange.exn.e.acdc.i,
+      a: exchange.exn.e.acdc.a,
+      s: {
+        title: schema.title,
+        description: schema.description,
+        version: schema.version,
+      },
+      lastStatus: {
+        s: exchange.exn.e.iss.s,
+        dt: new Date(exchange.exn.e.iss.dt).toISOString(),
+      },
+    };
   }
 }
 
