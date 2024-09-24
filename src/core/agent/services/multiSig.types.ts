@@ -23,7 +23,19 @@ interface IcpExn extends CommonExn {
   a: any[];
 }
 
-interface RotationMultiSigExnMessage {
+interface RotExn extends CommonExn {
+  s: string;
+  kt: string | string[];
+  k: string[];
+  nt: string | string[];
+  n: string[];
+  bt: string;
+  br: any[];
+  ba: any[];
+  a: any[];
+}
+
+interface InceptMultiSigExnMessage {
   exn: CommonExn & {
     a: {
       gid: string;
@@ -39,7 +51,21 @@ interface RotationMultiSigExnMessage {
   };
 }
 
-type InceptMultiSigExnMessage = RotationMultiSigExnMessage
+interface RotationMultiSigExnMessage {
+  exn: CommonExn & {
+    a: {
+      gid: string;
+      smids: string[];
+      rmids: string[];
+      rstates: HabState["state"][];
+      name: string;
+    };
+    e: {
+      rot: RotExn;
+      d: string;
+    };
+  };
+}
 
 interface CreateMultisigExnPayload {
   gid: string;

@@ -990,7 +990,10 @@ describe("Signify notification service of agent", () => {
       route: "/exn/ipex/grant",
       read: true,
       linkedGroupRequests: {
-        "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO": false,
+        "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
+          accepted: false,
+          saids: ["ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO"],
+        },
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: new Date(),
@@ -1091,8 +1094,10 @@ describe("Signify notification service of agent", () => {
       route: "/exn/ipex/grant",
       read: true,
       linkedGroupRequests: {
-        "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO": true,
-        "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": true,
+        "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
+          accepted: true,
+          saids: ["ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO"],
+        },
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: new Date(),

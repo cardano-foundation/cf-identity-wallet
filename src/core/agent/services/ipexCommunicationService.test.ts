@@ -927,7 +927,7 @@ describe("Ipex communication service of agent", () => {
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 
-  test("can accept ACDC from multisig exn", async () => {
+  test("can accept ACDC from multisig exn 123", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "uuid";
 
@@ -942,7 +942,10 @@ describe("Ipex communication service of agent", () => {
       route: "/exn/ipex/grant",
       read: true,
       linkedGroupRequests: {
-        "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
+        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
+          accepted: false,
+          saids: ["EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw"],
+        },
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: new Date(),
@@ -1094,7 +1097,10 @@ describe("Ipex communication service of agent", () => {
       route: "/exn/ipex/grant",
       read: true,
       linkedGroupRequests: {
-        exnSaid: true,
+        "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
+          accepted: true,
+          saids: ["exnSaid"],
+        },
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     });
@@ -1141,7 +1147,10 @@ describe("Ipex communication service of agent", () => {
       route: "/exn/ipex/grant",
       read: true,
       linkedGroupRequests: {
-        "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
+        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
+          accepted: false,
+          saids: ["EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw"],
+        },
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     };
@@ -1226,7 +1235,10 @@ describe("Ipex communication service of agent", () => {
       route: "/exn/ipex/grant",
       read: true,
       linkedGroupRequests: {
-        "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": true,
+        "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
+          accepted: true,
+          saids: ["EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw"],
+        },
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     });
@@ -1375,7 +1387,7 @@ describe("Ipex communication service of agent", () => {
       .spyOn(ipexCommunicationService, "multisigOfferAcdcFromApply")
       .mockResolvedValueOnce({
         op: { name: "opName", done: true },
-        exnSaid: "d",
+        offerSaid: "d",
       });
 
     await ipexCommunicationService.offerAcdcFromApply(id, acdc);
@@ -1441,7 +1453,7 @@ describe("Ipex communication service of agent", () => {
       .spyOn(ipexCommunicationService, "multisigOfferAcdcFromApply")
       .mockResolvedValueOnce({
         op: { name: "opName", done: true },
-        exnSaid: "d",
+        offerSaid: "d",
       });
 
     await ipexCommunicationService.offerAcdcFromApply("id", acdc);
@@ -1456,7 +1468,7 @@ describe("Ipex communication service of agent", () => {
       route: "/exn/ipex/apply",
       read: true,
       linkedGroupRequests: {
-        "EDdyFnzf3dDOIHU7AF4tsQ-fqtFeHmg5LniT7QpJuFpw": {
+        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
           accepted: true,
           saids: ["d"],
         },
@@ -1571,7 +1583,7 @@ describe("Ipex communication service of agent", () => {
       .spyOn(ipexCommunicationService, "multisigOfferAcdcFromApply")
       .mockResolvedValueOnce({
         op: { name: "opName", done: true },
-        exnSaid: "d",
+        offerSaid: "d",
       });
 
     await ipexCommunicationService.offerAcdcFromApply("id", acdc);
@@ -1591,7 +1603,7 @@ describe("Ipex communication service of agent", () => {
       route: "/exn/ipex/apply",
       read: true,
       linkedGroupRequests: {
-        "EDdyFnzf3dDOIHU7AF4tsQ-fqtFeHmg5LniT7QpJuFpw": {
+        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
           accepted: true,
           saids: ["d"],
         },

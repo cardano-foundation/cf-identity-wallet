@@ -458,9 +458,10 @@ class KeriaNotificationService extends AgentService {
         return false;
       }
 
+      const credentialId = previousExnMsg.exn.e.acdc.d;
       const existingCredential = await this.props.signifyClient
         .credentials()
-        .get(previousExnMsg.exn.e.acdc.d)
+        .get(credentialId)
         .catch(() => undefined);
 
       if (existingCredential) {
@@ -471,21 +472,24 @@ class KeriaNotificationService extends AgentService {
       if (notificationsGrant.length) {
         const notificationRecord = notificationsGrant[0];
         if (
-          !Object.values(notificationRecord.linkedGroupRequests).includes(
-            true
-          )
+          Object.keys(notificationRecord.linkedGroupRequests).length === 0 ||
+            notificationRecord.linkedGroupRequests.acdcSaid?.accepted === false
         ) {
           notificationRecord.linkedGroupRequests = {
-            ...notificationRecord.linkedGroupRequests,
-            [exchange.exn.d]: false,
+            [credentialId]: {
+              accepted: false,
+              saids: [exchange.exn.d],
+            },
           };
         } else {
           await this.ipexCommunications.acceptAcdcFromMultisigExn(
             exchange.exn.d
           );
           notificationRecord.linkedGroupRequests = {
-            ...notificationRecord.linkedGroupRequests,
-            [exchange.exn.d]: true,
+            [credentialId]: {
+              accepted: true,
+              saids: [exchange.exn.d],
+            },
           };
         }
         await this.notificationStorage.update(notificationRecord);
@@ -494,6 +498,8 @@ class KeriaNotificationService extends AgentService {
       return false;
     }
     case ExchangeRoute.IpexOffer: {
+      console.log("Exchange in multisig/exn: ", exchange);
+
       const previousExnMsgApply = await this.props.signifyClient
         .exchanges()
         .get(exchange?.exn.e.exn.p);
@@ -505,20 +511,28 @@ class KeriaNotificationService extends AgentService {
 
       if (notificationsApply.length) {
         const notificationRecord = notificationsApply[0];
-        const acdcSaid = exchange.exn.e.exn?.e?.acdc?.a?.d;
+        const acdcSaid = exchange.exn.e.exn?.e?.acdc?.d;
+        const said = exchange.exn.e.exn.d;
 
         if (
-          !notificationRecord.linkedGroupRequests ||
-            Object.keys(notificationRecord.linkedGroupRequests).length === 0 ||
+          Object.keys(notificationRecord.linkedGroupRequests).length === 0 ||
             notificationRecord.linkedGroupRequests.acdcSaid?.accepted === false
         ) {
           notificationRecord.linkedGroupRequests = {
             [acdcSaid]: {
               accepted: false,
-              saids: [exchange.exn.d],
+              saids: [said],
+            },
+          };
+        } else {
+          notificationRecord.linkedGroupRequests = {
+            [acdcSaid]: {
+              accepted: true,
+              saids: [said],
             },
           };
         }
+        await this.notificationStorage.update(notificationRecord);
       }
       await this.markNotification(notif.i);
       return false;
@@ -528,6 +542,7 @@ class KeriaNotificationService extends AgentService {
         .exchanges()
         .get(exchange?.exn.e.exn.p);
 
+      const credentialId = previousExnMsgAgree.exn.e.acdc.d;
       const notificationsAgree =
           await this.notificationStorage.findAllByQuery({
             exnSaid: previousExnMsgAgree.exn.d,
@@ -536,19 +551,22 @@ class KeriaNotificationService extends AgentService {
         const notificationRecord = notificationsAgree[0];
 
         if (
-          !Object.values(notificationRecord.linkedGroupRequests).includes(
-            true
-          )
+          Object.keys(notificationRecord.linkedGroupRequests).length === 0 ||
+            notificationRecord.linkedGroupRequests.acdcSaid?.accepted === false
         ) {
           notificationRecord.linkedGroupRequests = {
-            ...notificationRecord.linkedGroupRequests,
-            [exchange.exn.d]: false,
+            [credentialId]: {
+              accepted: false,
+              saids: [exchange.exn.d],
+            },
           };
         } else {
           await this.ipexCommunications.grantAcdcFromAgree(exchange.exn.d);
           notificationRecord.linkedGroupRequests = {
-            ...notificationRecord.linkedGroupRequests,
-            [exchange.exn.d]: true,
+            [credentialId]: {
+              accepted: true,
+              saids: [exchange.exn.d],
+            },
           };
         }
         await this.notificationStorage.update(notificationRecord);
