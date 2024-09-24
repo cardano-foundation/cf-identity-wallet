@@ -61,23 +61,19 @@ const CredentialDetailModule = ({
   const { isLightMode } = props;
   const selected = isLightMode ? props.selected : false;
   const setSelected = isLightMode ? props.setSelected : undefined;
-
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const favouritesCredsCache = useAppSelector(getFavouritesCredsCache);
   const notifications = useAppSelector(getNotificationsCache);
-
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertDeleteArchiveIsOpen, setAlertDeleteArchiveIsOpen] =
     useState(false);
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [cardData, setCardData] = useState<ACDCDetails>();
-
   const isArchived = credsCache.filter((item) => item.id === id).length === 0;
   const isRevoked = cardData?.status === CredentialStatus.REVOKED;
   const isInactiveCred = isArchived || isRevoked;
-
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === id);
   const [cloudError, setCloudError] = useState(false);
 

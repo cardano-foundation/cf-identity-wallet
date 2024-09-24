@@ -876,6 +876,7 @@
       "title": "Title",
       "description": "Description",
       "revoked": "Revoked",
+      "id": "Credential ID",
       "attributes": {
         "label": "Attributes",
         "issuee": "Issuee",
