@@ -1,6 +1,13 @@
-import { IonCheckbox, IonIcon, IonSpinner } from "@ionic/react";
+import {
+  IonCheckbox,
+  IonIcon,
+  IonLabel,
+  IonSegment,
+  IonSegmentButton,
+  IonSpinner,
+} from "@ionic/react";
 import { informationCircleOutline } from "ionicons/icons";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Agent } from "../../../../../core/agent/agent";
 import { i18n } from "../../../../../i18n";
@@ -27,6 +34,9 @@ import {
   RequestCredential,
 } from "./CredentialRequest.types";
 import { BackReason } from "../../../../components/CredentialDetailModule/CredentialDetailModule.types";
+import { CredentialStatus } from "../../../../../core/agent/services/credentialService.types";
+import { getCredsCache } from "../../../../../store/reducers/credsCache";
+import { CardDetailsBlock } from "../../../../components/CardDetails";
 
 const CRED_EMPTY = "Credential is empty";
 
@@ -68,6 +78,7 @@ const ChooseCredential = ({
   onClose,
   reloadData,
 }: ChooseCredentialProps) => {
+  const credsCache = useAppSelector(getCredsCache);
   const connections = useAppSelector(getConnectionsCache);
   const notifications = useAppSelector(getNotificationsCache);
   const dispatch = useDispatch();
@@ -78,8 +89,9 @@ const ChooseCredential = ({
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [viewCredDetail, setViewCredDetail] =
     useState<RequestCredential | null>(null);
+  const [segmentValue, setSegmentValue] = useState("active");
 
-  const displayIdentifiers = credentialRequest.credentials.map(
+  const mappedCredentials = credentialRequest.credentials.map(
     (cred): CardItem<RequestCredential> => {
       const connection = connections?.[cred.connectionId]?.label || "";
 
@@ -93,6 +105,31 @@ const ChooseCredential = ({
         data: cred,
       };
     }
+  );
+
+  const sortedCredentials = mappedCredentials.sort(function (a, b) {
+    if (a.title < b.title) {
+      return -1;
+    }
+    if (a.title > b.title) {
+      return 1;
+    }
+    const dateA = new Date(a.data.acdc.a.dt).getTime();
+    const dateB = new Date(b.data.acdc.a.dt).getTime();
+    return dateA - dateB;
+  });
+
+  const revokedCredsCache = useMemo(
+    () => credsCache.filter((item) => item.status === CredentialStatus.REVOKED),
+    [credsCache]
+  );
+
+  const revokedCredentials = sortedCredentials.filter((cred) =>
+    revokedCredsCache.some((revoked) => revoked.id === cred.id)
+  );
+
+  const activeCredentials = sortedCredentials.filter(
+    (cred) => !revokedCredsCache.some((revoked) => revoked.id === cred.id)
   );
 
   const handleSelectCred = useCallback((data: RequestCredential) => {
@@ -192,8 +229,73 @@ const ChooseCredential = ({
             }
           )}
         </h2>
+        <IonSegment
+          data-testid="choose-credential-segment"
+          value={segmentValue}
+          onIonChange={(event) => setSegmentValue(`${event.detail.value}`)}
+        >
+          <IonSegmentButton
+            value="active"
+            data-testid="choose-credential-active-button"
+          >
+            <IonLabel>{`${i18n.t(
+              "notifications.details.credential.request.choosecredential.active"
+            )}`}</IonLabel>
+          </IonSegmentButton>
+          <IonSegmentButton
+            value="revoked"
+            data-testid="choose-credential-revoked-button"
+          >
+            <IonLabel>{`${i18n.t(
+              "notifications.details.credential.request.choosecredential.revoked"
+            )}`}</IonLabel>
+          </IonSegmentButton>
+        </IonSegment>
+        {segmentValue === "revoked" && (
+          <CardDetailsBlock className="user-tips">
+            <div>
+              <p>
+                {i18n.t(
+                  "notifications.details.credential.request.choosecredential.disclaimer"
+                )}
+              </p>
+            </div>
+            <div className="disclaimer-icon">
+              <IonIcon
+                icon={informationCircleOutline}
+                slot="icon-only"
+              />
+            </div>
+          </CardDetailsBlock>
+        )}
+        {segmentValue === "active" && activeCredentials.length === 0 && (
+          <h2 className="title">
+            <i>
+              {i18n.t(
+                "notifications.details.credential.request.choosecredential.noactive",
+                {
+                  requestCred: credentialRequest.schema.name,
+                }
+              )}
+            </i>
+          </h2>
+        )}
+        {segmentValue === "revoked" && revokedCredentials.length === 0 && (
+          <h2 className="title">
+            <i>
+              {i18n.t(
+                "notifications.details.credential.request.choosecredential.norevoked",
+                {
+                  requestCred: credentialRequest.schema.name,
+                }
+              )}
+            </i>
+          </h2>
+        )}
         <CardList
-          data={displayIdentifiers}
+          data={
+            segmentValue === "active" ? activeCredentials : revokedCredentials
+          }
           onCardClick={(data, e) => {
             e.stopPropagation();
             handleSelectCred(data);

@@ -2,13 +2,14 @@ import { IonReactMemoryRouter } from "@ionic/react-router";
 import { mockIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
 import { MemoryRouter } from "react-router-dom";
+import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsForNotifications } from "../../__fixtures__/connectionsFix";
+import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
 import { NotificationFilter } from "./Notification.types";
 import { Notifications } from "./Notifications";
@@ -31,6 +32,12 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       basicStorage: {
         deleteById: jest.fn(() => Promise.resolve()),
+      },
+      credentials: {
+        getCredentialDetailsById: jest.fn(() =>
+          Promise.resolve(credsFixAcdc[0])
+        ),
+        getCredentials: jest.fn(() => Promise.resolve([])),
       },
     },
   },
@@ -247,5 +254,35 @@ describe("Notifications Tab", () => {
       expect(getByText("2w")).toBeInTheDocument();
       expect(getByText("2y")).toBeInTheDocument();
     }, 1);
+  });
+
+  test("Open revoked credential detail", async () => {
+    const storeMocked = {
+      ...mockStore(fullState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[TabsRoutePath.NOTIFICATIONS]}>
+          <Notifications />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    expect(getByTestId("notifications-tab-section-new")).toBeInTheDocument();
+    expect(getByTestId("revoke-credential-modal")).not.toBeVisible();
+
+    act(() => {
+      fireEvent.click(
+        getByTestId(
+          "notifications-tab-item-AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMm1"
+        )
+      );
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("revoke-credential-modal")).toBeVisible();
+    });
   });
 });

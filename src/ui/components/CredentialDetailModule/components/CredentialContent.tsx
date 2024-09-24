@@ -24,6 +24,14 @@ const CredentialContent = ({ cardData }: CredentialContentProps) => {
       >
         {cardData.s.description}
       </CardDetailsBlock>
+      <CardDetailsBlock title={i18n.t("credentials.details.id")}>
+        <CardDetailsItem
+          info={cardData.id}
+          copyButton={true}
+          icon={keyOutline}
+          testId="card-details-id"
+        />
+      </CardDetailsBlock>
       {cardData.a && (
         <CardDetailsBlock
           className="card-attribute-block"

@@ -845,6 +845,10 @@ class KeriaNotificationService extends AgentService {
           const credential = await this.props.signifyClient
             .credentials()
             .get(credentialId);
+          if (credential.status.s === "0") {
+            // Wait for admit operations to fully complete on KERIA - return early to not block other operations.
+            return;
+          }
           if (
             credential &&
               credential.status.s === "1" &&

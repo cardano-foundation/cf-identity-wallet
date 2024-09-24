@@ -42,7 +42,6 @@ const ReceiveCredential = ({
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const connection =
     connectionsCache?.[notificationDetails.connectionId]?.label;
-  const ANIMATION_DELAY = 2000;
 
   useIonHardwareBackButton(
     BackEventPriorityType.Page,
@@ -66,7 +65,7 @@ const ReceiveCredential = ({
       setTimeout(() => {
         handleNotificationUpdate();
         handleBack();
-      }, ANIMATION_DELAY);
+      });
     } catch (e) {
       setInitiateAnimation(false);
       showError("Unable to accept acdc", e, dispatch);
