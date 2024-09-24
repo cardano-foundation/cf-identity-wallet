@@ -1,15 +1,17 @@
 import { IonReactMemoryRouter } from "@ionic/react-router";
 import { mockIonicReact } from "@ionic/react-test-utils";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { act } from "react";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { CredentialRequest } from "./CredentialRequest";
 import { credRequestFix } from "../../../../__fixtures__/credRequestFix";
+import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
 
 mockIonicReact();
 
@@ -41,6 +43,8 @@ const initialState = {
   connectionsCache: {
     connections: connectionsForNotifications,
   },
+  credsCache: { creds: credsFixAcdc, favourites: [] },
+  credsArchivedCache: { creds: [] },
   notificationsCache: {
     notifications: notificationsFix,
   },
@@ -114,7 +118,7 @@ describe("Credential request", () => {
       <Provider store={storeMocked}>
         <IonReactMemoryRouter history={history}>
           <CredentialRequest
-            pageId="multi-sign"
+            pageId="notification-details"
             activeStatus
             handleBack={jest.fn()}
             notificationDetails={notificationsFix[4]}
@@ -137,7 +141,7 @@ describe("Credential request", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("primary-button-multi-sign"));
+      fireEvent.click(getByTestId("primary-button-notification-details"));
     });
 
     await waitFor(() => {
