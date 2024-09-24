@@ -17,7 +17,7 @@ import {
 } from "../records";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
-import { CredentialStatus } from "./credentialService.types";
+import { ACDCDetails, CredentialStatus } from "./credentialService.types";
 import { OnlineOnly, getCredentialShortDetails } from "./utils";
 import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
@@ -466,6 +466,11 @@ class IpexCommunicationService extends AgentService {
 
       await this.notificationStorage.update(notificationRecord);
     }
+  }
+
+  async getACDCDetail(said: string): Promise<ACDCDetails> {
+    const exchange = await this.props.signifyClient.exchanges().get(said);
+    return exchange.exn.e.acdc;
   }
 }
 
