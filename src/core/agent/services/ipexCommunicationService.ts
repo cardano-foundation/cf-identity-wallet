@@ -468,7 +468,7 @@ class IpexCommunicationService extends AgentService {
     }
   }
 
-  async getACDCDetail(said: string): Promise<ACDCDetails> {
+  async getAcdcFromIpexGrant(said: string): Promise<ACDCDetails> {
     const exchange = await this.props.signifyClient.exchanges().get(said);
     return exchange.exn.e.acdc;
   }

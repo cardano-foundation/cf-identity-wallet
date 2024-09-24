@@ -1262,7 +1262,7 @@ describe("Ipex communication service of agent", () => {
         .mockImplementationOnce(() => Promise.resolve(grantIpexMessageMock)),
     });
     expect(
-      await ipexCommunicationService.getACDCDetail(
+      await ipexCommunicationService.getAcdcFromIpexGrant(
         "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL"
       )
     ).toEqual(grantIpexMessageMock.exn.e.acdc);
