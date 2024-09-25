@@ -14,6 +14,7 @@ import {
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { Capacitor } from "@capacitor/core";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionStatus,
@@ -375,7 +376,7 @@ const Scanner = forwardRef(
     };
 
     const initScan = async () => {
-      if (isPlatform("ios") || isPlatform("android")) {
+      if (Capacitor.isNativePlatform()) {
         const allowed = await checkPermission();
         setPermisson(!!allowed);
         onCheckPermissionFinish?.(!!allowed);
