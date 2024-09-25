@@ -4,7 +4,7 @@ export enum CreatePassword {
 }
 
 export enum Passcode {
-  Description = "Create a passcode to secure access to your wallet and to continue the onboarding process",
+  Description = "Create a passcode to secure your wallet and to continue the onboarding process",
   Title = "Create your Passcode",
   TitleReEnter = "Re-enter your Passcode",
 }

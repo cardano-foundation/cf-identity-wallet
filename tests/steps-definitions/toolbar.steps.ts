@@ -4,6 +4,7 @@ import MenuToolbar from "../screen-objects/components/menu.toolbar.js";
 import PasscodeScreen from "../screen-objects/passcode.screen.js";
 import SeedPhraseGenerateScreen from "../screen-objects/seed-phrase/seed-phrase-generate.screen.js";
 import SeedPhraseVerifyScreen from "../screen-objects/seed-phrase/seed-phrase-verify.screen.js";
+import BaseModal from "../screen-objects/components/base.modal.js";
 
 Given(
   /^user tap (Add|Plus) button on the screen$/,
@@ -16,8 +17,12 @@ Given(/^user tap Back arrow icon on the screen$/, async function () {
   await MenuToolbar.clickBackArrowIcon();
 });
 
-Given(/^user tap Back arrow icon on Passcode screen$/, async function () {
-  await MenuToolbar.clickBackArrowButtonOf(PasscodeScreen.id);
+Given(/^user tap Cancel button on Passcode screen$/, async function () {
+  await BaseModal.clickCloseButtonOf(PasscodeScreen.id);
+});
+
+When(/^user tap Back button on Re-enter your Passcode screen$/, async function () {
+  await BaseModal.clickCloseButtonOf(PasscodeScreen.id);
 });
 
 Given(
