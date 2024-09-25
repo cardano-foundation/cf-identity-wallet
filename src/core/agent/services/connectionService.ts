@@ -25,7 +25,11 @@ import { AgentService } from "./agentService";
 import { KeriaContact } from "./connection.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { StorageMessage } from "../../storage/storage.types";
-import { ConnectionStateChangedEvent, EventTypes } from "../event.types";
+import {
+  AddNewOperationPendingEvent,
+  ConnectionStateChangedEvent,
+  EventTypes,
+} from "../event.types";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
@@ -388,9 +392,11 @@ class ConnectionService extends AgentService {
         id: operation.name,
         recordType: OperationPendingRecordType.Oobi,
       });
-      Agent.agent.keriaNotifications.addPendingOperationToQueue(
-        pendingOperation
-      );
+
+      this.props.eventEmitter.emit<AddNewOperationPendingEvent>({
+        type: EventTypes.AddNewOperation,
+        payload: { operation: pendingOperation },
+      });
     } else if (!operation.done) {
       throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
     }

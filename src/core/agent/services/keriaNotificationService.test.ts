@@ -1,12 +1,13 @@
 import { Agent } from "../agent";
 import { ExchangeRoute, MiscRecordId, NotificationRoute } from "../agent.types";
-import { IpexMessageStorage } from "../records";
+import { IpexMessageStorage, NotificationStorage } from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
 import { CoreEventEmitter } from "../event";
 import { KeriaNotificationService } from "./keriaNotificationService";
 import { EventTypes } from "../event.types";
+import { deleteNotificationRecordById } from "./utils";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -478,21 +479,33 @@ describe("Signify notification service of agent", () => {
 
   test("can delete keri notification by ID", async () => {
     const id = "uuid";
-    await keriaNotificationService.deleteNotificationRecordById(
+    const notificationStorage = new NotificationStorage(
+      agentServicesProps.signifyClient
+    );
+    notificationStorage.deleteById = jest.fn();
+    await deleteNotificationRecordById(
+      agentServicesProps.signifyClient,
+      notificationStorage,
       id,
       NotificationRoute.ExnIpexGrant
     );
-    expect(notificationStorage.deleteById).toBeCalled();
-    expect(markNotificationMock).toBeCalled();
+    expect(notificationStorage.deleteById).toBeCalledWith(id);
+    expect(markNotificationMock).toBeCalledWith(id);
   });
 
   test("Should not mark local notification when we delete notification", async () => {
     const id = "uuid";
-    await keriaNotificationService.deleteNotificationRecordById(
+    const notificationStorage = new NotificationStorage(
+      agentServicesProps.signifyClient
+    );
+    notificationStorage.deleteById = jest.fn();
+    await deleteNotificationRecordById(
+      agentServicesProps.signifyClient,
+      notificationStorage,
       id,
       NotificationRoute.LocalAcdcRevoked
     );
-    expect(notificationStorage.deleteById).toBeCalled();
+    expect(notificationStorage.deleteById).toBeCalledWith(id);
     expect(markNotificationMock).not.toBeCalled();
   });
 

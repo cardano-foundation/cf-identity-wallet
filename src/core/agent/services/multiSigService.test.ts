@@ -27,6 +27,8 @@ import {
   mockNotificationMultisigExnRotation,
   memberMetadataRecordProps,
 } from "../../__fixtures__/agent/multiSigMock";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
+import { EventTypes } from "../event.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -54,7 +56,6 @@ const addEndRoleMock = jest.fn();
 const sendExchangesMock = jest.fn();
 const getExchangesMock = jest.fn();
 const markNotificationMock = jest.fn();
-const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 const ipexAdmitMock = jest.fn();
 const ipexSubmitAdmitMock = jest.fn();
 const createExchangeMessageMock = jest.fn();
@@ -134,19 +135,22 @@ const identifierStorage = jest.mocked({
   createIdentifierMetadataRecord: jest.fn(),
 });
 
+const saveOperationPendingMock = jest.fn();
 const operationPendingStorage = jest.mocked({
-  save: jest.fn(),
+  save: saveOperationPendingMock,
 });
 
+const eventEmitter = new CoreEventEmitter();
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventEmitter: new CoreEventEmitter(),
+  eventEmitter,
 };
 
 const multiSigService = new MultiSigService(
   agentServicesProps,
   identifierStorage as any,
-  operationPendingStorage as any
+  operationPendingStorage as any,
+  notificationStorage as any
 );
 
 const mockResolveOobi = jest.fn();
@@ -168,8 +172,6 @@ jest.mock("../../../core/agent/agent", () => ({
       keriaNotifications: {
         addPendingOperationToQueue: jest.fn(),
         markNotification: (id: string) => markNotificationMock(id),
-        deleteNotificationRecordById: (id: string) =>
-          deleteNotificationMock(id),
       },
       getKeriaOnlineStatus: jest.fn(),
     },
@@ -769,6 +771,12 @@ describe("Creation of multi-sig", () => {
         groupId: "group-id",
       },
     ];
+    eventEmitter.emit = jest.fn();
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: `group.${multisigIdentifier}`,
+      recordType: OperationPendingRecordType.Group,
+    });
+
     expect(
       await multiSigService.createMultisig(
         creatorIdentifier,
@@ -784,7 +792,15 @@ describe("Creation of multi-sig", () => {
       expect.objectContaining({ id: multisigIdentifier, isPending: true })
     );
 
-    expect(operationPendingStorage.save).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.AddNewOperation,
+      payload: {
+        operation: {
+          id: `group.${multisigIdentifier}`,
+          recordType: OperationPendingRecordType.Group,
+        },
+      },
+    });
 
     (memberMetadataRecord.groupMetadata as any).groupCreated = false;
     identifiersCreateMock.mockImplementation((name, _config) => {
@@ -917,6 +933,13 @@ describe("Creation of multi-sig", () => {
         ],
       };
     });
+
+    eventEmitter.emit = jest.fn();
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: `group.${multisigIdentifier}`,
+      recordType: OperationPendingRecordType.Group,
+    });
+
     expect(
       await multiSigService.joinMultisig(
         "id",
@@ -943,7 +966,15 @@ describe("Creation of multi-sig", () => {
       memberIdentifierRecord
     );
 
-    expect(operationPendingStorage.save).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.AddNewOperation,
+      payload: {
+        operation: {
+          id: `group.${multisigIdentifier}`,
+          recordType: OperationPendingRecordType.Group,
+        },
+      },
+    });
 
     identifiersCreateMock.mockImplementationOnce((name, _config) => {
       return {

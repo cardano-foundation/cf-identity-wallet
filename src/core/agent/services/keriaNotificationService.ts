@@ -31,7 +31,9 @@ import {
   NotificationEvent,
   EventTypes,
   OperationPendingEvent,
+  AddNewOperationPendingEvent,
 } from "../event.types";
+import { deleteNotificationRecordById } from "./utils";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -746,7 +748,9 @@ class KeriaNotificationService extends AgentService {
                   });
               for (const notification of notifications) {
                 // @TODO: Delete other long running operations in linkedGroupRequests
-                await this.deleteNotificationRecordById(
+                await deleteNotificationRecordById(
+                  this.props.signifyClient,
+                  this.notificationStorage,
                   notification.id,
                     notification.a.r as NotificationRoute
                 );
@@ -834,6 +838,15 @@ class KeriaNotificationService extends AgentService {
 
   onLongOperationComplete(callback: (event: OperationPendingEvent) => void) {
     this.props.eventEmitter.on(EventTypes.Operation, callback);
+  }
+
+  onAddPendingOperation() {
+    this.props.eventEmitter.on<AddNewOperationPendingEvent>(
+      EventTypes.AddNewOperation,
+      (event) => {
+        this.pendingOperations.push(event.payload.operation);
+      }
+    );
   }
 }
 
