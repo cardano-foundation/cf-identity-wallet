@@ -108,6 +108,7 @@ const ReceiveCredential = ({
       setTimeout(() => {
         handleNotificationUpdate();
         handleBack();
+        setOpenInfo(false);
       }, ANIMATION_DELAY - (finishTime - startTime));
     } catch (e) {
       setInitiateAnimation(false);
