@@ -37,6 +37,8 @@ import {
 import { CredentialDetailModal } from "../../../../components/CredentialDetailModule";
 import { Spinner } from "../../../../components/Spinner";
 
+const ANIMATION_DELAY = 2000;
+
 const ReceiveCredential = ({
   pageId,
   activeStatus,
@@ -98,13 +100,15 @@ const ReceiveCredential = ({
 
   const handleAccept = async () => {
     try {
+      const startTime = Date.now();
       setInitiateAnimation(true);
       await Agent.agent.ipexCommunications.acceptAcdc(notificationDetails.id);
+      const finishTime = Date.now();
 
       setTimeout(() => {
         handleNotificationUpdate();
         handleBack();
-      });
+      }, ANIMATION_DELAY - (finishTime - startTime));
     } catch (e) {
       setInitiateAnimation(false);
       showError("Unable to accept acdc", e, dispatch);
