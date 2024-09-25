@@ -20,7 +20,7 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import { Agent } from "../agent";
 import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { ConnectionService } from "./connectionService";
-import { AddNewOperationPendingEvent, EventTypes } from "../event.types";
+import { EventTypes, OperationAddedEvent } from "../event.types";
 
 const identifierTypeThemes = [
   0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23, 30, 31, 32, 33, 40, 41, 42, 43,
@@ -173,8 +173,8 @@ class IdentifierService extends AgentService {
           id: op.name,
           recordType: OperationPendingRecordType.Witness,
         });
-        this.props.eventEmitter.emit<AddNewOperationPendingEvent>({
-          type: EventTypes.AddNewOperation,
+        this.props.eventEmitter.emit<OperationAddedEvent>({
+          type: EventTypes.OperationAdded,
           payload: { operation: pendingOperation },
         });
       }

@@ -348,7 +348,7 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.AddNewOperation,
+      type: EventTypes.OperationAdded,
       payload: {
         operation: {
           id: "opName",
@@ -909,7 +909,7 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.AddNewOperation,
+      type: EventTypes.OperationAdded,
       payload: {
         operation: {
           id: "opName",
@@ -1005,7 +1005,7 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.AddNewOperation,
+      type: EventTypes.OperationAdded,
       payload: {
         operation: {
           id: "opName",

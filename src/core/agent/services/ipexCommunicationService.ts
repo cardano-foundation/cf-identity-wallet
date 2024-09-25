@@ -29,7 +29,7 @@ import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
 import {
   AcdcStateChangedEvent,
-  AddNewOperationPendingEvent,
+  OperationAddedEvent,
   EventTypes,
 } from "../event.types";
 
@@ -167,13 +167,13 @@ class IpexCommunicationService extends AgentService {
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
 
-    this.props.eventEmitter.emit<AddNewOperationPendingEvent>({
-      type: EventTypes.AddNewOperation,
+    this.props.eventEmitter.emit<OperationAddedEvent>({
+      type: EventTypes.OperationAdded,
       payload: { operation: pendingOperation },
     });
 
     if (!holder.multisigManageAid) {
-      deleteNotificationRecordById(
+      await deleteNotificationRecordById(
         this.props.signifyClient,
         this.notificationStorage,
         id,
@@ -468,8 +468,8 @@ class IpexCommunicationService extends AgentService {
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
 
-    this.props.eventEmitter.emit<AddNewOperationPendingEvent>({
-      type: EventTypes.AddNewOperation,
+    this.props.eventEmitter.emit<OperationAddedEvent>({
+      type: EventTypes.OperationAdded,
       payload: { operation: pendingOperation },
     });
 

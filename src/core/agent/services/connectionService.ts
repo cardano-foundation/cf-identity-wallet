@@ -26,9 +26,9 @@ import { KeriaContact } from "./connection.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { StorageMessage } from "../../storage/storage.types";
 import {
-  AddNewOperationPendingEvent,
   ConnectionStateChangedEvent,
   EventTypes,
+  OperationAddedEvent,
 } from "../event.types";
 
 class ConnectionService extends AgentService {
@@ -393,8 +393,8 @@ class ConnectionService extends AgentService {
         recordType: OperationPendingRecordType.Oobi,
       });
 
-      this.props.eventEmitter.emit<AddNewOperationPendingEvent>({
-        type: EventTypes.AddNewOperation,
+      this.props.eventEmitter.emit<OperationAddedEvent>({
+        type: EventTypes.OperationAdded,
         payload: { operation: pendingOperation },
       });
     } else if (!operation.done) {

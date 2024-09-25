@@ -28,10 +28,10 @@ import { MultiSigService } from "./multiSigService";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import { IdentifierService } from "./identifierService";
 import {
-  NotificationEvent,
+  NotificationAddedEvent,
   EventTypes,
-  OperationPendingEvent,
-  AddNewOperationPendingEvent,
+  OperationCompleteEvent,
+  OperationAddedEvent,
 } from "../event.types";
 import { deleteNotificationRecordById } from "./utils";
 
@@ -87,6 +87,12 @@ class KeriaNotificationService extends AgentService {
     this.getKeriaOnlineStatus = getKeriaOnlineStatus;
     this.markAgentStatus = markAgentStatus;
     this.connect = connect;
+    this.props.eventEmitter.on<OperationAddedEvent>(
+      EventTypes.OperationAdded,
+      (event) => {
+        this.pendingOperations.push(event.payload.operation);
+      }
+    );
   }
 
   async pollNotifications() {
@@ -220,10 +226,12 @@ class KeriaNotificationService extends AgentService {
     id: string,
     route: NotificationRoute
   ): Promise<void> {
-    if (!/^\/local/.test(route)) {
-      await this.markNotification(id);
-    }
-    await this.notificationStorage.deleteById(id);
+    return deleteNotificationRecordById(
+      this.props.signifyClient,
+      this.notificationStorage,
+      id,
+      route
+    );
   }
 
   async processNotification(notif: Notification) {
@@ -253,8 +261,8 @@ class KeriaNotificationService extends AgentService {
 
     try {
       const keriaNotif = await this.createNotificationRecord(notif);
-      this.props.eventEmitter.emit<NotificationEvent>({
-        type: EventTypes.Notification,
+      this.props.eventEmitter.emit<NotificationAddedEvent>({
+        type: EventTypes.NotificationAdded,
         payload: {
           keriaNotif,
         },
@@ -688,8 +696,8 @@ class KeriaNotificationService extends AgentService {
         const multisigIdentifier =
             await this.identifierStorage.getIdentifierMetadata(recordId);
         await this.multiSigs.endRoleAuthorization(multisigIdentifier.id);
-        this.props.eventEmitter.emit<OperationPendingEvent>({
-          type: EventTypes.Operation,
+        this.props.eventEmitter.emit<OperationCompleteEvent>({
+          type: EventTypes.OperationComplete,
           payload: {
             opType: operationRecord.recordType,
             oid: recordId,
@@ -701,8 +709,8 @@ class KeriaNotificationService extends AgentService {
         await this.identifierStorage.updateIdentifierMetadata(recordId, {
           isPending: false,
         });
-        this.props.eventEmitter.emit<OperationPendingEvent>({
-          type: EventTypes.Operation,
+        this.props.eventEmitter.emit<OperationCompleteEvent>({
+          type: EventTypes.OperationComplete,
           payload: {
             opType: operationRecord.recordType,
             oid: recordId,
@@ -719,8 +727,8 @@ class KeriaNotificationService extends AgentService {
           connectionRecord.createdAt = (operation.response as any).dt;
           await this.connectionStorage.update(connectionRecord);
         }
-        this.props.eventEmitter.emit<OperationPendingEvent>({
-          type: EventTypes.Operation,
+        this.props.eventEmitter.emit<OperationCompleteEvent>({
+          type: EventTypes.OperationComplete,
           payload: {
             opType: operationRecord.recordType,
             oid: recordId,
@@ -806,8 +814,8 @@ class KeriaNotificationService extends AgentService {
               route: NotificationRoute.LocalAcdcRevoked,
             };
             await this.notificationStorage.save(metadata);
-            this.props.eventEmitter.emit<OperationPendingEvent>({
-              type: EventTypes.Operation,
+            this.props.eventEmitter.emit<OperationCompleteEvent>({
+              type: EventTypes.OperationComplete,
               payload: {
                 opType: operationRecord.recordType,
                 oid: recordId,
@@ -832,21 +840,12 @@ class KeriaNotificationService extends AgentService {
     this.pendingOperations.push(pendingOperation);
   }
 
-  onNewNotification(callback: (event: NotificationEvent) => void) {
-    this.props.eventEmitter.on(EventTypes.Notification, callback);
+  onNewNotification(callback: (event: NotificationAddedEvent) => void) {
+    this.props.eventEmitter.on(EventTypes.NotificationAdded, callback);
   }
 
-  onLongOperationComplete(callback: (event: OperationPendingEvent) => void) {
-    this.props.eventEmitter.on(EventTypes.Operation, callback);
-  }
-
-  onAddPendingOperation() {
-    this.props.eventEmitter.on<AddNewOperationPendingEvent>(
-      EventTypes.AddNewOperation,
-      (event) => {
-        this.pendingOperations.push(event.payload.operation);
-      }
-    );
+  onLongOperationComplete(callback: (event: OperationCompleteEvent) => void) {
+    this.props.eventEmitter.on(EventTypes.OperationComplete, callback);
   }
 }
 

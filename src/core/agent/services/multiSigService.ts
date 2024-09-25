@@ -45,7 +45,7 @@ import {
 } from "./utils";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConfigurationService } from "../../configuration";
-import { AddNewOperationPendingEvent, EventTypes } from "../event.types";
+import { OperationAddedEvent, EventTypes } from "../event.types";
 
 class MultiSigService extends AgentService {
   static readonly INVALID_THRESHOLD = "Invalid threshold";
@@ -158,8 +158,8 @@ class MultiSigService extends AgentService {
         recordType: OperationPendingRecordType.Group,
       });
 
-      this.props.eventEmitter.emit<AddNewOperationPendingEvent>({
-        type: EventTypes.AddNewOperation,
+      this.props.eventEmitter.emit<OperationAddedEvent>({
+        type: EventTypes.OperationAdded,
         payload: { operation: pendingOperation },
       });
     } else {
@@ -515,8 +515,8 @@ class MultiSigService extends AgentService {
         recordType: OperationPendingRecordType.Group,
       });
 
-      this.props.eventEmitter.emit<AddNewOperationPendingEvent>({
-        type: EventTypes.AddNewOperation,
+      this.props.eventEmitter.emit<OperationAddedEvent>({
+        type: EventTypes.OperationAdded,
         payload: { operation: pendingOperation },
       });
     } else {

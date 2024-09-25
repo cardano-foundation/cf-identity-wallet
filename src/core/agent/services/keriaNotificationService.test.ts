@@ -401,7 +401,7 @@ describe("Signify notification service of agent", () => {
     }
     expect(notificationStorage.save).toBeCalledTimes(2);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.Notification,
+      type: EventTypes.NotificationAdded,
       payload: {
         keriaNotif: {
           a: {
@@ -1124,7 +1124,7 @@ describe("Long running operation tracker", () => {
     await keriaNotificationService.processOperation(operationRecord);
     expect(Agent.agent.multiSigs.endRoleAuthorization).toBeCalledWith("id");
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.Operation,
+      type: EventTypes.OperationComplete,
       payload: {
         opType: operationRecord.recordType,
         oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
@@ -1161,7 +1161,7 @@ describe("Long running operation tracker", () => {
       }
     );
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.Operation,
+      type: EventTypes.OperationComplete,
       payload: {
         opType: operationRecord.recordType,
         oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
@@ -1203,7 +1203,7 @@ describe("Long running operation tracker", () => {
       createdAt: operationMock.response.dt,
     });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.Operation,
+      type: EventTypes.OperationComplete,
       payload: {
         opType: operationRecord.recordType,
         oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",

@@ -342,7 +342,7 @@ describe("Single sig service of agent", () => {
     expect(identifiersCreateMock).toBeCalled();
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.AddNewOperation,
+      type: EventTypes.OperationAdded,
       payload: {
         operation: {
           id: "op123",

@@ -653,7 +653,7 @@ describe("Connection service of agent", () => {
     eventEmitter.emit = jest.fn();
     await connectionService.resolveOobi(`${oobiPrefix}${failUuid}`, false);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.AddNewOperation,
+      type: EventTypes.OperationAdded,
       payload: {
         operation: {
           id: `${oobiPrefix}${failUuid}`,

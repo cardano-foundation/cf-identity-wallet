@@ -793,7 +793,7 @@ describe("Creation of multi-sig", () => {
     );
 
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.AddNewOperation,
+      type: EventTypes.OperationAdded,
       payload: {
         operation: {
           id: `group.${multisigIdentifier}`,
@@ -967,7 +967,7 @@ describe("Creation of multi-sig", () => {
     );
 
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.AddNewOperation,
+      type: EventTypes.OperationAdded,
       payload: {
         operation: {
           id: `group.${multisigIdentifier}`,

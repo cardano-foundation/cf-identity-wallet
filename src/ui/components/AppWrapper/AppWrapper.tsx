@@ -422,8 +422,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.keriaNotifications.onLongOperationComplete((event) => {
       signifyOperationStateChangeHandler(event.payload, dispatch);
     });
-
-    Agent.agent.keriaNotifications.onAddPendingOperation();
   };
 
   const initApp = async () => {
