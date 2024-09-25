@@ -1,11 +1,13 @@
-import { IonCol, IonIcon } from "@ionic/react";
+import { IonButton, IonCol, IonIcon } from "@ionic/react";
 import {
   checkmark,
+  informationCircleOutline,
   personCircleOutline,
   swapHorizontalOutline,
 } from "ionicons/icons";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
+import { NotificationRoute } from "../../../../../core/agent/agent.types";
 import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
@@ -13,18 +15,27 @@ import {
   getNotificationsCache,
   setNotificationsCache,
 } from "../../../../../store/reducers/notificationsCache";
+import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { Alert as AlertDecline } from "../../../../components/Alert";
 import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
+import { Verification } from "../../../../components/Verification";
 import { BackEventPriorityType } from "../../../../globals/types";
-import { useIonHardwareBackButton } from "../../../../hooks";
-import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
+import {
+  useIonHardwareBackButton,
+  useOnlineStatusEffect,
+} from "../../../../hooks";
+import { showError } from "../../../../utils/error";
+import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
 import "./ReceiveCredential.scss";
-import { NotificationRoute } from "../../../../../core/agent/agent.types";
-import { Verification } from "../../../../components/Verification";
-import { showError } from "../../../../utils/error";
+import {
+  ACDCDetails,
+  CredentialStatus,
+} from "../../../../../core/agent/services/credentialService.types";
+import { CredentialDetailModal } from "../../../../components/CredentialDetailModule";
+import { Spinner } from "../../../../components/Spinner";
 
 const ReceiveCredential = ({
   pageId,
@@ -40,6 +51,10 @@ const ReceiveCredential = ({
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
+  const [openInfo, setOpenInfo] = useState(false);
+  const [credDetail, setCreDetail] = useState<ACDCDetails>();
+  const [isLoading, setIsLoading] = useState(false);
+
   const connection =
     connectionsCache?.[notificationDetails.connectionId]?.label;
 
@@ -56,6 +71,30 @@ const ReceiveCredential = ({
     setNotifications(updatedNotifications);
     dispatch(setNotificationsCache(updatedNotifications));
   };
+
+  const getAcdc = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const credential =
+        await Agent.agent.ipexCommunications.getAcdcFromIpexGrant(
+          notificationDetails.a.d as string
+        );
+
+      setCreDetail({
+        ...credential,
+        status: CredentialStatus.CONFIRMED,
+        credentialType: credential.s.title,
+        issuanceDate: credential.a.dt,
+      });
+    } catch (e) {
+      setInitiateAnimation(false);
+      showError("Unable to get acdc", e, dispatch);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [dispatch, notificationDetails.a.d]);
+
+  useOnlineStatusEffect(getAcdc);
 
   const handleAccept = async () => {
     try {
@@ -85,13 +124,16 @@ const ReceiveCredential = ({
     }
   };
 
+  const classes = combineClassNames(`${pageId}-receive-credential`, {
+    "animation-on": initiateAnimation,
+    "animation-off": !initiateAnimation,
+  });
+
   return (
     <>
       <ResponsivePageLayout
         pageId={`${pageId}-receive-credential`}
-        customClass={`${pageId}-receive-credential${
-          initiateAnimation ? " animation-on" : " animation-off"
-        }`}
+        customClass={classes}
         activeStatus={activeStatus}
         header={
           <PageHeader
@@ -137,6 +179,12 @@ const ReceiveCredential = ({
               <span>
                 {i18n.t("notifications.details.credential.receive.receivefrom")}
               </span>
+              <strong className="credential-type">
+                {credDetail?.credentialType}
+              </strong>
+              <span className="break-text">
+                {i18n.t("notifications.details.credential.receive.from")}
+              </span>
               <strong>{connection}</strong>
             </IonCol>
           </div>
@@ -148,6 +196,22 @@ const ReceiveCredential = ({
                 )}
               </strong>
             </IonCol>
+          </div>
+          <div className="credential-detail">
+            <IonButton
+              fill="outline"
+              className="credential-button secondary-button"
+              onClick={() => setOpenInfo(true)}
+              data-testid="cred-detail-btn"
+            >
+              <IonIcon
+                slot="start"
+                icon={informationCircleOutline}
+              />
+              {i18n.t(
+                "notifications.details.credential.receive.credentialdetailbutton"
+              )}
+            </IonButton>
           </div>
         </div>
         <PageFooter
@@ -180,6 +244,16 @@ const ReceiveCredential = ({
         setVerifyIsOpen={setVerifyIsOpen}
         onVerify={handleAccept}
       />
+      <CredentialDetailModal
+        pageId="receive-credential-detail"
+        isOpen={openInfo}
+        setIsOpen={setOpenInfo}
+        onClose={() => setOpenInfo(false)}
+        id={credDetail?.id || ""}
+        credDetail={credDetail}
+        viewOnly
+      />
+      <Spinner show={isLoading} />
     </>
   );
 };

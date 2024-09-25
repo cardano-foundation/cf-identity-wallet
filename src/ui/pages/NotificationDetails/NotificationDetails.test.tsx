@@ -68,7 +68,7 @@ describe("Notification Detail", () => {
     const path = `${TabsRoutePath.NOTIFICATIONS}/${notificationsFix[0].id}`;
     history.push(path, notificationsFix[0]);
 
-    const { getByText } = render(
+    const { getAllByText, getByText } = render(
       <IonReactMemoryRouter
         initialEntries={[path]}
         history={history}
@@ -82,7 +82,9 @@ describe("Notification Detail", () => {
       </IonReactMemoryRouter>
     );
     expect(
-      getByText(EN_TRANSLATIONS.notifications.details.credential.receive.title)
+      getAllByText(
+        EN_TRANSLATIONS.notifications.details.credential.receive.title
+      )[0]
     ).toBeVisible();
     expect(
       getByText(EN_TRANSLATIONS.notifications.details.buttons.close)

@@ -632,3 +632,74 @@ describe("Cred detail - revoked", () => {
     });
   });
 });
+
+describe("Cred detail - view only", () => {
+  let storeMocked: Store<unknown, AnyAction>;
+  const credDispatchMock = jest.fn();
+
+  const state = {
+    stateCache: {
+      routes: [TabsRoutePath.CREDENTIALS],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+        passwordIsSet: false,
+        passwordIsSkipped: true,
+      },
+      isOnline: true,
+    },
+    seedPhraseCache: {
+      seedPhrase:
+        "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+      bran: "bran",
+    },
+    credsCache: { creds: credsFixAcdc },
+    credsArchivedCache: { creds: [] },
+    biometricsCache: {
+      enabled: false,
+    },
+    notificationsCache: {
+      notificationDetailCache: {
+        notificationId: "test-id",
+        viewCred: "test-cred",
+        step: 0,
+      },
+    },
+  };
+
+  beforeAll(() => {
+    jest
+      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(revokedCredFixs[0]);
+  });
+
+  beforeEach(() => {
+    const mockStore = configureStore();
+    storeMocked = {
+      ...mockStore(state),
+      dispatch: credDispatchMock,
+    };
+  });
+
+  test("It show notification revoke mode", async () => {
+    const { queryByText, queryByTestId } = render(
+      <Provider store={storeMocked}>
+        <CredentialDetailModule
+          pageId="credential-card-details"
+          id={credsFixAcdc[0].id}
+          onClose={jest.fn()}
+          viewOnly
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId("action-button")).toBe(null);
+
+      expect(queryByText(EN_TRANSLATIONS.credentials.details.delete)).toBe(
+        null
+      );
+    });
+  });
+});
