@@ -1274,8 +1274,6 @@ describe("Ipex communication service of agent", () => {
       )
     ).toEqual({
       id: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-      credentialType: "Qualified vLEI Issuer Credential",
-      issuanceDate: "2024-07-30T04:19:55.348000+00:00",
       schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
       i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
       a: {
