@@ -473,8 +473,20 @@ class IpexCommunicationService extends AgentService {
   ): Promise<Omit<ACDCDetails, "status" | "credentialType" | "issuanceDate">> {
     const exchange = await this.props.signifyClient.exchanges().get(said);
     const schemaSaid = exchange.exn.e.acdc.s;
-    const schema = await this.props.signifyClient.schemas().get(schemaSaid);
-
+    const schema = await this.props.signifyClient
+      .schemas()
+      .get(schemaSaid)
+      .catch(async (error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          await Agent.agent.connections.resolveOobi(
+            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
+          );
+          return await this.props.signifyClient.schemas().get(schemaSaid);
+        } else {
+          throw error;
+        }
+      });
     return {
       id: exchange.exn.e.acdc.d,
       schema: exchange.exn.e.acdc.s,

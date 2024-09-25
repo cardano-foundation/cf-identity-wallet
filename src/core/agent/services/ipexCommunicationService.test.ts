@@ -1290,4 +1290,47 @@ describe("Ipex communication service of agent", () => {
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
     });
   });
+
+  test("can get acdc detail when the schema has not been resolved", async () => {
+    signifyClient.exchanges = jest.fn().mockReturnValue({
+      get: jest
+        .fn()
+        .mockImplementationOnce(() => Promise.resolve(grantIpexMessageMock)),
+    });
+    const error404 = new Error("Not Found - 404");
+    schemaGetMock.mockRejectedValueOnce(error404);
+
+    resolveOobiMock.mockResolvedValueOnce({
+      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+      metadata: {
+        oobi: "testOobi",
+      },
+      done: true,
+      error: null,
+      response: {},
+      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+    });
+
+    expect(
+      await ipexCommunicationService.getAcdcFromIpexGrant(
+        "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL"
+      )
+    ).toEqual({
+      id: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+      schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+      i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      a: {
+        d: "ELHCh_X2aw7C-aYesOM4La23a5lsoNuJDuCsJuxwO2nq",
+        i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+        dt: "2024-07-30T04:19:55.348000+00:00",
+        attendeeName: "ccc",
+      },
+      s: {
+        title: "Qualified vLEI Issuer Credential",
+        description: "Qualified vLEI Issuer Credential",
+        version: "1.0",
+      },
+      lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
+    });
+  });
 });
