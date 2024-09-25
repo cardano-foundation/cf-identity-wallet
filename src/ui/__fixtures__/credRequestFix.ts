@@ -9,7 +9,7 @@ const credRequestFix = {
       connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
       acdc: {
         v: "ACDC10JSON000191_",
-        d: "ENj6MvfV1AdbBtkI-0BTLcTMPYtl1PDu1AXVHN4hMzVa",
+        d: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
         i: "EKtDv2h7MNqyhI5iODKtjEQAYWG-tjV5mDzEMf6MW6V0",
         ri: "EANnrMjnnwmII_zt11VA3Y2O4hLqdXRxS1PI18zopFVT",
         s: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",

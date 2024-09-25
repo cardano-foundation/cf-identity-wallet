@@ -1254,4 +1254,17 @@ describe("Ipex communication service of agent", () => {
       Agent.agent.keriaNotifications.deleteNotificationRecordById
     ).not.toBeCalledWith(id);
   });
+
+  test("can get acdc detail", async () => {
+    signifyClient.exchanges = jest.fn().mockReturnValue({
+      get: jest
+        .fn()
+        .mockImplementationOnce(() => Promise.resolve(grantIpexMessageMock)),
+    });
+    expect(
+      await ipexCommunicationService.getAcdcFromIpexGrant(
+        "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL"
+      )
+    ).toEqual(grantIpexMessageMock.exn.e.acdc);
+  });
 });
