@@ -53,8 +53,9 @@ const ipexMessageRecordStorage = jest.mocked({
   createIpexMessageRecord: jest.fn(),
 });
 
+const saveOperationPendingMock = jest.fn();
 const operationPendingStorage = jest.mocked({
-  save: jest.fn(),
+  save: saveOperationPendingMock,
   delete: jest.fn(),
   deleteById: jest.fn(),
   update: jest.fn(),
@@ -104,6 +105,7 @@ const submitAdmitMock = jest.fn().mockResolvedValue({
   name: "opName",
   done: true,
 });
+const markNotificationMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -151,7 +153,7 @@ const signifyClient = jest.mocked({
   }),
   notifications: () => ({
     list: jest.fn(),
-    mark: jest.fn(),
+    mark: markNotificationMock,
   }),
   ipex: () => ({
     admit: jest.fn().mockResolvedValue(["admit", "sigs", "aend"]),
@@ -202,7 +204,6 @@ jest.mock("../../../core/agent/agent", () => ({
         resolveOobi: () => resolveOobiMock(),
       },
       keriaNotifications: {
-        deleteNotificationRecordById: jest.fn(),
         addPendingOperationToQueue: jest.fn(),
       },
       ipexCommunications: {
@@ -316,6 +317,11 @@ describe("Ipex communication service of agent", () => {
     });
     eventEmitter.emit = jest.fn();
 
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+
     await ipexCommunicationService.acceptAcdc(id);
 
     const credentialMock = {
@@ -341,17 +347,21 @@ describe("Ipex communication service of agent", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    expect(
-      Agent.agent.keriaNotifications.addPendingOperationToQueue
-    ).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "opName",
+          recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+        },
+      },
+    });
     expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith(
       expect.objectContaining({
         historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
       })
     );
-    expect(
-      Agent.agent.keriaNotifications.deleteNotificationRecordById
-    ).toBeCalledWith(id, "/exn/ipex/grant");
+    expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 
   test("cannot accept ACDC if the notification is missing in the DB", async () => {
@@ -518,9 +528,8 @@ describe("Ipex communication service of agent", () => {
       acdc: expect.anything(),
       applySaid: "d",
     });
-    expect(
-      Agent.agent.keriaNotifications.deleteNotificationRecordById
-    ).toBeCalledWith(id, undefined);
+    expect(markNotificationMock).toBeCalledWith(id);
+    expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 
   test("can grant Keri Acdc when received the ipex agree", async () => {
@@ -885,6 +894,13 @@ describe("Ipex communication service of agent", () => {
       },
     ]);
 
+    eventEmitter.emit = jest.fn();
+
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+
     await ipexCommunicationService.acceptAcdc(id);
 
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
@@ -892,9 +908,15 @@ describe("Ipex communication service of agent", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    expect(
-      Agent.agent.keriaNotifications.addPendingOperationToQueue
-    ).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "opName",
+          recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+        },
+      },
+    });
   });
 
   test("can accept ACDC and update linkedGroupRequests when FIRST of multisig joins", async () => {
@@ -935,6 +957,11 @@ describe("Ipex communication service of agent", () => {
     });
 
     eventEmitter.emit = jest.fn();
+
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
 
     await ipexCommunicationService.acceptAcdc("id");
 
@@ -977,9 +1004,15 @@ describe("Ipex communication service of agent", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    expect(
-      Agent.agent.keriaNotifications.addPendingOperationToQueue
-    ).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "opName",
+          recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+        },
+      },
+    });
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
   });
 
@@ -1250,9 +1283,7 @@ describe("Ipex communication service of agent", () => {
     await expect(
       ipexCommunicationService.acceptAcdcFromMultisigExn(id)
     ).rejects.toThrowError(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
-    expect(
-      Agent.agent.keriaNotifications.deleteNotificationRecordById
-    ).not.toBeCalledWith(id);
+    expect(notificationStorage.deleteById).not.toBeCalledWith(id);
   });
 
   test("can get acdc detail", async () => {

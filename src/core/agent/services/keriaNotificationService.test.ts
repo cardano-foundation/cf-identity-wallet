@@ -1,12 +1,13 @@
 import { Agent } from "../agent";
 import { ExchangeRoute, MiscRecordId, NotificationRoute } from "../agent.types";
-import { IpexMessageStorage } from "../records";
+import { IpexMessageStorage, NotificationStorage } from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
 import { CoreEventEmitter } from "../event";
 import { KeriaNotificationService } from "./keriaNotificationService";
 import { EventTypes } from "../event.types";
+import { deleteNotificationRecordById } from "./utils";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -400,7 +401,7 @@ describe("Signify notification service of agent", () => {
     }
     expect(notificationStorage.save).toBeCalledTimes(2);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.Notification,
+      type: EventTypes.NotificationAdded,
       payload: {
         keriaNotif: {
           a: {
@@ -478,21 +479,33 @@ describe("Signify notification service of agent", () => {
 
   test("can delete keri notification by ID", async () => {
     const id = "uuid";
-    await keriaNotificationService.deleteNotificationRecordById(
+    const notificationStorage = new NotificationStorage(
+      agentServicesProps.signifyClient
+    );
+    notificationStorage.deleteById = jest.fn();
+    await deleteNotificationRecordById(
+      agentServicesProps.signifyClient,
+      notificationStorage,
       id,
       NotificationRoute.ExnIpexGrant
     );
-    expect(notificationStorage.deleteById).toBeCalled();
-    expect(markNotificationMock).toBeCalled();
+    expect(notificationStorage.deleteById).toBeCalledWith(id);
+    expect(markNotificationMock).toBeCalledWith(id);
   });
 
   test("Should not mark local notification when we delete notification", async () => {
     const id = "uuid";
-    await keriaNotificationService.deleteNotificationRecordById(
+    const notificationStorage = new NotificationStorage(
+      agentServicesProps.signifyClient
+    );
+    notificationStorage.deleteById = jest.fn();
+    await deleteNotificationRecordById(
+      agentServicesProps.signifyClient,
+      notificationStorage,
       id,
       NotificationRoute.LocalAcdcRevoked
     );
-    expect(notificationStorage.deleteById).toBeCalled();
+    expect(notificationStorage.deleteById).toBeCalledWith(id);
     expect(markNotificationMock).not.toBeCalled();
   });
 
@@ -1111,7 +1124,7 @@ describe("Long running operation tracker", () => {
     await keriaNotificationService.processOperation(operationRecord);
     expect(Agent.agent.multiSigs.endRoleAuthorization).toBeCalledWith("id");
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.Operation,
+      type: EventTypes.OperationComplete,
       payload: {
         opType: operationRecord.recordType,
         oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
@@ -1148,7 +1161,7 @@ describe("Long running operation tracker", () => {
       }
     );
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.Operation,
+      type: EventTypes.OperationComplete,
       payload: {
         opType: operationRecord.recordType,
         oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
@@ -1190,7 +1203,7 @@ describe("Long running operation tracker", () => {
       createdAt: operationMock.response.dt,
     });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
-      type: EventTypes.Operation,
+      type: EventTypes.OperationComplete,
       payload: {
         opType: operationRecord.recordType,
         oid: "AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",

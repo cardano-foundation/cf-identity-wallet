@@ -112,7 +112,8 @@ class Agent {
       this.multiSigService = new MultiSigService(
         this.agentServicesProps,
         this.identifierStorage,
-        this.operationPendingStorage
+        this.operationPendingStorage,
+        this.notificationStorage
       );
     }
     return this.multiSigService;
