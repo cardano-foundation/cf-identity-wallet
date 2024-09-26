@@ -273,6 +273,26 @@ const basicStorage = jest.mocked({
   createOrUpdateBasicRecord: jest.fn(),
 });
 
+const multiSigs = jest.mocked({
+  joinAuthorization: jest.fn(),
+  hasMultisig: jest.fn(),
+  endRoleAuthorization: jest.fn(),
+});
+
+const ipexCommunications = jest.mocked({
+  createLinkedIpexMessageRecord: jest.fn(),
+  acceptAcdcFromMultisigExn: jest.fn(),
+  grantAcdcFromAgree: jest.fn(),
+});
+
+const credentialService = jest.mocked({
+  markAcdc: jest.fn(),
+});
+
+const identifiers = jest.mocked({
+  getIdentifier: jest.fn(),
+});
+
 const keriaNotificationService = new KeriaNotificationService(
   agentServicesProps,
   notificationStorage as any,
@@ -282,9 +302,10 @@ const keriaNotificationService = new KeriaNotificationService(
   ipexMessageStorage as any,
   credentialStorage as any,
   basicStorage as any,
-  Agent.agent.multiSigs,
-  Agent.agent.ipexCommunications,
-  Agent.agent.identifiers,
+  multiSigs as any,
+  ipexCommunications as any,
+  credentialService as any,
+  identifiers as any,
   Agent.agent.getKeriaOnlineStatus,
   Agent.agent.markAgentStatus,
   Agent.agent.connect
@@ -346,7 +367,7 @@ describe("Signify notification service of agent", () => {
 
   test("Emitting an event when there are KERI notifications", async () => {
     exchangesGetMock.mockResolvedValue(ipexMessageMock);
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [
       {
@@ -421,7 +442,7 @@ describe("Signify notification service of agent", () => {
 
   test("Should admit if there is an existing credential", async () => {
     exchangesGetMock.mockResolvedValue(ipexMessageMock);
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [
       {
@@ -540,7 +561,7 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if there is a existed multi-sig", async () => {
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
+    multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     groupGetRequestMock.mockResolvedValue([{ exn: { a: { gid: "id" } } }]);
     const notes = [
@@ -562,7 +583,7 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if there is a missing gid multi-sig notification", async () => {
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
+    multiSigs.hasMultisig = jest.fn().mockResolvedValue(true);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     groupGetRequestMock.mockResolvedValue([{ exn: { a: {} } }]);
     const notes = [
@@ -634,7 +655,7 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if notification route is /multisig/rpy", async () => {
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -680,7 +701,7 @@ describe("Signify notification service of agent", () => {
       await keriaNotificationService.processNotification(notif);
     }
     expect(markNotificationMock).toBeCalledWith(notes[0].i);
-    expect(Agent.agent.multiSigs.joinAuthorization).toBeCalledTimes(1);
+    expect(multiSigs.joinAuthorization).toBeCalledTimes(1);
   });
 
   test("Should call grantAcdcFromAgree if notification route is /exn/ipex/agree", async () => {
@@ -700,7 +721,7 @@ describe("Signify notification service of agent", () => {
     await keriaNotificationService.processNotification(notification[0]);
 
     expect(eventEmitter.emit).toBeCalledTimes(0);
-    expect(Agent.agent.ipexCommunications.grantAcdcFromAgree).toBeCalledWith(
+    expect(ipexCommunications.grantAcdcFromAgree).toBeCalledWith(
       notification[0].a.d
     );
     expect(markNotificationMock).toBeCalledWith(notification[0].i);
@@ -727,7 +748,7 @@ describe("Signify notification service of agent", () => {
 
     await keriaNotificationService.processNotification(notification);
     expect(
-      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
+      ipexCommunications.createLinkedIpexMessageRecord
     ).toHaveBeenCalledWith(
       ipexMessageMock,
       ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
@@ -791,7 +812,7 @@ describe("Signify notification service of agent", () => {
 
     await keriaNotificationService.processNotification(notification);
     expect(
-      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
+      ipexCommunications.createLinkedIpexMessageRecord
     ).toHaveBeenCalledWith(
       ipexMessageMock,
       ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
@@ -799,7 +820,7 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if notification route is /multisig/exn and `e.exn.r` is not ipex/admit", async () => {
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [
       {
@@ -821,7 +842,7 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if notification route is /multisig/exn and the identifier is missing ", async () => {
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -849,7 +870,7 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should skip if notification route is /multisig/exn and the credential exists ", async () => {
-    Agent.agent.multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
+    multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
     const notes = [
@@ -1068,9 +1089,9 @@ describe("Signify notification service of agent", () => {
 
     await keriaNotificationService.processNotification(noti);
 
-    expect(
-      Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn
-    ).toBeCalledWith("ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO");
+    expect(ipexCommunications.acceptAcdcFromMultisigExn).toBeCalledWith(
+      "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO"
+    );
     expect(notificationStorage.update).toBeCalledWith({
       type: "NotificationRecord",
       id: "id",
@@ -1122,7 +1143,7 @@ describe("Long running operation tracker", () => {
       id: "id",
     });
     await keriaNotificationService.processOperation(operationRecord);
-    expect(Agent.agent.multiSigs.endRoleAuthorization).toBeCalledWith("id");
+    expect(multiSigs.endRoleAuthorization).toBeCalledWith("id");
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationComplete,
       payload: {
@@ -1252,7 +1273,7 @@ describe("Long running operation tracker", () => {
     });
 
     await keriaNotificationService.processOperation(operationRecord);
-    expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
+    expect(credentialService.markAcdc).toBeCalledWith(
       credentialIdMock,
       CredentialStatus.CONFIRMED
     );
@@ -1320,7 +1341,7 @@ describe("Long running operation tracker", () => {
     ]);
 
     await keriaNotificationService.processOperation(operationRecord);
-    expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
+    expect(credentialService.markAcdc).toBeCalledWith(
       credentialIdMock,
       CredentialStatus.CONFIRMED
     );
@@ -1369,13 +1390,14 @@ describe("Long running operation tracker", () => {
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
     await keriaNotificationService.processOperation(operationRecord);
-    expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledWith(
+    expect(credentialService.markAcdc).toBeCalledWith(
       credentialIdMock,
       CredentialStatus.REVOKED
     );
-    expect(
-      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
-    ).toBeCalledWith(grantExchange, ConnectionHistoryType.CREDENTIAL_REVOKED);
+    expect(ipexCommunications.createLinkedIpexMessageRecord).toBeCalledWith(
+      grantExchange,
+      ConnectionHistoryType.CREDENTIAL_REVOKED
+    );
     expect(notificationStorage.save).toBeCalledTimes(1);
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
@@ -1421,10 +1443,8 @@ describe("Long running operation tracker", () => {
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
     await keriaNotificationService.processOperation(operationRecord);
-    expect(Agent.agent.ipexCommunications.markAcdc).not.toBeCalled();
-    expect(
-      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
-    ).not.toBeCalled();
+    expect(credentialService.markAcdc).not.toBeCalled();
+    expect(ipexCommunications.createLinkedIpexMessageRecord).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
@@ -1469,10 +1489,8 @@ describe("Long running operation tracker", () => {
       updatedAt: new Date("2024-08-01T10:36:17.814Z"),
     } as OperationPendingRecord;
     await keriaNotificationService.processOperation(operationRecord);
-    expect(Agent.agent.ipexCommunications.markAcdc).not.toBeCalled();
-    expect(
-      Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
-    ).not.toBeCalled();
+    expect(credentialService.markAcdc).not.toBeCalled();
+    expect(ipexCommunications.createLinkedIpexMessageRecord).not.toBeCalled();
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.deleteById).toBeCalledTimes(0);
   });
@@ -1510,7 +1528,7 @@ describe("Long running operation tracker", () => {
     } as OperationPendingRecord;
     await keriaNotificationService.processOperation(operationRecord);
     expect(operationsGetMock).toBeCalledTimes(1);
-    expect(Agent.agent.ipexCommunications.markAcdc).toBeCalledTimes(0);
+    expect(credentialService.markAcdc).toBeCalledTimes(0);
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 

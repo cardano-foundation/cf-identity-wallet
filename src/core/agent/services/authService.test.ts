@@ -108,7 +108,7 @@ const basicStorage = jest.mocked({
   createOrUpdateBasicRecord: jest.fn(),
 });
 
-const authService = new AuthService(agentServicesProps);
+const authService = new AuthService(agentServicesProps, basicStorage as any);
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -139,7 +139,7 @@ describe("Auth service of agent", () => {
 
     const result = await authService.getLoginAttempts();
 
-    expect(Agent.agent.basicStorage.createOrUpdateBasicRecord).toBeCalled();
+    expect(basicStorage.createOrUpdateBasicRecord).toBeCalled();
     expect(result.attempts).toBe(0);
     expect(result.lockedUntil).toBeLessThanOrEqual(Date.now());
   });
@@ -216,10 +216,8 @@ describe("Auth service of agent", () => {
         createdAt: new Date(),
       });
 
-      Agent.agent.basicStorage.findById = jest
-        .fn()
-        .mockResolvedValue(existingRecord);
-      Agent.agent.basicStorage.update = jest.fn();
+      basicStorage.findById = jest.fn().mockResolvedValue(existingRecord);
+      basicStorage.update = jest.fn();
 
       const result = await authService.incrementLoginAttempts();
 
@@ -233,7 +231,7 @@ describe("Auth service of agent", () => {
         expect(result.lockedUntil).toBe(lockedUntil);
       }
 
-      expect(Agent.agent.basicStorage.update).toHaveBeenCalledWith(
+      expect(basicStorage.update).toHaveBeenCalledWith(
         expect.objectContaining({
           content: expect.objectContaining({
             attempts: expectedAttempts,
@@ -245,14 +243,12 @@ describe("Auth service of agent", () => {
   });
 
   test("Should reset attempts and lockedUntil", async () => {
-    Agent.agent.basicStorage.findById = jest
-      .fn()
-      .mockResolvedValue(existingRecord);
-    Agent.agent.basicStorage.update = jest.fn();
+    basicStorage.findById = jest.fn().mockResolvedValue(existingRecord);
+    basicStorage.update = jest.fn();
 
     await authService.resetLoginAttempts();
 
-    expect(Agent.agent.basicStorage.update).toBeCalled();
+    expect(basicStorage.update).toBeCalled();
   });
 
   test("Should throw an error if login attempt record is not found in resetLoginAttempts", async () => {

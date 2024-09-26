@@ -113,7 +113,9 @@ class Agent {
         this.agentServicesProps,
         this.identifierStorage,
         this.operationPendingStorage,
-        this.notificationStorage
+        this.notificationStorage,
+        this.connections,
+        this.identifierService
       );
     }
     return this.multiSigService;
@@ -128,7 +130,8 @@ class Agent {
         this.notificationStorage,
         this.ipexMessageStorage,
         this.operationPendingStorage,
-        this.multiSigs
+        this.multiSigs,
+        this.connections
       );
     }
     return this.ipexCommunicationService;
@@ -142,7 +145,8 @@ class Agent {
         this.connectionNoteStorage,
         this.credentialStorage,
         this.ipexMessageStorage,
-        this.operationPendingStorage
+        this.operationPendingStorage,
+        this.identifierStorage
       );
     }
     return this.connectionService;
@@ -180,7 +184,8 @@ class Agent {
         this.basicStorage,
         this.multiSigs,
         this.ipexCommunications,
-        this.identifiers,
+        this.credentialService,
+        this.identifierService,
         this.getKeriaOnlineStatus,
         this.markAgentStatus,
         this.connect
@@ -191,7 +196,10 @@ class Agent {
 
   get auth() {
     if (!this.authService) {
-      this.authService = new AuthService(this.agentServicesProps);
+      this.authService = new AuthService(
+        this.agentServicesProps,
+        this.basicStorage
+      );
     }
     return this.authService;
   }

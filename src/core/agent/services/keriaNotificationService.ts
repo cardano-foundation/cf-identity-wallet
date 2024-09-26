@@ -26,7 +26,6 @@ import { IonicStorage } from "../../storage/ionicStorage";
 import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
 import { IpexCommunicationService } from "./ipexCommunicationService";
-import { IdentifierService } from "./identifierService";
 import {
   NotificationAddedEvent,
   EventTypes,
@@ -34,6 +33,8 @@ import {
   OperationAddedEvent,
 } from "../event.types";
 import { deleteNotificationRecordById } from "./utils";
+import { CredentialService } from "./credentialService";
+import { IdentifierService } from "./identifierService";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -49,6 +50,7 @@ class KeriaNotificationService extends AgentService {
   protected readonly basicStorage: BasicStorage;
   protected readonly multiSigs: MultiSigService;
   protected readonly ipexCommunications: IpexCommunicationService;
+  protected readonly credentialService: CredentialService;
   protected readonly identifiers: IdentifierService;
   protected readonly getKeriaOnlineStatus: () => boolean;
   protected readonly markAgentStatus: (online: boolean) => void;
@@ -68,6 +70,7 @@ class KeriaNotificationService extends AgentService {
     basicStorage: BasicStorage,
     multiSigs: MultiSigService,
     ipexCommunications: IpexCommunicationService,
+    credentialService: CredentialService,
     identifiers: IdentifierService,
     getKeriaOnlineStatus: () => boolean,
     markAgentStatus: (online: boolean) => void,
@@ -83,6 +86,7 @@ class KeriaNotificationService extends AgentService {
     this.basicStorage = basicStorage;
     this.multiSigs = multiSigs;
     this.ipexCommunications = ipexCommunications;
+    this.credentialService = credentialService;
     this.identifiers = identifiers;
     this.getKeriaOnlineStatus = getKeriaOnlineStatus;
     this.markAgentStatus = markAgentStatus;
@@ -764,7 +768,7 @@ class KeriaNotificationService extends AgentService {
                 );
               }
             }
-            await this.ipexCommunications.markAcdc(
+            await this.credentialService.markAcdc(
               credentialId,
               CredentialStatus.CONFIRMED
             );
@@ -795,7 +799,7 @@ class KeriaNotificationService extends AgentService {
               credential.status.s === "1" &&
               credentialMetadata?.status !== CredentialStatus.REVOKED
           ) {
-            await this.ipexCommunications.markAcdc(
+            await this.credentialService.markAcdc(
               credentialId,
               CredentialStatus.REVOKED
             );

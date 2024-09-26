@@ -157,6 +157,9 @@ const ipexMessageStorage = jest.mocked({
     getIpexMessageMetadataByConnectionIdMock,
   deleteIpexMessageMetadata: jest.fn(),
 });
+const identifiers = jest.mocked({
+  getIdentifierMetadataByGroupId: jest.fn(),
+});
 
 const connectionService = new ConnectionService(
   agentServicesProps,
@@ -164,7 +167,8 @@ const connectionService = new ConnectionService(
   connectionNoteStorage as any,
   credentialStorage as any,
   ipexMessageStorage as any,
-  operationPendingStorage as any
+  operationPendingStorage as any,
+  identifiers as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({

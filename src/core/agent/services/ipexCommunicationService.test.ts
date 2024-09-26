@@ -216,6 +216,10 @@ jest.mock("../../../core/agent/agent", () => ({
   },
 }));
 
+const connections = jest.mocked({
+  resolveOobi: jest.fn(),
+});
+
 const ipexCommunicationService = new IpexCommunicationService(
   agentServicesProps,
   identifierStorage as any,
@@ -223,7 +227,8 @@ const ipexCommunicationService = new IpexCommunicationService(
   notificationStorage as any,
   ipexMessageRecordStorage as any,
   operationPendingStorage as any,
-  multisigService as any
+  multisigService as any,
+  connections as any
 );
 
 const grantIpexMessageMock = {
@@ -393,96 +398,6 @@ describe("Ipex communication service of agent", () => {
       IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY
     );
     expect(deleteNotificationMock).not.toBeCalledWith(id);
-  });
-
-  test("cannot mark credential as confirmed if metadata is missing", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const id = "uuid";
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
-    });
-    credentialListMock.mockResolvedValue([
-      {
-        sad: {
-          d: "id",
-        },
-      },
-    ]);
-    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
-    await expect(
-      ipexCommunicationService.markAcdc(id, CredentialStatus.CONFIRMED)
-    ).rejects.toThrowError(
-      IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
-    );
-    expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
-  });
-
-  test("Can mark credential as confirmed", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const id = "uuid";
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
-    });
-    credentialListMock.mockResolvedValue([
-      {
-        sad: {
-          d: "id",
-        },
-      },
-    ]);
-    const pendingCredentialMock = {
-      id: "id",
-      createdAt: new Date(),
-      issuanceDate: "",
-      credentialType: "",
-      status: CredentialStatus.PENDING,
-      connectionId: "connection-id",
-    };
-    credentialStorage.getCredentialMetadata = jest
-      .fn()
-      .mockResolvedValue(pendingCredentialMock);
-    await ipexCommunicationService.markAcdc(id, CredentialStatus.CONFIRMED);
-    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(
-      pendingCredentialMock.id,
-      {
-        ...pendingCredentialMock,
-        status: CredentialStatus.CONFIRMED,
-      }
-    );
-  });
-
-  test("Can mark credential as revoked", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const id = "uuid";
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
-    });
-    credentialListMock.mockResolvedValue([
-      {
-        sad: {
-          d: "id",
-        },
-      },
-    ]);
-    const pendingCredentialMock = {
-      id: "id",
-      createdAt: new Date(),
-      issuanceDate: "",
-      credentialType: "",
-      status: CredentialStatus.PENDING,
-      connectionId: "connection-id",
-    };
-    credentialStorage.getCredentialMetadata = jest
-      .fn()
-      .mockResolvedValue(pendingCredentialMock);
-    await ipexCommunicationService.markAcdc(id, CredentialStatus.REVOKED);
-    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(
-      pendingCredentialMock.id,
-      {
-        ...pendingCredentialMock,
-        status: CredentialStatus.REVOKED,
-      }
-    );
   });
 
   test("Should throw an error when KERIA is offline", async () => {
