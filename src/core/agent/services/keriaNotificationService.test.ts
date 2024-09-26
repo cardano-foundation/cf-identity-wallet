@@ -1006,7 +1006,7 @@ describe("Signify notification service of agent", () => {
         "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
           accepted: false,
           saids: {
-            "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL": [
+            EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt: [
               [
                 "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
                 "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
@@ -1022,7 +1022,7 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.save).toBeCalledTimes(0);
   });
 
-  test("Auto-joins /multisig/exn admit message and links to grant if we have joined a previous admit message, and no notification record is created", async () => {
+  test("Auto-joins /multisig/exn admit message and links to grant if we have joined a previous but different admit message, and no notification record is created", async () => {
     Agent.agent.identifiers.getIdentifier = jest
       .fn()
       .mockResolvedValueOnce(identifierMetadataRecordProps);
@@ -1079,11 +1079,12 @@ describe("Signify notification service of agent", () => {
       .mockResolvedValueOnce(grantIpexMessageMock);
 
     getCredentialMock.mockResolvedValue(undefined);
+    const dt = new Date().toISOString();
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {
         type: "NotificationRecord",
         id: "id",
-        createdAt: new Date(),
+        createdAt: dt,
         a: {
           r: "/exn/ipex/grant",
           d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
@@ -1094,17 +1095,17 @@ describe("Signify notification service of agent", () => {
           "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
             accepted: true,
             saids: {
-              "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL": [
+              EFtjdJ1gJW8ty7A_EPMv2g10W0DLO1UQYyZ9Sm0OIw_H: [
                 [
                   "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-                  "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
+                  "ELlGAQaGU9yjcvsh2elQoWlxz3-cPBqIdf9u2T5OSIPL",
                 ],
               ],
             },
           },
         },
         connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-        updatedAt: new Date(),
+        updatedAt: dt,
       },
     ]);
 
@@ -1113,10 +1114,11 @@ describe("Signify notification service of agent", () => {
     expect(
       Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn
     ).toBeCalledWith("ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO");
+
     expect(notificationStorage.update).toBeCalledWith({
       type: "NotificationRecord",
       id: "id",
-      createdAt: new Date(),
+      createdAt: dt,
       a: {
         r: "/exn/ipex/grant",
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
@@ -1127,10 +1129,139 @@ describe("Signify notification service of agent", () => {
         "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
           accepted: true,
           saids: {
-            "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL": [
+            EFtjdJ1gJW8ty7A_EPMv2g10W0DLO1UQYyZ9Sm0OIw_H: [
+              [
+                "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
+                "ELlGAQaGU9yjcvsh2elQoWlxz3-cPBqIdf9u2T5OSIPL",
+              ],
+            ],
+            EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt: [
               [
                 "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
                 "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
+              ],
+            ],
+          },
+        },
+      },
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+      updatedAt: dt,
+    });
+    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(notificationStorage.save).toBeCalledTimes(0);
+  });
+
+  test("Links /multisig/exn admit message to grant but does not join if admit by SAID already joined, and no notification record is created", async () => {
+    Agent.agent.identifiers.getIdentifier = jest
+      .fn()
+      .mockResolvedValueOnce(identifierMetadataRecordProps);
+
+    const noti = {
+      i: "string",
+      dt: "string",
+      r: false,
+      a: {
+        r: "/multisig/exn",
+        d: "string",
+        m: "",
+      },
+    };
+
+    exchangesGetMock
+      .mockResolvedValueOnce({
+        exn: {
+          v: "KERI10JSON00032d_",
+          t: "exn",
+          d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
+          i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
+          rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+          p: "",
+          dt: "2024-08-28T06:39:55.501000+00:00",
+          r: "/multisig/exn",
+          q: {},
+          a: {
+            i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+            gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+          },
+          e: {
+            exn: {
+              v: "KERI10JSON000178_",
+              t: "exn",
+              d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
+              i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+              rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+              p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+              dt: "2024-08-28T06:39:51.416000+00:00",
+              r: "/ipex/admit",
+              q: {},
+              a: {
+                i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+                m: "",
+              },
+              e: {},
+            },
+            d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
+          },
+        },
+        pathed: {},
+      })
+      .mockResolvedValueOnce(grantIpexMessageMock);
+
+    getCredentialMock.mockResolvedValue(undefined);
+    const dt = new Date().toISOString();
+    notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
+      {
+        type: "NotificationRecord",
+        id: "id",
+        createdAt: dt,
+        a: {
+          r: "/exn/ipex/grant",
+          d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+        },
+        route: "/exn/ipex/grant",
+        read: true,
+        linkedGroupRequests: {
+          "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
+            accepted: true,
+            saids: {
+              EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt: [
+                [
+                  "EFtjdJ1gJW8ty7A_EPMv2g10W0DLO1UQYyZ9Sm0OIw_H",
+                  "EFUFE140pcdemyv5DZM3AuIuI_ye5Kd5dytdeIwpaVS1",
+                ],
+              ],
+            },
+          },
+        },
+        connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+        updatedAt: dt,
+      },
+    ]);
+
+    await keriaNotificationService.processNotification(noti);
+
+    expect(
+      Agent.agent.ipexCommunications.acceptAcdcFromMultisigExn
+    ).not.toBeCalled();
+
+    expect(notificationStorage.update).toBeCalledWith({
+      type: "NotificationRecord",
+      id: "id",
+      createdAt: dt,
+      a: {
+        r: "/exn/ipex/grant",
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: "/exn/ipex/grant",
+      read: true,
+      linkedGroupRequests: {
+        "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
+          accepted: true,
+          saids: {
+            EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt: [
+              [
+                "EFtjdJ1gJW8ty7A_EPMv2g10W0DLO1UQYyZ9Sm0OIw_H",
+                "EFUFE140pcdemyv5DZM3AuIuI_ye5Kd5dytdeIwpaVS1",
               ],
               [
                 "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
@@ -1141,7 +1272,7 @@ describe("Signify notification service of agent", () => {
         },
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
-      updatedAt: new Date(),
+      updatedAt: dt,
     });
     expect(markNotificationMock).toBeCalledTimes(1);
     expect(notificationStorage.save).toBeCalledTimes(0);
