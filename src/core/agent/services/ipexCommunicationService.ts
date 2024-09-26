@@ -210,19 +210,20 @@ class IpexCommunicationService extends AgentService {
     }
 
     if (Object.keys(applyNoteRecord.linkedGroupRequests).length) {
-      const multiSigExnSaids = Object.entries(
-        applyNoteRecord.linkedGroupRequests
-      )
-        .filter(([_, details]) => !details.accepted)
-        .flatMap(
-          ([_, details]) =>
-            Object.values(details.saids).flat() as [string, string][]
-        );
-
-      for (const [, multiSigExnSaid] of multiSigExnSaids) {
-        await this.joinMultisigOffer(multiSigExnSaid as string);
+      const linkedGroupRequestDetails =
+        applyNoteRecord.linkedGroupRequests[acdc.d];
+      if (linkedGroupRequestDetails) {
+        if (!linkedGroupRequestDetails.accepted) {
+          // @TODO - foconnor: Improve reliability here, if multiple to join and fails halfway through, accepted will be true
+          for (const [, msSaids] of Object.entries(
+            linkedGroupRequestDetails.saids
+          )) {
+            if (!msSaids.length) continue; // Should never happen
+            await this.joinMultisigOffer(msSaids[0][1]); // Join the first received for this particular /ipex/apply, skip the rest
+          }
+        }
+        return; // Only return here if there are linked requests for this credential ID!
       }
-      return;
     }
 
     const msgSaid = applyNoteRecord.a.d as string;
@@ -619,6 +620,7 @@ class IpexCommunicationService extends AgentService {
       exnSaid: grantExn.d,
     });
 
+    // @TODO - foconnor: Similarly called in keriaNotificationService too - need to refactor in case of reliability issues
     if (notifications.length) {
       const notificationRecord = notifications[0];
       notificationRecord.linkedGroupRequests[credentialId] = {
@@ -630,27 +632,27 @@ class IpexCommunicationService extends AgentService {
     }
   }
 
-  private async joinMultisigOffer(offerSaid: string): Promise<void> {
-    const exn = await this.props.signifyClient.exchanges().get(offerSaid);
-    const multisigExn = exn?.exn?.e?.exn;
+  private async joinMultisigOffer(multiSigExnSaid: string): Promise<void> {
+    const exn = await this.props.signifyClient.exchanges().get(multiSigExnSaid);
+    const offerExn = exn.exn.e.exn;
     const holder = await this.identifierStorage.getIdentifierMetadata(
-      exn.exn.e.exn.i
+      offerExn.i
     );
 
     if (!holder) {
       throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     }
 
-    const issuerAidPrefix = multisigExn.a.i;
-    const credential = multisigExn.e.acdc;
-    const applySaid = multisigExn.p;
+    const issuerPrefix = offerExn.a.i;
+    const credential = offerExn.e.acdc;
+    const applySaid = offerExn.p;
 
     const { op } = await this.multisigOfferAcdcFromApply(
       holder.id,
       applySaid as string,
       credential,
-      issuerAidPrefix,
-      multisigExn
+      issuerPrefix,
+      offerExn
     );
 
     const pendingOperation = await this.operationPendingStorage.save({
@@ -660,7 +662,7 @@ class IpexCommunicationService extends AgentService {
     Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
 
     const notifications = await this.notificationStorage.findAllByQuery({
-      exnSaid: exn?.exn.e.exn.p,
+      exnSaid: offerExn.p,
     });
 
     // @TODO - foconnor: Similarly called in keriaNotificationService too - need to refactor in case of reliability issues
@@ -750,7 +752,7 @@ class IpexCommunicationService extends AgentService {
     if (offerExnToJoin) {
       const [, ked] = Saider.saidify(offerExnToJoin);
       const offer = new Serder(ked);
-      const keeper = await this.props.signifyClient.manager!.get(gHab);
+      const keeper = this.props.signifyClient.manager!.get(gHab);
       const sigs = await keeper.sign(b(new Serder(offerExnToJoin).raw));
 
       const mstateNew = gHab["state"];
@@ -854,7 +856,7 @@ class IpexCommunicationService extends AgentService {
       const { grantExn, atc } = grantToJoin;
       const [, ked] = Saider.saidify(grantExn);
       const grant = new Serder(ked);
-      const keeper = await this.props.signifyClient.manager!.get(gHab);
+      const keeper = this.props.signifyClient.manager!.get(gHab);
       const sigs = await keeper.sign(b(new Serder(grantExn).raw));
       const mstateNew = gHab["state"];
       const seal = [
