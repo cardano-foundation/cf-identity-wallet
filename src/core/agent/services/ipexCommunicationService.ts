@@ -88,16 +88,17 @@ class IpexCommunicationService extends AgentService {
     }
 
     if (Object.keys(grantNoteRecord.linkedGroupRequests).length) {
-      const multiSigExnSaids = Object.entries(
+      const linkedGroupRequestDetails = Object.values(
         grantNoteRecord.linkedGroupRequests
-      )
-        .filter(([_, details]) => !details.accepted)
-        .flatMap(
-          ([_, details]) =>
-            Object.values(details.saids).flat() as [string, string][]
-        );
-      for (const [, multiSigExnSaid] of multiSigExnSaids) {
-        await this.acceptAcdcFromMultisigExn(multiSigExnSaid);
+      )[0]; // Can only be related to 1 credentialId
+      if (!linkedGroupRequestDetails.accepted) {
+        // @TODO - foconnor: Improve reliability here, if multiple to join and fails halfway through, accepted will be true
+        for (const [, msSaids] of Object.entries(
+          linkedGroupRequestDetails.saids
+        )) {
+          if (!msSaids.length) continue; // Should never happen
+          await this.acceptAcdcFromMultisigExn(msSaids[0][1]); // Join the first received for this particular /ipex/admit, skip the rest
+        }
       }
       return;
     }
@@ -552,48 +553,44 @@ class IpexCommunicationService extends AgentService {
   }
 
   @OnlineOnly
-  async acceptAcdcFromMultisigExn(said: string): Promise<void> {
-    const exn = await this.props.signifyClient.exchanges().get(said);
+  async acceptAcdcFromMultisigExn(multiSigExnSaid: string): Promise<void> {
+    const exn = await this.props.signifyClient.exchanges().get(multiSigExnSaid);
 
-    const multisigExn = exn?.exn?.e?.exn;
-    const previousExnGrantMsg = await this.props.signifyClient
-      .exchanges()
-      .get(exn?.exn.e.exn.p);
+    const admitExn = exn.exn.e.exn;
+    const grantExn = await this.props.signifyClient.exchanges().get(admitExn.p);
 
     const holder = await this.identifierStorage.getIdentifierMetadata(
-      exn.exn.e.exn.i
+      admitExn.i
     );
 
     if (!holder) {
       throw new Error(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
     }
 
-    const credentialId = previousExnGrantMsg.exn.e.acdc.d;
-    const connectionId = previousExnGrantMsg.exn.i;
+    const credentialId = grantExn.exn.e.acdc.d;
+    const connectionId = grantExn.exn.i;
 
-    const schemaSaid = previousExnGrantMsg.exn.e.acdc.s;
-    const allSchemaSaids = Object.keys(
-      previousExnGrantMsg.exn.e.acdc?.e || {}
-    ).map((key) => previousExnGrantMsg.exn.e.acdc.e?.[key]?.s);
+    const schemaSaid = grantExn.exn.e.acdc.s;
+    const allSchemaSaids = Object.keys(grantExn.exn.e.acdc?.e || {}).map(
+      (key) => grantExn.exn.e.acdc.e?.[key]?.s
+    );
     allSchemaSaids.push(schemaSaid);
 
     const { op } = await this.multisigService.multisigAdmit(
       holder.id,
-      previousExnGrantMsg.exn.d as string,
+      grantExn.exn.d as string,
       allSchemaSaids,
-      multisigExn
+      admitExn
     );
 
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
     const credentialPending =
-      await this.credentialStorage.getCredentialMetadata(
-        previousExnGrantMsg.exn.e.acdc.d
-      );
+      await this.credentialStorage.getCredentialMetadata(credentialId);
 
     if (!credentialPending) {
       const credential = await this.saveAcdcMetadataRecord(
-        previousExnGrantMsg.exn.e.acdc.d,
-        previousExnGrantMsg.exn.e.acdc.a.dt,
+        credentialId,
+        grantExn.exn.e.acdc.a.dt,
         schema.title,
         connectionId,
         schemaSaid
@@ -619,7 +616,7 @@ class IpexCommunicationService extends AgentService {
     });
 
     const notifications = await this.notificationStorage.findAllByQuery({
-      exnSaid: exn?.exn.e.exn.p,
+      exnSaid: grantExn.d,
     });
 
     if (notifications.length) {
@@ -666,6 +663,7 @@ class IpexCommunicationService extends AgentService {
       exnSaid: exn?.exn.e.exn.p,
     });
 
+    // @TODO - foconnor: Similarly called in keriaNotificationService too - need to refactor in case of reliability issues
     if (notifications.length) {
       const acdcSaid = credential.d as string;
       const notificationRecord = notifications[0];

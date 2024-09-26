@@ -439,19 +439,22 @@ class KeriaNotificationService extends AgentService {
   ): Promise<boolean> {
     const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
 
-    switch (exchange?.exn?.e?.exn?.r) {
+    switch (exchange.exn.e?.exn?.r) {
     case ExchangeRoute.IpexAdmit: {
-      const previousExnMsg = await this.props.signifyClient
+      const admitSaid = exchange.exn.e.exn.d;
+      const otherMember = exchange.exn.i;
+
+      const grantExn = await this.props.signifyClient
         .exchanges()
-        .get(exchange?.exn.e.exn.p);
+        .get(exchange.exn.e.exn.p);
 
       const notificationsGrant =
           await this.notificationStorage.findAllByQuery({
-            exnSaid: previousExnMsg.exn.d,
+            exnSaid: grantExn.exn.d,
           });
 
       const existMultisig = await this.identifiers
-        .getIdentifier(exchange?.exn?.e?.exn?.i)
+        .getIdentifier(exchange.exn.e.exn.i)
         .catch((error) => {
           if (
             error.message ===
@@ -468,48 +471,54 @@ class KeriaNotificationService extends AgentService {
         return false;
       }
 
-      const credentialId = previousExnMsg.exn.e.acdc.d;
-      const member = exchange.exn.i;
-      const said = previousExnMsg.exn.d;
+      const credentialId = grantExn.exn.e.acdc.d;
       const existingCredential = await this.props.signifyClient
         .credentials()
         .get(credentialId)
         .catch(() => undefined);
 
+      // @TODO - foconnor: If multi-sig it may not complete now
       if (existingCredential) {
         await this.markNotification(notif.i);
         return false;
       }
 
+      // @TODO - foconnor: We may receive admit before grant, will cause issues
       if (notificationsGrant.length) {
         const notificationRecord = notificationsGrant[0];
-        if (
-          Object.keys(notificationRecord.linkedGroupRequests).length === 0 ||
-            notificationRecord.linkedGroupRequests.acdcSaid?.accepted === false
-        ) {
-          notificationRecord.linkedGroupRequests = {
-            [credentialId]: {
-              accepted: false,
-              saids: { [said]: [[member, exchange.exn.d]] },
-            },
-          };
+
+        // Can only be one, as grant tied to credential ID
+        let linkedGroupRequestDetails =
+            notificationRecord.linkedGroupRequests[credentialId];
+        if (linkedGroupRequestDetails) {
+          if (
+            linkedGroupRequestDetails.accepted &&
+              !linkedGroupRequestDetails.saids[admitSaid]
+          ) {
+            // Only auto-join NEW /ipex/admit
+            await this.ipexCommunications.acceptAcdcFromMultisigExn(
+              exchange.exn.d
+            );
+          }
+
+          if (!linkedGroupRequestDetails.saids[admitSaid]) {
+            // First /multisig/exn for specific /ipex/admit
+            linkedGroupRequestDetails.saids[admitSaid] = [];
+          }
+          linkedGroupRequestDetails.saids[admitSaid].push([
+            otherMember,
+            exchange.exn.d,
+          ]); // Record, should only get 1 notification
         } else {
-          await this.ipexCommunications.acceptAcdcFromMultisigExn(
-            exchange.exn.d
-          );
-          notificationRecord.linkedGroupRequests = {
-            [credentialId]: {
-              accepted: true,
-              saids: {
-                [said]: [
-                  ...notificationRecord.linkedGroupRequests[credentialId]
-                    .saids[said],
-                  [member, exchange.exn.d],
-                ],
-              },
-            },
+          linkedGroupRequestDetails = {
+            // First /multisig/exn linking to /ipex/grant
+            accepted: false,
+            saids: { [admitSaid]: [[otherMember, exchange.exn.d]] },
           };
         }
+
+        notificationRecord.linkedGroupRequests[credentialId] =
+            linkedGroupRequestDetails;
         await this.notificationStorage.update(notificationRecord);
       }
       await this.markNotification(notif.i);

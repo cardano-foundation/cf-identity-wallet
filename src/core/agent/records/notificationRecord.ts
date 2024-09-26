@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { BaseRecord, Tags } from "../../storage/storage.types";
 import { NotificationRoute } from "../agent.types";
 
-interface GroupRequestDetails {
+interface LinkedGroupRequestDetails {
   accepted: boolean;
   saids: Record<string, [string, string][]>;
 }
@@ -16,7 +16,7 @@ interface NotificationRecordStorageProps {
   read: boolean;
   multisigId?: string;
   connectionId: string;
-  linkedGroupRequests?: Record<string, GroupRequestDetails>;
+  linkedGroupRequests?: Record<string, LinkedGroupRequestDetails>;
 }
 
 class NotificationRecord extends BaseRecord {
@@ -25,7 +25,7 @@ class NotificationRecord extends BaseRecord {
   read!: boolean;
   multisigId?: string;
   connectionId!: string;
-  linkedGroupRequests!: Record<string, GroupRequestDetails>;
+  linkedGroupRequests!: Record<string, LinkedGroupRequestDetails>;
   static readonly type = "NotificationRecord";
   readonly type = NotificationRecord.type;
 
