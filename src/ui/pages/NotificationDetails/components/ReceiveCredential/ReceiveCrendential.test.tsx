@@ -1,17 +1,17 @@
 import { mockIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { act } from "react";
+import { KeyStoreKeys } from "../../../../../core/storage";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
-import { setNotificationsCache } from "../../../../../store/reducers/notificationsCache";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
 import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
-import { ReceiveCredential } from "./ReceiveCredential";
-import { KeyStoreKeys } from "../../../../../core/storage";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
+import { ReceiveCredential } from "./ReceiveCredential";
+import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
 
 mockIonicReact();
 jest.useFakeTimers();
@@ -46,6 +46,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
       },
       ipexCommunications: {
         acceptAcdc: (id: string) => acceptAcdcMock(id),
+        getAcdcFromIpexGrant: jest.fn(() => Promise.resolve(credsFixAcdc[0])),
       },
     },
   },
@@ -62,6 +63,9 @@ const initialState = {
       time: Date.now(),
       passcodeIsSet: true,
     },
+  },
+  credsCache: {
+    creds: [],
   },
   connectionsCache: {
     connections: connectionsForNotifications,
@@ -88,7 +92,7 @@ describe("Credential request", () => {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
-    const { getByText, getByTestId } = render(
+    const { getAllByText, getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <ReceiveCredential
           pageId="creadential-request"
@@ -100,7 +104,9 @@ describe("Credential request", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.notifications.details.credential.receive.title)
+      getAllByText(
+        EN_TRANSLATIONS.notifications.details.credential.receive.title
+      )[0]
     ).toBeVisible();
 
     act(() => {
@@ -133,7 +139,7 @@ describe("Credential request", () => {
     };
 
     const backMock = jest.fn();
-    const { getByText, getByTestId } = render(
+    const { getAllByText, getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <ReceiveCredential
           pageId="creadential-request"
@@ -145,7 +151,9 @@ describe("Credential request", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.notifications.details.credential.receive.title)
+      getAllByText(
+        EN_TRANSLATIONS.notifications.details.credential.receive.title
+      )[0]
     ).toBeVisible();
 
     act(() => {
@@ -170,6 +178,39 @@ describe("Credential request", () => {
 
     await waitFor(() => {
       expect(acceptAcdcMock).toBeCalledWith(notificationsFix[0].id);
+    });
+  }, 10000);
+
+  test("Open cred detail", async () => {
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const backMock = jest.fn();
+    const { getAllByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <ReceiveCredential
+          pageId="creadential-request"
+          activeStatus
+          handleBack={backMock}
+          notificationDetails={notificationsFix[0]}
+        />
+      </Provider>
+    );
+
+    expect(
+      getAllByText(
+        EN_TRANSLATIONS.notifications.details.credential.receive.title
+      )[0]
+    ).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("cred-detail-btn"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("receive-credential-detail-modal")).toBeVisible();
     });
   }, 10000);
 });

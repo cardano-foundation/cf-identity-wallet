@@ -13,7 +13,7 @@ const CredentialContent = ({ cardData }: CredentialContentProps) => {
     <>
       <CardDetailsBlock title={i18n.t("credentials.details.title")}>
         <CardDetailsItem
-          info={cardData.credentialType}
+          info={cardData.s.title}
           icon={informationCircleOutline}
           testId="card-details-credential-type"
         />

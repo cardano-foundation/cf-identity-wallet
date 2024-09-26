@@ -1053,8 +1053,10 @@
         },
         "receive": {
           "title": "Receive credential",
-          "receivefrom": "Receive a credential from",
+          "receivefrom": "Receive credential",
+          "from": "from",
           "credentialpending": "Credential pending",
+          "credentialdetailbutton": "Credential details",
           "alert": {
             "textdecline": "Are you sure you want to decline this credential issuance? You won't be able to change your decision later."
           }

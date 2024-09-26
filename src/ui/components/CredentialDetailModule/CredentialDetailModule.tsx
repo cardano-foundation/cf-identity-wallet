@@ -56,6 +56,8 @@ const CredentialDetailModule = ({
   onClose,
   hardwareBackButtonConfig,
   navAnimation = false,
+  credDetail,
+  viewOnly,
   ...props
 }: CredentialDetailModuleProps) => {
   const { isLightMode } = props;
@@ -73,7 +75,8 @@ const CredentialDetailModule = ({
   const [cardData, setCardData] = useState<ACDCDetails>();
   const isArchived = credsCache.filter((item) => item.id === id).length === 0;
   const isRevoked = cardData?.status === CredentialStatus.REVOKED;
-  const isInactiveCred = isArchived || isRevoked;
+  const isInactiveCred = (isArchived || isRevoked) && !viewOnly;
+
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === id);
   const [cloudError, setCloudError] = useState(false);
 
@@ -87,6 +90,11 @@ const CredentialDetailModule = ({
   }, [dispatch]);
 
   const getCredDetails = useCallback(async () => {
+    if (credDetail) {
+      setCardData(credDetail);
+      return;
+    }
+
     if (!id) return;
 
     try {
@@ -97,7 +105,7 @@ const CredentialDetailModule = ({
       setCloudError(true);
       showError("Unable to get credential detail", error, dispatch);
     }
-  }, [id, dispatch]);
+  }, [id, dispatch, credDetail]);
 
   useOnlineStatusEffect(getCredDetails);
 
@@ -259,6 +267,10 @@ const CredentialDetailModule = ({
   };
 
   const AdditionalButtons = () => {
+    if (viewOnly) {
+      return null;
+    }
+
     if (isLightMode) {
       return (
         <IonCheckbox
@@ -401,26 +413,32 @@ const CredentialDetailModule = ({
               </div>
             )}
             <CredentialCardTemplate
-              cardData={cardData}
+              cardData={{
+                ...cardData,
+                issuanceDate: cardData.a.dt,
+                credentialType: cardData.s.title || "",
+              }}
               isActive={false}
             />
             <div className="card-details-content">
               <CredentialContent cardData={cardData} />
-              <PageFooter
-                pageId={pageId}
-                archiveButtonText={
-                  !isInactiveCred
-                    ? `${i18n.t("credentials.details.button.archive")}`
-                    : ""
-                }
-                archiveButtonAction={() => handleArchive()}
-                deleteButtonText={
-                  isInactiveCred
-                    ? `${i18n.t("credentials.details.button.delete")}`
-                    : ""
-                }
-                deleteButtonAction={() => handleDelete()}
-              />
+              {!viewOnly && (
+                <PageFooter
+                  pageId={pageId}
+                  archiveButtonText={
+                    !isInactiveCred
+                      ? `${i18n.t("credentials.details.button.archive")}`
+                      : ""
+                  }
+                  archiveButtonAction={() => handleArchive()}
+                  deleteButtonText={
+                    isInactiveCred
+                      ? `${i18n.t("credentials.details.button.delete")}`
+                      : ""
+                  }
+                  deleteButtonAction={() => handleDelete()}
+                />
+              )}
             </div>
             <CredentialOptions
               optionsIsOpen={optionsIsOpen}
