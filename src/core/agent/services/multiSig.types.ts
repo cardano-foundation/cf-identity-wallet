@@ -2,16 +2,21 @@ import { HabState, State } from "signify-ts";
 
 interface CommonExn {
   v: string;
-  t: string;
+  t: "exn";
   d: string;
   i: string;
+  rp: string;
   p: string;
   dt: string;
   r: string;
-  q: any;
+  q: unknown;
 }
 
-interface IcpExn extends CommonExn {
+interface IcpExn {
+  v: string;
+  t: string;
+  d: string;
+  i: string;
   s: string;
   kt: string | string[];
   k: string[];
@@ -20,29 +25,32 @@ interface IcpExn extends CommonExn {
   bt: string;
   b: string[];
   c: string[];
-  a: any[];
+  a: unknown[];
 }
 
-interface RotExn extends CommonExn {
+interface RotExn {
+  v: string;
+  t: string;
+  d: string;
+  i: string;
   s: string;
   kt: string | string[];
   k: string[];
   nt: string | string[];
   n: string[];
   bt: string;
-  br: any[];
-  ba: any[];
-  a: any[];
+  br: string[];
+  ba: string[];
+  a: unknown[];
 }
 
 interface InceptMultiSigExnMessage {
   exn: CommonExn & {
     a: {
+      i: string;
       gid: string;
       smids: string[];
       rmids: string[];
-      rstates: HabState["state"][];
-      name: string;
     };
     e: {
       icp: IcpExn;
@@ -54,11 +62,10 @@ interface InceptMultiSigExnMessage {
 interface RotationMultiSigExnMessage {
   exn: CommonExn & {
     a: {
+      i: string;
       gid: string;
       smids: string[];
       rmids: string[];
-      rstates: HabState["state"][];
-      name: string;
     };
     e: {
       rot: RotExn;
