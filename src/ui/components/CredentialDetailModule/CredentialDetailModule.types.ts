@@ -19,7 +19,7 @@ type CredentialDetailModuleBaseProps = {
   navAnimation?: boolean;
   hardwareBackButtonConfig?: HardwareBackButtonConfig;
 } & (
-  | { viewOnly: false }
+  | { viewOnly?: false }
   | { viewOnly: true; credDetail: ACDCDetails | undefined }
 );
 
