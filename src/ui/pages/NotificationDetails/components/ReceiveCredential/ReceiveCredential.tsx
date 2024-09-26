@@ -85,8 +85,8 @@ const ReceiveCredential = ({
       setCredDetail({
         ...credential,
         status: CredentialStatus.PENDING,
-        credentialType: credential.s.title,
-        issuanceDate: credential.a.dt,
+        credentialType: "",
+        issuanceDate: "",
       });
     } catch (e) {
       setInitiateAnimation(false);
@@ -185,7 +185,7 @@ const ReceiveCredential = ({
                 {i18n.t("notifications.details.credential.receive.receivefrom")}
               </span>
               <strong className="credential-type">
-                {credDetail?.credentialType}
+                {credDetail?.s?.title}
               </strong>
               <span className="break-text">
                 {i18n.t("notifications.details.credential.receive.from")}

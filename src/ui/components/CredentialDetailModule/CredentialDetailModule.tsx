@@ -413,7 +413,11 @@ const CredentialDetailModule = ({
               </div>
             )}
             <CredentialCardTemplate
-              cardData={cardData}
+              cardData={{
+                ...cardData,
+                issuanceDate: cardData.a.dt,
+                credentialType: cardData.s.title || "",
+              }}
               isActive={false}
             />
             <div className="card-details-content">
