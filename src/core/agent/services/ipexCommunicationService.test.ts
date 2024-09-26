@@ -901,7 +901,7 @@ describe("Ipex communication service of agent", () => {
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 
-  test("can accept ACDC from multisig exn 123", async () => {
+  test("can accept ACDC from multisig exn", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "uuid";
 
@@ -1068,6 +1068,8 @@ describe("Ipex communication service of agent", () => {
     multisigService.multisigAdmit = jest.fn().mockResolvedValue({
       op: { name: "opName", done: false },
       exnSaid: "exnSaid",
+      ipexAdmitSaid: "ipexAdmitSaid",
+      member: "member1",
     });
 
     eventEmitter.emit = jest.fn();
@@ -1091,7 +1093,9 @@ describe("Ipex communication service of agent", () => {
       linkedGroupRequests: {
         "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
           accepted: true,
-          saids: ["exnSaid"],
+          saids: {
+            ipexAdmitSaid: [["member1", "exnSaid"]],
+          },
         },
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -1145,9 +1149,13 @@ describe("Ipex communication service of agent", () => {
       route: "/exn/ipex/grant",
       read: true,
       linkedGroupRequests: {
-        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
+        "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
           accepted: false,
-          saids: ["EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw"],
+          saids: {
+            ipexAdmitSaid: [
+              ["member2", "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw"],
+            ],
+          },
         },
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -1235,7 +1243,11 @@ describe("Ipex communication service of agent", () => {
       linkedGroupRequests: {
         "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
           accepted: true,
-          saids: ["EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw"],
+          saids: {
+            ipexAdmitSaid: [
+              ["member2", "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw"],
+            ],
+          },
         },
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -1385,7 +1397,9 @@ describe("Ipex communication service of agent", () => {
       .spyOn(ipexCommunicationService, "multisigOfferAcdcFromApply")
       .mockResolvedValueOnce({
         op: { name: "opName", done: true },
-        offerSaid: "d",
+        ipexOfferSaid: "ipexOfferSaid",
+        member: "member1",
+        exnSaid: "exnSaid",
       });
 
     await ipexCommunicationService.offerAcdcFromApply(id, acdc);
@@ -1451,7 +1465,9 @@ describe("Ipex communication service of agent", () => {
       .spyOn(ipexCommunicationService, "multisigOfferAcdcFromApply")
       .mockResolvedValueOnce({
         op: { name: "opName", done: true },
-        offerSaid: "d",
+        ipexOfferSaid: "ipexOfferSaid",
+        member: "member1",
+        exnSaid: "exnSaid",
       });
 
     await ipexCommunicationService.offerAcdcFromApply("id", acdc);
@@ -1468,7 +1484,9 @@ describe("Ipex communication service of agent", () => {
       linkedGroupRequests: {
         EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
           accepted: true,
-          saids: ["d"],
+          saids: {
+            ipexOfferSaid: [["member1", "exnSaid"]],
+          },
         },
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -1581,7 +1599,9 @@ describe("Ipex communication service of agent", () => {
       .spyOn(ipexCommunicationService, "multisigOfferAcdcFromApply")
       .mockResolvedValueOnce({
         op: { name: "opName", done: true },
-        offerSaid: "d",
+        ipexOfferSaid: "ipexOfferSaid",
+        member: "member1",
+        exnSaid: "exnSaid",
       });
 
     await ipexCommunicationService.offerAcdcFromApply("id", acdc);
@@ -1603,7 +1623,9 @@ describe("Ipex communication service of agent", () => {
       linkedGroupRequests: {
         EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
           accepted: true,
-          saids: ["d"],
+          saids: {
+            ipexOfferSaid: [["member1", "exnSaid"]],
+          },
         },
       },
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",

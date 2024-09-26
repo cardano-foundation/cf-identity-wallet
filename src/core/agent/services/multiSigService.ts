@@ -989,6 +989,7 @@ class MultiSigService extends AgentService {
     let exn: Serder;
     let sigsMes: string[];
     let dtime: string;
+    let ipexAdmitSaid: string;
 
     await Promise.all(
       schemaSaids.map(
@@ -1048,6 +1049,7 @@ class MultiSigService extends AgentService {
           gembeds,
           recp[0]
         );
+      ipexAdmitSaid = admit.ked.d;
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
       const [admit, sigs, end] = await this.props.signifyClient.ipex().admit({
@@ -1080,13 +1082,14 @@ class MultiSigService extends AgentService {
           gembeds,
           recp[0]
         );
+      ipexAdmitSaid = admit.ked.d;
     }
 
     const op = await this.props.signifyClient
       .ipex()
       .submitAdmit(multisigId, exn, sigsMes, dtime, recp);
 
-    return { op, exnSaid: exn.ked.d };
+    return { op, exnSaid: exn.ked.d, ipexAdmitSaid, member: ourIdentifier.id };
   }
 }
 

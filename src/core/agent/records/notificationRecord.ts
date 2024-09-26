@@ -4,7 +4,7 @@ import { NotificationRoute } from "../agent.types";
 
 interface GroupRequestDetails {
   accepted: boolean;
-  saids: string[];
+  saids: Record<string, [string, string][]>;
 }
 
 interface NotificationRecordStorageProps {

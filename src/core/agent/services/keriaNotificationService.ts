@@ -469,6 +469,8 @@ class KeriaNotificationService extends AgentService {
       }
 
       const credentialId = previousExnMsg.exn.e.acdc.d;
+      const member = exchange.exn.i;
+      const said = previousExnMsg.exn.d;
       const existingCredential = await this.props.signifyClient
         .credentials()
         .get(credentialId)
@@ -488,7 +490,7 @@ class KeriaNotificationService extends AgentService {
           notificationRecord.linkedGroupRequests = {
             [credentialId]: {
               accepted: false,
-              saids: [exchange.exn.d],
+              saids: { [said]: [[member, exchange.exn.d]] },
             },
           };
         } else {
@@ -498,7 +500,13 @@ class KeriaNotificationService extends AgentService {
           notificationRecord.linkedGroupRequests = {
             [credentialId]: {
               accepted: true,
-              saids: [exchange.exn.d],
+              saids: {
+                [said]: [
+                  ...notificationRecord.linkedGroupRequests[credentialId]
+                    .saids[said],
+                  [member, exchange.exn.d],
+                ],
+              },
             },
           };
         }
@@ -508,8 +516,6 @@ class KeriaNotificationService extends AgentService {
       return false;
     }
     case ExchangeRoute.IpexOffer: {
-      console.log("Exchange in multisig/exn: ", exchange);
-
       const previousExnMsgApply = await this.props.signifyClient
         .exchanges()
         .get(exchange?.exn.e.exn.p);
@@ -523,6 +529,7 @@ class KeriaNotificationService extends AgentService {
         const notificationRecord = notificationsApply[0];
         const acdcSaid = exchange.exn.e.exn?.e?.acdc?.d;
         const said = exchange.exn.e.exn.d;
+        const member = exchange.exn.i;
 
         if (
           Object.keys(notificationRecord.linkedGroupRequests).length === 0 ||
@@ -531,14 +538,21 @@ class KeriaNotificationService extends AgentService {
           notificationRecord.linkedGroupRequests = {
             [acdcSaid]: {
               accepted: false,
-              saids: [said],
+              saids: { [said]: [[member, exchange.exn.d]] },
             },
           };
         } else {
           notificationRecord.linkedGroupRequests = {
             [acdcSaid]: {
               accepted: true,
-              saids: [said],
+              saids: {
+                [said]: [
+                  ...notificationRecord.linkedGroupRequests[acdcSaid].saids[
+                    said
+                  ],
+                  [member, exchange.exn.d],
+                ],
+              },
             },
           };
         }
@@ -559,6 +573,8 @@ class KeriaNotificationService extends AgentService {
           });
       if (notificationsAgree.length) {
         const notificationRecord = notificationsAgree[0];
+        const said = exchange.exn.e.exn.d;
+        const member = exchange.exn.i;
 
         if (
           Object.keys(notificationRecord.linkedGroupRequests).length === 0 ||
@@ -567,7 +583,7 @@ class KeriaNotificationService extends AgentService {
           notificationRecord.linkedGroupRequests = {
             [credentialId]: {
               accepted: false,
-              saids: [exchange.exn.d],
+              saids: { [said]: [[member, exchange.exn.d]] },
             },
           };
         } else {
@@ -575,7 +591,13 @@ class KeriaNotificationService extends AgentService {
           notificationRecord.linkedGroupRequests = {
             [credentialId]: {
               accepted: true,
-              saids: [exchange.exn.d],
+              saids: {
+                [said]: [
+                  ...notificationRecord.linkedGroupRequests[credentialId]
+                    .saids[said],
+                  [member, exchange.exn.d],
+                ],
+              },
             },
           };
         }
