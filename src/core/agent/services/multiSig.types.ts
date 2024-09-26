@@ -97,8 +97,8 @@ enum MultiSigRoute {
 interface IpexGrantMultiSigExn {
   exn: CommonExn & {
     a: {
-      gid: string;
       i: string;
+      gid: string;
     };
     e: {
       exn: CommonExn & {
@@ -107,9 +107,9 @@ interface IpexGrantMultiSigExn {
           m: string;
         };
         e: {
-          acdc: any;
-          iss: any;
-          anc: any;
+          acdc: unknown; // @TODO - foconnor: We can type these.
+          iss: unknown;
+          anc: unknown;
           d: string;
         };
       };
