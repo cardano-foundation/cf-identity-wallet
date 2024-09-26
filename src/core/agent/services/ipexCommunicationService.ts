@@ -293,32 +293,35 @@ class IpexCommunicationService extends AgentService {
       );
     }
 
-    if (Object.keys(agreeNoteRecord.linkedGroupRequests).length) {
-      const multiSigExnSaids = Object.entries(
-        agreeNoteRecord.linkedGroupRequests
-      )
-        .filter(([_, details]) => !details.accepted)
-        .flatMap(
-          ([_, details]) =>
-            Object.values(details.saids).flat() as [string, string][]
-        );
-
-      for (const [, multiSigExnSaid] of multiSigExnSaids) {
-        await this.joinMultisigGrant(multiSigExnSaid as string);
-      }
-      return;
-    }
-
     const msgSaid = agreeNoteRecord.a.d as string;
     const agreeExn = await this.props.signifyClient.exchanges().get(msgSaid);
-    const msgOffer = await this.props.signifyClient
+    const offerExn = await this.props.signifyClient
       .exchanges()
       .get(agreeExn.exn.p);
+    const acdcSaid = offerExn.exn.e.acdc.d;
+
+    if (Object.keys(agreeNoteRecord.linkedGroupRequests).length) {
+      const linkedGroupRequestDetails =
+        agreeNoteRecord.linkedGroupRequests[acdcSaid];
+
+      if (linkedGroupRequestDetails) {
+        if (!linkedGroupRequestDetails.accepted) {
+          // @TODO - foconnor: Improve reliability here, if multiple to join and fails halfway through, accepted will be true
+          for (const [, msSaids] of Object.entries(
+            linkedGroupRequestDetails.saids
+          )) {
+            if (!msSaids.length) continue; // Should never happen
+            await this.joinMultisigGrant(msSaids[0][1]); // Join the first received for this particular /ipex/agree, skip the rest
+          }
+        }
+        return; // Only return here if there are linked requests for this credential ID!
+      }
+    }
 
     //TODO: this might throw 500 internal server error, might not run to the next line at the moment
     const pickedCred = await this.props.signifyClient
       .credentials()
-      .get(msgOffer.exn.e.acdc.d);
+      .get(acdcSaid);
     if (!pickedCred) {
       throw new Error(IpexCommunicationService.CREDENTIAL_NOT_FOUND);
     }
@@ -326,6 +329,7 @@ class IpexCommunicationService extends AgentService {
     const discloser = await this.identifierStorage.getIdentifierMetadata(
       agreeExn.exn.a.i
     );
+
     let op: Operation;
     if (discloser.multisigManageAid) {
       const {
@@ -339,7 +343,8 @@ class IpexCommunicationService extends AgentService {
         pickedCred
       );
       op = opMultisigGrant;
-      const credentialSaid = pickedCred?.sad?.d as string;
+
+      const credentialSaid = pickedCred.sad.d as string;
       agreeNoteRecord.linkedGroupRequests = {
         [credentialSaid]: {
           accepted: true,
@@ -678,8 +683,8 @@ class IpexCommunicationService extends AgentService {
     }
   }
 
-  private async joinMultisigGrant(said: string): Promise<void> {
-    const exn = await this.props.signifyClient.exchanges().get(said);
+  async joinMultisigGrant(multiSigExnSaid: string): Promise<void> {
+    const exn = await this.props.signifyClient.exchanges().get(multiSigExnSaid);
 
     const grantExn = exn?.exn?.e?.exn;
     const credential = grantExn?.e?.acdc;
