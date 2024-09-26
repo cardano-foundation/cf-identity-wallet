@@ -54,8 +54,9 @@ const ipexMessageRecordStorage = jest.mocked({
   createIpexMessageRecord: jest.fn(),
 });
 
+const saveOperationPendingMock = jest.fn();
 const operationPendingStorage = jest.mocked({
-  save: jest.fn(),
+  save: saveOperationPendingMock,
   delete: jest.fn(),
   deleteById: jest.fn(),
   update: jest.fn(),
@@ -115,6 +116,7 @@ const submitAdmitMock = jest.fn().mockResolvedValue({
   name: "opName",
   done: true,
 });
+const markNotificationMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -162,7 +164,7 @@ const signifyClient = jest.mocked({
   }),
   notifications: () => ({
     list: jest.fn(),
-    mark: jest.fn(),
+    mark: markNotificationMock,
   }),
   ipex: () => ({
     admit: jest.fn().mockResolvedValue(["admit", "sigs", "aend"]),
@@ -217,7 +219,6 @@ jest.mock("../../../core/agent/agent", () => ({
         resolveOobi: () => resolveOobiMock(),
       },
       keriaNotifications: {
-        deleteNotificationRecordById: jest.fn(),
         addPendingOperationToQueue: jest.fn(),
       },
       ipexCommunications: {
@@ -356,6 +357,11 @@ describe("Ipex communication service of agent", () => {
     });
     eventEmitter.emit = jest.fn();
 
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+
     await ipexCommunicationService.acceptAcdc(id);
 
     const credentialMock = {
@@ -381,17 +387,21 @@ describe("Ipex communication service of agent", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    expect(
-      Agent.agent.keriaNotifications.addPendingOperationToQueue
-    ).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "opName",
+          recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+        },
+      },
+    });
     expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith(
       expect.objectContaining({
         historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
       })
     );
-    expect(
-      Agent.agent.keriaNotifications.deleteNotificationRecordById
-    ).toBeCalledWith(id, "/exn/ipex/grant");
+    expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 
   test("cannot accept ACDC if the notification is missing in the DB", async () => {
@@ -573,44 +583,8 @@ describe("Ipex communication service of agent", () => {
       acdc: expect.anything(),
       applySaid: "d",
     });
-    expect(
-      Agent.agent.keriaNotifications.deleteNotificationRecordById
-    ).toBeCalledWith(id, "/exn/ipex/grant");
-  });
-
-  test("can not offer Keri Acdc if aid is not existed", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const id = "uuid";
-    const date = new Date().toISOString();
-    const noti = {
-      id,
-      createdAt: date,
-      a: {
-        d: "keri",
-      },
-      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
-      read: true,
-    };
-    getExchangeMock = jest.fn().mockReturnValueOnce({
-      exn: {
-        a: {
-          s: "schemaSaid",
-          i: "ai",
-        },
-        i: "i",
-      },
-    });
-    credentialListMock = jest.fn().mockReturnValue([{}]);
-    identifierStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockRejectedValue(
-        new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-      );
-    await expect(
-      ipexCommunicationService.offerAcdcFromApply(noti.id, {})
-    ).rejects.toThrowError(
-      IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
-    );
+    expect(markNotificationMock).toBeCalledWith(id);
+    expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 
   test("can grant Keri Acdc when received the ipex agree", async () => {
@@ -1034,6 +1008,13 @@ describe("Ipex communication service of agent", () => {
       },
     ]);
 
+    eventEmitter.emit = jest.fn();
+
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
+
     await ipexCommunicationService.acceptAcdc(id);
 
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
@@ -1041,9 +1022,15 @@ describe("Ipex communication service of agent", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    expect(
-      Agent.agent.keriaNotifications.addPendingOperationToQueue
-    ).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "opName",
+          recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+        },
+      },
+    });
   });
 
   test("can accept ACDC and update linkedGroupRequests when FIRST of multisig joins", async () => {
@@ -1084,6 +1071,11 @@ describe("Ipex communication service of agent", () => {
     });
 
     eventEmitter.emit = jest.fn();
+
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+    });
 
     await ipexCommunicationService.acceptAcdc("id");
 
@@ -1129,9 +1121,15 @@ describe("Ipex communication service of agent", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    expect(
-      Agent.agent.keriaNotifications.addPendingOperationToQueue
-    ).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "opName",
+          recordType: OperationPendingRecordType.ExchangeReceiveCredential,
+        },
+      },
+    });
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
   });
 
@@ -1776,9 +1774,7 @@ describe("Ipex communication service of agent", () => {
     await expect(
       ipexCommunicationService.acceptAcdcFromMultisigExn(id)
     ).rejects.toThrowError(IpexCommunicationService.ISSUEE_NOT_FOUND_LOCALLY);
-    expect(
-      Agent.agent.keriaNotifications.deleteNotificationRecordById
-    ).not.toBeCalledWith(id);
+    expect(notificationStorage.deleteById).not.toBeCalledWith(id);
   });
 
   test("cannot offer ACDC from multisig exn if the notification is missing in the DB", async () => {
@@ -1799,10 +1795,76 @@ describe("Ipex communication service of agent", () => {
         .fn()
         .mockImplementationOnce(() => Promise.resolve(grantIpexMessageMock)),
     });
+
+    schemaGetMock.mockResolvedValue({
+      title: "Qualified vLEI Issuer Credential",
+      description: "Qualified vLEI Issuer Credential",
+      version: "1.0",
+    });
+
     expect(
       await ipexCommunicationService.getAcdcFromIpexGrant(
         "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL"
       )
-    ).toEqual(grantIpexMessageMock.exn.e.acdc);
+    ).toEqual({
+      id: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+      schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+      i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      a: {
+        d: "ELHCh_X2aw7C-aYesOM4La23a5lsoNuJDuCsJuxwO2nq",
+        i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+        dt: "2024-07-30T04:19:55.348000+00:00",
+        attendeeName: "ccc",
+      },
+      s: {
+        title: "Qualified vLEI Issuer Credential",
+        description: "Qualified vLEI Issuer Credential",
+        version: "1.0",
+      },
+      lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
+    });
+  });
+
+  test("can get acdc detail when the schema has not been resolved", async () => {
+    signifyClient.exchanges = jest.fn().mockReturnValue({
+      get: jest
+        .fn()
+        .mockImplementationOnce(() => Promise.resolve(grantIpexMessageMock)),
+    });
+    const error404 = new Error("Not Found - 404");
+    schemaGetMock.mockRejectedValueOnce(error404);
+
+    resolveOobiMock.mockResolvedValueOnce({
+      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+      metadata: {
+        oobi: "testOobi",
+      },
+      done: true,
+      error: null,
+      response: {},
+      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+    });
+
+    expect(
+      await ipexCommunicationService.getAcdcFromIpexGrant(
+        "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL"
+      )
+    ).toEqual({
+      id: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+      schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
+      i: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      a: {
+        d: "ELHCh_X2aw7C-aYesOM4La23a5lsoNuJDuCsJuxwO2nq",
+        i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
+        dt: "2024-07-30T04:19:55.348000+00:00",
+        attendeeName: "ccc",
+      },
+      s: {
+        title: "Qualified vLEI Issuer Credential",
+        description: "Qualified vLEI Issuer Credential",
+        version: "1.0",
+      },
+      lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
+    });
   });
 });

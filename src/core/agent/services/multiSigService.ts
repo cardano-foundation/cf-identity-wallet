@@ -27,6 +27,7 @@ import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
   IdentifierStorage,
+  NotificationStorage,
   OperationPendingStorage,
 } from "../records";
 import { AgentService } from "./agentService";
@@ -38,9 +39,14 @@ import {
   AuthorizationExnPayload,
   InceptMultiSigExnMessage,
 } from "./multiSig.types";
-import { OnlineOnly, waitAndGetDoneOp } from "./utils";
+import {
+  deleteNotificationRecordById,
+  OnlineOnly,
+  waitAndGetDoneOp,
+} from "./utils";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConfigurationService } from "../../configuration";
+import { OperationAddedEvent, EventTypes } from "../event.types";
 
 class MultiSigService extends AgentService {
   static readonly INVALID_THRESHOLD = "Invalid threshold";
@@ -70,15 +76,18 @@ class MultiSigService extends AgentService {
 
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
+  protected readonly notificationStorage: NotificationStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
-    operationPendingStorage: OperationPendingStorage
+    operationPendingStorage: OperationPendingStorage,
+    notificationStorage: NotificationStorage
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
+    this.notificationStorage = notificationStorage;
   }
 
   @OnlineOnly
@@ -149,9 +158,11 @@ class MultiSigService extends AgentService {
         id: op.name,
         recordType: OperationPendingRecordType.Group,
       });
-      Agent.agent.keriaNotifications.addPendingOperationToQueue(
-        pendingOperation
-      );
+
+      this.props.eventEmitter.emit<OperationAddedEvent>({
+        type: EventTypes.OperationAdded,
+        payload: { operation: pendingOperation },
+      });
     } else {
       // Trigger the end role authorization if the operation is done
       await this.endRoleAuthorization(multisigId);
@@ -330,7 +341,9 @@ class MultiSigService extends AgentService {
       aid,
       multiSig.signifyName
     );
-    await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+    await deleteNotificationRecordById(
+      this.props.signifyClient,
+      this.notificationStorage,
       notification.id,
       notification.a.r as NotificationRoute
     );
@@ -435,7 +448,9 @@ class MultiSigService extends AgentService {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {
-      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+      await deleteNotificationRecordById(
+        this.props.signifyClient,
+        this.notificationStorage,
         notificationId,
         notificationRoute
       );
@@ -502,14 +517,18 @@ class MultiSigService extends AgentService {
         id: op.name,
         recordType: OperationPendingRecordType.Group,
       });
-      Agent.agent.keriaNotifications.addPendingOperationToQueue(
-        pendingOperation
-      );
+
+      this.props.eventEmitter.emit<OperationAddedEvent>({
+        type: EventTypes.OperationAdded,
+        payload: { operation: pendingOperation },
+      });
     } else {
       // Trigger the end role authorization if the operation is done
       await this.endRoleAuthorization(multisigId);
     }
-    await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+    await deleteNotificationRecordById(
+      this.props.signifyClient,
+      this.notificationStorage,
       notificationId,
       notificationRoute
     );

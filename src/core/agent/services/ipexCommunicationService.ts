@@ -17,14 +17,22 @@ import {
 } from "../records";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
-import { ACDCDetails, CredentialStatus } from "./credentialService.types";
-import { OnlineOnly, getCredentialShortDetails } from "./utils";
+import {
+  OnlineOnly,
+  getCredentialShortDetails,
+  deleteNotificationRecordById,
+} from "./utils";
+import { CredentialStatus, ACDCDetails } from "./credentialService.types";
 import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
 import { GrantToJoinMultisigExnPayload, MultiSigRoute } from "./multiSig.types";
-import { AcdcStateChangedEvent, EventTypes } from "../event.types";
+import {
+  AcdcStateChangedEvent,
+  OperationAddedEvent,
+  EventTypes,
+} from "../event.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -165,9 +173,15 @@ class IpexCommunicationService extends AgentService {
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
 
-    Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
+    this.props.eventEmitter.emit<OperationAddedEvent>({
+      type: EventTypes.OperationAdded,
+      payload: { operation: pendingOperation },
+    });
+
     if (!holder.multisigManageAid) {
-      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+      await deleteNotificationRecordById(
+        this.props.signifyClient,
+        this.notificationStorage,
         id,
         grantNoteRecord.a.r as NotificationRoute
       );
@@ -241,7 +255,9 @@ class IpexCommunicationService extends AgentService {
 
     Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
     if (!discloser.multisigManageAid) {
-      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+      await deleteNotificationRecordById(
+        this.props.signifyClient,
+        this.notificationStorage,
         id,
         applyNoteRecord.a.r as NotificationRoute
       );
@@ -325,7 +341,9 @@ class IpexCommunicationService extends AgentService {
 
     Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
     if (!discloser.multisigManageAid) {
-      await Agent.agent.keriaNotifications.deleteNotificationRecordById(
+      await deleteNotificationRecordById(
+        this.props.signifyClient,
+        this.notificationStorage,
         id,
         agreeNoteRecord.a.r as NotificationRoute
       );
@@ -565,7 +583,11 @@ class IpexCommunicationService extends AgentService {
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
+
+    this.props.eventEmitter.emit<OperationAddedEvent>({
+      type: EventTypes.OperationAdded,
+      payload: { operation: pendingOperation },
+    });
 
     const notifications = await this.notificationStorage.findAllByQuery({
       exnSaid: exn?.exn.e.exn.p,
@@ -878,9 +900,40 @@ class IpexCommunicationService extends AgentService {
     return { op, exnSaid: exn.ked.d };
   }
 
-  async getAcdcFromIpexGrant(said: string): Promise<ACDCDetails> {
+  async getAcdcFromIpexGrant(
+    said: string
+  ): Promise<Omit<ACDCDetails, "status" | "credentialType" | "issuanceDate">> {
     const exchange = await this.props.signifyClient.exchanges().get(said);
-    return exchange.exn.e.acdc;
+    const schemaSaid = exchange.exn.e.acdc.s;
+    const schema = await this.props.signifyClient
+      .schemas()
+      .get(schemaSaid)
+      .catch(async (error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          await Agent.agent.connections.resolveOobi(
+            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
+          );
+          return await this.props.signifyClient.schemas().get(schemaSaid);
+        } else {
+          throw error;
+        }
+      });
+    return {
+      id: exchange.exn.e.acdc.d,
+      schema: exchange.exn.e.acdc.s,
+      i: exchange.exn.e.acdc.i,
+      a: exchange.exn.e.acdc.a,
+      s: {
+        title: schema.title,
+        description: schema.description,
+        version: schema.version,
+      },
+      lastStatus: {
+        s: exchange.exn.e.iss.s,
+        dt: new Date(exchange.exn.e.iss.dt).toISOString(),
+      },
+    };
   }
 }
 
