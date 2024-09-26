@@ -37,7 +37,7 @@ import {
 import { CredentialDetailModal } from "../../../../components/CredentialDetailModule";
 import { Spinner } from "../../../../components/Spinner";
 
-const ANIMATION_DELAY = 2000;
+const ANIMATION_DELAY = 3000;
 
 const ReceiveCredential = ({
   pageId,
