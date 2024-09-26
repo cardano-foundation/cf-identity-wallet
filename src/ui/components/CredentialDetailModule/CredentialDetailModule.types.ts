@@ -11,27 +11,27 @@ enum BackReason {
   CLOSE,
 }
 
-interface CredentialDetailModuleBaseProps {
+type CredentialDetailModuleBaseProps = {
   pageId: string;
   id: string;
   credDetail?: ACDCDetails;
   onClose?: (reason: BackReason) => void;
   navAnimation?: boolean;
   hardwareBackButtonConfig?: HardwareBackButtonConfig;
-  viewOnly?: boolean;
-}
+} & (
+  | { viewOnly: false }
+  | { viewOnly: true; credDetail: ACDCDetails | undefined }
+);
 
-interface CredentialDetailModuleLightModeProps
-  extends CredentialDetailModuleBaseProps {
+type CredentialDetailModuleLightModeProps = {
   isLightMode: true;
   selected: boolean;
   setSelected: (value: boolean) => void;
-}
+} & CredentialDetailModuleBaseProps;
 
-interface CredentialDetailModuleNormalModeProps
-  extends CredentialDetailModuleBaseProps {
+type CredentialDetailModuleNormalModeProps = {
   isLightMode?: undefined;
-}
+} & CredentialDetailModuleBaseProps;
 
 type CredentialDetailModuleProps =
   | CredentialDetailModuleLightModeProps

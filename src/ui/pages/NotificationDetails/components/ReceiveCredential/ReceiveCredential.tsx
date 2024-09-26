@@ -54,7 +54,7 @@ const ReceiveCredential = ({
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [openInfo, setOpenInfo] = useState(false);
-  const [credDetail, setCreDetail] = useState<ACDCDetails>();
+  const [credDetail, setCredDetail] = useState<ACDCDetails>();
   const [isLoading, setIsLoading] = useState(false);
 
   const connection =
@@ -82,9 +82,9 @@ const ReceiveCredential = ({
           notificationDetails.a.d as string
         );
 
-      setCreDetail({
+      setCredDetail({
         ...credential,
-        status: CredentialStatus.CONFIRMED,
+        status: CredentialStatus.PENDING,
         credentialType: credential.s.title,
         issuanceDate: credential.a.dt,
       });
