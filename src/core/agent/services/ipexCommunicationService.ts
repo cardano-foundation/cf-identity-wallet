@@ -632,7 +632,7 @@ class IpexCommunicationService extends AgentService {
     }
   }
 
-  private async joinMultisigOffer(multiSigExnSaid: string): Promise<void> {
+  async joinMultisigOffer(multiSigExnSaid: string): Promise<void> {
     const exn = await this.props.signifyClient.exchanges().get(multiSigExnSaid);
     const offerExn = exn.exn.e.exn;
     const holder = await this.identifierStorage.getIdentifierMetadata(

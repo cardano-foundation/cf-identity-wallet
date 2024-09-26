@@ -525,46 +525,50 @@ class KeriaNotificationService extends AgentService {
       return false;
     }
     case ExchangeRoute.IpexOffer: {
-      const previousExnMsgApply = await this.props.signifyClient
+      const applyExn = await this.props.signifyClient
         .exchanges()
-        .get(exchange?.exn.e.exn.p);
+        .get(exchange.exn.e.exn.p);
 
       const notificationsApply =
           await this.notificationStorage.findAllByQuery({
-            exnSaid: previousExnMsgApply.exn.d,
+            exnSaid: applyExn.exn.d,
           });
 
       if (notificationsApply.length) {
         const notificationRecord = notificationsApply[0];
-        const acdcSaid = exchange.exn.e.exn?.e?.acdc?.d;
-        const said = exchange.exn.e.exn.d;
-        const member = exchange.exn.i;
+        const acdcSaid = exchange.exn.e.exn.e.acdc.d;
+        const offerSaid = exchange.exn.e.exn.d;
+        const otherMember = exchange.exn.i;
 
-        if (
-          Object.keys(notificationRecord.linkedGroupRequests).length === 0 ||
-            notificationRecord.linkedGroupRequests.acdcSaid?.accepted === false
-        ) {
-          notificationRecord.linkedGroupRequests = {
-            [acdcSaid]: {
-              accepted: false,
-              saids: { [said]: [[member, exchange.exn.d]] },
-            },
-          };
+        let linkedGroupRequestDetails =
+            notificationRecord.linkedGroupRequests[acdcSaid];
+        if (linkedGroupRequestDetails) {
+          if (
+            linkedGroupRequestDetails.accepted &&
+              !linkedGroupRequestDetails.saids[offerSaid]
+          ) {
+            // Only auto-join NEW /ipex/offer
+            await this.ipexCommunications.joinMultisigOffer(exchange.exn.d);
+          }
+
+          if (!linkedGroupRequestDetails.saids[offerSaid]) {
+            // First /multisig/exn for specific /ipex/offer
+            linkedGroupRequestDetails.saids[offerSaid] = [];
+          }
+          linkedGroupRequestDetails.saids[offerSaid].push([
+            otherMember,
+            exchange.exn.d,
+          ]); // Record, should only get 1 notification
         } else {
-          notificationRecord.linkedGroupRequests = {
-            [acdcSaid]: {
-              accepted: true,
-              saids: {
-                [said]: [
-                  ...notificationRecord.linkedGroupRequests[acdcSaid].saids[
-                    said
-                  ],
-                  [member, exchange.exn.d],
-                ],
-              },
-            },
+          linkedGroupRequestDetails = {
+            // First /multisig/exn linking to /ipex/apply with this credentialId
+            accepted: false,
+            saids: { [offerSaid]: [[otherMember, exchange.exn.d]] },
           };
         }
+
+        notificationRecord.linkedGroupRequests[acdcSaid] =
+            linkedGroupRequestDetails;
         await this.notificationStorage.update(notificationRecord);
       }
       await this.markNotification(notif.i);
