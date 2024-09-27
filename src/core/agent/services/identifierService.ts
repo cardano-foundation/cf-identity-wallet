@@ -118,23 +118,6 @@ class IdentifierService extends AgentService {
     };
   }
 
-  async getKeriIdentifierByGroupId(
-    groupId: string
-  ): Promise<IdentifierShortDetails | null> {
-    const metadata =
-      await this.identifierStorage.getIdentifierMetadataByGroupId(groupId);
-    if (!metadata) {
-      return null;
-    }
-    return {
-      displayName: metadata.displayName,
-      id: metadata.id,
-      createdAtUTC: metadata.createdAt.toISOString(),
-      theme: metadata.theme,
-      isPending: metadata.isPending ?? false,
-    };
-  }
-
   @OnlineOnly
   async createIdentifier(
     metadata: Omit<

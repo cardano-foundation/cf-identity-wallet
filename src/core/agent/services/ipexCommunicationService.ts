@@ -39,8 +39,6 @@ class IpexCommunicationService extends AgentService {
     "Cannot accept incoming ACDC, issuee AID not found in local wallet DB";
   static readonly ACDC_NOT_APPEARING = "ACDC is not appearing..."; // @TODO - foconnor: This is async we should wait for a notification
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
-  static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
-    "Credential metadata missing for stored credential";
   static readonly CREDENTIAL_NOT_FOUND_WITH_SCHEMA =
     "Credential not found with this schema";
 
