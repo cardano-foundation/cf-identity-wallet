@@ -185,7 +185,6 @@ class Agent {
         this.multiSigs,
         this.ipexCommunications,
         this.credentialService,
-        this.identifierService,
         this.getKeriaOnlineStatus,
         this.markAgentStatus,
         this.connect
