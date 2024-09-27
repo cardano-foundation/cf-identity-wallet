@@ -106,10 +106,7 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
         record.category === recordClass.type &&
         this.checkRecordIsValidWithQuery(record, query)
       ) {
-        const instance = deserializeRecord(record, recordClass);
-        if (instance) {
-          instances.push(instance);
-        }
+        instances.push(deserializeRecord(record, recordClass));
       }
     });
 
@@ -121,10 +118,7 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
     const instances: T[] = [];
     await this.session!.forEach((value) => {
       if (value.category && value.category === recordClass.type) {
-        const instance = deserializeRecord(value, recordClass);
-        if (instance) {
-          instances.push(instance);
-        }
+        instances.push(deserializeRecord(value, recordClass));
       }
     });
 

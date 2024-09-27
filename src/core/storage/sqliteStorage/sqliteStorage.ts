@@ -115,7 +115,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
 
     const record = await this.getItem(id);
 
-    if (!record) {
+    if (!record || record.category !== recordClass.type) {
       return null;
     }
     return deserializeRecord(record, recordClass);
@@ -128,10 +128,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
     const records = await this.scanItems(recordClass.type);
 
     records.forEach((value) => {
-      const instance = deserializeRecord(value, recordClass);
-      if (instance) {
-        instances.push(instance);
-      }
+      instances.push(deserializeRecord(value, recordClass));
     });
 
     return instances;
@@ -147,10 +144,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
 
     const records = await this.scanItems(recordClass.type, query);
     records.forEach((value) => {
-      const instance = deserializeRecord(value, recordClass);
-      if (instance) {
-        instances.push(instance);
-      }
+      instances.push(deserializeRecord(value, recordClass));
     });
     return instances;
   }
