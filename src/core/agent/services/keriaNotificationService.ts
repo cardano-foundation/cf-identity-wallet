@@ -277,6 +277,11 @@ class KeriaNotificationService extends AgentService {
         throw error;
       }
     }
+
+    // @TODO - foconnor: This post processing may fail, causing notification to be created again
+    if (notif.a.r === NotificationRoute.ExnIpexAgree) {
+      await this.ipexCommunications.grantAcdcFromAgree(notif.i);
+    }
   }
 
   private async processExnIpexApplyNotification(
@@ -575,14 +580,14 @@ class KeriaNotificationService extends AgentService {
       return false;
     }
     case ExchangeRoute.IpexGrant: {
-      const agreeSaid = await this.props.signifyClient
+      const agreeExn = await this.props.signifyClient
         .exchanges()
         .get(exchange.exn.e.exn.p);
 
-      const credentialId = agreeSaid.exn.e.acdc.d;
+      const credentialId = exchange.exn.e.exn.e.acdc.d;
       const notificationsAgree =
           await this.notificationStorage.findAllByQuery({
-            exnSaid: agreeSaid.exn.d,
+            exnSaid: agreeExn.exn.d,
           });
 
       if (notificationsAgree.length) {

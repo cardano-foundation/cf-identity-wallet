@@ -144,27 +144,20 @@ class Agent {
   }
 
   private async processNotification(notif: any) {
-    if (
-      Object.values(NotificationRoute).includes(
-        notif.a.r as NotificationRoute
-      ) &&
-      !notif.r
-    ) {
-      switch (notif.a.r) {
-      case NotificationRoute.ExnIpexOffer: {
-        const msg = await this.signifyApi.getExchangeMsg(notif.a.d!);
-        await this.signifyApi.agreeToAcdcFromOffer(
-          Agent.HOLDER_AID_NAME,
-          msg.exn.d,
-          msg.exn.i
-        );
-        break;
-      }
-      default:
-        break;
-      }
-      await this.signifyApi.deleteNotification(notif.i);
+    switch (notif.a.r) {
+    case NotificationRoute.ExnIpexOffer: {
+      const msg = await this.signifyApi.getExchangeMsg(notif.a.d!);
+      await this.signifyApi.agreeToAcdcFromOffer(
+        Agent.HOLDER_AID_NAME,
+        msg.exn.d,
+        msg.exn.i
+      );
+      break;
     }
+    default:
+      break;
+    }
+    await this.signifyApi.deleteNotification(notif.i);
   }
   
   async initKeri(): Promise<void> {

@@ -344,6 +344,7 @@ class IpexCommunicationService extends AgentService {
       } = await this.multisigGrantAcdcFromAgree(
         discloser.id,
         agreeExn.exn.i,
+        agreeExn.exn.d,
         pickedCred
       );
       op = opMultisigGrant;
@@ -368,6 +369,7 @@ class IpexCommunicationService extends AgentService {
         acdcAttachment: pickedCred.atc,
         ancAttachment: pickedCred.ancatc,
         issAttachment: pickedCred.issAtc,
+        agreeSaid: agreeExn.exn.d,
       });
       op = await this.props.signifyClient
         .ipex()
@@ -698,8 +700,8 @@ class IpexCommunicationService extends AgentService {
   async joinMultisigGrant(multiSigExnSaid: string): Promise<void> {
     const exn = await this.props.signifyClient.exchanges().get(multiSigExnSaid);
 
-    const grantExn = exn?.exn?.e?.exn;
-    const credential = grantExn?.e?.acdc;
+    const grantExn = exn.exn.e.exn;
+    const credential = grantExn.e.acdc;
     const holder = await this.identifierStorage.getIdentifierMetadata(
       exn.exn.e.exn.i
     );
@@ -710,7 +712,8 @@ class IpexCommunicationService extends AgentService {
 
     const { op } = await this.multisigGrantAcdcFromAgree(
       holder.id,
-      credential?.i,
+      credential.i,
+      grantExn.p,
       credential,
       {
         grantExn,
@@ -854,6 +857,7 @@ class IpexCommunicationService extends AgentService {
   async multisigGrantAcdcFromAgree(
     multisigId: string,
     discloseePrefix: string,
+    agreeSaid: string,
     acdcDetail: any,
     grantToJoin?: GrantToJoinMultisigExnPayload
   ) {
@@ -924,6 +928,7 @@ class IpexCommunicationService extends AgentService {
         ancAttachment: acdcDetail?.ancatc,
         issAttachment: acdcDetail?.issAtc,
         datetime: time,
+        agreeSaid,
       });
 
       const mstate = gHab["state"];
