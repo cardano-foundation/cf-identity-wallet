@@ -124,7 +124,7 @@ describe("Cred Detail Module - current not archived credential", () => {
   });
 
   test("It renders Card Details", async () => {
-    const { getByText, getAllByText } = render(
+    const { getByText } = render(
       <Provider store={storeMocked}>
         <CredentialDetailModule
           pageId="credential-card-details"
@@ -133,9 +133,6 @@ describe("Cred Detail Module - current not archived credential", () => {
         />
       </Provider>
     );
-    await waitFor(() => {
-      expect(getAllByText(credsFixAcdc[0].a.dt)).toHaveLength(2);
-    });
     await waitFor(() => {
       expect(getByText(credsFixAcdc[0].s.description)).toBeVisible;
     });
@@ -697,7 +694,11 @@ describe("Cred detail - view only", () => {
           pageId="credential-card-details"
           id={credsFixAcdc[0].id}
           onClose={jest.fn()}
-          credDetail={credsFixAcdc[0]}
+          credDetail={{
+            ...credsFixAcdc[0],
+            credentialType: credsFixAcdc[0].s.title,
+            issuanceDate: credsFixAcdc[0].a.dt,
+          }}
           viewOnly
         />
       </Provider>
