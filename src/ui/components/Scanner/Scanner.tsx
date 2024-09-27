@@ -10,7 +10,6 @@ import {
   IonIcon,
   IonRow,
   IonSpinner,
-  isPlatform,
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
