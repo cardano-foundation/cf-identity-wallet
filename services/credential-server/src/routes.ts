@@ -7,7 +7,6 @@ import {
   issueAcdcCredential,
   revokeCredential,
   contactCredentials,
-  agreeOffer,
 } from "./apis/credential.api";
 import { createShortenUrl, getFullUrl } from "./apis/shorten.api";
 import { schemaApi } from "./apis/schema.api";
@@ -27,6 +26,5 @@ router.get(config.path.contactCredentials, contactCredentials);
 router.post(config.path.requestDisclosure, requestDisclosure);
 router.post(config.path.revokeCredential, revokeCredential);
 router.delete(config.path.deleteContact, deleteContact);
-router.post(config.path.agreeOffer, agreeOffer);
 
 export default router;

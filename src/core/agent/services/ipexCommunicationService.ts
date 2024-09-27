@@ -273,7 +273,11 @@ class IpexCommunicationService extends AgentService {
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
 
-    Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
+    this.props.eventEmitter.emit<OperationAddedEvent>({
+      type: EventTypes.OperationAdded,
+      payload: { operation: pendingOperation },
+    });
+
     if (!discloser.multisigManageAid) {
       await deleteNotificationRecordById(
         this.props.signifyClient,
@@ -375,7 +379,11 @@ class IpexCommunicationService extends AgentService {
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
 
-    Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
+    this.props.eventEmitter.emit<OperationAddedEvent>({
+      type: EventTypes.OperationAdded,
+      payload: { operation: pendingOperation },
+    });
+
     if (!discloser.multisigManageAid) {
       await deleteNotificationRecordById(
         this.props.signifyClient,
@@ -664,7 +672,11 @@ class IpexCommunicationService extends AgentService {
       id: op.name,
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
-    Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
+
+    this.props.eventEmitter.emit<OperationAddedEvent>({
+      type: EventTypes.OperationAdded,
+      payload: { operation: pendingOperation },
+    });
 
     const notifications = await this.notificationStorage.findAllByQuery({
       exnSaid: offerExn.p,
@@ -710,7 +722,11 @@ class IpexCommunicationService extends AgentService {
       id: op.name,
       recordType: OperationPendingRecordType.ExchangePresentCredential,
     });
-    Agent.agent.keriaNotifications.addPendingOperationToQueue(pendingOperation);
+
+    this.props.eventEmitter.emit<OperationAddedEvent>({
+      type: EventTypes.OperationAdded,
+      payload: { operation: pendingOperation },
+    });
 
     const notifications = await this.notificationStorage.findAllByQuery({
       exnSaid: exn?.exn.e.exn.p,

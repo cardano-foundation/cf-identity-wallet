@@ -218,9 +218,6 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         resolveOobi: () => resolveOobiMock(),
       },
-      keriaNotifications: {
-        addPendingOperationToQueue: jest.fn(),
-      },
       ipexCommunications: {
         acceptAcdcFromMultisigExn: jest.fn(),
       },
@@ -1254,9 +1251,250 @@ describe("Ipex communication service of agent", () => {
     });
   });
 
+  test("can join offer ACDC from multisig exn", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    eventEmitter.emit = jest.fn();
+    const notificationRecord = {
+      type: "NotificationRecord",
+      id: "id",
+      a: {
+        r: "/exn/ipex/apply",
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: "/exn/ipex/apply",
+      read: true,
+      linkedGroupRequests: {},
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+    };
+
+    getExchangeMock.mockReturnValueOnce({
+      exn: {
+        v: "KERI10JSON00032d_",
+        t: "exn",
+        d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
+        i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
+        rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+        p: "",
+        dt: "2024-08-28T06:39:55.501000+00:00",
+        r: "/multisig/exn",
+        q: {},
+        a: {
+          i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+          gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+        },
+        e: {
+          exn: {
+            v: "KERI10JSON000178_",
+            t: "exn",
+            d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
+            i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+            rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+            p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+            dt: "2024-08-28T06:39:51.416000+00:00",
+            r: "/ipex/offer",
+            q: {},
+            a: {
+              i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+              m: "",
+            },
+            e: {
+              acdc: { d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT" },
+            },
+          },
+          d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
+        },
+      },
+      pathed: {},
+    });
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      type: "IdentifierMetadataRecord",
+      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      displayName: "holder",
+      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
+      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    notificationStorage.findAllByQuery = jest
+      .fn()
+      .mockResolvedValue([notificationRecord]);
+
+    jest
+      .spyOn(ipexCommunicationService, "multisigOfferAcdcFromApply")
+      .mockResolvedValueOnce({
+        op: { name: "opName", done: true },
+        ipexOfferSaid: "ipexOfferSaid",
+        member: "member1",
+        exnSaid: "exnSaid",
+      });
+
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeOfferCredential,
+    });
+
+    await ipexCommunicationService.joinMultisigOffer("multiSigExnSaid");
+
+    expect(operationPendingStorage.save).toBeCalledWith({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeOfferCredential,
+    });
+
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "opName",
+          recordType: OperationPendingRecordType.ExchangeOfferCredential,
+        },
+      },
+    });
+
+    expect(notificationStorage.update).lastCalledWith({
+      type: "NotificationRecord",
+      id: "id",
+      a: {
+        r: "/exn/ipex/apply",
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: "/exn/ipex/apply",
+      read: true,
+      linkedGroupRequests: {
+        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
+          accepted: true,
+        },
+      },
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+    });
+  });
+
+  test("can join grant ACDC from multisig exn", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    eventEmitter.emit = jest.fn();
+    const notificationRecord = {
+      type: "NotificationRecord",
+      id: "id",
+      a: {
+        r: "/exn/ipex/agree",
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: "/exn/ipex/agree",
+      read: true,
+      linkedGroupRequests: {},
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+    };
+
+    getExchangeMock.mockReturnValueOnce({
+      exn: {
+        v: "KERI10JSON00032d_",
+        t: "exn",
+        d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
+        i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
+        rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+        p: "",
+        dt: "2024-08-28T06:39:55.501000+00:00",
+        r: "/multisig/exn",
+        q: {},
+        a: {
+          i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+          gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+        },
+        e: {
+          exn: {
+            v: "KERI10JSON000178_",
+            t: "exn",
+            d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
+            i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+            rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+            p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
+            dt: "2024-08-28T06:39:51.416000+00:00",
+            r: "/ipex/grant",
+            q: {},
+            a: {
+              i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
+              m: "",
+            },
+            e: {
+              acdc: { d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT" },
+            },
+          },
+          d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
+        },
+      },
+      pathed: {},
+    });
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      type: "IdentifierMetadataRecord",
+      id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      displayName: "holder",
+      signifyName: "764c965c-d997-4842-b940-aebd514fce42",
+      signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    notificationStorage.findAllByQuery = jest
+      .fn()
+      .mockResolvedValue([notificationRecord]);
+
+    jest
+      .spyOn(ipexCommunicationService, "multisigGrantAcdcFromAgree")
+      .mockResolvedValueOnce({
+        op: { name: "opName", done: true },
+        ipexGrantSaid: "ipexGrantSaid",
+        member: "member1",
+        exnSaid: "exnSaid",
+      });
+
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangePresentCredential,
+    });
+
+    await ipexCommunicationService.joinMultisigGrant("multiSigExnSaid");
+
+    expect(operationPendingStorage.save).toBeCalledWith({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangePresentCredential,
+    });
+
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "opName",
+          recordType: OperationPendingRecordType.ExchangePresentCredential,
+        },
+      },
+    });
+
+    expect(notificationStorage.update).lastCalledWith({
+      type: "NotificationRecord",
+      id: "id",
+      a: {
+        r: "/exn/ipex/agree",
+        d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+      },
+      route: "/exn/ipex/agree",
+      read: true,
+      linkedGroupRequests: {
+        EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
+          accepted: true,
+        },
+      },
+      connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+    });
+  });
+
   test("can offer ACDC from multisig exn", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "uuid";
+    eventEmitter.emit = jest.fn();
 
     notificationStorage.findById = jest.fn().mockResolvedValue({
       type: "NotificationRecord",
@@ -1402,6 +1640,11 @@ describe("Ipex communication service of agent", () => {
         exnSaid: "exnSaid",
       });
 
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeOfferCredential,
+    });
+
     await ipexCommunicationService.offerAcdcFromApply(id, acdc);
 
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
@@ -1409,13 +1652,21 @@ describe("Ipex communication service of agent", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
-    expect(
-      Agent.agent.keriaNotifications.addPendingOperationToQueue
-    ).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "opName",
+          recordType: OperationPendingRecordType.ExchangeOfferCredential,
+        },
+      },
+    });
   });
 
   test("can offer ACDC and update linkedGroupRequests when FIRST of multisig joins", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    eventEmitter.emit = jest.fn();
+
     notificationStorage.findById = jest.fn().mockResolvedValue({
       type: "NotificationRecord",
       id: "id",
@@ -1470,6 +1721,11 @@ describe("Ipex communication service of agent", () => {
         exnSaid: "exnSaid",
       });
 
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "opName",
+      recordType: OperationPendingRecordType.ExchangeOfferCredential,
+    });
+
     await ipexCommunicationService.offerAcdcFromApply("id", acdc);
 
     expect(notificationStorage.update).toBeCalledWith({
@@ -1496,9 +1752,16 @@ describe("Ipex communication service of agent", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
-    expect(
-      Agent.agent.keriaNotifications.addPendingOperationToQueue
-    ).toBeCalledTimes(1);
+
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "opName",
+          recordType: OperationPendingRecordType.ExchangeOfferCredential,
+        },
+      },
+    });
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
   });
 

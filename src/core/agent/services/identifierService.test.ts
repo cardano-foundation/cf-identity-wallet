@@ -134,9 +134,6 @@ jest.mock("../../../core/agent/agent", () => ({
         getConnectionShortDetailById: jest.fn(),
         getConnections: jest.fn(),
       },
-      keriaNotifications: {
-        addPendingOperationToQueue: jest.fn(),
-      },
       getKeriaOnlineStatus: jest.fn(),
     },
   },

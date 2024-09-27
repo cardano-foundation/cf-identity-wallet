@@ -77,15 +77,4 @@ async function revokeCredential(req: Request, res: Response): Promise<void> {
   httpResponse(res, response);
 }
 
-async function agreeOffer(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const { offerSaid, aid } = req.body;  
-  await Agent.agent.agreeOffer(offerSaid, aid);
-  const response: ResponseData<string> = {
-    statusCode: 200,
-    success: true,
-    data: "Agree credential successfully",
-  };
-  httpResponse(res, response);
-}
-
-export { issueAcdcCredential, requestDisclosure, revokeCredential, contactCredentials, agreeOffer };
+export { issueAcdcCredential, requestDisclosure, revokeCredential, contactCredentials };

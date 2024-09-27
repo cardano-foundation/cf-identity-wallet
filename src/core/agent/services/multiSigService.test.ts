@@ -178,7 +178,6 @@ jest.mock("../../../core/agent/agent", () => ({
         updateIdentifier: jest.fn(),
       },
       keriaNotifications: {
-        addPendingOperationToQueue: jest.fn(),
         markNotification: (id: string) => markNotificationMock(id),
       },
       getKeriaOnlineStatus: jest.fn(),

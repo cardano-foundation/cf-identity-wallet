@@ -306,7 +306,6 @@ jest.mock("../../../core/agent/agent", () => ({
         markAcdc: jest.fn(),
       },
       keriaNotifications: {
-        addPendingOperationToQueue: jest.fn(),
         markAcdcComplete: jest.fn(),
       },
       identifiers: {
@@ -738,13 +737,17 @@ describe("Signify notification service of agent", () => {
       name: "name",
       done: true,
     });
-    const addPendingOperationToQueueSpy = jest.spyOn(
+
+    keriaNotificationService["pendingOperations"] = [];
+    const pendingOperationsDescriptor = Object.getOwnPropertyDescriptor(
       keriaNotificationService,
-      "addPendingOperationToQueue"
+      "pendingOperations"
     );
+
+    const pendingOperations = pendingOperationsDescriptor?.value;
     await keriaNotificationService.processNotification(notification);
-    expect(addPendingOperationToQueueSpy).toBeCalledTimes(1);
-    addPendingOperationToQueueSpy.mockRestore();
+    expect(pendingOperations.length).toBe(1);
+    expect(markNotificationMock).toBeCalledTimes(1);
   });
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT_AGREE", async () => {

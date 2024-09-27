@@ -25,7 +25,6 @@ const config = {
     requestDisclosure: "/requestDisclosure",
     revokeCredential: "/revokeCredential",
     deleteContact: "/deleteContact",
-    agreeOffer: "/agreeOffer",
   },
 };
 

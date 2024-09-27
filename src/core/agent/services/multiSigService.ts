@@ -677,7 +677,17 @@ class MultiSigService extends AgentService {
     icpResult: EventResult;
     name: string;
   }> {
-    const rstates = exn.a.rstates;
+    const rstates = await Promise.all(
+      exn.a.rmids.map(async (member) => {
+        const result = await this.props.signifyClient.keyStates().get(member);
+        if (result.length === 0) {
+          throw new Error(
+            MultiSigService.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER
+          );
+        }
+        return result[0];
+      })
+    );
     const icpResult = await this.props.signifyClient
       .identifiers()
       .rotate(name, { states: rstates, rstates: rstates });

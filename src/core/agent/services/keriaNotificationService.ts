@@ -347,7 +347,7 @@ class KeriaNotificationService extends AgentService {
         id: op.name,
         recordType: OperationPendingRecordType.ExchangeRevokeCredential,
       });
-      this.addPendingOperationToQueue(pendingOperation);
+      this.pendingOperations.push(pendingOperation);
       await this.markNotification(notif.i);
       return false;
     }
@@ -1022,10 +1022,6 @@ class KeriaNotificationService extends AgentService {
         1
       );
     }
-  }
-
-  addPendingOperationToQueue(pendingOperation: OperationPendingRecord) {
-    this.pendingOperations.push(pendingOperation);
   }
 
   onNewNotification(callback: (event: NotificationAddedEvent) => void) {
