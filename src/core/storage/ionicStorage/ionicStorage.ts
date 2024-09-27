@@ -87,7 +87,7 @@ class IonicStorage<T extends BaseRecord> implements StorageService<T> {
     this.checkSession(this.session);
     const recordStorage = await this.session!.get(id);
 
-    if (!recordStorage) {
+    if (!recordStorage || recordStorage.category !== recordClass.type) {
       return null;
     }
     return deserializeRecord(recordStorage, recordClass);
