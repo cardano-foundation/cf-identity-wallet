@@ -34,6 +34,21 @@ jest.mock("@ionic/react", () => ({
     isOpen ? <div {...props}>{children}</div> : null,
 }));
 
+jest.mock("@capacitor/core", () => {
+  return {
+    ...jest.requireActual("@capacitor/core"),
+    Capacitor: {
+      isNativePlatform: () => true,
+    },
+  };
+});
+
+jest.mock("@capacitor/keyboard", () => ({
+  Keyboard: {
+    addListener: jest.fn(),
+  },
+}));
+
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useHistory: () => ({
