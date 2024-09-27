@@ -9,7 +9,13 @@ describe("Creds content", () => {
   test("Render ACDC cedential content", () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
-        <CredentialContent cardData={credsFixAcdc[0]} />
+        <CredentialContent
+          cardData={{
+            ...credsFixAcdc[0],
+            credentialType: credsFixAcdc[0].s.title,
+            issuanceDate: credsFixAcdc[0].a.dt,
+          }}
+        />
       </Provider>
     );
     expect(getByTestId("card-details-credential-type")).toBeVisible();

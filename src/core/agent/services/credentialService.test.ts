@@ -311,8 +311,6 @@ describe("Credential service of agent", () => {
       credentialService.getCredentialDetailsById(credentialMetadataRecordA.id)
     ).resolves.toStrictEqual({
       id: credentialMetadataRecordA.id,
-      credentialType: credentialMetadataRecordA.credentialType,
-      issuanceDate: nowISO,
       status: CredentialStatus.CONFIRMED,
       i: acdc.sad.i,
       a: acdc.sad.a,

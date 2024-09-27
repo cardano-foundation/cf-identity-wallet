@@ -134,7 +134,7 @@ describe("Cred Detail Module - current not archived credential", () => {
       </Provider>
     );
     await waitFor(() => {
-      expect(getAllByText(credsFixAcdc[0].credentialType)).toHaveLength(2);
+      expect(getAllByText(credsFixAcdc[0].a.dt)).toHaveLength(2);
     });
     await waitFor(() => {
       expect(getByText(credsFixAcdc[0].s.description)).toBeVisible;
@@ -488,7 +488,15 @@ describe("Cred Detail Module - archived", () => {
       );
 
       credDispatchMock.mockImplementation((action) => {
-        expect(action).toEqual(setCredsCache(credsFixAcdc));
+        expect(action).toEqual(
+          setCredsCache(
+            credsFixAcdc.map((cred) => ({
+              ...cred,
+              credentialType: cred.s.title,
+              issuanceDate: cred.a.dt,
+            }))
+          )
+        );
       });
     });
   });

@@ -96,7 +96,11 @@ describe("Card switch view list Tab", () => {
       <Provider store={mockedStore}>
         <SwitchCardView
           cardTypes={CardType.CREDENTIALS}
-          cardsData={credsFixAcdc}
+          cardsData={credsFixAcdc.map((cred) => ({
+            ...cred,
+            credentialType: cred.s.title,
+            issuanceDate: cred.a.dt,
+          }))}
           title="title"
           name="allidentifiers"
         />

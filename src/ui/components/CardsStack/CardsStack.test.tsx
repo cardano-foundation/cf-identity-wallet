@@ -30,8 +30,6 @@ jest.mock("../../../core/agent/agent", () => ({
       credentials: {
         getCredentialDetailsById: jest.fn().mockResolvedValue({
           id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
-          issuanceDate: "2024-01-22T16:03:44.643Z",
-          credentialType: "Qualified vLEI Issuer Credential",
           status: "confirmed",
           i: "EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5",
           a: {
@@ -87,6 +85,8 @@ describe("Cards Stack Component", () => {
           cardsData={[
             {
               ...credsFixAcdc[0],
+              credentialType: credsFixAcdc[0].s.title,
+              issuanceDate: credsFixAcdc[0].a.dt,
               status: CredentialStatus.PENDING,
             },
           ]}
@@ -144,7 +144,11 @@ describe("Cards Stack Component", () => {
           <CardsStack
             name="example"
             cardsType={CardType.CREDENTIALS}
-            cardsData={credsFixAcdc}
+            cardsData={credsFixAcdc.map((cred) => ({
+              ...cred,
+              credentialType: cred.s.title,
+              issuanceDate: cred.a.dt,
+            }))}
           />
           <Route
             path={TabsRoutePath.CREDENTIAL_DETAILS}

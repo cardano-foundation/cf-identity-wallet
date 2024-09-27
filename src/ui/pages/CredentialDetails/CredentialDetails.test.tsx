@@ -144,7 +144,7 @@ describe("Cred Details page - current not archived credential", () => {
       </Provider>
     );
     await waitFor(() => {
-      expect(getAllByText(credsFixAcdc[0].credentialType)).toHaveLength(2);
+      expect(getAllByText(credsFixAcdc[0].s.title)).toHaveLength(2);
     });
     await waitFor(() => {
       expect(getByText(credsFixAcdc[0].s.description)).toBeVisible;
@@ -284,7 +284,15 @@ describe("Cards Details page - archived credential", () => {
       );
 
       credDispatchMock.mockImplementation((action) => {
-        expect(action).toEqual(setCredsCache(credsFixAcdc));
+        expect(action).toEqual(
+          setCredsCache(
+            credsFixAcdc.map((cred) => ({
+              ...cred,
+              issuanceDate: cred.a.dt,
+              credentialType: cred.s.title,
+            }))
+          )
+        );
       });
     });
   });

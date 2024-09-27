@@ -80,7 +80,11 @@ describe("Archived and revoked credentials", () => {
         <ArchivedCredentialsContainer
           revokedCreds={[]}
           archivedCredentialsIsOpen={true}
-          archivedCreds={credsFixAcdc}
+          archivedCreds={credsFixAcdc.map((cred) => ({
+            ...cred,
+            credentialType: cred.s.title,
+            issuanceDate: cred.a.dt,
+          }))}
           setArchivedCredentialsIsOpen={jest.fn()}
         />
       </Provider>
@@ -92,7 +96,7 @@ describe("Archived and revoked credentials", () => {
 
     credsFixAcdc.forEach((cred) => {
       expect(getByTestId(`credential-name-${cred.id}`).innerHTML).toBe(
-        cred.credentialType
+        cred.s.title
       );
     });
 
@@ -107,7 +111,11 @@ describe("Archived and revoked credentials", () => {
         <ArchivedCredentialsContainer
           revokedCreds={[]}
           archivedCredentialsIsOpen={true}
-          archivedCreds={credsFixAcdc}
+          archivedCreds={credsFixAcdc.map((cred) => ({
+            ...cred,
+            credentialType: cred.s.title,
+            issuanceDate: cred.a.dt,
+          }))}
           setArchivedCredentialsIsOpen={jest.fn()}
         />
       </Provider>
@@ -133,7 +141,11 @@ describe("Archived and revoked credentials", () => {
           <ArchivedCredentialsContainer
             revokedCreds={[]}
             archivedCredentialsIsOpen={true}
-            archivedCreds={credsFixAcdc}
+            archivedCreds={credsFixAcdc.map((cred) => ({
+              ...cred,
+              credentialType: cred.s.title,
+              issuanceDate: cred.a.dt,
+            }))}
             setArchivedCredentialsIsOpen={jest.fn()}
           />
         </Provider>
@@ -191,7 +203,11 @@ describe("Archived and revoked credentials", () => {
           <ArchivedCredentialsContainer
             revokedCreds={[]}
             archivedCredentialsIsOpen={true}
-            archivedCreds={credsFixAcdc}
+            archivedCreds={credsFixAcdc.map((cred) => ({
+              ...cred,
+              credentialType: cred.s.title,
+              issuanceDate: cred.a.dt,
+            }))}
             setArchivedCredentialsIsOpen={jest.fn()}
           />
         </Provider>
@@ -288,7 +304,11 @@ describe("Archived and revoked credentials", () => {
           <ArchivedCredentialsContainer
             revokedCreds={revokedCredsFix}
             archivedCredentialsIsOpen={true}
-            archivedCreds={credsFixAcdc}
+            archivedCreds={credsFixAcdc.map((cred) => ({
+              ...cred,
+              credentialType: cred.s.title,
+              issuanceDate: cred.a.dt,
+            }))}
             setArchivedCredentialsIsOpen={jest.fn()}
           />
         </Provider>
@@ -353,7 +373,11 @@ describe("Archived and revoked credentials", () => {
           <ArchivedCredentialsContainer
             revokedCreds={revokedCredsFix}
             archivedCredentialsIsOpen={true}
-            archivedCreds={credsFixAcdc}
+            archivedCreds={credsFixAcdc.map((cred) => ({
+              ...cred,
+              credentialType: cred.s.title,
+              issuanceDate: cred.a.dt,
+            }))}
             setArchivedCredentialsIsOpen={jest.fn()}
           />
         </Provider>

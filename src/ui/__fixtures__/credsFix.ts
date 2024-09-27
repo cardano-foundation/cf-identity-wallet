@@ -14,11 +14,9 @@ const connectionDetailsFix: ConnectionDetails = {
   status: ConnectionStatus.CONFIRMED,
 };
 
-const credsFixAcdc: ACDCDetails[] = [
+const credsFixAcdc: Omit<ACDCDetails, "credentialType" | "issuanceDate">[] = [
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
-    issuanceDate: "2024-01-22T16:03:44.643Z",
-    credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialStatus.CONFIRMED,
     i: "EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5",
     a: {

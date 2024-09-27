@@ -72,7 +72,9 @@ const CredentialDetailModule = ({
     useState(false);
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
-  const [cardData, setCardData] = useState<ACDCDetails>();
+  const [cardData, setCardData] =
+    useState<Omit<ACDCDetails, "credentialType" | "issuanceDate">>();
+
   const isArchived = credsCache.filter((item) => item.id === id).length === 0;
   const isRevoked = cardData?.status === CredentialStatus.REVOKED;
   const isInactiveCred = (isArchived || isRevoked) && !viewOnly;
@@ -421,7 +423,13 @@ const CredentialDetailModule = ({
               isActive={false}
             />
             <div className="card-details-content">
-              <CredentialContent cardData={cardData} />
+              <CredentialContent
+                cardData={{
+                  ...cardData,
+                  credentialType: cardData.s.title,
+                  issuanceDate: cardData.a.dt,
+                }}
+              />
               {!viewOnly && (
                 <PageFooter
                   pageId={pageId}

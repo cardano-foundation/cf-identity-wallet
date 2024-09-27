@@ -69,14 +69,19 @@ class CredentialService extends AgentService {
   }
 
   @OnlineOnly
-  async getCredentialDetailsById(id: string): Promise<ACDCDetails> {
+  async getCredentialDetailsById(
+    id: string
+  ): Promise<Omit<ACDCDetails, "credentialType" | "issuanceDate">> {
     const metadata = await this.getMetadataById(id);
     const acdc = await this.props.signifyClient.credentials().get(metadata.id);
     if (!acdc) {
       throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
     }
+    const credentialShortDetails = this.getCredentialShortDetails(metadata);
     return {
-      ...this.getCredentialShortDetails(metadata),
+      id: credentialShortDetails.id,
+      schema: credentialShortDetails.schema,
+      status: credentialShortDetails.status,
       i: acdc.sad.i,
       a: acdc.sad.a,
       s: {
