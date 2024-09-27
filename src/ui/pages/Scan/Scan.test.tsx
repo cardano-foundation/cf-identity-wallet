@@ -35,6 +35,21 @@ const addListener = jest.fn(
   }
 );
 
+jest.mock("@capacitor/core", () => {
+  return {
+    ...jest.requireActual("@capacitor/core"),
+    Capacitor: {
+      isNativePlatform: () => true,
+    },
+  };
+});
+
+jest.mock("@capacitor/keyboard", () => ({
+  Keyboard: {
+    addListener: jest.fn(),
+  },
+}));
+
 jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
     ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
