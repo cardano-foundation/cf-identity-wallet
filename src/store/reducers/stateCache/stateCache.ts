@@ -1,5 +1,6 @@
 import { LensFacing } from "@capacitor-mlkit/barcode-scanning";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from "uuid";
 import { LoginAttempts } from "../../../core/agent/services/auth.types";
 import { RoutePath } from "../../../routes";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
@@ -95,7 +96,7 @@ const stateCacheSlice = createSlice({
     setToastMsg: (state, action: PayloadAction<ToastMsgType>) => {
       state.toastMsgs = [
         {
-          id: crypto.randomUUID(),
+          id: uuidv4(),
           message: action.payload,
         },
         ...(state.toastMsgs || []),

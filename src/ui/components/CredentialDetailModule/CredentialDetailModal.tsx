@@ -1,9 +1,11 @@
 import { IonModal } from "@ionic/react";
+import { useMemo } from "react";
 import { CredentialDetailModule } from "./CredentialDetailModule";
 import {
   BackReason,
   CredentialDetailModalProps,
 } from "./CredentialDetailModule.types";
+import { BackEventPriorityType } from "../../globals/types";
 
 const CredentialDetailModal = ({
   isOpen,
@@ -20,6 +22,14 @@ const CredentialDetailModal = ({
     onClose?.(reason);
   };
 
+  const hardwareBackButtonConfig = useMemo(
+    () => ({
+      prevent: false,
+      priority: BackEventPriorityType.Modal,
+    }),
+    []
+  );
+
   return (
     <IonModal
       data-testid={`${props.pageId}-modal`}
@@ -29,6 +39,7 @@ const CredentialDetailModal = ({
       <CredentialDetailModule
         {...props}
         onClose={handleBack}
+        hardwareBackButtonConfig={hardwareBackButtonConfig}
       />
     </IonModal>
   );
