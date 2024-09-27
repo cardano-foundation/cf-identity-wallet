@@ -750,7 +750,7 @@ describe("Signify notification service of agent", () => {
     expect(markNotificationMock).toBeCalledTimes(1);
   });
 
-  test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT_AGREE", async () => {
+  test("Should call grantAcdcFromAgree with CREDENTIAL_REQUEST_PRESENT_AGREE", async () => {
     exchangesGetMock.mockResolvedValue(ipexMessageMock);
     notificationStorage.save = jest
       .fn()
@@ -769,12 +769,25 @@ describe("Signify notification service of agent", () => {
       new Error(IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING)
     );
 
+    notificationStorage.save = jest.fn().mockResolvedValue({
+      id: "string",
+      a: { r: "/exn/ipex/agree", d: "string", m: "" },
+      read: false,
+      route: "/exn/ipex/agree",
+      connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      createdAt: new Date(),
+    });
+
     await keriaNotificationService.processNotification(notification);
     expect(
       Agent.agent.ipexCommunications.createLinkedIpexMessageRecord
     ).toHaveBeenCalledWith(
       ipexMessageMock,
       ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
+    );
+    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(Agent.agent.ipexCommunications.grantAcdcFromAgree).toBeCalledWith(
+      notification.i
     );
   });
 
