@@ -33,14 +33,13 @@ import {
   OperationAddedEvent,
   EventTypes,
 } from "../event.types";
+import { ConnectionService } from "./connectionService";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
     "Cannot accept incoming ACDC, issuee AID not found in local wallet DB";
   static readonly ACDC_NOT_APPEARING = "ACDC is not appearing..."; // @TODO - foconnor: This is async we should wait for a notification
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
-  static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
-    "Credential metadata missing for stored credential";
   static readonly CREDENTIAL_NOT_FOUND_WITH_SCHEMA =
     "Credential not found with this schema";
 
@@ -58,6 +57,7 @@ class IpexCommunicationService extends AgentService {
   protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly multisigService: MultiSigService;
+  protected readonly connections: ConnectionService;
 
   constructor(
     agentServiceProps: AgentServicesProps,
@@ -66,7 +66,8 @@ class IpexCommunicationService extends AgentService {
     notificationStorage: NotificationStorage,
     ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage,
-    multisigService: MultiSigService
+    multisigService: MultiSigService,
+    connections: ConnectionService
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
@@ -75,6 +76,7 @@ class IpexCommunicationService extends AgentService {
     this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.multisigService = multisigService;
+    this.connections = connections;
   }
 
   @OnlineOnly
@@ -117,7 +119,7 @@ class IpexCommunicationService extends AgentService {
     }
 
     const schemaSaid = grantExn.exn.e.acdc.s;
-    await Agent.agent.connections.resolveOobi(
+    await this.connections.resolveOobi(
       `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
     );
 
@@ -493,7 +495,7 @@ class IpexCommunicationService extends AgentService {
     // @TODO - foconnor: For now this will only work with our test server, we need to find a better way to handle this in production.
     for (const schemaSaid of schemaSaids) {
       if (schemaSaid) {
-        await Agent.agent.connections.resolveOobi(
+        await this.connections.resolveOobi(
           `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
         );
       }
@@ -513,32 +515,6 @@ class IpexCommunicationService extends AgentService {
     return op;
   }
 
-  async markAcdc(
-    credentialId: string,
-    status: CredentialStatus.CONFIRMED | CredentialStatus.REVOKED
-  ) {
-    const metadata = await this.credentialStorage.getCredentialMetadata(
-      credentialId
-    );
-    if (!metadata) {
-      throw new Error(
-        IpexCommunicationService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
-      );
-    }
-    metadata.status = status;
-    await this.credentialStorage.updateCredentialMetadata(
-      metadata.id,
-      metadata
-    );
-    this.props.eventEmitter.emit<AcdcStateChangedEvent>({
-      type: EventTypes.AcdcStateChanged,
-      payload: {
-        status,
-        credential: getCredentialShortDetails(metadata),
-      },
-    });
-  }
-
   async createLinkedIpexMessageRecord(
     message: IpexMessage,
     historyType: ConnectionHistoryType
@@ -555,7 +531,7 @@ class IpexCommunicationService extends AgentService {
       schemaSaid = previousExchange.exn.e.acdc.s;
     }
 
-    await Agent.agent.connections.resolveOobi(
+    await this.connections.resolveOobi(
       `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
     );
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
@@ -975,7 +951,7 @@ class IpexCommunicationService extends AgentService {
       .catch(async (error) => {
         const status = error.message.split(" - ")[1];
         if (/404/gi.test(status)) {
-          await Agent.agent.connections.resolveOobi(
+          await this.connections.resolveOobi(
             `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
           );
           return await this.props.signifyClient.schemas().get(schemaSaid);

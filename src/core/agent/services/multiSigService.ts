@@ -47,6 +47,8 @@ import {
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConfigurationService } from "../../configuration";
 import { OperationAddedEvent, EventTypes } from "../event.types";
+import { ConnectionService } from "./connectionService";
+import { IdentifierService } from "./identifierService";
 
 class MultiSigService extends AgentService {
   static readonly INVALID_THRESHOLD = "Invalid threshold";
@@ -77,17 +79,23 @@ class MultiSigService extends AgentService {
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly notificationStorage: NotificationStorage;
+  protected readonly connections: ConnectionService;
+  protected readonly identifiers: IdentifierService;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     identifierStorage: IdentifierStorage,
     operationPendingStorage: OperationPendingStorage,
-    notificationStorage: NotificationStorage
+    notificationStorage: NotificationStorage,
+    connections: ConnectionService,
+    identifiers: IdentifierService
   ) {
     super(agentServiceProps);
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.notificationStorage = notificationStorage;
+    this.connections = connections;
+    this.identifiers = identifiers;
   }
 
   @OnlineOnly
@@ -122,9 +130,7 @@ class MultiSigService extends AgentService {
       .get(ourMetadata.id as string);
     const otherAids = await Promise.all(
       otherIdentifierContacts.map(async (contact) => {
-        const aid = await Agent.agent.connections.resolveOobi(
-          contact.oobi as string
-        );
+        const aid = await this.connections.resolveOobi(contact.oobi as string);
         return { state: aid.response };
       })
     );
@@ -403,14 +409,13 @@ class MultiSigService extends AgentService {
 
     const senderAid = icpMsg[0].exn.i;
     // @TODO - foconnor: This cross service call should be handled better.
-    const senderContact =
-      await Agent.agent.connections.getConnectionShortDetailById(
-        icpMsg[0].exn.i
-      );
+    const senderContact = await this.connections.getConnectionShortDetailById(
+      icpMsg[0].exn.i
+    );
 
     const smids = icpMsg[0].exn.a.smids;
     // @TODO - foconnor: These searches should be optimised, revisit.
-    const ourIdentifiers = await Agent.agent.identifiers.getIdentifiers();
+    const ourIdentifiers = await this.identifiers.getIdentifiers();
 
     const ourIdentifier = ourIdentifiers.find((identifier) =>
       smids.includes(identifier.id)
@@ -420,7 +425,7 @@ class MultiSigService extends AgentService {
     }
 
     const otherConnections = (
-      await Agent.agent.connections.getMultisigLinkedContacts(
+      await this.connections.getMultisigLinkedContacts(
         ourIdentifier.groupMetadata.groupId
       )
     ).filter((connection) => connection.id !== senderAid);
@@ -475,7 +480,7 @@ class MultiSigService extends AgentService {
     }
     const exn = icpMsg[0].exn;
     const smids = exn.a.smids;
-    const identifiers = await Agent.agent.identifiers.getIdentifiers();
+    const identifiers = await this.identifiers.getIdentifiers();
     const identifier = identifiers.find((identifier) => {
       return smids.find((member) => identifier.id === member);
     });
@@ -574,7 +579,7 @@ class MultiSigService extends AgentService {
     if (!metadata.multisigManageAid) {
       throw new Error(MultiSigService.AID_IS_NOT_MULTI_SIG);
     }
-    await Agent.agent.identifiers.rotateIdentifier(metadata.multisigManageAid);
+    await this.identifiers.rotateIdentifier(metadata.multisigManageAid);
   }
 
   private async rotateMultisigAid(
@@ -1004,7 +1009,7 @@ class MultiSigService extends AgentService {
     await Promise.all(
       schemaSaids.map(
         async (schemaSaid) =>
-          await Agent.agent.connections.resolveOobi(
+          await this.connections.resolveOobi(
             `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`,
             true
           )

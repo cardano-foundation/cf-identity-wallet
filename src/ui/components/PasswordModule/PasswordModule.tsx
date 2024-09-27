@@ -154,7 +154,7 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
     return (
       <>
         <div className="password-module">
-          <div className="page-content">
+          <form className="page-content">
             {title && <h2 data-testid={`${testId}-title`}>{title}</h2>}
             {description && (
               <p
@@ -229,7 +229,7 @@ const PasswordModule = forwardRef<PasswordModuleRef, PasswordModuleProps>(
                 message={`${i18n.t("createpassword.error.hintSameAsPassword")}`}
               />
             )}
-          </div>
+          </form>
           <PageFooter
             pageId={testId}
             primaryButtonText={`${i18n.t("createpassword.button.continue")}`}

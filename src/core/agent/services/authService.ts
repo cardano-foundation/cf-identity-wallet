@@ -1,21 +1,25 @@
 import { AgentService } from "./agentService";
 import { AgentServicesProps, MiscRecordId } from "../agent.types";
-import { Agent } from "../agent";
 import { LoginAttempts } from "./auth.types";
-import { BasicRecord } from "../records";
+import { BasicRecord, BasicStorage } from "../records";
 
 class AuthService extends AgentService {
   static readonly MIN_LOCK_TIME = 60 * 1000;
+  protected readonly basicStorage: BasicStorage;
 
-  constructor(agentServiceProps: AgentServicesProps) {
+  constructor(
+    agentServiceProps: AgentServicesProps,
+    basicStorage: BasicStorage
+  ) {
     super(agentServiceProps);
+    this.basicStorage = basicStorage;
   }
 
   static readonly LOGIN_ATTEMPT_RECORD_NOT_FOUND =
     "Login attempt record not found";
 
   async getLoginAttempts() {
-    const attemptInfo = await Agent.agent.basicStorage.findById(
+    const attemptInfo = await this.basicStorage.findById(
       MiscRecordId.LOGIN_METADATA
     );
 
@@ -23,7 +27,7 @@ class AuthService extends AgentService {
       return attemptInfo.content as unknown as LoginAttempts;
     }
 
-    await Agent.agent.basicStorage.createOrUpdateBasicRecord(
+    await this.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({
         id: MiscRecordId.LOGIN_METADATA,
         content: {
@@ -40,7 +44,7 @@ class AuthService extends AgentService {
   }
 
   async incrementLoginAttempts() {
-    const attemptInfo = await Agent.agent.basicStorage.findById(
+    const attemptInfo = await this.basicStorage.findById(
       MiscRecordId.LOGIN_METADATA
     );
 
@@ -84,12 +88,12 @@ class AuthService extends AgentService {
     attemptInfo.content.attempts = attempts;
     attemptInfo.content.lockedUntil = lockedUntil;
 
-    await Agent.agent.basicStorage.update(attemptInfo);
+    await this.basicStorage.update(attemptInfo);
     return { attempts, lockedUntil };
   }
 
   async resetLoginAttempts() {
-    const attemptInfo = await Agent.agent.basicStorage.findById(
+    const attemptInfo = await this.basicStorage.findById(
       MiscRecordId.LOGIN_METADATA
     );
 
@@ -100,7 +104,7 @@ class AuthService extends AgentService {
     attemptInfo.content.attempts = 0;
     attemptInfo.content.lockedUntil = Date.now();
 
-    await Agent.agent.basicStorage.update(attemptInfo);
+    await this.basicStorage.update(attemptInfo);
   }
 }
 

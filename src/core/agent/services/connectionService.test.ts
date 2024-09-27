@@ -157,6 +157,9 @@ const ipexMessageStorage = jest.mocked({
     getIpexMessageMetadataByConnectionIdMock,
   deleteIpexMessageMetadata: jest.fn(),
 });
+const identifiers = jest.mocked({
+  getIdentifierMetadataByGroupId: jest.fn(),
+});
 
 const connectionService = new ConnectionService(
   agentServicesProps,
@@ -164,7 +167,8 @@ const connectionService = new ConnectionService(
   connectionNoteStorage as any,
   credentialStorage as any,
   ipexMessageStorage as any,
-  operationPendingStorage as any
+  operationPendingStorage as any,
+  identifiers as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -210,9 +214,6 @@ describe("Connection service of agent", () => {
     signifyClient.oobis().resolve = jest.fn().mockImplementation((url) => {
       return { name: url, response: { i: "id" } };
     });
-    Agent.agent.identifiers.getKeriIdentifierByGroupId = jest
-      .fn()
-      .mockResolvedValue(null);
 
     const result = await connectionService.connectByOobiUrl(oobi);
     expect(result).toStrictEqual({
@@ -237,21 +238,7 @@ describe("Connection service of agent", () => {
     signifyClient.oobis().resolve = jest.fn().mockImplementation((url) => {
       return { alias: "alias", name: url, response: { i: "id" } };
     });
-    Agent.agent.identifiers.getKeriIdentifierByGroupId = jest
-      .fn()
-      .mockResolvedValue({
-        displayName: "displayName",
-        id: "id",
-        signifyName: "uuid",
-        createdAtUTC: new Date().toISOString(),
-        theme: 0,
-        isPending: false,
-        groupMetadata: {
-          groupId,
-          groupCreated: false,
-          groupInitiator: true,
-        },
-      });
+
     await connectionService.connectByOobiUrl(oobi);
     expect(connectionStorage.save).toBeCalled();
   });

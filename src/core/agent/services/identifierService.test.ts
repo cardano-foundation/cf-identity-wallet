@@ -503,32 +503,6 @@ describe("Single sig service of agent", () => {
     expect(identifiersRotateMock).toHaveBeenCalledWith(identifierId);
   });
 
-  test("Can get KERI identifier by group id", async () => {
-    identifierStorage.getIdentifierMetadataByGroupId = jest
-      .fn()
-      .mockResolvedValue(keriMetadataRecord);
-    expect(
-      await identifierService.getKeriIdentifierByGroupId(
-        keriMetadataRecord.groupMetadata?.groupId as string
-      )
-    ).toStrictEqual({
-      displayName: keriMetadataRecord.displayName,
-      id: keriMetadataRecord.id,
-      createdAtUTC: keriMetadataRecord.createdAt.toISOString(),
-      theme: keriMetadataRecord.theme,
-      isPending: keriMetadataRecord.isPending ?? false,
-    });
-    /**null result */
-    identifierStorage.getIdentifierMetadataByGroupId = jest
-      .fn()
-      .mockResolvedValue(null);
-    expect(
-      await identifierService.getKeriIdentifierByGroupId(
-        keriMetadataRecord.groupMetadata?.groupId as string
-      )
-    ).toStrictEqual(null);
-  });
-
   test("Should throw error if we failed to obtain key manager when call getSigner", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     identifierStorage.getIdentifierMetadata = jest

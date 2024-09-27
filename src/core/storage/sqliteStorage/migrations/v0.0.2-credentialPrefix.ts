@@ -35,6 +35,7 @@ async function credentialStatements(session?: SQLiteDBConnection) {
       credentialRecord,
       CredentialMetadataRecord
     );
+
     const statement = await updateCredentialPrefix({
       ...credentialRecord,
       id: instance.id,
