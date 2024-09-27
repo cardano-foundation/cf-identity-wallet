@@ -35,11 +35,14 @@ async function credentialStatements(session?: SQLiteDBConnection) {
       credentialRecord,
       CredentialMetadataRecord
     );
-    const statement = await updateCredentialPrefix({
-      ...credentialRecord,
-      id: instance.id,
-    });
-    migrationStatements.push(...statement);
+
+    if (instance) {
+      const statement = await updateCredentialPrefix({
+        ...credentialRecord,
+        id: instance.id,
+      });
+      migrationStatements.push(...statement);
+    }
   }
 
   return migrationStatements;
