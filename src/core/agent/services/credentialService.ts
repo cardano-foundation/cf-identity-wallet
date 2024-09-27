@@ -7,7 +7,7 @@ import {
   CredentialStatus,
 } from "./credentialService.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
-import { OnlineOnly } from "./utils";
+import { getCredentialShortDetails, OnlineOnly } from "./utils";
 import { CredentialStorage, NotificationStorage } from "../records";
 import { AcdcStateChangedEvent, EventTypes } from "../event.types";
 
@@ -185,6 +185,30 @@ class CredentialService extends AgentService {
         );
       }
     }
+  }
+
+  async markAcdc(
+    credentialId: string,
+    status: CredentialStatus.CONFIRMED | CredentialStatus.REVOKED
+  ) {
+    const metadata = await this.credentialStorage.getCredentialMetadata(
+      credentialId
+    );
+    if (!metadata) {
+      throw new Error(CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG);
+    }
+    metadata.status = status;
+    await this.credentialStorage.updateCredentialMetadata(
+      metadata.id,
+      metadata
+    );
+    this.props.eventEmitter.emit<AcdcStateChangedEvent>({
+      type: EventTypes.AcdcStateChanged,
+      payload: {
+        status,
+        credential: getCredentialShortDetails(metadata),
+      },
+    });
   }
 }
 
