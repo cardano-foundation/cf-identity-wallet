@@ -38,7 +38,7 @@ class ConnectionService extends AgentService {
   protected readonly credentialStorage: CredentialStorage;
   protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
-  protected readonly identifiers: IdentifierStorage;
+  protected readonly identifierStorage: IdentifierStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
@@ -47,7 +47,7 @@ class ConnectionService extends AgentService {
     credentialStorage: CredentialStorage,
     ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage,
-    identifiers: IdentifierStorage
+    identifierStorage: IdentifierStorage
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
@@ -55,7 +55,7 @@ class ConnectionService extends AgentService {
     this.credentialStorage = credentialStorage;
     this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
-    this.identifiers = identifiers;
+    this.identifierStorage = identifierStorage;
   }
 
   static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
@@ -112,7 +112,7 @@ class ConnectionService extends AgentService {
     if (multiSigInvite) {
       connectionMetadata.groupId = groupId;
       const identifierWithGroupId =
-        await this.identifiers.getIdentifierMetadataByGroupId(groupId);
+        await this.identifierStorage.getIdentifierMetadataByGroupId(groupId);
 
       // This allows the calling function to create our smid/rmid member identifier.
       // We let the UI handle it as it requires some metadata from the user like display name.

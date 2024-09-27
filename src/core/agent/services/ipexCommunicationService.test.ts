@@ -638,7 +638,7 @@ describe("Ipex communication service of agent", () => {
       historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE,
     });
     expect(schemaGetMock).toBeCalledTimes(2);
-    expect(resolveOobiMock).toBeCalledTimes(2);
+    expect(connections.resolveOobi).toBeCalledTimes(2);
   });
 
   test("Should throw error if schemas.get has an unexpected error", async () => {

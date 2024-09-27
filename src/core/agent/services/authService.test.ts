@@ -139,7 +139,7 @@ describe("Auth service of agent", () => {
 
     const result = await authService.getLoginAttempts();
 
-    expect(basicStorage.createOrUpdateBasicRecord).toBeCalled();
+    expect(basicStorage.createOrUpdateBasicRecord).toBeCalledTimes(0);
     expect(result.attempts).toBe(0);
     expect(result.lockedUntil).toBeLessThanOrEqual(Date.now());
   });

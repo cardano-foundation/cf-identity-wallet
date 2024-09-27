@@ -167,7 +167,7 @@ const multiSigService = new MultiSigService(
 );
 
 const mockResolveOobi = jest.fn();
-let mockGetIdentifiers = jest.fn();
+const mockGetIdentifiers = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -217,7 +217,7 @@ describe("Oobi/endrole", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(memberMetadataRecord);
-    mockResolveOobi.mockResolvedValue(resolvedOobiOpResponse);
+    connections.resolveOobi.mockResolvedValue(resolvedOobiOpResponse);
 
     identifiersCreateMock.mockImplementation((name, _config) => {
       return {
@@ -600,7 +600,7 @@ describe("Usage of multi-sig", () => {
     ];
     const mockEnd = "";
 
-    mockResolveOobi.mockResolvedValueOnce(resolvedOobiOpResponse);
+    connections.resolveOobi.mockResolvedValueOnce(resolvedOobiOpResponse);
 
     getExchangesMock.mockResolvedValueOnce(mockGetExchangeGrantMessage);
     identifiersMemberMock = jest
@@ -669,7 +669,7 @@ describe("Usage of multi-sig", () => {
 
     const mockSaider = [{} as Saider, ked] as [Saider, Dict<any>];
 
-    mockResolveOobi.mockResolvedValueOnce({
+    connections.resolveOobi.mockResolvedValueOnce({
       name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
       metadata: {
         oobi: "testOobi",
@@ -759,7 +759,7 @@ describe("Creation of multi-sig", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(memberMetadataRecord);
-    mockResolveOobi.mockResolvedValue(resolvedOobiOpResponse);
+    connections.resolveOobi.mockResolvedValue(resolvedOobiOpResponse);
 
     identifiersCreateMock.mockImplementation((name, _config) => {
       return {
@@ -928,7 +928,9 @@ describe("Creation of multi-sig", () => {
       .fn()
       .mockResolvedValue(getMemberIdentifierResponse);
 
-    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
+    identifiers.getIdentifiers = jest
+      .fn()
+      .mockResolvedValue([memberIdentifierRecord]);
     queryKeyStateGetMock = jest
       .fn()
       .mockResolvedValue([resolvedOobiOpResponse]);
@@ -1050,7 +1052,9 @@ describe("Creation of multi-sig", () => {
     identifiersGetMock = jest
       .fn()
       .mockResolvedValue(getMemberIdentifierResponse);
-    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
+    identifiers.getIdentifiers = jest
+      .fn()
+      .mockResolvedValue([memberIdentifierRecord]);
     identifiersCreateMock.mockImplementation((name, _config) => {
       return {
         op: () => {
@@ -1114,7 +1118,9 @@ describe("Creation of multi-sig", () => {
     groupGetRequestMock = jest
       .fn()
       .mockResolvedValue([mockGetRequestMultisigIcp]);
-    mockGetIdentifiers = jest.fn().mockResolvedValue([multisigMetadataRecord]);
+    identifiers.getIdentifiers = jest
+      .fn()
+      .mockResolvedValue([multisigMetadataRecord]);
     await expect(
       multiSigService.joinMultisig("id", NotificationRoute.MultiSigIcp, "d", {
         theme: 0,
@@ -1251,7 +1257,9 @@ describe("Creation of multi-sig", () => {
     groupGetRequestMock = jest
       .fn()
       .mockResolvedValue([mockGetRequestMultisigIcp]);
-    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
+    identifiers.getIdentifiers = jest
+      .fn()
+      .mockResolvedValue([memberIdentifierRecord]);
     connections.getConnectionShortDetailById = jest
       .fn()
       .mockResolvedValue(initiatorConnectionShortDetails);
@@ -1271,7 +1279,9 @@ describe("Creation of multi-sig", () => {
     groupGetRequestMock = jest
       .fn()
       .mockResolvedValue([mockGetRequestMultisigIcp]);
-    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
+    identifiers.getIdentifiers = jest
+      .fn()
+      .mockResolvedValue([memberIdentifierRecord]);
     connections.getConnectionShortDetailById = jest
       .fn()
       .mockResolvedValue(initiatorConnectionShortDetails);
@@ -1317,7 +1327,9 @@ describe("Creation of multi-sig", () => {
         },
       },
     ]);
-    mockGetIdentifiers = jest.fn().mockResolvedValue([memberIdentifierRecord]);
+    identifiers.getIdentifiers = jest
+      .fn()
+      .mockResolvedValue([memberIdentifierRecord]);
     connections.getConnectionShortDetailById = jest
       .fn()
       .mockResolvedValue(initiatorConnectionShortDetails);
@@ -1347,7 +1359,7 @@ describe("Creation of multi-sig", () => {
     groupGetRequestMock = jest
       .fn()
       .mockResolvedValue([mockGetRequestMultisigIcp]);
-    mockGetIdentifiers = jest
+    identifiers.getIdentifiers = jest
       .fn()
       .mockResolvedValue([
         { ...memberIdentifierRecord, groupMetadata: undefined },

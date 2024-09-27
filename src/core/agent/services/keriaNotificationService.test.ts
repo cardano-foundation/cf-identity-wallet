@@ -289,10 +289,6 @@ const credentialService = jest.mocked({
   markAcdc: jest.fn(),
 });
 
-const identifiers = jest.mocked({
-  getIdentifier: jest.fn(),
-});
-
 const keriaNotificationService = new KeriaNotificationService(
   agentServicesProps,
   notificationStorage as any,
@@ -305,7 +301,6 @@ const keriaNotificationService = new KeriaNotificationService(
   multiSigs as any,
   ipexCommunications as any,
   credentialService as any,
-  identifiers as any,
   Agent.agent.getKeriaOnlineStatus,
   Agent.agent.markAgentStatus,
   Agent.agent.connect
@@ -916,10 +911,9 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Original grant is linked to first received /multisig/exn admit message, and no notification record is created", async () => {
-    Agent.agent.identifiers.getIdentifier = jest
+    identifierStorage.getIdentifierMetadata = jest
       .fn()
-      .mockResolvedValueOnce(identifierMetadataRecordProps);
-
+      .mockResolvedValue(identifierMetadataRecordProps);
     const notif = {
       i: "string",
       dt: "string",
@@ -1012,9 +1006,9 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Auto-joins /multisig/exn admit message and links to grant if we have joined a previous admit message, and no notification record is created", async () => {
-    Agent.agent.identifiers.getIdentifier = jest
+    identifierStorage.getIdentifierMetadata = jest
       .fn()
-      .mockResolvedValueOnce(identifierMetadataRecordProps);
+      .mockResolvedValue(identifierMetadataRecordProps);
 
     const noti = {
       i: "string",
