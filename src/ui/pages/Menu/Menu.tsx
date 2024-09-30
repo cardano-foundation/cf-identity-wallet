@@ -29,10 +29,7 @@ import { SubMenu } from "./components/SubMenu";
 import { MenuItemProps, SubMenuKey } from "./Menu.types";
 import { OperationType } from "../../globals/types";
 import { CHAT_LINK, CRYPTO_LINK } from "../../globals/constants";
-import {
-  emptySubMenu,
-  SubMenuItems,
-} from "./components/SubMenu/SubMenuComponents";
+import { emptySubMenu, SubMenuItems } from "./components/SubMenuItems";
 import MenuItem from "./components/MenuItem";
 
 const Menu = () => {

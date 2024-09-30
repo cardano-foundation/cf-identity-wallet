@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { addOutline } from "ionicons/icons";
 import { IonButton, IonIcon } from "@ionic/react";
-import { SubMenuData, SubMenuKey } from "../../Menu.types";
-import { Profile } from "../Profile";
-import { i18n } from "../../../../../i18n";
-import { Connections } from "../../../Connections";
-import { ConnectWallet, ConnectWalletOptionRef } from "../ConnectWallet";
-import { Settings } from "../Settings";
-import { ManagePassword } from "../Settings/components/ManagePassword";
-import { RecoverySeedPhrase } from "../Settings/components/RecoverySeedPhrase";
-import { TermsAndPrivacy } from "../Settings/components/TermsAndPrivacy";
-import { ProfileOptionRef } from "../Profile/Profile.types";
-import { ConnectionsOptionRef } from "../../../Connections/Connections.types";
+import { SubMenuData, SubMenuKey } from "../Menu.types";
+import { Profile } from "./Profile";
+import { i18n } from "../../../../i18n";
+import { Connections } from "../../Connections";
+import { ConnectWallet, ConnectWalletOptionRef } from "./ConnectWallet";
+import { Settings } from "./Settings";
+import { ManagePassword } from "./Settings/components/ManagePassword";
+import { RecoverySeedPhrase } from "./Settings/components/RecoverySeedPhrase";
+import { TermsAndPrivacy } from "./Settings/components/TermsAndPrivacy";
+import { ProfileOptionRef } from "./Profile/Profile.types";
+import { ConnectionsOptionRef } from "../../Connections/Connections.types";
 
 const emptySubMenu = {
   Component: () => <></>,
@@ -58,7 +58,7 @@ const SubMenuItems = (
     toggleEditProfile();
   };
 
-  const submenuMapData: [SubMenuKey, SubMenuData][] = [
+  const menuMapData: [SubMenuKey, SubMenuData][] = [
     [
       SubMenuKey.Profile,
       {
@@ -141,6 +141,9 @@ const SubMenuItems = (
         renderAsModal: false,
       },
     ],
+  ];
+
+  const settingsMapData: [SubMenuKey, SubMenuData][] = [
     [
       SubMenuKey.Settings,
       {
@@ -192,7 +195,12 @@ const SubMenuItems = (
     ],
   ];
 
-  return useMemo(() => new Map(submenuMapData), [isEditingProfile]);
+  const subMenuMapData: [SubMenuKey, SubMenuData][] = [
+    ...menuMapData,
+    ...settingsMapData,
+  ];
+
+  return useMemo(() => new Map(subMenuMapData), [isEditingProfile]);
 };
 
 export { emptySubMenu, SubMenuItems };
