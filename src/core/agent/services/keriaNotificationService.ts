@@ -259,25 +259,13 @@ class KeriaNotificationService extends AgentService {
       return;
     }
     try {
-      if (notif.a.r !== NotificationRoute.ExnIpexAgree) {
-        const keriaNotif = await this.createNotificationRecord(notif);
-        this.props.eventEmitter.emit<NotificationAddedEvent>({
-          type: EventTypes.NotificationAdded,
-          payload: {
-            keriaNotif,
-          },
-        });
-      } else {
-        const keriaNotif = await this.createNotificationRecord(notif, true);
-        this.props.eventEmitter.emit<NotificationAddedEvent>({
-          type: EventTypes.NotificationAdded,
-          payload: {
-            keriaNotif,
-          },
-        });
-        // @TODO - foconnor: This post processing may fail, causing notification to be created again
-        await this.ipexCommunications.grantAcdcFromAgree(notif.i);
-      }
+      const keriaNotif = await this.createNotificationRecord(notif);
+      this.props.eventEmitter.emit<NotificationAddedEvent>({
+        type: EventTypes.NotificationAdded,
+        payload: {
+          keriaNotif,
+        },
+      });
     } catch (error) {
       if (
         (error as Error).message ===
@@ -287,6 +275,11 @@ class KeriaNotificationService extends AgentService {
       } else {
         throw error;
       }
+    }
+
+    // @TODO - foconnor: This post processing may fail, causing notification to be created again
+    if (notif.a.r === NotificationRoute.ExnIpexAgree) {
+      await this.ipexCommunications.grantAcdcFromAgree(notif.i);
     }
   }
 
@@ -669,8 +662,7 @@ class KeriaNotificationService extends AgentService {
   }
 
   private async createNotificationRecord(
-    event: Notification,
-    markNotification?: boolean
+    event: Notification
   ): Promise<KeriaNotification> {
     const exchange = await this.props.signifyClient.exchanges().get(event.a.d);
 
@@ -703,10 +695,6 @@ class KeriaNotificationService extends AgentService {
     }
 
     const result = await this.notificationStorage.save(metadata);
-
-    if (markNotification) {
-      await this.markNotification(result.a.d as string);
-    }
 
     return {
       id: result.id,
@@ -741,7 +729,11 @@ class KeriaNotificationService extends AgentService {
   }
 
   async getAllNotifications(): Promise<KeriaNotification[]> {
-    const notifications = await this.notificationStorage.getAll();
+    const notifications = await this.notificationStorage.findAllByQuery({
+      $not: {
+        route: NotificationRoute.ExnIpexAgree,
+      },
+    });
     return notifications.map((notification) => {
       return {
         id: notification.id,
