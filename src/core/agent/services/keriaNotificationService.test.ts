@@ -359,7 +359,7 @@ describe("Signify notification service of agent", () => {
     jest.resetAllMocks();
   });
 
-  test("Emitting an event when there are KERI notifications", async () => {
+  test("emit new event for new notification", async () => {
     exchangesGetMock.mockResolvedValue(ipexMessageMock);
     multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
@@ -415,6 +415,7 @@ describe("Signify notification service of agent", () => {
       await keriaNotificationService.processNotification(notif);
     }
     expect(notificationStorage.save).toBeCalledTimes(2);
+    expect(eventEmitter.emit).toBeCalledTimes(2);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.NotificationAdded,
       payload: {

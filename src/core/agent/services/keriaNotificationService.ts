@@ -260,12 +260,15 @@ class KeriaNotificationService extends AgentService {
     }
     try {
       const keriaNotif = await this.createNotificationRecord(notif);
-      this.props.eventEmitter.emit<NotificationAddedEvent>({
-        type: EventTypes.NotificationAdded,
-        payload: {
-          keriaNotif,
-        },
-      });
+      if (notif.a.r !== NotificationRoute.ExnIpexAgree) {
+        // Hidden from UI, so don't emit
+        this.props.eventEmitter.emit<NotificationAddedEvent>({
+          type: EventTypes.NotificationAdded,
+          payload: {
+            keriaNotif,
+          },
+        });
+      }
     } catch (error) {
       if (
         (error as Error).message ===
@@ -659,7 +662,6 @@ class KeriaNotificationService extends AgentService {
       );
     }
 
-    await this.ipexCommunications.grantAcdcFromAgree(notif.i);
     return true;
   }
 

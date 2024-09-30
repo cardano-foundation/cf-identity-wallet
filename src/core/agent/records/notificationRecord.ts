@@ -1,11 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { BaseRecord, Tags } from "../../storage/storage.types";
 import { NotificationRoute } from "../agent.types";
-
-interface LinkedGroupRequestDetails {
-  accepted: boolean;
-  saids: Record<string, [string, string][]>;
-}
+import { LinkedGroupRequestDetails } from "./notificationRecord.types";
 
 interface NotificationRecordStorageProps {
   id?: string;
