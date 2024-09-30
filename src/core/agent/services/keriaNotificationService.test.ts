@@ -733,7 +733,7 @@ describe("Signify notification service of agent", () => {
       ipexMessageMock,
       ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
     );
-    expect(markNotificationMock).toBeCalledTimes(0);
+    expect(markNotificationMock).toBeCalledTimes(1);
     expect(ipexCommunications.grantAcdcFromAgree).toBeCalledWith(
       notification.i
     );
@@ -1308,6 +1308,66 @@ describe("Signify notification service of agent", () => {
     });
     expect(markNotificationMock).toBeCalledTimes(1);
     expect(notificationStorage.save).toBeCalledTimes(0);
+  });
+
+  test("Should return all notifications except those with notification route is /exn/ipex/agree", async () => {
+    const mockNotifications = [
+      {
+        id: "0AC0W27tnnd2WyHWUh-368EI",
+        createdAt: new Date("2024-04-29T11:01:04.903Z"),
+        a: { r: "/exn/ipex/grant" },
+        multisigId: "multisig1",
+        read: false,
+        connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
+        linkedGroupRequest: {},
+      },
+      {
+        id: "0AC0W34tnnd2WyUCOy-790AY",
+        createdAt: new Date("2024-04-29T11:01:04.903Z"),
+        a: { r: "/exn/ipex/offer" },
+        multisigId: "multisig2",
+        read: false,
+        connectionId: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiSaVB",
+        linkedGroupRequest: {},
+      },
+    ];
+
+    notificationStorage.findAllByQuery = jest
+      .fn()
+      .mockResolvedValue(mockNotifications);
+
+    const result = await keriaNotificationService.getAllNotifications();
+
+    expect(notificationStorage.findAllByQuery).toHaveBeenCalledWith({
+      $not: {
+        route: NotificationRoute.ExnIpexAgree,
+      },
+    });
+    expect(result).toEqual([
+      {
+        id: "0AC0W27tnnd2WyHWUh-368EI",
+        createdAt: "2024-04-29T11:01:04.903Z",
+        a: { r: "/exn/ipex/grant" },
+        multisigId: "multisig1",
+        read: false,
+        connectionId: "ED_3K5-VPI8N3iRrV7o75fIMOnJfoSmEJy679HTkWsFQ",
+      },
+      {
+        id: "0AC0W34tnnd2WyUCOy-790AY",
+        createdAt: "2024-04-29T11:01:04.903Z",
+        a: { r: "/exn/ipex/offer" },
+        multisigId: "multisig2",
+        read: false,
+        connectionId: "ED_5C2-UOA8N3iRrV7o75fIMOnJfoSmYAe829YCiSaVB",
+      },
+    ]);
+  });
+
+  test("Should return an empty list notification if no notifications are found", async () => {
+    notificationStorage.findAllByQuery.mockResolvedValue([]);
+    const result = await keriaNotificationService.getAllNotifications();
+
+    expect(result).toEqual([]);
   });
 });
 

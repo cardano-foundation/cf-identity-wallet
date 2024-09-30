@@ -658,6 +658,9 @@ class KeriaNotificationService extends AgentService {
         ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
       );
     }
+
+    await this.ipexCommunications.grantAcdcFromAgree(notif.i);
+    await this.markNotification(notif.i);
     return true;
   }
 
@@ -983,7 +986,9 @@ class KeriaNotificationService extends AgentService {
                 });
             for (const notification of notifications) {
               // @TODO: Delete other long running operations in linkedGroupRequests
-              await this.deleteNotificationRecordById(
+              await deleteNotificationRecordById(
+                this.props.signifyClient,
+                this.notificationStorage,
                 notification.id,
                   notification.a.r as NotificationRoute
               );
@@ -1012,7 +1017,9 @@ class KeriaNotificationService extends AgentService {
                   });
               for (const notification of notifications) {
                 // @TODO: Delete other long running operations in linkedGroupRequests
-                await this.deleteNotificationRecordById(
+                await deleteNotificationRecordById(
+                  this.props.signifyClient,
+                  this.notificationStorage,
                   notification.id,
                     notification.a.r as NotificationRoute
                 );
