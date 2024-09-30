@@ -34,9 +34,10 @@ import { AgentService } from "./agentService";
 import { MultiSigIcpRequestDetails } from "./identifier.types";
 import {
   MultiSigRoute,
-  MultiSigExnMessage,
+  RotationMultiSigExnMessage,
   CreateMultisigExnPayload,
   AuthorizationExnPayload,
+  InceptMultiSigExnMessage,
 } from "./multiSig.types";
 import {
   deleteNotificationRecordById,
@@ -311,17 +312,18 @@ class MultiSigService extends AgentService {
   @OnlineOnly
   async joinMultisigRotation(notification: KeriaNotification): Promise<string> {
     const msgSaid = notification.a.d as string;
-    const notifications: MultiSigExnMessage[] = await this.props.signifyClient
-      .groups()
-      .getRequest(msgSaid)
-      .catch((error) => {
-        const status = error.message.split(" - ")[1];
-        if (/404/gi.test(status)) {
-          return [];
-        } else {
-          throw error;
-        }
-      });
+    const notifications: RotationMultiSigExnMessage[] =
+      await this.props.signifyClient
+        .groups()
+        .getRequest(msgSaid)
+        .catch((error) => {
+          const status = error.message.split(" - ")[1];
+          if (/404/gi.test(status)) {
+            return [];
+          } else {
+            throw error;
+          }
+        });
     if (!notifications.length) {
       throw new Error(MultiSigService.EXN_MESSAGE_NOT_FOUND);
     }
@@ -355,17 +357,18 @@ class MultiSigService extends AgentService {
   }
 
   private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
-    const notifications: MultiSigExnMessage[] = await this.props.signifyClient
-      .groups()
-      .getRequest(msgSaid)
-      .catch((error) => {
-        const status = error.message.split(" - ")[1];
-        if (/404/gi.test(status)) {
-          return [];
-        } else {
-          throw error;
-        }
-      });
+    const notifications: InceptMultiSigExnMessage[] =
+      await this.props.signifyClient
+        .groups()
+        .getRequest(msgSaid)
+        .catch((error) => {
+          const status = error.message.split(" - ")[1];
+          if (/404/gi.test(status)) {
+            return [];
+          } else {
+            throw error;
+          }
+        });
     if (!notifications.length) {
       return false;
     }
@@ -386,7 +389,7 @@ class MultiSigService extends AgentService {
   async getMultisigIcpDetails(
     notificationSaid: string
   ): Promise<MultiSigIcpRequestDetails> {
-    const icpMsg: MultiSigExnMessage[] = await this.props.signifyClient
+    const icpMsg: InceptMultiSigExnMessage[] = await this.props.signifyClient
       .groups()
       .getRequest(notificationSaid)
       .catch((error) => {
@@ -436,7 +439,7 @@ class MultiSigService extends AgentService {
       ourIdentifier,
       sender: senderContact,
       otherConnections,
-      threshold: parseInt(icpMsg[0].exn.e.icp.kt),
+      threshold: parseInt(icpMsg[0].exn.e.icp.kt as string),
     };
   }
 
@@ -458,7 +461,7 @@ class MultiSigService extends AgentService {
       );
       return;
     }
-    const icpMsg: MultiSigExnMessage[] = await this.props.signifyClient
+    const icpMsg: InceptMultiSigExnMessage[] = await this.props.signifyClient
       .groups()
       .getRequest(notificationSaid)
       .catch((error) => {
@@ -671,7 +674,7 @@ class MultiSigService extends AgentService {
   }
 
   private async joinMultisigRotationKeri(
-    exn: MultiSigExnMessage["exn"],
+    exn: RotationMultiSigExnMessage["exn"],
     aid: HabState,
     name: string
   ): Promise<{
@@ -679,7 +682,17 @@ class MultiSigService extends AgentService {
     icpResult: EventResult;
     name: string;
   }> {
-    const rstates = exn.a.rstates;
+    const rstates = await Promise.all(
+      exn.a.rmids.map(async (member) => {
+        const result = await this.props.signifyClient.keyStates().get(member);
+        if (result.length === 0) {
+          throw new Error(
+            MultiSigService.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER
+          );
+        }
+        return result[0];
+      })
+    );
     const icpResult = await this.props.signifyClient
       .identifiers()
       .rotate(name, { states: rstates, rstates: rstates });
@@ -731,7 +744,7 @@ class MultiSigService extends AgentService {
   }
 
   private async joinMultisigKeri(
-    exn: MultiSigExnMessage["exn"],
+    exn: InceptMultiSigExnMessage["exn"],
     aid: HabState,
     name: string
   ): Promise<{
@@ -851,7 +864,7 @@ class MultiSigService extends AgentService {
     return true;
   }
 
-  private async getMultisigParticipants(multisigId: string) {
+  async getMultisigParticipants(multisigId: string) {
     const members = await this.props.signifyClient
       .identifiers()
       .members(multisigId);
@@ -875,6 +888,7 @@ class MultiSigService extends AgentService {
         break;
       }
     }
+
     if (!ourIdentifier) {
       throw new Error(MultiSigService.MEMBER_AID_NOT_FOUND);
     }
@@ -990,6 +1004,7 @@ class MultiSigService extends AgentService {
     let exn: Serder;
     let sigsMes: string[];
     let dtime: string;
+    let ipexAdmitSaid: string;
 
     await Promise.all(
       schemaSaids.map(
@@ -1049,6 +1064,7 @@ class MultiSigService extends AgentService {
           gembeds,
           recp[0]
         );
+      ipexAdmitSaid = admit.ked.d;
     } else {
       const time = new Date().toISOString().replace("Z", "000+00:00");
       const [admit, sigs, end] = await this.props.signifyClient.ipex().admit({
@@ -1081,13 +1097,14 @@ class MultiSigService extends AgentService {
           gembeds,
           recp[0]
         );
+      ipexAdmitSaid = admit.ked.d;
     }
 
     const op = await this.props.signifyClient
       .ipex()
       .submitAdmit(multisigId, exn, sigsMes, dtime, recp);
 
-    return { op, exnSaid: exn.ked.d };
+    return { op, exnSaid: exn.ked.d, ipexAdmitSaid, member: ourIdentifier.id };
   }
 }
 

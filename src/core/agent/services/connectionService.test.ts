@@ -175,9 +175,7 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       getKeriaOnlineStatus: jest.fn(),
-      keriaNotifications: {
-        addPendingOperationToQueue: jest.fn(),
-      },
+      identifiers: { getKeriIdentifierByGroupId: jest.fn() },
     },
   },
 }));

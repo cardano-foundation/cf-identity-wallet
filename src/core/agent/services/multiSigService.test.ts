@@ -60,6 +60,10 @@ const ipexAdmitMock = jest.fn();
 const ipexSubmitAdmitMock = jest.fn();
 const createExchangeMessageMock = jest.fn();
 const getMemberMock = jest.fn();
+const ipexOfferMock = jest.fn();
+const ipexSubmitOfferMock = jest.fn();
+const ipexGrantMock = jest.fn();
+const ipexSubmitGrantMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -105,6 +109,10 @@ const signifyClient = jest.mocked({
   ipex: () => ({
     admit: ipexAdmitMock,
     submitAdmit: ipexSubmitAdmitMock,
+    offer: ipexOfferMock,
+    submitOffer: ipexSubmitOfferMock,
+    grant: ipexGrantMock,
+    submitGrant: ipexSubmitGrantMock,
   }),
   credentials: () => ({
     list: jest.fn(),
@@ -183,7 +191,6 @@ jest.mock("../../../core/agent/agent", () => ({
         updateIdentifier: jest.fn(),
       },
       keriaNotifications: {
-        addPendingOperationToQueue: jest.fn(),
         markNotification: (id: string) => markNotificationMock(id),
       },
       getKeriaOnlineStatus: jest.fn(),
@@ -749,6 +756,39 @@ describe("Usage of multi-sig", () => {
       multisigExnIpexGrantEnd,
       ["aid"]
     );
+  });
+
+  test("Can get participants with a multi-sig identifier", async () => {
+    identifiersMemberMock = jest
+      .fn()
+      .mockResolvedValue(getMultisigMembersResponse);
+
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce({
+      ...memberMetadataRecordProps,
+      groupMetadata: {
+        ...memberMetadataRecordProps.groupMetadata,
+        groupCreated: true,
+      },
+    });
+
+    await multiSigService.getMultisigParticipants("id");
+
+    expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
+      getMultisigMembersResponse.signing[0].aid
+    );
+  });
+
+  test("Can not get participants with a multi-sig identifier if not exist our identifier", async () => {
+    identifiersMemberMock = jest
+      .fn()
+      .mockResolvedValue(getMultisigMembersResponse);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(memberMetadataRecord);
+
+    await expect(
+      multiSigService.getMultisigParticipants("id")
+    ).rejects.toThrowError(MultiSigService.MEMBER_AID_NOT_FOUND);
   });
 });
 
