@@ -17,8 +17,6 @@ const connectionDetailsFix: ConnectionDetails = {
 const credsFixAcdc: ACDCDetails[] = [
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
-    issuanceDate: "2024-01-22T16:03:44.643Z",
-    credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialStatus.CONFIRMED,
     i: "EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5",
     a: {
@@ -44,8 +42,6 @@ const credsFixAcdc: ACDCDetails[] = [
 const pendingCredFixs: ACDCDetails[] = [
   {
     id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6wv",
-    issuanceDate: "2024-08-07T16:03:44.643Z",
-    credentialType: "Rare EVO 2024 Attendee",
     status: CredentialStatus.PENDING,
     i: "EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5",
     a: {
@@ -71,8 +67,6 @@ const pendingCredFixs: ACDCDetails[] = [
 const revokedCredFixs: ACDCDetails[] = [
   {
     id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6wo",
-    issuanceDate: "2024-08-07T16:03:44.643Z",
-    credentialType: "Rare EVO 2024 Attendee",
     status: CredentialStatus.REVOKED,
     i: "EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5",
     a: {

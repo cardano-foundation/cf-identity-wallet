@@ -75,8 +75,11 @@ class CredentialService extends AgentService {
     if (!acdc) {
       throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
     }
+    const credentialShortDetails = this.getCredentialShortDetails(metadata);
     return {
-      ...this.getCredentialShortDetails(metadata),
+      id: credentialShortDetails.id,
+      schema: credentialShortDetails.schema,
+      status: credentialShortDetails.status,
       i: acdc.sad.i,
       a: acdc.sad.a,
       s: {

@@ -82,12 +82,7 @@ const ReceiveCredential = ({
           notificationDetails.a.d as string
         );
 
-      setCredDetail({
-        ...credential,
-        status: CredentialStatus.PENDING,
-        credentialType: "",
-        issuanceDate: "",
-      });
+      setCredDetail(credential);
     } catch (e) {
       setInitiateAnimation(false);
       showError("Unable to get acdc", e, dispatch);
