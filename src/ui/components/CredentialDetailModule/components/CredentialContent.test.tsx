@@ -9,13 +9,7 @@ describe("Creds content", () => {
   test("Render ACDC cedential content", () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
-        <CredentialContent
-          cardData={{
-            ...credsFixAcdc[0],
-            credentialType: credsFixAcdc[0].s.title,
-            issuanceDate: credsFixAcdc[0].a.dt,
-          }}
-        />
+        <CredentialContent cardData={credsFixAcdc[0]} />
       </Provider>
     );
     expect(getByTestId("card-details-credential-type")).toBeVisible();
@@ -39,7 +33,7 @@ describe("Creds content", () => {
     expect(
       getByText("EJWgO4hwKxNMxu2aUpmGFMozKt9Eq2Jz8n-xXR7CYtY_")
     ).toBeVisible();
-    expect(getByText("22/01/2024 - 16:03:44")).toBeVisible();
+    expect(getByText("22/01/2024 - 23:03:44")).toBeVisible();
     expect(getByText("5493001KJTIIGC8Y1R17")).toBeVisible();
     expect(getByText("1.0.0")).toBeVisible();
     expect(
@@ -57,6 +51,6 @@ describe("Creds content", () => {
     expect(
       getByText(EN_TRANSLATIONS.credentials.details.status.issued)
     ).toBeVisible();
-    expect(getByText("22/01/2024 - 16:05:44")).toBeVisible();
+    expect(getByText("22/01/2024 - 23:05:44")).toBeVisible();
   });
 });

@@ -85,8 +85,6 @@ const ReceiveCredential = ({
       setCredDetail({
         ...credential,
         status: CredentialStatus.PENDING,
-        credentialType: "",
-        issuanceDate: "",
       });
     } catch (e) {
       setInitiateAnimation(false);

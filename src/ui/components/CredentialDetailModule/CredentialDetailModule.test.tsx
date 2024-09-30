@@ -694,11 +694,7 @@ describe("Cred detail - view only", () => {
           pageId="credential-card-details"
           id={credsFixAcdc[0].id}
           onClose={jest.fn()}
-          credDetail={{
-            ...credsFixAcdc[0],
-            credentialType: credsFixAcdc[0].s.title,
-            issuanceDate: credsFixAcdc[0].a.dt,
-          }}
+          credDetail={credsFixAcdc[0]}
           viewOnly
         />
       </Provider>

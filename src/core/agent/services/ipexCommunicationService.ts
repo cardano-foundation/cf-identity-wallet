@@ -466,7 +466,7 @@ class IpexCommunicationService extends AgentService {
 
   async getAcdcFromIpexGrant(
     said: string
-  ): Promise<Omit<ACDCDetails, "status" | "credentialType" | "issuanceDate">> {
+  ): Promise<Omit<ACDCDetails, "status">> {
     const exchange = await this.props.signifyClient.exchanges().get(said);
     const schemaSaid = exchange.exn.e.acdc.s;
     const schema = await this.props.signifyClient

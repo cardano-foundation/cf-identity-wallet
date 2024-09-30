@@ -69,9 +69,7 @@ class CredentialService extends AgentService {
   }
 
   @OnlineOnly
-  async getCredentialDetailsById(
-    id: string
-  ): Promise<Omit<ACDCDetails, "credentialType" | "issuanceDate">> {
+  async getCredentialDetailsById(id: string): Promise<ACDCDetails> {
     const metadata = await this.getMetadataById(id);
     const acdc = await this.props.signifyClient.credentials().get(metadata.id);
     if (!acdc) {
