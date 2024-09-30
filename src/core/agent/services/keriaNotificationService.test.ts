@@ -733,7 +733,6 @@ describe("Signify notification service of agent", () => {
       ipexMessageMock,
       ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
     );
-    expect(markNotificationMock).toBeCalledTimes(1);
     expect(ipexCommunications.grantAcdcFromAgree).toBeCalledWith(
       notification.i
     );

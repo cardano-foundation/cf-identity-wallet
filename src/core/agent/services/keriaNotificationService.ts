@@ -660,7 +660,6 @@ class KeriaNotificationService extends AgentService {
     }
 
     await this.ipexCommunications.grantAcdcFromAgree(notif.i);
-    await this.markNotification(notif.i);
     return true;
   }
 
