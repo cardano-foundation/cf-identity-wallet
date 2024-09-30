@@ -11,6 +11,7 @@ import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { CardType } from "../../globals/types";
 import { CredentialDetails } from "../../pages/CredentialDetails";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -144,11 +145,7 @@ describe("Cards Stack Component", () => {
           <CardsStack
             name="example"
             cardsType={CardType.CREDENTIALS}
-            cardsData={credsFixAcdc.map((cred) => ({
-              ...cred,
-              credentialType: cred.s.title,
-              issuanceDate: cred.a.dt,
-            }))}
+            cardsData={filteredCredsFix}
           />
           <Route
             path={TabsRoutePath.CREDENTIAL_DETAILS}

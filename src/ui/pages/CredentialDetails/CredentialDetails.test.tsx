@@ -22,6 +22,7 @@ import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
 import { CredentialDetails } from "./CredentialDetails";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -284,15 +285,7 @@ describe("Cards Details page - archived credential", () => {
       );
 
       credDispatchMock.mockImplementation((action) => {
-        expect(action).toEqual(
-          setCredsCache(
-            credsFixAcdc.map((cred) => ({
-              ...cred,
-              issuanceDate: cred.a.dt,
-              credentialType: cred.s.title,
-            }))
-          )
-        );
+        expect(action).toEqual(setCredsCache(filteredCredsFix));
       });
     });
   });

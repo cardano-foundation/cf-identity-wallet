@@ -15,6 +15,7 @@ import { credsFixAcdc, revokedCredFixs } from "../../__fixtures__/credsFix";
 import { ToastMsgType } from "../../globals/types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CredentialDetailModule } from "./CredentialDetailModule";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -485,15 +486,7 @@ describe("Cred Detail Module - archived", () => {
       );
 
       credDispatchMock.mockImplementation((action) => {
-        expect(action).toEqual(
-          setCredsCache(
-            credsFixAcdc.map((cred) => ({
-              ...cred,
-              credentialType: cred.s.title,
-              issuanceDate: cred.a.dt,
-            }))
-          )
-        );
+        expect(action).toEqual(setCredsCache(filteredCredsFix));
       });
     });
   });

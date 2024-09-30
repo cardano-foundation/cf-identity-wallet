@@ -8,9 +8,7 @@ import {
 } from "../../CardDetails";
 import { CredentialContentProps } from "./CredentialContent.types";
 
-const CredentialContent = ({
-  cardData,
-}: Omit<CredentialContentProps, "credentialType" | "issuanceDate">) => {
+const CredentialContent = ({ cardData }: CredentialContentProps) => {
   return (
     <>
       <CardDetailsBlock title={i18n.t("credentials.details.title")}>

@@ -46,7 +46,12 @@ jest.mock("../../../../../core/agent/agent", () => ({
       },
       ipexCommunications: {
         acceptAcdc: (id: string) => acceptAcdcMock(id),
-        getAcdcFromIpexGrant: jest.fn(() => Promise.resolve(credsFixAcdc[0])),
+        getAcdcFromIpexGrant: jest.fn(() =>
+          Promise.resolve({
+            ...credsFixAcdc[0],
+            status: "peding",
+          })
+        ),
       },
     },
   },
