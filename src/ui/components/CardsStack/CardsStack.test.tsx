@@ -85,9 +85,9 @@ describe("Cards Stack Component", () => {
           cardsType={CardType.CREDENTIALS}
           cardsData={[
             {
-              ...credsFixAcdc[0],
-              credentialType: credsFixAcdc[0].s.title,
-              issuanceDate: credsFixAcdc[0].a.dt,
+              ...filteredCredsFix[0],
+              credentialType: filteredCredsFix[0].credentialType,
+              issuanceDate: filteredCredsFix[0].issuanceDate,
               status: CredentialStatus.PENDING,
             },
           ]}
