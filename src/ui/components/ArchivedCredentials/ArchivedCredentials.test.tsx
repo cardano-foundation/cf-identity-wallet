@@ -4,8 +4,10 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
-import { credsFixAcdc } from "../../__fixtures__/credsFix";
-import { revokedCredsFix } from "../../__fixtures__/filteredCredsFix";
+import {
+  filteredCredsFix,
+  revokedCredsFix,
+} from "../../__fixtures__/filteredCredsFix";
 import { notificationsFix } from "../../__fixtures__/notificationsFix";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { ArchivedCredentialsContainer } from "./ArchivedCredentials";
@@ -80,7 +82,7 @@ describe("Archived and revoked credentials", () => {
         <ArchivedCredentialsContainer
           revokedCreds={[]}
           archivedCredentialsIsOpen={true}
-          archivedCreds={credsFixAcdc}
+          archivedCreds={filteredCredsFix}
           setArchivedCredentialsIsOpen={jest.fn()}
         />
       </Provider>
@@ -90,7 +92,7 @@ describe("Archived and revoked credentials", () => {
       expect(getByTestId("action-button")).toBeVisible();
     });
 
-    credsFixAcdc.forEach((cred) => {
+    filteredCredsFix.forEach((cred) => {
       expect(getByTestId(`credential-name-${cred.id}`).innerHTML).toBe(
         cred.credentialType
       );
@@ -107,7 +109,7 @@ describe("Archived and revoked credentials", () => {
         <ArchivedCredentialsContainer
           revokedCreds={[]}
           archivedCredentialsIsOpen={true}
-          archivedCreds={credsFixAcdc}
+          archivedCreds={filteredCredsFix}
           setArchivedCredentialsIsOpen={jest.fn()}
         />
       </Provider>
@@ -115,7 +117,9 @@ describe("Archived and revoked credentials", () => {
 
     expect(queryByTestId("archived-credential-detail-modal")).toBe(null);
 
-    const cardItem = getByTestId(`crendential-card-item-${credsFixAcdc[0].id}`);
+    const cardItem = getByTestId(
+      `crendential-card-item-${filteredCredsFix[0].id}`
+    );
 
     act(() => {
       fireEvent.click(cardItem);
@@ -133,7 +137,7 @@ describe("Archived and revoked credentials", () => {
           <ArchivedCredentialsContainer
             revokedCreds={[]}
             archivedCredentialsIsOpen={true}
-            archivedCreds={credsFixAcdc}
+            archivedCreds={filteredCredsFix}
             setArchivedCredentialsIsOpen={jest.fn()}
           />
         </Provider>
@@ -158,13 +162,13 @@ describe("Archived and revoked credentials", () => {
       });
 
       const cardItem = getByTestId(
-        `crendential-card-item-${credsFixAcdc[0].id}`
+        `crendential-card-item-${filteredCredsFix[0].id}`
       );
       fireEvent.click(cardItem);
 
       await waitFor(() => {
         expect(getByTestId("selected-amount-credentials").innerHTML).toBe(
-          `${credsFixAcdc.length} Credential Selected`
+          "1 Credential Selected"
         );
       });
 
@@ -191,7 +195,7 @@ describe("Archived and revoked credentials", () => {
           <ArchivedCredentialsContainer
             revokedCreds={[]}
             archivedCredentialsIsOpen={true}
-            archivedCreds={credsFixAcdc}
+            archivedCreds={filteredCredsFix}
             setArchivedCredentialsIsOpen={jest.fn()}
           />
         </Provider>
@@ -218,7 +222,7 @@ describe("Archived and revoked credentials", () => {
       });
 
       const cardItem = getByTestId(
-        `crendential-card-item-${credsFixAcdc[0].id}`
+        `crendential-card-item-${filteredCredsFix[0].id}`
       );
 
       act(() => {
@@ -288,7 +292,7 @@ describe("Archived and revoked credentials", () => {
           <ArchivedCredentialsContainer
             revokedCreds={revokedCredsFix}
             archivedCredentialsIsOpen={true}
-            archivedCreds={credsFixAcdc}
+            archivedCreds={filteredCredsFix}
             setArchivedCredentialsIsOpen={jest.fn()}
           />
         </Provider>
@@ -353,7 +357,7 @@ describe("Archived and revoked credentials", () => {
           <ArchivedCredentialsContainer
             revokedCreds={revokedCredsFix}
             archivedCredentialsIsOpen={true}
-            archivedCreds={credsFixAcdc}
+            archivedCreds={filteredCredsFix}
             setArchivedCredentialsIsOpen={jest.fn()}
           />
         </Provider>
@@ -384,7 +388,7 @@ describe("Archived and revoked credentials", () => {
 
       await waitFor(() => {
         expect(getByTestId("selected-amount-credentials").innerHTML).toBe(
-          `${credsFixAcdc.length} Credential Selected`
+          "1 Credential Selected"
         );
       });
 

@@ -940,9 +940,7 @@ class IpexCommunicationService extends AgentService {
     return { op, exnSaid: exn.ked.d, ipexGrantSaid, member: ourIdentifier.id };
   }
 
-  async getAcdcFromIpexGrant(
-    said: string
-  ): Promise<Omit<ACDCDetails, "status" | "credentialType" | "issuanceDate">> {
+  async getAcdcFromIpexGrant(said: string): Promise<ACDCDetails> {
     const exchange = await this.props.signifyClient.exchanges().get(said);
     const schemaSaid = exchange.exn.e.acdc.s;
     const schema = await this.props.signifyClient
@@ -973,6 +971,7 @@ class IpexCommunicationService extends AgentService {
         s: exchange.exn.e.iss.s,
         dt: new Date(exchange.exn.e.iss.dt).toISOString(),
       },
+      status: CredentialStatus.PENDING,
     };
   }
 }

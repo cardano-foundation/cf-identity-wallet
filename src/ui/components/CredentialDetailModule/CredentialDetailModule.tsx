@@ -73,6 +73,7 @@ const CredentialDetailModule = ({
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [cardData, setCardData] = useState<ACDCDetails>();
+
   const isArchived = credsCache.filter((item) => item.id === id).length === 0;
   const isRevoked = cardData?.status === CredentialStatus.REVOKED;
   const isInactiveCred = (isArchived || isRevoked) && !viewOnly;

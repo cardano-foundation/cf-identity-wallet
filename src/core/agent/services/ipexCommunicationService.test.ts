@@ -2122,6 +2122,7 @@ describe("Ipex communication service of agent", () => {
         version: "1.0",
       },
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
+      status: "pending",
     });
   });
 
@@ -2165,6 +2166,7 @@ describe("Ipex communication service of agent", () => {
         version: "1.0",
       },
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
+      status: "pending",
     });
   });
 });
