@@ -406,4 +406,8 @@ export class SignifyApi {
     }
     return op;
   }
+
+  sadifySchema(schema : any, label?: string) {
+    return Saider.saidify(schema, undefined, undefined, label)[1];
+  }
 }
