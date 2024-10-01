@@ -1,9 +1,11 @@
-// @ts-ignore prettier-ignore
+// @ts-ignore
+// prettier-ignore
 const port = window._env_?.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT ||
   process.env.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_PORT ||
   "3001";
 
-// @ts-ignore prettier-ignore
+// @ts-ignore
+// prettier-ignore
 const url = window._env_?.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL ||
   process.env.REACT_APP_CREDENTIAL_ISSUANCE_SERVER_URL ||
   "http://localhost";
@@ -34,6 +36,7 @@ const config = {
     resolveOobi: "/resolveOobi",
     requestDisclosure: "/requestDisclosure",
     revokeCredential: "/revokeCredential",
+    generateSchema: "/generateSchema",
   },
 };
 
