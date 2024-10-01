@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
-import { TabsRoutePath } from "../../../routes/paths";
+import { RoutePath, TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getFavouritesIdentifiersCache,
@@ -30,8 +30,6 @@ import {
 } from "../../components/SwitchCardView";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardType, OperationType, ToastMsgType } from "../../globals/types";
-import { useToggleConnections } from "../../hooks";
-import { Connections } from "../Connections";
 import "./Identifiers.scss";
 import { StartAnimationSource } from "./Identifiers.type";
 import { RemovePendingAlert } from "../../components/RemovePendingAlert";
@@ -109,9 +107,6 @@ const Identifiers = () => {
     useState<IdentifierShortDetails | null>(null);
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
-  const { showConnections, setShowConnections } = useToggleConnections(
-    TabsRoutePath.IDENTIFIERS
-  );
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
@@ -133,18 +128,12 @@ const Identifiers = () => {
     ) {
       setCreateIdentifierModalIsOpen(true);
     }
-
-    if (OperationType.RECEIVE_CONNECTION === currentOperation) {
-      dispatch(setCurrentOperation(OperationType.IDLE));
-      setShowConnections(true);
-    }
   }, [
     currentOperation,
     dispatch,
     history.location.pathname,
     identifiersData,
     multisigGroupCache,
-    setShowConnections,
   ]);
 
   useEffect(() => {
@@ -294,11 +283,6 @@ const Identifiers = () => {
 
   return (
     <>
-      <Connections
-        showConnections={showConnections}
-        setShowConnections={setShowConnections}
-        selfPaginated={true}
-      />
       <TabLayout
         pageId={pageId}
         header={true}
@@ -306,7 +290,7 @@ const Identifiers = () => {
         title={`${i18n.t("identifiers.tab.title")}`}
         additionalButtons={
           <AdditionalButtons
-            handleConnections={() => setShowConnections(true)}
+            handleConnections={() => history.push(RoutePath.CONNECTIONS)}
             handleCreateIdentifier={() => setCreateIdentifierModalIsOpen(true)}
           />
         }

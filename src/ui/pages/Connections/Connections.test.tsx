@@ -159,16 +159,15 @@ describe("Connections page", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
-            selfPaginated={true}
           />
         </Provider>
       </MemoryRouter>
     );
 
-    expect(getByTestId("connections-tab-cards-placeholder")).toBeVisible();
+    expect(getByTestId("connections-cards-placeholder")).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByTestId("primary-button-connections-tab"));
+      fireEvent.click(getByTestId("primary-button-connections"));
     });
 
     await waitFor(() => {
@@ -222,16 +221,15 @@ describe("Connections page", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
-            selfPaginated={false}
           />
         </Provider>
       </MemoryRouter>
     );
 
-    expect(getByTestId("connections-tab-cards-placeholder")).toBeVisible();
+    expect(getByTestId("connections-cards-placeholder")).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByTestId("primary-button-connections-tab"));
+      fireEvent.click(getByTestId("primary-button-connections"));
     });
 
     await waitFor(() => {
@@ -246,7 +244,6 @@ describe("Connections page", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
-            selfPaginated={true}
           />
         </Provider>
       </MemoryRouter>
@@ -268,7 +265,6 @@ describe("Connections page", () => {
         <Connections
           setShowConnections={mockSetShowConnections}
           showConnections={true}
-          selfPaginated={true}
         />
       </Provider>
     );
@@ -327,13 +323,12 @@ describe("Connections page", () => {
         <Connections
           setShowConnections={mockSetShowConnections}
           showConnections={true}
-          selfPaginated={true}
         />
       </Provider>
     );
 
     act(() => {
-      fireEvent.click(getByTestId("primary-button-connections-tab"));
+      fireEvent.click(getByTestId("primary-button-connections"));
     });
 
     await waitFor(() => {
@@ -409,7 +404,7 @@ describe("Connections page", () => {
     expect(getByText(EN_TRANSLATIONS.connections.tab.title)).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByTestId("primary-button-connections-tab"));
+      fireEvent.click(getByTestId("primary-button-connections"));
     });
 
     await waitFor(() => {
@@ -515,7 +510,7 @@ describe("Connections page from Credentials tab", () => {
     expect(getByText(EN_TRANSLATIONS.connections.tab.title)).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByTestId("primary-button-connections-tab"));
+      fireEvent.click(getByTestId("primary-button-connections"));
     });
 
     await waitFor(() => {
@@ -586,7 +581,6 @@ describe("Connections page from Credentials tab", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
-            selfPaginated={true}
           />
         </Provider>
       </IonReactMemoryRouter>
@@ -641,7 +635,6 @@ describe("Connections page from Credentials tab", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
-            selfPaginated={true}
           />
         </Provider>
       </MemoryRouter>
@@ -683,7 +676,7 @@ describe("Connections page from Credentials tab", () => {
 
     act(() => {
       fireEvent.click(
-        getByTestId("connections-tab-delete-pending-modal-confirm-button")
+        getByTestId("connections-delete-pending-modal-confirm-button")
       );
     });
 
@@ -737,7 +730,6 @@ describe("Connections page from Credentials tab", () => {
           <Connections
             setShowConnections={mockSetShowConnections}
             showConnections={true}
-            selfPaginated={true}
           />
         </Provider>
       </MemoryRouter>

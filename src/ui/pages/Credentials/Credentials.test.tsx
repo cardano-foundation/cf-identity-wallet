@@ -234,7 +234,7 @@ describe("Creds Tab", () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId("connections-tab")).toHaveClass("hide");
+      expect(getByTestId("connections")).toHaveClass("hide");
     });
 
     act(() => {
@@ -242,7 +242,7 @@ describe("Creds Tab", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("connections-tab")).toHaveClass("show");
+      expect(getByTestId("connections")).toHaveClass("show");
     });
 
     act(() => {
@@ -250,7 +250,7 @@ describe("Creds Tab", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("connections-tab")).toHaveClass("hide");
+      expect(getByTestId("connections")).toHaveClass("hide");
     });
   });
 
@@ -272,9 +272,7 @@ describe("Creds Tab", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByTestId("connections-tab-cards-placeholder")
-      ).toBeInTheDocument();
+      expect(getByTestId("connections-cards-placeholder")).toBeInTheDocument();
     });
   });
 

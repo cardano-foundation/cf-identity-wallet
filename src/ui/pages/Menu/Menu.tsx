@@ -15,6 +15,7 @@ import {
 } from "ionicons/icons";
 import { useEffect, useMemo, useState } from "react";
 import { Browser } from "@capacitor/browser";
+import { useHistory } from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -22,7 +23,7 @@ import {
   setCurrentOperation,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../../../routes/paths";
+import { RoutePath, TabsRoutePath } from "../../../routes/paths";
 import "./Menu.scss";
 import { i18n } from "../../../i18n";
 import { SubMenu } from "./components/SubMenu";
@@ -34,6 +35,7 @@ import MenuItem from "./components/MenuItem";
 
 const Menu = () => {
   const pageId = "menu-tab";
+  const history = useHistory();
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
   const [showSubMenu, setShowSubMenu] = useState(false);
@@ -59,10 +61,16 @@ const Menu = () => {
     }
   }, [currentOperation]);
 
-  const handleOpenUrl = (key: SubMenuKey.Crypto | SubMenuKey.Chat) => {
+  const handleOpenUrl = (
+    key: SubMenuKey.Crypto | SubMenuKey.Connections | SubMenuKey.Chat
+  ) => {
     switch (key) {
     case SubMenuKey.Crypto: {
       Browser.open({ url: CRYPTO_LINK });
+      break;
+    }
+    case SubMenuKey.Connections: {
+      history.push(RoutePath.CONNECTIONS);
       break;
     }
     case SubMenuKey.Chat: {
@@ -106,7 +114,11 @@ const Menu = () => {
   ];
 
   const showSelectedOption = (key: SubMenuKey) => {
-    if (key === SubMenuKey.Crypto || key === SubMenuKey.Chat) {
+    if (
+      key === SubMenuKey.Crypto ||
+      key === SubMenuKey.Connections ||
+      key === SubMenuKey.Chat
+    ) {
       handleOpenUrl(key);
     }
     if (!subMenuItems.has(key)) return;
@@ -114,7 +126,7 @@ const Menu = () => {
     setSelectedOption(key);
   };
 
-  const subMenuItems = SubMenuItems(selectedOption, showSelectedOption);
+  const subMenuItems = SubMenuItems(showSelectedOption);
 
   const selectSubmenu = useMemo(() => {
     // NOTE: emptySubMenu is returned for unavailable selected options to not break the animation

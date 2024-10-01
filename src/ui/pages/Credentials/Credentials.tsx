@@ -6,9 +6,10 @@ import {
 } from "@ionic/react";
 import { addOutline, peopleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
-import { TabsRoutePath } from "../../../routes/paths";
+import { RoutePath, TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCredsArchivedCache,
@@ -29,8 +30,7 @@ import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardType, OperationType, ToastMsgType } from "../../globals/types";
-import { useOnlineStatusEffect, useToggleConnections } from "../../hooks";
-import { Connections } from "../Connections";
+import { useOnlineStatusEffect } from "../../hooks";
 import { StartAnimationSource } from "../Identifiers/Identifiers.type";
 import "./Credentials.scss";
 import { ListHeader } from "../../components/ListHeader";
@@ -85,6 +85,7 @@ const AdditionalButtons = ({
 
 const Credentials = () => {
   const pageId = "credentials-tab";
+  const history = useHistory();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const archivedCreds = useAppSelector(getCredsArchivedCache);
@@ -95,10 +96,6 @@ const Credentials = () => {
   const [navAnimation, setNavAnimation] =
     useState<StartAnimationSource>("none");
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
-  const { showConnections, setShowConnections } = useToggleConnections(
-    TabsRoutePath.CREDENTIALS
-  );
-
   const [deletedPendingItem, setDeletePendingItem] =
     useState<CredentialShortDetails | null>(null);
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
@@ -251,11 +248,6 @@ const Credentials = () => {
 
   return (
     <>
-      <Connections
-        showConnections={showConnections}
-        setShowConnections={setShowConnections}
-        selfPaginated={true}
-      />
       <TabLayout
         pageId={pageId}
         header={true}
@@ -263,7 +255,7 @@ const Credentials = () => {
         title={`${i18n.t("credentials.tab.title")}`}
         additionalButtons={
           <AdditionalButtons
-            handleConnections={() => setShowConnections(true)}
+            handleConnections={() => history.push(RoutePath.CONNECTIONS)}
             handleCreateCred={handleCreateCred}
           />
         }

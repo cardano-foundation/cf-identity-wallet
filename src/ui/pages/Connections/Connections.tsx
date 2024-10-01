@@ -8,6 +8,7 @@ import {
   IonItemGroup,
   IonLabel,
   IonRow,
+  useIonViewWillEnter,
 } from "@ionic/react";
 import { addOutline } from "ionicons/icons";
 import {
@@ -37,12 +38,12 @@ import {
   getCurrentOperation,
   getStateCache,
   setCurrentOperation,
+  setCurrentRoute,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { Alert } from "../../components/Alert";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
-import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 import { ShareConnection } from "../../components/ShareConnection";
@@ -61,17 +62,24 @@ import {
   ConnectionsOptionRef,
   MappedConnections,
 } from "./Connections.types";
-import { useOnlineStatusEffect } from "../../hooks";
+import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
 import { showError } from "../../utils/error";
+import { getBackRoute } from "../../../routes/backRoute";
+import { RoutePath } from "../../../routes";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
+import { PageHeader } from "../../components/PageHeader";
 
 const ANIMATION_TIMEOUT = 350;
+const SLIDE_TIMEOUT = 250;
 
 const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
-  ({ showConnections, setShowConnections, selfPaginated }, ref) => {
-    const pageId = "connections-tab";
+  ({ showConnections, setShowConnections }, ref) => {
+    const pageId = "connections";
     const history = useHistory();
     const dispatch = useAppDispatch();
+    const ionicRouter = useAppIonRouter();
     const stateCache = useAppSelector(getStateCache);
+    const [pageIsOpen, setPageIsOpen] = useState(showConnections);
     const currentOperation = useAppSelector(getCurrentOperation);
     const connectionsCache = useAppSelector(getConnectionsCache);
     const identifierCache = useAppSelector(getIdentifiersCache);
@@ -96,6 +104,11 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
     const userName = stateCache.authentication.userName;
     const [oobi, setOobi] = useState("");
+
+    useIonViewWillEnter(() => {
+      dispatch(setCurrentRoute({ path: RoutePath.CONNECTIONS }));
+      setPageIsOpen(true);
+    });
 
     const fetchOobi = useCallback(async () => {
       try {
@@ -136,6 +149,39 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
         dispatch(setCurrentOperation(OperationType.IDLE));
       }
     }, [currentOperation, dispatch, setShowConnections]);
+
+    const handleDone = () => {
+      setPageIsOpen(false);
+      setTimeout(() => {
+        const data: DataProps = {
+          store: { stateCache },
+        };
+        const { backPath, updateRedux } = getBackRoute(
+          RoutePath.CONNECTION_DETAILS,
+          data
+        );
+
+        updateReduxState(backPath.pathname, data, dispatch, updateRedux);
+        ionicRouter.goBack();
+      }, SLIDE_TIMEOUT);
+    };
+
+    const AdditionalButtons = () => {
+      return (
+        <IonButton
+          shape="round"
+          className="add-button"
+          data-testid="add-connection-button"
+          onClick={handleConnectModal}
+        >
+          <IonIcon
+            slot="icon-only"
+            icon={addOutline}
+            color="primary"
+          />
+        </IonButton>
+      );
+    };
 
     const handleNavToCreateKeri = () => {
       setOpenIdentifierMissingAlert(false);
@@ -217,23 +263,6 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       showConnections,
     ]);
 
-    const AdditionalButtons = () => {
-      return (
-        <IonButton
-          shape="round"
-          className="add-button"
-          data-testid="add-connection-button"
-          onClick={handleConnectModal}
-        >
-          <IonIcon
-            slot="icon-only"
-            icon={addOutline}
-            color="primary"
-          />
-        </IonButton>
-      );
-    };
-
     useEffect(() => {
       const connections = Object.values(connectionsCache);
       if (connections.length) {
@@ -258,23 +287,6 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
         setMappedConnections(mapToArray);
       }
     }, [connectionsCache]);
-
-    const backHardwareConfig = useMemo(
-      () => ({
-        prevent: !showConnections,
-      }),
-      [showConnections]
-    );
-
-    const getConnectionsTab = useCallback(() => {
-      return document.getElementById(pageId);
-    }, []);
-
-    const canStart = useCallback(() => {
-      return showConnections;
-    }, [showConnections]);
-
-    useSwipeBack(getConnectionsTab, canStart, () => setShowConnections(false));
 
     const deletePendingCheckProps = useMemo(
       () => ({
@@ -306,75 +318,58 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       dispatch(setCurrentOperation(OperationType.IDLE));
     };
 
-    const ConnectionsBody = () => {
-      return (
-        <div className="connections-tab-center">
-          <IonContent className="connections-container">
-            <IonGrid>
-              <IonRow>
-                <IonCol size="12">
-                  {mappedConnections.map((alphabeticGroup, index) => {
-                    return (
-                      <IonItemGroup
-                        className="connections-list"
-                        key={index}
-                      >
-                        <IonItemDivider id={alphabeticGroup.key}>
-                          <IonLabel>{alphabeticGroup.key}</IonLabel>
-                        </IonItemDivider>
-                        <AlphabeticList
-                          items={Array.from(alphabeticGroup.value)}
-                          handleShowConnectionDetails={
-                            handleShowConnectionDetails
-                          }
-                        />
-                      </IonItemGroup>
-                    );
-                  })}
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </IonContent>
-          <AlphabetSelector />
-        </div>
-      );
-    };
-
     return (
-      <>
-        {selfPaginated ? (
-          <SideSlider isOpen={showConnections}>
-            <TabLayout
-              hardwareBackButtonConfig={backHardwareConfig}
-              pageId={pageId}
-              header={true}
-              backButton={true}
-              customClass={showConnections ? "show" : "hide"}
-              backButtonAction={() => setShowConnections(false)}
+      <SideSlider isOpen={pageIsOpen}>
+        <ScrollablePageLayout
+          pageId={pageId}
+          header={
+            <PageHeader
+              closeButton={true}
+              closeButtonLabel={`${i18n.t("identifiers.details.done")}`}
+              closeButtonAction={() => handleDone()}
               title={`${i18n.t("connections.tab.title")}`}
               additionalButtons={<AdditionalButtons />}
-              placeholder={
-                showPlaceholder && (
-                  <CardsPlaceholder
-                    buttonLabel={i18n.t("connections.tab.create")}
-                    buttonAction={handleConnectModal}
-                    testId={pageId}
-                  />
-                )
-              }
-            >
-              {!showPlaceholder && <ConnectionsBody />}
-            </TabLayout>
-          </SideSlider>
-        ) : (
-          (showPlaceholder && (
+            />
+          }
+        >
+          {showPlaceholder ? (
             <CardsPlaceholder
               buttonLabel={i18n.t("connections.tab.create")}
               buttonAction={handleConnectModal}
               testId={pageId}
             />
-          )) || <ConnectionsBody />
-        )}
+          ) : (
+            <div className="connections-center">
+              <IonContent className="connections-container">
+                <IonGrid>
+                  <IonRow>
+                    <IonCol size="12">
+                      {mappedConnections.map((alphabeticGroup, index) => {
+                        return (
+                          <IonItemGroup
+                            className="connections-list"
+                            key={index}
+                          >
+                            <IonItemDivider id={alphabeticGroup.key}>
+                              <IonLabel>{alphabeticGroup.key}</IonLabel>
+                            </IonItemDivider>
+                            <AlphabeticList
+                              items={Array.from(alphabeticGroup.value)}
+                              handleShowConnectionDetails={
+                                handleShowConnectionDetails
+                              }
+                            />
+                          </IonItemGroup>
+                        );
+                      })}
+                    </IonCol>
+                  </IonRow>
+                </IonGrid>
+              </IonContent>
+              <AlphabetSelector />
+            </div>
+          )}
+        </ScrollablePageLayout>
         <ConnectionsOptionModal
           type={RequestType.CONNECTION}
           connectModalIsOpen={connectModalIsOpen}
@@ -413,7 +408,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
           )}`}
           onDeletePendingItem={deleteConnection}
         />
-      </>
+      </SideSlider>
     );
   }
 );
