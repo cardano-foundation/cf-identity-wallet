@@ -1,6 +1,6 @@
 export enum CreatePassword {
-  Description = "You can choose to set an optional password for your Identity Wallet. This password will be required to complete protected operations within the wallet. If you choose to skip and not set a password, you will be asked to provide your passcode to complete protected operations.",
-  Title = "Create your Password",
+  Description = "Set your operations password so you can access additional wallet features.",
+  Title = "Create password",
 }
 
 export enum Passcode {
@@ -78,9 +78,9 @@ export enum PrivacyPolicy {
 }
 
 export enum SeedPhraseGenerate {
-  DescriptionBottom = "This phrase is essentially a representation of your Identity Wallet profile private key. This means that anyone with access to it can control your identity. We strongly recommend not using screenshots or storing this phrase without encryption.",
-  DescriptionTop = "It is critical that you securely store this secret recovery phrase, also referred to as a mnemonic, seed, or backup phrase. You will require this phrase in the event that you change mobile devices or need to regain access to your identity wallet profile.",
-  Title = "Generate your Seed Phrase",
+  DescriptionBottom = "It's important to keep these words safe and sound! Store them in a secure location and remember to never share them with anyone.",
+  DescriptionTop = "Think of your secret recovery phrase as a safety net for your identity. If you ever lose your phone or switch to a new wallet, this phrase will help you recover your identity.",
+  Title = "Generate recovery phrase",
 }
 
 export enum SeedPhraseVerify {

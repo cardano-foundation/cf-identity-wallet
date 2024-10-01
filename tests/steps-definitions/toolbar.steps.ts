@@ -1,5 +1,4 @@
 import { Given, When } from "@wdio/cucumber-framework";
-import CreatePasswordScreen from "../screen-objects/create-password.screen.js";
 import MenuToolbar from "../screen-objects/components/menu.toolbar.js";
 import PasscodeScreen from "../screen-objects/passcode.screen.js";
 import SeedPhraseGenerateScreen from "../screen-objects/seed-phrase/seed-phrase-generate.screen.js";
@@ -24,13 +23,6 @@ Given(/^user tap Cancel button on Passcode screen$/, async function () {
 When(/^user tap Back button on Re-enter your Passcode screen$/, async function () {
   await BaseModal.clickCloseButtonOf(PasscodeScreen.id);
 });
-
-Given(
-  /^user tap Back arrow icon on Create Password screen$/,
-  async function () {
-    await MenuToolbar.clickBackArrowButtonOf(CreatePasswordScreen.id);
-  }
-);
 
 Given(
   /^user tap Back arrow icon on Seed Phrase Generate screen$/,
