@@ -247,8 +247,8 @@ class Agent {
     await this.signifyApi.deleteNotification(grantNotification.i);
   }
 
-  sadifySchema(schema: any, label?: string) {
-    return this.signifyApi.sadifySchema(schema, label);
+  saidifySchema(schema: any, label?: string) {
+    return this.signifyApi.saidifySchema(schema, label);
   }
 }
 

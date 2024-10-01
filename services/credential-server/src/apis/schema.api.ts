@@ -15,13 +15,13 @@ async function schemaApi(req: Request, res: Response) {
 
 async function saidifySchema(req: Request, res: Response) {
   try {
-    const sadifiedSchema = Agent.agent.sadifySchema(req.body, "$id");
-    const response: ResponseData<string> = {
-    statusCode: 200,
-    success: true,
-    data: JSON.stringify(sadifiedSchema),
-  };
-  httpResponse(res, response);
+    Agent.agent.saidifySchema(req.body, "$id");
+      const response: ResponseData<string> = {
+      statusCode: 200,
+      success: true,
+      data: "Schema succesfully generated",
+    };
+    httpResponse(res, response);
   } catch (error: any) {
     console.error("Error during sadify operation:", error);
 

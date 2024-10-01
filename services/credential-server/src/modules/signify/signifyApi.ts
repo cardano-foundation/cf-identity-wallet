@@ -10,6 +10,7 @@ import { waitAndGetDoneOp } from "./utils";
 import { config } from "../../config";
 import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../../agent";
+import { setCache } from "../../utils/node-cache";
 
 export class SignifyApi {
   static readonly DEFAULT_ROLE = "agent";
@@ -407,7 +408,8 @@ export class SignifyApi {
     return op;
   }
 
-  sadifySchema(schema : any, label?: string) {
-    return Saider.saidify(schema, undefined, undefined, label)[1];
+  saidifySchema(schema : any, label?: string) {
+    const saidifiedSchema = Saider.saidify(schema, undefined, undefined, label)[1];
+    setCache(saidifiedSchema["$id"], JSON.stringify(saidifiedSchema), 0);
   }
 }
