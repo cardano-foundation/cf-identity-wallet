@@ -1,10 +1,31 @@
 import { notificationsFix } from "../__fixtures__/notificationsFix";
-import { ellipsisText, formatCurrencyUSD, timeDifference } from "./formatters";
+import {
+  ellipsisText,
+  formatCurrencyUSD,
+  formatLongDate,
+  formatShortTime,
+  timeDifference,
+} from "./formatters";
 
 describe("Utils", () => {
   test("formatCurrencyUSD", () => {
     const balance = 1012.0;
     expect(formatCurrencyUSD(balance)).toBe("$1,012.00");
+  });
+
+  test("formatLongDate", () => {
+    expect(formatLongDate("2024-07-16T03:32:59.312000+00:00")).toBe(
+      "16 July 2024"
+    );
+  });
+
+  test("formatShortTime", () => {
+    expect(formatShortTime("2024-07-16T03:32:59.312000+00:00")).toBe(
+      new Date("2024-07-16T03:32:59.312000+00:00").toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    );
   });
 
   test("ellipsisText", () => {

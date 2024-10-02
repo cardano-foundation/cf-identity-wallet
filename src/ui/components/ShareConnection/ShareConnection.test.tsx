@@ -1,7 +1,8 @@
 import { mockIonicReact } from "@ionic/react-test-utils";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { act } from "react";
 import ENG_trans from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { setToastMsg } from "../../../store/reducers/stateCache";
@@ -22,6 +23,14 @@ jest.mock("@ionic/react", () => ({
   IonModal: ({ children }: never) => (
     <div data-testid="share-connection-modal">{children}</div>
   ),
+}));
+
+const shareFnc = jest.fn();
+jest.mock("@capacitor/share", () => ({
+  ...jest.requireActual("@capacitor/share"),
+  Share: {
+    share: () => shareFnc(),
+  },
 }));
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -110,6 +119,41 @@ describe("Share Indentifier", () => {
       ).toBeVisible();
       expect(getByTestId("share-connection-modal")).toBeInTheDocument();
       expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("share-identifier-share-button"));
+    });
+
+    await waitFor(() => {
+      expect(shareFnc).toBeCalled();
+    });
+  });
+
+  test("Close share connection", async () => {
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <ShareConnection
+          isOpen={props.isOpen}
+          setIsOpen={props.setIsOpen}
+          shareType={ShareType.Connection}
+          oobi={""}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByTestId("share-identifier-qr-code").classList.contains("blur")
+      ).toBe(true);
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("close-button"));
+    });
+
+    await waitFor(() => {
+      expect(setIsOpen).toBeCalled();
     });
   });
 });

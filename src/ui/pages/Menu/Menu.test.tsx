@@ -51,6 +51,9 @@ const initialState = {
       connections: connectionsFix,
     },
   },
+  biometricsCache: {
+    enable: false,
+  },
   connectionsCache: {
     connections: connectionsFix,
   },
@@ -89,6 +92,28 @@ describe("Menu Tab", () => {
     expect(
       getByText(EN_TRANSLATIONS.menu.tab.items.chat.title)
     ).toBeInTheDocument();
+  });
+
+  test("Open Profile sub-menu", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <Menu />
+      </Provider>
+    );
+
+    expect(getByTestId("menu-tab")).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.profile.title)
+    ).toBeInTheDocument();
+    const settingButton = getByTestId("settings-button");
+
+    act(() => {
+      fireEvent.click(settingButton);
+    });
+
+    await waitForIonicReact();
+
+    expect(getByTestId("settings-security-items")).toBeVisible();
   });
 
   test("Open Profile sub-menu", async () => {
