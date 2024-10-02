@@ -8,7 +8,6 @@ import {
   IonItemGroup,
   IonLabel,
   IonRow,
-  useIonViewWillEnter,
 } from "@ionic/react";
 import { addOutline } from "ionicons/icons";
 import {
@@ -38,8 +37,8 @@ import {
   getCurrentOperation,
   getStateCache,
   setCurrentOperation,
-  setCurrentRoute,
   setToastMsg,
+  showConnections as updateShowConnections,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { Alert } from "../../components/Alert";
@@ -48,7 +47,6 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 import { ShareConnection } from "../../components/ShareConnection";
 import { ShareType } from "../../components/ShareConnection/ShareConnection.types";
-import { SideSlider } from "../../components/SideSlider";
 import { OperationType, RequestType, ToastMsgType } from "../../globals/types";
 import { useSwipeBack } from "../../hooks/swipeBackHook";
 import { AlphabeticList } from "./components/AlphabeticList";
@@ -62,24 +60,19 @@ import {
   ConnectionsOptionRef,
   MappedConnections,
 } from "./Connections.types";
-import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
+import { useOnlineStatusEffect } from "../../hooks";
 import { showError } from "../../utils/error";
-import { getBackRoute } from "../../../routes/backRoute";
-import { RoutePath } from "../../../routes";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../components/PageHeader";
 
 const ANIMATION_TIMEOUT = 350;
-const SLIDE_TIMEOUT = 250;
 
 const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
   ({ showConnections, setShowConnections }, ref) => {
     const pageId = "connections";
     const history = useHistory();
     const dispatch = useAppDispatch();
-    const ionicRouter = useAppIonRouter();
     const stateCache = useAppSelector(getStateCache);
-    const [pageIsOpen, setPageIsOpen] = useState(showConnections);
     const currentOperation = useAppSelector(getCurrentOperation);
     const connectionsCache = useAppSelector(getConnectionsCache);
     const identifierCache = useAppSelector(getIdentifiersCache);
@@ -105,11 +98,6 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     const userName = stateCache.authentication.userName;
     const [oobi, setOobi] = useState("");
 
-    useIonViewWillEnter(() => {
-      dispatch(setCurrentRoute({ path: RoutePath.CONNECTIONS }));
-      setPageIsOpen(true);
-    });
-
     const fetchOobi = useCallback(async () => {
       try {
         if (!selectedIdentifier?.id) return;
@@ -129,17 +117,6 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     useOnlineStatusEffect(fetchOobi);
 
     useEffect(() => {
-      const openConnections = (
-        history.location.state as Record<string, unknown>
-      )?.openConnections;
-
-      if (openConnections) {
-        setShowConnections(true);
-        history.replace(history.location.pathname, {});
-      }
-    }, [history, history.location.state, setShowConnections]);
-
-    useEffect(() => {
       setShowPlaceholder(Object.keys(connectionsCache).length === 0);
     }, [connectionsCache]);
 
@@ -151,19 +128,8 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     }, [currentOperation, dispatch, setShowConnections]);
 
     const handleDone = () => {
-      setPageIsOpen(false);
-      setTimeout(() => {
-        const data: DataProps = {
-          store: { stateCache },
-        };
-        const { backPath, updateRedux } = getBackRoute(
-          RoutePath.CONNECTION_DETAILS,
-          data
-        );
-
-        updateReduxState(backPath.pathname, data, dispatch, updateRedux);
-        ionicRouter.goBack();
-      }, SLIDE_TIMEOUT);
+      setShowConnections(false);
+      dispatch(updateShowConnections(false));
     };
 
     const AdditionalButtons = () => {
@@ -288,6 +254,23 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       }
     }, [connectionsCache]);
 
+    const backHardwareConfig = useMemo(
+      () => ({
+        prevent: !showConnections,
+      }),
+      [showConnections]
+    );
+
+    const getConnectionsTab = useCallback(() => {
+      return document.getElementById(pageId);
+    }, []);
+
+    const canStart = useCallback(() => {
+      return showConnections;
+    }, [showConnections]);
+
+    useSwipeBack(getConnectionsTab, canStart, () => setShowConnections(false));
+
     const deletePendingCheckProps = useMemo(
       () => ({
         title: i18n.t("connections.tab.detelepending.title"),
@@ -319,14 +302,15 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     };
 
     return (
-      <SideSlider isOpen={pageIsOpen}>
+      <>
         <ScrollablePageLayout
           pageId={pageId}
+          activeStatus={true}
           header={
             <PageHeader
-              closeButton={true}
-              closeButtonLabel={`${i18n.t("identifiers.details.done")}`}
-              closeButtonAction={() => handleDone()}
+              hardwareBackButtonConfig={backHardwareConfig}
+              backButton={true}
+              onBack={handleDone}
               title={`${i18n.t("connections.tab.title")}`}
               additionalButtons={<AdditionalButtons />}
             />
@@ -408,7 +392,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
           )}`}
           onDeletePendingItem={deleteConnection}
         />
-      </SideSlider>
+      </>
     );
   }
 );

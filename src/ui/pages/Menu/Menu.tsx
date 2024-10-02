@@ -22,6 +22,7 @@ import {
   getCurrentOperation,
   setCurrentOperation,
   setCurrentRoute,
+  showConnections,
 } from "../../../store/reducers/stateCache";
 import { RoutePath, TabsRoutePath } from "../../../routes/paths";
 import "./Menu.scss";
@@ -35,7 +36,6 @@ import MenuItem from "./components/MenuItem";
 
 const Menu = () => {
   const pageId = "menu-tab";
-  const history = useHistory();
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
   const [showSubMenu, setShowSubMenu] = useState(false);
@@ -70,7 +70,7 @@ const Menu = () => {
       break;
     }
     case SubMenuKey.Connections: {
-      history.push(RoutePath.CONNECTIONS);
+      dispatch(showConnections(true));
       break;
     }
     case SubMenuKey.Chat: {

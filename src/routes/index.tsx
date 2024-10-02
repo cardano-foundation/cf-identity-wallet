@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
+import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
 import { Redirect, Route } from "react-router-dom";
 import { Onboarding } from "../ui/pages/Onboarding";
@@ -21,7 +22,6 @@ import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
 import { CreateSSIAgent } from "../ui/pages/CreateSSIAgent";
 import { NotificationDetails } from "../ui/pages/NotificationDetails";
 import { VerifyRecoverySeedPhrase } from "../ui/pages/VerifyRecoverySeedPhrase";
-import { Connections } from "../ui/pages/Connections";
 
 const Routes = () => {
   const stateCache = useAppSelector(getStateCache);
@@ -82,11 +82,6 @@ const Routes = () => {
       <Route
         path={RoutePath.CONNECTION_DETAILS}
         component={ConnectionDetails}
-        exact
-      />
-      <Route
-        path={RoutePath.CONNECTIONS}
-        component={Connections}
         exact
       />
       {tabsRoutes.map((tab, index: number) => {

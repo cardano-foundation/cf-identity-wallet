@@ -6,10 +6,9 @@ import {
 } from "@ionic/react";
 import { addOutline, peopleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
-import { RoutePath, TabsRoutePath } from "../../../routes/paths";
+import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCredsArchivedCache,
@@ -24,6 +23,7 @@ import {
   setCurrentOperation,
   setCurrentRoute,
   setToastMsg,
+  showConnections,
 } from "../../../store/reducers/stateCache";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
@@ -85,7 +85,6 @@ const AdditionalButtons = ({
 
 const Credentials = () => {
   const pageId = "credentials-tab";
-  const history = useHistory();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const archivedCreds = useAppSelector(getCredsArchivedCache);
@@ -129,6 +128,10 @@ const Credentials = () => {
   }, [credsCache]);
 
   useOnlineStatusEffect(fetchArchivedCreds);
+
+  const handleConnections = () => {
+    dispatch(showConnections(true));
+  };
 
   const handleCreateCred = () => {
     dispatch(setCurrentOperation(OperationType.SCAN_CONNECTION));
@@ -255,7 +258,7 @@ const Credentials = () => {
         title={`${i18n.t("credentials.tab.title")}`}
         additionalButtons={
           <AdditionalButtons
-            handleConnections={() => history.push(RoutePath.CONNECTIONS)}
+            handleConnections={handleConnections}
             handleCreateCred={handleCreateCred}
           />
         }

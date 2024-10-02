@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
-import { RoutePath, TabsRoutePath } from "../../../routes/paths";
+import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getFavouritesIdentifiersCache,
@@ -19,6 +19,7 @@ import {
   setCurrentOperation,
   setCurrentRoute,
   setToastMsg,
+  showConnections,
 } from "../../../store/reducers/stateCache";
 import { CardSlider } from "../../components/CardSlider";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
@@ -281,6 +282,14 @@ const Identifiers = () => {
     [deletedPendingItem]
   );
 
+  const handleConnections = () => {
+    dispatch(showConnections(true));
+  };
+
+  const handleCreateIdentifier = () => {
+    setCreateIdentifierModalIsOpen(true);
+  };
+
   return (
     <>
       <TabLayout
@@ -290,15 +299,15 @@ const Identifiers = () => {
         title={`${i18n.t("identifiers.tab.title")}`}
         additionalButtons={
           <AdditionalButtons
-            handleConnections={() => history.push(RoutePath.CONNECTIONS)}
-            handleCreateIdentifier={() => setCreateIdentifierModalIsOpen(true)}
+            handleConnections={handleConnections}
+            handleCreateIdentifier={handleCreateIdentifier}
           />
         }
         placeholder={
           showPlaceholder && (
             <CardsPlaceholder
               buttonLabel={i18n.t("identifiers.tab.create")}
-              buttonAction={() => setCreateIdentifierModalIsOpen(true)}
+              buttonAction={handleCreateIdentifier}
               testId={pageId}
             >
               <span className="placeholder-spacer" />
