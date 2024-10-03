@@ -129,6 +129,7 @@ const LockPage = () => {
     const isAuthenticated = await handleBiometricAuth();
     if (isAuthenticated === true) {
       dispatch(login());
+      dispatch(setFirstAppLaunch(false));
     }
     enablePrivacy();
   };
