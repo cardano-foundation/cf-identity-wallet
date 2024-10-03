@@ -852,7 +852,11 @@ describe("Ipex communication service of agent", () => {
         credentialSaid: {
           accepted: true,
           saids: {
-            ipexGrantSaid: [["member"], ["multisigExn"]],
+            ipexAdmitSaid: [
+              ["memberA", "multisigExn1A"],
+              ["memberB", "multisigExn1B"],
+            ],
+            ipexAdmitSaid2: [["memberA", "multisigExn2A"]],
           },
         },
       },
@@ -870,7 +874,7 @@ describe("Ipex communication service of agent", () => {
 
     expect(result).toEqual({
       accepted: true,
-      membersJoined: ["member"],
+      membersJoined: ["memberA", "memberB"],
     });
   });
 

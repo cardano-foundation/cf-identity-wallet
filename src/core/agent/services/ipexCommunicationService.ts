@@ -984,7 +984,7 @@ class IpexCommunicationService extends AgentService {
       );
     }
 
-    const membersJoined: string[] = [];
+    const membersJoined: Set<string> = new Set();
     const linkedGroupRequest = grantNoteRecord.linkedGroupRequests;
     const exchange = await this.props.signifyClient
       .exchanges()
@@ -995,25 +995,24 @@ class IpexCommunicationService extends AgentService {
     if (Object.keys(linkedGroupRequest).length) {
       const saids = linkedGroupRequest[credentialSaid].saids;
 
-      for (const key in saids) {
-        if (key in saids) {
-          const memberDetails = saids[key];
+      for (const admitSaid in saids) {
+        const memberDetails = saids[admitSaid];
 
-          if (memberDetails.length > 0 && memberDetails[0].length > 0) {
-            const member = memberDetails[0][0];
-            membersJoined.push(member);
+        for (const memberInfo of memberDetails) {
+          if (memberInfo.length > 0) {
+            membersJoined.add(memberInfo[0]);
           }
         }
       }
 
       return {
         accepted: linkedGroupRequest[credentialSaid].accepted,
-        membersJoined,
+        membersJoined: Array.from(membersJoined),
       };
     } else {
       return {
         accepted: false,
-        membersJoined,
+        membersJoined: [],
       };
     }
   }
