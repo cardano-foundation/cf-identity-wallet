@@ -25,6 +25,7 @@ import {
   MaxLoginAttemptAlert,
   useLoginAttempt,
 } from "../../components/MaxLoginAttemptAlert";
+import { usePrivacyScreen } from "../../hooks/privacyScreenHook";
 
 const LockPage = () => {
   const pageId = "lock-page";
@@ -35,6 +36,8 @@ const LockPage = () => {
   const { handleBiometricAuth } = useBiometricAuth();
   const biometricsCache = useSelector(getBiometricsCacheCache);
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
+  const { enablePrivacy, disablePrivacy } = usePrivacyScreen(true);
+
   const {
     isLock,
     lockDuration,
@@ -110,10 +113,12 @@ const LockPage = () => {
   };
 
   const handleBiometrics = async () => {
+    disablePrivacy();
     const isAuthenticated = await handleBiometricAuth();
     if (isAuthenticated === true) {
       dispatch(login());
     }
+    enablePrivacy();
   };
 
   const resetPasscode = () => {
