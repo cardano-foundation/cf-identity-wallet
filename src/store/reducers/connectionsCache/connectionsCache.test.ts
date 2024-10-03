@@ -7,7 +7,7 @@ import {
   removeConnectionCache,
   setConnectionsCache,
   setMultisigConnectionsCache,
-  setOpenConnectionDetail,
+  setOpenConnectionId,
   updateOrAddConnectionCache,
 } from "./connectionsCache";
 import { RootState } from "../../index";
@@ -66,10 +66,10 @@ describe("connectionsCacheSlice", () => {
     ).toMatchObject(connection);
   });
 
-  it("should handle setOpenConnectionDetail", () => {
+  it("should handle setOpenConnectionId", () => {
     const newState = connectionsCacheSlice.reducer(
       initialState,
-      setOpenConnectionDetail(connection.id)
+      setOpenConnectionId(connection.id)
     );
 
     expect(newState.openConnectionId).toEqual(connection.id);

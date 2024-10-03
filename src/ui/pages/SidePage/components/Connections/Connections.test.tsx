@@ -18,7 +18,7 @@ import { passcodeFiller } from "../../../../utils/passcodeFiller";
 import { Credentials } from "../../../Credentials/Credentials";
 import { Identifiers } from "../../../Identifiers";
 import { Connections } from "./Connections";
-import { setOpenConnectionDetail } from "../../../../../store/reducers/connectionsCache";
+import { setOpenConnectionId } from "../../../../../store/reducers/connectionsCache";
 
 const combineMock = jest.fn(() => TabsRoutePath.IDENTIFIERS);
 
@@ -737,7 +737,7 @@ describe("Connections page from Credentials tab", () => {
     );
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(setOpenConnectionDetail(undefined));
+      expect(dispatchMock).toBeCalledWith(setOpenConnectionId(undefined));
       expect(historyPushMock).toBeCalled();
     });
   });

@@ -24,7 +24,7 @@ import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   removeConnectionCache,
-  setOpenConnectionDetail,
+  setOpenConnectionId,
   updateOrAddConnectionCache,
   updateOrAddMultisigConnectionCache,
 } from "../../../store/reducers/connectionsCache";
@@ -41,6 +41,7 @@ import {
   getToastMsgs,
   setCurrentOperation,
   setToastMsg,
+  showConnections,
 } from "../../../store/reducers/stateCache";
 import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
@@ -202,7 +203,8 @@ const Scanner = forwardRef(
 
         dispatch(setOpenMultiSigId(urlId));
       } else {
-        dispatch(setOpenConnectionDetail(urlId));
+        dispatch(setOpenConnectionId(urlId));
+        dispatch(showConnections(true));
       }
 
       handleReset?.();

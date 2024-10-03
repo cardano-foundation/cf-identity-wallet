@@ -26,14 +26,12 @@ import {
 } from "../../../../../core/agent/agent.types";
 import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
 import { i18n } from "../../../../../i18n";
-import { getNextRoute } from "../../../../../routes/nextRoute";
-import { DataProps } from "../../../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import {
   getConnectionsCache,
   getOpenConnectionId,
+  setOpenConnectionId,
   removeConnectionCache,
-  setOpenConnectionDetail,
 } from "../../../../../store/reducers/connectionsCache";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import {
@@ -80,6 +78,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     const currentOperation = useAppSelector(getCurrentOperation);
     const connectionsCache = useAppSelector(getConnectionsCache);
     const identifierCache = useAppSelector(getIdentifiersCache);
+    const openDetailId = useAppSelector(getOpenConnectionId);
     const [connectionShortDetails, setConnectionShortDetails] = useState<
       ConnectionShortDetails | undefined
     >(undefined);
@@ -171,6 +170,25 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
         ) &&
         history.push(TabsRoutePath.IDENTIFIERS);
     };
+
+    const getConnectionShortDetails = async (connectionId: string) => {
+      const shortDetails =
+        await Agent.agent.connections.getConnectionShortDetailById(
+          connectionId
+        );
+      setConnectionShortDetails(shortDetails);
+    };
+
+    useEffect(() => {
+      if (openDetailId === undefined) return;
+      const connection = connectionsCache[openDetailId];
+      dispatch(setOpenConnectionId(undefined));
+      if (!connection || connection.status === ConnectionStatus.PENDING) {
+        return;
+      } else {
+        getConnectionShortDetails(openDetailId);
+      }
+    }, [openDetailId]);
 
     const handleProvideQr = () => {
       availableIdentifiers.length

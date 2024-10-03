@@ -67,10 +67,7 @@ const connectionsCacheSlice = createSlice({
       };
     },
 
-    setOpenConnectionDetail: (
-      state,
-      action: PayloadAction<string | undefined>
-    ) => {
+    setOpenConnectionId: (state, action: PayloadAction<string | undefined>) => {
       state.openConnectionId = action.payload;
     },
   },
@@ -84,7 +81,7 @@ export const {
   updateOrAddConnectionCache,
   removeConnectionCache,
   updateOrAddMultisigConnectionCache,
-  setOpenConnectionDetail,
+  setOpenConnectionId,
 } = connectionsCacheSlice.actions;
 
 const getConnectionsCache = (state: RootState) =>
