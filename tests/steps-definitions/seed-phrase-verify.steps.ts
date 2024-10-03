@@ -10,8 +10,8 @@ export async function generateSeedPhraseOf() {
   await SeedPhraseGenerateScreen.viewSeedPhraseButton.click();
   seedPhraseWords = await seedPhrase().save();
   await SeedPhraseGenerateScreen.termsAndConditionsCheckbox.click();
-  await SeedPhraseGenerateScreen.continueButton.scrollIntoView();
-  await SeedPhraseGenerateScreen.continueButton.click();
+  await SeedPhraseGenerateScreen.generateButton.scrollIntoView();
+  await SeedPhraseGenerateScreen.generateButton.click();
   await AlertModal.clickConfirmButtonOf(SeedPhraseGenerateScreen.alertModal);
   await SeedPhraseVerifyScreen.loads();
 }
