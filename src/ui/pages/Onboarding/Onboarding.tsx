@@ -19,7 +19,7 @@ import { PageFooter } from "../../components/PageFooter";
 import { Slides } from "../../components/Slides";
 import { SlideItem } from "../../components/Slides/Slides.types";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
-import { useExitAppWithDoubleTap } from "../../hooks/useExitAppWithDoubleTap";
+import { useExitAppWithDoubleTap } from "../../hooks/exitAppWithDoubleTapHook";
 import "./Onboarding.scss";
 
 export type IntroImg0Type = typeof introImg0;

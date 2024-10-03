@@ -1,0 +1,120 @@
+import { ionFireEvent } from "@ionic/react-test-utils";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { eyeOutline } from "ionicons/icons";
+import { act } from "react";
+import { CustomInput } from "./CustomInput";
+
+describe("Custom input", () => {
+  const onChangeMock = jest.fn();
+
+  test("Render icon button", async () => {
+    const action = jest.fn();
+
+    const { getByTestId } = render(
+      <CustomInput
+        dataTestId="test-input"
+        value=""
+        onChangeInput={onChangeMock}
+        actionIcon={eyeOutline}
+        action={action}
+      />
+    );
+
+    expect(getByTestId("test-input")).toBeVisible();
+    expect(getByTestId("test-input-action")).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("test-input-action"));
+    });
+
+    expect(action).toBeCalled();
+  });
+
+  test("On Focus/Blur", async () => {
+    const focus = jest.fn();
+
+    const { getByTestId } = render(
+      <CustomInput
+        dataTestId="test-input"
+        value=""
+        hiddenInput
+        onChangeInput={onChangeMock}
+        onChangeFocus={focus}
+      />
+    );
+
+    act(() => {
+      ionFireEvent.ionFocus(getByTestId("test-input"));
+    });
+
+    expect(focus).toBeCalledWith(true);
+
+    act(() => {
+      ionFireEvent.ionBlur(getByTestId("test-input"));
+    });
+
+    expect(focus).toBeCalledWith(false);
+  });
+
+  test("On change", async () => {
+    const focus = jest.fn();
+
+    const { getByTestId } = render(
+      <CustomInput
+        dataTestId="test-input"
+        value=""
+        onChangeInput={onChangeMock}
+        onChangeFocus={focus}
+      />
+    );
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("test-input"), "test");
+    });
+
+    expect(onChangeMock).toBeCalled();
+  });
+
+  test("Show password", async () => {
+    const { getByTestId } = render(
+      <CustomInput
+        dataTestId="test-input"
+        value=""
+        onChangeInput={onChangeMock}
+        hiddenInput
+      />
+    );
+
+    expect((getByTestId("test-input") as HTMLInputElement).type).toBe(
+      "password"
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("test-input-hide-btn"));
+    });
+
+    await waitFor(() => {
+      expect((getByTestId("test-input") as HTMLInputElement).type).toBe("text");
+    });
+  });
+
+  test("Error", async () => {
+    const focus = jest.fn();
+
+    const { getByTestId } = render(
+      <CustomInput
+        dataTestId="test-input"
+        value=""
+        error
+        onChangeInput={onChangeMock}
+        onChangeFocus={focus}
+      />
+    );
+
+    expect(
+      getByTestId(
+        "test-input"
+      ).parentElement?.parentElement?.className.includes("error")
+    ).toBe(true);
+  });
+});
