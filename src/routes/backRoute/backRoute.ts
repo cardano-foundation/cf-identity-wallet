@@ -111,9 +111,6 @@ const backRoute: Record<string, any> = {
   [RoutePath.CREATE_PASSWORD]: {
     updateRedux: [removeCurrentRoute],
   },
-  [RoutePath.CONNECTION_DETAILS]: {
-    updateRedux: [removeCurrentRoute],
-  },
   [TabsRoutePath.NOTIFICATION_DETAILS]: {
     updateRedux: [removeCurrentRoute],
   },

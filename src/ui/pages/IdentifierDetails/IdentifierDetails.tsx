@@ -39,7 +39,6 @@ import "../../components/CardDetails/CardDetails.scss";
 import { CloudError } from "../../components/CloudError";
 import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
 import { IdentifierOptions } from "../../components/IdentifierOptions";
-import { TabLayout } from "../../components/layout/TabLayout";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import { ShareConnection } from "../../components/ShareConnection";

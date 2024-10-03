@@ -43,7 +43,6 @@ import {
   setToastMsg,
   showConnections as updateShowConnections,
 } from "../../../../../store/reducers/stateCache";
-import { updateReduxState } from "../../../../../store/utils";
 import { Alert } from "../../../../components/Alert";
 import { CardsPlaceholder } from "../../../../components/CardsPlaceholder";
 import { TabsRoutePath } from "../../../../components/navigation/TabsMenu";
@@ -70,8 +69,7 @@ import { useOnlineStatusEffect } from "../../../../hooks";
 import { showError } from "../../../../utils/error";
 import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../../../components/PageHeader";
-
-const ANIMATION_TIMEOUT = 350;
+import { ConnectionDetails } from "../../../ConnectionDetails";
 
 const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
   ({ showConnections, setShowConnections }, ref) => {
@@ -82,7 +80,9 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     const currentOperation = useAppSelector(getCurrentOperation);
     const connectionsCache = useAppSelector(getConnectionsCache);
     const identifierCache = useAppSelector(getIdentifiersCache);
-    const openDetailId = useAppSelector(getOpenConnectionId);
+    const [connectionShortDetails, setConnectionShortDetails] = useState<
+      ConnectionShortDetails | undefined
+    >(undefined);
     const availableIdentifiers = identifierCache.filter(
       (item) => !item.isPending
     );
@@ -190,50 +190,15 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       setOpenIdentifierMissingAlert(false);
     };
 
-    const handleShowConnectionDetails = useCallback(
-      async (item: ConnectionShortDetails) => {
-        if (item.status === ConnectionStatus.PENDING) {
-          setDeletePendingItem(item);
-          setOpenDeletePendingAlert(true);
-          return;
-        }
+    const handleShowConnectionDetails = (item: ConnectionShortDetails) => {
+      if (item.status === ConnectionStatus.PENDING) {
+        setDeletePendingItem(item);
+        setOpenDeletePendingAlert(true);
+        return;
+      }
 
-        const data: DataProps = {
-          store: { stateCache },
-        };
-        const { nextPath, updateRedux } = getNextRoute(
-          TabsRoutePath.CREDENTIALS,
-          data
-        );
-        updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-        history.push({
-          pathname: nextPath.pathname,
-          state: item,
-        });
-      },
-      [dispatch, history, stateCache]
-    );
-
-    useEffect(() => {
-      if (openDetailId === undefined) return;
-
-      setShowConnections(true);
-      const connection = connectionsCache[openDetailId];
-      dispatch(setOpenConnectionDetail(undefined));
-
-      if (!connection || connection.status === ConnectionStatus.PENDING) return;
-
-      setTimeout(() => {
-        handleShowConnectionDetails(connection);
-      }, ANIMATION_TIMEOUT);
-    }, [
-      connectionsCache,
-      dispatch,
-      handleShowConnectionDetails,
-      openDetailId,
-      setShowConnections,
-      showConnections,
-    ]);
+      setConnectionShortDetails(item);
+    };
 
     useEffect(() => {
       const connections = Object.values(connectionsCache);
@@ -307,7 +272,12 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       dispatch(setCurrentOperation(OperationType.IDLE));
     };
 
-    return (
+    return connectionShortDetails ? (
+      <ConnectionDetails
+        connectionShortDetails={connectionShortDetails}
+        setConnectionShortDetails={setConnectionShortDetails}
+      />
+    ) : (
       <>
         <ScrollablePageLayout
           pageId={pageId}

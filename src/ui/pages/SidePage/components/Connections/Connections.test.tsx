@@ -56,8 +56,8 @@ jest.mock("react-router-dom", () => ({
   }),
 }));
 
-jest.mock("../../../core/storage", () => ({
-  ...jest.requireActual("../../../core/storage"),
+jest.mock("../../../../../core/storage", () => ({
+  ...jest.requireActual("../../../../../core/storage"),
   SecureStorage: {
     get: () => "111111",
   },

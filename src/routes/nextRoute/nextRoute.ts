@@ -50,16 +50,6 @@ const getNextOnboardingRoute = (data: DataProps) => {
   return nextRoute;
 };
 
-const getNextConnectionDetailsRoute = () => {
-  const path = TabsRoutePath.CREDENTIALS;
-  return { pathname: path };
-};
-
-const getNextCredentialsRoute = () => {
-  const path = RoutePath.CONNECTION_DETAILS;
-  return { pathname: path };
-};
-
 const getNextCredentialDetailsRoute = () => {
   const path = TabsRoutePath.CREDENTIALS;
   return { pathname: path };
@@ -235,14 +225,6 @@ const nextRoute: Record<string, NextRoute> = {
   [RoutePath.CREATE_PASSWORD]: {
     nextPath: (data: DataProps) => getNextCreatePasswordRoute(data),
     updateRedux: [updateStoreAfterCreatePassword],
-  },
-  [RoutePath.CONNECTION_DETAILS]: {
-    nextPath: () => getNextConnectionDetailsRoute(),
-    updateRedux: [],
-  },
-  [TabsRoutePath.CREDENTIALS]: {
-    nextPath: () => getNextCredentialsRoute(),
-    updateRedux: [],
   },
   [TabsRoutePath.CREDENTIAL_DETAILS]: {
     nextPath: () => getNextCredentialDetailsRoute(),

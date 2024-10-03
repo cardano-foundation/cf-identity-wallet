@@ -1,5 +1,7 @@
-import { ConnectionDetails } from "../../Connections/Connections.types";
-import { ConnectionNoteDetails } from "../../../../core/agent/agent.types";
+import {
+  ConnectionDetails,
+  ConnectionNoteDetails,
+} from "../../../../core/agent/agent.types";
 
 interface EditConnectionsModalProps {
   notes: ConnectionNoteDetails[];
