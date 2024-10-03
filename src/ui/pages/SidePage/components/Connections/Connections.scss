@@ -1,8 +1,11 @@
 .connections {
-  background: var(--ion-color-light);
-  z-index: 102 !important;
   padding-inline: 0;
-  overflow: initial !important;
+
+  ion-header.page-header ion-toolbar {
+    margin-top: 0.625rem;
+    padding-right: 0;
+    padding-left: 0;
+  }
 
   ion-header {
     margin-bottom: -1px;

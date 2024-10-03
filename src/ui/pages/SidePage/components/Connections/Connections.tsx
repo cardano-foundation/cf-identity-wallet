@@ -19,36 +19,40 @@ import {
   useState,
 } from "react";
 import { useHistory } from "react-router-dom";
-import { Agent } from "../../../core/agent/agent";
-import { ConnectionStatus } from "../../../core/agent/agent.types";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
-import { i18n } from "../../../i18n";
-import { getNextRoute } from "../../../routes/nextRoute";
-import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { Agent } from "../../../../../core/agent/agent";
+import { ConnectionStatus } from "../../../../../core/agent/agent.types";
+import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
+import { i18n } from "../../../../../i18n";
+import { getNextRoute } from "../../../../../routes/nextRoute";
+import { DataProps } from "../../../../../routes/nextRoute/nextRoute.types";
+import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import {
   getConnectionsCache,
   getOpenConnectionId,
   removeConnectionCache,
   setOpenConnectionDetail,
-} from "../../../store/reducers/connectionsCache";
-import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
+} from "../../../../../store/reducers/connectionsCache";
+import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
   getStateCache,
   setCurrentOperation,
   setToastMsg,
   showConnections as updateShowConnections,
-} from "../../../store/reducers/stateCache";
-import { updateReduxState } from "../../../store/utils";
-import { Alert } from "../../components/Alert";
-import { CardsPlaceholder } from "../../components/CardsPlaceholder";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
-import { RemovePendingAlert } from "../../components/RemovePendingAlert";
-import { ShareConnection } from "../../components/ShareConnection";
-import { ShareType } from "../../components/ShareConnection/ShareConnection.types";
-import { OperationType, RequestType, ToastMsgType } from "../../globals/types";
-import { useSwipeBack } from "../../hooks/swipeBackHook";
+} from "../../../../../store/reducers/stateCache";
+import { updateReduxState } from "../../../../../store/utils";
+import { Alert } from "../../../../components/Alert";
+import { CardsPlaceholder } from "../../../../components/CardsPlaceholder";
+import { TabsRoutePath } from "../../../../components/navigation/TabsMenu";
+import { RemovePendingAlert } from "../../../../components/RemovePendingAlert";
+import { ShareConnection } from "../../../../components/ShareConnection";
+import { ShareType } from "../../../../components/ShareConnection/ShareConnection.types";
+import {
+  OperationType,
+  RequestType,
+  ToastMsgType,
+} from "../../../../globals/types";
+import { useSwipeBack } from "../../../../hooks/swipeBackHook";
 import { AlphabeticList } from "./components/AlphabeticList";
 import { AlphabetSelector } from "./components/AlphabetSelector";
 import { ConnectionsOptionModal } from "./components/ConnectionsOptionModal";
@@ -60,10 +64,10 @@ import {
   ConnectionsOptionRef,
   MappedConnections,
 } from "./Connections.types";
-import { useOnlineStatusEffect } from "../../hooks";
-import { showError } from "../../utils/error";
-import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import { PageHeader } from "../../components/PageHeader";
+import { useOnlineStatusEffect } from "../../../../hooks";
+import { showError } from "../../../../utils/error";
+import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
+import { PageHeader } from "../../../../components/PageHeader";
 
 const ANIMATION_TIMEOUT = 350;
 

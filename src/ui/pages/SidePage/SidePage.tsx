@@ -11,7 +11,7 @@ import {
 } from "../../../store/reducers/walletConnectionsCache";
 import { IncomingRequest } from "./components/IncomingRequest";
 import { WalletConnect } from "./components/WalletConnect";
-import { Connections } from "../Connections";
+import { Connections } from "./components/Connections";
 
 const SidePage = () => {
   const [openSidePage, setOpenSidePage] = useState(false);
@@ -23,7 +23,17 @@ const SidePage = () => {
   const canOpenIncomingRequest =
     queueIncomingRequest.queues.length > 0 && !queueIncomingRequest.isPaused;
   const canOpenPendingWalletConnection = !!pendingConnection;
-  const canOpenConnections = stateCache.showConnections;
+  const [canOpenConnections, setCanOpenConnections] = useState(false);
+
+  useEffect(() => {
+    if (canOpenConnections === true && stateCache.showConnections === false) {
+      setTimeout(() => {
+        setCanOpenConnections(false);
+      }, 500);
+    } else {
+      setCanOpenConnections(stateCache.showConnections);
+    }
+  }, [canOpenConnections, stateCache.showConnections]);
 
   useEffect(() => {
     if (!stateCache.authentication.loggedIn || isConnecting) return;
