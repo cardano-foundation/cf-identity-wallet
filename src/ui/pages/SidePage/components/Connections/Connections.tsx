@@ -20,7 +20,10 @@ import {
 } from "react";
 import { useHistory } from "react-router-dom";
 import { Agent } from "../../../../../core/agent/agent";
-import { ConnectionStatus } from "../../../../../core/agent/agent.types";
+import {
+  ConnectionShortDetails,
+  ConnectionStatus,
+} from "../../../../../core/agent/agent.types";
 import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
 import { i18n } from "../../../../../i18n";
 import { getNextRoute } from "../../../../../routes/nextRoute";
@@ -60,7 +63,6 @@ import { IdentifierSelectorModal } from "./components/IdentifierSelectorModal/Id
 import "./Connections.scss";
 import {
   ConnectionsComponentProps,
-  ConnectionShortDetails,
   ConnectionsOptionRef,
   MappedConnections,
 } from "./Connections.types";

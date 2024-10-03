@@ -2,7 +2,8 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import configureStore from "redux-mock-store";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
+import { MemoryRouter } from "react-router-dom";
 import { Menu } from "./Menu";
 import { store } from "../../../store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
@@ -11,6 +12,8 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CHAT_LINK, CRYPTO_LINK } from "../../globals/constants";
+import { Credentials } from "../Credentials";
+import { showConnections } from "../../../store/reducers/stateCache";
 
 const combineMock = jest.fn(() => TabsRoutePath.MENU);
 const historyPushMock = jest.fn();
@@ -47,9 +50,7 @@ const initialState = {
       time: Date.now(),
       passcodeIsSet: true,
     },
-    connectionsCache: {
-      connections: connectionsFix,
-    },
+    showConnections: false,
   },
   biometricsCache: {
     enable: false,
@@ -164,11 +165,13 @@ describe("Menu Tab", () => {
     });
   });
 
-  test("Open Connections sub-menu", async () => {
+  test("Open Connections view", async () => {
     const { getByTestId, getByText } = render(
-      <Provider store={storeMocked}>
-        <Menu />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.MENU]}>
+        <Provider store={storeMocked}>
+          <Menu />
+        </Provider>
+      </MemoryRouter>
     );
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
@@ -178,16 +181,13 @@ describe("Menu Tab", () => {
     const connectionsButton = getByTestId(
       `menu-input-item-${SubMenuKey.Connections}`
     );
-
     act(() => {
       fireEvent.click(connectionsButton);
     });
 
-    await waitForIonicReact();
-
-    expect(getByTestId("connections-title")).toHaveTextContent(
-      EN_TRANSLATIONS.menu.tab.items.connections.tabheader
-    );
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showConnections(true));
+    });
   });
 
   test("Open Cardano connect sub-menu", async () => {

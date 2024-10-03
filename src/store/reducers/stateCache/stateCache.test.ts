@@ -20,6 +20,7 @@ import {
   login,
   setIsOnline,
   showGenericError,
+  showConnections,
 } from "./stateCache";
 import { RootState } from "../../index";
 import { RoutePath } from "../../../routes";
@@ -63,6 +64,13 @@ describe("State Cache", () => {
     const nextState = stateCacheSlice.reducer(initialState, action);
 
     expect(nextState.showGenericError).toEqual(true);
+  });
+
+  test("should set showConnections", () => {
+    const action = showConnections(true);
+    const nextState = stateCacheSlice.reducer(initialState, action);
+
+    expect(nextState.showConnections).toEqual(true);
   });
 
   test("should set the current route cache", () => {

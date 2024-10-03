@@ -1,29 +1,30 @@
 import { IonReactMemoryRouter } from "@ionic/react-router";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { TabsRoutePath } from "../../../routes/paths";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
-import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { OperationType } from "../../globals/types";
-import { formatShortDate } from "../../utils/formatters";
-import { passcodeFiller } from "../../utils/passcodeFiller";
-import { Credentials } from "../Credentials/Credentials";
-import { Identifiers } from "../Identifiers";
+import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
+import { TabsRoutePath } from "../../../../../routes/paths";
+import { setCurrentOperation } from "../../../../../store/reducers/stateCache";
+import { connectionsFix } from "../../../../__fixtures__/connectionsFix";
+import { filteredCredsFix } from "../../../../__fixtures__/filteredCredsFix";
+import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
+import { OperationType } from "../../../../globals/types";
+import { formatShortDate } from "../../../../utils/formatters";
+import { passcodeFiller } from "../../../../utils/passcodeFiller";
+import { Credentials } from "../../../Credentials/Credentials";
+import { Identifiers } from "../../../Identifiers";
 import { Connections } from "./Connections";
-import { setOpenConnectionDetail } from "../../../store/reducers/connectionsCache";
+import { setOpenConnectionDetail } from "../../../../../store/reducers/connectionsCache";
 
 const combineMock = jest.fn(() => TabsRoutePath.IDENTIFIERS);
 
 const deleteConnectionByIdMock = jest.fn();
 
-jest.mock("../../../core/agent/agent", () => ({
+jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
@@ -118,7 +119,7 @@ describe("Connections page", () => {
     combineMock.mockReturnValue(TabsRoutePath.IDENTIFIERS);
   });
 
-  test("Render connections page empty (self paginated)", async () => {
+  test("Render connections page empty", async () => {
     const initialStateFull = {
       stateCache: {
         routes: [TabsRoutePath.CREDENTIALS],

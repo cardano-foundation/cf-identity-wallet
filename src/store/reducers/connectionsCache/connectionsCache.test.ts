@@ -11,8 +11,10 @@ import {
   updateOrAddConnectionCache,
 } from "./connectionsCache";
 import { RootState } from "../../index";
-import { ConnectionShortDetails } from "../../../ui/pages/Connections/Connections.types";
-import { ConnectionStatus } from "../../../core/agent/agent.types";
+import {
+  ConnectionShortDetails,
+  ConnectionStatus,
+} from "../../../core/agent/agent.types";
 
 const initialState = {
   connections: {},

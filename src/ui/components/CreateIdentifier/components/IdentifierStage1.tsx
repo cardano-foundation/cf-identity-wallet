@@ -17,7 +17,6 @@ import {
 } from "../../../../store/reducers/stateCache";
 import { OperationType, ToastMsgType } from "../../../globals/types";
 import { useOnlineStatusEffect } from "../../../hooks";
-import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
 import { getTheme } from "../../../utils/theme";
 import { Alert } from "../../Alert";
 import { TabsRoutePath } from "../../navigation/TabsMenu";
@@ -26,6 +25,7 @@ import { IdentifierStage1BodyInit } from "./IdentifierStage1BodyInit";
 import { IdentifierStage1BodyResume } from "./IdentifierStage1BodyResume";
 import { showError } from "../../../utils/error";
 import { Verification } from "../../Verification";
+import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 
 const IdentifierStage1 = ({
   state,

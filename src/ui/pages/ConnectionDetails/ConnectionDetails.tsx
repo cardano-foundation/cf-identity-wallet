@@ -11,10 +11,7 @@ import {
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../utils/formatters";
 import "./ConnectionDetails.scss";
-import {
-  ConnectionDetails as ConnectionData,
-  ConnectionShortDetails,
-} from "../Connections/Connections.types";
+
 import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -30,6 +27,8 @@ import { removeConnectionCache } from "../../../store/reducers/connectionsCache"
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { Agent } from "../../../core/agent/agent";
 import {
+  ConnectionDetails as ConnectionData,
+  ConnectionShortDetails,
   ConnectionHistoryItem,
   ConnectionNoteDetails,
 } from "../../../core/agent/agent.types";

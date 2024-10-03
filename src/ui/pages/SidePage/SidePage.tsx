@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { SideSlider } from "../../components/SideSlider";
 import {
   getQueueIncomingRequest,
@@ -23,17 +23,9 @@ const SidePage = () => {
   const canOpenIncomingRequest =
     queueIncomingRequest.queues.length > 0 && !queueIncomingRequest.isPaused;
   const canOpenPendingWalletConnection = !!pendingConnection;
-  const [canOpenConnections, setCanOpenConnections] = useState(false);
-
-  useEffect(() => {
-    if (canOpenConnections === true && stateCache.showConnections === false) {
-      setTimeout(() => {
-        setCanOpenConnections(false);
-      }, 500);
-    } else {
-      setCanOpenConnections(stateCache.showConnections);
-    }
-  }, [canOpenConnections, stateCache.showConnections]);
+  const canOpenConnections = stateCache.showConnections;
+  const DELAY_ON_PAGE_CLOSE = 500;
+  const [lastContent, setLastContent] = useState<ReactNode | null>(null);
 
   useEffect(() => {
     if (!stateCache.authentication.loggedIn || isConnecting) return;
@@ -84,12 +76,23 @@ const SidePage = () => {
     return null;
   };
 
+  const clearLastContent = () => {
+    setTimeout(() => {
+      setLastContent(null);
+    }, DELAY_ON_PAGE_CLOSE);
+  };
+
+  useEffect(() => {
+    getContent() !== null && setLastContent(getContent());
+    !openSidePage && clearLastContent();
+  }, [openSidePage]);
+
   return (
     <SideSlider
       renderAsModal
       isOpen={openSidePage}
     >
-      {getContent()}
+      {getContent() || lastContent}
     </SideSlider>
   );
 };
