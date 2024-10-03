@@ -118,6 +118,8 @@ const Identifiers = () => {
     setCreateIdentifierModalIsOpen(true);
   };
 
+  const openCreateModal = () => setCreateIdentifierModalIsOpen(true);
+
   useEffect(() => {
     if (
       [
@@ -127,7 +129,7 @@ const Identifiers = () => {
       ].includes(currentOperation) &&
       history.location.pathname === TabsRoutePath.IDENTIFIERS
     ) {
-      setCreateIdentifierModalIsOpen(true);
+      openCreateModal();
     }
   }, [
     currentOperation,
@@ -321,6 +323,7 @@ const Identifiers = () => {
               <div
                 ref={favouriteContainerElement}
                 className="identifiers-tab-content-block identifier-favourite-cards"
+                data-testid="favourite-identifiers"
               >
                 <CardSlider
                   title={`${i18n.t("identifiers.tab.favourites")}`}
