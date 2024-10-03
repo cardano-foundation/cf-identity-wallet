@@ -1,17 +1,14 @@
 import {
   Algos,
-  b,
   d,
   EventResult,
   HabState,
   messagize,
-  Saider,
   Serder,
   Siger,
   State,
 } from "signify-ts";
 import { v4 as uuidv4 } from "uuid";
-import { Agent } from "../agent";
 import {
   IdentifierResult,
   NotificationRoute,
@@ -45,7 +42,6 @@ import {
   waitAndGetDoneOp,
 } from "./utils";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
-import { ConfigurationService } from "../../configuration";
 import { OperationAddedEvent, EventTypes } from "../event.types";
 import { ConnectionService } from "./connectionService";
 import { IdentifierService } from "./identifierService";
@@ -993,118 +989,6 @@ class MultiSigService extends AgentService {
       recp,
       { gid: hab["prefix"] }
     );
-  }
-
-  async multisigAdmit(
-    multisigId: string,
-    notificationSaid: string,
-    schemaSaids: string[],
-    admitExnToJoin?: any
-  ) {
-    let exn: Serder;
-    let sigsMes: string[];
-    let dtime: string;
-    let ipexAdmitSaid: string;
-
-    await Promise.all(
-      schemaSaids.map(
-        async (schemaSaid) =>
-          await this.connections.resolveOobi(
-            `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`,
-            true
-          )
-      )
-    );
-
-    const exchangeMessage = await this.props.signifyClient
-      .exchanges()
-      .get(notificationSaid);
-    const grantSaid = exchangeMessage.exn.d;
-    const { ourIdentifier, multisigMembers } =
-      await this.getMultisigParticipants(multisigId);
-    const gHab = await this.props.signifyClient.identifiers().get(multisigId);
-    const mHab = await this.props.signifyClient
-      .identifiers()
-      .get(ourIdentifier.id);
-
-    const recp = multisigMembers
-      .filter((signing: any) => signing.aid !== ourIdentifier.id)
-      .map((member: any) => member.aid);
-
-    if (admitExnToJoin) {
-      const [, ked] = Saider.saidify(admitExnToJoin);
-      const admit = new Serder(ked);
-
-      const keeper = await this.props.signifyClient.manager!.get(gHab);
-      const sigs = await keeper.sign(b(new Serder(admitExnToJoin).raw));
-
-      const mstateNew = gHab["state"];
-      const seal = [
-        "SealEvent",
-        {
-          i: gHab["prefix"],
-          s: mstateNew["ee"]["s"],
-          d: mstateNew["ee"]["d"],
-        },
-      ];
-
-      const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
-      const ims = d(messagize(admit, sigers, seal));
-      const atc = ims.substring(admit.size);
-      const gembeds = {
-        exn: [admit, atc],
-      };
-
-      [exn, sigsMes, dtime] = await this.props.signifyClient
-        .exchanges()
-        .createExchangeMessage(
-          mHab,
-          MultiSigRoute.EXN,
-          { gid: gHab["prefix"] },
-          gembeds,
-          recp[0]
-        );
-      ipexAdmitSaid = admit.ked.d;
-    } else {
-      const time = new Date().toISOString().replace("Z", "000+00:00");
-      const [admit, sigs, end] = await this.props.signifyClient.ipex().admit({
-        senderName: multisigId,
-        message: "",
-        grantSaid,
-        datetime: time,
-        recipient: exchangeMessage.exn.i,
-      });
-
-      const mstate = gHab["state"];
-      const seal = [
-        "SealEvent",
-        { i: gHab["prefix"], s: mstate["ee"]["s"], d: mstate["ee"]["d"] },
-      ];
-      const sigers = sigs.map((sig: any) => new Siger({ qb64: sig }));
-      const ims = d(messagize(admit, sigers, seal));
-      let atc = ims.substring(admit.size);
-      atc += end;
-      const gembeds = {
-        exn: [admit, atc],
-      };
-
-      [exn, sigsMes, dtime] = await this.props.signifyClient
-        .exchanges()
-        .createExchangeMessage(
-          mHab,
-          MultiSigRoute.EXN,
-          { gid: gHab["prefix"] },
-          gembeds,
-          recp[0]
-        );
-      ipexAdmitSaid = admit.ked.d;
-    }
-
-    const op = await this.props.signifyClient
-      .ipex()
-      .submitAdmit(multisigId, exn, sigsMes, dtime, recp);
-
-    return { op, exnSaid: exn.ked.d, ipexAdmitSaid, member: ourIdentifier.id };
   }
 }
 
