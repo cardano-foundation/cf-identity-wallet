@@ -67,15 +67,11 @@ const LockPage = () => {
     }
   }, [passcodeIncorrect]);
 
-  useEffect(() => {
-    const runBiometrics = async () => {
-      if (biometricsCache.enabled) {
-        await handleBiometrics();
-      }
-    };
-    runBiometrics();
-  }, []);
-
+  const handleUseBiometrics = async () => {
+    if (biometricsCache.enabled) {
+      await handleBiometrics();
+    }
+  };
   const handlePinChange = async (digit: number) => {
     const updatedPasscode = `${passcode}${digit}`;
 
@@ -177,7 +173,7 @@ const LockPage = () => {
             handlePinChange={handlePinChange}
             handleRemove={handleRemove}
             handleBiometricButtonClick={() => {
-              handleBiometrics();
+              handleUseBiometrics();
             }}
           />
         </>

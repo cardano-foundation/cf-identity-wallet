@@ -53,7 +53,7 @@ const useBiometricAuth = () => {
     if (!biometricResult?.strongBiometryIsAvailable) {
       return new BiometryError(
         "Biometry too weak",
-        BiometryErrorType.biometryNotAvailable
+        BiometryErrorType.authenticationFailed
       );
     } else if (!biometricResult?.isAvailable) {
       return new BiometryError(
