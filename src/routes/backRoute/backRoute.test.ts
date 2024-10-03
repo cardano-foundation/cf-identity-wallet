@@ -44,6 +44,7 @@ describe("getBackRoute", () => {
             attempts: 0,
             lockedUntil: Date.now(),
           },
+          firstAppLaunch: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -183,6 +184,7 @@ describe("getPreviousRoute", () => {
             attempts: 0,
             lockedUntil: Date.now(),
           },
+          firstAppLaunch: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {

@@ -107,6 +107,7 @@ const initialState = {
         attempts: 0,
         lockedUntil: 0,
       },
+      firstAppLaunch: false,
     },
   },
 };
@@ -198,6 +199,7 @@ describe("Profile page", () => {
             attempts: 0,
             lockedUntil: 0,
           },
+          firstAppLaunch: false,
         })
       );
     });

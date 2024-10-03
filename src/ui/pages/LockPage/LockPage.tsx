@@ -6,7 +6,11 @@ import { Keyboard } from "@capacitor/keyboard";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch } from "../../../store/hooks";
 import { getBiometricsCacheCache } from "../../../store/reducers/biometricsCache";
-import { login } from "../../../store/reducers/stateCache";
+import {
+  geFirstAppLaunch,
+  login,
+  setFirstAppLaunch,
+} from "../../../store/reducers/stateCache";
 import { Alert } from "../../components/Alert";
 import {
   ErrorMessage,
@@ -35,6 +39,7 @@ const LockPage = () => {
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
   const { handleBiometricAuth } = useBiometricAuth();
   const biometricsCache = useSelector(getBiometricsCacheCache);
+  const firstAppLaunch = useSelector(geFirstAppLaunch);
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
   const { enablePrivacy, disablePrivacy } = usePrivacyScreen(true);
 
@@ -70,6 +75,12 @@ const LockPage = () => {
     }
   }, [passcodeIncorrect]);
 
+  useEffect(() => {
+    if (firstAppLaunch) {
+      handleUseBiometrics();
+    }
+  }, []);
+
   const handleUseBiometrics = async () => {
     if (biometricsCache.enabled) {
       await handleBiometrics();
@@ -86,6 +97,7 @@ const LockPage = () => {
       if (verified) {
         await resetLoginAttempt();
         dispatch(login());
+        dispatch(setFirstAppLaunch(false));
         handleClearState();
       } else {
         await incrementLoginAttempt();
