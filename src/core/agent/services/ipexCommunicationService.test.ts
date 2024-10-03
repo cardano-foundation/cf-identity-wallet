@@ -828,7 +828,7 @@ describe("Ipex communication service of agent", () => {
     notificationStorage.findById.mockResolvedValueOnce(null);
 
     await expect(
-      ipexCommunicationService.getLinkedGroupFromIpexGrant(notification)
+      ipexCommunicationService.getLinkedGroupFromIpexGrant(notification.id)
     ).rejects.toThrowError(
       `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
     );
@@ -865,7 +865,7 @@ describe("Ipex communication service of agent", () => {
     }));
 
     const result = await ipexCommunicationService.getLinkedGroupFromIpexGrant(
-      notification
+      notification.id
     );
 
     expect(result).toEqual({
@@ -898,7 +898,7 @@ describe("Ipex communication service of agent", () => {
     }));
 
     const result = await ipexCommunicationService.getLinkedGroupFromIpexGrant(
-      notification
+      notification.id
     );
 
     expect(result).toEqual({

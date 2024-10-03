@@ -975,14 +975,12 @@ class IpexCommunicationService extends AgentService {
     };
   }
 
-  async getLinkedGroupFromIpexGrant(notification: KeriaNotification) {
-    const grantNoteRecord = await this.notificationStorage.findById(
-      notification.id
-    );
+  async getLinkedGroupFromIpexGrant(id: string) {
+    const grantNoteRecord = await this.notificationStorage.findById(id);
 
     if (!grantNoteRecord) {
       throw new Error(
-        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${notification.id}`
+        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
       );
     }
 
