@@ -156,19 +156,6 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
 
     const handleNavToCreateKeri = () => {
       setOpenIdentifierMissingAlert(false);
-      history.location.pathname === TabsRoutePath.IDENTIFIERS &&
-        dispatch(
-          setCurrentOperation(
-            OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS
-          )
-        );
-      history.location.pathname === TabsRoutePath.CREDENTIALS &&
-        dispatch(
-          setCurrentOperation(
-            OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS
-          )
-        ) &&
-        history.push(TabsRoutePath.IDENTIFIERS);
     };
 
     const getConnectionShortDetails = async (connectionId: string) => {

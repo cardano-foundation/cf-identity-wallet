@@ -121,23 +121,10 @@ const Identifiers = () => {
   const openCreateModal = () => setCreateIdentifierModalIsOpen(true);
 
   useEffect(() => {
-    if (
-      [
-        OperationType.CREATE_IDENTIFIER_CONNECT_WALLET,
-        OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS,
-        OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS,
-      ].includes(currentOperation) &&
-      history.location.pathname === TabsRoutePath.IDENTIFIERS
-    ) {
+    currentOperation === OperationType.CREATE_IDENTIFIER_CONNECT_WALLET &&
+      history.location.pathname === TabsRoutePath.IDENTIFIERS &&
       openCreateModal();
-    }
-  }, [
-    currentOperation,
-    dispatch,
-    history.location.pathname,
-    identifiersData,
-    multisigGroupCache,
-  ]);
+  }, [currentOperation, history.location.pathname]);
 
   useEffect(() => {
     const multisigId =
@@ -229,22 +216,11 @@ const Identifiers = () => {
         : ""
   }`;
   const handleCloseCreateIdentifier = () => {
-    switch (currentOperation) {
-    case OperationType.CREATE_IDENTIFIER_CONNECT_WALLET:
-      dispatch(setCurrentOperation(OperationType.BACK_TO_CONNECT_WALLET));
-      history.push(TabsRoutePath.MENU);
-      break;
-    case OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS:
-      dispatch(setCurrentOperation(OperationType.BACK_TO_SHARE_CONNECTION));
-      break;
-    case OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS:
-      dispatch(setCurrentOperation(OperationType.BACK_TO_SHARE_CONNECTION));
-      history.push(TabsRoutePath.CREDENTIALS);
-      break;
-    default:
-      dispatch(setCurrentOperation(OperationType.IDLE));
-      break;
-    }
+    currentOperation === OperationType.CREATE_IDENTIFIER_CONNECT_WALLET
+      ? dispatch(setCurrentOperation(OperationType.BACK_TO_CONNECT_WALLET)) &&
+        history.push(TabsRoutePath.MENU)
+      : dispatch(setCurrentOperation(OperationType.IDLE));
+
     setCreateIdentifierModalIsOpen(false);
   };
 

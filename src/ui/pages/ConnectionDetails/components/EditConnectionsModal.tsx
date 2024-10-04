@@ -152,6 +152,7 @@ export const EditConnectionsContainer = ({
   return (
     <>
       <ScrollablePageLayout
+        activeStatus={modalIsOpen}
         header={
           <PageHeader
             closeButton={true}

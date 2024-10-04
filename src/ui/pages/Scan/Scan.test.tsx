@@ -208,7 +208,7 @@ describe("Scan Tab", () => {
           passcodeIsSet: true,
           passwordIsSet: false,
         },
-        currentOperation: OperationType.RECEIVE_CONNECTION,
+        currentOperation: OperationType.IDLE,
         toastMsgs: [],
       },
     };
@@ -228,7 +228,7 @@ describe("Scan Tab", () => {
       expect(historyPushMock).toBeCalledWith({
         pathname: TabsRoutePath.IDENTIFIERS,
         state: {
-          currentOperation: OperationType.RECEIVE_CONNECTION,
+          currentOperation: OperationType.IDLE,
           toastMsg: undefined,
           nextRoute: "/tabs/identifiers",
           openConnections: true,

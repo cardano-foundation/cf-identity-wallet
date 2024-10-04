@@ -154,28 +154,6 @@ const updateStoreAfterCreatePassword = (data: DataProps) => {
   });
 };
 
-const getNextScanRoute = (data: DataProps) => {
-  const currentOperation = data?.state?.currentOperation;
-  let path = TabsRoutePath.IDENTIFIERS;
-
-  if (currentOperation === OperationType.RECEIVE_CONNECTION) {
-    let previousPath = data.store.stateCache.routes[1]?.path;
-
-    if (
-      !previousPath ||
-      ![TabsRoutePath.CREDENTIALS, TabsRoutePath.IDENTIFIERS].includes(
-        previousPath as TabsRoutePath
-      )
-    ) {
-      previousPath = TabsRoutePath.IDENTIFIERS;
-    }
-
-    path = previousPath as TabsRoutePath;
-  }
-
-  return { pathname: path || "" };
-};
-
 const getNextRoute = (
   currentPath: string,
   data: DataProps
@@ -236,10 +214,6 @@ const nextRoute: Record<string, NextRoute> = {
   },
   [TabsRoutePath.NOTIFICATION_DETAILS]: {
     nextPath: () => getNextNotificationDetailsRoute(),
-    updateRedux: [],
-  },
-  [TabsRoutePath.SCAN]: {
-    nextPath: (data: DataProps) => getNextScanRoute(data),
     updateRedux: [],
   },
 };
