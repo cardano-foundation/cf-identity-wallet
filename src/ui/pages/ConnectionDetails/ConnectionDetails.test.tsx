@@ -121,7 +121,7 @@ describe("ConnectionDetails Page", () => {
     };
     const history = createMemoryHistory();
     history.push(TabsRoutePath.CREDENTIALS);
-    const { getByTestId, queryByTestId, getByText } = render(
+    const { getByTestId, queryByTestId, getByText, queryByText } = render(
       <IonReactMemoryRouter
         history={history}
         initialEntries={[TabsRoutePath.CREDENTIALS]}
@@ -131,7 +131,6 @@ describe("ConnectionDetails Page", () => {
             path={TabsRoutePath.CREDENTIALS}
             component={Credentials}
           />
-
           <Route
             path={RoutePath.CONNECTION_DETAILS}
             component={ConnectionDetails}
@@ -144,7 +143,10 @@ describe("ConnectionDetails Page", () => {
       fireEvent.click(getByTestId("connections-button"));
     });
 
+    await waitForIonicReact();
+
     await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.connections.tab.title)).toBeVisible();
       expect(queryByTestId("connection-item-0")).toBeNull();
     });
 
@@ -163,7 +165,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(connectionsFix[1].label)).toBeVisible();
+      expect(queryByText(connectionsFix[1].label)).toBe(null);
     });
   });
 

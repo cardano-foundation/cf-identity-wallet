@@ -230,7 +230,41 @@ describe("Creds Tab", () => {
     expect(getByTestId("keri-card-template-favs-index-0")).toBeInTheDocument();
   });
 
-  test("Open Connections view", async () => {
+  test("Toggle Connections view", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateEmpty),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, queryByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Credentials />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId("connections-tab")).toBe(null);
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("connections-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("connections-tab")).toHaveClass("show");
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("tab-back-button"));
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("connections-tab")).toBe(null);
+    });
+  });
+
+  test("Show Connections placeholder", async () => {
     const storeMocked = {
       ...mockStore(initialStateEmpty),
       dispatch: dispatchMock,
