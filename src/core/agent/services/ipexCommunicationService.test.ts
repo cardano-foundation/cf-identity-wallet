@@ -1,4 +1,5 @@
-import { IdentifierMetadataRecord, IdentifierStorage } from "../records";
+import { Saider, Serder } from "signify-ts";
+import { IdentifierStorage } from "../records";
 import { CoreEventEmitter } from "../event";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import { Agent } from "../agent";
@@ -7,8 +8,13 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
 import { EventTypes } from "../event.types";
-import { getMultisigMembersResponse, gHab, memberIdentifierRecord, memberMetadataRecord, memberMetadataRecordProps, mHab, mockGetExchangeGrantMessage, multisigExnIpexGrantEnd, multisigExnIpexGrantSerder, multisigExnIpexGrantSig, resolvedOobiOpResponse } from "../../__fixtures__/agent/multiSigMock";
-import { Dict, Saider, Serder } from "signify-ts";
+import {
+  gHab,
+  mHab,
+  multisigExnIpexGrantEnd,
+  multisigExnIpexGrantSerder,
+  multisigExnIpexGrantSig,
+} from "../../__fixtures__/agent/multiSigMock";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -68,7 +74,6 @@ const operationPendingStorage = jest.mocked({
 });
 
 const multisigService = jest.mocked({
-  // multisigAdmit: jest.fn().mockResolvedValue({ name: "opName", done: true }),
   offerPresentMultisigACDC: jest
     .fn()
     .mockResolvedValue({ name: "opName", done: true }),
@@ -78,12 +83,10 @@ const multisigService = jest.mocked({
 let credentialListMock = jest.fn();
 let credentialGetMock = jest.fn();
 const identifierListMock = jest.fn();
-let identifiersMemberMock = jest.fn();
+const identifiersMemberMock = jest.fn();
 let identifiersGetMock = jest.fn();
 const getMemberMock = jest.fn();
 const createExchangeMessageMock = jest.fn();
-
-const now = new Date();
 
 let getExchangeMock = jest.fn().mockImplementation((id: string) => {
   if (id == "saidForUuid") {
@@ -169,7 +172,6 @@ const signifyClient = jest.mocked({
     mark: markNotificationMock,
   }),
   ipex: () => ({
-    // admit: jest.fn().mockResolvedValue(["admit", "sigs", "aend"]),
     admit: ipexAdmitMock,
     submitAdmit: submitAdmitMock,
     offer: ipexOfferMock,
@@ -201,11 +203,6 @@ const signifyClient = jest.mocked({
   },
 });
 
-// jest.mock("signify-ts", () => ({
-//   Serder: jest.fn().mockImplementation(() => {
-//     return {};
-//   }),
-// }));
 jest.mock("signify-ts", () => ({
   Serder: jest.fn().mockImplementation(() => {
     return {};
@@ -241,9 +238,6 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       ipexCommunications: {
         acceptAcdcFromMultisigExn: jest.fn(),
-      },
-      multiSigs: {
-        // multisigAdmit: jest.fn().mockResolvedValue({ name: "opName" }),
       },
     },
   },
@@ -349,272 +343,6 @@ describe("Ipex communication service of agent", () => {
     await new ConfigurationService().start();
   });
 
-  test("Can initiate accepting an ACDC to a multi-sig identifier", async () => {
-    const multisigId = "multisigId";
-    const notificationSaid = "ELykd_2bX6yvuVEgLQqnCgZ7QLdxpUBze-RzHVwfCUfW";
-    const schemaSaids = ["schemaSaid"];
-    const mockAdmit = {
-      kind: "JSON",
-      raw: "{\"v\":\"KERI10JSON000111_\",\"t\":\"exn\",\"d\":\"EKlXGS9FrnHFWvo1HB2KsyXbXDRVts42nKg7qmzKas0j\",\"i\":\"EFKiC-cDUpBauOHMLRRKGaDBZue2FCqTrJJU8nn8qv_A\",\"p\":\"EGBtDLn59jI97a_Y0Poztc4wM3SZdTyjW8gRcBiMNuEy\",\"dt\":\"2024-08-02T02:47:15.250000+00:00\",\"r\":\"/ipex/admit\",\"q\":{},\"a\":{\"m\":\"\"},\"e\":{}}",
-      ked: {
-        v: "KERI10JSON000111_",
-        t: "exn",
-        d: "EKlXGS9FrnHFWvo1HB2KsyXbXDRVts42nKg7qmzKas0j",
-        i: "EFKiC-cDUpBauOHMLRRKGaDBZue2FCqTrJJU8nn8qv_A",
-        p: "EGBtDLn59jI97a_Y0Poztc4wM3SZdTyjW8gRcBiMNuEy",
-        dt: "2024-08-02T02:47:15.250000+00:00",
-        r: "/ipex/admit",
-        q: {},
-        a: { m: "" },
-        e: {},
-      },
-      size: 273,
-    };
-    const mockSigs = [
-      "AAAWesHyXn8p_ZeQYxD52OXhYkZiDNNmNBq8Bat_n7wk0KZ1LXKpfpeOd9s3A2huVibe1J18AgI-NOH9lfnvEOAM",
-    ];
-    const mockEnd = "";
-
-    connections.resolveOobi.mockResolvedValueOnce(resolvedOobiOpResponse);
-
-    getExchangeMock.mockResolvedValueOnce(mockGetExchangeGrantMessage);
-    identifiersMemberMock = jest
-      .fn()
-      .mockResolvedValueOnce(getMultisigMembersResponse);
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      ...memberIdentifierRecord,
-      groupMetadata: {
-        ...memberMetadataRecordProps.groupMetadata,
-        groupCreated: true,
-      },
-    });
-    identifiersGetMock = jest
-      .fn()
-      .mockResolvedValueOnce(gHab)
-      .mockResolvedValueOnce(mHab);
-    ipexAdmitMock.mockResolvedValueOnce([mockAdmit, mockSigs, mockEnd]);
-    multisigService.getMultisigParticipants.mockResolvedValueOnce({
-      ourIdentifier: {
-        id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
-        displayName: "Identifier 2",
-        signifyName: "uuid-here",
-        createdAt: "2024-09-23T08:53:11.981Z",
-        theme: 0,
-        groupMetadata: {
-          groupId: "group-id",
-          groupInitiator: true,
-          groupCreated: true,
-        },
-      },
-      multisigMembers: [
-        {
-          aid: "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
-          ends: [],
-        },
-        {
-          aid: "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
-          ends: [],
-        },
-      ],
-    });
-    createExchangeMessageMock.mockResolvedValueOnce([
-      multisigExnIpexGrantSerder,
-      multisigExnIpexGrantSig,
-      multisigExnIpexGrantEnd,
-    ]);
-
-    await ipexCommunicationService.multisigAdmit(
-      multisigId,
-      notificationSaid,
-      schemaSaids
-    );
-    expect(ipexAdmitMock).toBeCalledTimes(1);
-    expect(createExchangeMessageMock).toBeCalledTimes(1);
-    expect(submitAdmitMock).toBeCalledTimes(1);
-  });
-
-  test("Can agree to admit a credential with a multi-sig identifier", async () => {
-    const multisigId = gHab.name;
-    const notificationSaid = "ELykd_2bX6yvuVEgLQqnCgZ7QLdxpUBze-RzHVwfCUfW";
-    const schemaSaids = ["schemaSaid"];
-    const multisigExn = {
-      v: "KERI10JSON000111_",
-      t: "exn",
-      d: "EO6rXPzJVLNEOjs3puI5Kn4L2UsiB-iJJJKpXi26F73X",
-      i: "EHQDKkV40qP65N8yHaOJFlVS1CUvsYTvGlHPfcy2tFUb",
-      p: "EKWG4i9hT8vjwRPHsW7vqWrPq0utZHVgdu24fAf0j2Cb",
-      dt: "2024-08-02T07:06:24.884000+00:00",
-      r: "/ipex/admit",
-      q: {},
-      a: { m: "" },
-      e: {},
-    };
-
-    const ked = {
-      v: "KERI10JSON000111_",
-      t: "exn",
-      d: "EKm404jyX0iquIOu0BtZ6xR04opEQYoClKeSTuuS4fwn",
-      i: "EL3BEUfwxS1_mCWqKUrH5nGPkikoiHskhVhGenV2lcAZ",
-      p: "EBXi4JFZqjsKMzaMAz-gJWxJj992R988JcdN8EfzL4Po",
-      dt: "2024-08-02T07:11:59.510000+00:00",
-      r: "/ipex/admit",
-      q: {},
-      a: { m: "" },
-      e: {},
-    };
-
-    const mockSaider = [{} as Saider, ked] as [Saider, Dict<any>];
-
-    connections.resolveOobi.mockResolvedValueOnce({
-      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
-      metadata: {
-        oobi: "testOobi",
-      },
-      done: true,
-      error: null,
-      response: {},
-      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
-    });
-    const exchangeMock = {
-      exn: {
-        i: "ELWFo-DV4GujnvcwwIbzTzjc-nIf0ijv6W1ecajvQYBY",
-        d: "EO65SZOen5Qm26gYeAZZ_J_p8_Uy_6jB3cUpv0DzgDA4",
-      },
-    };
-    getExchangeMock.mockResolvedValueOnce(exchangeMock);
-    identifiersMemberMock = jest.fn().mockResolvedValueOnce({
-      signing: [
-        { ends: { agent: { [memberMetadataRecord.id]: "" } }, aid: "aid" },
-      ],
-    });
-    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValueOnce(
-      new IdentifierMetadataRecord({
-        id: "aidHere",
-        displayName: "Identifier 2",
-        signifyName: "uuid-here",
-        createdAt: now,
-        theme: 0,
-        groupMetadata: {
-          groupId: "group-id",
-          groupInitiator: true,
-          groupCreated: true,
-        },
-      })
-    );
-    identifiersGetMock = jest
-      .fn()
-      .mockResolvedValueOnce(gHab)
-      .mockResolvedValueOnce(mHab);
-
-    jest.spyOn(Saider, "saidify").mockReturnValueOnce(mockSaider);
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    jest.spyOn(require("signify-ts"), "Serder").mockImplementationOnce(() => {
-      return {
-        kind: "JSON",
-        raw: "{\"v\":\"KERI10JSON000111_\",\"t\":\"exn\",\"d\":\"EKm404jyX0iquIOu0BtZ6xR04opEQYoClKeSTuuS4fwn\",\"i\":\"EL3BEUfwxS1_mCWqKUrH5nGPkikoiHskhVhGenV2lcAZ\",\"p\":\"EBXi4JFZqjsKMzaMAz-gJWxJj992R988JcdN8EfzL4Po\",\"dt\":\"2024-08-02T07:11:59.510000+00:00\",\"r\":\"/ipex/admit\",\"q\":{},\"a\":{\"m\":\"\"},\"e\":{}}",
-        ked: {
-          v: "KERI10JSON000111_",
-          t: "exn",
-          d: "EKm404jyX0iquIOu0BtZ6xR04opEQYoClKeSTuuS4fwn",
-          i: "EL3BEUfwxS1_mCWqKUrH5nGPkikoiHskhVhGenV2lcAZ",
-          p: "EBXi4JFZqjsKMzaMAz-gJWxJj992R988JcdN8EfzL4Po",
-          dt: "2024-08-02T07:11:59.510000+00:00",
-          r: "/ipex/admit",
-          q: {},
-          a: { m: "" },
-          e: {}
-        },
-        ident: "KERI",
-        size: 273,
-        version: { major: 1, minor: 0 },
-        code: "E"
-      };
-    });
-    getMemberMock.mockResolvedValue({
-      sign: () => [
-        "ABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB",
-      ],
-    });
-
-    createExchangeMessageMock.mockResolvedValue([
-      multisigExnIpexGrantSerder,
-      multisigExnIpexGrantSig,
-      multisigExnIpexGrantEnd,
-    ]);
-    multisigService.getMultisigParticipants.mockResolvedValueOnce({
-      ourIdentifier: {
-        id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
-        displayName: "Identifier 2",
-        signifyName: "uuid-here",
-        createdAt: "2024-09-23T08:53:11.981Z",
-        theme: 0,
-        groupMetadata: {
-          groupId: "group-id",
-          groupInitiator: true,
-          groupCreated: true,
-        },
-      },
-      multisigMembers: [
-        {
-          aid: "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
-          ends: [],
-        },
-        {
-          aid: "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
-          ends: [],
-        },
-      ],
-    });
-    await ipexCommunicationService.multisigAdmit(
-      multisigId,
-      notificationSaid,
-      schemaSaids,
-      multisigExn
-    );
-
-    expect(ipexAdmitMock).toBeCalledTimes(0);
-    expect(createExchangeMessageMock).toBeCalledWith(
-      mHab,
-      "/multisig/exn",
-      {
-        gid: gHab["prefix"],
-      },
-      {
-        exn: [
-          {
-            kind: "JSON",
-            raw: "{\"v\":\"KERI10JSON000111_\",\"t\":\"exn\",\"d\":\"EKm404jyX0iquIOu0BtZ6xR04opEQYoClKeSTuuS4fwn\",\"i\":\"EL3BEUfwxS1_mCWqKUrH5nGPkikoiHskhVhGenV2lcAZ\",\"p\":\"EBXi4JFZqjsKMzaMAz-gJWxJj992R988JcdN8EfzL4Po\",\"dt\":\"2024-08-02T07:11:59.510000+00:00\",\"r\":\"/ipex/admit\",\"q\":{},\"a\":{\"m\":\"\"},\"e\":{}}",
-            ked: {
-              v: "KERI10JSON000111_",
-              t: "exn",
-              d: "EKm404jyX0iquIOu0BtZ6xR04opEQYoClKeSTuuS4fwn",
-              i: "EL3BEUfwxS1_mCWqKUrH5nGPkikoiHskhVhGenV2lcAZ",
-              p: "EBXi4JFZqjsKMzaMAz-gJWxJj992R988JcdN8EfzL4Po",
-              dt: "2024-08-02T07:11:59.510000+00:00",
-              r: "/ipex/admit",
-              q: {},
-              a: { m: "" },
-              e: {}
-            },
-            ident: "KERI",
-            size: 273,
-            version: { major: 1, minor: 0 },
-            code: "E"
-          },
-          "",
-        ],
-      }, "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF"
-    );
-
-    expect(submitAdmitMock).toBeCalledWith(
-      multisigId,
-      multisigExnIpexGrantSerder,
-      multisigExnIpexGrantSig,
-      multisigExnIpexGrantEnd,
-      ["ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF", "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5"]
-    );
-  });
-
   test("can accept ACDC", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "uuid";
@@ -651,7 +379,7 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
     ipexAdmitMock.mockResolvedValue(["admit", "sigs", "aend"]),
-      await ipexCommunicationService.acceptAcdc(id);
+    await ipexCommunicationService.acceptAcdc(id);
 
     const credentialMock = {
       connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
@@ -775,7 +503,7 @@ describe("Ipex communication service of agent", () => {
     });
     ipexOfferMock.mockResolvedValue(["offer", "sigs", "gend"]);
     ipexSubmitOfferMock.mockResolvedValue({ name: "opName", done: true }),
-      await ipexCommunicationService.offerAcdcFromApply(noti.id, {});
+    await ipexCommunicationService.offerAcdcFromApply(noti.id, {});
     expect(ipexOfferMock).toBeCalledWith({
       senderName: "abc123",
       recipient: "i",
@@ -1184,9 +912,71 @@ describe("Ipex communication service of agent", () => {
       },
     ]);
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
-    ipexCommunicationService.multisigAdmit = jest
+    multisigService.getMultisigParticipants.mockResolvedValue({
+      ourIdentifier: {
+        id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+        displayName: "Identifier 2",
+        signifyName: "uuid-here",
+        createdAt: "2024-09-23T08:53:11.981Z",
+        theme: 0,
+        groupMetadata: {
+          groupId: "group-id",
+          groupInitiator: true,
+          groupCreated: true,
+        },
+      },
+      multisigMembers: [
+        {
+          aid: "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+          ends: [],
+        },
+        {
+          aid: "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+          ends: [],
+        },
+      ],
+    });
+    getMemberMock.mockResolvedValue({
+      sign: () => [
+        "ABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB",
+      ],
+    });
+    identifiersGetMock = jest
       .fn()
-      .mockResolvedValue({ op: { name: "opName", done: true } });
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+    createExchangeMessageMock.mockResolvedValue([
+      multisigExnIpexGrantSerder,
+      multisigExnIpexGrantSig,
+      multisigExnIpexGrantEnd,
+    ]);
+
+    const ked = {
+      v: "KERI10JSON000178_",
+      t: "exn",
+      d: "EOQf4E9vcTRVs5hsz4F1-zR7IaGV5O75GFE2el3LAmru",
+      i: "ENEr59aBCXFU2TE6FyNc_Z7cZKv6PCqRFfXG6HrmSzdp",
+      rp: "EBgG1lhkxiv_UQ8IiF2G4j5HQlnT5K5XZy_zRFg_EGCS",
+      p: "ELI7vKj9mGu6BrYwjXOfco0SUThCBr8heO5q2g6OOVUJ",
+      dt: "2024-10-04T02:19:09.287000+00:00",
+      r: "/ipex/admit",
+      q: {},
+      a: {
+        i: "EBgG1lhkxiv_UQ8IiF2G4j5HQlnT5K5XZy_zRFg_EGCS",
+        m: "",
+      },
+      e: {},
+    };
+
+    (Serder as jest.Mock).mockImplementation(
+      jest.fn().mockReturnValue({
+        ked,
+      })
+    );
+
+    (Saider.saidify as jest.Mock).mockImplementation(
+      jest.fn().mockReturnValue([{} as Saider, ked])
+    );
 
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {
@@ -1264,14 +1054,34 @@ describe("Ipex communication service of agent", () => {
       .fn()
       .mockResolvedValue(credentialMetadataMock);
 
-    ipexCommunicationService.multisigAdmit = jest.fn().mockResolvedValue({
-      op: { name: "opName", done: false },
-      exnSaid: "exnSaid",
-      ipexAdmitSaid: "ipexAdmitSaid",
-      member: "member1",
-    });
-
-    eventEmitter.emit = jest.fn();
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+    const ked = {
+      v: "KERI10JSON000178_",
+      t: "exn",
+      d: "EOQf4E9vcTRVs5hsz4F1-zR7IaGV5O75GFE2el3LAmru",
+      i: "ENEr59aBCXFU2TE6FyNc_Z7cZKv6PCqRFfXG6HrmSzdp",
+      rp: "EBgG1lhkxiv_UQ8IiF2G4j5HQlnT5K5XZy_zRFg_EGCS",
+      p: "ELI7vKj9mGu6BrYwjXOfco0SUThCBr8heO5q2g6OOVUJ",
+      dt: "2024-10-04T02:19:09.287000+00:00",
+      r: "/ipex/admit",
+      q: {},
+      a: {
+        i: "EBgG1lhkxiv_UQ8IiF2G4j5HQlnT5K5XZy_zRFg_EGCS",
+        m: "",
+      },
+      e: {},
+    };
+    ipexAdmitMock.mockResolvedValue([
+      {
+        ked,
+      },
+      ["sigs"],
+      "aend",
+    ]),
+    (eventEmitter.emit = jest.fn());
 
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "opName",
@@ -1293,7 +1103,12 @@ describe("Ipex communication service of agent", () => {
         "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
           accepted: true,
           saids: {
-            ipexAdmitSaid: [["member1", "exnSaid"]],
+            "EOQf4E9vcTRVs5hsz4F1-zR7IaGV5O75GFE2el3LAmru": [
+              [
+                "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+                "EEpfEHR6EedLnEzleK7mM3AKJSoPWuSQeREC8xjyq3pa",
+              ],
+            ],
           },
         },
       },
@@ -1413,6 +1228,10 @@ describe("Ipex communication service of agent", () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
 
     credentialStorage.getCredentialMetadata = jest
       .fn()
