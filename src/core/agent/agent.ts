@@ -49,6 +49,11 @@ import { BaseRecord } from "../storage/storage.types";
 import { OperationPendingStorage } from "./records/operationPendingStorage";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
 import { EventTypes, KeriaStatusChangedEvent } from "./event.types";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../storage/preferences/preferencesStorage";
+import { ConfigurationService } from "../configuration";
 
 const walletId = "idw";
 class Agent {
@@ -63,7 +68,7 @@ class Agent {
   static readonly MISSING_DATA_ON_KERIA =
     "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.";
   static readonly BUFFER_ALLOC_SIZE = 3;
-
+  static readonly APP_PASSSCODE_DEV_MODE = "111111";
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {
     eventEmitter: undefined as any,
@@ -326,6 +331,63 @@ class Agent {
         isOnline: online,
       },
     });
+  }
+
+  async devPreload() {
+    try {
+      await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message ===
+          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_PASSCODE}`
+      ) {
+        await SecureStorage.set(
+          KeyStoreKeys.APP_PASSCODE,
+          Agent.APP_PASSSCODE_DEV_MODE
+        );
+      }
+    }
+
+    try {
+      await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message ===
+          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
+      ) {
+        const branAndMnemonic = await Agent.agent.getBranAndMnemonic();
+        await SecureStorage.set(
+          KeyStoreKeys.SIGNIFY_BRAN,
+          branAndMnemonic?.bran
+        );
+      }
+    }
+    await PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
+      initialized: true,
+    });
+
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.APP_PASSWORD_SKIPPED,
+        content: { value: true },
+      })
+    );
+
+    const keriaConnectUrlRecord = await this.basicStorage.findById(
+      MiscRecordId.KERIA_CONNECT_URL
+    );
+    const keriaBootUrlRecord = await this.basicStorage.findById(
+      MiscRecordId.KERIA_BOOT_URL
+    );
+
+    if (!keriaConnectUrlRecord && !keriaBootUrlRecord) {
+      await this.bootAndConnect({
+        url: ConfigurationService.env?.keri?.keria?.url || "",
+        bootUrl: ConfigurationService.env?.keri?.keria?.bootUrl || "",
+      });
+    }
   }
 
   private async saveAgentUrls(agentUrls: AgentUrls): Promise<void> {
