@@ -1269,6 +1269,14 @@
     "tab": {
       "title": "Connections",
       "create": "Add a connection",
+      "search": {
+        "placeholder": "Search connections",
+        "connections": "Connections",
+        "noresult": {
+          "title": "No results for “{{keyword}}”",
+          "text": "Check the spelling or try a new search"
+        }
+      },
       "indentifierselector": {
         "title": "Choose identifier",
         "message": "Which identifier would you like to make the connection with?",

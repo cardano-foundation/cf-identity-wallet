@@ -16,6 +16,16 @@ const useToggleConnections = (location: string) => {
     setShowConnections(false);
   }, [history.location.pathname]);
 
+  useEffect(() => {
+    const openConnections = (history.location.state as Record<string, unknown>)
+      ?.openConnections;
+
+    if (openConnections) {
+      setShowConnections(true);
+      history.replace(history.location.pathname, {});
+    }
+  }, [history, history.location.state, setShowConnections]);
+
   return {
     showConnections,
     setShowConnections,

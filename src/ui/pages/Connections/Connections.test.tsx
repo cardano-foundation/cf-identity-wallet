@@ -5,6 +5,7 @@ import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
+import { ionFireEvent } from "@ionic/react-test-utils";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
@@ -18,8 +19,6 @@ import { Credentials } from "../Credentials/Credentials";
 import { Identifiers } from "../Identifiers";
 import { Connections } from "./Connections";
 import { setOpenConnectionDetail } from "../../../store/reducers/connectionsCache";
-
-const combineMock = jest.fn(() => TabsRoutePath.IDENTIFIERS);
 
 const deleteConnectionByIdMock = jest.fn();
 
@@ -42,19 +41,6 @@ jest.mock("react-qrcode-logo", () => {
   };
 });
 
-const historyPushMock = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useHistory: () => ({
-    push: (args: unknown) => {
-      historyPushMock(args);
-    },
-    location: {
-      pathname: combineMock(),
-    },
-  }),
-}));
-
 jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
   SecureStorage: {
@@ -66,6 +52,27 @@ jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children, isOpen, ...props }: any) =>
     isOpen ? <div {...props}>{children}</div> : null,
+  IonSearchbar: (props: any) => {
+    const {
+      onIonInput,
+      debounce,
+      onIonCancel,
+      showCancelButton,
+      onIonFocus,
+      onIonBlur,
+      ...resProps
+    } = props;
+
+    return (
+      <input
+        {...resProps}
+        data-testid="search-bar"
+        onChange={onIonInput}
+        onBlur={onIonBlur}
+        onFocus={onIonFocus}
+      />
+    );
+  },
 }));
 
 const mockSetShowConnections = jest.fn();
@@ -114,8 +121,6 @@ describe("Connections page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-
-    combineMock.mockReturnValue(TabsRoutePath.IDENTIFIERS);
   });
 
   test("Render connections page empty (self paginated)", async () => {
@@ -444,6 +449,96 @@ describe("Connections page", () => {
       ).toBeVisible();
     });
   });
+
+  test("Search", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      identifiersCache: {
+        identifiers: [],
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      connectionsCache: {
+        connections: connectionsFix,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, getByText, queryByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={storeMocked}>
+          <Route
+            path={TabsRoutePath.IDENTIFIERS}
+            component={Identifiers}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    expect(getByTestId("connections-button")).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("connections-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("search-bar")).toBeVisible();
+    });
+
+    const searchBar = getByTestId("search-bar");
+
+    act(() => {
+      ionFireEvent.ionFocus(searchBar);
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("connections-tab-tab-header")).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.change(searchBar, {
+        target: {
+          value: "Cambridge",
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("search-connection")).toBeVisible();
+      expect(queryByTestId("empty-search-connection")).toBe(null);
+      expect(queryByTestId("connection-group-0")).toBe(null);
+      expect(getByText("Cambridge University")).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.change(searchBar, {
+        target: {
+          value: "Nothing",
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("search-connection")).toBe(null);
+      expect(getByTestId("empty-search-connection")).toBeVisible();
+      expect(queryByTestId("connection-group-0")).toBe(null);
+    });
+  });
 });
 
 describe("Connections page from Credentials tab", () => {
@@ -457,8 +552,6 @@ describe("Connections page from Credentials tab", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-
-    combineMock.mockReturnValue(TabsRoutePath.CREDENTIALS);
   });
 
   test("It allows to create an Identifier when no Identifiers are available (credentials tab)", async () => {
@@ -745,7 +838,6 @@ describe("Connections page from Credentials tab", () => {
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(setOpenConnectionDetail(undefined));
-      expect(historyPushMock).toBeCalled();
     });
   });
 });
