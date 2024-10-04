@@ -306,7 +306,10 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     return (
       <>
         {selfPaginated ? (
-          <SideSlider isOpen={showConnections}>
+          <SideSlider
+            renderAsModal
+            isOpen={showConnections}
+          >
             <TabLayout
               hardwareBackButtonConfig={backHardwareConfig}
               pageId={pageId}
