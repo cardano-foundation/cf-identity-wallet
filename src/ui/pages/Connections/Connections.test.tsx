@@ -81,6 +81,7 @@ jest.mock("@ionic/react", () => ({
     return (
       <input
         {...resProps}
+        data-testid="search-bar"
         onChange={onIonInput}
         onBlur={onIonBlur}
         onFocus={onIonFocus}
