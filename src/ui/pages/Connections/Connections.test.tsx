@@ -507,11 +507,17 @@ describe("Connections page", () => {
       </MemoryRouter>
     );
 
-    const searchBar = getByTestId("search-bar");
+    expect(getByTestId("connections-button")).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("connections-button"));
+    });
 
     await waitFor(() => {
-      expect(searchBar).toBeVisible();
+      expect(getByTestId("search-bar")).toBeVisible();
     });
+
+    const searchBar = getByTestId("search-bar");
 
     act(() => {
       ionFireEvent.ionFocus(searchBar);
