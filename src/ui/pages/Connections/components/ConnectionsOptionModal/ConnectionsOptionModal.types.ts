@@ -1,4 +1,4 @@
-import { RequestType } from "../../../../../../globals/types";
+import { RequestType } from "../../../../globals/types";
 
 interface ConnectionsOptionModalProps {
   type: RequestType;

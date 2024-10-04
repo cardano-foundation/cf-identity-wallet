@@ -8,42 +8,37 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useHistory } from "react-router-dom";
-import { Agent } from "../../../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionShortDetails,
   ConnectionStatus,
-} from "../../../../../core/agent/agent.types";
-import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
-import { i18n } from "../../../../../i18n";
-import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
+} from "../../../core/agent/agent.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { i18n } from "../../../i18n";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getConnectionsCache,
   getOpenConnectionId,
   setOpenConnectionId,
   removeConnectionCache,
-} from "../../../../../store/reducers/connectionsCache";
-import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
+} from "../../../store/reducers/connectionsCache";
+import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
 import {
   getCurrentOperation,
   getStateCache,
   setCurrentOperation,
   setToastMsg,
   showConnections as updateShowConnections,
-} from "../../../../../store/reducers/stateCache";
-import { Alert } from "../../../../components/Alert";
-import { CardsPlaceholder } from "../../../../components/CardsPlaceholder";
-import { RemovePendingAlert } from "../../../../components/RemovePendingAlert";
-import { ShareConnection } from "../../../../components/ShareConnection";
-import { ShareType } from "../../../../components/ShareConnection/ShareConnection.types";
-import {
-  OperationType,
-  RequestType,
-  ToastMsgType,
-} from "../../../../globals/types";
-import { useOnlineStatusEffect } from "../../../../hooks";
-import { useSwipeBack } from "../../../../hooks/swipeBackHook";
-import { showError } from "../../../../utils/error";
+} from "../../../store/reducers/stateCache";
+import { Alert } from "../../components/Alert";
+import { CardsPlaceholder } from "../../components/CardsPlaceholder";
+import { RemovePendingAlert } from "../../components/RemovePendingAlert";
+import { ShareConnection } from "../../components/ShareConnection";
+import { ShareType } from "../../components/ShareConnection/ShareConnection.types";
+import { OperationType, RequestType, ToastMsgType } from "../../globals/types";
+import { useOnlineStatusEffect } from "../../hooks";
+import { useSwipeBack } from "../../hooks/swipeBackHook";
+import { showError } from "../../utils/error";
 import { ConnectionsBody } from "./components/ConnectionsBody";
 import { ConnectionsOptionModal } from "./components/ConnectionsOptionModal";
 import { IdentifierSelectorModal } from "./components/IdentifierSelectorModal/IdentifierSelectorModal";
@@ -53,10 +48,10 @@ import {
   ConnectionsOptionRef,
   MappedConnections,
 } from "./Connections.types";
-import { combineClassNames } from "../../../../utils/style";
-import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
-import { PageHeader } from "../../../../components/PageHeader";
-import { ConnectionDetails } from "../../../ConnectionDetails";
+import { combineClassNames } from "../../utils/style";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
+import { PageHeader } from "../../components/PageHeader";
+import { ConnectionDetails } from "../ConnectionDetails";
 
 const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
   ({ showConnections, setShowConnections }, ref) => {

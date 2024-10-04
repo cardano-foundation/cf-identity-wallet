@@ -1,13 +1,10 @@
 import { scanCircleOutline, qrCodeOutline } from "ionicons/icons";
 import { ConnectionsOptionModalProps } from "./ConnectionsOptionModal.types";
-import { useAppDispatch } from "../../../../../../../store/hooks";
-import { setCurrentOperation } from "../../../../../../../store/reducers/stateCache";
-import { OperationType } from "../../../../../../globals/types";
-import {
-  OptionItem,
-  OptionModal,
-} from "../../../../../../components/OptionsModal";
-import { i18n } from "../../../../../../../i18n";
+import { useAppDispatch } from "../../../../../store/hooks";
+import { setCurrentOperation } from "../../../../../store/reducers/stateCache";
+import { OperationType } from "../../../../globals/types";
+import { OptionItem, OptionModal } from "../../../../components/OptionsModal";
+import { i18n } from "../../../../../i18n";
 
 const ConnectionsOptionModal = ({
   type,

@@ -4,10 +4,10 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { ConnectionsOptionModal } from "./ConnectionsOptionModal";
-import { i18n } from "../../../../../../../i18n";
-import { store } from "../../../../../../../store";
-import { setCurrentOperation } from "../../../../../../../store/reducers/stateCache";
-import { RequestType, OperationType } from "../../../../../../globals/types";
+import { i18n } from "../../../../../i18n";
+import { store } from "../../../../../store";
+import { setCurrentOperation } from "../../../../../store/reducers/stateCache";
+import { RequestType, OperationType } from "../../../../globals/types";
 
 describe("Connection modal", () => {
   test("It renders connection modal", async () => {

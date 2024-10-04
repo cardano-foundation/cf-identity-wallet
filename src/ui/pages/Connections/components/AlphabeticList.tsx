@@ -1,14 +1,14 @@
 import { useMemo } from "react";
 import { hourglassOutline } from "ionicons/icons";
 import { IonChip, IonIcon } from "@ionic/react";
-import KeriLogo from "../../../../../../ui/assets/images/KeriGeneric.jpg";
-import { CardItem } from "../../../../../components/CardList/CardList.types";
-import { formatShortDate } from "../../../../../utils/formatters";
-import { CardList } from "../../../../../components/CardList";
+import KeriLogo from "../../../../ui/assets/images/KeriGeneric.jpg";
+import { CardItem } from "../../../components/CardList/CardList.types";
+import { formatShortDate } from "../../../utils/formatters";
+import { CardList } from "../../../components/CardList";
 import {
   ConnectionShortDetails,
   ConnectionStatus,
-} from "../../../../../../core/agent/agent.types";
+} from "../../../../core/agent/agent.types";
 
 const AlphabeticList = ({
   items,

@@ -1,19 +1,19 @@
 import { IonText } from "@ionic/react";
 import { useMemo, useState } from "react";
-import { i18n } from "../../../../../../i18n";
+import { i18n } from "../../../../i18n";
 import {
   CardDetailsAttributes,
   CardDetailsBlock,
-} from "../../../../../components/CardDetails";
-import { PageFooter } from "../../../../../components/PageFooter";
-import { ScrollablePageLayout } from "../../../../../components/layout/ScrollablePageLayout";
-import UserIcon from "../../../../../assets/images/KeriGeneric.jpg";
+} from "../../../components/CardDetails";
+import { PageFooter } from "../../../components/PageFooter";
+import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
+import UserIcon from "../../../assets/images/KeriGeneric.jpg";
 import { RequestProps } from "../IncomingRequest.types";
 import "./SignRequest.scss";
-import { Spinner } from "../../../../../components/Spinner";
-import { PageHeader } from "../../../../../components/PageHeader";
-import { IncomingRequestType } from "../../../../../../store/reducers/stateCache/stateCache.types";
-import { Verification } from "../../../../../components/Verification";
+import { Spinner } from "../../../components/Spinner";
+import { PageHeader } from "../../../components/PageHeader";
+import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
+import { Verification } from "../../../components/Verification";
 
 const SignRequest = ({
   pageId,

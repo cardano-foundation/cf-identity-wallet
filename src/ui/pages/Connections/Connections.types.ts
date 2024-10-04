@@ -1,4 +1,4 @@
-import { ConnectionShortDetails } from "../../../../../core/agent/agent.types";
+import { ConnectionShortDetails } from "../../../core/agent/agent.types";
 
 interface ConnectionsOptionRef {
   handleConnectModalButton: () => void;

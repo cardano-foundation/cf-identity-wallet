@@ -7,19 +7,16 @@ import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import { ionFireEvent } from "@ionic/react-test-utils";
-import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
-import { TabsRoutePath } from "../../../../../routes/paths";
-import { setCurrentOperation } from "../../../../../store/reducers/stateCache";
-import { connectionsFix } from "../../../../__fixtures__/connectionsFix";
-import { filteredCredsFix } from "../../../../__fixtures__/filteredCredsFix";
-import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
-import { OperationType } from "../../../../globals/types";
-import { formatShortDate } from "../../../../utils/formatters";
-import { passcodeFiller } from "../../../../utils/passcodeFiller";
-import { Credentials } from "../../../Credentials/Credentials";
-import { Identifiers } from "../../../Identifiers";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { TabsRoutePath } from "../../../routes/paths";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import { formatShortDate } from "../../utils/formatters";
+import { passcodeFiller } from "../../utils/passcodeFiller";
+import { Credentials } from "../Credentials/Credentials";
+import { Identifiers } from "../Identifiers";
 import { Connections } from "./Connections";
-import { setOpenConnectionId } from "../../../../../store/reducers/connectionsCache";
 
 const deleteConnectionByIdMock = jest.fn();
 

@@ -1,16 +1,16 @@
 import { IonCheckbox, IonContent, IonModal } from "@ionic/react";
 import { useState } from "react";
-import { IdentifierShortDetails } from "../../../../../../../core/agent/services/identifier.types";
-import { useAppSelector } from "../../../../../../../store/hooks";
-import { getIdentifiersCache } from "../../../../../../../store/reducers/identifiersCache";
-import KeriLogo from "../../../../../../assets/images/KeriGeneric.jpg";
-import { CardItem, CardList } from "../../../../../../components/CardList";
-import { PageFooter } from "../../../../../../components/PageFooter";
-import { PageHeader } from "../../../../../../components/PageHeader";
-import { ResponsivePageLayout } from "../../../../../../components/layout/ResponsivePageLayout";
+import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
+import { useAppSelector } from "../../../../../store/hooks";
+import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
+import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
+import { CardItem, CardList } from "../../../../components/CardList";
+import { PageFooter } from "../../../../components/PageFooter";
+import { PageHeader } from "../../../../components/PageHeader";
+import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
 import "./IdentifierSelectorModal.scss";
 import { IdentifierSelectorProps } from "./IdentifierSelectorModal.types";
-import { i18n } from "../../../../../../../i18n";
+import { i18n } from "../../../../../i18n";
 
 const IdentifierSelectorModal = ({
   open,

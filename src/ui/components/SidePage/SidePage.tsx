@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { SideSlider } from "../../components/SideSlider";
+import { SideSlider } from "../SideSlider";
 import {
   getQueueIncomingRequest,
   getStateCache,
@@ -9,9 +9,9 @@ import {
   getIsConnecting,
   getPendingConnection,
 } from "../../../store/reducers/walletConnectionsCache";
-import { IncomingRequest } from "./components/IncomingRequest";
-import { WalletConnect } from "./components/WalletConnect";
-import { Connections } from "./components/Connections";
+import { Connections } from "../../pages/Connections";
+import { IncomingRequest } from "../../pages/IncomingRequest";
+import { WalletConnect } from "../../pages/WalletConnect";
 
 const SidePage = () => {
   const [openSidePage, setOpenSidePage] = useState(false);
