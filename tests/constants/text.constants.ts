@@ -73,6 +73,10 @@ export enum SeedPhraseVerify {
   Title = "Verify your recovery phrase",
 }
 
+export enum SsiAgentDetails {
+  DescriptionTop = "To continue, please enter the SSI agent boot and connect URLs (in your email or from your command line).",
+  Title = "Enter your SSI agent details",
+}
 export enum TermsOfUse {
   Title = "Terms of Use",
   Intro = "Please read these terms of use (“Terms of Use” or “Terms”) carefully before using the services offered by Cardano Foundation (together with our subsidiaries and affiliates, referred to as “Foundation,” “We,“, “Us“ or “Our” in these Terms of Use). These Terms of Use set forth the legally binding terms and conditions for your use of the Identity Wallet developed by the Cardano Foundation (the “Identity Wallet”) and the website http://identity.cardanofoundation.org/ (collectively, the “Products“). By using the Products in any manner, you agree to be bound by these Terms of Use.\n\nThis Identity Wallet is currently provided as an 'Alpha Release'. By using this Alpha Release, you acknowledge and accept that it is experimental and may contain bugs, incomplete features, or other issues. The primary purpose of this Alpha Release is for testing and gathering feedback. The software is provided 'as is' without warranties of any kind.",

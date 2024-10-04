@@ -23,7 +23,7 @@ Given(/^user Seed Phrase Verify$/, async function () {
 });
 
 Given(
-  /^user continue after choose and save (\d+) words seed phrase$/,
+  /^user continue after choose and save words of recovery phrase$/,
   async function () {
     await generateSeedPhraseOf();
   }

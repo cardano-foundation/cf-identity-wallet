@@ -24,8 +24,8 @@ When(/^user tap Back button on Re-enter your Passcode screen$/, async function (
 });
 
 When(
-  /^user tap Back arrow icon on Seed Phrase Verify screen$/,
+  /^user tap Back button on Seed Phrase Verify screen$/,
   async function () {
-    await MenuToolbar.clickBackArrowButtonOf(SeedPhraseVerifyScreen.id);
+    await BaseModal.clickCloseButtonOf(SeedPhraseVerifyScreen.id);
   }
 );
