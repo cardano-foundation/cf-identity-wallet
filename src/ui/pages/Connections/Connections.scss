@@ -34,13 +34,14 @@
 
   .tab-title {
     height: calc(var(--ion-safe-area-top, 0) + 3.25rem);
-    transition: all 0.5s;
+    transition: all 0.25s;
   }
 
   &.hide-header {
     .tab-title {
       opacity: 0;
       height: var(--ion-safe-area-top, 0);
+      --min-height: 0;
 
       & * {
         display: none;

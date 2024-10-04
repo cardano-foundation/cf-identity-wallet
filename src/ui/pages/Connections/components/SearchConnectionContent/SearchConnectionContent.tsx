@@ -50,7 +50,9 @@ const SearchConnectionContent = ({
 }: SearchConnectionContentProps) => {
   const connections = useMemo(() => {
     return mappedConnections.flatMap((item) => {
-      return item.value.filter((item) => item.label.includes(keyword));
+      return item.value.filter((item) =>
+        item.label.toLowerCase().includes(keyword.toLowerCase())
+      );
     });
   }, [mappedConnections, keyword]);
 
