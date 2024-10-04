@@ -38,42 +38,49 @@ export const EditConnectionsContainer = ({
     if (modalIsOpen) setUpdatedNotes([...notes]);
   }, [modalIsOpen, notes]);
 
-  const confirm = () => {
+  const confirm = async () => {
     try {
       const filteredNotes = updatedNotes.filter(
         (note) => note.title !== "" && note.message !== ""
       );
 
       let update = false;
-      filteredNotes.forEach((note) => {
-        if (note.id.includes(TEMP_ID_PREFIX)) {
-          Agent.agent.connections.createConnectionNote(
-            connectionDetails.id,
-            note
+
+      await Promise.all(
+        filteredNotes
+          .filter((note) => note.id.includes(TEMP_ID_PREFIX))
+          .map((note) => {
+            update = true;
+            return Agent.agent.connections.createConnectionNote(
+              connectionDetails.id,
+              note
+            );
+          })
+      );
+
+      await Promise.all(
+        notes.map((note) => {
+          const noteFind = filteredNotes.find(
+            (noteFilter) => note.id === noteFilter.id
           );
-          update = true;
-        }
-      });
 
-      notes.forEach((note) => {
-        const noteFind = filteredNotes.find(
-          (noteFilter) => note.id === noteFilter.id
-        );
+          if (!noteFind) {
+            update = true;
+            return Agent.agent.connections.deleteConnectionNoteById(note.id);
+          }
 
-        if (!noteFind) {
-          Agent.agent.connections.deleteConnectionNoteById(note.id);
-          update = true;
-          return;
-        }
-
-        if (
-          note.title !== noteFind.title ||
-          note.message !== noteFind.message
-        ) {
-          Agent.agent.connections.updateConnectionNoteById(note.id, noteFind);
-          update = true;
-        }
-      });
+          if (
+            note.title !== noteFind.title ||
+            note.message !== noteFind.message
+          ) {
+            update = true;
+            return Agent.agent.connections.updateConnectionNoteById(
+              note.id,
+              noteFind
+            );
+          }
+        })
+      );
 
       if (update) {
         setNotes(filteredNotes);
@@ -139,6 +146,8 @@ export const EditConnectionsContainer = ({
     deleteNoteId.current = "";
     dispatch(setToastMsg(ToastMsgType.NOTE_REMOVED));
   };
+
+  const cancelDeleteNote = () => setAlertDeleteNoteIsOpen(false);
 
   return (
     <>
@@ -221,9 +230,9 @@ export const EditConnectionsContainer = ({
         cancelButtonText={`${i18n.t(
           "connections.details.options.alert.deletenote.cancel"
         )}`}
-        actionConfirm={() => handleDeleteNote()}
-        actionCancel={() => setAlertDeleteNoteIsOpen(false)}
-        actionDismiss={() => setAlertDeleteNoteIsOpen(false)}
+        actionConfirm={handleDeleteNote}
+        actionCancel={cancelDeleteNote}
+        actionDismiss={cancelDeleteNote}
       />
     </>
   );

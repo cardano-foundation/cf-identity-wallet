@@ -285,6 +285,7 @@ const Credentials = () => {
               <div
                 ref={favouriteContainerElement}
                 className="credentials-tab-content-block credential-favourite-cards"
+                data-testid="favourite-container-element"
               >
                 {!!allCreds.length && (
                   <h3>{i18n.t("credentials.tab.favourites")}</h3>

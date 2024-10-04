@@ -10,8 +10,8 @@ const useIonHardwareBackButton = (
   useEffect(() => {
     if (prevent || !Capacitor.isNativePlatform()) return;
 
-    function handleBack(event: any) {
-      event.detail.register(priority, handler);
+    function handleBack(event: Event) {
+      (event as CustomEvent).detail.register(priority, handler);
     }
 
     document.addEventListener("ionBackButton", handleBack);

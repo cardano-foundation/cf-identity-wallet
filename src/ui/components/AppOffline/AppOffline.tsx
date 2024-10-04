@@ -2,7 +2,7 @@ import { IonSpinner } from "@ionic/react";
 import { i18n } from "../../../i18n";
 import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
 import "./AppOffline.scss";
-import { useExitAppWithDoubleTap } from "../../hooks/useExitAppWithDoubleTap";
+import { useExitAppWithDoubleTap } from "../../hooks/exitAppWithDoubleTapHook";
 import { BackEventPriorityType } from "../../globals/types";
 import { useAppSelector } from "../../../store/hooks";
 import { getAuthentication } from "../../../store/reducers/stateCache";
