@@ -107,17 +107,6 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     useOnlineStatusEffect(fetchOobi);
 
     useEffect(() => {
-      const openConnections = (
-        history.location.state as Record<string, unknown>
-      )?.openConnections;
-
-      if (openConnections) {
-        setShowConnections(true);
-        history.replace(history.location.pathname, {});
-      }
-    }, [history, history.location.state, setShowConnections]);
-
-    useEffect(() => {
       setShowPlaceholder(Object.keys(connectionsCache).length === 0);
     }, [connectionsCache]);
 

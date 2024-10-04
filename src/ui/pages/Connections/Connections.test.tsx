@@ -20,8 +20,6 @@ import { Identifiers } from "../Identifiers";
 import { Connections } from "./Connections";
 import { setOpenConnectionDetail } from "../../../store/reducers/connectionsCache";
 
-const combineMock = jest.fn(() => TabsRoutePath.IDENTIFIERS);
-
 const deleteConnectionByIdMock = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -42,19 +40,6 @@ jest.mock("react-qrcode-logo", () => {
     QRCode: () => <div></div>,
   };
 });
-
-const historyPushMock = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useHistory: () => ({
-    push: (args: unknown) => {
-      historyPushMock(args);
-    },
-    location: {
-      pathname: combineMock(),
-    },
-  }),
-}));
 
 jest.mock("../../../core/storage", () => ({
   ...jest.requireActual("../../../core/storage"),
@@ -136,8 +121,6 @@ describe("Connections page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-
-    combineMock.mockReturnValue(TabsRoutePath.IDENTIFIERS);
   });
 
   test("Render connections page empty (self paginated)", async () => {
@@ -569,8 +552,6 @@ describe("Connections page from Credentials tab", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-
-    combineMock.mockReturnValue(TabsRoutePath.CREDENTIALS);
   });
 
   test("It allows to create an Identifier when no Identifiers are available (credentials tab)", async () => {
@@ -857,7 +838,6 @@ describe("Connections page from Credentials tab", () => {
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(setOpenConnectionDetail(undefined));
-      expect(historyPushMock).toBeCalled();
     });
   });
 });
