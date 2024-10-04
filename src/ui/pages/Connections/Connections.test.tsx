@@ -5,6 +5,7 @@ import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
+import { ionFireEvent } from "@ionic/react-test-utils";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
@@ -66,6 +67,26 @@ jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children, isOpen, ...props }: any) =>
     isOpen ? <div {...props}>{children}</div> : null,
+  IonSearchbar: (props: any) => {
+    const {
+      onIonInput,
+      debounce,
+      onIonCancel,
+      showCancelButton,
+      onIonFocus,
+      onIonBlur,
+      ...resProps
+    } = props;
+
+    return (
+      <input
+        {...resProps}
+        onChange={onIonInput}
+        onBlur={onIonBlur}
+        onFocus={onIonFocus}
+      />
+    );
+  },
 }));
 
 const mockSetShowConnections = jest.fn();
@@ -442,6 +463,90 @@ describe("Connections page", () => {
       expect(
         getByText(EN_TRANSLATIONS.createidentifier.add.title)
       ).toBeVisible();
+    });
+  });
+
+  test("Search", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      identifiersCache: {
+        identifiers: [],
+      },
+      identifierViewTypeCacheCache: {
+        viewType: null,
+      },
+      connectionsCache: {
+        connections: connectionsFix,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, getByText, queryByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+        <Provider store={storeMocked}>
+          <Route
+            path={TabsRoutePath.IDENTIFIERS}
+            component={Identifiers}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const searchBar = getByTestId("search-bar");
+
+    await waitFor(() => {
+      expect(searchBar).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.ionFocus(searchBar);
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("connections-tab-tab-header")).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.change(searchBar, {
+        target: {
+          value: "Cambridge",
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("search-connection")).toBeVisible();
+      expect(queryByTestId("empty-search-connection")).toBe(null);
+      expect(queryByTestId("connection-group-0")).toBe(null);
+      expect(getByText("Cambridge University")).toBeVisible();
+    });
+
+    act(() => {
+      ionFireEvent.change(searchBar, {
+        target: {
+          value: "Nothing",
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("search-connection")).toBe(null);
+      expect(getByTestId("empty-search-connection")).toBeVisible();
+      expect(queryByTestId("connection-group-0")).toBe(null);
     });
   });
 });

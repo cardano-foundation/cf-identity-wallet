@@ -1,14 +1,4 @@
-import {
-  IonButton,
-  IonCol,
-  IonContent,
-  IonGrid,
-  IonIcon,
-  IonItemDivider,
-  IonItemGroup,
-  IonLabel,
-  IonRow,
-} from "@ionic/react";
+import { IonButton, IonIcon } from "@ionic/react";
 import { addOutline } from "ionicons/icons";
 import {
   forwardRef,
@@ -49,9 +39,10 @@ import { ShareConnection } from "../../components/ShareConnection";
 import { ShareType } from "../../components/ShareConnection/ShareConnection.types";
 import { SideSlider } from "../../components/SideSlider";
 import { OperationType, RequestType, ToastMsgType } from "../../globals/types";
+import { useOnlineStatusEffect } from "../../hooks";
 import { useSwipeBack } from "../../hooks/swipeBackHook";
-import { AlphabeticList } from "./components/AlphabeticList";
-import { AlphabetSelector } from "./components/AlphabetSelector";
+import { showError } from "../../utils/error";
+import { ConnectionsBody } from "./components/ConnectionsBody";
 import { ConnectionsOptionModal } from "./components/ConnectionsOptionModal";
 import { IdentifierSelectorModal } from "./components/IdentifierSelectorModal/IdentifierSelectorModal";
 import "./Connections.scss";
@@ -61,8 +52,7 @@ import {
   ConnectionsOptionRef,
   MappedConnections,
 } from "./Connections.types";
-import { useOnlineStatusEffect } from "../../hooks";
-import { showError } from "../../utils/error";
+import { combineClassNames } from "../../utils/style";
 
 const ANIMATION_TIMEOUT = 350;
 
@@ -96,6 +86,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
     const userName = stateCache.authentication.userName;
     const [oobi, setOobi] = useState("");
+    const [hideHeader, setHideHeader] = useState(false);
 
     const fetchOobi = useCallback(async () => {
       try {
@@ -306,39 +297,11 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       dispatch(setCurrentOperation(OperationType.IDLE));
     };
 
-    const ConnectionsBody = () => {
-      return (
-        <div className="connections-tab-center">
-          <IonContent className="connections-container">
-            <IonGrid>
-              <IonRow>
-                <IonCol size="12">
-                  {mappedConnections.map((alphabeticGroup, index) => {
-                    return (
-                      <IonItemGroup
-                        className="connections-list"
-                        key={index}
-                      >
-                        <IonItemDivider id={alphabeticGroup.key}>
-                          <IonLabel>{alphabeticGroup.key}</IonLabel>
-                        </IonItemDivider>
-                        <AlphabeticList
-                          items={Array.from(alphabeticGroup.value)}
-                          handleShowConnectionDetails={
-                            handleShowConnectionDetails
-                          }
-                        />
-                      </IonItemGroup>
-                    );
-                  })}
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </IonContent>
-          <AlphabetSelector />
-        </div>
-      );
-    };
+    const classes = combineClassNames({
+      show: showConnections,
+      hide: !showConnections,
+      "hide-header": hideHeader,
+    });
 
     return (
       <>
@@ -349,7 +312,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
               pageId={pageId}
               header={true}
               backButton={true}
-              customClass={showConnections ? "show" : "hide"}
+              customClass={classes}
               backButtonAction={() => setShowConnections(false)}
               title={`${i18n.t("connections.tab.title")}`}
               additionalButtons={<AdditionalButtons />}
@@ -363,7 +326,13 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
                 )
               }
             >
-              {!showPlaceholder && <ConnectionsBody />}
+              {!showPlaceholder && (
+                <ConnectionsBody
+                  onSearchFocus={setHideHeader}
+                  mappedConnections={mappedConnections}
+                  handleShowConnectionDetails={handleShowConnectionDetails}
+                />
+              )}
             </TabLayout>
           </SideSlider>
         ) : (
@@ -373,7 +342,13 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
               buttonAction={handleConnectModal}
               testId={pageId}
             />
-          )) || <ConnectionsBody />
+          )) || (
+            <ConnectionsBody
+              onSearchFocus={setHideHeader}
+              mappedConnections={mappedConnections}
+              handleShowConnectionDetails={handleShowConnectionDetails}
+            />
+          )
         )}
         <ConnectionsOptionModal
           type={RequestType.CONNECTION}
