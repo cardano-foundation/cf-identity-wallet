@@ -31,17 +31,19 @@ const ShareConnection = ({
     }
   }, [shareLocation]);
 
+  const closeModal = () => setIsOpen(false);
+
   return (
     <ResponsiveModal
       modalIsOpen={isOpen}
       componentId={componentId}
       customClasses={componentId}
-      onDismiss={() => setIsOpen(false)}
+      onDismiss={closeModal}
     >
       <PageHeader
         closeButton={true}
         closeButtonLabel={`${i18n.t("shareidentifier.done")}`}
-        closeButtonAction={() => setIsOpen(false)}
+        closeButtonAction={closeModal}
         title={`${i18n.t("shareidentifier.title")}`}
       />
       <p className="share-identifier-subtitle">{subtitle}</p>

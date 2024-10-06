@@ -122,6 +122,8 @@ const Identifiers = () => {
     setCreateIdentifierModalIsOpen(true);
   };
 
+  const openCreateModal = () => setCreateIdentifierModalIsOpen(true);
+
   useEffect(() => {
     if (
       [
@@ -131,7 +133,7 @@ const Identifiers = () => {
       ].includes(currentOperation) &&
       history.location.pathname === TabsRoutePath.IDENTIFIERS
     ) {
-      setCreateIdentifierModalIsOpen(true);
+      openCreateModal();
     }
 
     if (OperationType.RECEIVE_CONNECTION === currentOperation) {
@@ -307,14 +309,14 @@ const Identifiers = () => {
         additionalButtons={
           <AdditionalButtons
             handleConnections={() => setShowConnections(true)}
-            handleCreateIdentifier={() => setCreateIdentifierModalIsOpen(true)}
+            handleCreateIdentifier={openCreateModal}
           />
         }
         placeholder={
           showPlaceholder && (
             <CardsPlaceholder
               buttonLabel={i18n.t("identifiers.tab.create")}
-              buttonAction={() => setCreateIdentifierModalIsOpen(true)}
+              buttonAction={openCreateModal}
               testId={pageId}
             >
               <span className="placeholder-spacer" />
@@ -328,6 +330,7 @@ const Identifiers = () => {
               <div
                 ref={favouriteContainerElement}
                 className="identifiers-tab-content-block identifier-favourite-cards"
+                data-testid="favourite-identifiers"
               >
                 <CardSlider
                   title={`${i18n.t("identifiers.tab.favourites")}`}

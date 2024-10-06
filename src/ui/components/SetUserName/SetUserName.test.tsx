@@ -1,13 +1,21 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { IonInput, IonLabel } from "@ionic/react";
+import { ionFireEvent } from "@ionic/react-test-utils";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import {
+  setAuthentication,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { SetUserName } from "./SetUserName";
 import { ToastMsgType } from "../../globals/types";
-import { MiscRecordId } from "../../../core/agent/agent.types";
+import { CustomInputProps } from "../CustomInput/CustomInput.types";
+import { SetUserName } from "./SetUserName";
 import { Agent } from "../../../core/agent/agent";
+import { BasicRecord } from "../../../core/agent/records";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -18,8 +26,36 @@ jest.mock("../../../core/agent/agent", () => ({
       basicStorage: {
         findById: jest.fn(),
         save: jest.fn(),
+        createOrUpdateBasicRecord: jest.fn(() => {
+          return Promise.resolve(true);
+        }),
       },
     },
+  },
+}));
+
+jest.mock("../CustomInput", () => ({
+  CustomInput: (props: CustomInputProps) => {
+    return (
+      <>
+        <IonLabel
+          position="stacked"
+          data-testid={`${props.title?.toLowerCase().replace(" ", "-")}-title`}
+        >
+          {props.title}
+          {props.optional && (
+            <span className="custom-input-optional">(optional)</span>
+          )}
+        </IonLabel>
+        <IonInput
+          data-testid={props.dataTestId}
+          onIonInput={(e) => {
+            props.onChangeInput(e.detail.value as string);
+          }}
+          value={props.value}
+        />
+      </>
+    );
   },
 }));
 
@@ -36,9 +72,17 @@ describe("SetUserName component", () => {
       routes: ["/"],
       authentication: {
         loggedIn: true,
-        userName: "",
-        time: Date.now(),
+        time: 0,
         passcodeIsSet: true,
+        seedPhraseIsSet: true,
+        passwordIsSet: false,
+        passwordIsSkipped: true,
+        ssiAgentIsSet: true,
+        recoveryWalletProgress: false,
+        loginAttempt: {
+          attempts: 0,
+          lockedUntil: 0,
+        },
       },
     },
     connectionsCache: {
@@ -70,12 +114,8 @@ describe("SetUserName component", () => {
     expect(getByText(EN_TRANSLATIONS.setusername.button.confirm)).toBeVisible();
   });
 
-  test.skip("It should call handleConfirm when the primary button is clicked", async () => {
+  test("It should call handleConfirm when the primary button is clicked", async () => {
     const setIsOpenMock = jest.fn();
-    const mockDispatch = jest.fn();
-    const mockGetAuthentication = jest.fn();
-    const mockSetAuthentication = jest.fn();
-    const mockSetToastMsg = jest.fn();
 
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
@@ -87,9 +127,13 @@ describe("SetUserName component", () => {
     );
 
     act(() => {
-      fireEvent.change(getByTestId("set-user-name-input"), {
-        target: { value: "testUser" },
-      });
+      ionFireEvent.ionInput(getByTestId("set-user-name-input"), "testUser");
+    });
+
+    await waitFor(() => {
+      expect(
+        (getByTestId("set-user-name-input") as HTMLInputElement).value
+      ).toBe("testUser");
     });
 
     act(() => {
@@ -97,30 +141,72 @@ describe("SetUserName component", () => {
     });
 
     await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(
-        mockSetAuthentication({
-          ...mockGetAuthentication(),
+      expect(dispatchMock).toHaveBeenCalledWith(
+        setAuthentication({
+          loggedIn: true,
+          time: 0,
+          passcodeIsSet: true,
+          seedPhraseIsSet: true,
+          passwordIsSet: false,
+          passwordIsSkipped: true,
+          ssiAgentIsSet: true,
+          recoveryWalletProgress: false,
+          loginAttempt: {
+            attempts: 0,
+            lockedUntil: 0,
+          },
           userName: "testUser",
         })
       );
     });
 
     await waitFor(() => {
-      const mockSave = jest.fn();
-      Agent.agent.basicStorage.save = mockSave;
-      expect(mockSave).toHaveBeenCalledWith(MiscRecordId.USER_NAME, {
-        userName: "testUser",
-      });
-    });
-
-    await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(
-        mockSetToastMsg(ToastMsgType.USERNAME_CREATION_SUCCESS)
+      expect(dispatchMock).toHaveBeenCalledWith(
+        setToastMsg(ToastMsgType.USERNAME_CREATION_SUCCESS)
       );
     });
 
     await waitFor(() => {
       expect(setIsOpenMock).toHaveBeenCalledWith(false);
+    });
+  });
+
+  test("Display error message", async () => {
+    const setIsOpenMock = jest.fn();
+
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <SetUserName
+          isOpen={true}
+          setIsOpen={setIsOpenMock}
+        />
+      </Provider>
+    );
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("set-user-name-input"), "testUser");
+    });
+
+    await waitFor(() => {
+      expect(
+        (getByTestId("set-user-name-input") as HTMLInputElement).value
+      ).toBe("testUser");
+    });
+
+    jest
+      .spyOn(Agent.agent.basicStorage, "createOrUpdateBasicRecord")
+      .mockImplementation(() => {
+        return Promise.reject("Error");
+      });
+
+    act(() => {
+      fireEvent.click(getByText(EN_TRANSLATIONS.setusername.button.confirm));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toHaveBeenCalledWith(
+        setToastMsg(ToastMsgType.USERNAME_CREATION_ERROR)
+      );
     });
   });
 });

@@ -218,6 +218,9 @@ const ConnectionDetails = () => {
     setModalIsOpen(true);
   };
 
+  const cancelDeleteConnection = () =>
+    dispatch(setCurrentOperation(OperationType.IDLE));
+
   return (
     <>
       {cloudError ? (
@@ -370,8 +373,8 @@ const ConnectionDetails = () => {
           "connections.details.options.alert.deleteconnection.cancel"
         )}`}
         actionConfirm={() => handleAuthentication()}
-        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionCancel={cancelDeleteConnection}
+        actionDismiss={cancelDeleteConnection}
       />
       <Verification
         verifyIsOpen={verifyIsOpen}

@@ -1,30 +1,69 @@
 import {
-  mockIonicReact,
   ionFireEvent,
+  mockIonicReact,
   waitForIonicReact,
 } from "@ionic/react-test-utils";
-mockIonicReact();
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  getAllByTestId,
+  render,
+  waitFor,
+} from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { act } from "react-dom/test-utils";
+import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../routes/paths";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { filteredCredsFix } from "../../../__fixtures__/filteredCredsFix";
+import { formatShortDate } from "../../../utils/formatters";
 import {
   EditConnectionsContainer,
   EditConnectionsModal,
 } from "./EditConnectionsModal";
-import { formatShortDate } from "../../../utils/formatters";
-import EN_TRANSLATIONS from "../../../../locales/en/en.json";
+import { setToastMsg } from "../../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../../globals/types";
+mockIonicReact();
 
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonInput: (props: any) => {
+    const { onIonBlur, onIonFocus, onIonInput, ...componentProps } = props;
+
+    return (
+      <input
+        {...componentProps}
+        data-testid={componentProps["data-testid"]}
+        onBlur={(e) => onIonBlur?.(e)}
+        onFocus={(e) => onIonFocus?.(e)}
+        onChange={(e) => onIonInput?.(e)}
+      />
+    );
+  },
+  IonTextarea: (props: any) => {
+    const { onIonBlur, onIonFocus, onIonInput, ...componentProps } = props;
+    return (
+      <textarea
+        {...componentProps}
+        data-testid={componentProps["data-testid"]}
+        onBlur={(e) => onIonBlur?.(e)}
+        onFocus={(e) => onIonFocus?.(e)}
+        onChange={(e) => onIonInput?.(e)}
+      />
+    );
+  },
+}));
+
+const createNoteMock = jest.fn(() => Promise.resolve(true));
+const deleteNoteMock = jest.fn(() => Promise.resolve(true));
+const updateNoteMock = jest.fn(() => Promise.resolve(true));
 jest.mock("../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       connections: {
-        createConnectionNote: jest.fn(),
-        deleteConnectionNoteById: jest.fn(),
-        updateConnectionNoteById: jest.fn(),
+        createConnectionNote: () => createNoteMock(),
+        deleteConnectionNoteById: () => deleteNoteMock(),
+        updateConnectionNoteById: () => updateNoteMock(),
       },
     },
   },
@@ -67,7 +106,7 @@ describe("Edit Connection Modal", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, queryByTestId, getByText } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <EditConnectionsModal
           onConfirm={jest.fn()}
@@ -130,17 +169,17 @@ describe("Edit Connection Modal", () => {
       const titleInput = getByTestId("edit-connections-modal-note-title-1");
       const messageInput = getByTestId("edit-connections-modal-note-message-1");
 
-      expect(titleInput.querySelector("input")?.value).toBe("Mock Note");
-      expect(messageInput.querySelector("textarea")?.value).toBe("Mock Note");
+      expect((titleInput as HTMLInputElement).value).toBe("Mock Note");
+      expect((messageInput as HTMLTextAreaElement).value).toBe("Mock Note");
     });
   });
 
-  test("Display delete note alert", async () => {
+  test("Delete note alert", async () => {
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, getByText, getAllByTestId } = render(
+    const { getByTestId, unmount } = render(
       <Provider store={storeMocked}>
         <EditConnectionsContainer
           onConfirm={jest.fn()}
@@ -167,7 +206,7 @@ describe("Edit Connection Modal", () => {
 
     await waitFor(() => {
       const titleInput = getByTestId("edit-connections-modal-note-title-1");
-      expect(titleInput.querySelector("input")?.value).toBe("Mock Note");
+      expect((titleInput as HTMLInputElement).value).toBe("Mock Note");
       expect(getByTestId("note-delete-button-1")).toBeVisible();
     });
 
@@ -178,8 +217,23 @@ describe("Edit Connection Modal", () => {
     });
 
     await waitFor(() => {
-      expect(getAllByTestId("alert-confirm-delete-note")[0]).toBeVisible();
+      expect(getByTestId("alert-confirm-delete-note")).toBeVisible();
     });
+
+    await waitForIonicReact();
+
+    act(() => {
+      fireEvent.click(getByTestId("alert-confirm-delete-note-confirm-button"));
+      fireEvent.click(getByTestId("alert-confirm-delete-note-cancel-button"));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.NOTE_REMOVED)
+      );
+    });
+
+    unmount();
   });
 
   test("Add note", async () => {
@@ -266,5 +320,250 @@ describe("Edit Connection Modal", () => {
     });
 
     expect(confirmFn).toBeCalledTimes(0);
+  });
+
+  test("Update note", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <EditConnectionsContainer
+          onConfirm={jest.fn()}
+          modalIsOpen={true}
+          setModalIsOpen={jest.fn()}
+          setNotes={jest.fn()}
+          notes={[
+            {
+              id: "1",
+              title: "Note 1",
+              message: "Note message 1",
+            },
+          ]}
+          connectionDetails={connectionsFix[0]}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("connection-name").innerHTML).toBe(
+        connectionsFix[0].label
+      );
+    });
+    const noteInput = getByTestId("edit-connections-modal-note-title-1");
+    const noteMessageInput = getByTestId(
+      "edit-connections-modal-note-message-1"
+    );
+
+    act(() => {
+      fireEvent.change(noteInput, {
+        target: { value: "new Value" },
+      });
+
+      fireEvent.change(noteMessageInput, {
+        target: { value: "new Value" },
+      });
+
+      fireEvent.blur(noteInput);
+    });
+
+    await waitFor(() => {
+      expect((noteInput as HTMLInputElement).value).toEqual("new Value");
+    });
+  });
+
+  test("Update unchange note", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <EditConnectionsContainer
+          onConfirm={jest.fn()}
+          modalIsOpen={true}
+          setModalIsOpen={jest.fn()}
+          setNotes={jest.fn()}
+          notes={[
+            {
+              id: "1",
+              title: "Note 1",
+              message: "Note message 1",
+            },
+          ]}
+          connectionDetails={connectionsFix[0]}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("connection-name").innerHTML).toBe(
+        connectionsFix[0].label
+      );
+    });
+
+    const noteInput = getByTestId("edit-connections-modal-note-title-1");
+
+    act(() => {
+      fireEvent.blur(noteInput);
+    });
+
+    await waitFor(() => {
+      expect((noteInput as HTMLInputElement).value).toEqual("Note 1");
+    });
+  });
+
+  test("Save note", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+
+    const confirmFn = jest.fn();
+
+    const { getByTestId, getAllByTestId } = render(
+      <Provider store={storeMocked}>
+        <EditConnectionsContainer
+          onConfirm={confirmFn}
+          modalIsOpen={true}
+          setModalIsOpen={jest.fn()}
+          setNotes={jest.fn()}
+          notes={[
+            {
+              id: "temp-1",
+              title: "Note temp",
+              message: "Note message temp",
+            },
+            {
+              id: "1",
+              title: "Note 1",
+              message: "Note message 1",
+            },
+            {
+              id: "2",
+              title: "Note 1",
+              message: "Note message 1",
+            },
+          ]}
+          connectionDetails={connectionsFix[0]}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("connection-name").innerHTML).toBe(
+        connectionsFix[0].label
+      );
+    });
+    const noteInput = getByTestId("edit-connections-modal-note-title-1");
+    const noteMessageInput = getByTestId(
+      "edit-connections-modal-note-message-1"
+    );
+
+    act(() => {
+      fireEvent.change(noteInput, {
+        target: { value: "new Value" },
+      });
+
+      fireEvent.change(noteMessageInput, {
+        target: { value: "new Value" },
+      });
+
+      fireEvent.blur(noteInput);
+    });
+
+    await waitFor(() => {
+      expect((noteInput as HTMLInputElement).value).toEqual("new Value");
+    });
+
+    const deleteButton = getByTestId("note-delete-button-2");
+
+    act(() => {
+      ionFireEvent.click(deleteButton);
+    });
+
+    await waitFor(() => {
+      expect(getAllByTestId("alert-confirm-delete-note")[1]).toBeVisible();
+    });
+
+    await waitForIonicReact();
+
+    act(() => {
+      ionFireEvent.click(
+        getAllByTestId("alert-confirm-delete-note-confirm-button")[1]
+      );
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.NOTE_REMOVED)
+      );
+    });
+
+    const actionBtn = getByTestId("action-button");
+
+    act(() => {
+      ionFireEvent.click(actionBtn);
+    });
+
+    await waitFor(() => {
+      expect(createNoteMock).toBeCalledTimes(1);
+      expect(deleteNoteMock).toBeCalledTimes(1);
+      expect(updateNoteMock).toBeCalledTimes(1);
+      expect(confirmFn).toBeCalledTimes(1);
+    });
+  });
+
+  test("handle error when save note", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+
+    const confirmFn = jest.fn();
+
+    createNoteMock.mockImplementation(() =>
+      Promise.reject(new Error("Something wrong"))
+    );
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <EditConnectionsContainer
+          onConfirm={confirmFn}
+          modalIsOpen={true}
+          setModalIsOpen={jest.fn()}
+          setNotes={jest.fn()}
+          notes={[
+            {
+              id: "temp-1",
+              title: "Note temp",
+              message: "Note message temp",
+            },
+          ]}
+          connectionDetails={connectionsFix[0]}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("connection-name").innerHTML).toBe(
+        connectionsFix[0].label
+      );
+    });
+
+    const actionBtn = getByTestId("action-button");
+
+    act(() => {
+      ionFireEvent.click(actionBtn);
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.FAILED_UPDATE_CONNECTION)
+      );
+    });
   });
 });

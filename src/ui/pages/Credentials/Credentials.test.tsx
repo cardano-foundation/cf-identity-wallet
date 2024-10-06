@@ -1,14 +1,9 @@
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
+import { act } from "react";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
@@ -19,6 +14,11 @@ import { formatShortDate } from "../../utils/formatters";
 import { Credentials } from "./Credentials";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
+import {
+  setCurrentOperation,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
+import { OperationType } from "../../globals/types";
 
 const deleteIdentifierMock = jest.fn();
 const archiveIdentifierMock = jest.fn();
@@ -90,6 +90,10 @@ const initialStateFull = {
         id: filteredCredsFix[0].id,
         time: 1,
       },
+      {
+        id: filteredCredsFix[1].id,
+        time: 2,
+      },
     ],
   },
   credsArchivedCache: {
@@ -136,6 +140,9 @@ const archivedAndRevokedState = {
   },
   identifiersCache: {
     identifiers: filteredIdentifierFix,
+  },
+  notificationsCache: {
+    notifications: [],
   },
 };
 
@@ -225,7 +232,7 @@ describe("Creds Tab", () => {
       ...mockStore(initialStateEmpty),
       dispatch: dispatchMock,
     };
-    const { getByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Credentials />
@@ -234,7 +241,7 @@ describe("Creds Tab", () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId("connections-tab")).toHaveClass("hide");
+      expect(queryByTestId("connections-tab")).toBe(null);
     });
 
     act(() => {
@@ -250,7 +257,7 @@ describe("Creds Tab", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("connections-tab")).toHaveClass("hide");
+      expect(queryByTestId("connections-tab")).toBe(null);
     });
   });
 
@@ -445,5 +452,115 @@ describe("Creds Tab", () => {
     );
 
     expect(getByTestId("cred-archived-revoked-button")).toBeVisible();
+  });
+
+  test("Create cred", () => {
+    const storeMocked = {
+      ...mockStore(archivedAndRevokedState),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Credentials />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("add-credential-button"));
+    });
+
+    expect(dispatchMock).toBeCalledWith(
+      setCurrentOperation(OperationType.SCAN_CONNECTION)
+    );
+  });
+
+  test("Open cred detail", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Credentials />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("keri-card-template-allcreds-index-0"));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setCurrentRoute({
+          path: `${TabsRoutePath.CREDENTIALS}/${filteredCredsFix[2].id}`,
+        })
+      );
+
+      expect(
+        getByTestId("favourite-container-element").getAttribute("style")
+      ).not.toBe(null);
+    });
+
+    await waitFor(() => {
+      expect(
+        getByTestId("favourite-container-element").getAttribute("style")
+      ).toBe(null);
+    });
+  });
+
+  test("Open cred detail", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Credentials />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("keri-card-template-favs-index-0"));
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setCurrentRoute({
+          path: `${TabsRoutePath.CREDENTIALS}/${filteredCredsFix[0].id}`,
+        })
+      );
+
+      expect(
+        getByTestId("favourite-container-element").getAttribute("style")
+      ).toBe(null);
+    });
+  });
+
+  test("Open cred archived modal", async () => {
+    const storeMocked = {
+      ...mockStore(archivedAndRevokedState),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
+        <Provider store={storeMocked}>
+          <Credentials />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("cred-archived-revoked-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("archived-credentials")).toBeVisible();
+    });
   });
 });

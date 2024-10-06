@@ -7,14 +7,15 @@ interface TermsModalProps {
   children?: ReactNode;
 }
 
+interface TermContent {
+  subtitle: string;
+  text: string;
+}
+
 interface TermsSection {
   title: string;
-  content: [
-    {
-      subtitle: string;
-      text: string;
-    }
-  ];
+  content: TermContent[];
+  componentId: string;
 }
 
 interface TermsObject {
@@ -26,4 +27,4 @@ interface TermsObject {
   sections: TermsSection[];
 }
 
-export type { TermsModalProps, TermsSection, TermsObject };
+export type { TermsModalProps, TermsSection, TermsObject, TermContent };
