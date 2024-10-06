@@ -155,6 +155,7 @@ describe("SetUserName component", () => {
             attempts: 0,
             lockedUntil: 0,
           },
+          firstAppLaunch: false,
           userName: "testUser",
         })
       );
