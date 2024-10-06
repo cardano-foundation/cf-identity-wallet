@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
+import { App, AppState } from "@capacitor/app";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch } from "../../../store/hooks";
 import { getBiometricsCacheCache } from "../../../store/reducers/biometricsCache";
@@ -154,6 +155,19 @@ const LockPage = () => {
       Keyboard.hide();
       document.getElementById("passcode-button-1")?.focus();
     }
+  }, []);
+  useEffect(() => {
+    const handleAppStateChange = async (state: AppState) => {
+      if (state.isActive) {
+        await handleUseBiometrics();
+      }
+    };
+
+    App.addListener("appStateChange", handleAppStateChange);
+
+    return () => {
+      App.removeAllListeners();
+    };
   }, []);
 
   return (

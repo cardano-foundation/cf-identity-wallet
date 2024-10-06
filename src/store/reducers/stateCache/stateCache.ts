@@ -30,7 +30,7 @@ const initialState: StateCacheProps = {
       attempts: 0,
       lockedUntil: Date.now(),
     },
-    firstAppLaunch: false,
+    firstAppLaunch: true,
   },
   currentOperation: OperationType.IDLE,
   queueIncomingRequest: {
