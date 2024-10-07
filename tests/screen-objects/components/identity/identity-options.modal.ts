@@ -16,10 +16,6 @@ export class IdentityOptionsModal extends CommonIdentityModal {
   get shareIdentifierOption() {
     return $("[data-testid=\"share-identifier-option\"]");
   }
-
-  get viewJsonOption() {
-    return $("[data-testid=\"view-json-identifier-options\"]");
-  }
 }
 
 export default new IdentityOptionsModal();
