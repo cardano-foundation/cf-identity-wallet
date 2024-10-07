@@ -292,7 +292,9 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
               buttonLabel={i18n.t("connections.tab.create")}
               buttonAction={handleConnectModal}
               testId={pageId}
-            />
+            >
+              <span className="placeholder-spacer" />
+            </CardsPlaceholder>
           ) : (
             <ConnectionsBody
               onSearchFocus={setHideHeader}

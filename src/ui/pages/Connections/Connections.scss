@@ -12,8 +12,17 @@
     padding-inline: 1.25rem;
   }
 
+  ion-content.scrollable-page-content {
+    --offset-bottom: 1px !important;
+  }
+
   .cards-placeholder-container {
     padding-inline: 1.25rem;
+    background: var(--ion-color-light);
+  }
+
+  .placeholder-spacer {
+    height: 3.5rem;
   }
 
   .back-button {
@@ -163,6 +172,10 @@
     ion-header,
     .cards-placeholder-container {
       padding-inline: 1rem;
+    }
+
+    .placeholder-spacer {
+      height: 2.5rem;
     }
 
     .page-header {
