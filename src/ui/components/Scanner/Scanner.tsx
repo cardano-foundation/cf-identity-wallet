@@ -125,6 +125,8 @@ const Scanner = forwardRef(
             id,
           })
         );
+        dispatch(setCurrentOperation(OperationType.IDLE));
+        handleReset && handleReset();
       } else {
         dispatch(setToastMsg(ToastMsgType.PEER_ID_ERROR));
       }

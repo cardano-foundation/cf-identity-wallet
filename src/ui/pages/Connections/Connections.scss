@@ -40,7 +40,7 @@
   }
 
   .page-header {
-    height: 3.75rem;
+    height: calc(var(--ion-safe-area-top, 0) + 3.75rem);
     transition: all 0.25s;
   }
 
@@ -56,7 +56,7 @@
     }
 
     .connections-list {
-      height: calc(100vh - 3.5rem);
+      height: calc(100vh - (3.5rem + env(safe-area-inset-bottom)));
     }
   }
 
@@ -68,7 +68,7 @@
   .alphabet-selector {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    margin-top: calc(3.25rem + env(safe-area-inset-bottom));
 
     ion-button {
       width: 1.2rem;
@@ -180,8 +180,12 @@
     }
 
     .page-header {
-      height: 3.25rem;
+      height: calc(var(--ion-safe-area-top, 0) + 3.25rem);
       transition: all 0.25s;
+    }
+
+    .alphabet-selector {
+      margin-top: calc(2.5rem + env(safe-area-inset-bottom));
     }
 
     .connections-list {
