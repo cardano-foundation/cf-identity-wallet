@@ -1,8 +1,4 @@
 import { useRef, useState } from "react";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences/preferencesStorage";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -18,6 +14,8 @@ import { useAppIonRouter } from "../../hooks";
 import "./SetPasscode.scss";
 import { getBackRoute } from "../../../routes/backRoute";
 import { showError } from "../../utils/error";
+import { Agent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/agent.types";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
@@ -42,11 +40,16 @@ const SetPasscode = () => {
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     ionRouter.push(nextPath.pathname, "forward", "push");
 
-    PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
-      initialized: true,
-    }).catch((e) => {
-      showError("Unable to save app init state", e, dispatch);
-    });
+    Agent.agent.basicStorage
+      .save({
+        id: MiscRecordId.APP_ALREADY_INIT,
+        content: {
+          initialized: true,
+        },
+      })
+      .catch((e) => {
+        showError("Unable to save app init state", e, dispatch);
+      });
   };
 
   const isOnReenterPasscodeStep =
