@@ -1,4 +1,5 @@
 import { IonReactMemoryRouter } from "@ionic/react-router";
+import { ionFireEvent } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { act } from "react";
 import { fireEvent, render, waitFor } from "@testing-library/react";
@@ -6,7 +7,6 @@ import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
-import { ionFireEvent } from "@ionic/react-test-utils";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";

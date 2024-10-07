@@ -6,6 +6,7 @@ interface SideSliderProps {
   duration?: number;
   zIndex?: number;
   renderAsModal?: boolean;
+  className?: string;
 }
 
 export const ANIMATION_DURATION = 300;
