@@ -1,11 +1,13 @@
 import { Given, When } from "@wdio/cucumber-framework";
 import AddAnIdentifierModal from "../screen-objects/components/identity/identity-add.modal.js";
+import Assert from "../helpers/assert.js";
 import Gestures from "../helpers/gestures.js";
 import IdentityCardDetailsScreen from "../screen-objects/identity/identity-card-details.screen.js";
 import IdentityEditModal from "../screen-objects/components/identity/identity-edit.modal.js";
 import IdentityScreen from "../screen-objects/identity/identity.screen.js";
 import MenuToolbar from "../screen-objects/components/menu.toolbar.js";
 import { randomNameWithPrefix } from "../helpers/generate.js";
+import { Message } from "../constants/toast.constants";
 
 export async function editAndReturnIdentifierName() {
   const identityName = await randomNameWithPrefix("edit-identity");
@@ -30,7 +32,9 @@ async function addChosenIdentityType() {
 
 async function addChosenIdentityTypeByPlusIcon() {
   await MenuToolbar.addButton.click();
-  return await addChosenIdentityType();
+  const identityName = await addChosenIdentityType();
+  await Assert.toast(Message.NewIdentifierCreatedSuccessfully);
+  return identityName;
 }
 
 Given(
