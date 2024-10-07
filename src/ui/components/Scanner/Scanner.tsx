@@ -128,8 +128,6 @@ const Scanner = forwardRef(
       } else {
         dispatch(setToastMsg(ToastMsgType.PEER_ID_ERROR));
       }
-      dispatch(setCurrentOperation(OperationType.BACK_TO_CONNECT_WALLET));
-      handleReset?.(OperationType.BACK_TO_CONNECT_WALLET);
     };
 
     const updateConnections = async (groupId: string) => {

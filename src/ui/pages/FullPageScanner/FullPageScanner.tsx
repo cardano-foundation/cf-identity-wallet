@@ -1,7 +1,5 @@
 import { arrowBackOutline, repeatOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
@@ -17,7 +15,6 @@ import {
 
 const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
   const pageId = "qr-code-scanner-full-page";
-  const history = useHistory();
   const dispatch = useAppDispatch();
   const scannerRef = useRef<ScannerRefComponent>(null);
   const { cameraDirection, changeCameraDirection, supportMultiCamera } =
@@ -34,8 +31,6 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
     document
       ?.querySelector("body.scanner-active > div:last-child")
       ?.classList.add("hide");
-    operation === OperationType.BACK_TO_CONNECT_WALLET &&
-      history.push(TabsRoutePath.MENU);
   };
 
   const handleCloseButton = () => {

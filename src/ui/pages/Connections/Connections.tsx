@@ -24,7 +24,6 @@ import {
 } from "../../../store/reducers/connectionsCache";
 import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
 import {
-  getCurrentOperation,
   getStateCache,
   setCurrentOperation,
   setToastMsg,
@@ -52,14 +51,13 @@ import { combineClassNames } from "../../utils/style";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../components/PageHeader";
 import { ConnectionDetails } from "../ConnectionDetails";
-const ANIMATION_TIMEOUT = 350;
+import { CreateIdentifier } from "../../components/CreateIdentifier";
 
 const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
   ({ showConnections, setShowConnections }, ref) => {
     const pageId = "connections";
     const dispatch = useAppDispatch();
     const stateCache = useAppSelector(getStateCache);
-    const currentOperation = useAppSelector(getCurrentOperation);
     const connectionsCache = useAppSelector(getConnectionsCache);
     const identifierCache = useAppSelector(getIdentifiersCache);
     const openDetailId = useAppSelector(getOpenConnectionId);
@@ -81,6 +79,8 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     );
     const [openIdentifierMissingAlert, setOpenIdentifierMissingAlert] =
       useState<boolean>(false);
+    const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
+      useState(false);
     const [deletePendingItem, setDeletePendingItem] =
       useState<ConnectionShortDetails | null>(null);
     const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
@@ -110,16 +110,13 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       setShowPlaceholder(Object.keys(connectionsCache).length === 0);
     }, [connectionsCache]);
 
-    useEffect(() => {
-      if (currentOperation === OperationType.BACK_TO_SHARE_CONNECTION) {
-        setShowConnections(true);
-        dispatch(setCurrentOperation(OperationType.IDLE));
-      }
-    }, [currentOperation, dispatch, setShowConnections]);
-
     const handleDone = () => {
       setShowConnections(false);
       dispatch(updateShowConnections(false));
+    };
+
+    const handleCloseCreateIdentifier = () => {
+      setCreateIdentifierModalIsOpen(false);
     };
 
     const AdditionalButtons = () => {
@@ -139,8 +136,9 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       );
     };
 
-    const handleNavToCreateKeri = () => {
+    const handleCreateIdentifier = () => {
       setOpenIdentifierMissingAlert(false);
+      setCreateIdentifierModalIsOpen(true);
     };
 
     const getConnectionShortDetails = async (connectionId: string) => {
@@ -320,6 +318,10 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
           oobi={oobi}
           shareType={ShareType.Connection}
         />
+        <CreateIdentifier
+          modalIsOpen={createIdentifierModalIsOpen}
+          setModalIsOpen={handleCloseCreateIdentifier}
+        />
         <Alert
           isOpen={openIdentifierMissingAlert}
           setIsOpen={setOpenIdentifierMissingAlert}
@@ -327,7 +329,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
           headerText={i18n.t("connections.tab.alert.message")}
           confirmButtonText={`${i18n.t("connections.tab.alert.confirm")}`}
           cancelButtonText={`${i18n.t("connections.tab.alert.cancel")}`}
-          actionConfirm={handleNavToCreateKeri}
+          actionConfirm={handleCreateIdentifier}
           actionCancel={handleCloseAlert}
           actionDismiss={handleCloseAlert}
         />

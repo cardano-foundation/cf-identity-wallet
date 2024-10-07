@@ -1,7 +1,6 @@
 import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
 import { addOutline, peopleOutline } from "ionicons/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -77,7 +76,6 @@ const AdditionalButtons = ({
 };
 const Identifiers = () => {
   const pageId = "identifiers-tab";
-  const history = useHistory();
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const multisigGroupCache = useAppSelector(getMultiSigGroupCache);
@@ -117,14 +115,6 @@ const Identifiers = () => {
     setResumeMultiSig(identifier);
     setCreateIdentifierModalIsOpen(true);
   };
-
-  const openCreateModal = () => setCreateIdentifierModalIsOpen(true);
-
-  useEffect(() => {
-    currentOperation === OperationType.CREATE_IDENTIFIER_CONNECT_WALLET &&
-      history.location.pathname === TabsRoutePath.IDENTIFIERS &&
-      openCreateModal();
-  }, [currentOperation, history.location.pathname]);
 
   useEffect(() => {
     const multisigId =
@@ -216,11 +206,6 @@ const Identifiers = () => {
         : ""
   }`;
   const handleCloseCreateIdentifier = () => {
-    currentOperation === OperationType.CREATE_IDENTIFIER_CONNECT_WALLET
-      ? dispatch(setCurrentOperation(OperationType.BACK_TO_CONNECT_WALLET)) &&
-        history.push(TabsRoutePath.MENU)
-      : dispatch(setCurrentOperation(OperationType.IDLE));
-
     setCreateIdentifierModalIsOpen(false);
   };
 

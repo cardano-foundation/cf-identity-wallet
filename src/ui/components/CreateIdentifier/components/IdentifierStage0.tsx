@@ -180,6 +180,7 @@ const IdentifierStage0 = ({
     <>
       <ScrollablePageLayout
         pageId={componentId + "-content"}
+        activeStatus={true}
         customClass={keyboardIsOpen ? "keyboard-is-open" : ""}
         header={
           <PageHeader

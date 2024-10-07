@@ -805,9 +805,7 @@ describe("Wallet connect", () => {
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentOperation(OperationType.CREATE_IDENTIFIER_CONNECT_WALLET)
-      );
+      expect(getByTestId("create-identifier-modal")).toBeVisible();
     });
   });
 

@@ -7,7 +7,6 @@ import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { Scanner } from "../../components/Scanner";
-import { OperationType } from "../../globals/types";
 import "./Scan.scss";
 import { useCameraDirection } from "../../components/Scanner/hook/useCameraDirection";
 
@@ -30,9 +29,8 @@ const Scan = () => {
     }
   }, [isValueCaptured]);
 
-  const handleAfterScan = (operation?: OperationType) => {
-    operation === OperationType.BACK_TO_CONNECT_WALLET &&
-      history.push(TabsRoutePath.MENU);
+  const handleAfterScan = () => {
+    // TODO: check if this is still necessary
   };
 
   return (

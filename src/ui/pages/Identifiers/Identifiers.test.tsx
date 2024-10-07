@@ -525,7 +525,6 @@ describe("Identifiers Tab", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        currentOperation: OperationType.CREATE_IDENTIFIER_CONNECT_WALLET,
       },
       seedPhraseCache: {},
       identifiersCache: {
@@ -573,7 +572,6 @@ describe("Identifiers Tab", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        //currentOperation: OperationType.RECEIVE_CONNECTION,
       },
       seedPhraseCache: {},
       identifiersCache: {
@@ -608,180 +606,6 @@ describe("Identifiers Tab", () => {
         setCurrentOperation(OperationType.IDLE)
       );
       expect(getByText(EN_TRANSLATIONS.connections.tab.title)).toBeVisible();
-    });
-  });
-
-  test("Close create identifier: CREATE_IDENTIFIER_CONNECT_WALLET", async () => {
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
-    const initialState = {
-      stateCache: {
-        routes: [TabsRoutePath.IDENTIFIER_DETAILS, TabsRoutePath.IDENTIFIERS],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-        },
-        currentOperation: OperationType.CREATE_IDENTIFIER_CONNECT_WALLET,
-      },
-      seedPhraseCache: {},
-      identifiersCache: {
-        identifiers: pendingMultisignIdentifierFix,
-      },
-      identifierViewTypeCacheCache: {
-        viewType: null,
-      },
-      connectionsCache: {
-        connections: connectionsFix,
-      },
-    };
-
-    const storeMocked = {
-      ...mockStore(initialState),
-      dispatch: dispatchMock,
-    };
-
-    const { getByText, getByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.IDENTIFIERS}
-            component={Identifiers}
-          />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.createidentifier.add.title)
-      ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("close-button"));
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentOperation(OperationType.BACK_TO_CONNECT_WALLET)
-      );
-    });
-  });
-
-  test.skip("Close create identifier: CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS", async () => {
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
-    const initialState = {
-      stateCache: {
-        routes: [TabsRoutePath.IDENTIFIER_DETAILS, TabsRoutePath.IDENTIFIERS],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-        },
-        currentOperation: OperationType.IDLE,
-      },
-      seedPhraseCache: {},
-      identifiersCache: {
-        identifiers: pendingMultisignIdentifierFix,
-      },
-      identifierViewTypeCacheCache: {
-        viewType: null,
-      },
-      connectionsCache: {
-        connections: connectionsFix,
-      },
-    };
-
-    const storeMocked = {
-      ...mockStore(initialState),
-      dispatch: dispatchMock,
-    };
-
-    const { getByText, getByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.IDENTIFIERS}
-            component={Identifiers}
-          />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.createidentifier.add.title)
-      ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("close-button"));
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentOperation(OperationType.BACK_TO_SHARE_CONNECTION)
-      );
-    });
-  });
-
-  test.skip("Close create identifier: CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS", async () => {
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
-    const initialState = {
-      stateCache: {
-        routes: [TabsRoutePath.IDENTIFIER_DETAILS, TabsRoutePath.IDENTIFIERS],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-        },
-        currentOperation: OperationType.IDLE,
-      },
-      seedPhraseCache: {},
-      identifiersCache: {
-        identifiers: pendingMultisignIdentifierFix,
-      },
-      identifierViewTypeCacheCache: {
-        viewType: null,
-      },
-      connectionsCache: {
-        connections: connectionsFix,
-      },
-    };
-
-    const storeMocked = {
-      ...mockStore(initialState),
-      dispatch: dispatchMock,
-    };
-
-    const { getByText, getByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.IDENTIFIERS}
-            component={Identifiers}
-          />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.createidentifier.add.title)
-      ).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("close-button"));
-    });
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentOperation(OperationType.BACK_TO_SHARE_CONNECTION)
-      );
     });
   });
 
