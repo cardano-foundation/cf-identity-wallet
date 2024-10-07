@@ -1,6 +1,8 @@
 import { CredentialMetadataRecordProps } from "./credentialMetadataRecord.types";
 import { BaseRecord } from "../../storage/storage.types";
 import { CredentialStatus } from "../services/credentialService.types";
+import { IdentifierMetadataRecordProps } from "./identifierMetadataRecord";
+import { IdentifierType } from "../services/identifier.types";
 
 class CredentialMetadataRecord extends BaseRecord {
   isArchived?: boolean;
@@ -10,7 +12,8 @@ class CredentialMetadataRecord extends BaseRecord {
   status!: CredentialStatus;
   connectionId!: string;
   schema!: string;
-
+  identifier!: IdentifierMetadataRecordProps;
+  identifierType!: IdentifierType;
   static readonly type = "CredentialMetadataRecord";
   readonly type = CredentialMetadataRecord.type;
 
@@ -27,6 +30,8 @@ class CredentialMetadataRecord extends BaseRecord {
       this.status = props.status;
       this.connectionId = props.connectionId;
       this.schema = props.schema;
+      this.identifier = props.identifier;
+      this.identifierType = props.identifierType;
     }
   }
 

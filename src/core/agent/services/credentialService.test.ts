@@ -4,6 +4,8 @@ import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { CoreEventEmitter } from "../event";
 import { Agent } from "../agent";
 import { CredentialStatus } from "./credentialService.types";
+import { IdentifierType } from "./identifier.types";
+import { memberIdentifierRecord } from "../../__fixtures__/agent/multiSigMock";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -140,6 +142,8 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   status: CredentialStatus.CONFIRMED,
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
   schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+  identifierType: IdentifierType.Individual,
+  identifier: memberIdentifierRecord,
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(
@@ -175,6 +179,8 @@ describe("Credential service of agent", () => {
         issuanceDate: nowISO,
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        identifierType: IdentifierType.Individual,
+        identifier: memberIdentifierRecord,
       },
       {
         id: id2,
@@ -182,6 +188,8 @@ describe("Credential service of agent", () => {
         issuanceDate: nowISO,
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        identifierType: IdentifierType.Individual,
+        identifier: memberIdentifierRecord,
       },
     ]);
   });
@@ -324,6 +332,8 @@ describe("Credential service of agent", () => {
         dt: nowISO,
       },
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      identifierType: IdentifierType.Individual,
+      identifier: memberIdentifierRecord,
     });
   });
 
@@ -338,6 +348,8 @@ describe("Credential service of agent", () => {
       isDeleted: false,
       connectionId: undefined,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      identifierType: IdentifierType.Individual,
+      identifier: memberIdentifierRecord,
     });
     expect(
       await credentialService.getCredentialShortDetailsById(id)
@@ -347,6 +359,8 @@ describe("Credential service of agent", () => {
       credentialType,
       issuanceDate: nowISO,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      identifierType: IdentifierType.Individual,
+      identifier: memberIdentifierRecord,
     });
   });
 

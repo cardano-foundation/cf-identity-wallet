@@ -48,6 +48,11 @@ interface CreateIdentifierResult {
   isPending: boolean;
 }
 
+enum IdentifierType {
+  Individual = "individual",
+  Group = "group",
+}
+
 export type {
   IdentifierShortDetails,
   IdentifierDetails,
@@ -55,3 +60,5 @@ export type {
   CreateIdentifierInputs,
   CreateIdentifierResult,
 };
+
+export { IdentifierType };

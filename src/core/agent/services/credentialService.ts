@@ -59,6 +59,8 @@ class CredentialService extends AgentService {
       credentialType: metadata.credentialType,
       status: metadata.status,
       schema: metadata.schema,
+      identifierType: metadata.identifierType,
+      identifier: metadata.identifier,
     };
   }
 
@@ -80,6 +82,8 @@ class CredentialService extends AgentService {
       id: credentialShortDetails.id,
       schema: credentialShortDetails.schema,
       status: credentialShortDetails.status,
+      identifier: credentialShortDetails.identifier,
+      identifierType: credentialShortDetails.identifierType,
       i: acdc.sad.i,
       a: acdc.sad.a,
       s: {
@@ -145,25 +149,6 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  private async saveAcdcMetadataRecord(
-    credentialId: string,
-    dateTime: string,
-    schemaTitle: string,
-    connectionId: string,
-    schema: string
-  ): Promise<void> {
-    const credentialDetails: CredentialMetadataRecordProps = {
-      id: credentialId,
-      isArchived: false,
-      credentialType: schemaTitle,
-      issuanceDate: new Date(dateTime).toISOString(),
-      status: CredentialStatus.PENDING,
-      connectionId,
-      schema,
-    };
-    await this.createMetadata(credentialDetails);
-  }
-
   @OnlineOnly
   async syncACDCs() {
     const signifyCredentials = await this.props.signifyClient
@@ -179,13 +164,17 @@ class CredentialService extends AgentService {
     if (unSyncedData.length) {
       //sync the storage with the signify data
       for (const credential of unSyncedData) {
-        await this.saveAcdcMetadataRecord(
-          credential.sad.d,
-          credential.sad.a.dt,
-          credential.schema.title,
-          credential.sad.i,
-          credential.schema.$id
-        );
+        await this.createMetadata({
+          id: credential.sad.d,
+          isArchived: false,
+          issuanceDate: new Date(credential.sad.a.dt).toISOString(),
+          credentialType: credential.schema.title,
+          status: CredentialStatus.PENDING,
+          connectionId: credential.sad.i,
+          schema: credential.schema.$id,
+          identifierType: credential.identifierType,
+          identifier: credential.identifier,
+        });
       }
     }
   }

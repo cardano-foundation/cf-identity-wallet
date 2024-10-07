@@ -14,7 +14,12 @@ import {
   CredentialShortDetails,
   CredentialStatus,
 } from "../../../core/agent/services/credentialService.types";
+import { IdentifierType } from "../../../core/agent/services/identifier.types";
 import { FavouriteIdentifier } from "../identifiersCache/identifiersCache.types";
+import {
+  memberIdentifierRecord,
+  multisigMetadataRecord,
+} from "../../../core/__fixtures__/agent/multiSigMock";
 
 describe("credsCacheSlice", () => {
   const initialState = {
@@ -35,6 +40,8 @@ describe("credsCacheSlice", () => {
         credentialType: "University Credential",
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        identifierType: IdentifierType.Individual,
+        identifier: memberIdentifierRecord,
       },
     ];
     const newState = credsCacheSlice.reducer(
@@ -51,6 +58,8 @@ describe("credsCacheSlice", () => {
       credentialType: "University Credential",
       status: CredentialStatus.CONFIRMED,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      identifierType: IdentifierType.Individual,
+      identifier: memberIdentifierRecord,
     };
     const newState = credsCacheSlice.reducer(
       initialState,
@@ -68,6 +77,8 @@ describe("credsCacheSlice", () => {
       credentialType: "University Credential",
       status: CredentialStatus.PENDING,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      identifierType: IdentifierType.Group,
+      identifier: multisigMetadataRecord,
     };
     const cred2: CredentialShortDetails = {
       id: credId2,
@@ -75,6 +86,8 @@ describe("credsCacheSlice", () => {
       credentialType: "University Credential",
       status: CredentialStatus.PENDING,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      identifierType: IdentifierType.Group,
+      identifier: multisigMetadataRecord,
     };
     const updateCred: CredentialShortDetails = {
       ...cred1,
