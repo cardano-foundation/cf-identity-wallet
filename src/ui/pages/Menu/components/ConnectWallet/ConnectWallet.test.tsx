@@ -15,6 +15,7 @@ import { OperationType, ToastMsgType } from "../../../../globals/types";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
 import { setPendingConnection } from "../../../../../store/reducers/walletConnectionsCache";
+import { passcodeFiller } from "../../../../utils/passcodeFiller";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -442,7 +443,7 @@ describe("Wallet connect", () => {
   });
 
   test("Delete wallet connections", async () => {
-    const { getByText, getByTestId, unmount } = render(
+    const { getByText, getByTestId, unmount, queryByText } = render(
       <Provider store={storeMocked}>
         <ConnectWallet />
       </Provider>
@@ -485,57 +486,26 @@ describe("Wallet connect", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-0")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-1")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-2")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-3")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-4")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-5")).toBeVisible();
+      passcodeFiller(getByText, getByTestId, "1", 6);
     });
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
         setToastMsg(ToastMsgType.WALLET_CONNECTION_DELETED)
       );
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("alert-delete-cancel-button"));
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+            .deletealert.message
+        )
+      ).not.toBeVisible();
     });
 
     unmount();
@@ -600,12 +570,7 @@ describe("Wallet connect", () => {
     });
 
     act(() => {
-      fireEvent.click(
-        getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
-            .deletealert.confirm
-        )
-      );
+      fireEvent.click(getByTestId("alert-delete-confirm-button"));
     });
 
     await waitFor(() => {
@@ -613,51 +578,7 @@ describe("Wallet connect", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-0")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-1")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-2")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-3")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-4")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-5")).toBeVisible();
+      passcodeFiller(getByText, getByTestId, "1", 6);
     });
 
     await waitFor(() => {
