@@ -1,13 +1,14 @@
 import { IonReactMemoryRouter } from "@ionic/react-router";
+import { ionFireEvent } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
-import { ionFireEvent } from "@ionic/react-test-utils";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
+import { setOpenConnectionDetail } from "../../../store/reducers/connectionsCache";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
@@ -18,7 +19,6 @@ import { passcodeFiller } from "../../utils/passcodeFiller";
 import { Credentials } from "../Credentials/Credentials";
 import { Identifiers } from "../Identifiers";
 import { Connections } from "./Connections";
-import { setOpenConnectionDetail } from "../../../store/reducers/connectionsCache";
 
 const deleteConnectionByIdMock = jest.fn();
 
@@ -270,11 +270,13 @@ describe("Connections page", () => {
   test("It shows available sharing ID", async () => {
     const { getByTestId } = render(
       <Provider store={mockedStore}>
-        <Connections
-          setShowConnections={mockSetShowConnections}
-          showConnections={true}
-          selfPaginated={true}
-        />
+        <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+          <Connections
+            setShowConnections={mockSetShowConnections}
+            showConnections={true}
+            selfPaginated={true}
+          />
+        </MemoryRouter>
       </Provider>
     );
     act(() => {
@@ -329,11 +331,13 @@ describe("Connections page", () => {
     };
     const { getByTestId, getByText, queryByText } = render(
       <Provider store={storeMocked}>
-        <Connections
-          setShowConnections={mockSetShowConnections}
-          showConnections={true}
-          selfPaginated={true}
-        />
+        <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+          <Connections
+            setShowConnections={mockSetShowConnections}
+            showConnections={true}
+            selfPaginated={true}
+          />
+        </MemoryRouter>
       </Provider>
     );
 
