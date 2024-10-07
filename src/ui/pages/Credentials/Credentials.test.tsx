@@ -232,7 +232,7 @@ describe("Creds Tab", () => {
       ...mockStore(initialStateEmpty),
       dispatch: dispatchMock,
     };
-    const { getByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Credentials />
@@ -241,7 +241,7 @@ describe("Creds Tab", () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId("connections-tab")).toHaveClass("hide");
+      expect(queryByTestId("connections-tab")).toBe(null);
     });
 
     act(() => {
@@ -257,7 +257,7 @@ describe("Creds Tab", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("connections-tab")).toHaveClass("hide");
+      expect(queryByTestId("connections-tab")).toBe(null);
     });
   });
 

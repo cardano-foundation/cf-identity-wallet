@@ -32,6 +32,23 @@
     flex-direction: row;
   }
 
+  .tab-title {
+    height: calc(var(--ion-safe-area-top, 0) + 3.25rem);
+    transition: all 0.25s;
+  }
+
+  &.hide-header {
+    .tab-title {
+      opacity: 0;
+      height: var(--ion-safe-area-top, 0);
+      --min-height: 0;
+
+      & * {
+        display: none;
+      }
+    }
+  }
+
   .alphabet-selector {
     display: flex;
     flex-direction: column;
@@ -69,7 +86,7 @@
   }
 
   .connections-container {
-    height: calc(92vh - (6.813rem + env(safe-area-inset-bottom)));
+    height: calc(90vh - (6.813rem + env(safe-area-inset-bottom)));
 
     > ion-grid {
       padding: 0;
@@ -145,6 +162,10 @@
 
     .connections-container {
       height: 70vh;
+    }
+
+    .tab-title {
+      height: calc(var(--ion-safe-area-top, 0) + 2.75rem);
     }
 
     .connections-list {

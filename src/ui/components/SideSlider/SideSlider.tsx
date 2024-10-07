@@ -23,19 +23,22 @@ const SideSlider = ({
   useEffect(() => {
     if (isOpen) {
       setInnerOpen(true);
-    } else {
-      setTimeout(() => {
-        setInnerOpen(false);
-      }, ANIMATION_DURATION);
-    }
 
+      const timer = setTimeout(() => {
+        setCssClass(() =>
+          combineClassNames(baseClass, {
+            "slide-in-left": isOpen,
+          })
+        );
+      }, DELAY_TIME);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
     const timer = setTimeout(() => {
-      setCssClass(() =>
-        combineClassNames(baseClass, {
-          "slide-in-left": isOpen,
-        })
-      );
-    }, DELAY_TIME);
+      setInnerOpen(false);
+    }, ANIMATION_DURATION);
 
     return () => {
       clearTimeout(timer);
