@@ -29,16 +29,6 @@
     overflow: initial;
   }
 
-  .connections-body {
-    display: flex;
-    flex-direction: row;
-  }
-
-  .connections-body,
-  .connections-list {
-    height: 78vh;
-  }
-
   .page-header {
     height: 3.75rem;
     transition: all 0.25s;
@@ -54,6 +44,15 @@
         display: none;
       }
     }
+
+    .connections-list {
+      height: calc(100vh - 3.5rem);
+    }
+  }
+
+  .connections-body {
+    display: flex;
+    flex-direction: row;
   }
 
   .alphabet-selector {
@@ -93,6 +92,8 @@
   }
 
   .connections-list {
+    height: calc(100vh - 7.4rem);
+
     > ion-grid {
       padding: 0;
 
@@ -167,6 +168,10 @@
     .page-header {
       height: 3.25rem;
       transition: all 0.25s;
+    }
+
+    .connections-list {
+      height: calc(100vh - 6.9rem);
     }
 
     .connections-list-alphabetic-block {

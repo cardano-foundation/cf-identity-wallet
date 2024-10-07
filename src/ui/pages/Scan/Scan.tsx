@@ -4,7 +4,10 @@ import { useHistory } from "react-router-dom";
 import { repeatOutline } from "ionicons/icons";
 import { TabsRoutePath } from "../../../routes/paths";
 import { useAppDispatch } from "../../../store/hooks";
-import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import {
+  setCurrentRoute,
+  showConnections,
+} from "../../../store/reducers/stateCache";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { Scanner } from "../../components/Scanner";
 import "./Scan.scss";
@@ -30,7 +33,7 @@ const Scan = () => {
   }, [isValueCaptured]);
 
   const handleAfterScan = () => {
-    // TODO: check if this is still necessary
+    dispatch(showConnections(true));
   };
 
   return (
