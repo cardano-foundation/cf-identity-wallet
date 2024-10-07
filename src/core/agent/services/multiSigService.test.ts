@@ -26,7 +26,7 @@ import {
   mockGetExchangeGrantMessage,
   mockNotificationMultisigExnRotation,
   memberMetadataRecordProps,
-} from "../../__fixtures__/agent/multiSigMock";
+} from "../../__fixtures__/agent/multSigFixtures";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { EventTypes } from "../event.types";
 

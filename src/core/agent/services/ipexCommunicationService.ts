@@ -1,6 +1,5 @@
 import { b, d, messagize, Operation, Saider, Serder, Siger } from "signify-ts";
 import { ConfigurationService } from "../../configuration";
-import { Agent } from "../agent";
 import {
   ExchangeRoute,
   IpexMessage,
