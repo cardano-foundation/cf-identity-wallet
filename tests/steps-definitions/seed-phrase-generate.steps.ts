@@ -42,10 +42,10 @@ Given(
 );
 
 When(
-  /^user tap Continue button Seed Phrase Generate screen$/,
+  /^user tap Generate button Seed Phrase Generate screen$/,
   async function () {
-    await SeedPhraseGenerateScreen.continueButton.scrollIntoView();
-    await SeedPhraseGenerateScreen.continueButton.click();
+    await SeedPhraseGenerateScreen.generateButton.scrollIntoView();
+    await SeedPhraseGenerateScreen.generateButton.click();
   }
 );
 

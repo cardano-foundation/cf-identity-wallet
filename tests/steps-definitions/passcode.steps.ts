@@ -22,9 +22,9 @@ When(/^user re-enter passcode on Passcode screen$/, async function () {
 });
 
 When(
-  /^user tap Forgot your passcode button on Passcode screen$/,
+  /^user tap Can't remember button on Re-enter your Passcode screen$/,
   async function () {
-    await PasscodeScreen.forgotYourPasscodeButton.click();
+    await PasscodeScreen.cantRememberButton.click();
   }
 );
 

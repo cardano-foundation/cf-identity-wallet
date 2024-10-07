@@ -8,7 +8,7 @@ export class IdentityScreen {
   }
 
   get screenTitle() {
-    return $("[data-testid=\"tab-title-identity\"]");
+    return $("[data-testid=\"tab-title-identifiers\"]");
   }
 
   async identityAllCard(index: number) {

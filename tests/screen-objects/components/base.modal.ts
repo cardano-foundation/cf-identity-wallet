@@ -10,12 +10,12 @@ export class BaseModal {
     await findAndClickLocator(`${parent} ${this.closeButtonLocator}`);
   }
 
-  async clickDoneButton() {
-    await findFilterAndClickElement(this.closeButtonLocator);
-  }
-
   async clickDoneLabel() {
     await findFilterAndClickElement("[data-testid=\"close-button-label\"]");
+  }
+
+  async tapDoneButton() {
+    await findFilterAndClickElement("[data-testid=\"tab-done-button\"] h4");
   }
 
   async introTitle(modalName: string) {

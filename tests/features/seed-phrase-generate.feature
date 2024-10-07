@@ -6,10 +6,6 @@ Feature: SeedPhraseGenerate
     And skip Create Password screen
 
 
-  Scenario: SeedPhraseGenerate - user can go back to Create Password screen
-    Given user tap Back arrow icon on Seed Phrase Generate screen
-    Then user can see Create Password screen
-
   Scenario: SeedPhraseGenerate - user can read Terms of Use
     Given user tap Terms of Use link on Seed Phrase Generate screen
     Then user can see Terms of Use modal
@@ -25,6 +21,6 @@ Feature: SeedPhraseGenerate
   Scenario: SeedPhraseGenerate - user can go to see Verify Seed Phrase screen
     Given user tap View Seed Phrase button on Seed Phrase Generate screen
     And tap agree to the Terms and Conditions checkbox on Seed Phrase Generate screen
-    When user tap Continue button Seed Phrase Generate screen
+    When user tap Generate button Seed Phrase Generate screen
     And tap Confirm button on alert modal for Seed Phrase Generate screen
     Then user can see Seed Phrase Verify screen
