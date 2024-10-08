@@ -813,6 +813,104 @@ describe("Ipex communication service of agent", () => {
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 
+  test("Cannot get linkedGroupRequest from ipex/grant if the notification is missing in the DB", async () => {
+    const id = "uuid";
+    const date = new Date().toISOString();
+    const notification = {
+      id,
+      createdAt: date,
+      a: {
+        d: "d",
+      },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
+    };
+    notificationStorage.findById.mockResolvedValueOnce(null);
+
+    await expect(
+      ipexCommunicationService.getLinkedGroupFromIpexGrant(notification.id)
+    ).rejects.toThrowError(
+      `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+    );
+  });
+
+  test("Should return accepted and membersJoined when linkedGroupRequests contain valid data", async () => {
+    const id = "uuid";
+    const date = new Date().toISOString();
+    const notification = {
+      id,
+      createdAt: date,
+      a: {
+        d: "d",
+      },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
+    };
+
+    const grantNoteRecord = {
+      linkedGroupRequests: {
+        credentialSaid: {
+          accepted: true,
+          saids: {
+            ipexAdmitSaid: [
+              ["memberA", "multisigExn1A"],
+              ["memberB", "multisigExn1B"],
+            ],
+            ipexAdmitSaid2: [["memberA", "multisigExn2A"]],
+          },
+        },
+      },
+      a: { d: "d" },
+    };
+
+    notificationStorage.findById.mockResolvedValueOnce(grantNoteRecord);
+    getExchangeMock.mockImplementationOnce(() => ({
+      exn: { e: { acdc: { d: "credentialSaid" } } },
+    }));
+
+    const result = await ipexCommunicationService.getLinkedGroupFromIpexGrant(
+      notification.id
+    );
+
+    expect(result).toEqual({
+      accepted: true,
+      membersJoined: ["memberA", "memberB"],
+    });
+  });
+
+  test("Should return accepted is False and membersJoined when linkedGroupRequests not available", async () => {
+    const id = "uuid";
+    const date = new Date().toISOString();
+    const notification = {
+      id,
+      createdAt: date,
+      a: {
+        d: "d",
+      },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
+    };
+
+    const grantNoteRecord = {
+      linkedGroupRequests: {},
+      a: { d: "d" },
+    };
+
+    notificationStorage.findById.mockResolvedValueOnce(grantNoteRecord);
+    getExchangeMock.mockImplementationOnce(() => ({
+      exn: { e: { acdc: { d: "credentialSaid" } } },
+    }));
+
+    const result = await ipexCommunicationService.getLinkedGroupFromIpexGrant(
+      notification.id
+    );
+
+    expect(result).toEqual({
+      accepted: false,
+      membersJoined: [],
+    });
+  });
+
   test("can accept ACDC from multisig exn", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "uuid";
@@ -1709,7 +1807,7 @@ describe("Ipex communication service of agent", () => {
       },
     };
 
-    getExchangeMock.mockResolvedValue(offerIpexMessageMock);
+    getExchangeMock.mockResolvedValueOnce(offerIpexMessageMock);
 
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       type: "IdentifierMetadataRecord",

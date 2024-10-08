@@ -974,6 +974,48 @@ class IpexCommunicationService extends AgentService {
       status: CredentialStatus.PENDING,
     };
   }
+
+  async getLinkedGroupFromIpexGrant(id: string) {
+    const grantNoteRecord = await this.notificationStorage.findById(id);
+
+    if (!grantNoteRecord) {
+      throw new Error(
+        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+      );
+    }
+
+    const membersJoined: Set<string> = new Set();
+    const linkedGroupRequest = grantNoteRecord.linkedGroupRequests;
+    const exchange = await this.props.signifyClient
+      .exchanges()
+      .get(grantNoteRecord.a.d as string);
+
+    const credentialSaid = exchange.exn.e.acdc.d;
+
+    if (Object.keys(linkedGroupRequest).length) {
+      const saids = linkedGroupRequest[credentialSaid].saids;
+
+      for (const admitSaid in saids) {
+        const memberDetails = saids[admitSaid];
+
+        for (const memberInfo of memberDetails) {
+          if (memberInfo.length > 0) {
+            membersJoined.add(memberInfo[0]);
+          }
+        }
+      }
+
+      return {
+        accepted: linkedGroupRequest[credentialSaid].accepted,
+        membersJoined: Array.from(membersJoined),
+      };
+    } else {
+      return {
+        accepted: false,
+        membersJoined: [],
+      };
+    }
+  }
 }
 
 export { IpexCommunicationService };

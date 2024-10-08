@@ -13,29 +13,37 @@ const SideSlider = ({
   children,
   renderAsModal = false,
   zIndex = SIDE_SLIDER_Z_INDEX,
+  className,
 }: SideSliderProps) => {
-  const baseClass = renderAsModal
-    ? "side-slider-modal"
-    : "side-slider-container";
+  const baseClass = combineClassNames(
+    className,
+    renderAsModal ? "side-slider-modal" : "side-slider-container"
+  );
   const [cssClass, setCssClass] = useState<string | undefined>(baseClass);
   const [innerOpen, setInnerOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setInnerOpen(true);
-    } else {
-      setTimeout(() => {
-        setInnerOpen(false);
-      }, ANIMATION_DURATION);
+
+      const timer = setTimeout(() => {
+        setCssClass(() =>
+          combineClassNames(baseClass, {
+            "slide-in-left": isOpen,
+          })
+        );
+      }, DELAY_TIME);
+
+      return () => {
+        clearTimeout(timer);
+      };
     }
 
+    setCssClass(baseClass);
+
     const timer = setTimeout(() => {
-      setCssClass(() =>
-        combineClassNames(baseClass, {
-          "slide-in-left": isOpen,
-        })
-      );
-    }, DELAY_TIME);
+      setInnerOpen(false);
+    }, ANIMATION_DURATION);
 
     return () => {
       clearTimeout(timer);
