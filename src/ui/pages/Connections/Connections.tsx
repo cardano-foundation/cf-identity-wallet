@@ -88,105 +88,24 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     const [oobi, setOobi] = useState("");
     const [hideHeader, setHideHeader] = useState(false);
 
-    const fetchOobi = useCallback(async () => {
-      try {
-        if (!selectedIdentifier?.id) return;
-
-        const oobiValue = await Agent.agent.connections.getOobi(
-          `${selectedIdentifier.id}`,
-          userName
-        );
-        if (oobiValue) {
-          setOobi(oobiValue);
-        }
-      } catch (e) {
-        showError("Unable to fetch connection oobi", e, dispatch);
-      }
-    }, [selectedIdentifier?.id, userName, dispatch]);
-
-    useOnlineStatusEffect(fetchOobi);
-
     useEffect(() => {
       setShowPlaceholder(Object.keys(connectionsCache).length === 0);
     }, [connectionsCache]);
 
-    const handleDone = () => {
-      setShowConnections(false);
-      dispatch(updateShowConnections(false));
-    };
-
-    const handleCloseCreateIdentifier = () => {
-      setCreateIdentifierModalIsOpen(false);
-    };
-
-    const AdditionalButtons = () => {
-      return (
-        <IonButton
-          shape="round"
-          className="add-button"
-          data-testid="add-connection-button"
-          onClick={handleConnectModal}
-        >
-          <IonIcon
-            slot="icon-only"
-            icon={addOutline}
-            color="primary"
-          />
-        </IonButton>
-      );
-    };
-
-    const handleCreateIdentifier = () => {
-      setOpenIdentifierMissingAlert(false);
-      setCreateIdentifierModalIsOpen(true);
-    };
-
-    const getConnectionShortDetails = async (connectionId: string) => {
-      const shortDetails =
-        await Agent.agent.connections.getConnectionShortDetailById(
-          connectionId
-        );
-      setConnectionShortDetails(shortDetails);
-    };
-
     useEffect(() => {
-      if (openDetailId === undefined) return;
-      const connection = connectionsCache[openDetailId];
-      dispatch(setOpenConnectionId(undefined));
-      if (!connection || connection.status === ConnectionStatus.PENDING) {
-        return;
-      } else {
-        getConnectionShortDetails(openDetailId);
-      }
+      const fetchConnectionDetails = async () => {
+        if (openDetailId === undefined) return;
+        const connection = connectionsCache[openDetailId];
+        dispatch(setOpenConnectionId(undefined));
+        if (!connection || connection.status === ConnectionStatus.PENDING) {
+          return;
+        } else {
+          await getConnectionShortDetails(openDetailId);
+        }
+      };
+
+      fetchConnectionDetails();
     }, [openDetailId]);
-
-    const handleProvideQr = () => {
-      availableIdentifiers.length
-        ? setOpenIdentifierSelector(true)
-        : setOpenIdentifierMissingAlert(true);
-    };
-
-    const handleConnectModal = () => {
-      setConnectModalIsOpen(true);
-    };
-
-    useImperativeHandle(ref, () => ({
-      handleConnectModalButton: handleConnectModal,
-    }));
-
-    const handleCloseAlert = () => {
-      setOpenIdentifierMissingAlert(false);
-    };
-
-    const handleShowConnectionDetails = (item: ConnectionShortDetails) => {
-      if (item.status === ConnectionStatus.PENDING) {
-        setDeletePendingItem(item);
-        setOpenDeletePendingAlert(true);
-        return;
-      }
-
-      setConnectionShortDetails(item);
-    };
 
     useEffect(() => {
       const connections = Object.values(connectionsCache);
@@ -219,6 +138,69 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       }),
       [showConnections]
     );
+
+    const getConnectionShortDetails = async (connectionId: string) => {
+      const shortDetails =
+        await Agent.agent.connections.getConnectionShortDetailById(
+          connectionId
+        );
+      setConnectionShortDetails(shortDetails);
+    };
+
+    const fetchOobi = useCallback(async () => {
+      try {
+        if (!selectedIdentifier?.id) return;
+
+        const oobiValue = await Agent.agent.connections.getOobi(
+          `${selectedIdentifier.id}`,
+          userName
+        );
+        if (oobiValue) {
+          setOobi(oobiValue);
+        }
+      } catch (e) {
+        showError("Unable to fetch connection oobi", e, dispatch);
+      }
+    }, [selectedIdentifier?.id, userName, dispatch]);
+
+    useOnlineStatusEffect(fetchOobi);
+
+    const handleCreateIdentifier = () => {
+      setOpenIdentifierMissingAlert(false);
+      setCreateIdentifierModalIsOpen(true);
+    };
+
+    const handleCloseCreateIdentifier = () => {
+      setCreateIdentifierModalIsOpen(false);
+    };
+
+    const handleProvideQr = () => {
+      availableIdentifiers.length
+        ? setOpenIdentifierSelector(true)
+        : setOpenIdentifierMissingAlert(true);
+    };
+
+    const handleConnectModal = () => {
+      setConnectModalIsOpen(true);
+    };
+
+    useImperativeHandle(ref, () => ({
+      handleConnectModalButton: handleConnectModal,
+    }));
+
+    const handleCloseAlert = () => {
+      setOpenIdentifierMissingAlert(false);
+    };
+
+    const handleShowConnectionDetails = (item: ConnectionShortDetails) => {
+      if (item.status === ConnectionStatus.PENDING) {
+        setDeletePendingItem(item);
+        setOpenDeletePendingAlert(true);
+        return;
+      }
+
+      setConnectionShortDetails(item);
+    };
 
     const getConnectionsTab = useCallback(() => {
       return document.getElementById(pageId);
@@ -258,6 +240,28 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
         );
       }
       dispatch(setCurrentOperation(OperationType.IDLE));
+    };
+
+    const handleDone = () => {
+      setShowConnections(false);
+      dispatch(updateShowConnections(false));
+    };
+
+    const AdditionalButtons = () => {
+      return (
+        <IonButton
+          shape="round"
+          className="add-button"
+          data-testid="add-connection-button"
+          onClick={handleConnectModal}
+        >
+          <IonIcon
+            slot="icon-only"
+            icon={addOutline}
+            color="primary"
+          />
+        </IonButton>
+      );
     };
 
     const classes = combineClassNames({
