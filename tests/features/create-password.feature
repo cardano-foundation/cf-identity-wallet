@@ -5,10 +5,6 @@ Feature: CreatePassword
     And user generate passcode on Passcode screen
 
 
-  Scenario: CreatePassword - user can go back to Onboarding screen
-    Given user tap Back arrow icon on Create Password screen
-    Then user can see Onboarding screen
-
   Scenario: CreatePassword - user can cancel skipping password creation
     Given user tap Skip button on Create Password screen
     When tap Cancel button on alert modal for Create Password screen

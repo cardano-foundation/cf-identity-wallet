@@ -53,6 +53,7 @@ import {
   MappedConnections,
 } from "./Connections.types";
 import { combineClassNames } from "../../utils/style";
+import { RoutePath } from "../../../routes";
 
 const ANIMATION_TIMEOUT = 350;
 
@@ -298,6 +299,11 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
           <SideSlider
             renderAsModal
             isOpen={showConnections}
+            className={
+              history.location.pathname === RoutePath.CONNECTION_DETAILS
+                ? "open-detail"
+                : undefined
+            }
           >
             <TabLayout
               hardwareBackButtonConfig={backHardwareConfig}

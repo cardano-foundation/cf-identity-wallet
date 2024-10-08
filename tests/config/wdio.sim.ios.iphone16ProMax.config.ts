@@ -13,8 +13,8 @@ export const config = {
         // For W3C the appium capabilities need to have an extension prefix
         // This is `appium:` for all Appium Capabilities which can be found here
         // http://appium.io/docs/en/writing-running-appium/caps/
-        "appium:deviceName": "iPhone 15 Pro Max",
-        "appium:platformVersion": "17.5",
+        "appium:deviceName": "iPhone 16 Pro Max",
+        "appium:platformVersion": "18.0",
         "appium:orientation": "PORTRAIT",
         "appium:automationName": "XCUITest",
         "appium:autoWebview": true,

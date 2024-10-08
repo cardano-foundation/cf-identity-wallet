@@ -6,15 +6,15 @@ export class TabBar {
   }
 
   get identityTabButton() {
-    return $("#tab-button-Identity");
+    return $("#tab-button-Identifiers");
   }
 
   get menuTabButton() {
     return $("#tab-button-Menu");
   }
 
-  get p2pChatTabButton() {
-    return $("#tab-button-P2P");
+  get notificationsTabButton() {
+    return $("#tab-button-Notifications");
   }
 
   get scanTabButton() {
@@ -25,7 +25,7 @@ export class TabBar {
     await expect(this.identityTabButton).toBeDisplayed();
     await expect(this.credentialsTabButton).toBeDisplayed();
     await expect(this.scanTabButton).toBeDisplayed();
-    await expect(this.p2pChatTabButton).toBeDisplayed();
+    await expect(this.notificationsTabButton).toBeDisplayed();
     await expect(this.menuTabButton).toBeDisplayed();
   }
 }
