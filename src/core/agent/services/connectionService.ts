@@ -17,6 +17,7 @@ import {
   ConnectionRecord,
   ConnectionStorage,
   CredentialStorage,
+  IdentifierStorage,
   IpexMessageStorage,
   OperationPendingStorage,
 } from "../records";
@@ -25,7 +26,11 @@ import { AgentService } from "./agentService";
 import { KeriaContact } from "./connection.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { StorageMessage } from "../../storage/storage.types";
-import { ConnectionStateChangedEvent, EventTypes } from "../event.types";
+import {
+  ConnectionStateChangedEvent,
+  EventTypes,
+  OperationAddedEvent,
+} from "../event.types";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
@@ -33,6 +38,7 @@ class ConnectionService extends AgentService {
   protected readonly credentialStorage: CredentialStorage;
   protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
+  protected readonly identifierStorage: IdentifierStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
@@ -40,7 +46,8 @@ class ConnectionService extends AgentService {
     connectionNoteStorage: ConnectionNoteStorage,
     credentialStorage: CredentialStorage,
     ipexMessageStorage: IpexMessageStorage,
-    operationPendingStorage: OperationPendingStorage
+    operationPendingStorage: OperationPendingStorage,
+    identifierStorage: IdentifierStorage
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
@@ -48,6 +55,7 @@ class ConnectionService extends AgentService {
     this.credentialStorage = credentialStorage;
     this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
+    this.identifierStorage = identifierStorage;
   }
 
   static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
@@ -104,7 +112,7 @@ class ConnectionService extends AgentService {
     if (multiSigInvite) {
       connectionMetadata.groupId = groupId;
       const identifierWithGroupId =
-        await Agent.agent.identifiers.getKeriIdentifierByGroupId(groupId);
+        await this.identifierStorage.getIdentifierMetadataByGroupId(groupId);
 
       // This allows the calling function to create our smid/rmid member identifier.
       // We let the UI handle it as it requires some metadata from the user like display name.
@@ -388,9 +396,11 @@ class ConnectionService extends AgentService {
         id: operation.name,
         recordType: OperationPendingRecordType.Oobi,
       });
-      Agent.agent.keriaNotifications.addPendingOperationToQueue(
-        pendingOperation
-      );
+
+      this.props.eventEmitter.emit<OperationAddedEvent>({
+        type: EventTypes.OperationAdded,
+        payload: { operation: pendingOperation },
+      });
     } else if (!operation.done) {
       throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
     }

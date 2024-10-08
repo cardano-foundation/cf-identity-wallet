@@ -1,10 +1,18 @@
 export class CommonIdentityModal {
+  get colorTitle() {
+    return $("[data-testid=\"color-input-title\"]");
+  }
+
+  async colorItem(index: number) {
+    return $(`[data-testid="color-${index}"]`);
+  }
+
   get displayNameTitle() {
-    return $("[data-testid=\"display-name-title\"]");
+    return $("[data-testid=\"display-name-input-title\"]");
   }
 
   get themeTitle() {
-    return $(".theme-input-title");
+    return $("[data-testid=\"theme-input-title\"]");
   }
 
   async themeItem(index: number) {

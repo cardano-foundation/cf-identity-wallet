@@ -141,6 +141,7 @@ describe("Full page scanner", () => {
   };
 
   test("Renders content", async () => {
+    isNativeMock.mockImplementation(() => true);
     const { getByTestId } = render(
       <Provider store={storeMocked}>
         <FullPageScanner
@@ -160,6 +161,8 @@ describe("Full page scanner", () => {
   });
 
   test("Reset after scan", async () => {
+    isNativeMock.mockImplementation(() => true);
+
     const initialState = {
       stateCache: {
         routes: [TabsRoutePath.SCAN],

@@ -26,12 +26,14 @@ import { IonicStorage } from "../../storage/ionicStorage";
 import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
 import { IpexCommunicationService } from "./ipexCommunicationService";
-import { IdentifierService } from "./identifierService";
 import {
-  NotificationEvent,
+  NotificationAddedEvent,
   EventTypes,
-  OperationPendingEvent,
+  OperationCompleteEvent,
+  OperationAddedEvent,
 } from "../event.types";
+import { deleteNotificationRecordById } from "./utils";
+import { CredentialService } from "./credentialService";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -47,7 +49,7 @@ class KeriaNotificationService extends AgentService {
   protected readonly basicStorage: BasicStorage;
   protected readonly multiSigs: MultiSigService;
   protected readonly ipexCommunications: IpexCommunicationService;
-  protected readonly identifiers: IdentifierService;
+  protected readonly credentialService: CredentialService;
   protected readonly getKeriaOnlineStatus: () => boolean;
   protected readonly markAgentStatus: (online: boolean) => void;
   protected readonly connect: (retryInterval?: number) => Promise<void>;
@@ -66,7 +68,7 @@ class KeriaNotificationService extends AgentService {
     basicStorage: BasicStorage,
     multiSigs: MultiSigService,
     ipexCommunications: IpexCommunicationService,
-    identifiers: IdentifierService,
+    credentialService: CredentialService,
     getKeriaOnlineStatus: () => boolean,
     markAgentStatus: (online: boolean) => void,
     connect: (retryInterval?: number) => Promise<void>
@@ -81,10 +83,16 @@ class KeriaNotificationService extends AgentService {
     this.basicStorage = basicStorage;
     this.multiSigs = multiSigs;
     this.ipexCommunications = ipexCommunications;
-    this.identifiers = identifiers;
+    this.credentialService = credentialService;
     this.getKeriaOnlineStatus = getKeriaOnlineStatus;
     this.markAgentStatus = markAgentStatus;
     this.connect = connect;
+    this.props.eventEmitter.on<OperationAddedEvent>(
+      EventTypes.OperationAdded,
+      (event) => {
+        this.pendingOperations.push(event.payload.operation);
+      }
+    );
   }
 
   async pollNotifications() {
@@ -218,10 +226,12 @@ class KeriaNotificationService extends AgentService {
     id: string,
     route: NotificationRoute
   ): Promise<void> {
-    if (!/^\/local/.test(route)) {
-      await this.markNotification(id);
-    }
-    await this.notificationStorage.deleteById(id);
+    return deleteNotificationRecordById(
+      this.props.signifyClient,
+      this.notificationStorage,
+      id,
+      route
+    );
   }
 
   async processNotification(notif: Notification) {
@@ -248,15 +258,17 @@ class KeriaNotificationService extends AgentService {
     if (!shouldCreateRecord) {
       return;
     }
-
     try {
       const keriaNotif = await this.createNotificationRecord(notif);
-      this.props.eventEmitter.emit<NotificationEvent>({
-        type: EventTypes.Notification,
-        payload: {
-          keriaNotif,
-        },
-      });
+      if (notif.a.r !== NotificationRoute.ExnIpexAgree) {
+        // Hidden from UI, so don't emit
+        this.props.eventEmitter.emit<NotificationAddedEvent>({
+          type: EventTypes.NotificationAdded,
+          payload: {
+            keriaNotif,
+          },
+        });
+      }
     } catch (error) {
       if (
         (error as Error).message ===
@@ -266,6 +278,11 @@ class KeriaNotificationService extends AgentService {
       } else {
         throw error;
       }
+    }
+
+    // @TODO - foconnor: This post processing may fail, causing notification to be created again
+    if (notif.a.r === NotificationRoute.ExnIpexAgree) {
+      await this.ipexCommunications.grantAcdcFromAgree(notif.i);
     }
   }
 
@@ -337,7 +354,7 @@ class KeriaNotificationService extends AgentService {
         id: op.name,
         recordType: OperationPendingRecordType.ExchangeRevokeCredential,
       });
-      this.addPendingOperationToQueue(pendingOperation);
+      this.pendingOperations.push(pendingOperation);
       await this.markNotification(notif.i);
       return false;
     }
@@ -429,64 +446,195 @@ class KeriaNotificationService extends AgentService {
   ): Promise<boolean> {
     const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
 
-    if (exchange?.exn?.e?.exn?.r !== ExchangeRoute.IpexAdmit) {
-      await this.markNotification(notif.i);
-      return false;
-    }
+    switch (exchange.exn.e?.exn?.r) {
+    case ExchangeRoute.IpexAdmit: {
+      const admitSaid = exchange.exn.e.exn.d;
+      const otherMember = exchange.exn.i;
 
-    const existMultisig = await this.identifiers
-      .getIdentifier(exchange?.exn?.e?.exn?.i)
-      .catch((error) => {
-        if (
-          error.message === IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
-        ) {
-          return undefined;
-        } else {
-          throw error;
-        }
-      });
+      const grantExn = await this.props.signifyClient
+        .exchanges()
+        .get(exchange.exn.e.exn.p);
 
-    if (!existMultisig) {
-      await this.markNotification(notif.i);
-      return false;
-    }
-    const previousExnGrantMsg = await this.props.signifyClient
-      .exchanges()
-      .get(exchange?.exn.e.exn.p);
+      const notificationsGrant =
+          await this.notificationStorage.findAllByQuery({
+            exnSaid: grantExn.exn.d,
+          });
 
-    const existingCredential = await this.props.signifyClient
-      .credentials()
-      .get(previousExnGrantMsg.exn.e.acdc.d)
-      .catch(() => undefined);
+      const existMultisig = await this.identifierStorage
+        .getIdentifierMetadata(exchange.exn.e.exn.i)
+        .catch((error) => {
+          if (
+            error.message ===
+              IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+          ) {
+            return undefined;
+          } else {
+            throw error;
+          }
+        });
 
-    if (existingCredential) {
-      await this.markNotification(notif.i);
-      return false;
-    }
-    const notifications = await this.notificationStorage.findAllByQuery({
-      exnSaid: previousExnGrantMsg.exn.d,
-    });
-
-    if (notifications.length) {
-      const notificationRecord = notifications[0];
-      if (
-        !Object.values(notificationRecord.linkedGroupRequests).includes(true)
-      ) {
-        notificationRecord.linkedGroupRequests = {
-          ...notificationRecord.linkedGroupRequests,
-          [exchange.exn.d]: false,
-        };
-      } else {
-        await this.ipexCommunications.acceptAcdcFromMultisigExn(exchange.exn.d);
-        notificationRecord.linkedGroupRequests = {
-          ...notificationRecord.linkedGroupRequests,
-          [exchange.exn.d]: true,
-        };
+      if (!existMultisig) {
+        await this.markNotification(notif.i);
+        return false;
       }
-      await this.notificationStorage.update(notificationRecord);
+
+      const credentialId = grantExn.exn.e.acdc.d;
+      const existingCredential = await this.props.signifyClient
+        .credentials()
+        .get(credentialId)
+        .catch(() => undefined);
+
+      // @TODO - foconnor: If multi-sig it may not complete now
+      if (existingCredential) {
+        await this.markNotification(notif.i);
+        return false;
+      }
+
+      // @TODO - foconnor: We may receive admit before grant, will cause issues
+      if (notificationsGrant.length) {
+        const notificationRecord = notificationsGrant[0];
+
+        // Can only be one, as grant tied to credential ID
+        let linkedGroupRequestDetails =
+            notificationRecord.linkedGroupRequests[credentialId];
+        if (linkedGroupRequestDetails) {
+          if (
+            linkedGroupRequestDetails.accepted &&
+              !linkedGroupRequestDetails.saids[admitSaid]
+          ) {
+            // Only auto-join NEW /ipex/admit
+            await this.ipexCommunications.acceptAcdcFromMultisigExn(
+              exchange.exn.d
+            );
+          }
+
+          if (!linkedGroupRequestDetails.saids[admitSaid]) {
+            // First /multisig/exn for specific /ipex/admit
+            linkedGroupRequestDetails.saids[admitSaid] = [];
+          }
+          linkedGroupRequestDetails.saids[admitSaid].push([
+            otherMember,
+            exchange.exn.d,
+          ]); // Record, should only get 1 notification
+        } else {
+          linkedGroupRequestDetails = {
+            // First /multisig/exn linking to /ipex/grant
+            accepted: false,
+            saids: { [admitSaid]: [[otherMember, exchange.exn.d]] },
+          };
+        }
+
+        notificationRecord.linkedGroupRequests[credentialId] =
+            linkedGroupRequestDetails;
+        await this.notificationStorage.update(notificationRecord);
+      }
+      await this.markNotification(notif.i);
+      return false;
     }
-    await this.markNotification(notif.i);
-    return false;
+    case ExchangeRoute.IpexOffer: {
+      const applyExn = await this.props.signifyClient
+        .exchanges()
+        .get(exchange.exn.e.exn.p);
+
+      const notificationsApply =
+          await this.notificationStorage.findAllByQuery({
+            exnSaid: applyExn.exn.d,
+          });
+
+      if (notificationsApply.length) {
+        const notificationRecord = notificationsApply[0];
+        const acdcSaid = exchange.exn.e.exn.e.acdc.d;
+        const offerSaid = exchange.exn.e.exn.d;
+        const otherMember = exchange.exn.i;
+
+        let linkedGroupRequestDetails =
+            notificationRecord.linkedGroupRequests[acdcSaid];
+        if (linkedGroupRequestDetails) {
+          if (
+            linkedGroupRequestDetails.accepted &&
+              !linkedGroupRequestDetails.saids[offerSaid]
+          ) {
+            // Only auto-join NEW /ipex/offer
+            await this.ipexCommunications.joinMultisigOffer(exchange.exn.d);
+          }
+
+          if (!linkedGroupRequestDetails.saids[offerSaid]) {
+            // First /multisig/exn for specific /ipex/offer
+            linkedGroupRequestDetails.saids[offerSaid] = [];
+          }
+          linkedGroupRequestDetails.saids[offerSaid].push([
+            otherMember,
+            exchange.exn.d,
+          ]); // Record, should only get 1 notification
+        } else {
+          linkedGroupRequestDetails = {
+            // First /multisig/exn linking to /ipex/apply with this credentialId
+            accepted: false,
+            saids: { [offerSaid]: [[otherMember, exchange.exn.d]] },
+          };
+        }
+
+        notificationRecord.linkedGroupRequests[acdcSaid] =
+            linkedGroupRequestDetails;
+        await this.notificationStorage.update(notificationRecord);
+      }
+      await this.markNotification(notif.i);
+      return false;
+    }
+    case ExchangeRoute.IpexGrant: {
+      const agreeExn = await this.props.signifyClient
+        .exchanges()
+        .get(exchange.exn.e.exn.p);
+
+      const credentialId = exchange.exn.e.exn.e.acdc.d;
+      const notificationsAgree =
+          await this.notificationStorage.findAllByQuery({
+            exnSaid: agreeExn.exn.d,
+          });
+
+      if (notificationsAgree.length) {
+        const notificationRecord = notificationsAgree[0];
+        const grantSaid = exchange.exn.e.exn.d;
+        const otherMember = exchange.exn.i;
+
+        let linkedGroupRequestDetails =
+            notificationRecord.linkedGroupRequests[credentialId];
+        if (linkedGroupRequestDetails) {
+          if (
+            linkedGroupRequestDetails.accepted &&
+              !linkedGroupRequestDetails.saids[grantSaid]
+          ) {
+            // Only auto-join NEW /ipex/grant
+            await this.ipexCommunications.joinMultisigGrant(exchange.exn.d);
+          }
+
+          if (!linkedGroupRequestDetails.saids[grantSaid]) {
+            // First /multisig/exn for specific /ipex/grant
+            linkedGroupRequestDetails.saids[grantSaid] = [];
+          }
+          linkedGroupRequestDetails.saids[grantSaid].push([
+            otherMember,
+            exchange.exn.d,
+          ]); // Record, should only get 1 notification
+        } else {
+          linkedGroupRequestDetails = {
+            // First /multisig/exn linking to /ipex/apply with this credentialId
+            accepted: false,
+            saids: { [grantSaid]: [[otherMember, exchange.exn.d]] },
+          };
+        }
+
+        notificationRecord.linkedGroupRequests[credentialId] =
+            linkedGroupRequestDetails;
+        await this.notificationStorage.update(notificationRecord);
+      }
+      await this.markNotification(notif.i);
+      return false;
+    }
+    default:
+      await this.markNotification(notif.i);
+      return false;
+    }
   }
 
   private async processExnIpexAgreeNotification(
@@ -513,9 +661,8 @@ class KeriaNotificationService extends AgentService {
         ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
       );
     }
-    await this.ipexCommunications.grantAcdcFromAgree(notif.a.d);
-    await this.markNotification(notif.i);
-    return false;
+
+    return true;
   }
 
   private async createNotificationRecord(
@@ -552,6 +699,7 @@ class KeriaNotificationService extends AgentService {
     }
 
     const result = await this.notificationStorage.save(metadata);
+
     return {
       id: result.id,
       createdAt: result.createdAt.toISOString(),
@@ -585,7 +733,11 @@ class KeriaNotificationService extends AgentService {
   }
 
   async getAllNotifications(): Promise<KeriaNotification[]> {
-    const notifications = await this.notificationStorage.getAll();
+    const notifications = await this.notificationStorage.findAllByQuery({
+      $not: {
+        route: NotificationRoute.ExnIpexAgree,
+      },
+    });
     return notifications.map((notification) => {
       return {
         id: notification.id,
@@ -686,8 +838,8 @@ class KeriaNotificationService extends AgentService {
         const multisigIdentifier =
             await this.identifierStorage.getIdentifierMetadata(recordId);
         await this.multiSigs.endRoleAuthorization(multisigIdentifier.id);
-        this.props.eventEmitter.emit<OperationPendingEvent>({
-          type: EventTypes.Operation,
+        this.props.eventEmitter.emit<OperationCompleteEvent>({
+          type: EventTypes.OperationComplete,
           payload: {
             opType: operationRecord.recordType,
             oid: recordId,
@@ -699,8 +851,8 @@ class KeriaNotificationService extends AgentService {
         await this.identifierStorage.updateIdentifierMetadata(recordId, {
           isPending: false,
         });
-        this.props.eventEmitter.emit<OperationPendingEvent>({
-          type: EventTypes.Operation,
+        this.props.eventEmitter.emit<OperationCompleteEvent>({
+          type: EventTypes.OperationComplete,
           payload: {
             opType: operationRecord.recordType,
             oid: recordId,
@@ -717,8 +869,8 @@ class KeriaNotificationService extends AgentService {
           connectionRecord.createdAt = (operation.response as any).dt;
           await this.connectionStorage.update(connectionRecord);
         }
-        this.props.eventEmitter.emit<OperationPendingEvent>({
-          type: EventTypes.Operation,
+        this.props.eventEmitter.emit<OperationCompleteEvent>({
+          type: EventTypes.OperationComplete,
           payload: {
             opType: operationRecord.recordType,
             oid: recordId,
@@ -746,13 +898,15 @@ class KeriaNotificationService extends AgentService {
                   });
               for (const notification of notifications) {
                 // @TODO: Delete other long running operations in linkedGroupRequests
-                await this.deleteNotificationRecordById(
+                await deleteNotificationRecordById(
+                  this.props.signifyClient,
+                  this.notificationStorage,
                   notification.id,
                     notification.a.r as NotificationRoute
                 );
               }
             }
-            await this.ipexCommunications.markAcdc(
+            await this.credentialService.markAcdc(
               credentialId,
               CredentialStatus.CONFIRMED
             );
@@ -774,12 +928,16 @@ class KeriaNotificationService extends AgentService {
           const credential = await this.props.signifyClient
             .credentials()
             .get(credentialId);
+          if (credential.status.s === "0") {
+            // Wait for admit operations to fully complete on KERIA - return early to not block other operations.
+            return;
+          }
           if (
             credential &&
               credential.status.s === "1" &&
               credentialMetadata?.status !== CredentialStatus.REVOKED
           ) {
-            await this.ipexCommunications.markAcdc(
+            await this.credentialService.markAcdc(
               credentialId,
               CredentialStatus.REVOKED
             );
@@ -798,13 +956,76 @@ class KeriaNotificationService extends AgentService {
               route: NotificationRoute.LocalAcdcRevoked,
             };
             await this.notificationStorage.save(metadata);
-            this.props.eventEmitter.emit<OperationPendingEvent>({
-              type: EventTypes.Operation,
+            this.props.eventEmitter.emit<OperationCompleteEvent>({
+              type: EventTypes.OperationComplete,
               payload: {
                 opType: operationRecord.recordType,
                 oid: recordId,
               },
             });
+          }
+        }
+        break;
+      }
+      case OperationPendingRecordType.ExchangeOfferCredential: {
+        const offerExchange = await this.props.signifyClient
+          .exchanges()
+          .get(operation.metadata?.said);
+
+        if (offerExchange.exn.r === ExchangeRoute.IpexOffer) {
+          const applyExchange = await this.props.signifyClient
+            .exchanges()
+            .get(offerExchange.exn.p);
+
+          const holder = await this.identifierStorage.getIdentifierMetadata(
+            offerExchange.exn.i
+          );
+          if (holder.multisigManageAid) {
+            const notifications =
+                await this.notificationStorage.findAllByQuery({
+                  exnSaid: applyExchange.exn.d,
+                });
+            for (const notification of notifications) {
+              // @TODO: Delete other long running operations in linkedGroupRequests
+              await deleteNotificationRecordById(
+                this.props.signifyClient,
+                this.notificationStorage,
+                notification.id,
+                  notification.a.r as NotificationRoute
+              );
+            }
+          }
+        }
+        break;
+      }
+      case OperationPendingRecordType.ExchangePresentCredential: {
+        const grantExchange = await this.props.signifyClient
+          .exchanges()
+          .get(operation.metadata?.said);
+        if (grantExchange.exn.r === ExchangeRoute.IpexAgree) {
+          const agreeExchange = await this.props.signifyClient
+            .exchanges()
+            .get(grantExchange.exn.p);
+          const credentialId = agreeExchange.exn.e.acdc.d;
+          if (credentialId) {
+            const holder = await this.identifierStorage.getIdentifierMetadata(
+              grantExchange.exn.i
+            );
+            if (holder.multisigManageAid) {
+              const notifications =
+                  await this.notificationStorage.findAllByQuery({
+                    exnSaid: agreeExchange.exn.d,
+                  });
+              for (const notification of notifications) {
+                // @TODO: Delete other long running operations in linkedGroupRequests
+                await deleteNotificationRecordById(
+                  this.props.signifyClient,
+                  this.notificationStorage,
+                  notification.id,
+                    notification.a.r as NotificationRoute
+                );
+              }
+            }
           }
         }
         break;
@@ -820,16 +1041,12 @@ class KeriaNotificationService extends AgentService {
     }
   }
 
-  addPendingOperationToQueue(pendingOperation: OperationPendingRecord) {
-    this.pendingOperations.push(pendingOperation);
+  onNewNotification(callback: (event: NotificationAddedEvent) => void) {
+    this.props.eventEmitter.on(EventTypes.NotificationAdded, callback);
   }
 
-  onNewNotification(callback: (event: NotificationEvent) => void) {
-    this.props.eventEmitter.on(EventTypes.Notification, callback);
-  }
-
-  onLongOperationComplete(callback: (event: OperationPendingEvent) => void) {
-    this.props.eventEmitter.on(EventTypes.Operation, callback);
+  onLongOperationComplete(callback: (event: OperationCompleteEvent) => void) {
+    this.props.eventEmitter.on(EventTypes.OperationComplete, callback);
   }
 }
 

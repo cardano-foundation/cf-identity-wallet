@@ -1,0 +1,30 @@
+.connection-search-input {
+  padding-inline-start: 1.25rem;
+  padding-inline-end: 1.25rem;
+
+  .searchbar-cancel-button {
+    font-weight: 700;
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    padding-inline-start: 0.75rem;
+    padding-inline-end: 0.75rem;
+
+    .searchbar-cancel-button {
+      font-size: 0.95rem;
+    }
+  }
+}
+
+.connections-tab-center {
+  .alphabet-selector {
+    transition: all 0.25s;
+  }
+
+  &.keyboard {
+    .alphabet-selector {
+      justify-content: start;
+      transform-origin: top;
+    }
+  }
+}

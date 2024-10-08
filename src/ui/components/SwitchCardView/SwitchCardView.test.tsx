@@ -7,6 +7,7 @@ import { CardType } from "../../globals/types";
 import { SwitchCardView } from "./SwitchCardView";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { TabsRoutePath } from "../navigation/TabsMenu";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 
 const historyPushMock = jest.fn();
 jest.mock("../../../core/agent/agent", () => ({
@@ -96,7 +97,7 @@ describe("Card switch view list Tab", () => {
       <Provider store={mockedStore}>
         <SwitchCardView
           cardTypes={CardType.CREDENTIALS}
-          cardsData={credsFixAcdc}
+          cardsData={filteredCredsFix}
           title="title"
           name="allidentifiers"
         />
@@ -116,12 +117,12 @@ describe("Card switch view list Tab", () => {
     expect(getByTestId("card-list")).toBeInTheDocument();
 
     act(() => {
-      fireEvent.click(getByTestId("card-item-" + credsFixAcdc[0].id));
+      fireEvent.click(getByTestId("card-item-" + filteredCredsFix[0].id));
     });
 
     await waitFor(() => {
       expect(historyPushMock).toBeCalledWith({
-        pathname: `${TabsRoutePath.CREDENTIALS}/${credsFixAcdc[0].id}`,
+        pathname: `${TabsRoutePath.CREDENTIALS}/${filteredCredsFix[0].id}`,
       });
     });
 

@@ -56,10 +56,6 @@ When(/^user tap Cancel button on Identifier Edit modal$/, async function () {
   await BaseModal.clickCloseButtonOf(await IdentityEditModal.idLocator);
 });
 
-When(/^user tap Done button on Identifier JSON modal$/, async function () {
-  await BaseModal.clickDoneButton();
-});
-
 When(/^user tap Cancel button on modal$/, async function () {
   await BaseModal.clickDoneLabel();
 });

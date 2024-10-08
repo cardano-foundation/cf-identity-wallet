@@ -115,7 +115,7 @@ class SqliteStorage<T extends BaseRecord> implements StorageService<T> {
 
     const record = await this.getItem(id);
 
-    if (!record) {
+    if (!record || record.category !== recordClass.type) {
       return null;
     }
     return deserializeRecord(record, recordClass);

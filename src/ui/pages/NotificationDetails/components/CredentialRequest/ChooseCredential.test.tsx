@@ -4,8 +4,8 @@ import { Provider } from "react-redux";
 import { createMemoryHistory } from "history";
 import configureStore from "redux-mock-store";
 import { IonReactMemoryRouter } from "@ionic/react-router";
-import { act } from "react-dom/test-utils";
 import { SecureStorage } from "@aparajita/capacitor-secure-storage";
+import { act } from "react";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
@@ -17,7 +17,11 @@ import { ACDC } from "./CredentialRequest.types";
 import { credRequestFix } from "../../../../__fixtures__/credRequestFix";
 import { KeyStoreKeys } from "../../../../../core/storage";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
-import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
+import {
+  credsFixAcdc,
+  revokedCredFixs,
+} from "../../../../__fixtures__/credsFix";
+import { CredentialStatus } from "../../../../../core/agent/services/credentialService.types";
 
 mockIonicReact();
 
@@ -98,7 +102,7 @@ const initialState = {
 };
 
 describe("Credential request - choose request", () => {
-  test("Render", async () => {
+  test("Render full active credentials & empty revoked tab", async () => {
     const storeMocked = {
       ...mockStore(initialState),
       dispatch: dispatchMock,
@@ -149,6 +153,7 @@ describe("Credential request - choose request", () => {
         )} - ${formatTimeToSec(credRequestFix.credentials[0].acdc.a.dt)}`
       )
     ).toBeVisible();
+
     expect(
       getByText(
         `${formatShortDate(
@@ -156,6 +161,23 @@ describe("Credential request - choose request", () => {
         )} - ${formatTimeToSec(credRequestFix.credentials[1].acdc.a.dt)}`
       )
     ).toBeVisible();
+
+    const segment = getByTestId("choose-credential-segment");
+
+    act(() => {
+      ionFireEvent.ionChange(segment, "revoked");
+    });
+
+    await waitFor(() =>
+      expect(
+        getByText(
+          EN_TRANSLATIONS.notifications.details.credential.request.choosecredential.norevoked.replace(
+            "{{requestCred}}",
+            credRequestFix.schema.name
+          )
+        )
+      ).toBeVisible()
+    );
   });
 
   test("Show detail", async () => {
@@ -352,6 +374,9 @@ describe("Credential request - choose request", () => {
           passcodeIsSet: true,
         },
       },
+      credsCache: {
+        creds: [],
+      },
       connectionsCache: {
         connections: connectionsForNotifications,
       },
@@ -437,8 +462,100 @@ describe("Credential request - choose request", () => {
     });
 
     expect(offerAcdcFromApplyMock).toBeCalledWith(
-      notificationsFix[4],
+      notificationsFix[4].id,
       credRequestFix.credentials[0].acdc
+    );
+  });
+});
+
+describe("Credential request - choose request", () => {
+  const credsCacheMock = credsFixAcdc.map((item) => ({
+    ...item,
+    status: CredentialStatus.REVOKED,
+  }));
+
+  const initialState = {
+    stateCache: {
+      routes: [TabsRoutePath.NOTIFICATIONS],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+      },
+    },
+    credsCache: {
+      creds: credsCacheMock,
+    },
+    connectionsCache: {
+      connections: connectionsForNotifications,
+    },
+    notificationsCache: {
+      notifications: notificationsFix,
+    },
+  };
+
+  test("Render empty active credentials & full revoked tab", async () => {
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const credMock = {
+      ...credRequestFix,
+      credentials: [
+        {
+          ...credRequestFix.credentials[0],
+          status: CredentialStatus.REVOKED,
+        },
+      ],
+    };
+
+    const history = createMemoryHistory();
+
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <IonReactMemoryRouter history={history}>
+          <ChooseCredential
+            pageId="multi-sign"
+            activeStatus
+            onBack={jest.fn()}
+            onClose={jest.fn()}
+            notificationDetails={notificationsFix[4]}
+            credentialRequest={credMock}
+            reloadData={jest.fn}
+          />
+        </IonReactMemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.notifications.details.credential.request
+            .choosecredential.title
+        )
+      ).toBeVisible();
+    });
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.notifications.details.credential.request.choosecredential.noactive.replace(
+          "{{requestCred}}",
+          credRequestFix.schema.name
+        )
+      )
+    ).toBeVisible();
+
+    const segment = getByTestId("choose-credential-segment");
+
+    act(() => {
+      ionFireEvent.ionChange(segment, "revoked");
+    });
+
+    await waitFor(() =>
+      expect(
+        getByTestId("card-item-" + credRequestFix.credentials[0].acdc.d)
+      ).toBeVisible()
     );
   });
 });

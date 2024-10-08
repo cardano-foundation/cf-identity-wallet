@@ -311,8 +311,6 @@ describe("Credential service of agent", () => {
       credentialService.getCredentialDetailsById(credentialMetadataRecordA.id)
     ).resolves.toStrictEqual({
       id: credentialMetadataRecordA.id,
-      credentialType: credentialMetadataRecordA.credentialType,
-      issuanceDate: nowISO,
       status: CredentialStatus.CONFIRMED,
       i: acdc.sad.i,
       a: acdc.sad.a,
@@ -434,6 +432,96 @@ describe("Credential service of agent", () => {
     await credentialService.deleteStaleLocalCredential(credentialId);
     expect(credentialStorage.deleteCredentialMetadata).toBeCalledWith(
       credentialId
+    );
+  });
+
+  test("cannot mark credential as confirmed if metadata is missing", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
+    await expect(
+      credentialService.markAcdc(id, CredentialStatus.CONFIRMED)
+    ).rejects.toThrowError(
+      CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+    );
+    expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
+  });
+
+  test("Can mark credential as confirmed", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    const pendingCredentialMock = {
+      id: "id",
+      createdAt: new Date(),
+      issuanceDate: "",
+      credentialType: "",
+      status: CredentialStatus.PENDING,
+      connectionId: "connection-id",
+    };
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(pendingCredentialMock);
+    await credentialService.markAcdc(id, CredentialStatus.CONFIRMED);
+    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(
+      pendingCredentialMock.id,
+      {
+        ...pendingCredentialMock,
+        status: CredentialStatus.CONFIRMED,
+      }
+    );
+  });
+
+  test("Can mark credential as revoked", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    const pendingCredentialMock = {
+      id: "id",
+      createdAt: new Date(),
+      issuanceDate: "",
+      credentialType: "",
+      status: CredentialStatus.PENDING,
+      connectionId: "connection-id",
+    };
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(pendingCredentialMock);
+    await credentialService.markAcdc(id, CredentialStatus.REVOKED);
+    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(
+      pendingCredentialMock.id,
+      {
+        ...pendingCredentialMock,
+        status: CredentialStatus.REVOKED,
+      }
     );
   });
 });

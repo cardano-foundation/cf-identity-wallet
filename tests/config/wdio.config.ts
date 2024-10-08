@@ -4,18 +4,11 @@ import { returnBoolean } from "../helpers/parse.js";
 
 export const config: Options.Testrunner = {
   runner: "local",
-  autoCompileOpts: {
-    autoCompile: true,
-    tsNodeOpts: {
-      transpileOnly: true,
-      project: "tsconfig.json",
-    },
-  },
+  tsConfigPath: 'tsconfig.json',
   specs: ["../features/**/*.feature"],
   specFileRetries: 2,
   specFileRetriesDelay: 3,
   specFileRetriesDeferred: false,
-  capabilities: [],
   logLevel: "debug",
   bail: 0,
   baseUrl: "LACK_OF_BASE_URL",

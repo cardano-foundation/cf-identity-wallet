@@ -17,9 +17,11 @@ const CardDetailsNestedAttributes = ({
   const { className, ...restItemProps } = itemProps || {};
   const key = attribute[0];
   const item = attribute[1] as any;
+  const dateRegex =
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3,6}([+-]\d{2}:\d{2}|Z)$/;
 
   const cardDetailInfo = useMemo(() => {
-    if (item[10] === "T")
+    if (dateRegex.test(item))
       return `${formatShortDate(item)} - ${formatTimeToSec(item)}`;
 
     const isValuedType = typeof item === ("string" || "number");

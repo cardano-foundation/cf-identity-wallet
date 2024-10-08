@@ -4,6 +4,7 @@ import EN_TRANSLATIONS from "../../../../locales/en/en.json";
 import { credsFixAcdc } from "../../../__fixtures__/credsFix";
 import { CredentialContent } from "./CredentialContent";
 import { store } from "../../../../store";
+import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 
 describe("Creds content", () => {
   test("Render ACDC cedential content", () => {
@@ -18,6 +19,10 @@ describe("Creds content", () => {
     expect(
       getByText(EN_TRANSLATIONS.credentials.details.description)
     ).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.credentials.details.id)).toBeVisible();
+    expect(
+      getByText("EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv")
+    ).toBeVisible();
     expect(
       getByText(
         "A vLEI Credential issued by GLEIF to Qualified vLEI Issuers which allows the Qualified vLEI Issuers to issue, verify and revoke Legal Entity vLEI Credentials and Legal Entity Official Organizational Role vLEI Credentials"
@@ -29,7 +34,10 @@ describe("Creds content", () => {
     expect(
       getByText("EJWgO4hwKxNMxu2aUpmGFMozKt9Eq2Jz8n-xXR7CYtY_")
     ).toBeVisible();
-    // expect(getByText("22/01/2024 - 16:03:44")).toBeVisible();
+    const date = `${formatShortDate(credsFixAcdc[0].a.dt)} - ${formatTimeToSec(
+      credsFixAcdc[0].a.dt
+    )}`;
+    expect(getByText(date)).toBeVisible();
     expect(getByText("5493001KJTIIGC8Y1R17")).toBeVisible();
     expect(getByText("1.0.0")).toBeVisible();
     expect(
@@ -47,6 +55,9 @@ describe("Creds content", () => {
     expect(
       getByText(EN_TRANSLATIONS.credentials.details.status.issued)
     ).toBeVisible();
-    // expect(getByText("22/01/2024 - 16:05:44")).toBeVisible();
+    const lastStatus = `${formatShortDate(
+      credsFixAcdc[0].lastStatus.dt
+    )} - ${formatTimeToSec(credsFixAcdc[0].lastStatus.dt)}`;
+    expect(getByText(lastStatus)).toBeVisible();
   });
 });

@@ -14,7 +14,9 @@ import {
   setReadedNotification,
 } from "../../../store/reducers/notificationsCache";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import { CredentialDetailModal } from "../../components/CredentialDetailModule";
 import { TabLayout } from "../../components/layout/TabLayout";
+import { showError } from "../../utils/error";
 import { timeDifference } from "../../utils/formatters";
 import { FilterChipProps, NotificationFilter } from "./Notification.types";
 import { NotificationItem } from "./NotificationItem";
@@ -22,7 +24,6 @@ import "./Notifications.scss";
 import { EarlierNotification } from "./components";
 import { EarlierNotificationRef } from "./components/EarlierNotification.types";
 import { NotificationOptionsModal } from "./components/NotificationOptionsModal";
-import { showError } from "../../utils/error";
 
 const Chip = ({ filter, label, isActive, onClick }: FilterChipProps) => (
   <span>
@@ -49,6 +50,8 @@ const Notifications = () => {
   const [selectedItem, setSelectedItem] = useState<KeriaNotification | null>(
     null
   );
+  const [isOpenCredModal, setIsOpenCredModal] = useState(false);
+  const [viewCred, setViewCred] = useState("");
 
   const filteredNotification = useMemo(() => {
     if (selectedFilter === NotificationFilter.All) {
@@ -62,9 +65,11 @@ const Notifications = () => {
     }
 
     return notifications.filter((notification) =>
-      [NotificationRoute.ExnIpexGrant, NotificationRoute.ExnIpexApply].includes(
-        notification.a.r as NotificationRoute
-      )
+      [
+        NotificationRoute.ExnIpexGrant,
+        NotificationRoute.ExnIpexApply,
+        NotificationRoute.LocalAcdcRevoked,
+      ].includes(notification.a.r as NotificationRoute)
     );
   }, [notifications, selectedFilter]);
 
@@ -109,7 +114,8 @@ const Notifications = () => {
     await maskAsReaded(item);
 
     if (item.a.r === NotificationRoute.LocalAcdcRevoked) {
-      history.push(`${TabsRoutePath.CREDENTIALS}/${item.a.credentialId}`);
+      setIsOpenCredModal(true);
+      setViewCred(`${item.a.credentialId}`);
       return;
     }
 
@@ -147,69 +153,83 @@ const Notifications = () => {
       earlierNotificationRef.current?.reset();
   }, [history.location.pathname]);
 
+  const handleHideCardDetails = () => {
+    setViewCred("");
+    setIsOpenCredModal(false);
+  };
+
   return (
-    <TabLayout
-      pageId={pageId}
-      header={true}
-      title={`${i18n.t("notifications.tab.header")}`}
-    >
-      <div className="notifications-tab-chips">
-        {filterOptions.map((option) => (
-          <Chip
-            key={option.filter}
-            filter={option.filter}
-            label={option.label}
-            isActive={option.filter === selectedFilter}
-            onClick={handleSelectFilter}
-          />
-        ))}
-      </div>
-      <div className="notifications-tab-content">
-        {!!notificationsNew.length && (
-          <div
-            className="notifications-tab-section"
-            data-testid="notifications-tab-section-new"
-          >
-            <h3 className="notifications-tab-section-title">
-              {i18n.t("notifications.tab.sections.new")}
-            </h3>
-            <IonList
-              lines="none"
-              data-testid="notifications-items"
+    <>
+      <TabLayout
+        pageId={pageId}
+        header={true}
+        title={`${i18n.t("notifications.tab.header")}`}
+      >
+        <div className="notifications-tab-chips">
+          {filterOptions.map((option) => (
+            <Chip
+              key={option.filter}
+              filter={option.filter}
+              label={option.label}
+              isActive={option.filter === selectedFilter}
+              onClick={handleSelectFilter}
+            />
+          ))}
+        </div>
+        <div className="notifications-tab-content">
+          {!!notificationsNew.length && (
+            <div
+              className="notifications-tab-section"
+              data-testid="notifications-tab-section-new"
             >
-              {notificationsNew.map((item: KeriaNotification) => (
-                <NotificationItem
-                  key={item.id}
-                  item={item}
-                  onClick={handleNotificationClick}
-                  onOptionButtonClick={onOpenOptionModal}
-                />
-              ))}
-            </IonList>
-          </div>
+              <h3 className="notifications-tab-section-title">
+                {i18n.t("notifications.tab.sections.new")}
+              </h3>
+              <IonList
+                lines="none"
+                data-testid="notifications-items"
+              >
+                {notificationsNew.map((item: KeriaNotification) => (
+                  <NotificationItem
+                    key={item.id}
+                    item={item}
+                    onClick={handleNotificationClick}
+                    onOptionButtonClick={onOpenOptionModal}
+                  />
+                ))}
+              </IonList>
+            </div>
+          )}
+          <EarlierNotification
+            pageId={pageId}
+            ref={earlierNotificationRef}
+            data={notificationsEarlier}
+            onNotificationClick={handleNotificationClick}
+            onOpenOptionModal={onOpenOptionModal}
+          />
+          <p className="notification-empty">
+            {filteredNotification.length === 0
+              ? i18n.t("notifications.tab.empty")
+              : i18n.t("notifications.tab.sections.earlier.end")}
+          </p>
+        </div>
+        {selectedItem && (
+          <NotificationOptionsModal
+            notification={selectedItem}
+            onShowDetail={handleNotificationClick}
+            optionsIsOpen={!!selectedItem}
+            setCloseModal={() => onOpenOptionModal(null)}
+          />
         )}
-        <EarlierNotification
-          pageId={pageId}
-          ref={earlierNotificationRef}
-          data={notificationsEarlier}
-          onNotificationClick={handleNotificationClick}
-          onOpenOptionModal={onOpenOptionModal}
-        />
-        <p className="notification-empty">
-          {filteredNotification.length === 0
-            ? i18n.t("notifications.tab.empty")
-            : i18n.t("notifications.tab.sections.earlier.end")}
-        </p>
-      </div>
-      {selectedItem && (
-        <NotificationOptionsModal
-          notification={selectedItem}
-          onShowDetail={handleNotificationClick}
-          optionsIsOpen={!!selectedItem}
-          setCloseModal={() => onOpenOptionModal(null)}
-        />
-      )}
-    </TabLayout>
+      </TabLayout>
+      <CredentialDetailModal
+        pageId="revoke-credential"
+        isOpen={isOpenCredModal}
+        setIsOpen={setIsOpenCredModal}
+        onClose={handleHideCardDetails}
+        id={viewCred}
+      />
+    </>
   );
 };
 

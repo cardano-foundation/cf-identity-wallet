@@ -156,16 +156,15 @@ const IdentifierDetails = () => {
   const handleDelete = async () => {
     try {
       setVerifyIsOpen(false);
-      let updatedIdentifiers = identifierData;
-      if (cardData) {
-        updatedIdentifiers = identifierData.filter(
-          (item) => item.id !== cardData.id
-        );
-      } else if (cloudError) {
-        updatedIdentifiers = identifierData.filter(
-          (item) => item.id !== params.id
-        );
-      }
+      const filterId = cardData
+        ? cardData.id
+        : cloudError
+          ? params.id
+          : undefined;
+
+      const updatedIdentifiers = identifierData.filter(
+        (item) => item.id !== filterId
+      );
 
       await deleteIdentifier();
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
@@ -267,6 +266,9 @@ const IdentifierDetails = () => {
     setIdentifierOptionsIsOpen(true);
   };
 
+  const cancelDelete = () => dispatch(setCurrentOperation(OperationType.IDLE));
+  const openRotateModal = () => setOpenRotateKeyModal(true);
+
   const AdditionalButtons = () => {
     return (
       <>
@@ -331,14 +333,14 @@ const IdentifierDetails = () => {
             <PageHeader
               closeButton={true}
               closeButtonLabel={`${i18n.t("identifiers.details.done")}`}
-              closeButtonAction={() => handleDone()}
+              closeButtonAction={handleDone}
             />
           }
         >
           <PageFooter
             pageId={pageId}
             deleteButtonText={`${i18n.t("identifiers.details.delete.button")}`}
-            deleteButtonAction={() => deleteButtonAction()}
+            deleteButtonAction={deleteButtonAction}
           />
         </CloudError>
       ) : (
@@ -365,7 +367,7 @@ const IdentifierDetails = () => {
               />
               <div className="card-details-content">
                 <IdentifierContent
-                  onOpenRotateKey={() => setOpenRotateKeyModal(true)}
+                  onOpenRotateKey={openRotateModal}
                   cardData={cardData as IdentifierDetailsCore}
                 />
                 <PageFooter
@@ -373,7 +375,7 @@ const IdentifierDetails = () => {
                   deleteButtonText={`${i18n.t(
                     "identifiers.details.delete.button"
                   )}`}
-                  deleteButtonAction={() => deleteButtonAction()}
+                  deleteButtonAction={deleteButtonAction}
                 />
               </div>
               <ShareConnection
@@ -382,7 +384,7 @@ const IdentifierDetails = () => {
                 oobi={oobi}
               />
               <IdentifierOptions
-                handleRotateKey={() => setOpenRotateKeyModal(true)}
+                handleRotateKey={openRotateModal}
                 optionsIsOpen={identifierOptionsIsOpen}
                 setOptionsIsOpen={setIdentifierOptionsIsOpen}
                 cardData={cardData}
@@ -412,9 +414,9 @@ const IdentifierDetails = () => {
         cancelButtonText={`${i18n.t(
           "identifiers.details.delete.alert.cancel"
         )}`}
-        actionConfirm={() => handleAuthentication()}
-        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionConfirm={handleAuthentication}
+        actionCancel={cancelDelete}
+        actionDismiss={cancelDelete}
       />
       <Verification
         verifyIsOpen={verifyIsOpen}

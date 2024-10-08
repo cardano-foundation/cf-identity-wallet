@@ -25,7 +25,7 @@ const notificationsFix: KeriaNotification[] = [
     read: false,
   },
   {
-    id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
+    id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmv",
     createdAt: new Date(now.getTime() + 2 * 24 * 60 * 60 * -1000).toISOString(),
     a: {
       r: "/exn/ipex/grant",
@@ -36,7 +36,7 @@ const notificationsFix: KeriaNotification[] = [
     read: false,
   },
   {
-    id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmv",
+    id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmk",
     createdAt: new Date(
       now.getTime() + 15 * 24 * 60 * 60 * -1000
     ).toISOString(),
@@ -49,12 +49,35 @@ const notificationsFix: KeriaNotification[] = [
     read: false,
   },
   {
-    id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmG",
+    id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMmc",
     createdAt: new Date(
       now.getTime() + 750 * 24 * 60 * 60 * -1000
     ).toISOString(),
     a: {
       r: "/exn/ipex/apply",
+      d: "EMT02ZHUhpnr4gFFk104B-pLwb2bJC8aip2VYmbPztnk",
+      m: "",
+    },
+    connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
+    read: false,
+  },
+  {
+    id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMm1",
+    createdAt: new Date(now.getTime() + 120 * -60000).toISOString(),
+    a: {
+      r: "/local/acdc/revoked",
+      d: "EMT02ZHUhpnr4gFFk104B-pLwb2bJC8aip2VYmbPztnk",
+      m: "",
+      credentialId: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMm4",
+    },
+    connectionId: "EMrT7qX0FIMenQoe5pJLahxz_rheks1uIviGW8ch8pfB",
+    read: false,
+  },
+  {
+    id: "AL3XmFY8BM9F604qmV-l9b0YMZNvshHG7X6CveMWKMm2",
+    createdAt: new Date(now.getTime() + 120 * -60000).toISOString(),
+    a: {
+      r: "/multisig/exn",
       d: "EMT02ZHUhpnr4gFFk104B-pLwb2bJC8aip2VYmbPztnk",
       m: "",
     },

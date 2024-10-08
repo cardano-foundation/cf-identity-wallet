@@ -4,11 +4,14 @@ import { ConnectionStatus } from "../agent.types";
 import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
 import { CoreEventEmitter } from "../event";
 import { IdentifierService } from "./identifierService";
+import { EventTypes } from "../event.types";
+import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
 const identifiersCreateMock = jest.fn();
 const identifiersRotateMock = jest.fn();
+const saveOperationPendingMock = jest.fn();
 const mockSigner = {
   _code: "A",
   _size: -1,
@@ -103,12 +106,13 @@ const identifierStorage = jest.mocked({
 });
 
 const operationPendingStorage = jest.mocked({
-  save: jest.fn(),
+  save: saveOperationPendingMock,
 });
 
+const eventEmitter = new CoreEventEmitter();
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventEmitter: new CoreEventEmitter(),
+  eventEmitter,
 };
 
 const connections = jest.mocked({
@@ -129,9 +133,6 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         getConnectionShortDetailById: jest.fn(),
         getConnections: jest.fn(),
-      },
-      keriaNotifications: {
-        addPendingOperationToQueue: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
     },
@@ -300,6 +301,7 @@ describe("Single sig service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const aid = "newIdentifierAid";
     const displayName = "newDisplayName";
+    eventEmitter.emit = jest.fn();
     identifiersCreateMock.mockResolvedValue({
       serder: {
         ked: {
@@ -319,6 +321,11 @@ describe("Single sig service of agent", () => {
         },
       };
     });
+    saveOperationPendingMock.mockResolvedValueOnce({
+      id: "op123",
+      recordType: OperationPendingRecordType.Witness,
+    });
+
     expect(
       await identifierService.createIdentifier({
         displayName,
@@ -331,7 +338,15 @@ describe("Single sig service of agent", () => {
     });
     expect(identifiersCreateMock).toBeCalled();
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
-    expect(operationPendingStorage.save).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: "op123",
+          recordType: OperationPendingRecordType.Witness,
+        },
+      },
+    });
   });
 
   test("cannot create a keri identifier if theme is not valid", async () => {
@@ -486,32 +501,6 @@ describe("Single sig service of agent", () => {
     });
     await identifierService.rotateIdentifier(identifierId);
     expect(identifiersRotateMock).toHaveBeenCalledWith(identifierId);
-  });
-
-  test("Can get KERI identifier by group id", async () => {
-    identifierStorage.getIdentifierMetadataByGroupId = jest
-      .fn()
-      .mockResolvedValue(keriMetadataRecord);
-    expect(
-      await identifierService.getKeriIdentifierByGroupId(
-        keriMetadataRecord.groupMetadata?.groupId as string
-      )
-    ).toStrictEqual({
-      displayName: keriMetadataRecord.displayName,
-      id: keriMetadataRecord.id,
-      createdAtUTC: keriMetadataRecord.createdAt.toISOString(),
-      theme: keriMetadataRecord.theme,
-      isPending: keriMetadataRecord.isPending ?? false,
-    });
-    /**null result */
-    identifierStorage.getIdentifierMetadataByGroupId = jest
-      .fn()
-      .mockResolvedValue(null);
-    expect(
-      await identifierService.getKeriIdentifierByGroupId(
-        keriMetadataRecord.groupMetadata?.groupId as string
-      )
-    ).toStrictEqual(null);
   });
 
   test("Should throw error if we failed to obtain key manager when call getSigner", async () => {

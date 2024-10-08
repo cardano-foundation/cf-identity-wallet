@@ -17,6 +17,7 @@ function deserializeRecord<T extends BaseRecord>(
   instance.replaceTags(storageRecord.tags as Tags);
   instance.createdAt = new Date(instance.createdAt);
   if (instance.updatedAt) instance.updatedAt = new Date(instance.updatedAt);
+
   return instance;
 }
 

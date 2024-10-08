@@ -24,6 +24,7 @@ const config: CapacitorConfig = {
     PrivacyScreen: {
       enable: false,
       imageName: "Splashscreen",
+      preventScreenshots: false
     }
   }
 };

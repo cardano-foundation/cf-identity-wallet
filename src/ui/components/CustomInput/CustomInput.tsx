@@ -60,6 +60,7 @@ const CustomInput = ({
             onClick={() => {
               setHidden(!hidden);
             }}
+            data-testid={`${dataTestId}-hide-btn`}
           >
             <IonIcon
               slot="icon-only"

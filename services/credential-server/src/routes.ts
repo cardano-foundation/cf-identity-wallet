@@ -2,7 +2,12 @@ import express from "express";
 import { config } from "./config";
 import { ping } from "./apis/ping.api";
 import { keriOobiApi } from "./apis/invitation.api";
-import { requestDisclosure, issueAcdcCredential, revokeCredential, contactCredentials, } from "./apis/credential.api";
+import {
+  requestDisclosure,
+  issueAcdcCredential,
+  revokeCredential,
+  contactCredentials,
+} from "./apis/credential.api";
 import { createShortenUrl, getFullUrl } from "./apis/shorten.api";
 import { schemaApi } from "./apis/schema.api";
 import { contactList, deleteContact } from "./apis/contact.api";

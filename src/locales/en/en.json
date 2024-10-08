@@ -876,6 +876,7 @@
       "title": "Title",
       "description": "Description",
       "revoked": "Revoked",
+      "id": "Credential ID",
       "attributes": {
         "label": "Attributes",
         "issuee": "Issuee",
@@ -1042,13 +1043,20 @@
           },
           "choosecredential": {
             "description": "Below is a list of all '{{requestCred}}' credentials, ordered by the name of the issuer",
-            "title": "Choose credential"
+            "title": "Choose credential",
+            "active": "Active",
+            "noactive": "There are no active '{{requestCred}}' credentials.",
+            "revoked": "Revoked",
+            "norevoked": "There are no revoked '{{requestCred}}' credentials.",
+            "disclaimer": "The below credentials are revoked and may not be accepted by the verifier."
           }
         },
         "receive": {
           "title": "Receive credential",
-          "receivefrom": "Receive a credential from",
+          "receivefrom": "Receive credential",
+          "from": "from",
           "credentialpending": "Credential pending",
+          "credentialdetailbutton": "Credential details",
           "alert": {
             "textdecline": "Are you sure you want to decline this credential issuance? You won't be able to change your decision later."
           }
@@ -1261,6 +1269,14 @@
     "tab": {
       "title": "Connections",
       "create": "Add a connection",
+      "search": {
+        "placeholder": "Search connections",
+        "connections": "Connections",
+        "noresult": {
+          "title": "No results for “{{keyword}}”",
+          "text": "Check the spelling or try a new search"
+        }
+      },
       "indentifierselector": {
         "title": "Choose identifier",
         "message": "Which identifier would you like to make the connection with?",

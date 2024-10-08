@@ -1,7 +1,8 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter } from "react-router-dom";
+import { act } from "react";
 import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../../../routes/paths";
 import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
@@ -14,6 +15,7 @@ import { OperationType, ToastMsgType } from "../../../../globals/types";
 import { identifierFix } from "../../../../__fixtures__/identifierFix";
 import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
 import { setPendingConnection } from "../../../../../store/reducers/walletConnectionsCache";
+import { passcodeFiller } from "../../../../utils/passcodeFiller";
 
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
@@ -125,6 +127,67 @@ describe("Wallet connect: empty history", () => {
     await waitFor(() => {
       expect(
         getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+      ).toBeVisible();
+    });
+
+    unmount();
+  });
+
+  test("Connect wallet modal: scan QR when other connection connected", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+        toastMsgs: [],
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        connectedWallet: walletConnectionsFix[1],
+      },
+      identifiersCache: {
+        identifiers: [...identifierFix],
+      },
+      biometricsCache: {
+        enabled: false,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText, unmount } = render(
+      <MemoryRouter>
+        <Provider store={storeMocked}>
+          <ConnectWallet />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.connectbtn)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet
+            .disconnectbeforecreatealert.message
+        )
       ).toBeVisible();
     });
 
@@ -380,7 +443,7 @@ describe("Wallet connect", () => {
   });
 
   test("Delete wallet connections", async () => {
-    const { getByText, getByTestId, unmount } = render(
+    const { getByText, getByTestId, unmount, queryByText } = render(
       <Provider store={storeMocked}>
         <ConnectWallet />
       </Provider>
@@ -423,57 +486,106 @@ describe("Wallet connect", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-0")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-1")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-2")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-3")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-4")).toBeVisible();
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("passcode-button-1"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("circle-5")).toBeVisible();
+      passcodeFiller(getByText, getByTestId, "1", 6);
     });
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
         setToastMsg(ToastMsgType.WALLET_CONNECTION_DELETED)
       );
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("alert-delete-cancel-button"));
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+            .deletealert.message
+        )
+      ).not.toBeVisible();
+    });
+
+    unmount();
+  });
+
+  test("Delete pending wallet connections", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        toastMsgs: [],
+      },
+      walletConnectionsCache: {
+        walletConnections: [...walletConnectionsFix],
+        pendingConnection: walletConnectionsFix[0],
+      },
+      identifiersCache: {
+        identifiers: [...identifierFix],
+      },
+      biometricsCache: {
+        enabled: false,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText, getByTestId, unmount } = render(
+      <Provider store={storeMocked}>
+        <ConnectWallet />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory.title
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId(`delete-connections-${walletConnectionsFix[0].id}`)
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+            .deletealert.message
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("alert-delete-confirm-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    act(() => {
+      passcodeFiller(getByText, getByTestId, "1", 6);
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.WALLET_CONNECTION_DELETED)
+      );
+      expect(dispatchMock).toBeCalledWith(setPendingConnection(null));
     });
 
     unmount();
@@ -575,7 +687,7 @@ describe("Wallet connect", () => {
       dispatch: dispatchMock,
     };
 
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getAllByText } = render(
       <MemoryRouter>
         <Provider store={storeMocked}>
           <ConnectWallet />
@@ -597,19 +709,19 @@ describe("Wallet connect", () => {
 
     await waitFor(() => {
       expect(
-        getByText(
+        getAllByText(
           EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
             .missingidentifieralert.message
-        )
+        )[0]
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(
+        getAllByText(
           EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
             .missingidentifieralert.confirm
-        )
+        )[0]
       );
     });
 

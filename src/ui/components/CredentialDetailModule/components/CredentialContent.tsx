@@ -13,7 +13,7 @@ const CredentialContent = ({ cardData }: CredentialContentProps) => {
     <>
       <CardDetailsBlock title={i18n.t("credentials.details.title")}>
         <CardDetailsItem
-          info={cardData.credentialType}
+          info={cardData.s.title}
           icon={informationCircleOutline}
           testId="card-details-credential-type"
         />
@@ -23,6 +23,14 @@ const CredentialContent = ({ cardData }: CredentialContentProps) => {
         title={i18n.t("credentials.details.description")}
       >
         {cardData.s.description}
+      </CardDetailsBlock>
+      <CardDetailsBlock title={i18n.t("credentials.details.id")}>
+        <CardDetailsItem
+          info={cardData.id}
+          copyButton={true}
+          icon={keyOutline}
+          testId="card-details-id"
+        />
       </CardDetailsBlock>
       {cardData.a && (
         <CardDetailsBlock

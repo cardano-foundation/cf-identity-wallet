@@ -5,7 +5,7 @@ import { log } from "./logger.js";
 
 export class Assert {
   get toastMessageOverlay() {
-    return $("[data-testid=\"confirmation-toast\"]");
+    return $("[data-testid*=\"confirmation-toast\"]");
   }
 
   async clipboard() {

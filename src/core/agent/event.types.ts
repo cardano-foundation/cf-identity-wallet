@@ -1,4 +1,5 @@
 import { ConnectionStatus, KeriaNotification } from "./agent.types";
+import { OperationPendingRecord } from "./records/operationPendingRecord";
 import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
 import {
   CredentialShortDetails,
@@ -11,25 +12,33 @@ interface BaseEventEmitter {
 }
 
 enum EventTypes {
-  Notification = "Notification",
-  Operation = "Operation",
+  NotificationAdded = "NotificationAdded ",
+  OperationComplete = "OperationComplete",
+  OperationAdded = "OperationAdded",
   ConnectionStateChanged = "ConnectionStateChanged",
   AcdcStateChanged = "AcdcStateChanged",
   KeriaStatusChanged = "KeriaStatusChanged",
 }
 
-interface NotificationEvent extends BaseEventEmitter {
-  type: typeof EventTypes.Notification;
+interface NotificationAddedEvent extends BaseEventEmitter {
+  type: typeof EventTypes.NotificationAdded;
   payload: {
     keriaNotif: KeriaNotification;
   };
 }
 
-interface OperationPendingEvent extends BaseEventEmitter {
-  type: typeof EventTypes.Operation;
+interface OperationCompleteEvent extends BaseEventEmitter {
+  type: typeof EventTypes.OperationComplete;
   payload: {
     oid: string;
     opType: OperationPendingRecordType;
+  };
+}
+
+interface OperationAddedEvent extends BaseEventEmitter {
+  type: typeof EventTypes.OperationAdded;
+  payload: {
+    operation: OperationPendingRecord;
   };
 }
 
@@ -58,11 +67,12 @@ interface KeriaStatusChangedEvent extends BaseEventEmitter {
 }
 
 export type {
-  NotificationEvent,
-  OperationPendingEvent,
+  NotificationAddedEvent,
+  OperationCompleteEvent,
   BaseEventEmitter,
   ConnectionStateChangedEvent,
   AcdcStateChangedEvent,
   KeriaStatusChangedEvent,
+  OperationAddedEvent,
 };
 export { EventTypes };

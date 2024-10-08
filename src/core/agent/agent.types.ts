@@ -172,6 +172,7 @@ enum ExchangeRoute {
   IpexGrant = "/ipex/grant",
   IpexApply = "/ipex/apply",
   IpexAgree = "/ipex/agree",
+  IpexOffer = "/ipex/offer",
 }
 
 interface BranAndMnemonic {

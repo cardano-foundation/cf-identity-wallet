@@ -1,7 +1,8 @@
 import { Operation, SignifyClient } from "signify-ts";
-import { CredentialMetadataRecord } from "../records";
+import { CredentialMetadataRecord, NotificationStorage } from "../records";
 import { CredentialShortDetails } from "./credentialService.types";
 import { Agent } from "../agent";
+import { NotificationRoute } from "../agent.types";
 
 async function waitAndGetDoneOp(
   client: SignifyClient,
@@ -60,6 +61,18 @@ export const OnlineOnly = (
       }
     }
   };
+};
+
+export const deleteNotificationRecordById = async (
+  client: SignifyClient,
+  notificationStorage: NotificationStorage,
+  id: string,
+  route: NotificationRoute
+): Promise<void> => {
+  if (!/^\/local/.test(route)) {
+    await client.notifications().mark(id);
+  }
+  await notificationStorage.deleteById(id);
 };
 
 export { waitAndGetDoneOp, getCredentialShortDetails };

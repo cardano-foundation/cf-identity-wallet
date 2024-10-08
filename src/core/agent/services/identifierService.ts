@@ -20,6 +20,7 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 import { Agent } from "../agent";
 import { PeerConnection } from "../../cardano/walletConnect/peerConnection";
 import { ConnectionService } from "./connectionService";
+import { EventTypes, OperationAddedEvent } from "../event.types";
 
 const identifierTypeThemes = [
   0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23, 30, 31, 32, 33, 40, 41, 42, 43,
@@ -117,23 +118,6 @@ class IdentifierService extends AgentService {
     };
   }
 
-  async getKeriIdentifierByGroupId(
-    groupId: string
-  ): Promise<IdentifierShortDetails | null> {
-    const metadata =
-      await this.identifierStorage.getIdentifierMetadataByGroupId(groupId);
-    if (!metadata) {
-      return null;
-    }
-    return {
-      displayName: metadata.displayName,
-      id: metadata.id,
-      createdAtUTC: metadata.createdAt.toISOString(),
-      theme: metadata.theme,
-      isPending: metadata.isPending ?? false,
-    };
-  }
-
   @OnlineOnly
   async createIdentifier(
     metadata: Omit<
@@ -172,9 +156,10 @@ class IdentifierService extends AgentService {
           id: op.name,
           recordType: OperationPendingRecordType.Witness,
         });
-        Agent.agent.keriaNotifications.addPendingOperationToQueue(
-          pendingOperation
-        );
+        this.props.eventEmitter.emit<OperationAddedEvent>({
+          type: EventTypes.OperationAdded,
+          payload: { operation: pendingOperation },
+        });
       }
     }
     await this.identifierStorage.createIdentifierMetadataRecord({

@@ -18,7 +18,7 @@ import { PageFooter } from "../../components/PageFooter";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { useBiometricAuth } from "../../hooks/useBiometricsHook";
-import { useExitAppWithDoubleTap } from "../../hooks/useExitAppWithDoubleTap";
+import { useExitAppWithDoubleTap } from "../../hooks/exitAppWithDoubleTapHook";
 import "./LockPage.scss";
 import { BackEventPriorityType } from "../../globals/types";
 import {

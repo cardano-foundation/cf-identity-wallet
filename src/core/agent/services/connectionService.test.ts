@@ -5,11 +5,13 @@ import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { ConnectionHistoryType } from "./connection.types";
+import { EventTypes } from "../event.types";
 
 const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();
 const getOobiMock = jest.fn();
 const getIdentifier = jest.fn();
+const saveOperationPendingMock = jest.fn();
 const contactGetMock = jest.fn().mockImplementation((id: string) => {
   return {
     alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
@@ -102,9 +104,11 @@ const signifyClient = jest.mocked({
   }),
 });
 
+const eventEmitter = new CoreEventEmitter();
+
 const agentServicesProps = {
   signifyClient: signifyClient as any,
-  eventEmitter: new CoreEventEmitter(),
+  eventEmitter,
 };
 
 const connectionStorage = jest.mocked({
@@ -128,7 +132,7 @@ const connectionNoteStorage = jest.mocked({
 });
 
 const operationPendingStorage = jest.mocked({
-  save: jest.fn(),
+  save: saveOperationPendingMock,
   delete: jest.fn(),
   deleteById: jest.fn(),
   update: jest.fn(),
@@ -153,6 +157,9 @@ const ipexMessageStorage = jest.mocked({
     getIpexMessageMetadataByConnectionIdMock,
   deleteIpexMessageMetadata: jest.fn(),
 });
+const identifiers = jest.mocked({
+  getIdentifierMetadataByGroupId: jest.fn(),
+});
 
 const connectionService = new ConnectionService(
   agentServicesProps,
@@ -160,7 +167,8 @@ const connectionService = new ConnectionService(
   connectionNoteStorage as any,
   credentialStorage as any,
   ipexMessageStorage as any,
-  operationPendingStorage as any
+  operationPendingStorage as any,
+  identifiers as any
 );
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -168,9 +176,6 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       getKeriaOnlineStatus: jest.fn(),
       identifiers: { getKeriIdentifierByGroupId: jest.fn() },
-      keriaNotifications: {
-        addPendingOperationToQueue: jest.fn(),
-      },
     },
   },
 }));
@@ -209,9 +214,6 @@ describe("Connection service of agent", () => {
     signifyClient.oobis().resolve = jest.fn().mockImplementation((url) => {
       return { name: url, response: { i: "id" } };
     });
-    Agent.agent.identifiers.getKeriIdentifierByGroupId = jest
-      .fn()
-      .mockResolvedValue(null);
 
     const result = await connectionService.connectByOobiUrl(oobi);
     expect(result).toStrictEqual({
@@ -236,21 +238,7 @@ describe("Connection service of agent", () => {
     signifyClient.oobis().resolve = jest.fn().mockImplementation((url) => {
       return { alias: "alias", name: url, response: { i: "id" } };
     });
-    Agent.agent.identifiers.getKeriIdentifierByGroupId = jest
-      .fn()
-      .mockResolvedValue({
-        displayName: "displayName",
-        id: "id",
-        signifyName: "uuid",
-        createdAtUTC: new Date().toISOString(),
-        theme: 0,
-        isPending: false,
-        groupMetadata: {
-          groupId,
-          groupCreated: false,
-          groupInitiator: true,
-        },
-      });
+
     await connectionService.connectByOobiUrl(oobi);
     expect(connectionStorage.save).toBeCalled();
   });
@@ -633,21 +621,30 @@ describe("Connection service of agent", () => {
     );
   });
 
-  test("should save pending operation if the oobi resolving is not completing", async () => {
+  test("should emit an event to add pending operation if the oobi resolving is not completing", async () => {
     getOobiMock.mockResolvedValue({
       oobis: [],
       done: false,
     });
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
-    await connectionService.resolveOobi(`${oobiPrefix}${failUuid}`, false);
-    expect(operationPendingStorage.save).toBeCalledWith({
+
+    saveOperationPendingMock.mockResolvedValueOnce({
       id: `${oobiPrefix}${failUuid}`,
       recordType: OperationPendingRecordType.Oobi,
     });
-    expect(
-      Agent.agent.keriaNotifications.addPendingOperationToQueue
-    ).toBeCalledTimes(1);
+
+    jest.spyOn(Date.prototype, "getTime").mockReturnValueOnce(0);
+    eventEmitter.emit = jest.fn();
+    await connectionService.resolveOobi(`${oobiPrefix}${failUuid}`, false);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.OperationAdded,
+      payload: {
+        operation: {
+          id: `${oobiPrefix}${failUuid}`,
+          recordType: OperationPendingRecordType.Oobi,
+        },
+      },
+    });
   });
 
   test("Can get connection History by id", async () => {
