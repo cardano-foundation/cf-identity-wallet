@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useAppSelector } from "../../../../../store/hooks";
-import { getPendingConnection } from "../../../../../store/reducers/walletConnectionsCache";
-import { SideSlider } from "../../../../components/SideSlider";
-import { SidePageContentProps } from "../../SidePage.types";
+import { useAppSelector } from "../../../store/hooks";
+import { getPendingConnection } from "../../../store/reducers/walletConnectionsCache";
+import { SideSlider } from "../../components/SideSlider";
+import { SidePageContentProps } from "../../components/SidePage/SidePage.types";
 import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
 

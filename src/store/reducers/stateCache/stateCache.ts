@@ -37,6 +37,7 @@ const initialState: StateCacheProps = {
     queues: [],
     isPaused: false,
   },
+  showConnections: false,
   toastMsgs: [],
 };
 
@@ -157,6 +158,9 @@ const stateCacheSlice = createSlice({
     showGenericError: (state, action: PayloadAction<boolean | undefined>) => {
       state.showGenericError = action.payload;
     },
+    showConnections: (state, action: PayloadAction<boolean>) => {
+      state.showConnections = action.payload;
+    },
   },
 });
 
@@ -179,6 +183,7 @@ const {
   setLoginAttempt,
   setCameraDirection,
   showGenericError,
+  showConnections,
   removeToastMessage,
 } = stateCacheSlice.actions;
 
@@ -199,6 +204,8 @@ const getLoginAttempt = (state: RootState) =>
 const getCameraDirection = (state: RootState) =>
   state.stateCache.cameraDirection;
 const getShowCommonError = (state: RootState) =>
+  state.stateCache.showGenericError;
+const getShowCnnections = (state: RootState) =>
   state.stateCache.showGenericError;
 const getToastMgs = (state: RootState) => state.stateCache.toastMsgs;
 
@@ -221,6 +228,7 @@ export {
   getQueueIncomingRequest,
   getRoutes,
   getShowCommonError,
+  getShowCnnections,
   getStateCache,
   getToastMgs,
   getToastMsgs,
@@ -242,5 +250,6 @@ export {
   setQueueIncomingRequest,
   setToastMsg,
   showGenericError,
+  showConnections,
   stateCacheSlice,
 };

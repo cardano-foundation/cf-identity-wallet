@@ -1,17 +1,15 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { addOutline } from "ionicons/icons";
 import { IonButton, IonIcon } from "@ionic/react";
 import { SubMenuData, SubMenuKey } from "../Menu.types";
 import { Profile } from "./Profile";
 import { i18n } from "../../../../i18n";
-import { Connections } from "../../Connections";
 import { ConnectWallet, ConnectWalletOptionRef } from "./ConnectWallet";
 import { Settings } from "./Settings";
 import { ManagePassword } from "./Settings/components/ManagePassword";
 import { RecoverySeedPhrase } from "./Settings/components/RecoverySeedPhrase";
 import { TermsAndPrivacy } from "./Settings/components/TermsAndPrivacy";
 import { ProfileOptionRef } from "./Profile/Profile.types";
-import { ConnectionsOptionRef } from "../../Connections/Connections.types";
 
 const emptySubMenu = {
   Component: () => <></>,
@@ -27,20 +25,11 @@ const emptySubMenu = {
   renderAsModal: false,
 };
 
-const SubMenuItems = (
-  selectedOption: unknown,
-  showSelectedOption: (key: SubMenuKey) => void
-) => {
+const SubMenuItems = (showSelectedOption: (key: SubMenuKey) => void) => {
   const profileRef = useRef<ProfileOptionRef>(null);
-  const connectionsRef = useRef<ConnectionsOptionRef>(null);
   const connectWalletRef = useRef<ConnectWalletOptionRef>(null);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [showConnections, setShowConnections] = useState(false);
   const RENDER_SETTING_AS_MODAL = false;
-
-  useEffect(() => {
-    setShowConnections(selectedOption === SubMenuKey.Connections);
-  }, [selectedOption]);
 
   const backToParentMenu = useCallback(() => {
     showSelectedOption(SubMenuKey.Settings);
@@ -83,37 +72,6 @@ const SubMenuItems = (
         actionButtonLabel: isEditingProfile
           ? `${i18n.t("menu.tab.items.profile.actionconfirm")}`
           : `${i18n.t("menu.tab.items.profile.actionedit")}`,
-        renderAsModal: false,
-      },
-    ],
-    [
-      SubMenuKey.Connections,
-      {
-        Component: () => (
-          <Connections
-            showConnections={showConnections}
-            setShowConnections={setShowConnections}
-            selfPaginated={false}
-            ref={connectionsRef}
-          />
-        ),
-        title: "connections.tab.title",
-        pageId: "connections",
-        additionalButtons: (
-          <IonButton
-            shape="round"
-            className="add-button"
-            data-testid="add-connection-button"
-            onClick={() => connectionsRef.current?.handleConnectModalButton()}
-          >
-            <IonIcon
-              slot="icon-only"
-              icon={addOutline}
-              color="primary"
-            />
-          </IonButton>
-        ),
-        nestedMenu: false,
         renderAsModal: false,
       },
     ],

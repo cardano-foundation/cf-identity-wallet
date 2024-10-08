@@ -1,7 +1,4 @@
-import {
-  ConnectionDetails,
-  ConnectionShortDetails,
-} from "../../../core/agent/agent.types";
+import { ConnectionShortDetails } from "../../../core/agent/agent.types";
 
 interface ConnectionsOptionRef {
   handleConnectModalButton: () => void;
@@ -16,7 +13,6 @@ interface ConnectionItemProps {
 interface ConnectionsComponentProps {
   showConnections: boolean;
   setShowConnections: (value: boolean) => void;
-  selfPaginated: boolean;
 }
 
 interface MappedConnections {
@@ -45,8 +41,6 @@ interface ConnectionRequestData {
 
 export type {
   ConnectionsOptionRef,
-  ConnectionShortDetails,
-  ConnectionDetails,
   ConnectionItemProps,
   ConnectionsComponentProps,
   MappedConnections,

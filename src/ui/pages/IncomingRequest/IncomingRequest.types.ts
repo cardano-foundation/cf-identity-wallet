@@ -1,7 +1,7 @@
 import {
   IncomingRequestProps,
   IncomingRequestType,
-} from "../../../../../store/reducers/stateCache/stateCache.types";
+} from "../../../store/reducers/stateCache/stateCache.types";
 
 interface RequestProps<T extends IncomingRequestType> {
   pageId: string;

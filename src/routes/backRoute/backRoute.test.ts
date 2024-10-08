@@ -51,6 +51,7 @@ describe("getBackRoute", () => {
           queues: [],
           isPaused: false,
         },
+        showConnections: false,
         toastMsgs: [],
       },
       identifiersCache: {
@@ -190,6 +191,7 @@ describe("getPreviousRoute", () => {
           queues: [],
           isPaused: false,
         },
+        showConnections: false,
         toastMsgs: [],
       },
       identifiersCache: {

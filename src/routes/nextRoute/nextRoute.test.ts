@@ -40,6 +40,7 @@ describe("NextRoute", () => {
             lockedUntil: Date.now(),
           },
         },
+        showConnections: false,
         toastMsgs: [],
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -287,6 +288,7 @@ describe("getNextRoute", () => {
           lockedUntil: Date.now(),
         },
       },
+      showConnections: false,
       toastMsgs: [],
       currentOperation: OperationType.IDLE,
       queueIncomingRequest: {

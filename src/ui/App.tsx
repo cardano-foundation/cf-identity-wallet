@@ -25,7 +25,7 @@ import { OperationType } from "./globals/types";
 import { FullPageScanner } from "./pages/FullPageScanner";
 import { LoadingPage } from "./pages/LoadingPage/LoadingPage";
 import { LockPage } from "./pages/LockPage/LockPage";
-import { SidePage } from "./pages/SidePage";
+import { SidePage } from "./components/SidePage";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";

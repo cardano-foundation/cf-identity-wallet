@@ -1,19 +1,19 @@
 import { useEffect, useState, useMemo } from "react";
 import "./IncomingRequest.scss";
-import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
+import { SidePageContentProps } from "../../components/SidePage/SidePage.types";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   dequeueIncomingRequest,
   getQueueIncomingRequest,
   setToastMsg,
-} from "../../../../../store/reducers/stateCache";
-import { SidePageContentProps } from "../../SidePage.types";
+} from "../../../store/reducers/stateCache";
 import { SignRequest } from "./components/SignRequest"; // Import SignRequest component
 import {
   IncomingRequestType,
   PeerConnectSigningEventRequest,
-} from "../../../../../store/reducers/stateCache/stateCache.types";
-import { getConnectedWallet } from "../../../../../store/reducers/walletConnectionsCache";
-import { ToastMsgType } from "../../../../globals/types";
+} from "../../../store/reducers/stateCache/stateCache.types";
+import { getConnectedWallet } from "../../../store/reducers/walletConnectionsCache";
+import { ToastMsgType } from "../../globals/types";
 
 const IncomingRequest = ({ open, setOpenPage }: SidePageContentProps) => {
   const pageId = "incoming-request";
