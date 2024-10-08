@@ -1,6 +1,5 @@
 import { CredentialStatus } from "../services/credentialService.types";
 import { IdentifierType } from "../services/identifier.types";
-import { IdentifierMetadataRecordProps } from "./identifierMetadataRecord";
 
 interface CredentialMetadataRecordProps {
   id: string;
@@ -12,7 +11,7 @@ interface CredentialMetadataRecordProps {
   status: CredentialStatus;
   connectionId: string;
   schema: string;
-  identifier: IdentifierMetadataRecordProps;
+  identifierId: string;
   identifierType: IdentifierType;
 }
 

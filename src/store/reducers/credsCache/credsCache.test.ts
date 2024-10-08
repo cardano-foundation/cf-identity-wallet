@@ -41,7 +41,7 @@ describe("credsCacheSlice", () => {
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
         identifierType: IdentifierType.Individual,
-        identifier: memberIdentifierRecord,
+        identifierId: multisigMetadataRecord.id,
       },
     ];
     const newState = credsCacheSlice.reducer(
@@ -59,7 +59,7 @@ describe("credsCacheSlice", () => {
       status: CredentialStatus.CONFIRMED,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierType: IdentifierType.Individual,
-      identifier: memberIdentifierRecord,
+      identifierId: multisigMetadataRecord.id,
     };
     const newState = credsCacheSlice.reducer(
       initialState,
@@ -78,7 +78,7 @@ describe("credsCacheSlice", () => {
       status: CredentialStatus.PENDING,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierType: IdentifierType.Group,
-      identifier: multisigMetadataRecord,
+      identifierId: multisigMetadataRecord.id,
     };
     const cred2: CredentialShortDetails = {
       id: credId2,
@@ -87,7 +87,7 @@ describe("credsCacheSlice", () => {
       status: CredentialStatus.PENDING,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierType: IdentifierType.Group,
-      identifier: multisigMetadataRecord,
+      identifierId: multisigMetadataRecord.id,
     };
     const updateCred: CredentialShortDetails = {
       ...cred1,

@@ -8,8 +8,13 @@ import {
 } from "./credentialService.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { getCredentialShortDetails, OnlineOnly } from "./utils";
-import { CredentialStorage, NotificationStorage } from "../records";
+import {
+  CredentialStorage,
+  IdentifierStorage,
+  NotificationStorage,
+} from "../records";
 import { AcdcStateChangedEvent, EventTypes } from "../event.types";
+import { IdentifierType } from "./identifier.types";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -20,15 +25,18 @@ class CredentialService extends AgentService {
 
   protected readonly credentialStorage: CredentialStorage;
   protected readonly notificationStorage!: NotificationStorage;
+  protected readonly identifierStorage!: IdentifierStorage;
 
   constructor(
     agentServiceProps: AgentServicesProps,
     credentialStorage: CredentialStorage,
-    notificationStorage: NotificationStorage
+    notificationStorage: NotificationStorage,
+    identifierStorage: IdentifierStorage
   ) {
     super(agentServiceProps);
     this.credentialStorage = credentialStorage;
     this.notificationStorage = notificationStorage;
+    this.identifierStorage = identifierStorage;
   }
 
   onAcdcStateChanged(callback: (event: AcdcStateChangedEvent) => void) {
@@ -60,7 +68,7 @@ class CredentialService extends AgentService {
       status: metadata.status,
       schema: metadata.schema,
       identifierType: metadata.identifierType,
-      identifier: metadata.identifier,
+      identifierId: metadata.identifierId,
     };
   }
 
@@ -82,7 +90,7 @@ class CredentialService extends AgentService {
       id: credentialShortDetails.id,
       schema: credentialShortDetails.schema,
       status: credentialShortDetails.status,
-      identifier: credentialShortDetails.identifier,
+      identifierId: credentialShortDetails.identifierId,
       identifierType: credentialShortDetails.identifierType,
       i: acdc.sad.i,
       a: acdc.sad.a,
@@ -164,6 +172,9 @@ class CredentialService extends AgentService {
     if (unSyncedData.length) {
       //sync the storage with the signify data
       for (const credential of unSyncedData) {
+        const identifier = await this.identifierStorage.getIdentifierMetadata(
+          credential.sad.a.i
+        );
         await this.createMetadata({
           id: credential.sad.d,
           isArchived: false,
@@ -172,8 +183,10 @@ class CredentialService extends AgentService {
           status: CredentialStatus.PENDING,
           connectionId: credential.sad.i,
           schema: credential.schema.$id,
-          identifierType: credential.identifierType,
-          identifier: credential.identifier,
+          identifierType: identifier.multisigManageAid
+            ? IdentifierType.Group
+            : IdentifierType.Individual,
+          identifierId: credential.sad.a.i,
         });
       }
     }

@@ -481,7 +481,7 @@ class IpexCommunicationService extends AgentService {
       identifierType: holder.multisigManageAid
         ? IdentifierType.Group
         : IdentifierType.Individual,
-      identifier: holder,
+      identifierId: holder.id,
     };
     await this.credentialStorage.saveCredentialMetadataRecord(
       credentialDetails
@@ -979,7 +979,7 @@ class IpexCommunicationService extends AgentService {
         dt: new Date(exchange.exn.e.iss.dt).toISOString(),
       },
       status: CredentialStatus.PENDING,
-      identifier: holder,
+      identifierId: holder.id,
       identifierType: holder.multisigManageAid
         ? IdentifierType.Group
         : IdentifierType.Individual,

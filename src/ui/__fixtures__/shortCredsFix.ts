@@ -14,7 +14,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
-    identifier: memberIdentifierRecord,
+    identifierId: memberIdentifierRecord.id,
   },
   {
     credentialType: "AccessPassCredential",
@@ -24,7 +24,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
-    identifier: memberIdentifierRecord,
+    identifierId: memberIdentifierRecord.id,
   },
   {
     credentialType: "PermanentResidentCard",
@@ -34,7 +34,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
-    identifier: memberIdentifierRecord,
+    identifierId: memberIdentifierRecord.id,
   },
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
@@ -43,7 +43,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
-    identifier: memberIdentifierRecord,
+    identifierId: memberIdentifierRecord.id,
   },
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
@@ -52,7 +52,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     status: CredentialStatus.PENDING,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
-    identifier: memberIdentifierRecord,
+    identifierId: memberIdentifierRecord.id,
   },
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF2-ghumzCJ6nv",
@@ -61,7 +61,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     status: CredentialStatus.CONFIRMED,
     schema: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
     identifierType: IdentifierType.Individual,
-    identifier: memberIdentifierRecord,
+    identifierId: memberIdentifierRecord.id,
   },
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF3-ghumzCJ6nv",
@@ -70,7 +70,7 @@ const shortCredsFix: CredentialShortDetails[] = [
     status: CredentialStatus.PENDING,
     schema: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
     identifierType: IdentifierType.Individual,
-    identifier: memberIdentifierRecord,
+    identifierId: memberIdentifierRecord.id,
   },
 ];
 

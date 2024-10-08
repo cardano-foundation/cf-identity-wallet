@@ -298,7 +298,7 @@ const credentialMetadataMock = {
   schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
   updatedAt: "2024-08-09T04:21:19.695Z",
   identifierType: IdentifierType.Individual,
-  identifier: memberIdentifierRecord,
+  identifierId: memberIdentifierRecord,
 };
 
 const offerIpexMessageMock = {
@@ -353,6 +353,7 @@ describe("Ipex communication service of agent", () => {
 
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "holder",
+      id: "identifierId",
     });
     schemaGetMock.mockResolvedValue({ title: "title" });
 
@@ -377,9 +378,7 @@ describe("Ipex communication service of agent", () => {
       schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
       status: "pending",
       identifierType: IdentifierType.Individual,
-      identifier: {
-        signifyName: "holder",
-      },
+      identifierId: "identifierId",
     };
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
       credentialMock
@@ -1028,16 +1027,7 @@ describe("Ipex communication service of agent", () => {
       schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
       status: "pending",
       identifierType: IdentifierType.Group,
-      identifier: {
-        type: "IdentifierMetadataRecord",
-        id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-        displayName: "holder",
-        signifyName: "764c965c-d997-4842-b940-aebd514fce42",
-        signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-        multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-        createdAt: new Date("2024-08-09T04:21:18.311Z"),
-        updatedAt: new Date("2024-08-09T04:21:19.695Z"),
-      },
+      identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
     };
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
       credentialMock
@@ -2145,7 +2135,7 @@ describe("Ipex communication service of agent", () => {
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
       status: "pending",
       identifierType: IdentifierType.Individual,
-      identifier: memberIdentifierRecord,
+      identifierId: memberIdentifierRecord.id,
     });
   });
 
@@ -2194,7 +2184,7 @@ describe("Ipex communication service of agent", () => {
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
       status: "pending",
       identifierType: IdentifierType.Individual,
-      identifier: memberIdentifierRecord,
+      identifierId: memberIdentifierRecord.id,
     });
   });
 });

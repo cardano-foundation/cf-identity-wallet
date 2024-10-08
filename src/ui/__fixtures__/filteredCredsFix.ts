@@ -13,7 +13,7 @@ const filteredCredsFix: CredentialShortDetails[] = [
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
-    identifier: memberIdentifierRecord,
+    identifierId: memberIdentifierRecord.id,
   },
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6wv",
@@ -22,7 +22,7 @@ const filteredCredsFix: CredentialShortDetails[] = [
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
-    identifier: memberIdentifierRecord,
+    identifierId: memberIdentifierRecord.id,
   },
   {
     id: "did:example:ebfeb1f712ebc6f1c276e12ec23",
@@ -31,7 +31,7 @@ const filteredCredsFix: CredentialShortDetails[] = [
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqbo",
     identifierType: IdentifierType.Individual,
-    identifier: memberIdentifierRecord,
+    identifierId: memberIdentifierRecord.id,
   },
 ];
 
@@ -43,7 +43,7 @@ const revokedCredsFix: CredentialShortDetails[] = [
     status: CredentialStatus.REVOKED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
     identifierType: IdentifierType.Individual,
-    identifier: memberIdentifierRecord,
+    identifierId: memberIdentifierRecord.id,
   },
 ];
 

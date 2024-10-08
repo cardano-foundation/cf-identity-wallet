@@ -13,7 +13,7 @@ const mockData: CredentialMetadataRecordProps = {
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
   schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
   identifierType: IdentifierType.Individual,
-  identifier: memberIdentifierRecord,
+  identifierId: memberIdentifierRecord.id,
 };
 
 describe("Credential metadata record", () => {
@@ -45,7 +45,7 @@ describe("Credential metadata record", () => {
       connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierType: IdentifierType.Individual,
-      identifier: memberIdentifierRecord,
+      identifierId: memberIdentifierRecord.id,
     });
     expect(settingsRecord.createdAt.getTime()).toBeGreaterThan(
       createdAt.getTime()
@@ -63,7 +63,7 @@ describe("Credential metadata record", () => {
       connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierType: IdentifierType.Individual,
-      identifier: memberIdentifierRecord,
+      identifierId: memberIdentifierRecord.id,
     });
     expect(settingsRecord.isArchived).toBe(false);
   });

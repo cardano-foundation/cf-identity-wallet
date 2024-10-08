@@ -126,7 +126,8 @@ const notificationStorage = jest.mocked({
 const credentialService = new CredentialService(
   agentServicesProps,
   credentialStorage as any,
-  notificationStorage as any
+  notificationStorage as any,
+  identifierStorage as any
 );
 
 const now = new Date();
@@ -143,7 +144,7 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
   schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
   identifierType: IdentifierType.Individual,
-  identifier: memberIdentifierRecord,
+  identifierId: memberIdentifierRecord.id,
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(
@@ -180,7 +181,7 @@ describe("Credential service of agent", () => {
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
         identifierType: IdentifierType.Individual,
-        identifier: memberIdentifierRecord,
+        identifierId: memberIdentifierRecord.id,
       },
       {
         id: id2,
@@ -189,7 +190,7 @@ describe("Credential service of agent", () => {
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
         identifierType: IdentifierType.Individual,
-        identifier: memberIdentifierRecord,
+        identifierId: memberIdentifierRecord.id,
       },
     ]);
   });
@@ -333,7 +334,7 @@ describe("Credential service of agent", () => {
       },
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierType: IdentifierType.Individual,
-      identifier: memberIdentifierRecord,
+      identifierId: memberIdentifierRecord.id,
     });
   });
 
@@ -349,7 +350,7 @@ describe("Credential service of agent", () => {
       connectionId: undefined,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierType: IdentifierType.Individual,
-      identifier: memberIdentifierRecord,
+      identifierId: memberIdentifierRecord.id,
     });
     expect(
       await credentialService.getCredentialShortDetailsById(id)
@@ -360,7 +361,7 @@ describe("Credential service of agent", () => {
       issuanceDate: nowISO,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierType: IdentifierType.Individual,
-      identifier: memberIdentifierRecord,
+      identifierId: memberIdentifierRecord.id,
     });
   });
 
@@ -425,6 +426,10 @@ describe("Credential service of agent", () => {
       },
     ]);
     credentialStorage.getAllCredentialMetadata = jest.fn().mockReturnValue([]);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...memberIdentifierRecord,
+      id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+    });
     await credentialService.syncACDCs();
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(2);
   });

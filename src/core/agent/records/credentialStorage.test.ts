@@ -32,7 +32,7 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
   schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
   identifierType: IdentifierType.Individual,
-  identifier: memberIdentifierRecord,
+  identifierId: memberIdentifierRecord.id,
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(

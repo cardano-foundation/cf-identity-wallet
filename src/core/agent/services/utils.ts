@@ -28,7 +28,7 @@ function getCredentialShortDetails(
     status: metadata.status,
     schema: metadata.schema,
     identifierType: metadata.identifierType,
-    identifier: metadata.identifier,
+    identifierId: metadata.identifierId,
   };
 }
 
