@@ -42,7 +42,7 @@ const LockPage = () => {
   const biometricsCache = useSelector(getBiometricsCacheCache);
   const firstAppLaunch = useSelector(geFirstAppLaunch);
   const [openRecoveryAuth, setOpenRecoveryAuth] = useState(false);
-  const { enablePrivacy, disablePrivacy } = usePrivacyScreen(true);
+  const { enablePrivacy, disablePrivacy } = usePrivacyScreen();
 
   const {
     isLock,
