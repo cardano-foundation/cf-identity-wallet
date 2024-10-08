@@ -25,7 +25,7 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
     document?.querySelector("body")?.classList.add("full-page-scanner");
   }, []);
 
-  const handleReset = (operation?: OperationType) => {
+  const handleReset = () => {
     setShowScan(false);
     document?.querySelector("body")?.classList.remove("full-page-scanner");
     document

@@ -202,6 +202,8 @@ const Scanner = forwardRef(
         }
 
         dispatch(setOpenMultiSigId(urlId));
+        handleReset?.(TabsRoutePath.IDENTIFIERS);
+        return;
       } else {
         dispatch(setOpenConnectionId(urlId));
         dispatch(showConnections(true));

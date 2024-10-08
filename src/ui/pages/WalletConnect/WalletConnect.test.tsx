@@ -48,7 +48,7 @@ const identifierCache = [
   },
 ];
 
-jest.mock("../../../../../core/cardano/walletConnect/peerConnection", () => ({
+jest.mock("../../../core/cardano/walletConnect/peerConnection", () => ({
   PeerConnection: {
     peerConnection: {
       start: jest.fn(),
@@ -56,7 +56,7 @@ jest.mock("../../../../../core/cardano/walletConnect/peerConnection", () => ({
     },
   },
 }));
-jest.mock("../../../../../core/agent/agent", () => ({
+jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       peerConnectionMetadataStorage: {
@@ -66,6 +66,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
     },
   },
 }));
+
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children, isOpen }: any) => (

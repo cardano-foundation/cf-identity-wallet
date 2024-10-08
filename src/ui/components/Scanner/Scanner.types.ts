@@ -4,7 +4,7 @@ interface ScannerProps {
   routePath?: string;
   cameraDirection?: LensFacing;
   setIsValueCaptured?: (value: boolean) => void;
-  handleReset?: () => void;
+  handleReset?: (navTo?: string) => void;
   onCheckPermissionFinish?: (permission: boolean) => void;
 }
 

@@ -32,7 +32,15 @@ const Scan = () => {
     }
   }, [isValueCaptured]);
 
-  const handleAfterScan = () => {
+  const handleAfterScan = (navTo?: string) => {
+    if (navTo) {
+      history.push({
+        pathname: navTo,
+      });
+
+      return;
+    }
+
     dispatch(showConnections(true));
   };
 

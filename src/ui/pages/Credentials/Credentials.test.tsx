@@ -243,24 +243,12 @@ describe("Creds Tab", () => {
       </MemoryRouter>
     );
 
-    await waitFor(() => {
-      expect(queryByTestId("connections-tab")).toBe(null);
-    });
-
     act(() => {
       fireEvent.click(getByTestId("connections-button"));
     });
 
     await waitFor(() => {
-      expect(getByTestId("connections-tab")).toHaveClass("show");
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("tab-back-button"));
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("connections-tab")).toBe(null);
+      expect(dispatchMock).toBeCalledWith(showConnections(true));
     });
   });
 

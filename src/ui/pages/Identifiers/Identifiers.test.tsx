@@ -9,9 +9,14 @@ import { act } from "react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import configureStore from "redux-mock-store";
+import { createMemoryHistory } from "history";
+import { IonReactMemoryRouter } from "@ionic/react-router";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import {
+  setCurrentOperation,
+  showConnections,
+} from "../../../store/reducers/stateCache";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import {
   filteredIdentifierFix,
@@ -25,6 +30,7 @@ import {
 import { OperationType } from "../../globals/types";
 import { IdentifierDetails } from "../IdentifierDetails";
 import { Identifiers } from "./Identifiers";
+import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
 
 const deleteIdentifierMock = jest.fn();
 
@@ -209,7 +215,7 @@ describe("Identifiers Tab", () => {
 
     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
 
-    const doneButton = getByTestId("tab-done-label");
+    const doneButton = getByTestId("close-button");
 
     act(() => {
       fireEvent.click(doneButton);
@@ -346,7 +352,7 @@ describe("Identifiers Tab", () => {
       dispatch: dispatchMock,
     };
 
-    const { getByText, getByTestId } = render(
+    const { getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
         <Provider store={storeMocked}>
           <Route
@@ -363,7 +369,7 @@ describe("Identifiers Tab", () => {
       fireEvent.click(getByTestId("connections-button"));
     });
 
-    expect(getByText(EN_TRANSLATIONS.connections.tab.title)).toBeVisible();
+    expect(dispatchMock).toBeCalledWith(showConnections(true));
   });
 
   test("Remove pending identifier alert", async () => {
@@ -514,101 +520,6 @@ describe("Identifiers Tab", () => {
     });
   });
 
-  test("Open create identifier after nav", async () => {
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
-    const initialState = {
-      stateCache: {
-        routes: [TabsRoutePath.IDENTIFIER_DETAILS, TabsRoutePath.IDENTIFIERS],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-        },
-      },
-      seedPhraseCache: {},
-      identifiersCache: {
-        identifiers: pendingMultisignIdentifierFix,
-      },
-      identifierViewTypeCacheCache: {
-        viewType: null,
-      },
-      connectionsCache: {
-        connections: connectionsFix,
-      },
-    };
-
-    const storeMocked = {
-      ...mockStore(initialState),
-      dispatch: dispatchMock,
-    };
-
-    const { getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.IDENTIFIERS}
-            component={Identifiers}
-          />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.createidentifier.add.title)
-      ).toBeVisible();
-    });
-  });
-
-  test.skip("Open create connection after nav", async () => {
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
-    const initialState = {
-      stateCache: {
-        routes: [TabsRoutePath.IDENTIFIER_DETAILS, TabsRoutePath.IDENTIFIERS],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-        },
-      },
-      seedPhraseCache: {},
-      identifiersCache: {
-        identifiers: pendingMultisignIdentifierFix,
-      },
-      identifierViewTypeCacheCache: {
-        viewType: null,
-      },
-      connectionsCache: {
-        connections: connectionsFix,
-      },
-    };
-
-    const storeMocked = {
-      ...mockStore(initialState),
-      dispatch: dispatchMock,
-    };
-
-    const { getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.IDENTIFIERS}
-            component={Identifiers}
-          />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentOperation(OperationType.IDLE)
-      );
-      expect(getByText(EN_TRANSLATIONS.connections.tab.title)).toBeVisible();
-    });
-  });
-
   test("Close create identifier", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
@@ -639,15 +550,21 @@ describe("Identifiers Tab", () => {
       dispatch: dispatchMock,
     };
 
+    const history = createMemoryHistory();
+    history.push(TabsRoutePath.IDENTIFIERS);
+
     const { getByText, getByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
-        <Provider store={storeMocked}>
+      <Provider store={storeMocked}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[TabsRoutePath.IDENTIFIERS]}
+        >
           <Route
             path={TabsRoutePath.IDENTIFIERS}
             component={Identifiers}
           />
-        </Provider>
-      </MemoryRouter>
+        </IonReactMemoryRouter>
+      </Provider>
     );
 
     act(() => {
@@ -665,9 +582,7 @@ describe("Identifiers Tab", () => {
     });
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentOperation(OperationType.IDLE)
-      );
+      expect(dispatchMock).toBeCalledWith(setMultiSigGroupCache(undefined));
     });
   });
 
