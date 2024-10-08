@@ -111,6 +111,7 @@ describe("State Cache", () => {
         attempts: 0,
         lockedUntil: Date.now(),
       },
+      firstAppLaunch: false,
     };
     const action = setAuthentication(authentication);
     const nextState = stateCacheSlice.reducer(initialState, action);

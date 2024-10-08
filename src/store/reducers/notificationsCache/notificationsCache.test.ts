@@ -114,6 +114,7 @@ describe("Notifications cache", () => {
             attempts: 0,
             lockedUntil: Date.now(),
           },
+          firstAppLaunch: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
