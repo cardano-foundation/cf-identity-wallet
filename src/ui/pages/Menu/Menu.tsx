@@ -49,9 +49,7 @@ const Menu = () => {
     [showSubMenu]
   );
 
-  const handleOpenUrl = (
-    key: SubMenuKey.Crypto | SubMenuKey.Connections | SubMenuKey.Chat
-  ) => {
+  const handleOpenUrl = (key: SubMenuKey) => {
     switch (key) {
     case SubMenuKey.Crypto: {
       Browser.open({ url: CRYPTO_LINK });
@@ -103,9 +101,7 @@ const Menu = () => {
 
   const showSelectedOption = (key: SubMenuKey) => {
     if (
-      key === SubMenuKey.Crypto ||
-      key === SubMenuKey.Connections ||
-      key === SubMenuKey.Chat
+      [SubMenuKey.Crypto, SubMenuKey.Connections, SubMenuKey.Chat].includes(key)
     ) {
       handleOpenUrl(key);
     }
