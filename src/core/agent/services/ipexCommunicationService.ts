@@ -1016,6 +1016,43 @@ class IpexCommunicationService extends AgentService {
       };
     }
   }
+
+  async getLinkedGroupFromIpexApply(id: string, credentialSaid: string) {
+    const applyNotedRecord = await this.notificationStorage.findById(id);
+
+    if (!applyNotedRecord) {
+      throw new Error(
+        `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+      );
+    }
+
+    const membersJoined: Set<string> = new Set();
+    const linkedGroupRequest = applyNotedRecord.linkedGroupRequests;
+
+    if (Object.keys(linkedGroupRequest).length) {
+      const saids = linkedGroupRequest[credentialSaid].saids;
+
+      for (const offerSaid in saids) {
+        const memberDetails = saids[offerSaid];
+
+        for (const memberInfo of memberDetails) {
+          if (memberInfo.length > 0) {
+            membersJoined.add(memberInfo[0]);
+          }
+        }
+      }
+
+      return {
+        accepted: linkedGroupRequest[credentialSaid].accepted,
+        membersJoined: Array.from(membersJoined),
+      };
+    } else {
+      return {
+        accepted: false,
+        membersJoined: [],
+      };
+    }
+  }
 }
 
 export { IpexCommunicationService };
