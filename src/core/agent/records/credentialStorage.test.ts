@@ -1,4 +1,6 @@
+import { memberIdentifierRecord } from "../../__fixtures__/agent/multiSigMock";
 import { CredentialStatus } from "../services/credentialService.types";
+import { IdentifierType } from "../services/identifier.types";
 import { CredentialMetadataRecord } from "./credentialMetadataRecord";
 import { CredentialMetadataRecordProps } from "./credentialMetadataRecord.types";
 import { CredentialStorage } from "./credentialStorage";
@@ -29,6 +31,8 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   status: CredentialStatus.CONFIRMED,
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
   schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+  identifierType: IdentifierType.Individual,
+  identifierId: memberIdentifierRecord.id,
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(

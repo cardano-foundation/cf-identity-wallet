@@ -15,6 +15,8 @@ import {
   multisigExnIpexGrantSerder,
   multisigExnIpexGrantSig,
 } from "../../__fixtures__/agent/multiSigMock";
+import { IdentifierType } from "./identifier.types";
+import { memberIdentifierRecord } from "../../__fixtures__/agent/multiSigMock";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -312,6 +314,8 @@ const credentialMetadataMock = {
   connectionId: "EP0fEaRWZDR7caQbdserTOWlC_4trvqB1tzbr2xVo3a4",
   schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
   updatedAt: "2024-08-09T04:21:19.695Z",
+  identifierType: IdentifierType.Individual,
+  identifierId: memberIdentifierRecord,
 };
 
 const offerIpexMessageMock = {
@@ -366,6 +370,7 @@ describe("Ipex communication service of agent", () => {
 
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "holder",
+      id: "identifierId",
     });
     schemaGetMock.mockResolvedValue({ title: "title" });
 
@@ -389,6 +394,8 @@ describe("Ipex communication service of agent", () => {
       issuanceDate: "2024-07-30T04:19:55.348Z",
       schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
       status: "pending",
+      identifierType: IdentifierType.Individual,
+      identifierId: "identifierId",
     };
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
       credentialMock
@@ -1152,8 +1159,8 @@ describe("Ipex communication service of agent", () => {
       signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       signifyOpName: "group.EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
       multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date("2024-08-09T04:21:18.311Z"),
+      updatedAt: new Date("2024-08-09T04:21:19.695Z"),
     });
     schemaGetMock.mockResolvedValue({ title: "title" });
 
@@ -1230,6 +1237,8 @@ describe("Ipex communication service of agent", () => {
       issuanceDate: "2024-07-30T04:19:55.348Z",
       schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
       status: "pending",
+      identifierType: IdentifierType.Group,
+      identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
     };
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
       credentialMock
@@ -2315,6 +2324,10 @@ describe("Ipex communication service of agent", () => {
       version: "1.0",
     });
 
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(memberIdentifierRecord);
+
     expect(
       await ipexCommunicationService.getAcdcFromIpexGrant(
         "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL"
@@ -2336,6 +2349,8 @@ describe("Ipex communication service of agent", () => {
       },
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
       status: "pending",
+      identifierType: IdentifierType.Individual,
+      identifierId: memberIdentifierRecord.id,
     });
   });
 
@@ -2347,6 +2362,9 @@ describe("Ipex communication service of agent", () => {
     });
     const error404 = new Error("Not Found - 404");
     schemaGetMock.mockRejectedValueOnce(error404);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(memberIdentifierRecord);
 
     resolveOobiMock.mockResolvedValueOnce({
       name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
@@ -2380,6 +2398,8 @@ describe("Ipex communication service of agent", () => {
       },
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
       status: "pending",
+      identifierType: IdentifierType.Individual,
+      identifierId: memberIdentifierRecord.id,
     });
   });
 });

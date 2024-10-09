@@ -13,13 +13,11 @@ import {
   NotificationStorage,
   OperationPendingStorage,
   IpexMessageStorage,
+  IdentifierMetadataRecord,
 } from "../records";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 import { AgentService } from "./agentService";
-import {
-  OnlineOnly,
-  deleteNotificationRecordById,
-} from "./utils";
+import { OnlineOnly, deleteNotificationRecordById } from "./utils";
 import { CredentialStatus, ACDCDetails } from "./credentialService.types";
 import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
@@ -32,6 +30,7 @@ import {
   EventTypes,
 } from "../event.types";
 import { ConnectionService } from "./connectionService";
+import { IdentifierType } from "./identifier.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -129,6 +128,7 @@ class IpexCommunicationService extends AgentService {
 
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
     const credential = await this.saveAcdcMetadataRecord(
+      holder,
       grantExn.exn.e.acdc.d,
       grantExn.exn.e.acdc.a.dt,
       schema.title,
@@ -463,6 +463,7 @@ class IpexCommunicationService extends AgentService {
   }
 
   private async saveAcdcMetadataRecord(
+    holder: IdentifierMetadataRecord,
     credentialId: string,
     dateTime: string,
     schemaTitle: string,
@@ -477,6 +478,10 @@ class IpexCommunicationService extends AgentService {
       status: CredentialStatus.PENDING,
       connectionId,
       schema,
+      identifierType: holder.multisigManageAid
+        ? IdentifierType.Group
+        : IdentifierType.Individual,
+      identifierId: holder.id,
     };
     await this.credentialStorage.saveCredentialMetadataRecord(
       credentialDetails
@@ -579,6 +584,7 @@ class IpexCommunicationService extends AgentService {
 
     if (!credentialPending) {
       const credential = await this.saveAcdcMetadataRecord(
+        holder,
         credentialId,
         grantExn.exn.e.acdc.a.dt,
         schema.title,
@@ -940,6 +946,9 @@ class IpexCommunicationService extends AgentService {
 
   async getAcdcFromIpexGrant(said: string): Promise<ACDCDetails> {
     const exchange = await this.props.signifyClient.exchanges().get(said);
+    const holder = await this.identifierStorage.getIdentifierMetadata(
+      exchange.exn.a.i
+    );
     const schemaSaid = exchange.exn.e.acdc.s;
     const schema = await this.props.signifyClient
       .schemas()
@@ -970,6 +979,10 @@ class IpexCommunicationService extends AgentService {
         dt: new Date(exchange.exn.e.iss.dt).toISOString(),
       },
       status: CredentialStatus.PENDING,
+      identifierId: holder.id,
+      identifierType: holder.multisigManageAid
+        ? IdentifierType.Group
+        : IdentifierType.Individual,
     };
   }
 
@@ -1083,7 +1096,7 @@ class IpexCommunicationService extends AgentService {
 
     return { op, exnSaid: exn.ked.d, ipexAdmitSaid, member: ourIdentifier.id };
   }
-  
+
   async getLinkedGroupFromIpexGrant(id: string) {
     const grantNoteRecord = await this.notificationStorage.findById(id);
 
