@@ -113,6 +113,8 @@ const InputModal = () => {
             userName: inputValue,
           })
         );
+
+        setInputValue("");
         dispatch(setToastMsg(ToastMsgType.USERNAME_CREATION_SUCCESS));
       })
       .catch((error) => {
