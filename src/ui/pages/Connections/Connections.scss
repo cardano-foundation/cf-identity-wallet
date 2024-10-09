@@ -42,17 +42,17 @@
   .page-header {
     height: calc(var(--ion-safe-area-top, 0) + 3.75rem);
     transition: all 0.25s;
+
+    ion-toolbar {
+      height: 100%;
+      overflow: hidden;
+    }
   }
 
   &.hide-header {
     .page-header {
-      opacity: 0;
       height: var(--ion-safe-area-top, 0);
       --min-height: 0;
-
-      & * {
-        display: none;
-      }
     }
 
     .connections-list {
@@ -177,11 +177,6 @@
 
     .placeholder-spacer {
       height: 2.5rem;
-    }
-
-    .page-header {
-      height: calc(var(--ion-safe-area-top, 0) + 3.25rem);
-      transition: all 0.25s;
     }
 
     .alphabet-selector {
