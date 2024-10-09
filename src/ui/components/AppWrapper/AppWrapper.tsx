@@ -426,6 +426,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const initApp = async () => {
     await new ConfigurationService().start();
     await Agent.agent.initDatabaseConnection();
+
+    // This will skip the onboarding screen with dev mode.
+    if (process.env.DEV_SKIP_ONBOARDING === "true") {
+      await Agent.agent.devPreload();
+    }
+
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
     try {

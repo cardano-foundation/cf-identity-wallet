@@ -35,9 +35,15 @@ import {
   ipexSubmitOfferSerder,
   ipexSubmitOfferSig,
   ipexSubmitOfferEnd,
+  kedFromAdmitExnMessage,
 } from "../../__fixtures__/agent/ipexCommunicationFixture";
 import { NotificationRoute } from "../agent.types";
-import { gHab, mHab } from "../../__fixtures__/agent/multSigFixtures";
+import {
+  gHab,
+  mHab,
+  memberIdentifierRecord,
+} from "../../__fixtures__/agent/multSigFixtures";
+import { IdentifierType } from "./identifier.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -97,7 +103,6 @@ const operationPendingStorage = jest.mocked({
 });
 
 const multisigService = jest.mocked({
-  multisigAdmit: jest.fn().mockResolvedValue({ name: "opName", done: true }),
   offerPresentMultisigACDC: jest
     .fn()
     .mockResolvedValue({ name: "opName", done: true }),
@@ -111,8 +116,6 @@ const identifiersMemberMock = jest.fn();
 let identifiersGetMock = jest.fn();
 const getMemberMock = jest.fn();
 const createExchangeMessageMock = jest.fn();
-
-const now = new Date();
 
 let getExchangeMock = jest.fn().mockImplementation((id: string) => {
   if (id == "saidForUuid") {
@@ -151,7 +154,7 @@ const submitAdmitMock = jest.fn().mockResolvedValue({
   done: true,
 });
 const markNotificationMock = jest.fn();
-
+const ipexAdmitMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -201,7 +204,7 @@ const signifyClient = jest.mocked({
     mark: markNotificationMock,
   }),
   ipex: () => ({
-    admit: jest.fn().mockResolvedValue(["admit", "sigs", "aend"]),
+    admit: ipexAdmitMock,
     submitAdmit: submitAdmitMock,
     offer: ipexOfferMock,
     submitOffer: ipexSubmitOfferMock,
@@ -268,9 +271,6 @@ jest.mock("../../../core/agent/agent", () => ({
       ipexCommunications: {
         acceptAcdcFromMultisigExn: jest.fn(),
       },
-      multiSigs: {
-        multisigAdmit: jest.fn().mockResolvedValue({ name: "opName" }),
-      },
     },
   },
 }));
@@ -304,10 +304,10 @@ describe("Ipex communication service of agent", () => {
       id: id,
       createdAt: new Date(),
       a: {
-        r: "/exn/ipex/grant",
+        r: NotificationRoute.ExnIpexGrant,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/grant",
+      route: NotificationRoute.ExnIpexGrant,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -318,6 +318,7 @@ describe("Ipex communication service of agent", () => {
 
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "holder",
+      id: "identifierId",
     });
     schemaGetMock.mockResolvedValue(mockGetSchema);
 
@@ -330,8 +331,16 @@ describe("Ipex communication service of agent", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-
+    ipexAdmitMock.mockResolvedValue(["admit", "sigs", "aend"]),
     await ipexCommunicationService.acceptAcdc(id);
+
+    expect(submitAdmitMock).toBeCalledWith(
+      "identifierId",
+      "admit",
+      "sigs",
+      "aend",
+      ["EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x"]
+    );
 
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
       credentialRecordProps
@@ -421,10 +430,10 @@ describe("Ipex communication service of agent", () => {
       id: id,
       createdAt: new Date(),
       a: {
-        r: "/exn/ipex/grant",
+        r: NotificationRoute.ExnIpexGrant,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -971,10 +980,10 @@ describe("Ipex communication service of agent", () => {
       id: id,
       createdAt: new Date(),
       a: {
-        r: "/exn/ipex/grant",
+        r: NotificationRoute.ExnIpexGrant,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/grant",
+      route: NotificationRoute.ExnIpexGrant,
       read: true,
       linkedGroupRequests: {
         EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
@@ -1003,9 +1012,54 @@ describe("Ipex communication service of agent", () => {
       },
     ]);
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
-    multisigService.multisigAdmit = jest
+    multisigService.getMultisigParticipants.mockResolvedValue({
+      ourIdentifier: {
+        id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+        displayName: "Identifier 2",
+        signifyName: "uuid-here",
+        createdAt: "2024-09-23T08:53:11.981Z",
+        theme: 0,
+        groupMetadata: {
+          groupId: "group-id",
+          groupInitiator: true,
+          groupCreated: true,
+        },
+      },
+      multisigMembers: [
+        {
+          aid: "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+          ends: [],
+        },
+        {
+          aid: "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+          ends: [],
+        },
+      ],
+    });
+    getMemberMock.mockResolvedValue({
+      sign: () => [
+        "ABDEouKAUhCDedOkqA5oxlMO4OB1C8p5M4G-_DLJWPf-ZjegTK-OxN4s6veE_7hXXuFzX4boq6evbLs5vFiVl-MB",
+      ],
+    });
+    identifiersGetMock = jest
       .fn()
-      .mockResolvedValue({ op: { name: "opName", done: true } });
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+    createExchangeMessageMock.mockResolvedValue([
+      ipexSubmitGrantSerder,
+      ipexSubmitGrantSig,
+      ipexSubmitGrantEnd,
+    ]);
+
+    (Serder as jest.Mock).mockImplementation(
+      jest.fn().mockReturnValue({
+        kedFromAdmitExnMessage,
+      })
+    );
+
+    (Saider.saidify as jest.Mock).mockImplementation(
+      jest.fn().mockReturnValue([{} as Saider, kedFromAdmitExnMessage])
+    );
 
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {
@@ -1013,10 +1067,10 @@ describe("Ipex communication service of agent", () => {
         id: id,
         createdAt: new Date(),
         a: {
-          r: "/exn/ipex/grant",
+          r: NotificationRoute.ExnIpexGrant,
           d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
         },
-        route: "/exn/ipex/grant",
+        route: NotificationRoute.ExnIpexGrant,
         read: true,
         linkedGroupRequests: {
           "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
@@ -1034,7 +1088,16 @@ describe("Ipex communication service of agent", () => {
     });
 
     await ipexCommunicationService.acceptAcdc(id);
-
+    expect(submitAdmitMock).toBeCalledWith(
+      "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      ipexSubmitGrantSerder,
+      ipexSubmitGrantSig,
+      ipexSubmitGrantEnd,
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
+    );
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
@@ -1057,10 +1120,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/grant",
+        r: NotificationRoute.ExnIpexGrant,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/grant",
+      route: NotificationRoute.ExnIpexGrant,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -1076,14 +1139,18 @@ describe("Ipex communication service of agent", () => {
       .fn()
       .mockResolvedValue(credentialMetadataRecord);
 
-    multisigService.multisigAdmit = jest.fn().mockResolvedValue({
-      op: { name: "opName", done: false },
-      exnSaid: "exnSaid",
-      ipexAdmitSaid: "ipexAdmitSaid",
-      member: "member1",
-    });
-
-    eventEmitter.emit = jest.fn();
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+    ipexAdmitMock.mockResolvedValue([
+      {
+        kedFromAdmitExnMessage,
+      },
+      ["sigs"],
+      "aend",
+    ]),
+    (eventEmitter.emit = jest.fn());
 
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "opName",
@@ -1091,21 +1158,35 @@ describe("Ipex communication service of agent", () => {
     });
 
     await ipexCommunicationService.acceptAcdc("id");
-
+    expect(submitAdmitMock).toBeCalledWith(
+      "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      ipexSubmitGrantSerder,
+      ipexSubmitGrantSig,
+      ipexSubmitGrantEnd,
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
+    );
     expect(notificationStorage.update).toBeCalledWith({
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/grant",
+        r: NotificationRoute.ExnIpexGrant,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/grant",
+      route: NotificationRoute.ExnIpexGrant,
       read: true,
       linkedGroupRequests: {
         "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
           accepted: true,
           saids: {
-            ipexAdmitSaid: [["member1", "exnSaid"]],
+            "EOQf4E9vcTRVs5hsz4F1-zR7IaGV5O75GFE2el3LAmru": [
+              [
+                "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
+                "EEpfEHR6EedLnEzleK7mM3AKJSoPWuSQeREC8xjyq3pa",
+              ],
+            ],
           },
         },
       },
@@ -1145,10 +1226,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/grant",
+        r: NotificationRoute.ExnIpexGrant,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/grant",
+      route: NotificationRoute.ExnIpexGrant,
       read: true,
       linkedGroupRequests: {
         "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
@@ -1183,7 +1264,16 @@ describe("Ipex communication service of agent", () => {
       .mockResolvedValue([notificationRecord]);
 
     await ipexCommunicationService.acceptAcdc("id");
-
+    expect(submitAdmitMock).toBeCalledWith(
+      "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      ipexSubmitGrantSerder,
+      ipexSubmitGrantSig,
+      ipexSubmitGrantEnd,
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
+    );
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(0);
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
@@ -1194,10 +1284,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/grant",
+        r: NotificationRoute.ExnIpexGrant,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/grant",
+      route: NotificationRoute.ExnIpexGrant,
       read: true,
       linkedGroupRequests: {
         "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W": {
@@ -1219,10 +1309,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -1273,10 +1363,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {
         EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
@@ -1293,10 +1383,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/agree",
+        r: NotificationRoute.ExnIpexAgree,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/agree",
+      route: NotificationRoute.ExnIpexAgree,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -1347,10 +1437,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/agree",
+        r: NotificationRoute.ExnIpexAgree,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/agree",
+      route: NotificationRoute.ExnIpexAgree,
       read: true,
       linkedGroupRequests: {
         EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
@@ -1363,45 +1453,7 @@ describe("Ipex communication service of agent", () => {
 
   test("Cannot join offer ACDC from multisig exn if identifier is not locally stored", async () => {
     const id = "uuid";
-    getExchangeMock.mockReturnValueOnce({
-      exn: {
-        v: "KERI10JSON00032d_",
-        t: "exn",
-        d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-        i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-        rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-        p: "",
-        dt: "2024-08-28T06:39:55.501000+00:00",
-        r: "/multisig/exn",
-        q: {},
-        a: {
-          i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-          gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-        },
-        e: {
-          exn: {
-            v: "KERI10JSON000178_",
-            t: "exn",
-            d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
-            i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-            rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-            p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-            dt: "2024-08-28T06:39:51.416000+00:00",
-            r: "/ipex/grant",
-            q: {},
-            a: {
-              i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-              m: "",
-            },
-            e: {
-              acdc: { d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT" },
-            },
-          },
-          d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
-        },
-      },
-      pathed: {},
-    });
+    getExchangeMock.mockReturnValueOnce(multisigExnIpexGrant);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -1414,45 +1466,7 @@ describe("Ipex communication service of agent", () => {
 
   test("Cannot join grant ACDC from multisig exn if identifier is not locally stored", async () => {
     const id = "uuid";
-    getExchangeMock.mockReturnValueOnce({
-      exn: {
-        v: "KERI10JSON00032d_",
-        t: "exn",
-        d: "ELW97_QXT2MWtsmWLCSR8RBzH-dcyF2gTJvt72I0wEFO",
-        i: "ECS7jn05fIP_JK1Ub4E6hPviRKEdC55QhxZToxDIHo_E",
-        rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-        p: "",
-        dt: "2024-08-28T06:39:55.501000+00:00",
-        r: "/multisig/exn",
-        q: {},
-        a: {
-          i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-          gid: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-        },
-        e: {
-          exn: {
-            v: "KERI10JSON000178_",
-            t: "exn",
-            d: "EKa94ERqArLOvNf9AmItMJtsoGKZPVb3e_pEo_1D37qt",
-            i: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-            rp: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-            p: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
-            dt: "2024-08-28T06:39:51.416000+00:00",
-            r: "/ipex/grant",
-            q: {},
-            a: {
-              i: "EJ84hiNC0ts71HARE1ZkcnYAFJP0s-RiLNyzupnk7edn",
-              m: "",
-            },
-            e: {
-              acdc: { d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT" },
-            },
-          },
-          d: "EE8_Xc0ZUh_sUJLtmBpVSEr-RFS2mRUIpFyL-pmvtPvx",
-        },
-      },
-      pathed: {},
-    });
+    getExchangeMock.mockReturnValueOnce(multisigExnIpexGrant);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -1481,10 +1495,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -1536,10 +1550,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {
         EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
@@ -1582,10 +1596,10 @@ describe("Ipex communication service of agent", () => {
       id: id,
       createdAt: new Date(),
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -1615,10 +1629,10 @@ describe("Ipex communication service of agent", () => {
         id: id,
         createdAt: new Date(),
         a: {
-          r: "/exn/ipex/apply",
+          r: NotificationRoute.ExnIpexApply,
           d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
         },
-        route: "/exn/ipex/apply",
+        route: NotificationRoute.ExnIpexApply,
         read: true,
         linkedGroupRequests: {
           "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
@@ -1672,10 +1686,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -1715,10 +1729,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {
         EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
@@ -1754,10 +1768,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
@@ -1807,10 +1821,10 @@ describe("Ipex communication service of agent", () => {
       type: "NotificationRecord",
       id: "id",
       a: {
-        r: "/exn/ipex/apply",
+        r: NotificationRoute.ExnIpexApply,
         d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
       },
-      route: "/exn/ipex/apply",
+      route: NotificationRoute.ExnIpexApply,
       read: true,
       linkedGroupRequests: {
         EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT: {
@@ -1824,7 +1838,6 @@ describe("Ipex communication service of agent", () => {
     });
   });
 
-  //
   test("Can initiate offering an ACDC from a multi-sig identifier", async () => {
     const multisigId = "multisigId";
     const discloseePrefix = "discloseePrefix";
@@ -1909,7 +1922,7 @@ describe("Ipex communication service of agent", () => {
     expect(ipexOfferMock).toBeCalledTimes(0);
     expect(createExchangeMessageMock).toBeCalledWith(
       mHab,
-      "/multisig/exn",
+      NotificationRoute.MultiSigExn,
       {
         gid: gHab["prefix"],
       },
@@ -2057,7 +2070,7 @@ describe("Ipex communication service of agent", () => {
     expect(ipexGrantMock).toBeCalledTimes(0);
     expect(createExchangeMessageMock).toBeCalledWith(
       mHab,
-      "/multisig/exn",
+      NotificationRoute.MultiSigExn,
       {
         gid: gHab["prefix"],
       },
@@ -2149,10 +2162,10 @@ describe("Ipex communication service of agent", () => {
         id: id,
         createdAt: new Date(),
         a: {
-          r: "/exn/ipex/grant",
+          r: NotificationRoute.ExnIpexGrant,
           d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
         },
-        route: "/exn/ipex/grant",
+        route: NotificationRoute.ExnIpexGrant,
         read: true,
         linkedGroupRequests: {
           "EDm8iNyZ9I3P93jb0lFtL6DJD-4Mtd2zw1ADFOoEQAqw": false,
@@ -2242,6 +2255,10 @@ describe("Ipex communication service of agent", () => {
 
     schemaGetMock.mockResolvedValue(mockGetSchema);
 
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(memberIdentifierRecord);
+
     expect(
       await ipexCommunicationService.getAcdcFromIpexGrant(
         "EJ1jbI8vTFCEloTfSsZkBpV0bUJnhGVyak5q-5IFIglL"
@@ -2259,6 +2276,8 @@ describe("Ipex communication service of agent", () => {
       s: mockGetSchema,
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
       status: "pending",
+      identifierType: IdentifierType.Individual,
+      identifierId: memberIdentifierRecord.id,
     });
   });
 
@@ -2272,6 +2291,9 @@ describe("Ipex communication service of agent", () => {
     });
     const error404 = new Error("Not Found - 404");
     schemaGetMock.mockRejectedValueOnce(error404);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValueOnce(memberIdentifierRecord);
 
     resolveOobiMock.mockResolvedValueOnce({
       name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
@@ -2301,6 +2323,8 @@ describe("Ipex communication service of agent", () => {
       s: mockGetSchema,
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
       status: "pending",
+      identifierType: IdentifierType.Individual,
+      identifierId: memberIdentifierRecord.id,
     });
   });
 

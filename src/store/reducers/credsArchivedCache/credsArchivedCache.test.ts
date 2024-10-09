@@ -9,6 +9,8 @@ import {
   CredentialShortDetails,
   CredentialStatus,
 } from "../../../core/agent/services/credentialService.types";
+import { IdentifierType } from "../../../core/agent/services/identifier.types";
+import { memberIdentifierRecord } from "../../../core/__fixtures__/agent/multSigFixtures";
 
 describe("credsArchivedCacheSlice", () => {
   const initialState = {
@@ -28,6 +30,8 @@ describe("credsArchivedCacheSlice", () => {
         credentialType: "University Credential",
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        identifierType: IdentifierType.Individual,
+        identifierId: memberIdentifierRecord.id,
       },
     ];
     const newState = credsArchivedCacheSlice.reducer(

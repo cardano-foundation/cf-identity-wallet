@@ -171,6 +171,8 @@ const credentialRecordProps = {
   issuanceDate: "2024-07-30T04:19:55.348Z",
   schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
   status: CredentialStatus.PENDING,
+  identifierId: "identifierId",
+  identifierType: "individual",
 };
 
 const identifierMetadataRecord = {
@@ -435,7 +437,7 @@ const ipexSubmitGrantSerder = {
     i: "EN-5a2OQkuImwAJh5o-SXx2Db-az-ZQo0EmHv4SK-xxw",
     p: "",
     dt: "2024-08-09T10:27:01.653000+00:00",
-    r: "/multisig/exn",
+    r: NotificationRoute.MultiSigExn,
     q: {},
     a: { gid: "EOfnSCpCa3XmSTUZ7vEgEJoYbruyiYIbl5DYsAwooXTY" },
     e: {
@@ -446,7 +448,7 @@ const ipexSubmitGrantSerder = {
         i: "EOfnSCpCa3XmSTUZ7vEgEJoYbruyiYIbl5DYsAwooXTY",
         p: "",
         dt: "2024-08-09T10:27:00.155000+00:00",
-        r: "/ipex/grant",
+        r: ExchangeRoute.IpexGrant,
         q: {},
         a: { m: "", i: "ENDDYy0SVuFOI3rEnB3HbNFB_BFjhl4fQbZSeDZHGQf9" },
         e: {
@@ -514,7 +516,7 @@ const ipexOfferSerder = {
     rp: "EOb2ITawuAc6mAeSn4SMuHZtB9mIHfZzac_1NO28eytd",
     p: "ENdg2aG1gOXitYwI1xKZNch0VFAmZuFpvL0Xftliv0W9",
     dt: "2024-10-02T15:23:50.210000+00:00",
-    r: "/ipex/offer",
+    r: ExchangeRoute.IpexOffer,
     q: {},
     a: {
       i: "EOb2ITawuAc6mAeSn4SMuHZtB9mIHfZzac_1NO28eytd",
@@ -555,7 +557,7 @@ const ipexSubmitOfferSerder = {
     rp: "EOb2ITawuAc6mAeSn4SMuHZtB9mIHfZzac_1NO28eytd",
     p: "",
     dt: "2024-10-02T15:26:01.003000+00:00",
-    r: "/multisig/exn",
+    r: NotificationRoute.MultiSigExn,
     q: {},
     a: {
       i: "EOb2ITawuAc6mAeSn4SMuHZtB9mIHfZzac_1NO28eytd",
@@ -570,7 +572,7 @@ const ipexSubmitOfferSerder = {
         rp: "EOb2ITawuAc6mAeSn4SMuHZtB9mIHfZzac_1NO28eytd",
         p: "ENdg2aG1gOXitYwI1xKZNch0VFAmZuFpvL0Xftliv0W9",
         dt: "2024-10-02T15:23:50.210000+00:00",
-        r: "/ipex/offer",
+        r: ExchangeRoute.IpexOffer,
         q: {},
         a: {
           i: "EOb2ITawuAc6mAeSn4SMuHZtB9mIHfZzac_1NO28eytd",
@@ -606,6 +608,23 @@ const ipexSubmitOfferSig = [
 const ipexSubmitOfferEnd =
   "-LA35AACAA-e-exn-FABEBopw9UjL8plPiTfqJbb819-l2Jsr-0de7YXGxzKGRq40AAAAAAAAAAAAAAAAAAAAAAAEBopw9UjL8plPiTfqJbb819-l2Jsr-0de7YXGxzKGRq4-AABABCbsGn3CwRsUnzBhMitf8Mr6eHO5zv4-BNInB0rUTGhd86rIvz3kbzBqOBAAmbOOM4PwX08hzcgoomGk45cbxEO";
 
+const kedFromAdmitExnMessage = {
+  v: "KERI10JSON000178_",
+  t: "exn",
+  d: "EOQf4E9vcTRVs5hsz4F1-zR7IaGV5O75GFE2el3LAmru",
+  i: "ENEr59aBCXFU2TE6FyNc_Z7cZKv6PCqRFfXG6HrmSzdp",
+  rp: "EBgG1lhkxiv_UQ8IiF2G4j5HQlnT5K5XZy_zRFg_EGCS",
+  p: "ELI7vKj9mGu6BrYwjXOfco0SUThCBr8heO5q2g6OOVUJ",
+  dt: "2024-10-04T02:19:09.287000+00:00",
+  r: ExchangeRoute.IpexAdmit,
+  q: {},
+  a: {
+    i: "EBgG1lhkxiv_UQ8IiF2G4j5HQlnT5K5XZy_zRFg_EGCS",
+    m: "",
+  },
+  e: {},
+};
+
 export {
   mockGetSchema,
   credentialRecordProps,
@@ -633,4 +652,5 @@ export {
   ipexSubmitGrantSerder,
   ipexSubmitGrantSig,
   ipexSubmitGrantEnd,
+  kedFromAdmitExnMessage,
 };

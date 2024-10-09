@@ -112,15 +112,15 @@ const memberIdentifierRecord = {
   isDeleted: false,
   isPending: false,
   signifyOpName: "done.ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
-  createdAt: "2024-06-28T03:54:03.514Z",
+  createdAt: new Date("2024-06-28T03:54:03.514Z"),
   theme: 0,
   groupMetadata: {
     groupId: "08f22dee-8cb0-4d65-8600-a82bbc3f6fd7",
     groupInitiator: true,
     groupCreated: true,
   },
-  updatedAt: "2024-06-28T03:55:04.260Z",
-};
+  updatedAt: new Date("2024-06-28T03:55:04.260Z"),
+} as IdentifierMetadataRecordProps;
 
 const getMultisigMembersResponse = {
   signing: [
