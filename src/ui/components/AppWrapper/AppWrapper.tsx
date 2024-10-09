@@ -424,9 +424,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
     await Agent.agent.initDatabaseConnection();
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
-    try {
-      await Agent.agent.basicStorage.findById(MiscRecordId.APP_ALREADY_INIT);
-    } catch (e) {
+    const initState = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_ALREADY_INIT
+    );
+    if (!initState) {
       await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
       await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);

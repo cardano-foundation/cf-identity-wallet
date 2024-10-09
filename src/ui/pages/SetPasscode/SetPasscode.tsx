@@ -16,6 +16,7 @@ import { getBackRoute } from "../../../routes/backRoute";
 import { showError } from "../../utils/error";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
+import { ToastMsgType } from "../../globals/types";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
@@ -38,9 +39,7 @@ const SetPasscode = () => {
       data
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    ionRouter.push(nextPath.pathname, "forward", "push");
-
-    Agent.agent.basicStorage
+    await Agent.agent.basicStorage
       .save({
         id: MiscRecordId.APP_ALREADY_INIT,
         content: {
@@ -48,8 +47,15 @@ const SetPasscode = () => {
         },
       })
       .catch((e) => {
-        showError("Unable to save app init state", e, dispatch);
+        showError(
+          "Unable to save app init state",
+          e,
+          dispatch,
+          ToastMsgType.FAILED_ADD_APP_INIT_STATE
+        );
+        throw e;
       });
+    ionRouter.push(nextPath.pathname, "forward", "push");
   };
 
   const isOnReenterPasscodeStep =
