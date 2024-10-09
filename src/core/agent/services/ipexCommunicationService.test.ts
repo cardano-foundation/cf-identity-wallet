@@ -385,7 +385,15 @@ describe("Ipex communication service of agent", () => {
     });
     ipexAdmitMock.mockResolvedValue(["admit", "sigs", "aend"]),
     await ipexCommunicationService.acceptAcdc(id);
-
+    expect(submitAdmitMock).toBeCalledWith(
+      "identifierId",
+      "admit",
+      "sigs",
+      "aend",
+      [
+        "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
+      ]
+    );
     const credentialMock = {
       connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
       credentialType: "title",
@@ -1203,7 +1211,16 @@ describe("Ipex communication service of agent", () => {
     });
 
     await ipexCommunicationService.acceptAcdc("id");
-
+    expect(submitAdmitMock).toBeCalledWith(
+      "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      multisigExnIpexGrantSerder,
+      multisigExnIpexGrantSig,
+      multisigExnIpexGrantEnd,
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
+    );
     expect(notificationStorage.update).toBeCalledWith({
       type: "NotificationRecord",
       id: "id",
@@ -1358,7 +1375,16 @@ describe("Ipex communication service of agent", () => {
       .mockResolvedValue([notificationRecord]);
 
     await ipexCommunicationService.acceptAcdc("id");
-
+    expect(submitAdmitMock).toBeCalledWith(
+      "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      multisigExnIpexGrantSerder,
+      multisigExnIpexGrantSig,
+      multisigExnIpexGrantEnd,
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
+    );
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(0);
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
