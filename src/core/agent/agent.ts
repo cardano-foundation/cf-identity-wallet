@@ -49,6 +49,11 @@ import { BaseRecord } from "../storage/storage.types";
 import { OperationPendingStorage } from "./records/operationPendingStorage";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
 import { EventTypes, KeriaStatusChangedEvent } from "./event.types";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../storage/preferences/preferencesStorage";
+import { ConfigurationService } from "../configuration";
 
 const walletId = "idw";
 class Agent {
@@ -63,7 +68,6 @@ class Agent {
   static readonly MISSING_DATA_ON_KERIA =
     "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.";
   static readonly BUFFER_ALLOC_SIZE = 3;
-
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {
     eventEmitter: undefined as any,
@@ -157,7 +161,8 @@ class Agent {
       this.credentialService = new CredentialService(
         this.agentServicesProps,
         this.credentialStorage,
-        this.notificationStorage
+        this.notificationStorage,
+        this.identifierStorage
       );
     }
     return this.credentialService;
@@ -326,6 +331,53 @@ class Agent {
         isOnline: online,
       },
     });
+  }
+
+  async devPreload() {
+    const APP_PASSSCODE_DEV_MODE = "111111";
+    try {
+      await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message ===
+          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_PASSCODE}`
+      ) {
+        await SecureStorage.set(
+          KeyStoreKeys.APP_PASSCODE,
+          APP_PASSSCODE_DEV_MODE
+        );
+      } else {
+        throw error;
+      }
+    }
+
+    try {
+      await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message ===
+          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
+      ) {
+        await SecureStorage.set(
+          KeyStoreKeys.SIGNIFY_BRAN,
+          randomPasscode().substring(0, 21)
+        );
+      } else {
+        throw error;
+      }
+    }
+    await PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
+      initialized: true,
+    });
+
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.APP_PASSWORD_SKIPPED,
+        content: { value: true },
+      })
+    );
   }
 
   private async saveAgentUrls(agentUrls: AgentUrls): Promise<void> {
