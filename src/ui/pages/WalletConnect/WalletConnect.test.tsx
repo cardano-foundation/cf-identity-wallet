@@ -1,14 +1,14 @@
 import { setupIonicReact } from "@ionic/react";
 import { mockIonicReact, waitForIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
-import { TabsRoutePath } from "../../../../../routes/paths";
-import { store } from "../../../../../store";
-import { identifierFix } from "../../../../__fixtures__/identifierFix";
-import { walletConnectionsFix } from "../../../../__fixtures__/walletConnectionsFix";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { TabsRoutePath } from "../../../routes/paths";
+import { store } from "../../../store";
+import { identifierFix } from "../../__fixtures__/identifierFix";
+import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 import { WalletConnect } from "./WalletConnect";
 import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
@@ -48,7 +48,7 @@ const identifierCache = [
   },
 ];
 
-jest.mock("../../../../../core/cardano/walletConnect/peerConnection", () => ({
+jest.mock("../../../core/cardano/walletConnect/peerConnection", () => ({
   PeerConnection: {
     peerConnection: {
       start: jest.fn(),
@@ -56,7 +56,7 @@ jest.mock("../../../../../core/cardano/walletConnect/peerConnection", () => ({
     },
   },
 }));
-jest.mock("../../../../../core/agent/agent", () => ({
+jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       peerConnectionMetadataStorage: {
@@ -66,6 +66,7 @@ jest.mock("../../../../../core/agent/agent", () => ({
     },
   },
 }));
+
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children, isOpen }: any) => (

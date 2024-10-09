@@ -114,6 +114,7 @@ describe("Notifications cache", () => {
             attempts: 0,
             lockedUntil: Date.now(),
           },
+          firstAppLaunch: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -121,6 +122,7 @@ describe("Notifications cache", () => {
           queues: [],
           isPaused: false,
         },
+        showConnections: false,
         toastMsgs: [],
       },
       seedPhraseCache: {

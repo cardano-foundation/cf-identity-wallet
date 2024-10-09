@@ -126,7 +126,7 @@ describe("Cards Stack Component", () => {
 
     await waitFor(() => expect(firstCard).toHaveClass("active"));
 
-    const doneButton = await findByTestId("tab-done-label");
+    const doneButton = await findByTestId("close-button");
     act(() => {
       fireEvent.click(doneButton);
       jest.advanceTimersByTime(CLEAR_STATE_DELAY);

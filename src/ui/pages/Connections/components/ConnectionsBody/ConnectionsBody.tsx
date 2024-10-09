@@ -15,12 +15,13 @@ import { i18n } from "../../../../../i18n";
 import { combineClassNames } from "../../../../utils/style";
 import { AlphabetSelector } from "../AlphabetSelector";
 import { AlphabeticList } from "../AlphabeticList";
-import { SearchConnectionContent } from "../SearchConnectionContent";
+
 import "./ConnectionsBody.scss";
 import {
   ConnectionsBodyProps,
   SearchInputProps,
 } from "./ConnectionsBody.types";
+import { SearchConnectionContent } from "../SearchConnectionContent";
 
 const SearchInput = ({ onFocus, onInputChange, value }: SearchInputProps) => {
   const showCancel = useMemo(() => {
@@ -72,8 +73,7 @@ const ConnectionsBody = ({
     if (!container?.current) return;
 
     const contentHeight =
-      container.current.querySelector(".connections-container")?.clientHeight ||
-      0;
+      container.current.querySelector(".connections-list")?.clientHeight || 0;
 
     if (contentHeight > ALPHABET_LIST_MAX_HEIGHT) return;
 
@@ -119,7 +119,7 @@ const ConnectionsBody = ({
     }
   }, [search]);
 
-  const classes = combineClassNames("connections-tab-center", {
+  const classes = combineClassNames("connections-body", {
     keyboard: keyboardIsOpen,
   });
 
@@ -134,7 +134,7 @@ const ConnectionsBody = ({
         className={classes}
         ref={container}
       >
-        <IonContent className="connections-container">
+        <IonContent className="connections-list">
           <IonGrid>
             <IonRow>
               <IonCol size="12">
@@ -142,7 +142,7 @@ const ConnectionsBody = ({
                   mappedConnections.map((alphabeticGroup, index) => {
                     return (
                       <IonItemGroup
-                        className="connections-list"
+                        className="connections-list-alphabetic-block"
                         data-testid={`connection-group-${index}`}
                         key={index}
                       >

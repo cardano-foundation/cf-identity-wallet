@@ -1002,11 +1002,11 @@ class KeriaNotificationService extends AgentService {
         const grantExchange = await this.props.signifyClient
           .exchanges()
           .get(operation.metadata?.said);
-        if (grantExchange.exn.r === ExchangeRoute.IpexAgree) {
+        if (grantExchange.exn.r === ExchangeRoute.IpexGrant) {
           const agreeExchange = await this.props.signifyClient
             .exchanges()
             .get(grantExchange.exn.p);
-          const credentialId = agreeExchange.exn.e.acdc.d;
+          const credentialId = grantExchange.exn.e.acdc.d;
           if (credentialId) {
             const holder = await this.identifierStorage.getIdentifierMetadata(
               grantExchange.exn.i

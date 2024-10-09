@@ -2027,19 +2027,19 @@ describe("Long running operation tracker", () => {
       .exchanges()
       .get.mockResolvedValueOnce({
         exn: {
-          r: ExchangeRoute.IpexAgree,
-          p: "p",
-        },
-      })
-      .mockResolvedValueOnce({
-        exn: {
           r: ExchangeRoute.IpexGrant,
-          d: "d",
           e: {
             acdc: {
               d: credentialIdMock,
             },
           },
+          p: "p",
+        },
+      })
+      .mockResolvedValueOnce({
+        exn: {
+          r: ExchangeRoute.IpexAgree,
+          d: "d",
         },
       });
     const operationRecord = {

@@ -5,12 +5,12 @@ import { i18n } from "../../../../../i18n";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { CardItem, CardList } from "../../../../components/CardList";
 import { ListHeader } from "../../../../components/ListHeader";
-import { ConnectionShortDetails } from "../../Connections.types";
 import {
   SearchConnectionContentProps,
   SearchConnectionListProps,
 } from "../ConnectionsBody/ConnectionsBody.types";
 import "./SearchConnectionContent.scss";
+import { ConnectionShortDetails } from "../../../../../core/agent/agent.types";
 
 const SearchConnectionList = ({
   connections,

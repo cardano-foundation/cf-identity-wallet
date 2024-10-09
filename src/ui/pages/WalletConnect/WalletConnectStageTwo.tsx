@@ -1,25 +1,25 @@
 import { IonCheckbox, IonContent } from "@ionic/react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { IdentifierShortDetails } from "../../../../../core/agent/services/identifier.types";
-import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerConnection";
-import { i18n } from "../../../../../i18n";
-import { useAppSelector } from "../../../../../store/hooks";
-import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
-import { setCurrentOperation } from "../../../../../store/reducers/stateCache";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
+import { PeerConnection } from "../../../core/cardano/walletConnect/peerConnection";
+import { i18n } from "../../../i18n";
+import { useAppSelector } from "../../../store/hooks";
+import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import {
   getWalletConnectionsCache,
   setIsConnecting,
   setWalletConnectionsCache,
-} from "../../../../../store/reducers/walletConnectionsCache";
-import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
-import { CardItem, CardList } from "../../../../components/CardList";
-import { PageFooter } from "../../../../components/PageFooter";
-import { PageHeader } from "../../../../components/PageHeader";
-import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
-import { OperationType, ToastMsgType } from "../../../../globals/types";
-import { showError } from "../../../../utils/error";
-import { combineClassNames } from "../../../../utils/style";
+} from "../../../store/reducers/walletConnectionsCache";
+import KeriLogo from "../../assets/images/KeriGeneric.jpg";
+import { CardItem, CardList } from "../../components/CardList";
+import { PageFooter } from "../../components/PageFooter";
+import { PageHeader } from "../../components/PageHeader";
+import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { OperationType, ToastMsgType } from "../../globals/types";
+import { showError } from "../../utils/error";
+import { combineClassNames } from "../../utils/style";
 import "./WalletConnect.scss";
 import { WalletConnectStageTwoProps } from "./WalletConnect.types";
 
