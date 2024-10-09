@@ -172,22 +172,27 @@ class CredentialService extends AgentService {
     if (unSyncedData.length) {
       //sync the storage with the signify data
       for (const credential of unSyncedData) {
-        const identifier = await this.identifierStorage.getIdentifierMetadata(
-          credential.sad.a.i
-        );
-        await this.createMetadata({
-          id: credential.sad.d,
-          isArchived: false,
-          issuanceDate: new Date(credential.sad.a.dt).toISOString(),
-          credentialType: credential.schema.title,
-          status: CredentialStatus.PENDING,
-          connectionId: credential.sad.i,
-          schema: credential.schema.$id,
-          identifierType: identifier.multisigManageAid
-            ? IdentifierType.Group
-            : IdentifierType.Individual,
-          identifierId: credential.sad.a.i,
-        });
+        try {
+          const identifier = await this.identifierStorage.getIdentifierMetadata(
+            credential.sad.a.i
+          );
+          await this.createMetadata({
+            id: credential.sad.d,
+            isArchived: false,
+            issuanceDate: new Date(credential.sad.a.dt).toISOString(),
+            credentialType: credential.schema.title,
+            status: CredentialStatus.PENDING,
+            connectionId: credential.sad.i,
+            schema: credential.schema.$id,
+            identifierType: identifier.multisigManageAid
+              ? IdentifierType.Group
+              : IdentifierType.Individual,
+            identifierId: credential.sad.a.i,
+          });
+        } catch (error) {
+          /* eslint-disable no-console */
+          console.error(error);
+        }
       }
     }
   }
