@@ -16,10 +16,10 @@ import {
   getMultisigMembersResponse,
   memberKeyStateIcp,
   memberKeyStateRot,
-  mockGetRequestMultisigIcp,
-  mockNotificationMultisigExnRotation,
+  getRequestMultisigIcp,
+  notificationMultisigExnRotation,
   memberMetadataRecordProps,
-} from "../../__fixtures__/agent/multiSigMock";
+} from "../../__fixtures__/agent/multSigFixtures";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { EventTypes } from "../event.types";
 
@@ -429,7 +429,7 @@ describe("Rotation of multi-sig", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     groupGetRequestMock = jest.fn().mockResolvedValue([]);
     expect(
-      multiSigService.joinMultisigRotation(mockNotificationMultisigExnRotation)
+      multiSigService.joinMultisigRotation(notificationMultisigExnRotation)
     ).rejects.toThrowError(MultiSigService.EXN_MESSAGE_NOT_FOUND);
   });
 
@@ -463,12 +463,10 @@ describe("Rotation of multi-sig", () => {
       ...multisigMetadataRecord,
       multisigManageAid: undefined,
     });
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
+    groupGetRequestMock = jest.fn().mockResolvedValue([getRequestMultisigIcp]);
 
     expect(
-      multiSigService.joinMultisigRotation(mockNotificationMultisigExnRotation)
+      multiSigService.joinMultisigRotation(notificationMultisigExnRotation)
     ).rejects.toThrowError(MultiSigService.AID_IS_NOT_MULTI_SIG);
   });
 
@@ -777,9 +775,7 @@ describe("Creation of multi-sig", () => {
 
   test("Can join the multisig inception", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
+    groupGetRequestMock = jest.fn().mockResolvedValue([getRequestMultisigIcp]);
     identifiersGetMock = jest
       .fn()
       .mockResolvedValue(getMemberIdentifierResponse);
@@ -902,9 +898,7 @@ describe("Creation of multi-sig", () => {
 
   test("Cannot join the multisig if cannot get key states for multisig member", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
+    groupGetRequestMock = jest.fn().mockResolvedValue([getRequestMultisigIcp]);
     identifiersGetMock = jest
       .fn()
       .mockResolvedValue(getMemberIdentifierResponse);
@@ -971,9 +965,7 @@ describe("Creation of multi-sig", () => {
 
   test("Cannot join multisig if there's no identifier matched", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
+    groupGetRequestMock = jest.fn().mockResolvedValue([getRequestMultisigIcp]);
     identifiers.getIdentifiers = jest
       .fn()
       .mockResolvedValue([multisigMetadataRecord]);
@@ -1095,7 +1087,7 @@ describe("Creation of multi-sig", () => {
       Agent.KERIA_CONNECTION_BROKEN
     );
     await expect(
-      multiSigService.joinMultisigRotation(mockNotificationMultisigExnRotation)
+      multiSigService.joinMultisigRotation(notificationMultisigExnRotation)
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
     await expect(
       multiSigService.getMultisigIcpDetails("d")
@@ -1110,9 +1102,7 @@ describe("Creation of multi-sig", () => {
 
   test("Can get multisig icp details of 2 persons multi-sig", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
+    groupGetRequestMock = jest.fn().mockResolvedValue([getRequestMultisigIcp]);
     identifiers.getIdentifiers = jest
       .fn()
       .mockResolvedValue([memberIdentifierRecord]);
@@ -1132,9 +1122,7 @@ describe("Creation of multi-sig", () => {
 
   test("Throw error if the Multi-sig join request contains unknown AIDs", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
+    groupGetRequestMock = jest.fn().mockResolvedValue([getRequestMultisigIcp]);
     identifiers.getIdentifiers = jest
       .fn()
       .mockResolvedValue([memberIdentifierRecord]);
@@ -1168,11 +1156,11 @@ describe("Creation of multi-sig", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     groupGetRequestMock = jest.fn().mockResolvedValue([
       {
-        ...mockGetRequestMultisigIcp,
+        ...getRequestMultisigIcp,
         exn: {
-          ...mockGetRequestMultisigIcp.exn,
+          ...getRequestMultisigIcp.exn,
           a: {
-            ...mockGetRequestMultisigIcp.exn.a,
+            ...getRequestMultisigIcp.exn.a,
             smids: [
               "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
               "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
@@ -1212,9 +1200,7 @@ describe("Creation of multi-sig", () => {
 
   test("Throw error if we do not control any member AID of the multi-sig", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
+    groupGetRequestMock = jest.fn().mockResolvedValue([getRequestMultisigIcp]);
     identifiers.getIdentifiers = jest
       .fn()
       .mockResolvedValue([
@@ -1232,9 +1218,7 @@ describe("Creation of multi-sig", () => {
 
   test("Cannot get multi-sig details from an unknown sender (missing metadata)", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    groupGetRequestMock = jest
-      .fn()
-      .mockResolvedValue([mockGetRequestMultisigIcp]);
+    groupGetRequestMock = jest.fn().mockResolvedValue([getRequestMultisigIcp]);
     // @TODO - foconnor: This is not ideal as our identifier service is getting tightly coupled with the connection service.
     // Re-work this later.
     connections.getConnectionShortDetailById = jest

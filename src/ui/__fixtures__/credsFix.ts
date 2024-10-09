@@ -1,4 +1,4 @@
-import { memberIdentifierRecord } from "../../core/__fixtures__/agent/multiSigMock";
+import { memberIdentifierRecord } from "../../core/__fixtures__/agent/multSigFixtures";
 import {
   ConnectionDetails,
   ConnectionStatus,
