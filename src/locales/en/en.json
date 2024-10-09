@@ -1633,6 +1633,15 @@
       "usernameError": "Unable to set name. Please try again."
     }
   },
+  "setconnectionalias": {
+    "title": "It looks like your new connection doesn't have a name yet. Let's give them one!",
+    "button": {
+      "confirm": "Confirm"
+    },
+    "input": {
+      "title": "Name"
+    }
+  },
   "biometry": {
     "reason": "Please authenticate",
     "canceltitle": "Cancel",

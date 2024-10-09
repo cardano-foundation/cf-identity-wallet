@@ -3,6 +3,7 @@ import {
   BarcodeScanner,
   LensFacing,
 } from "@capacitor-mlkit/barcode-scanning";
+import { Capacitor } from "@capacitor/core";
 import {
   getPlatforms,
   IonCol,
@@ -13,7 +14,6 @@ import {
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { Capacitor } from "@capacitor/core";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionStatus,
@@ -24,6 +24,7 @@ import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   removeConnectionCache,
+  setMissingAliasUrl,
   setOpenConnectionId,
   updateOrAddConnectionCache,
   updateOrAddMultisigConnectionCache,
@@ -305,6 +306,11 @@ const Scanner = forwardRef(
       // Adding a pending connection item to the UI.
       // This will be removed when the create connection process ends.
       const connectionName = new URL(content).searchParams.get("name");
+      if (!connectionName) {
+        dispatch(setMissingAliasUrl(content));
+        return;
+      }
+
       const pendingId = crypto.randomUUID();
       dispatch(
         updateOrAddConnectionCache({

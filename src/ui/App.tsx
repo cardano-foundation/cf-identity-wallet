@@ -6,8 +6,8 @@ import {
   IonSpinner,
   setupIonicReact,
 } from "@ionic/react";
-import { StrictMode, useEffect, useState } from "react";
 import { IonReactRouter } from "@ionic/react-router";
+import { StrictMode, useEffect, useState } from "react";
 import { RoutePath, Routes } from "../routes";
 import { PublicRoutes, TabsRoutePath } from "../routes/paths";
 import { useAppSelector } from "../store/hooks";
@@ -18,19 +18,19 @@ import {
   getIsInitialized,
   getIsOnline,
 } from "../store/reducers/stateCache";
+import "./App.scss";
 import { AppOffline } from "./components/AppOffline";
 import { AppWrapper } from "./components/AppWrapper";
+import { ToastStack } from "./components/CustomToast/ToastStack";
+import { GenericError } from "./components/Error";
 import { SetUserName } from "./components/SetUserName";
+import { SidePage } from "./components/SidePage";
 import { OperationType } from "./globals/types";
 import { FullPageScanner } from "./pages/FullPageScanner";
 import { LoadingPage } from "./pages/LoadingPage/LoadingPage";
 import { LockPage } from "./pages/LockPage/LockPage";
-import { SidePage } from "./components/SidePage";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
-import "./App.scss";
-import { GenericError } from "./components/Error";
-import { ToastStack } from "./components/CustomToast/ToastStack";
 
 setupIonicReact();
 

@@ -52,6 +52,7 @@ import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayo
 import { PageHeader } from "../../components/PageHeader";
 import { ConnectionDetails } from "../ConnectionDetails";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
+import { SetConnectionAlias } from "../../components/SetConnectionAlias";
 
 const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
   ({ showConnections, setShowConnections }, ref) => {
@@ -349,6 +350,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
           )}`}
           onDeletePendingItem={deleteConnection}
         />
+        <SetConnectionAlias />
       </>
     );
   }
