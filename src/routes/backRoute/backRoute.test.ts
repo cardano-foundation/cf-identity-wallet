@@ -44,6 +44,7 @@ describe("getBackRoute", () => {
             attempts: 0,
             lockedUntil: Date.now(),
           },
+          firstAppLaunch: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -51,6 +52,7 @@ describe("getBackRoute", () => {
           queues: [],
           isPaused: false,
         },
+        showConnections: false,
         toastMsgs: [],
       },
       identifiersCache: {
@@ -183,6 +185,7 @@ describe("getPreviousRoute", () => {
             attempts: 0,
             lockedUntil: Date.now(),
           },
+          firstAppLaunch: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -190,6 +193,7 @@ describe("getPreviousRoute", () => {
           queues: [],
           isPaused: false,
         },
+        showConnections: false,
         toastMsgs: [],
       },
       identifiersCache: {

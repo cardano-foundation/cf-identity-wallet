@@ -5,7 +5,6 @@ Feature: Identity Details
 
   Scenario: Identity Details - Done button on card details screen of KERI default identifier works correctly
     Given user add KERI identity through plus icon
-    Then user can see toast message about created identity on Identity screen
     And user can see identity card details
     When user chose newly created identity on Identity screen
     And user can see Card Details screen for KERI

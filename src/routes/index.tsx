@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { IonReactRouter } from "@ionic/react-router";
+import { useEffect } from "react";
 import { IonRouterOutlet } from "@ionic/react";
 import { Redirect, Route } from "react-router-dom";
 import { Onboarding } from "../ui/pages/Onboarding";
@@ -18,7 +17,6 @@ import { TabsMenu, tabsRoutes } from "../ui/components/navigation/TabsMenu";
 import { RoutePath, TabsRoutePath } from "./paths";
 import { IdentifierDetails } from "../ui/pages/IdentifierDetails";
 import { CredentialDetails } from "../ui/pages/CredentialDetails";
-import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
 import { CreateSSIAgent } from "../ui/pages/CreateSSIAgent";
 import { NotificationDetails } from "../ui/pages/NotificationDetails";
 import { VerifyRecoverySeedPhrase } from "../ui/pages/VerifyRecoverySeedPhrase";
@@ -77,11 +75,6 @@ const Routes = () => {
       <Route
         path={RoutePath.SSI_AGENT}
         component={CreateSSIAgent}
-        exact
-      />
-      <Route
-        path={RoutePath.CONNECTION_DETAILS}
-        component={ConnectionDetails}
         exact
       />
       {tabsRoutes.map((tab, index: number) => {

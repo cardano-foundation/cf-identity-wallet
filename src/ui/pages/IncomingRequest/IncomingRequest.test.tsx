@@ -2,17 +2,17 @@ import { mockIonicReact, waitForIonicReact } from "@ionic/react-test-utils";
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
-import { TabsRoutePath } from "../../../../../routes/paths";
-import { dequeueIncomingRequest } from "../../../../../store/reducers/stateCache";
-import { IncomingRequestType } from "../../../../../store/reducers/stateCache/stateCache.types";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { TabsRoutePath } from "../../../routes/paths";
+import { dequeueIncomingRequest } from "../../../store/reducers/stateCache";
+import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import {
   signObjectFix,
   signTransactionFix,
-} from "../../../../__fixtures__/signTransactionFix";
+} from "../../__fixtures__/signTransactionFix";
 import { IncomingRequest } from "./IncomingRequest";
-import { KeyStoreKeys } from "../../../../../core/storage";
-import { passcodeFiller } from "../../../../utils/passcodeFiller";
+import { KeyStoreKeys } from "../../../core/storage";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 mockIonicReact();
 
 const mockApprovalCallback = jest.fn((status: boolean) => status);

@@ -96,6 +96,7 @@ const initialStateKeri = {
       time: Date.now(),
       passcodeIsSet: true,
       passwordIsSet: true,
+      firstAppLaunch: false,
     },
     isOnline: true,
   },

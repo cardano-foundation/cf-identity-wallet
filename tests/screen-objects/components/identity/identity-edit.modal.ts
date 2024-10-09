@@ -5,7 +5,7 @@ export class IdentityEditModal extends CommonIdentityModal {
   modalName = "edit";
 
   get confirmChangesButton() {
-    return $("[data-testid=\"continue-button\"]");
+    return $("[data-testid=\"primary-button-edit-identifier\"]");
   }
 
   get displayNameInput() {

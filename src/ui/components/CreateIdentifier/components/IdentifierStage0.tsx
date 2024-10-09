@@ -45,6 +45,7 @@ const IdentifierStage0 = ({
   setBlur,
   resetModal,
   multiSigGroup,
+  isModalOpen,
 }: IdentifierStageProps) => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
@@ -180,6 +181,7 @@ const IdentifierStage0 = ({
     <>
       <ScrollablePageLayout
         pageId={componentId + "-content"}
+        activeStatus={isModalOpen}
         customClass={keyboardIsOpen ? "keyboard-is-open" : ""}
         header={
           <PageHeader
@@ -293,9 +295,10 @@ const IdentifierStage0 = ({
           </div>
         )}
         <div className="identifier-theme">
-          <div className="theme-input-title">{`${i18n.t(
-            "createidentifier.color.title"
-          )}`}</div>
+          <div
+            className="theme-input-title"
+            data-testid="color-input-title"
+          >{`${i18n.t("createidentifier.color.title")}`}</div>
           <IdentifierColorSelector
             value={state.color}
             onColorChange={(color) => {
@@ -307,9 +310,10 @@ const IdentifierStage0 = ({
           />
         </div>
         <div className="identifier-theme">
-          <div className="theme-input-title">{`${i18n.t(
-            "createidentifier.theme.title"
-          )}`}</div>
+          <div
+            className="theme-input-title"
+            data-testid="theme-input-title"
+          >{`${i18n.t("createidentifier.theme.title")}`}</div>
           <IdentifierThemeSelector
             color={state.color}
             selectedTheme={selectedTheme}

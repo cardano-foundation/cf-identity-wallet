@@ -6,12 +6,8 @@ export class CreatePasswordScreen {
     return "[data-testid=\"create-password-alert-skip\"]";
   }
 
-  get backArrowIcon() {
-    return $("[data-testid=\"back-button\"]");
-  }
-
   get confirmPasswordInput() {
-    return $("#confirm-password-value input");
+    return $("#confirm-password-input input");
   }
 
   get createPasswordButton() {
@@ -19,7 +15,7 @@ export class CreatePasswordScreen {
   }
 
   get createPasswordInput() {
-    return $("#createPasswordValue input");
+    return $("#create-password-input input");
   }
 
   get errorMessageText() {
@@ -27,7 +23,7 @@ export class CreatePasswordScreen {
   }
 
   get hintInput() {
-    return $("#hintValue input");
+    return $("#create-hint-input input");
   }
 
   get id() {
@@ -67,7 +63,6 @@ export class CreatePasswordScreen {
   }
 
   async loads() {
-    await expect(this.backArrowIcon).toBeExisting();
     await expect(this.screenTitle).toBeDisplayed();
     await expect(this.screenTitle).toHaveText(CreatePassword.Title);
     await expect(this.screenTopParagraph).toBeDisplayed();

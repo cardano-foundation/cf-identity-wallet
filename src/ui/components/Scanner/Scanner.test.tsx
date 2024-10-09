@@ -25,7 +25,7 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { Scanner } from "./Scanner";
-import { setOpenConnectionDetail } from "../../../store/reducers/connectionsCache";
+import { setOpenConnectionId } from "../../../store/reducers/connectionsCache";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -797,9 +797,7 @@ describe("Scanner", () => {
     );
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setOpenConnectionDetail("connectionId")
-      );
+      expect(dispatchMock).toBeCalledWith(setOpenConnectionId("connectionId"));
     });
   });
 

@@ -1,6 +1,6 @@
+import { ConnectionShortDetails } from "../../../core/agent/agent.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifiersCache.types";
-import { ConnectionShortDetails } from "../../pages/Connections/Connections.types";
 import { IdentifierColor } from "./components/IdentifierColorSelector";
 
 interface CreateIdentifierProps {

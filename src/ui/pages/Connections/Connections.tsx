@@ -1,14 +1,4 @@
-import {
-  IonButton,
-  IonCol,
-  IonContent,
-  IonGrid,
-  IonIcon,
-  IonItemDivider,
-  IonItemGroup,
-  IonLabel,
-  IonRow,
-} from "@ionic/react";
+import { IonButton, IonIcon } from "@ionic/react";
 import { addOutline } from "ionicons/icons";
 import {
   forwardRef,
@@ -18,64 +8,62 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useHistory } from "react-router-dom";
 import { Agent } from "../../../core/agent/agent";
-import { ConnectionStatus } from "../../../core/agent/agent.types";
+import {
+  ConnectionShortDetails,
+  ConnectionStatus,
+} from "../../../core/agent/agent.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { i18n } from "../../../i18n";
-import { getNextRoute } from "../../../routes/nextRoute";
-import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getConnectionsCache,
   getOpenConnectionId,
+  setOpenConnectionId,
   removeConnectionCache,
-  setOpenConnectionDetail,
 } from "../../../store/reducers/connectionsCache";
 import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
 import {
-  getCurrentOperation,
   getStateCache,
   setCurrentOperation,
   setToastMsg,
+  showConnections as updateShowConnections,
 } from "../../../store/reducers/stateCache";
-import { updateReduxState } from "../../../store/utils";
 import { Alert } from "../../components/Alert";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
-import { TabLayout } from "../../components/layout/TabLayout";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 import { ShareConnection } from "../../components/ShareConnection";
 import { ShareType } from "../../components/ShareConnection/ShareConnection.types";
-import { SideSlider } from "../../components/SideSlider";
 import { OperationType, RequestType, ToastMsgType } from "../../globals/types";
+import { useOnlineStatusEffect } from "../../hooks";
 import { useSwipeBack } from "../../hooks/swipeBackHook";
-import { AlphabeticList } from "./components/AlphabeticList";
-import { AlphabetSelector } from "./components/AlphabetSelector";
+import { showError } from "../../utils/error";
+import { ConnectionsBody } from "./components/ConnectionsBody";
 import { ConnectionsOptionModal } from "./components/ConnectionsOptionModal";
 import { IdentifierSelectorModal } from "./components/IdentifierSelectorModal/IdentifierSelectorModal";
 import "./Connections.scss";
 import {
   ConnectionsComponentProps,
-  ConnectionShortDetails,
   ConnectionsOptionRef,
   MappedConnections,
 } from "./Connections.types";
-import { useOnlineStatusEffect } from "../../hooks";
-import { showError } from "../../utils/error";
-
-const ANIMATION_TIMEOUT = 350;
+import { combineClassNames } from "../../utils/style";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
+import { PageHeader } from "../../components/PageHeader";
+import { ConnectionDetails } from "../ConnectionDetails";
+import { CreateIdentifier } from "../../components/CreateIdentifier";
 
 const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
-  ({ showConnections, setShowConnections, selfPaginated }, ref) => {
-    const pageId = "connections-tab";
-    const history = useHistory();
+  ({ showConnections, setShowConnections }, ref) => {
+    const pageId = "connections";
     const dispatch = useAppDispatch();
     const stateCache = useAppSelector(getStateCache);
-    const currentOperation = useAppSelector(getCurrentOperation);
     const connectionsCache = useAppSelector(getConnectionsCache);
     const identifierCache = useAppSelector(getIdentifiersCache);
     const openDetailId = useAppSelector(getOpenConnectionId);
+    const [connectionShortDetails, setConnectionShortDetails] = useState<
+      ConnectionShortDetails | undefined
+    >(undefined);
     const availableIdentifiers = identifierCache.filter(
       (item) => !item.isPending
     );
@@ -91,148 +79,33 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
     );
     const [openIdentifierMissingAlert, setOpenIdentifierMissingAlert] =
       useState<boolean>(false);
+    const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
+      useState(false);
     const [deletePendingItem, setDeletePendingItem] =
       useState<ConnectionShortDetails | null>(null);
     const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
     const userName = stateCache.authentication.userName;
     const [oobi, setOobi] = useState("");
-
-    const fetchOobi = useCallback(async () => {
-      try {
-        if (!selectedIdentifier?.id) return;
-
-        const oobiValue = await Agent.agent.connections.getOobi(
-          `${selectedIdentifier.id}`,
-          userName
-        );
-        if (oobiValue) {
-          setOobi(oobiValue);
-        }
-      } catch (e) {
-        showError("Unable to fetch connection oobi", e, dispatch);
-      }
-    }, [selectedIdentifier?.id, userName, dispatch]);
-
-    useOnlineStatusEffect(fetchOobi);
-
-    useEffect(() => {
-      const openConnections = (
-        history.location.state as Record<string, unknown>
-      )?.openConnections;
-
-      if (openConnections) {
-        setShowConnections(true);
-        history.replace(history.location.pathname, {});
-      }
-    }, [history, history.location.state, setShowConnections]);
+    const [hideHeader, setHideHeader] = useState(false);
 
     useEffect(() => {
       setShowPlaceholder(Object.keys(connectionsCache).length === 0);
     }, [connectionsCache]);
 
     useEffect(() => {
-      if (currentOperation === OperationType.BACK_TO_SHARE_CONNECTION) {
-        setShowConnections(true);
-        dispatch(setCurrentOperation(OperationType.IDLE));
-      }
-    }, [currentOperation, dispatch, setShowConnections]);
-
-    const handleNavToCreateKeri = () => {
-      setOpenIdentifierMissingAlert(false);
-      history.location.pathname === TabsRoutePath.IDENTIFIERS &&
-        dispatch(
-          setCurrentOperation(
-            OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_IDENTIFIERS
-          )
-        );
-      history.location.pathname === TabsRoutePath.CREDENTIALS &&
-        dispatch(
-          setCurrentOperation(
-            OperationType.CREATE_IDENTIFIER_SHARE_CONNECTION_FROM_CREDENTIALS
-          )
-        ) &&
-        history.push(TabsRoutePath.IDENTIFIERS);
-    };
-
-    const handleProvideQr = () => {
-      availableIdentifiers.length
-        ? setOpenIdentifierSelector(true)
-        : setOpenIdentifierMissingAlert(true);
-    };
-
-    const handleConnectModal = () => {
-      setConnectModalIsOpen(true);
-    };
-
-    useImperativeHandle(ref, () => ({
-      handleConnectModalButton: handleConnectModal,
-    }));
-
-    const handleCloseAlert = () => {
-      setOpenIdentifierMissingAlert(false);
-    };
-
-    const handleShowConnectionDetails = useCallback(
-      async (item: ConnectionShortDetails) => {
-        if (item.status === ConnectionStatus.PENDING) {
-          setDeletePendingItem(item);
-          setOpenDeletePendingAlert(true);
+      const fetchConnectionDetails = async () => {
+        if (openDetailId === undefined) return;
+        const connection = connectionsCache[openDetailId];
+        dispatch(setOpenConnectionId(undefined));
+        if (!connection || connection.status === ConnectionStatus.PENDING) {
           return;
+        } else {
+          await getConnectionShortDetails(openDetailId);
         }
+      };
 
-        const data: DataProps = {
-          store: { stateCache },
-        };
-        const { nextPath, updateRedux } = getNextRoute(
-          TabsRoutePath.CREDENTIALS,
-          data
-        );
-        updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-        history.push({
-          pathname: nextPath.pathname,
-          state: item,
-        });
-      },
-      [dispatch, history, stateCache]
-    );
-
-    useEffect(() => {
-      if (openDetailId === undefined) return;
-
-      setShowConnections(true);
-      const connection = connectionsCache[openDetailId];
-      dispatch(setOpenConnectionDetail(undefined));
-
-      if (!connection || connection.status === ConnectionStatus.PENDING) return;
-
-      setTimeout(() => {
-        handleShowConnectionDetails(connection);
-      }, ANIMATION_TIMEOUT);
-    }, [
-      connectionsCache,
-      dispatch,
-      handleShowConnectionDetails,
-      openDetailId,
-      setShowConnections,
-      showConnections,
-    ]);
-
-    const AdditionalButtons = () => {
-      return (
-        <IonButton
-          shape="round"
-          className="add-button"
-          data-testid="add-connection-button"
-          onClick={handleConnectModal}
-        >
-          <IonIcon
-            slot="icon-only"
-            icon={addOutline}
-            color="primary"
-          />
-        </IonButton>
-      );
-    };
+      fetchConnectionDetails();
+    }, [openDetailId]);
 
     useEffect(() => {
       const connections = Object.values(connectionsCache);
@@ -265,6 +138,69 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       }),
       [showConnections]
     );
+
+    const getConnectionShortDetails = async (connectionId: string) => {
+      const shortDetails =
+        await Agent.agent.connections.getConnectionShortDetailById(
+          connectionId
+        );
+      setConnectionShortDetails(shortDetails);
+    };
+
+    const fetchOobi = useCallback(async () => {
+      try {
+        if (!selectedIdentifier?.id) return;
+
+        const oobiValue = await Agent.agent.connections.getOobi(
+          `${selectedIdentifier.id}`,
+          userName
+        );
+        if (oobiValue) {
+          setOobi(oobiValue);
+        }
+      } catch (e) {
+        showError("Unable to fetch connection oobi", e, dispatch);
+      }
+    }, [selectedIdentifier?.id, userName, dispatch]);
+
+    useOnlineStatusEffect(fetchOobi);
+
+    const handleCreateIdentifier = () => {
+      setOpenIdentifierMissingAlert(false);
+      setCreateIdentifierModalIsOpen(true);
+    };
+
+    const handleCloseCreateIdentifier = () => {
+      setCreateIdentifierModalIsOpen(false);
+    };
+
+    const handleProvideQr = () => {
+      availableIdentifiers.length
+        ? setOpenIdentifierSelector(true)
+        : setOpenIdentifierMissingAlert(true);
+    };
+
+    const handleConnectModal = () => {
+      setConnectModalIsOpen(true);
+    };
+
+    useImperativeHandle(ref, () => ({
+      handleConnectModalButton: handleConnectModal,
+    }));
+
+    const handleCloseAlert = () => {
+      setOpenIdentifierMissingAlert(false);
+    };
+
+    const handleShowConnectionDetails = (item: ConnectionShortDetails) => {
+      if (item.status === ConnectionStatus.PENDING) {
+        setDeletePendingItem(item);
+        setOpenDeletePendingAlert(true);
+        return;
+      }
+
+      setConnectionShortDetails(item);
+    };
 
     const getConnectionsTab = useCallback(() => {
       return document.getElementById(pageId);
@@ -306,75 +242,71 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
       dispatch(setCurrentOperation(OperationType.IDLE));
     };
 
-    const ConnectionsBody = () => {
+    const handleDone = () => {
+      setShowConnections(false);
+      dispatch(updateShowConnections(false));
+    };
+
+    const AdditionalButtons = () => {
       return (
-        <div className="connections-tab-center">
-          <IonContent className="connections-container">
-            <IonGrid>
-              <IonRow>
-                <IonCol size="12">
-                  {mappedConnections.map((alphabeticGroup, index) => {
-                    return (
-                      <IonItemGroup
-                        className="connections-list"
-                        key={index}
-                      >
-                        <IonItemDivider id={alphabeticGroup.key}>
-                          <IonLabel>{alphabeticGroup.key}</IonLabel>
-                        </IonItemDivider>
-                        <AlphabeticList
-                          items={Array.from(alphabeticGroup.value)}
-                          handleShowConnectionDetails={
-                            handleShowConnectionDetails
-                          }
-                        />
-                      </IonItemGroup>
-                    );
-                  })}
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </IonContent>
-          <AlphabetSelector />
-        </div>
+        <IonButton
+          shape="round"
+          className="add-button"
+          data-testid="add-connection-button"
+          onClick={handleConnectModal}
+        >
+          <IonIcon
+            slot="icon-only"
+            icon={addOutline}
+            color="primary"
+          />
+        </IonButton>
       );
     };
 
-    return (
+    const classes = combineClassNames({
+      show: showConnections,
+      hide: !showConnections,
+      "hide-header": hideHeader,
+    });
+
+    return connectionShortDetails ? (
+      <ConnectionDetails
+        connectionShortDetails={connectionShortDetails}
+        setConnectionShortDetails={setConnectionShortDetails}
+      />
+    ) : (
       <>
-        {selfPaginated ? (
-          <SideSlider isOpen={showConnections}>
-            <TabLayout
+        <ScrollablePageLayout
+          pageId={pageId}
+          activeStatus={true}
+          customClass={classes}
+          header={
+            <PageHeader
               hardwareBackButtonConfig={backHardwareConfig}
-              pageId={pageId}
-              header={true}
               backButton={true}
-              customClass={showConnections ? "show" : "hide"}
-              backButtonAction={() => setShowConnections(false)}
+              onBack={handleDone}
               title={`${i18n.t("connections.tab.title")}`}
               additionalButtons={<AdditionalButtons />}
-              placeholder={
-                showPlaceholder && (
-                  <CardsPlaceholder
-                    buttonLabel={i18n.t("connections.tab.create")}
-                    buttonAction={handleConnectModal}
-                    testId={pageId}
-                  />
-                )
-              }
-            >
-              {!showPlaceholder && <ConnectionsBody />}
-            </TabLayout>
-          </SideSlider>
-        ) : (
-          (showPlaceholder && (
+            />
+          }
+        >
+          {showPlaceholder ? (
             <CardsPlaceholder
               buttonLabel={i18n.t("connections.tab.create")}
               buttonAction={handleConnectModal}
               testId={pageId}
+            >
+              <span className="placeholder-spacer" />
+            </CardsPlaceholder>
+          ) : (
+            <ConnectionsBody
+              onSearchFocus={setHideHeader}
+              mappedConnections={mappedConnections}
+              handleShowConnectionDetails={handleShowConnectionDetails}
             />
-          )) || <ConnectionsBody />
-        )}
+          )}
+        </ScrollablePageLayout>
         <ConnectionsOptionModal
           type={RequestType.CONNECTION}
           connectModalIsOpen={connectModalIsOpen}
@@ -392,6 +324,10 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
           oobi={oobi}
           shareType={ShareType.Connection}
         />
+        <CreateIdentifier
+          modalIsOpen={createIdentifierModalIsOpen}
+          setModalIsOpen={handleCloseCreateIdentifier}
+        />
         <Alert
           isOpen={openIdentifierMissingAlert}
           setIsOpen={setOpenIdentifierMissingAlert}
@@ -399,7 +335,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
           headerText={i18n.t("connections.tab.alert.message")}
           confirmButtonText={`${i18n.t("connections.tab.alert.confirm")}`}
           cancelButtonText={`${i18n.t("connections.tab.alert.cancel")}`}
-          actionConfirm={handleNavToCreateKeri}
+          actionConfirm={handleCreateIdentifier}
           actionCancel={handleCloseAlert}
           actionDismiss={handleCloseAlert}
         />

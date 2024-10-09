@@ -6,7 +6,7 @@ export class SeedPhraseGenerateScreen {
     return "[data-testid=\"seed-phrase-generate-alert-continue\"]";
   }
 
-  get continueButton() {
+  get generateButton() {
     return $("[data-testid=\"primary-button-generate-seed-phrase\"]");
   }
 
@@ -66,7 +66,7 @@ export class SeedPhraseGenerateScreen {
     await expect(this.termsAndConditionsCheckbox).toBeDisplayed();
     await expect(this.termsOfUseLink).toBeDisplayed();
     await expect(this.privacyPolicyLink).toBeDisplayed();
-    await expect(this.continueButton).toBeExisting();
+    await expect(this.generateButton).toBeExisting();
   }
 }
 
