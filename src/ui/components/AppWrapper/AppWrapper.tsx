@@ -427,13 +427,16 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const initApp = async () => {
     await new ConfigurationService().start();
     await Agent.agent.initDatabaseConnection();
+
+    // This will skip the onboarding screen with dev mode.
+    if (process.env.DEV_SKIP_ONBOARDING === "true") {
+      await Agent.agent.devPreload();
+      setOnlineStatus(true);
+    }
+
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
     try {
-      if (process.env.DEV_SKIP_ONBOARDING === "true") {
-        await Agent.agent.devPreload();
-        setOnlineStatus(true);
-      }
       // @TODO - foconnor: This should use our normal DB - keeping Preferences temporarily to not break existing mobile builds.
       // Will remove preferences again once we have better handling on APP_ALREADY_INIT with user input.
       await PreferencesStorage.get(PreferencesKeys.APP_ALREADY_INIT);

@@ -68,7 +68,6 @@ class Agent {
   static readonly MISSING_DATA_ON_KERIA =
     "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.";
   static readonly BUFFER_ALLOC_SIZE = 3;
-  static readonly APP_PASSSCODE_DEV_MODE = "111111";
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {
     eventEmitter: undefined as any,
@@ -334,6 +333,7 @@ class Agent {
   }
 
   async devPreload() {
+    const APP_PASSSCODE_DEV_MODE = "111111";
     try {
       await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
     } catch (error) {
@@ -344,8 +344,10 @@ class Agent {
       ) {
         await SecureStorage.set(
           KeyStoreKeys.APP_PASSCODE,
-          Agent.APP_PASSSCODE_DEV_MODE
+          APP_PASSSCODE_DEV_MODE
         );
+      } else {
+        throw error;
       }
     }
 
@@ -357,11 +359,12 @@ class Agent {
         error.message ===
           `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
       ) {
-        const branAndMnemonic = await Agent.agent.getBranAndMnemonic();
         await SecureStorage.set(
           KeyStoreKeys.SIGNIFY_BRAN,
-          branAndMnemonic?.bran
+          randomPasscode().substring(0, 21)
         );
+      } else {
+        throw error;
       }
     }
     await PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
@@ -383,9 +386,16 @@ class Agent {
     );
 
     if (!keriaConnectUrlRecord && !keriaBootUrlRecord) {
+      if (
+        !ConfigurationService.env?.keri?.keria?.url ||
+        !ConfigurationService.env?.keri?.keria?.bootUrl
+      ) {
+        return;
+      }
+
       await this.bootAndConnect({
-        url: ConfigurationService.env?.keri?.keria?.url || "",
-        bootUrl: ConfigurationService.env?.keri?.keria?.bootUrl || "",
+        url: ConfigurationService.env.keri.keria.url,
+        bootUrl: ConfigurationService.env.keri.keria.bootUrl,
       });
     }
   }
