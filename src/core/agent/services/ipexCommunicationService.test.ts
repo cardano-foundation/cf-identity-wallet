@@ -911,7 +911,7 @@ describe("Ipex communication service of agent", () => {
     });
   });
 
-  test("Cannot get linkedGroupRequest from ipex/agree if the notification is missing in the DB", async () => {
+  test("Cannot get linkedGroupRequest from ipex/apply if the notification is missing in the DB", async () => {
     const id = "uuid";
     const date = new Date().toISOString();
     const notification = {
@@ -937,7 +937,7 @@ describe("Ipex communication service of agent", () => {
     );
   });
 
-  test("Should return accepted and membersJoined when linkedGroupRequests from ipex/agree contain valid data", async () => {
+  test("Should return accepted and membersJoined when linkedGroupRequests from ipex/apply contain valid data", async () => {
     const id = "uuid";
     const date = new Date().toISOString();
     const credentialSaid = "credentialSaid";
@@ -980,7 +980,7 @@ describe("Ipex communication service of agent", () => {
     });
   });
 
-  test("Should return accepted is False and membersJoined when linkedGroupRequests from ipex/agree not available", async () => {
+  test("Should return accepted is False and membersJoined when linkedGroupRequests from ipex/apply not available", async () => {
     const id = "uuid";
     const date = new Date().toISOString();
     const credentialSaid = "credentialSaid";
