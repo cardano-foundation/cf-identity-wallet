@@ -83,6 +83,7 @@ describe("SetUserName component", () => {
           attempts: 0,
           lockedUntil: 0,
         },
+        firstAppLaunch: true,
       },
     },
     connectionsCache: {
@@ -155,6 +156,7 @@ describe("SetUserName component", () => {
             attempts: 0,
             lockedUntil: 0,
           },
+          firstAppLaunch: true,
           userName: "testUser",
         })
       );

@@ -1,17 +1,17 @@
 import { IonIcon } from "@ionic/react";
 import { personCircleOutline } from "ionicons/icons";
 import { useState } from "react";
-import { i18n } from "../../../../../i18n";
-import { Alert } from "../../../../components/Alert";
-import { PageFooter } from "../../../../components/PageFooter";
-import { PageHeader } from "../../../../components/PageHeader";
-import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
-import { combineClassNames } from "../../../../utils/style";
+import { i18n } from "../../../i18n";
+import { Alert } from "../../components/Alert";
+import { PageFooter } from "../../components/PageFooter";
+import { PageHeader } from "../../components/PageHeader";
+import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { combineClassNames } from "../../utils/style";
 import "./WalletConnect.scss";
 import { WalletConnectStageOneProps } from "./WalletConnect.types";
-import { useAppDispatch } from "../../../../../store/hooks";
-import { setPendingConnection } from "../../../../../store/reducers/walletConnectionsCache";
-import { ANIMATION_DURATION } from "../../../../components/SideSlider/SideSlider.types";
+import { useAppDispatch } from "../../../store/hooks";
+import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
+import { ANIMATION_DURATION } from "../../components/SideSlider/SideSlider.types";
 
 const WalletConnectStageOne = ({
   isOpen,

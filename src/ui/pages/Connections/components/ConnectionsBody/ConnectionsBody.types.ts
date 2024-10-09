@@ -1,7 +1,5 @@
-import {
-  ConnectionShortDetails,
-  MappedConnections,
-} from "../../Connections.types";
+import { ConnectionShortDetails } from "../../../../../core/agent/agent.types";
+import { MappedConnections } from "../../Connections.types";
 
 interface SearchInputProps {
   onFocus?: (value: boolean) => void;

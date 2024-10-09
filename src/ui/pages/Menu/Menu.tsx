@@ -13,21 +13,19 @@ import {
   linkOutline,
   chatbubbleOutline,
 } from "ionicons/icons";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Browser } from "@capacitor/browser";
 import { TabLayout } from "../../components/layout/TabLayout";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { useAppDispatch } from "../../../store/hooks";
 import {
-  getCurrentOperation,
-  setCurrentOperation,
   setCurrentRoute,
+  showConnections,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import "./Menu.scss";
 import { i18n } from "../../../i18n";
 import { SubMenu } from "./components/SubMenu";
 import { MenuItemProps, SubMenuKey } from "./Menu.types";
-import { OperationType } from "../../globals/types";
 import { CHAT_LINK, CRYPTO_LINK } from "../../globals/constants";
 import { emptySubMenu, SubMenuItems } from "./components/SubMenuItems";
 import MenuItem from "./components/MenuItem";
@@ -35,7 +33,6 @@ import MenuItem from "./components/MenuItem";
 const Menu = () => {
   const pageId = "menu-tab";
   const dispatch = useAppDispatch();
-  const currentOperation = useAppSelector(getCurrentOperation);
   const [showSubMenu, setShowSubMenu] = useState(false);
   const [selectedOption, setSelectedOption] = useState<
     SubMenuKey | undefined
@@ -52,17 +49,14 @@ const Menu = () => {
     [showSubMenu]
   );
 
-  useEffect(() => {
-    if (currentOperation === OperationType.BACK_TO_CONNECT_WALLET) {
-      showSelectedOption(SubMenuKey.ConnectWallet);
-      dispatch(setCurrentOperation(OperationType.IDLE));
-    }
-  }, [currentOperation]);
-
-  const handleOpenUrl = (key: SubMenuKey.Crypto | SubMenuKey.Chat) => {
+  const handleOpenUrl = (key: SubMenuKey) => {
     switch (key) {
     case SubMenuKey.Crypto: {
       Browser.open({ url: CRYPTO_LINK });
+      break;
+    }
+    case SubMenuKey.Connections: {
+      dispatch(showConnections(true));
       break;
     }
     case SubMenuKey.Chat: {
@@ -106,7 +100,9 @@ const Menu = () => {
   ];
 
   const showSelectedOption = (key: SubMenuKey) => {
-    if (key === SubMenuKey.Crypto || key === SubMenuKey.Chat) {
+    if (
+      [SubMenuKey.Crypto, SubMenuKey.Connections, SubMenuKey.Chat].includes(key)
+    ) {
       handleOpenUrl(key);
     }
     if (!subMenuItems.has(key)) return;
@@ -114,7 +110,7 @@ const Menu = () => {
     setSelectedOption(key);
   };
 
-  const subMenuItems = SubMenuItems(selectedOption, showSelectedOption);
+  const subMenuItems = SubMenuItems(showSelectedOption);
 
   const selectSubmenu = useMemo(() => {
     // NOTE: emptySubMenu is returned for unavailable selected options to not break the animation

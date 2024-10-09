@@ -45,6 +45,7 @@ const IdentifierStage0 = ({
   setBlur,
   resetModal,
   multiSigGroup,
+  isModalOpen,
 }: IdentifierStageProps) => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
@@ -180,6 +181,7 @@ const IdentifierStage0 = ({
     <>
       <ScrollablePageLayout
         pageId={componentId + "-content"}
+        activeStatus={isModalOpen}
         customClass={keyboardIsOpen ? "keyboard-is-open" : ""}
         header={
           <PageHeader

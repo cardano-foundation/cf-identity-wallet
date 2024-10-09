@@ -39,7 +39,6 @@ import "../../components/CardDetails/CardDetails.scss";
 import { CloudError } from "../../components/CloudError";
 import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
 import { IdentifierOptions } from "../../components/IdentifierOptions";
-import { TabLayout } from "../../components/layout/TabLayout";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import { ShareConnection } from "../../components/ShareConnection";
@@ -52,6 +51,7 @@ import { combineClassNames } from "../../utils/style";
 import { IdentifierContent } from "./components/IdentifierContent";
 import { RotateKeyModal } from "./components/RotateKeyModal";
 import "./IdentifierDetails.scss";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -344,13 +344,17 @@ const IdentifierDetails = () => {
           />
         </CloudError>
       ) : (
-        <TabLayout
+        <ScrollablePageLayout
           pageId={pageId}
           customClass={pageClasses}
-          header={true}
-          doneLabel={`${i18n.t("identifiers.details.done")}`}
-          doneAction={handleDone}
-          additionalButtons={<AdditionalButtons />}
+          header={
+            <PageHeader
+              closeButton={true}
+              closeButtonLabel={`${i18n.t("identifiers.details.done")}`}
+              closeButtonAction={() => handleDone()}
+              additionalButtons={<AdditionalButtons />}
+            />
+          }
         >
           {!cardData ? (
             <div
@@ -401,7 +405,7 @@ const IdentifierDetails = () => {
             isOpen={openRotateKeyModal}
             onClose={() => setOpenRotateKeyModal(false)}
           />
-        </TabLayout>
+        </ScrollablePageLayout>
       )}
       <Alert
         isOpen={alertIsOpen}

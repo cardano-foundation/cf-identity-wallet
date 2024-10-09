@@ -7,12 +7,14 @@ import {
   removeConnectionCache,
   setConnectionsCache,
   setMultisigConnectionsCache,
-  setOpenConnectionDetail,
+  setOpenConnectionId,
   updateOrAddConnectionCache,
 } from "./connectionsCache";
 import { RootState } from "../../index";
-import { ConnectionShortDetails } from "../../../ui/pages/Connections/Connections.types";
-import { ConnectionStatus } from "../../../core/agent/agent.types";
+import {
+  ConnectionShortDetails,
+  ConnectionStatus,
+} from "../../../core/agent/agent.types";
 
 const initialState = {
   connections: {},
@@ -64,10 +66,10 @@ describe("connectionsCacheSlice", () => {
     ).toMatchObject(connection);
   });
 
-  it("should handle setOpenConnectionDetail", () => {
+  it("should handle setOpenConnectionId", () => {
     const newState = connectionsCacheSlice.reducer(
       initialState,
-      setOpenConnectionDetail(connection.id)
+      setOpenConnectionId(connection.id)
     );
 
     expect(newState.openConnectionId).toEqual(connection.id);

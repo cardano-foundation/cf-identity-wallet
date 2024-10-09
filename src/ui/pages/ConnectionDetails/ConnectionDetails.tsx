@@ -1,6 +1,5 @@
 import { ellipsisVertical } from "ionicons/icons";
 import { useCallback, useState } from "react";
-import { useHistory } from "react-router-dom";
 import {
   IonLabel,
   IonSegment,
@@ -11,25 +10,21 @@ import {
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../utils/formatters";
 import "./ConnectionDetails.scss";
-import {
-  ConnectionDetails as ConnectionData,
-  ConnectionShortDetails,
-} from "../Connections/Connections.types";
+
 import { RoutePath } from "../../../routes";
-import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { useAppDispatch } from "../../../store/hooks";
 import {
-  getStateCache,
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { updateReduxState } from "../../../store/utils";
 import { ConnectionOptions } from "../../components/ConnectionOptions";
 import { Alert as AlertDeleteConnection } from "../../components/Alert";
 import { removeConnectionCache } from "../../../store/reducers/connectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { Agent } from "../../../core/agent/agent";
 import {
+  ConnectionDetails as ConnectionData,
+  ConnectionShortDetails,
   ConnectionHistoryItem,
   ConnectionNoteDetails,
 } from "../../../core/agent/agent.types";
@@ -41,21 +36,23 @@ import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayo
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { CardDetailsBlock } from "../../components/CardDetails";
 import { ConnectionNotes } from "./components/ConnectionNotes";
-import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
-import { getBackRoute } from "../../../routes/backRoute";
+import { useOnlineStatusEffect } from "../../hooks";
 import { ConnectionHistoryEvent } from "./components/ConnectionHistoryEvent";
 import { Verification } from "../../components/Verification";
 import { CloudError } from "../../components/CloudError";
 import { showError } from "../../utils/error";
 
-const ConnectionDetails = () => {
+const ConnectionDetails = ({
+  connectionShortDetails,
+  setConnectionShortDetails,
+}: {
+  connectionShortDetails: ConnectionShortDetails;
+  setConnectionShortDetails: (
+    connectionShortDetails: ConnectionShortDetails | undefined
+  ) => void;
+}) => {
   const pageId = "connection-details";
-  const ionicRouter = useAppIonRouter();
-  const history = useHistory();
   const dispatch = useAppDispatch();
-  const stateCache = useAppSelector(getStateCache);
-  const connectionShortDetails = history?.location
-    ?.state as ConnectionShortDetails;
   const [connectionDetails, setConnectionDetails] = useState<ConnectionData>();
   const [connectionHistory, setConnectionHistory] = useState<
     ConnectionHistoryItem[]
@@ -131,16 +128,7 @@ const ConnectionDetails = () => {
   useOnlineStatusEffect(getData);
 
   const handleDone = () => {
-    const data: DataProps = {
-      store: { stateCache },
-    };
-    const { backPath, updateRedux } = getBackRoute(
-      RoutePath.CONNECTION_DETAILS,
-      data
-    );
-
-    updateReduxState(backPath.pathname, data, dispatch, updateRedux);
-    ionicRouter.goBack();
+    setConnectionShortDetails(undefined);
   };
 
   const handleDelete = () => {
@@ -244,6 +232,7 @@ const ConnectionDetails = () => {
       ) : (
         <ScrollablePageLayout
           pageId={pageId}
+          activeStatus={true}
           customClass="item-details-page"
           header={
             <PageHeader

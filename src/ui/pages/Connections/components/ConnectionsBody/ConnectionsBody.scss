@@ -1,6 +1,7 @@
 .connection-search-input {
   padding-inline-start: 1.25rem;
   padding-inline-end: 1.25rem;
+  margin-bottom: 0 !important;
 
   .searchbar-cancel-button {
     font-weight: 700;
@@ -16,7 +17,7 @@
   }
 }
 
-.connections-tab-center {
+.connections-body {
   .alphabet-selector {
     transition: all 0.25s;
   }
