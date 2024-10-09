@@ -14,20 +14,20 @@ import { EventTypes } from "../event.types";
 import { deleteNotificationRecordById } from "./utils";
 import {
   credentialMetadataMock,
-  mockNotificationGrantIpex,
   getCredentialResponse,
-  multisigExnIpexAdmit,
-  multisigExnIpexApply,
-  mockNotificationApplyIpex,
+  multisigExnGrant,
+  multisigExnAdmitForIssuance,
+  multisigExnOfferForPresenting,
+  multisigExnApplyForPresenting,
   notificationMultisigRpyProp,
   notificationMultisigExnProp,
   notificationMultisigIcpProp,
   notificationIpexGrantProp,
   notificationIpexAgreeProp,
   notificationIpexApplyProp,
-  multisigExnIpexOffer,
-  multisigExnIpexGrant,
-  mockNotificationAgreeIpex,
+  grantForIssuanceExnMessage,
+  applyForPresentingExnMessage,
+  agreeForPresentingExnMessage,
 } from "../../__fixtures__/agent/keriaNotificationFixture";
 
 const identifiersListMock = jest.fn();
@@ -265,7 +265,7 @@ describe("Signify notification service of agent", () => {
   });
 
   test("emit new event for new notification", async () => {
-    exchangesGetMock.mockResolvedValue(mockNotificationGrantIpex);
+    exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
     multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [
@@ -323,7 +323,7 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should admit if there is an existing credential", async () => {
-    exchangesGetMock.mockResolvedValue(mockNotificationGrantIpex);
+    exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
     multiSigs.hasMultisig = jest.fn().mockResolvedValue(false);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
     const notes = [notificationIpexGrantProp];
@@ -511,7 +511,7 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should call grantAcdcFromAgree if notification route is /exn/ipex/agree", async () => {
-    exchangesGetMock.mockResolvedValue(mockNotificationGrantIpex);
+    exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -534,7 +534,7 @@ describe("Signify notification service of agent", () => {
     expect(
       ipexCommunications.createLinkedIpexMessageRecord
     ).toHaveBeenCalledWith(
-      mockNotificationGrantIpex,
+      grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
     );
     expect(ipexCommunications.grantAcdcFromAgree).toBeCalledWith(
@@ -543,7 +543,7 @@ describe("Signify notification service of agent", () => {
   });
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT", async () => {
-    exchangesGetMock.mockResolvedValue(mockNotificationGrantIpex);
+    exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -557,13 +557,13 @@ describe("Signify notification service of agent", () => {
     expect(
       ipexCommunications.createLinkedIpexMessageRecord
     ).toHaveBeenCalledWith(
-      mockNotificationGrantIpex,
+      grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
     );
   });
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REVOKED", async () => {
-    exchangesGetMock.mockResolvedValue(mockNotificationGrantIpex);
+    exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
@@ -600,7 +600,7 @@ describe("Signify notification service of agent", () => {
     const notes = [notificationMultisigExnProp];
 
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexApply)
+      .mockResolvedValueOnce(multisigExnApplyForPresenting)
       .mockResolvedValueOnce({ exn: { d: "d" } });
 
     for (const notif of notes) {
@@ -619,7 +619,7 @@ describe("Signify notification service of agent", () => {
     const notes = [notificationMultisigExnProp];
 
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexApply)
+      .mockResolvedValueOnce(multisigExnApplyForPresenting)
       .mockResolvedValueOnce({ exn: { d: "d" } });
 
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({});
@@ -638,7 +638,7 @@ describe("Signify notification service of agent", () => {
     getCredentialMock.mockResolvedValue(getCredentialResponse);
 
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexApply)
+      .mockResolvedValueOnce(multisigExnApplyForPresenting)
       .mockResolvedValueOnce({ exn: { d: "d" } });
 
     for (const notif of notes) {
@@ -647,15 +647,14 @@ describe("Signify notification service of agent", () => {
     expect(markNotificationMock).toBeCalledTimes(1);
   });
 
-  // Multisig - ipex/admit
   test("Original grant is linked to first received /multisig/exn admit message, and no notification record is created", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(identifierMetadataRecordProps);
 
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexAdmit)
-      .mockResolvedValueOnce(mockNotificationGrantIpex);
+      .mockResolvedValueOnce(multisigExnAdmitForIssuance)
+      .mockResolvedValueOnce(grantForIssuanceExnMessage);
 
     getCredentialMock.mockResolvedValue(undefined);
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
@@ -715,8 +714,8 @@ describe("Signify notification service of agent", () => {
       .mockResolvedValue(identifierMetadataRecordProps);
 
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexAdmit)
-      .mockResolvedValueOnce(mockNotificationGrantIpex);
+      .mockResolvedValueOnce(multisigExnAdmitForIssuance)
+      .mockResolvedValueOnce(grantForIssuanceExnMessage);
 
     getCredentialMock.mockResolvedValue(undefined);
     const dt = new Date().toISOString();
@@ -797,8 +796,8 @@ describe("Signify notification service of agent", () => {
       .fn()
       .mockResolvedValue(identifierMetadataRecordProps);
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexAdmit)
-      .mockResolvedValueOnce(mockNotificationGrantIpex);
+      .mockResolvedValueOnce(multisigExnAdmitForIssuance)
+      .mockResolvedValueOnce(grantForIssuanceExnMessage);
 
     getCredentialMock.mockResolvedValue(undefined);
     const dt = new Date().toISOString();
@@ -875,15 +874,14 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.save).toBeCalledTimes(0);
   });
 
-  // Multisig - ipex/offer
   test("Original apply is linked to first received /multisig/exn offer message, and no notification record is created", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(identifierMetadataRecordProps);
 
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexOffer)
-      .mockResolvedValueOnce(mockNotificationApplyIpex);
+      .mockResolvedValueOnce(multisigExnOfferForPresenting)
+      .mockResolvedValueOnce(applyForPresentingExnMessage);
 
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {
@@ -942,8 +940,8 @@ describe("Signify notification service of agent", () => {
       .mockResolvedValue(identifierMetadataRecordProps);
 
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexOffer)
-      .mockResolvedValueOnce(mockNotificationApplyIpex);
+      .mockResolvedValueOnce(multisigExnOfferForPresenting)
+      .mockResolvedValueOnce(applyForPresentingExnMessage);
 
     const dt = new Date().toISOString();
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
@@ -1023,8 +1021,8 @@ describe("Signify notification service of agent", () => {
       .fn()
       .mockResolvedValue(identifierMetadataRecordProps);
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexOffer)
-      .mockResolvedValueOnce(mockNotificationApplyIpex);
+      .mockResolvedValueOnce(multisigExnOfferForPresenting)
+      .mockResolvedValueOnce(applyForPresentingExnMessage);
 
     const dt = new Date().toISOString();
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
@@ -1100,15 +1098,14 @@ describe("Signify notification service of agent", () => {
     expect(notificationStorage.save).toBeCalledTimes(0);
   });
 
-  // Multisig - ipex/grant
   test("Original agree is linked to first received /multisig/exn grant message, and no notification record is created", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(identifierMetadataRecordProps);
 
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexGrant)
-      .mockResolvedValueOnce(mockNotificationAgreeIpex);
+      .mockResolvedValueOnce(multisigExnGrant)
+      .mockResolvedValueOnce(agreeForPresentingExnMessage);
 
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {
@@ -1167,8 +1164,8 @@ describe("Signify notification service of agent", () => {
       .mockResolvedValue(identifierMetadataRecordProps);
 
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexGrant)
-      .mockResolvedValueOnce(mockNotificationAgreeIpex);
+      .mockResolvedValueOnce(multisigExnGrant)
+      .mockResolvedValueOnce(agreeForPresentingExnMessage);
 
     const dt = new Date().toISOString();
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
@@ -1249,8 +1246,8 @@ describe("Signify notification service of agent", () => {
       .mockResolvedValue(identifierMetadataRecordProps);
 
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexGrant)
-      .mockResolvedValueOnce(mockNotificationAgreeIpex);
+      .mockResolvedValueOnce(multisigExnGrant)
+      .mockResolvedValueOnce(agreeForPresentingExnMessage);
 
     const dt = new Date().toISOString();
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
@@ -1514,8 +1511,8 @@ describe("Signify notification service of agent", () => {
 
   test("Should skip if missing identifier metadata with admit multisig exn", async () => {
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexAdmit)
-      .mockResolvedValueOnce(mockNotificationGrantIpex);
+      .mockResolvedValueOnce(multisigExnAdmitForIssuance)
+      .mockResolvedValueOnce(grantForIssuanceExnMessage);
 
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {
@@ -1550,8 +1547,8 @@ describe("Signify notification service of agent", () => {
   test("Should throw error if other error occurs with admit multisig exn", async () => {
     const errorMessage = "Error - 500";
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexAdmit)
-      .mockResolvedValueOnce(mockNotificationGrantIpex);
+      .mockResolvedValueOnce(multisigExnAdmitForIssuance)
+      .mockResolvedValueOnce(grantForIssuanceExnMessage);
 
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {
@@ -1581,8 +1578,8 @@ describe("Signify notification service of agent", () => {
 
   test("Should skip if existing credential with admit multisig exn", async () => {
     exchangesGetMock
-      .mockResolvedValueOnce(multisigExnIpexAdmit)
-      .mockResolvedValueOnce(mockNotificationGrantIpex);
+      .mockResolvedValueOnce(multisigExnAdmitForIssuance)
+      .mockResolvedValueOnce(grantForIssuanceExnMessage);
 
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
       {

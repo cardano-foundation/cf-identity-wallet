@@ -490,7 +490,7 @@ const initiatorConnectionShortDetails = {
   connectionDate: new Date().toISOString(),
 };
 
-const mockNotificationMultisigExnRotation = {
+const notificationMultisigExnRotation = {
   id: "EBRg2Ur0JYi92jP0r0ZEO385sWr_8KNMqRIsv9s2JUFI",
   createdAt: new Date().toISOString(),
   a: {
@@ -502,7 +502,7 @@ const mockNotificationMultisigExnRotation = {
   read: true,
 };
 
-const mockGetRequestMultisigIcp = {
+const getRequestMultisigIcp = {
   exn: {
     v: "KERI10JSON000735_",
     t: "exn",
@@ -604,7 +604,7 @@ const mockGetRequestMultisigIcp = {
   },
 };
 
-const mockGetExchangeGrantMessage = {
+const getExchangeGrantMessage = {
   exn: {
     v: "KERI10JSON00054a_",
     t: "exn",
@@ -750,8 +750,8 @@ export {
   multisigMetadataRecord,
   memberKeyStateIcp,
   memberKeyStateRot,
-  mockNotificationMultisigExnRotation,
-  mockGetRequestMultisigIcp,
-  mockGetExchangeGrantMessage,
+  notificationMultisigExnRotation,
+  getRequestMultisigIcp,
+  getExchangeGrantMessage,
   memberMetadataRecordProps,
 };

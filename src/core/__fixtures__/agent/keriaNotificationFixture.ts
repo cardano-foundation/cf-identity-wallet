@@ -15,7 +15,7 @@ const credentialMetadataMock = {
   updatedAt: "2024-08-09T04:21:19.695Z",
 };
 
-const mockNotificationGrantIpex = {
+const grantForIssuanceExnMessage = {
   exn: {
     v: "KERI10JSON000516_",
     t: "exn",
@@ -58,7 +58,7 @@ const mockNotificationGrantIpex = {
   },
 };
 
-const mockNotificationApplyIpex = {
+const applyForPresentingExnMessage = {
   exn: {
     v: "KERI10JSON000198_",
     t: "exn",
@@ -80,7 +80,7 @@ const mockNotificationApplyIpex = {
   pathed: {},
 };
 
-const mockNotificationAgreeIpex = {
+const agreeForPresentingExnMessage = {
   exn: {
     v: "KERI10JSON000516_",
     t: "exn",
@@ -141,7 +141,7 @@ const getCredentialResponse = {
   },
 };
 
-const multisigExnIpexAdmit = {
+const multisigExnAdmitForIssuance = {
   exn: {
     v: "KERI10JSON00032d_",
     t: "exn",
@@ -179,7 +179,7 @@ const multisigExnIpexAdmit = {
   pathed: {},
 };
 
-const multisigExnIpexOffer = {
+const multisigExnOfferForPresenting = {
   exn: {
     v: "KERI10JSON00032d_",
     t: "exn",
@@ -217,7 +217,7 @@ const multisigExnIpexOffer = {
   pathed: {},
 };
 
-const multisigExnIpexApply = {
+const multisigExnApplyForPresenting = {
   exn: {
     e: {
       exn: {
@@ -230,7 +230,7 @@ const multisigExnIpexApply = {
   pathed: {},
 };
 
-const multisigExnIpexGrant = {
+const multisigExnGrant = {
   exn: {
     v: "KERI10JSON00032d_",
     t: "exn",
@@ -338,13 +338,13 @@ const notificationIpexApplyProp = {
 
 export {
   credentialMetadataMock,
-  mockNotificationGrantIpex,
-  mockNotificationApplyIpex,
-  mockNotificationAgreeIpex,
-  multisigExnIpexAdmit,
-  multisigExnIpexOffer,
-  multisigExnIpexApply,
-  multisigExnIpexGrant,
+  grantForIssuanceExnMessage,
+  applyForPresentingExnMessage,
+  agreeForPresentingExnMessage,
+  multisigExnAdmitForIssuance,
+  multisigExnOfferForPresenting,
+  multisigExnApplyForPresenting,
+  multisigExnGrant,
   getCredentialResponse,
   notificationMultisigRpyProp,
   notificationMultisigExnProp,

@@ -9,18 +9,18 @@ import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
 import { EventTypes } from "../event.types";
 import {
-  mockNotificationApplyIpex,
-  mockNotificationGrantIpex,
+  applyForPresentingExnMessage,
+  grantForIssuanceExnMessage,
   credentialMetadataRecord,
-  mockGetSchema,
+  QVISchema,
   credentialRecordProps,
   identifierMetadataRecord,
-  multisigExnIpexOffer,
-  multisigExnIpexAdmit,
-  mockCredentialRecord,
-  multisigExnIpexGrant,
-  mockNotificationOfferIpex,
-  mockNotificationAgreeIpex,
+  multisigExnOfferForPresenting,
+  multisigExnAdmitForIssuance,
+  credentialRecord,
+  multisigExnGrant,
+  offerForPresentingExnMessage,
+  agreeForPresentingExnMessage,
   getCredentialResponse,
   credentialProps,
   ipexGrantSerder,
@@ -35,7 +35,12 @@ import {
   ipexSubmitOfferSerder,
   ipexSubmitOfferSig,
   ipexSubmitOfferEnd,
-  kedFromAdmitExnMessage,
+  ipexAdmitEnd,
+  ipexAdmitSig,
+  ipexAdmitSerder,
+  ipexSubmitAdmitSerder,
+  ipexSubmitAdmitSig,
+  ipexSubmitAdmitEnd,
 } from "../../__fixtures__/agent/ipexCommunicationFixture";
 import { NotificationRoute } from "../agent.types";
 import {
@@ -314,13 +319,13 @@ describe("Ipex communication service of agent", () => {
       updatedAt: new Date(),
     });
 
-    getExchangeMock = jest.fn().mockReturnValue(mockNotificationGrantIpex);
+    getExchangeMock = jest.fn().mockReturnValue(grantForIssuanceExnMessage);
 
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       signifyName: "holder",
       id: "identifierId",
     });
-    schemaGetMock.mockResolvedValue(mockGetSchema);
+    schemaGetMock.mockResolvedValue(QVISchema);
 
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
       id: "id",
@@ -331,7 +336,8 @@ describe("Ipex communication service of agent", () => {
       id: "opName",
       recordType: OperationPendingRecordType.ExchangeReceiveCredential,
     });
-    ipexAdmitMock.mockResolvedValue(["admit", "sigs", "aend"]),
+    ipexAdmitMock.mockResolvedValue(["admit", "sigs", "aend"]);
+
     await ipexCommunicationService.acceptAcdc(id);
 
     expect(submitAdmitMock).toBeCalledWith(
@@ -342,13 +348,19 @@ describe("Ipex communication service of agent", () => {
       ["EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x"]
     );
 
-    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
-      credentialRecordProps
-    );
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
+      ...credentialRecordProps,
+      identifierId: "identifierId",
+      identifierType: "individual",
+    });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.AcdcStateChanged,
       payload: {
-        credential: credentialRecordProps,
+        credential: {
+          ...credentialRecordProps,
+          identifierId: "identifierId",
+          identifierType: "individual",
+        },
         status: CredentialStatus.PENDING,
       },
     });
@@ -636,7 +648,7 @@ describe("Ipex communication service of agent", () => {
       connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
       read: true,
     };
-    schemaGetMock.mockResolvedValue(mockGetSchema);
+    schemaGetMock.mockResolvedValue(QVISchema);
     credentialStorage.getCredentialMetadatasById.mockResolvedValue([
       {
         id: "d",
@@ -673,20 +685,20 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("Can create linked ipex message record", async () => {
-    schemaGetMock.mockResolvedValueOnce(mockGetSchema);
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
     await ipexCommunicationService.createLinkedIpexMessageRecord(
-      mockNotificationGrantIpex,
+      grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
     );
     expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
-      id: mockNotificationGrantIpex.exn.d,
-      credentialType: mockGetSchema.title,
-      content: mockNotificationGrantIpex,
-      connectionId: mockNotificationGrantIpex.exn.i,
+      id: grantForIssuanceExnMessage.exn.d,
+      credentialType: QVISchema.title,
+      content: grantForIssuanceExnMessage,
+      connectionId: grantForIssuanceExnMessage.exn.i,
       historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
     });
 
-    schemaGetMock.mockResolvedValueOnce(mockGetSchema);
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
     getExchangeMock.mockResolvedValueOnce({
       exn: {
         e: {
@@ -697,14 +709,14 @@ describe("Ipex communication service of agent", () => {
       },
     });
     await ipexCommunicationService.createLinkedIpexMessageRecord(
-      mockNotificationGrantIpex,
+      grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
     );
     expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
-      id: mockNotificationGrantIpex.exn.d,
-      credentialType: mockGetSchema.title,
-      content: mockNotificationGrantIpex,
-      connectionId: mockNotificationGrantIpex.exn.i,
+      id: grantForIssuanceExnMessage.exn.d,
+      credentialType: QVISchema.title,
+      content: grantForIssuanceExnMessage,
+      connectionId: grantForIssuanceExnMessage.exn.i,
       historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE,
     });
     expect(schemaGetMock).toBeCalledTimes(2);
@@ -712,17 +724,17 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("Can create linked ipex message record with message exchange route ipex/apply", async () => {
-    schemaGetMock.mockResolvedValueOnce(mockGetSchema);
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
     await ipexCommunicationService.createLinkedIpexMessageRecord(
-      mockNotificationApplyIpex,
+      applyForPresentingExnMessage,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
     );
 
     expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
-      id: mockNotificationApplyIpex.exn.d,
-      credentialType: mockGetSchema.title,
-      content: mockNotificationApplyIpex,
-      connectionId: mockNotificationApplyIpex.exn.i,
+      id: applyForPresentingExnMessage.exn.d,
+      credentialType: QVISchema.title,
+      content: applyForPresentingExnMessage,
+      connectionId: applyForPresentingExnMessage.exn.i,
       historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
     });
     expect(schemaGetMock).toBeCalledTimes(1);
@@ -730,19 +742,19 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("Can create linked ipex message record with message exchange route ipex/agree", async () => {
-    schemaGetMock.mockResolvedValueOnce(mockGetSchema);
-    getExchangeMock.mockResolvedValueOnce(mockNotificationAgreeIpex);
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
+    getExchangeMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
 
     await ipexCommunicationService.createLinkedIpexMessageRecord(
-      mockNotificationAgreeIpex,
+      agreeForPresentingExnMessage,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
     );
 
     expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
-      id: mockNotificationAgreeIpex.exn.d,
-      credentialType: mockGetSchema.title,
-      content: mockNotificationAgreeIpex,
-      connectionId: mockNotificationAgreeIpex.exn.i,
+      id: agreeForPresentingExnMessage.exn.d,
+      credentialType: QVISchema.title,
+      content: agreeForPresentingExnMessage,
+      connectionId: agreeForPresentingExnMessage.exn.i,
       historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
     });
     expect(schemaGetMock).toBeCalledTimes(1);
@@ -754,7 +766,7 @@ describe("Ipex communication service of agent", () => {
     schemaGetMock.mockRejectedValueOnce(new Error("Unknown error"));
     await expect(
       ipexCommunicationService.createLinkedIpexMessageRecord(
-        mockNotificationGrantIpex,
+        grantForIssuanceExnMessage,
         ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
       )
     ).rejects.toThrowError(new Error("Unknown error"));
@@ -813,7 +825,7 @@ describe("Ipex communication service of agent", () => {
     ).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
   });
 
-  test("should return undefined when schemaSaid returns 404", async () => {
+  test("Cannot get ipex apply details if the schema cannot be located", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const mockNotification = {
       a: {
@@ -843,7 +855,7 @@ describe("Ipex communication service of agent", () => {
     expect(schemaGetMock).toHaveBeenCalledWith("schemaSaid");
   });
 
-  test("should throw error for non-404 errors", async () => {
+  test("Should throw error for non-404 errors - getIpexApplyDetails", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const mockNotification = {
       a: {
@@ -996,14 +1008,14 @@ describe("Ipex communication service of agent", () => {
     });
 
     getExchangeMock
-      .mockReturnValueOnce(multisigExnIpexAdmit)
-      .mockReturnValueOnce(mockNotificationGrantIpex);
+      .mockReturnValueOnce(multisigExnAdmitForIssuance)
+      .mockReturnValue(grantForIssuanceExnMessage);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(identifierMetadataRecord);
 
-    schemaGetMock.mockResolvedValue(mockGetSchema);
+    schemaGetMock.mockResolvedValue(QVISchema);
     credentialListMock.mockResolvedValue([
       {
         sad: {
@@ -1046,19 +1058,19 @@ describe("Ipex communication service of agent", () => {
       .mockResolvedValueOnce(gHab)
       .mockResolvedValueOnce(mHab);
     createExchangeMessageMock.mockResolvedValue([
-      ipexSubmitGrantSerder,
-      ipexSubmitGrantSig,
-      ipexSubmitGrantEnd,
+      ipexSubmitAdmitSerder,
+      ipexSubmitAdmitSig,
+      ipexSubmitAdmitEnd,
     ]);
+
+    (Saider.saidify as jest.Mock).mockImplementation(
+      jest.fn().mockReturnValue([{} as Saider, ipexGrantSerder.ked])
+    );
 
     (Serder as jest.Mock).mockImplementation(
       jest.fn().mockReturnValue({
-        kedFromAdmitExnMessage,
+        ked: { d: "EKJEr0WbRERI1j2GjjfuReOIHjBSjC0tXguEaNYo5Hl6" },
       })
-    );
-
-    (Saider.saidify as jest.Mock).mockImplementation(
-      jest.fn().mockReturnValue([{} as Saider, kedFromAdmitExnMessage])
     );
 
     notificationStorage.findAllByQuery = jest.fn().mockResolvedValue([
@@ -1090,9 +1102,9 @@ describe("Ipex communication service of agent", () => {
     await ipexCommunicationService.acceptAcdc(id);
     expect(submitAdmitMock).toBeCalledWith(
       "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      ipexSubmitGrantSerder,
-      ipexSubmitGrantSig,
-      ipexSubmitGrantEnd,
+      ipexSubmitAdmitSerder,
+      ipexSubmitAdmitSig,
+      ipexSubmitAdmitEnd,
       [
         "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
         "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
@@ -1128,12 +1140,12 @@ describe("Ipex communication service of agent", () => {
       linkedGroupRequests: {},
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     });
-    getExchangeMock.mockReturnValueOnce(mockNotificationGrantIpex);
+    getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(identifierMetadataRecord);
-    schemaGetMock.mockResolvedValue(mockGetSchema);
+    schemaGetMock.mockResolvedValue(QVISchema);
 
     credentialStorage.getCredentialMetadata = jest
       .fn()
@@ -1143,12 +1155,11 @@ describe("Ipex communication service of agent", () => {
       .fn()
       .mockResolvedValueOnce(gHab)
       .mockResolvedValueOnce(mHab);
+
     ipexAdmitMock.mockResolvedValue([
-      {
-        kedFromAdmitExnMessage,
-      },
-      ["sigs"],
-      "aend",
+      ipexAdmitSerder,
+      ipexAdmitSig,
+      ipexAdmitEnd,
     ]),
     (eventEmitter.emit = jest.fn());
 
@@ -1160,9 +1171,9 @@ describe("Ipex communication service of agent", () => {
     await ipexCommunicationService.acceptAcdc("id");
     expect(submitAdmitMock).toBeCalledWith(
       "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      ipexSubmitGrantSerder,
-      ipexSubmitGrantSig,
-      ipexSubmitGrantEnd,
+      ipexSubmitAdmitSerder,
+      ipexSubmitAdmitSig,
+      ipexSubmitAdmitEnd,
       [
         "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
         "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
@@ -1184,7 +1195,7 @@ describe("Ipex communication service of agent", () => {
             "EOQf4E9vcTRVs5hsz4F1-zR7IaGV5O75GFE2el3LAmru": [
               [
                 "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
-                "EEpfEHR6EedLnEzleK7mM3AKJSoPWuSQeREC8xjyq3pa",
+                "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
               ],
             ],
           },
@@ -1193,14 +1204,20 @@ describe("Ipex communication service of agent", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     });
 
-    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith(
-      credentialRecordProps
-    );
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
+      ...credentialRecordProps,
+      identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      identifierType: "group",
+    });
 
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.AcdcStateChanged,
       payload: {
-        credential: credentialRecordProps,
+        credential: {
+          ...credentialRecordProps,
+          identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+          identifierType: "group",
+        },
         status: CredentialStatus.PENDING,
       },
     });
@@ -1248,8 +1265,8 @@ describe("Ipex communication service of agent", () => {
       .mockResolvedValue(notificationRecord);
 
     getExchangeMock
-      .mockReturnValueOnce(multisigExnIpexAdmit)
-      .mockReturnValueOnce(mockNotificationGrantIpex);
+      .mockReturnValueOnce(multisigExnAdmitForIssuance)
+      .mockReturnValueOnce(grantForIssuanceExnMessage);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -1263,12 +1280,17 @@ describe("Ipex communication service of agent", () => {
       .fn()
       .mockResolvedValue([notificationRecord]);
 
+    identifiersGetMock = jest
+      .fn()
+      .mockResolvedValueOnce(gHab)
+      .mockResolvedValueOnce(mHab);
+
     await ipexCommunicationService.acceptAcdc("id");
     expect(submitAdmitMock).toBeCalledWith(
       "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      ipexSubmitGrantSerder,
-      ipexSubmitGrantSig,
-      ipexSubmitGrantEnd,
+      ipexSubmitAdmitSerder,
+      ipexSubmitAdmitSig,
+      ipexSubmitAdmitEnd,
       [
         "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
         "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
@@ -1318,7 +1340,7 @@ describe("Ipex communication service of agent", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     };
 
-    getExchangeMock.mockReturnValueOnce(multisigExnIpexOffer);
+    getExchangeMock.mockReturnValueOnce(multisigExnOfferForPresenting);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -1392,7 +1414,7 @@ describe("Ipex communication service of agent", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     };
 
-    getExchangeMock.mockReturnValueOnce(multisigExnIpexGrant);
+    getExchangeMock.mockReturnValueOnce(multisigExnGrant);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -1453,7 +1475,7 @@ describe("Ipex communication service of agent", () => {
 
   test("Cannot join offer ACDC from multisig exn if identifier is not locally stored", async () => {
     const id = "uuid";
-    getExchangeMock.mockReturnValueOnce(multisigExnIpexGrant);
+    getExchangeMock.mockReturnValueOnce(multisigExnGrant);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -1466,7 +1488,7 @@ describe("Ipex communication service of agent", () => {
 
   test("Cannot join grant ACDC from multisig exn if identifier is not locally stored", async () => {
     const id = "uuid";
-    getExchangeMock.mockReturnValueOnce(multisigExnIpexGrant);
+    getExchangeMock.mockReturnValueOnce(multisigExnGrant);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -1506,7 +1528,7 @@ describe("Ipex communication service of agent", () => {
 
     eventEmitter.emit = jest.fn();
     notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
-    getExchangeMock.mockReturnValueOnce(multisigExnIpexOffer);
+    getExchangeMock.mockReturnValueOnce(multisigExnOfferForPresenting);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValueOnce(identifierMetadataRecord);
@@ -1529,7 +1551,7 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
 
-    await ipexCommunicationService.offerAcdcFromApply(id, mockCredentialRecord);
+    await ipexCommunicationService.offerAcdcFromApply(id, credentialRecord);
 
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
@@ -1581,7 +1603,7 @@ describe("Ipex communication service of agent", () => {
     ipexCommunicationService.joinMultisigOffer = jest.fn();
     notificationStorage.findById.mockResolvedValue(applyNoteRecord);
 
-    await ipexCommunicationService.offerAcdcFromApply(id, mockCredentialRecord);
+    await ipexCommunicationService.offerAcdcFromApply(id, credentialRecord);
 
     expect(ipexCommunicationService.joinMultisigOffer).not.toHaveBeenCalled();
   });
@@ -1606,7 +1628,7 @@ describe("Ipex communication service of agent", () => {
       updatedAt: new Date(),
     });
 
-    getExchangeMock.mockReturnValueOnce(multisigExnIpexOffer);
+    getExchangeMock.mockReturnValueOnce(multisigExnOfferForPresenting);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -1660,7 +1682,7 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
 
-    await ipexCommunicationService.offerAcdcFromApply(id, mockCredentialRecord);
+    await ipexCommunicationService.offerAcdcFromApply(id, credentialRecord);
 
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
     expect(operationPendingStorage.save).toBeCalledWith({
@@ -1695,7 +1717,7 @@ describe("Ipex communication service of agent", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
     });
 
-    getExchangeMock.mockResolvedValueOnce(mockNotificationApplyIpex);
+    getExchangeMock.mockReturnValueOnce(applyForPresentingExnMessage);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -1720,10 +1742,7 @@ describe("Ipex communication service of agent", () => {
       recordType: OperationPendingRecordType.ExchangeOfferCredential,
     });
 
-    await ipexCommunicationService.offerAcdcFromApply(
-      "id",
-      mockCredentialRecord
-    );
+    await ipexCommunicationService.offerAcdcFromApply("id", credentialRecord);
 
     expect(notificationStorage.update).toBeCalledWith({
       type: "NotificationRecord",
@@ -1781,10 +1800,7 @@ describe("Ipex communication service of agent", () => {
       .fn()
       .mockResolvedValue(notificationRecord);
 
-    getExchangeMock
-      .mockReturnValueOnce(multisigExnIpexOffer)
-      .mockReturnValueOnce(mockNotificationGrantIpex);
-
+    getExchangeMock.mockReturnValueOnce(multisigExnOfferForPresenting);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(identifierMetadataRecord);
@@ -1807,10 +1823,7 @@ describe("Ipex communication service of agent", () => {
         exnSaid: "exnSaid",
       });
 
-    await ipexCommunicationService.offerAcdcFromApply(
-      "id",
-      mockCredentialRecord
-    );
+    await ipexCommunicationService.offerAcdcFromApply("id", credentialRecord);
 
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",
@@ -1965,8 +1978,8 @@ describe("Ipex communication service of agent", () => {
     ipexCommunicationService.joinMultisigGrant = jest.fn();
     notificationStorage.findById.mockResolvedValueOnce(agreeNoteRecord);
     getExchangeMock
-      .mockReturnValueOnce(mockNotificationAgreeIpex)
-      .mockReturnValueOnce(mockNotificationOfferIpex);
+      .mockReturnValueOnce(agreeForPresentingExnMessage)
+      .mockReturnValueOnce(offerForPresentingExnMessage);
 
     await ipexCommunicationService.grantAcdcFromAgree(id);
 
@@ -2106,8 +2119,8 @@ describe("Ipex communication service of agent", () => {
 
     notificationStorage.findById.mockResolvedValueOnce(agreeNoteRecord);
     getExchangeMock
-      .mockReturnValueOnce(mockNotificationAgreeIpex)
-      .mockReturnValueOnce(mockNotificationOfferIpex);
+      .mockReturnValueOnce(agreeForPresentingExnMessage)
+      .mockReturnValueOnce(offerForPresentingExnMessage);
     credentialGetMock.mockReturnValue(getCredentialResponse);
 
     identifierStorage.getIdentifierMetadata = jest
@@ -2150,9 +2163,6 @@ describe("Ipex communication service of agent", () => {
   test("Can accept ACDC from multisig exn when existing credential", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "uuid";
-    getExchangeMock
-      .mockReturnValueOnce(multisigExnIpexAdmit)
-      .mockReturnValueOnce(mockNotificationGrantIpex);
     credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue({
       id: "id",
     });
@@ -2201,14 +2211,7 @@ describe("Ipex communication service of agent", () => {
       },
     });
 
-    signifyClient.exchanges = jest.fn().mockReturnValue({
-      get: jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve(multisigExnIpexAdmit))
-        .mockImplementationOnce(() =>
-          Promise.resolve(mockNotificationGrantIpex)
-        ),
-    });
+    getExchangeMock.mockReturnValueOnce(multisigExnAdmitForIssuance);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -2245,15 +2248,8 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("Can get acdc detail", async () => {
-    signifyClient.exchanges = jest.fn().mockReturnValue({
-      get: jest
-        .fn()
-        .mockImplementationOnce(() =>
-          Promise.resolve(mockNotificationGrantIpex)
-        ),
-    });
-
-    schemaGetMock.mockResolvedValue(mockGetSchema);
+    getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
+    schemaGetMock.mockResolvedValue(QVISchema);
 
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -2273,7 +2269,7 @@ describe("Ipex communication service of agent", () => {
         dt: "2024-07-30T04:19:55.348000+00:00",
         attendeeName: "ccc",
       },
-      s: mockGetSchema,
+      s: QVISchema,
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
       status: "pending",
       identifierType: IdentifierType.Individual,
@@ -2282,13 +2278,7 @@ describe("Ipex communication service of agent", () => {
   });
 
   test("Can get acdc detail when the schema has not been resolved", async () => {
-    signifyClient.exchanges = jest.fn().mockReturnValue({
-      get: jest
-        .fn()
-        .mockImplementationOnce(() =>
-          Promise.resolve(mockNotificationGrantIpex)
-        ),
-    });
+    getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
     const error404 = new Error("Not Found - 404");
     schemaGetMock.mockRejectedValueOnce(error404);
     identifierStorage.getIdentifierMetadata = jest
@@ -2320,7 +2310,7 @@ describe("Ipex communication service of agent", () => {
         dt: "2024-07-30T04:19:55.348000+00:00",
         attendeeName: "ccc",
       },
-      s: mockGetSchema,
+      s: QVISchema,
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
       status: "pending",
       identifierType: IdentifierType.Individual,
@@ -2328,14 +2318,8 @@ describe("Ipex communication service of agent", () => {
     });
   });
 
-  test("Throws error if the schema has not been resolved and with a non-404 error", async () => {
-    signifyClient.exchanges = jest.fn().mockReturnValue({
-      get: jest
-        .fn()
-        .mockImplementationOnce(() =>
-          Promise.resolve(mockNotificationGrantIpex)
-        ),
-    });
+  test("Throws error if the schema has not been resolved and with a non-404 error - getAcdcFromIpexGrant", async () => {
+    getExchangeMock.mockReturnValueOnce(grantForIssuanceExnMessage);
     const error = new Error("Some other error - 500");
     schemaGetMock.mockRejectedValueOnce(error);
 

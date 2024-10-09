@@ -1,7 +1,7 @@
 import { ExchangeRoute, NotificationRoute } from "../../agent/agent.types";
 import { CredentialStatus } from "../../agent/services/credentialService.types";
 
-const mockNotificationGrantIpex = {
+const grantForIssuanceExnMessage = {
   exn: {
     v: "KERI10JSON000516_",
     t: "exn",
@@ -41,7 +41,7 @@ const mockNotificationGrantIpex = {
   },
 };
 
-const mockNotificationApplyIpex = {
+const applyForPresentingExnMessage = {
   exn: {
     v: "KERI10JSON000198_",
     t: "exn",
@@ -63,7 +63,7 @@ const mockNotificationApplyIpex = {
   pathed: {},
 };
 
-const mockNotificationOfferIpex = {
+const offerForPresentingExnMessage = {
   exn: {
     v: "KERI10JSON000516_",
     t: "exn",
@@ -103,7 +103,7 @@ const mockNotificationOfferIpex = {
   },
 };
 
-const mockNotificationAgreeIpex = {
+const agreeForPresentingExnMessage = {
   exn: {
     v: "KERI10JSON000516_",
     t: "exn",
@@ -157,7 +157,7 @@ const credentialMetadataRecord = {
   updatedAt: "2024-08-09T04:21:19.695Z",
 };
 
-const mockGetSchema = {
+const QVISchema = {
   title: "Qualified vLEI Issuer Credential",
   description: "Qualified vLEI Issuer Credential",
   version: "1.0",
@@ -171,8 +171,6 @@ const credentialRecordProps = {
   issuanceDate: "2024-07-30T04:19:55.348Z",
   schema: "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu",
   status: CredentialStatus.PENDING,
-  identifierId: "identifierId",
-  identifierType: "individual",
 };
 
 const identifierMetadataRecord = {
@@ -186,7 +184,7 @@ const identifierMetadataRecord = {
   updatedAt: new Date(),
 };
 
-const multisigExnIpexOffer = {
+const multisigExnOfferForPresenting = {
   exn: {
     v: "KERI10JSON00032d_",
     t: "exn",
@@ -224,7 +222,7 @@ const multisigExnIpexOffer = {
   pathed: {},
 };
 
-const multisigExnIpexAdmit = {
+const multisigExnAdmitForIssuance = {
   exn: {
     v: "KERI10JSON00032d_",
     t: "exn",
@@ -262,7 +260,7 @@ const multisigExnIpexAdmit = {
   pathed: {},
 };
 
-const multisigExnIpexGrant = {
+const multisigExnGrant = {
   exn: {
     v: "KERI10JSON00032d_",
     t: "exn",
@@ -302,7 +300,7 @@ const multisigExnIpexGrant = {
   pathed: {},
 };
 
-const mockCredentialRecord = {
+const credentialRecord = {
   v: "ACDC10JSON00018d_",
   d: "EEuFpvZ2G_YMm3smqbwZn4SWArxQOen7ZypVVfr6fVCT",
   i: "EAzUd88Fcd1dHZg5LUEgz9zgHLX96V6y0cZoY6MkvnOP",
@@ -407,7 +405,7 @@ const ipexGrantSerder = {
     i: "EHis8uP3C9jJ70OjwRfY9tLxvqefH7qVIazlpaVJI5zm",
     p: "",
     dt: "2024-08-15T08:44:16.867000+00:00",
-    r: "/ipex/grant",
+    r: ExchangeRoute.IpexGrant,
     q: {},
     a: { m: "", i: "EEozWLiY6DrCMCLfPqdBaIvUX1aUyjLKkT6-RxFrIMd9" },
     e: {
@@ -608,36 +606,95 @@ const ipexSubmitOfferSig = [
 const ipexSubmitOfferEnd =
   "-LA35AACAA-e-exn-FABEBopw9UjL8plPiTfqJbb819-l2Jsr-0de7YXGxzKGRq40AAAAAAAAAAAAAAAAAAAAAAAEBopw9UjL8plPiTfqJbb819-l2Jsr-0de7YXGxzKGRq4-AABABCbsGn3CwRsUnzBhMitf8Mr6eHO5zv4-BNInB0rUTGhd86rIvz3kbzBqOBAAmbOOM4PwX08hzcgoomGk45cbxEO";
 
-const kedFromAdmitExnMessage = {
-  v: "KERI10JSON000178_",
-  t: "exn",
-  d: "EOQf4E9vcTRVs5hsz4F1-zR7IaGV5O75GFE2el3LAmru",
-  i: "ENEr59aBCXFU2TE6FyNc_Z7cZKv6PCqRFfXG6HrmSzdp",
-  rp: "EBgG1lhkxiv_UQ8IiF2G4j5HQlnT5K5XZy_zRFg_EGCS",
-  p: "ELI7vKj9mGu6BrYwjXOfco0SUThCBr8heO5q2g6OOVUJ",
-  dt: "2024-10-04T02:19:09.287000+00:00",
-  r: ExchangeRoute.IpexAdmit,
-  q: {},
-  a: {
-    i: "EBgG1lhkxiv_UQ8IiF2G4j5HQlnT5K5XZy_zRFg_EGCS",
-    m: "",
+const ipexAdmitSerder = {
+  kind: "JSON",
+  raw: "{\"v\":\"KERI10JSON0004b1_\",\"t\":\"exn\",\"d\":\"EIGHcMNSHqnRlQWy-tIg04k24wIy5_mqBfOXDhhAsHvx\",\"i\":\"EHis8uP3C9jJ70OjwRfY9tLxvqefH7qVIazlpaVJI5zm\",\"p\":\"\",\"dt\":\"2024-08-15T08:44:16.867000+00:00\",\"r\":\"/ipex/grant\",\"q\":{},\"a\":{\"m\":\"\",\"i\":\"EEozWLiY6DrCMCLfPqdBaIvUX1aUyjLKkT6-RxFrIMd9\"},\"e\":{\"acdc\":{\"v\":\"ACDC10JSON000197_\",\"d\":\"EBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r\",\"i\":\"EEozWLiY6DrCMCLfPqdBaIvUX1aUyjLKkT6-RxFrIMd9\",\"ri\":\"EPUFfq94pBLYKDRWyfOe7m-RKsET_zriJbfU3iUtM450\",\"s\":\"EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao\",\"a\":{\"d\":\"EIK0Xph_pH3RYIgLniWMuMVlgvoLK8eIICN7cIUJv2j8\",\"i\":\"EHis8uP3C9jJ70OjwRfY9tLxvqefH7qVIazlpaVJI5zm\",\"LEI\":\"5493001KJTIIGC8Y1R17\",\"dt\":\"2024-08-15T08:44:13.141000+00:00\"}},\"iss\":{\"v\":\"KERI10JSON0000ed_\",\"t\":\"iss\",\"d\":\"EEuxEi0sa45nAcVQc_MwGh8EGK0Lh1pgiHY18hbh1yNF\",\"i\":\"EBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r\",\"s\":\"0\",\"ri\":\"EPUFfq94pBLYKDRWyfOe7m-RKsET_zriJbfU3iUtM450\",\"dt\":\"2024-08-15T08:44:13.141000+00:00\"},\"anc\":{\"v\":\"KERI10JSON0000cd_\",\"t\":\"ixn\",\"d\":\"EK9x8RSjMJ_oxuBHIWftq5lYQcTW7WYZ3HwCT34s62jQ\",\"i\":\"EEozWLiY6DrCMCLfPqdBaIvUX1aUyjLKkT6-RxFrIMd9\",\"s\":\"1\",\"p\":\"EBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r\",\"a\":[{}]},\"d\":\"EO_bCCneshP2lNWQ8gKSqyU9frP9V8Zo6tLczIHeXhXg\"}}",
+  ked: {
+    v: "KERI10JSON000178_",
+    t: "exn",
+    d: "EOQf4E9vcTRVs5hsz4F1-zR7IaGV5O75GFE2el3LAmru",
+    i: "ENEr59aBCXFU2TE6FyNc_Z7cZKv6PCqRFfXG6HrmSzdp",
+    rp: "EBgG1lhkxiv_UQ8IiF2G4j5HQlnT5K5XZy_zRFg_EGCS",
+    p: "ELI7vKj9mGu6BrYwjXOfco0SUThCBr8heO5q2g6OOVUJ",
+    dt: "2024-10-04T02:19:09.287000+00:00",
+    r: ExchangeRoute.IpexAdmit,
+    q: {},
+    a: {
+      i: "EBgG1lhkxiv_UQ8IiF2G4j5HQlnT5K5XZy_zRFg_EGCS",
+      m: "",
+    },
+    e: {},
   },
-  e: {},
+  size: 1201,
 };
 
+const ipexAdmitSig = [
+  "AACfmWTQqrzUi9uSrnD439sFYFU95m4AFwLqihBzL94MltV7TFVOPKnFLl8z9O0hOyFCpspLmCPi9laBi7bocC8I",
+];
+
+const ipexAdmitEnd =
+  " -LAg4AACA-e-acdc-IABEBJHAbtBAi8yYspNjLDaw0s5A7PZyjoj1lrhSE-Dn28r0AAAAAAAAAAAAAAAAAAAAAAAEEuxEi0sa45nAcVQc_MwGh8EGK0Lh1pgiHY18hbh1yNF-LAW5AACAA-e-iss-VAS-GAB0AAAAAAAAAAAAAAAAAAAAAAAEK9x8RSjMJ_oxuBHIWftq5lYQcTW7WYZ3HwCT34s62jQ-LAa5AACAA-e-anc-AABAADHCaE5QMSHK1D83emSdbA5I6CvhRwmkMlGTm__zi4hB4dEvbcVPyexX1euccTCVW6pViLlqExvJBdz1J3PIgUI";
+
+const ipexSubmitAdmitSerder = {
+  kind: "JSON",
+  raw: "{\"v\":\"KERI10JSON00032d_\",\"t\":\"exn\",\"d\":\"EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW\",\"i\":\"EJ6cZ3ErT6857EAbYquE82waXZv2vftHTbBgtvNE3-J2\",\"rp\":\"EDxLVG6ffRnsjqdvffpM4Id2W4q9APTu0Ej35sdjtKYN\",\"p\":\"\",\"dt\":\"2024-10-09T12:20:55.832000+00:00\",\"r\":\"/multisig/exn\",\"q\":{},\"a\":{\"i\":\"EDxLVG6ffRnsjqdvffpM4Id2W4q9APTu0Ej35sdjtKYN\",\"gid\":\"EB6wkTnyxwgEgwgPv23OM-bWUSB_jdnlMIab9Q0JUNac\"},\"e\":{\"exn\":{\"v\":\"KERI10JSON000178_\",\"t\":\"exn\",\"d\":\"EJjQmGwlatWTgbaawivz0Qs-8O3XvburFSRLmi6fj25d\",\"i\":\"EB6wkTnyxwgEgwgPv23OM-bWUSB_jdnlMIab9Q0JUNac\",\"rp\":\"EBvkzD-Kn4bBQVjrpkjyh3PvUKF-9yuM3RYTvLK5k_5z\",\"p\":\"EGic7AcZLZAwA_cLbXmzFZleQoitx_ghgQtv8E9QMShk\",\"dt\":\"2024-10-09T12:20:43.875000+00:00\",\"r\":\"/ipex/admit\",\"q\":{},\"a\":{\"i\":\"EBvkzD-Kn4bBQVjrpkjyh3PvUKF-9yuM3RYTvLK5k_5z\",\"m\":\"\"},\"e\":{}},\"d\":\"EEtr51v8dSBepGheENmzRgySXbb5kkxibt7s-NyQyn_j\"}}",
+  ked: {
+    v: "KERI10JSON00032d_",
+    t: "exn",
+    d: "EL3A2jk9gvmVe4ROISB2iWmM8yPSNwQlmar6-SFVWSPW",
+    i: "EJ6cZ3ErT6857EAbYquE82waXZv2vftHTbBgtvNE3-J2",
+    rp: "EDxLVG6ffRnsjqdvffpM4Id2W4q9APTu0Ej35sdjtKYN",
+    p: "",
+    dt: "2024-10-09T12:20:55.832000+00:00",
+    r: NotificationRoute.MultiSigExn,
+    q: {},
+    a: {
+      i: "EDxLVG6ffRnsjqdvffpM4Id2W4q9APTu0Ej35sdjtKYN",
+      gid: "EB6wkTnyxwgEgwgPv23OM-bWUSB_jdnlMIab9Q0JUNac",
+    },
+    e: {
+      exn: {
+        v: "KERI10JSON000178_",
+        t: "exn",
+        d: "EJjQmGwlatWTgbaawivz0Qs-8O3XvburFSRLmi6fj25d",
+        i: "EB6wkTnyxwgEgwgPv23OM-bWUSB_jdnlMIab9Q0JUNac",
+        rp: "EBvkzD-Kn4bBQVjrpkjyh3PvUKF-9yuM3RYTvLK5k_5z",
+        p: "EGic7AcZLZAwA_cLbXmzFZleQoitx_ghgQtv8E9QMShk",
+        dt: "2024-10-09T12:20:43.875000+00:00",
+        r: ExchangeRoute.IpexAdmit,
+        q: {},
+        a: {
+          i: "EBvkzD-Kn4bBQVjrpkjyh3PvUKF-9yuM3RYTvLK5k_5z",
+          m: "",
+        },
+        e: {},
+      },
+      d: "EEtr51v8dSBepGheENmzRgySXbb5kkxibt7s-NyQyn_j",
+    },
+  },
+  size: 813,
+};
+
+const ipexSubmitAdmitSig = [
+  "AABUXUS1XNVm2cwNDCNmzzyX5PdmKO8RfzfHwe5PfweuzYJdTyeHFqoSF-q5Fk0Wpt27FVpONnqlAkBNwoTKCwsA",
+];
+
+const ipexSubmitAdmitEnd =
+  "-LA35AACAA-e-exn-FABEB6wkTnyxwgEgwgPv23OM-bWUSB_jdnlMIab9Q0JUNac0AAAAAAAAAAAAAAAAAAAAAAAEB6wkTnyxwgEgwgPv23OM-bWUSB_jdnlMIab9Q0JUNac-AABABDwPi6ZSD6AMwz-1VDbgGtVWMLUZKmbD6GHXqgYRdgklSO8x_qEwheY16XQvDz9uwpukMg2LyL9FBa64qu65xgE";
+
 export {
-  mockGetSchema,
+  QVISchema,
   credentialRecordProps,
   credentialMetadataRecord,
-  mockNotificationGrantIpex,
-  mockNotificationApplyIpex,
-  mockNotificationOfferIpex,
-  mockNotificationAgreeIpex,
+  grantForIssuanceExnMessage,
+  applyForPresentingExnMessage,
+  offerForPresentingExnMessage,
+  agreeForPresentingExnMessage,
   identifierMetadataRecord,
-  multisigExnIpexOffer,
-  multisigExnIpexAdmit,
-  multisigExnIpexGrant,
-  mockCredentialRecord,
+  multisigExnOfferForPresenting,
+  multisigExnAdmitForIssuance,
+  multisigExnGrant,
+  credentialRecord,
   getCredentialResponse,
   credentialProps,
   ipexOfferSerder,
@@ -652,5 +709,10 @@ export {
   ipexSubmitGrantSerder,
   ipexSubmitGrantSig,
   ipexSubmitGrantEnd,
-  kedFromAdmitExnMessage,
+  ipexAdmitSerder,
+  ipexAdmitSig,
+  ipexAdmitEnd,
+  ipexSubmitAdmitSerder,
+  ipexSubmitAdmitSig,
+  ipexSubmitAdmitEnd,
 };
