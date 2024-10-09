@@ -161,7 +161,8 @@ class Agent {
       this.credentialService = new CredentialService(
         this.agentServicesProps,
         this.credentialStorage,
-        this.notificationStorage
+        this.notificationStorage,
+        this.identifierStorage
       );
     }
     return this.credentialService;
