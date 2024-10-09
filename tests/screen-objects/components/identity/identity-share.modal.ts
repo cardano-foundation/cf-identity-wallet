@@ -34,7 +34,7 @@ export class IdentityShareModal extends CommonIdentityModal {
     await expect(this.modalTitle).toHaveText("Share connection");
     await expect(this.qrCodeColumn).toBeDisplayed();
     await expect(this.copyButton).toBeDisplayed();
-    await expect(this.copyButtonLabel).toHaveText("Copy Out-of-Band Invitation (OOBI)");
+    await expect(this.copyButtonLabel).toHaveText("Copy connection URL");
     await expect(this.moreOptionsButton).toBeDisplayed();
     await expect(this.moreOptionsButtonLabel).toHaveText("More share options");
   }

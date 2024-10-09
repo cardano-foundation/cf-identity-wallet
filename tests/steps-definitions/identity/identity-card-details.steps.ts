@@ -24,7 +24,7 @@ When(
 );
 
 When(/^tap Done button on Card Details screen$/, async function () {
-  await BaseModal.clickDoneLabel();
+  await BaseModal.tapDoneButton();
 });
 
 When(

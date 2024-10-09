@@ -16,16 +16,6 @@ Then(
 );
 
 Then(
-  /^the JSON schema is correct for (KeriJson)$/,
-  async function (identifierType: string) {
-    await Assert.responseJsonSchema(
-      atob(await driver.getClipboard()),
-      jsonSchema("identifier.json.ts", identifierType)
-    );
-  }
-);
-
-Then(
   /^user can see toast message about updated identifier$/,
   async function () {
     await Assert.toast(Message.IdentifierSuccessfullyUpdated);

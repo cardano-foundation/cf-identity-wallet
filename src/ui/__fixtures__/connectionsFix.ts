@@ -1,6 +1,8 @@
-import { ConnectionStatus } from "../../core/agent/agent.types";
+import {
+  ConnectionShortDetails,
+  ConnectionStatus,
+} from "../../core/agent/agent.types";
 import CardanoLogo from "../assets/images/CardanoLogo.jpg";
-import { ConnectionShortDetails } from "../pages/Connections/Connections.types";
 
 const connectionsFix: ConnectionShortDetails[] = [
   {

@@ -10,13 +10,13 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { pendingCredFixs } from "../../__fixtures__/credsFix";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
-import { formatShortDate } from "../../utils/formatters";
 import { Credentials } from "./Credentials";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import {
   setCurrentOperation,
   setCurrentRoute,
+  showConnections,
 } from "../../../store/reducers/stateCache";
 import { OperationType } from "../../globals/types";
 
@@ -57,6 +57,7 @@ const initialStateEmpty = {
       passcodeIsSet: true,
     },
     isOnline: true,
+    showConnections: false,
   },
   seedPhraseCache: {},
   credsCache: {
@@ -147,6 +148,8 @@ const archivedAndRevokedState = {
 };
 
 let mockedStore: Store<unknown, AnyAction>;
+const dispatch = jest.fn();
+
 describe("Creds Tab", () => {
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
@@ -240,24 +243,12 @@ describe("Creds Tab", () => {
       </MemoryRouter>
     );
 
-    await waitFor(() => {
-      expect(queryByTestId("connections-tab")).toBe(null);
-    });
-
     act(() => {
       fireEvent.click(getByTestId("connections-button"));
     });
 
     await waitFor(() => {
-      expect(getByTestId("connections-tab")).toHaveClass("show");
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("tab-back-button"));
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("connections-tab")).toBe(null);
+      expect(dispatchMock).toBeCalledWith(showConnections(true));
     });
   });
 
@@ -279,68 +270,10 @@ describe("Creds Tab", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByTestId("connections-tab-cards-placeholder")
-      ).toBeInTheDocument();
+      expect(dispatchMock).toBeCalledWith(showConnections(true));
     });
   });
 
-  test("Show Connections list", async () => {
-    const storeMocked = {
-      ...mockStore(initialStateFull),
-      dispatch: dispatchMock,
-    };
-    const { getByTestId, queryByTestId, getByText, getAllByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Credentials />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("connections-cards-placeholder")).toBeNull();
-    });
-
-    expect(getByText(connectionsFix[0].label)).toBeVisible();
-    expect(
-      getByText(formatShortDate(`${connectionsFix[0].connectionDate}`))
-    ).toBeVisible();
-    expect(getAllByText(connectionsFix[0].status)[0]).toBeVisible();
-  });
-
-  test.skip("Show Add Connections modal", async () => {
-    const storeMocked = {
-      ...mockStore(initialStateEmpty),
-      dispatch: dispatchMock,
-    };
-    const { getByTestId, queryByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Credentials />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    act(() => {
-      fireEvent.click(getByTestId("add-connection-button"));
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("add-connection-modal")).toHaveAttribute(
-        "is-open",
-        "true"
-      );
-    });
-  });
   test("Remove pending cred alert", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();

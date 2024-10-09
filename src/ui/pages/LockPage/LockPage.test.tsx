@@ -79,6 +79,13 @@ jest.mock("../../hooks/useBiometricsHook", () => ({
   })),
 }));
 
+jest.mock("@capacitor-community/privacy-screen", () => ({
+  PrivacyScreen: {
+    enable: jest.fn(),
+    disable: jest.fn(),
+  },
+}));
+
 interface StoreMockedProps {
   stateCache: {
     routes: RoutePath[];
@@ -205,7 +212,7 @@ describe("Lock Page", () => {
         </MemoryRouter>
       </Provider>
     );
-    passcodeFiller(getByText, getByTestId, "2", 6);
+    await passcodeFiller(getByText, getByTestId, "2", 6);
     expect(await findByText(EN_TRANSLATIONS.lockpage.error)).toBeVisible();
     fireEvent.click(getByText(EN_TRANSLATIONS.lockpage.forgotten.button));
     expect(

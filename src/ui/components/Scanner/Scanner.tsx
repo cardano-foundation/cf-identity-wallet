@@ -24,7 +24,7 @@ import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   removeConnectionCache,
-  setOpenConnectionDetail,
+  setOpenConnectionId,
   updateOrAddConnectionCache,
   updateOrAddMultisigConnectionCache,
 } from "../../../store/reducers/connectionsCache";
@@ -41,6 +41,7 @@ import {
   getToastMsgs,
   setCurrentOperation,
   setToastMsg,
+  showConnections,
 } from "../../../store/reducers/stateCache";
 import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
@@ -124,11 +125,11 @@ const Scanner = forwardRef(
             id,
           })
         );
+        dispatch(setCurrentOperation(OperationType.IDLE));
+        handleReset && handleReset();
       } else {
         dispatch(setToastMsg(ToastMsgType.PEER_ID_ERROR));
       }
-      dispatch(setCurrentOperation(OperationType.BACK_TO_CONNECT_WALLET));
-      handleReset?.(OperationType.BACK_TO_CONNECT_WALLET);
     };
 
     const updateConnections = async (groupId: string) => {
@@ -201,8 +202,11 @@ const Scanner = forwardRef(
         }
 
         dispatch(setOpenMultiSigId(urlId));
+        handleReset?.(TabsRoutePath.IDENTIFIERS);
+        return;
       } else {
-        dispatch(setOpenConnectionDetail(urlId));
+        dispatch(setOpenConnectionId(urlId));
+        dispatch(showConnections(true));
       }
 
       handleReset?.();

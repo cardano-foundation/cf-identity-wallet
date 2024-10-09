@@ -65,9 +65,11 @@ const Notifications = () => {
     }
 
     return notifications.filter((notification) =>
-      [NotificationRoute.ExnIpexGrant, NotificationRoute.ExnIpexApply].includes(
-        notification.a.r as NotificationRoute
-      )
+      [
+        NotificationRoute.ExnIpexGrant,
+        NotificationRoute.ExnIpexApply,
+        NotificationRoute.LocalAcdcRevoked,
+      ].includes(notification.a.r as NotificationRoute)
     );
   }, [notifications, selectedFilter]);
 

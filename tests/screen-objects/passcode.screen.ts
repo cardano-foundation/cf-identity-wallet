@@ -2,9 +2,10 @@ import { expect } from "expect-webdriverio";
 import { generateRandomNumbersArray } from "../helpers/generate.js";
 import { log } from "../helpers/logger.js";
 import { Passcode } from "../constants/text.constants.js";
+import baseModal from "./components/base.modal.js";
 
 export class PasscodeScreen {
-  get forgotYourPasscodeButton() {
+  get cantRememberButton() {
     return $("[data-testid=\"secondary-button-set-passcode\"]");
   }
 
@@ -27,6 +28,7 @@ export class PasscodeScreen {
   }
 
   async loads() {
+    await expect(await $(baseModal.closeButtonLocator)).toBeDisplayed();
     await expect(this.screenTitle).toBeDisplayed();
     await expect(this.screenTitle).toHaveText(Passcode.Title);
     await expect(this.screenDescriptionText).toBeDisplayed();
@@ -39,6 +41,7 @@ export class PasscodeScreen {
   async loadsReEnterScreen() {
     await expect(this.screenTitle).toBeDisplayed();
     await expect(this.screenTitle).toHaveText(Passcode.TitleReEnter);
+    await expect(this.cantRememberButton).toBeDisplayed();
   }
 
   async enterPasscode(passcode: number[], parentElement = "") {

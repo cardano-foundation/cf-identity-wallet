@@ -5,8 +5,8 @@ import { PageFooter } from "../../PageFooter";
 import { PageHeader } from "../../PageHeader";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
-import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
+import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 
 const IdentifierStage2 = ({
   state,

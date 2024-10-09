@@ -23,6 +23,7 @@ interface AuthenticationCacheProps {
   ssiAgentIsSet: boolean;
   recoveryWalletProgress: boolean;
   loginAttempt: LoginAttempts;
+  firstAppLaunch: boolean;
 }
 enum IncomingRequestType {
   PEER_CONNECT_SIGN = "peer-connect-sign",
@@ -56,6 +57,7 @@ interface StateCacheProps {
   queueIncomingRequest: QueueProps<IncomingRequestProps>;
   cameraDirection?: LensFacing;
   showGenericError?: boolean;
+  showConnections: boolean;
   toastMsgs: ToastStackItem[];
 }
 

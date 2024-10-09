@@ -6,10 +6,8 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useHistory } from "react-router-dom";
 import { hourglassOutline } from "ionicons/icons";
 import { i18n } from "../../../../../i18n";
-import { TabsRoutePath } from "../../../../../routes/paths";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import {
@@ -43,10 +41,10 @@ import { PeerConnection } from "../../../../../core/cardano/walletConnect/peerCo
 import { ANIMATION_DURATION } from "../../../../components/SideSlider/SideSlider.types";
 import { Verification } from "../../../../components/Verification";
 import { showError } from "../../../../utils/error";
+import { CreateIdentifier } from "../../../../components/CreateIdentifier";
 
 const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
   (props, ref) => {
-    const history = useHistory();
     const dispatch = useAppDispatch();
     const toastMsgs = useAppSelector(getToastMsgs);
     const pendingConnection = useAppSelector(getPendingConnection);
@@ -68,6 +66,8 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
     const [openIdentifierMissingAlert, setOpenIdentifierMissingAlert] =
       useState<boolean>(false);
     const [verifyIsOpen, setVerifyIsOpen] = useState(false);
+    const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
+      useState(false);
 
     const displayConnection = useMemo((): CardItem<ConnectionData>[] => {
       return connections.map((connection) => {
@@ -222,12 +222,13 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
       setOpenIdentifierMissingAlert(false);
     };
 
-    const handleNavToCreateKeri = () => {
+    const handleCreateIdentifier = () => {
       setOpenIdentifierMissingAlert(false);
-      dispatch(
-        setCurrentOperation(OperationType.CREATE_IDENTIFIER_CONNECT_WALLET)
-      );
-      history.push(TabsRoutePath.IDENTIFIERS);
+      setCreateIdentifierModalIsOpen(true);
+    };
+
+    const handleCloseCreateIdentifier = () => {
+      setCreateIdentifierModalIsOpen(false);
     };
 
     // NOTE: Reload connection data after connect success
@@ -382,9 +383,13 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           cancelButtonText={`${i18n.t(
             "menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.cancel"
           )}`}
-          actionConfirm={handleNavToCreateKeri}
+          actionConfirm={handleCreateIdentifier}
           actionCancel={closeIdentifierMissingAlert}
           actionDismiss={closeIdentifierMissingAlert}
+        />
+        <CreateIdentifier
+          modalIsOpen={createIdentifierModalIsOpen}
+          setModalIsOpen={handleCloseCreateIdentifier}
         />
         <Verification
           verifyIsOpen={verifyIsOpen}

@@ -23,14 +23,14 @@ import {
   setCurrentOperation,
   setCurrentRoute,
   setToastMsg,
+  showConnections,
 } from "../../../store/reducers/stateCache";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardType, OperationType, ToastMsgType } from "../../globals/types";
-import { useOnlineStatusEffect, useToggleConnections } from "../../hooks";
-import { Connections } from "../Connections";
+import { useOnlineStatusEffect } from "../../hooks";
 import { StartAnimationSource } from "../Identifiers/Identifiers.type";
 import "./Credentials.scss";
 import { ListHeader } from "../../components/ListHeader";
@@ -95,10 +95,6 @@ const Credentials = () => {
   const [navAnimation, setNavAnimation] =
     useState<StartAnimationSource>("none");
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
-  const { showConnections, setShowConnections } = useToggleConnections(
-    TabsRoutePath.CREDENTIALS
-  );
-
   const [deletedPendingItem, setDeletePendingItem] =
     useState<CredentialShortDetails | null>(null);
   const [openDeletePendingAlert, setOpenDeletePendingAlert] = useState(false);
@@ -132,6 +128,10 @@ const Credentials = () => {
   }, [credsCache]);
 
   useOnlineStatusEffect(fetchArchivedCreds);
+
+  const handleConnections = () => {
+    dispatch(showConnections(true));
+  };
 
   const handleCreateCred = () => {
     dispatch(setCurrentOperation(OperationType.SCAN_CONNECTION));
@@ -251,11 +251,6 @@ const Credentials = () => {
 
   return (
     <>
-      <Connections
-        showConnections={showConnections}
-        setShowConnections={setShowConnections}
-        selfPaginated={true}
-      />
       <TabLayout
         pageId={pageId}
         header={true}
@@ -263,7 +258,7 @@ const Credentials = () => {
         title={`${i18n.t("credentials.tab.title")}`}
         additionalButtons={
           <AdditionalButtons
-            handleConnections={() => setShowConnections(true)}
+            handleConnections={handleConnections}
             handleCreateCred={handleCreateCred}
           />
         }

@@ -50,16 +50,6 @@ const getNextOnboardingRoute = (data: DataProps) => {
   return nextRoute;
 };
 
-const getNextConnectionDetailsRoute = () => {
-  const path = TabsRoutePath.CREDENTIALS;
-  return { pathname: path };
-};
-
-const getNextCredentialsRoute = () => {
-  const path = RoutePath.CONNECTION_DETAILS;
-  return { pathname: path };
-};
-
 const getNextCredentialDetailsRoute = () => {
   const path = TabsRoutePath.CREDENTIALS;
   return { pathname: path };
@@ -164,28 +154,6 @@ const updateStoreAfterCreatePassword = (data: DataProps) => {
   });
 };
 
-const getNextScanRoute = (data: DataProps) => {
-  const currentOperation = data?.state?.currentOperation;
-  let path = TabsRoutePath.IDENTIFIERS;
-
-  if (currentOperation === OperationType.RECEIVE_CONNECTION) {
-    let previousPath = data.store.stateCache.routes[1]?.path;
-
-    if (
-      !previousPath ||
-      ![TabsRoutePath.CREDENTIALS, TabsRoutePath.IDENTIFIERS].includes(
-        previousPath as TabsRoutePath
-      )
-    ) {
-      previousPath = TabsRoutePath.IDENTIFIERS;
-    }
-
-    path = previousPath as TabsRoutePath;
-  }
-
-  return { pathname: path || "" };
-};
-
 const getNextRoute = (
   currentPath: string,
   data: DataProps
@@ -236,14 +204,6 @@ const nextRoute: Record<string, NextRoute> = {
     nextPath: (data: DataProps) => getNextCreatePasswordRoute(data),
     updateRedux: [updateStoreAfterCreatePassword],
   },
-  [RoutePath.CONNECTION_DETAILS]: {
-    nextPath: () => getNextConnectionDetailsRoute(),
-    updateRedux: [],
-  },
-  [TabsRoutePath.CREDENTIALS]: {
-    nextPath: () => getNextCredentialsRoute(),
-    updateRedux: [],
-  },
   [TabsRoutePath.CREDENTIAL_DETAILS]: {
     nextPath: () => getNextCredentialDetailsRoute(),
     updateRedux: [],
@@ -254,10 +214,6 @@ const nextRoute: Record<string, NextRoute> = {
   },
   [TabsRoutePath.NOTIFICATION_DETAILS]: {
     nextPath: () => getNextNotificationDetailsRoute(),
-    updateRedux: [],
-  },
-  [TabsRoutePath.SCAN]: {
-    nextPath: (data: DataProps) => getNextScanRoute(data),
     updateRedux: [],
   },
 };
