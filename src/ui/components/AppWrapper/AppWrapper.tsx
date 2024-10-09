@@ -430,7 +430,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     // This will skip the onboarding screen with dev mode.
     if (process.env.DEV_SKIP_ONBOARDING === "true") {
       await Agent.agent.devPreload();
-      setOnlineStatus(true);
     }
 
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.

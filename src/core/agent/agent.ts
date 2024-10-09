@@ -377,27 +377,6 @@ class Agent {
         content: { value: true },
       })
     );
-
-    const keriaConnectUrlRecord = await this.basicStorage.findById(
-      MiscRecordId.KERIA_CONNECT_URL
-    );
-    const keriaBootUrlRecord = await this.basicStorage.findById(
-      MiscRecordId.KERIA_BOOT_URL
-    );
-
-    if (!keriaConnectUrlRecord && !keriaBootUrlRecord) {
-      if (
-        !ConfigurationService.env?.keri?.keria?.url ||
-        !ConfigurationService.env?.keri?.keria?.bootUrl
-      ) {
-        return;
-      }
-
-      await this.bootAndConnect({
-        url: ConfigurationService.env.keri.keria.url,
-        bootUrl: ConfigurationService.env.keri.keria.bootUrl,
-      });
-    }
   }
 
   private async saveAgentUrls(agentUrls: AgentUrls): Promise<void> {
