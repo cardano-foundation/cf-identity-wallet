@@ -1620,8 +1620,11 @@
     "pending": "{{action}} pending",
     "success": "{{action}} successful"
   },
-  "setusername": {
-    "title": "Welcome! What should we call you?",
+  "inputmodal": {
+    "title": {
+      "username": "Welcome! What should we call you?",
+      "connectionalias": "It looks like your new connection doesn't have a name yet. Let's give them one!"
+    },
     "input": {
       "title": "Name"
     },
@@ -1631,15 +1634,6 @@
     "toast": {
       "usernameCreated": "Welcome, {{username}}!",
       "usernameError": "Unable to set name. Please try again."
-    }
-  },
-  "setconnectionalias": {
-    "title": "It looks like your new connection doesn't have a name yet. Let's give them one!",
-    "button": {
-      "confirm": "Confirm"
-    },
-    "input": {
-      "title": "Name"
     }
   },
   "biometry": {

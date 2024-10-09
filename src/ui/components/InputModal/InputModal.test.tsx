@@ -4,6 +4,7 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { Agent } from "../../../core/agent/agent";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
   setAuthentication,
@@ -13,10 +14,11 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { ToastMsgType } from "../../globals/types";
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
-import { SetUserName } from "./SetUserName";
-import { Agent } from "../../../core/agent/agent";
-import { BasicRecord } from "../../../core/agent/records";
+import { InputModal } from "./InputModal";
+import { StorageMessage } from "../../../core/storage/storage.types";
+import { setOpenConnectionId } from "../../../store/reducers/connectionsCache";
 
+const connectByOobiUrl = jest.fn();
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -29,6 +31,9 @@ jest.mock("../../../core/agent/agent", () => ({
         createOrUpdateBasicRecord: jest.fn(() => {
           return Promise.resolve(true);
         }),
+      },
+      connections: {
+        connectByOobiUrl: (url: string) => connectByOobiUrl(url),
       },
     },
   },
@@ -101,44 +106,34 @@ describe("SetUserName component", () => {
   };
 
   test("It renders modal successfully", async () => {
-    const showSetUserName = true;
-    const setShowSetUserName = jest.fn();
     const { getByText } = render(
       <Provider store={storeMocked}>
-        <SetUserName
-          isOpen={showSetUserName}
-          setIsOpen={setShowSetUserName}
-        />
+        <InputModal />
       </Provider>
     );
-    expect(getByText(EN_TRANSLATIONS.setusername.title)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.setusername.button.confirm)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.inputmodal.title.username)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.inputmodal.button.confirm)).toBeVisible();
   });
 
   test("It should call handleConfirm when the primary button is clicked", async () => {
-    const setIsOpenMock = jest.fn();
-
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
-        <SetUserName
-          isOpen={true}
-          setIsOpen={setIsOpenMock}
-        />
+        <InputModal />
       </Provider>
     );
 
     act(() => {
-      ionFireEvent.ionInput(getByTestId("set-user-name-input"), "testUser");
+      ionFireEvent.ionInput(getByTestId("input-modal-input"), "testUser");
     });
 
     await waitFor(() => {
-      expect(
-        (getByTestId("set-user-name-input") as HTMLInputElement).value
-      ).toBe("testUser");
+      expect((getByTestId("input-modal-input") as HTMLInputElement).value).toBe(
+        "testUser"
+      );
     });
 
     act(() => {
-      fireEvent.click(getByText(EN_TRANSLATIONS.setusername.button.confirm));
+      fireEvent.click(getByText(EN_TRANSLATIONS.inputmodal.button.confirm));
     });
 
     await waitFor(() => {
@@ -167,32 +162,23 @@ describe("SetUserName component", () => {
         setToastMsg(ToastMsgType.USERNAME_CREATION_SUCCESS)
       );
     });
-
-    await waitFor(() => {
-      expect(setIsOpenMock).toHaveBeenCalledWith(false);
-    });
   });
 
   test("Display error message", async () => {
-    const setIsOpenMock = jest.fn();
-
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
-        <SetUserName
-          isOpen={true}
-          setIsOpen={setIsOpenMock}
-        />
+        <InputModal />
       </Provider>
     );
 
     act(() => {
-      ionFireEvent.ionInput(getByTestId("set-user-name-input"), "testUser");
+      ionFireEvent.ionInput(getByTestId("input-modal-input"), "testUser");
     });
 
     await waitFor(() => {
-      expect(
-        (getByTestId("set-user-name-input") as HTMLInputElement).value
-      ).toBe("testUser");
+      expect((getByTestId("input-modal-input") as HTMLInputElement).value).toBe(
+        "testUser"
+      );
     });
 
     jest
@@ -202,13 +188,126 @@ describe("SetUserName component", () => {
       });
 
     act(() => {
-      fireEvent.click(getByText(EN_TRANSLATIONS.setusername.button.confirm));
+      fireEvent.click(getByText(EN_TRANSLATIONS.inputmodal.button.confirm));
     });
 
     await waitFor(() => {
       expect(dispatchMock).toHaveBeenCalledWith(
         setToastMsg(ToastMsgType.USERNAME_CREATION_ERROR)
       );
+    });
+  });
+});
+
+describe("Set connection alias", () => {
+  const mockStore = configureStore();
+  const dispatchMock = jest.fn();
+  const initialState = {
+    stateCache: {
+      routes: ["/"],
+      authentication: {
+        loggedIn: true,
+        time: 0,
+        passcodeIsSet: true,
+        seedPhraseIsSet: true,
+        passwordIsSet: false,
+        passwordIsSkipped: true,
+        ssiAgentIsSet: true,
+        recoveryWalletProgress: false,
+        loginAttempt: {
+          attempts: 0,
+          lockedUntil: 0,
+        },
+      },
+    },
+    connectionsCache: {
+      connections: connectionsFix,
+      missingAliasUrl:
+        "http://keria:3902/oobi/EJ0XanWANawPeyCzyPxAbilMId9FNHY8eobED84Gxfij/agent/ENmmQwmKjO7UQdRMGd2STVUvjV8y1sKCkg1Wc_QvpZU3",
+    },
+  };
+
+  const storeMocked = {
+    ...mockStore(initialState),
+    dispatch: dispatchMock,
+  };
+
+  test("render", async () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <InputModal />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.inputmodal.title.connectionalias)
+    ).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.inputmodal.button.confirm)).toBeVisible();
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("input-modal-input"), "connectionName");
+    });
+
+    await waitFor(() => {
+      expect((getByTestId("input-modal-input") as HTMLInputElement).value).toBe(
+        "connectionName"
+      );
+    });
+
+    act(() => {
+      fireEvent.click(getByText(EN_TRANSLATIONS.inputmodal.button.confirm));
+    });
+
+    await waitFor(() => {
+      expect(connectByOobiUrl).toBeCalledWith(
+        "http://keria:3902/oobi/EJ0XanWANawPeyCzyPxAbilMId9FNHY8eobED84Gxfij/agent/ENmmQwmKjO7UQdRMGd2STVUvjV8y1sKCkg1Wc_QvpZU3?name=connectionName"
+      );
+    });
+  });
+
+  test("create connection failed", async () => {
+    connectByOobiUrl.mockImplementation(() =>
+      Promise.reject(
+        new Error(`${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} mockId`)
+      )
+    );
+
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <InputModal />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.inputmodal.title.connectionalias)
+    ).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.inputmodal.button.confirm)).toBeVisible();
+
+    act(() => {
+      ionFireEvent.ionInput(getByTestId("input-modal-input"), "connectionName");
+    });
+
+    await waitFor(() => {
+      expect((getByTestId("input-modal-input") as HTMLInputElement).value).toBe(
+        "connectionName"
+      );
+    });
+
+    act(() => {
+      fireEvent.click(getByText(EN_TRANSLATIONS.inputmodal.button.confirm));
+    });
+
+    await waitFor(() => {
+      expect(connectByOobiUrl).toBeCalledWith(
+        "http://keria:3902/oobi/EJ0XanWANawPeyCzyPxAbilMId9FNHY8eobED84Gxfij/agent/ENmmQwmKjO7UQdRMGd2STVUvjV8y1sKCkg1Wc_QvpZU3?name=connectionName"
+      );
+    });
+
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(
+        setToastMsg(ToastMsgType.DUPLICATE_CONNECTION)
+      );
+      expect(dispatchMock).toBeCalledWith(setOpenConnectionId("mockId"));
     });
   });
 });
