@@ -1005,7 +1005,16 @@ describe("Ipex communication service of agent", () => {
     });
 
     await ipexCommunicationService.acceptAcdc(id);
-
+    expect(submitAdmitMock).toBeCalledWith(
+      "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      multisigExnIpexGrantSerder,
+      multisigExnIpexGrantSig,
+      multisigExnIpexGrantEnd,
+      [
+        "ELmrDKf0Yq54Yq7cyrHwHZlA4lBB8ZVX9c8Ea3h2VJFF",
+        "EGaEIhOGSTPccSMvnXvfvOVyC1C5AFq62GLTrRKVZBS5",
+      ]
+    );
     expect(notificationStorage.deleteById).toBeCalledTimes(0);
     expect(operationPendingStorage.save).toBeCalledWith({
       id: "opName",

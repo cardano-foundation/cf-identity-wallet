@@ -973,7 +973,7 @@ class IpexCommunicationService extends AgentService {
     };
   }
 
-  async multisigAdmit(
+  private async multisigAdmit(
     multisigId: string,
     notificationSaid: string,
     schemaSaids: string[],
