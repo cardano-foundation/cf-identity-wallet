@@ -27,14 +27,7 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
   },
 }));
 
-const mockGetMultisigConnection = jest.fn(
-  (args) =>
-    new Promise((res) => {
-      setTimeout(() => {
-        res([]);
-      }, 500);
-    })
-);
+const mockGetMultisigConnection = jest.fn((args) => Promise.resolve([]));
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
