@@ -182,7 +182,7 @@ describe("Connections page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.connections.tab.indentifierselector.title)
+        getByText(EN_TRANSLATIONS.connections.page.indentifierselector.title)
       ).toBeVisible();
     });
   });
@@ -343,7 +343,7 @@ describe("Connections page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.connections.tab.alert.message)
+        getByText(EN_TRANSLATIONS.connections.page.alert.message)
       ).toBeVisible();
     });
 
@@ -353,7 +353,7 @@ describe("Connections page", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS.connections.tab.alert.message)
+        queryByText(EN_TRANSLATIONS.connections.page.alert.message)
       ).toBeNull();
     });
   });
@@ -508,7 +508,7 @@ describe("Connections page from Credentials tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.connections.tab.alert.message)
+        getByText(EN_TRANSLATIONS.connections.page.alert.message)
       ).toBeVisible();
     });
   });
@@ -594,26 +594,26 @@ describe("Connections page from Credentials tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.connections.tab.detelepending.title)
+        getByText(EN_TRANSLATIONS.connections.page.detelepending.title)
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.connections.tab.detelepending.description)
+        getByText(EN_TRANSLATIONS.connections.page.detelepending.description)
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.connections.tab.detelepending.button)
+        getByText(EN_TRANSLATIONS.connections.page.detelepending.button)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.connections.tab.detelepending.button)
+        getByText(EN_TRANSLATIONS.connections.page.detelepending.button)
       );
     });
 
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.connections.tab.detelepending.secondchecktitle
+          EN_TRANSLATIONS.connections.page.detelepending.secondchecktitle
         )
       ).toBeVisible();
     });

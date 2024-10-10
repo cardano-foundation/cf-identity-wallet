@@ -129,7 +129,7 @@ const WalletConnectStageTwo = ({
       }
     >
       <h2 className="title">
-        {i18n.t("menu.tab.items.connectwallet.request.stagetwo.message")}
+        {i18n.t("tabs.menu.tab.items.connectwallet.request.stagetwo.message")}
       </h2>
       <IonContent className="identifier-list">
         <CardList

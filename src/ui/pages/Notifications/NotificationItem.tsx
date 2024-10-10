@@ -35,23 +35,23 @@ const NotificationItem = ({
     (item: KeriaNotification) => {
       switch (item.a.r) {
       case NotificationRoute.ExnIpexGrant:
-        return t("notifications.tab.labels.exnipexgrant", {
+        return t("tabs.notifications.tab.labels.exnipexgrant", {
           connection: connectionsCache?.[item.connectionId]?.label,
         });
       case NotificationRoute.MultiSigIcp:
-        return t("notifications.tab.labels.multisigicp", {
+        return t("tabs.notifications.tab.labels.multisigicp", {
           connection: multisigConnectionsCache?.[item.connectionId]?.label,
         });
       case NotificationRoute.ExnIpexApply:
-        return t("notifications.tab.labels.exnipexapply", {
+        return t("tabs.notifications.tab.labels.exnipexapply", {
           connection: connectionsCache?.[item.connectionId]?.label,
         });
       case NotificationRoute.LocalAcdcRevoked:
-        return t("notifications.tab.labels.exnipexgrantrevoke", {
+        return t("tabs.notifications.tab.labels.exnipexgrantrevoke", {
           credential: item.a.credentialTitle,
         });
       case NotificationRoute.MultiSigExn:
-        return t("notifications.tab.labels.multisigexn", {
+        return t("tabs.notifications.tab.labels.multisigexn", {
           connection: connectionsCache?.[item.connectionId]?.label,
         });
       default:

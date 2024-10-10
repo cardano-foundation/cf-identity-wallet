@@ -102,7 +102,9 @@ const WalletConnectStageOne = ({
             data-testid="wallet-connect-message"
             className="wallet-connect-message"
           >
-            {i18n.t("menu.tab.items.connectwallet.request.stageone.message")}
+            {i18n.t(
+              "tabs.menu.tab.items.connectwallet.request.stageone.message"
+            )}
           </p>
         </div>
         <PageFooter

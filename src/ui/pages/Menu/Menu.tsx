@@ -79,30 +79,30 @@ const Menu = () => {
     {
       itemKey: SubMenuKey.Profile,
       icon: personCircleOutline,
-      label: `${i18n.t("menu.tab.items.profile.title")}`,
+      label: `${i18n.t("tabs.menu.tab.items.profile.title")}`,
     },
     {
       itemKey: SubMenuKey.Crypto,
       icon: walletOutline,
-      label: `${i18n.t("menu.tab.items.crypto.title")}`,
-      subLabel: `${i18n.t("menu.tab.items.crypto.sublabel")}`,
+      label: `${i18n.t("tabs.menu.tab.items.crypto.title")}`,
+      subLabel: `${i18n.t("tabs.menu.tab.items.crypto.sublabel")}`,
     },
     {
       itemKey: SubMenuKey.Connections,
       icon: peopleOutline,
-      label: `${i18n.t("menu.tab.items.connections.title")}`,
+      label: `${i18n.t("tabs.menu.tab.items.connections.title")}`,
     },
     {
       itemKey: SubMenuKey.ConnectWallet,
       icon: linkOutline,
-      label: `${i18n.t("menu.tab.items.connectwallet.title")}`,
-      subLabel: `${i18n.t("menu.tab.items.connectwallet.sublabel")}`,
+      label: `${i18n.t("tabs.menu.tab.items.connectwallet.title")}`,
+      subLabel: `${i18n.t("tabs.menu.tab.items.connectwallet.sublabel")}`,
     },
     {
       itemKey: SubMenuKey.Chat,
       icon: chatbubbleOutline,
-      label: `${i18n.t("menu.tab.items.chat.title")}`,
-      subLabel: `${i18n.t("menu.tab.items.chat.sublabel")}`,
+      label: `${i18n.t("tabs.menu.tab.items.chat.title")}`,
+      subLabel: `${i18n.t("tabs.menu.tab.items.chat.sublabel")}`,
     },
   ];
 
@@ -157,7 +157,7 @@ const Menu = () => {
         pageId={pageId}
         hardwareBackButtonConfig={backHardwareConfig}
         header={true}
-        title={`${i18n.t("menu.tab.header")}`}
+        title={`${i18n.t("tabs.menu.tab.header")}`}
         additionalButtons={<AdditionalButtons />}
       >
         <IonGrid>

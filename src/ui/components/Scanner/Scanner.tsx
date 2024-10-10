@@ -485,7 +485,7 @@ const Scanner = forwardRef(
           <PageFooter
             customClass="actions-button"
             secondaryButtonAction={openPasteModal}
-            secondaryButtonText={`${i18n.t("scan.pastemeerkatid")}`}
+            secondaryButtonText={`${i18n.t("tabs.scan.pastemeerkatid")}`}
           />
         );
       case OperationType.MULTI_SIG_INITIATOR_SCAN:
@@ -543,7 +543,7 @@ const Scanner = forwardRef(
               <IonRow>
                 <IonCol size="12">
                   <span className="qr-code-scanner-text">
-                    {i18n.t("scan.tab.title")}
+                    {i18n.t("tabs.scan.tab.title")}
                   </span>
                 </IonCol>
               </IonRow>
@@ -554,7 +554,7 @@ const Scanner = forwardRef(
                   className="qr-code-scanner-icon"
                 />
                 <span className="qr-code-scanner-permission-text">
-                  {i18n.t("scan.tab.permissionalert")}
+                  {i18n.t("tabs.scan.tab.permissionalert")}
                 </span>
               </IonRow>
               <RenderPageFooter />
@@ -587,7 +587,9 @@ const Scanner = forwardRef(
               currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
                 ? `${i18n.t("createidentifier.scan.pasteoobi")}`
                 : currentOperation === OperationType.SCAN_WALLET_CONNECTION
-                  ? i18n.t("menu.tab.items.connectwallet.inputpidmodal.header")
+                  ? i18n.t(
+                    "tabs.menu.tab.items.connectwallet.inputpidmodal.header"
+                  )
                   : `${i18n.t("createidentifier.scan.pastecontents")}`
             }`,
             actionButton: true,

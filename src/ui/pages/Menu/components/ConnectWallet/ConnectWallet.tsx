@@ -273,7 +273,9 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           {connections.length > 0 ? (
             <>
               <h2 className="connect-wallet-title">
-                {i18n.t("menu.tab.items.connectwallet.connectionhistory.title")}
+                {i18n.t(
+                  "tabs.menu.tab.items.connectwallet.connectionhistory.title"
+                )}
               </h2>
               <CardList
                 data={displayConnection}
@@ -321,7 +323,9 @@ const ConnectWallet = forwardRef<ConnectWalletOptionRef, object>(
           ) : (
             <div className="placeholder-container">
               <CardsPlaceholder
-                buttonLabel={i18n.t("menu.tab.items.connectwallet.connectbtn")}
+                buttonLabel={i18n.t(
+                  "tabs.menu.tab.items.connectwallet.connectbtn"
+                )}
                 buttonAction={handleScanQR}
                 testId={pageId}
               />

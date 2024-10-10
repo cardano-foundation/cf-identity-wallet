@@ -58,20 +58,20 @@ const SubMenuItems = (showSelectedOption: (key: SubMenuKey) => void) => {
           />
         ),
         closeButtonLabel: isEditingProfile
-          ? `${i18n.t("menu.tab.items.profile.actioncancel")}`
+          ? `${i18n.t("tabs.menu.tab.items.profile.actioncancel")}`
           : undefined,
         closeButtonAction: isEditingProfile ? toggleEditProfile : undefined,
         title: isEditingProfile
-          ? "menu.tab.items.profile.tabedit"
-          : "menu.tab.items.profile.tabheader",
+          ? "tabs.menu.tab.items.profile.tabedit"
+          : "tabs.menu.tab.items.profile.tabheader",
         pageId: isEditingProfile ? "edit-profile" : "view-profile",
         additionalButtons: <></>,
         nestedMenu: false,
         actionButton: true,
         actionButtonAction: isEditingProfile ? saveChanges : toggleEditProfile,
         actionButtonLabel: isEditingProfile
-          ? `${i18n.t("menu.tab.items.profile.actionconfirm")}`
-          : `${i18n.t("menu.tab.items.profile.actionedit")}`,
+          ? `${i18n.t("tabs.menu.tab.items.profile.actionconfirm")}`
+          : `${i18n.t("tabs.menu.tab.items.profile.actionedit")}`,
         renderAsModal: false,
       },
     ],
@@ -79,7 +79,7 @@ const SubMenuItems = (showSelectedOption: (key: SubMenuKey) => void) => {
       SubMenuKey.ConnectWallet,
       {
         Component: () => <ConnectWallet ref={connectWalletRef} />,
-        title: "menu.tab.items.connectwallet.tabheader",
+        title: "tabs.menu.tab.items.connectwallet.tabheader",
         pageId: "connect-wallet",
         nestedMenu: false,
         additionalButtons: (
@@ -111,7 +111,7 @@ const SubMenuItems = (showSelectedOption: (key: SubMenuKey) => void) => {
             switchView={showSelectedOption}
           />
         ),
-        title: "settings.sections.header",
+        title: "tabs.menu.tab.settings.sections.header",
         additionalButtons: <></>,
         pageId: "menu-setting",
         nestedMenu: false,
@@ -122,7 +122,8 @@ const SubMenuItems = (showSelectedOption: (key: SubMenuKey) => void) => {
       SubMenuKey.ManagePassword,
       {
         Component: ManagePassword,
-        title: "settings.sections.security.managepassword.page.title",
+        title:
+          "tabs.menu.tab.settings.sections.security.managepassword.page.title",
         additionalButtons: <></>,
         pageId: "manage-password",
         nestedMenu: true,
@@ -133,7 +134,7 @@ const SubMenuItems = (showSelectedOption: (key: SubMenuKey) => void) => {
       SubMenuKey.RecoverySeedPhrase,
       {
         Component: () => <RecoverySeedPhrase onClose={backToParentMenu} />,
-        title: "settings.sections.security.seedphrase.page.title",
+        title: "tabs.menu.tab.settings.sections.security.seedphrase.page.title",
         pageId: "recovery-seed-phrase",
         nestedMenu: true,
         additionalButtons: <></>,
@@ -144,7 +145,7 @@ const SubMenuItems = (showSelectedOption: (key: SubMenuKey) => void) => {
       SubMenuKey.TermsAndPrivacy,
       {
         Component: TermsAndPrivacy,
-        title: "settings.sections.support.terms.submenu.title",
+        title: "tabs.menu.tab.settings.sections.support.terms.submenu.title",
         pageId: "term-and-privacy",
         nestedMenu: true,
         additionalButtons: <></>,

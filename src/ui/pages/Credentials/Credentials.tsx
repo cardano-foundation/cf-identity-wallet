@@ -211,7 +211,7 @@ const Credentials = () => {
           onClick={() => setArchivedCredentialsIsOpen(true)}
         >
           <IonLabel color="secondary">
-            {i18n.t("credentials.tab.viewarchived")}
+            {i18n.t("tabs.credentials.tab.viewarchived")}
           </IonLabel>
         </IonButton>
       </div>
@@ -220,9 +220,9 @@ const Credentials = () => {
 
   const deletePendingCheck = useMemo(
     () => ({
-      title: i18n.t("credentials.tab.detelepending.title"),
-      description: i18n.t("credentials.tab.detelepending.description"),
-      button: i18n.t("credentials.tab.detelepending.button"),
+      title: i18n.t("tabs.credentials.tab.detelepending.title"),
+      description: i18n.t("tabs.credentials.tab.detelepending.description"),
+      button: i18n.t("tabs.credentials.tab.detelepending.button"),
     }),
     []
   );
@@ -255,7 +255,7 @@ const Credentials = () => {
         pageId={pageId}
         header={true}
         customClass={tabClasses}
-        title={`${i18n.t("credentials.tab.title")}`}
+        title={`${i18n.t("tabs.credentials.tab.title")}`}
         additionalButtons={
           <AdditionalButtons
             handleConnections={handleConnections}
@@ -265,7 +265,7 @@ const Credentials = () => {
         placeholder={
           showPlaceholder && (
             <CardsPlaceholder
-              buttonLabel={i18n.t("credentials.tab.create")}
+              buttonLabel={i18n.t("tabs.credentials.tab.create")}
               buttonAction={handleCreateCred}
               testId={pageId}
             >
@@ -283,7 +283,7 @@ const Credentials = () => {
                 data-testid="favourite-container-element"
               >
                 {!!allCreds.length && (
-                  <h3>{i18n.t("credentials.tab.favourites")}</h3>
+                  <h3>{i18n.t("tabs.credentials.tab.favourites")}</h3>
                 )}
                 <CardsStack
                   name="favs"
@@ -296,7 +296,7 @@ const Credentials = () => {
             {!!allCreds.length && (
               <div className="credentials-tab-content-block credential-cards">
                 {!!favCreds.length && (
-                  <h3>{i18n.t("credentials.tab.allcreds")}</h3>
+                  <h3>{i18n.t("tabs.credentials.tab.allcreds")}</h3>
                 )}
                 <CardsStack
                   name="allcreds"
@@ -309,7 +309,7 @@ const Credentials = () => {
             {!!pendingCreds.length && (
               <div className="credetial-tab-content-block">
                 <ListHeader
-                  title={`${i18n.t("credentials.tab.pendingcred")}`}
+                  title={`${i18n.t("tabs.credentials.tab.pendingcred")}`}
                 />
                 <CredentialCardList
                   cardsData={pendingCreds}

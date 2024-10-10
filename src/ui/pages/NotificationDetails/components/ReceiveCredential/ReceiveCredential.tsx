@@ -140,10 +140,10 @@ const ReceiveCredential = ({
             closeButton={true}
             closeButtonAction={handleBack}
             closeButtonLabel={`${i18n.t(
-              "notifications.details.buttons.close"
+              "tabs.notifications.details.buttons.close"
             )}`}
             title={`${i18n.t(
-              "notifications.details.credential.receive.title"
+              "tabs.notifications.details.credential.receive.title"
             )}`}
           />
         }
@@ -177,13 +177,15 @@ const ReceiveCredential = ({
           <div className="request-info-row">
             <IonCol size="12">
               <span>
-                {i18n.t("notifications.details.credential.receive.receivefrom")}
+                {i18n.t(
+                  "tabs.notifications.details.credential.receive.receivefrom"
+                )}
               </span>
               <strong className="credential-type">
                 {credDetail?.s?.title}
               </strong>
               <span className="break-text">
-                {i18n.t("notifications.details.credential.receive.from")}
+                {i18n.t("tabs.notifications.details.credential.receive.from")}
               </span>
               <strong>{connection}</strong>
             </IonCol>
@@ -192,7 +194,7 @@ const ReceiveCredential = ({
             <IonCol size="12">
               <strong>
                 {i18n.t(
-                  "notifications.details.credential.receive.credentialpending"
+                  "tabs.notifications.details.credential.receive.credentialpending"
                 )}
               </strong>
             </IonCol>
@@ -209,7 +211,7 @@ const ReceiveCredential = ({
                 icon={informationCircleOutline}
               />
               {i18n.t(
-                "notifications.details.credential.receive.credentialdetailbutton"
+                "tabs.notifications.details.credential.receive.credentialdetailbutton"
               )}
             </IonButton>
           </div>
@@ -217,11 +219,11 @@ const ReceiveCredential = ({
         <PageFooter
           pageId={pageId}
           primaryButtonText={`${i18n.t(
-            "notifications.details.buttons.accept"
+            "tabs.notifications.details.buttons.accept"
           )}`}
           primaryButtonAction={() => setVerifyIsOpen(true)}
           secondaryButtonText={`${i18n.t(
-            "notifications.details.buttons.decline"
+            "tabs.notifications.details.buttons.decline"
           )}`}
           secondaryButtonAction={() => setAlertDeclineIsOpen(true)}
         />
@@ -231,10 +233,14 @@ const ReceiveCredential = ({
         setIsOpen={setAlertDeclineIsOpen}
         dataTestId="multisig-request-alert-decline"
         headerText={i18n.t(
-          "notifications.details.identifier.alert.textdecline"
+          "tabs.notifications.details.identifier.alert.textdecline"
         )}
-        confirmButtonText={`${i18n.t("notifications.details.buttons.decline")}`}
-        cancelButtonText={`${i18n.t("notifications.details.buttons.cancel")}`}
+        confirmButtonText={`${i18n.t(
+          "tabs.notifications.details.buttons.decline"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "tabs.notifications.details.buttons.cancel"
+        )}`}
         actionConfirm={() => handleDecline()}
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}

@@ -8,7 +8,7 @@ import { RoutePath } from "../../../routes";
 import { OperationType } from "../../globals/types";
 import { PasswordModule } from "./PasswordModule";
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
-import ENG_trans from "../../../locales/en/en.json";
+import TRANSLATIONS from "../../../locales/en/en.json";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { KeyStoreKeys } from "../../../core/storage";
@@ -162,7 +162,7 @@ describe("Passcode Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(ENG_trans.createpassword.error.isTooShort));
+      expect(getByText(TRANSLATIONS.createpassword.error.isTooShort));
       expect(
         getByTestId("password-validation-length-icon").classList.contains(
           "fails"
@@ -195,7 +195,7 @@ describe("Passcode Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(ENG_trans.createpassword.error.hasNoUppercase));
+      expect(getByText(TRANSLATIONS.createpassword.error.hasNoUppercase));
       expect(
         getByTestId("password-validation-length-icon").classList.contains(
           "pass"
@@ -228,7 +228,7 @@ describe("Passcode Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(ENG_trans.createpassword.error.hasNoLowercase));
+      expect(getByText(TRANSLATIONS.createpassword.error.hasNoLowercase));
       expect(
         getByTestId("password-validation-length-icon").classList.contains(
           "pass"
@@ -261,7 +261,7 @@ describe("Passcode Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(ENG_trans.createpassword.error.hasNoNumber));
+      expect(getByText(TRANSLATIONS.createpassword.error.hasNoNumber));
       expect(
         getByTestId("password-validation-length-icon").classList.contains(
           "pass"
@@ -294,7 +294,7 @@ describe("Passcode Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(ENG_trans.createpassword.error.hasNoSymbol));
+      expect(getByText(TRANSLATIONS.createpassword.error.hasNoSymbol));
       expect(
         getByTestId("password-validation-length-icon").classList.contains(
           "pass"
@@ -377,7 +377,7 @@ describe("Passcode Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(ENG_trans.createpassword.error.hasNoMatch));
+      expect(getByText(TRANSLATIONS.createpassword.error.hasNoMatch));
     });
   });
 
@@ -405,7 +405,7 @@ describe("Passcode Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(ENG_trans.createpassword.error.hintSameAsPassword));
+      expect(getByText(TRANSLATIONS.createpassword.error.hintSameAsPassword));
     });
   });
 
@@ -429,7 +429,7 @@ describe("Passcode Module", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(ENG_trans.createpassword.alert.text)).toBeVisible();
+      expect(getByText(TRANSLATIONS.createpassword.alert.text)).toBeVisible();
     });
 
     const mockDate = new Date(1466424490000);
@@ -437,7 +437,9 @@ describe("Passcode Module", () => {
       .spyOn(global, "Date")
       .mockImplementation((() => mockDate) as never);
     act(() => {
-      fireEvent.click(getByText(ENG_trans.createpassword.alert.button.confirm));
+      fireEvent.click(
+        getByText(TRANSLATIONS.createpassword.alert.button.confirm)
+      );
     });
 
     await waitFor(() => {
@@ -567,7 +569,7 @@ describe("Passcode Module", () => {
       </Provider>
     );
 
-    expect(queryByText(ENG_trans.createpassword.button.skip)).toBe(null);
+    expect(queryByText(TRANSLATIONS.createpassword.button.skip)).toBe(null);
 
     const input = getByTestId("create-password-input");
     const confirmInput = getByTestId("confirm-password-input");
@@ -616,8 +618,8 @@ describe("Passcode Module", () => {
     await waitFor(() => {
       expect(
         getByText(
-          ENG_trans.settings.sections.security.managepassword.page.alert
-            .existingpassword
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+            .page.alert.existingpassword
         )
       ).toBeVisible();
     });

@@ -123,8 +123,10 @@ const EditIdentifier = ({
           <PageHeader
             closeButton={true}
             closeButtonAction={handleCancel}
-            closeButtonLabel={`${i18n.t("identifiers.details.options.cancel")}`}
-            title={`${i18n.t("identifiers.details.options.edit")}`}
+            closeButtonLabel={`${i18n.t(
+              "tabs.identifiers.details.options.cancel"
+            )}`}
+            title={`${i18n.t("tabs.identifiers.details.options.edit")}`}
           />
         }
         pageId={pageId}
@@ -147,7 +149,7 @@ const EditIdentifier = ({
         >
           <CustomInput
             dataTestId="edit-name-input"
-            title={`${i18n.t("identifiers.details.options.inner.label")}`}
+            title={`${i18n.t("tabs.identifiers.details.options.inner.label")}`}
             hiddenInput={false}
             autofocus={true}
             onChangeInput={setNewDisplayName}
@@ -155,7 +157,9 @@ const EditIdentifier = ({
           />
           {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
             <ErrorMessage
-              message={`${i18n.t("identifiers.details.options.inner.error")}`}
+              message={`${i18n.t(
+                "tabs.identifiers.details.options.inner.error"
+              )}`}
               timeout={false}
             />
           ) : null}

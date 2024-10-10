@@ -36,18 +36,20 @@ const IdentifierContent = ({
   return (
     <>
       {cardData.di !== "" && cardData.di && (
-        <CardDetailsBlock title={i18n.t("identifiers.details.delegator.title")}>
+        <CardDetailsBlock
+          title={i18n.t("tabs.identifiers.details.delegator.title")}
+        >
           <CardDetailsItem
             info={cardData.di}
             copyButton={true}
-            textIcon="identifiers.details.delegator.icon"
+            textIcon="tabs.identifiers.details.delegator.icon"
             testId="delegator"
           />
         </CardDetailsBlock>
       )}
       {cardData.k.length && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.details.signingkeyslist.title")}
+          title={i18n.t("tabs.identifiers.details.signingkeyslist.title")}
         >
           {cardData.k.map((item, index) => {
             return (
@@ -55,7 +57,7 @@ const IdentifierContent = ({
                 key={index}
                 info={item}
                 copyButton={true}
-                textIcon="identifiers.details.signingkeyslist.icon"
+                textIcon="tabs.identifiers.details.signingkeyslist.icon"
                 testId={`signing-key-${index}`}
                 actionButton={isMultiSig ? undefined : refreshOutline}
                 actionButtonClick={isMultiSig ? undefined : onOpenRotateKey}
@@ -66,19 +68,19 @@ const IdentifierContent = ({
       )}
       {typeof cardData.kt === "string" && Number(cardData.kt) > 1 && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.details.signingkeysthreshold.title")}
+          title={i18n.t("tabs.identifiers.details.signingkeysthreshold.title")}
         >
           <CardDetailsItem
             info={`${cardData.kt}`}
             copyButton={false}
-            textIcon="identifiers.details.signingkeysthreshold.icon"
+            textIcon="tabs.identifiers.details.signingkeysthreshold.icon"
             testId="signing-keys-threshold"
           />
         </CardDetailsBlock>
       )}
       {cardData.n.length && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.details.nextkeyslist.title")}
+          title={i18n.t("tabs.identifiers.details.nextkeyslist.title")}
         >
           {cardData.n.map((item, index) => {
             return (
@@ -86,7 +88,7 @@ const IdentifierContent = ({
                 key={index}
                 info={item}
                 copyButton={true}
-                textIcon="identifiers.details.nextkeyslist.icon"
+                textIcon="tabs.identifiers.details.nextkeyslist.icon"
                 testId={`next-key-${index}`}
               />
             );
@@ -95,18 +97,18 @@ const IdentifierContent = ({
       )}
       {typeof cardData.nt === "string" && Number(cardData.nt) > 1 && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.details.nextkeysthreshold.title")}
+          title={i18n.t("tabs.identifiers.details.nextkeysthreshold.title")}
         >
           <CardDetailsItem
             info={`${cardData.nt}`}
             copyButton={false}
-            textIcon="identifiers.details.nextkeysthreshold.icon"
+            textIcon="tabs.identifiers.details.nextkeysthreshold.icon"
             testId="next-keys-threshold"
           />
         </CardDetailsBlock>
       )}
       <CardDetailsBlock
-        title={i18n.t("identifiers.details.creationtimestamp.title")}
+        title={i18n.t("tabs.identifiers.details.creationtimestamp.title")}
       >
         <CardDetailsItem
           info={
@@ -121,7 +123,7 @@ const IdentifierContent = ({
       </CardDetailsBlock>
       {cardData.s !== "0" && cardData.dt && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.details.rotationtimestamp.title")}
+          title={i18n.t("tabs.identifiers.details.rotationtimestamp.title")}
         >
           <CardDetailsItem
             info={
@@ -130,26 +132,26 @@ const IdentifierContent = ({
               formatTimeToSec(cardData.dt)
             }
             copyButton={false}
-            textIcon="identifiers.details.rotationtimestamp.icon"
+            textIcon="tabs.identifiers.details.rotationtimestamp.icon"
             testId="rotation-timestamp"
           />
         </CardDetailsBlock>
       )}
       {cardData.s !== "0" && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.details.sequencenumber.title")}
+          title={i18n.t("tabs.identifiers.details.sequencenumber.title")}
         >
           <CardDetailsItem
             info={`${cardData.s}`}
             copyButton={true}
-            textIcon="identifiers.details.sequencenumber.icon"
+            textIcon="tabs.identifiers.details.sequencenumber.icon"
             testId="sequence-number"
           />
         </CardDetailsBlock>
       )}
       {cardData.b.length > 0 && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.details.backerslist.title")}
+          title={i18n.t("tabs.identifiers.details.backerslist.title")}
         >
           {cardData.b.map((item, index) => {
             return (
@@ -157,7 +159,7 @@ const IdentifierContent = ({
                 key={index}
                 info={item}
                 copyButton={true}
-                textIcon="identifiers.details.backerslist.icon"
+                textIcon="tabs.identifiers.details.backerslist.icon"
                 testId={`backer-${index}`}
               />
             );
@@ -168,7 +170,7 @@ const IdentifierContent = ({
       {/* @TODO - foconnor: We should verify the particular identifier is ledger based, not that our config is. */}
       {ConfigurationService.env.keri.backing.mode === BackingMode.LEDGER && (
         <CardDetailsBlock
-          title={i18n.t("identifiers.details.backeraddress.title")}
+          title={i18n.t("tabs.identifiers.details.backeraddress.title")}
         >
           <CardDetailsItem
             info={ConfigurationService.env.keri.backing.ledger.address}

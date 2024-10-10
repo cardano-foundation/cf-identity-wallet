@@ -27,8 +27,8 @@ const CardDetailsNestedAttributes = ({
     const isValuedType = typeof item === ("string" || "number");
     if (isValuedType && customType === "status")
       return item === "0"
-        ? i18n.t("credentials.details.status.issued")
-        : i18n.t("credentials.details.status.revoked");
+        ? i18n.t("tabs.credentials.details.status.issued")
+        : i18n.t("tabs.credentials.details.status.revoked");
 
     if (isValuedType) return item;
 

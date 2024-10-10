@@ -199,10 +199,12 @@ const ChooseCredential = ({
         header={
           <PageHeader
             title={`${i18n.t(
-              "notifications.details.credential.request.choosecredential.title"
+              "tabs.notifications.details.credential.request.choosecredential.title"
             )}`}
             closeButton
-            closeButtonLabel={`${i18n.t("notifications.details.buttons.back")}`}
+            closeButtonLabel={`${i18n.t(
+              "tabs.notifications.details.buttons.back"
+            )}`}
             closeButtonAction={handleBack}
             hardwareBackButtonConfig={{
               prevent: !activeStatus,
@@ -214,7 +216,7 @@ const ChooseCredential = ({
             pageId={pageId}
             customClass="credential-request-footer"
             primaryButtonText={`${i18n.t(
-              "notifications.details.buttons.providecredential"
+              "tabs.notifications.details.buttons.providecredential"
             )}`}
             primaryButtonAction={() => setVerifyIsOpen(true)}
             primaryButtonDisabled={!selectedCred}
@@ -223,7 +225,7 @@ const ChooseCredential = ({
       >
         <h2 className="title">
           {i18n.t(
-            "notifications.details.credential.request.choosecredential.description",
+            "tabs.notifications.details.credential.request.choosecredential.description",
             {
               requestCred: credentialRequest.schema.name,
             }
@@ -239,7 +241,7 @@ const ChooseCredential = ({
             data-testid="choose-credential-active-button"
           >
             <IonLabel>{`${i18n.t(
-              "notifications.details.credential.request.choosecredential.active"
+              "tabs.notifications.details.credential.request.choosecredential.active"
             )}`}</IonLabel>
           </IonSegmentButton>
           <IonSegmentButton
@@ -247,7 +249,7 @@ const ChooseCredential = ({
             data-testid="choose-credential-revoked-button"
           >
             <IonLabel>{`${i18n.t(
-              "notifications.details.credential.request.choosecredential.revoked"
+              "tabs.notifications.details.credential.request.choosecredential.revoked"
             )}`}</IonLabel>
           </IonSegmentButton>
         </IonSegment>
@@ -256,7 +258,7 @@ const ChooseCredential = ({
             <div>
               <p>
                 {i18n.t(
-                  "notifications.details.credential.request.choosecredential.disclaimer"
+                  "tabs.notifications.details.credential.request.choosecredential.disclaimer"
                 )}
               </p>
             </div>
@@ -272,7 +274,7 @@ const ChooseCredential = ({
           <h2 className="title">
             <i>
               {i18n.t(
-                "notifications.details.credential.request.choosecredential.noactive",
+                "tabs.notifications.details.credential.request.choosecredential.noactive",
                 {
                   requestCred: credentialRequest.schema.name,
                 }
@@ -284,7 +286,7 @@ const ChooseCredential = ({
           <h2 className="title">
             <i>
               {i18n.t(
-                "notifications.details.credential.request.choosecredential.norevoked",
+                "tabs.notifications.details.credential.request.choosecredential.norevoked",
                 {
                   requestCred: credentialRequest.schema.name,
                 }

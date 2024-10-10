@@ -331,14 +331,16 @@ const IdentifierDetails = () => {
           header={
             <PageHeader
               closeButton={true}
-              closeButtonLabel={`${i18n.t("identifiers.details.done")}`}
+              closeButtonLabel={`${i18n.t("tabs.identifiers.details.done")}`}
               closeButtonAction={handleDone}
             />
           }
         >
           <PageFooter
             pageId={pageId}
-            deleteButtonText={`${i18n.t("identifiers.details.delete.button")}`}
+            deleteButtonText={`${i18n.t(
+              "tabs.identifiers.details.delete.button"
+            )}`}
             deleteButtonAction={deleteButtonAction}
           />
         </CloudError>
@@ -349,7 +351,7 @@ const IdentifierDetails = () => {
           header={
             <PageHeader
               closeButton={true}
-              closeButtonLabel={`${i18n.t("identifiers.details.done")}`}
+              closeButtonLabel={`${i18n.t("tabs.identifiers.details.done")}`}
               closeButtonAction={() => handleDone()}
               additionalButtons={<AdditionalButtons />}
             />
@@ -410,7 +412,7 @@ const IdentifierDetails = () => {
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
         dataTestId="alert-confirm-identifier-delete-details"
-        headerText={i18n.t("identifiers.details.delete.alert.title")}
+        headerText={i18n.t("tabs.identifiers.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
           "identifiers.details.delete.alert.confirm"
         )}`}

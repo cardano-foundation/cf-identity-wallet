@@ -76,7 +76,7 @@ const KeriCardTemplate = ({
         <div className="card-footer">
           <div className="card-footer-column">
             <span className="card-footer-column-label">
-              {i18n.t("credentials.layout.issued")}
+              {i18n.t("tabs.credentials.layout.issued")}
             </span>
             <span className="card-footer-column-value">
               {cardData.status === CredentialStatus.CONFIRMED ? (
@@ -93,8 +93,10 @@ const KeriCardTemplate = ({
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
           dataTestId="alert-confirm"
-          headerText={i18n.t("credentials.create.alert.title")}
-          confirmButtonText={`${i18n.t("credentials.create.alert.confirm")}`}
+          headerText={i18n.t("tabs.credentials.create.alert.title")}
+          confirmButtonText={`${i18n.t(
+            "tabs.credentials.create.alert.confirm"
+          )}`}
           actionConfirm={() => setAlertIsOpen(false)}
           backdropDismiss={false}
         />
