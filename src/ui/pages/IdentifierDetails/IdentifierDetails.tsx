@@ -244,7 +244,6 @@ const IdentifierDetails = () => {
 
   const deleteButtonAction = () => {
     setAlertIsOpen(true);
-    dispatch(setCurrentOperation(OperationType.DELETE_IDENTIFIER));
   };
 
   const handleAuthentication = () => {

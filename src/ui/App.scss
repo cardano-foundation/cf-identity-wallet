@@ -24,7 +24,9 @@ body {
       ion-app
       > *:not(.qr-code-scanner-full-page):not(.scanner-input-modal):not(
         .app-spinner-container
-      ):not(.input-pid-modal):not(.confirmation-toast) {
+      ):not(.input-pid-modal):not(.confirmation-toast):not(
+        .alert-create-identifier
+      ):not(.create-identifier-modal) {
       display: none;
     }
 

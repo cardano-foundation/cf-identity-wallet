@@ -1,7 +1,11 @@
 import { arrowBackOutline, repeatOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { useAppDispatch } from "../../../store/hooks";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import {
+  setCurrentOperation,
+  showConnections,
+} from "../../../store/reducers/stateCache";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { PageHeader } from "../../components/PageHeader";
 import { Scanner } from "../../components/Scanner";
@@ -9,17 +13,19 @@ import { useCameraDirection } from "../../components/Scanner/hook/useCameraDirec
 import {
   BackEventPriorityType,
   OperationType,
-  ToastMsgType,
 } from "../../globals/types";
 import "./FullPageScanner.scss";
 import {
   FullPageScannerProps,
   ScannerRefComponent,
 } from "./FullPageScanner.types";
+import { TabsRoutePath } from "../../../routes/paths";
+import { showConnectWallet } from "../../../store/reducers/walletConnectionsCache";
 
 const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
   const pageId = "qr-code-scanner-full-page";
   const dispatch = useAppDispatch();
+  const history = useHistory();
   const scannerRef = useRef<ScannerRefComponent>(null);
   const { cameraDirection, changeCameraDirection, supportMultiCamera } =
     useCameraDirection();
@@ -29,13 +35,19 @@ const FullPageScanner = ({ showScan, setShowScan }: FullPageScannerProps) => {
     document?.querySelector("body")?.classList.add("full-page-scanner");
   }, []);
 
-  const handleReset = () => {
+  const handleReset = (navTo?: string) => {
     setShowScan(false);
     document?.querySelector("body")?.classList.remove("full-page-scanner");
     document
       ?.querySelector("body.scanner-active > div:last-child")
       ?.classList.add("hide");
     dispatch(setCurrentOperation(OperationType.IDLE));
+
+    if (navTo === TabsRoutePath.MENU) {
+      dispatch(showConnections(false));
+      history.push(navTo);
+      dispatch(dispatch(showConnectWallet(true)));
+    }
   };
 
   const handleCloseButton = () => {
