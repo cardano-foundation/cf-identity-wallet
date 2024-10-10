@@ -75,7 +75,7 @@ const InputRequest = () => {
       const errorMessage = (e as Error).message;
 
       const urlId = errorMessage
-        .replace(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG, "")
+        .replace(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG, "")
         .trim();
 
       if (!urlId) {

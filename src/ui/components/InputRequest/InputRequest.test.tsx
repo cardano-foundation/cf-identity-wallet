@@ -277,7 +277,7 @@ describe("Set connection alias", () => {
   test("create connection failed", async () => {
     connectByOobiUrl.mockImplementation(() =>
       Promise.reject(
-        new Error(`${StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG} mockId`)
+        new Error(`${StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG} mockId`)
       )
     );
 
