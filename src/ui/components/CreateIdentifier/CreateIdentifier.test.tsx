@@ -27,7 +27,14 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
   },
 }));
 
-const mockGetMultisigConnection = jest.fn((args) => Promise.resolve([]));
+const mockGetMultisigConnection = jest.fn(
+  (args) =>
+    new Promise((res) => {
+      setTimeout(() => {
+        res([]);
+      }, 500);
+    })
+);
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -151,7 +158,11 @@ describe("Create Identifier modal", () => {
     act(() => {
       fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
     });
-    expect(getByTestId("spinner-container")).toBeVisible();
+
+    await waitFor(() => {
+      expect(getByTestId("spinner-container")).toBeVisible();
+    });
+
     await waitFor(() => {
       expect(setModalIsOpen).toBeCalledWith(false);
     });
