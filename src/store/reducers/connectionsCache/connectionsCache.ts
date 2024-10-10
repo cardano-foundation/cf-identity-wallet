@@ -1,11 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import { ConnectionShortDetails } from "../../../core/agent/agent.types";
-const initialState: {
-  connections: { [key: string]: ConnectionShortDetails };
-  multisigConnections: { [key: string]: ConnectionShortDetails };
-  openConnectionId?: string;
-} = {
+import { ConnectionsCacheState } from "./connectionsCache.types";
+const initialState: ConnectionsCacheState = {
   connections: {},
   multisigConnections: {},
 };
@@ -70,6 +67,9 @@ const connectionsCacheSlice = createSlice({
     setOpenConnectionId: (state, action: PayloadAction<string | undefined>) => {
       state.openConnectionId = action.payload;
     },
+    setMissingAliasUrl: (state, action: PayloadAction<string | undefined>) => {
+      state.missingAliasUrl = action.payload;
+    },
   },
 });
 
@@ -82,6 +82,7 @@ export const {
   removeConnectionCache,
   updateOrAddMultisigConnectionCache,
   setOpenConnectionId,
+  setMissingAliasUrl,
 } = connectionsCacheSlice.actions;
 
 const getConnectionsCache = (state: RootState) =>
@@ -93,8 +94,12 @@ const getMultisigConnectionsCache = (state: RootState) =>
 const getOpenConnectionId = (state: RootState) =>
   state.connectionsCache.openConnectionId;
 
+const getMissingAliasUrl = (state: RootState) =>
+  state.connectionsCache.missingAliasUrl;
+
 export {
   getConnectionsCache,
   getMultisigConnectionsCache,
   getOpenConnectionId,
+  getMissingAliasUrl,
 };

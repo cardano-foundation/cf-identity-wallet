@@ -1620,8 +1620,11 @@
     "pending": "{{action}} pending",
     "success": "{{action}} successful"
   },
-  "setusername": {
-    "title": "Welcome! What should we call you?",
+  "inputrequest": {
+    "title": {
+      "username": "Welcome! What should we call you?",
+      "connectionalias": "It looks like your new connection doesn't have a name yet. Let's give them one!"
+    },
     "input": {
       "title": "Name"
     },

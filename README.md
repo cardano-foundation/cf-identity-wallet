@@ -99,11 +99,11 @@ In this section, you'll find detailed PDF documents outlining the various user f
 # Getting Started
 
 ## Requirements
-- Node.js: Version 18.16.0.
+- Node.js: Version 18.20.4.
 - npm: Compatible with the Node.js version.
 - Xcode: For iOS emulation (latest version recommended).
 - Android Studio: For Android emulation (latest version recommended).
-- Capacitor: Version 4.8.1 (refer to package.json). For detailed environment setup, refer to the [Capacitor Environment Setup Guide](https://capacitorjs.com/docs/getting-started/environment-setup).
+- Capacitor: Version 6.0.0 (refer to package.json). For detailed environment setup, refer to the [Capacitor Environment Setup Guide](https://capacitorjs.com/docs/getting-started/environment-setup).
 - Mobile Device: iOS or Android for running the app on physical devices.
 - Docker, Docker Compose.
 
