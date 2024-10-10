@@ -19,7 +19,7 @@ import { FavouriteIdentifier } from "../identifiersCache/identifiersCache.types"
 import {
   memberIdentifierRecord,
   multisigMetadataRecord,
-} from "../../../core/__fixtures__/agent/multiSigMock";
+} from "../../../core/__fixtures__/agent/multSigFixtures";
 
 describe("credsCacheSlice", () => {
   const initialState = {

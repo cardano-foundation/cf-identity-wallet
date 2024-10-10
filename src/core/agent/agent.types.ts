@@ -74,9 +74,9 @@ type IpexMessage = {
     e: any;
   };
   pathed: {
-    acdc: string;
-    iss: string;
-    anc: string;
+    acdc?: string;
+    iss?: string;
+    anc?: string;
   };
 };
 
@@ -163,6 +163,7 @@ enum NotificationRoute {
   MultiSigRpy = "/multisig/rpy",
   ExnIpexApply = "/exn/ipex/apply",
   ExnIpexAgree = "/exn/ipex/agree",
+  ExnIpexOffer = "/exn/ipex/offer",
   // Notifications from our wallet to give further feedback to the user
   LocalAcdcRevoked = "/local/acdc/revoked",
 }
