@@ -28,15 +28,15 @@ import { showError } from "../../utils/error";
 import { CustomInput } from "../CustomInput";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { PageFooter } from "../PageFooter";
-import "./InputModal.scss";
+import "./InputRequest.scss";
 
-const InputModal = () => {
+const InputRequest = () => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const missingAliasUrl = useAppSelector(getMissingAliasUrl);
   const currentRoute = useAppSelector(getCurrentRoute);
 
-  const componentId = "input-modal";
+  const componentId = "input-request";
   const [inputValue, setInputValue] = useState("");
 
   const showModal = useMemo(() => {
@@ -179,4 +179,4 @@ const InputModal = () => {
   );
 };
 
-export { InputModal };
+export { InputRequest };

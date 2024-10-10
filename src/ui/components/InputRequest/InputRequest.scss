@@ -1,4 +1,4 @@
-ion-modal#input-modal {
+ion-modal#input-request {
   padding: 1.25rem;
   --height: fit-content;
   --border-radius: 1rem;
@@ -7,14 +7,14 @@ ion-modal#input-modal {
   &.connection-alias {
     --backdrop-opacity: var(--ion-backdrop-opacity, 0.4);
 
-    .input-modal-wrapper {
+    .input-request-wrapper {
       h3 {
         font-size: 1.125rem;
       }
     }
   }
 
-  .input-modal-wrapper {
+  .input-request-wrapper {
     padding: 1.56rem 1.25rem;
 
     h3 {
@@ -38,7 +38,7 @@ ion-modal#input-modal {
   }
 
   @media screen and (min-width: 250px) and (max-width: 399px) {
-    .input-modal-wrapper {
+    .input-request-wrapper {
       padding: 1.248rem 1rem;
 
       h3 {

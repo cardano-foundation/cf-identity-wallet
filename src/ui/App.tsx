@@ -22,7 +22,7 @@ import { AppOffline } from "./components/AppOffline";
 import { AppWrapper } from "./components/AppWrapper";
 import { ToastStack } from "./components/CustomToast/ToastStack";
 import { GenericError } from "./components/Error";
-import { InputModal } from "./components/InputModal";
+import { InputRequest } from "./components/InputRequest";
 import { SidePage } from "./components/SidePage";
 import { OperationType } from "./globals/types";
 import { FullPageScanner } from "./pages/FullPageScanner";
@@ -111,7 +111,7 @@ const App = () => {
           ) : (
             <LoadingPage />
           )}
-          <InputModal />
+          <InputRequest />
           <SidePage />
           <GenericError />
           <ToastStack />

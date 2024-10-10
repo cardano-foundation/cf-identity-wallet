@@ -14,7 +14,7 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { ToastMsgType } from "../../globals/types";
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
-import { InputModal } from "./InputModal";
+import { InputRequest } from "./InputRequest";
 import { StorageMessage } from "../../../core/storage/storage.types";
 import { setOpenConnectionId } from "../../../store/reducers/connectionsCache";
 
@@ -108,7 +108,7 @@ describe("SetUserName component", () => {
   test("It renders modal successfully", async () => {
     const { getByText } = render(
       <Provider store={storeMocked}>
-        <InputModal />
+        <InputRequest />
       </Provider>
     );
     expect(getByText(EN_TRANSLATIONS.inputmodal.title.username)).toBeVisible();
@@ -118,18 +118,18 @@ describe("SetUserName component", () => {
   test("It should call handleConfirm when the primary button is clicked", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
-        <InputModal />
+        <InputRequest />
       </Provider>
     );
 
     act(() => {
-      ionFireEvent.ionInput(getByTestId("input-modal-input"), "testUser");
+      ionFireEvent.ionInput(getByTestId("input-request-input"), "testUser");
     });
 
     await waitFor(() => {
-      expect((getByTestId("input-modal-input") as HTMLInputElement).value).toBe(
-        "testUser"
-      );
+      expect(
+        (getByTestId("input-request-input") as HTMLInputElement).value
+      ).toBe("testUser");
     });
 
     act(() => {
@@ -167,18 +167,18 @@ describe("SetUserName component", () => {
   test("Display error message", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
-        <InputModal />
+        <InputRequest />
       </Provider>
     );
 
     act(() => {
-      ionFireEvent.ionInput(getByTestId("input-modal-input"), "testUser");
+      ionFireEvent.ionInput(getByTestId("input-request-input"), "testUser");
     });
 
     await waitFor(() => {
-      expect((getByTestId("input-modal-input") as HTMLInputElement).value).toBe(
-        "testUser"
-      );
+      expect(
+        (getByTestId("input-request-input") as HTMLInputElement).value
+      ).toBe("testUser");
     });
 
     jest
@@ -235,7 +235,7 @@ describe("Set connection alias", () => {
   test("render", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
-        <InputModal />
+        <InputRequest />
       </Provider>
     );
 
@@ -245,13 +245,16 @@ describe("Set connection alias", () => {
     expect(getByText(EN_TRANSLATIONS.inputmodal.button.confirm)).toBeVisible();
 
     act(() => {
-      ionFireEvent.ionInput(getByTestId("input-modal-input"), "connectionName");
+      ionFireEvent.ionInput(
+        getByTestId("input-request-input"),
+        "connectionName"
+      );
     });
 
     await waitFor(() => {
-      expect((getByTestId("input-modal-input") as HTMLInputElement).value).toBe(
-        "connectionName"
-      );
+      expect(
+        (getByTestId("input-request-input") as HTMLInputElement).value
+      ).toBe("connectionName");
     });
 
     act(() => {
@@ -274,7 +277,7 @@ describe("Set connection alias", () => {
 
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
-        <InputModal />
+        <InputRequest />
       </Provider>
     );
 
@@ -284,13 +287,16 @@ describe("Set connection alias", () => {
     expect(getByText(EN_TRANSLATIONS.inputmodal.button.confirm)).toBeVisible();
 
     act(() => {
-      ionFireEvent.ionInput(getByTestId("input-modal-input"), "connectionName");
+      ionFireEvent.ionInput(
+        getByTestId("input-request-input"),
+        "connectionName"
+      );
     });
 
     await waitFor(() => {
-      expect((getByTestId("input-modal-input") as HTMLInputElement).value).toBe(
-        "connectionName"
-      );
+      expect(
+        (getByTestId("input-request-input") as HTMLInputElement).value
+      ).toBe("connectionName");
     });
 
     act(() => {
