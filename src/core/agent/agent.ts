@@ -49,11 +49,6 @@ import { BaseRecord } from "../storage/storage.types";
 import { OperationPendingStorage } from "./records/operationPendingStorage";
 import { OperationPendingRecord } from "./records/operationPendingRecord";
 import { EventTypes, KeriaStatusChangedEvent } from "./event.types";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../storage/preferences/preferencesStorage";
-import { ConfigurationService } from "../configuration";
 
 const walletId = "idw";
 class Agent {
@@ -364,8 +359,11 @@ class Agent {
         throw error;
       }
     }
-    await PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
-      initialized: true,
+    await this.basicStorage.save({
+      id: MiscRecordId.APP_ALREADY_INIT,
+      content: {
+        initialized: true,
+      },
     });
 
     await this.basicStorage.createOrUpdateBasicRecord(

@@ -10,7 +10,7 @@ import {
   CredentialStatus,
 } from "../../../core/agent/services/credentialService.types";
 import { IdentifierType } from "../../../core/agent/services/identifier.types";
-import { memberIdentifierRecord } from "../../../core/__fixtures__/agent/multiSigMock";
+import { memberIdentifierRecord } from "../../../core/__fixtures__/agent/multSigFixtures";
 
 describe("credsArchivedCacheSlice", () => {
   const initialState = {

@@ -15,10 +15,6 @@ import {
 } from "../../../core/cardano/walletConnect/peerConnection.types";
 import { ConfigurationService } from "../../../core/configuration";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences/preferencesStorage";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setEnableBiometricsCache } from "../../../store/reducers/biometricsCache";
@@ -434,11 +430,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
-    try {
-      // @TODO - foconnor: This should use our normal DB - keeping Preferences temporarily to not break existing mobile builds.
-      // Will remove preferences again once we have better handling on APP_ALREADY_INIT with user input.
-      await PreferencesStorage.get(PreferencesKeys.APP_ALREADY_INIT);
-    } catch (e) {
+    const initState = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_ALREADY_INIT
+    );
+    if (!initState) {
       await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
       await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
