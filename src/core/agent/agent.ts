@@ -255,9 +255,12 @@ class Agent {
       const bootResult = await this.signifyClient.boot().catch((e) => {
         /* eslint-disable no-console */
         console.error(e);
+        if (e.message === "Failed to fetch") {
+          throw new Error(Agent.KERIA_CONNECTION_BROKEN);
+        }
         throw new Error(Agent.KERIA_BOOT_FAILED);
       });
-
+    
       if (!bootResult.ok && bootResult.status !== 400) {
         /* eslint-disable no-console */
         console.warn(
@@ -271,13 +274,6 @@ class Agent {
         console.error(e);
         throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
       });
-      try {
-        await this.signifyClient.connect();
-      } catch (e) {
-        /* eslint-disable no-console */
-        console.error(e);
-        throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
-      }
       await this.saveAgentUrls(agentUrls);
       this.markAgentStatus(true);
     }
