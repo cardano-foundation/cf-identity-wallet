@@ -115,11 +115,11 @@ const WalletConnectStageTwo = ({
       header={
         <PageHeader
           title={`${i18n.t(
-            "menu.tab.items.connectwallet.request.stagetwo.title"
+            "tabs.menu.tab.items.connectwallet.request.stagetwo.title"
           )}`}
           closeButton
           closeButtonLabel={`${i18n.t(
-            "menu.tab.items.connectwallet.request.button.back"
+            "tabs.menu.tab.items.connectwallet.request.button.back"
           )}`}
           closeButtonAction={onBackClick}
           hardwareBackButtonConfig={{
@@ -156,7 +156,7 @@ const WalletConnectStageTwo = ({
       </IonContent>
       <PageFooter
         primaryButtonText={`${i18n.t(
-          "menu.tab.items.connectwallet.request.stagetwo.confirm"
+          "tabs.menu.tab.items.connectwallet.request.stagetwo.confirm"
         )}`}
         primaryButtonAction={handleConnectWallet}
         primaryButtonDisabled={!selectedIdentifier || startingMeerkat}

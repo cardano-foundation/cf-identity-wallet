@@ -332,7 +332,7 @@ const Credentials = () => {
         firstCheckProps={deletePendingCheck}
         onClose={() => setOpenDeletePendingAlert(false)}
         secondCheckTitle={`${i18n.t(
-          "credentials.tab.detelepending.secondchecktitle"
+          "tabs.credentials.tab.detelepending.secondchecktitle"
         )}`}
         onDeletePendingItem={deletePendingCred}
       />

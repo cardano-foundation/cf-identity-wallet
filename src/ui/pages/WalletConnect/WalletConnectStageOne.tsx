@@ -79,11 +79,11 @@ const WalletConnectStageOne = ({
         header={
           <PageHeader
             title={`${i18n.t(
-              "menu.tab.items.connectwallet.request.stageone.title"
+              "tabs.menu.tab.items.connectwallet.request.stageone.title"
             )}`}
             closeButton
             closeButtonLabel={`${i18n.t(
-              "menu.tab.items.connectwallet.request.button.back"
+              "tabs.menu.tab.items.connectwallet.request.button.back"
             )}`}
             closeButtonAction={openDecline}
           />
@@ -111,11 +111,11 @@ const WalletConnectStageOne = ({
           customClass="request-footer"
           pageId="connect-wallet-stage-one"
           primaryButtonText={`${i18n.t(
-            "menu.tab.items.connectwallet.request.button.accept"
+            "tabs.menu.tab.items.connectwallet.request.button.accept"
           )}`}
           primaryButtonAction={handleAccept}
           secondaryButtonText={`${i18n.t(
-            "menu.tab.items.connectwallet.request.button.decline"
+            "tabs.menu.tab.items.connectwallet.request.button.decline"
           )}`}
           secondaryButtonAction={openDecline}
         />
@@ -125,13 +125,13 @@ const WalletConnectStageOne = ({
         setIsOpen={setOpenDeclineAlert}
         dataTestId="alert-decline-connect"
         headerText={i18n.t(
-          "menu.tab.items.connectwallet.request.stageone.alert.titleconfirm"
+          "tabs.menu.tab.items.connectwallet.request.stageone.alert.titleconfirm"
         )}
         confirmButtonText={`${i18n.t(
-          "menu.tab.items.connectwallet.request.stageone.alert.confirm"
+          "tabs.menu.tab.items.connectwallet.request.stageone.alert.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "menu.tab.items.connectwallet.request.stageone.alert.cancel"
+          "tabs.menu.tab.items.connectwallet.request.stageone.alert.cancel"
         )}`}
         actionConfirm={handleClose}
         actionCancel={() => setOpenDeclineAlert(false)}
@@ -142,13 +142,13 @@ const WalletConnectStageOne = ({
         setIsOpen={setOpenIdentifierMissingAlert}
         dataTestId="missing-identifier-alert"
         headerText={i18n.t(
-          "menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.message"
+          "tabs.menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.message"
         )}
         confirmButtonText={`${i18n.t(
-          "menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.confirm"
+          "tabs.menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.cancel"
+          "tabs.menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.cancel"
         )}`}
         actionConfirm={handleCreateIdentifier}
         actionCancel={closeIdentifierMissingAlert}

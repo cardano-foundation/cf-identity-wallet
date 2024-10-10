@@ -339,7 +339,7 @@ const IdentifierDetails = () => {
           <PageFooter
             pageId={pageId}
             deleteButtonText={`${i18n.t(
-              "tabs.identifiers.details.delete.button"
+              "tabs.tabs.identifiers.details.delete.button"
             )}`}
             deleteButtonAction={deleteButtonAction}
           />
@@ -378,7 +378,7 @@ const IdentifierDetails = () => {
                 <PageFooter
                   pageId={pageId}
                   deleteButtonText={`${i18n.t(
-                    "identifiers.details.delete.button"
+                    "tabs.identifiers.details.delete.button"
                   )}`}
                   deleteButtonAction={deleteButtonAction}
                 />
@@ -414,10 +414,10 @@ const IdentifierDetails = () => {
         dataTestId="alert-confirm-identifier-delete-details"
         headerText={i18n.t("tabs.identifiers.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
-          "identifiers.details.delete.alert.confirm"
+          "tabs.identifiers.details.delete.alert.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "identifiers.details.delete.alert.cancel"
+          "tabs.identifiers.details.delete.alert.cancel"
         )}`}
         actionConfirm={handleAuthentication}
         actionCancel={cancelDelete}

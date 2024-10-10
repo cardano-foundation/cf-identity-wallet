@@ -237,8 +237,8 @@ const Identifiers = () => {
       title: i18n.t("tabs.identifiers.detelepending.title"),
       description: i18n.t(
         deletedPendingItem?.groupMetadata?.groupId
-          ? "identifiers.detelepending.mutilsigdescription"
-          : "identifiers.detelepending.description"
+          ? "tabs.identifiers.detelepending.mutilsigdescription"
+          : "tabs.identifiers.detelepending.description"
       ),
       button: i18n.t("tabs.identifiers.detelepending.button"),
     }),
@@ -343,7 +343,7 @@ const Identifiers = () => {
         firstCheckProps={deletePendingCheck}
         onClose={() => setOpenDeletePendingAlert(false)}
         secondCheckTitle={`${i18n.t(
-          "identifiers.detelepending.secondchecktitle"
+          "tabs.identifiers.detelepending.secondchecktitle"
         )}`}
         onDeletePendingItem={deletePendingIdentifier}
       />
