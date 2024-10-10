@@ -180,7 +180,7 @@ describe("Scan Tab", () => {
 
     connectByOobiUrlMock.mockImplementation(() => {
       return Promise.reject(
-        new Error(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG)
+        new Error(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG)
       );
     });
 

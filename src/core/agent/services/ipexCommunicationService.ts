@@ -1139,20 +1139,28 @@ class IpexCommunicationService extends AgentService {
     }
   }
 
-  async getLinkedGroupFromIpexApply(id: string, credentialSaid: string) {
-    const applyNotedRecord = await this.notificationStorage.findById(id);
+  async getLinkedGroupFromIpexApply(id: string) {
+    const applyNoteRecord = await this.notificationStorage.findById(id);
 
-    if (!applyNotedRecord) {
+    if (!applyNoteRecord) {
       throw new Error(
         `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
       );
     }
 
-    const membersJoined: Set<string> = new Set();
-    const linkedGroupRequest = applyNotedRecord.linkedGroupRequests;
+    const linkedGroupRequest = applyNoteRecord.linkedGroupRequests;
+    const result: Record<
+      string,
+      { accepted: boolean; membersJoined: string[] }
+    > = {};
 
-    if (Object.keys(linkedGroupRequest).length) {
+    if (Object.keys(linkedGroupRequest).length === 0) {
+      return result;
+    }
+
+    for (const credentialSaid in linkedGroupRequest) {
       const saids = linkedGroupRequest[credentialSaid].saids;
+      const membersJoined: Set<string> = new Set();
 
       for (const offerSaid in saids) {
         const memberDetails = saids[offerSaid];
@@ -1164,16 +1172,13 @@ class IpexCommunicationService extends AgentService {
         }
       }
 
-      return {
+      result[credentialSaid] = {
         accepted: linkedGroupRequest[credentialSaid].accepted,
         membersJoined: Array.from(membersJoined),
       };
-    } else {
-      return {
-        accepted: false,
-        membersJoined: [],
-      };
     }
+
+    return result;
   }
 }
 

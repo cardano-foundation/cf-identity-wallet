@@ -124,7 +124,7 @@ class ConnectionService extends AgentService {
           if (
             !(error instanceof Error) ||
             !error.message.includes(
-              StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG
+              StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG
             )
           ) {
             throw error;

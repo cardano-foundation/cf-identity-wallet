@@ -175,7 +175,7 @@ const Scanner = forwardRef(
         urlId = new URL(url).searchParams.get("groupId");
       } else {
         urlId = e.message
-          .replace(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG, "")
+          .replace(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG, "")
           .trim();
       }
 
@@ -280,7 +280,7 @@ const Scanner = forwardRef(
         const errorMessage = (e as Error).message;
 
         if (
-          errorMessage.includes(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG)
+          errorMessage.includes(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG)
         ) {
           await handleDuplicateConnectionError(e as Error, content, true);
           return;
@@ -321,7 +321,7 @@ const Scanner = forwardRef(
         const errorMessage = (e as Error).message;
 
         if (
-          errorMessage.includes(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG)
+          errorMessage.includes(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG)
         ) {
           await handleDuplicateConnectionError(e as Error, content, false);
           return;

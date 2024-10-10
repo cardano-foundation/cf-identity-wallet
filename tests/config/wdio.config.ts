@@ -4,7 +4,15 @@ import { returnBoolean } from "../helpers/parse.js";
 
 export const config: Options.Testrunner = {
   runner: "local",
-  tsConfigPath: 'tsconfig.json',
+   // tsConfigPath: 'tsconfig.json',
+   autoCompileOpts: {
+    autoCompile: true,
+    tsNodeOpts: {
+      transpileOnly: true,
+      project: "tsconfig.json",
+    },
+  },
+  capabilities: [],
   specs: ["../features/**/*.feature"],
   specFileRetries: 2,
   specFileRetriesDelay: 3,
