@@ -74,7 +74,7 @@ const NotificationOptionsModal = ({
   const options: OptionItem[] = [
     {
       icon: readerOutline,
-      label: i18n.t("notifications.tab.optionmodal.showdetail"),
+      label: i18n.t("tabs.notifications.tab.optionmodal.showdetail"),
       onClick: () => {
         onShowDetail(notification);
         closeModal();
@@ -85,15 +85,15 @@ const NotificationOptionsModal = ({
       icon: notification.read ? mailUnreadOutline : mailOpenOutline,
       label: i18n.t(
         notification.read
-          ? "notifications.tab.optionmodal.markasunread"
-          : "notifications.tab.optionmodal.markasread"
+          ? "tabs.notifications.tab.optionmodal.markasunread"
+          : "tabs.notifications.tab.optionmodal.markasread"
       ),
       onClick: toggleReadNotification,
       testId: "toogle-read-notification",
     },
     {
       icon: trashOutline,
-      label: i18n.t("notifications.tab.optionmodal.delete"),
+      label: i18n.t("tabs.notifications.tab.optionmodal.delete"),
       onClick: deleteNotificationClick,
       testId: "delete-notification",
     },
@@ -107,9 +107,11 @@ const NotificationOptionsModal = ({
         onDismiss={closeModal}
         header={{
           closeButton: true,
-          closeButtonLabel: `${i18n.t("notifications.tab.optionmodal.done")}`,
+          closeButtonLabel: `${i18n.t(
+            "tabs.notifications.tab.optionmodal.done"
+          )}`,
           closeButtonAction: closeModal,
-          title: `${i18n.t("notifications.tab.optionmodal.title")}`,
+          title: `${i18n.t("tabs.notifications.tab.optionmodal.title")}`,
         }}
         items={options}
       />
@@ -117,12 +119,14 @@ const NotificationOptionsModal = ({
         isOpen={openAlert}
         setIsOpen={setOpenAlert}
         dataTestId="alert-delete-notification"
-        headerText={i18n.t("notifications.tab.optionmodal.deletealert.text")}
+        headerText={i18n.t(
+          "tabs.notifications.tab.optionmodal.deletealert.text"
+        )}
         confirmButtonText={`${i18n.t(
-          "notifications.tab.optionmodal.deletealert.accept"
+          "tabs.notifications.tab.optionmodal.deletealert.accept"
         )}`}
         cancelButtonText={`${i18n.t(
-          "notifications.tab.optionmodal.deletealert.cancel"
+          "tabs.notifications.tab.optionmodal.deletealert.cancel"
         )}`}
         actionCancel={() => setOpenAlert(false)}
         actionConfirm={removeNotification}

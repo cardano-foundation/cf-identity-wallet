@@ -213,12 +213,12 @@ const IdentifierStage1 = ({
         isOpen={alertDeleteOpen}
         setIsOpen={setAlertDeleteOpen}
         dataTestId="alert-confirm-identifier-delete-details"
-        headerText={i18n.t("identifiers.details.delete.alert.title")}
+        headerText={i18n.t("tabs.identifiers.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
-          "identifiers.details.delete.alert.confirm"
+          "tabs.identifiers.details.delete.alert.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "identifiers.details.delete.alert.cancel"
+          "tabs.identifiers.details.delete.alert.cancel"
         )}`}
         actionConfirm={() => handleAuthentication()}
         actionCancel={() => setAlertDeleteOpen(false)}

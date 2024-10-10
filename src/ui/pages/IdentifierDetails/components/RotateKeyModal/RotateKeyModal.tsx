@@ -54,23 +54,25 @@ const RotateKeyModal = ({
         componentId="rotate-keys"
         header={{
           closeButton: true,
-          closeButtonLabel: `${i18n.t("identifiers.details.rotatekeys.done")}`,
+          closeButtonLabel: `${i18n.t(
+            "tabs.identifiers.details.rotatekeys.done"
+          )}`,
           closeButtonAction: () => {
             onClose();
           },
-          title: `${i18n.t("identifiers.details.options.rotatekeys")}`,
+          title: `${i18n.t("tabs.identifiers.details.options.rotatekeys")}`,
         }}
       >
         <p className="description">
-          {i18n.t("identifiers.details.rotatekeys.description")}
+          {i18n.t("tabs.identifiers.details.rotatekeys.description")}
         </p>
         <CardDetailsBlock
-          title={i18n.t("identifiers.details.signingkeyslist.title")}
+          title={i18n.t("tabs.identifiers.details.signingkeyslist.title")}
         >
           <CardDetailsItem
             info={signingKey}
             copyButton={true}
-            textIcon="identifiers.details.signingkeyslist.icon"
+            textIcon="tabs.identifiers.details.signingkeyslist.icon"
             testId={"signing-key"}
           />
           <Spinner show={loading} />
@@ -87,7 +89,7 @@ const RotateKeyModal = ({
             slot="start"
             icon={refreshOutline}
           />
-          {i18n.t("identifiers.details.options.rotatekeys")}
+          {i18n.t("tabs.identifiers.details.options.rotatekeys")}
         </IonButton>
       </OptionModal>
       <Verification

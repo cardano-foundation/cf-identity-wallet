@@ -108,34 +108,48 @@ describe("Settings page", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.changepin.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin.title
+      )
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.biometry)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.biometry
+      )
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.managepassword.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+          .title
+      )
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.seedphrase.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase
+          .title
+      )
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.contact)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.contact)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.learnmore)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.learnmore
+      )
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.terms.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.terms.title
+      )
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.version)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.version)
     ).toBeInTheDocument();
   });
 
@@ -169,7 +183,9 @@ describe("Settings page", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.biometry)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.biometry
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -258,7 +274,9 @@ describe("Settings page", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.biometry)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.biometry
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -330,7 +348,9 @@ describe("Settings page", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.biometry)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.biometry
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -350,11 +370,13 @@ describe("Settings page", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.contact)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.contact)
     ).toBeInTheDocument();
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.learnmore)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.learnmore
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -389,7 +411,9 @@ describe("Settings page", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.support.terms.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.support.terms.title
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -401,7 +425,10 @@ describe("Settings page", () => {
     });
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.managepassword.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+          .title
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -415,7 +442,10 @@ describe("Settings page", () => {
     });
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.seedphrase.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase
+          .title
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -438,7 +468,9 @@ describe("Settings page", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.changepin.title)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin.title
+      )
     ).toBeInTheDocument();
 
     act(() => {
@@ -454,7 +486,8 @@ describe("Settings page", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.settings.sections.security.changepin.createpasscode
+          EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
+            .createpasscode
         )
       ).toBeVisible();
     });

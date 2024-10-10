@@ -126,7 +126,7 @@ describe("Identifiers Tab", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.identifiers.tab.favourites)
+      getByText(EN_TRANSLATIONS.tabs.identifiers.tab.favourites)
     ).toBeInTheDocument();
   });
 
@@ -141,7 +141,7 @@ describe("Identifiers Tab", () => {
 
     expect(getByTestId("identifiers-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.identifiers.tab.title)
+      getByText(EN_TRANSLATIONS.tabs.identifiers.tab.title)
     ).toBeInTheDocument();
     expect(getByTestId("connections-button")).toBeInTheDocument();
     expect(getByTestId("add-button")).toBeInTheDocument();
@@ -211,7 +211,9 @@ describe("Identifiers Tab", () => {
       jest.advanceTimersByTime(NAVIGATION_DELAY);
     });
 
-    expect(getByText(EN_TRANSLATIONS.identifiers.details.done)).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.identifiers.details.done)
+    ).toBeVisible();
 
     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
 
@@ -220,7 +222,9 @@ describe("Identifiers Tab", () => {
     act(() => {
       fireEvent.click(doneButton);
     });
-    expect(queryByText(EN_TRANSLATIONS.identifiers.tab.title)).toBeVisible();
+    expect(
+      queryByText(EN_TRANSLATIONS.tabs.identifiers.tab.title)
+    ).toBeVisible();
   });
 
   test("Open multisig", async () => {
@@ -424,25 +428,27 @@ describe("Identifiers Tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.identifiers.detelepending.title)
+        getByText(EN_TRANSLATIONS.tabs.identifiers.detelepending.title)
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.identifiers.detelepending.description)
+        getByText(EN_TRANSLATIONS.tabs.identifiers.detelepending.description)
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.identifiers.detelepending.button)
+        getByText(EN_TRANSLATIONS.tabs.identifiers.detelepending.button)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.identifiers.detelepending.button)
+        getByText(EN_TRANSLATIONS.tabs.identifiers.detelepending.button)
       );
     });
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.identifiers.detelepending.secondchecktitle)
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.detelepending.secondchecktitle
+        )
       ).toBeVisible();
     });
 
@@ -515,7 +521,9 @@ describe("Identifiers Tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.identifiers.detelepending.mutilsigdescription)
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.detelepending.mutilsigdescription
+        )
       ).toBeVisible();
     });
   });

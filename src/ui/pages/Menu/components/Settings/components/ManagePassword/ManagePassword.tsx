@@ -100,11 +100,13 @@ const ManagePassword = () => {
             data-testid={"settings-item-toggle-password"}
           >
             <IonLabel>
-              {i18n.t("settings.sections.security.managepassword.page.enable")}
+              {i18n.t(
+                "tabs.menu.tab.settings.sections.security.managepassword.page.enable"
+              )}
             </IonLabel>
             <IonToggle
               aria-label={`${i18n.t(
-                "settings.sections.security.managepassword.page.enable"
+                "tabs.menu.tab.settings.sections.security.managepassword.page.enable"
               )}`}
               className="toggle-button"
               checked={passwordIsSet}
@@ -124,7 +126,7 @@ const ManagePassword = () => {
               data-testid={"settings-item-change-password"}
             >
               <IonLabel>{`${i18n.t(
-                "settings.sections.security.managepassword.page.change"
+                "tabs.menu.tab.settings.sections.security.managepassword.page.change"
               )}`}</IonLabel>
 
               <IonIcon
@@ -141,13 +143,13 @@ const ManagePassword = () => {
         setIsOpen={setAlertEnableIsOpen}
         dataTestId="alert-cancel-enable-password"
         headerText={`${i18n.t(
-          "settings.sections.security.managepassword.page.alert.enablemessage"
+          "tabs.menu.tab.settings.sections.security.managepassword.page.alert.enablemessage"
         )}`}
         confirmButtonText={`${i18n.t(
-          "settings.sections.security.managepassword.page.alert.confirm"
+          "tabs.menu.tab.settings.sections.security.managepassword.page.alert.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "settings.sections.security.managepassword.page.alert.cancel"
+          "tabs.menu.tab.settings.sections.security.managepassword.page.alert.cancel"
         )}`}
         actionConfirm={() => setVerifyPasscodeIsOpen(true)}
         actionCancel={handleClear}
@@ -158,13 +160,13 @@ const ManagePassword = () => {
         setIsOpen={setAlertDisableIsOpen}
         dataTestId="alert-cancel"
         headerText={`${i18n.t(
-          "settings.sections.security.managepassword.page.alert.disablemessage"
+          "tabs.menu.tab.settings.sections.security.managepassword.page.alert.disablemessage"
         )}`}
         confirmButtonText={`${i18n.t(
-          "settings.sections.security.managepassword.page.alert.confirm"
+          "tabs.menu.tab.settings.sections.security.managepassword.page.alert.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "settings.sections.security.managepassword.page.alert.cancel"
+          "tabs.menu.tab.settings.sections.security.managepassword.page.alert.cancel"
         )}`}
         actionConfirm={() => setVerifyPasswordIsOpen(true)}
         actionCancel={handleClear}

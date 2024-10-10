@@ -58,7 +58,8 @@ describe("Side Page: wallet connect", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.title
+          EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.request.stageone
+            .title
         )
       ).toBeInTheDocument();
     });

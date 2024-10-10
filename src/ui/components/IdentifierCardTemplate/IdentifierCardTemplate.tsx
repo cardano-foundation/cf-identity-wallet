@@ -65,7 +65,7 @@ const IdentifierCardTemplate = ({
         <div className="card-footer">
           <span className="card-footer-column">
             <span className="card-footer-column-label">
-              {i18n.t("identifiers.layout.created")}
+              {i18n.t("tabs.identifiers.layout.created")}
             </span>
             <span
               className="card-footer-column-info"

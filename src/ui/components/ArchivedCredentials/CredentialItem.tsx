@@ -78,7 +78,7 @@ const CredentialItem = ({
               onRestore(credential.id);
             }}
           >
-            {i18n.t("credentials.archived.restore")}
+            {i18n.t("tabs.credentials.archived.restore")}
           </IonItemOption>
         )}
         <IonItemOption
@@ -87,7 +87,7 @@ const CredentialItem = ({
             onDelete(credential.id);
           }}
         >
-          {i18n.t("credentials.archived.delete")}
+          {i18n.t("tabs.credentials.archived.delete")}
         </IonItemOption>
       </IonItemOptions>
     </IonItemSliding>

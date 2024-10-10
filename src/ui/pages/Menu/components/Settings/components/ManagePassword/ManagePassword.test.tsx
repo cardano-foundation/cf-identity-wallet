@@ -11,7 +11,7 @@ import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { KeyStoreKeys } from "../../../../../../../core/storage";
-import ENG_trans from "../../../../../../../locales/en/en.json";
+import TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { RoutePath } from "../../../../../../../routes";
 import { CustomInputProps } from "../../../../../../components/CustomInput/CustomInput.types";
 import { OperationType } from "../../../../../../globals/types";
@@ -131,8 +131,8 @@ describe("Manage password", () => {
     await waitFor(() => {
       expect(
         getByText(
-          ENG_trans.settings.sections.security.managepassword.page.alert
-            .enablemessage
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+            .page.alert.enablemessage
         )
       ).toBeVisible();
     });
@@ -238,8 +238,8 @@ describe("Manage password", () => {
     await waitFor(() => {
       expect(
         getByText(
-          ENG_trans.settings.sections.security.managepassword.page.alert
-            .disablemessage
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.managepassword
+            .page.alert.disablemessage
         )
       ).toBeVisible();
     });

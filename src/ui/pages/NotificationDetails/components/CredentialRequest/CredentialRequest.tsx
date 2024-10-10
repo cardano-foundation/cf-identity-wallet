@@ -95,10 +95,10 @@ const CredentialRequest = ({
         setIsOpen={setIsOpenAlert}
         dataTestId="alert-empty-cred"
         headerText={i18n.t(
-          "notifications.details.credential.request.alert.text"
+          "tabs.notifications.details.credential.request.alert.text"
         )}
         confirmButtonText={`${i18n.t(
-          "notifications.details.credential.request.alert.confirm"
+          "tabs.notifications.details.credential.request.alert.confirm"
         )}`}
         actionConfirm={handleClose}
         actionDismiss={handleClose}

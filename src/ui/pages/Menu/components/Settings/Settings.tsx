@@ -54,17 +54,21 @@ const Settings = ({ switchView }: SettingsProps) => {
     {
       index: OptionIndex.ChangePin,
       icon: lockClosedOutline,
-      label: i18n.t("settings.sections.security.changepin.title"),
+      label: i18n.t("tabs.menu.tab.settings.sections.security.changepin.title"),
     },
     {
       index: OptionIndex.ManagePassword,
       icon: informationCircleOutline,
-      label: i18n.t("settings.sections.security.managepassword.title"),
+      label: i18n.t(
+        "tabs.menu.tab.settings.sections.security.managepassword.title"
+      ),
     },
     {
       index: OptionIndex.RecoverySeedPhrase,
       icon: keyOutline,
-      label: i18n.t("settings.sections.security.seedphrase.title"),
+      label: i18n.t(
+        "tabs.menu.tab.settings.sections.security.seedphrase.title"
+      ),
     },
   ];
 
@@ -72,7 +76,7 @@ const Settings = ({ switchView }: SettingsProps) => {
     securityItems.unshift({
       index: OptionIndex.BiometricUpdate,
       icon: fingerPrintOutline,
-      label: i18n.t("settings.sections.security.biometry"),
+      label: i18n.t("tabs.menu.tab.settings.sections.security.biometry"),
       actionIcon: (
         <IonToggle
           aria-label="Biometric Toggle"
@@ -87,22 +91,22 @@ const Settings = ({ switchView }: SettingsProps) => {
     {
       index: OptionIndex.Documentation,
       icon: libraryOutline,
-      label: i18n.t("settings.sections.support.learnmore"),
+      label: i18n.t("tabs.menu.tab.settings.sections.support.learnmore"),
     },
     {
       index: OptionIndex.Term,
       icon: checkboxOutline,
-      label: i18n.t("settings.sections.support.terms.title"),
+      label: i18n.t("tabs.menu.tab.settings.sections.support.terms.title"),
     },
     {
       index: OptionIndex.Contact,
       icon: logoDiscord,
-      label: i18n.t("settings.sections.support.contact"),
+      label: i18n.t("tabs.menu.tab.settings.sections.support.contact"),
     },
     {
       index: OptionIndex.Version,
       icon: layersOutline,
-      label: i18n.t("settings.sections.support.version"),
+      label: i18n.t("tabs.menu.tab.settings.sections.support.version"),
       note: pJson.version,
     },
   ];
@@ -216,7 +220,7 @@ const Settings = ({ switchView }: SettingsProps) => {
   return (
     <>
       <div className="settings-section-title">
-        {i18n.t("settings.sections.security.title")}
+        {i18n.t("tabs.menu.tab.settings.sections.security.title")}
       </div>
       <IonCard>
         <IonList
@@ -235,7 +239,7 @@ const Settings = ({ switchView }: SettingsProps) => {
         </IonList>
       </IonCard>
       <div className="settings-section-title">
-        {i18n.t("settings.sections.support.title")}
+        {i18n.t("tabs.menu.tab.settings.sections.support.title")}
       </div>
       <IonCard>
         <IonList

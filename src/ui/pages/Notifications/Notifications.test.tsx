@@ -113,16 +113,16 @@ describe("Notifications Tab", () => {
 
     expect(getByTestId("notifications-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.notifications.tab.header)
+      getByText(EN_TRANSLATIONS.tabs.notifications.tab.header)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.notifications.tab.chips.all)
+      getByText(EN_TRANSLATIONS.tabs.notifications.tab.chips.all)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.notifications.tab.chips.identifiers)
+      getByText(EN_TRANSLATIONS.tabs.notifications.tab.chips.identifiers)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.notifications.tab.chips.credentials)
+      getByText(EN_TRANSLATIONS.tabs.notifications.tab.chips.credentials)
     ).toBeInTheDocument();
     expect(queryByTestId("notifications-tab-section-new")).toBeNull();
     expect(queryByTestId("notifications-tab-section-earlier")).toBeNull();

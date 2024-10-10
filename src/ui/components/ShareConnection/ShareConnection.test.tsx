@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { act } from "react";
-import ENG_trans from "../../../locales/en/en.json";
+import TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
@@ -64,7 +64,7 @@ describe("Share Indentifier", () => {
 
     await waitFor(() => {
       expect(
-        getByText(ENG_trans.shareidentifier.subtitle.identifier)
+        getByText(TRANSLATIONS.shareidentifier.subtitle.identifier)
       ).toBeVisible();
       expect(getByTestId("share-connection-modal")).toBeInTheDocument();
       expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
@@ -94,7 +94,7 @@ describe("Share Indentifier", () => {
 
     await waitFor(() => {
       expect(
-        getByText(ENG_trans.shareidentifier.subtitle.identifier)
+        getByText(TRANSLATIONS.shareidentifier.subtitle.identifier)
       ).toBeVisible();
       expect(getByTestId("share-connection-modal")).toBeInTheDocument();
       expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
@@ -115,7 +115,7 @@ describe("Share Indentifier", () => {
 
     await waitFor(() => {
       expect(
-        getByText(ENG_trans.shareidentifier.subtitle.connection)
+        getByText(TRANSLATIONS.shareidentifier.subtitle.connection)
       ).toBeVisible();
       expect(getByTestId("share-connection-modal")).toBeInTheDocument();
       expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();

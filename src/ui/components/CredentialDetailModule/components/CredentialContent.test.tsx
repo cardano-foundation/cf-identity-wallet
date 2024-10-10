@@ -14,12 +14,16 @@ describe("Creds content", () => {
       </Provider>
     );
     expect(getByTestId("card-details-credential-type")).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.credentials.details.title)).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.title)
+    ).toBeVisible();
     expect(getByText("Qualified vLEI Issuer Credential")).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.credentials.details.description)
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.description)
     ).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.credentials.details.id)).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.id)
+    ).toBeVisible();
     expect(
       getByText("EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv")
     ).toBeVisible();
@@ -29,7 +33,7 @@ describe("Creds content", () => {
       )
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.credentials.details.attributes.label)
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.attributes.label)
     ).toBeVisible();
     expect(
       getByText("EJWgO4hwKxNMxu2aUpmGFMozKt9Eq2Jz8n-xXR7CYtY_")
@@ -44,16 +48,16 @@ describe("Creds content", () => {
       getByText("EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5")
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.credentials.details.status.label)
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.status.label)
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.credentials.details.status.label + ":")
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.status.label + ":")
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.credentials.details.status.timestamp + ":")
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.status.timestamp + ":")
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.credentials.details.status.issued)
+      getByText(EN_TRANSLATIONS.tabs.credentials.details.status.issued)
     ).toBeVisible();
     const lastStatus = `${formatShortDate(
       credsFixAcdc[0].lastStatus.dt

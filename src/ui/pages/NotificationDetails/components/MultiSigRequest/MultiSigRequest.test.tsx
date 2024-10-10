@@ -114,7 +114,7 @@ describe("Multisign request", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.notifications.details.identifier.title)
+        getByText(EN_TRANSLATIONS.tabs.notifications.details.identifier.title)
       ).toBeVisible();
     });
 
@@ -125,7 +125,8 @@ describe("Multisign request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.identifier.alert.textdecline
+          EN_TRANSLATIONS.tabs.notifications.details.identifier.alert
+            .textdecline
         )
       ).toBeVisible();
     });
@@ -161,7 +162,7 @@ describe("Multisign request", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.notifications.details.identifier.title)
+        getByText(EN_TRANSLATIONS.tabs.notifications.details.identifier.title)
       ).toBeVisible();
     });
 
@@ -227,7 +228,7 @@ describe("Multisign request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.identifier.errorpage.title
+          EN_TRANSLATIONS.tabs.notifications.details.identifier.errorpage.title
         )
       ).toBeVisible();
     });

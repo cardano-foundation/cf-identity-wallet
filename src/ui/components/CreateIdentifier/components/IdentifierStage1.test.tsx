@@ -463,13 +463,15 @@ describe("Identifier Stage 1", () => {
 
       await waitFor(() => {
         expect(
-          getByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)
+          getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
         ).toBeInTheDocument();
       });
 
       act(() => {
         fireEvent.click(
-          getByText(EN_TRANSLATIONS.identifiers.details.delete.alert.confirm)
+          getByText(
+            EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.confirm
+          )
         );
       });
 

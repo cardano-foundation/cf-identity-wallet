@@ -21,8 +21,12 @@ const RecoverySeedPhrase = ({ onClose }: RecoverySeedPhraseProps) => {
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
 
   const footerButtonLabel = hideSeedPhrase
-    ? i18n.t("settings.sections.security.seedphrase.page.button.view")
-    : i18n.t("settings.sections.security.seedphrase.page.button.hide");
+    ? i18n.t(
+      "tabs.menu.tab.settings.sections.security.seedphrase.page.button.view"
+    )
+    : i18n.t(
+      "tabs.menu.tab.settings.sections.security.seedphrase.page.button.hide"
+    );
 
   const loadSeedPhrase = useCallback(async () => {
     try {
@@ -55,18 +59,24 @@ const RecoverySeedPhrase = ({ onClose }: RecoverySeedPhraseProps) => {
         <CardDetailsBlock className="user-tips">
           <div>
             <p>
-              {i18n.t("settings.sections.security.seedphrase.page.tips.label")}
+              {i18n.t(
+                "tabs.menu.tab.settings.sections.security.seedphrase.page.tips.label"
+              )}
             </p>
             <ol className="tips">
               <li>
-                {i18n.t("settings.sections.security.seedphrase.page.tips.one")}
-              </li>
-              <li>
-                {i18n.t("settings.sections.security.seedphrase.page.tips.two")}
+                {i18n.t(
+                  "tabs.menu.tab.settings.sections.security.seedphrase.page.tips.one"
+                )}
               </li>
               <li>
                 {i18n.t(
-                  "settings.sections.security.seedphrase.page.tips.three"
+                  "tabs.menu.tab.settings.sections.security.seedphrase.page.tips.two"
+                )}
+              </li>
+              <li>
+                {i18n.t(
+                  "tabs.menu.tab.settings.sections.security.seedphrase.page.tips.three"
                 )}
               </li>
             </ol>
@@ -82,7 +92,7 @@ const RecoverySeedPhrase = ({ onClose }: RecoverySeedPhraseProps) => {
           testId="seed-phrase-container"
           seedPhrase={seedPhrase}
           overlayText={`${i18n.t(
-            "settings.sections.security.seedphrase.page.hiddentext"
+            "tabs.menu.tab.settings.sections.security.seedphrase.page.hiddentext"
           )}`}
           hideSeedPhrase={hideSeedPhrase}
           setHideSeedPhrase={setHideSeedPhrase}

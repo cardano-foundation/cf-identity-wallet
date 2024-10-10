@@ -129,7 +129,7 @@ describe("Credential request - choose request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.credential.request
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
             .choosecredential.title
         )
       ).toBeVisible();
@@ -171,7 +171,7 @@ describe("Credential request - choose request", () => {
     await waitFor(() =>
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.credential.request.choosecredential.norevoked.replace(
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request.choosecredential.norevoked.replace(
             "{{requestCred}}",
             credRequestFix.schema.name
           )
@@ -207,7 +207,7 @@ describe("Credential request - choose request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.credential.request
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
             .choosecredential.title
         )
       ).toBeVisible();
@@ -279,7 +279,7 @@ describe("Credential request - choose request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.credential.request
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
             .choosecredential.title
         )
       ).toBeVisible();
@@ -313,7 +313,7 @@ describe("Credential request - choose request", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(EN_TRANSLATIONS.credentials.details.done));
+      fireEvent.click(getByText(EN_TRANSLATIONS.tabs.credentials.details.done));
     });
 
     await waitFor(() => {
@@ -352,7 +352,7 @@ describe("Credential request - choose request", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(EN_TRANSLATIONS.credentials.details.done));
+      fireEvent.click(getByText(EN_TRANSLATIONS.tabs.credentials.details.done));
     });
 
     await waitFor(() => {
@@ -419,7 +419,7 @@ describe("Credential request - choose request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.credential.request
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
             .choosecredential.title
         )
       ).toBeVisible();
@@ -531,7 +531,7 @@ describe("Credential request - choose request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.credential.request
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
             .choosecredential.title
         )
       ).toBeVisible();
@@ -539,7 +539,7 @@ describe("Credential request - choose request", () => {
 
     expect(
       getByText(
-        EN_TRANSLATIONS.notifications.details.credential.request.choosecredential.noactive.replace(
+        EN_TRANSLATIONS.tabs.notifications.details.credential.request.choosecredential.noactive.replace(
           "{{requestCred}}",
           credRequestFix.schema.name
         )

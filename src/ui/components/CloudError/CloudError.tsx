@@ -9,9 +9,9 @@ const CloudError = ({ pageId, header, children }: CloudErrorProps) => {
   const getMessage = (pageId: string) => {
     switch (pageId) {
     case "identifier-card-details":
-      return i18n.t("identifiers.details.clouderror");
+      return i18n.t("tabs.identifiers.details.clouderror");
     case "credential-card-details":
-      return i18n.t("credentials.details.clouderror");
+      return i18n.t("tabs.credentials.details.clouderror");
     case "connection-details":
       return i18n.t("connections.details.clouderror");
     default:

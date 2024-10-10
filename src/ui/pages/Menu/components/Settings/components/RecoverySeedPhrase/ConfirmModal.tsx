@@ -66,11 +66,11 @@ const ConfirmModal = ({
     () => ({
       closeButton: true,
       closeButtonLabel: `${i18n.t(
-        "settings.sections.security.seedphrase.page.confirmmodal.button.cancel"
+        "tabs.menu.tab.settings.sections.security.seedphrase.page.confirmmodal.button.cancel"
       )}`,
       closeButtonAction: resetModal,
       title: `${i18n.t(
-        "settings.sections.security.seedphrase.page.confirmmodal.title"
+        "tabs.menu.tab.settings.sections.security.seedphrase.page.confirmmodal.title"
       )}`,
     }),
     [resetModal]
@@ -92,13 +92,13 @@ const ConfirmModal = ({
       >
         <p className="subtitle">
           {i18n.t(
-            "settings.sections.security.seedphrase.page.confirmmodal.subtitle"
+            "tabs.menu.tab.settings.sections.security.seedphrase.page.confirmmodal.subtitle"
           )}
         </p>
         <IonList>
           <ConditionItem
             text={i18n.t(
-              "settings.sections.security.seedphrase.page.confirmmodal.firstcondition"
+              "tabs.menu.tab.settings.sections.security.seedphrase.page.confirmmodal.firstcondition"
             )}
             index={0}
             checked={confirmCondition[0]}
@@ -106,7 +106,7 @@ const ConfirmModal = ({
           />
           <ConditionItem
             text={i18n.t(
-              "settings.sections.security.seedphrase.page.confirmmodal.secondcondition"
+              "tabs.menu.tab.settings.sections.security.seedphrase.page.confirmmodal.secondcondition"
             )}
             index={1}
             checked={confirmCondition[1]}
@@ -114,7 +114,7 @@ const ConfirmModal = ({
           />
           <ConditionItem
             text={i18n.t(
-              "settings.sections.security.seedphrase.page.confirmmodal.thirdcondition"
+              "tabs.menu.tab.settings.sections.security.seedphrase.page.confirmmodal.thirdcondition"
             )}
             index={2}
             checked={confirmCondition[2]}
@@ -124,7 +124,7 @@ const ConfirmModal = ({
         <PageFooter
           pageId="confirm-view-seedpharse"
           primaryButtonText={`${i18n.t(
-            "settings.sections.security.seedphrase.page.confirmmodal.button.confirm"
+            "tabs.menu.tab.settings.sections.security.seedphrase.page.confirmmodal.button.confirm"
           )}`}
           primaryButtonAction={handleAuthentication}
           primaryButtonDisabled={!isAcceptAll}

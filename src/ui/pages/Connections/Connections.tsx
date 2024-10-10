@@ -214,9 +214,9 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
 
     const deletePendingCheckProps = useMemo(
       () => ({
-        title: i18n.t("connections.tab.detelepending.title"),
-        description: i18n.t("connections.tab.detelepending.description"),
-        button: i18n.t("connections.tab.detelepending.button"),
+        title: i18n.t("connections.page.detelepending.title"),
+        description: i18n.t("connections.page.detelepending.description"),
+        button: i18n.t("connections.page.detelepending.button"),
       }),
       []
     );
@@ -286,14 +286,14 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
               hardwareBackButtonConfig={backHardwareConfig}
               backButton={true}
               onBack={handleDone}
-              title={`${i18n.t("connections.tab.title")}`}
+              title={`${i18n.t("connections.page.title")}`}
               additionalButtons={<AdditionalButtons />}
             />
           }
         >
           {showPlaceholder ? (
             <CardsPlaceholder
-              buttonLabel={i18n.t("connections.tab.create")}
+              buttonLabel={i18n.t("connections.page.create")}
               buttonAction={handleConnectModal}
               testId={pageId}
             >
@@ -332,9 +332,9 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
           isOpen={openIdentifierMissingAlert}
           setIsOpen={setOpenIdentifierMissingAlert}
           dataTestId="alert-create-keri"
-          headerText={i18n.t("connections.tab.alert.message")}
-          confirmButtonText={`${i18n.t("connections.tab.alert.confirm")}`}
-          cancelButtonText={`${i18n.t("connections.tab.alert.cancel")}`}
+          headerText={i18n.t("connections.page.alert.message")}
+          confirmButtonText={`${i18n.t("connections.page.alert.confirm")}`}
+          cancelButtonText={`${i18n.t("connections.page.alert.cancel")}`}
           actionConfirm={handleCreateIdentifier}
           actionCancel={handleCloseAlert}
           actionDismiss={handleCloseAlert}
@@ -345,7 +345,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
           firstCheckProps={deletePendingCheckProps}
           onClose={() => setOpenDeletePendingAlert(false)}
           secondCheckTitle={`${i18n.t(
-            "connections.tab.detelepending.secondchecktitle"
+            "connections.page.detelepending.secondchecktitle"
           )}`}
           onDeletePendingItem={deleteConnection}
         />

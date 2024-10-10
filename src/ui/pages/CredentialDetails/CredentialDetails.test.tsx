@@ -247,12 +247,12 @@ describe("Cards Details page - archived credential", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS.credentials.details.restore)
+        queryByText(EN_TRANSLATIONS.tabs.credentials.details.restore)
       ).toBeVisible();
     });
 
     const restoreButton = getByText(
-      EN_TRANSLATIONS.credentials.details.restore
+      EN_TRANSLATIONS.tabs.credentials.details.restore
     );
 
     act(() => {
@@ -265,7 +265,9 @@ describe("Cards Details page - archived credential", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS.credentials.details.alert.restore.title)
+        queryByText(
+          EN_TRANSLATIONS.tabs.credentials.details.alert.restore.title
+        )
       ).toBeVisible();
     });
 
@@ -333,7 +335,7 @@ describe("Checking the Credential Details Page when information is missing from 
         getByTestId("credential-card-details-cloud-error-page")
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.credentials.details.clouderror, {
+        getByText(EN_TRANSLATIONS.tabs.credentials.details.clouderror, {
           normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
         })
       ).toBeVisible();

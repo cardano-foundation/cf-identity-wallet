@@ -63,7 +63,7 @@ describe("Earlier notifications", () => {
 
     expect(getByTestId("show-earlier-btn")).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.notifications.tab.sections.earlier.title)
+      getByText(EN_TRANSLATIONS.tabs.notifications.tab.sections.earlier.title)
     ).toBeVisible();
   });
 });

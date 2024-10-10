@@ -22,7 +22,9 @@ const TermsAndPrivacy = () => {
             data-testid="terms-modal-btn"
           >
             <IonLabel>
-              {i18n.t("settings.sections.support.terms.submenu.termsofuse")}
+              {i18n.t(
+                "tabs.menu.tab.settings.sections.support.terms.submenu.termsofuse"
+              )}
             </IonLabel>
             <IonIcon
               aria-hidden="true"
@@ -36,7 +38,9 @@ const TermsAndPrivacy = () => {
             data-testid="privacy-modal-btn"
           >
             <IonLabel>
-              {i18n.t("settings.sections.support.terms.submenu.privacy")}
+              {i18n.t(
+                "tabs.menu.tab.settings.sections.support.terms.submenu.privacy"
+              )}
             </IonLabel>
             <IonIcon
               aria-hidden="true"

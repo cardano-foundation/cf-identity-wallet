@@ -263,20 +263,22 @@ describe("Cards Details page (not multi-sig)", () => {
 
     act(() => {
       fireEvent.click(
-        getAllByText(EN_TRANSLATIONS.identifiers.details.options.delete)[0]
+        getAllByText(EN_TRANSLATIONS.tabs.identifiers.details.options.delete)[0]
       );
     });
 
     await waitFor(() => {
       expect(
-        getAllByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)[0]
+        getAllByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title
+        )[0]
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
         getAllByText(
-          EN_TRANSLATIONS.identifiers.details.delete.alert.confirm
+          EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.confirm
         )[0]
       );
     });
@@ -317,7 +319,7 @@ describe("Cards Details page (not multi-sig)", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)
+        getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
       ).toBeVisible();
     });
 
@@ -329,7 +331,7 @@ describe("Cards Details page (not multi-sig)", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.identifiers.details.delete.alert.title)
+        getByText(EN_TRANSLATIONS.tabs.identifiers.details.delete.alert.title)
       ).not.toBeVisible();
     });
   });
@@ -440,7 +442,9 @@ describe("Cards Details page (not multi-sig)", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.identifiers.details.rotatekeys.description)
+        getByText(
+          EN_TRANSLATIONS.tabs.identifiers.details.rotatekeys.description
+        )
       ).toBeVisible();
     });
 
@@ -614,7 +618,7 @@ describe("Checking the Identifier Details Page when information is missing from 
         getByTestId("identifier-card-details-cloud-error-page")
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.identifiers.details.clouderror, {
+        getByText(EN_TRANSLATIONS.tabs.identifiers.details.clouderror, {
           normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
         })
       ).toBeVisible();

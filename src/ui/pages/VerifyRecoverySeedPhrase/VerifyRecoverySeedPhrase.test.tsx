@@ -4,7 +4,7 @@ import { createMemoryHistory } from "history";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import ENG_Trans from "../../../locales/en/en.json";
+import TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { VerifyRecoverySeedPhrase } from "./VerifyRecoverySeedPhrase";
 import { setSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
@@ -86,7 +86,9 @@ describe("Verify Recovery Seed Phrase", () => {
       </Provider>
     );
 
-    expect(getByText(ENG_Trans.verifyrecoveryseedphrase.title)).toBeVisible();
+    expect(
+      getByText(TRANSLATIONS.verifyrecoveryseedphrase.title)
+    ).toBeVisible();
     for (let i = 0; i < SEED_PHRASE_LENGTH; i++) {
       act(() => {
         const input = getByTestId(`word-input-${i}`);
@@ -113,13 +115,13 @@ describe("Verify Recovery Seed Phrase", () => {
 
     expect(
       getByText(
-        ENG_Trans.verifyrecoveryseedphrase.button.continue
+        TRANSLATIONS.verifyrecoveryseedphrase.button.continue
       ).getAttribute("disabled")
     ).toBe("false");
 
     act(() => {
       fireEvent.click(
-        getByText(ENG_Trans.verifyrecoveryseedphrase.button.continue)
+        getByText(TRANSLATIONS.verifyrecoveryseedphrase.button.continue)
       );
     });
 

@@ -70,10 +70,10 @@ const CredentialRequestInformation = ({
             closeButton={true}
             closeButtonAction={onBack}
             closeButtonLabel={`${i18n.t(
-              "notifications.details.buttons.close"
+              "tabs.notifications.details.buttons.close"
             )}`}
             title={`${i18n.t(
-              "notifications.details.credential.request.information.title"
+              "tabs.notifications.details.credential.request.information.title"
             )}`}
           />
         }
@@ -82,11 +82,11 @@ const CredentialRequestInformation = ({
             pageId={pageId}
             customClass="credential-request-footer"
             primaryButtonText={`${i18n.t(
-              "notifications.details.buttons.accept"
+              "tabs.notifications.details.buttons.accept"
             )}`}
             primaryButtonAction={onAccept}
             secondaryButtonText={`${i18n.t(
-              "notifications.details.buttons.decline"
+              "tabs.notifications.details.buttons.decline"
             )}`}
             secondaryButtonAction={() => setAlertDeclineIsOpen(true)}
           />
@@ -96,7 +96,7 @@ const CredentialRequestInformation = ({
           <CardDetailsBlock
             className="request-from"
             title={`${i18n.t(
-              "notifications.details.credential.request.information.requestfrom"
+              "tabs.notifications.details.credential.request.information.requestfrom"
             )}`}
           >
             <div className="request-from-content">
@@ -107,7 +107,7 @@ const CredentialRequestInformation = ({
           <CardDetailsBlock
             className="credential-request"
             title={`${i18n.t(
-              "notifications.details.credential.request.information.requestedcredential"
+              "tabs.notifications.details.credential.request.information.requestedcredential"
             )}`}
           >
             <IonText className="requested-credential">
@@ -118,7 +118,7 @@ const CredentialRequestInformation = ({
             <CardDetailsBlock
               className="request-data"
               title={i18n.t(
-                "notifications.details.credential.request.information.informationrequired"
+                "tabs.notifications.details.credential.request.information.informationrequired"
               )}
             >
               <CardDetailsAttributes
@@ -139,10 +139,14 @@ const CredentialRequestInformation = ({
         setIsOpen={setAlertDeclineIsOpen}
         dataTestId="multisig-request-alert-decline"
         headerText={i18n.t(
-          "notifications.details.credential.request.information.alert.textdecline"
+          "tabs.notifications.details.credential.request.information.alert.textdecline"
         )}
-        confirmButtonText={`${i18n.t("notifications.details.buttons.decline")}`}
-        cancelButtonText={`${i18n.t("notifications.details.buttons.cancel")}`}
+        confirmButtonText={`${i18n.t(
+          "tabs.notifications.details.buttons.decline"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "tabs.notifications.details.buttons.cancel"
+        )}`}
         actionConfirm={() => handleDecline()}
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}

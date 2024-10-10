@@ -79,15 +79,20 @@ describe("ChangePin Modal", () => {
     expect(getByTestId("close-button")).toBeInTheDocument();
     expect(
       getByText(
-        EN_TRANSLATIONS.settings.sections.security.changepin.createpasscode
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
+          .createpasscode
       )
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.settings.sections.security.changepin.cancel)
+      getByText(
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
+          .cancel
+      )
     ).toBeInTheDocument();
     expect(
       getByText(
-        EN_TRANSLATIONS.settings.sections.security.changepin.description
+        EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
+          .description
       )
     ).toBeInTheDocument();
     expect(getByTestId("passcode-module-container")).toBeInTheDocument();
@@ -111,13 +116,17 @@ describe("ChangePin Modal", () => {
     await waitFor(() =>
       expect(
         queryByText(
-          EN_TRANSLATIONS.settings.sections.security.changepin.reenterpasscode
+          EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
+            .reenterpasscode
         )
       ).toBeInTheDocument()
     );
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS.settings.sections.security.changepin.back)
+        queryByText(
+          EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
+            .back
+        )
       ).toBeInTheDocument()
     );
     await waitFor(() =>
@@ -157,7 +166,8 @@ describe("ChangePin Modal", () => {
     await waitFor(() =>
       expect(
         queryByText(
-          EN_TRANSLATIONS.settings.sections.security.changepin.reenterpasscode
+          EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
+            .reenterpasscode
         )
       ).toBeInTheDocument()
     );
@@ -181,7 +191,10 @@ describe("ChangePin Modal", () => {
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.settings.sections.security.changepin.cancel)
+        getByText(
+          EN_TRANSLATIONS.tabs.menu.tab.settings.sections.security.changepin
+            .cancel
+        )
       );
     });
 

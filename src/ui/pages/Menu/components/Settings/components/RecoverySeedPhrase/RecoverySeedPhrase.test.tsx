@@ -5,7 +5,7 @@ import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { KeyStoreKeys } from "../../../../../../../core/storage";
-import ENG_trans from "../../../../../../../locales/en/en.json";
+import TRANSLATIONS from "../../../../../../../locales/en/en.json";
 import { RoutePath } from "../../../../../../../routes";
 import { OperationType } from "../../../../../../globals/types";
 import { passcodeFiller } from "../../../../../../utils/passcodeFiller";
@@ -83,22 +83,33 @@ describe("Recovery Phrase", () => {
     );
 
     expect(
-      getByText(ENG_trans.settings.sections.security.seedphrase.page.tips.one)
-    ).toBeVisible();
-    expect(
-      getByText(ENG_trans.settings.sections.security.seedphrase.page.tips.two)
-    ).toBeVisible();
-    expect(
-      getByText(ENG_trans.settings.sections.security.seedphrase.page.tips.three)
+      getByText(
+        TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+          .tips.one
+      )
     ).toBeVisible();
     expect(
       getByText(
-        ENG_trans.settings.sections.security.seedphrase.page.button.view
+        TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+          .tips.two
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+          .tips.three
+      )
+    ).toBeVisible();
+    expect(
+      getByText(
+        TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+          .button.view
       )
     ).toBeVisible();
     expect(
       queryByText(
-        ENG_trans.settings.sections.security.seedphrase.page.button.hide
+        TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+          .button.hide
       )
     ).toBe(null);
     expect(
@@ -115,14 +126,16 @@ describe("Recovery Phrase", () => {
 
     expect(
       getByText(
-        ENG_trans.settings.sections.security.seedphrase.page.button.view
+        TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+          .button.view
       )
     ).toBeVisible();
 
     act(() => {
       fireEvent.click(
         getByText(
-          ENG_trans.settings.sections.security.seedphrase.page.button.view
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+            .button.view
         )
       );
     });
@@ -166,7 +179,8 @@ describe("Recovery Phrase", () => {
       ).toBe(true);
       expect(
         queryByText(
-          ENG_trans.settings.sections.security.seedphrase.page.button.hide
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+            .button.hide
         )
       ).toBeVisible();
     });
@@ -174,7 +188,8 @@ describe("Recovery Phrase", () => {
     act(() => {
       fireEvent.click(
         getByText(
-          ENG_trans.settings.sections.security.seedphrase.page.button.hide
+          TRANSLATIONS.tabs.menu.tab.settings.sections.security.seedphrase.page
+            .button.hide
         )
       );
     });

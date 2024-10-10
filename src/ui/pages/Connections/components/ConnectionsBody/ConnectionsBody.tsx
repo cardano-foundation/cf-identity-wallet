@@ -53,7 +53,7 @@ const SearchInput = ({ onFocus, onInputChange, value }: SearchInputProps) => {
       onIonInput={(e) => {
         onInputChange(e.target.value || "");
       }}
-      placeholder={`${i18n.t("connections.tab.search.placeholder")}`}
+      placeholder={`${i18n.t("connections.page.search.placeholder")}`}
     />
   );
 };

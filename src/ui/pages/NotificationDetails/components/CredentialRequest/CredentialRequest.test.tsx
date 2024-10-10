@@ -79,8 +79,8 @@ describe("Credential request", () => {
 
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.credential.request.information
-            .title
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
+            .information.title
         )
       ).toBeVisible();
     });
@@ -92,7 +92,7 @@ describe("Credential request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.credential.request
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
             .choosecredential.title
         )
       ).toBeVisible();
@@ -134,8 +134,8 @@ describe("Credential request", () => {
 
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.credential.request.information
-            .title
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
+            .information.title
         )
       ).toBeVisible();
     });
@@ -147,7 +147,8 @@ describe("Credential request", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.credential.request.alert.text
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request.alert
+            .text
         )
       ).toBeVisible();
     });

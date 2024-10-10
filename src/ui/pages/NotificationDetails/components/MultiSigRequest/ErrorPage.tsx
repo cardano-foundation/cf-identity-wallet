@@ -58,7 +58,7 @@ const ErrorPage = ({
         onClick={() => Browser.open({ url: DISCORD_LINK })}
       >
         {i18n.t(
-          "notifications.details.identifier.errorpage.help.supportchannel"
+          "tabs.notifications.details.identifier.errorpage.help.supportchannel"
         )}
       </u>
     );
@@ -75,10 +75,10 @@ const ErrorPage = ({
             closeButton={true}
             closeButtonAction={handleBack}
             closeButtonLabel={`${i18n.t(
-              "notifications.details.buttons.close"
+              "tabs.notifications.details.buttons.close"
             )}`}
             title={`${i18n.t(
-              "notifications.details.identifier.errorpage.title"
+              "tabs.notifications.details.identifier.errorpage.title"
             )}`}
           />
         }
@@ -87,7 +87,7 @@ const ErrorPage = ({
             pageId={pageId}
             customClass="multisig-feedback-footer"
             primaryButtonText={`${i18n.t(
-              "notifications.details.identifier.errorpage.continuesetup"
+              "tabs.notifications.details.identifier.errorpage.continuesetup"
             )}`}
             primaryButtonAction={() => actionAccept()}
           />
@@ -95,7 +95,9 @@ const ErrorPage = ({
       >
         <CardDetailsBlock className="alert">
           <IonText className="alert-text">
-            {i18n.t("notifications.details.identifier.errorpage.alerttext")}
+            {i18n.t(
+              "tabs.notifications.details.identifier.errorpage.alerttext"
+            )}
           </IonText>
           <div className="alert-icon">
             <IonIcon
@@ -107,24 +109,24 @@ const ErrorPage = ({
         <div className="instructions">
           <h2 className="title">
             {i18n.t(
-              "notifications.details.identifier.errorpage.instructions.title"
+              "tabs.notifications.details.identifier.errorpage.instructions.title"
             )}
           </h2>
           <IonText className="detail-text">
             {i18n.t(
-              "notifications.details.identifier.errorpage.instructions.detailtext"
+              "tabs.notifications.details.identifier.errorpage.instructions.detailtext"
             )}
           </IonText>
           <CardDetailsBlock className="content">
             <ol className="instruction-list">
               <li>
                 {i18n.t(
-                  "notifications.details.identifier.errorpage.instructions.stepone"
+                  "tabs.notifications.details.identifier.errorpage.instructions.stepone"
                 )}
               </li>
               <li>
                 {i18n.t(
-                  "notifications.details.identifier.errorpage.instructions.steptwo"
+                  "tabs.notifications.details.identifier.errorpage.instructions.steptwo"
                 )}
               </li>
             </ol>
@@ -132,12 +134,14 @@ const ErrorPage = ({
         </div>
         <div className="help">
           <h2 className="title">
-            {i18n.t("notifications.details.identifier.errorpage.help.title")}
+            {i18n.t(
+              "tabs.notifications.details.identifier.errorpage.help.title"
+            )}
           </h2>
           <IonText className="detail-text">
             <Trans
               i18nKey={i18n.t(
-                "notifications.details.identifier.errorpage.help.detailtext"
+                "tabs.notifications.details.identifier.errorpage.help.detailtext"
               )}
               components={[<HandleDiscordLink key="" />]}
             />

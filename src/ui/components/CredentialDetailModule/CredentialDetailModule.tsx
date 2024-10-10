@@ -349,7 +349,9 @@ const CredentialDetailModule = ({
   };
 
   const actionButtonLabel = i18n.t(
-    isRevoked ? "credentials.details.delete" : "credentials.details.restore"
+    isRevoked
+      ? "tabs.credentials.details.delete"
+      : "tabs.credentials.details.restore"
   );
 
   const action = () => {
@@ -367,14 +369,16 @@ const CredentialDetailModule = ({
         header={
           <PageHeader
             closeButton={true}
-            closeButtonLabel={`${i18n.t("identifiers.details.done")}`}
+            closeButtonLabel={`${i18n.t("tabs.identifiers.details.done")}`}
             closeButtonAction={() => onClose?.(BackReason.DELETE)}
           />
         }
       >
         <PageFooter
           pageId={pageId}
-          deleteButtonText={`${i18n.t("credentials.details.button.delete")}`}
+          deleteButtonText={`${i18n.t(
+            "tabs.credentials.details.button.delete"
+          )}`}
           deleteButtonAction={() => handleDelete()}
         />
       </CloudError>
@@ -389,7 +393,7 @@ const CredentialDetailModule = ({
         header={
           <PageHeader
             closeButton
-            closeButtonLabel={`${i18n.t("credentials.details.done")}`}
+            closeButtonLabel={`${i18n.t("tabs.credentials.details.done")}`}
             closeButtonAction={() => onClose?.(BackReason.CLOSE)}
             additionalButtons={!isInactiveCred && <AdditionalButtons />}
             actionButton={isInactiveCred}
@@ -410,7 +414,7 @@ const CredentialDetailModule = ({
           <>
             {isRevoked && (
               <div className="revoked-alert">
-                {i18n.t("credentials.details.revoked")}
+                {i18n.t("tabs.credentials.details.revoked")}
               </div>
             )}
             <CredentialCardTemplate
@@ -428,13 +432,13 @@ const CredentialDetailModule = ({
                   pageId={pageId}
                   archiveButtonText={
                     !isInactiveCred
-                      ? `${i18n.t("credentials.details.button.archive")}`
+                      ? `${i18n.t("tabs.credentials.details.button.archive")}`
                       : ""
                   }
                   archiveButtonAction={() => handleArchive()}
                   deleteButtonText={
                     isInactiveCred
-                      ? `${i18n.t("credentials.details.button.delete")}`
+                      ? `${i18n.t("tabs.credentials.details.button.delete")}`
                       : ""
                   }
                   deleteButtonAction={() => handleDelete()}
@@ -455,18 +459,18 @@ const CredentialDetailModule = ({
         dataTestId="alert-delete-archive"
         headerText={i18n.t(
           isInactiveCred
-            ? "credentials.details.alert.delete.title"
-            : "credentials.details.alert.archive.title"
+            ? "tabs.credentials.details.alert.delete.title"
+            : "tabs.credentials.details.alert.archive.title"
         )}
         confirmButtonText={`${i18n.t(
           isInactiveCred
-            ? "credentials.details.alert.delete.confirm"
-            : "credentials.details.alert.archive.confirm"
+            ? "tabs.credentials.details.alert.delete.confirm"
+            : "tabs.credentials.details.alert.archive.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
           isInactiveCred
-            ? "credentials.details.alert.delete.cancel"
-            : "credentials.details.alert.archive.cancel"
+            ? "tabs.credentials.details.alert.delete.cancel"
+            : "tabs.credentials.details.alert.archive.cancel"
         )}`}
         actionConfirm={() => handleAuthentication()}
         actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
@@ -476,12 +480,12 @@ const CredentialDetailModule = ({
         isOpen={alertRestoreIsOpen}
         setIsOpen={setAlertRestoreIsOpen}
         dataTestId="alert-restore"
-        headerText={i18n.t("credentials.details.alert.restore.title")}
+        headerText={i18n.t("tabs.credentials.details.alert.restore.title")}
         confirmButtonText={`${i18n.t(
-          "credentials.details.alert.restore.confirm"
+          "tabs.credentials.details.alert.restore.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "credentials.details.alert.restore.cancel"
+          "tabs.credentials.details.alert.restore.cancel"
         )}`}
         actionConfirm={() => handleRestoreCredential()}
         actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
