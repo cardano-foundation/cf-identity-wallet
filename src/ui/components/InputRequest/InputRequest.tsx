@@ -143,10 +143,10 @@ const InputRequest = () => {
 
   const title = useMemo(() => {
     if (missingAliasUrl) {
-      return i18n.t("inputmodal.title.connectionalias");
+      return i18n.t("inputrequest.title.connectionalias");
     }
 
-    return i18n.t("inputmodal.title.username");
+    return i18n.t("inputrequest.title.username");
   }, [missingAliasUrl]);
 
   return (
@@ -162,7 +162,7 @@ const InputRequest = () => {
         <h3>{title}</h3>
         <CustomInput
           dataTestId={`${componentId}-input`}
-          title={`${i18n.t("inputmodal.input.title")}`}
+          title={`${i18n.t("inputrequest.input.title")}`}
           hiddenInput={false}
           autofocus={true}
           onChangeInput={setInputValue}
@@ -171,7 +171,7 @@ const InputRequest = () => {
         <PageFooter
           pageId={componentId}
           primaryButtonDisabled={inputValue.length === 0}
-          primaryButtonText={`${i18n.t("inputmodal.button.confirm")}`}
+          primaryButtonText={`${i18n.t("inputrequest.button.confirm")}`}
           primaryButtonAction={() => handleConfirm()}
         />
       </div>

@@ -111,8 +111,12 @@ describe("SetUserName component", () => {
         <InputRequest />
       </Provider>
     );
-    expect(getByText(EN_TRANSLATIONS.inputmodal.title.username)).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.inputmodal.button.confirm)).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.inputrequest.title.username)
+    ).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.inputrequest.button.confirm)
+    ).toBeVisible();
   });
 
   test("It should call handleConfirm when the primary button is clicked", async () => {
@@ -133,7 +137,7 @@ describe("SetUserName component", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(EN_TRANSLATIONS.inputmodal.button.confirm));
+      fireEvent.click(getByText(EN_TRANSLATIONS.inputrequest.button.confirm));
     });
 
     await waitFor(() => {
@@ -188,7 +192,7 @@ describe("SetUserName component", () => {
       });
 
     act(() => {
-      fireEvent.click(getByText(EN_TRANSLATIONS.inputmodal.button.confirm));
+      fireEvent.click(getByText(EN_TRANSLATIONS.inputrequest.button.confirm));
     });
 
     await waitFor(() => {
@@ -240,9 +244,11 @@ describe("Set connection alias", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.inputmodal.title.connectionalias)
+      getByText(EN_TRANSLATIONS.inputrequest.title.connectionalias)
     ).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.inputmodal.button.confirm)).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.inputrequest.button.confirm)
+    ).toBeVisible();
 
     act(() => {
       ionFireEvent.ionInput(
@@ -258,7 +264,7 @@ describe("Set connection alias", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(EN_TRANSLATIONS.inputmodal.button.confirm));
+      fireEvent.click(getByText(EN_TRANSLATIONS.inputrequest.button.confirm));
     });
 
     await waitFor(() => {
@@ -282,9 +288,11 @@ describe("Set connection alias", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.inputmodal.title.connectionalias)
+      getByText(EN_TRANSLATIONS.inputrequest.title.connectionalias)
     ).toBeVisible();
-    expect(getByText(EN_TRANSLATIONS.inputmodal.button.confirm)).toBeVisible();
+    expect(
+      getByText(EN_TRANSLATIONS.inputrequest.button.confirm)
+    ).toBeVisible();
 
     act(() => {
       ionFireEvent.ionInput(
@@ -300,7 +308,7 @@ describe("Set connection alias", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(EN_TRANSLATIONS.inputmodal.button.confirm));
+      fireEvent.click(getByText(EN_TRANSLATIONS.inputrequest.button.confirm));
     });
 
     await waitFor(() => {
