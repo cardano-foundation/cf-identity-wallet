@@ -466,7 +466,7 @@ describe("Ipex communication service of agent", () => {
       id: "abc123",
     });
     ipexOfferMock.mockResolvedValue(["offer", "sigs", "gend"]);
-    ipexSubmitOfferMock.mockResolvedValue({ name: "opName", done: true }),
+    ipexSubmitOfferMock.mockResolvedValue({ name: "opName", done: true });
     await ipexCommunicationService.offerAcdcFromApply(noti.id, {});
     expect(ipexOfferMock).toBeCalledWith({
       senderName: "abc123",
@@ -906,7 +906,7 @@ describe("Ipex communication service of agent", () => {
     );
   });
 
-  test("Should return accepted and membersJoined when linkedGroupRequests contain valid data", async () => {
+  test("Should return accepted and membersJoined when linkedGroupRequests from ipex/grant contain valid data", async () => {
     const id = "uuid";
     const date = new Date().toISOString();
     const notification = {
@@ -950,7 +950,7 @@ describe("Ipex communication service of agent", () => {
     });
   });
 
-  test("Should return accepted is False and membersJoined when linkedGroupRequests not available", async () => {
+  test("Should return accepted is False and membersJoined when linkedGroupRequests from ipex/grant not available", async () => {
     const id = "uuid";
     const date = new Date().toISOString();
     const notification = {
@@ -981,6 +981,150 @@ describe("Ipex communication service of agent", () => {
       accepted: false,
       membersJoined: [],
     });
+  });
+
+  test("Cannot get linkedGroupRequest from ipex/apply if the notification is missing in the DB", async () => {
+    const id = "uuid";
+    const date = new Date().toISOString();
+    const notification = {
+      id,
+      createdAt: date,
+      a: {
+        d: "d",
+      },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
+    };
+
+    notificationStorage.findById.mockResolvedValueOnce(null);
+
+    await expect(
+      ipexCommunicationService.getLinkedGroupFromIpexApply(notification.id)
+    ).rejects.toThrowError(
+      `${IpexCommunicationService.NOTIFICATION_NOT_FOUND} ${id}`
+    );
+  });
+
+  test("Should return accepted and membersJoined with each credential when linkedGroupRequests from ipex/apply contain valid data", async () => {
+    const id = "uuid";
+    const date = new Date().toISOString();
+    const notification = {
+      id,
+      createdAt: date,
+      a: {
+        d: "d",
+      },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
+    };
+
+    const applyNoteRecord = {
+      linkedGroupRequests: {
+        credentialSaid1: {
+          accepted: true,
+          saids: {
+            ipexOfferSaid1: [
+              ["memberA", "multisigExn1A"],
+              ["memberB", "multisigExn1B"],
+            ],
+            ipexOfferSaid2: [["memberA", "multisigExn2A"]],
+          },
+        },
+        credentialSaid2: {
+          accepted: true,
+          saids: {
+            ipexOfferSaid1: [["memberC", "multisigExn1C"]],
+            ipexOfferSaid2: [["memberD", "multisigExn2C"]],
+          },
+        },
+      },
+      a: { d: "d" },
+    };
+
+    notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
+
+    const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
+      notification.id
+    );
+
+    expect(result).toEqual({
+      credentialSaid1: {
+        accepted: true,
+        membersJoined: ["memberA", "memberB"],
+      },
+      credentialSaid2: {
+        accepted: true,
+        membersJoined: ["memberC", "memberD"],
+      },
+    });
+  });
+
+  test("Should return accepted is False and membersJoined with each credential when linkedGroupRequests from ipex/apply not available", async () => {
+    const id = "uuid";
+    const date = new Date().toISOString();
+    const notification = {
+      id,
+      createdAt: date,
+      a: {
+        d: "d",
+      },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
+    };
+
+    const applyNoteRecord = {
+      linkedGroupRequests: {
+        credentialSaid1: {
+          accepted: false,
+          saids: {},
+        },
+        credentialSaid2: {
+          accepted: false,
+          saids: {},
+        },
+      },
+    };
+
+    notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
+    const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
+      notification.id
+    );
+
+    expect(result).toEqual({
+      credentialSaid1: {
+        accepted: false,
+        membersJoined: [],
+      },
+      credentialSaid2: {
+        accepted: false,
+        membersJoined: [],
+      },
+    });
+  });
+
+  test("Should return empty object when linkedGroupRequests from ipex/apply is empty", async () => {
+    const id = "uuid";
+    const date = new Date().toISOString();
+    const notification = {
+      id,
+      createdAt: date,
+      a: {
+        d: "d",
+      },
+      connectionId: "EGR7Jm38EcsXRIidKDZBYDm_xox6eapfU1tqxdAUzkFd",
+      read: true,
+    };
+
+    const applyNoteRecord = {
+      linkedGroupRequests: {},
+    };
+
+    notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
+    const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
+      notification.id
+    );
+
+    expect(result).toEqual({});
   });
 
   test("Can accept ACDC from multisig exn", async () => {
@@ -1160,8 +1304,9 @@ describe("Ipex communication service of agent", () => {
       ipexAdmitSerder,
       ipexAdmitSig,
       ipexAdmitEnd,
-    ]),
-    (eventEmitter.emit = jest.fn());
+    ]);
+
+    eventEmitter.emit = jest.fn();
 
     saveOperationPendingMock.mockResolvedValueOnce({
       id: "opName",
