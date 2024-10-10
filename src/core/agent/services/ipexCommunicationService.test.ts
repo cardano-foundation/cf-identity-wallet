@@ -1018,7 +1018,7 @@ describe("Ipex communication service of agent", () => {
       read: true,
     };
 
-    const grantNoteRecord = {
+    const applyNoteRecord = {
       linkedGroupRequests: {
         credentialSaid1: {
           accepted: true,
@@ -1033,10 +1033,7 @@ describe("Ipex communication service of agent", () => {
         credentialSaid2: {
           accepted: true,
           saids: {
-            ipexOfferSaid1: [
-              ["memberC", "multisigExn1C"],
-              ["memberD", "multisigExn1D"],
-            ],
+            ipexOfferSaid1: [["memberC", "multisigExn1C"]],
             ipexOfferSaid2: [["memberD", "multisigExn2C"]],
           },
         },
@@ -1044,7 +1041,7 @@ describe("Ipex communication service of agent", () => {
       a: { d: "d" },
     };
 
-    notificationStorage.findById.mockResolvedValueOnce(grantNoteRecord);
+    notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
 
     const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
       notification.id
@@ -1075,7 +1072,7 @@ describe("Ipex communication service of agent", () => {
       read: true,
     };
 
-    const grantNoteRecord = {
+    const applyNoteRecord = {
       linkedGroupRequests: {
         credentialSaid1: {
           accepted: false,
@@ -1088,7 +1085,7 @@ describe("Ipex communication service of agent", () => {
       },
     };
 
-    notificationStorage.findById.mockResolvedValueOnce(grantNoteRecord);
+    notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
     const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
       notification.id
     );
@@ -1118,11 +1115,11 @@ describe("Ipex communication service of agent", () => {
       read: true,
     };
 
-    const grantNoteRecord = {
+    const applyNoteRecord = {
       linkedGroupRequests: {},
     };
 
-    notificationStorage.findById.mockResolvedValueOnce(grantNoteRecord);
+    notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
     const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
       notification.id
     );
