@@ -1595,8 +1595,7 @@
     "editidentifiererror": "Unable to update identifier",
     "failedupdateconnectionerror": "Failed to update connection",
     "duplicateconnectionerror": "Connection already established",
-    "groupidnotmatcherror": "Connection not part of this group",
-    "failedaddappinitstate": "Failed to add app init state"
+    "groupidnotmatcherror": "Connection not part of this group"
   },
   "request": {
     "sign": {

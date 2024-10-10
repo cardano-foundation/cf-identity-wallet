@@ -101,7 +101,6 @@ enum ToastMsgType {
   FAILED_UPDATE_CONNECTION = "failedupdateconnectionerror",
   DUPLICATE_CONNECTION = "duplicateconnectionerror",
   GROUP_ID_NOT_MATCH_ERROR = "groupidnotmatcherror",
-  FAILED_ADD_APP_INIT_STATE = "failedaddappinitstate",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {

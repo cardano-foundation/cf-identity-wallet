@@ -4,7 +4,10 @@ import { RoutePath } from "../../../routes";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  showGenericError,
+} from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { CreatePasscodeModule } from "../../components/CreatePasscodeModule";
 import { CreatePasscodeModuleRef } from "../../components/CreatePasscodeModule/CreatePasscodeModule.types";
@@ -13,10 +16,8 @@ import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayo
 import { useAppIonRouter } from "../../hooks";
 import "./SetPasscode.scss";
 import { getBackRoute } from "../../../routes/backRoute";
-import { showError } from "../../utils/error";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
-import { ToastMsgType } from "../../globals/types";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";
@@ -47,12 +48,7 @@ const SetPasscode = () => {
         },
       })
       .catch((e) => {
-        showError(
-          "Unable to save app init state",
-          e,
-          dispatch,
-          ToastMsgType.FAILED_ADD_APP_INIT_STATE
-        );
+        dispatch(showGenericError(true));
         throw e;
       });
     ionRouter.push(nextPath.pathname, "forward", "push");
