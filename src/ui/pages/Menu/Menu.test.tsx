@@ -58,6 +58,9 @@ const initialState = {
   connectionsCache: {
     connections: connectionsFix,
   },
+  walletConnectionsCache: {
+    showConnectWallet: false,
+  },
   identifiersCache: {
     identifiers: filteredIdentifierFix,
   },

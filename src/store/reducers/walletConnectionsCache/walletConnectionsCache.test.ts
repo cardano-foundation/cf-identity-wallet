@@ -24,6 +24,7 @@ describe("walletConnectionsCacheSlice", () => {
     connectedWallet: null,
     pendingConnection: null,
     isConnecting: false,
+    showConnectWallet: false,
   };
 
   it("should return the initial state", () => {

@@ -110,6 +110,9 @@ const initialState = {
       firstAppLaunch: false,
     },
   },
+  walletConnectionsCache: {
+    showConnectWallet: false,
+  },
 };
 
 const storeMocked = {
