@@ -151,7 +151,11 @@ describe("Create Identifier modal", () => {
     act(() => {
       fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
     });
-    expect(getByTestId("spinner-container")).toBeVisible();
+
+    await waitFor(() => {
+      expect(getByTestId("spinner-container")).toBeVisible();
+    });
+
     await waitFor(() => {
       expect(setModalIsOpen).toBeCalledWith(false);
     });

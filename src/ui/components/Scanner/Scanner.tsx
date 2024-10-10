@@ -44,7 +44,10 @@ import {
   setToastMsg,
   showConnections,
 } from "../../../store/reducers/stateCache";
-import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
+import {
+  setPendingConnection,
+  showConnectWallet,
+} from "../../../store/reducers/walletConnectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
 import { combineClassNames } from "../../utils/style";
@@ -126,8 +129,8 @@ const Scanner = forwardRef(
             id,
           })
         );
-        dispatch(setCurrentOperation(OperationType.IDLE));
-        handleReset && handleReset();
+        dispatch(showConnectWallet(true));
+        handleReset && handleReset(TabsRoutePath.MENU);
       } else {
         dispatch(setToastMsg(ToastMsgType.PEER_ID_ERROR));
       }

@@ -33,8 +33,6 @@ enum RequestType {
 // String enums as some of these map to i18n values (if relevant)
 enum OperationType {
   IDLE = "idle",
-  UPDATE_IDENTIFIER = "updateIdentifier",
-  DELETE_IDENTIFIER = "deleteIdentifier",
   DELETE_CONNECTION = "deleteConnection",
   ARCHIVE_CREDENTIAL = "archiveCredential",
   DELETE_CREDENTIAL = "deleteCredential",

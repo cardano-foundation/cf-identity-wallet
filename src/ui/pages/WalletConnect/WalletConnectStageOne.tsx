@@ -9,9 +9,11 @@ import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayo
 import { combineClassNames } from "../../utils/style";
 import "./WalletConnect.scss";
 import { WalletConnectStageOneProps } from "./WalletConnect.types";
-import { useAppDispatch } from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
 import { ANIMATION_DURATION } from "../../components/SideSlider/SideSlider.types";
+import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
+import { CreateIdentifier } from "../../components/CreateIdentifier";
 
 const WalletConnectStageOne = ({
   isOpen,
@@ -21,6 +23,13 @@ const WalletConnectStageOne = ({
 }: WalletConnectStageOneProps) => {
   const dispatch = useAppDispatch();
   const [openDeclineAlert, setOpenDeclineAlert] = useState(false);
+  const defaultIdentifierCache = useAppSelector(getIdentifiersCache).filter(
+    (identifier) => !identifier.multisigManageAid && !identifier.groupMetadata
+  );
+  const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
+    useState(false);
+  const [openIdentifierMissingAlert, setOpenIdentifierMissingAlert] =
+    useState<boolean>(false);
 
   const classes = combineClassNames(className, {
     show: !!isOpen,
@@ -40,7 +49,25 @@ const WalletConnectStageOne = ({
   };
 
   const handleAccept = () => {
+    if (defaultIdentifierCache.length === 0) {
+      setOpenIdentifierMissingAlert(true);
+      return;
+    }
+
     onAccept();
+  };
+
+  const closeIdentifierMissingAlert = () => {
+    setOpenIdentifierMissingAlert(false);
+  };
+
+  const handleCreateIdentifier = () => {
+    setOpenIdentifierMissingAlert(false);
+    setCreateIdentifierModalIsOpen(true);
+  };
+
+  const handleCloseCreateIdentifier = () => {
+    setCreateIdentifierModalIsOpen(false);
   };
 
   return (
@@ -107,6 +134,27 @@ const WalletConnectStageOne = ({
         actionConfirm={handleClose}
         actionCancel={() => setOpenDeclineAlert(false)}
         actionDismiss={() => setOpenDeclineAlert(false)}
+      />
+      <Alert
+        isOpen={openIdentifierMissingAlert}
+        setIsOpen={setOpenIdentifierMissingAlert}
+        dataTestId="missing-identifier-alert"
+        headerText={i18n.t(
+          "menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.message"
+        )}
+        confirmButtonText={`${i18n.t(
+          "menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "menu.tab.items.connectwallet.connectionhistory.missingidentifieralert.cancel"
+        )}`}
+        actionConfirm={handleCreateIdentifier}
+        actionCancel={closeIdentifierMissingAlert}
+        actionDismiss={closeIdentifierMissingAlert}
+      />
+      <CreateIdentifier
+        modalIsOpen={createIdentifierModalIsOpen}
+        setModalIsOpen={handleCloseCreateIdentifier}
       />
     </>
   );

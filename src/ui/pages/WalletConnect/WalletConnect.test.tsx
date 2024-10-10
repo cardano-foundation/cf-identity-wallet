@@ -1,19 +1,15 @@
-import { setupIonicReact } from "@ionic/react";
-import { mockIonicReact, waitForIonicReact } from "@ionic/react-test-utils";
+import { waitForIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
-import { store } from "../../../store";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { walletConnectionsFix } from "../../__fixtures__/walletConnectionsFix";
 import { WalletConnect } from "./WalletConnect";
 import { WalletConnectStageOne } from "./WalletConnectStageOne";
 import { WalletConnectStageTwo } from "./WalletConnectStageTwo";
-setupIonicReact();
-mockIonicReact();
 
 const identifierCache = [
   {
@@ -83,10 +79,29 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
 }));
 
 describe("Wallet Connect Stage One", () => {
+  const initialState = {
+    stateCache: {
+      routes: [TabsRoutePath.MENU],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+        passwordIsSet: false,
+      },
+    },
+    walletConnectionsCache: {
+      walletConnections: [],
+      pendingConnection: walletConnectionsFix[0],
+    },
+    identifiersCache: {
+      identifiers: identifierFix,
+    },
+  };
+
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
   const storeMocked = {
-    ...mockStore(store.getState()),
+    ...mockStore(initialState),
     dispatch: dispatchMock,
   };
 
@@ -178,6 +193,76 @@ describe("Wallet Connect Stage One", () => {
 
     await waitFor(() => {
       expect(handleCancel).toBeCalled();
+    });
+  });
+
+  test("Renders show missing identifier alert", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+      },
+      walletConnectionsCache: {
+        walletConnections: [],
+        pendingConnection: walletConnectionsFix[0],
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <WalletConnectStageOne
+          isOpen={true}
+          onAccept={handleAccept}
+          onClose={handleCancel}
+        />
+      </Provider>
+    );
+
+    expect(
+      getByText(
+        EN_TRANSLATIONS.menu.tab.items.connectwallet.request.stageone.title
+      )
+    ).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByTestId("primary-button-connect-wallet-stage-one"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+            .missingidentifieralert.message
+        )
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(
+          EN_TRANSLATIONS.menu.tab.items.connectwallet.connectionhistory
+            .missingidentifieralert.confirm
+        )
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.createidentifier.displayname.title)
+      ).toBeVisible();
     });
   });
 });

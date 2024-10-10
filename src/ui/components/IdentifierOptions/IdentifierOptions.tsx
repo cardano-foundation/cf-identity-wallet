@@ -49,7 +49,6 @@ const IdentifierOptions = ({
   };
 
   const updateIdentifier = () => {
-    dispatch(setCurrentOperation(OperationType.UPDATE_IDENTIFIER));
     setOptionsIsOpen(false);
     setEditorIsOpen(true);
   };
@@ -57,7 +56,6 @@ const IdentifierOptions = ({
   const deleteIdentifier = () => {
     setOptionsIsOpen(false);
     handleDelete();
-    dispatch(setCurrentOperation(OperationType.DELETE_IDENTIFIER));
   };
 
   const optionsRotate: OptionItem[] = [
