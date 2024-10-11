@@ -87,7 +87,7 @@ describe("test cases of bootAndConnect function", () => {
     mockSignifyClient.boot.mockResolvedValueOnce({ ok: true });
     mockSignifyClient.connect.mockRejectedValueOnce(new Error("Failed to fetch"));
 
-    await expect(agent.bootAndConnect(mockAgentUrls)).rejects.toThrowError(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
+    await expect(agent.bootAndConnect(mockAgentUrls)).rejects.toThrowError(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
 
     expect(mockSignifyClient.boot).toHaveBeenCalled();
     expect(mockSignifyClient.connect).toHaveBeenCalled();
@@ -215,7 +215,7 @@ describe("test cases of recoverKeriaAgent function", () => {
     mockSignifyClient.connect.mockRejectedValueOnce(new Error("Failed to fetch"));
 
     await expect(agent.recoverKeriaAgent(mockSeedPhrase, mockConnectUrl))
-      .rejects.toThrowError(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
+      .rejects.toThrowError(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
 
     expect(SecureStorage.set).not.toHaveBeenCalled();
   });

@@ -54,7 +54,8 @@ const walletId = "idw";
 class Agent {
   static readonly KERIA_CONNECTION_BROKEN =
     "The app is not connected to KERIA at the moment";
-  static readonly KERIA_BOOT_FAILED_BAD_NETWORK = "Failed to boot due to network connectivity";  
+  static readonly KERIA_BOOT_FAILED_BAD_NETWORK = "Failed to boot due to network connectivity";
+  static readonly KERIA_CONNECT_FAILED_BAD_NETWORK  = "Failed to connect due to network connectivity"
   static readonly KERIA_BOOT_FAILED = "Failed to boot signify client";
   static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT =
     "Signify client is already booted but cannot connect";
@@ -236,7 +237,7 @@ class Agent {
         /* eslint-disable no-console */
         console.error(e);
         if (e.message === "Failed to fetch") {
-          throw new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
+          throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
         }
         throw new Error(Agent.KERIA_CONNECTION_BROKEN);
       });
@@ -276,7 +277,7 @@ class Agent {
         /* eslint-disable no-console */
         console.error(e);
         if (e.message === "Failed to fetch") {
-          throw new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
+          throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
         }
         throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
       });
@@ -307,7 +308,7 @@ class Agent {
     } catch (error) {
       if (error instanceof Error) {
         if (error.message === "Failed to fetch") {
-          throw new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
+          throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
         }
         if (error.message === "Invalid mnemonic") {
           throw new Error(Agent.INVALID_MNEMONIC);
