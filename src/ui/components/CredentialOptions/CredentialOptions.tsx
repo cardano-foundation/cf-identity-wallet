@@ -22,7 +22,7 @@ const CredentialOptions = ({
   const options: OptionItem[] = [
     {
       icon: archiveOutline,
-      label: i18n.t("credentials.details.options.archive"),
+      label: i18n.t("tabs.credentials.details.options.archive"),
       onClick: () => {
         handleDelete();
         dispatch(setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL));
@@ -38,7 +38,7 @@ const CredentialOptions = ({
         componentId="creds-options-modal"
         onDismiss={() => handleCloseOptions()}
         header={{
-          title: `${i18n.t("credentials.details.options.title")}`,
+          title: `${i18n.t("tabs.credentials.details.options.title")}`,
         }}
         items={options}
       />

@@ -175,7 +175,7 @@ describe("Creds Tab", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.credentials.tab.favourites)
+      getByText(EN_TRANSLATIONS.tabs.credentials.tab.favourites)
     ).toBeInTheDocument();
   });
 
@@ -329,26 +329,28 @@ describe("Creds Tab", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.credentials.tab.detelepending.title)
+        getByText(EN_TRANSLATIONS.tabs.credentials.tab.detelepending.title)
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.credentials.tab.detelepending.description)
+        getByText(
+          EN_TRANSLATIONS.tabs.credentials.tab.detelepending.description
+        )
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.credentials.tab.detelepending.button)
+        getByText(EN_TRANSLATIONS.tabs.credentials.tab.detelepending.button)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.credentials.tab.detelepending.button)
+        getByText(EN_TRANSLATIONS.tabs.credentials.tab.detelepending.button)
       );
     });
 
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.credentials.tab.detelepending.secondchecktitle
+          EN_TRANSLATIONS.tabs.credentials.tab.detelepending.secondchecktitle
         )
       ).toBeVisible();
     });

@@ -88,10 +88,10 @@ describe("Notification Options modal", () => {
     expect(getByTestId("toogle-read-notification")).toBeVisible();
     expect(getByTestId("delete-notification")).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.notifications.tab.optionmodal.title)
+      getByText(EN_TRANSLATIONS.tabs.notifications.tab.optionmodal.title)
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.notifications.tab.optionmodal.markasread)
+      getByText(EN_TRANSLATIONS.tabs.notifications.tab.optionmodal.markasread)
     ).toBeVisible();
   });
 
@@ -118,7 +118,7 @@ describe("Notification Options modal", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.tab.optionmodal.deletealert.text
+          EN_TRANSLATIONS.tabs.notifications.tab.optionmodal.deletealert.text
         )
       ).toBeVisible();
     });

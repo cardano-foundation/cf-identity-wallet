@@ -193,7 +193,9 @@ describe("Cred Detail Module - current not archived credential", () => {
 
     await waitFor(() => {
       expect(
-        getAllByText(EN_TRANSLATIONS.credentials.details.alert.archive.title)[0]
+        getAllByText(
+          EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title
+        )[0]
       ).toBeVisible();
 
       expect(
@@ -418,12 +420,12 @@ describe("Cred Detail Module - archived", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS.credentials.details.restore)
+        queryByText(EN_TRANSLATIONS.tabs.credentials.details.restore)
       ).toBeVisible();
     });
 
     const restoreButton = getByText(
-      EN_TRANSLATIONS.credentials.details.restore
+      EN_TRANSLATIONS.tabs.credentials.details.restore
     );
 
     act(() => {
@@ -436,7 +438,9 @@ describe("Cred Detail Module - archived", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS.credentials.details.alert.restore.title)
+        queryByText(
+          EN_TRANSLATIONS.tabs.credentials.details.alert.restore.title
+        )
       ).toBeVisible();
     });
   });
@@ -454,12 +458,12 @@ describe("Cred Detail Module - archived", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS.credentials.details.restore)
+        queryByText(EN_TRANSLATIONS.tabs.credentials.details.restore)
       ).toBeVisible();
     });
 
     const restoreButton = getByText(
-      EN_TRANSLATIONS.credentials.details.restore
+      EN_TRANSLATIONS.tabs.credentials.details.restore
     );
 
     act(() => {
@@ -472,7 +476,9 @@ describe("Cred Detail Module - archived", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS.credentials.details.alert.restore.title)
+        queryByText(
+          EN_TRANSLATIONS.tabs.credentials.details.alert.restore.title
+        )
       ).toBeVisible();
     });
 
@@ -622,10 +628,10 @@ describe("Cred detail - revoked", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.credentials.details.revoked)
+        getByText(EN_TRANSLATIONS.tabs.credentials.details.revoked)
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.credentials.details.delete)
+        getByText(EN_TRANSLATIONS.tabs.credentials.details.delete)
       ).toBeVisible();
     });
   });
@@ -696,7 +702,7 @@ describe("Cred detail - view only", () => {
     await waitFor(() => {
       expect(queryByTestId("action-button")).toBe(null);
 
-      expect(queryByText(EN_TRANSLATIONS.credentials.details.delete)).toBe(
+      expect(queryByText(EN_TRANSLATIONS.tabs.credentials.details.delete)).toBe(
         null
       );
     });

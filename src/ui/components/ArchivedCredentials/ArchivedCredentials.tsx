@@ -248,9 +248,9 @@ const ArchivedCredentialsContainer = forwardRef<
   const closeButtonLabel = `${
     activeList
       ? selectedCredentials.length > 0
-        ? i18n.t("credentials.archived.deselectall")
-        : i18n.t("credentials.archived.selectall")
-      : i18n.t("credentials.archived.done")
+        ? i18n.t("tabs.credentials.archived.deselectall")
+        : i18n.t("tabs.credentials.archived.selectall")
+      : i18n.t("tabs.credentials.archived.done")
   }`;
 
   const handleActionButtonClick = () => {
@@ -260,8 +260,8 @@ const ArchivedCredentialsContainer = forwardRef<
 
   const actionButtonLabel = `${
     activeList
-      ? i18n.t("credentials.archived.cancel")
-      : i18n.t("credentials.archived.select")
+      ? i18n.t("tabs.credentials.archived.cancel")
+      : i18n.t("tabs.credentials.archived.select")
   }`;
 
   const handleClickCard = (id: string) => {
@@ -329,7 +329,7 @@ const ArchivedCredentialsContainer = forwardRef<
             actionButton={true}
             actionButtonAction={handleActionButtonClick}
             actionButtonLabel={actionButtonLabel}
-            title={`${i18n.t("credentials.archived.title")}`}
+            title={`${i18n.t("tabs.credentials.archived.title")}`}
             hardwareBackButtonConfig={{
               prevent: false,
               handler: handleHardwareBackButton,
@@ -339,7 +339,7 @@ const ArchivedCredentialsContainer = forwardRef<
       >
         {haveRevokedCreds && haveArchivedCreds && (
           <ListHeader
-            title={`${i18n.t("credentials.archived.archivedtitle")}`}
+            title={`${i18n.t("tabs.credentials.archived.archivedtitle")}`}
           />
         )}
         {haveArchivedCreds && (
@@ -367,7 +367,7 @@ const ArchivedCredentialsContainer = forwardRef<
         )}
         {haveRevokedCreds && haveArchivedCreds && (
           <ListHeader
-            title={`${i18n.t("credentials.archived.revokedtitle")}`}
+            title={`${i18n.t("tabs.credentials.archived.revokedtitle")}`}
           />
         )}
         {haveRevokedCreds && (
@@ -405,7 +405,7 @@ const ArchivedCredentialsContainer = forwardRef<
                   onClick={() => setAlertDeleteIsOpen(true)}
                   data-testid="delete-credentials"
                 >
-                  {i18n.t("credentials.archived.delete")}
+                  {i18n.t("tabs.credentials.archived.delete")}
                 </IonButton>
               </IonButtons>
               <div
@@ -413,8 +413,8 @@ const ArchivedCredentialsContainer = forwardRef<
                 className="selected-amount-credentials-label"
               >
                 {selectedCredentials.length === 1
-                  ? i18n.t("credentials.archived.oneselected")
-                  : t("credentials.archived.manyselected", {
+                  ? i18n.t("tabs.credentials.archived.oneselected")
+                  : t("tabs.credentials.archived.manyselected", {
                     amount: selectedCredentials.length,
                   })}
               </div>
@@ -424,7 +424,7 @@ const ArchivedCredentialsContainer = forwardRef<
                   onClick={handleBatchRestore}
                   data-testid="restore-credentials"
                 >
-                  {i18n.t("credentials.archived.restore")}
+                  {i18n.t("tabs.credentials.archived.restore")}
                 </IonButton>
               </IonButtons>
             </IonToolbar>
@@ -435,12 +435,12 @@ const ArchivedCredentialsContainer = forwardRef<
         isOpen={alertDeleteIsOpen}
         setIsOpen={setAlertDeleteIsOpen}
         dataTestId="alert-delete"
-        headerText={i18n.t("credentials.details.alert.delete.title")}
+        headerText={i18n.t("tabs.credentials.details.alert.delete.title")}
         confirmButtonText={`${i18n.t(
-          "credentials.details.alert.delete.confirm"
+          "tabs.credentials.details.alert.delete.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "credentials.details.alert.delete.cancel"
+          "tabs.credentials.details.alert.delete.cancel"
         )}`}
         actionConfirm={() => {
           setVerifyIsOpen(true);
@@ -452,12 +452,12 @@ const ArchivedCredentialsContainer = forwardRef<
         isOpen={alertRestoreIsOpen}
         setIsOpen={setAlertRestoreIsOpen}
         dataTestId="alert-restore"
-        headerText={i18n.t("credentials.details.alert.restore.title")}
+        headerText={i18n.t("tabs.credentials.details.alert.restore.title")}
         confirmButtonText={`${i18n.t(
-          "credentials.details.alert.restore.confirm"
+          "tabs.credentials.details.alert.restore.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "credentials.details.alert.restore.cancel"
+          "tabs.credentials.details.alert.restore.cancel"
         )}`}
         actionConfirm={async () => {
           await handleRestoreCredentials(selectedCredentials);
@@ -477,7 +477,9 @@ const ArchivedCredentialsContainer = forwardRef<
         isOpen={alertRestoreRevoked}
         setIsOpen={setAlertRestoreRevoked}
         dataTestId="alert-restore-revoked"
-        headerText={i18n.t("credentials.archived.alert.restorerevoked.title")}
+        headerText={i18n.t(
+          "tabs.credentials.archived.alert.restorerevoked.title"
+        )}
         confirmButtonText={`${i18n.t(
           "credentials.archived.alert.restorerevoked.confirm"
         )}`}

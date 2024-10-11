@@ -67,8 +67,8 @@ describe("Credential request information", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.credential.request.information
-            .title
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
+            .information.title
         )
       ).toBeVisible();
     });
@@ -80,8 +80,8 @@ describe("Credential request information", () => {
     await waitFor(() => {
       expect(
         getByText(
-          EN_TRANSLATIONS.notifications.details.credential.request.information
-            .alert.textdecline
+          EN_TRANSLATIONS.tabs.notifications.details.credential.request
+            .information.alert.textdecline
         )
       ).toBeVisible();
     });

@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { act } from "react";
 import { GenericError } from "./GenericError";
-import ENG_TRANS from "../../../locales/en/en.json";
+import TRANSLATIONS from "../../../locales/en/en.json";
 import { showGenericError } from "../../../store/reducers/stateCache";
 
 const dispatchMock = jest.fn();
@@ -33,11 +33,11 @@ describe("Common error alert", () => {
     );
 
     await waitFor(() => {
-      getByText(ENG_TRANS.genericerror.text);
+      getByText(TRANSLATIONS.genericerror.text);
     });
 
     act(() => {
-      fireEvent.click(getByText(ENG_TRANS.genericerror.button));
+      fireEvent.click(getByText(TRANSLATIONS.genericerror.button));
     });
 
     await waitFor(() => {

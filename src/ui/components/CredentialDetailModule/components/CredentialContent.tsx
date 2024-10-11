@@ -11,7 +11,7 @@ import { CredentialContentProps } from "./CredentialContent.types";
 const CredentialContent = ({ cardData }: CredentialContentProps) => {
   return (
     <>
-      <CardDetailsBlock title={i18n.t("credentials.details.title")}>
+      <CardDetailsBlock title={i18n.t("tabs.credentials.details.title")}>
         <CardDetailsItem
           info={cardData.s.title}
           icon={informationCircleOutline}
@@ -20,11 +20,11 @@ const CredentialContent = ({ cardData }: CredentialContentProps) => {
       </CardDetailsBlock>
       <CardDetailsBlock
         className="cred-content-acdc-card"
-        title={i18n.t("credentials.details.description")}
+        title={i18n.t("tabs.credentials.details.description")}
       >
         {cardData.s.description}
       </CardDetailsBlock>
-      <CardDetailsBlock title={i18n.t("credentials.details.id")}>
+      <CardDetailsBlock title={i18n.t("tabs.credentials.details.id")}>
         <CardDetailsItem
           info={cardData.id}
           copyButton={true}
@@ -35,19 +35,21 @@ const CredentialContent = ({ cardData }: CredentialContentProps) => {
       {cardData.a && (
         <CardDetailsBlock
           className="card-attribute-block"
-          title={i18n.t("credentials.details.attributes.label")}
+          title={i18n.t("tabs.credentials.details.attributes.label")}
         >
           <CardDetailsAttributes data={cardData.a as JSONObject} />
         </CardDetailsBlock>
       )}
-      <CardDetailsBlock title={i18n.t("credentials.details.schemaversion")}>
+      <CardDetailsBlock
+        title={i18n.t("tabs.credentials.details.schemaversion")}
+      >
         <CardDetailsItem
           info={cardData.s.version}
           icon={informationCircleOutline}
           testId="card-details-schema-version"
         />
       </CardDetailsBlock>
-      <CardDetailsBlock title={i18n.t("credentials.details.issuer")}>
+      <CardDetailsBlock title={i18n.t("tabs.credentials.details.issuer")}>
         <CardDetailsItem
           info={cardData.i}
           copyButton={true}
@@ -57,7 +59,7 @@ const CredentialContent = ({ cardData }: CredentialContentProps) => {
       </CardDetailsBlock>
       <CardDetailsBlock
         className="card-attribute-block"
-        title={i18n.t("credentials.details.status.label")}
+        title={i18n.t("tabs.credentials.details.status.label")}
       >
         <CardDetailsAttributes
           data={cardData.lastStatus as JSONObject}

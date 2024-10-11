@@ -53,7 +53,7 @@ const EarlierNotification = forwardRef<
       data-testid="notifications-tab-section-earlier"
     >
       <h3 className="notifications-tab-section-title">
-        {i18n.t("notifications.tab.sections.earlier.title")}
+        {i18n.t("tabs.notifications.tab.sections.earlier.title")}
       </h3>
       <InfiniteScroll
         dataLength={displayNotificationsEarlier.length}
@@ -87,7 +87,7 @@ const EarlierNotification = forwardRef<
           className="show-ealier-btn secondary-button"
           data-testid="show-earlier-btn"
         >
-          {i18n.t("notifications.tab.sections.earlier.buttons.showealier")}
+          {i18n.t("tabs.notifications.tab.sections.earlier.buttons.showealier")}
         </IonButton>
       )}
     </div>

@@ -80,21 +80,21 @@ describe("Menu Tab", () => {
     );
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
-    expect(getByText(EN_TRANSLATIONS.menu.tab.header)).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.tabs.menu.tab.header)).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.profile.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.crypto.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.crypto.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.connections.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connections.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.chat.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.chat.title)
     ).toBeInTheDocument();
   });
 
@@ -107,7 +107,7 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.profile.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.title)
     ).toBeInTheDocument();
     const settingButton = getByTestId("settings-button");
 
@@ -129,7 +129,7 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.profile.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.title)
     ).toBeInTheDocument();
     const profileButton = getByTestId(`menu-input-item-${SubMenuKey.Profile}`);
 
@@ -140,7 +140,7 @@ describe("Menu Tab", () => {
     await waitForIonicReact();
 
     expect(getByTestId("profile-title")).toHaveTextContent(
-      EN_TRANSLATIONS.menu.tab.items.profile.tabheader
+      EN_TRANSLATIONS.tabs.menu.tab.items.profile.tabheader
     );
   });
 
@@ -153,7 +153,7 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.crypto.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.crypto.title)
     ).toBeInTheDocument();
     const cryptoButton = getByTestId(`menu-input-item-${SubMenuKey.Crypto}`);
 
@@ -179,7 +179,7 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.connections.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connections.title)
     ).toBeInTheDocument();
     const connectionsButton = getByTestId(
       `menu-input-item-${SubMenuKey.Connections}`
@@ -202,7 +202,7 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.title)
     ).toBeInTheDocument();
     const connectButton = getByTestId(
       `menu-input-item-${SubMenuKey.ConnectWallet}`
@@ -215,7 +215,7 @@ describe("Menu Tab", () => {
     await waitForIonicReact();
 
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.tabheader)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.tabheader)
     ).toBeVisible();
   });
 
@@ -228,7 +228,7 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.chat.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.chat.title)
     ).toBeInTheDocument();
     const chatButton = getByTestId(`menu-input-item-${SubMenuKey.Chat}`);
 

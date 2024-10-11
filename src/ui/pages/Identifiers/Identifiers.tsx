@@ -234,13 +234,13 @@ const Identifiers = () => {
 
   const deletePendingCheck = useMemo(
     () => ({
-      title: i18n.t("identifiers.detelepending.title"),
+      title: i18n.t("tabs.identifiers.detelepending.title"),
       description: i18n.t(
         deletedPendingItem?.groupMetadata?.groupId
-          ? "identifiers.detelepending.mutilsigdescription"
-          : "identifiers.detelepending.description"
+          ? "tabs.identifiers.detelepending.mutilsigdescription"
+          : "tabs.identifiers.detelepending.description"
       ),
-      button: i18n.t("identifiers.detelepending.button"),
+      button: i18n.t("tabs.identifiers.detelepending.button"),
     }),
     [deletedPendingItem]
   );
@@ -259,7 +259,7 @@ const Identifiers = () => {
         pageId={pageId}
         header={true}
         customClass={tabClasses}
-        title={`${i18n.t("identifiers.tab.title")}`}
+        title={`${i18n.t("tabs.identifiers.tab.title")}`}
         additionalButtons={
           <AdditionalButtons
             handleConnections={handleConnections}
@@ -269,7 +269,7 @@ const Identifiers = () => {
         placeholder={
           showPlaceholder && (
             <CardsPlaceholder
-              buttonLabel={i18n.t("identifiers.tab.create")}
+              buttonLabel={i18n.t("tabs.identifiers.tab.create")}
               buttonAction={handleCreateIdentifier}
               testId={pageId}
             >
@@ -287,7 +287,7 @@ const Identifiers = () => {
                 data-testid="favourite-identifiers"
               >
                 <CardSlider
-                  title={`${i18n.t("identifiers.tab.favourites")}`}
+                  title={`${i18n.t("tabs.identifiers.tab.favourites")}`}
                   name="favs"
                   cardType={CardType.IDENTIFIERS}
                   cardsData={sortedFavIdentifiers}
@@ -301,13 +301,13 @@ const Identifiers = () => {
                 cardTypes={CardType.IDENTIFIERS}
                 cardsData={allIdentifiers}
                 onShowCardDetails={() => handleShowNavAnimation("cards")}
-                title={`${i18n.t("identifiers.tab.allidentifiers")}`}
+                title={`${i18n.t("tabs.identifiers.tab.allidentifiers")}`}
                 name="allidentifiers"
               />
             )}
             {!!multiSigIdentifiers.length && (
               <div className="identifiers-tab-content-block multisig-container">
-                <h3>{i18n.t("identifiers.tab.multisigidentifiers")}</h3>
+                <h3>{i18n.t("tabs.identifiers.tab.multisigidentifiers")}</h3>
                 <IdentifierCardList
                   cardTypes={CardType.IDENTIFIERS}
                   cardsData={multiSigIdentifiers}
@@ -321,7 +321,7 @@ const Identifiers = () => {
             {!!pendingIdentifiers.length && (
               <div className="identifiers-tab-content-block pending-container">
                 <ListHeader
-                  title={`${i18n.t("identifiers.tab.pendingidentifiers")}`}
+                  title={`${i18n.t("tabs.identifiers.tab.pendingidentifiers")}`}
                 />
                 <IdentifierCardList
                   cardsData={pendingIdentifiers}
@@ -343,7 +343,7 @@ const Identifiers = () => {
         firstCheckProps={deletePendingCheck}
         onClose={() => setOpenDeletePendingAlert(false)}
         secondCheckTitle={`${i18n.t(
-          "identifiers.detelepending.secondchecktitle"
+          "tabs.identifiers.detelepending.secondchecktitle"
         )}`}
         onDeletePendingItem={deletePendingIdentifier}
       />

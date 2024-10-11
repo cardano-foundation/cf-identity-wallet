@@ -60,7 +60,7 @@ const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
         {isEditing ? (
           <CustomInput
             dataTestId="profile-item-edit-name"
-            title={`${i18n.t("menu.tab.items.profile.name")}`}
+            title={`${i18n.t("tabs.menu.tab.items.profile.name")}`}
             placeholder={userName}
             hiddenInput={false}
             onChangeInput={setUserName}
@@ -75,7 +75,7 @@ const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
                   className="profile-item"
                   data-testid="profile-item-view-name"
                 >
-                  <span>{i18n.t("menu.tab.items.profile.name")}</span>
+                  <span>{i18n.t("tabs.menu.tab.items.profile.name")}</span>
                   <span>{userName}</span>
                 </div>
               </IonItem>
@@ -88,7 +88,7 @@ const Profile = forwardRef<ProfileOptionRef, ProfileProps>(
               className="profile-item"
               data-testid="profile-item-profile-link"
             >
-              <span>{i18n.t("menu.tab.items.profile.watchvideo")}</span>
+              <span>{i18n.t("tabs.menu.tab.items.profile.watchvideo")}</span>
               <IonIcon
                 aria-hidden="true"
                 icon={chevronForward}
