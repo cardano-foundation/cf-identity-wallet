@@ -37,6 +37,7 @@ import { TypeItem } from "./TypeItem";
 import { createThemeValue } from "../../../utils/theme";
 import { IADTypeInfoModal } from "./AIDTypeInfoModal";
 import { showError } from "../../../utils/error";
+import { combineClassNames } from "../../../utils/style";
 
 const IdentifierStage0 = ({
   state,
@@ -182,7 +183,10 @@ const IdentifierStage0 = ({
       <ScrollablePageLayout
         pageId={componentId + "-content"}
         activeStatus={isModalOpen}
-        customClass={keyboardIsOpen ? "keyboard-is-open" : ""}
+        customClass={combineClassNames(
+          "create-stage-0",
+          keyboardIsOpen ? "keyboard-is-open" : ""
+        )}
         header={
           <PageHeader
             closeButton={true}
