@@ -67,7 +67,7 @@ describe("test cases of bootAndConnect function", () => {
     (signifyReady as jest.Mock).mockResolvedValueOnce(true);
     mockSignifyClient.boot.mockRejectedValueOnce(new Error("Failed to fetch"));
 
-    await expect(agent.bootAndConnect(mockAgentUrls)).rejects.toThrowError(Agent.KERIA_CONNECTION_BROKEN);
+    await expect(agent.bootAndConnect(mockAgentUrls)).rejects.toThrowError(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
     expect(mockSignifyClient.connect).not.toHaveBeenCalled();
   });
 
@@ -80,6 +80,17 @@ describe("test cases of bootAndConnect function", () => {
 
     await expect(agent.bootAndConnect(mockAgentUrls)).rejects.toThrowError(Agent.KERIA_BOOT_FAILED);
     expect(mockSignifyClient.connect).not.toHaveBeenCalled();
+  });
+
+  test("should throw an connection error if connect fetch failing", async () => {
+    (signifyReady as jest.Mock).mockResolvedValueOnce(true);
+    mockSignifyClient.boot.mockResolvedValueOnce({ ok: true });
+    mockSignifyClient.connect.mockRejectedValueOnce(new Error("Failed to fetch"));
+
+    await expect(agent.bootAndConnect(mockAgentUrls)).rejects.toThrowError(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
+
+    expect(mockSignifyClient.boot).toHaveBeenCalled();
+    expect(mockSignifyClient.connect).toHaveBeenCalled();
   });
 
   test("should throw an error if connect fails after booting", async () => {
@@ -118,6 +129,16 @@ describe("test cases of bootAndConnect function", () => {
         isOnline: true,
       },
     });
+  });
+
+  it("should not boot and connect if already online", async () => {
+    Agent.isOnline = true;
+
+    await agent.bootAndConnect(mockAgentUrls);
+
+    expect(signifyReady).not.toHaveBeenCalled();
+    expect(mockSignifyClient.boot).not.toHaveBeenCalled();
+    expect(mockSignifyClient.connect).not.toHaveBeenCalled();
   });
 });
 
@@ -184,6 +205,17 @@ describe("test cases of recoverKeriaAgent function", () => {
 
     await expect(agent.recoverKeriaAgent(mockSeedPhrase, mockConnectUrl))
       .rejects.toThrowError(Agent.KERIA_NOT_BOOTED);
+
+    expect(SecureStorage.set).not.toHaveBeenCalled();
+  });
+
+  test("should throw KERIA_BOOT_FAILED_BAD_NETWORK error if connect fetch failing", async () => {
+    (mnemonicToEntropy as jest.Mock).mockReturnValueOnce(mockEntropy);
+    (mnemonicToEntropy as jest.Mock).mockReturnValueOnce(mockEntropy);
+    mockSignifyClient.connect.mockRejectedValueOnce(new Error("Failed to fetch"));
+
+    await expect(agent.recoverKeriaAgent(mockSeedPhrase, mockConnectUrl))
+      .rejects.toThrowError(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
 
     expect(SecureStorage.set).not.toHaveBeenCalled();
   });

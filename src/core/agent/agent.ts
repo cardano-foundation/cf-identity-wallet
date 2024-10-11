@@ -54,6 +54,7 @@ const walletId = "idw";
 class Agent {
   static readonly KERIA_CONNECTION_BROKEN =
     "The app is not connected to KERIA at the moment";
+  static readonly KERIA_BOOT_FAILED_BAD_NETWORK = "Failed to boot due to network connectivity";  
   static readonly KERIA_BOOT_FAILED = "Failed to boot signify client";
   static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT =
     "Signify client is already booted but cannot connect";
@@ -231,7 +232,14 @@ class Agent {
       const bran = await this.getBran();
       this.signifyClient = new SignifyClient(keriaConnectUrl, bran, Tier.low);
       this.agentServicesProps.signifyClient = this.signifyClient;
-      await this.signifyClient.connect();
+      await this.signifyClient.connect().catch((e) => {
+        /* eslint-disable no-console */
+        console.error(e);
+        if (e.message === "Failed to fetch") {
+          throw new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
+        }
+        throw new Error(Agent.KERIA_CONNECTION_BROKEN);
+      });
       this.markAgentStatus(true);
     }
   }
@@ -251,7 +259,7 @@ class Agent {
         /* eslint-disable no-console */
         console.error(e);
         if (e.message === "Failed to fetch") {
-          throw new Error(Agent.KERIA_CONNECTION_BROKEN);
+          throw new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
         }
         throw new Error(Agent.KERIA_BOOT_FAILED);
       });
@@ -267,6 +275,9 @@ class Agent {
       await this.signifyClient.connect().catch((e) => {
         /* eslint-disable no-console */
         console.error(e);
+        if (e.message === "Failed to fetch") {
+          throw new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
+        }
         throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
       });
       await this.saveAgentUrls(agentUrls);
@@ -295,6 +306,9 @@ class Agent {
       await this.signifyClient.connect();
     } catch (error) {
       if (error instanceof Error) {
+        if (error.message === "Failed to fetch") {
+          throw new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
+        }
         if (error.message === "Invalid mnemonic") {
           throw new Error(Agent.INVALID_MNEMONIC);
         }
