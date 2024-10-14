@@ -119,7 +119,7 @@ const VerifyPassword = ({
     () => ({
       closeButton: true,
       closeButtonLabel: `${i18n.t("verifypassword.cancel")}`,
-      closeButtonAction: () => setIsOpen(false),
+      closeButtonAction: () => setIsOpen(false, true),
       title: `${i18n.t("verifypassword.title")}`,
       actionButton: true,
       actionButtonDisabled: !verifyPasswordValue.length,
