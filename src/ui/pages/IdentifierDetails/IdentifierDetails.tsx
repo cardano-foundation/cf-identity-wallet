@@ -154,6 +154,8 @@ const IdentifierDetails = () => {
   };
 
   const handleDelete = async () => {
+    handleDone(false);
+
     try {
       setVerifyIsOpen(false);
       const filterId = cardData
@@ -169,7 +171,6 @@ const IdentifierDetails = () => {
       await deleteIdentifier();
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
       dispatch(setIdentifiersCache(updatedIdentifiers));
-      handleDone();
     } catch (e) {
       showError(
         "Unable to delete identifier",

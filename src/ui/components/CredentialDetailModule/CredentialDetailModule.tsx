@@ -205,6 +205,9 @@ const CredentialDetailModule = ({
 
   const onVerify = async () => {
     const backReason = isInactiveCred ? BackReason.DELETE : BackReason.ARCHIVED;
+    onClose?.(backReason);
+    setVerifyIsOpen(false);
+
     if (isArchived) {
       await handleDeleteCredential();
     } else if (isRevoked) {
@@ -212,9 +215,6 @@ const CredentialDetailModule = ({
     } else {
       await handleArchiveCredential();
     }
-
-    onClose?.(backReason);
-    setVerifyIsOpen(false);
   };
 
   const handleSetFavourite = (id: string) => {
