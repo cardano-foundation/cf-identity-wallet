@@ -3,9 +3,12 @@ import {
   SQLiteConnection,
   SQLiteDBConnection,
 } from "@capacitor-community/sqlite";
+import { Capacitor } from "@capacitor/core";
 import { versionCompare } from "./utils";
 import { MIGRATIONS } from "./migrations";
 import { MigrationType } from "./migrations/migrations.types";
+import { Agent } from "../../agent/agent";
+import { KeyStoreKeys, SecureStorage } from "../secureStorage";
 
 class SqliteSession {
   static readonly VERSION_DATABASE_KEY = "VERSION_DATABASE_KEY";
@@ -44,6 +47,19 @@ class SqliteSession {
 
   async open(storageName: string): Promise<void> {
     const connection = new SQLiteConnection(CapacitorSQLite);
+
+    const platform = Capacitor.getPlatform();
+    const isPlatformEncryption = platform !== "web";
+    const isEncryptInConfig = (await connection.isInConfigEncryption()).result;
+    const isEncryption = isPlatformEncryption && isEncryptInConfig;
+    if (isEncryption) {
+      const isSetSecret = (await connection.isSecretStored()).result;
+      if (!isSetSecret) {
+        const newBran = (await Agent.agent.getBranAndMnemonic()).bran;
+        await connection.setEncryptionSecret(newBran);
+      }
+    }
+
     const ret = await connection.checkConnectionsConsistency();
     const isConn = (await connection.isConnection(storageName, false)).result;
     if (ret.result && isConn) {
@@ -54,8 +70,8 @@ class SqliteSession {
     } else {
       this.sessionInstance = await connection.createConnection(
         storageName,
-        false,
-        "no-encryption",
+        true,
+        "secret",
         1,
         false
       );
