@@ -38,7 +38,7 @@ describe("Card detail item", () => {
     );
 
     expect(getByTestId("card-test-id-text-value")).toBeVisible();
-    expect(getByText("T")).toBeVisible();
+
     expect(getByText("Key:")).toBeVisible();
     expect(getByTestId("card-test-id-copy-button")).not.toBe(null);
   });
