@@ -1,6 +1,5 @@
-import { IonButton, IonIcon, IonItem, IonLabel, IonText } from "@ionic/react";
+import { IonButton, IonIcon, IonItem, IonText } from "@ionic/react";
 import { copyOutline } from "ionicons/icons";
-import { i18n } from "../../../../i18n";
 import { ToastMsgType } from "../../../globals/types";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { useAppDispatch } from "../../../../store/hooks";
@@ -14,9 +13,7 @@ const CardDetailsItem = ({
   copyButton,
   icon,
   keyValue,
-  textIcon,
   testId,
-  infoTestId,
   className,
   actionButton: actionIcon,
   actionButtonClick: actionIconClick,
@@ -55,14 +52,6 @@ const CardDetailsItem = ({
           icon={icon}
           slot="start"
         ></IonIcon>
-      )}
-      {textIcon && (
-        <IonText
-          slot="start"
-          className="card-details-info-block-text-icon"
-        >
-          {i18n.t(textIcon)}
-        </IonText>
       )}
       <div className={contentClass}>
         <IonText

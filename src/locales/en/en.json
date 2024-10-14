@@ -783,39 +783,31 @@
         "type": "Type",
         "publickeybase": "Public Key Base 58",
         "delegator": {
-          "title": "Delegator Identifier Prefix",
-          "icon": "DI"
+          "title": "Delegator Identifier Prefix"
         },
         "signingkeyslist": {
-          "title": "List of Signing Keys",
-          "icon": "K"
+          "title": "List of Signing Keys"
         },
         "signingkeysthreshold": {
-          "title": "Keys Signing Threshold",
-          "icon": "KT"
+          "title": "Keys Signing Threshold"
         },
         "nextkeyslist": {
-          "title": "List of Next Key Digests",
-          "icon": "N"
+          "title": "List of Next Key Digests"
         },
         "nextkeysthreshold": {
-          "title": "Next Keys Signing Threshold",
-          "icon": "NT"
+          "title": "Next Keys Signing Threshold"
         },
         "creationtimestamp": {
           "title": "Creation Timestamp"
         },
         "rotationtimestamp": {
-          "title": "Last Key Rotation Timestamp",
-          "icon": "DT"
+          "title": "Last Key Rotation Timestamp"
         },
         "sequencenumber": {
-          "title": "Sequence Number",
-          "icon": "S"
+          "title": "Sequence Number"
         },
         "backerslist": {
-          "title": "List of Backers",
-          "icon": "B"
+          "title": "List of Backers"
         },
         "backeraddress": {
           "title": "Backer Address"
