@@ -12,7 +12,6 @@ class CredentialMetadataRecord extends BaseRecord {
   connectionId!: string;
   schema!: string;
   identifierId!: string;
-  identifierType!: IdentifierType;
   static readonly type = "CredentialMetadataRecord";
   readonly type = CredentialMetadataRecord.type;
 
@@ -30,7 +29,6 @@ class CredentialMetadataRecord extends BaseRecord {
       this.connectionId = props.connectionId;
       this.schema = props.schema;
       this.identifierId = props.identifierId;
-      this.identifierType = props.identifierType;
     }
   }
 

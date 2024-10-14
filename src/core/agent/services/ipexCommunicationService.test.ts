@@ -351,7 +351,6 @@ describe("Ipex communication service of agent", () => {
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
       ...credentialRecordProps,
       identifierId: "identifierId",
-      identifierType: "individual",
     });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.AcdcStateChanged,
@@ -359,7 +358,6 @@ describe("Ipex communication service of agent", () => {
         credential: {
           ...credentialRecordProps,
           identifierId: "identifierId",
-          identifierType: "individual",
         },
         status: CredentialStatus.PENDING,
       },
@@ -937,14 +935,21 @@ describe("Ipex communication service of agent", () => {
 
     notificationStorage.findById.mockResolvedValueOnce(grantNoteRecord);
     getExchangeMock.mockImplementationOnce(() => ({
-      exn: { e: { acdc: { d: "credentialSaid" } } },
+      exn: { e: { acdc: { d: "credentialSaid" } }, a: { i: "i" } },
     }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
 
     const result = await ipexCommunicationService.getLinkedGroupFromIpexGrant(
       notification.id
     );
 
     expect(result).toEqual({
+      threshold: "2",
       accepted: true,
       membersJoined: ["memberA", "memberB"],
     });
@@ -970,14 +975,21 @@ describe("Ipex communication service of agent", () => {
 
     notificationStorage.findById.mockResolvedValueOnce(grantNoteRecord);
     getExchangeMock.mockImplementationOnce(() => ({
-      exn: { e: { acdc: { d: "credentialSaid" } } },
+      exn: { e: { acdc: { d: "credentialSaid" } }, a: { i: "i" } },
     }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
 
     const result = await ipexCommunicationService.getLinkedGroupFromIpexGrant(
       notification.id
     );
 
     expect(result).toEqual({
+      threshold: "2",
       accepted: false,
       membersJoined: [],
     });
@@ -1043,11 +1055,22 @@ describe("Ipex communication service of agent", () => {
 
     notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
 
+    getExchangeMock.mockImplementationOnce(() => ({
+      exn: { a: { i: "i" } },
+    }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
+
     const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
       notification.id
     );
 
     expect(result).toEqual({
+      threshold: "2",
       credentialSaid1: {
         accepted: true,
         membersJoined: ["memberA", "memberB"],
@@ -1083,7 +1106,18 @@ describe("Ipex communication service of agent", () => {
           saids: {},
         },
       },
+      a: { d: "d" },
     };
+
+    getExchangeMock.mockImplementationOnce(() => ({
+      exn: { a: { i: "i" } },
+    }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
 
     notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
     const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
@@ -1091,6 +1125,7 @@ describe("Ipex communication service of agent", () => {
     );
 
     expect(result).toEqual({
+      threshold: "2",
       credentialSaid1: {
         accepted: false,
         membersJoined: [],
@@ -1117,14 +1152,25 @@ describe("Ipex communication service of agent", () => {
 
     const applyNoteRecord = {
       linkedGroupRequests: {},
+      a: { d: "d" },
     };
+
+    getExchangeMock.mockImplementationOnce(() => ({
+      exn: { a: { i: "i" } },
+    }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
 
     notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
     const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
       notification.id
     );
 
-    expect(result).toEqual({});
+    expect(result).toEqual({ threshold: "2" });
   });
 
   test("Can accept ACDC from multisig exn", async () => {
@@ -1352,7 +1398,6 @@ describe("Ipex communication service of agent", () => {
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
       ...credentialRecordProps,
       identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-      identifierType: "group",
     });
 
     expect(eventEmitter.emit).toHaveBeenCalledWith({
@@ -1361,7 +1406,6 @@ describe("Ipex communication service of agent", () => {
         credential: {
           ...credentialRecordProps,
           identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
-          identifierType: "group",
         },
         status: CredentialStatus.PENDING,
       },
@@ -2417,7 +2461,6 @@ describe("Ipex communication service of agent", () => {
       s: QVISchema,
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
       status: "pending",
-      identifierType: IdentifierType.Individual,
       identifierId: memberIdentifierRecord.id,
     });
   });
@@ -2458,7 +2501,6 @@ describe("Ipex communication service of agent", () => {
       s: QVISchema,
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
       status: "pending",
-      identifierType: IdentifierType.Individual,
       identifierId: memberIdentifierRecord.id,
     });
   });

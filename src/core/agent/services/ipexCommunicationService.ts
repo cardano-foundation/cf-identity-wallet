@@ -30,7 +30,7 @@ import {
   EventTypes,
 } from "../event.types";
 import { ConnectionService } from "./connectionService";
-import { IdentifierType } from "./identifier.types";
+import { Agent } from "../agent";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -478,9 +478,6 @@ class IpexCommunicationService extends AgentService {
       status: CredentialStatus.PENDING,
       connectionId,
       schema,
-      identifierType: holder.multisigManageAid
-        ? IdentifierType.Group
-        : IdentifierType.Individual,
       identifierId: holder.id,
     };
     await this.credentialStorage.saveCredentialMetadataRecord(
@@ -946,9 +943,6 @@ class IpexCommunicationService extends AgentService {
 
   async getAcdcFromIpexGrant(said: string): Promise<ACDCDetails> {
     const exchange = await this.props.signifyClient.exchanges().get(said);
-    const holder = await this.identifierStorage.getIdentifierMetadata(
-      exchange.exn.a.i
-    );
     const schemaSaid = exchange.exn.e.acdc.s;
     const schema = await this.props.signifyClient
       .schemas()
@@ -979,10 +973,7 @@ class IpexCommunicationService extends AgentService {
         dt: new Date(exchange.exn.e.iss.dt).toISOString(),
       },
       status: CredentialStatus.PENDING,
-      identifierId: holder.id,
-      identifierType: holder.multisigManageAid
-        ? IdentifierType.Group
-        : IdentifierType.Individual,
+      identifierId: exchange.exn.a.i,
     };
   }
 
@@ -1112,6 +1103,10 @@ class IpexCommunicationService extends AgentService {
       .exchanges()
       .get(grantNoteRecord.a.d as string);
 
+    const multisigAid = await this.props.signifyClient
+      .identifiers()
+      .get(exchange.exn.a.i);
+
     const credentialSaid = exchange.exn.e.acdc.d;
 
     if (Object.keys(linkedGroupRequest).length) {
@@ -1128,11 +1123,13 @@ class IpexCommunicationService extends AgentService {
       }
 
       return {
+        threshold: multisigAid.state.kt,
         accepted: linkedGroupRequest[credentialSaid].accepted,
         membersJoined: Array.from(membersJoined),
       };
     } else {
       return {
+        threshold: multisigAid.state.kt,
         accepted: false,
         membersJoined: [],
       };
@@ -1149,13 +1146,24 @@ class IpexCommunicationService extends AgentService {
     }
 
     const linkedGroupRequest = applyNoteRecord.linkedGroupRequests;
+    const exchange = await this.props.signifyClient
+      .exchanges()
+      .get(applyNoteRecord.a.d as string);
+
+    const multisigAid = await this.props.signifyClient
+      .identifiers()
+      .get(exchange.exn.a.i);
+
     const result: Record<
       string,
       { accepted: boolean; membersJoined: string[] }
     > = {};
 
     if (Object.keys(linkedGroupRequest).length === 0) {
-      return result;
+      return {
+        threshold: multisigAid.state.kt,
+        ...result,
+      };
     }
 
     for (const credentialSaid in linkedGroupRequest) {
@@ -1178,7 +1186,10 @@ class IpexCommunicationService extends AgentService {
       };
     }
 
-    return result;
+    return {
+      threshold: multisigAid.state.kt,
+      ...result,
+    };
   }
 }
 

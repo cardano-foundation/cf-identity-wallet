@@ -3,7 +3,6 @@ import {
   CredentialShortDetails,
   CredentialStatus,
 } from "../../core/agent/services/credentialService.types";
-import { IdentifierType } from "../../core/agent/services/identifier.types";
 
 const shortCredsFix: CredentialShortDetails[] = [
   {
@@ -13,7 +12,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     issuanceDate: "2024-01-24T16:20:26.497Z",
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-    identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
   },
   {
@@ -23,7 +21,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     issuanceDate: "2024-01-24T16:19:33.281Z",
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-    identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
   },
   {
@@ -33,7 +30,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     issuanceDate: "2024-01-24T16:21:09.451Z",
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-    identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
   },
   {
@@ -42,7 +38,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-    identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
   },
   {
@@ -51,7 +46,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialStatus.PENDING,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-    identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
   },
   {
@@ -60,7 +54,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     credentialType: "Rare EVO 2024 Attendee",
     status: CredentialStatus.CONFIRMED,
     schema: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
-    identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
   },
   {
@@ -69,7 +62,6 @@ const shortCredsFix: CredentialShortDetails[] = [
     credentialType: "Rare EVO 2024 Attendee",
     status: CredentialStatus.PENDING,
     schema: "EJxnJdxkHbRw2wVFNe4IUOPLt8fEtg9Sr3WyTjlgKoIb",
-    identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
   },
 ];
