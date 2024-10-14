@@ -72,7 +72,6 @@ const RotateKeyModal = ({
           <CardDetailsItem
             info={signingKey}
             copyButton={true}
-            textIcon="tabs.identifiers.details.signingkeyslist.icon"
             testId={"signing-key"}
           />
           <Spinner show={loading} />

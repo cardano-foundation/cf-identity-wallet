@@ -42,7 +42,6 @@ const IdentifierContent = ({
           <CardDetailsItem
             info={cardData.di}
             copyButton={true}
-            textIcon="tabs.identifiers.details.delegator.icon"
             testId="delegator"
           />
         </CardDetailsBlock>
@@ -57,7 +56,6 @@ const IdentifierContent = ({
                 key={index}
                 info={item}
                 copyButton={true}
-                textIcon="tabs.identifiers.details.signingkeyslist.icon"
                 testId={`signing-key-${index}`}
                 actionButton={isMultiSig ? undefined : refreshOutline}
                 actionButtonClick={isMultiSig ? undefined : onOpenRotateKey}
@@ -73,7 +71,6 @@ const IdentifierContent = ({
           <CardDetailsItem
             info={`${cardData.kt}`}
             copyButton={false}
-            textIcon="tabs.identifiers.details.signingkeysthreshold.icon"
             testId="signing-keys-threshold"
           />
         </CardDetailsBlock>
@@ -88,7 +85,6 @@ const IdentifierContent = ({
                 key={index}
                 info={item}
                 copyButton={true}
-                textIcon="tabs.identifiers.details.nextkeyslist.icon"
                 testId={`next-key-${index}`}
               />
             );
@@ -102,7 +98,6 @@ const IdentifierContent = ({
           <CardDetailsItem
             info={`${cardData.nt}`}
             copyButton={false}
-            textIcon="tabs.identifiers.details.nextkeysthreshold.icon"
             testId="next-keys-threshold"
           />
         </CardDetailsBlock>
@@ -132,7 +127,6 @@ const IdentifierContent = ({
               formatTimeToSec(cardData.dt)
             }
             copyButton={false}
-            textIcon="tabs.identifiers.details.rotationtimestamp.icon"
             testId="rotation-timestamp"
           />
         </CardDetailsBlock>
@@ -144,7 +138,6 @@ const IdentifierContent = ({
           <CardDetailsItem
             info={`${cardData.s}`}
             copyButton={true}
-            textIcon="tabs.identifiers.details.sequencenumber.icon"
             testId="sequence-number"
           />
         </CardDetailsBlock>
@@ -159,7 +152,6 @@ const IdentifierContent = ({
                 key={index}
                 info={item}
                 copyButton={true}
-                textIcon="tabs.identifiers.details.backerslist.icon"
                 testId={`backer-${index}`}
               />
             );
