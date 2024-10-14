@@ -40,6 +40,7 @@ describe("credsCacheSlice", () => {
         credentialType: "University Credential",
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        identifierType: IdentifierType.Individual,
         identifierId: multisigMetadataRecord.id,
       },
     ];
@@ -57,6 +58,7 @@ describe("credsCacheSlice", () => {
       credentialType: "University Credential",
       status: CredentialStatus.CONFIRMED,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      identifierType: IdentifierType.Individual,
       identifierId: multisigMetadataRecord.id,
     };
     const newState = credsCacheSlice.reducer(
@@ -75,6 +77,7 @@ describe("credsCacheSlice", () => {
       credentialType: "University Credential",
       status: CredentialStatus.PENDING,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      identifierType: IdentifierType.Group,
       identifierId: multisigMetadataRecord.id,
     };
     const cred2: CredentialShortDetails = {
@@ -83,6 +86,7 @@ describe("credsCacheSlice", () => {
       credentialType: "University Credential",
       status: CredentialStatus.PENDING,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      identifierType: IdentifierType.Group,
       identifierId: multisigMetadataRecord.id,
     };
     const updateCred: CredentialShortDetails = {

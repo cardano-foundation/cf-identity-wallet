@@ -144,6 +144,7 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
   schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
   identifierId: memberIdentifierRecord.id,
+  identifierType: IdentifierType.Individual,
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(
@@ -180,6 +181,7 @@ describe("Credential service of agent", () => {
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
         identifierId: memberIdentifierRecord.id,
+        identifierType: IdentifierType.Individual,
       },
       {
         id: id2,
@@ -188,6 +190,7 @@ describe("Credential service of agent", () => {
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
         identifierId: memberIdentifierRecord.id,
+        identifierType: IdentifierType.Individual,
       },
     ]);
   });
@@ -331,6 +334,7 @@ describe("Credential service of agent", () => {
       },
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierId: memberIdentifierRecord.id,
+      identifierType: IdentifierType.Individual,
     });
   });
 
@@ -357,6 +361,7 @@ describe("Credential service of agent", () => {
       issuanceDate: nowISO,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
       identifierId: memberIdentifierRecord.id,
+      identifierType: IdentifierType.Individual,
     });
   });
 

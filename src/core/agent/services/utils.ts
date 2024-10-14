@@ -27,6 +27,7 @@ function getCredentialShortDetails(
     credentialType: metadata.credentialType,
     status: metadata.status,
     schema: metadata.schema,
+    identifierType: metadata.identifierType,
     identifierId: metadata.identifierId,
   };
 }

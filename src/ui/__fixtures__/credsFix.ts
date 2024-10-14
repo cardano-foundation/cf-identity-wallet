@@ -7,6 +7,7 @@ import {
   ACDCDetails,
   CredentialStatus,
 } from "../../core/agent/services/credentialService.types";
+import { IdentifierType } from "../../core/agent/services/identifier.types";
 
 const connectionDetailsFix: ConnectionDetails = {
   id: "test_id",
@@ -37,6 +38,7 @@ const credsFixAcdc: ACDCDetails[] = [
       dt: "2024-01-22T16:05:44.643Z",
     },
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
   },
 ];
@@ -63,6 +65,7 @@ const pendingCredFixs: ACDCDetails[] = [
       dt: "2024-08-07T16:05:44.643Z",
     },
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
   },
 ];
@@ -89,6 +92,7 @@ const revokedCredFixs: ACDCDetails[] = [
       dt: "2024-08-07T16:05:44.643Z",
     },
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
   },
 ];

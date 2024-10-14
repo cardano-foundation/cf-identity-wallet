@@ -30,6 +30,7 @@ describe("credsArchivedCacheSlice", () => {
         credentialType: "University Credential",
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        identifierType: IdentifierType.Individual,
         identifierId: memberIdentifierRecord.id,
       },
     ];

@@ -67,6 +67,7 @@ class CredentialService extends AgentService {
       credentialType: metadata.credentialType,
       status: metadata.status,
       schema: metadata.schema,
+      identifierType: metadata.identifierType,
       identifierId: metadata.identifierId,
     };
   }
@@ -90,7 +91,7 @@ class CredentialService extends AgentService {
       schema: credentialShortDetails.schema,
       status: credentialShortDetails.status,
       identifierId: credentialShortDetails.identifierId,
-      // identifierType: credentialShortDetails.identifierType,
+      identifierType: credentialShortDetails.identifierType,
       i: acdc.sad.i,
       a: acdc.sad.a,
       s: {
@@ -184,6 +185,9 @@ class CredentialService extends AgentService {
             connectionId: credential.sad.i,
             schema: credential.schema.$id,
             identifierId: credential.sad.a.i,
+            identifierType: identifier.multisigManageAid
+              ? IdentifierType.Group
+              : IdentifierType.Individual,
           });
         } catch (error) {
           /* eslint-disable no-console */

@@ -31,6 +31,7 @@ import {
 } from "../event.types";
 import { ConnectionService } from "./connectionService";
 import { Agent } from "../agent";
+import { IdentifierType } from "./identifier.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -479,6 +480,9 @@ class IpexCommunicationService extends AgentService {
       connectionId,
       schema,
       identifierId: holder.id,
+      identifierType: holder.multisigManageAid
+        ? IdentifierType.Group
+        : IdentifierType.Individual,
     };
     await this.credentialStorage.saveCredentialMetadataRecord(
       credentialDetails
@@ -941,7 +945,9 @@ class IpexCommunicationService extends AgentService {
     return { op, exnSaid: exn.ked.d, ipexGrantSaid, member: ourIdentifier.id };
   }
 
-  async getAcdcFromIpexGrant(said: string): Promise<ACDCDetails> {
+  async getAcdcFromIpexGrant(
+    said: string
+  ): Promise<Omit<ACDCDetails, "identifierType">> {
     const exchange = await this.props.signifyClient.exchanges().get(said);
     const schemaSaid = exchange.exn.e.acdc.s;
     const schema = await this.props.signifyClient

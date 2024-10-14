@@ -12,6 +12,7 @@ const filteredCredsFix: CredentialShortDetails[] = [
     credentialType: "University Credential",
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
   },
   {
@@ -20,6 +21,7 @@ const filteredCredsFix: CredentialShortDetails[] = [
     credentialType: "University Credential",
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
   },
   {
@@ -28,6 +30,7 @@ const filteredCredsFix: CredentialShortDetails[] = [
     credentialType: "University Credential",
     status: CredentialStatus.CONFIRMED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqbo",
+    identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
   },
 ];
@@ -39,6 +42,7 @@ const revokedCredsFix: CredentialShortDetails[] = [
     credentialType: "University Credential",
     status: CredentialStatus.REVOKED,
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
     identifierId: memberIdentifierRecord.id,
   },
 ];

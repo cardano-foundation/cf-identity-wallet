@@ -351,6 +351,7 @@ describe("Ipex communication service of agent", () => {
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
       ...credentialRecordProps,
       identifierId: "identifierId",
+      identifierType: "individual",
     });
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.AcdcStateChanged,
@@ -358,6 +359,7 @@ describe("Ipex communication service of agent", () => {
         credential: {
           ...credentialRecordProps,
           identifierId: "identifierId",
+          identifierType: "individual",
         },
         status: CredentialStatus.PENDING,
       },
@@ -1398,6 +1400,7 @@ describe("Ipex communication service of agent", () => {
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledWith({
       ...credentialRecordProps,
       identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+      identifierType: "group",
     });
 
     expect(eventEmitter.emit).toHaveBeenCalledWith({
@@ -1406,6 +1409,7 @@ describe("Ipex communication service of agent", () => {
         credential: {
           ...credentialRecordProps,
           identifierId: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
+          identifierType: "group",
         },
         status: CredentialStatus.PENDING,
       },

@@ -23,10 +23,7 @@ interface JSONObject {
 }
 
 interface ACDCDetails
-  extends Omit<
-    CredentialShortDetails,
-    "credentialType" | "issuanceDate" | "identifierType"
-  > {
+  extends Omit<CredentialShortDetails, "credentialType" | "issuanceDate"> {
   i: string;
   a: {
     i: string;
