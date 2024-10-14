@@ -15,8 +15,6 @@ const CardDetailsItem = ({
   keyValue,
   testId,
   className,
-  actionButton: actionIcon,
-  actionButtonClick: actionIconClick,
   fullText = false,
   mask = true,
 }: CardDetailsItemProps) => {
@@ -65,17 +63,6 @@ const CardDetailsItem = ({
           )}
           {info}
         </IonText>
-        {actionIcon && (
-          <IonButton
-            slot="end"
-            shape="round"
-            className="action-button"
-            data-testid={`${testId}-action-icon`}
-            onClick={actionIconClick}
-          >
-            <IonIcon icon={actionIcon} />
-          </IonButton>
-        )}
         {copyButton && (
           <IonButton
             slot="end"

@@ -1,9 +1,11 @@
 import {
   calendarNumberOutline,
+  keyOutline,
   personCircleOutline,
   refreshOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
+import { IonButton, IonIcon } from "@ionic/react";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import { IdentifierContentProps } from "./IdentifierContent.types";
 import { i18n } from "../../../../i18n";
@@ -33,8 +35,63 @@ const IdentifierContent = ({
     }
   }, [identifiersData, cardData.id, cardData.multisigManageAid]);
 
+  const RotateActionButton = () => {
+    return (
+      <>
+        {i18n.t("tabs.identifiers.details.signingkeyslist.rotate")}
+        <IonButton
+          slot="end"
+          shape="round"
+          className="action-button"
+          data-testid={"rotate-keys-button"}
+          onClick={onOpenRotateKey}
+        >
+          <IonIcon icon={refreshOutline} />
+        </IonButton>
+      </>
+    );
+  };
+
   return (
     <>
+      <CardDetailsBlock
+        title={i18n.t("tabs.identifiers.details.information.title")}
+      >
+        <CardDetailsItem
+          info={cardData.id}
+          copyButton={true}
+          icon={keyOutline}
+          testId="identifier"
+        />
+        <CardDetailsItem
+          info={
+            formatShortDate(cardData.createdAtUTC) +
+            " - " +
+            formatTimeToSec(cardData.createdAtUTC)
+          }
+          copyButton={false}
+          icon={calendarNumberOutline}
+          testId="creation-timestamp"
+        />
+      </CardDetailsBlock>
+      {cardData.k.length && (
+        <CardDetailsBlock
+          title={i18n.t("tabs.identifiers.details.signingkeyslist.title")}
+          action={isMultiSig ? undefined : <RotateActionButton />}
+        >
+          {cardData.k.map((item, index) => {
+            return (
+              <CardDetailsItem
+                key={index}
+                info={item}
+                copyButton={true}
+                testId={`signing-key-${index}`}
+              />
+            );
+          })}
+        </CardDetailsBlock>
+      )}
+
       {cardData.di !== "" && cardData.di && (
         <CardDetailsBlock
           title={i18n.t("tabs.identifiers.details.delegator.title")}
@@ -46,24 +103,7 @@ const IdentifierContent = ({
           />
         </CardDetailsBlock>
       )}
-      {cardData.k.length && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.signingkeyslist.title")}
-        >
-          {cardData.k.map((item, index) => {
-            return (
-              <CardDetailsItem
-                key={index}
-                info={item}
-                copyButton={true}
-                testId={`signing-key-${index}`}
-                actionButton={isMultiSig ? undefined : refreshOutline}
-                actionButtonClick={isMultiSig ? undefined : onOpenRotateKey}
-              />
-            );
-          })}
-        </CardDetailsBlock>
-      )}
+
       {typeof cardData.kt === "string" && Number(cardData.kt) > 1 && (
         <CardDetailsBlock
           title={i18n.t("tabs.identifiers.details.signingkeysthreshold.title")}
@@ -102,20 +142,6 @@ const IdentifierContent = ({
           />
         </CardDetailsBlock>
       )}
-      <CardDetailsBlock
-        title={i18n.t("tabs.identifiers.details.creationtimestamp.title")}
-      >
-        <CardDetailsItem
-          info={
-            formatShortDate(cardData.createdAtUTC) +
-            " - " +
-            formatTimeToSec(cardData.createdAtUTC)
-          }
-          copyButton={false}
-          icon={calendarNumberOutline}
-          testId="creation-timestamp"
-        />
-      </CardDetailsBlock>
       {cardData.s !== "0" && cardData.dt && (
         <CardDetailsBlock
           title={i18n.t("tabs.identifiers.details.rotationtimestamp.title")}

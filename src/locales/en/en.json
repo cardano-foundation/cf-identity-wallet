@@ -779,14 +779,12 @@
       },
       "details": {
         "done": "Done",
-        "information": "Information",
-        "type": "Type",
-        "publickeybase": "Public Key Base 58",
-        "delegator": {
-          "title": "Delegator Identifier Prefix"
+        "information": {
+          "title": "Information"
         },
         "signingkeyslist": {
-          "title": "List of Signing Keys"
+          "title": "List of Signing Keys",
+          "rotate": "Rotate keys"
         },
         "signingkeysthreshold": {
           "title": "Keys Signing Threshold"
@@ -797,9 +795,6 @@
         "nextkeysthreshold": {
           "title": "Next Keys Signing Threshold"
         },
-        "creationtimestamp": {
-          "title": "Creation Timestamp"
-        },
         "rotationtimestamp": {
           "title": "Last Key Rotation Timestamp"
         },
@@ -808,6 +803,9 @@
         },
         "backerslist": {
           "title": "List of Backers"
+        },
+        "delegator": {
+          "title": "Delegator Identifier Prefix"
         },
         "backeraddress": {
           "title": "Backer Address"

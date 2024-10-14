@@ -16,6 +16,34 @@
     margin: 0;
   }
 
+  .card-details-info-block-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .rotate-keys-button {
+      margin: 0;
+      --background: transparent;
+      --box-shadow: none;
+      --color: var(--ion-color-secondary);
+      --background-activated: var(--ion-color-light-grey);
+
+      ion-icon {
+        opacity: 0.5;
+        width: 1.375rem;
+        height: 1.375rem;
+      }
+
+      &::part(native) {
+        padding: 0;
+      }
+
+      &:not(:last-child) {
+        margin-right: 0.75rem;
+      }
+    }
+  }
+
   .card-details-info-block-title {
     @include text-style;
     margin-bottom: 0.625rem;
