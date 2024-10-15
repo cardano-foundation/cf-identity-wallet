@@ -54,16 +54,20 @@ const walletId = "idw";
 class Agent {
   static readonly KERIA_CONNECTION_BROKEN =
     "The app is not connected to KERIA at the moment";
-  static readonly KERIA_BOOT_FAILED_BAD_NETWORK = "Failed to boot due to network connectivity";
-  static readonly KERIA_CONNECT_FAILED_BAD_NETWORK = "Failed to connect due to network connectivity"
+  static readonly KERIA_BOOT_FAILED_BAD_NETWORK =
+    "Failed to boot due to network connectivity";
+  static readonly KERIA_CONNECT_FAILED_BAD_NETWORK =
+    "Failed to connect due to network connectivity";
   static readonly KERIA_BOOT_FAILED = "Failed to boot signify client";
-  static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT = "KERIA agent is already booted but cannot connect";
+  static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT =
+    "KERIA agent is already booted but cannot connect";
   static readonly KERIA_NOT_BOOTED =
     "Agent has not been booted for a given Signify passcode";
   static readonly INVALID_MNEMONIC = "Seed phrase is invalid";
   static readonly MISSING_DATA_ON_KERIA =
     "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.";
   static readonly BUFFER_ALLOC_SIZE = 3;
+
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {
     eventEmitter: undefined as any,
@@ -88,11 +92,11 @@ class Agent {
   private identifierService!: IdentifierService;
   private multiSigService!: MultiSigService;
   private ipexCommunicationService!: IpexCommunicationService;
-
   private connectionService!: ConnectionService;
   private credentialService!: CredentialService;
   private keriaNotificationService!: KeriaNotificationService;
   private authService!: AuthService;
+
   static isOnline = false;
 
   get identifiers() {
@@ -316,8 +320,8 @@ class Agent {
 
     this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
     this.agentServicesProps.signifyClient = this.signifyClient;
-    
-    await this.signifyClient.connect().catch(error => {
+
+    await this.signifyClient.connect().catch((error) => {
       if (!(error instanceof Error)) {
         throw error;
       }
@@ -358,7 +362,7 @@ class Agent {
       if (
         error instanceof Error &&
         error.message ===
-        `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_PASSCODE}`
+          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_PASSCODE}`
       ) {
         await SecureStorage.set(
           KeyStoreKeys.APP_PASSCODE,
@@ -375,7 +379,7 @@ class Agent {
       if (
         error instanceof Error &&
         error.message ===
-        `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
+          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
       ) {
         await SecureStorage.set(
           KeyStoreKeys.SIGNIFY_BRAN,
@@ -385,12 +389,15 @@ class Agent {
         throw error;
       }
     }
-    await this.basicStorage.save({
-      id: MiscRecordId.APP_ALREADY_INIT,
-      content: {
-        initialized: true,
-      },
-    });
+
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.APP_ALREADY_INIT,
+        content: {
+          initialized: true,
+        },
+      })
+    );
 
     await this.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({

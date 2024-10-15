@@ -32,6 +32,7 @@ interface IdentifierDetails extends IdentifierShortDetails {
   bt: string;
   b: string[];
   di?: string;
+  members?: string[];
 }
 
 interface MultiSigIcpRequestDetails {
