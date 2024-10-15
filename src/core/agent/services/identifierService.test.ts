@@ -240,7 +240,6 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       ...keriMetadataRecord,
       isPending: true,
-      signifyOpName: "signifyOpName",
     });
     await expect(
       identifierService.getIdentifier(keriMetadataRecord.id)
@@ -263,7 +262,6 @@ describe("Single sig service of agent", () => {
       groupMetadata: keriMetadataRecord.groupMetadata,
       multisigManageAid: keriMetadataRecord.multisigManageAid,
       ...aidReturnedBySignify.state,
-      signifyOpName: undefined,
       isPending: false,
     });
   });
@@ -372,7 +370,6 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       ...keriMetadataRecord,
       isPending: true,
-      signifyOpName: "signifyOpName",
     });
     connections.getMultisigLinkedContacts = jest.fn().mockResolvedValue([
       {
@@ -397,7 +394,6 @@ describe("Single sig service of agent", () => {
       .mockReturnValueOnce({
         ...keriMetadataRecord,
         isPending: true,
-        signifyOpName: "signifyOpName",
         multisigManageAid: "manageAid",
         groupMetadata: undefined,
       })
