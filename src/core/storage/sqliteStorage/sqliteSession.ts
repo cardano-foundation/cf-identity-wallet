@@ -4,6 +4,7 @@ import {
   SQLiteDBConnection,
 } from "@capacitor-community/sqlite";
 import { Capacitor } from "@capacitor/core";
+import { randomPasscode } from "signify-ts";
 import { versionCompare } from "./utils";
 import { MIGRATIONS } from "./migrations";
 import { MigrationType } from "./migrations/migrations.types";
@@ -55,7 +56,7 @@ class SqliteSession {
     if (isEncryption) {
       const isSetSecret = (await connection.isSecretStored()).result;
       if (!isSetSecret) {
-        const newBran = (await Agent.agent.getBranAndMnemonic()).bran;
+        const newBran = randomPasscode();
         await SecureStorage.set(KeyStoreKeys.DB_ENCRYPTION_BRAN, newBran);
         await connection.setEncryptionSecret(newBran);
       }
