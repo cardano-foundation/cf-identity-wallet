@@ -73,6 +73,7 @@ const CredentialDetailModule = ({
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [cardData, setCardData] = useState<ACDCDetails>();
+  const [hidden, setHidden] = useState(false);
 
   const isArchived = credsCache.filter((item) => item.id === id).length === 0;
   const isRevoked = cardData?.status === CredentialStatus.REVOKED;
@@ -205,6 +206,9 @@ const CredentialDetailModule = ({
 
   const onVerify = async () => {
     const backReason = isInactiveCred ? BackReason.DELETE : BackReason.ARCHIVED;
+    onClose?.(backReason);
+    setVerifyIsOpen(false);
+
     if (isArchived) {
       await handleDeleteCredential();
     } else if (isRevoked) {
@@ -212,9 +216,6 @@ const CredentialDetailModule = ({
     } else {
       await handleArchiveCredential();
     }
-
-    onClose?.(backReason);
-    setVerifyIsOpen(false);
   };
 
   const handleSetFavourite = (id: string) => {
@@ -331,6 +332,7 @@ const CredentialDetailModule = ({
       "cred-back-animation": navAnimation,
       "cred-open-animation": !navAnimation,
       revoked: isRevoked,
+      "ion-hide": hidden,
     }
   );
 
@@ -345,6 +347,7 @@ const CredentialDetailModule = ({
   };
 
   const handleAuthentication = () => {
+    setHidden(true);
     setVerifyIsOpen(true);
   };
 
@@ -493,7 +496,13 @@ const CredentialDetailModule = ({
       />
       <Verification
         verifyIsOpen={verifyIsOpen}
-        setVerifyIsOpen={setVerifyIsOpen}
+        setVerifyIsOpen={(value, isCancel) => {
+          if (isCancel) {
+            setHidden(false);
+          }
+
+          setVerifyIsOpen(value);
+        }}
         onVerify={onVerify}
       />
     </>

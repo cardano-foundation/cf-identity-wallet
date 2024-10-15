@@ -77,6 +77,7 @@ const IdentifierDetails = () => {
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
   const [cloudError, setCloudError] = useState(false);
+  const [hidden, setHidden] = useState(false);
 
   const fetchOobi = useCallback(async () => {
     try {
@@ -154,6 +155,8 @@ const IdentifierDetails = () => {
   };
 
   const handleDelete = async () => {
+    handleDone(false);
+
     try {
       setVerifyIsOpen(false);
       const filterId = cardData
@@ -169,7 +172,6 @@ const IdentifierDetails = () => {
       await deleteIdentifier();
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
       dispatch(setIdentifiersCache(updatedIdentifiers));
-      handleDone();
     } catch (e) {
       showError(
         "Unable to delete identifier",
@@ -247,6 +249,7 @@ const IdentifierDetails = () => {
   };
 
   const handleAuthentication = () => {
+    setHidden(true);
     setVerifyIsOpen(true);
   };
 
@@ -321,6 +324,7 @@ const IdentifierDetails = () => {
   const pageClasses = combineClassNames("card-details", {
     "back-animation": navAnimation,
     "open-animation": !navAnimation,
+    "ion-hide": hidden,
   });
 
   return (
@@ -425,7 +429,13 @@ const IdentifierDetails = () => {
       />
       <Verification
         verifyIsOpen={verifyIsOpen}
-        setVerifyIsOpen={setVerifyIsOpen}
+        setVerifyIsOpen={(value, isCancel) => {
+          if (isCancel) {
+            setHidden(false);
+          }
+
+          setVerifyIsOpen(value);
+        }}
         onVerify={handleDelete}
       />
     </>

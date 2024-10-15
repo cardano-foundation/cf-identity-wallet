@@ -3,7 +3,6 @@ export interface CardDetailsItemProps {
   copyButton?: boolean;
   icon?: string;
   keyValue?: string;
-  textIcon?: string;
   testId?: string;
   infoTestId?: string;
   className?: string;

@@ -1,6 +1,6 @@
 interface VerifyPasswordProps {
   isOpen: boolean;
-  setIsOpen: (value: boolean) => void;
+  setIsOpen: (value: boolean, isCancel?: boolean) => void;
   onVerify: () => void;
 }
 
