@@ -55,10 +55,9 @@ class Agent {
   static readonly KERIA_CONNECTION_BROKEN =
     "The app is not connected to KERIA at the moment";
   static readonly KERIA_BOOT_FAILED_BAD_NETWORK = "Failed to boot due to network connectivity";
-  static readonly KERIA_CONNECT_FAILED_BAD_NETWORK  = "Failed to connect due to network connectivity"
+  static readonly KERIA_CONNECT_FAILED_BAD_NETWORK = "Failed to connect due to network connectivity"
   static readonly KERIA_BOOT_FAILED = "Failed to boot signify client";
-  static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT =
-    "Signify client is already booted but cannot connect";
+  static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT = "KERIA agent is already booted but cannot connect";
   static readonly KERIA_NOT_BOOTED =
     "Agent has not been booted for a given Signify passcode";
   static readonly INVALID_MNEMONIC = "Seed phrase is invalid";
@@ -235,9 +234,13 @@ class Agent {
       this.agentServicesProps.signifyClient = this.signifyClient;
       await this.signifyClient.connect().catch((e) => {
         /* eslint-disable no-console */
+        const status = e.message.split(" - ")[1];
         console.error(e);
         if (e.message === "Failed to fetch") {
           throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
+        }
+        if (/404/gi.test(status)) {
+          throw new Error(Agent.KERIA_NOT_BOOTED);
         }
         throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
       });
@@ -264,7 +267,7 @@ class Agent {
         }
         throw new Error(Agent.KERIA_BOOT_FAILED);
       });
-    
+
       if (!bootResult.ok && bootResult.status !== 400) {
         /* eslint-disable no-console */
         console.warn(
@@ -275,9 +278,13 @@ class Agent {
 
       await this.signifyClient.connect().catch((e) => {
         /* eslint-disable no-console */
+        const status = e.message.split(" - ")[1];
         console.error(e);
         if (e.message === "Failed to fetch") {
           throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
+        }
+        if (/404/gi.test(status)) {
+          throw new Error(Agent.KERIA_NOT_BOOTED);
         }
         throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
       });
@@ -290,9 +297,9 @@ class Agent {
     seedPhrase: string[],
     connectUrl: string
   ): Promise<void> {
+    const mnemonic = seedPhrase.join(" ");
     let bran = "";
     try {
-      const mnemonic = seedPhrase.join(" ");
       const entropy = mnemonicToEntropy(mnemonic);
       const branBuffer = Buffer.from(entropy, "hex").slice(
         0,
@@ -300,25 +307,29 @@ class Agent {
       );
 
       bran = branBuffer.toString("utf-8");
-
-      this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
-      this.agentServicesProps.signifyClient = this.signifyClient;
-
-      await this.signifyClient.connect();
     } catch (error) {
-      if (error instanceof Error) {
-        if (error.message === "Failed to fetch") {
-          throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
-        }
-        if (error.message === "Invalid mnemonic") {
-          throw new Error(Agent.INVALID_MNEMONIC);
-        }
-        if (error.message.includes("agent does not exist for controller")) {
-          throw new Error(Agent.KERIA_NOT_BOOTED);
-        }
+      if (error instanceof Error && error.message === "Invalid mnemonic") {
+        throw new Error(Agent.INVALID_MNEMONIC);
+      }
+      throw error;
+    }
+
+    this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
+    this.agentServicesProps.signifyClient = this.signifyClient;
+    
+    await this.signifyClient.connect().catch(error => {
+      if (!(error instanceof Error)) {
         throw error;
       }
-    }
+      const status = error.message.split(" - ")[1];
+      if (error.message === "Failed to fetch") {
+        throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
+      }
+      if (/404/gi.test(status)) {
+        throw new Error(Agent.KERIA_NOT_BOOTED);
+      }
+      throw error;
+    });
 
     await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
     await this.saveAgentUrls({
@@ -347,7 +358,7 @@ class Agent {
       if (
         error instanceof Error &&
         error.message ===
-          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_PASSCODE}`
+        `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_PASSCODE}`
       ) {
         await SecureStorage.set(
           KeyStoreKeys.APP_PASSCODE,
@@ -364,7 +375,7 @@ class Agent {
       if (
         error instanceof Error &&
         error.message ===
-          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
+        `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
       ) {
         await SecureStorage.set(
           KeyStoreKeys.SIGNIFY_BRAN,
