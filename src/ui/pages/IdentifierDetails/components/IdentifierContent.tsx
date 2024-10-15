@@ -37,18 +37,16 @@ const IdentifierContent = ({
 
   const RotateActionButton = () => {
     return (
-      <>
-        {i18n.t("tabs.identifiers.details.signingkeyslist.rotate")}
-        <IonButton
-          slot="end"
-          shape="round"
-          className="action-button"
-          data-testid={"rotate-keys-button"}
-          onClick={onOpenRotateKey}
-        >
-          <IonIcon icon={refreshOutline} />
-        </IonButton>
-      </>
+      <IonButton
+        slot="end"
+        shape="round"
+        className="rotate-keys-button"
+        data-testid={"rotate-keys-button"}
+        onClick={onOpenRotateKey}
+      >
+        <h4>{i18n.t("tabs.identifiers.details.signingkeyslist.rotate")}</h4>
+        <IonIcon icon={refreshOutline} />
+      </IonButton>
     );
   };
 
