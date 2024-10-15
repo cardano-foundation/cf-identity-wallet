@@ -56,8 +56,8 @@ class SqliteSession {
       const isSetSecret = (await connection.isSecretStored()).result;
       if (!isSetSecret) {
         const newBran = (await Agent.agent.getBranAndMnemonic()).bran;
-        await connection.setEncryptionSecret(newBran);
         await SecureStorage.set(KeyStoreKeys.DB_ENCRYPTION_BRAN, newBran);
+        await connection.setEncryptionSecret(newBran);
       }
     }
 
