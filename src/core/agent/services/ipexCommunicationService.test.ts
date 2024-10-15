@@ -946,11 +946,23 @@ describe("Ipex communication service of agent", () => {
       },
     });
 
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+      ],
+    });
+
     const result = await ipexCommunicationService.getLinkedGroupFromIpexGrant(
       notification.id
     );
 
     expect(result).toEqual({
+      members: ["memberA", "memberB"],
       threshold: "2",
       accepted: true,
       membersJoined: ["memberA", "memberB"],
@@ -975,6 +987,17 @@ describe("Ipex communication service of agent", () => {
       a: { d: "d" },
     };
 
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+      ],
+    });
+
     notificationStorage.findById.mockResolvedValueOnce(grantNoteRecord);
     getExchangeMock.mockImplementationOnce(() => ({
       exn: { e: { acdc: { d: "credentialSaid" } }, a: { i: "i" } },
@@ -991,6 +1014,7 @@ describe("Ipex communication service of agent", () => {
     );
 
     expect(result).toEqual({
+      members: ["memberA", "memberB"],
       threshold: "2",
       accepted: false,
       membersJoined: [],
@@ -1067,19 +1091,39 @@ describe("Ipex communication service of agent", () => {
       },
     });
 
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+        {
+          aid: "memberC",
+        },
+        {
+          aid: "memberD",
+        },
+      ],
+    });
+
     const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
       notification.id
     );
 
     expect(result).toEqual({
+      members: ["memberA", "memberB", "memberC", "memberD"],
       threshold: "2",
-      credentialSaid1: {
-        accepted: true,
-        membersJoined: ["memberA", "memberB"],
-      },
-      credentialSaid2: {
-        accepted: true,
-        membersJoined: ["memberC", "memberD"],
+      offer: {
+        credentialSaid1: {
+          accepted: true,
+          membersJoined: ["memberA", "memberB"],
+        },
+        credentialSaid2: {
+          accepted: true,
+          membersJoined: ["memberC", "memberD"],
+        },
       },
     });
   });
@@ -1121,20 +1165,40 @@ describe("Ipex communication service of agent", () => {
       },
     });
 
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+        {
+          aid: "memberC",
+        },
+        {
+          aid: "memberD",
+        },
+      ],
+    });
+
     notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
     const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
       notification.id
     );
 
     expect(result).toEqual({
+      members: ["memberA", "memberB", "memberC", "memberD"],
       threshold: "2",
-      credentialSaid1: {
-        accepted: false,
-        membersJoined: [],
-      },
-      credentialSaid2: {
-        accepted: false,
-        membersJoined: [],
+      offer: {
+        credentialSaid1: {
+          accepted: false,
+          membersJoined: [],
+        },
+        credentialSaid2: {
+          accepted: false,
+          membersJoined: [],
+        },
       },
     });
   });
@@ -1167,12 +1231,27 @@ describe("Ipex communication service of agent", () => {
       },
     });
 
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+      ],
+    });
+
     notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
     const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
       notification.id
     );
 
-    expect(result).toEqual({ threshold: "2" });
+    expect(result).toEqual({
+      members: ["memberA", "memberB"],
+      threshold: "2",
+      offer: {},
+    });
   });
 
   test("Can accept ACDC from multisig exn", async () => {
