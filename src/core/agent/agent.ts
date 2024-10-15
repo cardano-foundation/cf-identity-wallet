@@ -57,13 +57,13 @@ class Agent {
   static readonly KERIA_BOOT_FAILED_BAD_NETWORK = "Failed to boot due to network connectivity";
   static readonly KERIA_CONNECT_FAILED_BAD_NETWORK  = "Failed to connect due to network connectivity"
   static readonly KERIA_BOOT_FAILED = "Failed to boot signify client";
-  static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT =
-    "Signify client is already booted but cannot connect";
+  static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT = "KERIA agent is already booted but cannot connect";
   static readonly KERIA_NOT_BOOTED =
     "Agent has not been booted for a given Signify passcode";
   static readonly INVALID_MNEMONIC = "Seed phrase is invalid";
   static readonly MISSING_DATA_ON_KERIA =
     "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.";
+  static readonly KERIA_BOOTED_ALREADY_NOT_FOUND = "KERIA agent is already booted but cannot be found, possible mismatched URLs";
   static readonly BUFFER_ALLOC_SIZE = 3;
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {
