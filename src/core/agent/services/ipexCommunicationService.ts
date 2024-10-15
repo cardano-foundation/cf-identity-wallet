@@ -1112,6 +1112,10 @@ class IpexCommunicationService extends AgentService {
     const multisigAid = await this.props.signifyClient
       .identifiers()
       .get(exchange.exn.a.i);
+    const members = await this.props.signifyClient
+      .identifiers()
+      .members(exchange.exn.a.i);
+    const memberAids = members.signing.map((member: any) => member.aid);
 
     const credentialSaid = exchange.exn.e.acdc.d;
 
@@ -1130,12 +1134,14 @@ class IpexCommunicationService extends AgentService {
 
       return {
         threshold: multisigAid.state.kt,
+        members: memberAids,
         accepted: linkedGroupRequest[credentialSaid].accepted,
         membersJoined: Array.from(membersJoined),
       };
     } else {
       return {
         threshold: multisigAid.state.kt,
+        members: memberAids,
         accepted: false,
         membersJoined: [],
       };
@@ -1159,6 +1165,10 @@ class IpexCommunicationService extends AgentService {
     const multisigAid = await this.props.signifyClient
       .identifiers()
       .get(exchange.exn.a.i);
+    const members = await this.props.signifyClient
+      .identifiers()
+      .members(exchange.exn.a.i);
+    const memberAids = members.signing.map((member: any) => member.aid);
 
     const result: Record<
       string,
@@ -1168,7 +1178,8 @@ class IpexCommunicationService extends AgentService {
     if (Object.keys(linkedGroupRequest).length === 0) {
       return {
         threshold: multisigAid.state.kt,
-        ...result,
+        members: memberAids,
+        offer: {},
       };
     }
 
@@ -1194,7 +1205,8 @@ class IpexCommunicationService extends AgentService {
 
     return {
       threshold: multisigAid.state.kt,
-      ...result,
+      members: memberAids,
+      offer: result,
     };
   }
 }
