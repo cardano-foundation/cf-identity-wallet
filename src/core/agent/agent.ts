@@ -297,9 +297,9 @@ class Agent {
     seedPhrase: string[],
     connectUrl: string
   ): Promise<void> {
+    const mnemonic = seedPhrase.join(" ");
     let bran = "";
     try {
-      const mnemonic = seedPhrase.join(" ");
       const entropy = mnemonicToEntropy(mnemonic);
       const branBuffer = Buffer.from(entropy, "hex").slice(
         0,
@@ -307,26 +307,29 @@ class Agent {
       );
 
       bran = branBuffer.toString("utf-8");
-
-      this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
-      this.agentServicesProps.signifyClient = this.signifyClient;
-
-      await this.signifyClient.connect();
     } catch (error) {
-      if (error instanceof Error) {
-        const status = error.message.split(" - ")[1];
-        if (error.message === "Failed to fetch") {
-          throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
-        }
-        if (error.message === "Invalid mnemonic") {
-          throw new Error(Agent.INVALID_MNEMONIC);
-        }
-        if (/404/gi.test(status)) {
-          throw new Error(Agent.KERIA_NOT_BOOTED);
-        }
+      if (error instanceof Error && error.message === "Invalid mnemonic") {
+        throw new Error(Agent.INVALID_MNEMONIC);
+      }
+      throw error;
+    }
+
+    this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
+    this.agentServicesProps.signifyClient = this.signifyClient;
+    
+    await this.signifyClient.connect().catch(error => {
+      if (!(error instanceof Error)) {
         throw error;
       }
-    }
+      const status = error.message.split(" - ")[1];
+      if (error.message === "Failed to fetch") {
+        throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
+      }
+      if (/404/gi.test(status)) {
+        throw new Error(Agent.KERIA_NOT_BOOTED);
+      }
+      throw error;
+    });
 
     await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
     await this.saveAgentUrls({
