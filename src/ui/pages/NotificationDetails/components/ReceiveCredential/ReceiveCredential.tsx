@@ -89,6 +89,7 @@ const ReceiveCredential = ({
         identifier.id === credential.identifierId;
       });
 
+      // @TODO: identifierType is not needed to render the component so this could be optimised. If it's needed, it should be fetched in the core for simplicity.
       const identifierType = identifier?.multisigManageAid
         ? IdentifierType.Group
         : IdentifierType.Individual;
