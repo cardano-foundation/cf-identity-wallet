@@ -325,7 +325,6 @@ describe("Rotation of multi-sig", () => {
       id: "123456",
       displayName: "John Doe",
       isPending: true,
-      signifyOpName: "op123",
       signifyName: "",
       theme: 0,
     } as IdentifierMetadataRecord;

@@ -23,7 +23,6 @@ interface IdentifierShortDetails {
 }
 
 interface IdentifierDetails extends IdentifierShortDetails {
-  signifyOpName?: string;
   s: string;
   dt: string;
   kt: string | string[];
