@@ -63,7 +63,6 @@ class Agent {
   static readonly INVALID_MNEMONIC = "Seed phrase is invalid";
   static readonly MISSING_DATA_ON_KERIA =
     "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.";
-  static readonly KERIA_BOOTED_ALREADY_NOT_FOUND = "KERIA agent is already booted but cannot be found, possible mismatched URLs";
   static readonly BUFFER_ALLOC_SIZE = 3;
   private static instance: Agent;
   private agentServicesProps: AgentServicesProps = {
@@ -239,6 +238,9 @@ class Agent {
         if (e.message === "Failed to fetch") {
           throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
         }
+        if (e.message === "agent does not exist for controller") {
+          throw new Error(Agent.KERIA_NOT_BOOTED);
+        }
         throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
       });
       this.markAgentStatus(true);
@@ -278,6 +280,9 @@ class Agent {
         console.error(e);
         if (e.message === "Failed to fetch") {
           throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
+        }
+        if (e.message === "agent does not exist for controller") {
+          throw new Error(Agent.KERIA_NOT_BOOTED);
         }
         throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
       });
