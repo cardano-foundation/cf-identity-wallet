@@ -239,7 +239,7 @@ class Agent {
         if (e.message === "Failed to fetch") {
           throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
         }
-        throw new Error(Agent.KERIA_CONNECTION_BROKEN);
+        throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
       });
       this.markAgentStatus(true);
     }
