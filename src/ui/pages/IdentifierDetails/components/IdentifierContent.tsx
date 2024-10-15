@@ -52,6 +52,37 @@ const IdentifierContent = ({
 
   return (
     <>
+      {isMultiSig && (
+        <>
+          <CardDetailsBlock
+            title={i18n.t("tabs.identifiers.details.groupmembers.title")}
+          >
+            {/* {groupMembers.map((item, index) => {
+            return (
+              <CardDetailsItem
+                key={index}
+                info={item}
+                copyButton={false}
+                testId={`group-member-${index}`}
+              />
+            );
+          })} */}
+          </CardDetailsBlock>
+          {cardData.kt && (
+            <CardDetailsBlock
+              title={i18n.t(
+                "tabs.identifiers.details.signingkeysthreshold.title"
+              )}
+            >
+              <CardDetailsItem
+                info={`${cardData.kt}`}
+                copyButton={false}
+                testId="signing-keys-threshold"
+              />
+            </CardDetailsBlock>
+          )}
+        </>
+      )}
       <CardDetailsBlock
         title={i18n.t("tabs.identifiers.details.information.title")}
       >
@@ -140,18 +171,6 @@ const IdentifierContent = ({
             info={cardData.di}
             copyButton={true}
             testId="delegator"
-          />
-        </CardDetailsBlock>
-      )}
-
-      {typeof cardData.kt === "string" && Number(cardData.kt) > 1 && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.signingkeysthreshold.title")}
-        >
-          <CardDetailsItem
-            info={`${cardData.kt}`}
-            copyButton={false}
-            testId="signing-keys-threshold"
           />
         </CardDetailsBlock>
       )}
