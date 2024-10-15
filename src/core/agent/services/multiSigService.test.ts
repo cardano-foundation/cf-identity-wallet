@@ -820,7 +820,7 @@ describe("Creation of multi-sig", () => {
       identifier: multisigIdentifier,
       isPending: true,
       signifyName: expect.any(String),
-      multisigManageAid: "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
+      multisigManageAid: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
     });
 
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
@@ -1162,7 +1162,7 @@ describe("Creation of multi-sig", () => {
             ...getRequestMultisigIcp.exn.a,
             smids: [
               "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-              "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
+              "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
               "EKlUo3CAqjPfFt0Wr2vvSc7MqT9WiL2EGadRsAP3V1IJ",
             ],
           },
@@ -1186,7 +1186,7 @@ describe("Creation of multi-sig", () => {
       },
     ]);
     const result = await multiSigService.getMultisigIcpDetails(
-      "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO"
+      "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G"
     );
     expect(result.ourIdentifier.id).toBe(memberIdentifierRecord.id);
     expect(result.sender.id).toBe(initiatorConnectionShortDetails.id);

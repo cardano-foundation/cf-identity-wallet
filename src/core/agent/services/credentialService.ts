@@ -184,10 +184,10 @@ class CredentialService extends AgentService {
             status: CredentialStatus.PENDING,
             connectionId: credential.sad.i,
             schema: credential.schema.$id,
+            identifierId: credential.sad.a.i,
             identifierType: identifier.multisigManageAid
               ? IdentifierType.Group
               : IdentifierType.Individual,
-            identifierId: credential.sad.a.i,
           });
         } catch (error) {
           /* eslint-disable no-console */

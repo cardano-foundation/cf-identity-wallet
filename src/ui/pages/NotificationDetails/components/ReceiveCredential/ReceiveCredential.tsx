@@ -36,6 +36,8 @@ import {
 } from "../../../../../core/agent/services/credentialService.types";
 import { CredentialDetailModal } from "../../../../components/CredentialDetailModule";
 import { Spinner } from "../../../../components/Spinner";
+import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
+import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
 
 const ANIMATION_DELAY = 2200;
 
@@ -56,6 +58,7 @@ const ReceiveCredential = ({
   const [openInfo, setOpenInfo] = useState(false);
   const [credDetail, setCredDetail] = useState<ACDCDetails>();
   const [isLoading, setIsLoading] = useState(false);
+  const identifiersData = useAppSelector(getIdentifiersCache);
 
   const connection =
     connectionsCache?.[notificationDetails.connectionId]?.label;
@@ -82,7 +85,16 @@ const ReceiveCredential = ({
           notificationDetails.a.d as string
         );
 
-      setCredDetail(credential);
+      const identifier = identifiersData.find((identifier) => {
+        identifier.id === credential.identifierId;
+      });
+
+      // @TODO: identifierType is not needed to render the component so this could be optimised. If it's needed, it should be fetched in the core for simplicity.
+      const identifierType = identifier?.multisigManageAid
+        ? IdentifierType.Group
+        : IdentifierType.Individual;
+
+      setCredDetail({ ...credential, identifierType });
     } catch (e) {
       setInitiateAnimation(false);
       showError("Unable to get acdc", e, dispatch);
