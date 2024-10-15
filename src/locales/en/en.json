@@ -783,32 +783,32 @@
           "title": "Information"
         },
         "signingkeyslist": {
-          "title": "List of Signing Keys",
+          "title": "List of signing keys",
           "rotate": "Rotate keys"
         },
         "signingkeysthreshold": {
-          "title": "Keys Signing Threshold"
+          "title": "Keys signing threshold"
         },
         "nextkeyslist": {
-          "title": "List of Next Key Digests"
+          "title": "List of next key digests"
         },
         "nextkeysthreshold": {
-          "title": "Next Keys Signing Threshold"
+          "title": "Next keys signing threshold"
         },
         "rotationtimestamp": {
-          "title": "Last Key Rotation Timestamp"
+          "title": "Last key rotation timestamp"
         },
         "sequencenumber": {
-          "title": "Sequence Number"
+          "title": "Sequence number"
         },
         "backerslist": {
-          "title": "List of Backers"
+          "title": "List of backers"
         },
         "delegator": {
-          "title": "Delegator Identifier Prefix"
+          "title": "Delegator identifier prefix"
         },
         "backeraddress": {
-          "title": "Backer Address"
+          "title": "Backer address"
         },
         "delete": {
           "button": "Delete identifier",

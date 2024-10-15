@@ -89,6 +89,48 @@ const IdentifierContent = ({
           })}
         </CardDetailsBlock>
       )}
+      {cardData.n.length && (
+        <CardDetailsBlock
+          title={i18n.t("tabs.identifiers.details.nextkeyslist.title")}
+        >
+          {cardData.n.map((item, index) => {
+            return (
+              <CardDetailsItem
+                key={index}
+                info={item}
+                copyButton={true}
+                testId={`next-key-${index}`}
+              />
+            );
+          })}
+        </CardDetailsBlock>
+      )}
+      {cardData.s && (
+        <CardDetailsBlock
+          title={i18n.t("tabs.identifiers.details.sequencenumber.title")}
+        >
+          <CardDetailsItem
+            info={`${cardData.s}`}
+            copyButton={false}
+            testId="sequence-number"
+          />
+        </CardDetailsBlock>
+      )}
+      {cardData.dt && (
+        <CardDetailsBlock
+          title={i18n.t("tabs.identifiers.details.rotationtimestamp.title")}
+        >
+          <CardDetailsItem
+            info={
+              formatShortDate(cardData.dt) +
+              " - " +
+              formatTimeToSec(cardData.dt)
+            }
+            copyButton={false}
+            testId="rotation-timestamp"
+          />
+        </CardDetailsBlock>
+      )}
 
       {cardData.di !== "" && cardData.di && (
         <CardDetailsBlock
@@ -113,22 +155,7 @@ const IdentifierContent = ({
           />
         </CardDetailsBlock>
       )}
-      {cardData.n.length && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.nextkeyslist.title")}
-        >
-          {cardData.n.map((item, index) => {
-            return (
-              <CardDetailsItem
-                key={index}
-                info={item}
-                copyButton={true}
-                testId={`next-key-${index}`}
-              />
-            );
-          })}
-        </CardDetailsBlock>
-      )}
+
       {typeof cardData.nt === "string" && Number(cardData.nt) > 1 && (
         <CardDetailsBlock
           title={i18n.t("tabs.identifiers.details.nextkeysthreshold.title")}
@@ -140,32 +167,7 @@ const IdentifierContent = ({
           />
         </CardDetailsBlock>
       )}
-      {cardData.s !== "0" && cardData.dt && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.rotationtimestamp.title")}
-        >
-          <CardDetailsItem
-            info={
-              formatShortDate(cardData.dt) +
-              " - " +
-              formatTimeToSec(cardData.dt)
-            }
-            copyButton={false}
-            testId="rotation-timestamp"
-          />
-        </CardDetailsBlock>
-      )}
-      {cardData.s !== "0" && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.sequencenumber.title")}
-        >
-          <CardDetailsItem
-            info={`${cardData.s}`}
-            copyButton={true}
-            testId="sequence-number"
-          />
-        </CardDetailsBlock>
-      )}
+
       {cardData.b.length > 0 && (
         <CardDetailsBlock
           title={i18n.t("tabs.identifiers.details.backerslist.title")}
