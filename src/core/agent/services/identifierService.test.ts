@@ -296,7 +296,7 @@ describe("Single sig service of agent", () => {
     });
   });
 
-  test.only("group identifier detailed view should contain the member identifiers", async () => {
+  test("group identifier detailed view should contain the member identifiers", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     identifierStorage.getIdentifierMetadata = jest
       .fn()
