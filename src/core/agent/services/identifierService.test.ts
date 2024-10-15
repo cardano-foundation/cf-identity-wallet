@@ -293,6 +293,7 @@ describe("Single sig service of agent", () => {
       multisigManageAid: keriMetadataRecord.multisigManageAid,
       ...identifierStateKeria.state,
       isPending: false,
+      members: undefined,
     });
   });
 
