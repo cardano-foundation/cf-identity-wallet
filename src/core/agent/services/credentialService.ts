@@ -107,10 +107,7 @@ class CredentialService extends AgentService {
   }
 
   async createMetadata(data: CredentialMetadataRecordProps) {
-    const metadataRecord = new CredentialMetadataRecord({
-      ...data,
-    });
-
+    const metadataRecord = new CredentialMetadataRecord(data);
     await this.credentialStorage.saveCredentialMetadataRecord(metadataRecord);
   }
 

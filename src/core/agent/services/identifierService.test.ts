@@ -7,10 +7,11 @@ import { IdentifierService } from "./identifierService";
 import { EventTypes } from "../event.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 
-const identifiersListMock = jest.fn();
-const identifiersGetMock = jest.fn();
-const identifiersCreateMock = jest.fn();
-const identifiersRotateMock = jest.fn();
+const listIdentifiersMock = jest.fn();
+const getIdentifierMembersMock = jest.fn();
+const getIdentifiersMock = jest.fn();
+const createIdentifierMock = jest.fn();
+const rotateIdentifierMock = jest.fn();
 const saveOperationPendingMock = jest.fn();
 const mockSigner = {
   _code: "A",
@@ -38,13 +39,13 @@ const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
   identifiers: () => ({
-    list: identifiersListMock,
-    get: identifiersGetMock,
-    create: identifiersCreateMock,
+    list: listIdentifiersMock,
+    get: getIdentifiersMock,
+    create: createIdentifierMock,
     addEndRole: jest.fn().mockResolvedValue({ op: jest.fn() }),
     interact: jest.fn(),
-    rotate: identifiersRotateMock,
-    members: jest.fn(),
+    rotate: rotateIdentifierMock,
+    members: getIdentifierMembersMock,
   }),
   operations: () => ({
     get: operationGetMock,
@@ -166,6 +167,7 @@ const keriMetadataRecordProps = {
   theme: 0,
   groupMetadata,
 };
+
 const identifierMetadataRecord = new IdentifierMetadataRecord({
   ...keriMetadataRecordProps,
   theme: 0,
@@ -175,7 +177,7 @@ const keriMetadataRecord = new IdentifierMetadataRecord(
   keriMetadataRecordProps
 );
 
-const aidReturnedBySignify = {
+const identifierStateKeria = {
   prefix: keriMetadataRecord.id,
   state: {
     s: "s",
@@ -188,6 +190,34 @@ const aidReturnedBySignify = {
     b: "b",
     di: "di",
   },
+};
+
+const groupIdentifierStateKeria = {
+  ...identifierStateKeria,
+  group: {},
+};
+
+const identifierMembersState = {
+  signing: [
+    {
+      aid: "EGn8b8d9nUbmw3csQ7DO4mkfCz9HusIKL98xe1BFYOKb",
+      ends: {},
+    },
+    {
+      aid: "EH51ZBTNCY7acERZQ9u2PHMdswKMfW6KRHgKrYr0UMFg",
+      ends: {},
+    },
+  ],
+  rotation: [
+    {
+      aid: "EGn8b8d9nUbmw3csQ7DO4mkfCz9HusIKL98xe1BFYOKb",
+      ends: {},
+    },
+    {
+      aid: "EH51ZBTNCY7acERZQ9u2PHMdswKMfW6KRHgKrYr0UMFg",
+      ends: {},
+    },
+  ],
 };
 
 describe("Single sig service of agent", () => {
@@ -222,7 +252,7 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    identifiersGetMock.mockRejectedValue(
+    getIdentifiersMock.mockRejectedValue(
       new Error("request - 404 - SignifyClient message")
     );
     await expect(
@@ -251,7 +281,7 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    identifiersGetMock.mockResolvedValue(aidReturnedBySignify);
+    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
     expect(
       await identifierService.getIdentifier(keriMetadataRecord.id)
     ).toStrictEqual({
@@ -261,8 +291,34 @@ describe("Single sig service of agent", () => {
       theme: 0,
       groupMetadata: keriMetadataRecord.groupMetadata,
       multisigManageAid: keriMetadataRecord.multisigManageAid,
-      ...aidReturnedBySignify.state,
+      ...identifierStateKeria.state,
       isPending: false,
+      members: undefined,
+    });
+  });
+
+  test("group identifier detailed view should contain the member identifiers", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    getIdentifiersMock.mockResolvedValue(groupIdentifierStateKeria);
+    getIdentifierMembersMock.mockResolvedValue(identifierMembersState);
+    expect(
+      await identifierService.getIdentifier(keriMetadataRecord.id)
+    ).toStrictEqual({
+      id: keriMetadataRecord.id,
+      displayName: keriMetadataRecordProps.displayName,
+      createdAtUTC: nowISO,
+      theme: 0,
+      groupMetadata: keriMetadataRecord.groupMetadata,
+      multisigManageAid: keriMetadataRecord.multisigManageAid,
+      ...identifierStateKeria.state,
+      isPending: false,
+      members: [
+        identifierMembersState.signing[0].aid,
+        identifierMembersState.signing[1].aid,
+      ],
     });
   });
 
@@ -270,7 +326,7 @@ describe("Single sig service of agent", () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const aid = "newIdentifierAid";
     const displayName = "newDisplayName";
-    identifiersCreateMock.mockResolvedValue({
+    createIdentifierMock.mockResolvedValue({
       serder: {
         ked: {
           i: aid,
@@ -291,7 +347,7 @@ describe("Single sig service of agent", () => {
       signifyName: expect.any(String),
       isPending: false,
     });
-    expect(identifiersCreateMock).toBeCalled();
+    expect(createIdentifierMock).toBeCalled();
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
   });
 
@@ -300,7 +356,7 @@ describe("Single sig service of agent", () => {
     const aid = "newIdentifierAid";
     const displayName = "newDisplayName";
     eventEmitter.emit = jest.fn();
-    identifiersCreateMock.mockResolvedValue({
+    createIdentifierMock.mockResolvedValue({
       serder: {
         ked: {
           i: aid,
@@ -334,7 +390,7 @@ describe("Single sig service of agent", () => {
       signifyName: expect.any(String),
       isPending: true,
     });
-    expect(identifiersCreateMock).toBeCalled();
+    expect(createIdentifierMock).toBeCalled();
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.OperationAdded,
@@ -350,7 +406,7 @@ describe("Single sig service of agent", () => {
   test("cannot create a keri identifier if theme is not valid", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const displayName = "newDisplayName";
-    identifiersCreateMock.mockResolvedValue({
+    createIdentifierMock.mockResolvedValue({
       serder: {
         ked: {
           i: "i",
@@ -458,7 +514,7 @@ describe("Single sig service of agent", () => {
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI identifiers", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
-    identifiersListMock.mockReturnValue({
+    listIdentifiersMock.mockReturnValue({
       aids: [
         {
           name: "12219bf2-613a-4d5f-8c5d-5d093e7035b3",
@@ -490,13 +546,13 @@ describe("Single sig service of agent", () => {
   test("should call signify.rotateIdentifier with correct params", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const identifierId = "identifierId";
-    identifiersRotateMock.mockResolvedValue({
+    rotateIdentifierMock.mockResolvedValue({
       op: jest.fn().mockResolvedValue({
         done: true,
       }),
     });
     await identifierService.rotateIdentifier(identifierId);
-    expect(identifiersRotateMock).toHaveBeenCalledWith(identifierId);
+    expect(rotateIdentifierMock).toHaveBeenCalledWith(identifierId);
   });
 
   test("Should throw error if we failed to obtain key manager when call getSigner", async () => {
@@ -504,7 +560,7 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    identifiersGetMock.mockResolvedValue(aidReturnedBySignify);
+    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
     await expect(
       identifierService.getSigner(keriMetadataRecord.id)
     ).rejects.toThrowError(IdentifierService.FAILED_TO_OBTAIN_KEY_MANAGER);
@@ -515,7 +571,7 @@ describe("Single sig service of agent", () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    identifiersGetMock.mockResolvedValue(aidReturnedBySignify);
+    getIdentifiersMock.mockResolvedValue(identifierStateKeria);
     signifyClient.manager = managerMock as any;
     expect(
       await identifierService.getSigner(keriMetadataRecord.id)
