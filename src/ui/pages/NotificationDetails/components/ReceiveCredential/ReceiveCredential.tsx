@@ -5,21 +5,30 @@ import {
   personCircleOutline,
   swapHorizontalOutline,
 } from "ionicons/icons";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Agent } from "../../../../../core/agent/agent";
 import { NotificationRoute } from "../../../../../core/agent/agent.types";
+import { ACDCDetails } from "../../../../../core/agent/services/credentialService.types";
+import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
 import { i18n } from "../../../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
-import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
+import {
+  getConnectionsCache,
+  getMultisigConnectionsCache,
+} from "../../../../../store/reducers/connectionsCache";
+import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import {
   getNotificationsCache,
   setNotificationsCache,
 } from "../../../../../store/reducers/notificationsCache";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { Alert as AlertDecline } from "../../../../components/Alert";
-import { ResponsivePageLayout } from "../../../../components/layout/ResponsivePageLayout";
+import { CardDetailsBlock } from "../../../../components/CardDetails";
+import { CredentialDetailModal } from "../../../../components/CredentialDetailModule";
+import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../../components/PageFooter";
 import { PageHeader } from "../../../../components/PageHeader";
+import { Spinner } from "../../../../components/Spinner";
 import { Verification } from "../../../../components/Verification";
 import { BackEventPriorityType } from "../../../../globals/types";
 import {
@@ -29,15 +38,13 @@ import {
 import { showError } from "../../../../utils/error";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
+import { Member } from "./Member";
 import "./ReceiveCredential.scss";
 import {
-  ACDCDetails,
-  CredentialStatus,
-} from "../../../../../core/agent/services/credentialService.types";
-import { CredentialDetailModal } from "../../../../components/CredentialDetailModule";
-import { Spinner } from "../../../../components/Spinner";
-import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
-import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
+  MemberAcceptStatus,
+  MultiSigMembersStatus,
+} from "./ReceiveCredential.types";
+import { getAuthentication } from "../../../../../store/reducers/stateCache";
 
 const ANIMATION_DELAY = 2200;
 
@@ -50,18 +57,35 @@ const ReceiveCredential = ({
   const dispatch = useAppDispatch();
   const notificationsCache = useAppSelector(getNotificationsCache);
   const [notifications, setNotifications] = useState(notificationsCache);
+  const userName = useAppSelector(getAuthentication)?.userName;
   const connectionsCache = useAppSelector(getConnectionsCache);
+  const multisignConnectionsCache = useAppSelector(getMultisigConnectionsCache);
   const fallbackLogo = KeriLogo;
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [openInfo, setOpenInfo] = useState(false);
   const [credDetail, setCredDetail] = useState<ACDCDetails>();
+  const [multisigMemberStatus, setMultisigMemberStatus] =
+    useState<MultiSigMembersStatus>({
+      threshold: "0",
+      accepted: false,
+      membersJoined: [],
+      members: [],
+    });
   const [isLoading, setIsLoading] = useState(false);
   const identifiersData = useAppSelector(getIdentifiersCache);
 
+  const isMultisig = credDetail?.identifierType === IdentifierType.Group;
+
   const connection =
     connectionsCache?.[notificationDetails.connectionId]?.label;
+
+  const userAccepted = multisigMemberStatus.accepted;
+  const maxThreshhold =
+    isMultisig &&
+    multisigMemberStatus.membersJoined.length >=
+      Number(multisigMemberStatus.threshold);
 
   useIonHardwareBackButton(
     BackEventPriorityType.Page,
@@ -77,6 +101,20 @@ const ReceiveCredential = ({
     dispatch(setNotificationsCache(updatedNotifications));
   };
 
+  const getMultiSigMemberStatus = useCallback(async () => {
+    try {
+      const result =
+        await Agent.agent.ipexCommunications.getLinkedGroupFromIpexGrant(
+          notificationDetails.id
+        );
+
+      setMultisigMemberStatus(result);
+    } catch (e) {
+      setInitiateAnimation(false);
+      showError("Unable to get group members", e, dispatch);
+    }
+  }, [dispatch, notificationDetails.id]);
+
   const getAcdc = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -85,23 +123,33 @@ const ReceiveCredential = ({
           notificationDetails.a.d as string
         );
 
-      const identifier = identifiersData.find((identifier) => {
-        identifier.id === credential.identifierId;
-      });
+      const identifier = identifiersData.find(
+        (identifier) => identifier.id === credential.identifierId
+      );
 
       // @TODO: identifierType is not needed to render the component so this could be optimised. If it's needed, it should be fetched in the core for simplicity.
-      const identifierType = identifier?.multisigManageAid
-        ? IdentifierType.Group
-        : IdentifierType.Individual;
+      const identifierType =
+        identifier?.multisigManageAid || identifier?.multisigManageAid
+          ? IdentifierType.Group
+          : IdentifierType.Individual;
 
       setCredDetail({ ...credential, identifierType });
+
+      if (identifierType === IdentifierType.Group) {
+        getMultiSigMemberStatus();
+      }
     } catch (e) {
       setInitiateAnimation(false);
       showError("Unable to get acdc", e, dispatch);
     } finally {
       setIsLoading(false);
     }
-  }, [dispatch, notificationDetails.a.d]);
+  }, [
+    dispatch,
+    getMultiSigMemberStatus,
+    identifiersData,
+    notificationDetails.a.d,
+  ]);
 
   useOnlineStatusEffect(getAcdc);
 
@@ -113,7 +161,10 @@ const ReceiveCredential = ({
       const finishTime = Date.now();
 
       setTimeout(() => {
-        handleNotificationUpdate();
+        if (!isMultisig) {
+          handleNotificationUpdate();
+        }
+
         handleBack();
         setOpenInfo(false);
       }, ANIMATION_DELAY - (finishTime - startTime));
@@ -141,9 +192,42 @@ const ReceiveCredential = ({
     "animation-off": !initiateAnimation,
   });
 
+  const getStatus = useCallback(
+    (member: string): MemberAcceptStatus => {
+      if (multisigMemberStatus.membersJoined.includes(member)) {
+        return MemberAcceptStatus.Accepted;
+      }
+
+      return MemberAcceptStatus.Waiting;
+    },
+    [multisigMemberStatus.membersJoined]
+  );
+
+  const members = useMemo(() => {
+    return multisigMemberStatus.members.map((member) => {
+      const memberConnection = multisignConnectionsCache[member];
+
+      let name = memberConnection?.label || member;
+
+      if (!memberConnection?.label) {
+        name = userName;
+      }
+
+      return {
+        id: member,
+        name,
+      };
+    });
+  }, [multisigMemberStatus.members, multisignConnectionsCache, userName]);
+
+  const handleConfirm = () => {
+    if (maxThreshhold) return;
+    setVerifyIsOpen(true);
+  };
+
   return (
     <>
-      <ResponsivePageLayout
+      <ScrollablePageLayout
         pageId={`${pageId}-receive-credential`}
         customClass={classes}
         activeStatus={activeStatus}
@@ -158,6 +242,27 @@ const ReceiveCredential = ({
               "tabs.notifications.details.credential.receive.title"
             )}`}
           />
+        }
+        footer={
+          !userAccepted && (
+            <PageFooter
+              pageId={pageId}
+              primaryButtonText={`${i18n.t(
+                maxThreshhold
+                  ? "tabs.notifications.details.buttons.addcred"
+                  : "tabs.notifications.details.buttons.accept"
+              )}`}
+              primaryButtonAction={handleConfirm}
+              secondaryButtonText={
+                maxThreshhold
+                  ? undefined
+                  : `${i18n.t("tabs.notifications.details.buttons.decline")}`
+              }
+              secondaryButtonAction={
+                maxThreshhold ? undefined : () => setAlertDeclineIsOpen(true)
+              }
+            />
+          )
         }
       >
         <div className="request-animation-center">
@@ -227,19 +332,24 @@ const ReceiveCredential = ({
               )}
             </IonButton>
           </div>
+          {isMultisig && (
+            <CardDetailsBlock
+              className="group-members"
+              title={i18n.t(
+                "tabs.notifications.details.credential.receive.members"
+              )}
+            >
+              {members.map(({ id, name }) => (
+                <Member
+                  key={id}
+                  name={name}
+                  status={getStatus(id)}
+                />
+              ))}
+            </CardDetailsBlock>
+          )}
         </div>
-        <PageFooter
-          pageId={pageId}
-          primaryButtonText={`${i18n.t(
-            "tabs.notifications.details.buttons.accept"
-          )}`}
-          primaryButtonAction={() => setVerifyIsOpen(true)}
-          secondaryButtonText={`${i18n.t(
-            "tabs.notifications.details.buttons.decline"
-          )}`}
-          secondaryButtonAction={() => setAlertDeclineIsOpen(true)}
-        />
-      </ResponsivePageLayout>
+      </ScrollablePageLayout>
       <AlertDecline
         isOpen={alertDeclineIsOpen}
         setIsOpen={setAlertDeclineIsOpen}

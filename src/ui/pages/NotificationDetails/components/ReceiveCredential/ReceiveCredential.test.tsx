@@ -12,6 +12,8 @@ import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { passcodeFiller } from "../../../../utils/passcodeFiller";
 import { ReceiveCredential } from "./ReceiveCredential";
 import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
+import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
+import { identifierFix } from "../../../../__fixtures__/identifierFix";
 
 mockIonicReact();
 jest.useFakeTimers();
@@ -36,7 +38,8 @@ const acceptAcdcMock = jest.fn(
       }, 700);
     })
 );
-
+const getLinkedGroupFromIpexGrantMock = jest.fn();
+const getAcdcFromIpexGrantMock = jest.fn();
 jest.mock("../../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -46,12 +49,11 @@ jest.mock("../../../../../core/agent/agent", () => ({
       },
       ipexCommunications: {
         acceptAcdc: (id: string) => acceptAcdcMock(id),
-        getAcdcFromIpexGrant: jest.fn(() =>
-          Promise.resolve({
-            ...credsFixAcdc[0],
-            status: "peding",
-          })
-        ),
+        getAcdcFromIpexGrant: () => getAcdcFromIpexGrantMock(),
+        getLinkedGroupFromIpexGrant: () => getLinkedGroupFromIpexGrantMock(),
+      },
+      identifiers: {
+        getIdentifier: jest.fn(() => Promise.resolve(identifierFix[0])),
       },
     },
   },
@@ -78,7 +80,6 @@ const initialState = {
   notificationsCache: {
     notifications: notificationsFix,
   },
-
   identifiersCache: {
     identifiers: filteredIdentifierFix,
   },
@@ -92,6 +93,15 @@ jest.mock("@ionic/react", () => ({
 }));
 
 describe("Credential request", () => {
+  beforeEach(() => {
+    getAcdcFromIpexGrantMock.mockImplementation(() =>
+      Promise.resolve({
+        ...credsFixAcdc[0],
+        status: "peding",
+      })
+    );
+  });
+
   test("Render and decline", async () => {
     const storeMocked = {
       ...mockStore(initialState),
@@ -219,4 +229,162 @@ describe("Credential request", () => {
       expect(getByTestId("receive-credential-detail-modal")).toBeVisible();
     });
   }, 10000);
+});
+
+describe("Credential request: Multisig", () => {
+  const initialState = {
+    stateCache: {
+      routes: [TabsRoutePath.NOTIFICATIONS],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+      },
+      isOnline: true,
+    },
+    credsCache: {
+      creds: [],
+    },
+    connectionsCache: {
+      connections: connectionsForNotifications,
+      multisigConnections: {
+        "member-1": {
+          label: "Member 1",
+        },
+        "member-2": {
+          label: "Member 2",
+        },
+      },
+    },
+    notificationsCache: {
+      notifications: notificationsFix,
+    },
+    identifiersCache: {
+      identifiers: filteredIdentifierFix,
+    },
+  };
+
+  const storeMocked = {
+    ...mockStore(initialState),
+    dispatch: dispatchMock,
+  };
+
+  test("Multisig credential request", async () => {
+    const backMock = jest.fn();
+
+    getAcdcFromIpexGrantMock.mockImplementation(() =>
+      Promise.resolve({
+        ...credsFixAcdc[0],
+        identifierType: IdentifierType.Group,
+        identifierId: filteredIdentifierFix[2].id,
+      })
+    );
+
+    getLinkedGroupFromIpexGrantMock.mockImplementation(() =>
+      Promise.resolve({
+        threshold: "2",
+        accepted: false,
+        membersJoined: [],
+        members: ["member-1", "member-2"],
+      })
+    );
+
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <ReceiveCredential
+          pageId="creadential-request"
+          activeStatus
+          handleBack={backMock}
+          notificationDetails={notificationsFix[0]}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          EN_TRANSLATIONS.tabs.notifications.details.credential.receive.members
+        )
+      ).toBeVisible();
+
+      expect(getByText("Member 1")).toBeVisible();
+
+      expect(getByText("Member 2")).toBeVisible();
+    });
+  });
+
+  test("Multisig credential request: max thresh hold", async () => {
+    const backMock = jest.fn();
+
+    getAcdcFromIpexGrantMock.mockImplementation(() =>
+      Promise.resolve({
+        ...credsFixAcdc[0],
+        identifierType: IdentifierType.Group,
+        identifierId: filteredIdentifierFix[2].id,
+      })
+    );
+
+    getLinkedGroupFromIpexGrantMock.mockImplementation(() =>
+      Promise.resolve({
+        threshold: "2",
+        accepted: false,
+        membersJoined: ["member-1", "member-2"],
+        members: ["member-1", "member-2"],
+      })
+    );
+
+    const { getByText } = render(
+      <Provider store={storeMocked}>
+        <ReceiveCredential
+          pageId="creadential-request"
+          activeStatus
+          handleBack={backMock}
+          notificationDetails={notificationsFix[0]}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.addcred)
+      ).toBeVisible();
+    });
+  });
+
+  test("Multisig credential request: Accepted", async () => {
+    const backMock = jest.fn();
+
+    getAcdcFromIpexGrantMock.mockImplementation(() =>
+      Promise.resolve({
+        ...credsFixAcdc[0],
+        identifierType: IdentifierType.Group,
+        identifierId: filteredIdentifierFix[2].id,
+      })
+    );
+
+    getLinkedGroupFromIpexGrantMock.mockImplementation(() =>
+      Promise.resolve({
+        threshold: "2",
+        accepted: true,
+        membersJoined: ["member-1"],
+        members: ["member-1", "member-2"],
+      })
+    );
+
+    const { queryByTestId } = render(
+      <Provider store={storeMocked}>
+        <ReceiveCredential
+          pageId="creadential-request"
+          activeStatus
+          handleBack={backMock}
+          notificationDetails={notificationsFix[0]}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId("primary-button-creadential-request")).toBe(null);
+      expect(queryByTestId("secondary-button-creadential-request")).toBe(null);
+    });
+  });
 });

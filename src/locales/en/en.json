@@ -1017,7 +1017,8 @@
           "cancel": "Cancel",
           "back": "Back",
           "choosecredential": "Choose credential",
-          "providecredential": "Provide credential"
+          "providecredential": "Provide credential",
+          "addcred": "Add Credential"
         },
         "credential": {
           "request": {
@@ -1050,6 +1051,7 @@
             "from": "from",
             "credentialpending": "Credential pending",
             "credentialdetailbutton": "Credential details",
+            "members": "Group member",
             "alert": {
               "textdecline": "Are you sure you want to decline this credential issuance? You won't be able to change your decision later."
             }
