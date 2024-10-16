@@ -221,7 +221,6 @@ const ReceiveCredential = ({
   }, [multisigMemberStatus.members, multisignConnectionsCache, userName]);
 
   const handleConfirm = () => {
-    if (maxThreshhold) return;
     setVerifyIsOpen(true);
   };
 
