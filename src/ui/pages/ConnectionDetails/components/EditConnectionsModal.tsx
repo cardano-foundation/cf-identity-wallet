@@ -26,7 +26,6 @@ export const EditConnectionsContainer = ({
   connectionDetails,
   onConfirm,
 }: EditConnectionsModalProps) => {
-  const TEMP_ID_PREFIX = "temp";
   const dispatch = useAppDispatch();
   const [updatedNotes, setUpdatedNotes] = useState<ConnectionNoteDetails[]>([
     ...notes,
@@ -48,7 +47,7 @@ export const EditConnectionsContainer = ({
 
       await Promise.all(
         filteredNotes
-          .filter((note) => note.id.includes(TEMP_ID_PREFIX))
+          .filter((note) => !note.id)
           .map((note) => {
             update = true;
             return Agent.agent.connections.createConnectionNote(
@@ -66,7 +65,10 @@ export const EditConnectionsContainer = ({
 
           if (!noteFind) {
             update = true;
-            return Agent.agent.connections.deleteConnectionNoteById(note.id);
+            return Agent.agent.connections.deleteConnectionNoteById(
+              connectionDetails.id,
+              note.id
+            );
           }
 
           if (
@@ -75,7 +77,8 @@ export const EditConnectionsContainer = ({
           ) {
             update = true;
             return Agent.agent.connections.updateConnectionNoteById(
-              note.id,
+              connectionDetails.id,
+              noteFind.id,
               noteFind
             );
           }
@@ -106,7 +109,7 @@ export const EditConnectionsContainer = ({
       {
         title: "",
         message: "",
-        id: TEMP_ID_PREFIX + Date.now(),
+        id: "",
       },
     ]);
   };

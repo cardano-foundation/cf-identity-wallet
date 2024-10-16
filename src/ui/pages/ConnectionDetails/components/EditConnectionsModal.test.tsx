@@ -433,17 +433,17 @@ describe("Edit Connection Modal", () => {
           setNotes={jest.fn()}
           notes={[
             {
-              id: "temp-1",
+              id: "",
               title: "Note temp",
               message: "Note message temp",
             },
             {
-              id: "1",
+              id: "note:1",
               title: "Note 1",
               message: "Note message 1",
             },
             {
-              id: "2",
+              id: "note:2",
               title: "Note 1",
               message: "Note message 1",
             },
@@ -458,9 +458,9 @@ describe("Edit Connection Modal", () => {
         connectionsFix[0].label
       );
     });
-    const noteInput = getByTestId("edit-connections-modal-note-title-1");
+    const noteInput = getByTestId("edit-connections-modal-note-title-note:1");
     const noteMessageInput = getByTestId(
-      "edit-connections-modal-note-message-1"
+      "edit-connections-modal-note-message-note:1"
     );
 
     act(() => {
@@ -479,7 +479,7 @@ describe("Edit Connection Modal", () => {
       expect((noteInput as HTMLInputElement).value).toEqual("new Value");
     });
 
-    const deleteButton = getByTestId("note-delete-button-2");
+    const deleteButton = getByTestId("note-delete-button-note:2");
 
     act(() => {
       ionFireEvent.click(deleteButton);
@@ -538,7 +538,7 @@ describe("Edit Connection Modal", () => {
           setNotes={jest.fn()}
           notes={[
             {
-              id: "temp-1",
+              id: "",
               title: "Note temp",
               message: "Note message temp",
             },

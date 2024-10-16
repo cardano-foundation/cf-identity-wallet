@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { SqliteStorage } from "../../storage/sqliteStorage";
+import { Salter } from "signify-ts";
 import { Agent } from "../agent";
 import {
   AgentServicesProps,
@@ -13,7 +13,6 @@ import {
   OobiScan,
 } from "../agent.types";
 import {
-  ConnectionNoteStorage,
   ConnectionRecord,
   ConnectionStorage,
   CredentialStorage,
@@ -34,7 +33,6 @@ import {
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
-  protected readonly connectionNoteStorage!: ConnectionNoteStorage;
   protected readonly credentialStorage: CredentialStorage;
   protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
@@ -43,7 +41,6 @@ class ConnectionService extends AgentService {
   constructor(
     agentServiceProps: AgentServicesProps,
     connectionStorage: ConnectionStorage,
-    connectionNoteStorage: ConnectionNoteStorage,
     credentialStorage: CredentialStorage,
     ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage,
@@ -51,7 +48,6 @@ class ConnectionService extends AgentService {
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
-    this.connectionNoteStorage = connectionNoteStorage;
     this.credentialStorage = credentialStorage;
     this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
@@ -66,6 +62,7 @@ class ConnectionService extends AgentService {
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
   static readonly CANNOT_GET_OOBI = "No OOBI available from KERIA";
+  static readonly CONNECTION_NOTE_PREFIX_KEY = "note:";
 
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
@@ -217,6 +214,12 @@ class ConnectionService extends AgentService {
           throw error;
         }
       });
+    const notes: Array<ConnectionNoteDetails> = [];
+    Object.keys(connection).forEach((key) => {
+      if (key.startsWith(ConnectionService.CONNECTION_NOTE_PREFIX_KEY)) {
+        notes.push(JSON.parse(connection[key]));
+      }
+    });
     return {
       label: connection?.alias,
       id: connection.id,
@@ -225,7 +228,7 @@ class ConnectionService extends AgentService {
         await this.getConnectionMetadataById(connection.id)
       ).createdAt.toISOString(),
       serviceEndpoints: [connection.oobi],
-      notes: await this.getConnectNotesByConnectionId(connection.id),
+      notes,
     };
   }
 
@@ -233,10 +236,6 @@ class ConnectionService extends AgentService {
   async deleteConnectionById(id: string): Promise<void> {
     await this.props.signifyClient.contacts().delete(id);
     await this.connectionStorage.deleteById(id);
-    const notes = await this.getConnectNotesByConnectionId(id);
-    await Promise.all(
-      notes.map((note) => this.connectionNoteStorage.deleteById(note.id))
-    );
     const historyItems =
       await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(id);
     await Promise.all(
@@ -261,31 +260,57 @@ class ConnectionService extends AgentService {
     connectionId: string,
     note: ConnectionNoteProps
   ): Promise<void> {
-    await this.connectionNoteStorage.save({
-      id: uuidv4(),
-      title: note.title,
-      message: note.message,
-      connectionId,
+    const id = new Salter({}).qb64;
+    await this.props.signifyClient.contacts().update(connectionId, {
+      [`${ConnectionService.CONNECTION_NOTE_PREFIX_KEY}${id}`]: JSON.stringify({
+        ...note,
+        id: `${ConnectionService.CONNECTION_NOTE_PREFIX_KEY}${id}`,
+      }),
     });
   }
 
   async updateConnectionNoteById(
+    connectionId: string,
     connectionNoteId: string,
     note: ConnectionNoteProps
   ) {
-    const noteRecord = await this.connectionNoteStorage.findById(
-      connectionNoteId
-    );
-    if (!noteRecord) {
-      throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
-    }
-    noteRecord.title = note.title;
-    noteRecord.message = note.message;
-    await this.connectionNoteStorage.update(noteRecord);
+    const connection = await this.props.signifyClient
+      .contacts()
+      .get(connectionId)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${connectionId}`);
+        } else {
+          throw error;
+        }
+      });
+    const connectionNote = JSON.parse(connection[connectionNoteId]);
+    connectionNote.title = note.title;
+    connectionNote.message = note.message;
+    await this.props.signifyClient.contacts().update(connectionId, {
+      ...connection,
+      [connectionNoteId]: JSON.stringify(connectionNote),
+    });
   }
 
-  async deleteConnectionNoteById(connectionNoteId: string) {
-    return this.connectionNoteStorage.deleteById(connectionNoteId);
+  async deleteConnectionNoteById(
+    connectionId: string,
+    connectionNoteId: string
+  ) {
+    const connection = await this.props.signifyClient
+      .contacts()
+      .get(connectionId)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${connectionId}`);
+        } else {
+          throw error;
+        }
+      });
+    delete connection[connectionNoteId];
+    return this.props.signifyClient.contacts().update(connectionId, connection);
   }
 
   @OnlineOnly
@@ -406,21 +431,6 @@ class ConnectionService extends AgentService {
     }
     const oobi = { ...operation, alias };
     return oobi;
-  }
-
-  private async getConnectNotesByConnectionId(
-    connectionId: string
-  ): Promise<ConnectionNoteDetails[]> {
-    const notes = await this.connectionNoteStorage.findAllByQuery({
-      connectionId,
-    });
-    return notes.map((note) => {
-      return {
-        id: note.id,
-        title: note.title,
-        message: note.message,
-      };
-    });
   }
 }
 
