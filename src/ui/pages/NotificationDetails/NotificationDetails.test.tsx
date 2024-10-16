@@ -88,11 +88,15 @@ describe("Notification Detail", () => {
         </Provider>
       </IonReactMemoryRouter>
     );
-    expect(
-      getAllByText(
-        EN_TRANSLATIONS.tabs.notifications.details.credential.receive.title
-      )[0]
-    ).toBeVisible();
+
+    await waitFor(() => {
+      expect(
+        getAllByText(
+          EN_TRANSLATIONS.tabs.notifications.details.credential.receive.title
+        )[0]
+      ).toBeVisible();
+    });
+
     expect(
       getByText(EN_TRANSLATIONS.tabs.notifications.details.buttons.close)
     ).toBeVisible();
