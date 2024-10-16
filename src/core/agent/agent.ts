@@ -313,6 +313,8 @@ class Agent {
       if (!(error instanceof Error)) {
         throw error;
       }
+      /* eslint-disable no-console */
+      console.error(error);
       const status = error.message.split(" - ")[1];
       if (error.message === "Failed to fetch") {
         throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
@@ -320,7 +322,7 @@ class Agent {
       if (/404/gi.test(status)) {
         throw new Error(Agent.KERIA_NOT_BOOTED);
       }
-      throw error;
+      throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
     });
   }
 
