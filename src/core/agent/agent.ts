@@ -236,18 +236,7 @@ class Agent {
       const bran = await this.getBran();
       this.signifyClient = new SignifyClient(keriaConnectUrl, bran, Tier.low);
       this.agentServicesProps.signifyClient = this.signifyClient;
-      await this.signifyClient.connect().catch((e) => {
-        /* eslint-disable no-console */
-        const status = e.message.split(" - ")[1];
-        console.error(e);
-        if (e.message === "Failed to fetch") {
-          throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
-        }
-        if (/404/gi.test(status)) {
-          throw new Error(Agent.KERIA_NOT_BOOTED);
-        }
-        throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
-      });
+      await this.connectSignifyClient();
       this.markAgentStatus(true);
     }
   }
@@ -280,18 +269,7 @@ class Agent {
         throw new Error(Agent.KERIA_BOOT_FAILED);
       }
 
-      await this.signifyClient.connect().catch((e) => {
-        /* eslint-disable no-console */
-        const status = e.message.split(" - ")[1];
-        console.error(e);
-        if (e.message === "Failed to fetch") {
-          throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
-        }
-        if (/404/gi.test(status)) {
-          throw new Error(Agent.KERIA_NOT_BOOTED);
-        }
-        throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
-      });
+      await this.connectSignifyClient();
       await this.saveAgentUrls(agentUrls);
       this.markAgentStatus(true);
     }
@@ -320,7 +298,17 @@ class Agent {
 
     this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
     this.agentServicesProps.signifyClient = this.signifyClient;
+    await this.connectSignifyClient();
 
+    await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
+    await this.saveAgentUrls({
+      url: connectUrl,
+      bootUrl: "",
+    });
+    this.markAgentStatus(true);
+  }
+
+  private async connectSignifyClient(): Promise<void> {
     await this.signifyClient.connect().catch((error) => {
       if (!(error instanceof Error)) {
         throw error;
@@ -334,14 +322,6 @@ class Agent {
       }
       throw error;
     });
-
-    await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
-    await this.saveAgentUrls({
-      url: connectUrl,
-      bootUrl: "",
-    });
-
-    this.markAgentStatus(true);
   }
 
   markAgentStatus(online: boolean) {
