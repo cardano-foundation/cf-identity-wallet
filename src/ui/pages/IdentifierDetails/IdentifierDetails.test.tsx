@@ -121,7 +121,7 @@ history.push(TabsRoutePath.IDENTIFIER_DETAILS, {
   ...identifierFix[0],
 });
 
-describe("Cards Details page (not multi-sig)", () => {
+describe("Individual Identifier Details page", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
@@ -437,7 +437,7 @@ describe("Cards Details page (not multi-sig)", () => {
     );
 
     act(() => {
-      fireEvent.click(getByTestId("signing-key-0-action-icon"));
+      fireEvent.click(getByTestId("rotate-keys-button"));
     });
 
     await waitFor(() => {

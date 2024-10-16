@@ -189,7 +189,7 @@ const IdentifierContent = ({
 
       {/* @TODO - sdisalvo: START: The following 3 sections will need to be removed/refactored */}
 
-      {/* {cardData.b.length > 0 && (
+      {cardData.b.length > 0 && (
         <CardDetailsBlock
           title={i18n.t("tabs.identifiers.details.backerslist.title")}
         >
@@ -204,10 +204,10 @@ const IdentifierContent = ({
             );
           })}
         </CardDetailsBlock>
-      )} */}
+      )}
 
       {/* @TODO - foconnor: We should verify the particular identifier is ledger based, not that our config is. */}
-      {/* {ConfigurationService.env.keri.backing.mode === BackingMode.LEDGER && (
+      {ConfigurationService.env.keri.backing.mode === BackingMode.LEDGER && (
         <CardDetailsBlock
           title={i18n.t("tabs.identifiers.details.backeraddress.title")}
         >
@@ -219,9 +219,9 @@ const IdentifierContent = ({
             testId="backer-address"
           />
         </CardDetailsBlock>
-      )} */}
+      )}
 
-      {/* {cardData.di !== "" && cardData.di && (
+      {cardData.di !== "" && cardData.di && (
         <CardDetailsBlock
           title={i18n.t("tabs.identifiers.details.delegator.title")}
         >
@@ -231,7 +231,7 @@ const IdentifierContent = ({
             testId="delegator"
           />
         </CardDetailsBlock>
-      )} */}
+      )}
       {/* @TODO - sdisalvo: END: The above 3 sections will need to be removed/refactored */}
     </>
   );
