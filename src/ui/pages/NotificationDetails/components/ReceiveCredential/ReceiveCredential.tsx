@@ -136,7 +136,7 @@ const ReceiveCredential = ({
       setCredDetail({ ...credential, identifierType });
 
       if (identifierType === IdentifierType.Group) {
-        getMultiSigMemberStatus();
+        await getMultiSigMemberStatus();
       }
     } catch (e) {
       setInitiateAnimation(false);
@@ -190,6 +190,7 @@ const ReceiveCredential = ({
   const classes = combineClassNames(`${pageId}-receive-credential`, {
     "animation-on": initiateAnimation,
     "animation-off": !initiateAnimation,
+    "pending-multisig": userAccepted && isMultisig,
   });
 
   const getStatus = useCallback(
@@ -223,6 +224,10 @@ const ReceiveCredential = ({
   const handleConfirm = () => {
     setVerifyIsOpen(true);
   };
+
+  if (isLoading) {
+    return <Spinner show={isLoading} />;
+  }
 
   return (
     <>
@@ -380,7 +385,6 @@ const ReceiveCredential = ({
         credDetail={credDetail}
         viewOnly
       />
-      <Spinner show={isLoading} />
     </>
   );
 };
