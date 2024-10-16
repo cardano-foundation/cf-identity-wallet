@@ -146,7 +146,6 @@ class MultiSigService extends AgentService {
       displayName: ourMetadata.displayName,
       theme: ourMetadata.theme,
       signifyName,
-      signifyOpName: result.op.name, //we save the signifyOpName here to sync the multisig's status later
       isPending,
       multisigManageAid: ourIdentifier,
     });
@@ -503,7 +502,6 @@ class MultiSigService extends AgentService {
       displayName: meta.displayName,
       theme: meta.theme,
       signifyName,
-      signifyOpName: op.name, //we save the signifyOpName here to sync the multisig's status later
       isPending,
       multisigManageAid: identifier.id,
     });
@@ -539,33 +537,6 @@ class MultiSigService extends AgentService {
       signifyName,
       isPending,
     };
-  }
-
-  @OnlineOnly
-  async markMultisigCompleteIfReady(metadata: IdentifierMetadataRecord) {
-    if (!metadata.signifyOpName || !metadata.isPending) {
-      return {
-        done: true,
-      };
-    }
-    const pendingOperation = await this.props.signifyClient
-      .operations()
-      .get(metadata.signifyOpName)
-      .catch((error) => {
-        const status = error.message.split(" - ")[1];
-        if (/404/gi.test(status)) {
-          return undefined;
-        } else {
-          throw error;
-        }
-      });
-    if (pendingOperation && pendingOperation.done) {
-      await this.identifierStorage.updateIdentifierMetadata(metadata.id, {
-        isPending: false,
-      });
-      return { done: true };
-    }
-    return { done: false };
   }
 
   async rotateLocalMember(multisigId: string) {

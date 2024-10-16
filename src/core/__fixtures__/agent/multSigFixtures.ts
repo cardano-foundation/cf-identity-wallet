@@ -30,7 +30,6 @@ const multisigMetadataRecord = {
   signifyName: "d8055a29-de5e-49c0-b986-b9e9f1fb6c2e",
   isDeleted: false,
   isPending: false,
-  signifyOpName: "group.EMkbq07RZoANCxluzl3zb8WfBkqDl-HMb0osYZckDWXg",
   multisigManageAid: "EP_DgYAq7TCCyH9FohNjniJsEJTq7LjrNr_6M5zXbu91",
   theme: 1,
 } as IdentifierMetadataRecord;
@@ -106,12 +105,11 @@ const memberIdentifierRecord = {
     groupCreated: true,
   },
   type: "IdentifierMetadataRecord",
-  id: "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
+  id: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
   displayName: "multi-sig",
   signifyName: "357cd92a-f349-4f5d-be3d-1ff0ff9969c5",
   isDeleted: false,
   isPending: false,
-  signifyOpName: "done.ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
   createdAt: new Date("2024-06-28T03:54:03.514Z"),
   theme: 0,
   groupMetadata: {
@@ -515,7 +513,7 @@ const getRequestMultisigIcp = {
     a: {
       gid: "EBHG7UW-48EAF4bMYbaCsPQfSuFk-INidVXLexDMk6pN",
       smids: [
-        "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
+        "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
         "EKlUo3CAqjPfFt0Wr2vvSc7MqT9WiL2EGadRsAP3V1IJ",
       ],
       rmids: [
