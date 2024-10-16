@@ -97,6 +97,13 @@ class IdentifierService extends AgentService {
         }
       });
 
+    let members;
+    if (aid.group) {
+      members = (
+        await this.props.signifyClient.identifiers().members(identifier)
+      ).signing.map((member: any) => member.aid);
+    }
+
     return {
       id: aid.prefix,
       displayName: metadata.displayName,
@@ -114,6 +121,7 @@ class IdentifierService extends AgentService {
       bt: aid.state.bt,
       b: aid.state.b,
       di: aid.state.di,
+      members,
     };
   }
 

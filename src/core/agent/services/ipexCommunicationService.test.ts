@@ -937,14 +937,33 @@ describe("Ipex communication service of agent", () => {
 
     notificationStorage.findById.mockResolvedValueOnce(grantNoteRecord);
     getExchangeMock.mockImplementationOnce(() => ({
-      exn: { e: { acdc: { d: "credentialSaid" } } },
+      exn: { e: { acdc: { d: "credentialSaid" } }, a: { i: "i" } },
     }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
+
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+      ],
+    });
 
     const result = await ipexCommunicationService.getLinkedGroupFromIpexGrant(
       notification.id
     );
 
     expect(result).toEqual({
+      members: ["memberA", "memberB"],
+      threshold: "2",
       accepted: true,
       membersJoined: ["memberA", "memberB"],
     });
@@ -968,16 +987,35 @@ describe("Ipex communication service of agent", () => {
       a: { d: "d" },
     };
 
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+      ],
+    });
+
     notificationStorage.findById.mockResolvedValueOnce(grantNoteRecord);
     getExchangeMock.mockImplementationOnce(() => ({
-      exn: { e: { acdc: { d: "credentialSaid" } } },
+      exn: { e: { acdc: { d: "credentialSaid" } }, a: { i: "i" } },
     }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
 
     const result = await ipexCommunicationService.getLinkedGroupFromIpexGrant(
       notification.id
     );
 
     expect(result).toEqual({
+      members: ["memberA", "memberB"],
+      threshold: "2",
       accepted: false,
       membersJoined: [],
     });
@@ -1043,18 +1081,49 @@ describe("Ipex communication service of agent", () => {
 
     notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
 
+    getExchangeMock.mockImplementationOnce(() => ({
+      exn: { a: { i: "i" } },
+    }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
+
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+        {
+          aid: "memberC",
+        },
+        {
+          aid: "memberD",
+        },
+      ],
+    });
+
     const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
       notification.id
     );
 
     expect(result).toEqual({
-      credentialSaid1: {
-        accepted: true,
-        membersJoined: ["memberA", "memberB"],
-      },
-      credentialSaid2: {
-        accepted: true,
-        membersJoined: ["memberC", "memberD"],
+      members: ["memberA", "memberB", "memberC", "memberD"],
+      threshold: "2",
+      offer: {
+        credentialSaid1: {
+          accepted: true,
+          membersJoined: ["memberA", "memberB"],
+        },
+        credentialSaid2: {
+          accepted: true,
+          membersJoined: ["memberC", "memberD"],
+        },
       },
     });
   });
@@ -1083,7 +1152,35 @@ describe("Ipex communication service of agent", () => {
           saids: {},
         },
       },
+      a: { d: "d" },
     };
+
+    getExchangeMock.mockImplementationOnce(() => ({
+      exn: { a: { i: "i" } },
+    }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
+
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+        {
+          aid: "memberC",
+        },
+        {
+          aid: "memberD",
+        },
+      ],
+    });
 
     notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
     const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
@@ -1091,13 +1188,17 @@ describe("Ipex communication service of agent", () => {
     );
 
     expect(result).toEqual({
-      credentialSaid1: {
-        accepted: false,
-        membersJoined: [],
-      },
-      credentialSaid2: {
-        accepted: false,
-        membersJoined: [],
+      members: ["memberA", "memberB", "memberC", "memberD"],
+      threshold: "2",
+      offer: {
+        credentialSaid1: {
+          accepted: false,
+          membersJoined: [],
+        },
+        credentialSaid2: {
+          accepted: false,
+          membersJoined: [],
+        },
       },
     });
   });
@@ -1117,14 +1218,40 @@ describe("Ipex communication service of agent", () => {
 
     const applyNoteRecord = {
       linkedGroupRequests: {},
+      a: { d: "d" },
     };
+
+    getExchangeMock.mockImplementationOnce(() => ({
+      exn: { a: { i: "i" } },
+    }));
+
+    identifiersGetMock = jest.fn().mockResolvedValueOnce({
+      state: {
+        kt: "2",
+      },
+    });
+
+    identifiersMemberMock.mockResolvedValueOnce({
+      signing: [
+        {
+          aid: "memberA",
+        },
+        {
+          aid: "memberB",
+        },
+      ],
+    });
 
     notificationStorage.findById.mockResolvedValueOnce(applyNoteRecord);
     const result = await ipexCommunicationService.getLinkedGroupFromIpexApply(
       notification.id
     );
 
-    expect(result).toEqual({});
+    expect(result).toEqual({
+      members: ["memberA", "memberB"],
+      threshold: "2",
+      offer: {},
+    });
   });
 
   test("Can accept ACDC from multisig exn", async () => {
@@ -2417,7 +2544,6 @@ describe("Ipex communication service of agent", () => {
       s: QVISchema,
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
       status: "pending",
-      identifierType: IdentifierType.Individual,
       identifierId: memberIdentifierRecord.id,
     });
   });
@@ -2458,7 +2584,6 @@ describe("Ipex communication service of agent", () => {
       s: QVISchema,
       lastStatus: { s: "0", dt: "2024-07-30T04:19:55.348Z" },
       status: "pending",
-      identifierType: IdentifierType.Individual,
       identifierId: memberIdentifierRecord.id,
     });
   });

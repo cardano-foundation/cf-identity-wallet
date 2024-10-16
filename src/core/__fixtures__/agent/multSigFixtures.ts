@@ -105,7 +105,7 @@ const memberIdentifierRecord = {
     groupCreated: true,
   },
   type: "IdentifierMetadataRecord",
-  id: "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
+  id: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
   displayName: "multi-sig",
   signifyName: "357cd92a-f349-4f5d-be3d-1ff0ff9969c5",
   isDeleted: false,
@@ -513,7 +513,7 @@ const getRequestMultisigIcp = {
     a: {
       gid: "EBHG7UW-48EAF4bMYbaCsPQfSuFk-INidVXLexDMk6pN",
       smids: [
-        "ELLb0OvktIxeHDeeOnRJ2pc9IkYJ38An4PXYigUQ_3AO",
+        "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
         "EKlUo3CAqjPfFt0Wr2vvSc7MqT9WiL2EGadRsAP3V1IJ",
       ],
       rmids: [

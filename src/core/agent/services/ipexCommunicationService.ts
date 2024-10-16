@@ -30,6 +30,7 @@ import {
   EventTypes,
 } from "../event.types";
 import { ConnectionService } from "./connectionService";
+import { Agent } from "../agent";
 import { IdentifierType } from "./identifier.types";
 
 class IpexCommunicationService extends AgentService {
@@ -478,10 +479,10 @@ class IpexCommunicationService extends AgentService {
       status: CredentialStatus.PENDING,
       connectionId,
       schema,
+      identifierId: holder.id,
       identifierType: holder.multisigManageAid
         ? IdentifierType.Group
         : IdentifierType.Individual,
-      identifierId: holder.id,
     };
     await this.credentialStorage.saveCredentialMetadataRecord(
       credentialDetails
@@ -944,11 +945,10 @@ class IpexCommunicationService extends AgentService {
     return { op, exnSaid: exn.ked.d, ipexGrantSaid, member: ourIdentifier.id };
   }
 
-  async getAcdcFromIpexGrant(said: string): Promise<ACDCDetails> {
+  async getAcdcFromIpexGrant(
+    said: string
+  ): Promise<Omit<ACDCDetails, "identifierType">> {
     const exchange = await this.props.signifyClient.exchanges().get(said);
-    const holder = await this.identifierStorage.getIdentifierMetadata(
-      exchange.exn.a.i
-    );
     const schemaSaid = exchange.exn.e.acdc.s;
     const schema = await this.props.signifyClient
       .schemas()
@@ -979,10 +979,7 @@ class IpexCommunicationService extends AgentService {
         dt: new Date(exchange.exn.e.iss.dt).toISOString(),
       },
       status: CredentialStatus.PENDING,
-      identifierId: holder.id,
-      identifierType: holder.multisigManageAid
-        ? IdentifierType.Group
-        : IdentifierType.Individual,
+      identifierId: exchange.exn.a.i,
     };
   }
 
@@ -1112,6 +1109,14 @@ class IpexCommunicationService extends AgentService {
       .exchanges()
       .get(grantNoteRecord.a.d as string);
 
+    const multisigAid = await this.props.signifyClient
+      .identifiers()
+      .get(exchange.exn.a.i);
+    const members = await this.props.signifyClient
+      .identifiers()
+      .members(exchange.exn.a.i);
+    const memberAids = members.signing.map((member: any) => member.aid);
+
     const credentialSaid = exchange.exn.e.acdc.d;
 
     if (Object.keys(linkedGroupRequest).length) {
@@ -1128,11 +1133,15 @@ class IpexCommunicationService extends AgentService {
       }
 
       return {
+        threshold: multisigAid.state.kt,
+        members: memberAids,
         accepted: linkedGroupRequest[credentialSaid].accepted,
         membersJoined: Array.from(membersJoined),
       };
     } else {
       return {
+        threshold: multisigAid.state.kt,
+        members: memberAids,
         accepted: false,
         membersJoined: [],
       };
@@ -1149,13 +1158,29 @@ class IpexCommunicationService extends AgentService {
     }
 
     const linkedGroupRequest = applyNoteRecord.linkedGroupRequests;
+    const exchange = await this.props.signifyClient
+      .exchanges()
+      .get(applyNoteRecord.a.d as string);
+
+    const multisigAid = await this.props.signifyClient
+      .identifiers()
+      .get(exchange.exn.a.i);
+    const members = await this.props.signifyClient
+      .identifiers()
+      .members(exchange.exn.a.i);
+    const memberAids = members.signing.map((member: any) => member.aid);
+
     const result: Record<
       string,
       { accepted: boolean; membersJoined: string[] }
     > = {};
 
     if (Object.keys(linkedGroupRequest).length === 0) {
-      return result;
+      return {
+        threshold: multisigAid.state.kt,
+        members: memberAids,
+        offer: {},
+      };
     }
 
     for (const credentialSaid in linkedGroupRequest) {
@@ -1178,7 +1203,11 @@ class IpexCommunicationService extends AgentService {
       };
     }
 
-    return result;
+    return {
+      threshold: multisigAid.state.kt,
+      members: memberAids,
+      offer: result,
+    };
   }
 }
 
