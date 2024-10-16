@@ -4,17 +4,20 @@ import {
   personCircleOutline,
   refreshOutline,
 } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IonButton, IonIcon } from "@ionic/react";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import { IdentifierContentProps } from "./IdentifierContent.types";
 import { i18n } from "../../../../i18n";
+import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { ConfigurationService } from "../../../../core/configuration";
 import { CardDetailsBlock } from "../../../components/CardDetails/CardDetailsBlock";
 import { CardDetailsItem } from "../../../components/CardDetails/CardDetailsItem";
 import { BackingMode } from "../../../../core/configuration/configurationService.types";
 import { useAppSelector } from "../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
+import { getMultisigConnectionsCache } from "../../../../store/reducers/connectionsCache";
+import { getAuthentication } from "../../../../store/reducers/stateCache";
 
 const IdentifierContent = ({
   cardData,
@@ -22,6 +25,8 @@ const IdentifierContent = ({
 }: IdentifierContentProps) => {
   const identifiersData = useAppSelector(getIdentifiersCache);
   const [isMultiSig, setIsMultiSig] = useState(false);
+  const userName = useAppSelector(getAuthentication)?.userName;
+  const multisignConnectionsCache = useAppSelector(getMultisigConnectionsCache);
 
   useEffect(() => {
     if (cardData.multisigManageAid) {
@@ -34,6 +39,19 @@ const IdentifierContent = ({
       setIsMultiSig(true);
     }
   }, [identifiersData, cardData.id, cardData.multisigManageAid]);
+
+  const members = useMemo(() => {
+    return cardData.members?.map((member) => {
+      const memberConnection = multisignConnectionsCache[member];
+      let name = memberConnection?.label || member;
+
+      if (!memberConnection?.label) {
+        name = userName;
+      }
+
+      return name;
+    });
+  }, [cardData.members, multisignConnectionsCache, userName]);
 
   const RotateActionButton = () => {
     return (
@@ -52,21 +70,21 @@ const IdentifierContent = ({
 
   return (
     <>
-      {isMultiSig && (
+      {isMultiSig && members && (
         <>
           <CardDetailsBlock
             title={i18n.t("tabs.identifiers.details.groupmembers.title")}
           >
-            {/* {groupMembers.map((item, index) => {
-            return (
-              <CardDetailsItem
-                key={index}
-                info={item}
-                copyButton={false}
-                testId={`group-member-${index}`}
-              />
-            );
-          })} */}
+            {members.map((item, index) => {
+              return (
+                <CardDetailsItem
+                  key={index}
+                  info={item}
+                  customIcon={KeriLogo}
+                  testId={`group-member-${index}`}
+                />
+              );
+            })}
           </CardDetailsBlock>
           {cardData.kt && (
             <CardDetailsBlock
@@ -76,7 +94,6 @@ const IdentifierContent = ({
             >
               <CardDetailsItem
                 info={`${cardData.kt}`}
-                copyButton={false}
                 testId="signing-keys-threshold"
               />
             </CardDetailsBlock>
@@ -98,7 +115,6 @@ const IdentifierContent = ({
             " - " +
             formatTimeToSec(cardData.createdAtUTC)
           }
-          copyButton={false}
           icon={calendarNumberOutline}
           testId="creation-timestamp"
         />
@@ -136,13 +152,22 @@ const IdentifierContent = ({
           })}
         </CardDetailsBlock>
       )}
+      {isMultiSig && cardData.nt && (
+        <CardDetailsBlock
+          title={i18n.t("tabs.identifiers.details.nextkeysthreshold.title")}
+        >
+          <CardDetailsItem
+            info={`${cardData.nt}`}
+            testId="next-keys-threshold"
+          />
+        </CardDetailsBlock>
+      )}
       {cardData.s && (
         <CardDetailsBlock
           title={i18n.t("tabs.identifiers.details.sequencenumber.title")}
         >
           <CardDetailsItem
             info={`${cardData.s}`}
-            copyButton={false}
             testId="sequence-number"
           />
         </CardDetailsBlock>
@@ -157,37 +182,14 @@ const IdentifierContent = ({
               " - " +
               formatTimeToSec(cardData.dt)
             }
-            copyButton={false}
             testId="rotation-timestamp"
           />
         </CardDetailsBlock>
       )}
 
-      {cardData.di !== "" && cardData.di && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.delegator.title")}
-        >
-          <CardDetailsItem
-            info={cardData.di}
-            copyButton={true}
-            testId="delegator"
-          />
-        </CardDetailsBlock>
-      )}
+      {/* @TODO - sdisalvo: START: The following 3 sections will need to be removed/refactored */}
 
-      {typeof cardData.nt === "string" && Number(cardData.nt) > 1 && (
-        <CardDetailsBlock
-          title={i18n.t("tabs.identifiers.details.nextkeysthreshold.title")}
-        >
-          <CardDetailsItem
-            info={`${cardData.nt}`}
-            copyButton={false}
-            testId="next-keys-threshold"
-          />
-        </CardDetailsBlock>
-      )}
-
-      {cardData.b.length > 0 && (
+      {/* {cardData.b.length > 0 && (
         <CardDetailsBlock
           title={i18n.t("tabs.identifiers.details.backerslist.title")}
         >
@@ -202,10 +204,10 @@ const IdentifierContent = ({
             );
           })}
         </CardDetailsBlock>
-      )}
+      )} */}
 
       {/* @TODO - foconnor: We should verify the particular identifier is ledger based, not that our config is. */}
-      {ConfigurationService.env.keri.backing.mode === BackingMode.LEDGER && (
+      {/* {ConfigurationService.env.keri.backing.mode === BackingMode.LEDGER && (
         <CardDetailsBlock
           title={i18n.t("tabs.identifiers.details.backeraddress.title")}
         >
@@ -217,7 +219,20 @@ const IdentifierContent = ({
             testId="backer-address"
           />
         </CardDetailsBlock>
-      )}
+      )} */}
+
+      {/* {cardData.di !== "" && cardData.di && (
+        <CardDetailsBlock
+          title={i18n.t("tabs.identifiers.details.delegator.title")}
+        >
+          <CardDetailsItem
+            info={cardData.di}
+            copyButton={true}
+            testId="delegator"
+          />
+        </CardDetailsBlock>
+      )} */}
+      {/* @TODO - sdisalvo: END: The above 3 sections will need to be removed/refactored */}
     </>
   );
 };

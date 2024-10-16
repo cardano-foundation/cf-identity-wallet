@@ -795,14 +795,14 @@
         "nextkeyslist": {
           "title": "List of next key digests"
         },
+        "nextkeysthreshold": {
+          "title": "Next keys signing threshold"
+        },
         "sequencenumber": {
           "title": "Sequence number"
         },
         "rotationtimestamp": {
           "title": "Last key rotation timestamp"
-        },
-        "nextkeysthreshold": {
-          "title": "Next keys signing threshold"
         },
         "backerslist": {
           "title": "List of backers"

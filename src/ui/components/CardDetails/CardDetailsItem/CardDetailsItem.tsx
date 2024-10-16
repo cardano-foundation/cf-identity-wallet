@@ -12,6 +12,7 @@ const CardDetailsItem = ({
   info,
   copyButton,
   icon,
+  customIcon,
   keyValue,
   testId,
   className,
@@ -49,7 +50,15 @@ const CardDetailsItem = ({
           className="card-details-info-block-line-start-icon"
           icon={icon}
           slot="start"
-        ></IonIcon>
+        />
+      )}
+      {customIcon && (
+        <img
+          className="card-details-info-block-line-start-icon"
+          slot="start"
+          src={customIcon}
+          alt="keri"
+        />
       )}
       <div className={contentClass}>
         <IonText
