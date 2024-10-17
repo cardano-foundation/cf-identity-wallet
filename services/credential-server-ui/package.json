@@ -30,14 +30,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
-    "prettier": "npx prettier . --write"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "build": "react-scripts build"
   },
   "browserslist": {
     "production": [
@@ -53,7 +46,6 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@babel/plugin-transform-private-property-in-object": "^7.23.4",
-    "prettier": "3.2.5"
+    "@babel/plugin-transform-private-property-in-object": "^7.23.4"
   }
 }
