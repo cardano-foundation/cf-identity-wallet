@@ -6,8 +6,8 @@ enum CredentialStatus {
   REVOKED = "revoked",
 }
 
-enum ConnectionNoteKeys {
-  PREFIX_KEY = "note:",
+enum KeriaContactKeyPrefix {
+  CONNECTION_NOTE = "note:",
 }
 
 type CredentialShortDetails = Omit<
@@ -56,7 +56,7 @@ interface Notification {
   };
 }
 
-export { CredentialStatus, ConnectionNoteKeys };
+export { CredentialStatus, KeriaContactKeyPrefix };
 export type {
   CredentialShortDetails,
   ACDCDetails,

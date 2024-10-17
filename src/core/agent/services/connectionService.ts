@@ -30,7 +30,7 @@ import {
   EventTypes,
   OperationAddedEvent,
 } from "../event.types";
-import { ConnectionNoteKeys } from "./credentialService.types";
+import { KeriaContactKeyPrefix } from "./credentialService.types";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
@@ -216,7 +216,7 @@ class ConnectionService extends AgentService {
       });
     const notes: Array<ConnectionNoteDetails> = [];
     Object.keys(connection).forEach((key) => {
-      if (key.startsWith(ConnectionNoteKeys.PREFIX_KEY)) {
+      if (key.startsWith(KeriaContactKeyPrefix.CONNECTION_NOTE)) {
         notes.push(JSON.parse(connection[key]));
       }
     });
@@ -262,9 +262,9 @@ class ConnectionService extends AgentService {
   ): Promise<void> {
     const id = new Salter({}).qb64;
     await this.props.signifyClient.contacts().update(connectionId, {
-      [`${ConnectionNoteKeys.PREFIX_KEY}${id}`]: JSON.stringify({
+      [`${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`]: JSON.stringify({
         ...note,
-        id: `${ConnectionNoteKeys.PREFIX_KEY}${id}`,
+        id: `${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`,
       }),
     });
   }
