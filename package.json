@@ -9,7 +9,7 @@
     "build:cap": "npm run build && npx cap sync",
     "build:e2e": "npm run build:local && npx cap sync",
     "prettier": "npx prettier --write '{.,services/{credential-server,credential-server-ui}}/src/**/*.{ts,tsx,scss}'",
-    "eslint": "eslint '{.,services/{credential-server,credential-server-ui}}/src/**/*.{ts,tsx}'",
+    "eslint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
     "wdio:android:s23ultra": "npx wdio tests/config/wdio.emu.android.galaxyS23Ultra.config.ts --watch",
     "wdio:ios:15promax": "npx wdio tests/config/wdio.sim.ios.iphone15ProMax.config.ts --watch",
@@ -137,7 +137,7 @@
     ]
   },
   "lint-staged": {
-    "{.,services/{credential-server,credential-server-ui}}/src/**/*.{ts,tsx}": "eslint --cache --fix",
+    "src/**/*.{ts,tsx}": "eslint --cache --fix",
     "{.,services/{credential-server,credential-server-ui}}/src/**/*.{ts,tsx,scss}": "npx prettier --write"
   },
   "type": "module"
