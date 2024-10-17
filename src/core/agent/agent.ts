@@ -257,7 +257,7 @@ class Agent {
         throw new Error(Agent.KERIA_BOOT_FAILED);
       });
 
-      if (!bootResult.ok && bootResult.status !== 400) {
+      if (!bootResult.ok && bootResult.status !== 409) {
         /* eslint-disable no-console */
         console.warn(
           `Unexpected KERIA boot status returned: ${bootResult.status} ${bootResult.statusText}`
