@@ -15,6 +15,7 @@ class CredentialStorage {
     const records = await this.storageService.findAllByQuery(
       {
         ...(isArchived !== undefined ? { isArchived } : {}),
+        isDeleted: false,
       },
       CredentialMetadataRecord
     );
