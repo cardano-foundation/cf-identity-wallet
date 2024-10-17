@@ -29,7 +29,7 @@ import { IdentifierDetails } from "./IdentifierDetails";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
-const combineMock = jest.fn(() => identifierFix[0]);
+const getIndentifier = jest.fn(() => identifierFix[0]);
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -70,7 +70,7 @@ jest.mock("../../../core/agent/agent", () => ({
       "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.",
     agent: {
       identifiers: {
-        getIdentifier: () => combineMock(),
+        getIdentifier: () => getIndentifier(),
         rotateIdentifier: (id: string) => rotateIdentifierMock(id),
         deleteStaleLocalIdentifier: () => deleteStaleLocalIdentifierMock(),
         deleteIdentifier: () => deleteIdentifier(),
@@ -132,7 +132,7 @@ describe("Individual Identifier details page", () => {
     await new ConfigurationService().start();
   });
   beforeEach(() => {
-    combineMock.mockReturnValue(identifierFix[0]);
+    getIndentifier.mockReturnValue(identifierFix[0]);
   });
 
   test("It renders Identifier Details", async () => {
@@ -593,7 +593,7 @@ describe("Group Identifier details page", () => {
     await new ConfigurationService().start();
   });
   beforeEach(() => {
-    combineMock.mockReturnValue(identifierFix[2]);
+    getIndentifier.mockReturnValue(identifierFix[2]);
   });
 
   test("It renders Identifier Details", async () => {
@@ -631,7 +631,15 @@ describe("Group Identifier details page", () => {
         multisigConnections: {
           "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu": {
             id: "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu",
-            label: "Group",
+            label: "Member 0",
+            connectionDate: "2024-10-14T13:11:44.501Z",
+            status: "confirmed",
+            oobi: "http://keria:3902/oobi/EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu/agent/EMrn5s4fG1bzxdlrtyRusPQ23fohlGuH6LkZBSRiDtKy?name=Brave&groupId=9a12f939-1412-4450-aa61-a9a8a697ceca",
+            groupId: "9a12f939-1412-4450-aa61-a9a8a697ceca",
+          },
+          "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYB2": {
+            id: "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu",
+            label: "Member 1",
             connectionDate: "2024-10-14T13:11:44.501Z",
             status: "confirmed",
             oobi: "http://keria:3902/oobi/EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu/agent/EMrn5s4fG1bzxdlrtyRusPQ23fohlGuH6LkZBSRiDtKy?name=Brave&groupId=9a12f939-1412-4450-aa61-a9a8a697ceca",
@@ -659,81 +667,83 @@ describe("Group Identifier details page", () => {
         </IonReactMemoryRouter>
       </Provider>
     );
+
     // Render card template
-    await waitFor(() =>
+    await waitFor(() => {
       expect(
         getByTestId("identifier-card-template-default-index-0")
-      ).toBeInTheDocument()
-    );
+      ).toBeInTheDocument();
+
+      expect(getByTestId("card-block-title-groupmembers")).toBeInTheDocument();
+    });
+
     // Render Group members
-    expect(getByTestId("card-block-title-groupmembers")).toBeInTheDocument();
-    expect(getByTestId("group-member-0").innerHTML).toBe("Member 0");
-    expect(getByTestId("group-member-1").innerHTML).toBe("Member 1");
+    expect(getByTestId("group-member-0-text-value").innerHTML).toBe("Member 0");
+    expect(getByTestId("group-member-1-text-value").innerHTML).toBe("Member 1");
     // Render Keys signing threshold
     expect(
       getByTestId("card-block-title-keyssigningthreshold")
     ).toBeInTheDocument();
-    expect(getByTestId("signing-keys-threshold").innerHTML).toBe(
-      identifierFix[0].kt
+    expect(getByTestId("signing-keys-threshold-text-value").innerHTML).toBe(
+      identifierFix[2].kt
     );
     // Render Information
     expect(getByTestId("card-block-title-information")).toBeInTheDocument();
     expect(getByTestId("identifier-text-value").innerHTML).toBe(
-      filteredIdentifierFix[0].id
+      filteredIdentifierFix[2].id
     );
     fireEvent.click(getByTestId("identifier-copy-button"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
-        string: filteredIdentifierFix[0].id,
+        string: filteredIdentifierFix[2].id,
       });
     });
     expect(
       getByText(
-        formatShortDate(identifierFix[0].createdAtUTC) +
+        formatShortDate(identifierFix[2].createdAtUTC) +
           " - " +
-          formatTimeToSec(identifierFix[0].createdAtUTC)
+          formatTimeToSec(identifierFix[2].createdAtUTC)
       )
     ).toBeInTheDocument();
     // Render List of signing keys
     expect(
       getByTestId("card-block-title-listofsigningkeys")
     ).toBeInTheDocument();
-    expect(getByTestId("rotate-keys-button")).toBeInTheDocument();
-    expect(getByText(identifierFix[0].k[0])).toBeInTheDocument();
+    expect(getByText(identifierFix[2].k[0])).toBeInTheDocument();
     fireEvent.click(getByTestId("signing-key-0-copy-button"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
-        string: filteredIdentifierFix[0].id,
+        string: filteredIdentifierFix[2].id,
       });
     });
     // Render List of next key digests
     expect(
       getByTestId("card-block-title-listofnextkeydigests")
     ).toBeInTheDocument();
-    expect(getByText(identifierFix[0].n[0])).toBeInTheDocument();
+    expect(getByText(identifierFix[2].n[0])).toBeInTheDocument();
     fireEvent.click(getByTestId("next-key-0-copy-button"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
-        string: filteredIdentifierFix[0].id,
+        string: filteredIdentifierFix[2].id,
       });
     });
     // Render Next keys signing threshold
     expect(
       getByTestId("card-block-title-nextkeyssigningthreshold")
     ).toBeInTheDocument();
-    expect(getByText(identifierFix[0].nt[0])).toBeInTheDocument();
+    expect(getByText(identifierFix[2].nt[0])).toBeInTheDocument();
     // Render Sequence number
     expect(getByTestId("card-block-title-sequencenumber")).toBeInTheDocument();
-    expect(getByText(identifierFix[0].s)).toBeInTheDocument();
+    expect(getByText(identifierFix[2].s)).toBeInTheDocument();
     // Render Last key rotation timestamp
     expect(
       getByTestId("card-block-title-lastkeyrotationtimestamp")
     ).toBeInTheDocument();
     expect(
       getByText(
-        formatShortDate(identifierFix[0].dt) +
+        formatShortDate(identifierFix[2].dt) +
           " - " +
-          formatTimeToSec(identifierFix[0].dt)
+          formatTimeToSec(identifierFix[2].dt)
       )
     ).toBeInTheDocument();
   });
@@ -796,7 +806,7 @@ describe("Group Identifier details page", () => {
 
 describe("Checking the Identifier Details Page when information is missing from the cloud", () => {
   beforeEach(() => {
-    combineMock.mockImplementation(() => {
+    getIndentifier.mockImplementation(() => {
       throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`);
     });
   });
@@ -894,7 +904,7 @@ describe("Favourite identifier", () => {
     await new ConfigurationService().start();
   });
   beforeEach(() => {
-    combineMock.mockReturnValue(identifierFix[0]);
+    getIndentifier.mockReturnValue(identifierFix[0]);
   });
   test("It changes to favourite icon on click favourite button", async () => {
     const spy = jest
