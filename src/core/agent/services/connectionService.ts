@@ -30,7 +30,7 @@ import {
   EventTypes,
   OperationAddedEvent,
 } from "../event.types";
-import { KeriaContactKeyPrefix } from "./credentialService.types";
+import { KeriaContactKeyPrefix } from "./connectionService.types";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;

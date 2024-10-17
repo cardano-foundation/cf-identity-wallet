@@ -6,10 +6,6 @@ enum CredentialStatus {
   REVOKED = "revoked",
 }
 
-enum KeriaContactKeyPrefix {
-  CONNECTION_NOTE = "note:",
-}
-
 type CredentialShortDetails = Omit<
   CredentialMetadataRecordProps,
   "connectionId" | "createdAt"
@@ -56,7 +52,7 @@ interface Notification {
   };
 }
 
-export { CredentialStatus, KeriaContactKeyPrefix };
+export { CredentialStatus };
 export type {
   CredentialShortDetails,
   ACDCDetails,
