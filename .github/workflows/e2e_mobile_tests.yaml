@@ -2,13 +2,15 @@ name: Mobile e2e tests
 on:
   workflow_dispatch:
 jobs:
-  test:
+  mobile-e2e-tests:
     timeout-minutes: 60
-    runs-on: macos-latest
+    runs-on: [self-hosted, macOS, ARM64]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      - name: 🦾 Create .env file
+        run: |
+          echo "APP_PATH=/Users/admin/Library/Developer/Xcode/DerivedData/App-artdanwhyejdrjaissakjwinbepw/Build/Products/Debug-iphonesimulator/App.app" > .env
       - name: Setup node
         uses: actions/setup-node@v4
         with:
@@ -16,3 +18,18 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: 🔨 Build project
+        run: npm run build:cap
+
+      - name: 🔨 Build app for iOS simulator
+        run: xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Debug -sdk iphonesimulator17.5 CODE_SIGN_INDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+
+      - name: 📱 Start appium
+        run: appium &
+
+      - name: 📱 Start iOS simulator app
+        run: open -a Simulator.app &
+
+      - name: 🏃🏼 Run tests for iOS simulator
+        run: npm run wdio:ios:15promax -- --spec ./tests/features/onboarding.feature
