@@ -216,7 +216,10 @@ class ConnectionService extends AgentService {
       });
     const notes: Array<ConnectionNoteDetails> = [];
     Object.keys(connection).forEach((key) => {
-      if (key.startsWith(KeriaContactKeyPrefix.CONNECTION_NOTE)) {
+      if (
+        key.startsWith(KeriaContactKeyPrefix.CONNECTION_NOTE) &&
+        connection[key]
+      ) {
         notes.push(JSON.parse(connection[key]));
       }
     });
@@ -283,19 +286,9 @@ class ConnectionService extends AgentService {
     connectionId: string,
     connectionNoteId: string
   ) {
-    const connection = await this.props.signifyClient
-      .contacts()
-      .get(connectionId)
-      .catch((error) => {
-        const status = error.message.split(" - ")[1];
-        if (/404/gi.test(status)) {
-          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${connectionId}`);
-        } else {
-          throw error;
-        }
-      });
-    delete connection[connectionNoteId];
-    return this.props.signifyClient.contacts().update(connectionId, connection);
+    return this.props.signifyClient.contacts().update(connectionId, {
+      [connectionNoteId]: null,
+    });
   }
 
   @OnlineOnly

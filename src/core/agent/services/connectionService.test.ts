@@ -330,36 +330,13 @@ describe("Connection service of agent", () => {
   test("can delete connection note with id", async () => {
     const connectionNoteId = "connectionNoteId";
     const connectionId = "connectionId";
-    const connectionMockValue = {
-      alias: "alias",
-      oobi: "oobi",
-      id: "connectionId",
-      connectionNoteId: "note",
-    };
-    contactGetMock.mockResolvedValue(connectionMockValue);
-
     await connectionService.deleteConnectionNoteById(
       connectionId,
       connectionNoteId
     );
     expect(updateContactMock).toBeCalledWith(connectionId, {
-      alias: "alias",
-      oobi: "oobi",
-      id: "connectionId",
+      [connectionNoteId]: null,
     });
-  });
-
-  test("cannot delete connection note because connection invalid", async () => {
-    const connectionNoteId = "connectionNoteId";
-    const connectionId = "connectionId";
-    contactGetMock.mockRejectedValue(
-      new Error("request - 404 - SignifyClient message")
-    );
-    await expect(
-      connectionService.deleteConnectionNoteById(connectionId, connectionNoteId)
-    ).rejects.toThrow(
-      new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${connectionId}`)
-    );
   });
 
   test("can update connection note by id", async () => {
