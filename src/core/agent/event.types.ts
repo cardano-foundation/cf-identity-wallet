@@ -18,6 +18,7 @@ enum EventTypes {
   ConnectionStateChanged = "ConnectionStateChanged",
   AcdcStateChanged = "AcdcStateChanged",
   KeriaStatusChanged = "KeriaStatusChanged",
+  NotificationRemoved = "NotificationRemoved ",
 }
 
 interface NotificationAddedEvent extends BaseEventEmitter {
@@ -66,6 +67,13 @@ interface KeriaStatusChangedEvent extends BaseEventEmitter {
   };
 }
 
+interface NotificationRemovedEvent extends BaseEventEmitter {
+  type: typeof EventTypes.NotificationRemoved;
+  payload: {
+    keriaNotif: KeriaNotification;
+  };
+}
+
 export type {
   NotificationAddedEvent,
   OperationCompleteEvent,
@@ -74,5 +82,6 @@ export type {
   AcdcStateChangedEvent,
   KeriaStatusChangedEvent,
   OperationAddedEvent,
+  NotificationRemovedEvent,
 };
 export { EventTypes };

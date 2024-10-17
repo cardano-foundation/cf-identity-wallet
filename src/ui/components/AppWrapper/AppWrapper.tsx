@@ -411,11 +411,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     );
     Agent.agent.keriaNotifications.onNewNotification((event) => {
-      notificatiStateChanged(event.payload.keriaNotif, dispatch);
+      notificatiStateChanged(event, dispatch);
     });
 
     Agent.agent.keriaNotifications.onLongOperationComplete((event) => {
       signifyOperationStateChangeHandler(event.payload, dispatch);
+    });
+
+    Agent.agent.keriaNotifications.onRemoveNotification((event) => {
+      notificatiStateChanged(event, dispatch);
     });
   };
 
