@@ -105,6 +105,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getAllNotifications: jest.fn(),
         onNewNotification: jest.fn(),
         onLongOperationComplete: jest.fn(),
+        onRemoveNotification: jest.fn(),
       },
       getKeriaOnlineStatus: jest.fn(),
       onKeriaStatusStateChanged: jest.fn(),

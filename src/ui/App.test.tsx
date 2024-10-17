@@ -61,6 +61,7 @@ jest.mock("../core/agent/agent", () => ({
         startNotification: jest.fn(),
         onNewNotification: jest.fn(),
         onLongOperationComplete: jest.fn(),
+        onRemoveNotification: jest.fn(),
       },
       onKeriaStatusStateChanged: jest.fn(),
       peerConnectionMetadataStorage: {
