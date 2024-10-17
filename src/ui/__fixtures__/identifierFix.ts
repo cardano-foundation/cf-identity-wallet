@@ -46,7 +46,7 @@ const identifierFix: IdentifierDetails[] = [
     di: "test", // Delegated identifier prefix, don't show if ""
   },
   {
-    id: "ECHG-cxboMQ78Hwlm2-w6OS3iU275bAKkqC1LjwICPyi",
+    id: "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut",
     displayName: "Test MS",
     createdAtUTC: "2024-03-07T11:54:56.886Z",
     theme: 0,
@@ -66,6 +66,11 @@ const identifierFix: IdentifierDetails[] = [
     bt: "1", // Backer threshold and backer keys below
     b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"], // List of backers
     di: "test", // Delegated identifier prefix, don't show if ""
+    multisigManageAid: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9x",
+    members: [
+      "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9x",
+      "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu",
+    ],
   },
 ];
 

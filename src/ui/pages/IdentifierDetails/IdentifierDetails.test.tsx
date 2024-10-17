@@ -6,6 +6,7 @@ import {
   render,
   waitFor,
 } from "@testing-library/react";
+import { Clipboard } from "@capacitor/clipboard";
 import { createMemoryHistory } from "history";
 import { act } from "react";
 import { Provider } from "react-redux";
@@ -25,6 +26,7 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { IdentifierDetails } from "./IdentifierDetails";
+import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
 const combineMock = jest.fn(() => identifierFix[0]);
@@ -134,7 +136,8 @@ describe("Individual Identifier details page", () => {
   });
 
   test("It renders Identifier Details", async () => {
-    const { getByText, getByTestId, getAllByTestId } = render(
+    Clipboard.write = jest.fn();
+    const { getByText, getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
         <IonReactMemoryRouter
           history={history}
@@ -147,29 +150,67 @@ describe("Individual Identifier details page", () => {
         </IonReactMemoryRouter>
       </Provider>
     );
-
+    // Render card template
     await waitFor(() =>
       expect(
-        getByText(
-          filteredIdentifierFix[0].id.substring(0, 5) +
-            "..." +
-            filteredIdentifierFix[0].id.slice(-5)
-        )
+        getByTestId("identifier-card-template-default-index-0")
       ).toBeInTheDocument()
     );
-    expect(getByText(filteredIdentifierFix[0].displayName)).toBeInTheDocument();
-    expect(
-      getAllByTestId("share-connection-modal")[0].getAttribute("is-open")
-    ).toBe("false");
-    expect(
-      getByTestId("identifier-options-modal").getAttribute("is-open")
-    ).toBe("false");
-    expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
-      "false"
-    );
-    expect(Agent.agent.identifiers.getIdentifier).toBeCalledWith(
+    // Render Information
+    expect(getByTestId("card-block-title-information")).toBeInTheDocument();
+    expect(getByTestId("identifier-text-value").innerHTML).toBe(
       filteredIdentifierFix[0].id
     );
+    fireEvent.click(getByTestId("identifier-copy-button"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: filteredIdentifierFix[0].id,
+      });
+    });
+    expect(
+      getByText(
+        formatShortDate(identifierFix[0].createdAtUTC) +
+          " - " +
+          formatTimeToSec(identifierFix[0].createdAtUTC)
+      )
+    ).toBeInTheDocument();
+    // Render List of signing keys
+    expect(
+      getByTestId("card-block-title-listofsigningkeys")
+    ).toBeInTheDocument();
+    expect(getByTestId("rotate-keys-button")).toBeInTheDocument();
+    expect(getByText(identifierFix[0].k[0])).toBeInTheDocument();
+    fireEvent.click(getByTestId("signing-key-0-copy-button"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: filteredIdentifierFix[0].id,
+      });
+    });
+    // Render List of next key digests
+    expect(
+      getByTestId("card-block-title-listofnextkeydigests")
+    ).toBeInTheDocument();
+    expect(getByText(identifierFix[0].n[0])).toBeInTheDocument();
+    fireEvent.click(getByTestId("next-key-0-copy-button"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: filteredIdentifierFix[0].id,
+      });
+    });
+    // Render Sequence number
+    expect(getByTestId("card-block-title-sequencenumber")).toBeInTheDocument();
+    expect(getByText(identifierFix[0].s)).toBeInTheDocument();
+    // Render Last key rotation timestamp
+    expect(
+      getByTestId("card-block-title-lastkeyrotationtimestamp")
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        formatShortDate(identifierFix[0].dt) +
+          " - " +
+          formatTimeToSec(identifierFix[0].dt)
+      )
+    ).toBeInTheDocument();
   });
 
   test("It opens the sharing modal", async () => {
@@ -448,14 +489,7 @@ describe("Individual Identifier details page", () => {
         favourites: [],
       },
       connectionsCache: {
-        multisigConnections: {
-          "member-1": {
-            label: "Member 0",
-          },
-          "member-2": {
-            label: "Member 1",
-          },
-        },
+        multisigConnections: {},
       },
     };
 
@@ -560,6 +594,148 @@ describe("Group Identifier details page", () => {
   });
   beforeEach(() => {
     combineMock.mockReturnValue(identifierFix[2]);
+  });
+
+  test("It renders Identifier Details", async () => {
+    Clipboard.write = jest.fn();
+
+    const initialStateKeri = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        isOnline: true,
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "bran",
+      },
+      identifiersCache: {
+        identifiers: [
+          {
+            displayName: "GG",
+            id: "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut",
+            createdAtUTC: "2024-10-14T13:11:52.963Z",
+            theme: 20,
+            isPending: false,
+            multisigManageAid: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9x",
+          },
+        ],
+        favourites: [],
+      },
+      connectionsCache: {
+        multisigConnections: {
+          "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu": {
+            id: "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu",
+            label: "Group",
+            connectionDate: "2024-10-14T13:11:44.501Z",
+            status: "confirmed",
+            oobi: "http://keria:3902/oobi/EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu/agent/EMrn5s4fG1bzxdlrtyRusPQ23fohlGuH6LkZBSRiDtKy?name=Brave&groupId=9a12f939-1412-4450-aa61-a9a8a697ceca",
+            groupId: "9a12f939-1412-4450-aa61-a9a8a697ceca",
+          },
+        },
+      },
+    };
+
+    const storeMockedAidKeri = {
+      ...mockStore(initialStateKeri),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMockedAidKeri}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[path]}
+        >
+          <Route
+            path={TabsRoutePath.IDENTIFIER_DETAILS}
+            component={IdentifierDetails}
+          />
+        </IonReactMemoryRouter>
+      </Provider>
+    );
+    // Render card template
+    await waitFor(() =>
+      expect(
+        getByTestId("identifier-card-template-default-index-0")
+      ).toBeInTheDocument()
+    );
+    // Render Group members
+    expect(getByTestId("card-block-title-groupmembers")).toBeInTheDocument();
+    expect(getByTestId("group-member-0").innerHTML).toBe("Member 0");
+    expect(getByTestId("group-member-1").innerHTML).toBe("Member 1");
+    // Render Keys signing threshold
+    expect(
+      getByTestId("card-block-title-keyssigningthreshold")
+    ).toBeInTheDocument();
+    expect(getByTestId("signing-keys-threshold").innerHTML).toBe(
+      identifierFix[0].kt
+    );
+    // Render Information
+    expect(getByTestId("card-block-title-information")).toBeInTheDocument();
+    expect(getByTestId("identifier-text-value").innerHTML).toBe(
+      filteredIdentifierFix[0].id
+    );
+    fireEvent.click(getByTestId("identifier-copy-button"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: filteredIdentifierFix[0].id,
+      });
+    });
+    expect(
+      getByText(
+        formatShortDate(identifierFix[0].createdAtUTC) +
+          " - " +
+          formatTimeToSec(identifierFix[0].createdAtUTC)
+      )
+    ).toBeInTheDocument();
+    // Render List of signing keys
+    expect(
+      getByTestId("card-block-title-listofsigningkeys")
+    ).toBeInTheDocument();
+    expect(getByTestId("rotate-keys-button")).toBeInTheDocument();
+    expect(getByText(identifierFix[0].k[0])).toBeInTheDocument();
+    fireEvent.click(getByTestId("signing-key-0-copy-button"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: filteredIdentifierFix[0].id,
+      });
+    });
+    // Render List of next key digests
+    expect(
+      getByTestId("card-block-title-listofnextkeydigests")
+    ).toBeInTheDocument();
+    expect(getByText(identifierFix[0].n[0])).toBeInTheDocument();
+    fireEvent.click(getByTestId("next-key-0-copy-button"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: filteredIdentifierFix[0].id,
+      });
+    });
+    // Render Next keys signing threshold
+    expect(
+      getByTestId("card-block-title-nextkeyssigningthreshold")
+    ).toBeInTheDocument();
+    expect(getByText(identifierFix[0].nt[0])).toBeInTheDocument();
+    // Render Sequence number
+    expect(getByTestId("card-block-title-sequencenumber")).toBeInTheDocument();
+    expect(getByText(identifierFix[0].s)).toBeInTheDocument();
+    // Render Last key rotation timestamp
+    expect(
+      getByTestId("card-block-title-lastkeyrotationtimestamp")
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        formatShortDate(identifierFix[0].dt) +
+          " - " +
+          formatTimeToSec(identifierFix[0].dt)
+      )
+    ).toBeInTheDocument();
   });
 
   test("Cannot rotate key", async () => {
