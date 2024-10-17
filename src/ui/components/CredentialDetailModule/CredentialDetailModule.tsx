@@ -58,6 +58,7 @@ const CredentialDetailModule = ({
   navAnimation = false,
   credDetail,
   viewOnly,
+  joinedCredRequestMembers,
   ...props
 }: CredentialDetailModuleProps) => {
   const { isLightMode } = props;
@@ -429,7 +430,10 @@ const CredentialDetailModule = ({
               isActive={false}
             />
             <div className="card-details-content">
-              <CredentialContent cardData={cardData} />
+              <CredentialContent
+                joinedCredRequestMembers={joinedCredRequestMembers}
+                cardData={cardData}
+              />
               {!viewOnly && (
                 <PageFooter
                   pageId={pageId}
