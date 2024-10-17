@@ -362,55 +362,21 @@ describe("Connection service of agent", () => {
     );
   });
 
-  test("cannot update connection note because connection invalid", async () => {
-    const connectionId = "connectionId";
-    const connectionNoteId = "connectionNoteId";
-    const note = {
-      title: "title",
-      message: "message",
-    };
-    updateContactMock.mockRejectedValue(
-      new Error("request - 404 - SignifyClient message")
-    );
-    await expect(
-      connectionService.updateConnectionNoteById(
-        connectionId,
-        connectionNoteId,
-        note
-      )
-    ).rejects.toThrow(
-      new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${connectionId}`)
-    );
-  });
-
   test("can update connection note by id", async () => {
     const connectionToUpdate = {
       id: "note:id",
       title: "title",
       message: "message",
     };
-    const connectionMockValue = {
-      alias: "alias",
-      oobi: "oobi",
-      id: "connectionId",
-      "note:id": JSON.stringify(connectionToUpdate),
-    };
     const connectionId = "connectionId";
-    const note = {
-      id: "note:id",
-      title: "title",
-      message: "message2",
-    };
 
-    contactGetMock.mockResolvedValue(connectionMockValue);
     await connectionService.updateConnectionNoteById(
       connectionId,
       connectionToUpdate.id,
-      note
+      connectionToUpdate
     );
     expect(updateContactMock).toBeCalledWith(connectionId, {
-      ...connectionMockValue,
-      "note:id": JSON.stringify(note),
+      "note:id": JSON.stringify(connectionToUpdate),
     });
   });
 

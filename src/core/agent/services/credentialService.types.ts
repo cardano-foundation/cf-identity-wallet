@@ -7,7 +7,7 @@ enum CredentialStatus {
 }
 
 enum ConnectionNoteKeys {
-  PREFIX_KEY = ":note",
+  PREFIX_KEY = "note:",
 }
 
 type CredentialShortDetails = Omit<
