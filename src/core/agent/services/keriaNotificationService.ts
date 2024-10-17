@@ -31,6 +31,7 @@ import {
   EventTypes,
   OperationCompleteEvent,
   OperationAddedEvent,
+  NotificationRemovedEvent,
 } from "../event.types";
 import { deleteNotificationRecordById } from "./utils";
 import { CredentialService } from "./credentialService";
@@ -904,6 +905,20 @@ class KeriaNotificationService extends AgentService {
                   notification.id,
                     notification.a.r as NotificationRoute
                 );
+
+                this.props.eventEmitter.emit<NotificationRemovedEvent>({
+                  type: EventTypes.NotificationRemoved,
+                  payload: {
+                    keriaNotif: {
+                      id: notification.id,
+                      createdAt: notification.createdAt.toISOString(),
+                      a: notification.a,
+                      multisigId: notification.multisigId,
+                      connectionId: notification.connectionId,
+                      read: notification.read,
+                    },
+                  },
+                });
               }
             }
             await this.credentialService.markAcdc(
@@ -1047,6 +1062,10 @@ class KeriaNotificationService extends AgentService {
 
   onLongOperationComplete(callback: (event: OperationCompleteEvent) => void) {
     this.props.eventEmitter.on(EventTypes.OperationComplete, callback);
+  }
+
+  onRemoveNotification(callback: (event: NotificationRemovedEvent) => void) {
+    this.props.eventEmitter.on(EventTypes.NotificationRemoved, callback);
   }
 }
 
