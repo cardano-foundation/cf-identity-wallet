@@ -18,7 +18,7 @@ enum EventTypes {
   ConnectionStateChanged = "ConnectionStateChanged",
   AcdcStateChanged = "AcdcStateChanged",
   KeriaStatusChanged = "KeriaStatusChanged",
-  NotificationRemoved = "NotificationRemoved ",
+  NotificationRemoved = "NotificationRemoved",
 }
 
 interface NotificationAddedEvent extends BaseEventEmitter {
