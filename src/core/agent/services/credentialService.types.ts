@@ -6,6 +6,10 @@ enum CredentialStatus {
   REVOKED = "revoked",
 }
 
+enum ConnectionNoteKeys {
+  PREFIX_KEY = ":note",
+}
+
 type CredentialShortDetails = Omit<
   CredentialMetadataRecordProps,
   "connectionId" | "createdAt"
@@ -52,7 +56,7 @@ interface Notification {
   };
 }
 
-export { CredentialStatus };
+export { CredentialStatus, ConnectionNoteKeys };
 export type {
   CredentialShortDetails,
   ACDCDetails,

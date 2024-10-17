@@ -30,6 +30,7 @@ import {
   EventTypes,
   OperationAddedEvent,
 } from "../event.types";
+import { ConnectionNoteKeys } from "./credentialService.types";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
@@ -62,7 +63,6 @@ class ConnectionService extends AgentService {
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
   static readonly CANNOT_GET_OOBI = "No OOBI available from KERIA";
-  static readonly CONNECTION_NOTE_PREFIX_KEY = "note:";
 
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
@@ -216,7 +216,7 @@ class ConnectionService extends AgentService {
       });
     const notes: Array<ConnectionNoteDetails> = [];
     Object.keys(connection).forEach((key) => {
-      if (key.startsWith(ConnectionService.CONNECTION_NOTE_PREFIX_KEY)) {
+      if (key.startsWith(ConnectionNoteKeys.PREFIX_KEY)) {
         notes.push(JSON.parse(connection[key]));
       }
     });
@@ -262,9 +262,9 @@ class ConnectionService extends AgentService {
   ): Promise<void> {
     const id = new Salter({}).qb64;
     await this.props.signifyClient.contacts().update(connectionId, {
-      [`${ConnectionService.CONNECTION_NOTE_PREFIX_KEY}${id}`]: JSON.stringify({
+      [`${ConnectionNoteKeys.PREFIX_KEY}${id}`]: JSON.stringify({
         ...note,
-        id: `${ConnectionService.CONNECTION_NOTE_PREFIX_KEY}${id}`,
+        id: `${ConnectionNoteKeys.PREFIX_KEY}${id}`,
       }),
     });
   }
@@ -274,23 +274,8 @@ class ConnectionService extends AgentService {
     connectionNoteId: string,
     note: ConnectionNoteProps
   ) {
-    const connection = await this.props.signifyClient
-      .contacts()
-      .get(connectionId)
-      .catch((error) => {
-        const status = error.message.split(" - ")[1];
-        if (/404/gi.test(status)) {
-          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${connectionId}`);
-        } else {
-          throw error;
-        }
-      });
-    const connectionNote = JSON.parse(connection[connectionNoteId]);
-    connectionNote.title = note.title;
-    connectionNote.message = note.message;
     await this.props.signifyClient.contacts().update(connectionId, {
-      ...connection,
-      [connectionNoteId]: JSON.stringify(connectionNote),
+      [connectionNoteId]: JSON.stringify(note),
     });
   }
 

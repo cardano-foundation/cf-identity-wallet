@@ -369,7 +369,7 @@ describe("Connection service of agent", () => {
       title: "title",
       message: "message",
     };
-    contactGetMock.mockRejectedValue(
+    updateContactMock.mockRejectedValue(
       new Error("request - 404 - SignifyClient message")
     );
     await expect(
