@@ -14,6 +14,7 @@ import {
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionStatus,
@@ -314,7 +315,7 @@ const Scanner = forwardRef(
         return;
       }
 
-      const pendingId = crypto.randomUUID();
+      const pendingId = uuidv4();
       dispatch(
         updateOrAddConnectionCache({
           id: pendingId,
