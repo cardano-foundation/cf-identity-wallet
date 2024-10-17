@@ -55,6 +55,16 @@ const initialState = {
   identifiersCache: {
     identifiers: filteredIdentifierFix,
   },
+  connectionsCache: {
+    multisigConnections: {
+      "member-0": {
+        label: "Member 0",
+      },
+      "member-1": {
+        label: "Member 1",
+      },
+    },
+  },
 };
 
 const storeMocked = {

@@ -75,6 +75,7 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       connections: {
         getOobi: jest.fn(() => Promise.resolve("oobi")),
+        getMultisigConnections: jest.fn().mockResolvedValue([]),
       },
       basicStorage: {
         findById: jest.fn(),
@@ -109,6 +110,16 @@ const initialStateKeri = {
     identifiers: filteredIdentifierFix,
     favourites: [],
   },
+  connectionsCache: {
+    multisigConnections: {
+      "member-1": {
+        label: "Member 0",
+      },
+      "member-2": {
+        label: "Member 1",
+      },
+    },
+  },
 };
 
 const storeMockedAidKeri = {
@@ -121,7 +132,7 @@ history.push(TabsRoutePath.IDENTIFIER_DETAILS, {
   ...identifierFix[0],
 });
 
-describe("Individual Identifier Details page", () => {
+describe("Individual Identifier details page", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
@@ -501,7 +512,7 @@ describe("Individual Identifier Details page", () => {
   });
 });
 
-describe("Cards Details page (multi-sig)", () => {
+describe("Group Identifier details page", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
