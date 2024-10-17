@@ -111,14 +111,7 @@ const initialStateKeri = {
     favourites: [],
   },
   connectionsCache: {
-    multisigConnections: {
-      "member-1": {
-        label: "Member 0",
-      },
-      "member-2": {
-        label: "Member 1",
-      },
-    },
+    multisigConnections: {},
   },
 };
 
@@ -138,6 +131,45 @@ describe("Individual Identifier details page", () => {
   });
   beforeEach(() => {
     combineMock.mockReturnValue(identifierFix[0]);
+  });
+
+  test("It renders Identifier Details", async () => {
+    const { getByText, getByTestId, getAllByTestId } = render(
+      <Provider store={storeMockedAidKeri}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[path]}
+        >
+          <Route
+            path={TabsRoutePath.IDENTIFIER_DETAILS}
+            component={IdentifierDetails}
+          />
+        </IonReactMemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() =>
+      expect(
+        getByText(
+          filteredIdentifierFix[0].id.substring(0, 5) +
+            "..." +
+            filteredIdentifierFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
+    );
+    expect(getByText(filteredIdentifierFix[0].displayName)).toBeInTheDocument();
+    expect(
+      getAllByTestId("share-connection-modal")[0].getAttribute("is-open")
+    ).toBe("false");
+    expect(
+      getByTestId("identifier-options-modal").getAttribute("is-open")
+    ).toBe("false");
+    expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
+      "false"
+    );
+    expect(Agent.agent.identifiers.getIdentifier).toBeCalledWith(
+      filteredIdentifierFix[0].id
+    );
   });
 
   test("It opens the sharing modal", async () => {
@@ -415,6 +447,16 @@ describe("Individual Identifier details page", () => {
         identifiers: filteredIdentifierFix,
         favourites: [],
       },
+      connectionsCache: {
+        multisigConnections: {
+          "member-1": {
+            label: "Member 0",
+          },
+          "member-2": {
+            label: "Member 1",
+          },
+        },
+      },
     };
 
     const storeMockedAidKeri = {
@@ -540,6 +582,9 @@ describe("Group Identifier details page", () => {
         identifiers: [filteredIdentifierFix[2]],
         favourites: [],
       },
+      connectionsCache: {
+        multisigConnections: {},
+      },
     };
 
     const storeMockedAidKeri = {
@@ -600,6 +645,9 @@ describe("Checking the Identifier Details Page when information is missing from 
       identifiersCache: {
         identifiers: filteredIdentifierFix,
         favourites: [],
+      },
+      connectionsCache: {
+        multisigConnections: {},
       },
     };
 
@@ -755,6 +803,9 @@ describe("Favourite identifier", () => {
           },
         ],
       },
+      connectionsCache: {
+        multisigConnections: {},
+      },
     };
 
     const storeMockedAidKeri = {
@@ -819,6 +870,9 @@ describe("Favourite identifier", () => {
           },
         ],
       },
+      connectionsCache: {
+        multisigConnections: {},
+      },
     };
 
     const storeMockedAidKeri = {
@@ -882,6 +936,9 @@ describe("Favourite identifier", () => {
             time: 0,
           },
         ],
+      },
+      connectionsCache: {
+        multisigConnections: {},
       },
     };
 
