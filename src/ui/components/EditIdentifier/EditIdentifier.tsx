@@ -135,7 +135,7 @@ const EditIdentifier = ({
             customClass={keyboardIsOpen ? "ion-hide" : undefined}
             pageId={pageId}
             primaryButtonText={`${i18n.t(
-              "identifiers.details.options.inner.confirm"
+              "tabs.identifiers.details.options.inner.confirm"
             )}`}
             primaryButtonAction={handleSubmit}
             primaryButtonDisabled={!verifyDisplayName}
@@ -165,7 +165,7 @@ const EditIdentifier = ({
           ) : null}
         </div>
         <span className="theme-input-title">{`${i18n.t(
-          "identifiers.details.options.inner.color"
+          "tabs.identifiers.details.options.inner.color"
         )}`}</span>
         <div className="card-theme">
           <IdentifierColorSelector
@@ -174,7 +174,7 @@ const EditIdentifier = ({
           />
         </div>
         <span className="theme-input-title">{`${i18n.t(
-          "identifiers.details.options.inner.theme"
+          "tabs.identifiers.details.options.inner.theme"
         )}`}</span>
         <div className="card-theme">
           <IdentifierThemeSelector

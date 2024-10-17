@@ -12,11 +12,10 @@ const CardDetailsItem = ({
   info,
   copyButton,
   icon,
+  customIcon,
   keyValue,
   testId,
   className,
-  actionButton: actionIcon,
-  actionButtonClick: actionIconClick,
   fullText = false,
   mask = true,
 }: CardDetailsItemProps) => {
@@ -51,7 +50,15 @@ const CardDetailsItem = ({
           className="card-details-info-block-line-start-icon"
           icon={icon}
           slot="start"
-        ></IonIcon>
+        />
+      )}
+      {customIcon && (
+        <img
+          className="card-details-info-block-line-start-icon"
+          slot="start"
+          src={customIcon}
+          alt="keri"
+        />
       )}
       <div className={contentClass}>
         <IonText
@@ -65,17 +72,6 @@ const CardDetailsItem = ({
           )}
           {info}
         </IonText>
-        {actionIcon && (
-          <IonButton
-            slot="end"
-            shape="round"
-            className="action-button"
-            data-testid={`${testId}-action-icon`}
-            onClick={actionIconClick}
-          >
-            <IonIcon icon={actionIcon} />
-          </IonButton>
-        )}
         {copyButton && (
           <IonButton
             slot="end"
