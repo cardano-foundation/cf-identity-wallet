@@ -1,3 +1,4 @@
+import { Salter } from "signify-ts";
 import { ConnectionStatus, KeriConnectionType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { CoreEventEmitter } from "../event";
@@ -9,6 +10,7 @@ import { EventTypes } from "../event.types";
 
 const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();
+const updateContactMock = jest.fn();
 const getOobiMock = jest.fn();
 const getIdentifier = jest.fn();
 const saveOperationPendingMock = jest.fn();
@@ -79,6 +81,7 @@ const signifyClient = jest.mocked({
     list: contactListMock,
     get: contactGetMock,
     delete: deleteContactMock,
+    update: updateContactMock,
   }),
   notifications: () => ({
     list: jest.fn(),
@@ -164,7 +167,6 @@ const identifiers = jest.mocked({
 const connectionService = new ConnectionService(
   agentServicesProps,
   connectionStorage as any,
-  connectionNoteStorage as any,
   credentialStorage as any,
   ipexMessageStorage as any,
   operationPendingStorage as any,
@@ -185,6 +187,12 @@ jest.mock("uuid", () => {
     v4: () => "uuid",
   };
 });
+
+jest.mock("signify-ts", () => ({
+  Salter: jest.fn().mockImplementation(() => {
+    return { qb64: "" };
+  }),
+}));
 
 const now = new Date();
 const nowISO = now.toISOString();
@@ -309,51 +317,43 @@ describe("Connection service of agent", () => {
       title: "title",
       message: "message",
     };
+    const id = new Salter({}).qb64;
     await connectionService.createConnectionNote(connectionId, note);
-    expect(connectionNoteStorage.save).toBeCalledWith({
-      id: expect.any(String),
-      title: "title",
-      message: "message",
-      connectionId,
+    expect(updateContactMock).toBeCalledWith(connectionId, {
+      [`note:${id}`]: JSON.stringify({
+        ...note,
+        id: `note:${id}`,
+      }),
     });
   });
 
   test("can delete connection note with id", async () => {
-    const connectionNoteId = "connectionId";
-    await connectionService.deleteConnectionNoteById(connectionNoteId);
-    expect(connectionNoteStorage.deleteById).toBeCalledWith(connectionNoteId);
-  });
-
-  test("cannot update connection note because connection note invalid", async () => {
+    const connectionNoteId = "connectionNoteId";
     const connectionId = "connectionId";
-    const note = {
-      title: "title",
-      message: "message",
-    };
-    await expect(
-      connectionService.updateConnectionNoteById(connectionId, note)
-    ).rejects.toThrowError(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
+    await connectionService.deleteConnectionNoteById(
+      connectionId,
+      connectionNoteId
+    );
+    expect(updateContactMock).toBeCalledWith(connectionId, {
+      [connectionNoteId]: null,
+    });
   });
 
   test("can update connection note by id", async () => {
     const connectionToUpdate = {
-      id: "id",
+      id: "note:id",
       title: "title",
       message: "message",
     };
-    connectionNoteStorage.findById = jest
-      .fn()
-      .mockResolvedValue(connectionToUpdate);
     const connectionId = "connectionId";
-    const note = {
-      title: "title",
-      message: "message2",
-    };
-    await connectionService.updateConnectionNoteById(connectionId, note);
-    expect(connectionNoteStorage.update).toBeCalledWith({
-      ...connectionToUpdate,
-      title: "title",
-      message: "message2",
+
+    await connectionService.updateConnectionNoteById(
+      connectionId,
+      connectionToUpdate.id,
+      connectionToUpdate
+    );
+    expect(updateContactMock).toBeCalledWith(connectionId, {
+      "note:id": JSON.stringify(connectionToUpdate),
     });
   });
 
@@ -389,10 +389,6 @@ describe("Connection service of agent", () => {
     ]);
     const connectionId = "connectionId";
     await connectionService.deleteConnectionById(connectionId);
-    expect(connectionNoteStorage.deleteById).toBeCalledWith(
-      mockConnectionNote.id
-    );
-    expect(connectionNoteStorage.deleteById).toBeCalledTimes(1);
     expect(ipexMessageStorage.deleteIpexMessageMetadata).toBeCalledWith(
       mockIpexMessage.id
     );
