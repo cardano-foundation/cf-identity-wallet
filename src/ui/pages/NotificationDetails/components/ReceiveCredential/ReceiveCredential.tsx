@@ -38,12 +38,9 @@ import {
 import { showError } from "../../../../utils/error";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
-import { Member } from "./Member";
+import { MultisigMember, MemberAcceptStatus } from "../MultisigMember";
 import "./ReceiveCredential.scss";
-import {
-  MemberAcceptStatus,
-  MultiSigMembersStatus,
-} from "./ReceiveCredential.types";
+import { MultiSigMembersStatus } from "./ReceiveCredential.types";
 import { getAuthentication } from "../../../../../store/reducers/stateCache";
 
 const ANIMATION_DELAY = 2200;
@@ -344,7 +341,7 @@ const ReceiveCredential = ({
               )}
             >
               {members.map(({ id, name }) => (
-                <Member
+                <MultisigMember
                   key={id}
                   name={name}
                   status={getStatus(id)}

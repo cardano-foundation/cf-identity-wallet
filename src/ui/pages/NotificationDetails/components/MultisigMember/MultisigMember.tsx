@@ -3,10 +3,10 @@ import { checkmark, closeOutline, hourglassOutline } from "ionicons/icons";
 import { useMemo } from "react";
 import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
 import { combineClassNames } from "../../../../utils/style";
-import "./ReceiveCredential.scss";
-import { MemberAcceptStatus, MemberProps } from "./ReceiveCredential.types";
+import "./MultisigMember.scss";
+import { MemberAcceptStatus, MemberProps } from "./MultisigMember.types";
 
-const Member = ({ name, status }: MemberProps) => {
+const MultisigMember = ({ name, status }: MemberProps) => {
   const statusClasses = combineClassNames("status", {
     accepted: status === MemberAcceptStatus.Accepted,
     waiting: status === MemberAcceptStatus.Waiting,
@@ -50,4 +50,4 @@ const Member = ({ name, status }: MemberProps) => {
   );
 };
 
-export { Member };
+export { MultisigMember };

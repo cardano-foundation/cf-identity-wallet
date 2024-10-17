@@ -1,9 +1,3 @@
-enum MemberAcceptStatus {
-  Accepted,
-  Waiting,
-  Rejected,
-}
-
 interface MultiSigMembersStatus {
   threshold: string | string[];
   accepted: boolean;
@@ -11,11 +5,4 @@ interface MultiSigMembersStatus {
   members: string[];
 }
 
-interface MemberProps {
-  name: string;
-  status: MemberAcceptStatus;
-}
-
-export type { MemberProps, MultiSigMembersStatus };
-
-export { MemberAcceptStatus };
+export type { MultiSigMembersStatus };
