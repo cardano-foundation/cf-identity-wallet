@@ -1918,7 +1918,7 @@ describe("Long running operation tracker", () => {
       displayName: "holder",
       signifyName: "764c965c-d997-4842-b940-aebd514fce42",
       multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
-      createdAt: new Date(),
+      createdAt: new Date("2024-08-01T10:36:17.814Z"),
       updatedAt: new Date(),
     });
 
@@ -1926,7 +1926,7 @@ describe("Long running operation tracker", () => {
       {
         type: "NotificationRecord",
         id: "id",
-        createdAt: new Date(),
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
         a: {
           r: NotificationRoute.ExnIpexGrant,
           d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
@@ -1947,6 +1947,23 @@ describe("Long running operation tracker", () => {
       CredentialStatus.CONFIRMED
     );
     expect(notificationStorage.deleteById).toBeCalledWith("id");
+    expect(eventEmitter.emit).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.NotificationRemoved,
+      payload: {
+        keriaNotif: {
+          a: {
+            d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+            r: NotificationRoute.ExnIpexGrant,
+          },
+          connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+          createdAt: "2024-08-01T10:36:17.814Z",
+          id: "id",
+          multisigId: undefined,
+          read: true,
+        },
+      },
+    });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 
@@ -2361,6 +2378,16 @@ describe("Long running operation tracker", () => {
 
     expect(eventEmitter.on).toHaveBeenCalledWith(
       EventTypes.OperationComplete,
+      callback
+    );
+  });
+
+  test("Should register callback for NotificationRemoved event", () => {
+    const callback = jest.fn();
+    keriaNotificationService.onRemoveNotification(callback);
+
+    expect(eventEmitter.on).toHaveBeenCalledWith(
+      EventTypes.NotificationRemoved,
       callback
     );
   });
