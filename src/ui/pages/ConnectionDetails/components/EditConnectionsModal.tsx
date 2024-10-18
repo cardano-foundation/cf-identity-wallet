@@ -66,7 +66,10 @@ export const EditConnectionsContainer = ({
 
           if (!noteFind) {
             update = true;
-            return Agent.agent.connections.deleteConnectionNoteById(note.id);
+            return Agent.agent.connections.deleteConnectionNoteById(
+              connectionDetails.id,
+              note.id
+            );
           }
 
           if (
@@ -75,7 +78,8 @@ export const EditConnectionsContainer = ({
           ) {
             update = true;
             return Agent.agent.connections.updateConnectionNoteById(
-              note.id,
+              connectionDetails.id,
+              noteFind.id,
               noteFind
             );
           }

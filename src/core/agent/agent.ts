@@ -23,8 +23,6 @@ import { CoreEventEmitter } from "./event";
 import {
   BasicRecord,
   BasicStorage,
-  ConnectionNoteRecord,
-  ConnectionNoteStorage,
   ConnectionRecord,
   ConnectionStorage,
   CredentialMetadataRecord,
@@ -80,7 +78,6 @@ class Agent {
   private identifierStorage!: IdentifierStorage;
   private credentialStorage!: CredentialStorage;
   private connectionStorage!: ConnectionStorage;
-  private connectionNoteStorage!: ConnectionNoteStorage;
   private notificationStorage!: NotificationStorage;
   private peerConnectionStorage!: PeerConnectionStorage;
   private ipexMessageStorage!: IpexMessageStorage;
@@ -146,7 +143,6 @@ class Agent {
       this.connectionService = new ConnectionService(
         this.agentServicesProps,
         this.connectionStorage,
-        this.connectionNoteStorage,
         this.credentialStorage,
         this.ipexMessageStorage,
         this.operationPendingStorage,
@@ -261,7 +257,7 @@ class Agent {
         throw new Error(Agent.KERIA_BOOT_FAILED);
       });
 
-      if (!bootResult.ok && bootResult.status !== 400) {
+      if (!bootResult.ok && bootResult.status !== 409) {
         /* eslint-disable no-console */
         console.warn(
           `Unexpected KERIA boot status returned: ${bootResult.status} ${bootResult.statusText}`
@@ -421,9 +417,6 @@ class Agent {
     );
     this.connectionStorage = new ConnectionStorage(
       this.getStorageService<ConnectionRecord>(this.storageSession)
-    );
-    this.connectionNoteStorage = new ConnectionNoteStorage(
-      this.getStorageService<ConnectionNoteRecord>(this.storageSession)
     );
     this.notificationStorage = new NotificationStorage(
       this.getStorageService<NotificationRecord>(this.storageSession)

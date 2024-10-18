@@ -50,6 +50,7 @@ describe("test cases of bootAndConnect function", () => {
       url: "http://127.0.0.1:3901",
       bootUrl: "http://127.0.0.1:3903",
     };
+    Agent.isOnline = false;
   });
 
   afterEach(() => {
@@ -76,7 +77,7 @@ describe("test cases of bootAndConnect function", () => {
     expect(mockSignifyClient.connect).not.toHaveBeenCalled();
   });
 
-  test("should throw an error if boot result is not ok and status is not 400", async () => {
+  test("should throw an error if boot result is not ok and status is not 409", async () => {
     (signifyReady as jest.Mock).mockResolvedValueOnce(true);
     mockSignifyClient.boot.mockResolvedValueOnce({
       ok: false,
@@ -159,7 +160,37 @@ describe("test cases of bootAndConnect function", () => {
     });
   });
 
-  it("should not boot and connect if already online", async () => {
+  test("should ignore 409 already booted and continue to connect", async () => {
+    (signifyReady as jest.Mock).mockResolvedValueOnce(true);
+    mockSignifyClient.boot.mockResolvedValueOnce({
+      ok: false,
+      status: 409,
+    });
+    mockSignifyClient.connect.mockResolvedValueOnce(true);
+    SecureStorage.get = jest.fn().mockResolvedValueOnce(mockGetBranValue);
+    await agent.bootAndConnect(mockAgentUrls);
+
+    expect(signifyReady).toHaveBeenCalled();
+    expect(SignifyClient).toHaveBeenCalledWith(
+      mockAgentUrls.url,
+      mockGetBranValue,
+      Tier.low,
+      mockAgentUrls.bootUrl
+    );
+    expect(SecureStorage.get).toBeCalledWith(KeyStoreKeys.SIGNIFY_BRAN);
+    expect(mockSignifyClient.boot).toHaveBeenCalled();
+    expect(mockSignifyClient.connect).toHaveBeenCalled();
+    expect(mockBasicStorageService.save).toBeCalledTimes(2);
+    expect(Agent.isOnline).toBe(true);
+    expect(mockAgentServicesProps.eventEmitter.emit).toBeCalledWith({
+      type: EventTypes.KeriaStatusChanged,
+      payload: {
+        isOnline: true,
+      },
+    });
+  });
+
+  test("should not boot and connect if already online", async () => {
     Agent.isOnline = true;
 
     await agent.bootAndConnect(mockAgentUrls);

@@ -49,13 +49,9 @@ class CredentialService extends AgentService {
     const listMetadatas = await this.credentialStorage.getAllCredentialMetadata(
       isGetArchive
     );
-    // Only get credentials that are not deleted
-    // @TODO - foconnor: Should be filtering via SQL for the deleted ones.
-    return listMetadatas
-      .filter((item) => !item.isDeleted)
-      .map((element: CredentialMetadataRecord) =>
-        this.getCredentialShortDetails(element)
-      );
+    return listMetadatas.map((element: CredentialMetadataRecord) =>
+      this.getCredentialShortDetails(element)
+    );
   }
 
   private getCredentialShortDetails(

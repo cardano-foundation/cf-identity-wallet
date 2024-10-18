@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { SqliteStorage } from "../../storage/sqliteStorage";
+import { Salter } from "signify-ts";
 import { Agent } from "../agent";
 import {
   AgentServicesProps,
@@ -13,7 +13,6 @@ import {
   OobiScan,
 } from "../agent.types";
 import {
-  ConnectionNoteStorage,
   ConnectionRecord,
   ConnectionStorage,
   CredentialStorage,
@@ -31,10 +30,10 @@ import {
   EventTypes,
   OperationAddedEvent,
 } from "../event.types";
+import { KeriaContactKeyPrefix } from "./connectionService.types";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
-  protected readonly connectionNoteStorage!: ConnectionNoteStorage;
   protected readonly credentialStorage: CredentialStorage;
   protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
@@ -43,7 +42,6 @@ class ConnectionService extends AgentService {
   constructor(
     agentServiceProps: AgentServicesProps,
     connectionStorage: ConnectionStorage,
-    connectionNoteStorage: ConnectionNoteStorage,
     credentialStorage: CredentialStorage,
     ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage,
@@ -51,7 +49,6 @@ class ConnectionService extends AgentService {
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
-    this.connectionNoteStorage = connectionNoteStorage;
     this.credentialStorage = credentialStorage;
     this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
@@ -217,6 +214,15 @@ class ConnectionService extends AgentService {
           throw error;
         }
       });
+    const notes: Array<ConnectionNoteDetails> = [];
+    Object.keys(connection).forEach((key) => {
+      if (
+        key.startsWith(KeriaContactKeyPrefix.CONNECTION_NOTE) &&
+        connection[key]
+      ) {
+        notes.push(JSON.parse(connection[key]));
+      }
+    });
     return {
       label: connection?.alias,
       id: connection.id,
@@ -225,7 +231,7 @@ class ConnectionService extends AgentService {
         await this.getConnectionMetadataById(connection.id)
       ).createdAt.toISOString(),
       serviceEndpoints: [connection.oobi],
-      notes: await this.getConnectNotesByConnectionId(connection.id),
+      notes,
     };
   }
 
@@ -233,10 +239,6 @@ class ConnectionService extends AgentService {
   async deleteConnectionById(id: string): Promise<void> {
     await this.props.signifyClient.contacts().delete(id);
     await this.connectionStorage.deleteById(id);
-    const notes = await this.getConnectNotesByConnectionId(id);
-    await Promise.all(
-      notes.map((note) => this.connectionNoteStorage.deleteById(note.id))
-    );
     const historyItems =
       await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(id);
     await Promise.all(
@@ -261,31 +263,32 @@ class ConnectionService extends AgentService {
     connectionId: string,
     note: ConnectionNoteProps
   ): Promise<void> {
-    await this.connectionNoteStorage.save({
-      id: uuidv4(),
-      title: note.title,
-      message: note.message,
-      connectionId,
+    const id = new Salter({}).qb64;
+    await this.props.signifyClient.contacts().update(connectionId, {
+      [`${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`]: JSON.stringify({
+        ...note,
+        id: `${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`,
+      }),
     });
   }
 
   async updateConnectionNoteById(
+    connectionId: string,
     connectionNoteId: string,
     note: ConnectionNoteProps
   ) {
-    const noteRecord = await this.connectionNoteStorage.findById(
-      connectionNoteId
-    );
-    if (!noteRecord) {
-      throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
-    }
-    noteRecord.title = note.title;
-    noteRecord.message = note.message;
-    await this.connectionNoteStorage.update(noteRecord);
+    await this.props.signifyClient.contacts().update(connectionId, {
+      [connectionNoteId]: JSON.stringify(note),
+    });
   }
 
-  async deleteConnectionNoteById(connectionNoteId: string) {
-    return this.connectionNoteStorage.deleteById(connectionNoteId);
+  async deleteConnectionNoteById(
+    connectionId: string,
+    connectionNoteId: string
+  ) {
+    return this.props.signifyClient.contacts().update(connectionId, {
+      [connectionNoteId]: null,
+    });
   }
 
   @OnlineOnly
@@ -406,21 +409,6 @@ class ConnectionService extends AgentService {
     }
     const oobi = { ...operation, alias };
     return oobi;
-  }
-
-  private async getConnectNotesByConnectionId(
-    connectionId: string
-  ): Promise<ConnectionNoteDetails[]> {
-    const notes = await this.connectionNoteStorage.findAllByQuery({
-      connectionId,
-    });
-    return notes.map((note) => {
-      return {
-        id: note.id,
-        title: note.title,
-        message: note.message,
-      };
-    });
   }
 }
 
