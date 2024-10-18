@@ -32,7 +32,7 @@ const RelationshipForm: React.FC<RelationshipFormProps> = ({
     }
 
     const prescriptionCredential = await fetch(jsonFilePath).then((response) =>
-      response.json(),
+      response.json()
     );
     prescriptionCredential.credentialSubject[0].name = namePartner1;
     prescriptionCredential.credentialSubject[1].name = namePartner2;
@@ -43,8 +43,16 @@ const RelationshipForm: React.FC<RelationshipFormProps> = ({
   };
 
   return (
-    <Grid container spacing={2} margin={2}>
-      <Grid item xs={11} sm={6}>
+    <Grid
+      container
+      spacing={2}
+      margin={2}
+    >
+      <Grid
+        item
+        xs={11}
+        sm={6}
+      >
         <TextField
           required
           id="input-name-partner-1"
@@ -54,7 +62,11 @@ const RelationshipForm: React.FC<RelationshipFormProps> = ({
           onChange={(e) => setNamePartner1(e.target.value)}
         />
       </Grid>
-      <Grid item xs={11} sm={6}>
+      <Grid
+        item
+        xs={11}
+        sm={6}
+      >
         <TextField
           required
           id="input-name-partner-2"
@@ -73,13 +85,25 @@ const RelationshipForm: React.FC<RelationshipFormProps> = ({
         alignItems="flex-end"
         justifyContent="right"
       >
-        <Button variant="contained" color="primary" onClick={generateJson}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={generateJson}
+        >
           Validate Information
         </Button>
       </Grid>
 
-      <Grid container justifyContent="center" margin={2}>
-        <Grid item xs={12} sm={6}>
+      <Grid
+        container
+        justifyContent="center"
+        margin={2}
+      >
+        <Grid
+          item
+          xs={12}
+          sm={6}
+        >
           {isSuccessfulValidationVisible && (
             <Alert severity="success">Successfully validated</Alert>
           )}
