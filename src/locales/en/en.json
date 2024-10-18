@@ -779,38 +779,39 @@
       },
       "details": {
         "done": "Done",
-        "information": "Information",
-        "type": "Type",
-        "publickeybase": "Public Key Base 58",
-        "delegator": {
-          "title": "Delegator Identifier Prefix"
-        },
-        "signingkeyslist": {
-          "title": "List of Signing Keys"
+        "groupmembers": {
+          "title": "Group members"
         },
         "signingkeysthreshold": {
-          "title": "Keys Signing Threshold"
+          "title": "Keys signing threshold"
+        },
+        "information": {
+          "title": "Information"
+        },
+        "signingkeyslist": {
+          "title": "List of signing keys",
+          "rotate": "Rotate keys"
         },
         "nextkeyslist": {
-          "title": "List of Next Key Digests"
+          "title": "List of next key digests"
         },
         "nextkeysthreshold": {
-          "title": "Next Keys Signing Threshold"
-        },
-        "creationtimestamp": {
-          "title": "Creation Timestamp"
-        },
-        "rotationtimestamp": {
-          "title": "Last Key Rotation Timestamp"
+          "title": "Next keys signing threshold"
         },
         "sequencenumber": {
-          "title": "Sequence Number"
+          "title": "Sequence number"
+        },
+        "rotationtimestamp": {
+          "title": "Last key rotation timestamp"
         },
         "backerslist": {
-          "title": "List of Backers"
+          "title": "List of backers"
+        },
+        "delegator": {
+          "title": "Delegator identifier prefix"
         },
         "backeraddress": {
-          "title": "Backer Address"
+          "title": "Backer address"
         },
         "delete": {
           "button": "Delete identifier",

@@ -9,7 +9,7 @@ const identifierFix: IdentifierDetails[] = [
     isPending: false,
     s: "4", // Sequence number, only show if s > 0
     dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
-    kt: "2", // Keys signing threshold (only show if kt > 1)
+    kt: "2", // Keys signing threshold (only show for group identifiers)
     k: [
       // List of signing keys - array
       "DCF6b0c5aVm_26_sCTgLB4An6oUxEM5pVDDLqxxXDxH-",
@@ -31,7 +31,7 @@ const identifierFix: IdentifierDetails[] = [
     isPending: false,
     s: "4", // Sequence number, only show if s > 0
     dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
-    kt: "2", // Keys signing threshold (only show if kt > 1)
+    kt: "2", // Keys signing threshold (only show for group identifiers)
     k: [
       // List of signing keys - array
       "DCF6b0c5aVm_26_sCTgLB4An6oUxEM5pVDDLqxxXDxH-",
@@ -53,7 +53,7 @@ const identifierFix: IdentifierDetails[] = [
     isPending: true,
     s: "4", // Sequence number, only show if s > 0
     dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
-    kt: "2", // Keys signing threshold (only show if kt > 1)
+    kt: "2", // Keys signing threshold (only show for group identifiers)
     k: [
       // List of signing keys - array
       "DCF6b0c5aVm_26_sCTgLB4An6oUxEM5pVDDLqxxXDxH-",
@@ -65,7 +65,12 @@ const identifierFix: IdentifierDetails[] = [
     ],
     bt: "1", // Backer threshold and backer keys below
     b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"], // List of backers
-    di: "test", // Delegated identifier prefix, don't show if ""
+    di: "test", // Delegated identifier prefix, don't show if "",
+    multisigManageAid: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9x",
+    members: [
+      "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu",
+      "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYB2",
+    ],
   },
 ];
 
