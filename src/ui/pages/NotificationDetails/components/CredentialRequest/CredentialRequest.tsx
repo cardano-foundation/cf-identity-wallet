@@ -35,10 +35,9 @@ const CredentialRequest = ({
       );
 
       const identifier = identifiersData.find(
-        (identifier) => identifier.id === request.identifierId
+        (identifier) => identifier.id === request.identifier
       );
 
-      // @TODO: identifierType is not needed to render the component so this could be optimised. If it's needed, it should be fetched in the core for simplicity.
       const identifierType =
         identifier?.multisigManageAid || identifier?.multisigManageAid
           ? IdentifierType.Group
