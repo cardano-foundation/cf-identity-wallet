@@ -60,13 +60,21 @@
     margin-bottom: 0.625rem;
     padding-left: 1.25rem;
   }
-}
 
-@media screen and (min-width: 250px) and (max-width: 370px) {
-  .card-details-info-block {
-    .card-details-info-block-title {
-      font-size: 0.8rem;
-      line-height: 1.175rem;
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .card-details-info-block-header {
+      .card-details-info-block-title,
+      .rotate-keys-button {
+        h4 {
+          font-size: 0.8rem;
+          line-height: 1.175rem;
+        }
+
+        ion-icon {
+          width: 1rem;
+          height: 1rem;
+        }
+      }
     }
   }
 }
