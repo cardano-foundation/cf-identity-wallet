@@ -12,6 +12,7 @@ import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
 import { CredentialRequest } from "./CredentialRequest";
 import { credRequestFix } from "../../../../__fixtures__/credRequestFix";
 import { credsFixAcdc } from "../../../../__fixtures__/credsFix";
+import { filteredIdentifierFix } from "../../../../__fixtures__/filteredIdentifierFix";
 
 mockIonicReact();
 
@@ -47,6 +48,9 @@ const initialState = {
   credsArchivedCache: { creds: [] },
   notificationsCache: {
     notifications: notificationsFix,
+  },
+  identifiersCache: {
+    identifiers: filteredIdentifierFix,
   },
 };
 
