@@ -62,7 +62,7 @@ const ConnectionQR: React.FC<ConnectionQRProps> = ({
         } else if (jsonFilePath) {
           response = await axios.post(
             url,
-            await fetch(jsonFilePath).then((response) => response.json()),
+            await fetch(jsonFilePath).then((response) => response.json())
           );
           setResponseLink(await response.data.data);
         } else {
@@ -88,12 +88,17 @@ const ConnectionQR: React.FC<ConnectionQRProps> = ({
 
   return (
     <Container sx={{ py: 2 }}>
-      <Typography variant="h6" gutterBottom>
+      <Typography
+        variant="h6"
+        gutterBottom
+      >
         {icon}
         {name}
       </Typography>
       <Typography align="center">
-        To connect, scan this QR code with the scanner of your identity wallet. If you wish to receive credentials to a group identifier, each member or device in the group should individually scan this QR code.
+        To connect, scan this QR code with the scanner of your identity wallet.
+        If you wish to receive credentials to a group identifier, each member or
+        device in the group should individually scan this QR code.
       </Typography>
       {customCredentialForm &&
         React.cloneElement(customCredentialForm as React.ReactElement<any>, {
@@ -108,10 +113,16 @@ const ConnectionQR: React.FC<ConnectionQRProps> = ({
       {showQR && (
         <div>
           <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
-            <QRCode value={responseLink} size={256} />
+            <QRCode
+              value={responseLink}
+              size={256}
+            />
           </Box>
           <div style={{ display: "flex", justifyContent: "center" }}>
-            <Button onClick={() => navigator.clipboard.writeText(responseLink)}>Copy connection URL<CopyAll /></Button>
+            <Button onClick={() => navigator.clipboard.writeText(responseLink)}>
+              Copy connection URL
+              <CopyAll />
+            </Button>
           </div>
         </div>
       )}
@@ -130,14 +141,17 @@ const ConnectionQR: React.FC<ConnectionQRProps> = ({
           It was not possible to connect to the server. Try again
         </Alert>
       )}
-      {onNextStep &&
+      {onNextStep && (
         <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <Button variant="contained" color="primary" onClick={() => onNextStep()}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => onNextStep()}
+          >
             Next step
           </Button>
         </Box>
-      }
-
+      )}
     </Container>
   );
 };

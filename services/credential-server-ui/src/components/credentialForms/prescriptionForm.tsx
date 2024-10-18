@@ -23,7 +23,7 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
   const [type, setType] = useState("");
   const [name, setName] = useState("");
   const [expirationDate, setExpirationDate] = React.useState<Dayjs | null>(
-    null,
+    null
   );
 
   const [isSuccessfulValidationVisible, setIsSuccessfulValidationVisible] =
@@ -46,7 +46,7 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
     }
 
     const prescriptionCredential = await fetch(jsonFilePath).then((response) =>
-      response.json(),
+      response.json()
     );
     prescriptionCredential.credentialSubject.prescription.type = type;
     prescriptionCredential.credentialSubject.prescription.name = name;
@@ -58,8 +58,16 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
   };
 
   return (
-    <Grid container spacing={2} margin={2}>
-      <Grid item xs={11} sm={6}>
+    <Grid
+      container
+      spacing={2}
+      margin={2}
+    >
+      <Grid
+        item
+        xs={11}
+        sm={6}
+      >
         <FormControl fullWidth>
           <InputLabel id="input-label-type">Class of medicine</InputLabel>
           <Select
@@ -80,7 +88,11 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
         </FormControl>
       </Grid>
 
-      <Grid item xs={11} sm={6}>
+      <Grid
+        item
+        xs={11}
+        sm={6}
+      >
         <TextField
           required
           id="input-name"
@@ -91,7 +103,11 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
         />
       </Grid>
 
-      <Grid item xs={11} sm={6}>
+      <Grid
+        item
+        xs={11}
+        sm={6}
+      >
         <DatePicker
           label={"Expiration Date"}
           value={expirationDate}
@@ -107,13 +123,25 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
         alignItems="flex-end"
         justifyContent="right"
       >
-        <Button variant="contained" color="primary" onClick={generateJson}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={generateJson}
+        >
           Validate Information
         </Button>
       </Grid>
 
-      <Grid container justifyContent="center" margin={2}>
-        <Grid item xs={12} sm={6}>
+      <Grid
+        container
+        justifyContent="center"
+        margin={2}
+      >
+        <Grid
+          item
+          xs={12}
+          sm={6}
+        >
           {isSuccessfulValidationVisible && (
             <Alert severity="success">Successfully validated</Alert>
           )}
