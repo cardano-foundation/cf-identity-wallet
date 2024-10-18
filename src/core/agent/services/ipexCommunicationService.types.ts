@@ -8,6 +8,7 @@ interface CredentialsMatchingApply {
     acdc: any;
   }[];
   attributes: Record<string, unknown>;
+  identifier: string;
 }
 
 export type { CredentialsMatchingApply };

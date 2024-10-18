@@ -41,6 +41,7 @@ const credRequestFix = {
   attributes: {
     attendeeName: "hmlax",
   },
+  identifier: "id",
 };
 
 export { credRequestFix };

@@ -6,6 +6,7 @@ import {
   render,
   waitFor,
 } from "@testing-library/react";
+import { Clipboard } from "@capacitor/clipboard";
 import { createMemoryHistory } from "history";
 import { act } from "react";
 import { Provider } from "react-redux";
@@ -25,9 +26,10 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
 import { passcodeFiller } from "../../utils/passcodeFiller";
 import { IdentifierDetails } from "./IdentifierDetails";
+import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
-const combineMock = jest.fn(() => identifierFix[0]);
+const getIndentifier = jest.fn(() => identifierFix[0]);
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -68,13 +70,14 @@ jest.mock("../../../core/agent/agent", () => ({
       "Attempted to fetch data by ID on KERIA, but was not found. May indicate stale data records in the local database.",
     agent: {
       identifiers: {
-        getIdentifier: () => combineMock(),
+        getIdentifier: () => getIndentifier(),
         rotateIdentifier: (id: string) => rotateIdentifierMock(id),
         deleteStaleLocalIdentifier: () => deleteStaleLocalIdentifierMock(),
         deleteIdentifier: () => deleteIdentifier(),
       },
       connections: {
         getOobi: jest.fn(() => Promise.resolve("oobi")),
+        getMultisigConnections: jest.fn().mockResolvedValue([]),
       },
       basicStorage: {
         findById: jest.fn(),
@@ -109,6 +112,9 @@ const initialStateKeri = {
     identifiers: filteredIdentifierFix,
     favourites: [],
   },
+  connectionsCache: {
+    multisigConnections: {},
+  },
 };
 
 const storeMockedAidKeri = {
@@ -121,12 +127,90 @@ history.push(TabsRoutePath.IDENTIFIER_DETAILS, {
   ...identifierFix[0],
 });
 
-describe("Cards Details page (not multi-sig)", () => {
+describe("Individual Identifier details page", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
   beforeEach(() => {
-    combineMock.mockReturnValue(identifierFix[0]);
+    getIndentifier.mockReturnValue(identifierFix[0]);
+  });
+
+  test("It renders Identifier Details", async () => {
+    Clipboard.write = jest.fn();
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMockedAidKeri}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[path]}
+        >
+          <Route
+            path={TabsRoutePath.IDENTIFIER_DETAILS}
+            component={IdentifierDetails}
+          />
+        </IonReactMemoryRouter>
+      </Provider>
+    );
+    // Render card template
+    await waitFor(() =>
+      expect(
+        getByTestId("identifier-card-template-default-index-0")
+      ).toBeInTheDocument()
+    );
+    // Render Information
+    expect(getByTestId("card-block-title-information")).toBeInTheDocument();
+    expect(getByTestId("identifier-text-value").innerHTML).toBe(
+      filteredIdentifierFix[0].id
+    );
+    fireEvent.click(getByTestId("identifier-copy-button"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: filteredIdentifierFix[0].id,
+      });
+    });
+    expect(
+      getByText(
+        formatShortDate(identifierFix[0].createdAtUTC) +
+          " - " +
+          formatTimeToSec(identifierFix[0].createdAtUTC)
+      )
+    ).toBeInTheDocument();
+    // Render List of signing keys
+    expect(
+      getByTestId("card-block-title-listofsigningkeys")
+    ).toBeInTheDocument();
+    expect(getByTestId("rotate-keys-button")).toBeInTheDocument();
+    expect(getByText(identifierFix[0].k[0])).toBeInTheDocument();
+    fireEvent.click(getByTestId("signing-key-0-copy-button"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: filteredIdentifierFix[0].id,
+      });
+    });
+    // Render List of next key digests
+    expect(
+      getByTestId("card-block-title-listofnextkeydigests")
+    ).toBeInTheDocument();
+    expect(getByText(identifierFix[0].n[0])).toBeInTheDocument();
+    fireEvent.click(getByTestId("next-key-0-copy-button"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: filteredIdentifierFix[0].id,
+      });
+    });
+    // Render Sequence number
+    expect(getByTestId("card-block-title-sequencenumber")).toBeInTheDocument();
+    expect(getByText(identifierFix[0].s)).toBeInTheDocument();
+    // Render Last key rotation timestamp
+    expect(
+      getByTestId("card-block-title-lastkeyrotationtimestamp")
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        formatShortDate(identifierFix[0].dt) +
+          " - " +
+          formatTimeToSec(identifierFix[0].dt)
+      )
+    ).toBeInTheDocument();
   });
 
   test("It opens the sharing modal", async () => {
@@ -404,6 +488,9 @@ describe("Cards Details page (not multi-sig)", () => {
         identifiers: filteredIdentifierFix,
         favourites: [],
       },
+      connectionsCache: {
+        multisigConnections: {},
+      },
     };
 
     const storeMockedAidKeri = {
@@ -437,7 +524,7 @@ describe("Cards Details page (not multi-sig)", () => {
     );
 
     act(() => {
-      fireEvent.click(getByTestId("signing-key-0-action-icon"));
+      fireEvent.click(getByTestId("rotate-keys-button"));
     });
 
     await waitFor(() => {
@@ -501,12 +588,164 @@ describe("Cards Details page (not multi-sig)", () => {
   });
 });
 
-describe("Cards Details page (multi-sig)", () => {
+describe("Group Identifier details page", () => {
   beforeAll(async () => {
     await new ConfigurationService().start();
   });
   beforeEach(() => {
-    combineMock.mockReturnValue(identifierFix[2]);
+    getIndentifier.mockReturnValue(identifierFix[2]);
+  });
+
+  test("It renders Identifier Details", async () => {
+    Clipboard.write = jest.fn();
+
+    const initialStateKeri = {
+      stateCache: {
+        routes: [TabsRoutePath.IDENTIFIERS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        isOnline: true,
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "bran",
+      },
+      identifiersCache: {
+        identifiers: [
+          {
+            displayName: "GG",
+            id: "EJexLqpflqJr3HQhMNECkgFL_D5Z3xAMbSmlHyPhqYut",
+            createdAtUTC: "2024-10-14T13:11:52.963Z",
+            theme: 20,
+            isPending: false,
+            multisigManageAid: "ELUXM-ajSu0o1qyFvss-3QQfkj3DOke9aHNwt72Byi9x",
+          },
+        ],
+        favourites: [],
+      },
+      connectionsCache: {
+        multisigConnections: {
+          "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu": {
+            id: "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu",
+            label: "Member 0",
+            connectionDate: "2024-10-14T13:11:44.501Z",
+            status: "confirmed",
+            oobi: "http://keria:3902/oobi/EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu/agent/EMrn5s4fG1bzxdlrtyRusPQ23fohlGuH6LkZBSRiDtKy?name=Brave&groupId=9a12f939-1412-4450-aa61-a9a8a697ceca",
+            groupId: "9a12f939-1412-4450-aa61-a9a8a697ceca",
+          },
+          "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYB2": {
+            id: "EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu",
+            label: "Member 1",
+            connectionDate: "2024-10-14T13:11:44.501Z",
+            status: "confirmed",
+            oobi: "http://keria:3902/oobi/EFZ-hSogn3-wXEahBbIW_oXYxAV_vH8eEhX6BwQHsYBu/agent/EMrn5s4fG1bzxdlrtyRusPQ23fohlGuH6LkZBSRiDtKy?name=Brave&groupId=9a12f939-1412-4450-aa61-a9a8a697ceca",
+            groupId: "9a12f939-1412-4450-aa61-a9a8a697ceca",
+          },
+        },
+      },
+    };
+
+    const storeMockedAidKeri = {
+      ...mockStore(initialStateKeri),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMockedAidKeri}>
+        <IonReactMemoryRouter
+          history={history}
+          initialEntries={[path]}
+        >
+          <Route
+            path={TabsRoutePath.IDENTIFIER_DETAILS}
+            component={IdentifierDetails}
+          />
+        </IonReactMemoryRouter>
+      </Provider>
+    );
+
+    // Render card template
+    await waitFor(() => {
+      expect(
+        getByTestId("identifier-card-template-default-index-0")
+      ).toBeInTheDocument();
+
+      expect(getByTestId("card-block-title-groupmembers")).toBeInTheDocument();
+    });
+
+    // Render Group members
+    expect(getByTestId("group-member-0-text-value").innerHTML).toBe("Member 0");
+    expect(getByTestId("group-member-1-text-value").innerHTML).toBe("Member 1");
+    // Render Keys signing threshold
+    expect(
+      getByTestId("card-block-title-keyssigningthreshold")
+    ).toBeInTheDocument();
+    expect(getByTestId("signing-keys-threshold-text-value").innerHTML).toBe(
+      identifierFix[2].kt
+    );
+    // Render Information
+    expect(getByTestId("card-block-title-information")).toBeInTheDocument();
+    expect(getByTestId("identifier-text-value").innerHTML).toBe(
+      filteredIdentifierFix[2].id
+    );
+    fireEvent.click(getByTestId("identifier-copy-button"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: filteredIdentifierFix[2].id,
+      });
+    });
+    expect(
+      getByText(
+        formatShortDate(identifierFix[2].createdAtUTC) +
+          " - " +
+          formatTimeToSec(identifierFix[2].createdAtUTC)
+      )
+    ).toBeInTheDocument();
+    // Render List of signing keys
+    expect(
+      getByTestId("card-block-title-listofsigningkeys")
+    ).toBeInTheDocument();
+    expect(getByText(identifierFix[2].k[0])).toBeInTheDocument();
+    fireEvent.click(getByTestId("signing-key-0-copy-button"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: filteredIdentifierFix[2].id,
+      });
+    });
+    // Render List of next key digests
+    expect(
+      getByTestId("card-block-title-listofnextkeydigests")
+    ).toBeInTheDocument();
+    expect(getByText(identifierFix[2].n[0])).toBeInTheDocument();
+    fireEvent.click(getByTestId("next-key-0-copy-button"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: filteredIdentifierFix[2].id,
+      });
+    });
+    // Render Next keys signing threshold
+    expect(
+      getByTestId("card-block-title-nextkeyssigningthreshold")
+    ).toBeInTheDocument();
+    expect(getByText(identifierFix[2].nt[0])).toBeInTheDocument();
+    // Render Sequence number
+    expect(getByTestId("card-block-title-sequencenumber")).toBeInTheDocument();
+    expect(getByText(identifierFix[2].s)).toBeInTheDocument();
+    // Render Last key rotation timestamp
+    expect(
+      getByTestId("card-block-title-lastkeyrotationtimestamp")
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        formatShortDate(identifierFix[2].dt) +
+          " - " +
+          formatTimeToSec(identifierFix[2].dt)
+      )
+    ).toBeInTheDocument();
   });
 
   test("Cannot rotate key", async () => {
@@ -528,6 +767,9 @@ describe("Cards Details page (multi-sig)", () => {
       identifiersCache: {
         identifiers: [filteredIdentifierFix[2]],
         favourites: [],
+      },
+      connectionsCache: {
+        multisigConnections: {},
       },
     };
 
@@ -564,7 +806,7 @@ describe("Cards Details page (multi-sig)", () => {
 
 describe("Checking the Identifier Details Page when information is missing from the cloud", () => {
   beforeEach(() => {
-    combineMock.mockImplementation(() => {
+    getIndentifier.mockImplementation(() => {
       throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`);
     });
   });
@@ -589,6 +831,9 @@ describe("Checking the Identifier Details Page when information is missing from 
       identifiersCache: {
         identifiers: filteredIdentifierFix,
         favourites: [],
+      },
+      connectionsCache: {
+        multisigConnections: {},
       },
     };
 
@@ -659,7 +904,7 @@ describe("Favourite identifier", () => {
     await new ConfigurationService().start();
   });
   beforeEach(() => {
-    combineMock.mockReturnValue(identifierFix[0]);
+    getIndentifier.mockReturnValue(identifierFix[0]);
   });
   test("It changes to favourite icon on click favourite button", async () => {
     const spy = jest
@@ -744,6 +989,9 @@ describe("Favourite identifier", () => {
           },
         ],
       },
+      connectionsCache: {
+        multisigConnections: {},
+      },
     };
 
     const storeMockedAidKeri = {
@@ -808,6 +1056,9 @@ describe("Favourite identifier", () => {
           },
         ],
       },
+      connectionsCache: {
+        multisigConnections: {},
+      },
     };
 
     const storeMockedAidKeri = {
@@ -871,6 +1122,9 @@ describe("Favourite identifier", () => {
             time: 0,
           },
         ],
+      },
+      connectionsCache: {
+        multisigConnections: {},
       },
     };
 
