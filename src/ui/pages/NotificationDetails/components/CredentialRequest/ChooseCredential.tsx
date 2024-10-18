@@ -157,14 +157,6 @@ const ChooseCredential = ({
     setViewCredDetail(null);
   };
 
-  const handleNotificationUpdate = async () => {
-    const updatedNotifications = notifications.filter(
-      (notification) => notification.id !== notificationDetails.id
-    );
-
-    dispatch(setNotificationsCache(updatedNotifications));
-  };
-
   const handleRequestCredential = async () => {
     try {
       if (!selectedCred) {
@@ -176,7 +168,6 @@ const ChooseCredential = ({
         notificationDetails.id,
         selectedCred.acdc
       );
-      handleNotificationUpdate();
       dispatch(setToastMsg(ToastMsgType.SHARE_CRED_SUCCESS));
       onClose();
     } catch (e) {

@@ -675,6 +675,7 @@ describe("Ipex communication service of agent", () => {
         fullName: "Mr. John Lucas Smith",
         licenseNumber: "SMITH01192OP",
       },
+      identifier: "uuid",
     });
     expect(credentialListMock).toBeCalledWith({
       filter: expect.objectContaining({
