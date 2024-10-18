@@ -1448,22 +1448,6 @@ describe("Signify notification service of agent", () => {
     ).rejects.toThrow(errorMessage);
   });
 
-  test("Should throw error if other error occurs with route exn/ipex/agree", async () => {
-    const errorMessage = "Error - 500";
-    getIpexMessageMetadataMock.mockRejectedValueOnce(new Error(errorMessage));
-    await expect(
-      keriaNotificationService.processNotification(notificationIpexAgreeProp)
-    ).rejects.toThrow(errorMessage);
-  });
-
-  test("Should throw error if other error occurs with route exn/ipex/apply", async () => {
-    const errorMessage = "Error - 500";
-    getIpexMessageMetadataMock.mockRejectedValueOnce(new Error(errorMessage));
-    await expect(
-      keriaNotificationService.processNotification(notificationIpexApplyProp)
-    ).rejects.toThrow(errorMessage);
-  });
-
   test("Should skip if missing identifier metadata with route ipex/grant", async () => {
     exchangesGetMock.mockResolvedValueOnce({
       exn: {

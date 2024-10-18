@@ -85,6 +85,7 @@ type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 interface ConnectionDetails extends ConnectionShortDetails {
   serviceEndpoints?: string[];
   notes?: ConnectionNoteDetails[];
+  historyItems?: ConnectionHistoryItem[];
 }
 interface NotificationRpy {
   a: {

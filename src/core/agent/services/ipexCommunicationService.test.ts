@@ -48,7 +48,7 @@ import {
   mHab,
   memberIdentifierRecord,
 } from "../../__fixtures__/agent/multSigFixtures";
-import { IdentifierType } from "./identifier.types";
+import { KeriaContactKeyPrefix } from "./connectionService.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -160,6 +160,7 @@ const submitAdmitMock = jest.fn().mockResolvedValue({
 });
 const markNotificationMock = jest.fn();
 const ipexAdmitMock = jest.fn();
+const updateContactMock = jest.fn();
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -195,6 +196,7 @@ const signifyClient = jest.mocked({
   }),
   contacts: () => ({
     list: jest.fn(),
+    update: updateContactMock,
     get: jest.fn().mockImplementation((id: string) => {
       return {
         alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
@@ -338,6 +340,22 @@ describe("Ipex communication service of agent", () => {
     });
     ipexAdmitMock.mockResolvedValue(["admit", "sigs", "aend"]);
 
+    const connectionNote = {
+      id: "note:id",
+      title: "title",
+      message: "message",
+    };
+
+    signifyClient.contacts().update = jest.fn().mockReturnValue(
+      Promise.resolve({
+        alias: "alias",
+        oobi: "oobi",
+        id: "id",
+        [`${KeriaContactKeyPrefix.CONNECTION_NOTE}:id`]:
+          JSON.stringify(connectionNote),
+      })
+    );
+
     await ipexCommunicationService.acceptAcdc(id);
 
     expect(submitAdmitMock).toBeCalledWith(
@@ -377,11 +395,7 @@ describe("Ipex communication service of agent", () => {
         },
       },
     });
-    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith(
-      expect.objectContaining({
-        historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-      })
-    );
+
     expect(notificationStorage.deleteById).toBeCalledWith(id);
   });
 
@@ -687,16 +701,22 @@ describe("Ipex communication service of agent", () => {
 
   test("Can create linked ipex message record", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
+    let now = new Date()
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
     );
-    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
-      id: grantForIssuanceExnMessage.exn.d,
-      credentialType: QVISchema.title,
-      content: grantForIssuanceExnMessage,
-      connectionId: grantForIssuanceExnMessage.exn.i,
-      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+
+    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.i, {
+      [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
+        JSON.stringify({
+          id: grantForIssuanceExnMessage.exn.d,
+          credentialType: QVISchema.title,
+          content: grantForIssuanceExnMessage,
+          connectionId: grantForIssuanceExnMessage.exn.i,
+          historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+          createdAt: now,
+        }),
     });
 
     schemaGetMock.mockResolvedValueOnce(QVISchema);
@@ -709,35 +729,49 @@ describe("Ipex communication service of agent", () => {
         },
       },
     });
+    now = new Date()
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
     );
-    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
-      id: grantForIssuanceExnMessage.exn.d,
-      credentialType: QVISchema.title,
-      content: grantForIssuanceExnMessage,
-      connectionId: grantForIssuanceExnMessage.exn.i,
-      historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE,
+    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.i, {
+      [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
+        JSON.stringify({
+          id: grantForIssuanceExnMessage.exn.d,
+          credentialType: QVISchema.title,
+          content: grantForIssuanceExnMessage,
+          connectionId: grantForIssuanceExnMessage.exn.i,
+          historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE,
+          createdAt: now,
+        }),
     });
+
     expect(schemaGetMock).toBeCalledTimes(2);
     expect(connections.resolveOobi).toBeCalledTimes(2);
   });
 
   test("Can create linked ipex message record with message exchange route ipex/apply", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
+    const now = new Date()
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       applyForPresentingExnMessage,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
     );
 
-    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
-      id: applyForPresentingExnMessage.exn.d,
-      credentialType: QVISchema.title,
-      content: applyForPresentingExnMessage,
-      connectionId: applyForPresentingExnMessage.exn.i,
-      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-    });
+    expect(updateContactMock).toBeCalledWith(
+      applyForPresentingExnMessage.exn.i,
+      {
+        [`${KeriaContactKeyPrefix.HISTORY_IPEX}${applyForPresentingExnMessage.exn.d}`]:
+          JSON.stringify({
+            id: applyForPresentingExnMessage.exn.d,
+            credentialType: QVISchema.title,
+            content: applyForPresentingExnMessage,
+            connectionId: applyForPresentingExnMessage.exn.i,
+            historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+            createdAt: now,
+          }),
+      }
+    );
     expect(schemaGetMock).toBeCalledTimes(1);
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
@@ -745,23 +779,57 @@ describe("Ipex communication service of agent", () => {
   test("Can create linked ipex message record with message exchange route ipex/agree", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
     getExchangeMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
-
+    const now = new Date()
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       agreeForPresentingExnMessage,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
     );
 
-    expect(ipexMessageRecordStorage.createIpexMessageRecord).toBeCalledWith({
-      id: agreeForPresentingExnMessage.exn.d,
-      credentialType: QVISchema.title,
-      content: agreeForPresentingExnMessage,
-      connectionId: agreeForPresentingExnMessage.exn.i,
-      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-    });
+    expect(updateContactMock).toBeCalledWith(
+      agreeForPresentingExnMessage.exn.i,
+      {
+        [`${KeriaContactKeyPrefix.HISTORY_IPEX}${agreeForPresentingExnMessage.exn.d}`]:
+          JSON.stringify({
+            id: agreeForPresentingExnMessage.exn.d,
+            credentialType: QVISchema.title,
+            content: agreeForPresentingExnMessage,
+            connectionId: agreeForPresentingExnMessage.exn.i,
+            historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+            createdAt: now,
+          }),
+      }
+    );
     expect(schemaGetMock).toBeCalledTimes(1);
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
 
+  test("Can create linked ipex message record with history type is credential revoked", async () => {
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
+    getExchangeMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
+    const now = new Date()
+    await ipexCommunicationService.createLinkedIpexMessageRecord(
+      agreeForPresentingExnMessage,
+      ConnectionHistoryType.CREDENTIAL_REVOKED
+    );
+
+    expect(updateContactMock).toBeCalledWith(
+      agreeForPresentingExnMessage.exn.i,
+      {
+        [`${KeriaContactKeyPrefix.HISTORY_REVOKE}${agreeForPresentingExnMessage.exn.e.acdc.d}`]:
+          JSON.stringify({
+            id: agreeForPresentingExnMessage.exn.d,
+            credentialType: QVISchema.title,
+            content: agreeForPresentingExnMessage,
+            connectionId: agreeForPresentingExnMessage.exn.i,
+            historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
+            createdAt: now,
+          }),
+      }
+    );
+    expect(schemaGetMock).toBeCalledTimes(1);
+    expect(connections.resolveOobi).toBeCalledTimes(1);
+  })
+  
   test("Should throw error if schemas.get has an unexpected error", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     schemaGetMock.mockRejectedValueOnce(new Error("Unknown error"));

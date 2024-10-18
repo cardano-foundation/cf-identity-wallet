@@ -4,7 +4,6 @@ import { Agent } from "../agent";
 import {
   AgentServicesProps,
   ConnectionDetails,
-  ConnectionHistoryItem,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
@@ -17,6 +16,7 @@ import {
   ConnectionStorage,
   CredentialStorage,
   IdentifierStorage,
+  IpexMessageRecord,
   IpexMessageStorage,
   OperationPendingStorage,
 } from "../records";
@@ -223,6 +223,17 @@ class ConnectionService extends AgentService {
         notes.push(JSON.parse(connection[key]));
       }
     });
+
+    const historyItems: Array<IpexMessageRecord> = [];
+    Object.keys(connection).forEach((key) => {
+      if (
+        key.startsWith(KeriaContactKeyPrefix.HISTORY_IPEX) ||
+        key.startsWith(KeriaContactKeyPrefix.HISTORY_REVOKE)
+      ) {
+        historyItems.push(JSON.parse(connection[key]));
+      }
+    });
+
     return {
       label: connection?.alias,
       id: connection.id,
@@ -232,6 +243,19 @@ class ConnectionService extends AgentService {
       ).createdAt.toISOString(),
       serviceEndpoints: [connection.oobi],
       notes,
+      historyItems: historyItems
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+        .map((messageRecord) => {
+          const { historyType, createdAt, credentialType } = messageRecord;
+          return {
+            type: historyType,
+            timestamp: new Date(createdAt).toISOString(),
+            credentialType,
+          };
+        }),
     };
   }
 
@@ -239,13 +263,6 @@ class ConnectionService extends AgentService {
   async deleteConnectionById(id: string): Promise<void> {
     await this.props.signifyClient.contacts().delete(id);
     await this.connectionStorage.deleteById(id);
-    const historyItems =
-      await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(id);
-    await Promise.all(
-      historyItems.map((historyItem) =>
-        this.ipexMessageStorage.deleteIpexMessageMetadata(historyItem.id)
-      )
-    );
   }
 
   async deleteStaleLocalConnectionById(id: string): Promise<void> {
@@ -334,26 +351,6 @@ class ConnectionService extends AgentService {
       throw new Error(ConnectionService.CONNECTION_METADATA_RECORD_NOT_FOUND);
     }
     return connection;
-  }
-
-  async getConnectionHistoryById(
-    connectionId: string
-  ): Promise<ConnectionHistoryItem[]> {
-    const linkedIpexMessages =
-      await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(
-        connectionId
-      );
-    const requestMessages = linkedIpexMessages
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .map((messageRecord) => {
-        const { historyType, createdAt, credentialType } = messageRecord;
-        return {
-          type: historyType,
-          timestamp: createdAt.toISOString(),
-          credentialType,
-        };
-      });
-    return requestMessages;
   }
 
   // @TODO - foconnor: Contacts that are smid/rmids for multisigs will be synced too.

@@ -30,8 +30,8 @@ import {
   EventTypes,
 } from "../event.types";
 import { ConnectionService } from "./connectionService";
-import { Agent } from "../agent";
 import { IdentifierType } from "./identifier.types";
+import { KeriaContactKeyPrefix } from "./connectionService.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -540,12 +540,30 @@ class IpexCommunicationService extends AgentService {
       `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
     );
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
-    await this.ipexMessageStorage.createIpexMessageRecord({
+
+    let prefix;
+    let key;
+    switch (historyType) {
+    case ConnectionHistoryType.CREDENTIAL_REVOKED:
+      prefix = KeriaContactKeyPrefix.HISTORY_REVOKE;
+      key = message.exn.e.acdc.d;
+      break;
+    default:
+      prefix = KeriaContactKeyPrefix.HISTORY_IPEX;
+      key = message.exn.d;
+      break;
+    }
+    const ipexHistory = {
       id: message.exn.d,
       credentialType: schema?.title,
       content: message,
       connectionId: message.exn.i,
       historyType,
+      createdAt: new Date(),
+    };
+
+    await this.props.signifyClient.contacts().update(message.exn.i, {
+      [`${prefix}${key}`]: JSON.stringify(ipexHistory),
     });
   }
 
