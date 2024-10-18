@@ -10,7 +10,9 @@ import { ChooseCredential } from "./ChooseCredential";
 import "./CredentialRequest.scss";
 import { CredentialRequestInformation } from "./CredentialRequestInformation";
 import { showError } from "../../../../utils/error";
-import { useAppDispatch } from "../../../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
+import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
+import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
 
 const CredentialRequest = ({
   pageId,
@@ -22,6 +24,7 @@ const CredentialRequest = ({
   const [requestStage, setRequestStage] = useState(0);
   const [credentialRequest, setCredentialRequest] =
     useState<CredentialsMatchingApply | null>();
+  const identifiersData = useAppSelector(getIdentifiersCache);
 
   const [isOpenAlert, setIsOpenAlert] = useState(false);
 
@@ -30,6 +33,16 @@ const CredentialRequest = ({
       const request = await Agent.agent.ipexCommunications.getIpexApplyDetails(
         notificationDetails
       );
+
+      const identifier = identifiersData.find(
+        (identifier) => identifier.id === request.identifierId
+      );
+
+      // @TODO: identifierType is not needed to render the component so this could be optimised. If it's needed, it should be fetched in the core for simplicity.
+      const identifierType =
+        identifier?.multisigManageAid || identifier?.multisigManageAid
+          ? IdentifierType.Group
+          : IdentifierType.Individual;
 
       setCredentialRequest(request);
     } catch (e) {

@@ -6,7 +6,7 @@ interface CredentialRequestProps {
   pageId: string;
   activeStatus: boolean;
   notificationDetails: KeriaNotification;
-  credentialRequest: CredentialsMatchingApply;
+  credentialRequest: Omit<CredentialsMatchingApply, "identifierId">;
   onAccept: () => void;
   onBack: () => void;
 }
@@ -14,7 +14,7 @@ interface CredentialRequestProps {
 interface ChooseCredentialProps {
   pageId: string;
   activeStatus: boolean;
-  credentialRequest: CredentialsMatchingApply;
+  credentialRequest: Omit<CredentialsMatchingApply, "identifierId">;
   notificationDetails: KeriaNotification;
   reloadData: () => void;
   onBack: () => void;

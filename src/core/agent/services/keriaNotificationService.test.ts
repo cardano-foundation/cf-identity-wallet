@@ -2010,7 +2010,7 @@ describe("Long running operation tracker", () => {
       {
         type: "NotificationRecord",
         id: "id",
-        createdAt: new Date(),
+        createdAt: new Date("2024-08-01T10:36:17.814Z"),
         a: {
           r: NotificationRoute.ExnIpexApply,
           d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
@@ -2027,6 +2027,23 @@ describe("Long running operation tracker", () => {
 
     await keriaNotificationService.processOperation(operationRecord);
     expect(notificationStorage.deleteById).toBeCalledWith("id");
+    expect(eventEmitter.emit).toBeCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.NotificationRemoved,
+      payload: {
+        keriaNotif: {
+          a: {
+            d: "EIDUavcmyHBseNZAdAHR3SF8QMfX1kSJ3Ct0OqS0-HCW",
+            r: NotificationRoute.ExnIpexApply,
+          },
+          connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
+          createdAt: "2024-08-01T10:36:17.814Z",
+          id: "id",
+          multisigId: undefined,
+          read: true,
+        },
+      },
+    });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
 

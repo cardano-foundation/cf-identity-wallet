@@ -460,6 +460,7 @@ class IpexCommunicationService extends AgentService {
         };
       }),
       attributes: attributes,
+      identifierId: msg.exn.a.i,
     };
   }
 

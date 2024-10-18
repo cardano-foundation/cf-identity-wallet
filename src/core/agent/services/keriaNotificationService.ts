@@ -1008,6 +1008,20 @@ class KeriaNotificationService extends AgentService {
                 notification.id,
                   notification.a.r as NotificationRoute
               );
+
+              this.props.eventEmitter.emit<NotificationRemovedEvent>({
+                type: EventTypes.NotificationRemoved,
+                payload: {
+                  keriaNotif: {
+                    id: notification.id,
+                    createdAt: notification.createdAt.toISOString(),
+                    a: notification.a,
+                    multisigId: notification.multisigId,
+                    connectionId: notification.connectionId,
+                    read: notification.read,
+                  },
+                },
+              });
             }
           }
         }
