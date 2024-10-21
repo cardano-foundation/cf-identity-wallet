@@ -81,6 +81,9 @@ const ConnectionDetails = ({
       if (connectionDetails.notes) {
         setNotes(connectionDetails.notes);
       }
+      if (connectionDetails.historyItems) {
+        setConnectionHistory(connectionDetails.historyItems);
+      }
     } catch (error) {
       if (
         error instanceof Error &&
@@ -92,24 +95,7 @@ const ConnectionDetails = ({
         showError("Unable to get connection details", error, dispatch);
       }
     } finally {
-      setLoading((value) => ({ ...value, details: false }));
-    }
-  }, [connectionShortDetails?.id, dispatch]);
-
-  const getHistory = useCallback(async () => {
-    if (!connectionShortDetails?.id) return;
-
-    try {
-      const connectionHistory =
-        await Agent.agent.connections.getConnectionHistoryById(
-          connectionShortDetails.id
-        );
-      setConnectionHistory(connectionHistory);
-    } catch (e) {
-      handleDone();
-      showError("Unable to get connection history", e, dispatch);
-    } finally {
-      setLoading((value) => ({ ...value, history: false }));
+      setLoading((value) => ({ ...value, details: false, history: false }));
     }
   }, [connectionShortDetails?.id, dispatch]);
 
@@ -122,8 +108,7 @@ const ConnectionDetails = ({
     });
 
     getDetails();
-    getHistory();
-  }, [connectionShortDetails?.id, getDetails, getHistory]);
+  }, [connectionShortDetails?.id, getDetails]);
 
   useOnlineStatusEffect(getData);
 

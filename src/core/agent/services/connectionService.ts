@@ -4,7 +4,6 @@ import { Agent } from "../agent";
 import {
   AgentServicesProps,
   ConnectionDetails,
-  ConnectionHistoryItem,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
@@ -17,7 +16,7 @@ import {
   ConnectionStorage,
   CredentialStorage,
   IdentifierStorage,
-  IpexMessageStorage,
+  IpexMessageRecord,
   OperationPendingStorage,
 } from "../records";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
@@ -35,7 +34,6 @@ import { KeriaContactKeyPrefix } from "./connectionService.types";
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
   protected readonly credentialStorage: CredentialStorage;
-  protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly identifierStorage: IdentifierStorage;
 
@@ -43,14 +41,12 @@ class ConnectionService extends AgentService {
     agentServiceProps: AgentServicesProps,
     connectionStorage: ConnectionStorage,
     credentialStorage: CredentialStorage,
-    ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage,
     identifierStorage: IdentifierStorage
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
     this.credentialStorage = credentialStorage;
-    this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.identifierStorage = identifierStorage;
   }
@@ -223,6 +219,17 @@ class ConnectionService extends AgentService {
         notes.push(JSON.parse(connection[key]));
       }
     });
+
+    const historyItems: Array<IpexMessageRecord> = [];
+    Object.keys(connection).forEach((key) => {
+      if (
+        key.startsWith(KeriaContactKeyPrefix.HISTORY_IPEX) ||
+        key.startsWith(KeriaContactKeyPrefix.HISTORY_REVOKE)
+      ) {
+        historyItems.push(JSON.parse(connection[key]));
+      }
+    });
+
     return {
       label: connection?.alias,
       id: connection.id,
@@ -232,6 +239,19 @@ class ConnectionService extends AgentService {
       ).createdAt.toISOString(),
       serviceEndpoints: [connection.oobi],
       notes,
+      historyItems: historyItems
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+        .map((messageRecord) => {
+          const { historyType, createdAt, credentialType } = messageRecord;
+          return {
+            type: historyType,
+            timestamp: new Date(createdAt).toISOString(),
+            credentialType,
+          };
+        }),
     };
   }
 
@@ -239,13 +259,6 @@ class ConnectionService extends AgentService {
   async deleteConnectionById(id: string): Promise<void> {
     await this.props.signifyClient.contacts().delete(id);
     await this.connectionStorage.deleteById(id);
-    const historyItems =
-      await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(id);
-    await Promise.all(
-      historyItems.map((historyItem) =>
-        this.ipexMessageStorage.deleteIpexMessageMetadata(historyItem.id)
-      )
-    );
   }
 
   async deleteStaleLocalConnectionById(id: string): Promise<void> {
@@ -334,26 +347,6 @@ class ConnectionService extends AgentService {
       throw new Error(ConnectionService.CONNECTION_METADATA_RECORD_NOT_FOUND);
     }
     return connection;
-  }
-
-  async getConnectionHistoryById(
-    connectionId: string
-  ): Promise<ConnectionHistoryItem[]> {
-    const linkedIpexMessages =
-      await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(
-        connectionId
-      );
-    const requestMessages = linkedIpexMessages
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .map((messageRecord) => {
-        const { historyType, createdAt, credentialType } = messageRecord;
-        return {
-          type: historyType,
-          timestamp: createdAt.toISOString(),
-          credentialType,
-        };
-      });
-    return requestMessages;
   }
 
   // @TODO - foconnor: Contacts that are smid/rmids for multisigs will be synced too.
