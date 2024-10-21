@@ -38,7 +38,10 @@ import {
 import { showError } from "../../../../utils/error";
 import { combineClassNames } from "../../../../utils/style";
 import { NotificationDetailsProps } from "../../NotificationDetails.types";
-import { MultisigMember, MemberAcceptStatus } from "../MultisigMember";
+import {
+  MultisigMember,
+  MemberAcceptStatus,
+} from "../../../../components/CredentialDetailModule/components";
 import "./ReceiveCredential.scss";
 import { MultiSigMembersStatus } from "./ReceiveCredential.types";
 import { getAuthentication } from "../../../../../store/reducers/stateCache";
@@ -126,7 +129,7 @@ const ReceiveCredential = ({
 
       // @TODO: identifierType is not needed to render the component so this could be optimised. If it's needed, it should be fetched in the core for simplicity.
       const identifierType =
-        identifier?.multisigManageAid || identifier?.multisigManageAid
+        identifier?.groupMetadata || identifier?.multisigManageAid
           ? IdentifierType.Group
           : IdentifierType.Individual;
 

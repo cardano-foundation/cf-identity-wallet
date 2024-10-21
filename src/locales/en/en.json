@@ -1021,7 +1021,8 @@
           "choosecredential": "Choose credential",
           "providecredential": "Provide credential",
           "addcred": "Add Credential",
-          "done": "Done"
+          "done": "Done",
+          "ok": "Ok"
         },
         "credential": {
           "request": {

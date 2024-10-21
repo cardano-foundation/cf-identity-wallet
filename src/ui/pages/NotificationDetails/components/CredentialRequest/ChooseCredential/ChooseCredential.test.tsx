@@ -1,27 +1,27 @@
+import { SecureStorage } from "@aparajita/capacitor-secure-storage";
+import { IonReactMemoryRouter } from "@ionic/react-router";
 import { ionFireEvent, mockIonicReact } from "@ionic/react-test-utils";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { Provider } from "react-redux";
 import { createMemoryHistory } from "history";
-import configureStore from "redux-mock-store";
-import { IonReactMemoryRouter } from "@ionic/react-router";
-import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { act } from "react";
-import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
-import { TabsRoutePath } from "../../../../../routes/paths";
-import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
-import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
-import { ChooseCredential } from "./ChooseCredential";
-import { formatShortDate, formatTimeToSec } from "../../../../utils/formatters";
-import { KeriaNotification } from "../../../../../core/agent/agent.types";
-import { ACDC } from "./CredentialRequest.types";
-import { credRequestFix } from "../../../../__fixtures__/credRequestFix";
-import { KeyStoreKeys } from "../../../../../core/storage";
-import { passcodeFiller } from "../../../../utils/passcodeFiller";
+import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
+import { KeriaNotification } from "../../../../../../core/agent/agent.types";
+import { CredentialStatus } from "../../../../../../core/agent/services/credentialService.types";
+import { KeyStoreKeys } from "../../../../../../core/storage";
+import EN_TRANSLATIONS from "../../../../../../locales/en/en.json";
+import { TabsRoutePath } from "../../../../../../routes/paths";
+import { connectionsForNotifications } from "../../../../../__fixtures__/connectionsFix";
+import { credRequestFix } from "../../../../../__fixtures__/credRequestFix";
+import { credsFixAcdc } from "../../../../../__fixtures__/credsFix";
+import { notificationsFix } from "../../../../../__fixtures__/notificationsFix";
 import {
-  credsFixAcdc,
-  revokedCredFixs,
-} from "../../../../__fixtures__/credsFix";
-import { CredentialStatus } from "../../../../../core/agent/services/credentialService.types";
+  formatShortDate,
+  formatTimeToSec,
+} from "../../../../../utils/formatters";
+import { passcodeFiller } from "../../../../../utils/passcodeFiller";
+import { ChooseCredential } from "./ChooseCredential";
+import { ACDC } from "../CredentialRequest.types";
 
 mockIonicReact();
 
@@ -51,7 +51,7 @@ const offerAcdcFromApplyMock = jest.fn(
     })
 );
 
-jest.mock("../../../../../core/agent/agent", () => ({
+jest.mock("../../../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       keriaNotifications: {
@@ -121,6 +121,7 @@ describe("Credential request - choose request", () => {
             notificationDetails={notificationsFix[4]}
             credentialRequest={credRequestFix}
             reloadData={jest.fn}
+            linkedGroup={null}
           />
         </IonReactMemoryRouter>
       </Provider>
@@ -199,6 +200,7 @@ describe("Credential request - choose request", () => {
             notificationDetails={notificationsFix[4]}
             credentialRequest={credRequestFix}
             reloadData={jest.fn}
+            linkedGroup={null}
           />
         </IonReactMemoryRouter>
       </Provider>
@@ -271,6 +273,7 @@ describe("Credential request - choose request", () => {
             notificationDetails={notificationsFix[4]}
             credentialRequest={credRequestFix}
             reloadData={jest.fn}
+            linkedGroup={null}
           />
         </IonReactMemoryRouter>
       </Provider>
@@ -411,6 +414,7 @@ describe("Credential request - choose request", () => {
             notificationDetails={notificationsFix[4]}
             credentialRequest={credRequestFix}
             reloadData={jest.fn}
+            linkedGroup={null}
           />
         </IonReactMemoryRouter>
       </Provider>
@@ -523,6 +527,7 @@ describe("Credential request - choose request", () => {
             notificationDetails={notificationsFix[4]}
             credentialRequest={credMock}
             reloadData={jest.fn}
+            linkedGroup={null}
           />
         </IonReactMemoryRouter>
       </Provider>

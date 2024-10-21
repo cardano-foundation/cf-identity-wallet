@@ -7,80 +7,51 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { informationCircleOutline } from "ionicons/icons";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Agent } from "../../../../../core/agent/agent";
-import { i18n } from "../../../../../i18n";
-import { useAppSelector } from "../../../../../store/hooks";
-import { getConnectionsCache } from "../../../../../store/reducers/connectionsCache";
+import { Agent } from "../../../../../../core/agent/agent";
+import { CredentialStatus } from "../../../../../../core/agent/services/credentialService.types";
+import { i18n } from "../../../../../../i18n";
+import { useAppSelector } from "../../../../../../store/hooks";
+import { getConnectionsCache } from "../../../../../../store/reducers/connectionsCache";
+import { getCredsCache } from "../../../../../../store/reducers/credsCache";
+import { setToastMsg } from "../../../../../../store/reducers/stateCache";
+import KeriLogo from "../../../../../assets/images/KeriGeneric.jpg";
+import { CardDetailsBlock } from "../../../../../components/CardDetails";
+import { CardItem, CardList } from "../../../../../components/CardList";
+import { BackReason } from "../../../../../components/CredentialDetailModule/CredentialDetailModule.types";
+import { PageFooter } from "../../../../../components/PageFooter";
+import { PageHeader } from "../../../../../components/PageHeader";
+import { Verification } from "../../../../../components/Verification";
+import { ScrollablePageLayout } from "../../../../../components/layout/ScrollablePageLayout";
+import { ToastMsgType } from "../../../../../globals/types";
 import {
-  getNotificationsCache,
-  setNotificationsCache,
-} from "../../../../../store/reducers/notificationsCache";
-import { setToastMsg } from "../../../../../store/reducers/stateCache";
-import KeriLogo from "../../../../assets/images/KeriGeneric.jpg";
-import { CardItem, CardList } from "../../../../components/CardList";
-import { CredentialDetailModal } from "../../../../components/CredentialDetailModule";
-import { PageFooter } from "../../../../components/PageFooter";
-import { PageHeader } from "../../../../components/PageHeader";
-import { Verification } from "../../../../components/Verification";
-import { ScrollablePageLayout } from "../../../../components/layout/ScrollablePageLayout";
-import { ToastMsgType } from "../../../../globals/types";
-import { formatShortDate, formatTimeToSec } from "../../../../utils/formatters";
-import "./ChooseCredential.scss";
+  formatShortDate,
+  formatTimeToSec,
+} from "../../../../../utils/formatters";
 import {
   ChooseCredentialProps,
-  LightCredentialDetailModalProps,
   RequestCredential,
-} from "./CredentialRequest.types";
-import { BackReason } from "../../../../components/CredentialDetailModule/CredentialDetailModule.types";
-import { CredentialStatus } from "../../../../../core/agent/services/credentialService.types";
-import { getCredsCache } from "../../../../../store/reducers/credsCache";
-import { CardDetailsBlock } from "../../../../components/CardDetails";
+} from "../CredentialRequest.types";
+import { JoinedMember } from "../JoinedMember";
+import { LightCredentialDetailModal } from "../LightCredentialDetailModal";
+import { MembersModal } from "../MembersModal";
+import "./ChooseCredential.scss";
 
 const CRED_EMPTY = "Credential is empty";
-
-const LightCredentialDetailModal = ({
-  credId,
-  isOpen,
-  defaultSelected,
-  setIsOpen,
-  onClose,
-}: LightCredentialDetailModalProps) => {
-  const [isSelected, setSelected] = useState(defaultSelected);
-
-  useEffect(() => {
-    setSelected(defaultSelected);
-  }, [defaultSelected]);
-
-  return (
-    <CredentialDetailModal
-      pageId="request-cred-detail"
-      id={credId || ""}
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      onClose={(reason) => {
-        onClose(reason, isSelected, credId);
-      }}
-      isLightMode
-      selected={isSelected}
-      setSelected={setSelected}
-    />
-  );
-};
 
 const ChooseCredential = ({
   pageId,
   activeStatus,
   credentialRequest,
   notificationDetails,
+  linkedGroup,
   onBack,
   onClose,
   reloadData,
 }: ChooseCredentialProps) => {
   const credsCache = useAppSelector(getCredsCache);
   const connections = useAppSelector(getConnectionsCache);
-  const notifications = useAppSelector(getNotificationsCache);
   const dispatch = useDispatch();
   const [selectedCred, setSelectedCred] = useState<RequestCredential | null>(
     null
@@ -90,6 +61,8 @@ const ChooseCredential = ({
   const [viewCredDetail, setViewCredDetail] =
     useState<RequestCredential | null>(null);
   const [segmentValue, setSegmentValue] = useState("active");
+  const [showMemberCred, setShowMemberCred] =
+    useState<RequestCredential | null>(null);
 
   const mappedCredentials = credentialRequest.credentials.map(
     (cred): CardItem<RequestCredential> => {
@@ -180,6 +153,14 @@ const ChooseCredential = ({
   const handleBack = () => {
     onBack();
   };
+
+  const credName = useMemo(
+    () =>
+      showMemberCred && connections
+        ? connections[showMemberCred?.connectionId]?.label
+        : "",
+    [connections, showMemberCred]
+  );
 
   return (
     <>
@@ -308,16 +289,24 @@ const ChooseCredential = ({
           }}
           onRenderEndSlot={(data) => {
             return (
-              <IonCheckbox
-                checked={selectedCred?.acdc?.d === data.acdc.d}
-                aria-label=""
-                className="checkbox"
-                data-testid={`cred-select-${data.acdc.d}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleSelectCred(data);
-                }}
-              />
+              <div className="item-action">
+                <JoinedMember
+                  members={linkedGroup?.memberInfos.filter(
+                    (item) => item.joinedCred === data.acdc.d
+                  )}
+                  onClick={() => setShowMemberCred(data)}
+                />
+                <IonCheckbox
+                  checked={selectedCred?.acdc?.d === data.acdc.d}
+                  aria-label=""
+                  className="checkbox"
+                  data-testid={`cred-select-${data.acdc.d}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelectCred(data);
+                  }}
+                />
+              </div>
             );
           }}
         />
@@ -341,6 +330,23 @@ const ChooseCredential = ({
         isOpen={!!viewCredDetail}
         setIsOpen={() => setViewCredDetail(null)}
         onClose={handleSelectCredOnModal}
+        joinedCredRequestMembers={
+          linkedGroup?.memberInfos.filter(
+            (item) => item.joinedCred === viewCredDetail?.acdc.d
+          ) || []
+        }
+      />
+      <MembersModal
+        isOpen={!!showMemberCred}
+        onClose={() => setShowMemberCred(null)}
+        members={
+          linkedGroup?.memberInfos.filter(
+            (item) => item.joinedCred === showMemberCred?.acdc.d
+          ) || []
+        }
+        credName={credName || ""}
+        threshold={Number(linkedGroup?.threshold) || 0}
+        joinedMembers={linkedGroup?.joinedMembers || 0}
       />
     </>
   );

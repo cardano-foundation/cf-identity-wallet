@@ -2,11 +2,31 @@ import { KeriaNotification } from "../../../../../core/agent/agent.types";
 import { CredentialsMatchingApply } from "../../../../../core/agent/services/ipexCommunicationService.types";
 import { BackReason } from "../../../../components/CredentialDetailModule/CredentialDetailModule.types";
 
+interface MemberInfo {
+  aid: string;
+  name: string;
+  joinedCred?: string;
+}
+interface LinkedGroup {
+  threshold: string | string[];
+  members: string[];
+  offer: Record<
+    string,
+    {
+      accepted: boolean;
+      membersJoined: string[];
+    }
+  >;
+  memberInfos: MemberInfo[];
+  joinedMembers: number;
+}
+
 interface CredentialRequestProps {
   pageId: string;
   activeStatus: boolean;
   notificationDetails: KeriaNotification;
   credentialRequest: CredentialsMatchingApply;
+  linkedGroup: LinkedGroup | null;
   onAccept: () => void;
   onBack: () => void;
 }
@@ -16,6 +36,7 @@ interface ChooseCredentialProps {
   activeStatus: boolean;
   credentialRequest: CredentialsMatchingApply;
   notificationDetails: KeriaNotification;
+  linkedGroup: LinkedGroup | null;
   reloadData: () => void;
   onBack: () => void;
   onClose: () => void;
@@ -45,15 +66,35 @@ interface RequestCredential {
 interface LightCredentialDetailModalProps {
   credId: string;
   isOpen: boolean;
-  defaultSelected: boolean;
+  defaultSelected?: boolean;
   setIsOpen: (value: boolean) => void;
-  onClose: (reason: BackReason, isSelected: boolean, id: string) => void;
+  onClose?: (reason: BackReason, isSelected: boolean, id: string) => void;
+  joinedCredRequestMembers?: MemberInfo[];
+  viewOnly?: boolean;
+}
+
+interface JoinedMemberProps {
+  members: MemberInfo[] | null | undefined;
+  onClick: () => void;
+}
+
+interface MembersModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  credName: string;
+  members: MemberInfo[];
+  threshold: number;
+  joinedMembers: number;
 }
 
 export type {
+  MembersModalProps,
+  JoinedMemberProps,
   LightCredentialDetailModalProps,
   CredentialRequestProps,
   ChooseCredentialProps,
   RequestCredential,
   ACDC,
+  LinkedGroup,
+  MemberInfo,
 };
