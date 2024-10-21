@@ -901,7 +901,6 @@ class KeriaNotificationService extends AgentService {
         const admitExchange = await this.props.signifyClient
           .exchanges()
           .get(operation.metadata?.said);
-        console.log("admitExchange: ",admitExchange);
           
         if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
           const grantExchange = await this.props.signifyClient
@@ -913,7 +912,6 @@ class KeriaNotificationService extends AgentService {
           const credential = await this.props.signifyClient
             .credentials()
             .get(credentialId);
-          console.log("credential: ",credential);
             
           if (credential.status.s === "0") {
             // Wait for admit operations to fully complete on KERIA - return early to not block other operations.
