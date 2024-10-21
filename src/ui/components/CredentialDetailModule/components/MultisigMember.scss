@@ -52,4 +52,23 @@
       background: rgba(var(--ion-color-dark-grey-rgb), 0.5);
     }
   }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    --padding-top: 0.5rem;
+    --padding-bottom: 0.5rem;
+
+    .member-name {
+      font-size: 0.875rem;
+    }
+
+    .status {
+      padding: 0.125rem;
+      width: 0.675rem;
+      height: 0.675rem;
+
+      &.md {
+        margin-inline-start: 0;
+      }
+    }
+  }
 }
