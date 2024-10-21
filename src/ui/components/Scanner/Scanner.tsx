@@ -452,7 +452,7 @@ const Scanner = forwardRef(
               OperationType.MULTI_SIG_RECEIVER_SCAN,
             ].includes(currentOperation) &&
               !isDuplicateConnectionToast)) &&
-          !showConnectionPage
+          !showConnectionPage && !createIdentifierModalIsOpen
         ) {
           await initScan();
         } else {
@@ -460,13 +460,7 @@ const Scanner = forwardRef(
         }
       };
       onLoad();
-    }, [
-      currentOperation,
-      currentToastMsgs,
-      routePath,
-      cameraDirection,
-      showConnectionPage,
-    ]);
+    }, [currentOperation, currentToastMsgs, routePath, cameraDirection, showConnectionPage, createIdentifierModalIsOpen]);
 
     useEffect(() => {
       return () => {
