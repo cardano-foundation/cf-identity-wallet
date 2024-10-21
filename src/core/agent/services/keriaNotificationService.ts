@@ -15,7 +15,6 @@ import {
   ConnectionStorage,
   CredentialStorage,
   IdentifierStorage,
-  IpexMessageStorage,
   NotificationRecordStorageProps,
   NotificationStorage,
   OperationPendingStorage,
@@ -45,7 +44,6 @@ class KeriaNotificationService extends AgentService {
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly connectionStorage: ConnectionStorage;
-  protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly credentialStorage: CredentialStorage;
   protected readonly basicStorage: BasicStorage;
   protected readonly multiSigs: MultiSigService;
@@ -64,7 +62,6 @@ class KeriaNotificationService extends AgentService {
     identifierStorage: IdentifierStorage,
     operationPendingStorage: OperationPendingStorage,
     connectionStorage: ConnectionStorage,
-    ipexMessageStorage: IpexMessageStorage,
     credentialStorage: CredentialStorage,
     basicStorage: BasicStorage,
     multiSigs: MultiSigService,
@@ -79,7 +76,6 @@ class KeriaNotificationService extends AgentService {
     this.identifierStorage = identifierStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.connectionStorage = connectionStorage;
-    this.ipexMessageStorage = ipexMessageStorage;
     this.credentialStorage = credentialStorage;
     this.basicStorage = basicStorage;
     this.multiSigs = multiSigs;

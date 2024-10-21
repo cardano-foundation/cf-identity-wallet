@@ -17,7 +17,6 @@ import {
   CredentialStorage,
   IdentifierStorage,
   IpexMessageRecord,
-  IpexMessageStorage,
   OperationPendingStorage,
 } from "../records";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
@@ -35,7 +34,6 @@ import { KeriaContactKeyPrefix } from "./connectionService.types";
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
   protected readonly credentialStorage: CredentialStorage;
-  protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly identifierStorage: IdentifierStorage;
 
@@ -43,14 +41,12 @@ class ConnectionService extends AgentService {
     agentServiceProps: AgentServicesProps,
     connectionStorage: ConnectionStorage,
     credentialStorage: CredentialStorage,
-    ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage,
     identifierStorage: IdentifierStorage
   ) {
     super(agentServiceProps);
     this.connectionStorage = connectionStorage;
     this.credentialStorage = credentialStorage;
-    this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.identifierStorage = identifierStorage;
   }

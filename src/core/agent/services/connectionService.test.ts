@@ -149,12 +149,7 @@ const credentialStorage = jest.mocked({
   updateCredentialMetadata: jest.fn(),
   getCredentialMetadatasById: jest.fn(),
 });
-const ipexMessageStorage = jest.mocked({
-  createIpexMessageRecord: jest.fn(),
-  getIpexMessageMetadataByConnectionId:
-    getIpexMessageMetadataByConnectionIdMock,
-  deleteIpexMessageMetadata: jest.fn(),
-});
+
 const identifiers = jest.mocked({
   getIdentifierMetadataByGroupId: jest.fn(),
 });
@@ -163,7 +158,6 @@ const connectionService = new ConnectionService(
   agentServicesProps,
   connectionStorage as any,
   credentialStorage as any,
-  ipexMessageStorage as any,
   operationPendingStorage as any,
   identifiers as any
 );

@@ -2,7 +2,6 @@ import { Agent } from "../agent";
 import { ExchangeRoute, MiscRecordId, NotificationRoute } from "../agent.types";
 import {
   IdentifierStorage,
-  IpexMessageStorage,
   NotificationStorage,
 } from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
@@ -162,11 +161,6 @@ const identifierStorage = jest.mocked({
 });
 
 const getIpexMessageMetadataMock = jest.fn();
-const ipexMessageStorage = jest.mocked({
-  createIpexMessageRecord: jest.fn(),
-  getIpexMessageMetadata: getIpexMessageMetadataMock,
-  getIpexMessageMetadataByConnectionId: jest.fn(),
-});
 
 const operationPendingGetAllMock = jest.fn();
 const operationPendingStorage = jest.mocked({
@@ -218,7 +212,6 @@ const keriaNotificationService = new KeriaNotificationService(
   identifierStorage as any,
   operationPendingStorage as any,
   connectionStorage as any,
-  ipexMessageStorage as any,
   credentialStorage as any,
   basicStorage as any,
   multiSigs as any,
@@ -515,10 +508,7 @@ describe("Signify notification service of agent", () => {
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
-    getIpexMessageMetadataMock.mockRejectedValueOnce(
-      new Error(IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING)
-    );
-
+ 
     notificationStorage.save = jest.fn().mockResolvedValue({
       id: "string",
       a: { r: NotificationRoute.ExnIpexAgree, d: "string", m: "" },
@@ -547,9 +537,6 @@ describe("Signify notification service of agent", () => {
     notificationStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
-    getIpexMessageMetadataMock.mockRejectedValueOnce(
-      new Error(IpexMessageStorage.IPEX_MESSAGE_METADATA_RECORD_MISSING)
-    );
 
     await keriaNotificationService.processNotification(
       notificationIpexApplyProp

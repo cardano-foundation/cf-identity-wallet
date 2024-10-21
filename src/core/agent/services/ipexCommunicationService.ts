@@ -12,7 +12,6 @@ import {
   IdentifierStorage,
   NotificationStorage,
   OperationPendingStorage,
-  IpexMessageStorage,
   IdentifierMetadataRecord,
 } from "../records";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
@@ -52,7 +51,6 @@ class IpexCommunicationService extends AgentService {
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;
   protected readonly notificationStorage: NotificationStorage;
-  protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly multisigService: MultiSigService;
   protected readonly connections: ConnectionService;
@@ -62,7 +60,6 @@ class IpexCommunicationService extends AgentService {
     identifierStorage: IdentifierStorage,
     credentialStorage: CredentialStorage,
     notificationStorage: NotificationStorage,
-    ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage,
     multisigService: MultiSigService,
     connections: ConnectionService
@@ -71,7 +68,6 @@ class IpexCommunicationService extends AgentService {
     this.identifierStorage = identifierStorage;
     this.credentialStorage = credentialStorage;
     this.notificationStorage = notificationStorage;
-    this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.multisigService = multisigService;
     this.connections = connections;

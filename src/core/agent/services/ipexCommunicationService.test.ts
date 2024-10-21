@@ -90,12 +90,6 @@ const credentialStorage = jest.mocked({
   getCredentialMetadatasById: jest.fn(),
 });
 
-const ipexMessageRecordStorage = jest.mocked({
-  getIpexMessageMetadata: jest.fn(),
-  getIpexMessageMetadataByConnectionId: jest.fn(),
-  createIpexMessageRecord: jest.fn(),
-});
-
 const saveOperationPendingMock = jest.fn();
 const operationPendingStorage = jest.mocked({
   save: saveOperationPendingMock,
@@ -291,7 +285,6 @@ const ipexCommunicationService = new IpexCommunicationService(
   identifierStorage as any,
   credentialStorage as any,
   notificationStorage as any,
-  ipexMessageRecordStorage as any,
   operationPendingStorage as any,
   multisigService as any,
   connections as any
