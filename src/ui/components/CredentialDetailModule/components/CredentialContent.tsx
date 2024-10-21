@@ -16,7 +16,7 @@ const CredentialContent = ({
 }: CredentialContentProps) => {
   return (
     <>
-      {joinedCredRequestMembers && (
+      {joinedCredRequestMembers && joinedCredRequestMembers.length > 0 && (
         <CardDetailsBlock
           title={i18n.t("tabs.credentials.details.joinedmember")}
         >
