@@ -161,10 +161,6 @@ const Credentials = () => {
     return timeA - timeB;
   });
 
-  const allCreds = confirmedCreds.filter(
-    (cred) => !favCredsCache?.some((fav) => fav.id === cred.id)
-  );
-
   const handleShowNavAnimation = (source: StartAnimationSource) => {
     if (favouriteContainerElement.current && source !== "favourite") {
       favouriteContainerElement.current.style.height =
@@ -282,7 +278,7 @@ const Credentials = () => {
                 className="credentials-tab-content-block credential-favourite-cards"
                 data-testid="favourite-container-element"
               >
-                {!!allCreds.length && (
+                {!!confirmedCreds.length && (
                   <h3>{i18n.t("tabs.credentials.tab.favourites")}</h3>
                 )}
                 <CardsStack
@@ -293,7 +289,7 @@ const Credentials = () => {
                 />
               </div>
             )}
-            {!!allCreds.length && (
+            {!!confirmedCreds.length && (
               <div className="credentials-tab-content-block credential-cards">
                 {!!favCreds.length && (
                   <h3>{i18n.t("tabs.credentials.tab.allcreds")}</h3>
@@ -301,7 +297,7 @@ const Credentials = () => {
                 <CardsStack
                   name="allcreds"
                   cardsType={CardType.CREDENTIALS}
-                  cardsData={allCreds}
+                  cardsData={confirmedCreds}
                   onShowCardDetails={() => handleShowNavAnimation("cards")}
                 />
               </div>
