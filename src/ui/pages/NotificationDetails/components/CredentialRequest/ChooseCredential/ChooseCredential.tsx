@@ -162,6 +162,22 @@ const ChooseCredential = ({
     [connections, showMemberCred]
   );
 
+  const joinedCredMembers = useMemo(() => {
+    if(!viewCredDetail) return [];
+
+    return linkedGroup?.memberInfos.filter(
+      (item) => item.joinedCred === viewCredDetail.acdc.d
+    ) || [];
+  }, [linkedGroup?.memberInfos, viewCredDetail]);
+
+  const showCredMembers = useMemo(() => {
+    if(!showMemberCred) return [];
+
+    return linkedGroup?.memberInfos.filter(
+      (item) => item.joinedCred === showMemberCred.acdc.d
+    ) || [];
+  }, [linkedGroup?.memberInfos, showMemberCred]);
+
   return (
     <>
       <ScrollablePageLayout
@@ -330,20 +346,12 @@ const ChooseCredential = ({
         isOpen={!!viewCredDetail}
         setIsOpen={() => setViewCredDetail(null)}
         onClose={handleSelectCredOnModal}
-        joinedCredRequestMembers={
-          linkedGroup?.memberInfos.filter(
-            (item) => item.joinedCred === viewCredDetail?.acdc.d
-          ) || []
-        }
+        joinedCredRequestMembers={joinedCredMembers}
       />
       <MembersModal
         isOpen={!!showMemberCred}
         onClose={() => setShowMemberCred(null)}
-        members={
-          linkedGroup?.memberInfos.filter(
-            (item) => item.joinedCred === showMemberCred?.acdc.d
-          ) || []
-        }
+        members={showCredMembers}
         credName={credName || ""}
         threshold={Number(linkedGroup?.threshold) || 0}
         joinedMembers={linkedGroup?.joinedMembers || 0}
