@@ -7,10 +7,6 @@
   ion-header ion-toolbar {
     margin-top: 0.625rem;
     --background: var(--ion-color-light);
-
-    ion-title.md {
-      margin-left: -3rem;
-    }
   }
 
   h2 {
@@ -199,14 +195,7 @@
 
 ion-toolbar.multisig-request-footer {
   &.page-footer {
-    z-index: 1000;
-    bottom: calc(-100vh + 8.5rem);
     padding-inline: 0.9rem;
-  }
-
-  @media screen and (min-width: 250px) and (max-width: 370px) {
-    &.page-footer {
-      bottom: calc(-100vh + 6.5rem);
-    }
+    padding-bottom: 0.5rem;
   }
 }
