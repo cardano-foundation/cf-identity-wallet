@@ -78,5 +78,7 @@
 			</dict>
 		</dict>
 	</array>
+	<key>NSCameraUsageDescription</key>
+    <string>The app enables the scanning of various barcodes.</string>
 </dict>
 </plist>
