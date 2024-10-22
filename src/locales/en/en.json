@@ -863,6 +863,7 @@
         "issued": "Issued"
       },
       "details": {
+        "joinedmember": "Joined members",
         "done": "Done",
         "restore": "Restore",
         "delete": "Delete",
@@ -1019,7 +1020,9 @@
           "back": "Back",
           "choosecredential": "Choose credential",
           "providecredential": "Provide credential",
-          "addcred": "Add Credential"
+          "addcred": "Add Credential",
+          "done": "Done",
+          "ok": "Ok"
         },
         "credential": {
           "request": {
@@ -1032,9 +1035,14 @@
               "requestfrom": "Request from",
               "requestedcredential": "Requested credential",
               "informationrequired": "Information required",
+              "threshold": "Threshold",
               "alert": {
                 "textdecline": "Are you sure you want to decline this credential request? You won't be able to change your decision later."
-              }
+              },
+              "groupmember": "Group members",
+              "joinedmembers": "Joined members",
+              "reachthreshold": "The threshold has been met and your group has already chosen a credential to provide.",
+              "providecredential": "Provided credential"
             },
             "choosecredential": {
               "description": "Below is a list of all '{{requestCred}}' credentials, ordered by the name of the issuer",

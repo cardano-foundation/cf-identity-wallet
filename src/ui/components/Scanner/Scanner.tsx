@@ -40,6 +40,7 @@ import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifi
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
   getCurrentOperation,
+  getShowConnections,
   getToastMsgs,
   setCurrentOperation,
   setToastMsg,
@@ -81,6 +82,7 @@ const Scanner = forwardRef(
     const currentToastMsgs = useAppSelector(getToastMsgs);
     const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
       useState(false);
+    const showConnectionPage = useAppSelector(getShowConnections);
     const [pasteModalIsOpen, setPasteModalIsOpen] = useState(false);
     const [groupId, setGroupId] = useState("");
     const [pastedValue, setPastedValue] = useState("");
@@ -437,7 +439,7 @@ const Scanner = forwardRef(
         );
 
         if (
-          ((routePath === TabsRoutePath.SCAN ||
+          (((routePath === TabsRoutePath.SCAN ||
             [
               OperationType.SCAN_CONNECTION,
               OperationType.SCAN_WALLET_CONNECTION,
@@ -445,11 +447,12 @@ const Scanner = forwardRef(
               OperationType.SCAN_SSI_CONNECT_URL,
             ].includes(currentOperation)) &&
             !isRequestPending) ||
-          ([
-            OperationType.MULTI_SIG_INITIATOR_SCAN,
-            OperationType.MULTI_SIG_RECEIVER_SCAN,
-          ].includes(currentOperation) &&
-            !isDuplicateConnectionToast)
+            ([
+              OperationType.MULTI_SIG_INITIATOR_SCAN,
+              OperationType.MULTI_SIG_RECEIVER_SCAN,
+            ].includes(currentOperation) &&
+              !isDuplicateConnectionToast)) &&
+          !showConnectionPage && !createIdentifierModalIsOpen
         ) {
           await initScan();
         } else {
@@ -457,7 +460,7 @@ const Scanner = forwardRef(
         }
       };
       onLoad();
-    }, [currentOperation, currentToastMsgs, routePath, cameraDirection]);
+    }, [currentOperation, currentToastMsgs, routePath, cameraDirection, showConnectionPage, createIdentifierModalIsOpen]);
 
     useEffect(() => {
       return () => {

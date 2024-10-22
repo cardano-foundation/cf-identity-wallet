@@ -3,18 +3,18 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { mockIonicReact } from "@ionic/react-test-utils";
 import { act } from "react-dom/test-utils";
-import { TabsRoutePath } from "../../../../../routes/paths";
+import { TabsRoutePath } from "../../../../../../routes/paths";
 import { CredentialRequestInformation } from "./CredentialRequestInformation";
-import { notificationsFix } from "../../../../__fixtures__/notificationsFix";
-import { connectionsForNotifications } from "../../../../__fixtures__/connectionsFix";
-import EN_TRANSLATIONS from "../../../../../locales/en/en.json";
-import { credRequestFix } from "../../../../__fixtures__/credRequestFix";
+import { notificationsFix } from "../../../../../__fixtures__/notificationsFix";
+import { connectionsForNotifications } from "../../../../../__fixtures__/connectionsFix";
+import EN_TRANSLATIONS from "../../../../../../locales/en/en.json";
+import { credRequestFix } from "../../../../../__fixtures__/credRequestFix";
 
 mockIonicReact();
 
 const deleteNotificationMock = jest.fn((id: string) => Promise.resolve(id));
 
-jest.mock("../../../../../core/agent/agent", () => ({
+jest.mock("../../../../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       keriaNotifications: {
@@ -60,6 +60,7 @@ describe("Credential request information", () => {
           onAccept={jest.fn()}
           notificationDetails={notificationsFix[4]}
           credentialRequest={credRequestFix}
+          linkedGroup={null}
         />
       </Provider>
     );

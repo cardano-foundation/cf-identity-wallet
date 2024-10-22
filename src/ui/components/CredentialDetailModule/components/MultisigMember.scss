@@ -8,6 +8,7 @@
   .member-avatar {
     width: 1.5rem;
     height: 1.5rem;
+    margin-right: 0.5rem;
   }
 
   .member-name {
@@ -28,6 +29,11 @@
     padding: 0.3125rem;
     width: 0.875rem;
     height: 0.875rem;
+
+    &.md {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
 
     &.accepted {
       background: var(--ion-color-primary-gradient);

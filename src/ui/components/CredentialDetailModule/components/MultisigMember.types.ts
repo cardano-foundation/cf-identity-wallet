@@ -6,7 +6,7 @@ enum MemberAcceptStatus {
 
 interface MemberProps {
   name: string;
-  status: MemberAcceptStatus;
+  status?: MemberAcceptStatus;
 }
 
 export type { MemberProps };

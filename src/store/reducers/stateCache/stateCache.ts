@@ -212,8 +212,8 @@ const getCameraDirection = (state: RootState) =>
   state.stateCache.cameraDirection;
 const getShowCommonError = (state: RootState) =>
   state.stateCache.showGenericError;
-const getShowCnnections = (state: RootState) =>
-  state.stateCache.showGenericError;
+const getShowConnections = (state: RootState) =>
+  state.stateCache.showConnections;
 const getToastMgs = (state: RootState) => state.stateCache.toastMsgs;
 
 export type {
@@ -236,7 +236,7 @@ export {
   getQueueIncomingRequest,
   getRoutes,
   getShowCommonError,
-  getShowCnnections,
+  getShowConnections,
   getStateCache,
   getToastMgs,
   getToastMsgs,
