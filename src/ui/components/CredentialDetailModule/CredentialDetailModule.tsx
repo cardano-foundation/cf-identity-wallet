@@ -339,12 +339,10 @@ const CredentialDetailModule = ({
 
   const handleArchive = () => {
     setAlertDeleteArchiveIsOpen(true);
-    dispatch(setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL));
   };
 
   const handleDelete = () => {
     setAlertDeleteArchiveIsOpen(true);
-    dispatch(setCurrentOperation(OperationType.DELETE_CREDENTIAL));
   };
 
   const handleAuthentication = () => {
@@ -366,6 +364,8 @@ const CredentialDetailModule = ({
     setAlertRestoreIsOpen(true);
   };
 
+  const resetOperation = () => dispatch(setCurrentOperation(OperationType.IDLE));
+
   if (cloudError) {
     return (
       <CloudError
@@ -374,7 +374,7 @@ const CredentialDetailModule = ({
           <PageHeader
             closeButton={true}
             closeButtonLabel={`${i18n.t("tabs.identifiers.details.done")}`}
-            closeButtonAction={() => onClose?.(BackReason.DELETE)}
+            closeButtonAction={() => onClose?.(BackReason.CLOSE)}
           />
         }
       >
@@ -383,7 +383,7 @@ const CredentialDetailModule = ({
           deleteButtonText={`${i18n.t(
             "tabs.credentials.details.button.delete"
           )}`}
-          deleteButtonAction={() => handleDelete()}
+          deleteButtonAction={handleDelete}
         />
       </CloudError>
     );
@@ -480,8 +480,8 @@ const CredentialDetailModule = ({
             : "tabs.credentials.details.alert.archive.cancel"
         )}`}
         actionConfirm={() => handleAuthentication()}
-        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionCancel={resetOperation}
+        actionDismiss={resetOperation}
       />
       <AlertRestore
         isOpen={alertRestoreIsOpen}
@@ -495,8 +495,8 @@ const CredentialDetailModule = ({
           "tabs.credentials.details.alert.restore.cancel"
         )}`}
         actionConfirm={() => handleRestoreCredential()}
-        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionCancel={resetOperation}
+        actionDismiss={resetOperation}
       />
       <Verification
         verifyIsOpen={verifyIsOpen}
