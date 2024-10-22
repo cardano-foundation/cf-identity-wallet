@@ -1,4 +1,14 @@
 .identifiers-tab {
+  &.tab-layout {
+    padding-inline: 0;
+  }
+
+  .tab-header,
+  ion-content > *:not(.identifier-favourite-cards),
+  .card-slider-header {
+    padding-inline: 1.25rem;
+  }
+
   .cards-placeholder-container {
     margin-top: 2.5rem;
   }
