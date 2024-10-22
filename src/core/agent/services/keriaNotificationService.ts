@@ -255,6 +255,8 @@ class KeriaNotificationService extends AgentService {
       shouldCreateRecord = await this.processMultiSigIcpNotification(notif);
     } else if (notif.a.r === NotificationRoute.MultiSigExn) {
       shouldCreateRecord = await this.processMultiSigExnNotification(notif);
+    } else if (notif.a.r === NotificationRoute.ExnIpexOffer) {
+      shouldCreateRecord = await this.processExnIpexOfferNotification(notif);
     }
     if (!shouldCreateRecord) {
       return;
@@ -356,6 +358,30 @@ class KeriaNotificationService extends AgentService {
         recordType: OperationPendingRecordType.ExchangeRevokeCredential,
       });
       this.pendingOperations.push(pendingOperation);
+      await this.markNotification(notif.i);
+      return false;
+    }
+    return true;
+  }
+
+  private async processExnIpexOfferNotification(
+    notif: Notification
+  ): Promise<boolean> {
+    const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
+    const ourIdentifier = await this.identifierStorage
+      .getIdentifierMetadata(exchange.exn.a.i)
+      .catch((error) => {
+        if (
+          (error as Error).message ===
+          IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
+        ) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
+
+    if (!ourIdentifier) {
       await this.markNotification(notif.i);
       return false;
     }
@@ -529,7 +555,6 @@ class KeriaNotificationService extends AgentService {
             linkedGroupRequestDetails;
         await this.notificationStorage.update(notificationRecord);
       }
-      await this.markNotification(notif.i);
       return false;
     }
     case ExchangeRoute.IpexOffer: {
@@ -579,7 +604,6 @@ class KeriaNotificationService extends AgentService {
             linkedGroupRequestDetails;
         await this.notificationStorage.update(notificationRecord);
       }
-      await this.markNotification(notif.i);
       return false;
     }
     case ExchangeRoute.IpexGrant: {
@@ -629,7 +653,6 @@ class KeriaNotificationService extends AgentService {
             linkedGroupRequestDetails;
         await this.notificationStorage.update(notificationRecord);
       }
-      await this.markNotification(notif.i);
       return false;
     }
     default:
@@ -898,12 +921,13 @@ class KeriaNotificationService extends AgentService {
                     exnSaid: grantExchange.exn.d,
                   });
               for (const notification of notifications) {
+                await this.markNotification(notification.id)
                 // @TODO: Delete other long running operations in linkedGroupRequests
                 await deleteNotificationRecordById(
                   this.props.signifyClient,
                   this.notificationStorage,
                   notification.id,
-                    notification.a.r as NotificationRoute
+                  notification.a.r as NotificationRoute
                 );
 
                 this.props.eventEmitter.emit<NotificationRemovedEvent>({
@@ -1001,6 +1025,7 @@ class KeriaNotificationService extends AgentService {
                   exnSaid: applyExchange.exn.d,
                 });
             for (const notification of notifications) {
+              await this.markNotification(notification.id)
               // @TODO: Delete other long running operations in linkedGroupRequests
               await deleteNotificationRecordById(
                 this.props.signifyClient,
@@ -1046,6 +1071,7 @@ class KeriaNotificationService extends AgentService {
                     exnSaid: agreeExchange.exn.d,
                   });
               for (const notification of notifications) {
+                await this.markNotification(notification.id)
                 // @TODO: Delete other long running operations in linkedGroupRequests
                 await deleteNotificationRecordById(
                   this.props.signifyClient,
