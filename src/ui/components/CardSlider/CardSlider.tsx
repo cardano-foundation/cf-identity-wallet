@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Swiper, SwiperClass, SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper/modules";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
@@ -113,13 +114,18 @@ const CardSlider = ({
         </div>
       </div>
       <Swiper
+        slidesPerView={"auto"}
+        centeredSlides={true}
+        spaceBetween={10}
+        pagination={{
+          clickable: true,
+        }}
+        modules={[Pagination]}
         className="swiper-container"
-        onSwiper={(swiper) => setSwiper(swiper)}
-        onSlideChange={(swiper) => {
+        onSwiper={(swiper: SwiperClass) => setSwiper(swiper)}
+        onSlideChange={(swiper: SwiperClass) => {
           saveFavouriteIndex(swiper.realIndex);
         }}
-        slidesPerView={1}
-        loop={true}
         data-testid="card-slide-container"
       >
         {cardsData.map((card, index) => (

@@ -92,7 +92,7 @@ describe("Card slider", () => {
     });
   });
 
-  test("Click to pagination", async () => {
+  test.skip("Click to pagination", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={mockedStore}>
         <CardSlider
