@@ -54,10 +54,13 @@ const walletId = "idw";
 class Agent {
   static readonly KERIA_CONNECTION_BROKEN =
     "The app is not connected to KERIA at the moment";
-  static readonly KERIA_BOOT_FAILED_BAD_NETWORK = "Failed to boot due to network connectivity";
-  static readonly KERIA_CONNECT_FAILED_BAD_NETWORK = "Failed to connect due to network connectivity"
+  static readonly KERIA_BOOT_FAILED_BAD_NETWORK =
+    "Failed to boot due to network connectivity";
+  static readonly KERIA_CONNECT_FAILED_BAD_NETWORK =
+    "Failed to connect due to network connectivity";
   static readonly KERIA_BOOT_FAILED = "Failed to boot signify client";
-  static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT = "KERIA agent is already booted but cannot connect";
+  static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT =
+    "KERIA agent is already booted but cannot connect";
   static readonly KERIA_NOT_BOOTED =
     "Agent has not been booted for a given Signify passcode";
   static readonly INVALID_MNEMONIC = "Seed phrase is invalid";
@@ -268,7 +271,7 @@ class Agent {
         throw new Error(Agent.KERIA_BOOT_FAILED);
       });
 
-      if (!bootResult.ok && bootResult.status !== 400) {
+      if (!bootResult.ok && bootResult.status !== 409) {
         /* eslint-disable no-console */
         console.warn(
           `Unexpected KERIA boot status returned: ${bootResult.status} ${bootResult.statusText}`
@@ -316,8 +319,8 @@ class Agent {
 
     this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
     this.agentServicesProps.signifyClient = this.signifyClient;
-    
-    await this.signifyClient.connect().catch(error => {
+
+    await this.signifyClient.connect().catch((error) => {
       if (!(error instanceof Error)) {
         throw error;
       }
@@ -358,7 +361,7 @@ class Agent {
       if (
         error instanceof Error &&
         error.message ===
-        `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_PASSCODE}`
+          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_PASSCODE}`
       ) {
         await SecureStorage.set(
           KeyStoreKeys.APP_PASSCODE,
@@ -375,7 +378,7 @@ class Agent {
       if (
         error instanceof Error &&
         error.message ===
-        `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
+          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
       ) {
         await SecureStorage.set(
           KeyStoreKeys.SIGNIFY_BRAN,

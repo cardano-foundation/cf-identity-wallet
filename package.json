@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "webpack serve --config webpack.dev.cjs --host 0.0.0.0 --port 3003",
-    "build": "cross-env ENVIRONMENT=remote-dev-comm webpack --config webpack.prod.cjs",
+    "build": "cross-env ENVIRONMENT=remote-dev-comm DEV_SKIP_ONBOARDING=true webpack --config webpack.prod.cjs",
     "build:local": "cross-env ENVIRONMENT=local-direct webpack --config webpack.prod.cjs",
     "build:cap": "npm run build && npx cap sync",
     "build:e2e": "npm run build:local && npx cap sync",
