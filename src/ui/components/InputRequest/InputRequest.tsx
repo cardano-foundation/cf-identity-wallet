@@ -155,7 +155,7 @@ const InputRequest = () => {
       id={componentId}
       data-testid={`${componentId}-modal`}
       className={missingAliasUrl ? "connection-alias" : undefined}
-      backdropDismiss={showModal}
+      backdropDismiss={false}
       animated={!isPlatform("ios") || !!missingAliasUrl}
     >
       <div className={`${componentId}-wrapper`}>
