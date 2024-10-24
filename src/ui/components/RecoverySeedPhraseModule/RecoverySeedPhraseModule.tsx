@@ -6,20 +6,19 @@ import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
 import { useAppDispatch } from "../../../store/hooks";
 import { setSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
+import { showError } from "../../utils/error";
 import { Alert as AlertFail } from "../Alert";
 import { PageFooter } from "../PageFooter";
 import { SeedPhraseModule } from "../SeedPhraseModule";
 import { SeedPhraseModuleRef } from "../SeedPhraseModule/SeedPhraseModule.types";
+import { SwitchOnboardingMode } from "../SwitchOnboardingMode";
+import { OnboardingMode } from "../SwitchOnboardingMode/SwitchOnboardingMode.types";
 import "./RecoverySeedPhraseModule.scss";
 import {
   RecoverySeedPhraseModuleProps,
   RecoverySeedPhraseModuleRef,
   SeedPhraseInfo,
 } from "./RecoverySeedPhraseModule.types";
-import { SwitchOnboardingMode } from "../SwitchOnboardingMode";
-import { OnboardingMode } from "../SwitchOnboardingMode/SwitchOnboardingMode.types";
-import { showError } from "../../utils/error";
-import { ToastMsgType } from "../../globals/types";
 
 const SEED_PHRASE_LENGTH = 18;
 const SUGGEST_SEED_PHRASE_LENGTH = 4;
@@ -187,7 +186,7 @@ const RecoverySeedPhraseModule = forwardRef<
         onVerifySuccess();
       } catch (e) {
         setAlertIsOpen(true);
-        showError("Unable to verify recovery seed phrase", e, dispatch);
+        showError("Unable to verify recovery seed phrase", e);
       }
     };
 
