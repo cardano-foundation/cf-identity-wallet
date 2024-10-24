@@ -235,7 +235,7 @@ describe("Creds Tab", () => {
       ...mockStore(initialStateEmpty),
       dispatch: dispatchMock,
     };
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Credentials />
@@ -431,7 +431,7 @@ describe("Creds Tab", () => {
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(
         setCurrentRoute({
-          path: `${TabsRoutePath.CREDENTIALS}/${filteredCredsFix[2].id}`,
+          path: `${TabsRoutePath.CREDENTIALS}/${filteredCredsFix[0].id}`,
         })
       );
 

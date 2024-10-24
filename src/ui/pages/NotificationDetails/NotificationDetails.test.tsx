@@ -36,6 +36,7 @@ jest.mock("../../../core/agent/agent", () => ({
       ipexCommunications: {
         getIpexApplyDetails: jest.fn(() => Promise.resolve(credRequestFix)),
         getAcdcFromIpexGrant: jest.fn(() => Promise.resolve(credsFixAcdc[0])),
+        getLinkedGroupFromIpexApply: jest.fn(),
       },
     },
   },

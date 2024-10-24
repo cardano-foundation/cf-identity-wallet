@@ -206,6 +206,20 @@ const MultiSigRequest = ({
             title={`${i18n.t("tabs.notifications.details.identifier.title")}`}
           />
         }
+        footer={
+          <PageFooter
+            pageId={pageId}
+            customClass="multisig-request-footer"
+            primaryButtonText={`${i18n.t(
+              "tabs.notifications.details.buttons.accept"
+            )}`}
+            primaryButtonAction={() => setVerifyIsOpen(true)}
+            secondaryButtonText={`${i18n.t(
+              "tabs.notifications.details.buttons.decline"
+            )}`}
+            secondaryButtonAction={handleDeclineClick}
+          />
+        }
       >
         <p className="multisig-request-subtitle">
           {i18n.t("tabs.notifications.details.identifier.subtitle")}
@@ -305,18 +319,6 @@ const MultiSigRequest = ({
           </IonCard>
         </div>
       </ScrollablePageLayout>
-      <PageFooter
-        pageId={pageId}
-        customClass="multisig-request-footer"
-        primaryButtonText={`${i18n.t(
-          "tabs.notifications.details.buttons.accept"
-        )}`}
-        primaryButtonAction={() => setVerifyIsOpen(true)}
-        secondaryButtonText={`${i18n.t(
-          "tabs.notifications.details.buttons.decline"
-        )}`}
-        secondaryButtonAction={handleDeclineClick}
-      />
       <AlertDecline
         isOpen={alertDeclineIsOpen}
         setIsOpen={setAlertDeclineIsOpen}

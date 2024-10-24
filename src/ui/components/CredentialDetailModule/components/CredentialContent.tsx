@@ -1,16 +1,34 @@
-import { keyOutline, informationCircleOutline } from "ionicons/icons";
-import { i18n } from "../../../../i18n";
+import { informationCircleOutline, keyOutline } from "ionicons/icons";
 import { JSONObject } from "../../../../core/agent/services/credentialService.types";
+import { i18n } from "../../../../i18n";
 import {
   CardDetailsAttributes,
   CardDetailsBlock,
   CardDetailsItem,
 } from "../../CardDetails";
 import { CredentialContentProps } from "./CredentialContent.types";
+import { MultisigMember } from "./MultisigMember";
+import { MemberAcceptStatus } from "./MultisigMember.types";
 
-const CredentialContent = ({ cardData }: CredentialContentProps) => {
+const CredentialContent = ({
+  cardData,
+  joinedCredRequestMembers,
+}: CredentialContentProps) => {
   return (
     <>
+      {joinedCredRequestMembers && joinedCredRequestMembers.length > 0 && (
+        <CardDetailsBlock
+          title={i18n.t("tabs.credentials.details.joinedmember")}
+        >
+          {joinedCredRequestMembers?.map((member) => (
+            <MultisigMember
+              key={member.aid}
+              name={member.name}
+              status={MemberAcceptStatus.Accepted}
+            />
+          ))}
+        </CardDetailsBlock>
+      )}
       <CardDetailsBlock title={i18n.t("tabs.credentials.details.title")}>
         <CardDetailsItem
           info={cardData.s.title}

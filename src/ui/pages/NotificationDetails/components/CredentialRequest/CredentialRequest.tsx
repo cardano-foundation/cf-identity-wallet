@@ -13,6 +13,9 @@ import { showError } from "../../../../utils/error";
 import { useAppDispatch, useAppSelector } from "../../../../../store/hooks";
 import { getIdentifiersCache } from "../../../../../store/reducers/identifiersCache";
 import { IdentifierType } from "../../../../../core/agent/services/identifier.types";
+import { LinkedGroup } from "./CredentialRequest.types";
+import { getMultisigConnectionsCache } from "../../../../../store/reducers/connectionsCache";
+import { getAuthentication } from "../../../../../store/reducers/stateCache";
 
 const CredentialRequest = ({
   pageId,
@@ -21,12 +24,63 @@ const CredentialRequest = ({
   handleBack,
 }: NotificationDetailsProps) => {
   const dispatch = useAppDispatch();
+  const multisignConnectionsCache = useAppSelector(getMultisigConnectionsCache);
+  const userName = useAppSelector(getAuthentication)?.userName;
   const [requestStage, setRequestStage] = useState(0);
   const [credentialRequest, setCredentialRequest] =
     useState<CredentialsMatchingApply | null>();
   const identifiersData = useAppSelector(getIdentifiersCache);
 
+  const [linkedGroup, setLinkedGroup] = useState<LinkedGroup | null>(null);
   const [isOpenAlert, setIsOpenAlert] = useState(false);
+
+  const reachThreshold =
+    linkedGroup &&
+    linkedGroup?.joinedMembers === Number(linkedGroup?.threshold);
+
+  const getMultisigInfo = useCallback(async () => {
+    const linkedGroup =
+        await Agent.agent.ipexCommunications.getLinkedGroupFromIpexApply(
+          notificationDetails.id
+        );
+
+    const credentials = Object.keys(linkedGroup.offer);
+
+    const memberInfos = linkedGroup.members.map((member: string) => {
+      const memberConnection = multisignConnectionsCache[member];
+
+      let name = memberConnection?.label || member;
+
+      if (!memberConnection?.label) {
+        name = userName;
+      }
+
+      const joinedCred = credentials.find((credId) =>
+        linkedGroup.offer[credId].membersJoined.includes(member)
+      );
+
+      return {
+        aid: member,
+        name,
+        joinedCred,
+      };
+    });
+
+    const joinedMembers = Object.values(linkedGroup.offer).reduce(
+      (result, next) => {
+        return next.membersJoined.length > result
+          ? next.membersJoined.length
+          : result;
+      },
+      0
+    );
+
+    setLinkedGroup({
+      ...linkedGroup,
+      memberInfos,
+      joinedMembers,
+    });
+  }, [multisignConnectionsCache, notificationDetails.id, userName]);
 
   const getCrendetialRequest = useCallback(async () => {
     try {
@@ -39,20 +93,29 @@ const CredentialRequest = ({
       );
 
       const identifierType =
-        identifier?.multisigManageAid || identifier?.multisigManageAid
+        identifier?.multisigManageAid || identifier?.groupMetadata
           ? IdentifierType.Group
           : IdentifierType.Individual;
+
+      if (identifierType === IdentifierType.Group) {
+        await getMultisigInfo();
+      }
 
       setCredentialRequest(request);
     } catch (e) {
       handleBack();
       showError("Unable to get credential request detail", e, dispatch);
     }
-  }, [notificationDetails, dispatch, handleBack]);
+  }, [notificationDetails, identifiersData, getMultisigInfo, handleBack, dispatch]);
 
   useOnlineStatusEffect(getCrendetialRequest);
 
   const changeToStageTwo = () => {
+    if (reachThreshold) {
+      handleBack();
+      return;
+    }
+
     if (credentialRequest?.credentials.length === 0) {
       setIsOpenAlert(true);
       return;
@@ -89,6 +152,7 @@ const CredentialRequest = ({
           activeStatus={activeStatus}
           notificationDetails={notificationDetails}
           credentialRequest={credentialRequest}
+          linkedGroup={linkedGroup}
           onBack={handleBack}
         />
       ) : (
@@ -97,6 +161,7 @@ const CredentialRequest = ({
           activeStatus={activeStatus}
           credentialRequest={credentialRequest}
           notificationDetails={notificationDetails}
+          linkedGroup={linkedGroup}
           onBack={backToStageOne}
           onClose={handleBack}
           reloadData={getCrendetialRequest}

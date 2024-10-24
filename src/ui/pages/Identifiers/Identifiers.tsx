@@ -153,6 +153,7 @@ const Identifiers = () => {
     for (const identifier of identifiersData) {
       if (favouritesIdentifiers?.some((fav) => fav.id === identifier.id)) {
         tmpFavIdentifiers.push(identifier);
+        tmpAllIdentifiers.push(identifier);
         continue;
       }
       if (identifier.isPending) {

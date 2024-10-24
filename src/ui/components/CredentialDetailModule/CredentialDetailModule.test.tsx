@@ -7,17 +7,21 @@ import { Agent } from "../../../core/agent/agent";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
   addFavouritesCredsCache,
-  removeFavouritesCredsCache,
-  setCredsCache,
+  removeFavouritesCredsCache
 } from "../../../store/reducers/credsCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { credsFixAcdc, revokedCredFixs } from "../../__fixtures__/credsFix";
+import { notificationsFix } from "../../__fixtures__/notificationsFix";
 import { ToastMsgType } from "../../globals/types";
+import { passcodeFiller } from "../../utils/passcodeFiller";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { CredentialDetailModule } from "./CredentialDetailModule";
-import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
+
+const archiveCredential = jest.fn();
+const deleteCredential = jest.fn();
+const deleteNotificationRecordById = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -27,12 +31,17 @@ jest.mock("../../../core/agent/agent", () => ({
         restoreCredential: jest.fn(() => Promise.resolve(true)),
         getCredentialShortDetailsById: jest.fn(() => Promise.resolve([])),
         getCredentials: jest.fn(() => Promise.resolve(true)),
+        archiveCredential: () => archiveCredential(),
+        deleteCredential: () => deleteCredential(),
       },
       basicStorage: {
         findById: jest.fn(),
         save: jest.fn(),
         createOrUpdateBasicRecord: jest.fn().mockResolvedValue(undefined),
       },
+      keriaNotifications: {
+        deleteNotificationRecordById: () => deleteNotificationRecordById()
+      }
     },
   },
 }));
@@ -49,6 +58,19 @@ jest.mock("react-router-dom", () => ({
     id: credsFixAcdc[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
+}));
+
+jest.mock("@ionic/react", () => ({
+  ...jest.requireActual("@ionic/react"),
+  IonModal: ({ children, isOpen, ...props }: any) =>
+    isOpen ? <div data-testid={props["data-testid"]}>{children}</div> : null,
+}));
+
+jest.mock("../../../core/storage", () => ({
+  ...jest.requireActual("../../../core/storage"),
+  SecureStorage: {
+    get: () => "111111",
+  },
 }));
 
 const mockStore = configureStore();
@@ -110,10 +132,10 @@ const initialStateNoPasswordArchived = {
 
 describe("Cred Detail Module - current not archived credential", () => {
   let storeMocked: Store<unknown, AnyAction>;
-  beforeAll(() => {
+  beforeEach(() => {
     jest
       .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
-      .mockResolvedValue(credsFixAcdc[0]);
+      .mockImplementation(() => Promise.resolve(credsFixAcdc[0]));
   });
   beforeEach(() => {
     const mockStore = configureStore();
@@ -142,8 +164,12 @@ describe("Cred Detail Module - current not archived credential", () => {
     });
   });
 
-  test("It opens the options modal", async () => {
-    const { findByTestId } = render(
+  test("It renders cloud error", async () => {
+    jest
+      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
+      .mockImplementation(() => Promise.reject(new Error("Not found")));
+
+    const { getByTestId } = render(
       <Provider store={storeMocked}>
         <CredentialDetailModule
           pageId="credential-card-details"
@@ -153,15 +179,37 @@ describe("Cred Detail Module - current not archived credential", () => {
       </Provider>
     );
 
-    const credsOptionsModal = await findByTestId("creds-options-modal");
-    expect(credsOptionsModal.getAttribute("is-open")).toBe("false");
-    const optionsButton = await findByTestId("options-button");
+    await waitFor(() => {
+      expect(getByTestId("credential-card-details-cloud-error-page")).toBeVisible();
+    });
+  });
+
+  test("It opens the options modal", async () => {
+    const { queryByTestId, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CredentialDetailModule
+          pageId="credential-card-details"
+          id={credsFixAcdc[0].id}
+          onClose={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId("cred-detail-spinner-container")).toBe(null);
+    });
+
+    expect(queryByTestId("creds-options-modal")).toBe(null);
+    
+    const optionsButton = await getByTestId("options-button");
+  
     act(() => {
       fireEvent.click(optionsButton);
     });
 
-    const credsOptionsModalOpen = await findByTestId("creds-options-modal");
-    expect(credsOptionsModalOpen.getAttribute("is-open")).toBe("true");
+    await waitFor(() => {
+      expect(queryByTestId("creds-options-modal")).toBeVisible();
+    })
   });
 
   test("It shows the warning when I click on the big archive button", async () => {
@@ -171,6 +219,7 @@ describe("Cred Detail Module - current not archived credential", () => {
       queryAllByTestId,
       getByTestId,
       getAllByTestId,
+      queryByText,
     } = render(
       <Provider store={storeMocked}>
         <CredentialDetailModule
@@ -209,7 +258,12 @@ describe("Cred Detail Module - current not archived credential", () => {
 
     await waitFor(() => {
       expect(getByTestId("verify-passcode")).toBeVisible();
-      expect(getByTestId("verify-passcode")).toHaveAttribute("is-open", "true");
+    });
+
+    fireEvent.click(getByTestId("alert-delete-archive-cancel-button"));
+
+    await waitFor(() => {
+      expect(queryByText(EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title)).toBe(null);
     });
   });
 
@@ -389,6 +443,54 @@ describe("Cred Detail Module - current not archived credential", () => {
       );
     });
   });
+
+  test("archive credential", async () => {
+    const { getByText, getByTestId, queryByText } = render(
+      <Provider store={storeMocked}>
+        <CredentialDetailModule
+          pageId="credential-card-details"
+          id={credsFixAcdc[0].id}
+          onClose={jest.fn()}
+        />
+      </Provider>
+    );
+    await waitFor(() => {
+      expect(getByText(credsFixAcdc[0].s.description)).toBeVisible;
+    });
+    await waitFor(() => {
+      expect(getByText(credsFixAcdc[0].a.i)).toBeVisible;
+    });
+
+    fireEvent.click(getByText(
+      EN_TRANSLATIONS.tabs.credentials.details.button.archive
+    ));
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title)).toBeVisible();
+    });
+
+    fireEvent.click(getByText(
+      EN_TRANSLATIONS.tabs.credentials.details.alert.archive.confirm
+    ));
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    act(() => {
+      passcodeFiller(getByText, getByTestId, "1", 6);
+    });
+
+    await waitFor(() => {
+      expect(archiveCredential).toBeCalled();
+    });
+
+    fireEvent.click(getByTestId("alert-delete-archive-cancel-button"));
+
+    await waitFor(() => {
+      expect(queryByText(EN_TRANSLATIONS.tabs.credentials.details.alert.archive.title)).toBe(null);
+    });
+  });
 });
 
 describe("Cred Detail Module - archived", () => {
@@ -490,10 +592,50 @@ describe("Cred Detail Module - archived", () => {
       expect(credDispatchMock).toBeCalledWith(
         setToastMsg(ToastMsgType.CREDENTIAL_RESTORED)
       );
+    });
+  });
 
-      credDispatchMock.mockImplementation((action) => {
-        expect(action).toEqual(setCredsCache(filteredCredsFix));
-      });
+  test("Delete cred", async () => {
+    const { queryByText, getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CredentialDetailModule
+          pageId="credential-card-details"
+          id={credsFixAcdc[0].id}
+          onClose={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.tabs.credentials.details.button.delete)
+      ).toBeVisible();
+    });
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.credentials.details.button.delete));
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.title)).toBeVisible();
+    })
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.confirm));
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    act(() => {
+      passcodeFiller(getByText, getByTestId, "1", 6);
+    });
+
+    await waitFor(() => {
+      expect(deleteCredential).toBeCalled();
+    });
+
+    fireEvent.click(getByTestId("alert-delete-archive-cancel-button"));
+
+    await waitFor(() => {
+      expect(queryByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.title)).toBe(null);
     });
   });
 });
@@ -598,6 +740,13 @@ describe("Cred detail - revoked", () => {
         viewCred: "test-cred",
         step: 0,
       },
+      notifications: [{
+        ...notificationsFix[0],
+        a: {
+          ...notificationsFix[0].a,
+          credentialId: credsFixAcdc[0].id
+        }
+      }]
     },
   };
 
@@ -633,6 +782,55 @@ describe("Cred detail - revoked", () => {
       expect(
         getByText(EN_TRANSLATIONS.tabs.credentials.details.delete)
       ).toBeVisible();
+    });
+  });
+
+  test("Delete revoke credential", async () => {
+    const { getByText, getByTestId, queryByText } = render(
+      <Provider store={storeMocked}>
+        <CredentialDetailModule
+          pageId="credential-card-details"
+          id={credsFixAcdc[0].id}
+          onClose={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.tabs.credentials.details.revoked)
+      ).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.tabs.credentials.details.delete)
+      ).toBeVisible();
+    });
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.credentials.details.delete));
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.title)).toBeVisible();
+    })
+
+    fireEvent.click(getByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.confirm));
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    act(() => {
+      passcodeFiller(getByText, getByTestId, "1", 6);
+    });
+
+    await waitFor(() => {
+      expect(archiveCredential).toBeCalled();
+      expect(deleteCredential).toBeCalled();
+      expect(deleteNotificationRecordById).toBeCalled();
+    });
+
+    fireEvent.click(getByTestId("alert-delete-archive-cancel-button"));
+
+    await waitFor(() => {
+      expect(queryByText(EN_TRANSLATIONS.tabs.credentials.details.alert.delete.title)).toBe(null);
     });
   });
 });

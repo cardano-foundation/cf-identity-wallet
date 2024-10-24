@@ -17,7 +17,7 @@
   }
 
   &:not(:first-child) {
-    margin-top: -10rem;
+    margin-top: -45%;
     box-shadow: 0px -5px 5px rgba(54, 60, 74, 0.25);
   }
 
@@ -122,10 +122,6 @@
     border-radius: 0.85rem;
     font-size: 0.75rem;
     line-height: 1.169rem;
-
-    &:not(:first-child) {
-      margin-top: -7.5rem;
-    }
 
     .identifier-card-template-inner {
       &.pending {
