@@ -44,7 +44,6 @@ const RecoverySeedPhraseModule = forwardRef<
 
     const [alertIsOpen, setAlertIsOpen] = useState(false);
     const [clearAlertOpen, setClearAlertOpen] = useState(false);
-    const [alertManyAttempOpen, setAlertManyAttempOpen] = useState(false);
 
     const [seedPhraseInfo, setSeedPhraseInfo] = useState<SeedPhraseInfo[]>([
       {
@@ -327,21 +326,6 @@ const RecoverySeedPhraseModule = forwardRef<
           )}`}
           cancelButtonText={`${i18n.t(
             "verifyrecoveryseedphrase.alert.clear.button.cancel"
-          )}`}
-          className={alerClasses}
-          actionConfirm={handleClearState}
-          actionCancel={closeClearAlert}
-          actionDismiss={closeClearAlert}
-        />
-        <AlertFail
-          isOpen={alertManyAttempOpen}
-          setIsOpen={setAlertManyAttempOpen}
-          dataTestId="alert-fail"
-          headerText={i18n.t(
-            "verifyrecoveryseedphrase.alert.toomanyattempts.text"
-          )}
-          confirmButtonText={`${i18n.t(
-            "verifyrecoveryseedphrase.alert.toomanyattempts.button.confirm"
           )}`}
           className={alerClasses}
           actionConfirm={handleClearState}
