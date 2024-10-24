@@ -1600,7 +1600,8 @@
     "editidentifiererror": "Unable to update identifier",
     "failedupdateconnectionerror": "Failed to update connection",
     "duplicateconnectionerror": "Connection already established",
-    "groupidnotmatcherror": "Connection not part of this group"
+    "groupidnotmatcherror": "Connection not part of this group",
+    "unknownerror": "Something went wrong, try again"
   },
   "request": {
     "sign": {

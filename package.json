@@ -53,7 +53,7 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^5.3.4",
     "signify-ts": "github:WebOfTrust/signify-ts#1212b54bfeaf085ad2217278e1e0fcaf4181621a",
-    "swiper": "^9.2.0",
+    "swiper": "^11.1.14",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
