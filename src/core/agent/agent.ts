@@ -388,12 +388,15 @@ class Agent {
         throw error;
       }
     }
-    await this.basicStorage.save({
-      id: MiscRecordId.APP_ALREADY_INIT,
-      content: {
-        initialized: true,
-      },
-    });
+
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.APP_ALREADY_INIT,
+        content: {
+          initialized: true,
+        },
+      })
+    );
 
     await this.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({
