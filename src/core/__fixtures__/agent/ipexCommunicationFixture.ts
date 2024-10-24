@@ -177,7 +177,6 @@ const identifierMetadataRecord = {
   type: "IdentifierMetadataRecord",
   id: "EC1cyV3zLnGs4B9AYgoGNjXESyQZrBWygz3jLlRD30bR",
   displayName: "holder",
-  signifyName: "764c965c-d997-4842-b940-aebd514fce42",
   multisigManageAid: "EAL7pX9Hklc_iq7pkVYSjAilCfQX3sr5RbX76AxYs2UH",
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -373,7 +372,6 @@ const multisigParticipantsProps = {
   ourIdentifier: {
     id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
     displayName: "Identifier 2",
-    signifyName: "uuid-here",
     createdAt: "2024-09-23T08:53:11.981Z",
     theme: 0,
     groupMetadata: {

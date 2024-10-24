@@ -10,6 +10,7 @@ import { OperationPendingRecordType } from "../records/operationPendingRecord.ty
 const listIdentifiersMock = jest.fn();
 const getIdentifierMembersMock = jest.fn();
 const getIdentifiersMock = jest.fn();
+const updateIdentifierMock = jest.fn();
 const createIdentifierMock = jest.fn();
 const rotateIdentifierMock = jest.fn();
 const saveOperationPendingMock = jest.fn();
@@ -46,6 +47,7 @@ const signifyClient = jest.mocked({
     interact: jest.fn(),
     rotate: rotateIdentifierMock,
     members: getIdentifierMembersMock,
+    update: updateIdentifierMock,
   }),
   operations: () => ({
     get: operationGetMock,
@@ -162,7 +164,6 @@ const groupMetadata = {
 const keriMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
-  signifyName: "uuid-here",
   createdAt: now,
   theme: 0,
   groupMetadata,
@@ -344,7 +345,6 @@ describe("Single sig service of agent", () => {
       })
     ).toEqual({
       identifier: aid,
-      signifyName: expect.any(String),
       isPending: false,
     });
     expect(createIdentifierMock).toBeCalled();
@@ -387,7 +387,6 @@ describe("Single sig service of agent", () => {
       })
     ).toEqual({
       identifier: aid,
-      signifyName: expect.any(String),
       isPending: true,
     });
     expect(createIdentifierMock).toBeCalled();
@@ -480,6 +479,25 @@ describe("Single sig service of agent", () => {
       identifierMetadataRecord.id,
       {
         isDeleted: true,
+      }
+    );
+  });
+
+  test("can update an identifier", async () => {
+    const newDisplayName = "newDisplayName";
+    const newTheme = 1;
+    await identifierService.updateIdentifier(keriMetadataRecord.id, {
+      displayName: newDisplayName,
+      theme: newTheme,
+    });
+    expect(updateIdentifierMock).toBeCalledWith(keriMetadataRecord.id, {
+      name: `${newTheme}:${newDisplayName}`,
+    })
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      keriMetadataRecord.id,
+      {
+        displayName: newDisplayName,
+        theme: newTheme,
       }
     );
   });

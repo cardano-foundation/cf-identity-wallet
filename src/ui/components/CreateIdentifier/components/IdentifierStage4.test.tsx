@@ -18,7 +18,6 @@ mockIonicReact();
 const createMultiSignMock = jest.fn((...arg: any) => ({
   identifier: "mock-id",
   isPending: true,
-  signifyName: "mock-name",
 }));
 
 jest.mock("../../../../core/agent/agent", () => ({
@@ -49,7 +48,6 @@ describe("Identifier Stage 4", () => {
       createdAtUTC: "",
       theme: 0,
       isPending: false,
-      signifyName: "",
       groupMetadata: undefined,
     },
     color: IdentifierColor.Green,
@@ -149,7 +147,6 @@ describe("Identifier Stage 4", () => {
         createdAtUTC: "",
         theme: 0,
         isPending: false,
-        signifyName: "",
         groupMetadata: undefined,
       },
       color: IdentifierColor.Green,

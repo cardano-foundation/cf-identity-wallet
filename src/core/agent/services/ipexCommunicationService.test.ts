@@ -322,7 +322,6 @@ describe("Ipex communication service of agent", () => {
     getExchangeMock = jest.fn().mockReturnValue(grantForIssuanceExnMessage);
 
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
-      signifyName: "holder",
       id: "identifierId",
     });
     schemaGetMock.mockResolvedValue(QVISchema);
@@ -1300,7 +1299,6 @@ describe("Ipex communication service of agent", () => {
       ourIdentifier: {
         id: "EGrdtLIlSIQHF1gHhE7UVfs9yRF-EDhqtLT41pJlj_z8",
         displayName: "Identifier 2",
-        signifyName: "uuid-here",
         createdAt: "2024-09-23T08:53:11.981Z",
         theme: 0,
         groupMetadata: {
