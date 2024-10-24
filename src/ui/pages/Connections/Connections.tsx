@@ -293,7 +293,7 @@ const Connections = forwardRef<ConnectionsOptionRef, ConnectionsComponentProps>(
         >
           {showPlaceholder ? (
             <CardsPlaceholder
-              buttonLabel={i18n.t("connections.page.create")}
+              buttonLabel={`${i18n.t("connections.page.create")}`}
               buttonAction={handleConnectModal}
               testId={pageId}
             >
