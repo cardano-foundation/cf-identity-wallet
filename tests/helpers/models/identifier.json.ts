@@ -2,7 +2,6 @@ export interface KeriJson {
   id: string;
   displayName: string;
   createdAtUTC: string;
-  signifyName: string;
   theme: number;
   isPending: boolean;
   s: string;

@@ -8,7 +8,6 @@ import {
   Siger,
   State,
 } from "signify-ts";
-import { v4 as uuidv4 } from "uuid";
 import {
   IdentifierResult,
   NotificationRoute,
@@ -21,7 +20,6 @@ import type {
   AuthorizationRequestExn,
 } from "../agent.types";
 import {
-  IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
   IdentifierStorage,
   NotificationStorage,
@@ -130,11 +128,11 @@ class MultiSigService extends AgentService {
         return { state: aid.response };
       })
     );
-    const signifyName = uuidv4();
+    const name = `${ourMetadata.theme}:${ourMetadata.displayName}`;
     const result = await this.createAidMultisig(
       ourAid,
       otherAids,
-      signifyName,
+      name,
       threshold
     );
     const op = result.op;
@@ -145,7 +143,6 @@ class MultiSigService extends AgentService {
       id: multisigId,
       displayName: ourMetadata.displayName,
       theme: ourMetadata.theme,
-      signifyName,
       isPending,
       multisigManageAid: ourIdentifier,
     });
@@ -168,7 +165,7 @@ class MultiSigService extends AgentService {
       // Trigger the end role authorization if the operation is done
       await this.endRoleAuthorization(multisigId);
     }
-    return { identifier: multisigId, signifyName, isPending };
+    return { identifier: multisigId, isPending };
   }
 
   private async createAidMultisig(
@@ -209,7 +206,7 @@ class MultiSigService extends AgentService {
       .map((aid) => aid["state"])
       .map((state) => state["i"]);
     await this.sendMultisigExn(
-      aid["name"],
+      aid["prefix"],
       aid,
       MultiSigRoute.ICP,
       embeds,
@@ -298,7 +295,7 @@ class MultiSigService extends AgentService {
       rmids,
       states,
       rstates,
-      metadata.signifyName
+      metadata.id
     );
     const multisigId = result.op.name.split(".")[1];
     return multisigId;
@@ -340,7 +337,7 @@ class MultiSigService extends AgentService {
     const res = await this.joinMultisigRotationKeri(
       exn,
       aid,
-      multiSig.signifyName
+      multiSig.id
     );
     await deleteNotificationRecordById(
       this.props.signifyClient,
@@ -491,8 +488,9 @@ class MultiSigService extends AgentService {
     const aid = await this.props.signifyClient
       .identifiers()
       .get(identifier?.id);
-    const signifyName = uuidv4();
-    const res = await this.joinMultisigKeri(exn, aid, signifyName);
+
+    const name = `${meta.theme}:${meta.displayName}`;
+    const res = await this.joinMultisigKeri(exn, aid, name);
     const op = res.op;
     const multisigId = op.name.split(".")[1];
     const isPending = !op.done;
@@ -501,7 +499,6 @@ class MultiSigService extends AgentService {
       id: multisigId,
       displayName: meta.displayName,
       theme: meta.theme,
-      signifyName,
       isPending,
       multisigManageAid: identifier.id,
     });
@@ -534,7 +531,6 @@ class MultiSigService extends AgentService {
     return {
       identifier: multisigId,
       multisigManageAid: identifier.id,
-      signifyName,
       isPending,
     };
   }
@@ -584,7 +580,7 @@ class MultiSigService extends AgentService {
     ];
 
     await this.sendMultisigExn(
-      aid["name"],
+      aid["prefix"],
       aid,
       MultiSigRoute.ROT,
       embeds,
@@ -680,7 +676,7 @@ class MultiSigService extends AgentService {
       .filter((r) => r.i !== aid.state.i)
       .map((state) => state["i"]);
     await this.sendMultisigExn(
-      aid["name"],
+      aid["prefix"],
       aid,
       MultiSigRoute.IXN,
       embeds,
@@ -774,7 +770,7 @@ class MultiSigService extends AgentService {
       .filter((r) => r.i !== aid.state.i)
       .map((state) => state["i"]);
     await this.sendMultisigExn(
-      aid["name"],
+      aid["prefix"],
       aid,
       MultiSigRoute.ICP,
       embeds,
@@ -901,7 +897,7 @@ class MultiSigService extends AgentService {
       };
 
       await this.sendMultisigExn(
-        ourIdentifier?.signifyName,
+        ourIdentifier.id,
         ourAid,
         MultiSigRoute.RPY,
         roleEmbeds,
@@ -953,7 +949,7 @@ class MultiSigService extends AgentService {
       .get(ourIdentifier.id as string);
 
     await this.sendMultisigExn(
-      ourIdentifier.signifyName,
+      ourIdentifier.id,
       ourAid,
       MultiSigRoute.RPY,
       roleEmbeds,

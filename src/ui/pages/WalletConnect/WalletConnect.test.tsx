@@ -15,7 +15,6 @@ const identifierCache = [
   {
     displayName: "mutil sign",
     id: "testid_00",
-    signifyName: "178a2adb-4ce0-4acd-984d-f1408c8a1087",
     createdAtUTC: "2024-07-02T02:59:06.013Z",
     theme: 0,
     isPending: false,
@@ -24,7 +23,6 @@ const identifierCache = [
   {
     displayName: "mutil sign 1",
     id: "testid_0",
-    signifyName: "178a2adb-4ce0-4acd-984d-f1408c8a1087",
     createdAtUTC: "2024-07-02T02:59:06.013Z",
     theme: 0,
     isPending: false,
@@ -37,7 +35,6 @@ const identifierCache = [
   {
     displayName: "mutil sign 2",
     id: "testid_1",
-    signifyName: "178a2adb-4ce0-4acd-984d-f1408c8a1087",
     createdAtUTC: "2024-07-02T02:59:06.013Z",
     theme: 0,
     isPending: false,

@@ -47,7 +47,7 @@ describe("IdentityWalletConnect", () => {
   });
 
   test("should return OOBI if identifier is located", async () => {
-    const mockIdentifier = { signifyName: "test-signify-name" };
+    const mockIdentifier = { id: "id" };
     Agent.agent.identifiers.getIdentifier = jest
       .fn()
       .mockResolvedValue(mockIdentifier);

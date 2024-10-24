@@ -16,7 +16,6 @@ const identifierStorage = new IdentifierStorage(storageService as any);
 const identifierMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
-  signifyName: "uuid-here",
   createdAt: new Date(),
   theme: 0,
 };

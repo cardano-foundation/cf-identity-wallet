@@ -325,7 +325,6 @@ describe("Rotation of multi-sig", () => {
       id: "123456",
       displayName: "John Doe",
       isPending: true,
-      signifyName: "",
       theme: 0,
     } as IdentifierMetadataRecord;
     identifierStorage.getIdentifierMetadata = jest
@@ -338,13 +337,11 @@ describe("Rotation of multi-sig", () => {
 
   test("Cannot rotate a multisig if we cannot retrieve updated member identifier states", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const signifyName = "newUuidHere";
     identifiersGetMock = jest
       .fn()
       .mockResolvedValue(getMemberIdentifierResponse);
     identifiersCreateMock = jest.fn().mockResolvedValue({
       identifier: multisigIdentifier,
-      signifyName,
     });
 
     identifierStorage.getIdentifierMetadata = jest
@@ -375,13 +372,11 @@ describe("Rotation of multi-sig", () => {
 
   test("Can rotate a keri multisig with KERI contacts", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const signifyName = "newUuidHere";
     identifiersGetMock = jest
       .fn()
       .mockResolvedValue(getMemberIdentifierResponse);
     identifiersCreateMock = jest.fn().mockResolvedValue({
       identifier: multisigIdentifier,
-      signifyName,
     });
     identifierStorage.getIdentifierMetadata = jest
       .fn()
@@ -542,7 +537,6 @@ describe("Usage of multi-sig", () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       id: multisigId,
       displayName: "Multisig",
-      signifyName: "uuid-here",
       multisigManageAid: "aid",
       createdAt: now,
       theme: 0,
@@ -652,7 +646,6 @@ describe("Creation of multi-sig", () => {
     ).toEqual({
       identifier: multisigIdentifier,
       isPending: true,
-      signifyName: expect.any(String),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
       expect.objectContaining({ id: multisigIdentifier, isPending: true })
@@ -691,7 +684,6 @@ describe("Creation of multi-sig", () => {
     ).toEqual({
       identifier: `${multisigIdentifier}1`,
       isPending: true,
-      signifyName: expect.any(String),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
       expect.objectContaining({
@@ -723,7 +715,6 @@ describe("Creation of multi-sig", () => {
     ).toEqual({
       identifier: `${multisigIdentifier}2`,
       isPending: true,
-      signifyName: expect.any(String),
     });
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledWith(
       expect.objectContaining({
@@ -819,7 +810,7 @@ describe("Creation of multi-sig", () => {
     ).toEqual({
       identifier: multisigIdentifier,
       isPending: true,
-      signifyName: expect.any(String),
+
       multisigManageAid: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G",
     });
 

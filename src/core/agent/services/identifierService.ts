@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import { Signer } from "signify-ts";
 import {
   CreateIdentifierResult,
@@ -127,10 +126,7 @@ class IdentifierService extends AgentService {
 
   @OnlineOnly
   async createIdentifier(
-    metadata: Omit<
-      IdentifierMetadataRecordProps,
-      "id" | "createdAt" | "signifyName"
-    >
+    metadata: Omit<IdentifierMetadataRecordProps, "id" | "createdAt">
   ): Promise<CreateIdentifierResult> {
     const startTime = Date.now();
 
@@ -138,10 +134,11 @@ class IdentifierService extends AgentService {
       throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
     }
 
-    const signifyName = uuidv4();
-    const operation = await this.props.signifyClient
-      .identifiers()
-      .create(signifyName); //, this.getCreateAidOptions());
+    let name = `${metadata.theme}:${metadata.displayName}`;
+    if (metadata.groupMetadata) {
+      name = `${metadata.theme}:${metadata.groupMetadata.groupId}:${metadata.displayName}`;
+    }
+    const operation = await this.props.signifyClient.identifiers().create(name); //, this.getCreateAidOptions());
     let op = await operation.op();
     const identifier = operation.serder.ked.i;
 
@@ -172,9 +169,8 @@ class IdentifierService extends AgentService {
       id: identifier,
       ...metadata,
       isPending: !op.done,
-      signifyName: signifyName,
     });
-    return { identifier, signifyName, isPending: !op.done };
+    return { identifier, isPending: !op.done };
   }
 
   async deleteIdentifier(identifier: string): Promise<void> {
@@ -244,6 +240,9 @@ class IdentifierService extends AgentService {
       "theme" | "displayName" | "groupMetadata"
     >
   ): Promise<void> {
+    await this.props.signifyClient.identifiers().update(identifier, {
+      name: `${data.theme}:${data.displayName}`,
+    });
     return this.identifierStorage.updateIdentifierMetadata(identifier, {
       theme: data.theme,
       displayName: data.displayName,
@@ -280,7 +279,6 @@ class IdentifierService extends AgentService {
           id: identifier.prefix,
           displayName: identifier.prefix, //same as the id at the moment
           theme: 0,
-          signifyName: identifier.name,
         });
       }
     }

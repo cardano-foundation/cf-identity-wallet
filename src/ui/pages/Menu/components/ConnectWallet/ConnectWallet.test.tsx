@@ -344,7 +344,6 @@ describe("Wallet connect: empty history", () => {
           {
             displayName: "ms",
             id: "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ6L",
-            signifyName: "52e200ea-5cbc-4632-a8bb-59cb586caad7",
             createdAtUTC: "2024-07-25T13:33:20.323Z",
             theme: 0,
             isPending: false,
@@ -353,7 +352,6 @@ describe("Wallet connect: empty history", () => {
           {
             displayName: "ms",
             id: "EFn1HAaIyISfu_pwLA8DFgeKxr0pLzBccb4eXHSPVQ6L",
-            signifyName: "52e200ea-5cbc-4632-a8bb-59cb586caad7",
             createdAtUTC: "2024-07-25T13:33:20.323Z",
             theme: 0,
             isPending: false,
@@ -796,7 +794,6 @@ describe("Wallet connect", () => {
       identifiersCache: {
         identifiers: [
           {
-            signifyName: "Test",
             id: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
             displayName: "Professional ID",
             createdAtUTC: "2023-01-01T19:23:24Z",
@@ -866,7 +863,6 @@ describe("Wallet connect", () => {
       identifiersCache: {
         identifiers: [
           {
-            signifyName: "Test",
             id: "EN5dwY0N7RKn6OcVrK7ksIniSgPcItCuBRax2JFUpuRd",
             displayName: "Professional ID",
             createdAtUTC: "2023-01-01T19:23:24Z",

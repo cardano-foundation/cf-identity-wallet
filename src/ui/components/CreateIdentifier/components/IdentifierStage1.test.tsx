@@ -109,7 +109,6 @@ describe("Identifier Stage 1", () => {
       createdAtUTC: new Date().toISOString(),
       theme: 0,
       isPending: false,
-      signifyName: "signifyName",
       groupMetadata: {
         groupId: "a2c1ac9e-fbaf-4cfd-83fb-7008d9661898",
         groupInitiator: true,
@@ -197,7 +196,6 @@ describe("Identifier Stage 1", () => {
         createdAtUTC: new Date().toISOString(),
         theme: 0,
         isPending: false,
-        signifyName: "signifyName",
         groupMetadata: {
           groupId: "a2c1ac9e-fbaf-4cfd-83fb-7008d9661898",
           groupInitiator: true,
@@ -383,7 +381,6 @@ describe("Identifier Stage 1", () => {
         createdAtUTC: new Date().toISOString(),
         theme: 0,
         isPending: false,
-        signifyName: "signifyName",
         groupMetadata: {
           groupId: "a2c1ac9e-fbaf-4cfd-83fb-7008d9661898",
           groupInitiator: true,

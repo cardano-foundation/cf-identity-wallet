@@ -51,7 +51,6 @@ const CreateIdentifier = ({
       createdAtUTC: "",
       theme: 0,
       isPending: false,
-      signifyName: "",
     },
     color: IdentifierColor.Green,
   };
