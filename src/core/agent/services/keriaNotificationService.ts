@@ -241,8 +241,6 @@ class KeriaNotificationService extends AgentService {
     let shouldCreateRecord = true;
     if (notif.a.r === NotificationRoute.ExnIpexApply) {
       shouldCreateRecord = await this.processExnIpexApplyNotification(notif);
-    } else if (notif.a.r === NotificationRoute.ExnIpexAgree) {
-      shouldCreateRecord = await this.processExnIpexAgreeNotification(notif);
     } else if (notif.a.r === NotificationRoute.ExnIpexGrant) {
       shouldCreateRecord = await this.processExnIpexGrantNotification(notif);
     } else if (notif.a.r === NotificationRoute.MultiSigRpy) {
@@ -618,20 +616,6 @@ class KeriaNotificationService extends AgentService {
       await this.markNotification(notif.i);
       return false;
     }
-  }
-
-  private async processExnIpexAgreeNotification(
-    notif: Notification
-  ): Promise<boolean> {
-    const exchange = await this.props.signifyClient
-      .exchanges()
-      .get(notif.a.d);
-    await this.ipexCommunications.createLinkedIpexMessageRecord(
-      exchange,
-      ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
-    );
-
-    return true;
   }
 
   private async createNotificationRecord(
@@ -1026,6 +1010,10 @@ class KeriaNotificationService extends AgentService {
               }
             }
           }
+          await this.ipexCommunications.createLinkedIpexMessageRecord(
+            agreeExchange,
+            ConnectionHistoryType.CREDENTIAL_PRESENTED
+          );
         }
         break;
       }

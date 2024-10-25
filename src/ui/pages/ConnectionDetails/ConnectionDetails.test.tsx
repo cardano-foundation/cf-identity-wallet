@@ -623,7 +623,10 @@ describe("Checking the Connection Details Page when notes are available", () => 
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.connections.details.agree)
+        getByText(`${EN_TRANSLATIONS.connections.details.presented.replace(
+          "{{ credentialType }}",
+          historyEvents[1].credentialType
+        )}`)
       ).toBeVisible();
       expect(
         getByText(

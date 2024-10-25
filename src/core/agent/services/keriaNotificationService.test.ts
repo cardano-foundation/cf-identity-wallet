@@ -1,9 +1,6 @@
 import { Agent } from "../agent";
 import { ExchangeRoute, MiscRecordId, NotificationRoute } from "../agent.types";
-import {
-  IdentifierStorage,
-  NotificationStorage,
-} from "../records";
+import { IdentifierStorage, NotificationStorage } from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
@@ -22,7 +19,6 @@ import {
   notificationMultisigExnProp,
   notificationMultisigIcpProp,
   notificationIpexGrantProp,
-  notificationIpexAgreeProp,
   notificationIpexApplyProp,
   grantForIssuanceExnMessage,
   applyForPresentingExnMessage,
@@ -501,35 +497,6 @@ describe("Signify notification service of agent", () => {
     }
     expect(markNotificationMock).toBeCalledWith(notes[0].i);
     expect(multiSigs.joinAuthorization).toBeCalledTimes(1);
-  });
-
-  test("Should call grantAcdcFromAgree if notification route is /exn/ipex/agree", async () => {
-    exchangesGetMock.mockResolvedValue(grantForIssuanceExnMessage);
-    notificationStorage.save = jest
-      .fn()
-      .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
- 
-    notificationStorage.save = jest.fn().mockResolvedValue({
-      id: "string",
-      a: { r: NotificationRoute.ExnIpexAgree, d: "string", m: "" },
-      read: false,
-      route: NotificationRoute.ExnIpexAgree,
-      connectionId: "EC9bQGHShmp2Juayqp0C5XcheBiHyc1p54pZ_Op-B95x",
-      createdAt: new Date(),
-    });
-
-    await keriaNotificationService.processNotification(
-      notificationIpexAgreeProp
-    );
-    expect(
-      ipexCommunications.createLinkedIpexMessageRecord
-    ).toHaveBeenCalledWith(
-      grantForIssuanceExnMessage,
-      ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE
-    );
-    expect(ipexCommunications.grantAcdcFromAgree).toBeCalledWith(
-      notificationIpexAgreeProp.i
-    );
   });
 
   test("Should call createLinkedIpexMessageRecord with CREDENTIAL_REQUEST_PRESENT", async () => {
@@ -1796,25 +1763,27 @@ describe("Long running operation tracker", () => {
 
   test("Should handle long operations with type exchange.presentcredential", async () => {
     const credentialIdMock = "credentialId";
-    signifyClient
-      .exchanges()
-      .get.mockResolvedValueOnce({
-        exn: {
-          r: ExchangeRoute.IpexAgree,
-          p: "p",
-        },
-      })
-      .mockResolvedValueOnce({
-        exn: {
-          r: ExchangeRoute.IpexGrant,
-          d: "d",
-          e: {
-            acdc: {
-              d: credentialIdMock,
-            },
+    const grantExchangeMock = {
+      exn: {
+        r: ExchangeRoute.IpexGrant,
+        d: "d",
+        e: {
+          acdc: {
+            d: credentialIdMock,
           },
         },
-      });
+      },
+    };
+    const agreeExchange = {
+      exn: {
+        r: ExchangeRoute.IpexAgree,
+        p: "p",
+      },
+    };
+    signifyClient
+      .exchanges()
+      .get.mockResolvedValueOnce(grantExchangeMock)
+      .mockResolvedValueOnce(agreeExchange);
     const operationRecord = {
       type: "OperationPendingRecord",
       id: "exchange.presentcredential.AOCUvGbpidkplC7gAoJOxLgXX1P2j4xlWMbzk3gM8JzA",
@@ -1833,6 +1802,10 @@ describe("Long running operation tracker", () => {
     });
 
     await keriaNotificationService.processOperation(operationRecord);
+    expect(ipexCommunications.createLinkedIpexMessageRecord).toBeCalledWith(
+      agreeExchange,
+      ConnectionHistoryType.CREDENTIAL_PRESENTED
+    );
     expect(notificationStorage.save).not.toBeCalled();
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
   });
