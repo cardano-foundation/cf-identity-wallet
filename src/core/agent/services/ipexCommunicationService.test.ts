@@ -5,7 +5,6 @@ import { IpexCommunicationService } from "./ipexCommunicationService";
 import { Agent } from "../agent";
 import { ConfigurationService } from "../../configuration";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
-import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
 import { EventTypes } from "../event.types";
 import {
@@ -48,7 +47,7 @@ import {
   mHab,
   memberIdentifierRecord,
 } from "../../__fixtures__/agent/multSigFixtures";
-import { KeriaContactKeyPrefix } from "./connectionService.types";
+import { ConnectionHistoryType, KeriaContactKeyPrefix } from "./connectionService.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),

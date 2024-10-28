@@ -5,9 +5,8 @@ import { CoreEventEmitter } from "../event";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
-import { ConnectionHistoryType } from "./connection.types";
 import { EventTypes } from "../event.types";
-import { KeriaContactKeyPrefix } from "./connectionService.types";
+import { ConnectionHistoryType, KeriaContactKeyPrefix } from "./connectionService.types";
 
 const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();

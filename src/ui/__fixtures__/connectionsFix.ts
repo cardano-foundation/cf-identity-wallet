@@ -17,8 +17,8 @@ const connectionsFix: ConnectionDetails[] = [
     notes: [
       {
         id: "ebfeb1ebc6f1c276ef71212ec20",
-        title: "Important",
-        message: "This is a very important connection",
+        title: "Title",
+        message: "Message",
       },
     ],
     historyItems: [

@@ -8,6 +8,8 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Agent } from "../../../core/agent/agent";
 import {
+  ConnectionHistoryItem,
+  ConnectionNoteDetails,
   ConnectionStatus,
 } from "../../../core/agent/agent.types";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
@@ -400,8 +402,8 @@ interface MockConnectionDetails {
   connectionDate: string;
   logo: string;
   status: ConnectionStatus;
-  notes: any[];
-  historyItems: any[];
+  notes: ConnectionNoteDetails[];
+  historyItems: ConnectionHistoryItem[];
   serviceEndpoints: string[];
 }
 
@@ -476,7 +478,13 @@ describe("Checking the Connection Details Page when notes are available", () => 
               message: "Message",
             },
           ],
-          historyItems: [],
+          historyItems: [
+            {
+              type: 1,
+              timestamp: "2017-01-14T19:23:24Z",
+              credentialType: "Rare EVO Attendee",
+            },
+          ],
           serviceEndpoints: [],
         })
     );

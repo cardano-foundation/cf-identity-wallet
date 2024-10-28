@@ -2,7 +2,6 @@ import { b, d, messagize, Operation, Saider, Serder, Siger } from "signify-ts";
 import { ConfigurationService } from "../../configuration";
 import {
   ExchangeRoute,
-  IpexHistoryItem,
   IpexMessage,
   NotificationRoute,
   type AgentServicesProps,
@@ -21,7 +20,6 @@ import { OnlineOnly, deleteNotificationRecordById } from "./utils";
 import { CredentialStatus, ACDCDetails } from "./credentialService.types";
 import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
-import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
 import { GrantToJoinMultisigExnPayload, MultiSigRoute } from "./multiSig.types";
 import {
@@ -31,7 +29,7 @@ import {
 } from "../event.types";
 import { ConnectionService } from "./connectionService";
 import { IdentifierType } from "./identifier.types";
-import { KeriaContactKeyPrefix } from "./connectionService.types";
+import { ConnectionHistoryType, IpexHistoryItem, KeriaContactKeyPrefix } from "./connectionService.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =

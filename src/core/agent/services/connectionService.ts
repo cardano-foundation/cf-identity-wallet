@@ -8,7 +8,6 @@ import {
   ConnectionNoteProps,
   ConnectionShortDetails,
   ConnectionStatus,
-  IpexHistoryItem,
   KeriConnectionType,
   OobiScan,
 } from "../agent.types";
@@ -21,7 +20,6 @@ import {
 } from "../records";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { AgentService } from "./agentService";
-import { KeriaContact } from "./connection.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { StorageMessage } from "../../storage/storage.types";
 import {
@@ -29,7 +27,7 @@ import {
   EventTypes,
   OperationAddedEvent,
 } from "../event.types";
-import { KeriaContactKeyPrefix } from "./connectionService.types";
+import { IpexHistoryItem, KeriaContact, KeriaContactKeyPrefix } from "./connectionService.types";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
@@ -218,8 +216,7 @@ class ConnectionService extends AgentService {
         connection[key]
       ) {
         notes.push(JSON.parse(connection[key]));
-      }
-      if (
+      } else if (
         key.startsWith(KeriaContactKeyPrefix.HISTORY_IPEX) ||
         key.startsWith(KeriaContactKeyPrefix.HISTORY_REVOKE)
       ) {
@@ -278,7 +275,7 @@ class ConnectionService extends AgentService {
       [`${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`]: JSON.stringify({
         ...note,
         id: `${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`,
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
       }),
     });
   }

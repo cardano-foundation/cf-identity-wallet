@@ -1,7 +1,7 @@
 import { SignifyClient } from "signify-ts";
 import { CoreEventEmitter } from "./event";
-import { ConnectionHistoryType } from "./services/connection.types";
 import { OperationPendingRecordType } from "./records/operationPendingRecord.type";
+import { ConnectionHistoryType } from "./services/connectionService.types";
 
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
@@ -51,15 +51,6 @@ type ConnectionNoteDetails = {
   message: string;
 };
 
-interface IpexHistoryItem {
-  id: string;
-  credentialType: string;
-  content: IpexMessage;
-  historyType: ConnectionHistoryType;
-  timestamp: Date;
-  connectionId: string;
-}
-
 interface JSONObject {
   [x: string]: JSONValue;
 }
@@ -92,9 +83,9 @@ type IpexMessage = {
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 
 interface ConnectionDetails extends ConnectionShortDetails {
-  serviceEndpoints: string[] | [];
-  notes: ConnectionNoteDetails[] | [];
-  historyItems: ConnectionHistoryItem[] | [];
+  serviceEndpoints: string[];
+  notes: ConnectionNoteDetails[];
+  historyItems: ConnectionHistoryItem[];
 }
 interface NotificationRpy {
   a: {
@@ -225,5 +216,4 @@ export type {
   NotificationRpy,
   AuthorizationRequestExn,
   OperationCallback,
-  IpexHistoryItem,
 };
