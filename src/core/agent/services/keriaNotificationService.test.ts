@@ -28,7 +28,6 @@ import {
   grantForIssuanceExnMessage,
   applyForPresentingExnMessage,
   agreeForPresentingExnMessage,
-  notificationIpexOfferProp,
 } from "../../__fixtures__/agent/keriaNotificationFixture";
 
 const identifiersListMock = jest.fn();

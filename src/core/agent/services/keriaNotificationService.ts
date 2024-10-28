@@ -898,7 +898,6 @@ class KeriaNotificationService extends AgentService {
                     exnSaid: grantExchange.exn.d,
                   });
               for (const notification of notifications) {
-                await this.markNotification(notification.id)
                 // @TODO: Delete other long running operations in linkedGroupRequests
                 await deleteNotificationRecordById(
                   this.props.signifyClient,
@@ -1002,7 +1001,6 @@ class KeriaNotificationService extends AgentService {
                   exnSaid: applyExchange.exn.d,
                 });
             for (const notification of notifications) {
-              await this.markNotification(notification.id)
               // @TODO: Delete other long running operations in linkedGroupRequests
               await deleteNotificationRecordById(
                 this.props.signifyClient,
@@ -1048,7 +1046,6 @@ class KeriaNotificationService extends AgentService {
                     exnSaid: agreeExchange.exn.d,
                   });
               for (const notification of notifications) {
-                await this.markNotification(notification.id)
                 // @TODO: Delete other long running operations in linkedGroupRequests
                 await deleteNotificationRecordById(
                   this.props.signifyClient,
