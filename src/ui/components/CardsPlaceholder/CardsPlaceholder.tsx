@@ -18,12 +18,14 @@ const CardsPlaceholder = ({
         <span className="back-card" />
         <span className="front-card" />
       </div>
-      <PageFooter
-        pageId={testId}
-        primaryButtonIcon={addOutline}
-        primaryButtonText={buttonLabel}
-        primaryButtonAction={buttonAction}
-      />
+      {buttonLabel && buttonAction && (
+        <PageFooter
+          pageId={testId}
+          primaryButtonIcon={addOutline}
+          primaryButtonText={buttonLabel}
+          primaryButtonAction={buttonAction}
+        />
+      )}
       {children}
     </div>
   );

@@ -203,8 +203,8 @@ const Identifiers = () => {
     navAnimation === "cards"
       ? "cards-identifier-nav"
       : navAnimation === "favourite"
-        ? "favorite-identifier-nav"
-        : ""
+      ? "favorite-identifier-nav"
+      : ""
   }`;
   const handleCloseCreateIdentifier = () => {
     setCreateIdentifierModalIsOpen(false);
@@ -270,7 +270,7 @@ const Identifiers = () => {
         placeholder={
           showPlaceholder && (
             <CardsPlaceholder
-              buttonLabel={i18n.t("tabs.identifiers.tab.create")}
+              buttonLabel={`${i18n.t("tabs.identifiers.tab.create")}`}
               buttonAction={handleCreateIdentifier}
               testId={pageId}
             >

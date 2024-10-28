@@ -4,7 +4,7 @@ import {
   IonLabel,
   useIonViewWillEnter,
 } from "@ionic/react";
-import { addOutline, peopleOutline } from "ionicons/icons";
+import { peopleOutline } from "ionicons/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Agent } from "../../../core/agent/agent";
 import { i18n } from "../../../i18n";
@@ -20,7 +20,6 @@ import {
   setCredsCache,
 } from "../../../store/reducers/credsCache";
 import {
-  setCurrentOperation,
   setCurrentRoute,
   setToastMsg,
   showConnections,
@@ -29,7 +28,7 @@ import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { TabLayout } from "../../components/layout/TabLayout";
-import { CardType, OperationType, ToastMsgType } from "../../globals/types";
+import { CardType, ToastMsgType } from "../../globals/types";
 import { useOnlineStatusEffect } from "../../hooks";
 import { StartAnimationSource } from "../Identifiers/Identifiers.type";
 import "./Credentials.scss";
@@ -44,15 +43,11 @@ import { showError } from "../../utils/error";
 
 const CLEAR_STATE_DELAY = 1000;
 
-interface AdditionalButtonsProps {
-  handleCreateCred: () => void;
-  handleConnections: () => void;
-}
-
 const AdditionalButtons = ({
-  handleCreateCred,
   handleConnections,
-}: AdditionalButtonsProps) => {
+}: {
+  handleConnections: () => void;
+}) => {
   return (
     <>
       <IonButton
@@ -64,18 +59,6 @@ const AdditionalButtons = ({
         <IonIcon
           slot="icon-only"
           icon={peopleOutline}
-          color="primary"
-        />
-      </IonButton>
-      <IonButton
-        shape="round"
-        className="add-credential-button"
-        data-testid="add-credential-button"
-        onClick={handleCreateCred}
-      >
-        <IonIcon
-          slot="icon-only"
-          icon={addOutline}
           color="primary"
         />
       </IonButton>
@@ -133,10 +116,6 @@ const Credentials = () => {
     dispatch(showConnections(true));
   };
 
-  const handleCreateCred = () => {
-    dispatch(setCurrentOperation(OperationType.SCAN_CONNECTION));
-  };
-
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDENTIALS }));
   });
@@ -181,8 +160,8 @@ const Credentials = () => {
     navAnimation === "cards"
       ? "cards-credential-nav"
       : navAnimation === "favourite"
-        ? "favorite-credential-nav"
-        : ""
+      ? "favorite-credential-nav"
+      : ""
   }`;
 
   const handleArchivedCredentialsDisplayChange = (value: boolean) => {
@@ -253,18 +232,14 @@ const Credentials = () => {
         customClass={tabClasses}
         title={`${i18n.t("tabs.credentials.tab.title")}`}
         additionalButtons={
-          <AdditionalButtons
-            handleConnections={handleConnections}
-            handleCreateCred={handleCreateCred}
-          />
+          <AdditionalButtons handleConnections={handleConnections} />
         }
         placeholder={
           showPlaceholder && (
-            <CardsPlaceholder
-              buttonLabel={i18n.t("tabs.credentials.tab.create")}
-              buttonAction={handleCreateCred}
-              testId={pageId}
-            >
+            <CardsPlaceholder testId={pageId}>
+              <p>
+                <i>{i18n.t("tabs.credentials.tab.placeholder")}</i>
+              </p>
               <ArchivedCredentialsButton />
             </CardsPlaceholder>
           )

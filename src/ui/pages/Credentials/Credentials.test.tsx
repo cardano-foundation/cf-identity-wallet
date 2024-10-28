@@ -201,7 +201,7 @@ describe("Creds Tab", () => {
       ...mockStore(initialStateEmpty),
       dispatch: dispatchMock,
     };
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
         <Provider store={storeMocked}>
           <Credentials />
@@ -211,6 +211,9 @@ describe("Creds Tab", () => {
 
     expect(
       getByTestId("credentials-tab-cards-placeholder")
+    ).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.credentials.tab.placeholder)
     ).toBeInTheDocument();
   });
 
@@ -387,28 +390,6 @@ describe("Creds Tab", () => {
     );
 
     expect(getByTestId("cred-archived-revoked-button")).toBeVisible();
-  });
-
-  test("Create cred", () => {
-    const storeMocked = {
-      ...mockStore(archivedAndRevokedState),
-      dispatch: dispatchMock,
-    };
-    const { getByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Credentials />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("add-credential-button"));
-    });
-
-    expect(dispatchMock).toBeCalledWith(
-      setCurrentOperation(OperationType.SCAN_CONNECTION)
-    );
   });
 
   test("Open cred detail", async () => {
