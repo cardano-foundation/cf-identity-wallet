@@ -51,6 +51,15 @@ type ConnectionNoteDetails = {
   message: string;
 };
 
+interface IpexHistoryItem {
+  id: string;
+  credentialType: string;
+  content: IpexMessage;
+  historyType: ConnectionHistoryType;
+  timestamp: Date;
+  connectionId: string;
+}
+
 interface JSONObject {
   [x: string]: JSONValue;
 }
@@ -83,9 +92,9 @@ type IpexMessage = {
 type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
 
 interface ConnectionDetails extends ConnectionShortDetails {
-  serviceEndpoints?: string[];
-  notes?: ConnectionNoteDetails[];
-  historyItems?: ConnectionHistoryItem[];
+  serviceEndpoints: string[] | [];
+  notes: ConnectionNoteDetails[] | [];
+  historyItems: ConnectionHistoryItem[] | [];
 }
 interface NotificationRpy {
   a: {
@@ -216,4 +225,5 @@ export type {
   NotificationRpy,
   AuthorizationRequestExn,
   OperationCallback,
+  IpexHistoryItem,
 };

@@ -8,6 +8,7 @@ import {
   ConnectionNoteProps,
   ConnectionShortDetails,
   ConnectionStatus,
+  IpexHistoryItem,
   KeriConnectionType,
   OobiScan,
 } from "../agent.types";
@@ -16,7 +17,6 @@ import {
   ConnectionStorage,
   CredentialStorage,
   IdentifierStorage,
-  IpexMessageRecord,
   OperationPendingStorage,
 } from "../records";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
@@ -211,6 +211,7 @@ class ConnectionService extends AgentService {
         }
       });
     const notes: Array<ConnectionNoteDetails> = [];
+    const historyItems: Array<IpexHistoryItem> = [];
     Object.keys(connection).forEach((key) => {
       if (
         key.startsWith(KeriaContactKeyPrefix.CONNECTION_NOTE) &&
@@ -218,10 +219,6 @@ class ConnectionService extends AgentService {
       ) {
         notes.push(JSON.parse(connection[key]));
       }
-    });
-
-    const historyItems: Array<IpexMessageRecord> = [];
-    Object.keys(connection).forEach((key) => {
       if (
         key.startsWith(KeriaContactKeyPrefix.HISTORY_IPEX) ||
         key.startsWith(KeriaContactKeyPrefix.HISTORY_REVOKE)
@@ -242,13 +239,13 @@ class ConnectionService extends AgentService {
       historyItems: historyItems
         .sort(
           (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
         )
         .map((messageRecord) => {
-          const { historyType, createdAt, credentialType } = messageRecord;
+          const { historyType, timestamp, credentialType } = messageRecord;
           return {
             type: historyType,
-            timestamp: new Date(createdAt).toISOString(),
+            timestamp: new Date(timestamp).toISOString(),
             credentialType,
           };
         }),
@@ -281,6 +278,7 @@ class ConnectionService extends AgentService {
       [`${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`]: JSON.stringify({
         ...note,
         id: `${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`,
+        timestamp: new Date(),
       }),
     });
   }

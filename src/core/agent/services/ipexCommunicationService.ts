@@ -2,6 +2,7 @@ import { b, d, messagize, Operation, Saider, Serder, Siger } from "signify-ts";
 import { ConfigurationService } from "../../configuration";
 import {
   ExchangeRoute,
+  IpexHistoryItem,
   IpexMessage,
   NotificationRoute,
   type AgentServicesProps,
@@ -544,18 +545,22 @@ class IpexCommunicationService extends AgentService {
       prefix = KeriaContactKeyPrefix.HISTORY_REVOKE;
       key = message.exn.e.acdc.d;
       break;
-    default:
+    case ConnectionHistoryType.CREDENTIAL_ISSUANCE:
+    case ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE:
+    case ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT:
       prefix = KeriaContactKeyPrefix.HISTORY_IPEX;
       key = message.exn.d;
       break;
+    default:
+      throw new Error("Invalid history type");
     }
-    const ipexHistory = {
+    const ipexHistory: IpexHistoryItem = {
       id: message.exn.d,
       credentialType: schema?.title,
       content: message,
       connectionId: message.exn.i,
       historyType,
-      createdAt: new Date(),
+      timestamp: new Date(),
     };
 
     await this.props.signifyClient.contacts().update(message.exn.i, {

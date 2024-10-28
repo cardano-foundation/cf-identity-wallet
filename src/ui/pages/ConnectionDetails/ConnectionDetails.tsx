@@ -78,12 +78,8 @@ const ConnectionDetails = ({
         connectionShortDetails.id
       );
       setConnectionDetails(connectionDetails);
-      if (connectionDetails.notes) {
-        setNotes(connectionDetails.notes);
-      }
-      if (connectionDetails.historyItems) {
-        setConnectionHistory(connectionDetails.historyItems);
-      }
+      setNotes(connectionDetails.notes);
+      setConnectionHistory(connectionDetails.historyItems);
     } catch (error) {
       if (
         error instanceof Error &&

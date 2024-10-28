@@ -708,7 +708,7 @@ describe("Ipex communication service of agent", () => {
           content: grantForIssuanceExnMessage,
           connectionId: grantForIssuanceExnMessage.exn.i,
           historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-          createdAt: now,
+          timestamp: now,
         }),
     });
 
@@ -735,7 +735,7 @@ describe("Ipex communication service of agent", () => {
           content: grantForIssuanceExnMessage,
           connectionId: grantForIssuanceExnMessage.exn.i,
           historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE,
-          createdAt: now,
+          timestamp: now,
         }),
     });
 
@@ -761,7 +761,7 @@ describe("Ipex communication service of agent", () => {
             content: applyForPresentingExnMessage,
             connectionId: applyForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-            createdAt: now,
+            timestamp: now,
           }),
       }
     );
@@ -788,7 +788,7 @@ describe("Ipex communication service of agent", () => {
             content: agreeForPresentingExnMessage,
             connectionId: agreeForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-            createdAt: now,
+            timestamp: now,
           }),
       }
     );
@@ -815,7 +815,7 @@ describe("Ipex communication service of agent", () => {
             content: agreeForPresentingExnMessage,
             connectionId: agreeForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
-            createdAt: now,
+            timestamp: now,
           }),
       }
     );
@@ -823,6 +823,15 @@ describe("Ipex communication service of agent", () => {
     expect(connections.resolveOobi).toBeCalledTimes(1);
   })
   
+  test("Should throw error if history type invalid", async () => {
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
+    getExchangeMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
+    await expect( ipexCommunicationService.createLinkedIpexMessageRecord(
+      agreeForPresentingExnMessage,
+      "invalid" as any
+    )).rejects.toThrowError("Invalid history type");
+  })
+
   test("Should throw error if schemas.get has an unexpected error", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     schemaGetMock.mockRejectedValueOnce(new Error("Unknown error"));

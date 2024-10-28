@@ -7,7 +7,9 @@ import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Agent } from "../../../core/agent/agent";
-import { ConnectionStatus } from "../../../core/agent/agent.types";
+import {
+  ConnectionStatus,
+} from "../../../core/agent/agent.types";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
@@ -112,6 +114,7 @@ describe("ConnectionDetails Page", () => {
               credentialType: "Rare EVO 2024 Attendee",
             },
           ],
+          serviceEndpoints: [],
         })
     );
   });
@@ -398,6 +401,8 @@ interface MockConnectionDetails {
   logo: string;
   status: ConnectionStatus;
   notes: any[];
+  historyItems: any[];
+  serviceEndpoints: string[];
 }
 
 describe("Checking the Connection Details Page when no notes are available", () => {
@@ -411,6 +416,8 @@ describe("Checking the Connection Details Page when no notes are available", () 
           logo: ".png",
           status: "pending" as ConnectionStatus,
           notes: [],
+          historyItems: [],
+          serviceEndpoints: [],
         })
     );
   });
@@ -469,6 +476,8 @@ describe("Checking the Connection Details Page when notes are available", () => 
               message: "Message",
             },
           ],
+          historyItems: [],
+          serviceEndpoints: [],
         })
     );
   });
