@@ -5,9 +5,8 @@ import { CoreEventEmitter } from "../event";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
-import { ConnectionHistoryType } from "./connection.types";
 import { EventTypes } from "../event.types";
-import { KeriaContactKeyPrefix } from "./connectionService.types";
+import { ConnectionHistoryType, KeriaContactKeyPrefix } from "./connectionService.types";
 
 const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();
@@ -307,11 +306,13 @@ describe("Connection service of agent", () => {
       message: "message",
     };
     const id = new Salter({}).qb64;
+    const now = new Date();
     await connectionService.createConnectionNote(connectionId, note);
     expect(updateContactMock).toBeCalledWith(connectionId, {
       [`note:${id}`]: JSON.stringify({
         ...note,
         id: `note:${id}`,
+        timestamp: now,
       }),
     });
   });
@@ -657,7 +658,7 @@ describe("Connection service of agent", () => {
       content: {},
       historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
       type: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-      createdAt: new Date(),
+      timestamp: new Date(),
       connectionId: "connectionId",
     };
     const mockHistoryRevokeMessage = {
@@ -666,7 +667,7 @@ describe("Connection service of agent", () => {
       content: {},
       historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
       type: ConnectionHistoryType.CREDENTIAL_REVOKED,
-      createdAt: new Date(),
+      timestamp: new Date(),
       connectionId: "connectionId",
     };
 
@@ -705,7 +706,7 @@ describe("Connection service of agent", () => {
       historyItems: [mockHistoryIpexMessage, mockHistoryRevokeMessage].map(
         (item) => ({
           type: item.historyType,
-          timestamp: new Date(item.createdAt).toISOString(),
+          timestamp: new Date(item.timestamp).toISOString(),
           credentialType: item.credentialType,
         })
       ),

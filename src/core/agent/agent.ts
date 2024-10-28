@@ -33,7 +33,6 @@ import {
   PeerConnectionStorage,
   NotificationRecord,
   NotificationStorage,
-  IpexMessageRecord,
 } from "./records";
 import { KeyStoreKeys, SecureStorage } from "../storage";
 import { MultiSigService } from "./services/multiSigService";

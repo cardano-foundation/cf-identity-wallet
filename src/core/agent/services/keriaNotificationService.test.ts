@@ -2,7 +2,6 @@ import { Agent } from "../agent";
 import { ExchangeRoute, MiscRecordId, NotificationRoute } from "../agent.types";
 import { IdentifierStorage, NotificationStorage } from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
-import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
 import { CoreEventEmitter } from "../event";
 import { KeriaNotificationService } from "./keriaNotificationService";
@@ -24,6 +23,7 @@ import {
   applyForPresentingExnMessage,
   agreeForPresentingExnMessage,
 } from "../../__fixtures__/agent/keriaNotificationFixture";
+import { ConnectionHistoryType } from "./connectionService.types";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -658,7 +658,7 @@ describe("Signify notification service of agent", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: new Date(),
     });
-    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.save).toBeCalledTimes(0);
   });
 
@@ -741,7 +741,7 @@ describe("Signify notification service of agent", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: dt,
     });
-    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.save).toBeCalledTimes(0);
   });
 
@@ -824,7 +824,7 @@ describe("Signify notification service of agent", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: dt,
     });
-    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.save).toBeCalledTimes(0);
   });
 
@@ -884,7 +884,7 @@ describe("Signify notification service of agent", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: new Date("2024-04-29T11:01:04.903Z"),
     });
-    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.save).toBeCalledTimes(0);
   });
 
@@ -966,7 +966,7 @@ describe("Signify notification service of agent", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: dt,
     });
-    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.save).toBeCalledTimes(0);
   });
 
@@ -1048,7 +1048,7 @@ describe("Signify notification service of agent", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: dt,
     });
-    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.save).toBeCalledTimes(0);
   });
 
@@ -1108,7 +1108,7 @@ describe("Signify notification service of agent", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: new Date("2024-04-29T11:01:04.903Z"),
     });
-    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.save).toBeCalledTimes(0);
   });
 
@@ -1190,7 +1190,7 @@ describe("Signify notification service of agent", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: dt,
     });
-    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.save).toBeCalledTimes(0);
   });
 
@@ -1273,7 +1273,7 @@ describe("Signify notification service of agent", () => {
       connectionId: "EEFjBBDcUM2IWpNF7OclCme_bE76yKE3hzULLzTOFE8E",
       updatedAt: dt,
     });
-    expect(markNotificationMock).toBeCalledTimes(1);
+    expect(markNotificationMock).not.toBeCalled();
     expect(notificationStorage.save).toBeCalledTimes(0);
   });
 
@@ -1909,6 +1909,7 @@ describe("Long running operation tracker", () => {
       },
     });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+    expect(markNotificationMock).toBeCalledWith("id");
   });
 
   test("Should delete original apply notification when multi-sig offer operation completes", async () => {
@@ -1989,6 +1990,7 @@ describe("Long running operation tracker", () => {
       },
     });
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+    expect(markNotificationMock).toBeCalledWith("id");
   });
 
   test("Should delete original agree notification when multi-sig grant operation completes", async () => {
@@ -2052,6 +2054,7 @@ describe("Long running operation tracker", () => {
     await keriaNotificationService.processOperation(operationRecord);
     expect(notificationStorage.deleteById).toBeCalledWith("id");
     expect(operationPendingStorage.deleteById).toBeCalledTimes(1);
+    expect(markNotificationMock).toBeCalledWith("id");
   });
 
   test("Should handle long operations with type exchange.revokecredential", async () => {

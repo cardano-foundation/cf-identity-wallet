@@ -22,7 +22,6 @@ import {
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
 import { IonicStorage } from "../../storage/ionicStorage";
-import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
 import { IpexCommunicationService } from "./ipexCommunicationService";
 import {
@@ -34,6 +33,7 @@ import {
 } from "../event.types";
 import { deleteNotificationRecordById } from "./utils";
 import { CredentialService } from "./credentialService";
+import { ConnectionHistoryType } from "./connectionService.types";
 
 class KeriaNotificationService extends AgentService {
   static readonly NOTIFICATION_NOT_FOUND = "Notification record not found";
@@ -249,6 +249,9 @@ class KeriaNotificationService extends AgentService {
       shouldCreateRecord = await this.processMultiSigIcpNotification(notif);
     } else if (notif.a.r === NotificationRoute.MultiSigExn) {
       shouldCreateRecord = await this.processMultiSigExnNotification(notif);
+    } else if (notif.a.r === NotificationRoute.ExnIpexOffer) {
+      // @TODO - DTIS-1381; message appearing as notification after being multi-sig sent
+      shouldCreateRecord = false;
     }
     if (!shouldCreateRecord) {
       return;
@@ -509,7 +512,6 @@ class KeriaNotificationService extends AgentService {
             linkedGroupRequestDetails;
         await this.notificationStorage.update(notificationRecord);
       }
-      await this.markNotification(notif.i);
       return false;
     }
     case ExchangeRoute.IpexOffer: {
@@ -559,7 +561,6 @@ class KeriaNotificationService extends AgentService {
             linkedGroupRequestDetails;
         await this.notificationStorage.update(notificationRecord);
       }
-      await this.markNotification(notif.i);
       return false;
     }
     case ExchangeRoute.IpexGrant: {
@@ -609,7 +610,6 @@ class KeriaNotificationService extends AgentService {
             linkedGroupRequestDetails;
         await this.notificationStorage.update(notificationRecord);
       }
-      await this.markNotification(notif.i);
       return false;
     }
     default:
@@ -855,7 +855,7 @@ class KeriaNotificationService extends AgentService {
                   this.props.signifyClient,
                   this.notificationStorage,
                   notification.id,
-                    notification.a.r as NotificationRoute
+                  notification.a.r as NotificationRoute
                 );
 
                 this.props.eventEmitter.emit<NotificationRemovedEvent>({

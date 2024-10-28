@@ -5,7 +5,6 @@ import { IpexCommunicationService } from "./ipexCommunicationService";
 import { Agent } from "../agent";
 import { ConfigurationService } from "../../configuration";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
-import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
 import { EventTypes } from "../event.types";
 import {
@@ -48,7 +47,7 @@ import {
   mHab,
   memberIdentifierRecord,
 } from "../../__fixtures__/agent/multSigFixtures";
-import { KeriaContactKeyPrefix } from "./connectionService.types";
+import { ConnectionHistoryType, KeriaContactKeyPrefix } from "./connectionService.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -708,7 +707,7 @@ describe("Ipex communication service of agent", () => {
           content: grantForIssuanceExnMessage,
           connectionId: grantForIssuanceExnMessage.exn.i,
           historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-          createdAt: now,
+          timestamp: now,
         }),
     });
 
@@ -734,8 +733,8 @@ describe("Ipex communication service of agent", () => {
           credentialType: QVISchema.title,
           content: grantForIssuanceExnMessage,
           connectionId: grantForIssuanceExnMessage.exn.i,
-          historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
-          createdAt: now,
+          historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE,
+          timestamp: now,
         }),
     });
 
@@ -760,7 +759,7 @@ describe("Ipex communication service of agent", () => {
             content: applyForPresentingExnMessage,
             connectionId: applyForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-            createdAt: now,
+            timestamp: now,
           }),
       }
     );
@@ -812,7 +811,7 @@ describe("Ipex communication service of agent", () => {
             content: agreeForPresentingExnMessage,
             connectionId: agreeForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-            createdAt: now,
+            timestamp: now,
           }),
       }
     );
@@ -839,13 +838,22 @@ describe("Ipex communication service of agent", () => {
             content: agreeForPresentingExnMessage,
             connectionId: agreeForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
-            createdAt: now,
+            timestamp: now,
           }),
       }
     );
     expect(schemaGetMock).toBeCalledTimes(1);
     expect(connections.resolveOobi).toBeCalledTimes(1);
-  });
+  })
+  
+  test("Should throw error if history type invalid", async () => {
+    schemaGetMock.mockResolvedValueOnce(QVISchema);
+    getExchangeMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
+    await expect( ipexCommunicationService.createLinkedIpexMessageRecord(
+      agreeForPresentingExnMessage,
+      "invalid" as any
+    )).rejects.toThrowError("Invalid history type");
+  })
 
   test("Should throw error if schemas.get has an unexpected error", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);

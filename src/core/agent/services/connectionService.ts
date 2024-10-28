@@ -16,12 +16,10 @@ import {
   ConnectionStorage,
   CredentialStorage,
   IdentifierStorage,
-  IpexMessageRecord,
   OperationPendingStorage,
 } from "../records";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { AgentService } from "./agentService";
-import { KeriaContact } from "./connection.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { StorageMessage } from "../../storage/storage.types";
 import {
@@ -29,7 +27,7 @@ import {
   EventTypes,
   OperationAddedEvent,
 } from "../event.types";
-import { KeriaContactKeyPrefix } from "./connectionService.types";
+import { IpexHistoryItem, KeriaContact, KeriaContactKeyPrefix } from "./connectionService.types";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
@@ -211,18 +209,14 @@ class ConnectionService extends AgentService {
         }
       });
     const notes: Array<ConnectionNoteDetails> = [];
+    const historyItems: Array<IpexHistoryItem> = [];
     Object.keys(connection).forEach((key) => {
       if (
         key.startsWith(KeriaContactKeyPrefix.CONNECTION_NOTE) &&
         connection[key]
       ) {
         notes.push(JSON.parse(connection[key]));
-      }
-    });
-
-    const historyItems: Array<IpexMessageRecord> = [];
-    Object.keys(connection).forEach((key) => {
-      if (
+      } else if (
         key.startsWith(KeriaContactKeyPrefix.HISTORY_IPEX) ||
         key.startsWith(KeriaContactKeyPrefix.HISTORY_REVOKE)
       ) {
@@ -242,13 +236,13 @@ class ConnectionService extends AgentService {
       historyItems: historyItems
         .sort(
           (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
         )
         .map((messageRecord) => {
-          const { historyType, createdAt, credentialType } = messageRecord;
+          const { historyType, timestamp, credentialType } = messageRecord;
           return {
             type: historyType,
-            timestamp: new Date(createdAt).toISOString(),
+            timestamp: new Date(timestamp).toISOString(),
             credentialType,
           };
         }),
@@ -281,6 +275,7 @@ class ConnectionService extends AgentService {
       [`${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`]: JSON.stringify({
         ...note,
         id: `${KeriaContactKeyPrefix.CONNECTION_NOTE}${id}`,
+        timestamp: new Date().toISOString(),
       }),
     });
   }
