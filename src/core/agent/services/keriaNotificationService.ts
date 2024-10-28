@@ -287,9 +287,7 @@ class KeriaNotificationService extends AgentService {
   private async processExnIpexApplyNotification(
     notif: Notification
   ): Promise<boolean> {
-    const exchange = await this.props.signifyClient
-      .exchanges()
-      .get(notif.a.d);
+    const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
     await this.ipexCommunications.createLinkedIpexMessageRecord(
       exchange,
       ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT
@@ -855,7 +853,7 @@ class KeriaNotificationService extends AgentService {
                   this.props.signifyClient,
                   this.notificationStorage,
                   notification.id,
-                  notification.a.r as NotificationRoute
+                    notification.a.r as NotificationRoute
                 );
 
                 this.props.eventEmitter.emit<NotificationRemovedEvent>({
@@ -885,7 +883,7 @@ class KeriaNotificationService extends AgentService {
         const admitExchange = await this.props.signifyClient
           .exchanges()
           .get(operation.metadata?.said);
-          
+
         if (admitExchange.exn.r === ExchangeRoute.IpexAdmit) {
           const grantExchange = await this.props.signifyClient
             .exchanges()
@@ -896,7 +894,7 @@ class KeriaNotificationService extends AgentService {
           const credential = await this.props.signifyClient
             .credentials()
             .get(credentialId);
-            
+
           if (credential.status.s === "0") {
             // Wait for admit operations to fully complete on KERIA - return early to not block other operations.
             return;
@@ -1009,11 +1007,11 @@ class KeriaNotificationService extends AgentService {
                 );
               }
             }
+            await this.ipexCommunications.createLinkedIpexMessageRecord(
+              agreeExchange,
+              ConnectionHistoryType.CREDENTIAL_PRESENTED
+            );
           }
-          await this.ipexCommunications.createLinkedIpexMessageRecord(
-            agreeExchange,
-            ConnectionHistoryType.CREDENTIAL_PRESENTED
-          );
         }
         break;
       }

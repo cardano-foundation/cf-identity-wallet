@@ -51,7 +51,7 @@ const ConnectionHistoryEvent = ({
             })}
           {historyItem.type ===
             ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT &&
-            i18next.t("connections.details.present", {
+            i18next.t("connections.details.requestpresent", {
               issuer: connectionDetails?.label,
             })}
           {historyItem.type === ConnectionHistoryType.CREDENTIAL_PRESENTED &&

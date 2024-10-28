@@ -622,7 +622,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
     await waitFor(() => {
       expect(
         getByText(
-          `${EN_TRANSLATIONS.connections.details.present.replace(
+          `${EN_TRANSLATIONS.connections.details.requestpresent.replace(
             "{{ issuer }}",
             connectionDetails.label
           )}`
