@@ -256,7 +256,8 @@ class KeriaNotificationService extends AgentService {
     } else if (notif.a.r === NotificationRoute.MultiSigExn) {
       shouldCreateRecord = await this.processMultiSigExnNotification(notif);
     } else if (notif.a.r === NotificationRoute.ExnIpexOffer) {
-      shouldCreateRecord = await this.processExnIpexOfferNotification(notif);
+      // @TODO - DTIS-1381; message appearing as notification after being multi-sig sent
+      shouldCreateRecord = false;
     }
     if (!shouldCreateRecord) {
       return;
@@ -358,30 +359,6 @@ class KeriaNotificationService extends AgentService {
         recordType: OperationPendingRecordType.ExchangeRevokeCredential,
       });
       this.pendingOperations.push(pendingOperation);
-      await this.markNotification(notif.i);
-      return false;
-    }
-    return true;
-  }
-
-  private async processExnIpexOfferNotification(
-    notif: Notification
-  ): Promise<boolean> {
-    const exchange = await this.props.signifyClient.exchanges().get(notif.a.d);
-    const ourIdentifier = await this.identifierStorage
-      .getIdentifierMetadata(exchange.exn.a.i)
-      .catch((error) => {
-        if (
-          (error as Error).message ===
-          IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING
-        ) {
-          return undefined;
-        } else {
-          throw error;
-        }
-      });
-
-    if (!ourIdentifier) {
       await this.markNotification(notif.i);
       return false;
     }

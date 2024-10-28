@@ -648,19 +648,6 @@ describe("Signify notification service of agent", () => {
     expect(markNotificationMock).toBeCalledTimes(1);
   });
 
-  test("Should skip if notification route is /ipex/offer and the identifier is missing ", async () => {
-    exchangesGetMock.mockResolvedValueOnce({ exn: { a: { i: "i" } } });
-    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
-      new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
-    );
-
-    await keriaNotificationService.processNotification(
-      notificationIpexOfferProp
-    );
-
-    expect(markNotificationMock).toBeCalledWith(notificationIpexOfferProp.i);
-  });
-
   test("Original grant is linked to first received /multisig/exn admit message, and no notification record is created", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
