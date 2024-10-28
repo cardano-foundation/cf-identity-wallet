@@ -27,6 +27,7 @@ import {
   ConnectionShortDetails,
   ConnectionHistoryItem,
   ConnectionNoteDetails,
+  ConnectionStatus,
 } from "../../../core/agent/agent.types";
 import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
 import { EditConnectionsModal } from "./components/EditConnectionsModal";
@@ -144,8 +145,9 @@ const ConnectionDetails = ({
             connectionShortDetails.id
           );
         } else {
-          await Agent.agent.connections.deleteConnectionById(
-            connectionShortDetails.id
+          await Agent.agent.connections.markConnectionPendingDelete(
+            connectionShortDetails.id,
+            ConnectionStatus.PENDING
           );
         }
         dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));

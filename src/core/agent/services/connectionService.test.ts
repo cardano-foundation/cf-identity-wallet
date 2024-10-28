@@ -9,7 +9,7 @@ import { ConnectionHistoryType } from "./connection.types";
 import { EventTypes } from "../event.types";
 
 const contactListMock = jest.fn();
-const deleteContactMock = jest.fn();
+let deleteContactMock = jest.fn();
 const updateContactMock = jest.fn();
 const getOobiMock = jest.fn();
 const getIdentifier = jest.fn();
@@ -357,44 +357,6 @@ describe("Connection service of agent", () => {
     });
   });
 
-  test("can delete conenction by id", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    connectionNoteStorage.findAllByQuery = jest.fn().mockReturnValue([]);
-    getIpexMessageMetadataByConnectionIdMock.mockResolvedValueOnce([]);
-    const connectionId = "connectionId";
-    await connectionService.deleteConnectionById(connectionId);
-    expect(connectionStorage.deleteById).toBeCalledWith(connectionId);
-    // expect(deleteContactMock).toBeCalledWith(connectionId); // it should be uncommented later when deleting on KERIA is re-enabled
-  });
-
-  test("Should delete connection's notes & history when deleting that connection", async () => {
-    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
-    const mockConnectionNote = {
-      id: "uuid",
-      title: "title",
-    };
-    connectionNoteStorage.findAllByQuery = jest
-      .fn()
-      .mockReturnValue([mockConnectionNote]);
-    const mockIpexMessage = {
-      id: "id",
-      credentialType: "rare evo",
-      content: {},
-      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-      createdAt: new Date(),
-      connectionId: "connectionId",
-    };
-    getIpexMessageMetadataByConnectionIdMock.mockResolvedValueOnce([
-      mockIpexMessage,
-    ]);
-    const connectionId = "connectionId";
-    await connectionService.deleteConnectionById(connectionId);
-    expect(ipexMessageStorage.deleteIpexMessageMetadata).toBeCalledWith(
-      mockIpexMessage.id
-    );
-    expect(ipexMessageStorage.deleteIpexMessageMetadata).toBeCalledTimes(1);
-  });
-
   test("can receive keri oobi", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     signifyClient.oobis().resolve.mockResolvedValue({
@@ -738,5 +700,95 @@ describe("Connection service of agent", () => {
     await expect(connectionService.getConnectionById("id")).rejects.toThrow(
       new Error(`${Agent.MISSING_DATA_ON_KERIA}: id`)
     );
+  });
+
+  test("Can get connection pending deletion keri", async () => {
+    connectionStorage.findAllByQuery = jest.fn().mockResolvedValueOnce([
+      {
+        id: keriContacts[0].id,
+        createdAt: now,
+        alias: "keri",
+        oobi: "oobi",
+        groupId: "group-id",
+        getTag: jest.fn().mockReturnValue("group-id"),
+        pending: true,
+      },
+    ]);
+    expect(
+      await connectionService.getConnectionsPendingDeletion()
+    ).toMatchObject([
+      {
+        id: keriContacts[0].id,
+        groupId: "group-id",
+        connectionDate: nowISO,
+        label: "keri",
+        oobi: "oobi",
+        status: "pending",
+      },
+    ]);
+    expect(connectionStorage.findAllByQuery).toBeCalledTimes(1);
+  });
+
+  test("Should mark connection is pending when start delete connection", async () => {
+    const connectionProps = {
+      id: keriContacts[0].id,
+      createdAt: now,
+      alias: "keri",
+      getTag: jest.fn(),
+    };
+
+    connectionStorage.findById = jest
+      .fn()
+      .mockResolvedValueOnce(connectionProps);
+    eventEmitter.emit = jest.fn();
+
+    await connectionService.markConnectionPendingDelete(
+      keriContacts[0].id,
+      ConnectionStatus.PENDING
+    );
+
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.ConnectionRemoved,
+      payload: {
+        connectionId: keriContacts[0].id,
+        status: ConnectionStatus.PENDING,
+      },
+    });
+    expect(connectionStorage.update).toBeCalledWith({
+      ...connectionProps,
+      pending: true,
+    });
+  });
+
+  test("Should return when result find connection by id is empty", async () => {
+    connectionStorage.findById = jest.fn().mockResolvedValueOnce(undefined);
+
+    await connectionService.markConnectionPendingDelete(
+      keriContacts[0].id,
+      ConnectionStatus.PENDING
+    );
+
+    expect(connectionStorage.update).not.toBeCalled();
+  });
+
+  test("Can delete connection by id if keria throw error 404 when delete contact", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    deleteContactMock = jest
+      .fn()
+      .mockRejectedValue(new Error("request - 404 - SignifyClient message"));
+
+    await connectionService.deleteConnectionById(keriContacts[0].id);
+    expect(connectionStorage.deleteById).toBeCalledWith(keriContacts[0].id);
+  });
+
+  test("Throws error if if keria throw error with a non-404 error", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+
+    const error = new Error("Some other error - 500");
+    deleteContactMock.mockRejectedValueOnce(error);
+
+    await expect(
+      connectionService.deleteConnectionById(keriContacts[0].id)
+    ).rejects.toThrow("Some other error - 500");
   });
 });

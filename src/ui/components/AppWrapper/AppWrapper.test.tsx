@@ -50,6 +50,8 @@ import {
   EventTypes,
 } from "../../../core/agent/event.types";
 
+const getConnectionsPendingDeletionMock = jest.fn();
+
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
@@ -83,6 +85,9 @@ jest.mock("../../../core/agent/agent", () => ({
         getConnectionShortDetailById: jest.fn(),
         getUnhandledConnections: jest.fn(),
         syncKeriaContacts: jest.fn(),
+        onConnectionRemoveChanged: jest.fn(),
+        getConnectionsPendingDeletion: () => getConnectionsPendingDeletionMock(),
+        deleteConnectionById: jest.fn()
       },
       credentials: {
         getCredentials: jest.fn().mockResolvedValue([]),
@@ -131,6 +136,10 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
 }));
 
 describe("App Wrapper", () => {
+  beforeAll(() => {
+    getConnectionsPendingDeletionMock.mockImplementation(() => Promise.resolve([connectionShortDetailsMock]))
+  });
+
   test("renders children components", async () => {
     const { getByText } = render(
       <Provider store={store}>

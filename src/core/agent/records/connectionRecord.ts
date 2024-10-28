@@ -36,6 +36,7 @@ class ConnectionRecord extends BaseRecord {
     return {
       ...this._tags,
       groupId: this.groupId,
+      pending: this.pending,
     };
   }
 }

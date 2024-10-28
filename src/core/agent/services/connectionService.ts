@@ -26,6 +26,7 @@ import { KeriaContact } from "./connection.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { StorageMessage } from "../../storage/storage.types";
 import {
+  ConnectionRemovedEvent,
   ConnectionStateChangedEvent,
   EventTypes,
   OperationAddedEvent,
@@ -68,6 +69,14 @@ class ConnectionService extends AgentService {
     callback: (event: ConnectionStateChangedEvent) => void
   ) {
     this.props.eventEmitter.on(EventTypes.ConnectionStateChanged, callback);
+  }
+
+  onConnectionRemoveChanged() {
+    this.props.eventEmitter.on(
+      EventTypes.ConnectionRemoved,
+      (data: ConnectionRemovedEvent) =>
+        this.deleteConnectionById(data.payload.connectionId!)
+    );
   }
 
   @OnlineOnly
@@ -237,14 +246,42 @@ class ConnectionService extends AgentService {
 
   @OnlineOnly
   async deleteConnectionById(id: string): Promise<void> {
-    await this.props.signifyClient.contacts().delete(id);
+    await this.props.signifyClient
+      .contacts()
+      .delete(id)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          return undefined;
+        } else {
+          throw error;
+        }
+      });
     await this.connectionStorage.deleteById(id);
-    const historyItems =
-      await this.ipexMessageStorage.getIpexMessageMetadataByConnectionId(id);
-    await Promise.all(
-      historyItems.map((historyItem) =>
-        this.ipexMessageStorage.deleteIpexMessageMetadata(historyItem.id)
-      )
+  }
+
+  async markConnectionPendingDelete(id: string, status: ConnectionStatus) {
+    const connectionProps = await this.connectionStorage.findById(id);
+    if (!connectionProps) return;
+    connectionProps.pending = true;
+    await this.connectionStorage.update(connectionProps);
+
+    this.props.eventEmitter.emit<ConnectionRemovedEvent>({
+      type: EventTypes.ConnectionRemoved,
+      payload: {
+        connectionId: id,
+        status,
+      },
+    });
+  }
+
+  async getConnectionsPendingDeletion(): Promise<ConnectionShortDetails[]> {
+    const connections = await this.connectionStorage.findAllByQuery({
+      pending: true,
+    });
+
+    return connections.map((connection) =>
+      this.getConnectionShortDetails(connection)
     );
   }
 

@@ -19,6 +19,7 @@ import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setEnableBiometricsCache } from "../../../store/reducers/biometricsCache";
 import {
+  removeConnectionCache,
   setConnectionsCache,
   setMultisigConnectionsCache,
   updateOrAddConnectionCache,
@@ -421,6 +422,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.keriaNotifications.onRemoveNotification((event) => {
       notificatiStateChanged(event, dispatch);
     });
+    Agent.agent.connections.onConnectionRemoveChanged();
   };
 
   const initApp = async () => {
@@ -463,6 +465,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
           throw e;
         }
       }
+    }
+    const pendingDeletions =
+      await Agent.agent.connections.getConnectionsPendingDeletion();
+
+    for (const pendingDeletion of pendingDeletions) {
+      await Agent.agent.connections.deleteConnectionById(pendingDeletion.id);
+      dispatch(removeConnectionCache(pendingDeletion.id));
     }
 
     // Begin background polling of KERIA or local DB items

@@ -25,6 +25,7 @@ jest.mock("@ionic/react", () => ({
 
 const deleteStaleLocalConnectionByIdMock = jest.fn();
 const deleteConnection = jest.fn();
+const markConnectionPendingDeleteMock = jest.fn()
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -37,6 +38,7 @@ jest.mock("../../../core/agent/agent", () => ({
         deleteStaleLocalConnectionById: () =>
           deleteStaleLocalConnectionByIdMock(),
         deleteConnectionById: () => deleteConnection(),
+        markConnectionPendingDelete: () => markConnectionPendingDeleteMock()
       },
       credentials: {
         getCredentialDetailsById: jest.fn(),
@@ -195,7 +197,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     await waitFor(() => {
-      expect(deleteConnection).toBeCalled();
+      expect(markConnectionPendingDeleteMock).toBeCalled();
     });
   });
 
