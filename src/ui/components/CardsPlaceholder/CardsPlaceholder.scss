@@ -37,6 +37,10 @@
     margin-right: 0.5rem;
   }
 
+  p {
+    text-align: center;
+  }
+
   @media screen and (min-height: 300px) and (max-height: 580px) {
     max-height: unset;
   }

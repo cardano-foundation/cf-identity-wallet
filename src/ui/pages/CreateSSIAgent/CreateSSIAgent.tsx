@@ -386,7 +386,7 @@ const CreateSSIAgent = () => {
               }
               errorMessage={
                 hasMismatchError
-                  ? `${i18n.t("ssiagent.error.mismatchconnecturl")}`
+                  ? `${i18n.t(isRecoveryMode ? "ssiagent.error.recoverymismatchconnecturl" : "ssiagent.error.mismatchconnecturl")}`
                   : displayBootUrlError && !isInvalidConnectUrl
                     ? `${i18n.t("ssiagent.error.invalidurl")}`
                     : `${i18n.t("ssiagent.error.invalidconnecturl")}`

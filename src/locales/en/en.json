@@ -623,12 +623,6 @@
           "confirm": "Clear all",
           "cancel": "Cancel"
         }
-      },
-      "toomanyattempts": {
-        "text": "Too many failed attempts. Please try again later.",
-        "button": {
-          "confirm": "Ok"
-        }
       }
     }
   },
@@ -745,7 +739,8 @@
       "invalidurl": "Enter a valid URL",
       "invalidbooturl": "Enter a valid boot URL",
       "invalidconnecturl": "Enter a valid connect URL",
-      "mismatchconnecturl": "This connect URL doesn’t match the boot URL"
+      "mismatchconnecturl": "This connect URL doesn’t match the boot URL",
+      "recoverymismatchconnecturl": "Please check this connect URL matches the original boot URL used for onboarding and that your agent is still active"
     }
   },
   "operationspasswordregex": {
@@ -847,7 +842,7 @@
     "credentials": {
       "tab": {
         "title": "Credentials",
-        "create": "Add a credential",
+        "placeholder": "No credentials yet. They will appear here once a connection issues them.",
         "viewarchived": "Archived & Revoked",
         "favourites": "Favourites",
         "allcreds": "All credentials",

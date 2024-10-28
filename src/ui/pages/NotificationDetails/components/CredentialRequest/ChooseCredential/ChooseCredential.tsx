@@ -37,6 +37,7 @@ import { JoinedMember } from "../JoinedMember";
 import { LightCredentialDetailModal } from "../LightCredentialDetailModal";
 import { MembersModal } from "../MembersModal";
 import "./ChooseCredential.scss";
+import { getNotificationsCache, setNotificationsCache } from "../../../../../../store/reducers/notificationsCache";
 
 const CRED_EMPTY = "Credential is empty";
 
@@ -52,6 +53,7 @@ const ChooseCredential = ({
 }: ChooseCredentialProps) => {
   const credsCache = useAppSelector(getCredsCache);
   const connections = useAppSelector(getConnectionsCache);
+  const notifications = useAppSelector(getNotificationsCache);
   const dispatch = useDispatch();
   const [selectedCred, setSelectedCred] = useState<RequestCredential | null>(
     null
@@ -130,6 +132,14 @@ const ChooseCredential = ({
     setViewCredDetail(null);
   };
 
+  const handleNotificationUpdate = async () => {
+    const updatedNotifications = notifications.filter(
+      (notification) => notification.id !== notificationDetails.id
+    );
+    dispatch(setNotificationsCache(updatedNotifications));
+  };
+
+
   const handleRequestCredential = async () => {
     try {
       if (!selectedCred) {
@@ -141,6 +151,11 @@ const ChooseCredential = ({
         notificationDetails.id,
         selectedCred.acdc
       );
+
+      if(!linkedGroup) {
+        handleNotificationUpdate();
+      }
+
       dispatch(setToastMsg(ToastMsgType.SHARE_CRED_SUCCESS));
       onClose();
     } catch (e) {
