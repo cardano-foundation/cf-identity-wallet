@@ -22,7 +22,6 @@ import {
 } from "../records";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { AgentService } from "./agentService";
-import { KeriaContact } from "./connection.types";
 import { OnlineOnly, waitAndGetDoneOp } from "./utils";
 import { StorageMessage } from "../../storage/storage.types";
 import {

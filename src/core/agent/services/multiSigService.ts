@@ -171,15 +171,15 @@ class MultiSigService extends AgentService {
   private async createAidMultisig(
     aid: HabState,
     otherAids: Pick<HabState, "state">[],
-    name: string,
+    prefix: string,
     threshold: number
   ): Promise<{
     op: any;
     icpResult: EventResult;
-    name: string;
+    prefix: string;
   }> {
     const states = [aid["state"], ...otherAids.map((aid) => aid["state"])];
-    const icp = await this.props.signifyClient.identifiers().create(name, {
+    const icp = await this.props.signifyClient.identifiers().create(prefix, {
       algo: Algos.group,
       mhab: aid,
       isith: threshold,
@@ -216,13 +216,13 @@ class MultiSigService extends AgentService {
         smids: smids,
         rmids: smids,
         rstates: states,
-        name,
+        name: prefix,
       }
     );
     return {
       op: op,
       icpResult: icp,
-      name: name,
+      prefix,
     };
   }
 
@@ -334,11 +334,7 @@ class MultiSigService extends AgentService {
     const aid = await this.props.signifyClient
       .identifiers()
       .get(multiSig.multisigManageAid);
-    const res = await this.joinMultisigRotationKeri(
-      exn,
-      aid,
-      multiSig.id
-    );
+    const res = await this.joinMultisigRotationKeri(exn, aid, multiSig.id);
     await deleteNotificationRecordById(
       this.props.signifyClient,
       this.notificationStorage,
@@ -551,14 +547,14 @@ class MultiSigService extends AgentService {
     rmids: any[],
     states: State[],
     rstates: State[],
-    name: string
+    prefix: string
   ): Promise<{
     op: any;
     icpResult: EventResult;
   }> {
     const icp = await this.props.signifyClient
       .identifiers()
-      .rotate(name, { states, rstates });
+      .rotate(prefix, { states, rstates });
 
     const op = await icp.op();
     const serder = icp.serder;
@@ -589,7 +585,7 @@ class MultiSigService extends AgentService {
         gid: serder.pre,
         smids: smids,
         rmids: rmids,
-        name,
+        name: prefix,
       }
     );
     return {
@@ -639,11 +635,11 @@ class MultiSigService extends AgentService {
   private async joinMultisigRotationKeri(
     exn: RotationMultiSigExnMessage["exn"],
     aid: HabState,
-    name: string
+    prefix: string
   ): Promise<{
     op: any;
     icpResult: EventResult;
-    name: string;
+    prefix: string;
   }> {
     const rstates = await Promise.all(
       exn.a.rmids.map(async (member) => {
@@ -658,7 +654,7 @@ class MultiSigService extends AgentService {
     );
     const icpResult = await this.props.signifyClient
       .identifiers()
-      .rotate(name, { states: rstates, rstates: rstates });
+      .rotate(prefix, { states: rstates, rstates: rstates });
     const op = await icpResult.op();
     const serder = icpResult.serder;
     const sigs = icpResult.sigs;
@@ -686,13 +682,13 @@ class MultiSigService extends AgentService {
         smids: smids,
         rmids: rmids,
         rstates,
-        name,
+        name: prefix,
       }
     );
     return {
       op: op,
       icpResult: icpResult,
-      name: name,
+      prefix,
     };
   }
 
@@ -709,11 +705,11 @@ class MultiSigService extends AgentService {
   private async joinMultisigKeri(
     exn: InceptMultiSigExnMessage["exn"],
     aid: HabState,
-    name: string
+    prefix: string
   ): Promise<{
     op: any;
     icpResult: EventResult;
-    name: string;
+    prefix: string;
   }> {
     const icp = exn.e.icp;
 
@@ -744,7 +740,7 @@ class MultiSigService extends AgentService {
     );
     const icpResult = await this.props.signifyClient
       .identifiers()
-      .create(name, {
+      .create(prefix, {
         algo: Algos.group,
         mhab: aid,
         isith: icp.kt,
@@ -780,18 +776,18 @@ class MultiSigService extends AgentService {
         smids: smids,
         rmids: smids,
         rstates,
-        name,
+        name: prefix,
       }
     );
     return {
       op: op,
       icpResult: icpResult,
-      name: name,
+      prefix,
     };
   }
 
   private async sendMultisigExn(
-    name: string,
+    prefix: string,
     aid: HabState,
     route: MultiSigRoute,
     embeds: {
@@ -806,7 +802,7 @@ class MultiSigService extends AgentService {
   ): Promise<any> {
     return this.props.signifyClient
       .exchanges()
-      .send(name, "multisig", aid, route, payload, embeds, recp);
+      .send(prefix, "multisig", aid, route, payload, embeds, recp);
   }
 
   async hasMultisig(multisigId: string): Promise<boolean> {

@@ -1,11 +1,3 @@
-interface KeriaContact {
-  alias: string;
-  id: string;
-  oobi: string;
-  challenges: string[];
-  wellKnowns: string[];
-}
-
 enum ConnectionHistoryType {
   CREDENTIAL_ISSUANCE,
   CREDENTIAL_REQUEST_PRESENT,
@@ -14,5 +6,3 @@ enum ConnectionHistoryType {
 }
 
 export { ConnectionHistoryType };
-
-export type { KeriaContact };
