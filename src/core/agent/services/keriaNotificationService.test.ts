@@ -5,7 +5,6 @@ import {
   NotificationStorage,
 } from "../records";
 import { OperationPendingRecord } from "../records/operationPendingRecord";
-import { ConnectionHistoryType } from "./connection.types";
 import { CredentialStatus } from "./credentialService.types";
 import { CoreEventEmitter } from "../event";
 import { KeriaNotificationService } from "./keriaNotificationService";
@@ -28,6 +27,7 @@ import {
   applyForPresentingExnMessage,
   agreeForPresentingExnMessage,
 } from "../../__fixtures__/agent/keriaNotificationFixture";
+import { ConnectionHistoryType } from "./connectionService.types";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
