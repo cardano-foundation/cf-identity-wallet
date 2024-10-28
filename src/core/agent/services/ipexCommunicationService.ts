@@ -544,7 +544,6 @@ class IpexCommunicationService extends AgentService {
       key = message.exn.e.acdc.d;
       break;
     case ConnectionHistoryType.CREDENTIAL_ISSUANCE:
-    case ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE:
     case ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT:
     case ConnectionHistoryType.CREDENTIAL_PRESENTED:
       prefix = KeriaContactKeyPrefix.HISTORY_IPEX;

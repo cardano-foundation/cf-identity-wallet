@@ -733,7 +733,7 @@ describe("Ipex communication service of agent", () => {
           credentialType: QVISchema.title,
           content: grantForIssuanceExnMessage,
           connectionId: grantForIssuanceExnMessage.exn.i,
-          historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE,
+          historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
           timestamp: now,
         }),
     });
@@ -784,7 +784,7 @@ describe("Ipex communication service of agent", () => {
             content: agreeForPresentingExnMessage,
             connectionId: agreeForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
-            createdAt: now,
+            timestamp: now,
           }),
       }
     );

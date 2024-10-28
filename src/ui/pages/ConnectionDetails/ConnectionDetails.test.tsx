@@ -482,7 +482,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
             {
               type: 1,
               timestamp: "2017-01-14T19:23:24Z",
-              credentialType: "Rare EVO Attendee",
+              credentialType: "Rare EVO 2024 Attendee",
             },
           ],
           serviceEndpoints: [],
@@ -642,13 +642,13 @@ describe("Checking the Connection Details Page when notes are available", () => 
       expect(
         getByText(`${EN_TRANSLATIONS.connections.details.presented.replace(
           "{{ credentialType }}",
-          historyEvents[1].credentialType
+          historyEvents[3].credentialType
         )}`)
       ).toBeVisible();
       expect(
         getByText(
-          `${formatShortDate(historyEvents[2].timestamp)} - ${formatTimeToSec(
-            historyEvents[2].timestamp
+          `${formatShortDate(historyEvents[3].timestamp)} - ${formatTimeToSec(
+            historyEvents[3].timestamp
           )}`
         )
       ).toBeVisible();
