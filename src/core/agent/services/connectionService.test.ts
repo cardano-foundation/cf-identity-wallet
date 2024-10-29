@@ -315,7 +315,7 @@ describe("Connection service of agent", () => {
       [`note:${id}`]: JSON.stringify({
         ...note,
         id: `note:${id}`,
-        timestamp: now,
+        timestamp: now.toISOString(),
       }),
     });
   });
