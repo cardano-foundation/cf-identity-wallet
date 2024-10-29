@@ -11,7 +11,7 @@ interface IpexHistoryItem {
   credentialType: string;
   content: IpexMessage;
   historyType: ConnectionHistoryType;
-  timestamp: Date;
+  timestamp: string;
   connectionId: string;
 }
 
