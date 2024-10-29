@@ -47,7 +47,10 @@ import {
   mHab,
   memberIdentifierRecord,
 } from "../../__fixtures__/agent/multSigFixtures";
-import { ConnectionHistoryType, KeriaContactKeyPrefix } from "./connectionService.types";
+import {
+  ConnectionHistoryType,
+  KeriaContactKeyPrefix,
+} from "./connectionService.types";
 
 const notificationStorage = jest.mocked({
   open: jest.fn(),
@@ -702,10 +705,10 @@ describe("Ipex communication service of agent", () => {
       [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
         JSON.stringify({
           id: grantForIssuanceExnMessage.exn.d,
+          dt: grantForIssuanceExnMessage.exn.dt,
           credentialType: QVISchema.title,
           connectionId: grantForIssuanceExnMessage.exn.i,
           historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-          dt: grantForIssuanceExnMessage.exn.dt,
         }),
     });
 
@@ -727,10 +730,10 @@ describe("Ipex communication service of agent", () => {
       [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
         JSON.stringify({
           id: grantForIssuanceExnMessage.exn.d,
+          dt: grantForIssuanceExnMessage.exn.dt,
           credentialType: QVISchema.title,
           connectionId: grantForIssuanceExnMessage.exn.i,
           historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE,
-          dt: grantForIssuanceExnMessage.exn.dt,
         }),
     });
 
@@ -751,10 +754,10 @@ describe("Ipex communication service of agent", () => {
         [`${KeriaContactKeyPrefix.HISTORY_IPEX}${applyForPresentingExnMessage.exn.d}`]:
           JSON.stringify({
             id: applyForPresentingExnMessage.exn.d,
+            dt: applyForPresentingExnMessage.exn.dt,
             credentialType: QVISchema.title,
             connectionId: applyForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-            dt: applyForPresentingExnMessage.exn.dt,
           }),
       }
     );
@@ -776,10 +779,10 @@ describe("Ipex communication service of agent", () => {
         [`${KeriaContactKeyPrefix.HISTORY_IPEX}${agreeForPresentingExnMessage.exn.d}`]:
           JSON.stringify({
             id: agreeForPresentingExnMessage.exn.d,
+            dt: agreeForPresentingExnMessage.exn.dt,
             credentialType: QVISchema.title,
             connectionId: agreeForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-            dt: agreeForPresentingExnMessage.exn.dt,
           }),
       }
     );
@@ -801,25 +804,27 @@ describe("Ipex communication service of agent", () => {
         [`${KeriaContactKeyPrefix.HISTORY_REVOKE}${agreeForPresentingExnMessage.exn.e.acdc.d}`]:
           JSON.stringify({
             id: agreeForPresentingExnMessage.exn.d,
+            dt: agreeForPresentingExnMessage.exn.dt,
             credentialType: QVISchema.title,
             connectionId: agreeForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
-            dt: agreeForPresentingExnMessage.exn.dt,
           }),
       }
     );
     expect(schemaGetMock).toBeCalledTimes(1);
     expect(connections.resolveOobi).toBeCalledTimes(1);
-  })
-  
+  });
+
   test("Should throw error if history type invalid", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
     getExchangeMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
-    await expect( ipexCommunicationService.createLinkedIpexMessageRecord(
-      agreeForPresentingExnMessage,
-      "invalid" as any
-    )).rejects.toThrowError("Invalid history type");
-  })
+    await expect(
+      ipexCommunicationService.createLinkedIpexMessageRecord(
+        agreeForPresentingExnMessage,
+        "invalid" as any
+      )
+    ).rejects.toThrowError("Invalid history type");
+  });
 
   test("Should throw error if schemas.get has an unexpected error", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
