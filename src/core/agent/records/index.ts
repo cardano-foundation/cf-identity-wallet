@@ -11,5 +11,3 @@ export * from "./basicStorage";
 export * from "./connectionStorage";
 export * from "./notificationStorage";
 export * from "./operationPendingStorage";
-export * from "./ipexMessageRecord";
-export * from "./ipexMessageStorage";

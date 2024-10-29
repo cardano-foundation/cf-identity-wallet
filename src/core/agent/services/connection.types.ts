@@ -1,8 +1,0 @@
-enum ConnectionHistoryType {
-  CREDENTIAL_ISSUANCE,
-  CREDENTIAL_REQUEST_PRESENT,
-  CREDENTIAL_REQUEST_AGREE,
-  CREDENTIAL_REVOKED,
-}
-
-export { ConnectionHistoryType };
