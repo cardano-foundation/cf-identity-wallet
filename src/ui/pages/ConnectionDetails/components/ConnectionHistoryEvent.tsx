@@ -6,8 +6,8 @@ import {
   ConnectionDetails,
   ConnectionHistoryItem,
 } from "../../../../core/agent/agent.types";
-import { ConnectionHistoryType } from "../../../../core/agent/services/connection.types";
 import { i18n } from "../../../../i18n";
+import { ConnectionHistoryType } from "../../../../core/agent/services/connectionService.types";
 
 const ConnectionHistoryEvent = ({
   index,
