@@ -40,6 +40,8 @@ import {
 } from "../../../core/agent/services/credentialService.types";
 import { RemovePendingAlert } from "../../components/RemovePendingAlert";
 import { showError } from "../../utils/error";
+import { CardSlider } from "../../components/CardSlider";
+import { combineClassNames } from "../../utils/style";
 
 const CLEAR_STATE_DELAY = 1000;
 
@@ -108,7 +110,7 @@ const Credentials = () => {
 
   useEffect(() => {
     setShowPlaceholder(confirmedCreds.length + pendingCreds.length === 0);
-  }, [credsCache]);
+  }, [confirmedCreds.length, credsCache, pendingCreds.length]);
 
   useOnlineStatusEffect(fetchArchivedCreds);
 
@@ -156,13 +158,10 @@ const Credentials = () => {
     }, CLEAR_STATE_DELAY);
   };
 
-  const tabClasses = `credential-tab ${
-    navAnimation === "cards"
-      ? "cards-credential-nav"
-      : navAnimation === "favourite"
-      ? "favorite-credential-nav"
-      : ""
-  }`;
+  const tabClasses = combineClassNames("credential-tab", {
+    "cards-credential-nav": navAnimation === "cards",
+    "favorite-credential-nav": navAnimation === "favourite"
+  });
 
   const handleArchivedCredentialsDisplayChange = (value: boolean) => {
     if (value === archivedCredentialsIsOpen) return;
@@ -253,12 +252,10 @@ const Credentials = () => {
                 className="credentials-tab-content-block credential-favourite-cards"
                 data-testid="favourite-container-element"
               >
-                {!!confirmedCreds.length && (
-                  <h3>{i18n.t("tabs.credentials.tab.favourites")}</h3>
-                )}
-                <CardsStack
+                <CardSlider
+                  title={`${i18n.t("tabs.credentials.tab.favourites")}`}
                   name="favs"
-                  cardsType={CardType.CREDENTIALS}
+                  cardType={CardType.CREDENTIALS}
                   cardsData={sortedFavCreds}
                   onShowCardDetails={() => handleShowNavAnimation("favourite")}
                 />
@@ -278,7 +275,7 @@ const Credentials = () => {
               </div>
             )}
             {!!pendingCreds.length && (
-              <div className="credetial-tab-content-block">
+              <div className="credetial-tab-content-block pending-container">
                 <ListHeader
                   title={`${i18n.t("tabs.credentials.tab.pendingcred")}`}
                 />
