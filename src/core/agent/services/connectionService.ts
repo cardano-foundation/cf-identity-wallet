@@ -242,7 +242,7 @@ class ConnectionService extends AgentService {
           const { historyType, timestamp, credentialType } = messageRecord;
           return {
             type: historyType,
-            timestamp: new Date(timestamp).toISOString(),
+            timestamp,
             credentialType,
           };
         }),

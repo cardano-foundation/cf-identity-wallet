@@ -558,7 +558,7 @@ class IpexCommunicationService extends AgentService {
       content: message,
       connectionId: message.exn.i,
       historyType,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
     };
 
     await this.props.signifyClient.contacts().update(message.exn.i, {
