@@ -702,10 +702,11 @@ describe("Ipex communication service of agent", () => {
       [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
         JSON.stringify({
           id: grantForIssuanceExnMessage.exn.d,
+          dt: grantForIssuanceExnMessage.exn.dt,
           credentialType: QVISchema.title,
           connectionId: grantForIssuanceExnMessage.exn.i,
           historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-          dt: grantForIssuanceExnMessage.exn.dt,
+         
         }),
     });
 
@@ -727,10 +728,10 @@ describe("Ipex communication service of agent", () => {
       [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
         JSON.stringify({
           id: grantForIssuanceExnMessage.exn.d,
+          dt: grantForIssuanceExnMessage.exn.dt,
           credentialType: QVISchema.title,
           connectionId: grantForIssuanceExnMessage.exn.i,
           historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
-          dt: grantForIssuanceExnMessage.exn.dt,
         }),
     });
 
@@ -750,10 +751,10 @@ describe("Ipex communication service of agent", () => {
         [`${KeriaContactKeyPrefix.HISTORY_IPEX}${applyForPresentingExnMessage.exn.d}`]:
           JSON.stringify({
             id: applyForPresentingExnMessage.exn.d,
+            dt: applyForPresentingExnMessage.exn.dt,
             credentialType: QVISchema.title,
             connectionId: applyForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-            dt: applyForPresentingExnMessage.exn.dt,
           }),
       }
     );
@@ -763,22 +764,20 @@ describe("Ipex communication service of agent", () => {
   
   test("Can create linked ipex message record when long running operation for /ipex/grant completes", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
-    const now = new Date();
     await ipexCommunicationService.createLinkedIpexMessageRecord(
-      agreeForPresentingExnMessage,
+      grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_PRESENTED
     );
     expect(updateContactMock).toBeCalledWith(
-      agreeForPresentingExnMessage.exn.i,
+      grantForIssuanceExnMessage.exn.i,
       {
-        [`${KeriaContactKeyPrefix.HISTORY_IPEX}${agreeForPresentingExnMessage.exn.d}`]:
+        [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
           JSON.stringify({
-            id: agreeForPresentingExnMessage.exn.d,
+            id: grantForIssuanceExnMessage.exn.d,
+            dt: grantForIssuanceExnMessage.exn.dt,
             credentialType: QVISchema.title,
-            content: agreeForPresentingExnMessage,
-            connectionId: agreeForPresentingExnMessage.exn.i,
+            connectionId: grantForIssuanceExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
-            timestamp: now,
           }),
       }
     );
@@ -800,10 +799,10 @@ describe("Ipex communication service of agent", () => {
         [`${KeriaContactKeyPrefix.HISTORY_IPEX}${agreeForPresentingExnMessage.exn.d}`]:
           JSON.stringify({
             id: agreeForPresentingExnMessage.exn.d,
+            dt: agreeForPresentingExnMessage.exn.dt,
             credentialType: QVISchema.title,
             connectionId: agreeForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-            dt: agreeForPresentingExnMessage.exn.dt,
           }),
       }
     );
@@ -825,10 +824,10 @@ describe("Ipex communication service of agent", () => {
         [`${KeriaContactKeyPrefix.HISTORY_REVOKE}${agreeForPresentingExnMessage.exn.e.acdc.d}`]:
           JSON.stringify({
             id: agreeForPresentingExnMessage.exn.d,
+            dt: agreeForPresentingExnMessage.exn.dt,
             credentialType: QVISchema.title,
             connectionId: agreeForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
-            dt: agreeForPresentingExnMessage.exn.dt,
           }),
       }
     );
