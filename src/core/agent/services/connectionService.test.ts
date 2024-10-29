@@ -628,16 +628,7 @@ describe("Connection service of agent", () => {
     ]);
     expect(
       await connectionService.getConnectionsPendingDeletion()
-    ).toMatchObject([
-      {
-        id: keriContacts[0].id,
-        groupId: "group-id",
-        connectionDate: nowISO,
-        label: "keri",
-        oobi: "oobi",
-        status: "pending",
-      },
-    ]);
+    ).toMatchObject([keriContacts[0].id]);
     expect(connectionStorage.findAllByQuery).toBeCalledTimes(1);
   });
 
@@ -654,31 +645,21 @@ describe("Connection service of agent", () => {
       .mockResolvedValueOnce(connectionProps);
     eventEmitter.emit = jest.fn();
 
-    await connectionService.markConnectionPendingDelete(
-      keriContacts[0].id,
-      ConnectionStatus.PENDING
-    );
+    await connectionService.markConnectionPendingDelete(keriContacts[0].id);
 
     expect(eventEmitter.emit).toHaveBeenCalledWith({
       type: EventTypes.ConnectionRemoved,
       payload: {
         connectionId: keriContacts[0].id,
-        status: ConnectionStatus.PENDING,
       },
     });
-    expect(connectionStorage.update).toBeCalledWith({
-      ...connectionProps,
-      pending: true,
-    });
+    expect(connectionStorage.update).toBeCalledWith(connectionProps);
   });
 
   test("Should return when result find connection by id is empty", async () => {
     connectionStorage.findById = jest.fn().mockResolvedValueOnce(undefined);
 
-    await connectionService.markConnectionPendingDelete(
-      keriContacts[0].id,
-      ConnectionStatus.PENDING
-    );
+    await connectionService.markConnectionPendingDelete(keriContacts[0].id);
 
     expect(connectionStorage.update).not.toBeCalled();
   });

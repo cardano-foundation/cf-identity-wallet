@@ -422,7 +422,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.keriaNotifications.onRemoveNotification((event) => {
       notificatiStateChanged(event, dispatch);
     });
-    Agent.agent.connections.onConnectionRemoveChanged();
+    Agent.agent.connections.onConnectionRemoved();
   };
 
   const initApp = async () => {
@@ -453,6 +453,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
     if (keriaConnectUrlRecord) {
       try {
         await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
+
+        const pendingDeletions =
+          await Agent.agent.connections.getConnectionsPendingDeletion();
+
+        for (const id of pendingDeletions) {
+          await Agent.agent.connections.deleteConnectionById(id);
+          dispatch(removeConnectionCache(id));
+        }
       } catch (e) {
         const errorMessage = (e as Error).message;
         // If the error is failed to fetch with signify, we retry until the connection is secured
@@ -465,13 +473,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
           throw e;
         }
       }
-    }
-    const pendingDeletions =
-      await Agent.agent.connections.getConnectionsPendingDeletion();
-
-    for (const pendingDeletion of pendingDeletions) {
-      await Agent.agent.connections.deleteConnectionById(pendingDeletion.id);
-      dispatch(removeConnectionCache(pendingDeletion.id));
     }
 
     // Begin background polling of KERIA or local DB items

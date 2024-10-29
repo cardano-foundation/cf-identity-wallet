@@ -69,7 +69,7 @@ class ConnectionService extends AgentService {
     this.props.eventEmitter.on(EventTypes.ConnectionStateChanged, callback);
   }
 
-  onConnectionRemoveChanged() {
+  onConnectionRemoved() {
     this.props.eventEmitter.on(
       EventTypes.ConnectionRemoved,
       (data: ConnectionRemovedEvent) =>
@@ -275,29 +275,26 @@ class ConnectionService extends AgentService {
     await this.connectionStorage.deleteById(id);
   }
 
-  async markConnectionPendingDelete(id: string, status: ConnectionStatus) {
+  async markConnectionPendingDelete(id: string) {
     const connectionProps = await this.connectionStorage.findById(id);
     if (!connectionProps) return;
-    connectionProps.pending = true;
+    connectionProps.pendingDeletion = true;
     await this.connectionStorage.update(connectionProps);
 
     this.props.eventEmitter.emit<ConnectionRemovedEvent>({
       type: EventTypes.ConnectionRemoved,
       payload: {
         connectionId: id,
-        status,
       },
     });
   }
 
-  async getConnectionsPendingDeletion(): Promise<ConnectionShortDetails[]> {
+  async getConnectionsPendingDeletion() {
     const connections = await this.connectionStorage.findAllByQuery({
-      pending: true,
+      pendingDeletion: true,
     });
 
-    return connections.map((connection) =>
-      this.getConnectionShortDetails(connection)
-    );
+    return connections.map((connection) => connection.id);
   }
 
   async deleteStaleLocalConnectionById(id: string): Promise<void> {

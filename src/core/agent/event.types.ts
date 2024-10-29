@@ -56,8 +56,7 @@ interface ConnectionStateChangedEvent extends BaseEventEmitter {
 interface ConnectionRemovedEvent extends BaseEventEmitter {
   type: typeof EventTypes.ConnectionRemoved;
   payload: {
-    connectionId?: string;
-    status: ConnectionStatus;
+    connectionId: string;
   };
 }
 

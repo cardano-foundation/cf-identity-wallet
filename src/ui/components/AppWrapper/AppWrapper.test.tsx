@@ -85,7 +85,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getConnectionShortDetailById: jest.fn(),
         getUnhandledConnections: jest.fn(),
         syncKeriaContacts: jest.fn(),
-        onConnectionRemoveChanged: jest.fn(),
+        onConnectionRemoved: jest.fn(),
         getConnectionsPendingDeletion: () => getConnectionsPendingDeletionMock(),
         deleteConnectionById: jest.fn()
       },
