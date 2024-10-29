@@ -5,8 +5,11 @@ import { CoreEventEmitter } from "../event";
 import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
-import { ConnectionHistoryType } from "./connection.types";
 import { EventTypes } from "../event.types";
+import {
+  ConnectionHistoryType,
+  KeriaContactKeyPrefix,
+} from "./connectionService.types";
 
 const contactListMock = jest.fn();
 let deleteContactMock = jest.fn();
@@ -14,13 +17,7 @@ const updateContactMock = jest.fn();
 const getOobiMock = jest.fn();
 const getIdentifier = jest.fn();
 const saveOperationPendingMock = jest.fn();
-const contactGetMock = jest.fn().mockImplementation((id: string) => {
-  return {
-    alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
-    oobi: "oobi",
-    id,
-  };
-});
+let contactGetMock = jest.fn();
 
 const failUuid = "fail-uuid";
 const signifyClient = jest.mocked({
@@ -154,12 +151,7 @@ const credentialStorage = jest.mocked({
   updateCredentialMetadata: jest.fn(),
   getCredentialMetadatasById: jest.fn(),
 });
-const ipexMessageStorage = jest.mocked({
-  createIpexMessageRecord: jest.fn(),
-  getIpexMessageMetadataByConnectionId:
-    getIpexMessageMetadataByConnectionIdMock,
-  deleteIpexMessageMetadata: jest.fn(),
-});
+
 const identifiers = jest.mocked({
   getIdentifierMetadataByGroupId: jest.fn(),
 });
@@ -168,7 +160,6 @@ const connectionService = new ConnectionService(
   agentServicesProps,
   connectionStorage as any,
   credentialStorage as any,
-  ipexMessageStorage as any,
   operationPendingStorage as any,
   identifiers as any
 );
@@ -318,11 +309,13 @@ describe("Connection service of agent", () => {
       message: "message",
     };
     const id = new Salter({}).qb64;
+    const now = new Date();
     await connectionService.createConnectionNote(connectionId, note);
     expect(updateContactMock).toBeCalledWith(connectionId, {
       [`note:${id}`]: JSON.stringify({
         ...note,
         id: `note:${id}`,
+        timestamp: now.toISOString(),
       }),
     });
   });
@@ -605,87 +598,6 @@ describe("Connection service of agent", () => {
     });
   });
 
-  test("Can get connection History by id", async () => {
-    jest.restoreAllMocks();
-    const connectionId = "connectionId";
-    const date1 = new Date("Sat Jul 27 2024 15:02:30 GMT+0700");
-    const date2 = new Date("Sat Jul 27 2024 15:45:04 GMT+0700");
-    const date3 = new Date("Sat Jul 27 2024 15:30:34 GMT+0700");
-    getIpexMessageMetadataByConnectionIdMock.mockResolvedValue([
-      {
-        id: "id-1",
-        content: {
-          exn: {
-            r: "/ipex/grant",
-            e: {
-              acdc: {
-                d: "EN_tsGwSUI63SYoSiiN8qsysUT8bnka9gZEka8PG_oVK",
-              },
-            },
-          },
-        },
-        credentialType: "IIW 2024 Demo Day Attendee",
-        connectionId,
-        historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-        createdAt: date1,
-      },
-      {
-        id: "id-2",
-        content: {
-          exn: {
-            r: "/ipex/apply",
-            e: {
-              acdc: {
-                d: "EN_tsGwSUI63SYoSiiN8qsysUT8bnka9gZEka8PG_oVQ",
-              },
-            },
-          },
-        },
-        credentialType: "IIW 2024 Demo Day Attendee",
-        connectionId,
-        historyType: ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT,
-        createdAt: date2,
-      },
-      {
-        id: "id-3",
-        content: {
-          exn: {
-            r: "/ipex/grant",
-            e: {
-              acdc: {
-                d: "EN_tsGwSUI63SYoSiiN8qsysUT8bnka9gZEka8PG_oVQ",
-              },
-            },
-          },
-        },
-        credentialType: "IIW 2024 Demo Day Attendee",
-        connectionId,
-        historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
-        createdAt: date3,
-      },
-    ]);
-    const histories = await connectionService.getConnectionHistoryById(
-      connectionId
-    );
-    expect(histories).toEqual([
-      {
-        type: ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT,
-        timestamp: date2.toISOString(),
-        credentialType: "IIW 2024 Demo Day Attendee",
-      },
-      {
-        type: ConnectionHistoryType.CREDENTIAL_REVOKED,
-        timestamp: date3.toISOString(),
-        credentialType: "IIW 2024 Demo Day Attendee",
-      },
-      {
-        type: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-        timestamp: date1.toISOString(),
-        credentialType: "IIW 2024 Demo Day Attendee",
-      },
-    ]);
-  });
-
   test("Can delete stale local connection", async () => {
     const connectionId = "connection-id";
     await connectionService.deleteStaleLocalConnectionById(connectionId);
@@ -790,5 +702,70 @@ describe("Connection service of agent", () => {
     await expect(
       connectionService.deleteConnectionById(keriContacts[0].id)
     ).rejects.toThrow("Some other error - 500");
+  });
+  test("can get connection by id", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const connectionNote = {
+      id: "note:id",
+      title: "title",
+      message: "message",
+    };
+    const mockHistoryIpexMessage = {
+      id: "id",
+      credentialType: "rare evo",
+      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+      type: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+      dt: new Date().toISOString(),
+      connectionId: "connectionId",
+    };
+    const mockHistoryRevokeMessage = {
+      id: "id",
+      credentialType: "rare evo",
+      historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
+      type: ConnectionHistoryType.CREDENTIAL_REVOKED,
+      dt: new Date().toISOString(),
+      connectionId: "connectionId",
+    };
+
+    contactGetMock = jest.fn().mockReturnValue(
+      Promise.resolve({
+        alias: "alias",
+        oobi: "oobi",
+        id: "id",
+        [`${KeriaContactKeyPrefix.CONNECTION_NOTE}:id`]:
+          JSON.stringify(connectionNote),
+        [`${KeriaContactKeyPrefix.HISTORY_IPEX}:id`]: JSON.stringify(
+          mockHistoryIpexMessage
+        ),
+        [`${KeriaContactKeyPrefix.HISTORY_REVOKE}:id`]: JSON.stringify(
+          mockHistoryRevokeMessage
+        ),
+      })
+    );
+
+    connectionStorage.findById = jest.fn().mockResolvedValue({
+      id: keriContacts[0].id,
+      createdAt: now,
+      alias: "keri",
+      oobi: "oobi",
+      groupId: "group-id",
+      getTag: jest.fn().mockReturnValue("group-id"),
+    });
+
+    expect(await connectionService.getConnectionById("id")).toEqual({
+      id: "id",
+      label: "alias",
+      serviceEndpoints: ["oobi"],
+      status: ConnectionStatus.CONFIRMED,
+      connectionDate: nowISO,
+      notes: [connectionNote],
+      historyItems: [mockHistoryIpexMessage, mockHistoryRevokeMessage].map(
+        (item) => ({
+          type: item.historyType,
+          timestamp: item.dt,
+          credentialType: item.credentialType,
+        })
+      ),
+    });
   });
 });

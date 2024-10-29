@@ -7,7 +7,11 @@ import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Agent } from "../../../core/agent/agent";
-import { ConnectionStatus } from "../../../core/agent/agent.types";
+import {
+  ConnectionHistoryItem,
+  ConnectionNoteDetails,
+  ConnectionStatus,
+} from "../../../core/agent/agent.types";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { TabsRoutePath } from "../../../routes/paths";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
@@ -107,6 +111,14 @@ describe("ConnectionDetails Page", () => {
               message: "Message",
             },
           ],
+          historyItems: [
+            {
+              type: 3,
+              timestamp: "2024-08-07T15:33:18.204Z",
+              credentialType: "Rare EVO 2024 Attendee",
+            },
+          ],
+          serviceEndpoints: [],
         })
     );
   });
@@ -392,7 +404,9 @@ interface MockConnectionDetails {
   connectionDate: string;
   logo: string;
   status: ConnectionStatus;
-  notes: any[];
+  notes: ConnectionNoteDetails[];
+  historyItems: ConnectionHistoryItem[];
+  serviceEndpoints: string[];
 }
 
 describe("Checking the Connection Details Page when no notes are available", () => {
@@ -406,6 +420,8 @@ describe("Checking the Connection Details Page when no notes are available", () 
           logo: ".png",
           status: "pending" as ConnectionStatus,
           notes: [],
+          historyItems: [],
+          serviceEndpoints: [],
         })
     );
   });
@@ -464,6 +480,14 @@ describe("Checking the Connection Details Page when notes are available", () => 
               message: "Message",
             },
           ],
+          historyItems: [
+            {
+              type: 1,
+              timestamp: "2017-01-14T19:23:24Z",
+              credentialType: "Rare EVO Attendee",
+            },
+          ],
+          serviceEndpoints: [],
         })
     );
   });
@@ -503,13 +527,6 @@ describe("Checking the Connection Details Page when notes are available", () => 
   });
 
   test("Get all connection history items", async () => {
-    const connectionDetails = {
-      ...connectionsFix[6],
-      serviceEndpoints: [
-        "http://keria:3902/oobi/EBvcao4Ub-Q7Wwkm0zJzwigvPTrthP4uH5mQ4efRv9aU/agent/EBJBjEDV_ysVyJHg7fDdqB332gCVhpgb6a3a00BtmWdg?name=The%20Pentagon",
-      ],
-      notes: [],
-    };
     const historyEvents = [
       {
         type: 3,
@@ -532,13 +549,18 @@ describe("Checking the Connection Details Page when notes are available", () => 
         credentialType: "Rare EVO 2024 Attendee",
       },
     ];
+    const connectionDetails = {
+      ...connectionsFix[6],
+      serviceEndpoints: [
+        "http://keria:3902/oobi/EBvcao4Ub-Q7Wwkm0zJzwigvPTrthP4uH5mQ4efRv9aU/agent/EBJBjEDV_ysVyJHg7fDdqB332gCVhpgb6a3a00BtmWdg?name=The%20Pentagon",
+      ],
+      notes: [],
+      historyItems: historyEvents,
+    };
+
     jest
       .spyOn(Agent.agent.connections, "getConnectionById")
       .mockResolvedValue(connectionDetails);
-
-    jest
-      .spyOn(Agent.agent.connections, "getConnectionHistoryById")
-      .mockResolvedValue(historyEvents);
 
     const storeMocked = {
       ...mockStore(initialStateFull),

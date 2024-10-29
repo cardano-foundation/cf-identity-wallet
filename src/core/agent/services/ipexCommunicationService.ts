@@ -12,7 +12,6 @@ import {
   IdentifierStorage,
   NotificationStorage,
   OperationPendingStorage,
-  IpexMessageStorage,
   IdentifierMetadataRecord,
 } from "../records";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
@@ -21,7 +20,6 @@ import { OnlineOnly, deleteNotificationRecordById } from "./utils";
 import { CredentialStatus, ACDCDetails } from "./credentialService.types";
 import { CredentialsMatchingApply } from "./ipexCommunicationService.types";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
-import { ConnectionHistoryType } from "./connection.types";
 import { MultiSigService } from "./multiSigService";
 import { GrantToJoinMultisigExnPayload, MultiSigRoute } from "./multiSig.types";
 import {
@@ -30,8 +28,12 @@ import {
   EventTypes,
 } from "../event.types";
 import { ConnectionService } from "./connectionService";
-import { Agent } from "../agent";
 import { IdentifierType } from "./identifier.types";
+import {
+  ConnectionHistoryItem,
+  ConnectionHistoryType,
+  KeriaContactKeyPrefix,
+} from "./connectionService.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -52,7 +54,6 @@ class IpexCommunicationService extends AgentService {
   protected readonly identifierStorage: IdentifierStorage;
   protected readonly credentialStorage: CredentialStorage;
   protected readonly notificationStorage: NotificationStorage;
-  protected readonly ipexMessageStorage: IpexMessageStorage;
   protected readonly operationPendingStorage: OperationPendingStorage;
   protected readonly multisigService: MultiSigService;
   protected readonly connections: ConnectionService;
@@ -62,7 +63,6 @@ class IpexCommunicationService extends AgentService {
     identifierStorage: IdentifierStorage,
     credentialStorage: CredentialStorage,
     notificationStorage: NotificationStorage,
-    ipexMessageStorage: IpexMessageStorage,
     operationPendingStorage: OperationPendingStorage,
     multisigService: MultiSigService,
     connections: ConnectionService
@@ -71,7 +71,6 @@ class IpexCommunicationService extends AgentService {
     this.identifierStorage = identifierStorage;
     this.credentialStorage = credentialStorage;
     this.notificationStorage = notificationStorage;
-    this.ipexMessageStorage = ipexMessageStorage;
     this.operationPendingStorage = operationPendingStorage;
     this.multisigService = multisigService;
     this.connections = connections;
@@ -540,12 +539,33 @@ class IpexCommunicationService extends AgentService {
       `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${schemaSaid}`
     );
     const schema = await this.props.signifyClient.schemas().get(schemaSaid);
-    await this.ipexMessageStorage.createIpexMessageRecord({
+
+    let prefix;
+    let key;
+    switch (historyType) {
+    case ConnectionHistoryType.CREDENTIAL_REVOKED:
+      prefix = KeriaContactKeyPrefix.HISTORY_REVOKE;
+      key = message.exn.e.acdc.d;
+      break;
+    case ConnectionHistoryType.CREDENTIAL_ISSUANCE:
+    case ConnectionHistoryType.CREDENTIAL_REQUEST_AGREE:
+    case ConnectionHistoryType.CREDENTIAL_REQUEST_PRESENT:
+      prefix = KeriaContactKeyPrefix.HISTORY_IPEX;
+      key = message.exn.d;
+      break;
+    default:
+      throw new Error("Invalid history type");
+    }
+    const historyItem: ConnectionHistoryItem = {
       id: message.exn.d,
-      credentialType: schema?.title,
-      content: message,
+      dt: message.exn.dt,
+      credentialType: schema.title,
       connectionId: message.exn.i,
       historyType,
+    };
+
+    await this.props.signifyClient.contacts().update(message.exn.i, {
+      [`${prefix}${key}`]: JSON.stringify(historyItem),
     });
   }
 
