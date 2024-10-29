@@ -72,8 +72,15 @@ const initialState = {
       passwordIsSet: true,
     },
   },
-  identifierViewTypeCacheCache: {
-    viewType: null,
+  viewTypeCache: {
+    identifier: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
+    credential: {
+      viewType: null,
+      favouriteIndex: 0,
+    }
   },
   seedPhraseCache: {
     seedPhrase:
@@ -167,8 +174,15 @@ describe("Identifiers Tab", () => {
       identifiersCache: {
         identifiers: filteredIdentifierFix,
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -247,8 +261,15 @@ describe("Identifiers Tab", () => {
           groupId: multisignIdentifierFix[0].groupMetadata?.groupId,
         },
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: [],
@@ -296,8 +317,15 @@ describe("Identifiers Tab", () => {
         identifiers: multisignIdentifierFix,
         openMultiSigId: multisignIdentifierFix[0].groupMetadata?.groupId,
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: [],
@@ -343,8 +371,15 @@ describe("Identifiers Tab", () => {
       identifiersCache: {
         identifiers: [],
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: [],
@@ -392,8 +427,15 @@ describe("Identifiers Tab", () => {
       identifiersCache: {
         identifiers: filteredIdentifierFix,
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -485,8 +527,15 @@ describe("Identifiers Tab", () => {
       identifiersCache: {
         identifiers: pendingMultisignIdentifierFix,
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -545,8 +594,15 @@ describe("Identifiers Tab", () => {
       identifiersCache: {
         identifiers: pendingMultisignIdentifierFix,
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: connectionsFix,
@@ -614,8 +670,15 @@ describe("Identifiers Tab", () => {
           groupId: multisignIdentifierFix[0].groupMetadata?.groupId,
         },
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: [],

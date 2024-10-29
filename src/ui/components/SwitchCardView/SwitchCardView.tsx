@@ -14,9 +14,11 @@ import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getIdentifierViewTypeCacheCache,
-  setViewTypeCache,
-} from "../../../store/reducers/identifierViewTypeCache";
+  getCredentialViewTypeCache,
+  getIdentifierViewTypeCache,
+  setCredentialViewTypeCache,
+  setIdentifierViewTypeCache,
+} from "../../../store/reducers/viewTypeCache";
 import { Agent } from "../../../core/agent/agent";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 
@@ -32,21 +34,24 @@ const SwitchCardView = ({
   const history = useHistory();
   const dispatch = useAppDispatch();
   const [type, setType] = useState<CardListViewType>(CardListViewType.Stack);
-  const viewTypeCache = useAppSelector(getIdentifierViewTypeCacheCache);
+  const identifierViewTypeCache = useAppSelector(getIdentifierViewTypeCache);
+  const credViewTypeCache = useAppSelector(getCredentialViewTypeCache);
+  const isIdentifier = cardTypes === CardType.IDENTIFIERS;
+  const viewTypeCache = isIdentifier ? identifierViewTypeCache : credViewTypeCache;
 
   const setViewType = useCallback((viewType: CardListViewType) => {
     setType(viewType);
     Agent.agent.basicStorage
       .createOrUpdateBasicRecord(
         new BasicRecord({
-          id: MiscRecordId.APP_IDENTIFIER_VIEW_TYPE,
+          id: isIdentifier ? MiscRecordId.APP_IDENTIFIER_VIEW_TYPE :  MiscRecordId.APP_CRED_VIEW_TYPE,
           content: { viewType },
         })
       )
       .then(() => {
-        dispatch(setViewTypeCache(viewType));
+        dispatch(isIdentifier ? setIdentifierViewTypeCache(viewType) : setCredentialViewTypeCache(viewType));
       });
-  }, [dispatch]);
+  }, [dispatch, isIdentifier]);
 
   useEffect(() => {
     if (!viewTypeCache.viewType) {

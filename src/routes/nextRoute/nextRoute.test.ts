@@ -73,9 +73,15 @@ describe("NextRoute", () => {
         connectedWallet: null,
         pendingConnection: null,
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
-        favouriteIndex: 0,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       biometricsCache: {
         enabled: false,
@@ -322,9 +328,15 @@ describe("getNextRoute", () => {
       connectedWallet: null,
       pendingConnection: null,
     },
-    identifierViewTypeCacheCache: {
-      viewType: null,
-      favouriteIndex: 0,
+    viewTypeCache: {
+      identifier: {
+        viewType: null,
+        favouriteIndex: 0,
+      },
+      credential: {
+        viewType: null,
+        favouriteIndex: 0,
+      }
     },
     biometricsCache: {
       enabled: false,
