@@ -1,17 +1,18 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
-import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
 import { IonButton, IonIcon, IonInput, IonLabel } from "@ionic/react";
 import { ionFireEvent } from "@ionic/react-test-utils";
-import { StoreMockedProps } from "../../pages/LockPage/LockPage.test";
-import { RoutePath } from "../../../routes";
-import { OperationType } from "../../globals/types";
-import { PasswordModule } from "./PasswordModule";
-import { CustomInputProps } from "../CustomInput/CustomInput.types";
-import TRANSLATIONS from "../../../locales/en/en.json";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
+import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { KeyStoreKeys } from "../../../core/storage";
+import TRANSLATIONS from "../../../locales/en/en.json";
+import { RoutePath } from "../../../routes";
+import { OperationType } from "../../globals/types";
+import { StoreMockedProps } from "../../pages/LockPage/LockPage.test";
+import { CustomInputProps } from "../CustomInput/CustomInput.types";
+import { PasswordModule } from "./PasswordModule";
 
 const initialState = {
   stateCache: {
@@ -79,6 +80,9 @@ jest.mock("../../components/CustomInput", () => ({
           {props.optional && (
             <span className="custom-input-optional">(optional)</span>
           )}
+          {
+            props.labelAction
+          }
         </IonLabel>
         <IonInput
           data-testid={props.dataTestId}
@@ -116,7 +120,7 @@ const storeMocked = (initialState: StoreMockedProps) => {
   };
 };
 
-describe("Passcode Module", () => {
+describe("Password Module", () => {
   const onCreateSuccesMock = jest.fn();
   test("Render", async () => {
     const { getByTestId, getByText } = render(
@@ -158,200 +162,65 @@ describe("Passcode Module", () => {
     const input = getByTestId("create-password-input");
 
     act(() => {
-      ionFireEvent.ionInput(input, "Pass1@");
+      ionFireEvent.ionInput(input, "pass");
+      ionFireEvent.ionBlur(input);
     });
 
     await waitFor(() => {
-      expect(getByText(TRANSLATIONS.createpassword.error.isTooShort));
-      expect(
-        getByTestId("password-validation-length-icon").classList.contains(
-          "fails"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-uppercase-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-lowercase-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-number-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-symbol-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-    });
+      expect(getByText(TRANSLATIONS.createpassword.error.passwordlength))
+      expect(getByText(TRANSLATIONS.createpassword.meter.strengthlevel.weak))
+    })
 
     act(() => {
       ionFireEvent.ionInput(input, "passsssssss1@");
+      ionFireEvent.ionBlur(input);
     });
 
     await waitFor(() => {
       expect(getByText(TRANSLATIONS.createpassword.error.hasNoUppercase));
-      expect(
-        getByTestId("password-validation-length-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-uppercase-icon").classList.contains(
-          "fails"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-lowercase-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-number-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-symbol-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-    });
+      expect(getByText(TRANSLATIONS.createpassword.meter.strengthlevel.medium));
+    })
 
     act(() => {
       ionFireEvent.ionInput(input, "PASSSSSSSSS1@");
+      ionFireEvent.ionBlur(input);
     });
 
     await waitFor(() => {
       expect(getByText(TRANSLATIONS.createpassword.error.hasNoLowercase));
-      expect(
-        getByTestId("password-validation-length-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-uppercase-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-lowercase-icon").classList.contains(
-          "fails"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-number-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-symbol-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-    });
+    })
 
     act(() => {
       ionFireEvent.ionInput(input, "Passssssssssssss@");
+      ionFireEvent.ionBlur(input);
     });
 
     await waitFor(() => {
       expect(getByText(TRANSLATIONS.createpassword.error.hasNoNumber));
-      expect(
-        getByTestId("password-validation-length-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-uppercase-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-lowercase-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-number-icon").classList.contains(
-          "fails"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-symbol-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-    });
+    })
 
     act(() => {
       ionFireEvent.ionInput(input, "Passssssssssssss1");
+      ionFireEvent.ionBlur(input);
     });
 
     await waitFor(() => {
       expect(getByText(TRANSLATIONS.createpassword.error.hasNoSymbol));
-      expect(
-        getByTestId("password-validation-length-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-uppercase-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-lowercase-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-number-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-symbol-icon").classList.contains(
-          "fails"
-        )
-      ).toBe(true);
-    });
+    })
 
     act(() => {
-      ionFireEvent.ionInput(input, "Passssssssssssss@1");
+      ionFireEvent.ionInput(input, "Passssssssssssss@1∞");
+      ionFireEvent.ionBlur(input);
     });
 
     await waitFor(() => {
-      expect(
-        getByTestId("password-validation-length-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-uppercase-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-lowercase-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-number-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-symbol-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
+      expect(getByText(TRANSLATIONS.createpassword.error.hasSpecialChar));
+      expect(getByText(TRANSLATIONS.createpassword.meter.strengthlevel.strong));
+    })
+
+    act(() => {
+      ionFireEvent.ionInput(input, "Passssssssssssss@1");
+      ionFireEvent.ionBlur(input);
     });
   });
 
@@ -477,34 +346,6 @@ describe("Passcode Module", () => {
       ionFireEvent.ionInput(hintInput, "hint");
     });
 
-    await waitFor(() => {
-      expect(
-        getByTestId("password-validation-length-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-uppercase-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-lowercase-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-number-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-symbol-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-    });
-
     const submitButton = getByTestId("primary-button-password-module");
 
     const mockDate = new Date(1466424490000);
@@ -581,34 +422,6 @@ describe("Passcode Module", () => {
       ionFireEvent.ionInput(hintInput, "hint");
     });
 
-    await waitFor(() => {
-      expect(
-        getByTestId("password-validation-length-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-uppercase-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-lowercase-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-number-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-      expect(
-        getByTestId("password-validation-symbol-icon").classList.contains(
-          "pass"
-        )
-      ).toBe(true);
-    });
-
     const submitButton = getByTestId("primary-button-password-module");
 
     act(() => {
@@ -634,6 +447,55 @@ describe("Passcode Module", () => {
       expect((input as HTMLInputElement).value).toBe("");
       expect((confirmInput as HTMLInputElement).value).toBe("");
       expect((hintInput as HTMLInputElement).value).toBe("");
+    });
+  });
+
+  test("Open symbol modal", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [RoutePath.TABS_MENU],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          seedPhraseIsSet: true,
+          passwordIsSet: true,
+        },
+        currentOperation: OperationType.IDLE,
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+        bran: "",
+      },
+      cryptoAccountsCache: {
+        cryptoAccounts: [],
+      },
+      biometricsCache: {
+        enabled: false,
+      },
+    };
+
+    const { getByTestId, getByText, queryByText } = render(
+      <Provider store={storeMocked(initialState)}>
+        <PasswordModule
+          title="Password Module"
+          description="Description"
+          testId="password-module"
+          isOnboarding={false}
+          onCreateSuccess={onCreateSuccesMock}
+        />
+      </Provider>
+    );
+    
+    act(() => {
+      ionFireEvent.click(
+        getByTestId("open-symbol-modal")
+      );
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("symbol-modal")).toBeVisible();
+      expect(getByText(TRANSLATIONS.createpassword.symbolmodal.done)).toBeVisible();
     });
   });
 });
