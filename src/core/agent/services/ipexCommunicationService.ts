@@ -29,7 +29,11 @@ import {
 } from "../event.types";
 import { ConnectionService } from "./connectionService";
 import { IdentifierType } from "./identifier.types";
-import { ConnectionHistoryType, IpexHistoryItem, KeriaContactKeyPrefix } from "./connectionService.types";
+import {
+  ConnectionHistoryItem,
+  ConnectionHistoryType,
+  KeriaContactKeyPrefix,
+} from "./connectionService.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -552,17 +556,16 @@ class IpexCommunicationService extends AgentService {
     default:
       throw new Error("Invalid history type");
     }
-    const ipexHistory: IpexHistoryItem = {
+    const historyItem: ConnectionHistoryItem = {
       id: message.exn.d,
-      credentialType: schema?.title,
-      content: message,
+      dt: message.exn.dt,
+      credentialType: schema.title,
       connectionId: message.exn.i,
       historyType,
-      timestamp: new Date().toISOString(),
     };
 
     await this.props.signifyClient.contacts().update(message.exn.i, {
-      [`${prefix}${key}`]: JSON.stringify(ipexHistory),
+      [`${prefix}${key}`]: JSON.stringify(historyItem),
     });
   }
 

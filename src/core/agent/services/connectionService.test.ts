@@ -6,7 +6,10 @@ import { ConfigurationService } from "../../configuration";
 import { Agent } from "../agent";
 import { OperationPendingRecordType } from "../records/operationPendingRecord.type";
 import { EventTypes } from "../event.types";
-import { ConnectionHistoryType, KeriaContactKeyPrefix } from "./connectionService.types";
+import {
+  ConnectionHistoryType,
+  KeriaContactKeyPrefix,
+} from "./connectionService.types";
 
 const contactListMock = jest.fn();
 const deleteContactMock = jest.fn();
@@ -655,19 +658,17 @@ describe("Connection service of agent", () => {
     const mockHistoryIpexMessage = {
       id: "id",
       credentialType: "rare evo",
-      content: {},
       historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
       type: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-      timestamp: new Date(),
+      dt: new Date().toISOString(),
       connectionId: "connectionId",
     };
     const mockHistoryRevokeMessage = {
       id: "id",
       credentialType: "rare evo",
-      content: {},
       historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
       type: ConnectionHistoryType.CREDENTIAL_REVOKED,
-      timestamp: new Date(),
+      dt: new Date().toISOString(),
       connectionId: "connectionId",
     };
 
@@ -706,7 +707,7 @@ describe("Connection service of agent", () => {
       historyItems: [mockHistoryIpexMessage, mockHistoryRevokeMessage].map(
         (item) => ({
           type: item.historyType,
-          timestamp: new Date(item.timestamp).toISOString(),
+          timestamp: item.dt,
           credentialType: item.credentialType,
         })
       ),

@@ -6,12 +6,11 @@ enum KeriaContactKeyPrefix {
   HISTORY_REVOKE = "history:revoke:",
 }
 
-interface IpexHistoryItem {
+interface ConnectionHistoryItem {
   id: string;
   credentialType: string;
-  content: IpexMessage;
   historyType: ConnectionHistoryType;
-  timestamp: string;
+  dt: string;
   connectionId: string;
 }
 
@@ -32,4 +31,4 @@ enum ConnectionHistoryType {
 
 export { ConnectionHistoryType, KeriaContactKeyPrefix };
 
-export type { KeriaContact, IpexHistoryItem, IpexMessage };
+export type { KeriaContact, ConnectionHistoryItem, IpexMessage };
