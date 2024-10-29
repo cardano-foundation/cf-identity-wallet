@@ -14,6 +14,7 @@ const updateIdentifierMock = jest.fn();
 const createIdentifierMock = jest.fn();
 const rotateIdentifierMock = jest.fn();
 const saveOperationPendingMock = jest.fn();
+const operationMock = jest.fn()
 const mockSigner = {
   _code: "A",
   _size: -1,
@@ -421,6 +422,27 @@ describe("Single sig service of agent", () => {
     ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
   });
 
+  test("should throw an error if identifier name already exists", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const displayName = "newDisplayName";
+    const errorMessage = "HTTP POST /identifiers - 400 Bad Request - {'title': 'AID with name {theme}:{name} already incepted'}";
+    createIdentifierMock.mockResolvedValue({
+      serder: {
+        ked: {
+          i: "i",
+        },
+      },
+      op: operationMock,
+    });
+    operationMock.mockRejectedValue(new Error(errorMessage));
+    await expect(
+      identifierService.createIdentifier({
+        displayName,
+        theme: 0,
+      })
+    ).rejects.toThrowError(IdentifierService.IDENTIFIER_ALREADY_EXISTS);
+  });
+
   test("should delete all associated linked connections if the identifier is a group member identifier", async () => {
     identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
       ...keriMetadataRecord,
@@ -492,7 +514,7 @@ describe("Single sig service of agent", () => {
     });
     expect(updateIdentifierMock).toBeCalledWith(keriMetadataRecord.id, {
       name: `${newTheme}:${newDisplayName}`,
-    })
+    });
     expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
       keriMetadataRecord.id,
       {

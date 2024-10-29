@@ -35,6 +35,8 @@ class IdentifierService extends AgentService {
     "Failed to rotate AID, operation not completing...";
   static readonly FAILED_TO_OBTAIN_KEY_MANAGER =
     "Failed to obtain key manager for given AID";
+  static readonly IDENTIFIER_ALREADY_EXISTS =
+    "The identifier has already been incepted";
   static readonly IDENTIFIER_IS_PENDING =
     "Cannot fetch identifier details as the identifier is still pending";
   protected readonly identifierStorage: IdentifierStorage;
@@ -138,8 +140,14 @@ class IdentifierService extends AgentService {
     if (metadata.groupMetadata) {
       name = `${metadata.theme}:${metadata.groupMetadata.groupId}:${metadata.displayName}`;
     }
-    const operation = await this.props.signifyClient.identifiers().create(name); //, this.getCreateAidOptions());
-    let op = await operation.op();
+    const operation = await this.props.signifyClient.identifiers().create(name);
+    let op = await operation.op().catch((error) => {
+      const err = error.message.split(" - ");
+      if (/400/gi.test(err[1]) && /already incepted/gi.test(err[2])) {     
+        throw new Error(IdentifierService.IDENTIFIER_ALREADY_EXISTS);
+      }
+      throw error;
+    });
     const identifier = operation.serder.ked.i;
 
     const addRoleOperation = await this.props.signifyClient
