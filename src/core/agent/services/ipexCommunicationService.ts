@@ -29,7 +29,11 @@ import {
 } from "../event.types";
 import { ConnectionService } from "./connectionService";
 import { IdentifierType } from "./identifier.types";
-import { ConnectionHistoryType, IpexHistoryItem, KeriaContactKeyPrefix } from "./connectionService.types";
+import {
+  ConnectionHistoryType,
+  IpexHistoryItem,
+  KeriaContactKeyPrefix,
+} from "./connectionService.types";
 
 class IpexCommunicationService extends AgentService {
   static readonly ISSUEE_NOT_FOUND_LOCALLY =
@@ -520,8 +524,12 @@ class IpexCommunicationService extends AgentService {
     historyType: ConnectionHistoryType
   ): Promise<void> {
     let schemaSaid;
+    let connectionId = message.exn.i;
     if (message.exn.r === ExchangeRoute.IpexGrant) {
       schemaSaid = message.exn.e.acdc.s;
+      if (historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED) {
+        connectionId = message.exn.rp;
+      }
     } else if (message.exn.r === ExchangeRoute.IpexApply) {
       schemaSaid = message.exn.a.s;
     } else if (message.exn.r === ExchangeRoute.IpexAgree) {
@@ -556,12 +564,12 @@ class IpexCommunicationService extends AgentService {
       id: message.exn.d,
       credentialType: schema?.title,
       content: message,
-      connectionId: message.exn.i,
+      connectionId,
       historyType,
       timestamp: new Date().toISOString(),
     };
 
-    await this.props.signifyClient.contacts().update(message.exn.i, {
+    await this.props.signifyClient.contacts().update(connectionId, {
       [`${prefix}${key}`]: JSON.stringify(ipexHistory),
     });
   }

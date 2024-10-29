@@ -1008,7 +1008,7 @@ class KeriaNotificationService extends AgentService {
               }
             }
             await this.ipexCommunications.createLinkedIpexMessageRecord(
-              agreeExchange,
+              grantExchange,
               ConnectionHistoryType.CREDENTIAL_PRESENTED
             );
           }
