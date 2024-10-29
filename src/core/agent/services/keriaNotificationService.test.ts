@@ -1803,7 +1803,7 @@ describe("Long running operation tracker", () => {
 
     await keriaNotificationService.processOperation(operationRecord);
     expect(ipexCommunications.createLinkedIpexMessageRecord).toBeCalledWith(
-      agreeExchange,
+      grantExchangeMock,
       ConnectionHistoryType.CREDENTIAL_PRESENTED
     );
     expect(notificationStorage.save).not.toBeCalled();
