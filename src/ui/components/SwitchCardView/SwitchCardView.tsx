@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
@@ -34,13 +34,28 @@ const SwitchCardView = ({
   const [type, setType] = useState<CardListViewType>(CardListViewType.Stack);
   const viewTypeCache = useAppSelector(getIdentifierViewTypeCacheCache);
 
+  const setViewType = useCallback((viewType: CardListViewType) => {
+    setType(viewType);
+    Agent.agent.basicStorage
+      .createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: MiscRecordId.APP_IDENTIFIER_VIEW_TYPE,
+          content: { viewType },
+        })
+      )
+      .then(() => {
+        dispatch(setViewTypeCache(viewType));
+      });
+  }, [dispatch]);
+
   useEffect(() => {
     if (!viewTypeCache.viewType) {
       setType(CardListViewType.Stack);
       return;
     }
+
     setViewType(viewTypeCache.viewType as CardListViewType);
-  }, [viewTypeCache]);
+  }, [setViewType, viewTypeCache]);
 
   const handleOpenDetail = (
     data: IdentifierShortDetails | CredentialShortDetails
@@ -59,20 +74,6 @@ const SwitchCardView = ({
     );
 
     history.push({ pathname: pathname });
-  };
-
-  const setViewType = (viewType: CardListViewType) => {
-    setType(viewType);
-    Agent.agent.basicStorage
-      .createOrUpdateBasicRecord(
-        new BasicRecord({
-          id: MiscRecordId.APP_IDENTIFIER_VIEW_TYPE,
-          content: { viewType },
-        })
-      )
-      .then(() => {
-        dispatch(setViewTypeCache(viewType));
-      });
   };
 
   const classes = combineClassNames("card-switch-view", className);
