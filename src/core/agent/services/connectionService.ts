@@ -27,7 +27,11 @@ import {
   EventTypes,
   OperationAddedEvent,
 } from "../event.types";
-import { IpexHistoryItem, KeriaContact, KeriaContactKeyPrefix } from "./connectionService.types";
+import {
+  ConnectionHistoryItem,
+  KeriaContact,
+  KeriaContactKeyPrefix,
+} from "./connectionService.types";
 
 class ConnectionService extends AgentService {
   protected readonly connectionStorage!: ConnectionStorage;
@@ -209,7 +213,7 @@ class ConnectionService extends AgentService {
         }
       });
     const notes: Array<ConnectionNoteDetails> = [];
-    const historyItems: Array<IpexHistoryItem> = [];
+    const historyItems: Array<ConnectionHistoryItem> = [];
     Object.keys(connection).forEach((key) => {
       if (
         key.startsWith(KeriaContactKeyPrefix.CONNECTION_NOTE) &&
@@ -234,15 +238,12 @@ class ConnectionService extends AgentService {
       serviceEndpoints: [connection.oobi],
       notes,
       historyItems: historyItems
-        .sort(
-          (a, b) =>
-            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-        )
+        .sort((a, b) => new Date(b.dt).getTime() - new Date(a.dt).getTime())
         .map((messageRecord) => {
-          const { historyType, timestamp, credentialType } = messageRecord;
+          const { historyType, dt, credentialType } = messageRecord;
           return {
             type: historyType,
-            timestamp,
+            timestamp: dt,
             credentialType,
           };
         }),

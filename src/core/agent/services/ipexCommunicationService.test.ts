@@ -693,7 +693,6 @@ describe("Ipex communication service of agent", () => {
 
   test("Can create linked ipex message record", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
-    let now = new Date();
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
@@ -704,10 +703,9 @@ describe("Ipex communication service of agent", () => {
         JSON.stringify({
           id: grantForIssuanceExnMessage.exn.d,
           credentialType: QVISchema.title,
-          content: grantForIssuanceExnMessage,
           connectionId: grantForIssuanceExnMessage.exn.i,
           historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-          timestamp: now,
+          dt: grantForIssuanceExnMessage.exn.dt,
         }),
     });
 
@@ -721,7 +719,6 @@ describe("Ipex communication service of agent", () => {
         },
       },
     });
-    now = new Date();
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_PRESENTED
@@ -731,10 +728,9 @@ describe("Ipex communication service of agent", () => {
         JSON.stringify({
           id: grantForIssuanceExnMessage.exn.d,
           credentialType: QVISchema.title,
-          content: grantForIssuanceExnMessage,
           connectionId: grantForIssuanceExnMessage.exn.i,
           historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
-          timestamp: now,
+          dt: grantForIssuanceExnMessage.exn.dt,
         }),
     });
 
@@ -744,7 +740,6 @@ describe("Ipex communication service of agent", () => {
 
   test("Can create linked ipex message record with message exchange route ipex/apply", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
-    const now = new Date();
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       applyForPresentingExnMessage,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
@@ -756,10 +751,9 @@ describe("Ipex communication service of agent", () => {
           JSON.stringify({
             id: applyForPresentingExnMessage.exn.d,
             credentialType: QVISchema.title,
-            content: applyForPresentingExnMessage,
             connectionId: applyForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-            timestamp: now,
+            dt: applyForPresentingExnMessage.exn.dt,
           }),
       }
     );
@@ -795,7 +789,6 @@ describe("Ipex communication service of agent", () => {
   test("Can create linked ipex message record with message exchange route ipex/agree", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
     getExchangeMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
-    const now = new Date();
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       agreeForPresentingExnMessage,
       ConnectionHistoryType.CREDENTIAL_ISSUANCE
@@ -808,10 +801,9 @@ describe("Ipex communication service of agent", () => {
           JSON.stringify({
             id: agreeForPresentingExnMessage.exn.d,
             credentialType: QVISchema.title,
-            content: agreeForPresentingExnMessage,
             connectionId: agreeForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
-            timestamp: now,
+            dt: agreeForPresentingExnMessage.exn.dt,
           }),
       }
     );
@@ -822,7 +814,6 @@ describe("Ipex communication service of agent", () => {
   test("Can create linked ipex message record with history type is credential revoked", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
     getExchangeMock.mockResolvedValueOnce(agreeForPresentingExnMessage);
-    const now = new Date();
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       agreeForPresentingExnMessage,
       ConnectionHistoryType.CREDENTIAL_REVOKED
@@ -835,10 +826,9 @@ describe("Ipex communication service of agent", () => {
           JSON.stringify({
             id: agreeForPresentingExnMessage.exn.d,
             credentialType: QVISchema.title,
-            content: agreeForPresentingExnMessage,
             connectionId: agreeForPresentingExnMessage.exn.i,
             historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
-            timestamp: now,
+            dt: agreeForPresentingExnMessage.exn.dt,
           }),
       }
     );

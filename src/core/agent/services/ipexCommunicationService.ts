@@ -30,8 +30,8 @@ import {
 import { ConnectionService } from "./connectionService";
 import { IdentifierType } from "./identifier.types";
 import {
+  ConnectionHistoryItem,
   ConnectionHistoryType,
-  IpexHistoryItem,
   KeriaContactKeyPrefix,
 } from "./connectionService.types";
 
@@ -560,17 +560,16 @@ class IpexCommunicationService extends AgentService {
     default:
       throw new Error("Invalid history type");
     }
-    const ipexHistory: IpexHistoryItem = {
+    const historyItem: ConnectionHistoryItem = {
       id: message.exn.d,
-      credentialType: schema?.title,
-      content: message,
-      connectionId,
+      dt: message.exn.dt,
+      credentialType: schema.title,
+      connectionId: message.exn.i,
       historyType,
-      timestamp: new Date().toISOString(),
     };
 
-    await this.props.signifyClient.contacts().update(connectionId, {
-      [`${prefix}${key}`]: JSON.stringify(ipexHistory),
+    await this.props.signifyClient.contacts().update(message.exn.i, {
+      [`${prefix}${key}`]: JSON.stringify(historyItem),
     });
   }
 
