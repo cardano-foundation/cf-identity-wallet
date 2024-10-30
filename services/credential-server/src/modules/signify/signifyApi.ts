@@ -87,9 +87,7 @@ export class SignifyApi {
       operation.done && operation.response
         ? operation.response.i
         : new URL(url).pathname.split("/oobi/").pop()?.split("/")[0];
-    await this.signifyClient.contacts().update(connectionId, {
-      ["alias"]: alias,
-    });
+    await this.signifyClient.contacts().update(connectionId, { alias });
     return operation;
   }
 

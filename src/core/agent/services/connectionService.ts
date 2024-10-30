@@ -133,7 +133,7 @@ class ConnectionService extends AgentService {
       }
     }
     await this.props.signifyClient.contacts().update(connectionId, {
-      ["alias"]: operation.alias,
+      alias: operation.alias
     });    
     await this.createConnectionMetadata(connectionId, connectionMetadata);
 
