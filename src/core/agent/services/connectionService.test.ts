@@ -623,7 +623,7 @@ describe("Connection service of agent", () => {
         oobi: "oobi",
         groupId: "group-id",
         getTag: jest.fn().mockReturnValue("group-id"),
-        pending: true,
+        pendingDeletion: true,
       },
     ]);
     expect(
@@ -674,7 +674,7 @@ describe("Connection service of agent", () => {
     expect(connectionStorage.deleteById).toBeCalledWith(keriContacts[0].id);
   });
 
-  test("Throws error if if keria throw error with a non-404 error", async () => {
+  test("Throws error if keria throw error with a non-404 error", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
 
     const error = new Error("Some other error - 500");
@@ -748,5 +748,118 @@ describe("Connection service of agent", () => {
         })
       ),
     });
+  });
+
+  test("Can get connection pending keri", async () => {
+    connectionStorage.findAllByQuery = jest.fn().mockResolvedValueOnce([
+      {
+        id: keriContacts[0].id,
+        createdAt: now,
+        alias: "keri",
+        oobi: "oobi",
+        groupId: "group-id",
+        getTag: jest.fn().mockReturnValue("group-id"),
+        pending: true,
+      },
+    ]);
+    expect(await connectionService.getConnectionsPending()).toMatchObject([
+      keriContacts[0].id,
+    ]);
+    expect(connectionStorage.findAllByQuery).toBeCalledTimes(1);
+  });
+
+  test("Should re-connect with pending connection by id", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const connectionProps = {
+      id: keriContacts[0].id,
+      createdAt: now,
+      alias: "keri",
+      getTag: jest.fn(),
+      pending: true,
+    };
+    const connectionNote = {
+      id: "note:id",
+      title: "title",
+      message: "message",
+    };
+    const mockHistoryIpexMessage = {
+      id: "id",
+      credentialType: "rare evo",
+      historyType: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+      type: ConnectionHistoryType.CREDENTIAL_ISSUANCE,
+      dt: new Date().toISOString(),
+      connectionId: "connectionId",
+    };
+    const mockHistoryRevokeMessage = {
+      id: "id",
+      credentialType: "rare evo",
+      historyType: ConnectionHistoryType.CREDENTIAL_REVOKED,
+      type: ConnectionHistoryType.CREDENTIAL_REVOKED,
+      dt: new Date().toISOString(),
+      connectionId: "connectionId",
+    };
+
+    contactGetMock = jest.fn().mockReturnValue(
+      Promise.resolve({
+        alias: "alias",
+        oobi: "oobi",
+        id: "id",
+        [`${KeriaContactKeyPrefix.CONNECTION_NOTE}:id`]:
+          JSON.stringify(connectionNote),
+        [`${KeriaContactKeyPrefix.HISTORY_IPEX}:id`]: JSON.stringify(
+          mockHistoryIpexMessage
+        ),
+        [`${KeriaContactKeyPrefix.HISTORY_REVOKE}:id`]: JSON.stringify(
+          mockHistoryRevokeMessage
+        ),
+        pending: true,
+      })
+    );
+
+    connectionService.resolveOobi = jest.fn().mockResolvedValueOnce({
+      done: true,
+    });
+
+    connectionStorage.findById = jest
+      .fn()
+      .mockResolvedValueOnce(connectionProps);
+
+    eventEmitter.emit = jest.fn();
+
+    await connectionService.reconnectPendingConnectionById(keriContacts[0].id);
+
+    expect(eventEmitter.emit).toHaveBeenCalledWith({
+      type: EventTypes.ConnectionStateChanged,
+      payload: {
+        connectionId: keriContacts[0].id,
+        status: ConnectionStatus.CONFIRMED,
+      },
+    });
+    expect(connectionStorage.update).toBeCalledWith({
+      ...connectionProps,
+      pending: false,
+    });
+  });
+
+  test("Throws error missing data on keria if keria throw error 404 when reconnect pending connection", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    contactGetMock = jest
+      .fn()
+      .mockRejectedValue(new Error("request - 404 - SignifyClient message"));
+
+    await expect(
+      connectionService.reconnectPendingConnectionById(keriContacts[0].id)
+    ).rejects.toThrow(`${Agent.MISSING_DATA_ON_KERIA}: ${keriContacts[0].id}`);
+  });
+
+  test("Throws error if keria throw error with a non-404 error when reconnect pending connection", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+
+    const error = new Error("Some other error - 500");
+    contactGetMock.mockRejectedValueOnce(error);
+
+    await expect(
+      connectionService.reconnectPendingConnectionById(keriContacts[0].id)
+    ).rejects.toThrow("Some other error - 500");
   });
 });

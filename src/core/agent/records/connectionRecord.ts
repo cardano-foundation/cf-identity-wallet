@@ -39,6 +39,7 @@ class ConnectionRecord extends BaseRecord {
       ...this._tags,
       groupId: this.groupId,
       pendingDeletion: this.pendingDeletion,
+      pending: this.pending,
     };
   }
 }

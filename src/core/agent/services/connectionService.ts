@@ -295,6 +295,47 @@ class ConnectionService extends AgentService {
     return connections.map((connection) => connection.id);
   }
 
+  async getConnectionsPending() {
+    const connections = await this.connectionStorage.findAllByQuery({
+      pending: true,
+      groupId: undefined,
+    });
+
+    return connections.map((connection) => connection.id);
+  }
+
+  @OnlineOnly
+  async reconnectPendingConnectionById(id: string) {
+    const connection = await this.props.signifyClient
+      .contacts()
+      .get(id)
+      .catch((error) => {
+        const status = error.message.split(" - ")[1];
+        if (/404/gi.test(status)) {
+          throw new Error(`${Agent.MISSING_DATA_ON_KERIA}: ${id}`);
+        } else {
+          throw error;
+        }
+      });
+
+    const operation = await this.resolveOobi(connection.oobi, true);
+    if (operation.done) {
+      const connectionProps = await this.connectionStorage.findById(id);
+      if (!connectionProps) return;
+      connectionProps.pending = false;
+
+      await this.connectionStorage.update(connectionProps);
+
+      this.props.eventEmitter.emit<ConnectionStateChangedEvent>({
+        type: EventTypes.ConnectionStateChanged,
+        payload: {
+          connectionId: id,
+          status: ConnectionStatus.CONFIRMED,
+        },
+      });
+    }
+  }
+
   async deleteStaleLocalConnectionById(id: string): Promise<void> {
     await this.connectionStorage.deleteById(id);
   }
@@ -406,6 +447,7 @@ class ConnectionService extends AgentService {
 
   @OnlineOnly
   async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
+
     const startTime = Date.now();
     const alias = new URL(url).searchParams.get("name") ?? uuidv4();
     let operation;

@@ -216,9 +216,19 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     };
 
+    const reconnectPendingConnection = async () => {
+      const pendingDeletions =
+        await Agent.agent.connections.getConnectionsPending();
+
+      for (const id of pendingDeletions) {
+        await Agent.agent.connections.reconnectPendingConnectionById(id);
+      }
+    };
+
     if (isOnline) {
       syncWithKeria();
       removePendingDeletion();
+      reconnectPendingConnection();
     }
   }, [isOnline, dispatch]);
 
