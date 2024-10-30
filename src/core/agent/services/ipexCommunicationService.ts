@@ -524,12 +524,9 @@ class IpexCommunicationService extends AgentService {
     historyType: ConnectionHistoryType
   ): Promise<void> {
     let schemaSaid;
-    let connectionId = message.exn.i;
+    const connectionId = historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED ? message.exn.rp : message.exn.i;
     if (message.exn.r === ExchangeRoute.IpexGrant) {
       schemaSaid = message.exn.e.acdc.s;
-      if (historyType === ConnectionHistoryType.CREDENTIAL_PRESENTED) {
-        connectionId = message.exn.rp;
-      }
     } else if (message.exn.r === ExchangeRoute.IpexApply) {
       schemaSaid = message.exn.a.s;
     } else if (message.exn.r === ExchangeRoute.IpexAgree) {
@@ -564,11 +561,11 @@ class IpexCommunicationService extends AgentService {
       id: message.exn.d,
       dt: message.exn.dt,
       credentialType: schema.title,
-      connectionId: message.exn.i,
+      connectionId,
       historyType,
     };
 
-    await this.props.signifyClient.contacts().update(message.exn.i, {
+    await this.props.signifyClient.contacts().update(connectionId, {
       [`${prefix}${key}`]: JSON.stringify(historyItem),
     });
   }

@@ -726,13 +726,13 @@ describe("Ipex communication service of agent", () => {
       grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_PRESENTED
     );
-    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.i, {
+    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.rp, {
       [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
         JSON.stringify({
           id: grantForIssuanceExnMessage.exn.d,
           dt: grantForIssuanceExnMessage.exn.dt,
           credentialType: QVISchema.title,
-          connectionId: grantForIssuanceExnMessage.exn.i,
+          connectionId: grantForIssuanceExnMessage.exn.rp,
           historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
         }),
     });
@@ -764,19 +764,19 @@ describe("Ipex communication service of agent", () => {
     expect(connections.resolveOobi).toBeCalledTimes(1);
   });
 
-  test("Can create linked ipex message record when long running operation for /ipex/grant completes", async () => {
+  test("can link credential presentation history items to the correct connection", async () => {
     schemaGetMock.mockResolvedValueOnce(QVISchema);
     await ipexCommunicationService.createLinkedIpexMessageRecord(
       grantForIssuanceExnMessage,
       ConnectionHistoryType.CREDENTIAL_PRESENTED
     );
-    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.i, {
+    expect(updateContactMock).toBeCalledWith(grantForIssuanceExnMessage.exn.rp, {
       [`${KeriaContactKeyPrefix.HISTORY_IPEX}${grantForIssuanceExnMessage.exn.d}`]:
         JSON.stringify({
           id: grantForIssuanceExnMessage.exn.d,
           dt: grantForIssuanceExnMessage.exn.dt,
           credentialType: QVISchema.title,
-          connectionId: grantForIssuanceExnMessage.exn.i,
+          connectionId: grantForIssuanceExnMessage.exn.rp,
           historyType: ConnectionHistoryType.CREDENTIAL_PRESENTED,
         }),
     });
