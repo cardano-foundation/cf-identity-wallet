@@ -132,6 +132,9 @@ class ConnectionService extends AgentService {
         };
       }
     }
+    await this.props.signifyClient.contacts().update(connectionId, {
+      ["alias"]: operation.alias,
+    });    
     await this.createConnectionMetadata(connectionId, connectionMetadata);
 
     if (!multiSigInvite) {

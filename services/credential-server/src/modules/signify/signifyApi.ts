@@ -74,7 +74,7 @@ export class SignifyApi {
 
   async resolveOobi(url: string): Promise<any> {
     const alias = new URL(url).searchParams.get("name") ?? uuidv4();
-    const operation = await waitAndGetDoneOp(
+    const operation: any = await waitAndGetDoneOp(
       this.signifyClient,
       await this.signifyClient.oobis().resolve(url, alias),
       this.opTimeout,
@@ -83,6 +83,13 @@ export class SignifyApi {
     if (!operation.done) {
       throw new Error(SignifyApi.FAILED_TO_RESOLVE_OOBI);
     }
+    const connectionId =
+      operation.done && operation.response
+        ? operation.response.i
+        : new URL(url).pathname.split("/oobi/").pop()?.split("/")[0];
+    await this.signifyClient.contacts().update(connectionId, {
+      ["alias"]: alias,
+    });
     return operation;
   }
 
