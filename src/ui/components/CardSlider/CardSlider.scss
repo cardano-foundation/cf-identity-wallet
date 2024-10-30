@@ -33,6 +33,16 @@
     width: 90%;
   }
 
+  &.transition-start {
+    .not-picked {
+      visibility: hidden;
+    }
+
+    .picked-card {
+      transform: none !important;
+    }
+  }
+
   @media screen and (min-width: 250px) and (max-width: 370px) {
     .page-indicator-active {
       width: 1.5rem !important;

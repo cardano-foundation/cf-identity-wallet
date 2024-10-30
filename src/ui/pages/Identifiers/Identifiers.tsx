@@ -203,8 +203,8 @@ const Identifiers = () => {
     navAnimation === "cards"
       ? "cards-identifier-nav"
       : navAnimation === "favourite"
-      ? "favorite-identifier-nav"
-      : ""
+        ? "favorite-identifier-nav"
+        : ""
   }`;
   const handleCloseCreateIdentifier = () => {
     setCreateIdentifierModalIsOpen(false);

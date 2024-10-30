@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, MouseEvent as ReactMouseEvent } from "react";
+import { Dispatch, SetStateAction, MouseEvent as ReactMouseEvent, ReactNode } from "react";
 
 interface CustomInputProps {
   dataTestId: string;
@@ -13,6 +13,8 @@ interface CustomInputProps {
   error?: boolean;
   actionIcon?: string;
   action?: (e: ReactMouseEvent<HTMLElement, MouseEvent>) => void;
+  className?: string;
+  labelAction?: ReactNode;
 }
 
 export type { CustomInputProps };

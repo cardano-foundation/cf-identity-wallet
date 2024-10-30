@@ -2,6 +2,15 @@ import { CredentialShortDetails } from "../../../core/agent/services/credentialS
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { CardType } from "../../globals/types";
 
+interface CardProps {
+  name: string;
+  index: number;
+  cardType: CardType;
+  cardData: IdentifierShortDetails | CredentialShortDetails;
+  handleShowCardDetails: (index: number) => void;
+  pickedCard: number | null;
+}
+
 interface CardSliderProps {
   title: string;
   name: string;
@@ -10,4 +19,4 @@ interface CardSliderProps {
   onShowCardDetails?: () => void;
 }
 
-export type { CardSliderProps };
+export type { CardSliderProps, CardProps };
