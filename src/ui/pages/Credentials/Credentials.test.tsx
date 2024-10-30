@@ -72,9 +72,15 @@ const initialStateEmpty = {
   identifiersCache: {
     identifiers: filteredIdentifierFix,
   },
-  identifierViewTypeCacheCache: {
-    viewType: null,
-    favouriteIndex: 0,
+  viewTypeCache: {
+    identifier: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
+    credential: {
+      viewType: null,
+      favouriteIndex: 0,
+    }
   },
 };
 
@@ -110,9 +116,15 @@ const initialStateFull = {
   identifiersCache: {
     identifiers: filteredIdentifierFix,
   },
-  identifierViewTypeCacheCache: {
-    viewType: null,
-    favouriteIndex: 0,
+  viewTypeCache: {
+    identifier: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
+    credential: {
+      viewType: null,
+      favouriteIndex: 0,
+    }
   },
 };
 
@@ -153,9 +165,15 @@ const archivedAndRevokedState = {
   notificationsCache: {
     notifications: [],
   },
-  identifierViewTypeCacheCache: {
-    viewType: null,
-    favouriteIndex: 0,
+  viewTypeCache: {
+    identifier: {
+      viewType: null,
+      favouriteIndex: 0,
+    },
+    credential: {
+      viewType: null,
+      favouriteIndex: 0,
+    }
   },
 };
 
@@ -312,8 +330,15 @@ describe("Creds Tab", () => {
       credsArchivedCache: {
         creds: [],
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       connectionsCache: {
         connections: connectionsFix,

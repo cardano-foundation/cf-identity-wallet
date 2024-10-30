@@ -11,7 +11,7 @@ import {
   IdentifierShortDetails,
 } from "../../../core/agent/services/identifier.types";
 import { useAppSelector } from "../../../store/hooks";
-import { getIdentifierFavouriteIndex } from "../../../store/reducers/identifierViewTypeCache";
+import { getCredentialFavouriteIndex, getIdentifierFavouriteIndex } from "../../../store/reducers/viewTypeCache";
 import { CardType } from "../../globals/types";
 import { CredentialCardTemplate } from "../CredentialCardTemplate";
 import { IdentifierCardTemplate } from "../IdentifierCardTemplate";
@@ -57,8 +57,11 @@ const CardSlider = ({
   const history = useHistory();
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
-  const favouriteIndex = useAppSelector(getIdentifierFavouriteIndex);
   const [pickedCardIndex, setPickedCardIndex] = useState<number | null>(null);
+  const identifierFavouriteIndex = useAppSelector(getIdentifierFavouriteIndex);
+  const credFavouriteIndex = useAppSelector(getCredentialFavouriteIndex);
+  const isIdentifier = cardType === CardType.IDENTIFIERS;
+  const favouriteIndex = isIdentifier ? identifierFavouriteIndex : credFavouriteIndex;
 
   const handleShowCardDetails = async (index: number) => {
     setPickedCardIndex(index);
@@ -86,7 +89,7 @@ const CardSlider = ({
     setActiveIndex(() => index);
     Agent.agent.basicStorage.createOrUpdateBasicRecord(
       new BasicRecord({
-        id: MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX,
+        id: isIdentifier ? MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX : MiscRecordId.APP_CRED_FAVOURITE_INDEX,
         content: { favouriteIndex: index },
       })
     );
