@@ -23,8 +23,6 @@ import { CoreEventEmitter } from "./event";
 import {
   BasicRecord,
   BasicStorage,
-  ConnectionNoteRecord,
-  ConnectionNoteStorage,
   ConnectionRecord,
   ConnectionStorage,
   CredentialMetadataRecord,
@@ -35,8 +33,6 @@ import {
   PeerConnectionStorage,
   NotificationRecord,
   NotificationStorage,
-  IpexMessageStorage,
-  IpexMessageRecord,
 } from "./records";
 import { KeyStoreKeys, SecureStorage } from "../storage";
 import { MultiSigService } from "./services/multiSigService";
@@ -54,9 +50,13 @@ const walletId = "idw";
 class Agent {
   static readonly KERIA_CONNECTION_BROKEN =
     "The app is not connected to KERIA at the moment";
+  static readonly KERIA_BOOT_FAILED_BAD_NETWORK =
+    "Failed to boot due to network connectivity";
+  static readonly KERIA_CONNECT_FAILED_BAD_NETWORK =
+    "Failed to connect due to network connectivity";
   static readonly KERIA_BOOT_FAILED = "Failed to boot signify client";
   static readonly KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT =
-    "Signify client is already booted but cannot connect";
+    "KERIA agent is already booted but cannot connect";
   static readonly KERIA_NOT_BOOTED =
     "Agent has not been booted for a given Signify passcode";
   static readonly INVALID_MNEMONIC = "Seed phrase is invalid";
@@ -76,10 +76,8 @@ class Agent {
   private identifierStorage!: IdentifierStorage;
   private credentialStorage!: CredentialStorage;
   private connectionStorage!: ConnectionStorage;
-  private connectionNoteStorage!: ConnectionNoteStorage;
   private notificationStorage!: NotificationStorage;
   private peerConnectionStorage!: PeerConnectionStorage;
-  private ipexMessageStorage!: IpexMessageStorage;
   private operationPendingStorage!: OperationPendingStorage;
 
   private signifyClient!: SignifyClient;
@@ -88,11 +86,11 @@ class Agent {
   private identifierService!: IdentifierService;
   private multiSigService!: MultiSigService;
   private ipexCommunicationService!: IpexCommunicationService;
-
   private connectionService!: ConnectionService;
   private credentialService!: CredentialService;
   private keriaNotificationService!: KeriaNotificationService;
   private authService!: AuthService;
+
   static isOnline = false;
 
   get identifiers() {
@@ -113,7 +111,9 @@ class Agent {
         this.agentServicesProps,
         this.identifierStorage,
         this.operationPendingStorage,
-        this.notificationStorage
+        this.notificationStorage,
+        this.connections,
+        this.identifierService
       );
     }
     return this.multiSigService;
@@ -126,9 +126,9 @@ class Agent {
         this.identifierStorage,
         this.credentialStorage,
         this.notificationStorage,
-        this.ipexMessageStorage,
         this.operationPendingStorage,
-        this.multiSigs
+        this.multiSigs,
+        this.connections
       );
     }
     return this.ipexCommunicationService;
@@ -139,10 +139,9 @@ class Agent {
       this.connectionService = new ConnectionService(
         this.agentServicesProps,
         this.connectionStorage,
-        this.connectionNoteStorage,
         this.credentialStorage,
-        this.ipexMessageStorage,
-        this.operationPendingStorage
+        this.operationPendingStorage,
+        this.identifierStorage
       );
     }
     return this.connectionService;
@@ -153,7 +152,8 @@ class Agent {
       this.credentialService = new CredentialService(
         this.agentServicesProps,
         this.credentialStorage,
-        this.notificationStorage
+        this.notificationStorage,
+        this.identifierStorage
       );
     }
     return this.credentialService;
@@ -175,12 +175,11 @@ class Agent {
         this.identifierStorage,
         this.operationPendingStorage,
         this.connectionStorage,
-        this.ipexMessageStorage,
         this.credentialStorage,
         this.basicStorage,
         this.multiSigs,
         this.ipexCommunications,
-        this.identifiers,
+        this.credentialService,
         this.getKeriaOnlineStatus,
         this.markAgentStatus,
         this.connect
@@ -191,7 +190,10 @@ class Agent {
 
   get auth() {
     if (!this.authService) {
-      this.authService = new AuthService(this.agentServicesProps);
+      this.authService = new AuthService(
+        this.agentServicesProps,
+        this.basicStorage
+      );
     }
     return this.authService;
   }
@@ -224,7 +226,7 @@ class Agent {
       const bran = await this.getBran();
       this.signifyClient = new SignifyClient(keriaConnectUrl, bran, Tier.low);
       this.agentServicesProps.signifyClient = this.signifyClient;
-      await this.signifyClient.connect();
+      await this.connectSignifyClient();
       this.markAgentStatus(true);
     }
   }
@@ -243,10 +245,13 @@ class Agent {
       const bootResult = await this.signifyClient.boot().catch((e) => {
         /* eslint-disable no-console */
         console.error(e);
+        if (e.message === "Failed to fetch") {
+          throw new Error(Agent.KERIA_BOOT_FAILED_BAD_NETWORK);
+        }
         throw new Error(Agent.KERIA_BOOT_FAILED);
       });
 
-      if (!bootResult.ok && bootResult.status !== 400) {
+      if (!bootResult.ok && bootResult.status !== 409) {
         /* eslint-disable no-console */
         console.warn(
           `Unexpected KERIA boot status returned: ${bootResult.status} ${bootResult.statusText}`
@@ -254,18 +259,7 @@ class Agent {
         throw new Error(Agent.KERIA_BOOT_FAILED);
       }
 
-      await this.signifyClient.connect().catch((e) => {
-        /* eslint-disable no-console */
-        console.error(e);
-        throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
-      });
-      try {
-        await this.signifyClient.connect();
-      } catch (e) {
-        /* eslint-disable no-console */
-        console.error(e);
-        throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
-      }
+      await this.connectSignifyClient();
       await this.saveAgentUrls(agentUrls);
       this.markAgentStatus(true);
     }
@@ -275,9 +269,9 @@ class Agent {
     seedPhrase: string[],
     connectUrl: string
   ): Promise<void> {
+    const mnemonic = seedPhrase.join(" ");
     let bran = "";
     try {
-      const mnemonic = seedPhrase.join(" ");
       const entropy = mnemonicToEntropy(mnemonic);
       const branBuffer = Buffer.from(entropy, "hex").slice(
         0,
@@ -285,30 +279,41 @@ class Agent {
       );
 
       bran = branBuffer.toString("utf-8");
-
-      this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
-      this.agentServicesProps.signifyClient = this.signifyClient;
-
-      await this.signifyClient.connect();
     } catch (error) {
-      if (error instanceof Error) {
-        if (error.message === "Invalid mnemonic") {
-          throw new Error(Agent.INVALID_MNEMONIC);
-        }
-        if (error.message.includes("agent does not exist for controller")) {
-          throw new Error(Agent.KERIA_NOT_BOOTED);
-        }
-        throw error;
+      if (error instanceof Error && error.message === "Invalid mnemonic") {
+        throw new Error(Agent.INVALID_MNEMONIC);
       }
+      throw error;
     }
+
+    this.signifyClient = new SignifyClient(connectUrl, bran, Tier.low);
+    this.agentServicesProps.signifyClient = this.signifyClient;
+    await this.connectSignifyClient();
 
     await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
     await this.saveAgentUrls({
       url: connectUrl,
       bootUrl: "",
     });
-
     this.markAgentStatus(true);
+  }
+
+  private async connectSignifyClient(): Promise<void> {
+    await this.signifyClient.connect().catch((error) => {
+      if (!(error instanceof Error)) {
+        throw error;
+      }
+      /* eslint-disable no-console */
+      console.error(error);
+      const status = error.message.split(" - ")[1];
+      if (error.message === "Failed to fetch") {
+        throw new Error(Agent.KERIA_CONNECT_FAILED_BAD_NETWORK);
+      }
+      if (/404/gi.test(status)) {
+        throw new Error(Agent.KERIA_NOT_BOOTED);
+      }
+      throw new Error(Agent.KERIA_BOOTED_ALREADY_BUT_CANNOT_CONNECT);
+    });
   }
 
   markAgentStatus(online: boolean) {
@@ -319,6 +324,59 @@ class Agent {
         isOnline: online,
       },
     });
+  }
+
+  async devPreload() {
+    const APP_PASSSCODE_DEV_MODE = "111111";
+    try {
+      await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message ===
+          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_PASSCODE}`
+      ) {
+        await SecureStorage.set(
+          KeyStoreKeys.APP_PASSCODE,
+          APP_PASSSCODE_DEV_MODE
+        );
+      } else {
+        throw error;
+      }
+    }
+
+    try {
+      await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message ===
+          `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.SIGNIFY_BRAN}`
+      ) {
+        await SecureStorage.set(
+          KeyStoreKeys.SIGNIFY_BRAN,
+          randomPasscode().substring(0, 21)
+        );
+      } else {
+        throw error;
+      }
+    }
+
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.APP_ALREADY_INIT,
+        content: {
+          initialized: true,
+        },
+      })
+    );
+
+    await this.basicStorage.createOrUpdateBasicRecord(
+      new BasicRecord({
+        id: MiscRecordId.APP_PASSWORD_SKIPPED,
+        content: { value: true },
+      })
+    );
   }
 
   private async saveAgentUrls(agentUrls: AgentUrls): Promise<void> {
@@ -354,9 +412,6 @@ class Agent {
     this.connectionStorage = new ConnectionStorage(
       this.getStorageService<ConnectionRecord>(this.storageSession)
     );
-    this.connectionNoteStorage = new ConnectionNoteStorage(
-      this.getStorageService<ConnectionNoteRecord>(this.storageSession)
-    );
     this.notificationStorage = new NotificationStorage(
       this.getStorageService<NotificationRecord>(this.storageSession)
     );
@@ -365,9 +420,6 @@ class Agent {
     );
     this.operationPendingStorage = new OperationPendingStorage(
       this.getStorageService<OperationPendingRecord>(this.storageSession)
-    );
-    this.ipexMessageStorage = new IpexMessageStorage(
-      this.getStorageService<IpexMessageRecord>(this.storageSession)
     );
     this.agentServicesProps = {
       signifyClient: this.signifyClient,

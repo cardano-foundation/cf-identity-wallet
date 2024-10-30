@@ -2,7 +2,7 @@ import { useState } from "react";
 import { IonIcon } from "@ionic/react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { playCircleOutline, pauseCircleOutline } from "ionicons/icons";
-import { Autoplay } from "swiper";
+import { Autoplay } from "swiper/modules";
 import { Swiper as SwiperClass } from "swiper/types";
 import Lottie from "lottie-react";
 import { SlideProps } from "./Slides.types";
@@ -32,7 +32,7 @@ const Slides = ({ items }: SlideProps) => {
       <div className="slides">
         <Swiper
           className="swiper-container"
-          onSwiper={(swiper) => setSwiper(swiper)}
+          onSwiper={(swiper: SwiperClass) => setSwiper(swiper)}
           onSlideChange={() =>
             swiper ? setActiveIndex(swiper.realIndex) : null
           }

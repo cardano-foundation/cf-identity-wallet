@@ -2,7 +2,8 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import configureStore from "redux-mock-store";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
+import { MemoryRouter } from "react-router-dom";
 import { Menu } from "./Menu";
 import { store } from "../../../store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
@@ -11,6 +12,8 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CHAT_LINK, CRYPTO_LINK } from "../../globals/constants";
+import { Credentials } from "../Credentials";
+import { showConnections } from "../../../store/reducers/stateCache";
 
 const combineMock = jest.fn(() => TabsRoutePath.MENU);
 const historyPushMock = jest.fn();
@@ -47,12 +50,16 @@ const initialState = {
       time: Date.now(),
       passcodeIsSet: true,
     },
-    connectionsCache: {
-      connections: connectionsFix,
-    },
+    showConnections: false,
+  },
+  biometricsCache: {
+    enable: false,
   },
   connectionsCache: {
     connections: connectionsFix,
+  },
+  walletConnectionsCache: {
+    showConnectWallet: false,
   },
   identifiersCache: {
     identifiers: filteredIdentifierFix,
@@ -73,21 +80,21 @@ describe("Menu Tab", () => {
     );
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
-    expect(getByText(EN_TRANSLATIONS.menu.tab.header)).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.tabs.menu.tab.header)).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.profile.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.crypto.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.crypto.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.connections.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connections.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.chat.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.chat.title)
     ).toBeInTheDocument();
   });
 
@@ -100,7 +107,29 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.profile.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.title)
+    ).toBeInTheDocument();
+    const settingButton = getByTestId("settings-button");
+
+    act(() => {
+      fireEvent.click(settingButton);
+    });
+
+    await waitForIonicReact();
+
+    expect(getByTestId("settings-security-items")).toBeVisible();
+  });
+
+  test("Open Profile sub-menu", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <Menu />
+      </Provider>
+    );
+
+    expect(getByTestId("menu-tab")).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.profile.title)
     ).toBeInTheDocument();
     const profileButton = getByTestId(`menu-input-item-${SubMenuKey.Profile}`);
 
@@ -111,7 +140,7 @@ describe("Menu Tab", () => {
     await waitForIonicReact();
 
     expect(getByTestId("profile-title")).toHaveTextContent(
-      EN_TRANSLATIONS.menu.tab.items.profile.tabheader
+      EN_TRANSLATIONS.tabs.menu.tab.items.profile.tabheader
     );
   });
 
@@ -124,7 +153,7 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.crypto.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.crypto.title)
     ).toBeInTheDocument();
     const cryptoButton = getByTestId(`menu-input-item-${SubMenuKey.Crypto}`);
 
@@ -139,30 +168,29 @@ describe("Menu Tab", () => {
     });
   });
 
-  test("Open Connections sub-menu", async () => {
+  test("Open Connections view", async () => {
     const { getByTestId, getByText } = render(
-      <Provider store={storeMocked}>
-        <Menu />
-      </Provider>
+      <MemoryRouter initialEntries={[TabsRoutePath.MENU]}>
+        <Provider store={storeMocked}>
+          <Menu />
+        </Provider>
+      </MemoryRouter>
     );
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.connections.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connections.title)
     ).toBeInTheDocument();
     const connectionsButton = getByTestId(
       `menu-input-item-${SubMenuKey.Connections}`
     );
-
     act(() => {
       fireEvent.click(connectionsButton);
     });
 
-    await waitForIonicReact();
-
-    expect(getByTestId("connections-title")).toHaveTextContent(
-      EN_TRANSLATIONS.menu.tab.items.connections.tabheader
-    );
+    await waitFor(() => {
+      expect(dispatchMock).toBeCalledWith(showConnections(true));
+    });
   });
 
   test("Open Cardano connect sub-menu", async () => {
@@ -174,7 +202,7 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.title)
     ).toBeInTheDocument();
     const connectButton = getByTestId(
       `menu-input-item-${SubMenuKey.ConnectWallet}`
@@ -187,7 +215,7 @@ describe("Menu Tab", () => {
     await waitForIonicReact();
 
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.connectwallet.tabheader)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.connectwallet.tabheader)
     ).toBeVisible();
   });
 
@@ -200,7 +228,7 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS.menu.tab.items.chat.title)
+      getByText(EN_TRANSLATIONS.tabs.menu.tab.items.chat.title)
     ).toBeInTheDocument();
     const chatButton = getByTestId(`menu-input-item-${SubMenuKey.Chat}`);
 

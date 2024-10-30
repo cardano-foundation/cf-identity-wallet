@@ -114,6 +114,7 @@ describe("Notifications cache", () => {
             attempts: 0,
             lockedUntil: Date.now(),
           },
+          firstAppLaunch: false,
         },
         currentOperation: OperationType.IDLE,
         queueIncomingRequest: {
@@ -121,6 +122,7 @@ describe("Notifications cache", () => {
           queues: [],
           isPaused: false,
         },
+        showConnections: false,
         toastMsgs: [],
       },
       seedPhraseCache: {
@@ -146,9 +148,15 @@ describe("Notifications cache", () => {
         connectedWallet: null,
         pendingConnection: null,
       },
-      identifierViewTypeCacheCache: {
-        viewType: null,
-        favouriteIndex: 0,
+      viewTypeCache: {
+        identifier: {
+          viewType: null,
+          favouriteIndex: 0,
+        },
+        credential: {
+          viewType: null,
+          favouriteIndex: 0,
+        }
       },
       biometricsCache: {
         enabled: false,

@@ -1,14 +1,33 @@
-import { ConnectionStatus } from "../../core/agent/agent.types";
+import {
+  ConnectionDetails,
+  ConnectionStatus,
+} from "../../core/agent/agent.types";
 import CardanoLogo from "../assets/images/CardanoLogo.jpg";
-import { ConnectionShortDetails } from "../pages/Connections/Connections.types";
 
-const connectionsFix: ConnectionShortDetails[] = [
+const connectionsFix: ConnectionDetails[] = [
   {
     id: "ebfeb1ebc6f1c276ef71212ec20",
     label: "Cambridge University",
     connectionDate: "2017-01-14T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.PENDING,
+    serviceEndpoints: [
+      "http://keria:3902/oobi/ELjvc_mLWOx7pI4fBh7lGUYofOAJUgUrMKnaoFGdvs86/agent/ENGnzDMWk8PlFbOoYCauLs1rDuQbvsIStxNzkjZPikSo?name=CF%20Credential%20Issuance",
+    ],
+    notes: [
+      {
+        id: "ebfeb1ebc6f1c276ef71212ec20",
+        title: "Title",
+        message: "Message",
+      },
+    ],
+    historyItems: [
+      {
+        type: 1,
+        timestamp: "2017-01-14T19:23:24Z",
+        credentialType: "Rare EVO Attendee",
+      },
+    ],
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec21",
@@ -16,6 +35,9 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2017-01-16T08:21:54Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
+    serviceEndpoints: [],
+    notes: [],
+    historyItems: [],
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec22",
@@ -23,6 +45,9 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2017-01-13T10:15:11Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
+    serviceEndpoints: [],
+    notes: [],
+    historyItems: [],
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec23",
@@ -30,6 +55,9 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2024-02-13T11:39:20Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
+    serviceEndpoints: [],
+    notes: [],
+    historyItems: [],
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec24",
@@ -37,6 +65,9 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2016-01-10T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.PENDING,
+    serviceEndpoints: [],
+    notes: [],
+    historyItems: [],
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec25",
@@ -44,12 +75,18 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2018-01-14T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.ACCEPTED,
+    serviceEndpoints: [],
+    notes: [],
+    historyItems: [],
   },
   {
     label: "The Pentagon",
     id: "EBvcao4Ub-Q7Wwkm0zJzwigvPTrthP4uH5mQ4efRv9aU",
     status: ConnectionStatus.CONFIRMED,
     connectionDate: "2024-08-07T15:30:42.952Z",
+    serviceEndpoints: [],
+    notes: [],
+    historyItems: [],
   },
 ];
 

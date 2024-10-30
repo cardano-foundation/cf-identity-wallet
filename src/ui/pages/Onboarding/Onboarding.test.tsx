@@ -2,6 +2,7 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { act } from "react";
 import { Onboarding } from "./index";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { SetPasscode } from "../SetPasscode";
@@ -9,6 +10,28 @@ import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
 import { OperationType } from "../../globals/types";
 import { CreatePassword } from "../CreatePassword";
+
+const exitApp = jest.fn();
+jest.mock("@capacitor/app", () => ({
+  ...jest.requireActual("@capacitor/app"),
+  App: {
+    exitApp: () => exitApp(),
+    addListener: jest.fn(() =>
+      Promise.resolve({
+        remove: jest.fn(),
+      })
+    ),
+  },
+}));
+
+jest.mock("@capacitor/core", () => {
+  return {
+    ...jest.requireActual("@capacitor/core"),
+    Capacitor: {
+      isNativePlatform: () => true,
+    },
+  };
+});
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
@@ -117,6 +140,43 @@ describe("Onboarding Page", () => {
       expect(queryAllByText(EN_TRANSLATIONS.createpassword.title)).toHaveLength(
         2
       );
+    });
+  });
+
+  test("Exit app with double tap", async () => {
+    render(
+      <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
+        <Provider store={store}>
+          <Onboarding />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    act(() => {
+      fireEvent(
+        document,
+        new CustomEvent("ionBackButton", {
+          detail: {
+            register: (priority: string, handler: () => void) => {
+              handler();
+            },
+          },
+        })
+      );
+      fireEvent(
+        document,
+        new CustomEvent("ionBackButton", {
+          detail: {
+            register: (priority: string, handler: () => void) => {
+              handler();
+            },
+          },
+        })
+      );
+    });
+
+    await waitFor(() => {
+      expect(exitApp).toBeCalled();
     });
   });
 });

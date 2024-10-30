@@ -51,10 +51,20 @@ function App() {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <CssBaseline />
         <NavBar />
-        <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
+        <Container
+          component="main"
+          maxWidth="md"
+          sx={{ mb: 4 }}
+        >
           <Routes>
-            <Route path="/" element={<ConnectionPage />} />
-            <Route path="/connections-issuer" element={<ConnectionsIssuer />} />
+            <Route
+              path="/"
+              element={<ConnectionPage />}
+            />
+            <Route
+              path="/connections-issuer"
+              element={<ConnectionsIssuer />}
+            />
             {MENU_ITEMS.map((item) =>
               item.path === "/connections" ? (
                 <Route
@@ -75,7 +85,7 @@ function App() {
                     </Paper>
                   }
                 />
-              ),
+              )
             )}
           </Routes>
         </Container>

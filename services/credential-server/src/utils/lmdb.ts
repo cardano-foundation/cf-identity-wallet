@@ -6,13 +6,13 @@ class Lmdb {
 
   private constructor() {
     this.db = open({
-      path: './data/lmdb',
+      path: "./data/lmdb",
     });
   }
 
   public static getInstance(): Lmdb {
     if (!Lmdb.instance) {
-        Lmdb.instance = new Lmdb();
+      Lmdb.instance = new Lmdb();
     }
     return Lmdb.instance;
   }

@@ -18,7 +18,11 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import { config } from "../config";
 import { Contact } from "../types";
 import { Attributes, CredentialType, UUID_REGEX } from "../constants";
-import { IAttributeObj, IAttributes, SchemaShortDetails } from "../constants/type";
+import {
+  IAttributeObj,
+  IAttributes,
+  SchemaShortDetails,
+} from "../constants/type";
 
 interface CredentialFormProps {
   onSubmit: (values: any) => Promise<void>;
@@ -46,7 +50,8 @@ const CredentialForm: React.FC<CredentialFormProps> = ({
   const [attributes, setAttributes] = useState<IAttributeObj[]>([]);
   const [isSuccess, setIsSuccess] = useState(false);
   const [schemaList, setSchemaList] = useState<SchemaShortDetails[]>([]);
-  const [defaultCredentialType, setDefaultCredentialType] = useState<string>("");
+  const [defaultCredentialType, setDefaultCredentialType] =
+    useState<string>("");
   const [selectedSchemaId, setSelectedSchemaId] = useState<string | null>(null);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
 
@@ -65,7 +70,7 @@ const CredentialForm: React.FC<CredentialFormProps> = ({
   const handleGetContacts = async () => {
     try {
       setContacts(
-        (await axios.get(`${config.endpoint}${config.path.contacts}`)).data.data,
+        (await axios.get(`${config.endpoint}${config.path.contacts}`)).data.data
       );
     } catch (e) {
       console.log(e);
@@ -74,7 +79,9 @@ const CredentialForm: React.FC<CredentialFormProps> = ({
 
   const handleGetSchemaList = async () => {
     try {
-      const response = await axios.get(`${config.endpoint}${config.path.schemaList}`);
+      const response = await axios.get(
+        `${config.endpoint}${config.path.schemaList}`
+      );
       const schemas: SchemaShortDetails[] = response.data;
       setSchemaList(schemas);
       if (schemas.length > 0) {
@@ -90,13 +97,16 @@ const CredentialForm: React.FC<CredentialFormProps> = ({
   };
 
   const handleGetSchemaDetails = async (schemaTitle: string) => {
-    const schema = schemaList.find(s => s.title === schemaTitle);
+    const schema = schemaList.find((s) => s.title === schemaTitle);
     if (!schema) return;
 
     try {
-      const response = await axios.get(`${config.endpoint}${config.path.schemaCustomFields}`, {
-        params: { id: schema.$id },
-      });
+      const response = await axios.get(
+        `${config.endpoint}${config.path.schemaCustomFields}`,
+        {
+          params: { id: schema.$id },
+        }
+      );
       const { customizableKeys } = response.data;
 
       const newAttributes = Object.keys(customizableKeys).map((key: string) => {
@@ -104,8 +114,8 @@ const CredentialForm: React.FC<CredentialFormProps> = ({
         return {
           key,
           label: `${key} - ${value.description}`,
-          type: value.type || 'string', // Default to 'string' if type is not provided
-          defaultValue: value.default || '', // Add default value if provided
+          type: value.type || "string", // Default to 'string' if type is not provided
+          defaultValue: value.default || "", // Add default value if provided
         };
       });
 
@@ -154,8 +164,15 @@ const CredentialForm: React.FC<CredentialFormProps> = ({
   return (
     <Box>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
-        <Grid container spacing={2} justifyContent="center">
-          <Grid item xs={10}>
+        <Grid
+          container
+          spacing={2}
+          justifyContent="center"
+        >
+          <Grid
+            item
+            xs={10}
+          >
             <FormControl fullWidth>
               <Controller
                 name="selectedContact"
@@ -186,14 +203,20 @@ const CredentialForm: React.FC<CredentialFormProps> = ({
               />
             </FormControl>
           </Grid>
-          <Grid item xs={1}>
+          <Grid
+            item
+            xs={1}
+          >
             <Button
               startIcon={<RefreshIcon />}
               onClick={handleGetContacts}
               style={{ height: "100%" }}
             ></Button>
           </Grid>
-          <Grid item xs={11}>
+          <Grid
+            item
+            xs={11}
+          >
             <FormControl fullWidth>
               <InputLabel id="credential_type">Credential Type</InputLabel>
               <Controller
@@ -208,11 +231,17 @@ const CredentialForm: React.FC<CredentialFormProps> = ({
                     value={field.value || ""}
                     onChange={(event) => {
                       field.onChange(event);
-                      setSelectedSchemaId(schemaList.find(s => s.title === event.target.value)?.$id || null);
+                      setSelectedSchemaId(
+                        schemaList.find((s) => s.title === event.target.value)
+                          ?.$id || null
+                      );
                     }}
                   >
                     {schemaList.map((schema, index) => (
-                      <MenuItem key={index} value={schema.title}>
+                      <MenuItem
+                        key={index}
+                        value={schema.title}
+                      >
                         {schema.title}
                       </MenuItem>
                     ))}
@@ -221,15 +250,21 @@ const CredentialForm: React.FC<CredentialFormProps> = ({
               />
             </FormControl>
           </Grid>
-          <Grid item xs={11}>
+          <Grid
+            item
+            xs={11}
+          >
             {attributes.map((att, index) => (
-              <FormControl key={index} sx={{ width: "100%", mb: 2 }}>
+              <FormControl
+                key={index}
+                sx={{ width: "100%", mb: 2 }}
+              >
                 <Controller
                   control={control}
                   name={`attributes.${index}.value`}
                   render={({ field }) => {
                     switch (att.type) {
-                      case 'integer':
+                      case "integer":
                         return (
                           <TextField
                             {...field}
@@ -238,7 +273,7 @@ const CredentialForm: React.FC<CredentialFormProps> = ({
                             variant="outlined"
                           />
                         );
-                      case 'string':
+                      case "string":
                       default:
                         return (
                           <TextField
@@ -254,7 +289,10 @@ const CredentialForm: React.FC<CredentialFormProps> = ({
               </FormControl>
             ))}
           </Grid>
-          <Grid item xs={12}>
+          <Grid
+            item
+            xs={12}
+          >
             <Box sx={{ display: "flex", justifyContent: "right" }}>
               {errors.selectedContact && (
                 <Alert severity="error">
@@ -264,12 +302,12 @@ const CredentialForm: React.FC<CredentialFormProps> = ({
               {errors.credential_type && (
                 <Alert severity="error">Please, select a credential type</Alert>
               )}
-              {isSuccess && (
-                <Alert severity="success">
-                  {successMessage}
-                </Alert>
-              )}
-              <Button variant="contained" color="primary" type="submit">
+              {isSuccess && <Alert severity="success">{successMessage}</Alert>}
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
                 {submitButtonText}
               </Button>
             </Box>

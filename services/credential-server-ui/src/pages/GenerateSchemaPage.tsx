@@ -1,11 +1,29 @@
 import React, { useState } from "react";
-import { Button, TextField, Divider, Accordion, AccordionSummary, AccordionDetails, Typography, Grid, Box, Alert, Tooltip, IconButton } from "@mui/material";
+import {
+  Button,
+  TextField,
+  Divider,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  Grid,
+  Box,
+  Alert,
+  Tooltip,
+  IconButton,
+} from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
 import { config } from "../config";
-import { GENERATE_SCHEMA_BLUEPRINT, ATTRIBUTES_BLOCK, EDGES_BLOCK, RULES_BLOCK } from "../utils/schemaBlueprint";
+import {
+  GENERATE_SCHEMA_BLUEPRINT,
+  ATTRIBUTES_BLOCK,
+  EDGES_BLOCK,
+  RULES_BLOCK,
+} from "../utils/schemaBlueprint";
 import FieldSection from "../components/generateSchema/FieldSection";
 import { OptionalField } from "../constants/type";
 
@@ -30,7 +48,9 @@ const GenerateSchemaPage: React.FC = () => {
       return;
     }
 
-    const allFieldNames = [...attributes, ...edges, ...rules].map(field => field.name);
+    const allFieldNames = [...attributes, ...edges, ...rules].map(
+      (field) => field.name
+    );
     const uniqueFieldNames = new Set(allFieldNames);
 
     if (allFieldNames.length !== uniqueFieldNames.size) {
@@ -44,27 +64,39 @@ const GenerateSchemaPage: React.FC = () => {
     schema.description = description;
     schema.credentialType = credentialType;
 
-    const addFieldsToSchema = (fields: OptionalField[], schemaProperties: any, requiredFields: string[]) => {
-      fields.forEach(field => {
+    const addFieldsToSchema = (
+      fields: OptionalField[],
+      schemaProperties: any,
+      requiredFields: string[]
+    ) => {
+      fields.forEach((field) => {
         if (field.name && field.description) {
           const fieldSchema: any = {
             description: field.description,
             type: field.type,
           };
-    
+
           if (field.customizable) {
             fieldSchema.customizable = field.customizable;
-            if (field.default !== undefined && field.default !== "" && !Number.isNaN(field.default)) {
+            if (
+              field.default !== undefined &&
+              field.default !== "" &&
+              !Number.isNaN(field.default)
+            ) {
               fieldSchema.default = field.default;
             }
           }
-    
-          if (field.type === 'object' && field.fields) {
+
+          if (field.type === "object" && field.fields) {
             fieldSchema.properties = {};
             fieldSchema.required = [];
-            addFieldsToSchema(field.fields, fieldSchema.properties, fieldSchema.required);
+            addFieldsToSchema(
+              field.fields,
+              fieldSchema.properties,
+              fieldSchema.required
+            );
           }
-    
+
           schemaProperties[field.name] = fieldSchema;
           requiredFields.push(field.name);
         }
@@ -73,8 +105,14 @@ const GenerateSchemaPage: React.FC = () => {
 
     // Process attributes
     if (attributes.length > 0) {
-      const attributesBlock = JSON.parse(JSON.stringify(ATTRIBUTES_BLOCK.oneOf[1]));
-      addFieldsToSchema(attributes, attributesBlock.properties, attributesBlock.required);
+      const attributesBlock = JSON.parse(
+        JSON.stringify(ATTRIBUTES_BLOCK.oneOf[1])
+      );
+      addFieldsToSchema(
+        attributes,
+        attributesBlock.properties,
+        attributesBlock.required
+      );
       schema.properties.a = {
         oneOf: [
           { description: "Attributes block SAID", type: "string" },
@@ -117,7 +155,7 @@ const GenerateSchemaPage: React.FC = () => {
     try {
       const response = await axios.post(
         `${config.endpoint}${config.path.generateSchema}`,
-        generatedSchema,
+        generatedSchema
       );
       console.log("Schema saved successfully:", response.data);
       setIsSuccess(true);
@@ -128,7 +166,13 @@ const GenerateSchemaPage: React.FC = () => {
   };
 
   const handleAddField = (section: string) => {
-    const newField: OptionalField = { name: "", description: "", type: "string", customizable: false, fields: [] };
+    const newField: OptionalField = {
+      name: "",
+      description: "",
+      type: "string",
+      customizable: false,
+      fields: [],
+    };
 
     if (section === "edges") {
       setEdges((prevEdges) => [...prevEdges, newField]);
@@ -140,7 +184,12 @@ const GenerateSchemaPage: React.FC = () => {
     }
   };
 
-  const handleFieldChange = (section: string, index: number, field: "name" | "description" | "type" | "default" | "fields", value: any) => {
+  const handleFieldChange = (
+    section: string,
+    index: number,
+    field: "name" | "description" | "type" | "default" | "fields",
+    value: any
+  ) => {
     const updateFields = (fields: OptionalField[]) => {
       const newFields = [...fields];
       if (field === "fields") {
@@ -160,7 +209,11 @@ const GenerateSchemaPage: React.FC = () => {
     }
   };
 
-  const handleCustomizableChange = (section: string, index: number, value: boolean) => {
+  const handleCustomizableChange = (
+    section: string,
+    index: number,
+    value: boolean
+  ) => {
     const updateFields = (fields: OptionalField[]) => {
       const newFields = [...fields];
       newFields[index].customizable = value;
@@ -177,7 +230,8 @@ const GenerateSchemaPage: React.FC = () => {
   };
 
   const removeField = (section: string, index: number) => {
-    const updateFields = (fields: OptionalField[]) => fields.filter((_, i) => i !== index);
+    const updateFields = (fields: OptionalField[]) =>
+      fields.filter((_, i) => i !== index);
 
     if (section === "edges") {
       setEdges(updateFields(edges));
@@ -190,13 +244,24 @@ const GenerateSchemaPage: React.FC = () => {
 
   return (
     <>
-      <Typography component="h1" variant="h4" align="center">
+      <Typography
+        component="h1"
+        variant="h4"
+        align="center"
+      >
         Generate Schema
       </Typography>
       <Box>
         <form onSubmit={handleGenerateSchema}>
-          <Grid container spacing={2} justifyContent="center">
-            <Grid item xs={10}>
+          <Grid
+            container
+            spacing={2}
+            justifyContent="center"
+          >
+            <Grid
+              item
+              xs={10}
+            >
               <TextField
                 id="credential-title"
                 label="Title"
@@ -205,7 +270,10 @@ const GenerateSchemaPage: React.FC = () => {
                 onChange={(e) => setTitle(e.target.value)}
               />
             </Grid>
-            <Grid item xs={10}>
+            <Grid
+              item
+              xs={10}
+            >
               <TextField
                 id="credential-description"
                 label="Description"
@@ -214,7 +282,10 @@ const GenerateSchemaPage: React.FC = () => {
                 onChange={(e) => setDescription(e.target.value)}
               />
             </Grid>
-            <Grid item xs={10}>
+            <Grid
+              item
+              xs={10}
+            >
               <TextField
                 id="credential-type"
                 label="Type"
@@ -223,16 +294,28 @@ const GenerateSchemaPage: React.FC = () => {
                 onChange={(e) => setCredentialType(e.target.value)}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <Divider style={{ margin: "20px 0" }} />
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <Accordion>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                   <Typography variant="h6">Extra Fields</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <h4>Attributes</h4>
                       <Tooltip title="A top-level field map within an ACDC that provides a property of an entity that is inherent or assigned to the entity.">
@@ -241,7 +324,10 @@ const GenerateSchemaPage: React.FC = () => {
                         </IconButton>
                       </Tooltip>
                     </div>
-                    <IconButton onClick={() => handleAddField("attributes")} color="primary">
+                    <IconButton
+                      onClick={() => handleAddField("attributes")}
+                      color="primary"
+                    >
                       <AddIcon />
                     </IconButton>
                   </div>
@@ -253,7 +339,13 @@ const GenerateSchemaPage: React.FC = () => {
                     handleAddField={handleAddField}
                     removeField={removeField}
                   />
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <h4>Edges</h4>
                       <Tooltip title="A top-level field map within an ACDC that provides edges that connect to other ACDCs, forming a labeled property graph (LPG).">
@@ -262,7 +354,10 @@ const GenerateSchemaPage: React.FC = () => {
                         </IconButton>
                       </Tooltip>
                     </div>
-                    <IconButton onClick={() => handleAddField("edges")} color="primary">
+                    <IconButton
+                      onClick={() => handleAddField("edges")}
+                      color="primary"
+                    >
                       <AddIcon />
                     </IconButton>
                   </div>
@@ -274,7 +369,13 @@ const GenerateSchemaPage: React.FC = () => {
                     handleAddField={handleAddField}
                     removeField={removeField}
                   />
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <h4>Rules</h4>
                       <Tooltip title="A top-level field map within an ACDC that provides a legal language as a Ricardian Contract, which is both human and machine-readable and referenceable by a cryptographic digest.">
@@ -283,7 +384,10 @@ const GenerateSchemaPage: React.FC = () => {
                         </IconButton>
                       </Tooltip>
                     </div>
-                    <IconButton onClick={() => handleAddField("rules")} color="primary">
+                    <IconButton
+                      onClick={() => handleAddField("rules")}
+                      color="primary"
+                    >
                       <AddIcon />
                     </IconButton>
                   </div>
@@ -298,19 +402,32 @@ const GenerateSchemaPage: React.FC = () => {
                 </AccordionDetails>
               </Accordion>
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <Box sx={{ display: "flex", justifyContent: "right" }}>
                 {error && (
-                  <Alert severity="error" sx={{ marginRight: 2 }}>
+                  <Alert
+                    severity="error"
+                    sx={{ marginRight: 2 }}
+                  >
                     {error}
                   </Alert>
                 )}
                 {isSuccess && (
-                  <Alert severity="success" sx={{ marginRight: 2 }}>
+                  <Alert
+                    severity="success"
+                    sx={{ marginRight: 2 }}
+                  >
                     Schema generated successfully
                   </Alert>
                 )}
-                <Button variant="contained" color="primary" type="submit">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                >
                   Generate Schema
                 </Button>
               </Box>
@@ -318,16 +435,31 @@ const GenerateSchemaPage: React.FC = () => {
           </Grid>
         </form>
         {generatedSchema && (
-          <Grid item xs={12}>
+          <Grid
+            item
+            xs={12}
+          >
             <Box sx={{ marginTop: 4 }}>
               <Typography variant="h6">Generated Schema</Typography>
-              <pre style={{ backgroundColor: "#f5f5f5", padding: "10px", borderRadius: "4px" }}>
-          {JSON.stringify(generatedSchema, null, 2)}
+              <pre
+                style={{
+                  backgroundColor: "#f5f5f5",
+                  padding: "10px",
+                  borderRadius: "4px",
+                }}
+              >
+                {JSON.stringify(generatedSchema, null, 2)}
               </pre>
-              <Box sx={{ display: "flex", justifyContent: "right", marginTop: 2 }}>
-          <Button variant="contained" color="primary" onClick={saveSchema}>
-            Save Schema
-          </Button>
+              <Box
+                sx={{ display: "flex", justifyContent: "right", marginTop: 2 }}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={saveSchema}
+                >
+                  Save Schema
+                </Button>
               </Box>
             </Box>
           </Grid>

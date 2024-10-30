@@ -1,20 +1,34 @@
 import { Agent } from "../../../core/agent/agent";
-import { KeriaNotification } from "../../../core/agent/agent.types";
+import {
+  EventTypes,
+  NotificationAddedEvent,
+  NotificationRemovedEvent,
+} from "../../../core/agent/event.types";
 import { OperationPendingRecordType } from "../../../core/agent/records/operationPendingRecord.type";
 import { useAppDispatch } from "../../../store/hooks";
 import { updateIsPending } from "../../../store/reducers/identifiersCache";
 import {
   addNotification,
+  deleteNotification,
   setNotificationsCache,
 } from "../../../store/reducers/notificationsCache";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
 
 const notificatiStateChanged = (
-  notif: KeriaNotification,
+  event: NotificationRemovedEvent | NotificationAddedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  dispatch(addNotification(notif));
+  switch (event.type) {
+  case EventTypes.NotificationAdded:
+    dispatch(addNotification(event.payload.keriaNotif));
+    break;
+  case EventTypes.NotificationRemoved:
+    dispatch(deleteNotification(event.payload.keriaNotif));
+    break;
+  default:
+    break;
+  }
 };
 
 const signifyOperationStateChangeHandler = async (

@@ -1,6 +1,27 @@
 import { expect } from "expect-webdriverio";
+import { SsiAgentDetails } from "../constants/text.constants.js";
 
 export class SsiAgentDetailsScreen {
+  get bootUrlInput() {
+    return $("#boot-url-input input");
+  }
+
+  get connectUrlInput() {
+    return $("#connect-url-input input");
+  }
+
+  get screenTitle() {
+    return $("[data-testid=\"create-ssi-agent-title\"]");
+  }
+
+  get screenTopParagraph() {
+    return $("[data-testid=\"create-ssi-agent-top-paragraph\"]");
+  }
+
+  get switchToRecoveryWalletButton() {
+    return $("[data-testid=\"switch-mode-button\"]");
+  }
+
   get validateButton() {
     return $("[data-testid=\"primary-button-create-ssi-agent\"]");
   }
@@ -12,6 +33,15 @@ export class SsiAgentDetailsScreen {
   }
 
   async loads() {
+    await expect(this.screenTitle).toBeDisplayed();
+    await expect(this.screenTitle).toHaveText(SsiAgentDetails.Title);
+    await expect(this.screenTopParagraph).toBeDisplayed();
+    await expect(this.screenTopParagraph).toHaveText(
+      SsiAgentDetails.DescriptionTop
+    );
+    await expect(this.bootUrlInput).toBeDisplayed();
+    await expect(this.connectUrlInput).toBeDisplayed();
+    await expect(this.switchToRecoveryWalletButton).toBeDisplayed();
     await expect(this.validateButton).toBeDisplayed();
   }
 }

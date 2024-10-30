@@ -1,3 +1,5 @@
+import { ACDCDetails } from "../../../core/agent/services/credentialService.types";
+import { MemberInfo } from "../../pages/NotificationDetails/components/CredentialRequest/CredentialRequest.types";
 import { NotificationDetailState } from "../../pages/NotificationDetails/NotificationDetails.types";
 import { HardwareBackButtonConfig } from "../PageHeader/PageHeader.types";
 
@@ -13,9 +15,12 @@ enum BackReason {
 interface CredentialDetailModuleBaseProps {
   pageId: string;
   id: string;
+  credDetail?: ACDCDetails;
   onClose?: (reason: BackReason) => void;
   navAnimation?: boolean;
   hardwareBackButtonConfig?: HardwareBackButtonConfig;
+  viewOnly?: boolean;
+  joinedCredRequestMembers?: MemberInfo[];
 }
 
 interface CredentialDetailModuleLightModeProps

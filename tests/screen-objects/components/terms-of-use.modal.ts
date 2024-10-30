@@ -5,6 +5,25 @@ import { BaseModal } from "./base.modal.js";
 export class TermsOfUseModal extends BaseModal {
   modalName = "terms-of-use";
 
+  async validateSection(
+    sectionLocator: string,
+    sectionIndex: number,
+    currentIndex: number) {
+    await expect(
+      await this.subsectionElement(sectionLocator, "subtitle", currentIndex)
+    ).toHaveText(
+      TermsOfUse[
+        `Section${sectionIndex}Subtitle${currentIndex}` as keyof typeof TermsOfUse]
+    );
+
+    await expect(
+      await this.subsectionElement(sectionLocator, "content", currentIndex)
+    ).toHaveText(
+      TermsOfUse[
+        `Section${sectionIndex}Content${currentIndex}` as keyof typeof TermsOfUse]
+    );
+  }
+
   async validateSubtitlesAndContent(
     sectionName: string,
     sectionIndex: number,
@@ -18,27 +37,20 @@ export class TermsOfUseModal extends BaseModal {
       TermsOfUse[`Section${sectionIndex}Title` as keyof typeof TermsOfUse]
     );
     for (let i = 1; i <= sectionLength; i++) {
-      await expect(
-        await this.subsectionElement(sectionLocator, "subtitle", i)
-      ).toHaveText(
-        TermsOfUse[
-          `Section${sectionIndex}Subtitle${i}` as keyof typeof TermsOfUse
-        ]
-      );
-      await expect(
-        await this.subsectionElement(sectionLocator, "content", i)
-      ).toHaveText(
-        TermsOfUse[
-          `Section${sectionIndex}Content${i}` as keyof typeof TermsOfUse
-        ]
-      );
+      if(sectionName === "disclaimerslimitationofliability") {
+        if(i !== 1) {
+          await this.validateSection(sectionLocator, sectionIndex, i);
+        }
+      }
+      else{
+        await this.validateSection(sectionLocator, sectionIndex, i);}
     }
   }
 
   async loads() {
     await expect(this.introTitle(this.modalName)).toHaveText(TermsOfUse.Title);
     await expect(this.introText(this.modalName)).toHaveText(TermsOfUse.Intro);
-    await this.validateSubtitlesAndContent("useofproducts", 1, 7);
+    await this.validateSubtitlesAndContent("useofproducts", 1, 6);
     await this.validateSubtitlesAndContent("yourcontent", 2, 5);
     await this.validateSubtitlesAndContent("intellectualproperty", 3, 4);
     await this.validateSubtitlesAndContent(

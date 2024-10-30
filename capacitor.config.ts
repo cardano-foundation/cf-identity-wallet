@@ -13,7 +13,10 @@ const config: CapacitorConfig = {
   },
   plugins: {
     CapacitorSQLite: {
-      "iosDatabaseLocation": "Library/IDWalletDatabase"
+      iosDatabaseLocation: "Library/IDWalletDatabase",
+      iosIsEncryption: true,
+      iosKeychainPrefix: "db-encryption-bran",
+      androidIsEncryption: true,
     },
     SplashScreen: {
       launchShowDuration: 3000,
@@ -24,6 +27,7 @@ const config: CapacitorConfig = {
     PrivacyScreen: {
       enable: false,
       imageName: "Splashscreen",
+      preventScreenshots: false
     }
   }
 };

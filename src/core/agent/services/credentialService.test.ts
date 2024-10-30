@@ -4,6 +4,8 @@ import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { CoreEventEmitter } from "../event";
 import { Agent } from "../agent";
 import { CredentialStatus } from "./credentialService.types";
+import { IdentifierType } from "./identifier.types";
+import { memberIdentifierRecord } from "../../__fixtures__/agent/multSigFixtures";
 
 const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
@@ -124,7 +126,8 @@ const notificationStorage = jest.mocked({
 const credentialService = new CredentialService(
   agentServicesProps,
   credentialStorage as any,
-  notificationStorage as any
+  notificationStorage as any,
+  identifierStorage as any
 );
 
 const now = new Date();
@@ -140,6 +143,8 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   status: CredentialStatus.CONFIRMED,
   connectionId: "EEnw0sGaicPN-9gHgU62JIZOYo7cMzXjd-fpwJ1EgdK6",
   schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+  identifierId: memberIdentifierRecord.id,
+  identifierType: IdentifierType.Individual,
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(
@@ -175,6 +180,8 @@ describe("Credential service of agent", () => {
         issuanceDate: nowISO,
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        identifierId: memberIdentifierRecord.id,
+        identifierType: IdentifierType.Individual,
       },
       {
         id: id2,
@@ -182,6 +189,8 @@ describe("Credential service of agent", () => {
         issuanceDate: nowISO,
         status: CredentialStatus.CONFIRMED,
         schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        identifierId: memberIdentifierRecord.id,
+        identifierType: IdentifierType.Individual,
       },
     ]);
   });
@@ -311,8 +320,6 @@ describe("Credential service of agent", () => {
       credentialService.getCredentialDetailsById(credentialMetadataRecordA.id)
     ).resolves.toStrictEqual({
       id: credentialMetadataRecordA.id,
-      credentialType: credentialMetadataRecordA.credentialType,
-      issuanceDate: nowISO,
       status: CredentialStatus.CONFIRMED,
       i: acdc.sad.i,
       a: acdc.sad.a,
@@ -326,6 +333,8 @@ describe("Credential service of agent", () => {
         dt: nowISO,
       },
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      identifierId: memberIdentifierRecord.id,
+      identifierType: IdentifierType.Individual,
     });
   });
 
@@ -340,6 +349,8 @@ describe("Credential service of agent", () => {
       isDeleted: false,
       connectionId: undefined,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      identifierType: IdentifierType.Individual,
+      identifierId: memberIdentifierRecord.id,
     });
     expect(
       await credentialService.getCredentialShortDetailsById(id)
@@ -349,6 +360,8 @@ describe("Credential service of agent", () => {
       credentialType,
       issuanceDate: nowISO,
       schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+      identifierId: memberIdentifierRecord.id,
+      identifierType: IdentifierType.Individual,
     });
   });
 
@@ -413,6 +426,10 @@ describe("Credential service of agent", () => {
       },
     ]);
     credentialStorage.getAllCredentialMetadata = jest.fn().mockReturnValue([]);
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      ...memberIdentifierRecord,
+      id: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+    });
     await credentialService.syncACDCs();
     expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(2);
   });
@@ -434,6 +451,96 @@ describe("Credential service of agent", () => {
     await credentialService.deleteStaleLocalCredential(credentialId);
     expect(credentialStorage.deleteCredentialMetadata).toBeCalledWith(
       credentialId
+    );
+  });
+
+  test("cannot mark credential as confirmed if metadata is missing", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
+    await expect(
+      credentialService.markAcdc(id, CredentialStatus.CONFIRMED)
+    ).rejects.toThrowError(
+      CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+    );
+    expect(credentialStorage.updateCredentialMetadata).not.toBeCalled();
+  });
+
+  test("Can mark credential as confirmed", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    const pendingCredentialMock = {
+      id: "id",
+      createdAt: new Date(),
+      issuanceDate: "",
+      credentialType: "",
+      status: CredentialStatus.PENDING,
+      connectionId: "connection-id",
+    };
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(pendingCredentialMock);
+    await credentialService.markAcdc(id, CredentialStatus.CONFIRMED);
+    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(
+      pendingCredentialMock.id,
+      {
+        ...pendingCredentialMock,
+        status: CredentialStatus.CONFIRMED,
+      }
+    );
+  });
+
+  test("Can mark credential as revoked", async () => {
+    Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
+    const id = "uuid";
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    const pendingCredentialMock = {
+      id: "id",
+      createdAt: new Date(),
+      issuanceDate: "",
+      credentialType: "",
+      status: CredentialStatus.PENDING,
+      connectionId: "connection-id",
+    };
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(pendingCredentialMock);
+    await credentialService.markAcdc(id, CredentialStatus.REVOKED);
+    expect(credentialStorage.updateCredentialMetadata).toBeCalledWith(
+      pendingCredentialMock.id,
+      {
+        ...pendingCredentialMock,
+        status: CredentialStatus.REVOKED,
+      }
     );
   });
 });

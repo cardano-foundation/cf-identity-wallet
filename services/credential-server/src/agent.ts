@@ -1,4 +1,4 @@
-import { randomPasscode, ready as signifyReady} from "signify-ts";
+import { randomPasscode, ready as signifyReady } from "signify-ts";
 import { config } from "./config";
 import { SignifyApi } from "./modules/signify/signifyApi";
 import { NotificationRoute } from "./modules/signify/signifyApi.type";
@@ -47,20 +47,27 @@ class Agent {
     const bransFilePath = "./data/brans.json";
     const dirPath = path.dirname(bransFilePath);
     if (!existsSync(dirPath)) {
-      mkdirSync(dirPath, { recursive: true })
+      mkdirSync(dirPath, { recursive: true });
     }
     if (!existsSync(bransFilePath)) {
       // Create new file if the file doesn't exist
       await writeFile(bransFilePath, "");
     }
     const bransFileContent = await readFile(bransFilePath, "utf8");
-    if (!bransFileContent.includes("bran") && !bransFileContent.includes("issuerBran")) {
+    if (
+      !bransFileContent.includes("bran") &&
+      !bransFileContent.includes("issuerBran")
+    ) {
       // Write file content if it's empty
       bran = randomPasscode();
       issuerBran = randomPasscode();
-      await writeFile(bransFilePath, JSON.stringify({
-        bran, issuerBran
-      }));
+      await writeFile(
+        bransFilePath,
+        JSON.stringify({
+          bran,
+          issuerBran,
+        })
+      );
     } else {
       const bransData = JSON.parse(bransFileContent);
       bran = bransData.bran;
@@ -117,15 +124,21 @@ class Agent {
 
   async deleteContact(id: string) {
     return this.signifyApi.deleteContact(id);
-  };
-  
+  }
+
   async contactCredentials(contactId: string) {
-    const issuer = await this.signifyApi.getIdentifierByName(Agent.HOLDER_AID_NAME);
+    const issuer = await this.signifyApi.getIdentifierByName(
+      Agent.HOLDER_AID_NAME
+    );
     return this.signifyApi.contactCredentials(issuer.prefix, contactId);
   }
 
   async revokeCredential(credentialId: string, holder: string) {
-    return this.signifyApi.revokeCredential(Agent.HOLDER_AID_NAME, holder, credentialId);
+    return this.signifyApi.revokeCredential(
+      Agent.HOLDER_AID_NAME,
+      holder,
+      credentialId
+    );
   }
 
   async onNotificationKeriStateChanged() {
@@ -144,13 +157,7 @@ class Agent {
   }
 
   private async processNotification(notif: any) {
-    if (
-      Object.values(NotificationRoute).includes(
-        notif.a.r as NotificationRoute
-      ) &&
-      !notif.r
-    ) {
-      switch (notif.a.r) {
+    switch (notif.a.r) {
       case NotificationRoute.ExnIpexOffer: {
         const msg = await this.signifyApi.getExchangeMsg(notif.a.d!);
         await this.signifyApi.agreeToAcdcFromOffer(
@@ -162,16 +169,25 @@ class Agent {
       }
       default:
         break;
-      }
-      await this.signifyApi.deleteNotification(notif.i);
     }
+    await this.signifyApi.deleteNotification(notif.i);
   }
-  
+
   async initKeri(): Promise<void> {
     this.onNotificationKeriStateChanged();
     /* eslint-disable no-console */
-    const existingKeriIssuerRegistryRegk = await this.signifyApiIssuer.getRegistry(Agent.ISSUER_AID_NAME).catch((e) => {console.error(e); return undefined});
-    const existingKeriRegistryRegk = await this.signifyApi.getRegistry(Agent.HOLDER_AID_NAME).catch((e) => {console.error(e); return undefined});
+    const existingKeriIssuerRegistryRegk = await this.signifyApiIssuer
+      .getRegistry(Agent.ISSUER_AID_NAME)
+      .catch((e) => {
+        console.error(e);
+        return undefined;
+      });
+    const existingKeriRegistryRegk = await this.signifyApi
+      .getRegistry(Agent.HOLDER_AID_NAME)
+      .catch((e) => {
+        console.error(e);
+        return undefined;
+      });
     // Issuer
     if (existingKeriIssuerRegistryRegk) {
       this.keriIssuerRegistryRegk = existingKeriIssuerRegistryRegk;
@@ -193,7 +209,7 @@ class Agent {
         .catch((e) => console.error(e));
       this.keriRegistryRegk = await this.signifyApi
         .createRegistry(Agent.HOLDER_AID_NAME)
-        .catch((e) => console.error(e));     
+        .catch((e) => console.error(e));
     }
 
     await this.createQVICredential().catch((e) => console.error(e));
@@ -236,7 +252,9 @@ class Agent {
     const grantNotification = (await getHolderNotifications()).notes[0];
 
     // resolve schema
-    await this.signifyApi.resolveOobi(`${config.oobiEndpoint}/oobi/${Agent.QVI_SCHEMA_SAID}`);
+    await this.signifyApi.resolveOobi(
+      `${config.oobiEndpoint}/oobi/${Agent.QVI_SCHEMA_SAID}`
+    );
 
     // holder IPEX admit
     await this.signifyApi.admitCredential(

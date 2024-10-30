@@ -8,7 +8,11 @@ const ATTRIBUTES_BLOCK = {
       properties: {
         d: { description: "Attributes block SAID", type: "string" },
         i: { description: "Issuer AID", type: "string" },
-        dt: { description: "Issuance date time", type: "string", format: "date-time" },
+        dt: {
+          description: "Issuance date time",
+          type: "string",
+          format: "date-time",
+        },
       },
       additionalProperties: false,
       required: ["i", "dt"],
@@ -68,4 +72,9 @@ const GENERATE_SCHEMA_BLUEPRINT = {
   required: ["i", "ri", "s", "d"],
 };
 
-export { GENERATE_SCHEMA_BLUEPRINT, ATTRIBUTES_BLOCK, EDGES_BLOCK, RULES_BLOCK };
+export {
+  GENERATE_SCHEMA_BLUEPRINT,
+  ATTRIBUTES_BLOCK,
+  EDGES_BLOCK,
+  RULES_BLOCK,
+};

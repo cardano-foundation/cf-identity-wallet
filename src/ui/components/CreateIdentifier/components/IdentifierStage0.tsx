@@ -37,6 +37,7 @@ import { TypeItem } from "./TypeItem";
 import { createThemeValue } from "../../../utils/theme";
 import { IADTypeInfoModal } from "./AIDTypeInfoModal";
 import { showError } from "../../../utils/error";
+import { combineClassNames } from "../../../utils/style";
 
 const IdentifierStage0 = ({
   state,
@@ -45,6 +46,7 @@ const IdentifierStage0 = ({
   setBlur,
   resetModal,
   multiSigGroup,
+  isModalOpen,
 }: IdentifierStageProps) => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
@@ -180,7 +182,11 @@ const IdentifierStage0 = ({
     <>
       <ScrollablePageLayout
         pageId={componentId + "-content"}
-        customClass={keyboardIsOpen ? "keyboard-is-open" : ""}
+        activeStatus={isModalOpen}
+        customClass={combineClassNames(
+          "create-stage-0",
+          keyboardIsOpen ? "keyboard-is-open" : ""
+        )}
         header={
           <PageHeader
             closeButton={true}
@@ -293,9 +299,10 @@ const IdentifierStage0 = ({
           </div>
         )}
         <div className="identifier-theme">
-          <div className="theme-input-title">{`${i18n.t(
-            "createidentifier.color.title"
-          )}`}</div>
+          <div
+            className="theme-input-title"
+            data-testid="color-input-title"
+          >{`${i18n.t("createidentifier.color.title")}`}</div>
           <IdentifierColorSelector
             value={state.color}
             onColorChange={(color) => {
@@ -307,9 +314,10 @@ const IdentifierStage0 = ({
           />
         </div>
         <div className="identifier-theme">
-          <div className="theme-input-title">{`${i18n.t(
-            "createidentifier.theme.title"
-          )}`}</div>
+          <div
+            className="theme-input-title"
+            data-testid="theme-input-title"
+          >{`${i18n.t("createidentifier.theme.title")}`}</div>
           <IdentifierThemeSelector
             color={state.color}
             selectedTheme={selectedTheme}

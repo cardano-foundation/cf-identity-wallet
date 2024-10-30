@@ -11,6 +11,7 @@ import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { CardType } from "../../globals/types";
 import { CredentialDetails } from "../../pages/CredentialDetails";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -30,8 +31,6 @@ jest.mock("../../../core/agent/agent", () => ({
       credentials: {
         getCredentialDetailsById: jest.fn().mockResolvedValue({
           id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
-          issuanceDate: "2024-01-22T16:03:44.643Z",
-          credentialType: "Qualified vLEI Issuer Credential",
           status: "confirmed",
           i: "EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5",
           a: {
@@ -86,7 +85,7 @@ describe("Cards Stack Component", () => {
           cardsType={CardType.CREDENTIALS}
           cardsData={[
             {
-              ...credsFixAcdc[0],
+              ...filteredCredsFix[0],
               status: CredentialStatus.PENDING,
             },
           ]}
@@ -127,7 +126,7 @@ describe("Cards Stack Component", () => {
 
     await waitFor(() => expect(firstCard).toHaveClass("active"));
 
-    const doneButton = await findByTestId("tab-done-label");
+    const doneButton = await findByTestId("close-button");
     act(() => {
       fireEvent.click(doneButton);
       jest.advanceTimersByTime(CLEAR_STATE_DELAY);
@@ -144,7 +143,7 @@ describe("Cards Stack Component", () => {
           <CardsStack
             name="example"
             cardsType={CardType.CREDENTIALS}
-            cardsData={credsFixAcdc}
+            cardsData={filteredCredsFix}
           />
           <Route
             path={TabsRoutePath.CREDENTIAL_DETAILS}

@@ -1,30 +1,25 @@
 import {
-  act,
-  getDefaultNormalizer,
-  render,
-  waitFor,
-} from "@testing-library/react";
-import { createMemoryHistory } from "history";
-import {
   ionFireEvent as fireEvent,
   waitForIonicReact,
 } from "@ionic/react-test-utils";
-import { MemoryRouter, Route } from "react-router-dom";
+import { getDefaultNormalizer, render, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { IonReactMemoryRouter } from "@ionic/react-router";
-import { ConnectionStatus } from "../../../core/agent/agent.types";
-import { RoutePath } from "../../../routes";
-import { TabsRoutePath } from "../../../routes/paths";
-import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
-import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { Credentials } from "../Credentials";
-import { ConnectionDetails } from "./ConnectionDetails";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { Agent } from "../../../core/agent/agent";
-import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
+import {
+  ConnectionHistoryItem,
+  ConnectionNoteDetails,
+  ConnectionStatus,
+} from "../../../core/agent/agent.types";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { TabsRoutePath } from "../../../routes/paths";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
+import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { passcodeFiller } from "../../utils/passcodeFiller";
+import { ConnectionDetails } from "./ConnectionDetails";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -33,6 +28,7 @@ jest.mock("@ionic/react", () => ({
 }));
 
 const deleteStaleLocalConnectionByIdMock = jest.fn();
+const deleteConnection = jest.fn();
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -44,9 +40,11 @@ jest.mock("../../../core/agent/agent", () => ({
         getConnectionHistoryById: jest.fn(),
         deleteStaleLocalConnectionById: () =>
           deleteStaleLocalConnectionByIdMock(),
+        deleteConnectionById: () => deleteConnection(),
       },
       credentials: {
         getCredentialDetailsById: jest.fn(),
+        getCredentials: jest.fn(() => Promise.resolve([])),
       },
       basicStorage: {
         deleteById: jest.fn(() => Promise.resolve()),
@@ -111,61 +109,16 @@ describe("ConnectionDetails Page", () => {
               message: "Message",
             },
           ],
+          historyItems: [
+            {
+              type: 3,
+              timestamp: "2024-08-07T15:33:18.204Z",
+              credentialType: "Rare EVO 2024 Attendee",
+            },
+          ],
+          serviceEndpoints: [],
         })
     );
-  });
-
-  test("Open and close ConnectionDetails", async () => {
-    const storeMocked = {
-      ...mockStore(initialStateFull),
-      dispatch: dispatchMock,
-    };
-    const history = createMemoryHistory();
-    history.push(TabsRoutePath.CREDENTIALS);
-    const { getByTestId, queryByTestId, getByText } = render(
-      <IonReactMemoryRouter
-        history={history}
-        initialEntries={[TabsRoutePath.CREDENTIALS]}
-      >
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.CREDENTIALS}
-            component={Credentials}
-          />
-
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </IonReactMemoryRouter>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("connection-item-0")).toBeNull();
-    });
-
-    expect(getByText(connectionsFix[1].label)).toBeVisible();
-
-    act(() => {
-      fireEvent.click(getByText(connectionsFix[1].label));
-    });
-
-    await waitFor(() =>
-      expect(queryByTestId("connection-details-page")).toBeVisible()
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("close-button"));
-    });
-
-    await waitFor(() => {
-      expect(getByText(connectionsFix[1].label)).toBeVisible();
-    });
   });
 
   test("Open and Close ConnectionOptions", async () => {
@@ -173,29 +126,16 @@ describe("ConnectionDetails Page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
+
+    const setConnectionShortDetails = jest.fn();
     const { getByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.CREDENTIALS}
-            component={Credentials}
-          />
-
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </MemoryRouter>
+      <Provider store={storeMocked}>
+        <ConnectionDetails
+          connectionShortDetails={connectionsFix[0]}
+          setConnectionShortDetails={setConnectionShortDetails}
+        />
+      </Provider>
     );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    act(() => {
-      fireEvent.click(getByText(connectionsFix[1].label));
-    });
 
     await waitFor(() => {
       expect(
@@ -213,33 +153,22 @@ describe("ConnectionDetails Page", () => {
   });
 
   test("Delete button in the footer triggers a confirmation alert", async () => {
+    getMock.mockImplementation(() => Promise.resolve("111111"));
+
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
+
+    const setConnectionShortDetails = jest.fn();
     const { getByTestId, getByText, findByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.CREDENTIALS}
-            component={Credentials}
-          />
-
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </MemoryRouter>
+      <Provider store={storeMocked}>
+        <ConnectionDetails
+          connectionShortDetails={connectionsFix[0]}
+          setConnectionShortDetails={setConnectionShortDetails}
+        />
+      </Provider>
     );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    act(() => {
-      fireEvent.click(getByText(connectionsFix[1].label));
-    });
 
     const alertDeleteConnection = await findByTestId(
       "alert-confirm-delete-connection-container"
@@ -268,6 +197,18 @@ describe("ConnectionDetails Page", () => {
     await waitFor(() => {
       expect(getByTestId("verify-passcode")).toBeVisible();
     });
+
+    await waitFor(() => {
+      expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    });
+
+    act(() => {
+      passcodeFiller(getByText, getByTestId, "1", 6);
+    });
+
+    await waitFor(() => {
+      expect(deleteConnection).toBeCalled();
+    });
   });
 
   test("Show loading spin when load data", async () => {
@@ -275,29 +216,16 @@ describe("ConnectionDetails Page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.CREDENTIALS}
-            component={Credentials}
-          />
 
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </MemoryRouter>
+    const setConnectionShortDetails = jest.fn();
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <ConnectionDetails
+          connectionShortDetails={connectionsFix[0]}
+          setConnectionShortDetails={setConnectionShortDetails}
+        />
+      </Provider>
     );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    act(() => {
-      fireEvent.click(getByText(connectionsFix[1].label));
-    });
 
     expect(getByTestId("connection-detail-spinner-container")).toBeVisible();
   });
@@ -307,29 +235,15 @@ describe("ConnectionDetails Page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, getByText, queryByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.CREDENTIALS}
-            component={Credentials}
-          />
-
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </MemoryRouter>
+    const setConnectionShortDetails = jest.fn();
+    const { getByTestId, queryByTestId } = render(
+      <Provider store={storeMocked}>
+        <ConnectionDetails
+          connectionShortDetails={connectionsFix[0]}
+          setConnectionShortDetails={setConnectionShortDetails}
+        />
+      </Provider>
     );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    act(() => {
-      fireEvent.click(getByText(connectionsFix[1].label));
-    });
 
     expect(getByTestId("connection-detail-spinner-container")).toBeVisible();
 
@@ -338,34 +252,21 @@ describe("ConnectionDetails Page", () => {
     });
   });
 
-  test.skip("Delete button in the ConnectionOptions modal triggers a confirmation alert", async () => {
+  test("Delete button in the ConnectionOptions modal triggers a confirmation alert", async () => {
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, getByText, getAllByTestId, queryByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.CREDENTIALS}
-            component={Credentials}
-          />
 
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </MemoryRouter>
+    const setConnectionShortDetails = jest.fn();
+    const { getByTestId, getAllByTestId, queryByTestId } = render(
+      <Provider store={storeMocked}>
+        <ConnectionDetails
+          connectionShortDetails={connectionsFix[0]}
+          setConnectionShortDetails={setConnectionShortDetails}
+        />
+      </Provider>
     );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    act(() => {
-      fireEvent.click(getByText(connectionsFix[1].label));
-    });
 
     await waitFor(() => {
       expect(queryByTestId("connection-detail-spinner-container")).toBe(null);
@@ -391,36 +292,35 @@ describe("ConnectionDetails Page", () => {
         "custom-alert"
       );
     });
+
+    act(() => {
+      fireEvent.click(
+        getByTestId("alert-confirm-delete-connection-cancel-button")
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByTestId("alert-confirm-delete-connection")
+      ).not.toBeVisible();
+    });
   });
 
-  test.skip("Open Manage Connection notes modal", async () => {
+  test("Open Manage Connection notes modal", async () => {
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, getByText, queryByTestId } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.CREDENTIALS}
-            component={Credentials}
-          />
 
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </MemoryRouter>
+    const setConnectionShortDetails = jest.fn();
+    const { getByTestId, queryByTestId } = render(
+      <Provider store={storeMocked}>
+        <ConnectionDetails
+          connectionShortDetails={connectionsFix[0]}
+          setConnectionShortDetails={setConnectionShortDetails}
+        />
+      </Provider>
     );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    act(() => {
-      fireEvent.click(getByText(connectionsFix[1].label));
-    });
 
     await waitFor(() => {
       expect(queryByTestId("connection-detail-spinner-container")).toBe(null);
@@ -441,10 +341,7 @@ describe("ConnectionDetails Page", () => {
     await waitForIonicReact();
 
     await waitFor(() =>
-      expect(getByTestId("edit-connections-modal")).toHaveAttribute(
-        "is-open",
-        "true"
-      )
+      expect(getByTestId("edit-connections-modal")).toBeVisible()
     );
   });
 
@@ -453,35 +350,16 @@ describe("ConnectionDetails Page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.CREDENTIALS}
-            component={Credentials}
-          />
 
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </MemoryRouter>
+    const setConnectionShortDetails = jest.fn();
+    const { queryByTestId, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <ConnectionDetails
+          connectionShortDetails={connectionsFix[1]}
+          setConnectionShortDetails={setConnectionShortDetails}
+        />
+      </Provider>
     );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("connection-item-0")).toBeNull();
-    });
-
-    expect(getByText(connectionsFix[1].label)).toBeVisible();
-
-    act(() => {
-      fireEvent.click(getByText(connectionsFix[1].label));
-    });
 
     await waitFor(() => {
       expect(getByTestId("connection-details-segment")).toBeVisible();
@@ -524,7 +402,9 @@ interface MockConnectionDetails {
   connectionDate: string;
   logo: string;
   status: ConnectionStatus;
-  notes: any[];
+  notes: ConnectionNoteDetails[];
+  historyItems: ConnectionHistoryItem[];
+  serviceEndpoints: string[];
 }
 
 describe("Checking the Connection Details Page when no notes are available", () => {
@@ -538,6 +418,8 @@ describe("Checking the Connection Details Page when no notes are available", () 
           logo: ".png",
           status: "pending" as ConnectionStatus,
           notes: [],
+          historyItems: [],
+          serviceEndpoints: [],
         })
     );
   });
@@ -547,35 +429,16 @@ describe("Checking the Connection Details Page when no notes are available", () 
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.CREDENTIALS}
-            component={Credentials}
-          />
 
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </MemoryRouter>
+    const setConnectionShortDetails = jest.fn();
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <ConnectionDetails
+          connectionShortDetails={connectionsFix[0]}
+          setConnectionShortDetails={setConnectionShortDetails}
+        />
+      </Provider>
     );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("connection-item-0")).toBeNull();
-    });
-
-    expect(getByText(connectionsFix[1].label)).toBeVisible();
-
-    act(() => {
-      fireEvent.click(getByText(connectionsFix[1].label));
-    });
 
     await waitFor(() => {
       expect(getByTestId("connection-details-segment")).toBeVisible();
@@ -615,6 +478,14 @@ describe("Checking the Connection Details Page when notes are available", () => 
               message: "Message",
             },
           ],
+          historyItems: [
+            {
+              type: 1,
+              timestamp: "2017-01-14T19:23:24Z",
+              credentialType: "Rare EVO 2024 Attendee",
+            },
+          ],
+          serviceEndpoints: [],
         })
     );
   });
@@ -624,35 +495,16 @@ describe("Checking the Connection Details Page when notes are available", () => 
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.CREDENTIALS}
-            component={Credentials}
-          />
 
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </MemoryRouter>
+    const setConnectionShortDetails = jest.fn();
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <ConnectionDetails
+          connectionShortDetails={connectionsFix[0]}
+          setConnectionShortDetails={setConnectionShortDetails}
+        />
+      </Provider>
     );
-
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
-    await waitFor(() => {
-      expect(queryByTestId("connection-item-0")).toBeNull();
-    });
-
-    expect(getByText(connectionsFix[1].label)).toBeVisible();
-
-    act(() => {
-      fireEvent.click(getByText(connectionsFix[1].label));
-    });
 
     await waitFor(() => {
       expect(getByTestId("connection-details-segment")).toBeVisible();
@@ -673,13 +525,6 @@ describe("Checking the Connection Details Page when notes are available", () => 
   });
 
   test("Get all connection history items", async () => {
-    const connectionDetails = {
-      ...connectionsFix[6],
-      serviceEndpoints: [
-        "http://keria:3902/oobi/EBvcao4Ub-Q7Wwkm0zJzwigvPTrthP4uH5mQ4efRv9aU/agent/EBJBjEDV_ysVyJHg7fDdqB332gCVhpgb6a3a00BtmWdg?name=The%20Pentagon",
-      ],
-      notes: [],
-    };
     const historyEvents = [
       {
         type: 3,
@@ -702,47 +547,36 @@ describe("Checking the Connection Details Page when notes are available", () => 
         credentialType: "Rare EVO 2024 Attendee",
       },
     ];
+    const connectionDetails = {
+      ...connectionsFix[6],
+      serviceEndpoints: [
+        "http://keria:3902/oobi/EBvcao4Ub-Q7Wwkm0zJzwigvPTrthP4uH5mQ4efRv9aU/agent/EBJBjEDV_ysVyJHg7fDdqB332gCVhpgb6a3a00BtmWdg?name=The%20Pentagon",
+      ],
+      notes: [],
+      historyItems: historyEvents,
+    };
+
     jest
       .spyOn(Agent.agent.connections, "getConnectionById")
       .mockResolvedValue(connectionDetails);
-
-    jest
-      .spyOn(Agent.agent.connections, "getConnectionHistoryById")
-      .mockResolvedValue(historyEvents);
 
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
 
-    const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[TabsRoutePath.CREDENTIALS]}>
-        <Provider store={storeMocked}>
-          <Route
-            path={TabsRoutePath.CREDENTIALS}
-            component={Credentials}
-          />
-
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </MemoryRouter>
+    const setConnectionShortDetails = jest.fn();
+    const { getByText, getAllByText } = render(
+      <Provider store={storeMocked}>
+        <ConnectionDetails
+          connectionShortDetails={connectionDetails}
+          setConnectionShortDetails={setConnectionShortDetails}
+        />
+      </Provider>
     );
 
-    act(() => {
-      fireEvent.click(getByTestId("connections-button"));
-    });
-
     await waitFor(() => {
-      expect(queryByTestId("connection-item-0")).toBeNull();
-    });
-
-    expect(getByText(connectionDetails.label)).toBeVisible();
-
-    act(() => {
-      fireEvent.click(getByText(connectionDetails.label));
+      expect(getAllByText(connectionDetails.label)[0]).toBeVisible();
     });
 
     await waitFor(() => {
@@ -762,6 +596,7 @@ describe("Checking the Connection Details Page when notes are available", () => 
         )
       ).toBeVisible();
     });
+
     await waitFor(() => {
       expect(
         getByText(
@@ -783,15 +618,17 @@ describe("Checking the Connection Details Page when notes are available", () => 
         )
       ).toBeVisible();
     });
+
     await waitFor(() => {
       expect(
         getByText(
-          `${EN_TRANSLATIONS.connections.details.present.replace(
+          `${EN_TRANSLATIONS.connections.details.requestpresent.replace(
             "{{ issuer }}",
             connectionDetails.label
           )}`
         )
       ).toBeVisible();
+
       expect(
         getByText(
           `${formatShortDate(historyEvents[1].timestamp)} - ${formatTimeToSec(
@@ -800,14 +637,18 @@ describe("Checking the Connection Details Page when notes are available", () => 
         )
       ).toBeVisible();
     });
+
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.connections.details.agree)
+        getByText(`${EN_TRANSLATIONS.connections.details.presented.replace(
+          "{{ credentialType }}",
+          historyEvents[3].credentialType
+        )}`)
       ).toBeVisible();
       expect(
         getByText(
-          `${formatShortDate(historyEvents[2].timestamp)} - ${formatTimeToSec(
-            historyEvents[2].timestamp
+          `${formatShortDate(historyEvents[3].timestamp)} - ${formatTimeToSec(
+            historyEvents[3].timestamp
           )}`
         )
       ).toBeVisible();
@@ -851,26 +692,17 @@ describe("Checking the Connection Details Page when connection is missing from t
       dispatch: dispatchMock,
     };
 
-    const history = createMemoryHistory();
-    history.push(RoutePath.CONNECTION_DETAILS, {
-      ...connectionsFix[0],
-    });
+    const setConnectionShortDetails = jest.fn();
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <ConnectionDetails
+          connectionShortDetails={connectionsFix[0]}
+          setConnectionShortDetails={setConnectionShortDetails}
+        />
+      </Provider>
+    );
 
     getMock.mockImplementation(() => Promise.resolve("111111"));
-
-    const { getByTestId, getByText } = render(
-      <IonReactMemoryRouter
-        history={history}
-        initialEntries={[RoutePath.CONNECTION_DETAILS]}
-      >
-        <Provider store={storeMocked}>
-          <Route
-            path={RoutePath.CONNECTION_DETAILS}
-            component={ConnectionDetails}
-          />
-        </Provider>
-      </IonReactMemoryRouter>
-    );
 
     await waitForIonicReact();
 

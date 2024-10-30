@@ -1,6 +1,5 @@
 import { ellipsisVertical } from "ionicons/icons";
 import { useCallback, useState } from "react";
-import { useHistory } from "react-router-dom";
 import {
   IonLabel,
   IonSegment,
@@ -11,25 +10,21 @@ import {
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../utils/formatters";
 import "./ConnectionDetails.scss";
-import {
-  ConnectionDetails as ConnectionData,
-  ConnectionShortDetails,
-} from "../Connections/Connections.types";
+
 import { RoutePath } from "../../../routes";
-import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { useAppDispatch } from "../../../store/hooks";
 import {
-  getStateCache,
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { updateReduxState } from "../../../store/utils";
 import { ConnectionOptions } from "../../components/ConnectionOptions";
 import { Alert as AlertDeleteConnection } from "../../components/Alert";
 import { removeConnectionCache } from "../../../store/reducers/connectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { Agent } from "../../../core/agent/agent";
 import {
+  ConnectionDetails as ConnectionData,
+  ConnectionShortDetails,
   ConnectionHistoryItem,
   ConnectionNoteDetails,
 } from "../../../core/agent/agent.types";
@@ -41,21 +36,23 @@ import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayo
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { CardDetailsBlock } from "../../components/CardDetails";
 import { ConnectionNotes } from "./components/ConnectionNotes";
-import { useAppIonRouter, useOnlineStatusEffect } from "../../hooks";
-import { getBackRoute } from "../../../routes/backRoute";
+import { useOnlineStatusEffect } from "../../hooks";
 import { ConnectionHistoryEvent } from "./components/ConnectionHistoryEvent";
 import { Verification } from "../../components/Verification";
 import { CloudError } from "../../components/CloudError";
 import { showError } from "../../utils/error";
 
-const ConnectionDetails = () => {
+const ConnectionDetails = ({
+  connectionShortDetails,
+  setConnectionShortDetails,
+}: {
+  connectionShortDetails: ConnectionShortDetails;
+  setConnectionShortDetails: (
+    connectionShortDetails: ConnectionShortDetails | undefined
+  ) => void;
+}) => {
   const pageId = "connection-details";
-  const ionicRouter = useAppIonRouter();
-  const history = useHistory();
   const dispatch = useAppDispatch();
-  const stateCache = useAppSelector(getStateCache);
-  const connectionShortDetails = history?.location
-    ?.state as ConnectionShortDetails;
   const [connectionDetails, setConnectionDetails] = useState<ConnectionData>();
   const [connectionHistory, setConnectionHistory] = useState<
     ConnectionHistoryItem[]
@@ -81,9 +78,8 @@ const ConnectionDetails = () => {
         connectionShortDetails.id
       );
       setConnectionDetails(connectionDetails);
-      if (connectionDetails.notes) {
-        setNotes(connectionDetails.notes);
-      }
+      setNotes(connectionDetails.notes);
+      setConnectionHistory(connectionDetails.historyItems);
     } catch (error) {
       if (
         error instanceof Error &&
@@ -95,24 +91,7 @@ const ConnectionDetails = () => {
         showError("Unable to get connection details", error, dispatch);
       }
     } finally {
-      setLoading((value) => ({ ...value, details: false }));
-    }
-  }, [connectionShortDetails?.id, dispatch]);
-
-  const getHistory = useCallback(async () => {
-    if (!connectionShortDetails?.id) return;
-
-    try {
-      const connectionHistory =
-        await Agent.agent.connections.getConnectionHistoryById(
-          connectionShortDetails.id
-        );
-      setConnectionHistory(connectionHistory);
-    } catch (e) {
-      handleDone();
-      showError("Unable to get connection history", e, dispatch);
-    } finally {
-      setLoading((value) => ({ ...value, history: false }));
+      setLoading((value) => ({ ...value, details: false, history: false }));
     }
   }, [connectionShortDetails?.id, dispatch]);
 
@@ -125,22 +104,12 @@ const ConnectionDetails = () => {
     });
 
     getDetails();
-    getHistory();
-  }, [connectionShortDetails?.id, getDetails, getHistory]);
+  }, [connectionShortDetails?.id, getDetails]);
 
   useOnlineStatusEffect(getData);
 
   const handleDone = () => {
-    const data: DataProps = {
-      store: { stateCache },
-    };
-    const { backPath, updateRedux } = getBackRoute(
-      RoutePath.CONNECTION_DETAILS,
-      data
-    );
-
-    updateReduxState(backPath.pathname, data, dispatch, updateRedux);
-    ionicRouter.goBack();
+    setConnectionShortDetails(undefined);
   };
 
   const handleDelete = () => {
@@ -218,6 +187,9 @@ const ConnectionDetails = () => {
     setModalIsOpen(true);
   };
 
+  const cancelDeleteConnection = () =>
+    dispatch(setCurrentOperation(OperationType.IDLE));
+
   return (
     <>
       {cloudError ? (
@@ -241,6 +213,7 @@ const ConnectionDetails = () => {
       ) : (
         <ScrollablePageLayout
           pageId={pageId}
+          activeStatus={true}
           customClass="item-details-page"
           header={
             <PageHeader
@@ -370,8 +343,8 @@ const ConnectionDetails = () => {
           "connections.details.options.alert.deleteconnection.cancel"
         )}`}
         actionConfirm={() => handleAuthentication()}
-        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionCancel={cancelDeleteConnection}
+        actionDismiss={cancelDeleteConnection}
       />
       <Verification
         verifyIsOpen={verifyIsOpen}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
@@ -14,9 +14,11 @@ import { MiscRecordId } from "../../../core/agent/agent.types";
 import { BasicRecord } from "../../../core/agent/records";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getIdentifierViewTypeCacheCache,
-  setViewTypeCache,
-} from "../../../store/reducers/identifierViewTypeCache";
+  getCredentialViewTypeCache,
+  getIdentifierViewTypeCache,
+  setCredentialViewTypeCache,
+  setIdentifierViewTypeCache,
+} from "../../../store/reducers/viewTypeCache";
 import { Agent } from "../../../core/agent/agent";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 
@@ -32,15 +34,33 @@ const SwitchCardView = ({
   const history = useHistory();
   const dispatch = useAppDispatch();
   const [type, setType] = useState<CardListViewType>(CardListViewType.Stack);
-  const viewTypeCache = useAppSelector(getIdentifierViewTypeCacheCache);
+  const identifierViewTypeCache = useAppSelector(getIdentifierViewTypeCache);
+  const credViewTypeCache = useAppSelector(getCredentialViewTypeCache);
+  const isIdentifier = cardTypes === CardType.IDENTIFIERS;
+  const viewTypeCache = isIdentifier ? identifierViewTypeCache : credViewTypeCache;
+
+  const setViewType = useCallback((viewType: CardListViewType) => {
+    setType(viewType);
+    Agent.agent.basicStorage
+      .createOrUpdateBasicRecord(
+        new BasicRecord({
+          id: isIdentifier ? MiscRecordId.APP_IDENTIFIER_VIEW_TYPE :  MiscRecordId.APP_CRED_VIEW_TYPE,
+          content: { viewType },
+        })
+      )
+      .then(() => {
+        dispatch(isIdentifier ? setIdentifierViewTypeCache(viewType) : setCredentialViewTypeCache(viewType));
+      });
+  }, [dispatch, isIdentifier]);
 
   useEffect(() => {
     if (!viewTypeCache.viewType) {
       setType(CardListViewType.Stack);
       return;
     }
+
     setViewType(viewTypeCache.viewType as CardListViewType);
-  }, [viewTypeCache]);
+  }, [setViewType, viewTypeCache]);
 
   const handleOpenDetail = (
     data: IdentifierShortDetails | CredentialShortDetails
@@ -59,20 +79,6 @@ const SwitchCardView = ({
     );
 
     history.push({ pathname: pathname });
-  };
-
-  const setViewType = (viewType: CardListViewType) => {
-    setType(viewType);
-    Agent.agent.basicStorage
-      .createOrUpdateBasicRecord(
-        new BasicRecord({
-          id: MiscRecordId.APP_IDENTIFIER_VIEW_TYPE,
-          content: { viewType },
-        })
-      )
-      .then(() => {
-        dispatch(setViewTypeCache(viewType));
-      });
   };
 
   const classes = combineClassNames("card-switch-view", className);

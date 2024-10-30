@@ -201,17 +201,31 @@ const MultiSigRequest = ({
             closeButton={true}
             closeButtonAction={handleBack}
             closeButtonLabel={`${i18n.t(
-              "notifications.details.buttons.close"
+              "tabs.notifications.details.buttons.close"
             )}`}
-            title={`${i18n.t("notifications.details.identifier.title")}`}
+            title={`${i18n.t("tabs.notifications.details.identifier.title")}`}
+          />
+        }
+        footer={
+          <PageFooter
+            pageId={pageId}
+            customClass="multisig-request-footer"
+            primaryButtonText={`${i18n.t(
+              "tabs.notifications.details.buttons.accept"
+            )}`}
+            primaryButtonAction={() => setVerifyIsOpen(true)}
+            secondaryButtonText={`${i18n.t(
+              "tabs.notifications.details.buttons.decline"
+            )}`}
+            secondaryButtonAction={handleDeclineClick}
           />
         }
       >
         <p className="multisig-request-subtitle">
-          {i18n.t("notifications.details.identifier.subtitle")}
+          {i18n.t("tabs.notifications.details.identifier.subtitle")}
         </p>
         <div className="multisig-request-section">
-          <h4>{i18n.t("notifications.details.identifier.requestfrom")}</h4>
+          <h4>{i18n.t("tabs.notifications.details.identifier.requestfrom")}</h4>
           <IonCard className="multisig-request-details">
             <IonList lines="none">
               <IonItem className="multisig-request-item">
@@ -253,7 +267,9 @@ const MultiSigRequest = ({
         </div>
         {!!multisigIcpDetails?.otherConnections.length && (
           <div className="multisig-request-section">
-            <h4>{i18n.t("notifications.details.identifier.othermembers")}</h4>
+            <h4>
+              {i18n.t("tabs.notifications.details.identifier.othermembers")}
+            </h4>
             <IonCard className="multisig-request-details">
               <IonList lines="none">
                 {multisigIcpDetails?.otherConnections.map(
@@ -293,7 +309,7 @@ const MultiSigRequest = ({
           </div>
         )}
         <div className="multisig-request-section">
-          <h4>{i18n.t("notifications.details.identifier.threshold")}</h4>
+          <h4>{i18n.t("tabs.notifications.details.identifier.threshold")}</h4>
           <IonCard className="multisig-request-details">
             <IonList lines="none">
               <IonItem className="multisig-request-item">
@@ -303,25 +319,19 @@ const MultiSigRequest = ({
           </IonCard>
         </div>
       </ScrollablePageLayout>
-      <PageFooter
-        pageId={pageId}
-        customClass="multisig-request-footer"
-        primaryButtonText={`${i18n.t("notifications.details.buttons.accept")}`}
-        primaryButtonAction={() => setVerifyIsOpen(true)}
-        secondaryButtonText={`${i18n.t(
-          "notifications.details.buttons.decline"
-        )}`}
-        secondaryButtonAction={handleDeclineClick}
-      />
       <AlertDecline
         isOpen={alertDeclineIsOpen}
         setIsOpen={setAlertDeclineIsOpen}
         dataTestId="multisig-request-alert-decline"
         headerText={i18n.t(
-          "notifications.details.identifier.alert.textdecline"
+          "tabs.notifications.details.identifier.alert.textdecline"
         )}
-        confirmButtonText={`${i18n.t("notifications.details.buttons.decline")}`}
-        cancelButtonText={`${i18n.t("notifications.details.buttons.cancel")}`}
+        confirmButtonText={`${i18n.t(
+          "tabs.notifications.details.buttons.decline"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "tabs.notifications.details.buttons.cancel"
+        )}`}
         actionConfirm={() => actionDecline()}
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}

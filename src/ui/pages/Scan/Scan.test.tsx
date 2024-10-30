@@ -9,10 +9,11 @@ import configureStore from "redux-mock-store";
 import { KeriConnectionType } from "../../../core/agent/agent.types";
 import { TabsRoutePath } from "../../../routes/paths";
 import { store } from "../../../store";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { showConnections } from "../../../store/reducers/stateCache";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { OperationType } from "../../globals/types";
 import { Scan } from "./Scan";
+import { StorageMessage } from "../../../core/storage/storage.types";
 
 const addListener = jest.fn(
   (eventName: string, listenerFunc: (result: BarcodeScannedEvent) => void) => {
@@ -34,6 +35,21 @@ const addListener = jest.fn(
     };
   }
 );
+
+jest.mock("@capacitor/core", () => {
+  return {
+    ...jest.requireActual("@capacitor/core"),
+    Capacitor: {
+      isNativePlatform: () => true,
+    },
+  };
+});
+
+jest.mock("@capacitor/keyboard", () => ({
+  Keyboard: {
+    addListener: jest.fn(),
+  },
+}));
 
 jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
@@ -138,91 +154,11 @@ describe("Scan Tab", () => {
     );
 
     await waitFor(() => {
-      expect(historyPushMock).toBeCalledWith({
-        pathname: TabsRoutePath.IDENTIFIERS,
-        state: {
-          currentOperation: OperationType.MULTI_SIG_RECEIVER_SCAN,
-          toastMsg: undefined,
-          openConnections: false,
-          nextRoute: "/tabs/identifiers",
-        },
-      });
+      expect(dispatchMock).toBeCalledWith(showConnections(true));
     });
   });
 
-  test("Nav back to previous page after scan", async () => {
-    const initialState = {
-      stateCache: {
-        routes: [TabsRoutePath.SCAN, TabsRoutePath.IDENTIFIERS],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-          passwordIsSet: false,
-        },
-        currentOperation: OperationType.SCAN_CONNECTION,
-        toastMsgs: [],
-      },
-    };
-
-    const storeMocked = {
-      ...mockStore(initialState),
-      dispatch: dispatchMock,
-    };
-
-    connectByOobiUrlMock.mockImplementation(() => {
-      return {
-        type: KeriConnectionType.NORMAL,
-      };
-    });
-
-    getMultisigLinkedContactsMock.mockReturnValue([connectionsFix[0]]);
-
-    const { rerender } = render(
-      <Provider store={storeMocked}>
-        <Scan />
-      </Provider>
-    );
-
-    const updateState = {
-      stateCache: {
-        routes: [TabsRoutePath.SCAN, TabsRoutePath.IDENTIFIERS],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-          passwordIsSet: false,
-        },
-        currentOperation: OperationType.RECEIVE_CONNECTION,
-        toastMsgs: [],
-      },
-    };
-
-    const updateStore = {
-      ...mockStore(updateState),
-      dispatch: dispatchMock,
-    };
-
-    rerender(
-      <Provider store={updateStore}>
-        <Scan />
-      </Provider>
-    );
-
-    await waitFor(() => {
-      expect(historyPushMock).toBeCalledWith({
-        pathname: TabsRoutePath.IDENTIFIERS,
-        state: {
-          currentOperation: OperationType.RECEIVE_CONNECTION,
-          toastMsg: undefined,
-          nextRoute: "/tabs/identifiers",
-          openConnections: true,
-        },
-      });
-    });
-  });
-
-  test("Nav to identifier after scan multisig", async () => {
+  test("Nav to identifier after scan duplicate multisig", async () => {
     const initialState = {
       stateCache: {
         routes: [TabsRoutePath.SCAN, TabsRoutePath.IDENTIFIERS],
@@ -243,12 +179,10 @@ describe("Scan Tab", () => {
     };
 
     connectByOobiUrlMock.mockImplementation(() => {
-      return {
-        type: KeriConnectionType.NORMAL,
-      };
+      return Promise.reject(
+        new Error(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG)
+      );
     });
-
-    getMultisigLinkedContactsMock.mockReturnValue([connectionsFix[0]]);
 
     render(
       <Provider store={storeMocked}>
@@ -257,10 +191,9 @@ describe("Scan Tab", () => {
     );
 
     await waitFor(() => {
-      expect(historyPushMock).toBeCalledWith(TabsRoutePath.IDENTIFIERS);
-      expect(dispatchMock).toBeCalledWith(
-        setCurrentOperation(OperationType.OPEN_MULTISIG_IDENTIFIER)
-      );
+      expect(historyPushMock).toBeCalledWith({
+        pathname: TabsRoutePath.IDENTIFIERS,
+      });
     });
   });
 });

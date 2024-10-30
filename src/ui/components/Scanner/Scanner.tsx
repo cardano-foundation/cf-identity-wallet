@@ -3,6 +3,7 @@ import {
   BarcodeScanner,
   LensFacing,
 } from "@capacitor-mlkit/barcode-scanning";
+import { Capacitor } from "@capacitor/core";
 import {
   getPlatforms,
   IonCol,
@@ -10,10 +11,10 @@ import {
   IonIcon,
   IonRow,
   IonSpinner,
-  isPlatform,
 } from "@ionic/react";
 import { scanOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionStatus,
@@ -24,7 +25,8 @@ import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   removeConnectionCache,
-  setOpenConnectionDetail,
+  setMissingAliasUrl,
+  setOpenConnectionId,
   updateOrAddConnectionCache,
   updateOrAddMultisigConnectionCache,
 } from "../../../store/reducers/connectionsCache";
@@ -38,11 +40,16 @@ import { MultiSigGroup } from "../../../store/reducers/identifiersCache/identifi
 import { setBootUrl, setConnectUrl } from "../../../store/reducers/ssiAgent";
 import {
   getCurrentOperation,
+  getShowConnections,
   getToastMsgs,
   setCurrentOperation,
   setToastMsg,
+  showConnections,
 } from "../../../store/reducers/stateCache";
-import { setPendingConnection } from "../../../store/reducers/walletConnectionsCache";
+import {
+  setPendingConnection,
+  showConnectWallet,
+} from "../../../store/reducers/walletConnectionsCache";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { showError } from "../../utils/error";
 import { combineClassNames } from "../../utils/style";
@@ -75,6 +82,7 @@ const Scanner = forwardRef(
     const currentToastMsgs = useAppSelector(getToastMsgs);
     const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
       useState(false);
+    const showConnectionPage = useAppSelector(getShowConnections);
     const [pasteModalIsOpen, setPasteModalIsOpen] = useState(false);
     const [groupId, setGroupId] = useState("");
     const [pastedValue, setPastedValue] = useState("");
@@ -124,11 +132,11 @@ const Scanner = forwardRef(
             id,
           })
         );
+        dispatch(showConnectWallet(true));
+        handleReset && handleReset(TabsRoutePath.MENU);
       } else {
         dispatch(setToastMsg(ToastMsgType.PEER_ID_ERROR));
       }
-      dispatch(setCurrentOperation(OperationType.BACK_TO_CONNECT_WALLET));
-      handleReset?.(OperationType.BACK_TO_CONNECT_WALLET);
     };
 
     const updateConnections = async (groupId: string) => {
@@ -174,7 +182,7 @@ const Scanner = forwardRef(
         urlId = new URL(url).searchParams.get("groupId");
       } else {
         urlId = e.message
-          .replace(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG, "")
+          .replace(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG, "")
           .trim();
       }
 
@@ -201,8 +209,11 @@ const Scanner = forwardRef(
         }
 
         dispatch(setOpenMultiSigId(urlId));
+        handleReset?.(TabsRoutePath.IDENTIFIERS);
+        return;
       } else {
-        dispatch(setOpenConnectionDetail(urlId));
+        dispatch(setOpenConnectionId(urlId));
+        dispatch(showConnections(true));
       }
 
       handleReset?.();
@@ -276,7 +287,7 @@ const Scanner = forwardRef(
         const errorMessage = (e as Error).message;
 
         if (
-          errorMessage.includes(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG)
+          errorMessage.includes(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG)
         ) {
           await handleDuplicateConnectionError(e as Error, content, true);
           return;
@@ -301,7 +312,12 @@ const Scanner = forwardRef(
       // Adding a pending connection item to the UI.
       // This will be removed when the create connection process ends.
       const connectionName = new URL(content).searchParams.get("name");
-      const pendingId = crypto.randomUUID();
+      if (!connectionName) {
+        dispatch(setMissingAliasUrl(content));
+        return;
+      }
+
+      const pendingId = uuidv4();
       dispatch(
         updateOrAddConnectionCache({
           id: pendingId,
@@ -317,7 +333,7 @@ const Scanner = forwardRef(
         const errorMessage = (e as Error).message;
 
         if (
-          errorMessage.includes(StorageMessage.RECORD_DOES_NOT_EXIST_ERROR_MSG)
+          errorMessage.includes(StorageMessage.RECORD_ALREADY_EXISTS_ERROR_MSG)
         ) {
           await handleDuplicateConnectionError(e as Error, content, false);
           return;
@@ -375,7 +391,7 @@ const Scanner = forwardRef(
     };
 
     const initScan = async () => {
-      if (isPlatform("ios") || isPlatform("android")) {
+      if (Capacitor.isNativePlatform()) {
         const allowed = await checkPermission();
         setPermisson(!!allowed);
         onCheckPermissionFinish?.(!!allowed);
@@ -423,7 +439,7 @@ const Scanner = forwardRef(
         );
 
         if (
-          ((routePath === TabsRoutePath.SCAN ||
+          (((routePath === TabsRoutePath.SCAN ||
             [
               OperationType.SCAN_CONNECTION,
               OperationType.SCAN_WALLET_CONNECTION,
@@ -431,11 +447,12 @@ const Scanner = forwardRef(
               OperationType.SCAN_SSI_CONNECT_URL,
             ].includes(currentOperation)) &&
             !isRequestPending) ||
-          ([
-            OperationType.MULTI_SIG_INITIATOR_SCAN,
-            OperationType.MULTI_SIG_RECEIVER_SCAN,
-          ].includes(currentOperation) &&
-            !isDuplicateConnectionToast)
+            ([
+              OperationType.MULTI_SIG_INITIATOR_SCAN,
+              OperationType.MULTI_SIG_RECEIVER_SCAN,
+            ].includes(currentOperation) &&
+              !isDuplicateConnectionToast)) &&
+          !showConnectionPage && !createIdentifierModalIsOpen
         ) {
           await initScan();
         } else {
@@ -443,7 +460,7 @@ const Scanner = forwardRef(
         }
       };
       onLoad();
-    }, [currentOperation, currentToastMsgs, routePath, cameraDirection]);
+    }, [currentOperation, currentToastMsgs, routePath, cameraDirection, showConnectionPage, createIdentifierModalIsOpen]);
 
     useEffect(() => {
       return () => {
@@ -472,7 +489,7 @@ const Scanner = forwardRef(
           <PageFooter
             customClass="actions-button"
             secondaryButtonAction={openPasteModal}
-            secondaryButtonText={`${i18n.t("scan.pastemeerkatid")}`}
+            secondaryButtonText={`${i18n.t("tabs.scan.pastemeerkatid")}`}
           />
         );
       case OperationType.MULTI_SIG_INITIATOR_SCAN:
@@ -530,7 +547,7 @@ const Scanner = forwardRef(
               <IonRow>
                 <IonCol size="12">
                   <span className="qr-code-scanner-text">
-                    {i18n.t("scan.tab.title")}
+                    {i18n.t("tabs.scan.tab.title")}
                   </span>
                 </IonCol>
               </IonRow>
@@ -541,7 +558,7 @@ const Scanner = forwardRef(
                   className="qr-code-scanner-icon"
                 />
                 <span className="qr-code-scanner-permission-text">
-                  {i18n.t("scan.tab.permissionalert")}
+                  {i18n.t("tabs.scan.tab.permissionalert")}
                 </span>
               </IonRow>
               <RenderPageFooter />
@@ -574,7 +591,9 @@ const Scanner = forwardRef(
               currentOperation === OperationType.MULTI_SIG_RECEIVER_SCAN
                 ? `${i18n.t("createidentifier.scan.pasteoobi")}`
                 : currentOperation === OperationType.SCAN_WALLET_CONNECTION
-                  ? i18n.t("menu.tab.items.connectwallet.inputpidmodal.header")
+                  ? i18n.t(
+                    "tabs.menu.tab.items.connectwallet.inputpidmodal.header"
+                  )
                   : `${i18n.t("createidentifier.scan.pastecontents")}`
             }`,
             actionButton: true,

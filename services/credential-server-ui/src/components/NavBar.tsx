@@ -16,8 +16,11 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { MENU_ITEMS } from "../App";
 
 const NavBar: React.FC = () => {
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElCredentials, setAnchorElCredentials] = React.useState<null | HTMLElement>(null);
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
+    null
+  );
+  const [anchorElCredentials, setAnchorElCredentials] =
+    React.useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -93,7 +96,10 @@ const NavBar: React.FC = () => {
               }}
             >
               {MENU_ITEMS.map((item) => (
-                <MenuItem key={item.key} onClick={handleCloseNavMenu}>
+                <MenuItem
+                  key={item.key}
+                  onClick={handleCloseNavMenu}
+                >
                   <Typography
                     textAlign="center"
                     component={Link}
@@ -107,7 +113,14 @@ const NavBar: React.FC = () => {
           </Box>
 
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {MENU_ITEMS.filter(item => !["issue-credential", "request-credential", "revocation"].includes(item.key)).map((item) => (
+            {MENU_ITEMS.filter(
+              (item) =>
+                ![
+                  "issue-credential",
+                  "request-credential",
+                  "revocation",
+                ].includes(item.key)
+            ).map((item) => (
               <Button
                 key={item.key}
                 component={Link}
@@ -150,8 +163,19 @@ const NavBar: React.FC = () => {
               open={Boolean(anchorElCredentials)}
               onClose={handleCloseCredentialsMenu}
             >
-              {MENU_ITEMS.filter(item => ["issue-credential", "request-credential", "revocation"].includes(item.key)).map((item) => (
-                <MenuItem key={item.key} onClick={handleCloseCredentialsMenu} component={Link} to={item.path}>
+              {MENU_ITEMS.filter((item) =>
+                [
+                  "issue-credential",
+                  "request-credential",
+                  "revocation",
+                ].includes(item.key)
+              ).map((item) => (
+                <MenuItem
+                  key={item.key}
+                  onClick={handleCloseCredentialsMenu}
+                  component={Link}
+                  to={item.path}
+                >
                   {item.label}
                 </MenuItem>
               ))}

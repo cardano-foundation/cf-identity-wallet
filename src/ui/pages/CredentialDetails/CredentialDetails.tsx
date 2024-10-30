@@ -11,7 +11,10 @@ import {
 import { updateReduxState } from "../../../store/utils";
 import "../../components/CardDetails/CardDetails.scss";
 import { CredentialDetailModule } from "../../components/CredentialDetailModule";
-import { CredHistory } from "../../components/CredentialDetailModule/CredentialDetailModule.types";
+import {
+  BackReason,
+  CredHistory,
+} from "../../components/CredentialDetailModule/CredentialDetailModule.types";
 import { useAppIonRouter } from "../../hooks";
 
 const NAVIGATION_DELAY = 250;
@@ -30,8 +33,12 @@ const CredentialDetails = () => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
   });
 
-  const handleDone = () => {
-    setNavAnimation(true);
+  const handleDone = (backReason: BackReason) => {
+    const animation = ![BackReason.ARCHIVED, BackReason.DELETE].includes(
+      backReason
+    );
+
+    setNavAnimation(animation);
 
     const { nextPath, updateRedux } = getNextRoute(
       TabsRoutePath.CREDENTIAL_DETAILS,
@@ -47,9 +54,13 @@ const CredentialDetails = () => {
       updateRedux
     );
 
-    setTimeout(() => {
+    if (animation) {
+      setTimeout(() => {
+        ionRouter.push(nextPath.pathname, "back", "pop");
+      }, NAVIGATION_DELAY);
+    } else {
       ionRouter.push(nextPath.pathname, "back", "pop");
-    }, NAVIGATION_DELAY);
+    }
 
     setTimeout(() => {
       setNavAnimation(false);

@@ -1,5 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, Box, Button, Container, Grid, TextField, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  Grid,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { resolveOobi } from "../../services/resolve-oobi";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import "./qrscanner.css";
@@ -15,13 +23,16 @@ enum ContentType {
   RESOLVED = "resolved",
 }
 
-const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstStep }) => {
+const InputOobi: React.FC<InputOobiProps> = ({
+  handleGetContacts,
+  backToFirstStep,
+}) => {
   const [oobi, setOobi] = useState("");
   const [isAtendeeOobiEmptyVisible, setIsAtendeeOobiEmptyVisible] =
     useState(false);
   const [restartCamera, setRestartCamera] = useState(false);
   const [contentType, setContentType] = useState<ContentType>(
-    ContentType.SCANNER,
+    ContentType.SCANNER
   );
   const [canReset, setCanReset] = useState(false);
   const [showInput, setShowInput] = useState(false);
@@ -40,7 +51,7 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
           },
           fps: 5,
         },
-        false,
+        false
       );
 
       const success = (result: string) => {
@@ -48,7 +59,7 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
         handleResolveOObi(result);
       };
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      const error = (_: any) => { };
+      const error = (_: any) => {};
       scanner.render(success, error);
     }
   }, [restartCamera, elementRef.current, showInput]);
@@ -89,7 +100,12 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
     switch (contentType) {
       case ContentType.SCANNER:
         return {
-          component: <div ref={elementRef} id="reader" />,
+          component: (
+            <div
+              ref={elementRef}
+              id="reader"
+            />
+          ),
           title: "Scan your wallet QR Code",
         };
       case ContentType.RESOLVING:
@@ -99,9 +115,7 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
         };
       case ContentType.RESOLVED:
         return {
-          component: (
-            <></>
-          ),
+          component: <></>,
           title: "Connected successfully",
         };
     }
@@ -111,49 +125,78 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
   const handleReset = () => {
     setCanReset(false);
     restartScanner();
-  }
+  };
 
   return (
     <Container sx={{ py: 2 }}>
-      <Typography align="center" mb={2}>
-        Now, to connect the server to your identity wallet, please share an identifier connection QR code. This can be accessed directly in the identifier itself (share button), or in the Connections page by clicking the + icon and “Provide a QR Code"
+      <Typography
+        align="center"
+        mb={2}
+      >
+        Now, to connect the server to your identity wallet, please share an
+        identifier connection QR code. This can be accessed directly in the
+        identifier itself (share button), or in the Connections page by clicking
+        the + icon and “Provide a QR Code"
       </Typography>
       <div className="scannerPage">
         <div>
           <h3 className="">{content?.title}</h3>
-          {(!showInput && !canReset) &&
-            <Box sx={{ display: "flex", justifyContent: "center" }} mb={2}>
+          {!showInput && !canReset && (
+            <Box
+              sx={{ display: "flex", justifyContent: "center" }}
+              mb={2}
+            >
               <Button
-                sx={{ minHeight: '200px', minWidth: '230px', color: "gray", borderColor: "gray" }}
+                sx={{
+                  minHeight: "200px",
+                  minWidth: "230px",
+                  color: "gray",
+                  borderColor: "gray",
+                }}
                 variant="outlined"
                 onClick={() => setShowInput(true)}
               >
                 Start Scanner
               </Button>
-            </Box>}
-          {(showInput && !canReset) && (<>
-            {content?.component}
-          </>)}
+            </Box>
+          )}
+          {showInput && !canReset && <>{content?.component}</>}
         </div>
       </div>
 
-      {!canReset && <Grid container xs={12} justifyContent={"center"}>
-        <Grid item xs={12} md={6} mb={2} sx={{ my: 2 }}>
-          <TextField
-            required
-            id="input-oobi"
-            label="Input connection link manually instead..."
-            variant="outlined"
-            fullWidth
-            onChange={(e) => setOobi(e.target.value)}
-          />
-          {isAtendeeOobiEmptyVisible && (
-            <Alert severity="error">Please, input valid OOBI link</Alert>
-          )}
+      {!canReset && (
+        <Grid
+          container
+          xs={12}
+          justifyContent={"center"}
+        >
+          <Grid
+            item
+            xs={12}
+            md={6}
+            mb={2}
+            sx={{ my: 2 }}
+          >
+            <TextField
+              required
+              id="input-oobi"
+              label="Input connection link manually instead..."
+              variant="outlined"
+              fullWidth
+              onChange={(e) => setOobi(e.target.value)}
+            />
+            {isAtendeeOobiEmptyVisible && (
+              <Alert severity="error">Please, input valid OOBI link</Alert>
+            )}
+          </Grid>
         </Grid>
-      </Grid>}
+      )}
 
-      <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
+      <Grid
+        item
+        xs={12}
+        sx={{ display: "flex", justifyContent: "center" }}
+      >
         <Button
           variant="outlined"
           onClick={() => backToFirstStep()}
@@ -161,15 +204,17 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
         >
           Back
         </Button>
-        {
-          canReset ? <Button
+        {canReset ? (
+          <Button
             variant="contained"
             color="primary"
             onClick={() => handleReset()}
             sx={{ mx: { xs: 1, md: 1 } }}
           >
             Reset
-          </Button> : <Button
+          </Button>
+        ) : (
+          <Button
             variant="contained"
             color="primary"
             onClick={handleSubmit}
@@ -177,7 +222,7 @@ const InputOobi: React.FC<InputOobiProps> = ({ handleGetContacts, backToFirstSte
           >
             Submit
           </Button>
-        }
+        )}
       </Grid>
     </Container>
   );

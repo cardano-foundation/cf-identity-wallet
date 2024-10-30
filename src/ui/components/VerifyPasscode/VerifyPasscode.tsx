@@ -28,11 +28,11 @@ const VerifyPasscode = ({
   const confirmButtonText = i18n.t("verifypasscode.alert.button.verify");
   const cancelButtonText = i18n.t("verifypasscode.alert.button.cancel");
 
-  const handleClearState = () => {
+  const handleClearState = (isCancel?: boolean) => {
     setPasscode("");
     setAlertIsOpen(false);
     setPasscodeIncorrect(false);
-    setIsOpen(false);
+    setIsOpen(false, isCancel);
   };
 
   const handlePinChange = (digit: number) => {
@@ -89,7 +89,7 @@ const VerifyPasscode = ({
       isOpen={isOpen}
       className={componentId}
       data-testid={componentId}
-      onDidDismiss={() => handleClearState()}
+      onDidDismiss={() => handleClearState(true)}
     >
       <ResponsivePageLayout
         activeStatus={isOpen}
@@ -97,7 +97,7 @@ const VerifyPasscode = ({
           <PageHeader
             closeButton={true}
             closeButtonLabel={`${i18n.t("verifypasscode.cancel")}`}
-            closeButtonAction={handleClearState}
+            closeButtonAction={() => handleClearState(true)}
           />
         }
         pageId={`${componentId}-content`}

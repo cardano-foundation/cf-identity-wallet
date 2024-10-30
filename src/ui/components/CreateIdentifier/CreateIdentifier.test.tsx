@@ -1,14 +1,14 @@
-import { fireEvent, render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
-import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
 import { setupIonicReact } from "@ionic/react";
 import { mockIonicReact } from "@ionic/react-test-utils";
-import { CreateIdentifier } from "./CreateIdentifier";
-import { TabsRoutePath } from "../navigation/TabsMenu";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act } from "react";
+import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
+import EN_TRANSLATION from "../../../locales/en/en.json";
 import { setMultiSigGroupCache } from "../../../store/reducers/identifiersCache";
 import { identifierFix } from "../../__fixtures__/identifierFix";
-import EN_TRANSLATION from "../../../locales/en/en.json";
+import { TabsRoutePath } from "../navigation/TabsMenu";
+import { CreateIdentifier } from "./CreateIdentifier";
 setupIonicReact();
 mockIonicReact();
 
@@ -71,11 +71,12 @@ describe("Create Identifier modal", () => {
   };
 
   test("It can dismiss the modal", async () => {
-    const { getByTestId, getByText } = render(
+    const setModalIsOpen = jest.fn();
+    const { getByText } = render(
       <Provider store={storeMocked}>
         <CreateIdentifier
           modalIsOpen={true}
-          setModalIsOpen={jest.fn()}
+          setModalIsOpen={setModalIsOpen}
           resumeMultiSig={null}
         />
       </Provider>
@@ -84,9 +85,10 @@ describe("Create Identifier modal", () => {
     act(() => {
       fireEvent.click(getByText(EN_TRANSLATION.createidentifier.cancel));
     });
-    expect(getByTestId("create-identifier-modal-content-page")).toHaveClass(
-      "ion-hide"
-    );
+
+    await waitFor(() => {
+      expect(setModalIsOpen).toBeCalledWith(false);
+    });
   });
 
   test("Update multisig group", async () => {
@@ -132,11 +134,12 @@ describe("Create Identifier modal", () => {
   });
 
   test("It shows the spinner and closes the modal when creating a new Default identifier", async () => {
+    const setModalIsOpen = jest.fn();
     const { getByTestId } = render(
       <Provider store={storeMocked}>
         <CreateIdentifier
           modalIsOpen={true}
-          setModalIsOpen={jest.fn()}
+          setModalIsOpen={setModalIsOpen}
           resumeMultiSig={null}
         />
       </Provider>
@@ -148,9 +151,13 @@ describe("Create Identifier modal", () => {
     act(() => {
       fireEvent.click(getByTestId("primary-button-create-identifier-modal"));
     });
-    expect(getByTestId("spinner-container")).toBeVisible();
-    expect(getByTestId("create-identifier-modal-content-page")).toHaveClass(
-      "ion-hide"
-    );
+
+    await waitFor(() => {
+      expect(getByTestId("spinner-container")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(setModalIsOpen).toBeCalledWith(false);
+    });
   });
 });

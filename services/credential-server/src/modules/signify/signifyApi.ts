@@ -18,7 +18,8 @@ export class SignifyApi {
     "Failed to resolve OOBI, operation not completing...";
   static readonly UNKNOW_SCHEMA_ID = "Unknow Schema ID: ";
   static readonly CREDENTIAL_NOT_FOUND = "Not found credential with ID: ";
-  static readonly CREDENTIAL_REVOKED_ALREADY = "The credential has been revoked already";
+  static readonly CREDENTIAL_REVOKED_ALREADY =
+    "The credential has been revoked already";
   private signifyClient!: SignifyClient;
   private opTimeout: number;
   private opRetryInterval: number;
@@ -119,16 +120,14 @@ export class SignifyApi {
       throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);
     }
 
-    const result = await this.signifyClient
-      .credentials()
-      .issue(issuerName, {
-        ri: registryId, 
-        s: schemaId,
-        a: {
-          i: recipient, 
-          ...vcdata,
-        }
-      });
+    const result = await this.signifyClient.credentials().issue(issuerName, {
+      ri: registryId,
+      s: schemaId,
+      a: {
+        i: recipient,
+        ...vcdata,
+      },
+    });
     await waitAndGetDoneOp(
       this.signifyClient,
       result.op,
@@ -155,7 +154,9 @@ export class SignifyApi {
     registryId: string,
     recipientPrefix: string
   ) {
-    await this.resolveOobi(`${config.oobiEndpoint}/oobi/${Agent.QVI_SCHEMA_SAID}`);
+    await this.resolveOobi(
+      `${config.oobiEndpoint}/oobi/${Agent.QVI_SCHEMA_SAID}`
+    );
 
     const vcdata = {
       LEI: "5493001KJTIIGC8Y1R17",
@@ -166,7 +167,7 @@ export class SignifyApi {
       a: {
         i: recipientPrefix,
         ...vcdata,
-      }
+      },
     });
     await waitAndGetDoneOp(
       this.signifyClient,
@@ -204,14 +205,12 @@ export class SignifyApi {
     d: string,
     issuerAidPrefix: string
   ) {
-    const [admit, sigs, aend] = await this.signifyClient
-    .ipex()
-    .admit({
+    const [admit, sigs, aend] = await this.signifyClient.ipex().admit({
       senderName: holderAidName,
       message: "",
       grantSaid: d,
       recipient: issuerAidPrefix,
-      datetime: new Date().toISOString().replace("Z", "000+00:00")
+      datetime: new Date().toISOString().replace("Z", "000+00:00"),
     });
     const op = await this.signifyClient
       .ipex()
@@ -240,7 +239,7 @@ export class SignifyApi {
     const qviCredential = await this.signifyClient
       .credentials()
       .get(qviCredentialId);
-    
+
     const result = await this.signifyClient.credentials().issue(holderAidName, {
       ri: registryId,
       s: Agent.LE_SCHEMA_SAID,
@@ -316,13 +315,16 @@ export class SignifyApi {
   async deleteContact(id: string): Promise<any> {
     return this.signifyClient.contacts().delete(id);
   }
-  
-  async contactCredentials(issuerPrefix: string, connectionId : string): Promise<any> {
-    return this.signifyClient.credentials().list({ 
+
+  async contactCredentials(
+    issuerPrefix: string,
+    connectionId: string
+  ): Promise<any> {
+    return this.signifyClient.credentials().list({
       filter: {
-        '-i': issuerPrefix, 
-        '-a-i': connectionId,
-      } 
+        "-i": issuerPrefix,
+        "-a-i": connectionId,
+      },
     });
   }
 
@@ -353,9 +355,16 @@ export class SignifyApi {
     return this.signifyClient.exchanges().get(said);
   }
 
-  async revokeCredential(issuerName: string, holder: string, credentialId: string) {
+  async revokeCredential(
+    issuerName: string,
+    holder: string,
+    credentialId: string
+  ) {
     // TODO: If the credential does not exist, this will throw 500 at the moment. Will change this later
-    let credential = await this.signifyClient.credentials().get(credentialId).catch(() => undefined);
+    let credential = await this.signifyClient
+      .credentials()
+      .get(credentialId)
+      .catch(() => undefined);
     if (!credential) {
       throw new Error(`${SignifyApi.CREDENTIAL_NOT_FOUND} ${credentialId}`);
     }
@@ -412,7 +421,7 @@ export class SignifyApi {
     const customizableKeys: { [key: string]: any } = {};
 
     const removeCustomizables = (obj: any): any => {
-      if (typeof obj !== 'object' || obj === null) return obj;
+      if (typeof obj !== "object" || obj === null) return obj;
 
       for (const key in obj) {
         if (obj.hasOwnProperty(key)) {
@@ -430,7 +439,7 @@ export class SignifyApi {
     schema = removeCustomizables(schema);
 
     const saidifyDeepest = (obj: any): any => {
-      if (typeof obj !== 'object' || obj === null) return obj;
+      if (typeof obj !== "object" || obj === null) return obj;
 
       for (const key in obj) {
         if (obj.hasOwnProperty(key)) {
@@ -450,7 +459,10 @@ export class SignifyApi {
     if (schemas === undefined) {
       schemas = {};
     }
-    schemas[saidifiedSchema.$id] = { schema: saidifiedSchema, customizableKeys };
+    schemas[saidifiedSchema.$id] = {
+      schema: saidifiedSchema,
+      customizableKeys,
+    };
     await lmdb.put("schemas", schemas);
   }
 }

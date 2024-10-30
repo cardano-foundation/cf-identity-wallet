@@ -25,13 +25,28 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { CustomInputProps } from "../CustomInput/CustomInput.types";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { Scanner } from "./Scanner";
-import { setOpenConnectionDetail } from "../../../store/reducers/connectionsCache";
+import { setOpenConnectionId } from "../../../store/reducers/connectionsCache";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   isPlatform: () => true,
   IonModal: ({ children, isOpen, ...props }: any) =>
     isOpen ? <div {...props}>{children}</div> : null,
+}));
+
+jest.mock("@capacitor/core", () => {
+  return {
+    ...jest.requireActual("@capacitor/core"),
+    Capacitor: {
+      isNativePlatform: () => true,
+    },
+  };
+});
+
+jest.mock("@capacitor/keyboard", () => ({
+  Keyboard: {
+    addListener: jest.fn(),
+  },
 }));
 
 jest.mock("react-router-dom", () => ({
@@ -62,14 +77,20 @@ const addListener = jest.fn(
   }
 );
 
+const checkPermisson = jest.fn(() =>
+  Promise.resolve({
+    camera: "granted",
+  })
+);
+
+const requestPermission = jest.fn();
+
 jest.mock("@capacitor-mlkit/barcode-scanning", () => {
   return {
     ...jest.requireActual("@capacitor-mlkit/barcode-scanning"),
     BarcodeScanner: {
-      checkPermissions: () =>
-        Promise.resolve({
-          camera: "granted",
-        }),
+      checkPermissions: () => checkPermisson(),
+      requestPermissions: () => requestPermission(),
       addListener: (
         eventName: string,
         listenerFunc: (result: BarcodeScannedEvent) => void
@@ -134,6 +155,12 @@ describe("Scanner", () => {
   const setIsValueCaptured = jest.fn();
 
   beforeEach(() => {
+    checkPermisson.mockImplementation(() =>
+      Promise.resolve({
+        camera: "granted",
+      })
+    );
+
     addListener.mockImplementation(
       (
         eventName: string,
@@ -770,9 +797,7 @@ describe("Scanner", () => {
     );
 
     await waitFor(() => {
-      expect(dispatchMock).toBeCalledWith(
-        setOpenConnectionDetail("connectionId")
-      );
+      expect(dispatchMock).toBeCalledWith(setOpenConnectionId("connectionId"));
     });
   });
 
@@ -904,6 +929,154 @@ describe("Scanner", () => {
       expect(dispatchMock).toBeCalledWith(
         setToastMsg(ToastMsgType.SCANNER_ERROR)
       );
+    });
+  });
+
+  test("Request permission: prompt", async () => {
+    checkPermisson.mockImplementation(() =>
+      Promise.resolve({
+        camera: "prompt",
+      })
+    );
+
+    requestPermission.mockImplementation(() =>
+      Promise.resolve({
+        camera: "granted",
+      })
+    );
+
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
+        setTimeout(() => {
+          listenerFunc({
+            barcode: {
+              displayValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              format: BarcodeFormat.QrCode,
+              rawValue: "Invalid URL",
+              valueType: BarcodeValueType.Url,
+            },
+          });
+        }, 100);
+
+        return {
+          remove: jest.fn(),
+        };
+      }
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(requestPermission).toBeCalled();
+    });
+  });
+
+  test("Request permission: prompt-with-rationale", async () => {
+    checkPermisson.mockImplementation(() =>
+      Promise.resolve({
+        camera: "prompt-with-rationale",
+      })
+    );
+
+    requestPermission.mockImplementation(() =>
+      Promise.resolve({
+        camera: "granted",
+      })
+    );
+
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.SCAN],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: false,
+        },
+        currentOperation: OperationType.SCAN_CONNECTION,
+        toastMsgs: [],
+      },
+      identifiersCache: {
+        identifiers: [],
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const handleReset = jest.fn();
+
+    addListener.mockImplementation(
+      (
+        eventName: string,
+        listenerFunc: (result: BarcodeScannedEvent) => void
+      ) => {
+        setTimeout(() => {
+          listenerFunc({
+            barcode: {
+              displayValue:
+                "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org/oobi?groupId=72e2f089cef6",
+              format: BarcodeFormat.QrCode,
+              rawValue: "Invalid URL",
+              valueType: BarcodeValueType.Url,
+            },
+          });
+        }, 100);
+
+        return {
+          remove: jest.fn(),
+        };
+      }
+    );
+
+    render(
+      <Provider store={storeMocked}>
+        <Scanner
+          setIsValueCaptured={setIsValueCaptured}
+          handleReset={handleReset}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(requestPermission).toBeCalled();
     });
   });
 });

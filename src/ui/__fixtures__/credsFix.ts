@@ -1,3 +1,4 @@
+import { memberIdentifierRecord } from "../../core/__fixtures__/agent/multSigFixtures";
 import {
   ConnectionDetails,
   ConnectionStatus,
@@ -6,19 +7,21 @@ import {
   ACDCDetails,
   CredentialStatus,
 } from "../../core/agent/services/credentialService.types";
+import { IdentifierType } from "../../core/agent/services/identifier.types";
 
 const connectionDetailsFix: ConnectionDetails = {
   id: "test_id",
   label: "test_label",
   connectionDate: "2010-01-01T19:23:24Z",
   status: ConnectionStatus.CONFIRMED,
+  serviceEndpoints: [],
+  notes: [],
+  historyItems: [],
 };
 
 const credsFixAcdc: ACDCDetails[] = [
   {
     id: "EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
-    issuanceDate: "2024-01-22T16:03:44.643Z",
-    credentialType: "Qualified vLEI Issuer Credential",
     status: CredentialStatus.CONFIRMED,
     i: "EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5",
     a: {
@@ -38,14 +41,14 @@ const credsFixAcdc: ACDCDetails[] = [
       dt: "2024-01-22T16:05:44.643Z",
     },
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
+    identifierId: memberIdentifierRecord.id,
   },
 ];
 
 const pendingCredFixs: ACDCDetails[] = [
   {
     id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6wv",
-    issuanceDate: "2024-08-07T16:03:44.643Z",
-    credentialType: "Rare EVO 2024 Attendee",
     status: CredentialStatus.PENDING,
     i: "EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5",
     a: {
@@ -65,14 +68,14 @@ const pendingCredFixs: ACDCDetails[] = [
       dt: "2024-08-07T16:05:44.643Z",
     },
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
+    identifierId: memberIdentifierRecord.id,
   },
 ];
 
 const revokedCredFixs: ACDCDetails[] = [
   {
     id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6wo",
-    issuanceDate: "2024-08-07T16:03:44.643Z",
-    credentialType: "Rare EVO 2024 Attendee",
     status: CredentialStatus.REVOKED,
     i: "EGvs2tol4NEtRvYFQDwzRJNnxZgAiGbM4iHB3h4gpRN5",
     a: {
@@ -92,6 +95,8 @@ const revokedCredFixs: ACDCDetails[] = [
       dt: "2024-08-07T16:05:44.643Z",
     },
     schema: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+    identifierType: IdentifierType.Individual,
+    identifierId: memberIdentifierRecord.id,
   },
 ];
 

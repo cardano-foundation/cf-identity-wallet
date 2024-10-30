@@ -22,6 +22,7 @@ export const config = {
         // The path to the app
         "appium:app": process.env.APP_PATH,
         "appium:newCommandTimeout": 240,
+        "appium:webviewConnectTimeout": 60 * 1000,
       },
     ],
   },

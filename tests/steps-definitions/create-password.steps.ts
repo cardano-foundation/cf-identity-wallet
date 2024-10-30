@@ -3,12 +3,15 @@ import { expect } from "expect-webdriverio";
 import AlertModal from "../screen-objects/components/alert.modal.js";
 import CreatePasswordScreen from "../screen-objects/create-password.screen.js";
 import { returnPassword } from "../helpers/generate.js";
+import { delay } from "../screen-objects/base.screen";
+import { log } from "../helpers/logger";
 
 let generatedPassword: string;
 
 Given(/^skip Create Password screen$/, async function () {
   await CreatePasswordScreen.skipButton.click();
   await AlertModal.clickConfirmButtonOf(CreatePasswordScreen.alertModal);
+  log.info("END of SKIP create password screen");
 });
 
 Given(/^user tap Skip button on Create Password screen$/, async function () {

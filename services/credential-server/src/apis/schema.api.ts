@@ -22,12 +22,12 @@ function schemaList(req: Request, res: Response) {
   }
 
   const schemaDetailsList: Array<SchemaShortDetails> = [];
-  
+
   Object.entries(schemas).forEach(([id, schema]) => {
     const typedSchema = (schema as any).schema;
     schemaDetailsList.push({
       $id: typedSchema.$id,
-      title: typedSchema.title
+      title: typedSchema.title,
     });
   });
 
@@ -52,7 +52,7 @@ async function schemaCustomFields(req: Request, res: Response) {
 async function saidifySchema(req: Request, res: Response) {
   try {
     await Agent.agent.saidifySchema(req.body, "$id");
-      const response: ResponseData<string> = {
+    const response: ResponseData<string> = {
       statusCode: 200,
       success: true,
       data: "Schema succesfully generated",
@@ -64,7 +64,9 @@ async function saidifySchema(req: Request, res: Response) {
     const response: ResponseData<string> = {
       statusCode: 500,
       success: false,
-      data: error.message || "An unknown error occurred while processing the schema.",
+      data:
+        error.message ||
+        "An unknown error occurred while processing the schema.",
     };
     httpResponse(res, response);
   }

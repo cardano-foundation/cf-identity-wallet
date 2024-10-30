@@ -7,7 +7,11 @@ import PowerIcon from "@mui/icons-material/Power";
 const ConnectionsIssuer: React.FC = () => {
   return (
     <>
-      <Typography component="h1" variant="h4" align="center">
+      <Typography
+        component="h1"
+        variant="h4"
+        align="center"
+      >
         {`Holder <--> Issuer`}
       </Typography>
       <ConnectionQR

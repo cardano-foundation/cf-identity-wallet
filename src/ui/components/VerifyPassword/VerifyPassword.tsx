@@ -119,7 +119,7 @@ const VerifyPassword = ({
     () => ({
       closeButton: true,
       closeButtonLabel: `${i18n.t("verifypassword.cancel")}`,
-      closeButtonAction: () => setIsOpen(false),
+      closeButtonAction: () => setIsOpen(false, true),
       title: `${i18n.t("verifypassword.title")}`,
       actionButton: true,
       actionButtonDisabled: !verifyPasswordValue.length,
@@ -151,7 +151,7 @@ const VerifyPassword = ({
         onDismiss={() => resetModal()}
         header={headerOptions}
       >
-        <div className="password-input-container">
+        <form className="password-input-container">
           <CustomInput
             dataTestId="verify-password-value"
             hiddenInput={true}
@@ -167,7 +167,7 @@ const VerifyPassword = ({
           ) : (
             <div className="error-placeholder" />
           )}
-        </div>
+        </form>
         <div className="forgot-actions">
           {storedHint ? (
             <IonButton

@@ -100,7 +100,7 @@ interface BaseRecordConstructor<T> extends Constructor<T> {
 }
 
 enum StorageMessage {
-  RECORD_DOES_NOT_EXIST_ERROR_MSG = "Record already exists with id",
+  RECORD_ALREADY_EXISTS_ERROR_MSG = "Record already exists with id",
 }
 
 export { BaseRecord, StorageMessage };

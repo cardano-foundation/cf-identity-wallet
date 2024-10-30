@@ -4,6 +4,7 @@ import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import { CustomInputProps } from "./CustomInput.types";
 import "./CustomInput.scss";
 import { i18n } from "../../../i18n";
+import { combineClassNames } from "../../utils/style";
 
 const CustomInput = ({
   dataTestId,
@@ -18,6 +19,8 @@ const CustomInput = ({
   error,
   action,
   actionIcon,
+  className,
+  labelAction
 }: CustomInputProps) => {
   const [hidden, setHidden] = useState(hiddenInput);
 
@@ -26,19 +29,43 @@ const CustomInput = ({
       onChangeFocus(focus);
     }
   };
+
+  const inputClassname = combineClassNames("custom-input", className, {
+    "error": !!error,
+    "has-action": !!labelAction
+  })
+
   return (
-    <IonItem className={`custom-input ${error ? "error" : ""}`}>
-      <IonLabel
-        position="stacked"
-        data-testid={`${title?.toLowerCase().replace(/\s/g, "-")}-input-title`}
-      >
-        {title}
-        {optional && (
-          <span className="custom-input-optional">
-            {i18n.t("custominput.optional")}
-          </span>
-        )}
-      </IonLabel>
+    <IonItem className={inputClassname}>
+      {
+        !labelAction ? <IonLabel
+          position="stacked"
+          data-testid={`${title?.toLowerCase().replace(/\s/g, "-")}-input-title`}
+        >
+          {title}
+          {optional && (
+            <span className="custom-input-optional">
+              {i18n.t("custominput.optional")}
+            </span>
+          )}
+        </IonLabel> : <div className="input-label">
+          <IonLabel
+            position="stacked"
+            data-testid={`${title?.toLowerCase().replace(/\s/g, "-")}-input-title`}
+          >
+            {title}
+            {optional && (
+              <span className="custom-input-optional">
+                {i18n.t("custominput.optional")}
+              </span>
+            )}
+          </IonLabel>
+          {
+            labelAction
+          }
+        </div>
+
+      }
       <div className="input-line">
         <IonInput
           id={dataTestId}
@@ -60,6 +87,7 @@ const CustomInput = ({
             onClick={() => {
               setHidden(!hidden);
             }}
+            data-testid={`${dataTestId}-hide-btn`}
           >
             <IonIcon
               slot="icon-only"

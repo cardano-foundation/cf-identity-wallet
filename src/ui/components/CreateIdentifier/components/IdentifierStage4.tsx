@@ -11,7 +11,6 @@ import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../globals/types";
 import { Agent } from "../../../../core/agent/agent";
-import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
 import {
   getIdentifiersCache,
   setIdentifiersCache,
@@ -20,6 +19,7 @@ import { IdentifierShortDetails } from "../../../../core/agent/services/identifi
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
 import { createThemeValue } from "../../../utils/theme";
 import { showError } from "../../../utils/error";
+import { ConnectionShortDetails } from "../../../../core/agent/agent.types";
 
 const IdentifierStage4 = ({
   state,

@@ -6,12 +6,19 @@ import { Typography } from "@mui/material";
 
 const CredentialPage: React.FC = () => {
   const handleIssueCredential = async (data: any) => {
-    await axios.post(`${config.endpoint}${config.path.issueAcdcCredential}`, data);
+    await axios.post(
+      `${config.endpoint}${config.path.issueAcdcCredential}`,
+      data
+    );
   };
 
   return (
     <div>
-      <Typography component="h1" variant="h4" align="center">
+      <Typography
+        component="h1"
+        variant="h4"
+        align="center"
+      >
         Issue Credential
       </Typography>
       <CredentialForm

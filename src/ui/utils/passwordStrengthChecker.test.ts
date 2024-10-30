@@ -30,4 +30,10 @@ describe("passwordStrengthChecker", () => {
       "Abc123456789012345678901234567890123456789012345678901234567890123@";
     expect(passwordStrengthChecker.isLengthValid(password)).toBe(false);
   });
+  it("should return false if has invalid character", () => {
+    const password = "Abc@12344,∞";
+    expect(passwordStrengthChecker.getErrorByPriority(password)).toBe(
+      "Use only lowercase/uppercase letters, numbers & symbols for your password."
+    );
+  });
 });

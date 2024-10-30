@@ -22,6 +22,7 @@ import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { ToastMsgType } from "../../globals/types";
 import { CredentialDetails } from "./CredentialDetails";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 
 const path = TabsRoutePath.CREDENTIALS + "/" + credsFixAcdc[0].id;
 
@@ -144,7 +145,7 @@ describe("Cred Details page - current not archived credential", () => {
       </Provider>
     );
     await waitFor(() => {
-      expect(getAllByText(credsFixAcdc[0].credentialType)).toHaveLength(2);
+      expect(getAllByText(credsFixAcdc[0].s.title)).toHaveLength(2);
     });
     await waitFor(() => {
       expect(getByText(credsFixAcdc[0].s.description)).toBeVisible;
@@ -246,12 +247,12 @@ describe("Cards Details page - archived credential", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS.credentials.details.restore)
+        queryByText(EN_TRANSLATIONS.tabs.credentials.details.restore)
       ).toBeVisible();
     });
 
     const restoreButton = getByText(
-      EN_TRANSLATIONS.credentials.details.restore
+      EN_TRANSLATIONS.tabs.credentials.details.restore
     );
 
     act(() => {
@@ -264,7 +265,9 @@ describe("Cards Details page - archived credential", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS.credentials.details.alert.restore.title)
+        queryByText(
+          EN_TRANSLATIONS.tabs.credentials.details.alert.restore.title
+        )
       ).toBeVisible();
     });
 
@@ -284,7 +287,7 @@ describe("Cards Details page - archived credential", () => {
       );
 
       credDispatchMock.mockImplementation((action) => {
-        expect(action).toEqual(setCredsCache(credsFixAcdc));
+        expect(action).toEqual(setCredsCache(filteredCredsFix));
       });
     });
   });
@@ -332,7 +335,7 @@ describe("Checking the Credential Details Page when information is missing from 
         getByTestId("credential-card-details-cloud-error-page")
       ).toBeVisible();
       expect(
-        getByText(EN_TRANSLATIONS.credentials.details.clouderror, {
+        getByText(EN_TRANSLATIONS.tabs.credentials.details.clouderror, {
           normalizer: getDefaultNormalizer({ collapseWhitespace: false }),
         })
       ).toBeVisible();

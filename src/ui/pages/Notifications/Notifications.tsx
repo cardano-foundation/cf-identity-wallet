@@ -65,9 +65,11 @@ const Notifications = () => {
     }
 
     return notifications.filter((notification) =>
-      [NotificationRoute.ExnIpexGrant, NotificationRoute.ExnIpexApply].includes(
-        notification.a.r as NotificationRoute
-      )
+      [
+        NotificationRoute.ExnIpexGrant,
+        NotificationRoute.ExnIpexApply,
+        NotificationRoute.LocalAcdcRevoked,
+      ].includes(notification.a.r as NotificationRoute)
     );
   }, [notifications, selectedFilter]);
 
@@ -125,15 +127,15 @@ const Notifications = () => {
   const filterOptions = [
     {
       filter: NotificationFilter.All,
-      label: i18n.t("notifications.tab.chips.all"),
+      label: i18n.t("tabs.notifications.tab.chips.all"),
     },
     {
       filter: NotificationFilter.Identifier,
-      label: i18n.t("notifications.tab.chips.identifiers"),
+      label: i18n.t("tabs.notifications.tab.chips.identifiers"),
     },
     {
       filter: NotificationFilter.Credential,
-      label: i18n.t("notifications.tab.chips.credentials"),
+      label: i18n.t("tabs.notifications.tab.chips.credentials"),
     },
   ];
 
@@ -161,7 +163,7 @@ const Notifications = () => {
       <TabLayout
         pageId={pageId}
         header={true}
-        title={`${i18n.t("notifications.tab.header")}`}
+        title={`${i18n.t("tabs.notifications.tab.header")}`}
       >
         <div className="notifications-tab-chips">
           {filterOptions.map((option) => (
@@ -181,7 +183,7 @@ const Notifications = () => {
               data-testid="notifications-tab-section-new"
             >
               <h3 className="notifications-tab-section-title">
-                {i18n.t("notifications.tab.sections.new")}
+                {i18n.t("tabs.notifications.tab.sections.new")}
               </h3>
               <IonList
                 lines="none"
@@ -207,8 +209,8 @@ const Notifications = () => {
           />
           <p className="notification-empty">
             {filteredNotification.length === 0
-              ? i18n.t("notifications.tab.empty")
-              : i18n.t("notifications.tab.sections.earlier.end")}
+              ? i18n.t("tabs.notifications.tab.empty")
+              : i18n.t("tabs.notifications.tab.sections.earlier.end")}
           </p>
         </div>
         {selectedItem && (

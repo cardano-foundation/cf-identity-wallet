@@ -1,20 +1,18 @@
 import { IonModal } from "@ionic/react";
-import i18next from "i18next";
+import { t } from "i18next";
 import { i18n } from "../../../i18n";
-import { TermsModalProps, TermsObject, TermsSection } from "./TermsModal.types";
+import {
+  TermContent,
+  TermsModalProps,
+  TermsObject,
+  TermsSection,
+} from "./TermsModal.types";
 import "./TermsModal.scss";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
 
-const TermsModal = ({ name, isOpen, setIsOpen, children }: TermsModalProps) => {
-  const nameNoDash = name.replace(/-/g, "");
-  const componentId = name + "-modal";
-  const termsObject: TermsObject = i18next.t(nameNoDash, {
-    returnObjects: true,
-  });
-  const introText = `${i18n.t(`${nameNoDash}.intro.text`)}`;
-  const sections = termsObject.sections;
-  const Section = ({ title, content }: TermsSection) => (
+const Section = ({ title, content, componentId }: TermsSection) => {
+  return (
     <div>
       <h3
         data-testid={`${componentId}-section-${title
@@ -23,7 +21,7 @@ const TermsModal = ({ name, isOpen, setIsOpen, children }: TermsModalProps) => {
       >
         {title}
       </h3>
-      {content.map((item: any, index: number) => (
+      {content.map((item: TermContent, index: number) => (
         <p key={index}>
           {!!item.subtitle.length && (
             <b
@@ -47,12 +45,25 @@ const TermsModal = ({ name, isOpen, setIsOpen, children }: TermsModalProps) => {
       ))}
     </div>
   );
+};
+
+const TermsModal = ({ name, isOpen, setIsOpen, children }: TermsModalProps) => {
+  const nameNoDash = name.replace(/-/g, "");
+  const componentId = name + "-modal";
+  const termsObject: TermsObject = t(nameNoDash, {
+    returnObjects: true,
+  });
+  const introText = `${i18n.t(`${nameNoDash}.intro.text`)}`;
+  const sections = termsObject.sections;
+
+  const closeModal = () => setIsOpen(false);
+
   return (
     <IonModal
       isOpen={isOpen}
       className="terms-modal"
       data-testid={componentId}
-      onDidDismiss={() => setIsOpen(false)}
+      onDidDismiss={closeModal}
     >
       <ScrollablePageLayout
         pageId={componentId + "-content"}
@@ -60,7 +71,7 @@ const TermsModal = ({ name, isOpen, setIsOpen, children }: TermsModalProps) => {
           <PageHeader
             closeButton={true}
             closeButtonLabel={`${i18n.t(`${nameNoDash}.done`)}`}
-            closeButtonAction={() => setIsOpen(false)}
+            closeButtonAction={closeModal}
             title={`${i18n.t(`${nameNoDash}.intro.title`)}`}
           />
         }
@@ -75,6 +86,7 @@ const TermsModal = ({ name, isOpen, setIsOpen, children }: TermsModalProps) => {
             key={index}
             title={section.title}
             content={section.content}
+            componentId={componentId}
           />
         ))}
         {children}

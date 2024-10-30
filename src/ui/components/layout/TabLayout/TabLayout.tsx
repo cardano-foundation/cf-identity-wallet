@@ -85,10 +85,13 @@ const TabLayout = ({
       id={pageId}
     >
       {header && (
-        <IonHeader className="ion-no-border tab-header">
+        <IonHeader
+          data-testid={`${pageId}-tab-header`}
+          className="ion-no-border tab-header"
+        >
           <IonToolbar
             color="transparent"
-            className={`${backButton ? "has-back-button" : ""}`}
+            className={`tab-title ${backButton ? "has-back-button" : ""}`}
           >
             {backButton && backButtonAction && (
               <IonButtons

@@ -56,6 +56,9 @@ const CredentialDetailModule = ({
   onClose,
   hardwareBackButtonConfig,
   navAnimation = false,
+  credDetail,
+  viewOnly,
+  joinedCredRequestMembers,
   ...props
 }: CredentialDetailModuleProps) => {
   const { isLightMode } = props;
@@ -71,9 +74,12 @@ const CredentialDetailModule = ({
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
   const [verifyIsOpen, setVerifyIsOpen] = useState(false);
   const [cardData, setCardData] = useState<ACDCDetails>();
+  const [hidden, setHidden] = useState(false);
+
   const isArchived = credsCache.filter((item) => item.id === id).length === 0;
   const isRevoked = cardData?.status === CredentialStatus.REVOKED;
-  const isInactiveCred = isArchived || isRevoked;
+  const isInactiveCred = (isArchived || isRevoked) && !viewOnly;
+
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === id);
   const [cloudError, setCloudError] = useState(false);
 
@@ -87,6 +93,11 @@ const CredentialDetailModule = ({
   }, [dispatch]);
 
   const getCredDetails = useCallback(async () => {
+    if (credDetail) {
+      setCardData(credDetail);
+      return;
+    }
+
     if (!id) return;
 
     try {
@@ -97,7 +108,7 @@ const CredentialDetailModule = ({
       setCloudError(true);
       showError("Unable to get credential detail", error, dispatch);
     }
-  }, [id, dispatch]);
+  }, [id, dispatch, credDetail]);
 
   useOnlineStatusEffect(getCredDetails);
 
@@ -196,6 +207,9 @@ const CredentialDetailModule = ({
 
   const onVerify = async () => {
     const backReason = isInactiveCred ? BackReason.DELETE : BackReason.ARCHIVED;
+    onClose?.(backReason);
+    setVerifyIsOpen(false);
+
     if (isArchived) {
       await handleDeleteCredential();
     } else if (isRevoked) {
@@ -203,9 +217,6 @@ const CredentialDetailModule = ({
     } else {
       await handleArchiveCredential();
     }
-
-    onClose?.(backReason);
-    setVerifyIsOpen(false);
   };
 
   const handleSetFavourite = (id: string) => {
@@ -259,6 +270,10 @@ const CredentialDetailModule = ({
   };
 
   const AdditionalButtons = () => {
+    if (viewOnly) {
+      return null;
+    }
+
     if (isLightMode) {
       return (
         <IonCheckbox
@@ -318,25 +333,27 @@ const CredentialDetailModule = ({
       "cred-back-animation": navAnimation,
       "cred-open-animation": !navAnimation,
       revoked: isRevoked,
+      "ion-hide": hidden,
     }
   );
 
   const handleArchive = () => {
     setAlertDeleteArchiveIsOpen(true);
-    dispatch(setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL));
   };
 
   const handleDelete = () => {
     setAlertDeleteArchiveIsOpen(true);
-    dispatch(setCurrentOperation(OperationType.DELETE_CREDENTIAL));
   };
 
   const handleAuthentication = () => {
+    setHidden(true);
     setVerifyIsOpen(true);
   };
 
   const actionButtonLabel = i18n.t(
-    isRevoked ? "credentials.details.delete" : "credentials.details.restore"
+    isRevoked
+      ? "tabs.credentials.details.delete"
+      : "tabs.credentials.details.restore"
   );
 
   const action = () => {
@@ -347,6 +364,8 @@ const CredentialDetailModule = ({
     setAlertRestoreIsOpen(true);
   };
 
+  const resetOperation = () => dispatch(setCurrentOperation(OperationType.IDLE));
+
   if (cloudError) {
     return (
       <CloudError
@@ -354,15 +373,17 @@ const CredentialDetailModule = ({
         header={
           <PageHeader
             closeButton={true}
-            closeButtonLabel={`${i18n.t("identifiers.details.done")}`}
-            closeButtonAction={() => onClose?.(BackReason.DELETE)}
+            closeButtonLabel={`${i18n.t("tabs.identifiers.details.done")}`}
+            closeButtonAction={() => onClose?.(BackReason.CLOSE)}
           />
         }
       >
         <PageFooter
           pageId={pageId}
-          deleteButtonText={`${i18n.t("credentials.details.button.delete")}`}
-          deleteButtonAction={() => handleDelete()}
+          deleteButtonText={`${i18n.t(
+            "tabs.credentials.details.button.delete"
+          )}`}
+          deleteButtonAction={handleDelete}
         />
       </CloudError>
     );
@@ -376,7 +397,7 @@ const CredentialDetailModule = ({
         header={
           <PageHeader
             closeButton
-            closeButtonLabel={`${i18n.t("credentials.details.done")}`}
+            closeButtonLabel={`${i18n.t("tabs.credentials.details.done")}`}
             closeButtonAction={() => onClose?.(BackReason.CLOSE)}
             additionalButtons={!isInactiveCred && <AdditionalButtons />}
             actionButton={isInactiveCred}
@@ -397,30 +418,39 @@ const CredentialDetailModule = ({
           <>
             {isRevoked && (
               <div className="revoked-alert">
-                {i18n.t("credentials.details.revoked")}
+                {i18n.t("tabs.credentials.details.revoked")}
               </div>
             )}
             <CredentialCardTemplate
-              cardData={cardData}
+              cardData={{
+                ...cardData,
+                issuanceDate: cardData.a.dt,
+                credentialType: cardData.s.title || "",
+              }}
               isActive={false}
             />
             <div className="card-details-content">
-              <CredentialContent cardData={cardData} />
-              <PageFooter
-                pageId={pageId}
-                archiveButtonText={
-                  !isInactiveCred
-                    ? `${i18n.t("credentials.details.button.archive")}`
-                    : ""
-                }
-                archiveButtonAction={() => handleArchive()}
-                deleteButtonText={
-                  isInactiveCred
-                    ? `${i18n.t("credentials.details.button.delete")}`
-                    : ""
-                }
-                deleteButtonAction={() => handleDelete()}
+              <CredentialContent
+                joinedCredRequestMembers={joinedCredRequestMembers}
+                cardData={cardData}
               />
+              {!viewOnly && (
+                <PageFooter
+                  pageId={pageId}
+                  archiveButtonText={
+                    !isInactiveCred
+                      ? `${i18n.t("tabs.credentials.details.button.archive")}`
+                      : ""
+                  }
+                  archiveButtonAction={() => handleArchive()}
+                  deleteButtonText={
+                    isInactiveCred
+                      ? `${i18n.t("tabs.credentials.details.button.delete")}`
+                      : ""
+                  }
+                  deleteButtonAction={() => handleDelete()}
+                />
+              )}
             </div>
             <CredentialOptions
               optionsIsOpen={optionsIsOpen}
@@ -436,41 +466,47 @@ const CredentialDetailModule = ({
         dataTestId="alert-delete-archive"
         headerText={i18n.t(
           isInactiveCred
-            ? "credentials.details.alert.delete.title"
-            : "credentials.details.alert.archive.title"
+            ? "tabs.credentials.details.alert.delete.title"
+            : "tabs.credentials.details.alert.archive.title"
         )}
         confirmButtonText={`${i18n.t(
           isInactiveCred
-            ? "credentials.details.alert.delete.confirm"
-            : "credentials.details.alert.archive.confirm"
+            ? "tabs.credentials.details.alert.delete.confirm"
+            : "tabs.credentials.details.alert.archive.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
           isInactiveCred
-            ? "credentials.details.alert.delete.cancel"
-            : "credentials.details.alert.archive.cancel"
+            ? "tabs.credentials.details.alert.delete.cancel"
+            : "tabs.credentials.details.alert.archive.cancel"
         )}`}
         actionConfirm={() => handleAuthentication()}
-        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionCancel={resetOperation}
+        actionDismiss={resetOperation}
       />
       <AlertRestore
         isOpen={alertRestoreIsOpen}
         setIsOpen={setAlertRestoreIsOpen}
         dataTestId="alert-restore"
-        headerText={i18n.t("credentials.details.alert.restore.title")}
+        headerText={i18n.t("tabs.credentials.details.alert.restore.title")}
         confirmButtonText={`${i18n.t(
-          "credentials.details.alert.restore.confirm"
+          "tabs.credentials.details.alert.restore.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "credentials.details.alert.restore.cancel"
+          "tabs.credentials.details.alert.restore.cancel"
         )}`}
         actionConfirm={() => handleRestoreCredential()}
-        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionCancel={resetOperation}
+        actionDismiss={resetOperation}
       />
       <Verification
         verifyIsOpen={verifyIsOpen}
-        setVerifyIsOpen={setVerifyIsOpen}
+        setVerifyIsOpen={(value, isCancel) => {
+          if (isCancel) {
+            setHidden(false);
+          }
+
+          setVerifyIsOpen(value);
+        }}
         onVerify={onVerify}
       />
     </>

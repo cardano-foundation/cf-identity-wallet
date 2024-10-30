@@ -39,7 +39,6 @@ import "../../components/CardDetails/CardDetails.scss";
 import { CloudError } from "../../components/CloudError";
 import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
 import { IdentifierOptions } from "../../components/IdentifierOptions";
-import { TabLayout } from "../../components/layout/TabLayout";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import { ShareConnection } from "../../components/ShareConnection";
@@ -52,6 +51,7 @@ import { combineClassNames } from "../../utils/style";
 import { IdentifierContent } from "./components/IdentifierContent";
 import { RotateKeyModal } from "./components/RotateKeyModal";
 import "./IdentifierDetails.scss";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
@@ -77,6 +77,7 @@ const IdentifierDetails = () => {
   const userName = stateCache.authentication.userName;
   const [oobi, setOobi] = useState("");
   const [cloudError, setCloudError] = useState(false);
+  const [hidden, setHidden] = useState(false);
 
   const fetchOobi = useCallback(async () => {
     try {
@@ -154,23 +155,23 @@ const IdentifierDetails = () => {
   };
 
   const handleDelete = async () => {
+    handleDone(false);
+
     try {
       setVerifyIsOpen(false);
-      let updatedIdentifiers = identifierData;
-      if (cardData) {
-        updatedIdentifiers = identifierData.filter(
-          (item) => item.id !== cardData.id
-        );
-      } else if (cloudError) {
-        updatedIdentifiers = identifierData.filter(
-          (item) => item.id !== params.id
-        );
-      }
+      const filterId = cardData
+        ? cardData.id
+        : cloudError
+          ? params.id
+          : undefined;
+
+      const updatedIdentifiers = identifierData.filter(
+        (item) => item.id !== filterId
+      );
 
       await deleteIdentifier();
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
       dispatch(setIdentifiersCache(updatedIdentifiers));
-      handleDone();
     } catch (e) {
       showError(
         "Unable to delete identifier",
@@ -245,10 +246,10 @@ const IdentifierDetails = () => {
 
   const deleteButtonAction = () => {
     setAlertIsOpen(true);
-    dispatch(setCurrentOperation(OperationType.DELETE_IDENTIFIER));
   };
 
   const handleAuthentication = () => {
+    setHidden(true);
     setVerifyIsOpen(true);
   };
 
@@ -266,6 +267,9 @@ const IdentifierDetails = () => {
     if (!cardData) return;
     setIdentifierOptionsIsOpen(true);
   };
+
+  const cancelDelete = () => dispatch(setCurrentOperation(OperationType.IDLE));
+  const openRotateModal = () => setOpenRotateKeyModal(true);
 
   const AdditionalButtons = () => {
     return (
@@ -320,6 +324,7 @@ const IdentifierDetails = () => {
   const pageClasses = combineClassNames("card-details", {
     "back-animation": navAnimation,
     "open-animation": !navAnimation,
+    "ion-hide": hidden,
   });
 
   return (
@@ -330,25 +335,31 @@ const IdentifierDetails = () => {
           header={
             <PageHeader
               closeButton={true}
-              closeButtonLabel={`${i18n.t("identifiers.details.done")}`}
-              closeButtonAction={() => handleDone()}
+              closeButtonLabel={`${i18n.t("tabs.identifiers.details.done")}`}
+              closeButtonAction={handleDone}
             />
           }
         >
           <PageFooter
             pageId={pageId}
-            deleteButtonText={`${i18n.t("identifiers.details.delete.button")}`}
-            deleteButtonAction={() => deleteButtonAction()}
+            deleteButtonText={`${i18n.t(
+              "tabs.tabs.identifiers.details.delete.button"
+            )}`}
+            deleteButtonAction={deleteButtonAction}
           />
         </CloudError>
       ) : (
-        <TabLayout
+        <ScrollablePageLayout
           pageId={pageId}
           customClass={pageClasses}
-          header={true}
-          doneLabel={`${i18n.t("identifiers.details.done")}`}
-          doneAction={handleDone}
-          additionalButtons={<AdditionalButtons />}
+          header={
+            <PageHeader
+              closeButton={true}
+              closeButtonLabel={`${i18n.t("tabs.identifiers.details.done")}`}
+              closeButtonAction={() => handleDone()}
+              additionalButtons={<AdditionalButtons />}
+            />
+          }
         >
           {!cardData ? (
             <div
@@ -365,15 +376,15 @@ const IdentifierDetails = () => {
               />
               <div className="card-details-content">
                 <IdentifierContent
-                  onOpenRotateKey={() => setOpenRotateKeyModal(true)}
+                  onOpenRotateKey={openRotateModal}
                   cardData={cardData as IdentifierDetailsCore}
                 />
                 <PageFooter
                   pageId={pageId}
                   deleteButtonText={`${i18n.t(
-                    "identifiers.details.delete.button"
+                    "tabs.identifiers.details.delete.button"
                   )}`}
-                  deleteButtonAction={() => deleteButtonAction()}
+                  deleteButtonAction={deleteButtonAction}
                 />
               </div>
               <ShareConnection
@@ -382,7 +393,7 @@ const IdentifierDetails = () => {
                 oobi={oobi}
               />
               <IdentifierOptions
-                handleRotateKey={() => setOpenRotateKeyModal(true)}
+                handleRotateKey={openRotateModal}
                 optionsIsOpen={identifierOptionsIsOpen}
                 setOptionsIsOpen={setIdentifierOptionsIsOpen}
                 cardData={cardData}
@@ -399,26 +410,32 @@ const IdentifierDetails = () => {
             isOpen={openRotateKeyModal}
             onClose={() => setOpenRotateKeyModal(false)}
           />
-        </TabLayout>
+        </ScrollablePageLayout>
       )}
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
         dataTestId="alert-confirm-identifier-delete-details"
-        headerText={i18n.t("identifiers.details.delete.alert.title")}
+        headerText={i18n.t("tabs.identifiers.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
-          "identifiers.details.delete.alert.confirm"
+          "tabs.identifiers.details.delete.alert.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "identifiers.details.delete.alert.cancel"
+          "tabs.identifiers.details.delete.alert.cancel"
         )}`}
-        actionConfirm={() => handleAuthentication()}
-        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionConfirm={handleAuthentication}
+        actionCancel={cancelDelete}
+        actionDismiss={cancelDelete}
       />
       <Verification
         verifyIsOpen={verifyIsOpen}
-        setVerifyIsOpen={setVerifyIsOpen}
+        setVerifyIsOpen={(value, isCancel) => {
+          if (isCancel) {
+            setHidden(false);
+          }
+
+          setVerifyIsOpen(value);
+        }}
         onVerify={handleDelete}
       />
     </>

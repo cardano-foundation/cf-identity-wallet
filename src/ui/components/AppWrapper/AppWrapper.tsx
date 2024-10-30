@@ -15,10 +15,6 @@ import {
 } from "../../../core/cardano/walletConnect/peerConnection.types";
 import { ConfigurationService } from "../../../core/configuration";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences/preferencesStorage";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setEnableBiometricsCache } from "../../../store/reducers/biometricsCache";
@@ -39,9 +35,10 @@ import {
 } from "../../../store/reducers/identifiersCache";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import {
-  setFavouriteIndex,
-  setViewTypeCache,
-} from "../../../store/reducers/identifierViewTypeCache";
+  setCredentialViewTypeCache,
+  setIdentifierFavouriteIndex,
+  setIdentifierViewTypeCache,
+} from "../../../store/reducers/viewTypeCache";
 import { setNotificationsCache } from "../../../store/reducers/notificationsCache";
 import {
   getAuthentication,
@@ -85,7 +82,6 @@ const connectionStateChangedHandler = async (
   if (event.payload.status === ConnectionStatus.PENDING) {
     if (event.payload.isMultiSigInvite) return;
 
-    dispatch(setCurrentOperation(OperationType.RECEIVE_CONNECTION));
     dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else {
     const connectionRecordId = event.payload.connectionId!;
@@ -315,14 +311,25 @@ const AppWrapper = (props: { children: ReactNode }) => {
           )
         );
       }
-      const viewType = await Agent.agent.basicStorage.findById(
+      const indentifierViewType = await Agent.agent.basicStorage.findById(
         MiscRecordId.APP_IDENTIFIER_VIEW_TYPE
       );
-      if (viewType) {
+      if (indentifierViewType) {
         dispatch(
-          setViewTypeCache(viewType.content.viewType as CardListViewType)
+          setIdentifierViewTypeCache(indentifierViewType.content.viewType as CardListViewType)
         );
       }
+
+      const credViewType = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_CRED_VIEW_TYPE
+      );
+
+      if (credViewType) {
+        dispatch(
+          setCredentialViewTypeCache(credViewType.content.viewType as CardListViewType)
+        );
+      }
+
       const appBiometrics = await Agent.agent.basicStorage.findById(
         MiscRecordId.APP_BIOMETRY
       );
@@ -339,13 +346,23 @@ const AppWrapper = (props: { children: ReactNode }) => {
         userName = appUserNameRecord.content as { userName: string };
       }
 
-      const favouriteIndex = await Agent.agent.basicStorage.findById(
+      const identifierFavouriteIndex = await Agent.agent.basicStorage.findById(
         MiscRecordId.APP_IDENTIFIER_FAVOURITE_INDEX
       );
 
-      if (favouriteIndex) {
+      if (identifierFavouriteIndex) {
         dispatch(
-          setFavouriteIndex(Number(favouriteIndex.content.favouriteIndex))
+          setIdentifierFavouriteIndex(Number(identifierFavouriteIndex.content.favouriteIndex))
+        );
+      }
+
+      const credFavouriteIndex = await Agent.agent.basicStorage.findById(
+        MiscRecordId.APP_CRED_FAVOURITE_INDEX
+      );
+
+      if (credFavouriteIndex) {
+        dispatch(
+          setIdentifierFavouriteIndex(Number(credFavouriteIndex.content.favouriteIndex))
         );
       }
 
@@ -416,24 +433,33 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     );
     Agent.agent.keriaNotifications.onNewNotification((event) => {
-      notificatiStateChanged(event.payload.keriaNotif, dispatch);
+      notificatiStateChanged(event, dispatch);
     });
 
     Agent.agent.keriaNotifications.onLongOperationComplete((event) => {
       signifyOperationStateChangeHandler(event.payload, dispatch);
+    });
+
+    Agent.agent.keriaNotifications.onRemoveNotification((event) => {
+      notificatiStateChanged(event, dispatch);
     });
   };
 
   const initApp = async () => {
     await new ConfigurationService().start();
     await Agent.agent.initDatabaseConnection();
+
+    // This will skip the onboarding screen with dev mode.
+    if (process.env.DEV_SKIP_ONBOARDING === "true") {
+      await Agent.agent.devPreload();
+    }
+
     // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
     // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
-    try {
-      // @TODO - foconnor: This should use our normal DB - keeping Preferences temporarily to not break existing mobile builds.
-      // Will remove preferences again once we have better handling on APP_ALREADY_INIT with user input.
-      await PreferencesStorage.get(PreferencesKeys.APP_ALREADY_INIT);
-    } catch (e) {
+    const initState = await Agent.agent.basicStorage.findById(
+      MiscRecordId.APP_ALREADY_INIT
+    );
+    if (!initState) {
       await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
       await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
       await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
@@ -475,10 +501,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
         setIsOpen={setIsAlertPeerBrokenOpen}
         dataTestId="alert-confirm-connection-broken"
         headerText={i18n.t(
-          "menu.tab.items.connectwallet.connectionbrokenalert.message"
+          "tabs.menu.tab.items.connectwallet.connectionbrokenalert.message"
         )}
         confirmButtonText={`${i18n.t(
-          "menu.tab.items.connectwallet.connectionbrokenalert.confirm"
+          "tabs.menu.tab.items.connectwallet.connectionbrokenalert.confirm"
         )}`}
         actionConfirm={() => dispatch(setCurrentOperation(OperationType.IDLE))}
         actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}

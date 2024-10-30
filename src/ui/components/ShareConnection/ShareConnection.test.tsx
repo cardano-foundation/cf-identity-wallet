@@ -1,8 +1,9 @@
 import { mockIonicReact } from "@ionic/react-test-utils";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import ENG_trans from "../../../locales/en/en.json";
+import { act } from "react";
+import TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
@@ -22,6 +23,14 @@ jest.mock("@ionic/react", () => ({
   IonModal: ({ children }: never) => (
     <div data-testid="share-connection-modal">{children}</div>
   ),
+}));
+
+const shareFnc = jest.fn();
+jest.mock("@capacitor/share", () => ({
+  ...jest.requireActual("@capacitor/share"),
+  Share: {
+    share: () => shareFnc(),
+  },
 }));
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -55,7 +64,7 @@ describe("Share Indentifier", () => {
 
     await waitFor(() => {
       expect(
-        getByText(ENG_trans.shareidentifier.subtitle.identifier)
+        getByText(TRANSLATIONS.shareidentifier.subtitle.identifier)
       ).toBeVisible();
       expect(getByTestId("share-connection-modal")).toBeInTheDocument();
       expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
@@ -85,7 +94,7 @@ describe("Share Indentifier", () => {
 
     await waitFor(() => {
       expect(
-        getByText(ENG_trans.shareidentifier.subtitle.identifier)
+        getByText(TRANSLATIONS.shareidentifier.subtitle.identifier)
       ).toBeVisible();
       expect(getByTestId("share-connection-modal")).toBeInTheDocument();
       expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
@@ -106,10 +115,45 @@ describe("Share Indentifier", () => {
 
     await waitFor(() => {
       expect(
-        getByText(ENG_trans.shareidentifier.subtitle.connection)
+        getByText(TRANSLATIONS.shareidentifier.subtitle.connection)
       ).toBeVisible();
       expect(getByTestId("share-connection-modal")).toBeInTheDocument();
       expect(getByTestId("share-identifier-copy-button")).toBeInTheDocument();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("share-identifier-share-button"));
+    });
+
+    await waitFor(() => {
+      expect(shareFnc).toBeCalled();
+    });
+  });
+
+  test("Close share connection", async () => {
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <ShareConnection
+          isOpen={props.isOpen}
+          setIsOpen={props.setIsOpen}
+          shareType={ShareType.Connection}
+          oobi={""}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        getByTestId("share-identifier-qr-code").classList.contains("blur")
+      ).toBe(true);
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("close-button"));
+    });
+
+    await waitFor(() => {
+      expect(setIsOpen).toBeCalled();
     });
   });
 });

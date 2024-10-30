@@ -82,7 +82,7 @@ class IdentifierService extends AgentService {
     const metadata = await this.identifierStorage.getIdentifierMetadata(
       identifier
     );
-    if (metadata.isPending && metadata.signifyOpName) {
+    if (metadata.isPending) {
       throw new Error(IdentifierService.IDENTIFIER_IS_PENDING);
     }
     const aid = await this.props.signifyClient
@@ -97,12 +97,18 @@ class IdentifierService extends AgentService {
         }
       });
 
+    let members;
+    if (aid.group) {
+      members = (
+        await this.props.signifyClient.identifiers().members(identifier)
+      ).signing.map((member: any) => member.aid);
+    }
+
     return {
       id: aid.prefix,
       displayName: metadata.displayName,
       createdAtUTC: metadata.createdAt.toISOString(),
       theme: metadata.theme,
-      signifyOpName: metadata.signifyOpName,
       multisigManageAid: metadata.multisigManageAid,
       isPending: metadata.isPending ?? false,
       groupMetadata: metadata.groupMetadata,
@@ -115,23 +121,7 @@ class IdentifierService extends AgentService {
       bt: aid.state.bt,
       b: aid.state.b,
       di: aid.state.di,
-    };
-  }
-
-  async getKeriIdentifierByGroupId(
-    groupId: string
-  ): Promise<IdentifierShortDetails | null> {
-    const metadata =
-      await this.identifierStorage.getIdentifierMetadataByGroupId(groupId);
-    if (!metadata) {
-      return null;
-    }
-    return {
-      displayName: metadata.displayName,
-      id: metadata.id,
-      createdAtUTC: metadata.createdAt.toISOString(),
-      theme: metadata.theme,
-      isPending: metadata.isPending ?? false,
+      members,
     };
   }
 
@@ -153,7 +143,6 @@ class IdentifierService extends AgentService {
       .identifiers()
       .create(signifyName); //, this.getCreateAidOptions());
     let op = await operation.op();
-    const signifyOpName = op.name;
     const identifier = operation.serder.ked.i;
 
     const addRoleOperation = await this.props.signifyClient
@@ -182,7 +171,6 @@ class IdentifierService extends AgentService {
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: identifier,
       ...metadata,
-      signifyOpName: signifyOpName,
       isPending: !op.done,
       signifyName: signifyName,
     });

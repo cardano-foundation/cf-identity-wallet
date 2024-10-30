@@ -1,0 +1,26 @@
+.github/* @rcmorano
+Earthfile @rcmorano
+Dockerfile @rcmorano @iFergal
+docker* @rcmorano @iFergal
+
+*.ts @jimcase @iFergal
+*.js @jimcase @iFergal
+*.cjs @jimcase @iFergal
+*.json @jimcase @iFergal
+
+.husky/* @jimcase @iFergal @jorgenavben
+
+android/* @jimcase @iFergal
+
+configs/* @iFergal
+
+docs/* @jorgenavben
+
+ios/* @jimcase @iFergal
+
+services/* @jimcase @iFergal @jorgenavben
+
+src/ui/* @jimcase @sdisalvo-crd
+src/core/* @jimcase @iFergal @jorgenavben
+
+tests/* @obstar
