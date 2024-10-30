@@ -13,7 +13,6 @@ export interface IAttributeObj {
 export interface SchemaShortDetails {
   $id: string;
   title: string;
-  credentialType: string;
 }
 
 export interface OptionalField {
