@@ -12,6 +12,7 @@ const grantForIssuanceExnMessage = {
     r: ExchangeRoute.IpexGrant,
     q: {},
     a: { m: "", i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G" },
+    rp: "ELjvc_mLWOx7pI4fBh7lGUYofOAJUgUrMKnaoFGdvs86",
     e: {
       acdc: {
         d: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
@@ -114,6 +115,7 @@ const agreeForPresentingExnMessage = {
     r: ExchangeRoute.IpexAgree,
     q: {},
     a: { m: "", i: "EE-gjeEni5eCdpFlBtG7s4wkv7LJ0JmWplCS4DNQwW2G" },
+    rp: "ELjvc_mLWOx7pI4fBh7lGUYofOAJUgUrMKnaoFGdvs86",
     e: {
       acdc: {
         d: "EAe_JgQ636ic-k34aUQMjDFPp6Zd350gEsQA6HePBU5W",
