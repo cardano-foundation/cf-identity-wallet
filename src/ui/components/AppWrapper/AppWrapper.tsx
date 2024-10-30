@@ -206,8 +206,19 @@ const AppWrapper = (props: { children: ReactNode }) => {
       // Agent.agent.credentials.syncACDCs(),
       // ]);
     };
+    const removePendingDeletion = async () => {
+      const pendingDeletions =
+        await Agent.agent.connections.getConnectionsPendingDeletion();
+
+      for (const id of pendingDeletions) {
+        await Agent.agent.connections.deleteConnectionById(id);
+        dispatch(removeConnectionCache(id));
+      }
+    };
+
     if (isOnline) {
       syncWithKeria();
+      removePendingDeletion();
     }
   }, [isOnline, dispatch]);
 
@@ -453,14 +464,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     if (keriaConnectUrlRecord) {
       try {
         await Agent.agent.start(keriaConnectUrlRecord.content.url as string);
-
-        const pendingDeletions =
-          await Agent.agent.connections.getConnectionsPendingDeletion();
-
-        for (const id of pendingDeletions) {
-          await Agent.agent.connections.deleteConnectionById(id);
-          dispatch(removeConnectionCache(id));
-        }
       } catch (e) {
         const errorMessage = (e as Error).message;
         // If the error is failed to fetch with signify, we retry until the connection is secured

@@ -266,9 +266,7 @@ class ConnectionService extends AgentService {
       .delete(id)
       .catch((error) => {
         const status = error.message.split(" - ")[1];
-        if (/404/gi.test(status)) {
-          return undefined;
-        } else {
+        if (!/404/gi.test(status)) {
           throw error;
         }
       });
