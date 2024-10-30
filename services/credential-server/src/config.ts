@@ -26,6 +26,8 @@ const config = {
     revokeCredential: "/revokeCredential",
     deleteContact: "/deleteContact",
     generateSchema: "/generateSchema",
+    schemaList: "/schemaList",
+    schemaCustomFields: "/schemaCustomFields",
   },
 };
 

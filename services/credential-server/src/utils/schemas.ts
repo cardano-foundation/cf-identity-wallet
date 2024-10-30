@@ -34,6 +34,7 @@ const ACDC_SCHEMAS = {
                 description: "LEI of the requesting Legal Entity",
                 type: "string",
                 format: "ISO 17442",
+                customizable: true,
               },
               gracePeriod: {
                 description: "Allocated grace period",
@@ -148,7 +149,8 @@ const ACDC_SCHEMAS = {
               },
               attendeeName: {
                 description: "The name of the attendee",
-                type: "string"
+                type: "string",
+                customizable: true
               }
             },
             additionalProperties: false,
@@ -229,7 +231,8 @@ const ACDC_SCHEMAS = {
               "LEI": {
                 "description": "LE Issuer AID",
                 "type": "string",
-                "format": "ISO 17442"
+                "format": "ISO 17442",
+                "customizable": true
               }
             },
             "additionalProperties": false,

@@ -16,9 +16,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { MENU_ITEMS } from "../App";
 
 const NavBar: React.FC = () => {
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null,
-  );
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+  const [anchorElCredentials, setAnchorElCredentials] = React.useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -26,6 +25,14 @@ const NavBar: React.FC = () => {
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+  };
+
+  const handleOpenCredentialsMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElCredentials(event.currentTarget);
+  };
+
+  const handleCloseCredentialsMenu = () => {
+    setAnchorElCredentials(null);
   };
 
   return (
@@ -100,7 +107,7 @@ const NavBar: React.FC = () => {
           </Box>
 
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {MENU_ITEMS.map((item) => (
+            {MENU_ITEMS.filter(item => !["issue-credential", "request-credential", "revocation"].includes(item.key)).map((item) => (
               <Button
                 key={item.key}
                 component={Link}
@@ -116,6 +123,39 @@ const NavBar: React.FC = () => {
                 {item.label}
               </Button>
             ))}
+            <Button
+              onClick={handleOpenCredentialsMenu}
+              sx={{
+                my: 1,
+                px: 2.5,
+                fontSize: "1.1rem",
+                color: "white",
+                display: "block",
+              }}
+            >
+              Credentials
+            </Button>
+            <Menu
+              id="credentials-menu"
+              anchorEl={anchorElCredentials}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "left",
+              }}
+              open={Boolean(anchorElCredentials)}
+              onClose={handleCloseCredentialsMenu}
+            >
+              {MENU_ITEMS.filter(item => ["issue-credential", "request-credential", "revocation"].includes(item.key)).map((item) => (
+                <MenuItem key={item.key} onClick={handleCloseCredentialsMenu} component={Link} to={item.path}>
+                  {item.label}
+                </MenuItem>
+              ))}
+            </Menu>
           </Box>
         </Toolbar>
       </Container>

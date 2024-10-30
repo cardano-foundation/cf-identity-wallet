@@ -37,6 +37,8 @@ const config = {
     requestDisclosure: "/requestDisclosure",
     revokeCredential: "/revokeCredential",
     generateSchema: "/generateSchema",
+    schemaList: "/schemaList",
+    schemaCustomFields: "/schemaCustomFields",
   },
 };
 

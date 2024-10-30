@@ -3,6 +3,8 @@ import { ACDC_SCHEMAS } from "../utils/schemas";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
 import { Agent } from "../agent";
+import lmdb from "../utils/lmdb";
+import { SchemaShortDetails } from "../types/schema.type";
 
 async function schemaApi(req: Request, res: Response) {
   const { id } = req.params;
@@ -13,9 +15,43 @@ async function schemaApi(req: Request, res: Response) {
   return res.send(data);
 }
 
+function schemaList(req: Request, res: Response) {
+  const schemas = lmdb.get("schemas");
+  if (!schemas) {
+    return res.status(404).send("No schemas found");
+  }
+
+  const schemaDetailsList: Array<SchemaShortDetails> = [];
+  
+  Object.entries(schemas).forEach(([id, schema]) => {
+    const typedSchema = (schema as any).schema;
+    schemaDetailsList.push({
+      $id: typedSchema.$id,
+      title: typedSchema.title
+    });
+  });
+
+  return res.send(schemaDetailsList);
+}
+
+async function schemaCustomFields(req: Request, res: Response) {
+  const { id } = req.query;
+  const schemas = await lmdb.get("schemas");
+  if (!schemas) {
+    return res.status(404).send("No schemas found");
+  }
+
+  const data = schemas[id as string];
+  if (!data) {
+    return res.status(404).send("Schema for given SAID not found");
+  }
+
+  return res.send({ customizableKeys: data.customizableKeys });
+}
+
 async function saidifySchema(req: Request, res: Response) {
   try {
-    Agent.agent.saidifySchema(req.body, "$id");
+    await Agent.agent.saidifySchema(req.body, "$id");
       const response: ResponseData<string> = {
       statusCode: 200,
       success: true,
@@ -34,4 +70,4 @@ async function saidifySchema(req: Request, res: Response) {
   }
 }
 
-export { schemaApi, saidifySchema };
+export { schemaApi, schemaList, schemaCustomFields, saidifySchema };

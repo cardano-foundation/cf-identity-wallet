@@ -4,7 +4,7 @@ import { ping } from "./apis/ping.api";
 import { keriOobiApi } from "./apis/invitation.api";
 import { requestDisclosure, issueAcdcCredential, revokeCredential, contactCredentials, } from "./apis/credential.api";
 import { createShortenUrl, getFullUrl } from "./apis/shorten.api";
-import { saidifySchema, schemaApi } from "./apis/schema.api";
+import { saidifySchema, schemaApi, schemaCustomFields, schemaList } from "./apis/schema.api";
 import { contactList, deleteContact } from "./apis/contact.api";
 import { resolveOobi } from "./apis/oobi.api";
 
@@ -22,5 +22,7 @@ router.post(config.path.requestDisclosure, requestDisclosure);
 router.post(config.path.revokeCredential, revokeCredential);
 router.delete(config.path.deleteContact, deleteContact);
 router.post(config.path.generateSchema, saidifySchema);
+router.get(config.path.schemaList, schemaList);
+router.get(config.path.schemaCustomFields, schemaCustomFields);
 
 export default router;

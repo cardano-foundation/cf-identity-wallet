@@ -10,7 +10,7 @@ import { waitAndGetDoneOp } from "./utils";
 import { config } from "../../config";
 import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../../agent";
-import { setCache } from "../../utils/node-cache";
+import lmdb from "../../utils/lmdb";
 
 export class SignifyApi {
   static readonly DEFAULT_ROLE = "agent";
@@ -408,8 +408,49 @@ export class SignifyApi {
     return op;
   }
 
-  saidifySchema(schema : any, label?: string) {
-    const saidifiedSchema = Saider.saidify(schema, undefined, undefined, label)[1];
-    setCache(saidifiedSchema["$id"], JSON.stringify(saidifiedSchema), 0);
+  async saidifySchema(schema: any, label?: string) {
+    const customizableKeys: { [key: string]: any } = {};
+
+    const removeCustomizables = (obj: any): any => {
+      if (typeof obj !== 'object' || obj === null) return obj;
+
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          if (obj[key] && obj[key].customizable === true) {
+            customizableKeys[key] = obj[key];
+            delete obj[key].customizable;
+          } else {
+            obj[key] = removeCustomizables(obj[key]);
+          }
+        }
+      }
+      return obj;
+    };
+
+    schema = removeCustomizables(schema);
+
+    const saidifyDeepest = (obj: any): any => {
+      if (typeof obj !== 'object' || obj === null) return obj;
+
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          obj[key] = saidifyDeepest(obj[key]);
+        }
+      }
+
+      if (obj.hasOwnProperty(label)) {
+        return Saider.saidify(obj, undefined, undefined, label)[1];
+      }
+
+      return obj;
+    };
+
+    const saidifiedSchema = saidifyDeepest(schema);
+    let schemas = lmdb.get("schemas");
+    if (schemas === undefined) {
+      schemas = {};
+    }
+    schemas[saidifiedSchema.$id] = { schema: saidifiedSchema, customizableKeys };
+    await lmdb.put("schemas", schemas);
   }
 }
