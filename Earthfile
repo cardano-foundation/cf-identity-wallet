@@ -11,7 +11,7 @@ ARG --global RELEASE_TAG=""
 ARG --global PUSH=false
 
 ARG --global KERIA_GIT_REPO_URL="https://github.com/WebOfTrust/keria.git"
-ARG --global KERIA_GIT_REF=e8bc173437ac91a88abebc3bc8c6b7f07885da68
+ARG --global KERIA_GIT_REF=736947191069cfc1617a43f63dbc64210c351b5c
 
 ARG --global KERI_DOCKER_IMAGE_REPO=weboftrust/keri
 ARG --global KERI_DOCKER_IMAGE_TAG=1.1.6

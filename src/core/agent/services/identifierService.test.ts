@@ -425,6 +425,7 @@ describe("Single sig service of agent", () => {
   test("should throw an error if identifier name already exists", async () => {
     Agent.agent.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     const displayName = "newDisplayName";
+    const theme = 0;
     const errorMessage = "HTTP POST /identifiers - 400 Bad Request - {'title': 'AID with name {theme}:{name} already incepted'}";
     createIdentifierMock.mockResolvedValue({
       serder: {
@@ -438,9 +439,9 @@ describe("Single sig service of agent", () => {
     await expect(
       identifierService.createIdentifier({
         displayName,
-        theme: 0,
+        theme,
       })
-    ).rejects.toThrowError(IdentifierService.IDENTIFIER_ALREADY_EXISTS);
+    ).rejects.toThrowError(`${IdentifierService.IDENTIFIER_NAME_TAKEN}: ${theme}:${displayName}`);
   });
 
   test("should delete all associated linked connections if the identifier is a group member identifier", async () => {
