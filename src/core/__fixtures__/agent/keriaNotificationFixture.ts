@@ -336,6 +336,17 @@ const notificationIpexApplyProp = {
   },
 };
 
+const notificationIpexOfferProp = {
+  i: "string",
+  dt: "string",
+  r: false,
+  a: {
+    r: NotificationRoute.ExnIpexOffer,
+    d: "string",
+    m: "",
+  },
+};
+
 export {
   credentialMetadataMock,
   grantForIssuanceExnMessage,
@@ -352,4 +363,5 @@ export {
   notificationIpexGrantProp,
   notificationIpexAgreeProp,
   notificationIpexApplyProp,
+  notificationIpexOfferProp,
 };

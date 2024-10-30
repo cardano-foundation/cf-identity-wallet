@@ -26,6 +26,7 @@ import {
   grantForIssuanceExnMessage,
   applyForPresentingExnMessage,
   agreeForPresentingExnMessage,
+  notificationIpexOfferProp,
 } from "../../__fixtures__/agent/keriaNotificationFixture";
 import { ConnectionHistoryType } from "./connectionService.types";
 
@@ -1582,6 +1583,78 @@ describe("Signify notification service of agent", () => {
     expect(markNotificationMock).toHaveBeenCalledWith(
       notificationIpexGrantProp.i
     );
+  });
+
+  test("Should skip if identifier metadata exist with route ipex/offer", async () => {
+    exchangesGetMock.mockResolvedValueOnce({
+      exn: {
+        r: ExchangeRoute.IpexOffer,
+        p: "p",
+        a: { i: "i" },
+        e: { acdc: { d: "d" } },
+      },
+    });
+    credentialStorage.getCredentialMetadata.mockResolvedValueOnce(
+      credentialMetadataMock
+    );
+
+    identifierStorage.getIdentifierMetadata.mockResolvedValueOnce({
+      id: "id",
+    });
+
+    await keriaNotificationService.processNotification(
+      notificationIpexOfferProp
+    );
+    expect(markNotificationMock).toHaveBeenCalledWith(
+      notificationIpexOfferProp.i
+    );
+  });
+
+  test("Should skip if credential metadata exist with route ipex/offer", async () => {
+    exchangesGetMock.mockResolvedValueOnce({
+      exn: {
+        r: ExchangeRoute.IpexOffer,
+        p: "p",
+        a: { i: "i" },
+        e: { acdc: { d: "d" } },
+      },
+    });
+    credentialStorage.getCredentialMetadata.mockResolvedValueOnce(
+      credentialMetadataMock
+    );
+
+    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
+      new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING)
+    );
+
+    await keriaNotificationService.processNotification(
+      notificationIpexOfferProp
+    );
+    expect(markNotificationMock).toHaveBeenCalledWith(
+      notificationIpexOfferProp.i
+    );
+  });
+
+  test("Should throw error if other error occurs with route ipex/offer", async () => {
+    const errorMessage = "Error - 500";
+    exchangesGetMock.mockResolvedValueOnce({
+      exn: {
+        r: ExchangeRoute.IpexOffer,
+        p: "p",
+        a: { i: "i" },
+        e: { acdc: { d: "d" } },
+      },
+    });
+    credentialStorage.getCredentialMetadata.mockResolvedValueOnce(
+      credentialMetadataMock
+    );
+    identifierStorage.getIdentifierMetadata.mockRejectedValueOnce(
+      new Error(errorMessage)
+    );
+
+    await expect(
+      keriaNotificationService.processNotification(notificationIpexOfferProp)
+    ).rejects.toThrow(errorMessage);
   });
 });
 
