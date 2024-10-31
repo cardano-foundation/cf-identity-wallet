@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { Salter } from "signify-ts";
+import { Operation, Salter, State } from "signify-ts";
 import { Agent } from "../agent";
 import {
   AgentServicesProps,
@@ -87,7 +87,7 @@ class ConnectionService extends AgentService {
     const connectionId =
       operation.done && operation.response
         ? operation.response.i
-        : new URL(url).pathname.split("/oobi/").pop()?.split("/")[0];
+        : new URL(url).pathname.split("/oobi/").pop()!.split("/")[0];
     const connectionMetadata: any = {
       alias: operation.alias,
       oobi: url,
@@ -98,7 +98,7 @@ class ConnectionService extends AgentService {
     const connection = {
       id: connectionId,
       connectionDate,
-      oobi: operation.metadata.oobi,
+      oobi: operation.metadata!.oobi,
       status: ConnectionStatus.CONFIRMED,
       label: operation.alias,
       groupId,
@@ -131,7 +131,7 @@ class ConnectionService extends AgentService {
           connection,
         };
       }
-    }  
+    }
 
     await this.createConnectionMetadata(connectionId, connectionMetadata);
 
@@ -367,13 +367,17 @@ class ConnectionService extends AgentService {
   }
 
   @OnlineOnly
-  async resolveOobi(url: string, waitForCompletion = true): Promise<any> {
+  async resolveOobi(
+    url: string,
+    waitForCompletion = true
+  ): Promise<Operation & { response: State } & { alias: string }> {
     const alias = new URL(url).searchParams.get("name") ?? uuidv4();
-    const operation: any = await waitAndGetDoneOp(
+
+    const operation = (await waitAndGetDoneOp(
       this.props.signifyClient,
       await this.props.signifyClient.oobis().resolve(url, alias),
       5000
-    );
+    )) as Operation & { response: State };
 
     if (!operation.done && !waitForCompletion) {
       const pendingOperation = await this.operationPendingStorage.save({
@@ -388,14 +392,13 @@ class ConnectionService extends AgentService {
     } else if (!operation.done) {
       throw new Error(ConnectionService.FAILED_TO_RESOLVE_OOBI);
     }
-    
+
     const connectionId =
-    operation.done && operation.response
-      ? operation.response.i
-      : new URL(url).pathname.split("/oobi/").pop()?.split("/")[0];
+      operation.done && operation.response
+        ? operation.response.i
+        : new URL(url).pathname.split("/oobi/").pop()!.split("/")[0];
 
     await this.props.signifyClient.contacts().update(connectionId, { alias });
-    await this.operationPendingStorage.deleteById(operation.name); 
     const oobi = { ...operation, alias };
     return oobi;
   }
